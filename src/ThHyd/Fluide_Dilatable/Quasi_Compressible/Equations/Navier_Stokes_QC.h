@@ -23,8 +23,7 @@
 #ifndef Navier_Stokes_QC_included
 #define Navier_Stokes_QC_included
 
-#include <Navier_Stokes_std.h>
-#include <Navier_Stokes_QC_impl.h>
+#include <Navier_Stokes_Fluide_Dilatable_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -44,39 +43,16 @@
 //         convectif, tel ou tel terme source).
 //    L'inconnue est le champ de vitesse.
 // .SECTION voir aussi
-//      Equation_base Pb_Thermohydraulique_QC Navier_Stokes_std
+//      Navier_Stokes_Fluide_Dilatable_base
+//
 //////////////////////////////////////
-////////////////////////////////////////
-class Navier_Stokes_QC : public Navier_Stokes_std,public Navier_Stokes_QC_impl
+
+class Navier_Stokes_QC : public Navier_Stokes_Fluide_Dilatable_base
 {
   Declare_instanciable(Navier_Stokes_QC);
 
 public :
-
-  void completer();
   virtual int impr(Sortie& os) const;
-  int preparer_calcul();
-
-  const Champ_Don& diffusivite_pour_transport();
-  const Champ_base& diffusivite_pour_pas_de_temps();
-  const Champ_base& vitesse_pour_transport();
-
-  DoubleTab& derivee_en_temps_inco(DoubleTab& );
-  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  void assembler_avec_inertie( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual bool initTimeStep(double dt);
-
-  inline const Champ_Inc& rho_la_vitesse() const;
-  void discretiser();
-protected:
-
-
-
 };
-inline const Champ_Inc& Navier_Stokes_QC::rho_la_vitesse() const
-{
-  return rho_la_vitesse_;
-}
-#endif
+
+#endif /* Navier_Stokes_QC_included */

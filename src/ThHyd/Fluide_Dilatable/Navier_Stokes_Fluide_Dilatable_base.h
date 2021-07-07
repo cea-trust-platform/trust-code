@@ -14,18 +14,18 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Navier_Stokes_QC_impl.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Equations
+// File:        Navier_Stokes_Fluide_Dilatable_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
 // Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Navier_Stokes_QC_impl_included
-#define Navier_Stokes_QC_impl_included
+#ifndef Navier_Stokes_Fluide_Dilatable_base_included
+#define Navier_Stokes_Fluide_Dilatable_base_included
 
 #include <Champ_Inc.h>
 #include <Ref_IntVect.h>
-class Navier_Stokes_std;
+#include <Navier_Stokes_std.h>
 class DoubleTab;
 class Entree;
 class Sortie;
@@ -38,39 +38,55 @@ class Matrice_Morse;
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//  Class implementing several methods for Navier_Stokes_QC and Navier_Stokes_Turbulent_QC classes
+//    classe Navier_Stokes_Fluide_Dilatable_base
+//    Cette classe basse porte les termes de l'equation de la dynamique
+//    pour un fluide sans modelisation de la turbulence.
+//    On suppose l'hypothese de fluide dilatable.
+//    Sous ces hypotheses, on utilise la forme suivante des equations de
+//    Navier_Stokes:
+//       DU/dt = div(terme visqueux) - gradP/rho + sources/rho
+//       div U = W
+//    avec DU/dt : derivee particulaire de la vitesse
+//         rho   : masse volumique
+//    Rq : l'implementation de la classe permet bien sur de negliger
+//         certains termes de l'equation (le terme visqueux, le terme
+//         convectif, tel ou tel terme source).
+//    L'inconnue est le champ de vitesse.
+// .SECTION voir aussi
+//      Navier_Stokes_std
+//
 //////////////////////////////////////
-////////////////////////////////////////
-class Navier_Stokes_QC_impl
+
+class Navier_Stokes_Fluide_Dilatable_base : public Navier_Stokes_std
 {
+  Declare_base_sans_constructeur(Navier_Stokes_Fluide_Dilatable_base);
 public :
-  Navier_Stokes_QC_impl()
-  {
-    cumulative_=0;
-  };
-  Entree& lire_impl(Navier_Stokes_std&,const Motcle&, Entree&);
-  void completer_impl(Navier_Stokes_std&);
-  int impr_impl(const Navier_Stokes_std&,Sortie& os) const;
-  int preparer_calcul_impl(Navier_Stokes_std&);
-  void projeter_impl(Navier_Stokes_std&);
+  Navier_Stokes_Fluide_Dilatable_base();
+  virtual int impr(Sortie& os) const;
+  int preparer_calcul();
+  void completer();
+  const Champ_Don& diffusivite_pour_transport();
+  const Champ_base& diffusivite_pour_pas_de_temps();
+  const Champ_base& vitesse_pour_transport();
+  virtual const Champ_base& get_champ(const Motcle& nom) const;
+  virtual bool initTimeStep(double dt);
+  void discretiser();
+  DoubleTab& rho_vitesse(const DoubleTab& tab_rho,const DoubleTab& vitesse,DoubleTab& rhovitesse) const;
 
-  void assembler_impl(const Navier_Stokes_std&, Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  void assembler_avec_inertie_impl(const Navier_Stokes_std&, Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
+  virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
+  virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
+  virtual void assembler_avec_inertie( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
 
-  DoubleTab& rho_vitesse_impl(const DoubleTab& tab_rho,const DoubleTab& vitesse,DoubleTab& rhovitesse) const;
-  void discretiser_impl(Navier_Stokes_std&);
+  // Methodes inlines
+  inline const Champ_Inc& rho_la_vitesse() const { return rho_la_vitesse_; }
 
 protected:
-
-  DoubleTab& derivee_en_temps_inco(Navier_Stokes_std&,DoubleTab&,  Fluide_base& le_fluide,const Matrice& matrice_pression_,Assembleur& assembleur_pression_, int is_implicite);
   Champ_Inc rho_la_vitesse_;
+  IntVect orientation_VDF_;
   DoubleTab tab_W;
 
-  IntVect orientation_VDF_;
 private:
   mutable double cumulative_;
 };
 
-
-
-#endif
+#endif /* Navier_Stokes_Fluide_Dilatable_base_included */
