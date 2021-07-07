@@ -1285,6 +1285,8 @@ for pkg in $pkgs
 do
   [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && InstallPipPkgs=1
 done
+# On desactive en zone (pb de build):
+[ "${HOST#sagittarius}" != $HOST ] && InstallPipPkgs=0
 if [ "$InstallPipPkgs" = 1 ]
 then
    for pkg in $pkgs
