@@ -77,8 +77,8 @@ then
    options="-lgfortran"
 fi
 
-# By default, all plugins off, except for FLTK GUI (which requires Mesh, Post, Plugins and ONELAB) and MED.
-plugins="-DDEFAULT=OFF -DENABLE_MED=ON -DENABLE_FLTK=ON -DENABLE_MESH=ON -DENABLE_POST=ON -DENABLE_PLUGINS=ON -DENABLE_ONELAB=ON -DENABLE_PARSER=ON"
+# By default, all plugins off, except for FLTK GUI (which requires Mesh, Post, Plugins and ONELAB), MED and (since v184) NETGEN.
+plugins="-DDEFAULT=OFF -DENABLE_MED=ON -DENABLE_FLTK=ON -DENABLE_MESH=ON -DENABLE_POST=ON -DENABLE_PLUGINS=ON -DENABLE_ONELAB=ON -DENABLE_PARSER=ON -DENABLE_NETGEN=ON"
 
 # seen on Ub19/20: Adding LIBLAPACK to LD_LIBARY_PATH, otherwise TRUST_lapack not found during install
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TRUST_ROOT/lib/src/LIBLAPACK
