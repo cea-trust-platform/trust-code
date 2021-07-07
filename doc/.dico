@@ -312,6 +312,10 @@
  Ensemble_Lagrange_base Ensemble_Lagrange_base Ensemble_Lagrange_base.h
  Entree_Fichier_base Entree_Fichier_base Entree_Fichier_base.h
  Entree_temperature_imposee_H Entree_fluide_temperature_imposee_H Entree_fluide_temperature_imposee_H.h
+ EOS_Tools EOS_Tools EOS_Tools.h
+ EOS_Tools_base EOS_Tools_base EOS_Tools_base.h
+ EOS_Tools_VDF EOS_Tools_VDF EOS_Tools_VDF.h
+ EOS_Tools_VEF EOS_Tools_VEF EOS_Tools_VEF.h
  Equation Equation Equation.h
  Equations_Scalaires_Passifs List_Equations_Scalaires_Passifs List_Equations_Scalaires_Passifs.h
  Equation_base Equation_base Equation_base.h

@@ -47,6 +47,7 @@ void instancie_src_PolyMAC_Sources();
 void instancie_src_PolyMAC_Zones();
 void instancie_src_ThHyd_Chimie();
 void instancie_src_ThHyd_Fluide_Dilatable();
+void instancie_src_ThHyd_Fluide_Dilatable_Common();
 void instancie_src_ThHyd_Fluide_Dilatable_Quasi_Compressible();
 void instancie_src_ThHyd_Fluide_Dilatable_Quasi_Compressible_Cond_Lim();
 void instancie_src_ThHyd_Fluide_Dilatable_Quasi_Compressible_EF();
