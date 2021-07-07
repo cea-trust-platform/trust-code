@@ -46,6 +46,7 @@ VisIt,mesa-17.2.8.tar.gz,,PL,MIT,,ftp://ftp.freedesktop.org/pub/mesa/older-versi
 VisIt,numpy-1.14.1.zip,,PL,"?","?",https://files.pythonhosted.org/packages/a3/99/74aa456fc740a7e8f733af4e8302d8e61e123367ec660cd89c53a3cd4d70/numpy-1.14.1.zip,
 VisIt,openssl-1.0.2j.tar.gz,,PL,"BSD-style",,https://ftp.openssl.org/source/old/1.0.2/openssl-1.0.2j.tar.gz,
 VisIt,zlib-1.2.11.tar.xz,,PL,"free zlib/libpng license",,https://sourceforge.net/projects/libpng/files/zlib/1.2.11/zlib-1.2.11.tar.xz/download,
+VisIt,glu-9.0.0.tar.gz,,PL,MIT,,https://archive.mesa3d.org/glu/glu-9.0.0.tar.gz,
 petsc,ml-6.2-p4.tar.gz,,PL,"GNU LGPL",,
 lapack,lapack-3.4.1.tgz,,SV,BSD,http://www.netlib.org/lapack/,http://www.netlib.org/lapack/lapack-3.4.1.tgz,
 lapack,OpenBLAS-0.3.10.tar.gz,,PL,BSD,https://www.openblas.net/,http://github.com/xianyi/OpenBLAS/archive/v0.3.10.tar.gz,

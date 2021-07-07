@@ -20,8 +20,8 @@ linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-IJK-FT        		 		-
 linux	rsync_ssh	tache	orcus-intel.intra.cea.fr	-limited	-TrioCFD -IJK-FT -STT -PEMFC -FLICA5   						-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd.intra.cea.fr		-limited	-TrioCFD -IJK-FT -FLICA5  						-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr	-limited	-TrioCFD 					-cuda										# CentOS 7.6	CEA Saclay
-linux	rsync_ssh	tache	pegasi2_desactivee.intra.cea.fr	  	-TrioCFD  				 		     -force_provided_mpich			# CentOS 7.9 serveur rackable pour validation TrioCFD
-linux	rsync_ssh	tache	pegasi3.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD 	 		     -force_provided_mpich -without-pdflatex -disable-gmsh -without-visit 			# Redhat 8.2 serveur rackable Titania
+linux	rsync_ssh	tache	pegasi2.intra.cea.fr	  	-TrioCFD  				 		     -force_provided_mpich			# CentOS 7.9 serveur rackable pour validation TrioCFD
+linux	rsync_ssh	tache	pegasi3.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD 	 		     -force_provided_mpich -without-pdflatex  			# Redhat 8.2 serveur rackable Titania
 linux	rsync_ssh	tache	is226425-bench.intra.cea.fr	-limited							-avx -benchmark	-force_provided_mpich -disable-tools						# Fedora 24	Bat 451 LGLS	bureau TMA TRUST ( ajuster pour tester g++ 4.1.2)
 linux	rsync_ssh	tache	is221715.intra.cea.fr		-all 							-Check_decoupage 		-force_provided_mpich -without-pdflatex						# CentOS 7.9	Bat 451	LMEC	bureau TMA FLICA4
 linux	rsync_ssh	tache	is221556.intra.cea.fr												-force_latest_openmpi								# Ubuntu 16	Bat 451 LGLS	bureau a cote de Clarisse Genrault

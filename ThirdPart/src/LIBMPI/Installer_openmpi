@@ -21,7 +21,8 @@ then
    [ $version = $latest_version ] && options=$options" --enable-mpi1-compatibility" # HDF5 qui utilise des MPI deprecated...
 fi
 # On disable diverses choses pour accelerer la compilation et reduire la taille de la libmpi.a
-options="--enable-static --disable-shared --disable-mpi-cxx --enable-mca-no-build=maffinity-libnuma "$options
+# On retire  --disable-shared pour que les cas tests utilisant mpi4py tournent.
+options="--enable-static --disable-mpi-cxx --enable-mca-no-build=maffinity-libnuma "$options
 # Ajout CUDA:
 [ "$TRUST_USE_CUDA" = 1 ] && options=$options" --with-cuda=$CUDA_INC_PATH"
 
