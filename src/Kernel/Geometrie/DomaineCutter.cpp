@@ -1176,7 +1176,9 @@ void DomaineCutter::construire_sous_domaine(const int part,
 
   construire_faces_joints_ssdom(part, correspondance, zone_partie);
 
-  int compute_items_distants = Decouper::print_more_infos; // To print NbElemDist informations
+  //if som_raccord is used (for DecouperMulti), then construire_elements_distants_ssdom()
+  //can lead to the creation of empty joints -> it must not be called
+  int compute_items_distants= Decouper::print_more_infos && !som_raccord; // To print NbElemDist informations
   if (compute_items_distants)
     {
       // Cet algorithme sequentiel n'est pas utilise en temps normal, sauf si
