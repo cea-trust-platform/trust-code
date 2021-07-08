@@ -197,12 +197,26 @@ then
    # Lancement en local de la commande creant la fiche avec les options
    [ "$prod" = "" ] && export prod=1 # On utilise les queues de production desormais par defaut si pas specifie
    # Recherche de la fiche prm:
-   prm=`ls src/*.prm 2>/dev/null`
+   prm=`ls src/*.prm *.ipynb 2>/dev/null`
    if [ "`echo $prm | wc -w`" != 1 ]
    then
       echo ".prm files found: $prm"
       echo "There should be ONE .prm file in the src directory."
       exit -1
+   fi
+   # Lancement d'une fiche jupyter
+   if [ ${prm%.ipynb} != $prm ]
+   then
+      # Verification Conda
+      if [ "`jupyter -h 2>/dev/null`" = "" ]
+      then
+         [ ! -w $TRUST_ROOT ] && echo "You don't have rights to install Jupyter under TRUST_ROOT=$TRUST_ROOT" && exit -1
+         echo "Trying to install Jupyter stuff..."
+         conda install -f -c conda-forge jupyterlab ipywidgets ca-certificates=2020.10.14 conda=4.9.2 certifi=2020.6.20
+      fi
+      source $TRUST_ROOT/env_for_python.sh
+      jupyter-notebook &
+      exit 0
    fi
    # Verifie la syntaxe des visu
    KO=`grep _magnitude $prm | grep -i pseudocolor`
