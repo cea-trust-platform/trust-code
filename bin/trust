@@ -625,7 +625,15 @@ fi
 ##########################
 if [ "$xdata" = 1 ]
 then
-   cd $TRUST_ROOT/Outils/TRIOXDATA && source ./XDATA.sh && cd test_complet && ./fait_lance_test && echo $NOM | ./lance_test_modif
+   if [ "$project_directory" != "" ]
+   then
+      # Pour Baltik:
+      cd $project_directory/build/xdata
+   else
+      # Pour TRUST:
+      cd $TRUST_ROOT/Outils/TRIOXDATA
+   fi
+   source ./XDATA.sh && cd test_complet && ./fait_lance_test && echo $NOM | ./lance_test_modif
    exit $?
 fi
 
