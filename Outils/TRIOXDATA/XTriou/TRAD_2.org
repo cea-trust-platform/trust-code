@@ -752,6 +752,8 @@ gen solveur_sys_base gen -1 not_set
 petsc solveur_sys_base petsc 0 Solver via Petsc API NL2 \input{{solvpetsc}}
   attr solveur chaine solveur 0 not_set
   attr option_solveur bloc_lecture option_solveur 0 not_set
+  attr atol floattant atol 1 Absolute threshold for convergence (same as seuil option)
+  attr rtol floattant rtol 1 Relative threshold for convergence
 amgx petsc amgx 0 Solver via AmgX API
   attr solveur chaine solveur 0 not_set
   attr option_solveur bloc_lecture option_solveur 0 not_set
