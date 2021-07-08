@@ -130,7 +130,6 @@ help()
    echo "-check function|class|class::method : Check the non regression of a list of tests cases covering a function, a class or a class method."
    echo "-gdb                          : Run under gdb debugger."
    echo "-valgrind                     : Run under valgrind."
-   echo "-suppressions_val             : Add a suppression file."
    echo "-valgrind_strict              : Run under valgrind with no suppressions."
    echo "-callgrind                    : Run callgrind tool (profiling) from valgrind."
    echo "-massif                       : Run massif tool (heap profile) from valgrind." 
@@ -168,7 +167,6 @@ cpus_per_task=""
 gpus_per_node=""
 hintnomultithread=""
 queue_choisie=""
-suppression_file=""
 [ "$prod" = "" ] && prod=0
 [ "$bigmem" = "" ] && bigmem=0
 [ "$gpu" = "" ] && gpu=0
@@ -415,14 +413,6 @@ do
    elif [ "$1" = "-valgrind" ]
    then 
       VALGRIND=1
-   elif [ "$1" = "-suppressions_val" ]
-   then
-      shift
-      if [ "$1" != "" ] 
-      then
-         suppression_file=$1
-         [ ! -f $suppression_file ] && echo "The suppression file $suppression_file not found" && exit -1 
-      fi
    elif [ "$1" = "-valgrind_strict" ]
    then
       VALGRIND_STRICT=1
