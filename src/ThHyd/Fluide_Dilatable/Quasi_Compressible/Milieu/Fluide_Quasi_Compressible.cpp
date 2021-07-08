@@ -61,7 +61,6 @@ Sortie& Fluide_Quasi_Compressible::printOn(Sortie& os) const
   return os;
 }
 
-
 // Description:
 //   Lit les caracteristiques du fluide a partir d'un flot
 //   d'entree.
@@ -306,6 +305,7 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
     {
       typ = "VEF";
     }
+  Nom typp = typ;
   typ += "_";
 
   // Pb_Hydraulique_Melange_Binaire_QC/Pb_Hydraulique_Melange_Binaire_Turbulent_QC is currently an isobar problem
@@ -322,14 +322,19 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
   // All this is not good... EDO_Pth_ should only be used if traitement_PTh = 0
   // I think we can do better ...
 
+  // TODO : FIXME
   EDO_Pth_.typer(typ);
+  eos_tools_.typer(typp);
   EDO_Pth_->associer_zones(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
+  eos_tools_->associer_zones(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
   EDO_Pth_->associer_fluide(*this);
+  eos_tools_->associer_fluide(*this);
   EDO_Pth_->mettre_a_jour_CL(Pth_);
 
   initialiser_inco_ch();
 
-  EDO_Pth_->mettre_a_jour(0.);
+//  EDO_Pth_->mettre_a_jour(0.);
+  eos_tools_->mettre_a_jour(0.);
   loi_etat_->initialiser();
 
   output_file_ = Objet_U::nom_du_cas();
@@ -362,7 +367,8 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 void Fluide_Quasi_Compressible::preparer_pas_temps()
 {
   Fluide_Dilatable_base::preparer_pas_temps();
-  EDO_Pth_->mettre_a_jour(0);
+//  EDO_Pth_->mettre_a_jour(0);
+  eos_tools_->mettre_a_jour(0);
   EDO_Pth_->mettre_a_jour_CL(Pth_);
 }
 
@@ -435,13 +441,16 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
 void Fluide_Quasi_Compressible::prepare_pressure_edo()
 {
   EDO_Pth_->completer();
-  EDO_Pth_->mettre_a_jour(0.);
+//  EDO_Pth_->mettre_a_jour(0.);
+  eos_tools_->mettre_a_jour(0.);
 }
 
 void Fluide_Quasi_Compressible::write_mean_edo(double temps)
 {
-  double Ch_m = EDO_Pth_->moyenne_vol(inco_chaleur_->valeurs());
-  double rhom = EDO_Pth_->moyenne_vol(rho.valeurs());
+//  double Ch_m = EDO_Pth_->moyenne_vol(inco_chaleur_->valeurs());
+//  double rhom = EDO_Pth_->moyenne_vol(rho.valeurs());
+  double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeurs());
+  double rhom = eos_tools_->moyenne_vol(rho.valeurs());
 
   if(je_suis_maitre())
     {

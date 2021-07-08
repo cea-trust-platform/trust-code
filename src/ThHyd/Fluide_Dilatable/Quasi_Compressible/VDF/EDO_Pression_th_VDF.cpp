@@ -31,8 +31,9 @@
 #include <Check_espace_virtuel.h>
 #include <communications.h>
 
-Implemente_base(EDO_Pression_th_VDF,"EDO_Pression_th_VDF",EDO_Pression_th_base);
+Implemente_base_sans_constructeur(EDO_Pression_th_VDF,"EDO_Pression_th_VDF",EDO_Pression_th_base);
 
+EDO_Pression_th_VDF::EDO_Pression_th_VDF() : M0(-1.) { }
 
 Sortie& EDO_Pression_th_VDF::printOn(Sortie& os) const
 {
@@ -47,16 +48,7 @@ void  EDO_Pression_th_VDF::associer_zones(const Zone_dis& zone, const Zone_Cl_di
 {
   la_zone = ref_cast(Zone_VDF,zone.valeur());
   la_zone_Cl = zone_cl;
-  Champ_Face toto;
-  toto.associer_zone_dis_base(zone.valeur());
-  toto.fixer_nb_comp(1);
-  toto.fixer_nb_valeurs_nodales(la_zone->nb_faces());
-  //tab_rhoFa=toto.valeurs();
-  tab_rho_face=toto.valeurs();
-  tab_rho_face_demi=toto.valeurs();
-  tab_rho_face_np1=toto.valeurs();
 }
-
 
 // Description:
 //    Complete l'EDO : calcule rho sur les faces
@@ -78,125 +70,6 @@ void EDO_Pression_th_VDF::completer()
   double Pth=le_fluide_->pression_th();
   M0=masse_totale(Pth,tab_ICh);
   le_fluide_->checkTraitementPth(la_zone_Cl);
-}
-
-// Description:
-//    Calcule la moyenne volumique de la grandeur P0 donnee
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-double EDO_Pression_th_VDF::moyenne_vol(const DoubleTab& tab) const
-{
-  int nb_elem=la_zone->nb_elem();
-  const DoubleVect& volumes = la_zone->volumes();
-  assert(tab.dimension(0)==nb_elem);
-  ArrOfDouble sum(2);
-  sum = 0;
-  for (int elem=0 ; elem<nb_elem ; elem++)
-    {
-      double v = volumes(elem);
-      sum[0] += v;
-      sum[1] += v*tab(elem);
-    }
-  mp_sum_for_each_item(sum);
-  return sum[1]/sum[0];
-}
-void EDO_Pression_th_VDF::calculer_rho_face_np1(const DoubleTab& tab_rhoP0)
-{
-  int face,nb_faces_tot = la_zone->nb_faces_tot();
-  int elem;
-  Debog::verifier("tab_rhoP0",tab_rhoP0);
-  int i, nb_comp;
-  IntTab& face_voisins = la_zone->face_voisins();
-  for (face=0 ; face<nb_faces_tot ; face++)
-    {
-      nb_comp=0;
-      tab_rho_face_np1(face) = 0;
-      for (i=0 ; i<2 ; i++)
-        {
-          elem= face_voisins(face,i);
-          if (elem!=-1)
-            {
-              nb_comp++;
-              tab_rho_face_np1(face) += tab_rhoP0(elem);
-            }
-        }
-      tab_rho_face_np1(face) /= nb_comp;
-    }
-  tab_rho_face_np1.echange_espace_virtuel();
-  Debog::verifier("tab_rho_face_np1",tab_rho_face_np1);
-  for (face=0 ; face<nb_faces_tot ; face++)
-    {
-      tab_rho_face_demi(face)=(tab_rho_face_np1(face)+tab_rho_face(face))/2.;
-    }
-}
-
-// Description:
-//    Renvoie rho avec la meme discretisation que la vitesse :
-//    une valeur par face en VDF
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-const DoubleTab& EDO_Pression_th_VDF::rho_discvit() const
-{
-  return tab_rho_face_demi;
-}
-
-// Description:
-//    Renvoie div(u) avec la meme discretisation que la vitesse :
-//    une valeur par face en VDF
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: div(u) discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void EDO_Pression_th_VDF::divu_discvit(const DoubleTab& secmem1, DoubleTab& secmem2)
-{
-  assert_espace_virtuel_vect(secmem1);
-  int nb_faces_tot = la_zone->nb_faces_tot();
-  IntTab& face_voisins = la_zone->face_voisins();
-  //remplissage de div(u) sur les faces
-  for (int face=0 ; face<nb_faces_tot; face++)
-    {
-      int nb_comp=0;
-      secmem2(face)=0;
-      for (int i=0 ; i<2 ; i++)
-        {
-          int elem= face_voisins(face,i);
-          if (elem!=-1)
-            {
-              nb_comp++;
-              secmem2(face) += secmem1(elem);
-            }
-        }
-      secmem2(face) /= nb_comp;
-    }
-  secmem2.echange_espace_virtuel();
 }
 
 // Description:
@@ -243,50 +116,6 @@ double EDO_Pression_th_VDF::masse_totale(double P,const DoubleTab& T)
   return M;
 }
 
-
-
-// Description:
-//    Calcule le second membre de l'equation de continuite :
-//    div(rhoU) = W = -dZ/dT    avec Z=rho
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void EDO_Pression_th_VDF::secmembre_divU_Z(DoubleTab& tab_W) const
-{
-  double dt = le_fluide().vitesse()->equation().schema_temps().pas_de_temps();
-
-  int nb_faces = la_zone->nb_faces();
-  int elem,nb_elem = la_zone->nb_elem();
-  DoubleVect tab_dZ(nb_elem);
-  DoubleTab tab_gradZ(nb_faces);
-
-  const DoubleTab& tab_rhonP0 = le_fluide().loi_etat()->rho_n();
-  const DoubleTab& tab_rhonp1P0 = le_fluide().loi_etat()->rho_np1();
-  Debog::verifier("divU tab_rhonP0",tab_rhonP0);
-  Debog::verifier("divU tab_rhonp1P0",tab_rhonp1P0);
-  const DoubleVect& volumes = la_zone->volumes();
-  for (elem=0 ; elem<nb_elem ; elem++)
-    {
-      //Corrections pour eviter l assemblage de la matrice de pression
-      tab_dZ(elem) = (tab_rhonp1P0(elem)-tab_rhonP0(elem))/dt;
-    }
-  double tmp;
-  for (elem=0 ; elem<nb_elem ; elem++)
-    {
-      tmp = tab_dZ(elem) ;
-      tab_W(elem) = -tmp * volumes(elem);
-    }
-}
-
 void  EDO_Pression_th_VDF::calculer_grad(const DoubleTab& inco, DoubleTab& resu)
 {
   int face, n0, n1, ori;
@@ -307,20 +136,8 @@ void  EDO_Pression_th_VDF::calculer_grad(const DoubleTab& inco, DoubleTab& resu)
       coef=1;
       resu(face) += coef*(inco(n1)-inco(n0))/(xp(n1,ori)- xp(n0,ori));
     }
-
 }
 
-void EDO_Pression_th_VDF::mettre_a_jour(double temps)
-{
-  // a voir
-  // copie de tab_rho_face_np1 dans tab_rho_face
-  int n=tab_rho_face_np1.size_totale();
-  for (int i=0; i<n; i++)
-    {
-      tab_rho_face(i)=tab_rho_face_np1(i);
-      tab_rho_face_demi(i)=tab_rho_face_np1(i);
-    }
-}
 void EDO_Pression_th_VDF::mettre_a_jour_CL(double P)
 {
   for (int n_bord=0; n_bord<la_zone->nb_front_Cl(); n_bord++)

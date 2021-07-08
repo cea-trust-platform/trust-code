@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Fluide_Dilatable_base.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
 // Version:     /main/29
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@
 #include <Ref_Champ_Inc.h>
 #include <Champ_Inc.h>
 #include <Loi_Etat.h>
-#include <EDO_Pression_th.h>
+#include <EOS_Tools.h>
 
 class Probleme_base;
 class Zone_Cl_dis;
@@ -69,7 +69,7 @@ public :
   virtual void mettre_a_jour(double );
   virtual void preparer_calcul();
   virtual void checkTraitementPth(const Zone_Cl_dis&)=0;
-  virtual void calculer_rho_face(const DoubleTab& tab_rho)=0;
+//  virtual void calculer_rho_face(const DoubleTab& tab_rho)=0;
   virtual void completer(const Probleme_base&)=0;
   virtual void prepare_pressure_edo()=0;
   virtual void write_mean_edo(double )=0;
@@ -111,12 +111,22 @@ public :
   inline double pression_th1() const { return Pth1; } // Pression thermodynamique calculee pour conserver la masse
   inline double calculer_H(double hh) const { return loi_etat_->calculer_H(Pth_,hh); }
 
+  // Methodes inlines from EOS_Tools
+  inline const DoubleTab& rho_discvit() const { return eos_tools_->rho_discvit();  }
+  inline const DoubleTab& rho_face_n() const { return eos_tools_->rho_face_n(); }
+  inline const DoubleTab& rho_face_np1() const { return eos_tools_->rho_face_np1(); }
+  virtual void secmembre_divU_Z(DoubleTab& ) const { }; // TODO : FIXME
+  inline void calculer_rho_face(const DoubleTab& tab_rho) { eos_tools_->calculer_rho_face_np1(tab_rho); }
+  inline void divu_discvit(DoubleTab& secmem1, DoubleTab& secmem2) { eos_tools_->divu_discvit(secmem1,secmem2); }
+  inline double moyenne_vol(const DoubleTab& A) const { return eos_tools_->moyenne_vol(A); }
+
 protected :
   int traitement_PTh; // flag pour le traitement de la pression thermo
   double Pth_, Pth_n, Pth1;
   REF(Champ_Inc) inco_chaleur_, vitesse_, pression_;
   Champ_Don pression_tot_,mu_sur_Sc,nu_sur_Sc,rho_gaz,rho_comme_v;
   Loi_Etat loi_etat_;
+  EOS_Tools eos_tools_;
 };
 
 inline void Fluide_Dilatable_base::calculer_coeff_T()

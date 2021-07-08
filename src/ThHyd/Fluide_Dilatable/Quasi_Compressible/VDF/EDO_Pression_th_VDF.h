@@ -27,6 +27,7 @@
 #include <Ref_Zone_VDF.h>
 #include <DoubleTab.h>
 #include <Ref_Zone_Cl_dis.h>
+
 class Fluide_Quasi_Compressible;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -42,49 +43,21 @@ class Fluide_Quasi_Compressible;
 
 class EDO_Pression_th_VDF: public EDO_Pression_th_base
 {
-
-  Declare_base(EDO_Pression_th_VDF);
+  Declare_base_sans_constructeur(EDO_Pression_th_VDF);
 public :
-  const Fluide_Quasi_Compressible& le_fluide() const
-  {
-    return le_fluide_.valeur();
-  };
+  EDO_Pression_th_VDF();
+  const Fluide_Quasi_Compressible& le_fluide() const { return le_fluide_.valeur(); };
   void associer_zones(const Zone_dis&,const Zone_Cl_dis&);
   void completer();
   void calculer_grad(const DoubleTab&,DoubleTab&);
-  const DoubleTab& rho_discvit() const;
-  void divu_discvit(const DoubleTab&, DoubleTab&);
   double masse_totale(double P,const DoubleTab& T);
-  void secmembre_divU_Z(DoubleTab& ) const;
-  double moyenne_vol(const DoubleTab&) const ;
   void mettre_a_jour_CL(double P);
-  double getM0()
-  {
-    return M0; // renvoie la masse totale initiale.
-  }
-  void mettre_a_jour(double temps);
-  void calculer_rho_face_np1(const DoubleTab& rho);
-  inline const  DoubleTab& rho_face_n() const
-  {
-    return tab_rho_face;
-  } ;
-  inline const  DoubleTab& rho_face_np1() const
-  {
-    return tab_rho_face_np1;
-  }
+  double getM0() { return M0; }
 
 protected :
   REF(Zone_VDF) la_zone;
   REF(Zone_Cl_dis) la_zone_Cl;
-
-  //DoubleTab tab_rhoFa;
-  DoubleTab tab_rho_face;
-  DoubleTab tab_rho_face_demi;
-  DoubleTab tab_rho_face_np1;
-
   double M0;// la masse totale initiale
-
 };
 
-
-#endif
+#endif /* EDO_Pression_th_VDF_included */

@@ -41,43 +41,22 @@ class Fluide_Quasi_Compressible;
 
 class EDO_Pression_th_VEF: public EDO_Pression_th_base
 {
-  Declare_base(EDO_Pression_th_VEF);
-public :
-  const Fluide_Quasi_Compressible& le_fluide() const
-  {
-    return le_fluide_.valeur();
-  };
+  Declare_base_sans_constructeur(EDO_Pression_th_VEF);
 
+public :
+  EDO_Pression_th_VEF();
+  const Fluide_Quasi_Compressible& le_fluide() const { return le_fluide_.valeur(); };
   void associer_zones(const Zone_dis&,const Zone_Cl_dis&);
   void completer();
   void calculer_grad(const DoubleTab&,DoubleTab&);
-  void divu_discvit(const DoubleTab& , DoubleTab& );
   double masse_totale(double P,const DoubleTab& T);
-  void secmembre_divU_Z(DoubleTab& ) const;
-  void secmembre_divU_Z_VEFP1B(DoubleTab& ) const;
-  double moyenne_vol(const DoubleTab&) const;
   void mettre_a_jour_CL(double P);
-  double getM0()
-  {
-    return M0; // renvoie la masse totale initiale.
-  }
-  const DoubleTab& rho_discvit() const;
-  const DoubleTab& rho_face_n() const;
-  const DoubleTab& rho_face_np1() const;
-  // ne fait  rien rho est deja au face
-  inline void calculer_rho_face_np1(const DoubleTab& rho)
-  {
-    ;
-  };
+  double getM0() { return M0; }
 
 protected :
   REF(Zone_VEF) la_zone;
   REF(Zone_Cl_dis) la_zone_Cl;
-
   double M0;// la masse totale initiale
-
 };
 
-
-
-#endif
+#endif /* EDO_Pression_th_VEF_included */

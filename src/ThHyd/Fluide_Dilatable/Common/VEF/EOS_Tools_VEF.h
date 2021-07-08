@@ -40,7 +40,7 @@ class Fluide_Dilatable_base;
 
 class EOS_Tools_VEF: public EOS_Tools_base
 {
-  Declare_base(EOS_Tools_VEF);
+  Declare_instanciable(EOS_Tools_VEF);
 public :
   const DoubleTab& rho_discvit() const;
   const DoubleTab& rho_face_n() const;

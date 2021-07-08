@@ -41,7 +41,7 @@ class Fluide_Dilatable_base;
 
 class EOS_Tools_VDF: public EOS_Tools_base
 {
-  Declare_base(EOS_Tools_VDF);
+  Declare_instanciable(EOS_Tools_VDF);
 public :
   const DoubleTab& rho_discvit() const;
   void associer_zones(const Zone_dis&,const Zone_Cl_dis&);

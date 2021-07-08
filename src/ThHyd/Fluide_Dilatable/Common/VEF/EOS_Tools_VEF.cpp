@@ -31,16 +31,45 @@
 #include <Champ_P1NC.h>
 #include <Check_espace_virtuel.h>
 
-Implemente_base(EOS_Tools_VEF,"EOS_Tools_VEF",EOS_Tools_base);
+Implemente_instanciable(EOS_Tools_VEF,"EOS_Tools_VEF",EOS_Tools_base);
 
+// Description:
+//    Imprime sur un flot de sortie.
+// Precondition:
+// Parametre: Sortie& os
+//    Signification: le flot de sortie pour l'impression
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord: le flot de sortie est modifie
+// Postcondition: la methode ne modifie pas l'objet
 Sortie& EOS_Tools_VEF::printOn(Sortie& os) const
 {
-  return EOS_Tools_base::printOn(os);
+  os <<que_suis_je()<< finl;
+  return os;
 }
 
+// Description:
+//    Lecture sur un flot d'entree.
+// Precondition:
+// Parametre: Entree& is
+//    Signification: le flot d'entree pour la lecture des parametres
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree&
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 Entree& EOS_Tools_VEF::readOn(Entree& is)
 {
-  return EOS_Tools_base::readOn(is);
+  return is;
 }
 
 // Description:
@@ -69,6 +98,36 @@ void  EOS_Tools_VEF::associer_zones(const Zone_dis& zone, const Zone_Cl_dis& zon
 }
 
 // Description:
+//    Renvoie rho avec la meme discretisation que la vitesse :
+//    une valeur par face en VEF
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: DoubleTab&
+//    Signification: rho discretise par face
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+const DoubleTab& EOS_Tools_VEF::rho_discvit() const
+{
+  return le_fluide_->masse_volumique().valeurs();
+}
+
+const DoubleTab& EOS_Tools_VEF::rho_face_n() const
+{
+  return le_fluide_->rho_n();
+}
+
+const DoubleTab& EOS_Tools_VEF::rho_face_np1() const
+{
+  return le_fluide_->rho_np1();
+}
+
+// Description:
 //    Calcule la moyenne volumique de la grandeur P1NC donnee
 // Precondition:
 // Parametre:
@@ -88,7 +147,6 @@ double EOS_Tools_VEF::moyenne_vol(const DoubleTab& tab) const
   double x = Champ_P1NC::calculer_integrale_volumique(la_zone.valeur(), tab, FAUX_EN_PERIO);
   // La facon simple de faire serait celle-ci, mais c'est faux a cause de FAUX_EN_PERIO
   //  qui compte deux fois les volumes entrelaces des faces periodiques:
-  // double y = la_zone.valeur().zone().volume_total();
   DoubleVect un;
   la_zone.valeur().creer_tableau_faces(un, Array_base::NOCOPY_NOINIT);
   un = 1.;
@@ -114,7 +172,6 @@ void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab
     {
       int nb_comp=0;
       DivVelocityFaces(face)=0;
-
       for (int i=0 ; i<2 ; i++)
         {
           int elem= face_voisins(face,i);
@@ -126,16 +183,15 @@ void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab
         }
       DivVelocityFaces(face) /= nb_comp;
     }
+
   int size = la_zone->nb_faces();
   for (int face=premiere_fac_std; face<size; face++)
     {
       int nb_comp=0;
       DivVelocityFaces(face)=0;
-
       for (int i=0 ; i<2 ; i++)
         {
           int elem= face_voisins(face,i);
-
           if (elem!=-1)
             {
               nb_comp++;
@@ -169,11 +225,10 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   int nb_elem_tot=la_zone->nb_elem_tot();
   int nb_som_tot=la_zone->zone().nb_som_tot();
   int nb_faces_tot=la_zone->nb_faces_tot();
-
   const Equation_base& eq=le_fluide().vitesse()->equation();
   DoubleTab tab_dZ;
-  // Dimensionnement de tab_dZ
 
+  // Dimensionnement de tab_dZ
   const Navier_Stokes_std& eqns = ref_cast(Navier_Stokes_std,eq);
   const DoubleTab& pression = eqns.pression().valeurs();
   tab_dZ = pression;
@@ -198,6 +253,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   int nfe = la_zone->zone().nb_faces_elem();
   int nsf = la_zone->nb_som_face();
   const Domaine& dom=la_zone->zone().domaine();
+
   // calcul de la somme des volumes entrelacees autour d'un sommet
   volume_int_som=0.;
   for (face=0 ; face<nb_faces_tot ; face++)
@@ -243,45 +299,43 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
         }
       tab_dZ(elem) = (rnp1-rn)/(nfe*dt);
     }
+
   decal+=nb_case;
   tab_dZ.echange_espace_virtuel();
+
   Debog::verifier("EOS_Tools_VEF::secmembre_divU_Z tab_dZ=",tab_dZ);
   int p_has_som=zp1b.get_alphaS();
   nb_case=nb_som_tot*p_has_som;
+
   for (som=0 ; som<nb_case ; som++)
-    {
-      tab_dZ(decal+som) = ((tab_rhonp1_som(som))-(tab_rhon_som(som)))/dt;
-    }
+    tab_dZ(decal+som) = ((tab_rhonp1_som(som))-(tab_rhon_som(som)))/dt;
+
   decal+=nb_case;
   int p_has_arrete=zp1b.get_alphaA();
   int nb_ar_tot=la_zone->zone().nb_aretes_tot();
-  nb_case=nb_ar_tot*p_has_arrete        ;
+  nb_case=nb_ar_tot*p_has_arrete;
+
   for (int ar=0 ; ar<nb_case ; ar++)
-    {
-      tab_dZ(decal+ar) =0;
-    }
+    tab_dZ(decal+ar) =0;
+
   assert(decal+nb_case==tab_W.size_totale());
   tab_dZ.echange_espace_virtuel();
   Debog::verifier("EOS_Tools_VEF::secmembre_divU_Z tab_dZ=",tab_dZ);
 
-  double coefdivelem=1;
-  double coefdivsom=1;
-
+  double coefdivelem=1,coefdivsom=1;
   decal=0;
-
   nb_case=nb_elem_tot*p_has_elem;
+
   for (elem=0 ; elem<nb_case ; elem++)
-    {
-      tab_W(elem) = -coefdivelem*tab_dZ(elem) * volumes(elem);
-    }
+    tab_W(elem) = -coefdivelem*tab_dZ(elem) * volumes(elem);
+
   Debog::verifier("EOS_Tools_VEF::secmembre_divU_Z tabW elem",tab_W);
   decal+=nb_case;
   nb_case=nb_som_tot*p_has_som;
+
   for (som=0 ; som<nb_case ; som++)
-    {
-      //Corrections pour nouvelle formulation du quasi-compressible
-      tab_W(decal+som) = -coefdivsom*tab_dZ(decal+som)*volumes_controle(som)*1;
-    }
+    tab_W(decal+som) = -coefdivsom*tab_dZ(decal+som)*volumes_controle(som)*1;
+
   decal+=nb_case;
   nb_case=nb_ar_tot*p_has_arrete;
   for (int ar=0 ; ar<nb_case ; ar++)
@@ -290,37 +344,8 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
       assert(tab_dZ(decal+ar)==0);
       tab_W(decal+ar) =0;
     }
+
   assert(decal+nb_case==tab_W.size_totale());
   tab_W.echange_espace_virtuel();
   Debog::verifier("EOS_Tools_VEF::secmembre_divU_Z tab_W=",tab_W);
-}
-
-// Description:
-//    Renvoie rho avec la meme discretisation que la vitesse :
-//    une valeur par face en VEF
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-const DoubleTab& EOS_Tools_VEF::rho_discvit() const
-{
-  return le_fluide_->masse_volumique().valeurs();
-}
-// renvoie rho_n
-const DoubleTab& EOS_Tools_VEF::rho_face_n() const
-{
-  return le_fluide_->rho_n();
-}
-// renvoie rho_n
-const DoubleTab& EOS_Tools_VEF::rho_face_np1() const
-{
-  return le_fluide_->rho_np1();
 }

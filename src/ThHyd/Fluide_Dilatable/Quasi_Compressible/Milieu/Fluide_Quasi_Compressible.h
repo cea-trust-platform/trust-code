@@ -24,6 +24,7 @@
 #define Fluide_Quasi_Compressible_included
 
 #include <Fluide_Dilatable_base.h>
+#include <EDO_Pression_th.h>
 
 class Zone_Cl_dis;
 
@@ -43,9 +44,7 @@ class Fluide_Quasi_Compressible : public Fluide_Dilatable_base
   Declare_instanciable_sans_constructeur(Fluide_Quasi_Compressible);
 
 public :
-
   Fluide_Quasi_Compressible();
-
   virtual void set_param(Param& param);
   virtual void completer(const Probleme_base&);
   virtual void preparer_pas_temps();
@@ -56,15 +55,9 @@ public :
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
 
   // Methodes inlines
-  inline const DoubleTab& rho_discvit() const  { return EDO_Pth_->rho_discvit();  }
-  inline const DoubleTab& rho_face_n() const { return EDO_Pth_->rho_face_n(); }
-  inline const DoubleTab& rho_face_np1() const  { return EDO_Pth_->rho_face_np1(); }
   inline void Resoudre_EDO_PT();
   inline void secmembre_divU_Z(DoubleTab& ) const;
-  inline void calculer_rho_face(const DoubleTab& tab_rho) { EDO_Pth_->calculer_rho_face_np1(tab_rho); }
-  inline void divu_discvit(DoubleTab& secmem1, DoubleTab& secmem2) { EDO_Pth_->divu_discvit(secmem1,secmem2); }
   inline int get_traitement_rho_gravite() const { return traitement_rho_gravite_; }
-  inline double moyenne_vol(const DoubleTab& A) const { return EDO_Pth_->moyenne_vol(A); }
   inline double masse_totale(double P,const DoubleTab& T) { return EDO_Pth_->masse_totale( P, T); }
 
 protected :
@@ -95,7 +88,7 @@ inline void Fluide_Quasi_Compressible::secmembre_divU_Z(DoubleTab& tab_W) const
   double temps=vitesse_->temps();
   if (temps>temps_debut_prise_en_compte_drho_dt_)
     {
-      EDO_Pth_->secmembre_divU_Z(tab_W);
+      eos_tools_->secmembre_divU_Z(tab_W);
       // Relaxation eventuelle:
       // (BM: j'ai remplace le test size() != 0 car invalide sur champ P1bulle)
       if (tab_W_old_.size_totale() > 0)

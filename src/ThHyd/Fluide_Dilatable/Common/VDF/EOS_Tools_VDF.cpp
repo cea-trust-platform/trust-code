@@ -28,15 +28,45 @@
 #include <Check_espace_virtuel.h>
 #include <communications.h>
 
-Implemente_base(EOS_Tools_VDF,"EOS_Tools_VDF",EOS_Tools_base);
+Implemente_instanciable(EOS_Tools_VDF,"EOS_Tools_VDF",EOS_Tools_base);
 
+// Description:
+//    Imprime sur un flot de sortie.
+// Precondition:
+// Parametre: Sortie& os
+//    Signification: le flot de sortie pour l'impression
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord: le flot de sortie est modifie
+// Postcondition: la methode ne modifie pas l'objet
 Sortie& EOS_Tools_VDF::printOn(Sortie& os) const
 {
-  return EOS_Tools_base::printOn(os);
+  os <<que_suis_je()<< finl;
+  return os;
 }
+
+// Description:
+//    Lecture sur un flot d'entree.
+// Precondition:
+// Parametre: Entree& is
+//    Signification: le flot d'entree pour la lecture des parametres
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree&
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 Entree& EOS_Tools_VDF::readOn(Entree& is)
 {
-  return EOS_Tools_base::readOn(is);
+  return is;
 }
 
 void  EOS_Tools_VDF::associer_zones(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
@@ -85,8 +115,7 @@ double EOS_Tools_VDF::moyenne_vol(const DoubleTab& tab) const
 
 void EOS_Tools_VDF::calculer_rho_face_np1(const DoubleTab& tab_rhoP0)
 {
-  int face,nb_faces_tot = la_zone->nb_faces_tot();
-  int elem;
+  int face, elem, nb_faces_tot = la_zone->nb_faces_tot();
   Debog::verifier("tab_rhoP0",tab_rhoP0);
   int i, nb_comp;
   IntTab& face_voisins = la_zone->face_voisins();
@@ -105,12 +134,11 @@ void EOS_Tools_VDF::calculer_rho_face_np1(const DoubleTab& tab_rhoP0)
         }
       tab_rho_face_np1(face) /= nb_comp;
     }
+
   tab_rho_face_np1.echange_espace_virtuel();
   Debog::verifier("tab_rho_face_np1",tab_rho_face_np1);
   for (face=0 ; face<nb_faces_tot ; face++)
-    {
-      tab_rho_face_demi(face)=(tab_rho_face_np1(face)+tab_rho_face(face))/2.;
-    }
+    tab_rho_face_demi(face)=(tab_rho_face_np1(face)+tab_rho_face(face))/2.;
 }
 
 // Description:
@@ -190,22 +218,18 @@ void EOS_Tools_VDF::divu_discvit(const DoubleTab& secmem1, DoubleTab& secmem2)
 void EOS_Tools_VDF::secmembre_divU_Z(DoubleTab& tab_W) const
 {
   double dt = le_fluide().vitesse()->equation().schema_temps().pas_de_temps();
-
-  int nb_faces = la_zone->nb_faces();
-  int elem,nb_elem = la_zone->nb_elem();
+  int elem,nb_elem = la_zone->nb_elem(),nb_faces = la_zone->nb_faces();
   DoubleVect tab_dZ(nb_elem);
   DoubleTab tab_gradZ(nb_faces);
-
   const DoubleTab& tab_rhonP0 = le_fluide().loi_etat()->rho_n();
   const DoubleTab& tab_rhonp1P0 = le_fluide().loi_etat()->rho_np1();
   Debog::verifier("divU tab_rhonP0",tab_rhonP0);
   Debog::verifier("divU tab_rhonp1P0",tab_rhonp1P0);
   const DoubleVect& volumes = la_zone->volumes();
+
   for (elem=0 ; elem<nb_elem ; elem++)
-    {
-      //Corrections pour eviter l assemblage de la matrice de pression
-      tab_dZ(elem) = (tab_rhonp1P0(elem)-tab_rhonP0(elem))/dt;
-    }
+    tab_dZ(elem) = (tab_rhonp1P0(elem)-tab_rhonP0(elem))/dt;
+
   double tmp;
   for (elem=0 ; elem<nb_elem ; elem++)
     {
@@ -216,8 +240,6 @@ void EOS_Tools_VDF::secmembre_divU_Z(DoubleTab& tab_W) const
 
 void EOS_Tools_VDF::mettre_a_jour(double temps)
 {
-  // a voir
-  // copie de tab_rho_face_np1 dans tab_rho_face
   int n=tab_rho_face_np1.size_totale();
   for (int i=0; i<n; i++)
     {
@@ -225,4 +247,3 @@ void EOS_Tools_VDF::mettre_a_jour(double temps)
       tab_rho_face_demi(i)=tab_rho_face_np1(i);
     }
 }
-

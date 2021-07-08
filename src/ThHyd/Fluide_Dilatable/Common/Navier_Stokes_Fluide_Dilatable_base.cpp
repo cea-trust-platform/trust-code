@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Navier_Stokes_Fluide_Dilatable_base.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
 // Version:     /main/47
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -146,7 +146,7 @@ int Navier_Stokes_Fluide_Dilatable_base::impr(Sortie& os) const
         Process::exit();
       }
   }
-  return 1;
+  return Navier_Stokes_std::impr(os);
 }
 
 // Description:

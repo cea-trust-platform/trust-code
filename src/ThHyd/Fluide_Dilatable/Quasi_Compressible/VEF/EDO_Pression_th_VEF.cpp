@@ -34,18 +34,19 @@
 #include <Zone_VEF.h>
 #include <Champ_P1NC.h>
 #include <Check_espace_virtuel.h>
-Implemente_base(EDO_Pression_th_VEF,"EDO_Pression_th_VEF",EDO_Pression_th_base);
+Implemente_base_sans_constructeur(EDO_Pression_th_VEF,"EDO_Pression_th_VEF",EDO_Pression_th_base);
 
+EDO_Pression_th_VEF::EDO_Pression_th_VEF() : M0(-1.) { }
 
 Sortie& EDO_Pression_th_VEF::printOn(Sortie& os) const
 {
   return EDO_Pression_th_base::printOn(os);
 }
+
 Entree& EDO_Pression_th_VEF::readOn(Entree& is)
 {
   return EDO_Pression_th_base::readOn(is);
 }
-
 
 // Description:
 //    Associe les zones a l'EDO
@@ -98,104 +99,6 @@ void EDO_Pression_th_VEF::completer()
   double Pth=le_fluide_->pression_th();
   M0=masse_totale(Pth,tab_ICh);
   le_fluide_->checkTraitementPth(la_zone_Cl);
-}
-
-// Description:
-//    Calcule la moyenne volumique de la grandeur P1NC donnee
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-double EDO_Pression_th_VEF::moyenne_vol(const DoubleTab& tab) const
-{
-  assert(tab.line_size() == 1);
-  double x = Champ_P1NC::calculer_integrale_volumique(la_zone.valeur(), tab, FAUX_EN_PERIO);
-  // La facon simple de faire serait celle-ci, mais c'est faux a cause de FAUX_EN_PERIO
-  //  qui compte deux fois les volumes entrelaces des faces periodiques:
-  // double y = la_zone.valeur().zone().volume_total();
-  DoubleVect un;
-  la_zone.valeur().creer_tableau_faces(un, Array_base::NOCOPY_NOINIT);
-  un = 1.;
-  double y = Champ_P1NC::calculer_integrale_volumique(la_zone.valeur(), un, FAUX_EN_PERIO);
-  return x / y;
-}
-
-// Description:
-// Div(u) is computed on faces from Div(u) on elements
-void EDO_Pression_th_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab& DivVelocityFaces)
-{
-  assert_espace_virtuel_vect(DivVelocityElements);
-  //Corrections pour moyenner div(u) sur les faces
-  const DoubleVect& volumes = la_zone->volumes();
-  const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Zone_Cl_VEF,la_zone_Cl->valeur()).volumes_entrelaces_Cl();
-
-  IntTab& face_voisins = la_zone->face_voisins();
-  int premiere_fac_std=la_zone->premiere_face_std();
-
-  //remplissage de div(u) sur les faces
-  for (int face=0; face<premiere_fac_std; face++)
-    {
-      int nb_comp=0;
-      DivVelocityFaces(face)=0;
-
-      for (int i=0 ; i<2 ; i++)
-        {
-          int elem= face_voisins(face,i);
-          if (elem!=-1)
-            {
-              nb_comp++;
-              DivVelocityFaces(face) += DivVelocityElements(elem)*(volumes_entrelaces_Cl(face)/volumes(elem));
-            }
-        }
-      DivVelocityFaces(face) /= nb_comp;
-    }
-  int size = la_zone->nb_faces();
-  for (int face=premiere_fac_std; face<size; face++)
-    {
-      int nb_comp=0;
-      DivVelocityFaces(face)=0;
-
-      for (int i=0 ; i<2 ; i++)
-        {
-          int elem= face_voisins(face,i);
-
-          if (elem!=-1)
-            {
-              nb_comp++;
-              DivVelocityFaces(face) += DivVelocityElements(elem)*(volumes_entrelaces(face)/volumes(elem));
-            }
-        }
-      DivVelocityFaces(face) /= nb_comp;
-    }
-}
-
-// Description:
-//    Calcule le second membre de l'equation de continuite :
-//    div(U) = W = dZ/dT + U.grad(Z)    avec Z=ln(rho)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void EDO_Pression_th_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
-{
-  return secmembre_divU_Z_VEFP1B(tab_W);
 }
 
 void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)
@@ -361,157 +264,6 @@ void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)
     }
 }
 
-// Description:
-//    Calcule le second membre de l'equation de continuite pour une discretisation VEF_P1B:
-//    W = -dZ/dT avec Z=rho
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1B(DoubleTab& tab_W) const
-{
-  double dt = le_fluide().vitesse()->equation().schema_temps().pas_de_temps();
-  int face;
-  int elem;
-  int som,som_glob;
-  const IntTab& face_sommets = la_zone->face_sommets();
-  int nb_elem_tot=la_zone->nb_elem_tot();
-  int nb_som_tot=la_zone->zone().nb_som_tot();
-  int nb_faces_tot=la_zone->nb_faces_tot();
-
-  const Equation_base& eq=le_fluide().vitesse()->equation();
-  DoubleTab tab_dZ;
-  // Dimensionnement de tab_dZ
-
-  const Navier_Stokes_std& eqns = ref_cast(Navier_Stokes_std,eq);
-  const DoubleTab& pression = eqns.pression().valeurs();
-  tab_dZ = pression;
-
-  DoubleVect tab_rhon_som(nb_som_tot);
-  DoubleVect volume_int_som(nb_som_tot);
-  DoubleVect tab_rhonp1_som(nb_som_tot);
-
-  const DoubleTab& tab_rhon = le_fluide().loi_etat()->rho_n();
-  const DoubleTab& tab_rhonp1 = le_fluide().loi_etat()->rho_np1();
-  DoubleTab tab_rhonP1_,tab_rhonp1P1_;
-  const DoubleVect& porosite_face = la_zone->porosite_face();
-  const DoubleTab& tab_rhonP1=modif_par_porosite_si_flag(tab_rhon,tab_rhonP1_,1,porosite_face);
-  const DoubleTab& tab_rhonp1P1=modif_par_porosite_si_flag(tab_rhonp1,tab_rhonp1P1_,1,porosite_face);
-  const IntTab& elem_faces = la_zone->elem_faces();
-  const DoubleVect& volumes = la_zone->volumes();
-  const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
-  const Zone_VEF_PreP1b& zp1b=ref_cast(Zone_VEF_PreP1b,la_zone.valeur());
-  const DoubleVect& volumes_controle=zp1b.volume_aux_sommets();
-
-  double rn,rnp1;
-  int nfe = la_zone->zone().nb_faces_elem();
-  int nsf = la_zone->nb_som_face();
-  const Domaine& dom=la_zone->zone().domaine();
-  // calcul de la somme des volumes entrelacees autour d'un sommet
-  volume_int_som=0.;
-  for (face=0 ; face<nb_faces_tot ; face++)
-    for (som=0 ; som<nsf ; som++)
-      {
-        som_glob=dom.get_renum_som_perio(face_sommets(face,som));
-        volume_int_som(som_glob)+=volumes_entrelaces(face);
-      }
-  //discretisation de rho sur les sommets
-  tab_rhon_som=0;
-  tab_rhonp1_som=0;
-
-  double pond;
-  pond=1./nsf; // version_originale
-  for (face=0 ; face<nb_faces_tot ; face++)
-    {
-      for (som=0 ; som<nsf ; som++)
-        {
-          som_glob=dom.get_renum_som_perio(face_sommets(face,som));
-          pond=volumes_entrelaces(face)/volume_int_som(som_glob);
-          tab_rhon_som(som_glob) += tab_rhonP1(face)*pond;
-          tab_rhonp1_som(som_glob) += tab_rhonp1P1(face)*pond;
-        }
-    }
-
-  //Corrections pour test de la moyenne de la derivee de la masse volumique
-  Debog::verifier("EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1B tab_dZ=",tab_dZ);
-  Debog::verifier("EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1B tab_rhonP1=",tab_rhonP1);
-  Debog::verifier("EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1B tab_rhonp1P1=",tab_rhonp1P1);
-  Debog::verifier("EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1B dt=",dt);
-
-  int decal=0;
-  int p_has_elem=zp1b.get_alphaE();
-  int nb_case=nb_elem_tot*p_has_elem;
-  for (elem=0 ; elem<nb_case ; elem++)
-    {
-      rn=0;
-      rnp1=0;
-      for (face=0 ; face<nfe ; face++)
-        {
-          rn += tab_rhonP1(elem_faces(elem,face));
-          rnp1 += tab_rhonp1P1(elem_faces(elem,face));
-        }
-      tab_dZ(elem) = (rnp1-rn)/(nfe*dt);
-    }
-  decal+=nb_case;
-  tab_dZ.echange_espace_virtuel();
-  Debog::verifier("EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1B tab_dZ=",tab_dZ);
-  int p_has_som=zp1b.get_alphaS();
-  nb_case=nb_som_tot*p_has_som;
-  for (som=0 ; som<nb_case ; som++)
-    {
-      tab_dZ(decal+som) = ((tab_rhonp1_som(som))-(tab_rhon_som(som)))/dt;
-    }
-  decal+=nb_case;
-  int p_has_arrete=zp1b.get_alphaA();
-  int nb_ar_tot=la_zone->zone().nb_aretes_tot();
-  nb_case=nb_ar_tot*p_has_arrete        ;
-  for (int ar=0 ; ar<nb_case ; ar++)
-    {
-      tab_dZ(decal+ar) =0;
-    }
-  assert(decal+nb_case==tab_W.size_totale());
-  tab_dZ.echange_espace_virtuel();
-  Debog::verifier("EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1B tab_dZ=",tab_dZ);
-
-  double coefdivelem=1;
-  double coefdivsom=1;
-
-  decal=0;
-
-  nb_case=nb_elem_tot*p_has_elem;
-  for (elem=0 ; elem<nb_case ; elem++)
-    {
-      tab_W(elem) = -coefdivelem*tab_dZ(elem) * volumes(elem);
-    }
-  Debog::verifier("EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1BtabWelem",tab_W);
-  decal+=nb_case;
-  nb_case=nb_som_tot*p_has_som;
-  for (som=0 ; som<nb_case ; som++)
-    {
-      //Corrections pour nouvelle formulation du quasi-compressible
-      tab_W(decal+som) = -coefdivsom*tab_dZ(decal+som)*volumes_controle(som)*1;
-    }
-  decal+=nb_case;
-  nb_case=nb_ar_tot*p_has_arrete;
-  for (int ar=0 ; ar<nb_case ; ar++)
-    {
-      //pour l'instant on n'a pas calcule tab_dZ aux aretes
-      assert(tab_dZ(decal+ar)==0);
-      tab_W(decal+ar) =0;
-    }
-  assert(decal+nb_case==tab_W.size_totale());
-  tab_W.echange_espace_virtuel();
-  Debog::verifier("EDO_Pression_th_VEF::secmembre_divU_Z_VEFP1B tab_W=",tab_W);
-}
-
 double EDO_Pression_th_VEF::masse_totale(double P,const DoubleTab& T)
 {
   int nb_faces = la_zone->nb_faces();
@@ -551,33 +303,4 @@ void EDO_Pression_th_VEF::mettre_a_jour_CL(double P)
           cl.set_Pth(P);
         }
     }
-}
-// Description:
-//    Renvoie rho avec la meme discretisation que la vitesse :
-//    une valeur par face en VEF
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: rho discretise par face
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-const DoubleTab& EDO_Pression_th_VEF::rho_discvit() const
-{
-  return le_fluide_->masse_volumique().valeurs();
-}
-// renvoie rho_n
-const DoubleTab& EDO_Pression_th_VEF::rho_face_n() const
-{
-  return le_fluide_->rho_n();
-}
-// renvoie rho_n
-const DoubleTab& EDO_Pression_th_VEF::rho_face_np1() const
-{
-  return le_fluide_->rho_np1();
 }

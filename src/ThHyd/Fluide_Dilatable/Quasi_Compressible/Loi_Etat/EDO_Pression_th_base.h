@@ -49,27 +49,17 @@ class DoubleTab;
 class EDO_Pression_th_base : public Objet_U
 {
   Declare_base(EDO_Pression_th_base);
-
 public :
-  virtual double resoudre(double) =0;
+  void associer_fluide(const Fluide_Quasi_Compressible&);
+  // Virtuelles pure
   virtual void completer() =0;
-  virtual void  associer_zones(const Zone_dis&,const Zone_Cl_dis&) =0;
-  void  associer_fluide(const Fluide_Quasi_Compressible&);
-  virtual double moyenne_vol(const DoubleTab&) const =0;
-  virtual const DoubleTab& rho_discvit() const=0;
-  virtual const DoubleTab& rho_face_n() const=0;
-  virtual const DoubleTab& rho_face_np1() const=0;
-
-  virtual void divu_discvit(const DoubleTab&, DoubleTab&)=0;
-  virtual double masse_totale(double P,const DoubleTab& T)=0;
-  virtual void secmembre_divU_Z(DoubleTab& ) const =0;
+  virtual void associer_zones(const Zone_dis&,const Zone_Cl_dis&) =0;
   virtual void mettre_a_jour_CL(double) = 0;
-  inline virtual void mettre_a_jour(double )
-  {
-    ;
-  };
-  virtual void calculer_rho_face_np1(const DoubleTab& rho)=0;
+  virtual double masse_totale(double P,const DoubleTab& T)=0;
+  virtual double resoudre(double) =0;
+
 protected :
   REF(Fluide_Quasi_Compressible) le_fluide_;
 };
-#endif
+
+#endif /* EDO_Pression_th_base_included */
