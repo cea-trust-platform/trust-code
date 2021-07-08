@@ -7,7 +7,7 @@ cd $TRUST_LATAFILTER
 mkdir -p include build
 
 cd build
-ln -sf $ORG/commun_triou/* . 1>/dev/null 2>&1
+ln -sf ../../../../ThirdPart/src/LIBLATAFILTER/commun_triou/* . 1>/dev/null 2>&1
 if [ ! -f makefile ] || [ $ORG/makefile.sa -nt makefile ]
 then   
    cp $ORG/makefile.sa makefile

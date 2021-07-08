@@ -86,7 +86,7 @@ fi
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 echo "Creating HDF5 links ..."
 echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-
+[ "x$TRUST_USE_EXTERNAL_HDF" = "x" ] && actual_install_dir=../`basename $actual_install_dir` # Pour creation de chemins relatifs
 for ze_dir in bin lib include; do
   mkdir -p $install_dir/$ze_dir
   cd $install_dir/$ze_dir
