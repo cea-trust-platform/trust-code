@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Loi_Etat_base.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@
 #include <Champs_compris.h>
 #include <Champs_compris_interface.h>
 
-class Fluide_Quasi_Comp;
+class Fluide_Dilatable_base;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -42,6 +42,7 @@ class Fluide_Quasi_Comp;
 //     Methodes abstraites:
 //       void calculer_coeff_T()
 //       void calculer_masse_volumique()
+//
 //////////////////////////////////////////////////////////////////////////////
 
 class Loi_Etat_base : public Objet_U, public Champs_compris_interface
@@ -49,87 +50,57 @@ class Loi_Etat_base : public Objet_U, public Champs_compris_interface
   Declare_base_sans_constructeur(Loi_Etat_base);
 
 public :
-
   Loi_Etat_base();
-
-  virtual void associer_fluide(const Fluide_Dilatable_base&);
-  virtual void initialiser() =0;
-  const virtual Nom type_fluide() const =0;
-  virtual void preparer_calcul();
   void mettre_a_jour(double);
-  virtual void abortTimeStep();
+  void calculer_nu();
+  Champ_Don& ch_temperature();
+  const Champ_Don& ch_temperature() const;
 
+  // Methodes virtuelles
+  virtual void associer_fluide(const Fluide_Dilatable_base&);
+  virtual void preparer_calcul();
+  virtual void abortTimeStep();
   virtual void initialiser_inco_ch();
-  virtual double inverser_Pth(double,double) =0;
-  virtual void remplir_T() =0;
-  virtual void calculer_Cp() =0;
   virtual void calculer_mu();
   virtual void calculer_lambda();
-  void calculer_nu();
   virtual void calculer_alpha();
   virtual void calculer_mu_sur_Sc();
   virtual void calculer_nu_sur_Sc();
-
   virtual void calculer_masse_volumique();
-  virtual double calculer_masse_volumique(double,double) const =0;
   virtual double calculer_H(double,double) const;
-
-  Champ_Don& ch_temperature();
-  const Champ_Don& ch_temperature() const;
-  inline const DoubleTab& temperature() const;
-  inline const DoubleTab& rho_n() const;
-  inline const DoubleTab& rho_np1() const;
-  inline double Prandt() const;
-
   virtual double Drho_DP(double,double) const ;
   virtual double Drho_DT(double,double) const ;
   virtual double De_DP(double,double) const ;
   virtual double De_DT(double,double) const ;
-
-  //Pour pouvoir acceder a champs_compris_ dans la classe de discretisation
-  inline Champs_compris& champs_compris();
   //Methodes de l interface des champs postraitables
-  /////////////////////////////////////////////////////
-  virtual void creer_champ(const Motcle& motlu);
   virtual const Champ_base& get_champ(const Motcle& nom) const;
+  virtual void creer_champ(const Motcle& motlu);
   virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
-  /////////////////////////////////////////////////////
+
+  // Methodes virtuelles pure
+  const virtual Nom type_fluide() const =0;
+  virtual void initialiser() =0;
+  virtual void remplir_T() =0;
+  virtual void calculer_Cp() =0;
+  virtual double calculer_masse_volumique(double,double) const =0;
+  virtual double inverser_Pth(double,double) =0;
+
+  // Methodes inlines
+  inline Champs_compris& champs_compris() { return champs_compris_; }
+  inline const DoubleTab& temperature() const { return ch_temperature().valeurs(); }
+  inline const DoubleTab& rho_n() const { return tab_rho_n; }
+  inline const DoubleTab& rho_np1() const { return tab_rho_np1; }
+  inline double Prandt() const { return Pr_; }
 
 protected :
   REF(Fluide_Dilatable_base) le_fluide;
   Champ_Don temperature_;
-  DoubleTab tab_rho_n;    //rho a l'etape precedente
-  DoubleTab tab_rho_np1;    //rho a l'etape suivante
+  DoubleTab tab_rho_n, tab_rho_np1;    //rho a l'etape precedente et l'etape suivante
   double Pr_;
   int debug;
 
 private :
-
   Champs_compris champs_compris_;
 };
 
-inline double Loi_Etat_base::Prandt() const
-{
-  return Pr_;
-}
-
-inline const DoubleTab& Loi_Etat_base::temperature() const
-{
-  return ch_temperature().valeurs();
-}
-
-
-inline const DoubleTab& Loi_Etat_base::rho_n() const
-{
-  return tab_rho_n;
-}
-inline const DoubleTab& Loi_Etat_base::rho_np1() const
-{
-  return tab_rho_np1;
-}
-
-inline Champs_compris& Loi_Etat_base::champs_compris()
-{
-  return champs_compris_;
-}
-#endif
+#endif /* Loi_Etat_base_included */

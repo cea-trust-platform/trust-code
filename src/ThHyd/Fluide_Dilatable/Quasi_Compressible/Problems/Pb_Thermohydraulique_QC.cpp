@@ -23,8 +23,7 @@
 #include <Pb_Thermohydraulique_QC.h>
 #include <Verif_Cl.h>
 
-Implemente_instanciable(Pb_Thermohydraulique_QC,"Pb_Thermohydraulique_QC",Pb_QC);
-
+Implemente_instanciable(Pb_Thermohydraulique_QC,"Pb_Thermohydraulique_QC",Pb_QC_base);
 
 // Description:
 //    Simple appel a: Probleme_base::printOn(Sortie&)
@@ -45,7 +44,6 @@ Sortie& Pb_Thermohydraulique_QC::printOn(Sortie& os) const
 {
   return Probleme_base::printOn(os);
 }
-
 
 // Description:
 //    Simple appel a: Probleme_base::readOn(Entree&)
@@ -173,7 +171,3 @@ int Pb_Thermohydraulique_QC::verifier()
   const Zone_Cl_dis& zone_Cl_th = eq_thermique.zone_Cl_dis();
   return tester_compatibilite_hydr_thermique(zone_Cl_hydr,zone_Cl_th);
 }
-
-
-
-

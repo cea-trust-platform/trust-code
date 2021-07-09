@@ -15,24 +15,18 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Fluide_Dilatable_base.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
 // Version:     /main/49
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Fluide_Dilatable_base.h>
 #include <Champ_Uniforme.h>
-#include <Zone_Cl_dis.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
-#include <Champ_Fonc_Tabule.h>
-#include <EChaine.h>
 #include <Discretisation_base.h>
 #include <Loi_Etat_Melange_GP.h>
-#include <SFichier.h>
-#include <Param.h>
 #include <Champ_Fonc_Fonction.h>
-#include <Neumann_sortie_libre.h>
 #include <Zone_VF.h>
 
 Implemente_base_sans_constructeur(Fluide_Dilatable_base,"Fluide_Dilatable_base",Fluide_base);
@@ -82,6 +76,45 @@ Entree& Fluide_Dilatable_base::readOn(Entree& is)
 
 void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
+  Cerr<<"Fluide_Dilatable_base::discretiser"<<finl;
+
+  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+  double temps=pb.schema_temps().temps_courant();
+
+  // les champs seront nommes par le milieu_base
+  Champ_Don ch_rho;
+  dis.discretiser_champ("temperature",zone_dis,"masse_volumique_p","neant",1,temps,ch_rho);
+  rho = ch_rho.valeur();
+
+  Champ_Don& cp = capacite_calorifique();
+  if (!cp.non_nul() || !sub_type(Champ_Uniforme,cp.valeur())) //ie Cp non constant : gaz reels
+    {
+      Cerr<<"Heat capacity Cp is discretized once more for space variable case."<<finl;
+      dis.discretiser_champ("temperature",zone_dis,"cp_prov","neant",1,temps,cp);
+    }
+
+  if (!lambda.non_nul() || ((!sub_type(Champ_Uniforme,lambda.valeur())) && (!sub_type(Champ_Fonc_Tabule,lambda.valeur()))))
+    {
+      // cas particulier etait faux en VEF voir quand cela sert (FM slt) : sera nomme par milieu_base
+      dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,lambda);
+    }
+
+  dis.discretiser_champ("vitesse", zone_dis,"rho_comme_v","kg/m3",1,temps,rho_comme_v);
+  champs_compris_.ajoute_champ(rho_comme_v);
+
+  dis.discretiser_champ("champ_elem",zone_dis,"mu_sur_Schmidt","kg/(m.s)",1,temps,mu_sur_Sc);
+  champs_compris_.ajoute_champ(mu_sur_Sc);
+
+  dis.discretiser_champ("champ_elem",zone_dis,"nu_sur_Schmidt","m2/s",1,temps,nu_sur_Sc);
+  champs_compris_.ajoute_champ(nu_sur_Sc);
+
+  Champ_Don& ptot = pression_tot();
+  dis.discretiser_champ("champ_elem",zone_dis,"pression_tot","Pa",1,temps,ptot);
+  champs_compris_.ajoute_champ(ptot);
+
+  dis.discretiser_champ("temperature",zone_dis,"rho_gaz","kg/m3",1,temps,rho_gaz);
+  champs_compris_.ajoute_champ(rho_gaz);
+
   Fluide_base::discretiser(pb,dis);
 }
 
@@ -252,6 +285,7 @@ Champ_Don& Fluide_Dilatable_base::ch_temperature()
 void Fluide_Dilatable_base::preparer_pas_temps()
 {
   loi_etat_->mettre_a_jour(0);
+  eos_tools_->mettre_a_jour(0);
 }
 
 void Fluide_Dilatable_base::abortTimeStep()
@@ -480,4 +514,37 @@ void Fluide_Dilatable_base::preparer_calcul()
   calculer_coeff_T();
   calculer_pression_tot();
   pression_tot_.mettre_a_jour(0);
+}
+
+// Description:
+//    Complete le fluide avec les champs inconnus associes au probleme
+// Precondition:
+// Parametre: Pb_Thermohydraulique& pb
+//    Signification: le probleme a resoudre
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: lecture
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Fluide_Dilatable_base::completer(const Probleme_base& pb)
+{
+  Cerr<<"Fluide_Dilatable_base::completer Pth = " << Pth_ << finl;
+  inco_chaleur_ = pb.equation(1).inconnue();
+  vitesse_ = pb.equation(0).inconnue();
+  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,pb.equation(0));
+  pression_ = eqn_hydr.pression();
+
+  Nom typ = pb.equation(0).discretisation().que_suis_je();
+  if (typ=="VEFPreP1B") typ = "VEF";
+
+  eos_tools_.typer(typ);
+  eos_tools_->associer_zones(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
+  eos_tools_->associer_fluide(*this);
+  initialiser_inco_ch();
+  eos_tools_->mettre_a_jour(0.);
+  loi_etat_->initialiser();
 }

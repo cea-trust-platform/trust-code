@@ -21,19 +21,12 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Fluide_Quasi_Compressible.h>
-#include <Champ_Uniforme.h>
 #include <Probleme_base.h>
-#include <Navier_Stokes_std.h>
-#include <Champ_Fonc_Tabule.h>
-#include <EChaine.h>
 #include <Discretisation_base.h>
 #include <Loi_Etat_Melange_GP.h>
-#include <Zone_Cl_dis.h>
-#include <SFichier.h>
 #include <Param.h>
 #include <Champ_Fonc_Fonction.h>
 #include <Neumann_sortie_libre.h>
-#include <Zone_VF.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quasi_Compressible",Fluide_Dilatable_base);
 
@@ -82,7 +75,6 @@ Entree& Fluide_Quasi_Compressible::readOn(Entree& is)
   return is;
 }
 
-
 void Fluide_Quasi_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
 {
   /*
@@ -91,36 +83,40 @@ void Fluide_Quasi_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
    * traitement_PTh=2 => pression laissee cste.
    */
 
-  // Pas de verification si EDO choisi (traitement_PTh=0)
-  if (traitement_PTh==0) return;
-  int pression_imposee=0;
-  int size=zone_cl.les_conditions_limites().size();
-  assert(size!=0);
-  for (int n=0; n<size; n++)
+  if (traitement_PTh==0)
     {
-      const Cond_lim& la_cl = zone_cl.les_conditions_limites(n);
-      if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
-        {
-          pression_imposee=1;
-        }
+      /* Do nothing*/
     }
-  if (pression_imposee && traitement_PTh!=2)
+  else
     {
-      if (Process::je_suis_maitre())
+      int pression_imposee=0;
+      int size=zone_cl.les_conditions_limites().size();
+      assert(size!=0);
+      for (int n=0; n<size; n++)
         {
-          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
-          Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
+          const Cond_lim& la_cl = zone_cl.les_conditions_limites(n);
+          if (sub_type(Neumann_sortie_libre, la_cl.valeur())) pression_imposee=1;
         }
-      Process::exit();
-    }
-  if (!pression_imposee && traitement_PTh!=1)
-    {
-      if (Process::je_suis_maitre())
+
+      if (pression_imposee && traitement_PTh!=2)
         {
-          Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
-          Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
+          if (Process::je_suis_maitre())
+            {
+              Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
+              Cerr << "Traitement_Pth constant must be used for the case of free outlet." << finl;
+            }
+          Process::exit();
         }
-      Process::exit();
+
+      if (!pression_imposee && traitement_PTh!=1)
+        {
+          if (Process::je_suis_maitre())
+            {
+              Cerr << "The Traitement_Pth option selected is not coherent with the boundaries conditions." << finl;
+              Cerr << "Traitement_Pth conservation_masse must be used for the case without free outlet." << finl;
+            }
+          Process::exit();
+        }
     }
 }
 
@@ -289,65 +285,8 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
       Process::exit();
     }
 
-  Cerr<<"Fluide_Dilatable_base::completer Pth="<<Pth_<<finl;
-  inco_chaleur_ = pb.equation(1).inconnue();
-
-  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
-    assert(inco_chaleur_.le_nom()=="fraction_massique");
-
-
-  vitesse_ = pb.equation(0).inconnue();
-  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,pb.equation(0));
-  pression_ = eqn_hydr.pression();
-
-  Nom typ = pb.equation(0).discretisation().que_suis_je();
-  if (typ=="VEFPreP1B")
-    {
-      typ = "VEF";
-    }
-  Nom typp = typ;
-  typ += "_";
-
-  // Pb_Hydraulique_Melange_Binaire_QC/Pb_Hydraulique_Melange_Binaire_Turbulent_QC is currently an isobar problem
-  // The EDO_pth is not solved (traitement_pth constant)
-  // However, we need a typer because we will need to access calculer_rho_face in calculer_masse_volumique (loi_etat)
-  // EDO_Pression_th_VDF/VEF_Melange_Binaire not implemented yet
-  // just typer Gaz_Parfait instead...
-  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
-    typ +="Gaz_Parfait";
-  else
-    typ += loi_etat_->type_fluide();
-
-  // TODO : XXX
-  // All this is not good... EDO_Pth_ should only be used if traitement_PTh = 0
-  // I think we can do better ...
-
-  // TODO : FIXME
-  EDO_Pth_.typer(typ);
-  eos_tools_.typer(typp);
-  EDO_Pth_->associer_zones(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
-  eos_tools_->associer_zones(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
-  EDO_Pth_->associer_fluide(*this);
-  eos_tools_->associer_fluide(*this);
-  EDO_Pth_->mettre_a_jour_CL(Pth_);
-
-  initialiser_inco_ch();
-
-//  EDO_Pth_->mettre_a_jour(0.);
-  eos_tools_->mettre_a_jour(0.);
-  loi_etat_->initialiser();
-
-  output_file_ = Objet_U::nom_du_cas();
-  output_file_ += "_";
-  output_file_ += pb.le_nom();
-  output_file_ += ".evol_glob";
-
-  Cerr << "Warning! evol_glob file renamed " << output_file_ << finl;
-  if(je_suis_maitre())
-    {
-      SFichier fic (output_file_);
-      fic<<"# Time sum(T*dv)/sum(dv)[K] sum(rho*dv)/sum(dv)[kg/m3] Pth[Pa]"<<finl;
-    }
+  Fluide_Dilatable_base::completer(pb);
+  if (traitement_PTh != 2) completer_edo(pb);
 }
 
 // Description:
@@ -367,34 +306,17 @@ void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 void Fluide_Quasi_Compressible::preparer_pas_temps()
 {
   Fluide_Dilatable_base::preparer_pas_temps();
-//  EDO_Pth_->mettre_a_jour(0);
-  eos_tools_->mettre_a_jour(0);
-  EDO_Pth_->mettre_a_jour_CL(Pth_);
+  if (traitement_PTh != 2 ) EDO_Pth_->mettre_a_jour_CL(Pth_);
 }
-
 
 void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
-  Motcle nom_var;
-  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
-    nom_var="fraction_massique"; // because we do not even have a temperature variable
-  else
-    nom_var="temperature";
-
   const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
   double temps=pb.schema_temps().temps_courant();
-  //
-  Cerr<<"Fluide_Dilatable_base::discretiser"<<finl;
-  // les champs seront nommes par le milieu_base
-  Champ_Don ch_rho;
-  dis.discretiser_champ("temperature",zone_dis,"masse_volumique_p","neant",1,temps,ch_rho);
-  rho = ch_rho.valeur();
 
-  // NOTE : ch_temperature() is the temperature field
-  // unless for a Pb_Hydraulique_Melange_Binaire_QC & Pb_Hydraulique_Melange_Binaire_Turbulent_QC
-  // where it denotes the species Y1 (mass fraction)
+  // In *_Melange_Binaire_QC we do not even have a temperature variable ...
+  // it is the species mass fraction Y1... Although named ch_temperature
   Champ_Don& ch_TK = ch_temperature();
-
   if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
     dis.discretiser_champ("temperature",zone_dis,"fraction_massique","neant",1,temps,ch_TK);
   else
@@ -403,52 +325,18 @@ void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Disc
   if (type_fluide()!="Gaz_Parfait")
     loi_etat().valeur().champs_compris().ajoute_champ(ch_TK);
 
-  Champ_Don& cp = capacite_calorifique();
-  if (!cp.non_nul() || !sub_type(Champ_Uniforme,cp.valeur()))    //ie Cp non constant : gaz reels
-    {
-      Cerr<<"Heat capacity Cp is discretized once more for space variable case."<<finl;
-      dis.discretiser_champ("temperature",zone_dis,"cp_prov","neant",1,temps,cp);
-    }
-  if (!lambda.non_nul() || ((!sub_type(Champ_Uniforme,lambda.valeur())) && (!sub_type(Champ_Fonc_Tabule,lambda.valeur()))))
-    {
-      // cas particulier etait faux en VEF voir quand cela sert (FM slt)
-      // sera nomme par milieu_base
-      dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,lambda);
-
-    }
-  dis.discretiser_champ("vitesse", zone_dis,"rho_comme_v","kg/m3",1,temps,rho_comme_v);
-  champs_compris_.ajoute_champ(rho_comme_v);
-
-  // mu_sur_Schmidt
-  dis.discretiser_champ("champ_elem",zone_dis,"mu_sur_Schmidt","kg/(m.s)",1,temps,mu_sur_Sc);
-  champs_compris_.ajoute_champ(mu_sur_Sc);
-
-  // nu_sur_Schmidt
-  dis.discretiser_champ("champ_elem",zone_dis,"nu_sur_Schmidt","m2/s",1,temps,nu_sur_Sc);
-  champs_compris_.ajoute_champ(nu_sur_Sc);
-
-  // pression_tot
-  //  pas comme la pression !!!
-  Champ_Don& ptot = pression_tot();
-  dis.discretiser_champ("champ_elem",zone_dis,"pression_tot","Pa",1,temps,ptot);
-  champs_compris_.ajoute_champ(ptot);
-  dis.discretiser_champ("temperature",zone_dis,"rho_gaz","kg/m3",1,temps,rho_gaz);
-  champs_compris_.ajoute_champ(rho_gaz);
-
   Fluide_Dilatable_base::discretiser(pb,dis);
 }
 
 void Fluide_Quasi_Compressible::prepare_pressure_edo()
 {
-  EDO_Pth_->completer();
-//  EDO_Pth_->mettre_a_jour(0.);
+  if (traitement_PTh != 2) EDO_Pth_->completer();
+
   eos_tools_->mettre_a_jour(0.);
 }
 
 void Fluide_Quasi_Compressible::write_mean_edo(double temps)
 {
-//  double Ch_m = EDO_Pth_->moyenne_vol(inco_chaleur_->valeurs());
-//  double rhom = EDO_Pth_->moyenne_vol(rho.valeurs());
   double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeurs());
   double rhom = eos_tools_->moyenne_vol(rho.valeurs());
 
@@ -456,5 +344,37 @@ void Fluide_Quasi_Compressible::write_mean_edo(double temps)
     {
       SFichier fic (output_file_,ios::app);
       fic<<temps <<" "<<Ch_m<<" "<<rhom<<" "<<Pth_<<finl;
+    }
+}
+
+void Fluide_Quasi_Compressible::completer_edo(const Probleme_base& pb)
+{
+  assert(traitement_PTh != 2);
+  Nom typ = pb.equation(0).discretisation().que_suis_je();
+  if (typ=="VEFPreP1B") typ = "VEF";
+  typ += "_";
+  // EDO_Pression_th_VDF/VEF_Melange_Binaire not implemented yet
+  // typer Gaz_Parfait instead to use when traitement_PTh=1...
+  if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
+    typ +="Gaz_Parfait";
+  else
+    typ += loi_etat_->type_fluide();
+
+  EDO_Pth_.typer(typ);
+  EDO_Pth_->associer_zones(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
+  EDO_Pth_->associer_fluide(*this);
+  EDO_Pth_->mettre_a_jour_CL(Pth_);
+
+  // Write in file
+  output_file_ = Objet_U::nom_du_cas();
+  output_file_ += "_";
+  output_file_ += pb.le_nom();
+  output_file_ += ".evol_glob";
+
+  Cerr << "Warning! evol_glob file renamed " << output_file_ << finl;
+  if(je_suis_maitre())
+    {
+      SFichier fic (output_file_);
+      fic<<"# Time sum(T*dv)/sum(dv)[K] sum(rho*dv)/sum(dv)[kg/m3] Pth[Pa]"<<finl;
     }
 }

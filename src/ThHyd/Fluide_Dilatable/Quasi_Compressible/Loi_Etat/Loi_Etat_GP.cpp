@@ -29,12 +29,7 @@
 
 Implemente_instanciable_sans_constructeur(Loi_Etat_GP,"Loi_Etat_Gaz_Parfait",Loi_Etat_base);
 
-
-Loi_Etat_GP::Loi_Etat_GP()
-{
-  Cp_ = -1;
-  R_ = -1;
-}
+Loi_Etat_GP::Loi_Etat_GP() : Cp_(-1), R_(-1) { }
 
 // Description:
 //    Imprime la loi sur un flot de sortie.
@@ -230,24 +225,16 @@ void Loi_Etat_GP::initialiser()
 {
   const DoubleTab& tab_Temp = le_fluide->inco_chaleur().valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  int i;
-  //int n = tab_Temp.dimension(0);
-  int ntot=tab_Temp.size_totale();
-
+  int i, ntot=tab_Temp.size_totale();
   DoubleTab& tab_T = temperature_.valeurs();
   assert(tab_T.size()==tab_Temp.dimension(0));
-  //tab_T.resize(n);
 
   tab_rho_n=tab_Temp;
-  //tab_rho_np1=tab_Temp;
-  //  tab_rho_n.resize(n);
-  // tab_rho_np1.resize(n);
   for (i=0 ; i<ntot ; i++)
     {
-      tab_rho_n[i] = tab_rho[i];
-      tab_T[i] = tab_Temp[i];
+      tab_rho_n(i) = tab_rho(i,0);
+      tab_T(i,0) = tab_Temp(i,0);
     }
-  //   Cerr<<"Loi_Etat_GP::initialiser tab_Temp="<<tab_Temp[0]<<"  tab_T="<<tab_T[0]<<finl;
 }
 
 // Description:
@@ -267,15 +254,9 @@ void Loi_Etat_GP::initialiser()
 void Loi_Etat_GP::remplir_T()
 {
   const DoubleTab& tab_Temp = le_fluide->inco_chaleur().valeurs();
-  int i;
-  //  int n = tab_Temp.dimension(0);
-  int ntot=tab_Temp.size_totale();
+  int i, ntot=tab_Temp.size_totale();
   DoubleTab& tab_T = temperature_.valeurs();
-  for (i=0 ; i<ntot ; i++)
-    {
-      tab_T[i] = tab_Temp[i];
-    }
-  //   Cerr<<"---Loi_Etat_GP::remplir_T present="<<le_fluide->inco_chaleur().valeurs()(0)<<" passe="<<le_fluide->inco_chaleur().passe()(0)<<" futur="<<le_fluide->inco_chaleur().futur()(0)<<"  local T="<<tab_T(0)<<finl;
+  for (i=0 ; i<ntot ; i++) tab_T(i,0) = tab_Temp(i,0);
 }
 
 // Description:
@@ -295,6 +276,7 @@ void Loi_Etat_GP::remplir_T()
 // Postcondition:
 void Loi_Etat_GP::calculer_Cp()
 {
+  /* Do nothing */
 }
 
 // Description:
@@ -313,16 +295,14 @@ void Loi_Etat_GP::calculer_Cp()
 // Postcondition:
 void Loi_Etat_GP::calculer_lambda()
 {
-  const Champ_Don&  mu          = le_fluide->viscosite_dynamique();
-  const DoubleTab&  tab_mu      = mu.valeurs();
-  Champ_Don&        lambda      = le_fluide->conductivite();
-  DoubleTab&        tab_lambda  = lambda.valeurs();
-
+  const Champ_Don& mu = le_fluide->viscosite_dynamique();
+  const DoubleTab& tab_mu = mu.valeurs();
+  Champ_Don& lambda = le_fluide->conductivite();
+  DoubleTab& tab_lambda =lambda.valeurs();
 
   int i, n=tab_lambda.size();
 
   //La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
-  //  Cerr << " Cp = " << Cp_ << finl;
   if (sub_type(Champ_Fonc_Tabule,lambda.valeur()))
     {
       lambda.valeur().mettre_a_jour(temperature_.valeur().temps());
@@ -333,24 +313,11 @@ void Loi_Etat_GP::calculer_lambda()
       if (sub_type(Champ_Uniforme,mu.valeur()))
         {
           double mu0 = tab_mu(0,0);
-          for (i=0 ; i<n ; i++)
-            {
-              tab_lambda[i] = mu0 * Cp_ / Pr_;
-            }
-        }
-      else if (tab_mu.nb_dim() > 1)
-        {
-          for (i=0 ; i<n ; i++)
-            {
-              tab_lambda[i] = tab_mu(i,0) * Cp_ / Pr_;
-            }
+          for (i=0 ; i<n ; i++) tab_lambda(i,0) = mu0 * Cp_ / Pr_;
         }
       else
         {
-          for (i=0 ; i<n ; i++)
-            {
-              tab_lambda[i] = tab_mu[i] * Cp_ / Pr_;
-            }
+          for (i=0 ; i<n ; i++) tab_lambda(i,0) = tab_mu(i,0) * Cp_ / Pr_;
         }
     }
   else
@@ -365,13 +332,10 @@ void Loi_Etat_GP::calculer_lambda()
           Cerr << "If lambda is of type Champ_Uniform, mu must also be of type Champ_Uniforme !"<< finl;
           Cerr << "If needed, you can use a Champ_Fonc_Fonction or a Champ_Fonc_Tabule with a constant for mu."<< finl ;
           Cerr << finl ;
-          exit();
+          Process::exit();
         }
     }
-
-
   tab_lambda.echange_espace_virtuel();
-
 }
 
 // Description:
@@ -395,42 +359,37 @@ void Loi_Etat_GP::calculer_alpha()
   Champ_Don& alpha=le_fluide->diffusivite();
   DoubleTab& tab_alpha = le_fluide->diffusivite().valeurs();
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+
   int isVDF=0;
-  if (alpha.valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF=1;
+  if (alpha.valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
   int i, n=tab_alpha.size();
+
   if (isVDF)
     {
       if (sub_type(Champ_Uniforme,lambda.valeur()))
         {
           double lambda0 = tab_lambda(0,0);
-          for (i=0 ; i<n ; i++)
-            {
-              tab_alpha[i] = lambda0 / (tab_rho[i]*Cp_);
-            }
+          for (i=0 ; i<n ; i++) tab_alpha(i,0) = lambda0 / (tab_rho(i,0) * Cp_);
         }
       else
         {
-          for (i=0 ; i<n ; i++)
-            {
-              tab_alpha[i] = tab_lambda(i) / (tab_rho[i]*Cp_);
-            }
+          for (i=0 ; i<n ; i++) tab_alpha(i,0) = tab_lambda(i,0) / (tab_rho(i,0) * Cp_);
         }
     }
   else
     {
-      //const IntTab& elem_faces=ref_cast(Zone_VF,ref_cast(Champ_Fonc_P0_VEF,alpha.valeur()).zone_dis_base()).elem_faces();
       const IntTab& elem_faces=ref_cast(Zone_VF,le_fluide->vitesse().zone_dis_base()).elem_faces();
       double rhoelem;
-      int nfe=elem_faces.dimension(1),face;
+      int face, nfe = elem_faces.line_size();
       if (sub_type(Champ_Uniforme,lambda.valeur()))
         {
           double lambda0 = tab_lambda(0,0);
           for (i=0 ; i<n ; i++)
             {
               rhoelem=0;
-              for (face=0; face<nfe; face++) rhoelem+=tab_rho(elem_faces(i,face));
-              rhoelem/=nfe;
-              tab_alpha[i] = lambda0 / (rhoelem*Cp_);
+              for (face=0; face<nfe; face++) rhoelem += tab_rho(elem_faces(i,face),0);
+              rhoelem /= nfe;
+              tab_alpha(i,0) = lambda0 / ( rhoelem * Cp_ );
             }
         }
       else
@@ -438,9 +397,9 @@ void Loi_Etat_GP::calculer_alpha()
           for (i=0 ; i<n ; i++)
             {
               rhoelem=0;
-              for (face=0; face<nfe; face++) rhoelem+=tab_rho(elem_faces(i,face));
-              rhoelem/=nfe;
-              tab_alpha[i] = tab_lambda(i) / (rhoelem*Cp_);
+              for (face=0; face<nfe; face++) rhoelem += tab_rho(elem_faces(i,face),0);
+              rhoelem /= nfe;
+              tab_alpha(i,0) = tab_lambda(i,0) / ( rhoelem * Cp_ );
             }
         }
     }
@@ -463,21 +422,18 @@ void Loi_Etat_GP::calculer_alpha()
 // Postcondition:
 double Loi_Etat_GP::calculer_masse_volumique(double P, double T) const
 {
-  if (rho_constant_pour_debug_.non_nul())
-    {
-      return rho_constant_pour_debug_(0,0);
-    }
+  if (rho_constant_pour_debug_.non_nul()) return rho_constant_pour_debug_(0,0);
+
   if (inf_ou_egal(T,0))
     {
-
       Cerr << finl << "Error, we find a temperature of " << T << " !" << finl;
       Cerr << "Either your calculation has diverged or you don't define" << finl;
       Cerr << "temperature in Kelvin somewhere in your data file." << finl;
       Cerr << "It is mandatory for Quasi compressible model." << finl;
       Cerr << "Check your data file." << finl;
-      exit();
+      Process::exit();
     }
-  return P/(R_*T);
+  return P / ( R_ * T );
 }
 
 // Description:
@@ -496,7 +452,7 @@ double Loi_Etat_GP::calculer_masse_volumique(double P, double T) const
 // Postcondition:
 double Loi_Etat_GP::inverser_Pth(double T, double rho)
 {
-  return rho*R_*T;
+  return rho * R_ * T;
 }
 void Loi_Etat_GP::calculer_masse_volumique()
 {

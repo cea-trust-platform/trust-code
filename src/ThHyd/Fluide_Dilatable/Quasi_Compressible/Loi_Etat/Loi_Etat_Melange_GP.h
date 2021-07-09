@@ -24,12 +24,12 @@
 #define Loi_Etat_Melange_GP_included
 
 #include <Loi_Etat_GP.h>
-#include <Champ_Inc_base.h>
-#include <List.h>
-#include <Ref_Champ_Inc_base.h>
 #include <Convection_Diffusion_fraction_massique_QC.h>
+#include <Ref_Champ_Inc_base.h>
 #include <Ref_Espece.h>
-#include <DoubleTab.h>
+#include <List.h>
+
+class Fluide_Dilatable_base;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -52,45 +52,34 @@ public :
 
   Loi_Etat_Melange_GP();
   void associer_fluide(const Fluide_Dilatable_base&);
-  virtual  void associer_inconnue(const Champ_Inc_base& inconnue);
   void associer_espece(const Convection_Diffusion_fraction_massique_QC& eq);
-  void calculer_Cp();
-  virtual void calculer_tab_Cp(DoubleTab& cp) const;
   void calculer_lambda();
   void calculer_alpha();
   void calculer_mu();
   void calculer_mu_sur_Sc();
   void calculer_mu0();
-
   void calculer_masse_volumique();
-  double calculer_masse_volumique(double,double) const;
-  virtual double calculer_masse_volumique_case(double P,double T,double r, int som) const;
-
-  virtual void initialiser_inco_ch();
   void calculer_masse_molaire();
   void calculer_masse_molaire(DoubleTab& M) const;
+  void calculer_Cp();
+  double calculer_masse_volumique(double,double) const;
+
+  virtual void initialiser_inco_ch();
+  virtual void associer_inconnue(const Champ_Inc_base& inconnue);
+  virtual void calculer_tab_Cp(DoubleTab& cp) const;
   virtual void rabot(int futur=0);
-  inline const DoubleTab& masse_molaire() const;
-  inline DoubleTab& masse_molaire();
+  virtual double calculer_masse_volumique_case(double P,double T,double r, int som) const;
+
+  // Methodes inlines
+  inline const DoubleTab& masse_molaire() const { return Masse_mol_mel; }
+  inline DoubleTab& masse_molaire() { return Masse_mol_mel; }
 
 protected :
   int correction_fraction_,ignore_check_fraction_;
   double Sc_,dtol_fraction_;
   DoubleTab Masse_mol_mel;
-
   LIST(REF(Champ_Inc_base)) liste_Y;
   LIST(REF(Espece)) liste_especes;
 };
 
-
-inline const DoubleTab& Loi_Etat_Melange_GP::masse_molaire() const
-{
-  return Masse_mol_mel;
-}
-
-inline DoubleTab& Loi_Etat_Melange_GP::masse_molaire()
-{
-  return Masse_mol_mel;
-}
-
-#endif
+#endif /* Loi_Etat_Melange_GP_included */

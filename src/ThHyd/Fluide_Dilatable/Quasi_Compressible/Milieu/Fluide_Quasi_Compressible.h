@@ -42,7 +42,6 @@ class Zone_Cl_dis;
 class Fluide_Quasi_Compressible : public Fluide_Dilatable_base
 {
   Declare_instanciable_sans_constructeur(Fluide_Quasi_Compressible);
-
 public :
   Fluide_Quasi_Compressible();
   virtual void set_param(Param& param);
@@ -66,20 +65,27 @@ protected :
   EDO_Pression_th EDO_Pth_;
   Nom output_file_;
   mutable DoubleTab tab_W_old_;
+
+private :
+  void completer_edo(const Probleme_base& );
 };
 
 inline void Fluide_Quasi_Compressible::Resoudre_EDO_PT()
 {
   Pth_n = Pth_;
-  Pth_ = EDO_Pth_->resoudre(Pth_);
 
-  if (Pth_<=0)
+  if (traitement_PTh != 2)
     {
-      Cerr<<"Error : the pressure calculated by Resoudre_EDO_PT method is negative : "<< Pth_ << finl;
-      abort();
-    }
+      Pth_ = EDO_Pth_->resoudre(Pth_);
 
-  EDO_Pth_->mettre_a_jour_CL(Pth_);
+      if (Pth_<=0)
+        {
+          Cerr<<"Error : the pressure calculated by Resoudre_EDO_PT method is negative : "<< Pth_ << finl;
+          abort();
+        }
+
+      EDO_Pth_->mettre_a_jour_CL(Pth_);
+    }
 }
 
 //Calcule W=-dZ/dt, 2nd membre de l'equation div(rhoU) = W
@@ -89,9 +95,7 @@ inline void Fluide_Quasi_Compressible::secmembre_divU_Z(DoubleTab& tab_W) const
   if (temps>temps_debut_prise_en_compte_drho_dt_)
     {
       eos_tools_->secmembre_divU_Z(tab_W);
-      // Relaxation eventuelle:
-      // (BM: j'ai remplace le test size() != 0 car invalide sur champ P1bulle)
-      if (tab_W_old_.size_totale() > 0)
+      if (tab_W_old_.size_totale() > 0) // Relaxation eventuelle:
         {
           tab_W *= omega_drho_dt_;
           tab_W.ajoute_sans_ech_esp_virt(1-omega_drho_dt_, tab_W_old_);

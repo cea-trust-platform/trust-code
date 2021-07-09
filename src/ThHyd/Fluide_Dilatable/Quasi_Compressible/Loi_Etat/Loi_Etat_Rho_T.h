@@ -26,7 +26,6 @@
 #include <Loi_Etat_GP.h>
 #include <Champ_Don.h>
 #include <DoubleTab.h>
-#include <Fluide_Quasi_Compressible.h>
 #include <Parser_U.h>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -46,8 +45,8 @@ public :
   void initialiser_inco_ch();
   void initialiser_rho();
   void calculer_masse_volumique();
-  double calculer_masse_volumique(double P, double T) const; // overrided
-  double calculer_masse_volumique(double P, double T, int ind) const;// overloaded
+  double calculer_masse_volumique(double, double) const; // overrided
+  double calculer_masse_volumique(double, double, int) const;// overloaded
   double inverser_Pth(double T, double rho); // forbidden
 
 protected :

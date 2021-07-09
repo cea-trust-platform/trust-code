@@ -45,9 +45,7 @@ class Loi_Etat_Melange_Binaire : public Loi_Etat_GP
 
 public :
   Loi_Etat_Melange_Binaire();
-  const Nom type_fluide() const;
   void associer_fluide(const Fluide_Dilatable_base& fl);
-  void calculer_Cp();
   void calculer_lambda();
   void calculer_mu();
   void calculer_mu_wilke();
@@ -55,17 +53,17 @@ public :
   void calculer_mu_sur_Sc(); // returns rho * D
   void calculer_nu_sur_Sc(); // returns D
   void calculer_masse_volumique();
+
+  const Nom type_fluide() const;
+  void calculer_Cp();
   double calculer_masse_volumique(double P,double Y1) const;
   double inverser_Pth(double,double);
-  static constexpr double R_GAS = 8.314472;
 
 protected :
-  double massmol1_;
-  double massmol2_;
-  double mu1_;
-  double mu2_;
-  double tempr_;
-  double diff_coeff_;
+  double massmol1_,massmol2_,mu1_,mu2_,tempr_,diff_coeff_;
+
+private :
+  static constexpr double R_GAS = 8.314472;
 };
 
 #endif /* Loi_Etat_Melange_Binaire_included */

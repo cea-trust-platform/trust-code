@@ -23,8 +23,7 @@
 #include <Pb_Hydraulique_Melange_Binaire_QC.h>
 #include <Verif_Cl.h>
 
-Implemente_instanciable(Pb_Hydraulique_Melange_Binaire_QC,"Pb_Hydraulique_Melange_Binaire_QC",Pb_QC);
-
+Implemente_instanciable(Pb_Hydraulique_Melange_Binaire_QC,"Pb_Hydraulique_Melange_Binaire_QC",Pb_QC_base);
 
 // Description:
 //    Simple appel a: Probleme_base::printOn(Sortie&)
@@ -173,7 +172,3 @@ int Pb_Hydraulique_Melange_Binaire_QC::verifier()
 
   return tester_compatibilite_hydr_fraction_massique(zone_Cl_hydr,zone_Cl_fm);
 }
-
-
-
-

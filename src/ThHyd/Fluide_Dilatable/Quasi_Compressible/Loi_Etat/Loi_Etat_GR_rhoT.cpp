@@ -27,12 +27,7 @@
 
 Implemente_instanciable_sans_constructeur(Loi_Etat_GR_rhoT,"Loi_Etat_Gaz_Reel_rhoT",Loi_Etat_base);
 
-Loi_Etat_GR_rhoT::Loi_Etat_GR_rhoT()
-{
-  MMole_=-1;
-  Cp_=-1;
-  R = -1;
-}
+Loi_Etat_GR_rhoT::Loi_Etat_GR_rhoT() : MMole_(-1),Cp_(-1),R(-1) { }
 
 // Description:
 //    Imprime la loi sur un flot de sortie.
@@ -70,10 +65,7 @@ Sortie& Loi_Etat_GR_rhoT::printOn(Sortie& os) const
 // Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_GR_rhoT::readOn(Entree& is)
 {
-  double PolyRho_lu=-1;
-  double PolyT_lu=-1;
-  double MMole_lu=-1;
-  double Pr_lu=-1;
+  double PolyRho_lu=-1, PolyT_lu=-1, MMole_lu=-1, Pr_lu=-1;
 
   Motcle accferme="}";
   Motcle accouverte="{";
@@ -253,16 +245,14 @@ void Loi_Etat_GR_rhoT::initialiser()
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   int i, n = tab_H.dimension(0);
   DoubleTab& tab_T = temperature_.valeurs();
-  //tab_T.resize(n);
   tab_TempC.resize(n);
   double Pth = le_fluide->pression_th();
   for (i=0 ; i<n ; i++)
     {
-      tab_rho_n[i] = tab_rho[i];
-      tab_TempC[i] = calculer_temperature(Pth,tab_H[i]);
-      tab_T[i] = tab_TempC[i];
+      tab_rho_n(i) = tab_rho(i,0);
+      tab_TempC(i) = calculer_temperature(Pth,tab_H(i,0));
+      tab_T(i) = tab_TempC(i);
     }
-
   tab_Cp.ref(le_fluide->capacite_calorifique().valeurs());
   calculer_Cp();
 }
@@ -282,35 +272,35 @@ void Loi_Etat_GR_rhoT::initialiser()
 // Postcondition:
 void Loi_Etat_GR_rhoT::initialiser_inco_ch()
 {
-  //l'inconnue inco_chaleur est d'abord remplie avec la temperature initiale.
-  // il faut la transfomer en enthalpie ;
-  //les donnes sont la masse volumique et la temperature
-  // on doit donc calculer l'enthalpie et la pression
+  /*
+   * XXX XXX XXX
+   * l'inconnue inco_chaleur est d'abord remplie avec la temperature initiale.
+   * il faut la transfomer en enthalpie ;
+   * les donnes sont la masse volumique et la temperature
+   * on doit donc calculer l'enthalpie et la pression
+   */
+
   DoubleTab& tab_TH = le_fluide->inco_chaleur().valeurs();
   double Pth = le_fluide->pression_th();
   int som,n = tab_TH.dimension(0);
   tab_rho_n.resize(n);
   tab_rho_np1.resize(n);
-  //  tab_rho_nm1.resize(n);
 
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   if (le_fluide->inco_chaleur()->le_nom() == "enthalpie")
     {
       for (som=0 ; som<n ; som++)
-        {
-          tab_rho_np1[som] = tab_rho[som] = tab_rho_n[som] = calculer_masse_volumique(Pth,tab_TH[som]);
-        }
+        tab_rho_np1(som) = tab_rho(som,0) = tab_rho_n(som) = calculer_masse_volumique(Pth,tab_TH(som,0));
     }
   else
     {
       for (som=0 ; som<n ; som++)
         {
-          tab_TH[som] = calculer_H(Pth,tab_TH[som]);
-          tab_rho_np1[som] = tab_rho[som] = tab_rho_n[som] = calculer_masse_volumique(Pth,tab_TH[som]);
+          tab_TH(som,0) = calculer_H(Pth,tab_TH(som,0));
+          tab_rho_np1(som) = tab_rho(som,0) = tab_rho_n(som) = calculer_masse_volumique(Pth,tab_TH(som,0));
         }
     }
-
-  Cerr<<"FINLoi_Etat_GR_rhoT::initialiser_H Pth="<<Pth<<"  H="<<tab_TH[0]<<finl;
+  Cerr<<"FIN Loi_Etat_GR_rhoT::initialiser_H Pth = "<<Pth<<"  H = "<<tab_TH(0,0)<<finl;
 }
 
 // Description:
@@ -335,10 +325,9 @@ void Loi_Etat_GR_rhoT::remplir_T()
   double Pth = le_fluide->pression_th();
   for (i=0 ; i<n ; i++)
     {
-      tab_TempC[i] = calculer_temperature(Pth,tab_H[i]);
-      tab_T[i] = tab_TempC[i];
+      tab_TempC(i) = calculer_temperature(Pth,tab_H(i,0));
+      tab_T(i,0) = tab_TempC(i);
     }
-  //   Cerr<<"---Loi_Etat_GR::remplir_T h present="<<le_fluide->inco_chaleur().valeurs()(0)<<" passe="<<le_fluide->inco_chaleur().passe()(0)<<" futur="<<le_fluide->inco_chaleur().futur()(0)<<"  local T="<<tab_T(0)<<finl;
 }
 
 
@@ -385,9 +374,7 @@ void Loi_Etat_GR_rhoT::calculer_Cp()
 {
   double Pth = le_fluide->pression_th();
   const DoubleTab& tab_h = le_fluide->inco_chaleur().valeurs();
-
-  for (int i=0; i<tab_Cp.size(); i++)
-    tab_Cp(i) = Cp_calc(Pth,tab_h[i]);
+  for (int i=0; i<tab_Cp.size(); i++) tab_Cp(i) = Cp_calc(Pth,tab_h(i,0));
 }
 
 // Description:
@@ -417,18 +404,11 @@ void Loi_Etat_GR_rhoT::calculer_lambda()
     {
       if (sub_type(Champ_Uniforme,mu.valeur()))
         {
-          double mu0 = tab_mu(0,0);
-          for (i=0 ; i<n ; i++)
-            {
-              tab_lambda[i] = mu0 * tab_Cp[i] / Pr_;
-            }
+          for (i=0 ; i<n ; i++) tab_lambda(i,0) = tab_mu(0,0) * tab_Cp(i) / Pr_;
         }
       else
         {
-          for (i=0 ; i<n ; i++)
-            {
-              tab_lambda[i] = tab_mu[i] * tab_Cp[i] / Pr_;
-            }
+          for (i=0 ; i<n ; i++) tab_lambda(i,0) = tab_mu(i,0) * tab_Cp(i) / Pr_;
         }
     }
 }
@@ -460,12 +440,8 @@ double Loi_Etat_GR_rhoT::calculer_masse_volumique(double P, double h) const
       double H = h;
       int i,j;
       for (i=0 ; i<PolyRho_.dimension(0) ; i++)
-        {
-          for (j=0 ; j<PolyRho_.dimension(1) ; j++)
-            {
-              res += PolyRho_(i,j) *pow(P,j) *pow(H,i);
-            }
-        }
+        for (j=0 ; j<PolyRho_.line_size() ; j++)
+          res += PolyRho_(i,j) *pow(P,j) *pow(H,i);
     }
   else
     {
@@ -502,12 +478,8 @@ double Loi_Etat_GR_rhoT::calculer_temperature(double P, double h)
       int i,j;
       double H = h;
       for (i=0 ; i<PolyT_.dimension(0) ; i++)
-        {
-          for (j=0 ; j<PolyT_.dimension(1) ; j++)
-            {
-              res += PolyT_(i,j) *pow(P,i) *pow(H,j);
-            }
-        }
+        for (j=0 ; j<PolyT_.line_size() ; j++)
+          res += PolyT_(i,j) *pow(P,i) *pow(H,j);
     }
   else
     {
@@ -537,25 +509,18 @@ double Loi_Etat_GR_rhoT::calculer_H(double Pth_, double T_) const
   if (R==-1)
     {
       //il faut resoudre c0-T_ + c1.H + c2.H^2 +...=0
-      int i,j;
-      int it,max_iter = 1000;
+      int i,j, it,max_iter = 1000;
       double eps = 1.e-6;
-      DoubleVect coef(PolyT_.dimension(1));
+      DoubleVect coef(PolyT_.line_size());
       coef = 0;
 
-      for (j=0 ; j<PolyT_.dimension(1) ; j++)
-        {
-          for (i=0 ; i<PolyT_.dimension(0) ; i++)
-            {
-              coef(j) += PolyT_(i,j) * pow(Pth_,i);
-            }
-        }
-      coef(0) -= T_;
+      for (i=0 ; i<PolyT_.dimension(0) ; i++)
+        for (j=0 ; j<PolyT_.line_size() ; j++)
+          coef(j) += PolyT_(i,j) * pow(Pth_,i);
 
-      double H = -coef(0)/coef(1);
-      double dH;
-      double num=coef(0), den=0;
-      for (j=1 ; j<PolyT_.dimension(1) ; j++)
+      coef(0) -= T_;
+      double dH, H = -coef(0)/coef(1), num=coef(0), den=0;
+      for (j=1 ; j<PolyT_.line_size() ; j++)
         {
           num += coef(j) * pow(H,j);
           den += j*coef(j) * pow(H,j-1);
@@ -568,12 +533,12 @@ double Loi_Etat_GR_rhoT::calculer_H(double Pth_, double T_) const
         {
           num=coef(0);
           den=0;
-          for (j=1 ; j<PolyT_.dimension(1) ; j++)
+          for (j=1 ; j<PolyT_.line_size() ; j++)
             {
               num += coef(j) * pow(H,j);
               den += j*coef(j) * pow(H,j-1);
             }
-          dH = num/den;
+          dH = num / den;
           H -= dH;
           it++;
         }
@@ -584,9 +549,7 @@ double Loi_Etat_GR_rhoT::calculer_H(double Pth_, double T_) const
           Cerr<<"Pth= "<<Pth_<<" t="<<T_<<" H="<<H<<finl;
           abort();
         }
-
       res = H;
-
     }
   else
     {
@@ -604,12 +567,8 @@ double Loi_Etat_GR_rhoT::Drho_DP(double P, double h) const
       int i,j;
       double H =h;
       for (i=1 ; i<PolyRho_.dimension(0) ; i++)
-        {
-          for (j=0 ; j<PolyRho_.dimension(1) ; j++)
-            {
-              res += i* PolyRho_(i,j) *pow(P,i-1) *pow(H,j);
-            }
-        }
+        for (j=0 ; j<PolyRho_.line_size() ; j++)
+          res += i* PolyRho_(i,j) *pow(P,i-1) *pow(H,j);
     }
   else
     {
@@ -629,12 +588,8 @@ double Loi_Etat_GR_rhoT::Drho_DT(double P, double h) const
       int i,j;
       double H = h;
       for (i=1 ; i<PolyRho_.dimension(0) ; i++)
-        {
-          for (j=0 ; j<PolyRho_.dimension(1) ; j++)
-            {
-              res += i* PolyRho_(i,j) *pow(P,j) *pow(H,i-1);
-            }
-        }
+        for (j=0 ; j<PolyRho_.line_size() ; j++)
+          res += i* PolyRho_(i,j) *pow(P,j) *pow(H,i-1);
     }
   else
     {
@@ -665,12 +620,8 @@ double Loi_Etat_GR_rhoT::DT_DH(double P, double h) const
       int i,j;
       double H = h;
       for (i=0 ; i<PolyT_.dimension(0) ; i++)
-        {
-          for (j=1 ; j<PolyT_.dimension(1) ; j++)
-            {
-              res += j* PolyT_(i,j) *pow(P,i) *pow(H,j-1);
-            }
-        }
+        for (j=1 ; j<PolyT_.line_size() ; j++)
+          res += j* PolyT_(i,j) *pow(P,i) *pow(H,j-1);
     }
   else
     {
@@ -697,7 +648,6 @@ double Loi_Etat_GR_rhoT::DT_DH(double P, double h) const
 double Loi_Etat_GR_rhoT::inverser_Pth(double H, double rho)
 {
   double P = le_fluide->pression_th();
-
   double acc = (calculer_masse_volumique(P,H) - rho) / Drho_DP(P,H);
   int i=0;
   while (fabs(acc)>1e-8 && i<1000)
@@ -714,6 +664,7 @@ double Loi_Etat_GR_rhoT::inverser_Pth(double H, double rho)
     }
   return P;
 }
+
 void Loi_Etat_GR_rhoT::calculer_masse_volumique()
 {
   Loi_Etat_base::calculer_masse_volumique();

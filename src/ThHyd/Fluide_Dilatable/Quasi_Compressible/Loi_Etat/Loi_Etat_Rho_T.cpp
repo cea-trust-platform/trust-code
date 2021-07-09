@@ -21,20 +21,13 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Loi_Etat_Rho_T.h>
+#include <Fluide_Dilatable_base.h>
 #include <Param.h>
-#include <Probleme_base.h>
-#include <Interprete.h>
-#include <Discretisation_base.h>
-#include <Equation_base.h>
-#include <Zone_dis_base.h>
-#include <Zone_VF.h>
-#include <Table.h>
 
 Implemente_instanciable_sans_constructeur( Loi_Etat_Rho_T, "Loi_Etat_Rho_T", Loi_Etat_GP ) ;
 // XD rho_T loi_etat_base rho_T -1 Defining a state equation of form rho = f(T).
 
-Loi_Etat_Rho_T::Loi_Etat_Rho_T() : is_exp_(false)
-{}
+Loi_Etat_Rho_T::Loi_Etat_Rho_T() : is_exp_(false) { }
 
 // Description:
 //    Imprime la loi sur un flot de sortie.
@@ -111,12 +104,8 @@ Entree& Loi_Etat_Rho_T::readOn( Entree& is )
 void Loi_Etat_Rho_T::initialiser_rho()
 {
   assert(rho_xyz_.valeur().que_suis_je() == "Champ_Fonc_xyz" );
-
-  // VDF/polyMAC or VEF ??
-  int isVDF=0;
-  if (le_fluide->masse_volumique().que_suis_je()=="Champ_Fonc_P0_VDF")
-    isVDF=1;
-
+  int isVDF = 0;
+  if (le_fluide->masse_volumique().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
   // We know that mu is always stored on elems
   int nb_elems = le_fluide->viscosite_dynamique().valeurs().size();
   // The Champ_Don rho_xyz_ is evaluated on elements
@@ -124,12 +113,10 @@ void Loi_Etat_Rho_T::initialiser_rho()
 
   if (isVDF)
     {
-      // Disc VDF/polyMAC => rho_ & rho_xyz_ on elems => we do nothing
+      // Disc VDF => rho_ & rho_xyz_ on elems => we do nothing
       rho_.resize(nb_elems, 1);
       DoubleTab& fld = rho_xyz_.valeur().valeurs();
-
-      for (int i=0; i<nb_elems; i++)
-        rho_(i)=fld(i,0);
+      for (int i=0; i<nb_elems; i++) rho_(i,0)=fld(i,0);
     }
   else
     {
@@ -140,9 +127,7 @@ void Loi_Etat_Rho_T::initialiser_rho()
       Champ_base& ch_rho = le_fluide->masse_volumique();
       ch_rho.affecter_(rho_xyz_);
       DoubleTab& fld = ch_rho.valeurs();
-
-      for (int i = 0; i < nb_faces; i++)
-        rho_(i)= fld[i];
+      for (int i = 0; i < nb_faces; i++) rho_(i,0)= fld(i,0);
     }
 }
 
@@ -165,8 +150,7 @@ void Loi_Etat_Rho_T::initialiser_rho()
 void Loi_Etat_Rho_T::initialiser_inco_ch()
 {
   // required here for xyz !
-  if ( !is_exp_ )
-    initialiser_rho();
+  if ( !is_exp_ ) initialiser_rho();
 
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   tab_rho_n=tab_rho;
@@ -242,7 +226,7 @@ double Loi_Etat_Rho_T::calculer_masse_volumique(double P, double T, int ind) con
     {
       // Initialized from Champ_Fonc_xyz
       // dont change, return what is saved in rho_
-      return rho_(ind);
+      return rho_(ind,0);
     }
 }
 
@@ -274,8 +258,8 @@ void Loi_Etat_Rho_T::calculer_masse_volumique()
   int n=tab_rho.size();
   for (int som=0 ; som<n ; som++)
     {
-      tab_rho_np1[som] =  calculer_masse_volumique(Pth,tab_ICh[som],som);
-      tab_rho[som] = (tab_rho_n[som] + tab_rho_np1[som])/2.;
+      tab_rho_np1(som) =  calculer_masse_volumique(Pth,tab_ICh(som,0),som);
+      tab_rho(som,0) = 0.5 * (tab_rho_n(som) + tab_rho_np1(som));
     }
   tab_rho.echange_espace_virtuel();
   tab_rho_np1.echange_espace_virtuel();

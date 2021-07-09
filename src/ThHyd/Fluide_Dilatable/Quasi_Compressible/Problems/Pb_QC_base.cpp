@@ -14,37 +14,71 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_QC.h
+// File:        Pb_QC_base.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Problems
-// Version:     /main/9
+// Version:     /main/19
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Pb_QC_included
-#define Pb_QC_included
+#include <Pb_QC_base.h>
+#include <Fluide_Quasi_Compressible.h>
+#include <Equation_base.h>
+#include <Loi_Fermeture_base.h>
+#include <Probleme_Couple.h>
+#include <Debog.h>
+#include <Domaine.h>
 
-#include <Pb_Dilatable_base.h>
+Implemente_base(Pb_QC_base,"Pb_QC_base",Pb_Dilatable_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Pb_QC
-//    Cette classe est censee factoriser ce qui est commun a l'ensemble
-//    des problemes quasi-compressibles.
-//    Il est suppose dans l'algorithme de iterateTimeStep que la
-//     premiere equation est hydraulique et la deuxieme est thermique.
-// .SECTION voir Pb_Dilatable_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Pb_QC : public Pb_Dilatable_base
+Sortie& Pb_QC_base::printOn(Sortie& os) const
 {
-  Declare_base(Pb_QC);
-public:
-  virtual bool initTimeStep(double dt);
-  virtual void preparer_calcul();
-  virtual void associer_milieu_base(const Milieu_base& );
-  virtual void solve_pressure_thermo();
-};
+  return Pb_Dilatable_base::printOn(os);
+}
 
-#endif /* Pb_QC_included */
+Entree& Pb_QC_base::readOn(Entree& is)
+{
+  return Pb_Dilatable_base::readOn(is);
+}
+
+void Pb_QC_base::associer_milieu_base(const Milieu_base& mil)
+{
+  if (sub_type(Fluide_Quasi_Compressible,mil))
+    {
+      Pb_Dilatable_base::associer_milieu_base(mil);
+    }
+  else
+    {
+      Cerr << "Un milieu de type " << mil.que_suis_je()
+           << " ne peut etre associe a "<< finl
+           << "un probleme quasi-compressible" << finl;
+      Process::exit();
+    }
+}
+
+void Pb_QC_base::preparer_calcul()
+{
+  Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,milieu());
+
+  if (le_fluide.type_fluide()=="Gaz_Reel") equation(1).inconnue()->nommer("temperature");
+  if (le_fluide.type_fluide()=="Melange_Binaire") equation(1).inconnue()->nommer("fraction_massique");
+
+  le_fluide.completer(*this);
+  le_fluide.preparer_calcul();
+  Pb_Dilatable_base::preparer_calcul();
+  le_fluide.calculer_masse_volumique();
+  le_fluide.preparer_calcul();
+}
+
+bool Pb_QC_base::initTimeStep(double dt)
+{
+  bool ok = Pb_Dilatable_base::initTimeStep(dt);
+  Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,le_fluide_.valeur());
+  le_fluide.preparer_pas_temps();
+  return ok;
+}
+
+void Pb_QC_base::solve_pressure_thermo()
+{
+  Fluide_Quasi_Compressible& le_fluide_QC = ref_cast(Fluide_Quasi_Compressible,le_fluide_.valeur());
+  le_fluide_QC.Resoudre_EDO_PT();
+}

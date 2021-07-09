@@ -25,16 +25,20 @@
 
 #include <Loi_Etat_base.h>
 #include <Champ.h>
+
+class Fluide_Dilatable_base;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
 //     classe Loi_Etat_GP
 //     Cette classe represente la loi d'etat pour les gaz parfaits.
-//     Associe a un fluide incompressible, elle definit un fluide quasi compressible
+//     Associe a un fluide dilatable, elle definit un fluide quasi compressible
 //     dont la loi d'eata est :
 //        Pth = rho*R*T
 // .SECTION voir aussi
 //     Fluide_Dilatable_base Loi_Etat_base
+//
 //////////////////////////////////////////////////////////////////////////////
 
 class Loi_Etat_GP : public Loi_Etat_base
@@ -42,30 +46,25 @@ class Loi_Etat_GP : public Loi_Etat_base
   Declare_instanciable_sans_constructeur(Loi_Etat_GP);
 
 public :
-
   Loi_Etat_GP();
-  const Nom type_fluide() const;
   void associer_fluide(const Fluide_Dilatable_base&);
-  virtual void initialiser();
-  void remplir_T();
-  void calculer_Cp();
   void calculer_lambda();
   void calculer_alpha();
   virtual void calculer_masse_volumique();
+
+  const Nom type_fluide() const;
+  virtual void initialiser();
+  void remplir_T();
+  void calculer_Cp();
   double calculer_masse_volumique(double,double) const;
   double inverser_Pth(double,double);
 
-  inline double R() const;
+  // Methodes inlines
+  inline double R() const { return R_; }
 
 protected :
-  double Cp_;
-  double R_;
+  double Cp_, R_;
   Champ rho_constant_pour_debug_;
 };
 
-inline double Loi_Etat_GP::R() const
-{
-  return R_;
-}
-
-#endif
+#endif /* Loi_Etat_GP_included */

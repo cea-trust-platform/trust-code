@@ -20,14 +20,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Pb_Hydraulique_Melange_Binaire_QC_included
 #define Pb_Hydraulique_Melange_Binaire_QC_included
 
-#include <Pb_QC.h>
+#include <Pb_QC_base.h>
 #include <Navier_Stokes_QC.h>
 #include <Convection_Diffusion_fraction_massique_MB_QC.h>
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -41,23 +39,19 @@
 // .SECTION voir aussi
 //     Probleme_base Navier_Stokes_QC Convection_Diffusion_fraction_massique_MB_QC
 //////////////////////////////////////////////////////////////////////////////
-class Pb_Hydraulique_Melange_Binaire_QC : public Pb_QC
+
+class Pb_Hydraulique_Melange_Binaire_QC : public Pb_QC_base
 {
-
   Declare_instanciable(Pb_Hydraulique_Melange_Binaire_QC);
-
 public:
-
   int nombre_d_equations() const;
   const Equation_base& equation(int) const ;
   Equation_base& equation(int);
   int verifier();
 
 protected:
-
   Navier_Stokes_QC eq_hydraulique;
   Convection_Diffusion_fraction_massique_MB_QC eq_frac_mass;
-
 };
 
 #endif /* Pb_Hydraulique_Melange_Binaire_QC_included */

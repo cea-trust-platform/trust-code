@@ -50,43 +50,31 @@ class Loi_Etat_GR_rhoT : public Loi_Etat_base
 public :
 
   Loi_Etat_GR_rhoT();
-  inline double masse_molaire() const;
-  double Cp_calc(double,double) const;
-  const Nom type_fluide() const;
-
-  void initialiser();
   void initialiser_inco_ch();
-  void remplir_T();
-  void calculer_Cp();
   void calculer_lambda();
-
   virtual void calculer_masse_volumique();
-  double calculer_masse_volumique(double,double) const;
   double calculer_temperature(double,double);
   double calculer_H(double,double) const;
+  double Drho_DP(double,double) const;
+  double Drho_DT(double,double) const;
+  double De_DP(double,double) const;
+  double De_DT(double,double) const;
+  double DT_DH(double,double) const;
+  double Cp_calc(double,double) const;
+
+  const Nom type_fluide() const;
+  void initialiser();
+  void remplir_T();
+  void calculer_Cp();
+  double calculer_masse_volumique(double,double) const;
   double inverser_Pth(double,double);
 
-  double Drho_DP(double,double) const ;
-  double Drho_DT(double,double) const ;
-  double De_DP(double,double) const ;
-  double De_DT(double,double) const ;
-
-  double DT_DH(double,double) const ;
+  // Methodes inlines
+  inline double masse_molaire() const { return MMole_; }
 
 protected :
-  DoubleTab PolyRho_;
-  DoubleTab PolyT_;
-  double MMole_;
-  DoubleTab tab_TempC;
-  DoubleTab tab_Cp;
-
-  double Cp_;
-  double R;
+  DoubleTab PolyRho_,PolyT_,tab_TempC,tab_Cp;
+  double MMole_,Cp_,R;
 };
 
-inline double Loi_Etat_GR_rhoT::masse_molaire() const
-{
-  return MMole_;
-}
-
-#endif
+#endif /* Loi_Etat_GR_rhoT_included */

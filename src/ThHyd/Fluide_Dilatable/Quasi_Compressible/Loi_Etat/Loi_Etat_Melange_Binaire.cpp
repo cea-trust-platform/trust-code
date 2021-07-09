@@ -31,9 +31,7 @@ Implemente_instanciable_sans_constructeur(Loi_Etat_Melange_Binaire,"Loi_Etat_Mel
 // XD melange_binaire loi_etat_base melange_binaire -1 Mixing of a binary mixture uder the iso-thermal and iso-bar assumptions.
 
 Loi_Etat_Melange_Binaire::Loi_Etat_Melange_Binaire() :
-  massmol1_(-1),massmol2_(-1),mu1_(-1),mu2_(-1),tempr_(-1),diff_coeff_(-1)
-{
-}
+  massmol1_(-1),massmol2_(-1),mu1_(-1),mu2_(-1),tempr_(-1),diff_coeff_(-1) { }
 
 // Description:
 //    Imprime la loi sur un flot de sortie.
@@ -200,15 +198,13 @@ void Loi_Etat_Melange_Binaire::calculer_mu_wilke()
       double phi_12 = m1om2*a1*a1/b1;
       double phi_21 = m2om1*a2*a2/b2;
 
-      double y1 = tab_Y1[i];
+      double y1 = tab_Y1(i,0);
       double y2 = 1. - y1; // All about binary mixture !
 
-      tab_mu[i]= (mu1_*y1)/(y1+y2*phi_12) + (mu2_*y2)/(y2+y1*phi_21);
+      tab_mu(i,0) = (mu1_*y1)/(y1+y2*phi_12) + (mu2_*y2)/(y2+y1*phi_21);
     }
-
   tab_mu.echange_espace_virtuel();
   Debog::verifier("calculer_mu_wilke",tab_mu);
-
 }
 
 // Description:
@@ -288,25 +284,21 @@ void Loi_Etat_Melange_Binaire::calculer_mu_sur_Sc()
    * ====================================================================
    */
 
-  // XXX : VEF ? should we resize or is it the faces dimension ?
   Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
   const Champ_base& rho = le_fluide->masse_volumique();
   DoubleTab& tab_mu_sur_Sc = mu_sur_Sc.valeurs();
   const DoubleTab& tab_rho = rho.valeurs();
+  const int n=tab_mu_sur_Sc.size();
 
   if (!sub_type(Champ_Uniforme,mu_sur_Sc.valeur()))
     {
-      int n=tab_mu_sur_Sc.size();
       if (sub_type(Champ_Uniforme,rho))
         {
           Cerr << "We should not have a density field of type Champ_Uniforme !" << finl;
           Process::exit();
         }
       else
-        {
-          for (int i=0 ; i<n ; i++)
-            tab_mu_sur_Sc[i] = tab_rho[i]*diff_coeff_;
-        }
+        for (int i=0 ; i<n ; i++) tab_mu_sur_Sc(i,0) = tab_rho(i,0)*diff_coeff_;
     }
   else
     {
@@ -342,13 +334,11 @@ void Loi_Etat_Melange_Binaire::calculer_nu_sur_Sc()
    * ====================================================================
    */
 
-  // XXX : VEF ? should we resize or is it the faces dimension ?
   Champ_Don& nu_sur_Sc = le_fluide->nu_sur_Schmidt();
   DoubleTab& tab_nu_sur_Sc = nu_sur_Sc.valeurs();
-  int n=tab_nu_sur_Sc.size();
+  const int n=tab_nu_sur_Sc.size();
 
-  for (int i=0 ; i<n ; i++)
-    tab_nu_sur_Sc[i] = diff_coeff_;
+  for (int i=0 ; i<n ; i++) tab_nu_sur_Sc(i,0) = diff_coeff_;
 
   double temps_champ = le_fluide->masse_volumique().temps();
   nu_sur_Sc.valeur().changer_temps(temps_champ);
@@ -438,22 +428,18 @@ void Loi_Etat_Melange_Binaire::calculer_masse_volumique()
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   double Pth = le_fluide->pression_th();
 
-  int n=tab_rho.size();
+  const int n = tab_rho.size();
   for (int som=0 ; som<n ; som++)
     {
-      tab_rho_np1[som] = calculer_masse_volumique(Pth,tab_Y1[som]);
-      tab_rho[som] = (tab_rho_n[som] + tab_rho_np1[som])/2.;
+      tab_rho_np1(som) = calculer_masse_volumique(Pth,tab_Y1(som,0));
+      tab_rho(som,0) = 0.5 * ( tab_rho_n(som) + tab_rho_np1(som) );
     }
 
   const Champ_base& rho_m=le_fluide->get_champ("rho_gaz");
-  ref_cast_non_const(DoubleTab,rho_m.valeurs())=tab_rho_np1;
-
+  ref_cast_non_const(DoubleTab,rho_m.valeurs()) = tab_rho_np1;
   tab_rho.echange_espace_virtuel();
   tab_rho_np1.echange_espace_virtuel();
-
-  // TODO : verify the use of this ... I think no need for !
   le_fluide->calculer_rho_face(tab_rho_np1);
-
   Debog::verifier("Loi_Etat_Melange_GP::calculer_masse_volumique, tab_rho_np1",tab_rho_np1);
   Debog::verifier("Loi_Etat_Melange_GP::calculer_masse_volumique, tab_rho",tab_rho);
 }

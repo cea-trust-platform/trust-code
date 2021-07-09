@@ -48,9 +48,7 @@ class Fluide_Dilatable_base : public Fluide_base
   Declare_base_sans_constructeur(Fluide_Dilatable_base);
 
 public :
-
   Fluide_Dilatable_base();
-
   void verifier_coherence_champs(int& err,Nom& message);
   void set_Cp(double);
   void update_rho_cp(double temps);
@@ -68,12 +66,13 @@ public :
   virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
   virtual void mettre_a_jour(double );
   virtual void preparer_calcul();
+  virtual void completer(const Probleme_base&);
+  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+
+  // Virtuelles pure
   virtual void checkTraitementPth(const Zone_Cl_dis&)=0;
-//  virtual void calculer_rho_face(const DoubleTab& tab_rho)=0;
-  virtual void completer(const Probleme_base&)=0;
   virtual void prepare_pressure_edo()=0;
   virtual void write_mean_edo(double )=0;
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
 
   // Methodes de l interface des champs postraitables
   virtual const Champ_base& get_champ(const Motcle& nom) const;
