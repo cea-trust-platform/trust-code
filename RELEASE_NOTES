@@ -1,7 +1,7 @@
-XX/XX/21 (TRUST)  Performance : A same advanced field used by several probes are now computed only once during each post-processing phasis 
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
+09/07/21 (TRUST)  Performance : A same advanced field used by several probes are now computed only once during each post-processing phasis
 05/07/21 (TRUST)  Portability : New CCRT cluster topaze supported (110592 AMD Milan Epyc cores)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3 : Enhancements, modifications and corrected bugs since version 1.8.2 :
