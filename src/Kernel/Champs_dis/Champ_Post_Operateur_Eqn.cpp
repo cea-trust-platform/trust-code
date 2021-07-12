@@ -222,6 +222,14 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
       ref_eq_->sources()(numero_source_).calculer(es);
     if (!sans_solveur_masse_)
       ref_eq_->solv_masse().valeur().appliquer_impl(es);
+    // Hack: car Masse_PolyMAC_Face::appliquer_impl ne divise par le volume (matrice de masse)....
+    if (ref_eq_->solv_masse().valeur().que_suis_je()=="Masse_PolyMAC_Face")
+      {
+        //Cerr << "Volumic source terms on faces with PolyMAC can't be post-processed yet." << finl;
+        Cerr << "Warning, source terms on faces with PolyMAC are post-processed as S*dV not as volumic source terms S." << finl;
+        Cerr << "Cause Masse_PolyMAC_Face::appliquer_impl do not divide per volume." << finl;
+        //Process::exit();
+      }
   }
   es.echange_espace_virtuel();
   // apres je recupere juste la composante si elle est demandee

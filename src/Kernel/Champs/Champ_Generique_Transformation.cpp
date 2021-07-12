@@ -433,7 +433,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
 
   if (Motcle(methode_)=="formule")
     {
-      // on redeande le nb_sources car on a ajoute des sources par completer
+      // on redemande le nb_sources car on a ajoute des sources par completer
       nb_sources = get_nb_sources();
       fxyz.dimensionner(1);
       fxyz[0].setNbVar(4+nb_sources);
@@ -453,10 +453,10 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
 }
 
 
-void  projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Zone_VF& zvf,const Motcle& loc,int is_VDF)
+void projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Zone_VF& zvf,const Motcle& loc,bool champ_normal_faces)
 {
   const Nom& type_elem=zvf.zone().type_elem().valeur().que_suis_je();
-  if ((is_VDF)||(loc!="elem")|| (type_elem!="Quadrangle"))
+  if ((champ_normal_faces)||(loc!="elem")|| (type_elem!="Quadrangle"))
     {
       Cerr<<"option composante_normale not coded in this case"<<finl;
       Process::exit();
@@ -523,9 +523,9 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
   int nb_elem_tot = zvf.nb_elem_tot();
   int nb_som_tot = get_ref_domain().nb_som_tot();
   const Motcle directive = get_directive_pour_discr();
-  int is_VDF = 0;
-  if (zvf.que_suis_je().debute_par("Zone_VDF"))
-    is_VDF = 1;
+  bool champ_normal_faces = 0;
+  if (zvf.que_suis_je().debute_par("Zone_VDF") || zvf.que_suis_je().finit_par("MAC"))
+    champ_normal_faces = 1;
   if (localisation_ == "elem")
     {
       if (zvf.xp().nb_dim() != 2) /* xp() non initialise */
@@ -652,11 +652,8 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
       for (int j=0; j<nb_comp_; j++)
         fxyz[j].setVar("t",temps);
 
-      if ((is_VDF) && (localisation_=="faces"))
+      if ((champ_normal_faces) && (localisation_=="faces"))
         {
-          const IntVect& orientation = zvf.orientation();
-          int ori;
-
           for (int i=0; i<nb_pos; i++)
             {
               x = positions(i,0);
@@ -664,22 +661,18 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
               z = 0;
               if (dimension>2)
                 z = positions(i,2);
-              ori = orientation(i);
-
+              valeurs_espace(i) = 0;
               for (int j=0; j<nb_comp_; j++)
                 {
-                  if (ori==j)
+                  fxyz[j].setVar(0,x);
+                  fxyz[j].setVar(1,y);
+                  fxyz[j].setVar(2,z);
+                  for (int so=0; so<nb_sources; so++)
                     {
-                      fxyz[j].setVar(0,x);
-                      fxyz[j].setVar(1,y);
-                      fxyz[j].setVar(2,z);
-                      for (int so=0; so<nb_sources; so++)
-                        {
-                          const DoubleTab& source_so_val = sources_val[so];
-                          fxyz[j].setVar(so+4,source_so_val(i,0));
-                        }
-                      valeurs_espace(i) = fxyz[j].eval();
+                      const DoubleTab& source_so_val = sources_val[so];
+                      fxyz[j].setVar(so+4,source_so_val(i,0));
                     }
+                  valeurs_espace(i) += fxyz[j].eval() * zvf.face_normales(i, j) / zvf.surface(i);
                 }
             }
         }
@@ -711,7 +704,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
   else if (Motcle(methode_)=="composante_normale")
     {
       const DoubleTab& source_so_val = sources_val[0];
-      projette(valeurs_espace,source_so_val,zvf,localisation_,is_VDF);
+      projette(valeurs_espace,source_so_val,zvf,localisation_,champ_normal_faces);
     }
   else if (Motcle(methode_)=="composante")
     {
@@ -723,18 +716,10 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
         }
 
       const DoubleTab& source_so_val = sources_val[0];
-      if ((is_VDF) && (localisation_=="faces"))
+      if ((champ_normal_faces) && (localisation_=="faces"))
         {
-          const IntVect& orientation = zvf.orientation();
-          int ori;
           for (int i=0; i<nb_pos; i++)
-            {
-              ori = orientation(i);
-              if (ori==num_compo)
-                valeurs_espace(i) = source_so_val(i,0);
-              else
-                valeurs_espace(i) = 0.;
-            }
+            valeurs_espace(i) = source_so_val(i,0) * zvf.face_normales(i, num_compo) / zvf.surface(i);
         }
       else
         {

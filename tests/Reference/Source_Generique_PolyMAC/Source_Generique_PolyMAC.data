@@ -1,0 +1,114 @@
+# PARALLEL NOT #
+dimension 2
+domaine dom
+# BEGIN MESH #
+Read_file upwind.geo ;
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name dom
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+Pb_thermohydraulique pb
+# CoviMAC dis #
+PolyMAC dis
+# VDF dis #
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0.
+    tmax 12
+    solveur implicite {
+        solveur petsc gmres { precond diag { } rtol 1.e-6 }
+    }
+}
+
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+    Cp Champ_Uniforme 1 1006
+    beta_th Champ_Uniforme 1 3.41e-3
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0 -9.81
+
+Associate fluide gravite
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+
+Read pb
+{
+# On resout du/dt = S(x,y,z) #
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc gcp { precond null { } seuil 1e30 }
+        convection { negligeable }
+        diffusion { negligeable }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+        boundary_conditions {
+            Obstacle paroi_fixe
+            Symetrie symetrie
+            Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 2  1. 0.
+        }
+	# On compare le terme source generique avec le terme source qdm (doit etre identique) #
+        sources {
+            Source_Generique Transformation { methode vecteur expression 2 x y localisation faces } ,
+            Source_Qdm Champ_fonc_xyz dom 2 x y
+        }
+    }
+# On compare le terme source generique aux elements avec un terme sous puissance_thermique #
+    Convection_Diffusion_Temperature
+    {
+        diffusion { negligeable }
+        convection { negligeable }
+        boundary_conditions
+        {
+            Symetrie 	paroi_adiabatique
+            Obstacle 	paroi_adiabatique
+            Entree  	frontiere_ouverte_temperature_imposee Champ_front_Fonc_xyz 1 1
+            Sortie	frontiere_ouverte_temperature_imposee Champ_front_Fonc_xyz 1 0
+        }
+        initial_conditions { Temperature Champ_Fonc_xyz dom 1 0 }
+        sources {
+            Source_Generique Transformation { methode formule expression 1 50+x+y localisation elem } ,
+            Puissance_Thermique champ_fonc_xyz dom 1 50+x+y
+        }
+    }
+
+    Postraitement
+    {
+        Definition_champs {
+            source_volumique_generique_P0         Operateur_Eqn { numero_source 0 sources { refChamp { pb_champ pb temperature } } }
+            source_volumique_puissance_thermique  Operateur_Eqn { numero_source 1 sources { refChamp { pb_champ pb temperature } } }
+	    source_generique 			  Operateur_Eqn { numero_source 0 sources { refChamp { pb_champ pb vitesse } } } 
+	    source_qdm 				  Operateur_Eqn { numero_source 1 sources { refChamp { pb_champ pb vitesse } } } 
+        }
+        fields dt_post 1e10
+        {
+            source_volumique_generique_P0 		elem
+            source_volumique_puissance_thermique 	elem
+ 	    source_generique 				elem
+	    source_qdm					elem
+        }
+    }
+}
+Solve pb
+
+

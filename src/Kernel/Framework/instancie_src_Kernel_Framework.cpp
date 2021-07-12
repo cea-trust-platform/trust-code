@@ -50,6 +50,7 @@
 #include <Sondes.h>
 #include <Sondes_Int.h>
 #include <Source.h>
+#include <Source_Generique_P0_Elem.h>
 #include <Sources.h>
 #include <Sous_zone_dis.h>
 #include <Sous_zones_dis.h>
@@ -110,11 +111,12 @@ Sonde_Int inst48;verifie_pere(inst48);
 Sondes inst49;verifie_pere(inst49);
 Sondes_Int inst50;verifie_pere(inst50);
 Source inst51;verifie_pere(inst51);
-Sources inst52;verifie_pere(inst52);
-Sous_zone_dis inst53;verifie_pere(inst53);
-Sous_zones_dis inst54;verifie_pere(inst54);
-Testeur inst55;verifie_pere(inst55);
-Zone_Cl_dis inst56;verifie_pere(inst56);
-Zone_dis inst57;verifie_pere(inst57);
-Zones_dis inst58;verifie_pere(inst58);
+Source_Generique_P0_Elem inst52;verifie_pere(inst52);
+Sources inst53;verifie_pere(inst53);
+Sous_zone_dis inst54;verifie_pere(inst54);
+Sous_zones_dis inst55;verifie_pere(inst55);
+Testeur inst56;verifie_pere(inst56);
+Zone_Cl_dis inst57;verifie_pere(inst57);
+Zone_dis inst58;verifie_pere(inst58);
+Zones_dis inst59;verifie_pere(inst59);
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,27 +14,26 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Generique_VDF_Elem.h
-// Directory:   $TRUST_ROOT/src/VDF/Sources
+// File:        Source_Generique_P0_Elem.h
+// Directory:   $TRUST_ROOT/src/Kernel/Framework
 // Version:     /main/5
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Source_Generique_VDF_Elem_included
-#define Source_Generique_VDF_Elem_included
+#ifndef Source_Generique_P0_Elem_included
+#define Source_Generique_P0_Elem_included
 
 #include <Source_Generique_base.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Zone_VF.h>
 
 // .DESCRIPTION class Source_Generique_VDF_Elem
 // .SECTION voir Source_Generique_base
 //
-class Source_Generique_VDF_Elem: public Source_Generique_base
+class Source_Generique_P0_Elem: public Source_Generique_base
 {
 
-  Declare_instanciable(Source_Generique_VDF_Elem);
+  Declare_instanciable(Source_Generique_P0_Elem);
 
 public:
 
@@ -44,8 +43,7 @@ public:
 
 protected:
 
-  REF(Zone_VDF) la_zone_VDF;
-  REF(Zone_Cl_VDF) la_zcl_VDF;
+  REF(Zone_VF) la_zone;
 };
 
 #endif
