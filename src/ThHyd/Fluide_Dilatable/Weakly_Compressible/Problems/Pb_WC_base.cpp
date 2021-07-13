@@ -14,35 +14,69 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/8
+// File:        Pb_WC_base.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Problems
+// Version:     /main/19
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#include <Pb_WC_base.h>
+#include <Fluide_Weakly_Compressible.h>
+#include <Equation_base.h>
+#include <Loi_Fermeture_base.h>
+#include <Probleme_Couple.h>
+#include <Debog.h>
+#include <Domaine.h>
 
-#include <Loi_Etat_base.h>
+Implemente_base(Pb_WC_base,"Pb_WC_base",Pb_Dilatable_base);
 
-////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
-//
-// .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
-
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
+Sortie& Pb_WC_base::printOn(Sortie& os) const
 {
-  Declare_instanciable(Loi_Etat);
+  return Pb_Dilatable_base::printOn(os);
+}
 
-public:
-  void typer(const Nom&);
-};
+Entree& Pb_WC_base::readOn(Entree& is)
+{
+  return Pb_Dilatable_base::readOn(is);
+}
 
-#endif /* Loi_Etat_included */
+void Pb_WC_base::associer_milieu_base(const Milieu_base& mil)
+{
+  if (sub_type(Fluide_Weakly_Compressible,mil))
+    {
+      Pb_Dilatable_base::associer_milieu_base(mil);
+    }
+  else
+    {
+      Cerr << "Un milieu de type " << mil.que_suis_je()
+           << " ne peut etre associe a un probleme Weakly Compressible" << finl;
+      Process::exit();
+    }
+}
+
+void Pb_WC_base::preparer_calcul()
+{
+  Fluide_Weakly_Compressible& le_fluide = ref_cast(Fluide_Weakly_Compressible,milieu());
+
+  if (le_fluide.type_fluide()=="Gaz_Reel") equation(1).inconnue()->nommer("temperature");
+  if (le_fluide.type_fluide()=="Melange_Binaire") equation(1).inconnue()->nommer("fraction_massique");
+
+  le_fluide.completer(*this);
+  le_fluide.preparer_calcul();
+  Pb_Dilatable_base::preparer_calcul();
+  le_fluide.calculer_masse_volumique();
+  le_fluide.preparer_calcul();
+}
+
+bool Pb_WC_base::initTimeStep(double dt)
+{
+  bool ok = Pb_Dilatable_base::initTimeStep(dt);
+  Fluide_Weakly_Compressible& le_fluide = ref_cast(Fluide_Weakly_Compressible,le_fluide_.valeur());
+  le_fluide.preparer_pas_temps();
+  return ok;
+}
+
+void Pb_WC_base::solve_pressure_thermo()
+{
+  /* Do nothing */
+}

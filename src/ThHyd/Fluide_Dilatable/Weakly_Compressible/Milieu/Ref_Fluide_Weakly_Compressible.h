@@ -14,35 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/8
+// File:        Ref_Fluide_Weakly_Compressible.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Milieu
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Ref_Fluide_Weakly_Compressible_included
+#define Ref_Fluide_Weakly_Compressible_included
 
-#include <Loi_Etat_base.h>
+#include <Ref.h>
+class Fluide_Weakly_Compressible;
+Declare_ref(Fluide_Weakly_Compressible);
 
-////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
-//
-// .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
-
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
-{
-  Declare_instanciable(Loi_Etat);
-
-public:
-  void typer(const Nom&);
-};
-
-#endif /* Loi_Etat_included */
+#endif

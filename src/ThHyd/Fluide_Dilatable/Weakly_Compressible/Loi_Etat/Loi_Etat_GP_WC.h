@@ -14,35 +14,56 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/8
+// File:        Loi_Etat_GP_WC.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Loi_Etat
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Loi_Etat_GP_WC_included
+#define Loi_Etat_GP_WC_included
 
 #include <Loi_Etat_base.h>
+#include <Champ.h>
 
-////////////////////////////////////////////////////////////////
+class Fluide_Dilatable_base;
+
+//////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
-//
+//     classe Loi_Etat_GP_WC
+//     Cette classe represente la loi d'etat pour les gaz parfaits.
+//     Associe a un fluide dilatable, elle definit un fluide weakly compressible
+//     dont la loi d'eata est :
+//        Pth = rho*R*T
 // .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
+//     Fluide_Dilatable_base Loi_Etat_base
+//
+//////////////////////////////////////////////////////////////////////////////
 
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Loi_Etat_GP_WC : public Loi_Etat_base
 {
-  Declare_instanciable(Loi_Etat);
+  Declare_instanciable_sans_constructeur(Loi_Etat_GP_WC);
 
-public:
-  void typer(const Nom&);
+public :
+  Loi_Etat_GP_WC();
+  const Nom type_fluide() const;
+  void associer_fluide(const Fluide_Dilatable_base&);
+  void calculer_lambda();
+  void calculer_alpha();
+  void remplir_T();
+  void calculer_Cp();
+  double calculer_masse_volumique(double,double) const;
+  double inverser_Pth(double,double);
+
+  virtual void calculer_masse_volumique();
+  virtual void initialiser();
+
+  // Methodes inlines
+  inline double R() const { return R_; }
+
+protected :
+  double Cp_, R_;
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Loi_Etat_GP_WC_included */

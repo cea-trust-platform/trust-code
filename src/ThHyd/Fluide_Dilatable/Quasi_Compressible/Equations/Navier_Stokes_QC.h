@@ -52,6 +52,7 @@ class Navier_Stokes_QC : public Navier_Stokes_Fluide_Dilatable_base
   Declare_instanciable(Navier_Stokes_QC);
 
 public :
+  virtual void completer();
   virtual int impr(Sortie& os) const;
 };
 

@@ -14,35 +14,50 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/8
+// File:        Source_Weakly_Compressible_Chaleur.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Sources
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Source_Weakly_Compressible_Chaleur_included
+#define Source_Weakly_Compressible_Chaleur_included
 
-#include <Loi_Etat_base.h>
+#include <Source_base.h>
+#include <Ref_Fluide_Weakly_Compressible.h>
 
-////////////////////////////////////////////////////////////////
+class Zone_dis;
+class Zone_Cl_dis;
+
+//////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
+// .DESCRIPTION class Source_Weakly_Compressible_Chaleur
+//
+// Cette classe represente un terme source supplementaire
+// a prendre en compte dans les equations de la chaleur
+//  dans le cas ou le fluide est quasi compressible
 //
 // .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
+// Source_base Fluide_Weakly_Compressible
+//
+//////////////////////////////////////////////////////////////////////////////
 
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Source_Weakly_Compressible_Chaleur : public Source_base
 {
-  Declare_instanciable(Loi_Etat);
-
+  Declare_base(Source_Weakly_Compressible_Chaleur);
 public:
-  void typer(const Nom&);
+  void completer();
+  DoubleTab& calculer(DoubleTab& ) const ;
+  DoubleTab& ajouter(DoubleTab& ) const;
+  // Methodes inlines
+  inline void mettre_a_jour(double) {};
+  inline void associer_pb(const Probleme_base& ) {};
+
+protected:
+  DoubleVect volumes, porosites;
+  virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) =0;
+  REF(Fluide_Weakly_Compressible) le_fluide;
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Source_Weakly_Compressible_Chaleur_included */
+

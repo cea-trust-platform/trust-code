@@ -14,35 +14,44 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/8
+// File:        Pb_Thermohydraulique_WC.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Problems
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Pb_Thermohydraulique_WC_included
+#define Pb_Thermohydraulique_WC_included
 
-#include <Loi_Etat_base.h>
+#include <Pb_WC_base.h>
+#include <Navier_Stokes_WC.h>
+#include <Convection_Diffusion_Chaleur_WC.h>
 
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
-//
+//    classe Pb_Thermohydraulique_WC
+//     Cette classe represente un probleme de thermohydraulique en fluide weakly compressible:
+//      - Equations de Navier_Stokes en regime laminaire
+//        pour un fluide weakly compressible
+//      - Equation d'energie exprimee en temperature (gaz parfait) ou enthalpie (gaz reel)
+//        en regime laminaire pour un fluide weakly compressible
 // .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
+//     Probleme_base Navier_Stokes_WC Convection_Diffusion_Chaleur_WC
+//////////////////////////////////////////////////////////////////////////////
 
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Pb_Thermohydraulique_WC : public Pb_WC_base
 {
-  Declare_instanciable(Loi_Etat);
-
+  Declare_instanciable(Pb_Thermohydraulique_WC);
 public:
-  void typer(const Nom&);
+  int nombre_d_equations() const;
+  const Equation_base& equation(int) const ;
+  Equation_base& equation(int);
+  int verifier();
+
+protected:
+  Navier_Stokes_WC eq_hydraulique;
+  Convection_Diffusion_Chaleur_WC eq_thermique;
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Pb_Thermohydraulique_WC_included */

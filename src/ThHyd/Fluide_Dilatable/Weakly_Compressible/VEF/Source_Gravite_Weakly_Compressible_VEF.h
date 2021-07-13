@@ -14,35 +14,45 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
+// File:        Source_Gravite_Weakly_Compressible_VEF.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VEF
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Source_Gravite_Weakly_Compressible_VEF_included
+#define Source_Gravite_Weakly_Compressible_VEF_included
 
-#include <Loi_Etat_base.h>
+#include <Source_Gravite_Weakly_Compressible_base.h>
+#include <Ref_Zone_VEF.h>
+#include <Ref_Zone_Cl_VEF.h>
 
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
+// .DESCRIPTION class  Source_Gravite_Weakly_Compressible_VEF
+//
+// Cette classe represente un terme source supplementaire
+// a prendre en compte dans les equations de quantite de mouvement
+//  dans le cas ou le fluide est quasi compressible, en cas de gravite, et pour
+//  une discretisation VEF.
 //
 // .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
+// Source_base Fluide_Quasi_Compressible Source_Gravite_Weakly_Compressible_base
+//
+//////////////////////////////////////////////////////////////////////////////
 
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Source_Gravite_Weakly_Compressible_VEF : public Source_Gravite_Weakly_Compressible_base
 {
-  Declare_instanciable(Loi_Etat);
+  Declare_instanciable(Source_Gravite_Weakly_Compressible_VEF);
 
 public:
-  void typer(const Nom&);
+  void completer();
+  DoubleTab& ajouter(DoubleTab& ) const;
+
+protected :
+  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
+  REF(Zone_VEF) la_zone;
+  REF(Zone_Cl_VEF) la_zone_Cl;
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Source_Gravite_Weakly_Compressible_VEF_included */

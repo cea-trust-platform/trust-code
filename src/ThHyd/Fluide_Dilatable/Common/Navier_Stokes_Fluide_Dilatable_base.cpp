@@ -190,24 +190,8 @@ int Navier_Stokes_Fluide_Dilatable_base::preparer_calcul()
 // Postcondition:
 void Navier_Stokes_Fluide_Dilatable_base::completer()
 {
-  if (le_fluide->a_gravite())
-    {
-      Cerr << "Gravity = " << le_fluide->gravite() << finl;
-      Cerr << "Creation of the buoyancy source term for the Navier_Stokes_QC equation : " << finl;
-      Source t;
-      Source& so=les_sources.add(t);
-      Nom type_so = "Source_Gravite_Quasi_Compressible_";
-      Nom disc = discretisation().que_suis_je();
-      if (disc=="VEFPreP1B") disc = "VEF";
-      type_so += disc;
-      so.typer_direct(type_so);
-      so->associer_eqn(*this);
-      Cerr << so->que_suis_je() << finl;
-    }
-
-  Cerr<<"Navier_Stokes_std::completer_deb"<<finl;
+  Cerr<<"Navier_Stokes_std::completer"<<finl;
   Navier_Stokes_std::completer();
-  Cerr<<"Navier_Stokes_std::completer_fin"<<finl;
   Cerr<<"Unknown field type : " << inconnue()->que_suis_je() << finl;
   Cerr<<"Unknown field name : " << inconnue()->le_nom() << finl;
   Cerr<<"Equation type : " << inconnue()->equation().que_suis_je() << finl;

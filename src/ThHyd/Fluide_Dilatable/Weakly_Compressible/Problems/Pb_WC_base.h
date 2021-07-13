@@ -14,35 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/8
+// File:        Pb_WC_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Problems
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Pb_WC_base_included
+#define Pb_WC_base_included
 
-#include <Loi_Etat_base.h>
+#include <Pb_Dilatable_base.h>
 
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
+//    classe Pb_WC_base
+//    Cette classe est censee factoriser ce qui est commun a l'ensemble
+//    des problemes weakly-compressibles.
+//    Il est suppose dans l'algorithme de iterateTimeStep que la
+//     premiere equation est hydraulique et la deuxieme est thermique.
+// .SECTION voir Pb_Dilatable_base
 //
-// .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Pb_WC_base : public Pb_Dilatable_base
 {
-  Declare_instanciable(Loi_Etat);
-
+  Declare_base(Pb_WC_base);
 public:
-  void typer(const Nom&);
+  virtual bool initTimeStep(double dt);
+  virtual void preparer_calcul();
+  virtual void associer_milieu_base(const Milieu_base& );
+  virtual void solve_pressure_thermo();
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Pb_WC_base_included */

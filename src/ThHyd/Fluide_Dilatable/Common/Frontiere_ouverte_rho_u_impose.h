@@ -14,35 +14,41 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
+// File:        Frontiere_ouverte_rho_u_impose.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/8
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Frontiere_ouverte_rho_u_impose_included
+#define Frontiere_ouverte_rho_u_impose_included
 
-#include <Loi_Etat_base.h>
+#include <Entree_fluide_vitesse_imposee_libre.h>
+#include <Ref_Fluide_Dilatable_base.h>
 
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
-//
+//    Frontiere ouverte sur laquelle on impose le flux massique rho.U
+//    et non la vitesse U. La vitesse est calculee par division par
+//    rho(n+1) trouve dans le fluide au moment de l'appel a
+//    val_imp.
 // .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
+//    Dirichlet_entree_fluide
+//////////////////////////////////////////////////////////////////////////////
 
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Frontiere_ouverte_rho_u_impose  : public Entree_fluide_vitesse_imposee_libre
 {
-  Declare_instanciable(Loi_Etat);
+  Declare_instanciable(Frontiere_ouverte_rho_u_impose);
 
-public:
-  void typer(const Nom&);
+public :
+  void completer();
+  int compatible_avec_eqn(const Equation_base&) const;
+  double val_imp_au_temps(double temps, int i) const;
+  double val_imp_au_temps(double temps, int i, int j) const;
+
+protected :
+  REF(Fluide_Dilatable_base) le_fluide;
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Frontiere_ouverte_rho_u_impose_included */

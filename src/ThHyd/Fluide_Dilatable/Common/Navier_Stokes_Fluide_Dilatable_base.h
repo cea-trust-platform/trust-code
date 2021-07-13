@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Navier_Stokes_Fluide_Dilatable_base.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
 // Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -62,20 +62,21 @@ class Navier_Stokes_Fluide_Dilatable_base : public Navier_Stokes_std
   Declare_base_sans_constructeur(Navier_Stokes_Fluide_Dilatable_base);
 public :
   Navier_Stokes_Fluide_Dilatable_base();
-  virtual int impr(Sortie& os) const;
+  void discretiser();
   int preparer_calcul();
-  void completer();
   const Champ_Don& diffusivite_pour_transport();
   const Champ_base& diffusivite_pour_pas_de_temps();
   const Champ_base& vitesse_pour_transport();
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual bool initTimeStep(double dt);
-  void discretiser();
   DoubleTab& rho_vitesse(const DoubleTab& tab_rho,const DoubleTab& vitesse,DoubleTab& rhovitesse) const;
 
+  // Methodes virtuelles
   virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
+  virtual const Champ_base& get_champ(const Motcle& nom) const;
+  virtual void completer();
   virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
   virtual void assembler_avec_inertie( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
+  virtual int impr(Sortie& os) const;
+  virtual bool initTimeStep(double dt);
 
   // Methodes inlines
   inline const Champ_Inc& rho_la_vitesse() const { return rho_la_vitesse_; }
@@ -83,7 +84,7 @@ public :
 protected:
   Champ_Inc rho_la_vitesse_;
   IntVect orientation_VDF_;
-  DoubleTab tab_W;
+  DoubleTab tab_W; // RHS of div(rho.U)
 
 private:
   mutable double cumulative_;

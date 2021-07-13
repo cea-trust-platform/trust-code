@@ -14,35 +14,38 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/8
+// File:        Source_Weakly_Compressible_Chaleur_VDF.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VDF
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Source_Weakly_Compressible_Chaleur_VDF_included
+#define Source_Weakly_Compressible_Chaleur_VDF_included
 
-#include <Loi_Etat_base.h>
+#include <Source_Weakly_Compressible_Chaleur.h>
 
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
+// .DESCRIPTION class  Source_Weakly_Compressible_Chaleur_VDF
+//
+// Cette classe represente un terme source supplementaire
+// a prendre en compte dans les equations de la chaleur
+//  dans le cas ou le fluide est quasi compressible et pour
+//  une discretisation VDF
 //
 // .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
+// Source_base Fluide_Quasi_Compressible Source_Weakly_Compressible_Chaleur
+//
+//////////////////////////////////////////////////////////////////////////////
 
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Source_Weakly_Compressible_Chaleur_VDF : public Source_Weakly_Compressible_Chaleur
 {
-  Declare_instanciable(Loi_Etat);
+  Declare_instanciable(Source_Weakly_Compressible_Chaleur_VDF);
 
-public:
-  void typer(const Nom&);
+protected :
+  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Source_Weakly_Compressible_Chaleur_VDF_included */
+

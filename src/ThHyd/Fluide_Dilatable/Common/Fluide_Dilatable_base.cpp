@@ -368,35 +368,36 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
 int Fluide_Dilatable_base::initialiser(const double& temps)
 {
   Cerr << "Fluide_Dilatable_base::initialiser()" << finl;
-  if (sub_type(Champ_Don_base, rho)) ref_cast(Champ_Don_base, rho).initialiser(temps);
+  if (sub_type(Champ_Don_base, rho))
+    ref_cast(Champ_Don_base, rho).initialiser(temps);
+
   mu.initialiser(temps);
   lambda.initialiser(temps);
   Cp.initialiser(temps);
   update_rho_cp(temps);
 
-  // Initialisation des proprietes radiatives du fluide incompressible
-  // (Pour un fluide incompressible semi transparent).
-
   if (coeff_absorption_.non_nul() && indice_refraction_.non_nul())
-    {
-      coeff_absorption_.initialiser(temps);
-      indice_refraction_.initialiser(temps);
+    initialiser_radiatives(temps);
 
-      // Initialisation de longueur_rayo
-      longueur_rayo_.initialiser(temps);
-      if (sub_type(Champ_Uniforme,kappa().valeur()))
-        {
-          longueur_rayo()->valeurs()(0,0)=1/(3*kappa()(0,0));
-        }
-      else
-        {
-          DoubleTab& l_rayo = longueur_rayo_.valeurs();
-          const DoubleTab& K = kappa().valeurs();
-          for (int i=0; i<kappa().nb_valeurs_nodales(); i++)
-            l_rayo[i] = 1/(3*K[i]);
-        }
-    }
   return 1;
+}
+
+// Initialisation des proprietes radiatives du fluide incompressible
+// (Pour un fluide incompressible semi transparent).
+void Fluide_Dilatable_base::initialiser_radiatives(const double& temps)
+{
+  coeff_absorption_.initialiser(temps);
+  indice_refraction_.initialiser(temps);
+  longueur_rayo_.initialiser(temps);
+  if (sub_type(Champ_Uniforme,kappa().valeur()))
+    longueur_rayo()->valeurs()(0,0)=1/(3*kappa()(0,0));
+  else
+    {
+      DoubleTab& l_rayo = longueur_rayo_.valeurs();
+      const DoubleTab& K = kappa().valeurs();
+      for (int i=0; i<kappa().nb_valeurs_nodales(); i++)
+        l_rayo[i] = 1/(3*K[i]);
+    }
 }
 
 // Description:
@@ -416,7 +417,7 @@ int Fluide_Dilatable_base::initialiser(const double& temps)
 void Fluide_Dilatable_base::calculer_pression_tot()
 {
   DoubleTab& tab_Ptot = pression_tot_.valeurs();
-  int n = tab_Ptot.dimension_tot(0);
+  const int n = tab_Ptot.dimension_tot(0);
   DoubleTab tab_PHyd(n, 1);
   if( n != pression_->valeurs().dimension_tot(0) )
     {
@@ -426,13 +427,9 @@ void Fluide_Dilatable_base::calculer_pression_tot()
       const DoubleTab& centres_de_gravites=zone.xp();
       pression_->valeur().valeur_aux(centres_de_gravites,tab_PHyd);
     }
-  else
-    tab_PHyd = pression_->valeurs();
+  else  tab_PHyd = pression_->valeurs();
 
-  for (int i=0 ; i<n ; i++)
-    {
-      tab_Ptot(i) = tab_PHyd(i) + Pth_;
-    }
+  for (int i=0 ; i<n ; i++) tab_Ptot(i) = tab_PHyd(i) + Pth_;
 }
 
 const Champ_base& Fluide_Dilatable_base::get_champ(const Motcle& nom) const
@@ -477,6 +474,8 @@ void Fluide_Dilatable_base::get_noms_champs_postraitables(Noms& nom,Option opt) 
 // Postcondition:
 void Fluide_Dilatable_base::mettre_a_jour(double temps)
 {
+  calculer_pression_tot();
+  pression_tot_.mettre_a_jour(temps);
   rho.mettre_a_jour(temps);
   ch_temperature().mettre_a_jour(temps); // Note : it denotes the species Y1 for Pb_Hydraulique_Melange_Binaire_QC
   rho->changer_temps(temps);
@@ -485,8 +484,8 @@ void Fluide_Dilatable_base::mettre_a_jour(double temps)
   lambda->changer_temps(temps);
   Cp.mettre_a_jour(temps);
   update_rho_cp(temps);
-  calculer_pression_tot();
-  pression_tot_.mettre_a_jour(temps);
+//  calculer_pression_tot();
+//  pression_tot_.mettre_a_jour(temps);
 
   write_mean_edo(temps); // si besoin (i.e. QC)
 }
@@ -509,11 +508,13 @@ void Fluide_Dilatable_base::preparer_calcul()
 {
   Cerr << "Fluide_Dilatable_base::preparer_calcul()" << finl;
   Milieu_base::preparer_calcul();
+  calculer_pression_tot();
+  pression_tot_.mettre_a_jour(0);
   loi_etat_->preparer_calcul();
   prepare_pressure_edo(); // si besoin (i.e. QC)
   calculer_coeff_T();
-  calculer_pression_tot();
-  pression_tot_.mettre_a_jour(0);
+//  calculer_pression_tot();
+//  pression_tot_.mettre_a_jour(0);
 }
 
 // Description:
@@ -532,7 +533,6 @@ void Fluide_Dilatable_base::preparer_calcul()
 // Postcondition:
 void Fluide_Dilatable_base::completer(const Probleme_base& pb)
 {
-  Cerr<<"Fluide_Dilatable_base::completer Pth = " << Pth_ << finl;
   inco_chaleur_ = pb.equation(1).inconnue();
   vitesse_ = pb.equation(0).inconnue();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,pb.equation(0));

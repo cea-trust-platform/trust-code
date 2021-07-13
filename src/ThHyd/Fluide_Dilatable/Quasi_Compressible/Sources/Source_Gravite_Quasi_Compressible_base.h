@@ -46,31 +46,21 @@ class Zone_Cl_dis;
 
 class Source_Gravite_Quasi_Compressible_base : public Source_base
 {
-
   Declare_base(Source_Gravite_Quasi_Compressible_base);
 
 public:
-
-  inline void associer_pb(const Probleme_base& );
-
-  virtual DoubleTab& ajouter(DoubleTab& ) const =0;
+  void mettre_a_jour(double temps);
   DoubleTab& calculer(DoubleTab& ) const ;
+  virtual DoubleTab& ajouter(DoubleTab& ) const =0;
   virtual void completer();
-  void mettre_a_jour(double temps)
-  {
-    ;
-  }
+
+  // Methodes inlines
+  inline void associer_pb(const Probleme_base& ) { }
 
 protected:
-
   virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) =0;
-
   REF(Fluide_Quasi_Compressible) le_fluide;
   DoubleVect g;
 };
 
-inline void Source_Gravite_Quasi_Compressible_base::associer_pb(const Probleme_base& )
-{
-}
-#endif
-
+#endif /* Source_Gravite_Quasi_Compressible_base_included */

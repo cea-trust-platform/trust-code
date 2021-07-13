@@ -276,7 +276,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
 // Postcondition:
 void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 {
-
+  Cerr<<"Fluide_Quasi_Compressible::completer Pth = " << Pth_ << finl;
   if ((loi_etat_->que_suis_je() == "Loi_Etat_Rho_T" || loi_etat_->que_suis_je() == "Loi_Etat_Melange_Binaire" )
       && traitement_PTh == 0)
     {

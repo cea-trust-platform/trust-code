@@ -14,35 +14,46 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/8
+// File:        Navier_Stokes_WC.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Equations
+// Version:     /main/19
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Navier_Stokes_WC_included
+#define Navier_Stokes_WC_included
 
-#include <Loi_Etat_base.h>
+#include <Navier_Stokes_Fluide_Dilatable_base.h>
 
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
-//
+//    classe Navier_Stokes_WC
+//    Cette classe porte les termes de l'equation de la dynamique
+//    pour un fluide sans modelisation de la turbulence.
+//    On suppose l'hypothese de fluide quasi compressible.
+//    Sous ces hypotheses, on utilise la forme suivante des equations de
+//    Navier_Stokes:
+//       DU/dt = div(terme visqueux) - gradP/rho + sources/rho
+//       div U = W
+//    avec DU/dt : derivee particulaire de la vitesse
+//         rho   : masse volumique
+//    Rq : l'implementation de la classe permet bien sur de negliger
+//         certains termes de l'equation (le terme visqueux, le terme
+//         convectif, tel ou tel terme source).
+//    L'inconnue est le champ de vitesse.
 // .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
+//      Navier_Stokes_Fluide_Dilatable_base
+//
+//////////////////////////////////////
 
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Navier_Stokes_WC : public Navier_Stokes_Fluide_Dilatable_base
 {
-  Declare_instanciable(Loi_Etat);
+  Declare_instanciable(Navier_Stokes_WC);
 
-public:
-  void typer(const Nom&);
+public :
+  virtual void completer();
+  virtual int impr(Sortie& os) const;
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Navier_Stokes_WC_included */

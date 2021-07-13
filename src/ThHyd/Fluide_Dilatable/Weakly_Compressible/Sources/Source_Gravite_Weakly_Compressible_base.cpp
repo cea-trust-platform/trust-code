@@ -14,23 +14,24 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/9
+// File:        Source_Gravite_Weakly_Compressible_base.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Sources
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat.h>
-#include <Motcle.h>
+#include <Source_Gravite_Weakly_Compressible_base.h>
+#include <Fluide_Weakly_Compressible.h>
+#include <Equation_base.h>
 
-Implemente_deriv(Loi_Etat_base);
-Implemente_instanciable(Loi_Etat,"Loi_Etat",DERIV(Loi_Etat_base));
+Implemente_base(Source_Gravite_Weakly_Compressible_base,"Source_Gravite_Weakly_Compressible_base",Source_base);
+
 
 // Description:
-//    Impression de la loi d'etat sur un flot de sortie.
+//    Imprime la source sur un flot de sortie.
 // Precondition:
 // Parametre: Sortie& os
-//    Signification: le flot de sortie
+//    Signification: le flot de sortie pour l'impression
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces: sortie
@@ -40,16 +41,17 @@ Implemente_instanciable(Loi_Etat,"Loi_Etat",DERIV(Loi_Etat_base));
 // Exception:
 // Effets de bord: le flot de sortie est modifie
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Loi_Etat::printOn(Sortie& os) const
+Sortie& Source_Gravite_Weakly_Compressible_base::printOn(Sortie& os) const
 {
-  return DERIV(Loi_Etat_base)::printOn(os);
+  os <<que_suis_je()<< finl;
+  return os;
 }
 
 // Description:
-//    Lecture de la loi d'etat sur un flot d'entree.
+//    Lecture de la source sur un flot d'entree.
 // Precondition:
 // Parametre: Entree& is
-//    Signification: le flot d'entree
+//    Signification: le flot d'entree pour la lecture des parametres
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces: entree/sortie
@@ -57,85 +59,20 @@ Sortie& Loi_Etat::printOn(Sortie& os) const
 //    Signification: le flot d'entree modifie
 //    Contraintes:
 // Exception:
-// Effets de bord: le flot d'entree est modifie
+// Effets de bord:
 // Postcondition:
-Entree& Loi_Etat::readOn(Entree& is)
+Entree& Source_Gravite_Weakly_Compressible_base::readOn(Entree& is)
 {
-  Cerr<<"Lecture et typage de la loi d'etat :"<<finl;
-  Motcle motlu;
-  is>>motlu;
-  Nom type = "Loi_Etat_";
-  Motcles les_mots_loi(7);
-  {
-    // QC
-    les_mots_loi[0] = "gaz_parfait";
-    les_mots_loi[1] = "gaz_reel_rhoe";
-    les_mots_loi[2] = "gaz_reel_rhoT";
-    les_mots_loi[3] = "melange_gaz_parfait";
-    les_mots_loi[4] = "rho_T";
-    les_mots_loi[5] = "melange_binaire";
-    // WC
-    les_mots_loi[6] = "gaz_parfait_WC";
-  }
-  int rang_loi = les_mots_loi.search(motlu);
-  switch(rang_loi)
-    {
-    case 0 :
-      {
-        type += "Gaz_Parfait";
-        break;
-      }
-    case 1 :
-      {
-        type += "Gaz_Reel_rhoe";
-        break;
-      }
-    case 2 :
-      {
-        type += "Gaz_Reel_rhoT";
-        break;
-      }
-    case 3 :
-      {
-        type += "Melange_Gaz_Parfait";
-        break;
-      }
-    case 4 :
-      {
-        type += "Rho_T";
-        break;
-      }
-    case 5 :
-      {
-        type += "Melange_Binaire";
-        break;
-      }
-    case 6 :
-      {
-        type += "Gaz_Parfait_WC";
-        break;
-      }
-    default :
-      {
-        Cerr<<"ERREUR : Les lois d'etat actuellement implementees sont :"<<finl;
-        Cerr<<les_mots_loi<<finl;
-        abort();
-      }
-    }
-  typer(type);
-
-  is >> valeur();
   return is;
 }
 
-
 // Description:
-//    Type la loi d'etat
+//    Complete la source : rempli la ref sur le fluide
 // Precondition:
-// Parametre: Nom& typ
-//    Signification: le nom de type a donner a la loi d'etat
+// Parametre:
+//    Signification:
 //    Valeurs par defaut:
-//    Contraintes: reference constante
+//    Contraintes:
 //    Acces:
 // Retour:
 //    Signification:
@@ -143,8 +80,35 @@ Entree& Loi_Etat::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat::typer(const Nom& type)
+void Source_Gravite_Weakly_Compressible_base::completer()
 {
-  DERIV(Loi_Etat_base)::typer(type);
-  Cerr<<" "<<valeur().que_suis_je()<<finl;
+  Cerr<<"Source_Gravite_Weakly_Compressible_base::completer()"<<finl;
+  Source_base::completer();
+  le_fluide = ref_cast(Fluide_Weakly_Compressible,mon_equation->milieu());
+
+  g = le_fluide->gravite().valeurs();
+}
+
+// Description:
+//    Calcule la contribution de cette source
+// Precondition:
+// Parametre: DoubleTab& resu
+//    Signification: flux
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: DoubleTab&
+//    Signification: le flux
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+DoubleTab& Source_Gravite_Weakly_Compressible_base::calculer(DoubleTab& resu) const
+{
+  return ajouter(resu);
+}
+
+void Source_Gravite_Weakly_Compressible_base::mettre_a_jour(double temps)
+{
+  /* Do nothing */
 }

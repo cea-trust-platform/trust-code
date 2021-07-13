@@ -14,35 +14,42 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
-// Version:     /main/8
+// File:        Convection_Diffusion_Chaleur_WC.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Equations
+// Version:     /main/20
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_included
-#define Loi_Etat_included
+#ifndef Convection_Diffusion_Chaleur_WC_included
+#define Convection_Diffusion_Chaleur_WC_included
 
-#include <Loi_Etat_base.h>
+#include <Convection_Diffusion_Chaleur_Fluide_Dilatable_base.h>
 
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-// class Loi_Etat
-//    Cette classe est la derivee de la classe Loi_Etat_base
-//
+//     classe Convection_Diffusion_Chaleur_WC
+//     Cas particulier de Convection_Diffusion_Chaleur_Fluide_Dilatable_base pour un fluide quasi conpressible
+//     quand le scalaire subissant le transport est la temperature en gaz parfaits,
+//     ou l'enthalpie en gaz reels.
+//     (generalisation de Convection_Diffusion_Temperature pour les gaz reels)
 // .SECTION voir aussi
-// Loi_Etat_base
-////////////////////////////////////////////////////////////////
+//     Conv_Diffusion_std Convection_Diffusion_Temperature
+//////////////////////////////////////////////////////////////////////////////
 
-Declare_deriv(Loi_Etat_base);
-
-class Loi_Etat : public DERIV(Loi_Etat_base)
+class Convection_Diffusion_Chaleur_WC : public Convection_Diffusion_Chaleur_Fluide_Dilatable_base
 {
-  Declare_instanciable(Loi_Etat);
+  Declare_instanciable_sans_constructeur(Convection_Diffusion_Chaleur_WC);
 
-public:
-  void typer(const Nom&);
+public :
+  Convection_Diffusion_Chaleur_WC();
+  void set_param(Param& titi);
+  const Champ_base& vitesse_pour_transport();
+  int lire_motcle_non_standard(const Motcle&, Entree&);
+  int preparer_calcul();
+
+  void calculer_div_u_ou_div_rhou(DoubleTab& res) const;
+  bool is_generic();
 };
 
-#endif /* Loi_Etat_included */
+#endif /* Convection_Diffusion_Chaleur_WC_included */

@@ -14,44 +14,47 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Frontiere_ouverte_rho_u_impose.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Cond_Lim
-// Version:     /main/7
+// File:        Source_Gravite_Weakly_Compressible_VDF.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VDF
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Frontiere_ouverte_rho_u_impose_included
-#define Frontiere_ouverte_rho_u_impose_included
+#ifndef Source_Gravite_Weakly_Compressible_VDF_included
+#define Source_Gravite_Weakly_Compressible_VDF_included
 
-#include <Entree_fluide_vitesse_imposee_libre.h>
-#include <Ref_Fluide_Quasi_Compressible.h>
+#include <Source_Gravite_Weakly_Compressible_base.h>
+#include <Ref_Zone_VDF.h>
+#include <Ref_Zone_Cl_VDF.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION
-//    Frontiere ouverte sur laquelle on impose le flux massique rho.U
-//    et non la vitesse U. La vitesse est calculee par division par
-//    rho(n+1) trouve dans le fluide au moment de l'appel a
-//    val_imp.
+// .DESCRIPTION class  Source_Gravite_Weakly_Compressible_VDF
+//
+// Cette classe represente un terme source supplementaire
+// a prendre en compte dans les equations de quantite de mouvement
+//  dans le cas ou le fluide est quasi compressible, en cas de gravite, et pour
+//  une discretisation VDF.
+//
 // .SECTION voir aussi
-//    Dirichlet_entree_fluide
+// Source_base Fluide_Quasi_Compressible Source_Gravite_Weakly_Compressible_base
+//
 //////////////////////////////////////////////////////////////////////////////
-class Frontiere_ouverte_rho_u_impose  : public Entree_fluide_vitesse_imposee_libre
+
+class Source_Gravite_Weakly_Compressible_VDF : public Source_Gravite_Weakly_Compressible_base
 {
+  Declare_instanciable(Source_Gravite_Weakly_Compressible_VDF);
 
-  Declare_instanciable(Frontiere_ouverte_rho_u_impose);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const;
+public:
   void completer();
-
-  double val_imp_au_temps(double temps, int i) const;
-  double val_imp_au_temps(double temps, int i, int j) const;
+  DoubleTab& ajouter(DoubleTab& ) const;
 
 protected :
-  REF(Fluide_Quasi_Compressible) le_fluide;
-
+  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
+  REF(Zone_VDF) la_zone;
+  REF(Zone_Cl_VDF) la_zone_Cl;
 };
 
-#endif
+#endif /* Source_Gravite_Weakly_Compressible_VDF_included */
+

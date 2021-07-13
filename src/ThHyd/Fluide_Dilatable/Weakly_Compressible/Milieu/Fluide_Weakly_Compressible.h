@@ -25,6 +25,8 @@
 
 #include <Fluide_Dilatable_base.h>
 
+class Zone_Cl_dis;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -40,16 +42,31 @@ class Fluide_Weakly_Compressible : public Fluide_Dilatable_base
   Declare_instanciable_sans_constructeur(Fluide_Weakly_Compressible);
 
 public :
-
   Fluide_Weakly_Compressible();
-  virtual void checkTraitementPth(const Zone_Cl_dis&);
-  virtual void calculer_rho_face(const DoubleTab& tab_rho);
+  virtual void set_param(Param& param);
   virtual void completer(const Probleme_base&);
-  virtual void write_mean_edo(double);
-
+  virtual void preparer_pas_temps();
   virtual void prepare_pressure_edo();
+  virtual void write_mean_edo(double);
+  virtual void checkTraitementPth(const Zone_Cl_dis&);
+  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
+  virtual void abortTimeStep();
+  virtual void calculer_pression_tot();
+  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
 
+  // Methodes inlines
+  inline const DoubleTab& pression_th_tab() { return Pth_tab_; } // Pression thermodynamique
+  inline const DoubleTab& pression_thn_tab() { return Pth_n_tab_; } // Pression thermodynamique a l'etape precedente
+  inline void secmembre_divU_Z(DoubleTab& tab_W) const { eos_tools_->secmembre_divU_Z(tab_W); }
+  inline int use_total_pressure() { return use_total_pressure_; }
 
+protected:
+  Champ_Don Pth_xyz_;
+  DoubleTab Pth_tab_, Pth_n_tab_;
+  int use_total_pressure_;
+
+private:
+  void initialiser_pth_xyz(const Probleme_base&);
 };
 
 #endif /* Fluide_Weakly_Compressible_included */

@@ -14,17 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Navier_Stokes_QC.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Equations
+// File:        Navier_Stokes_WC.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Equations
 // Version:     /main/39
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Navier_Stokes_QC.h>
-#include <Fluide_Quasi_Compressible.h>
+#include <Navier_Stokes_WC.h>
+#include <Fluide_Weakly_Compressible.h>
 #include <Discretisation_base.h>
 
-Implemente_instanciable(Navier_Stokes_QC,"Navier_Stokes_QC",Navier_Stokes_Fluide_Dilatable_base);
+Implemente_instanciable(Navier_Stokes_WC,"Navier_Stokes_WC",Navier_Stokes_Fluide_Dilatable_base);
 
 // Description:
 //    Simple appel a: Equation_base::printOn(Sortie&)
@@ -41,7 +41,7 @@ Implemente_instanciable(Navier_Stokes_QC,"Navier_Stokes_QC",Navier_Stokes_Fluide
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet la methode ne modifie pas l'objet
-Sortie& Navier_Stokes_QC::printOn(Sortie& is) const
+Sortie& Navier_Stokes_WC::printOn(Sortie& is) const
 {
   return Navier_Stokes_Fluide_Dilatable_base::printOn(is);
 }
@@ -68,13 +68,13 @@ Sortie& Navier_Stokes_QC::printOn(Sortie& is) const
 // Exception: solveur pression non defini dans jeu de donnees
 // Effets de bord:
 // Postcondition:
-Entree& Navier_Stokes_QC::readOn(Entree& is)
+Entree& Navier_Stokes_WC::readOn(Entree& is)
 {
   Navier_Stokes_Fluide_Dilatable_base::readOn(is);
   assert(le_fluide.non_nul());
-  if (!sub_type(Fluide_Quasi_Compressible,le_fluide.valeur()))
+  if (!sub_type(Fluide_Weakly_Compressible,le_fluide.valeur()))
     {
-      Cerr<<"ERROR : the Navier_Stokes_QC equation can be associated only to a quasi compressible fluid."<<finl;
+      Cerr<<"ERROR : the Navier_Stokes_WC equation can be associated only to a weakly compressible fluid."<<finl;
       Process::exit();
     }
   return is;
@@ -99,16 +99,16 @@ Entree& Navier_Stokes_QC::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Navier_Stokes_QC::completer()
+void Navier_Stokes_WC::completer()
 {
-  Cerr<<"Navier_Stokes_QC::completer"<<finl;
+  Cerr<<"Navier_Stokes_WC::completer"<<finl;
   if (le_fluide->a_gravite())
     {
       Cerr << "Gravity = " << le_fluide->gravite() << finl;
-      Cerr << "Creation of the buoyancy source term for the Navier_Stokes_QC equation : " << finl;
+      Cerr << "Creation of the buoyancy source term for the Navier_Stokes_WC equation : " << finl;
       Source t;
       Source& so=les_sources.add(t);
-      Nom type_so = "Source_Gravite_Quasi_Compressible_";
+      Nom type_so = "Source_Gravite_Weakly_Compressible_";
       Nom disc = discretisation().que_suis_je();
       if (disc=="VEFPreP1B") disc = "VEF";
       type_so += disc;
@@ -119,7 +119,7 @@ void Navier_Stokes_QC::completer()
   Navier_Stokes_Fluide_Dilatable_base::completer();
 }
 
-int Navier_Stokes_QC::impr(Sortie& os) const
+int Navier_Stokes_WC::impr(Sortie& os) const
 {
   return Navier_Stokes_Fluide_Dilatable_base::impr(os);
 }

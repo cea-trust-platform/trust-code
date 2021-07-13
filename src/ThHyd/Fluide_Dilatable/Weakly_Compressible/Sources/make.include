@@ -30,11 +30,11 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Loi_Etat\
 	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Problems\
-	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Weakly_Compressible\
 	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable/Common\
 	-I$(TRUST_ROOT)/src/ThHyd/Fluide_Dilatable\
 	-I$(TRUST_ROOT)/src/ThSol\
 	
 
-Lib = $(TRUST_LIB)/libthhydwc_milieu
+Lib = $(TRUST_LIB)/libthhydwc_sources

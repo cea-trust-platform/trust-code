@@ -53,13 +53,14 @@ public :
   void set_Cp(double);
   void update_rho_cp(double temps);
   void creer_champs_non_lus();
-  void calculer_pression_tot();
+  void initialiser_radiatives(const double& temps);
   int initialiser(const double& temps);
 
   const DoubleTab& temperature() const;
   const Champ_Don& ch_temperature() const;
   Champ_Don& ch_temperature();
 
+  virtual void calculer_pression_tot();
   virtual void preparer_pas_temps();
   virtual void abortTimeStep();
   virtual void set_param(Param& param);
@@ -73,6 +74,7 @@ public :
   virtual void checkTraitementPth(const Zone_Cl_dis&)=0;
   virtual void prepare_pressure_edo()=0;
   virtual void write_mean_edo(double )=0;
+  virtual void secmembre_divU_Z(DoubleTab& ) const=0;
 
   // Methodes de l interface des champs postraitables
   virtual const Champ_base& get_champ(const Motcle& nom) const;
@@ -94,7 +96,7 @@ public :
   inline const  DoubleTab& rho_n() const { return loi_etat_->rho_n(); }
   inline const  DoubleTab& rho_np1() const { return loi_etat_->rho_np1(); }
   inline void calculer_coeff_T();
-  inline void initialiser_inco_ch() { loi_etat_->initialiser_inco_ch();  }
+  inline void initialiser_inco_ch() { loi_etat_->initialiser_inco_ch(); }
   inline void calculer_Cp() { loi_etat_->calculer_Cp(); }
   inline void calculer_lambda() { loi_etat_->calculer_lambda(); }
   inline void calculer_mu() { loi_etat_->calculer_mu(); }
@@ -111,10 +113,9 @@ public :
   inline double calculer_H(double hh) const { return loi_etat_->calculer_H(Pth_,hh); }
 
   // Methodes inlines from EOS_Tools
-  inline const DoubleTab& rho_discvit() const { return eos_tools_->rho_discvit();  }
+  inline const DoubleTab& rho_discvit() const { return eos_tools_->rho_discvit(); }
   inline const DoubleTab& rho_face_n() const { return eos_tools_->rho_face_n(); }
   inline const DoubleTab& rho_face_np1() const { return eos_tools_->rho_face_np1(); }
-  virtual void secmembre_divU_Z(DoubleTab& ) const { }; // TODO : FIXME
   inline void calculer_rho_face(const DoubleTab& tab_rho) { eos_tools_->calculer_rho_face_np1(tab_rho); }
   inline void divu_discvit(DoubleTab& secmem1, DoubleTab& secmem2) { eos_tools_->divu_discvit(secmem1,secmem2); }
   inline double moyenne_vol(const DoubleTab& A) const { return eos_tools_->moyenne_vol(A); }
