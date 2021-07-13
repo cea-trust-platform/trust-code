@@ -894,7 +894,7 @@ fi
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "genepi3" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
+      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
       then
          #if [[ "$Composant" == "triocfd" ]]
          #then
@@ -3003,7 +3003,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=80.03 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=80.05 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
@@ -3644,6 +3644,8 @@ then
    cp $TRUST_ROOT/doc/TRUST/Tutorial/TRUST_tutorial.pdf $TRUST_ROOT/doc/TRUST/
    cp $TRUST_ROOT/doc/TRUST/Tutorial/ICoCo_tutorial.pdf $TRUST_ROOT/doc/TRUST/
    cp $TRUST_ROOT/doc/TRUST/Tutorial/Baltik_tutorial.pdf $TRUST_ROOT/doc/TRUST/
+   # Update the version in README.md file (displayed on github)
+   sed -i "s/$old/$new/g" $TRUST_ROOT/README.md
    # Commit
    echo "Call git commit --u=no --all -m Commit before the $new version."
    git commit --u=no --all -m"Commit before the $new version."
@@ -4102,10 +4104,11 @@ TRUST is a thermohydraulic software package for CFD
 simulations of incompressible monophasic flows.
 This software is OpenSource (BSD license).
 
----------------------------------
-New TRUST version released v$new
----------------------------------
-is available at http://sourceforge.net/projects/trust-platform/
+-------------------------------------------------
+New TRUST version released v$new is now available
+-------------------------------------------------
+on GitHub: https://github.com/cea-trust-platform/trust-code
+and on SourceForge: http://sourceforge.net/projects/trust-platform/
 
 -----------------
 Table of contents
@@ -4118,13 +4121,33 @@ Table of contents
 6. Version tested on several OS
 7. Version portability with several compilers
 
-TRUST support team: $TRUST_MAIL  Web: http://triocfd.cea.fr
+TRUST support team: $TRUST_MAIL
+Website: http://triocfd.cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
 ---------------------------------------------------------------------------------------------
 1. How to install?
 ---------------------------------------------------------------------------------------------
+## From github:
+
+# First method:
+git clone https://github.com/cea-trust-platform/trust-code.git TRUST-$new
+cd TRUST-$new
+wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-$new.tar
+tar xf externalpackages-$new.tar
+./configure \$OPTIONS
+make
+
+# Second method:
+wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version$new/TRUST-$new.tar.gz
+tar xzf TRUST-$new.tar.gz
+cd TRUST-$new
+./configure \$OPTIONS
+make
+
+## From sourceforge:
+
 # First method:
 wget http://downloads.sourceforge.net/project/trust-platform/Installer_TRUST.sh;
 chmod +x Installer_TRUST.sh;
@@ -4153,16 +4176,16 @@ type mpicxx
 ----------------------------------------------------------------------------------------------------
 2. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
-# for PC connected to CEA Saclay network (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
-source /home/triou/env_TRUST_$new.sh
-
-# for CEA Saclay (orcus/Titania):
+# for CEA Saclay (PC Titania file system or orcus cluster):
 source /home/trust_trio-public/env_TRUST-$new.sh
 
-# for CCRT-TGCC supercomputers (cobalt, irene-ccrt & irene AMD Rome):
+# for CEA Saclay (PC Thalie file system) (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
+source /home/triou/env_TRUST_$new.sh
+
+# for COBALT supercomputer:
 source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
 
-# for int64 version on CCRT-TGCC supercomputer (irene AMD Rome)
+# for IRENE (Skylake & AMD Rome) supercomputer (int64 version only)
 source /ccc/cont002/home/den/triou/env_TRUST-$new-int64.sh
 
 # for IDRIS supercomputer (jean-zay):
@@ -4206,7 +4229,7 @@ source /panfs/panasas/softs/applications/trio_u/TRUST/env_TRUST-$new.sh
       then
          echo "
 TrioCFD (previously named \"Trio_U\") is the Computational Fluid Dynamics (CFD) code 
-based on the TRUST platform (\"TRUST\" with Front_Tracking, Radiation, Zoom and Turbulence LES & RANS models).
+based on the TRUST platform (\"TRUST\" with Front-Tracking, Radiation, ALE for fluid-structure interactions and Turbulence LES & RANS models).
 This software is OpenSource (BSD license).
 
 -----------------------------------
@@ -4221,7 +4244,8 @@ Table of contents
 2. How to run preinstalled version?
 3. $Composant Release notes
 
-TRUST/TrioCFD support team: $TRUST_MAIL  Web: http://triocfd.cea.fr
+TRUST/TrioCFD support team: $TRUST_MAIL
+Website: http://triocfd.cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
@@ -4250,16 +4274,16 @@ make optim debug
 ----------------------------------------------------------------------------------------------------
 2. How to run preinstalled version?
 ----------------------------------------------------------------------------------------------------
-# for PC connected to CEA Saclay network (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
-source /home/triou/env_TrioCFD_$new.sh
-
-# for CEA Saclay (orcus/Titania):
+# for CEA Saclay (PC Titania file system or orcus cluster):
 source /home/trust_trio-public/env_TrioCFD-$new.sh
 
-# for CCRT-TGCC supercomputers (cobalt, irene-ccrt & irene AMD Rome):
+# for CEA Saclay (PC Thalie file system) (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
+source /home/triou/env_TrioCFD_$new.sh
+
+# for CCRT-TGCC supercomputer (cobalt):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh
 
-# for int64 version on CCRT-TGCC supercomputer (irene AMD Rome)
+# for IRENE (Skylake & AMD Rome) supercomputer (int64 version only)
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new-int64.sh
 
 # for IDRIS supercomputer (jean-zay):
