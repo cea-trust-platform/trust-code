@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -116,11 +116,13 @@ public:
 
   int limpr_ustar(double , double, double, double ) const;
   inline double get_Cmu() const;
+  void lire_distance_paroi( );
 
 protected:
 
   double LeCmu;
   Champ_Fonc la_viscosite_turbulente;
+  Champ_Fonc wall_length_;
   REF(Equation_base) mon_equation;
   Turbulence_paroi loipar;
   double dt_impr_ustar;

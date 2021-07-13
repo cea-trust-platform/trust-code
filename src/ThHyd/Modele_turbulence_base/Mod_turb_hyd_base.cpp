@@ -34,6 +34,8 @@
 #include <Debog.h>
 #include <EcrFicPartage.h>
 #include <communications.h>
+#include <LecFicDiffuse.h>
+#include <Postraitement.h>
 
 
 Implemente_base_sans_constructeur(Mod_turb_hyd_base,"Mod_turb_hyd_base",Objet_U);
@@ -287,6 +289,47 @@ void Mod_turb_hyd_base::completer()
 
 
 // Description:
+//    Lit le fichier dom_Wall_length.xyz pour remplir le champs wall_length en vue d'un post-traitement de distance_paroi
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Mod_turb_hyd_base::lire_distance_paroi( )
+{
+
+  // PQ : 25/02/04 recuperation de la distance a la paroi dans Wall_length.xyz
+
+  DoubleTab& wall_length = wall_length_.valeurs();
+  wall_length=-1.;
+
+
+  LecFicDiffuse fic;
+  Nom nom_fic = equation().probleme().domaine().le_nom()+"_Wall_length.xyz";
+  fic.set_bin(1);
+  if(!fic.ouvrir(nom_fic))
+    {
+      Cerr << " File " << nom_fic << " doesn't exist. To generate it, please, refer to html.doc (Distance_paroi) " << finl;
+      exit();
+    }
+
+  Noms nom_paroi;
+
+  fic >> nom_paroi;
+
+  EcritureLectureSpecial::lecture_special(wall_length_, fic);
+
+}
+
+
+// Description:
 //    Discretise le modele de turbulence.
 // Precondition:
 // Parametre:
@@ -309,6 +352,9 @@ void Mod_turb_hyd_base::discretiser()
 
   discretiser_corr_visc_turb(mon_equation->schema_temps(),mon_equation->zone_dis(),corr_visco_turb);
   champs_compris_.ajoute_champ(corr_visco_turb);
+  const Discretisation_base& dis=ref_cast(Discretisation_base, mon_equation->discretisation());
+  dis.discretiser_champ("champ_elem",mon_equation->zone_dis().valeur(),"distance_paroi","m",1,mon_equation->schema_temps().temps_courant(),wall_length_);
+  champs_compris_.ajoute_champ(wall_length_);
 }
 
 void Mod_turb_hyd_base::discretiser_visc_turb(const Schema_Temps_base& sch,
@@ -344,6 +390,7 @@ void Mod_turb_hyd_base::discretiser_K(const Schema_Temps_base& sch,
 // Description:
 //    Prepare le calcul.
 //    Initialise la loi de paroi.
+//    Remplit le champ wall_length en cas de post traitemetn de la distance_paroi
 // Precondition:
 // Parametre:
 //    Signification:
@@ -361,6 +408,26 @@ int Mod_turb_hyd_base::preparer_calcul()
   int res = 1;
   if (loipar.non_nul())
     res = loipar.init_lois_paroi();
+
+  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = equation().probleme().postraitements();
+  bool contient_distance_paroi = false;
+  while (curseur && !contient_distance_paroi)
+    {
+      if (sub_type(Postraitement,curseur.valeur().valeur()))
+        {
+          Postraitement& post = ref_cast(Postraitement,curseur.valeur().valeur());
+          for (int i=0; i<post.noms_champs_a_post().size(); i++)
+            {
+              if (post.noms_champs_a_post()[i].contient("DISTANCE_PAROI"))
+                {
+                  lire_distance_paroi();
+                  contient_distance_paroi = true;
+                  break;
+                }
+            }
+        }
+      ++curseur;
+    }
   loipar.imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_);
   return res;
 }
