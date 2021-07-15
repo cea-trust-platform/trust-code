@@ -516,6 +516,7 @@ then
    rm -f $TRUST_ROOT/.toto
    # Plus on efface le $TRUST_TMP
    rm -r -f $TRUST_TMP
+   rm -r -f $TRUST_ROOT/Outils/Salome/SALOME-*
    exit 0
 else
    rm -f prog.log
@@ -1276,7 +1277,7 @@ then
    pkgs="mpi4py "$pkgs
 fi
 # ld from conda does not recognize openmpi configuration on TGCC
-if [ "${HOST#irene}" != $HOST ] || [ "${HOST#cobalt}" != $HOST ]
+if [ "${HOST#irene}" != $HOST ] || [ "${HOST#cobalt}" != $HOST ] || [ "${HOST#topaze}" != $HOST ]
 then
    rm -rf $TRUST_ROOT/exec/python/compiler_compat && echo "We remove ld from conda on TGCC..."
 fi
@@ -1342,45 +1343,50 @@ fi
 ########################
 # Installation de Salome
 ########################
-version_salome=8.5.0
+version_salome=9.7.0
 if [ $TRUST_DOWNLOAD_SALOME = 1 ]
 then
-   version_salome_=`echo $version_salome | awk '{gsub("\\\.","_",$0);print $0}'`
-   package=Salome$version_salome
-   run_salome=Salome-V$version_salome_-univ_public.run
+   package=SALOME-$version_salome
    echo $ECHO_OPTS "Trying to install $package...\c"
-   if [ -f $TRUST_ROOT/Outils/Salome/appli_V$version_salome_/runAppli ]
+   if [ -d $TRUST_ROOT/Outils/Salome/$package ]
    then
       err=0
    else
-      rm -f $run_salome
-      wget_ http://files.salome-platform.org/Salome/$package/$run_salome 1>$package.log 2>&1
-      chmod +x $run_salome
-      mkdir -p $TRUST_ROOT/Outils/Salome
-      echo $ECHO_OPTS "Y" | ./$run_salome -t $TRUST_ROOT/Outils/Salome 1>>$package.log 2>&1
+      cd $TRUST_TMP #$TRUST_ROOT/Outils/Salome
+      $TRUST_ROOT/bin/KSH/wget_ ftp://ftp.cea.fr/pub/salome/targz/SALOME-"$version_salome"/SALOME-"$version_salome".tar.gz 1>$package.log 2>&1
       err=$?
+      if [ $err != 0 ]
+      then
+         # We try to download SALOME from salome-platform.org
+         $TRUST_ROOT/bin/KSH/wget_ http://files.salome-platform.org/Salome/Salome$version_salome/SALOME-$version_salome.tar.gz  1>$package.log 2>&1
+         err=$?
+      fi
+      [ $err != 0 ] && echo "SALOME download failed, see $TRUST_TMP/$package.log"  && exit -1
+      cd $TRUST_ROOT/Outils/Salome
+      tar xzf $TRUST_TMP/SALOME-"$version_salome".tar.gz
+      err=$?
+      cd $TRUST_ROOT/env
    fi
    if [ $err = 0 ]
    then
       echo "OK"
-      echo "ADD_PATH \$TRUST_ROOT/Outils/Salome/appli_V$version_salome_" >> $env
+      echo "ADD_PATH \$TRUST_ROOT/Outils/Salome/SALOME-$version_salome/" >> $env
    else
       echo "KO (See `pwd`/$package.log)"
       echo "Contact TRUST support."
       [ -f $TRUST_ROOT/NON_INSTALLED ] && Display_Missing_packages
       exit -1
    fi
-   rm -f $run_salome
-else
-   # Try to detect last Salome version
-   X=`echo $version_salome | awk -F. '{print $1}'`
-   SALOME_BIN_ROOT=`ls -rt /export/home/salome/V$X"_"*/APPLI/runAppli 2>/dev/null | tail -1`
-   if [ "$SALOME_BIN_ROOT" != "" ]
-   then
-      SALOME_BIN_ROOT=`dirname $SALOME_BIN_ROOT`
-      echo "Salome $version_salome detected under $SALOME_BIN_ROOT and added to the TRUST environment."
-      echo "ADD_PATH $SALOME_BIN_ROOT" >> $env
-   fi
+#else
+#   # Try to detect last Salome version
+#   X=`echo $version_salome | awk -F. '{print $1}'`
+#   SALOME_BIN_ROOT=`ls -rt /export/home/salome/V$X"_"*/APPLI/runAppli 2>/dev/null | tail -1`
+#   if [ "$SALOME_BIN_ROOT" != "" ]
+#   then
+#      SALOME_BIN_ROOT=`dirname $SALOME_BIN_ROOT`
+#      echo "Salome $version_salome detected under $SALOME_BIN_ROOT and added to the TRUST environment."
+#      echo "ADD_PATH $SALOME_BIN_ROOT" >> $env
+#   fi
 fi
 
 # Shares libs possibles ?
