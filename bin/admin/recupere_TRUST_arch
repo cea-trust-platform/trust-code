@@ -82,12 +82,13 @@ do
 <TD>RAM</TD>
 <TD>Cache</TD>
 <TD>Freq</TD>
+<TD>Nvidia</TD>
 <TD>End</TD>
 <TD>OS</TD>
-<TD>Model</TD>
+<TD>Titania</TD>
 <TD>CC</TD>
 <TD>MPI</TD>
-<TD>Size</TD>
+<TD>Exec</TD>
 <TD>Build</TD>
 <TD>Tools</TD>
 <TD>Petsc</TD>
@@ -96,6 +97,7 @@ do
 <TD>lata2</TD>
 <TD>plot2</TD>
 <TD>ICoCo</TD>
+<TD>trioxd</TD>
 <TD>Gmsh</TD>
 <TD>VisIt</TD>
 <TD>fiche</TD>
@@ -258,12 +260,17 @@ do
 	PERF=$REP_NUIT/PERF_$NOM
 	EXEC=${NOM%_$HOST}
 	EXEC=${EXEC%_$arch}
-	host="";os="";rel="";mod="";nb_procs="";ram="";cache="";freq="";TRUST_CC=""
-	taille="";cpu="";cpu3d="<TD $BLANC>NOT</TD>";bench="<TD $BLANC>NOT</TD>";runfich="<TD $BLANC>NOT</TD>";testgrind="<TD $BLANC>NOT</TD>"
+	host="";os="";rel="";titania="";nvidia="";nb_procs="";ram="";cache="";freq="";TRUST_CC=""
+	executable="-";cpu="";cpu3d="<TD $BLANC>NOT</TD>";bench="<TD $BLANC>NOT</TD>";runfich="<TD $BLANC>NOT</TD>";testgrind="<TD $BLANC>NOT</TD>"
 	BLANC="BGCOLOR=#FEFEFE";ROUGE="BGCOLOR=#C42111";VERT="BGCOLOR=3D\"#E47833\""
 	comp="Echec";COL1=$ROUGE
 	[ "`grep BUILD_EXEC=OK $CR`" != "" ] && comp="Succes" && COL1=$VERT
+    TRIOXDATA="<TD $BLANC>NOT</TD>" && [ "`grep TRIOXDATA:OK $CR`" != "" ] && TRIOXDATA="<TD $VERT>OK</TD>"
+	TRIOXDATA=$TRIOXDATA && [ "`grep TRIOXDATA:error $CR`" != "" ] && TRIOXDATA="<TD $ROUGE>KO</TD>"
 	TOOLS="<TD $ROUGE>Echec</TD>" && [ "`grep BUILD_TOOLS=OK $CR`" != "" ] && TOOLS="<TD $VERT>Succes</TD>"
+	titania=`$TRUST_Awk -F= '/Titania=/ {print $2}' $CR`
+	nvidia=`grep " Device " $CR | cut -d: -f 2 | sed "s/^ //" | sed "s/\"//g"`
+	[ "$nvidia" = "" ] && nvidia=`$TRUST_Awk -F= '/Nvidia=/ {print $2}' $CR`
 	COL2="";taux=$vide
 	ptaux=""	
 	if [ ${#PERF} != 0 ] && [ -f $PERF ]
@@ -271,14 +278,14 @@ do
 	   host=`	$TRUST_Awk -F"=" '/hostname=/ {print $2}' $PERF` && [ $host != $HOST ] && echo "Problem : $host != $HOST"
 	   os=`		$TRUST_Awk -F"=" '/os=/       {print $2}' $PERF`
 	   rel=`	$TRUST_Awk -F"=" '/release=/  {print $2}' $PERF`
-	   mod=`	$TRUST_Awk -F"=" '/model=/    {print $2}' $PERF`
 	   nb_procs=`	$TRUST_Awk -F"=" '/nb_procs=/ {print $2}' $PERF`
 	   ram=`	$TRUST_Awk -F"=" '/ram=/      {print $2}' $PERF`
 	   cache=`	$TRUST_Awk -F"=" '/cache=/    {print $2}' $PERF`
 	   freq=`	$TRUST_Awk -F"=" '/freq=/     {print $2}' $PERF`
 	   
 	   TRUST_CC=`echo $TRUST_ARCH_CC | $TRUST_Awk -F'_' '{print $NF}'` && CC_PERF=`cat $PERF | $TRUST_Awk '/CC / {print $2" "$3}'` && [ "$CC_PERF" != "" ] && TRUST_CC=$CC_PERF
-	   taille=`cat $PERF | $TRUST_Awk '/sizeMo/ {print $2"Mo"}'`
+	   #taille=`cat $PERF | $TRUST_Awk '/sizeMo/ {print $2"Mo"}'`
+	   executable=`$TRUST_Awk -F":" '/Binary:/    {print $2}' $PERF` && executable=`basename $executable` && executable=${executable#TRUST_}
 	   cpu3d=$cpu3d && [ "`grep CPU_3D=KO $CR`" != "" ] && cpu3d="<TD $ROUGE>KO</TD>"
 	   cpu=`cat $CR | grep "Mo|" | $TRUST_Awk -F"|" '/cpu_3D / && !/PAR_/ && !/NP/{print $4}'`
 	   cpu3d=$cpu3d && [ "`grep CPU_3D=OK $CR`" != "" ] && cpu3d="<TD $VERT>$cpu</TD>"
@@ -330,7 +337,7 @@ do
 	[ "`grep IHM: $CR`" = "" ] && PLOT2D="<TD $BLANC>NOT</TD>"
 	ICOCO=$COOL 	 && [ "`grep ICoCo:OK $CR`" != "" ] 	  && ICOCO="<TD $VERT>OK</TD>"
 	GMSH=$COOL 	 && [ "`grep Gmsh:OK $CR`" != "" ] 	  && GMSH="<TD $VERT>OK</TD>"
-	VISIT=$COOL 	 && [ "`grep VisIt:OK $CR`" != "" ] 	  && RUN=`$TRUST_Awk -F= '/VisIt=/ {print $2}' $CR` && VISIT="<TD `[ $RUN = PAR ] && echo $VERT`>$RUN</TD>"
+	VISIT=$COOL 	 && [ "`grep VisIt:OK $CR`" != "" ] 	  && RUN=`$TRUST_Awk -F= '/VisIt=/ {print $2}' $CR` && VISIT="<TD `[ ${RUN#PAR} != $RUN ] && echo $VERT`>$RUN</TD>"
 	ATELIER=$STRICT  && [ "`grep ATELIER=OK $CR`" != "" ] 	  && ATELIER="<TD $VERT>OK</TD>" && [ "$machine_cible" = 1 ] && let portabilite_atelier=$portabilite_atelier+1
 	ASSERT=$STRICT   && [ "`grep ASSERT=OK $CR`" != "" ] 	  && ASSERT="<TD $VERT>OK</TD>"	 && [ "$machine_cible" = 1 ] && let portabilite_assert=$portabilite_assert+1
 	BALTIK=$STRICT 	 && [ "`grep BALTIK=OK $CR`" != "" ] 	  && BALTIK="<TD $VERT>OK</TD>"  && [ "$machine_cible" = 1 ] && let portabilite_baltik=$portabilite_baltik+1
@@ -387,12 +394,13 @@ $TD$nb_procs$FTD
 $TD$ram$FTD
 $TD$cache$FTD
 $TD$freq$FTD
+$TD$nvidia$FTD
 $FIN
 $TD$os$FTD
-$TD$mod$FTD
+$TD$titania$FTD
 $TD$TRUST_CC$FTD
 $TD$MPI$FTD
-$TD$taille$FTD
+$TD$executable$FTD
 <TD $COL1><A HREF="compile_$NOM.log">$comp</A>$FTD
 $TOOLS
 $PETSC
@@ -401,6 +409,7 @@ $MEDCOUPL
 $LATA2DX
 $PLOT2D
 $ICOCO
+$TRIOXDATA
 $GMSH
 $VISIT
 $runfich
@@ -423,6 +432,7 @@ $bench
         echo "
 <TR>
 $TD_CR<A HREF="$CR">$HOST</A>$FTD
+<TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>
 <TD>$vide</TD>

@@ -100,6 +100,7 @@ check_components()
                   $TRUST_ROOT/bin/baltik/share/baltik/bin/baltik_check_TRUST_modif 1>tmp.log 2>&1
                   if [ $? != 0 ]
                   then
+                     echo "Baltik pas a jour"
                      cat tmp.log
                      cat tmp.log | mail_ -s\"[lance_test_nuit] baltik_check_TRUST_modif KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TRUST_MAIL
                      echo "  KO"
@@ -110,7 +111,7 @@ check_components()
                   rm tmp.log 1>/dev/null 2>&1
                fi
             fi
-	    [ $MODIF_TRUST_OK = 0 ] && COMPOSANT_OK=0
+	    #[ $MODIF_TRUST_OK = 0 ] && COMPOSANT_OK=0
 	    # Verification de Liste_fiche pour Create_light_archive.sh
 	    VERIF_LIGHT_OK=1
             if [ $* = tuleap/Livraison ] && [ "$Composant" = triocfd ]
@@ -3352,6 +3353,7 @@ do
    echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
    PROJECT_ROOT=`dirname $TRUST_ROOT`/Composants/$Composant
    validation_composant=1
+   baltik_pas_a_jour=""
    # Check if component is OK on $HOST:
    OK=0
    KO=0
@@ -3384,6 +3386,7 @@ do
 	 nb=`(grep " KO" $Composant_log;grep KO $Composant_log | grep $Composant;grep " connect to host " $Composant_log | cut -d: -f2) | wc -l`
          KO=`echo $(($KO+$nb))`
          [ "`grep KO $Composant_log | grep $Composant | grep Component`" != "" ] && validation_composant=0
+         [ "`grep 'Baltik pas a jour' $Composant_log`" != "" ] && baltik_pas_a_jour="Baltik pas a jour"
       fi
       let NB=$OK+$KO
    done
@@ -3449,10 +3452,10 @@ do
    [ "$NB" -eq 0 ] && NB=-1
    if [ "$NB" -eq -1 ]
    then
-      echo "$validation_composant  $Composant $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" #>> $MESSAGES_NUIT
+      echo "$validation_composant  $Composant $OK/0="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1) $baltik_pas_a_jour" #>> $MESSAGES_NUIT
       NB=0
    else
-      echo "$validation_composant  $Composant $OK/$NB="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1)" #>> $MESSAGES_NUIT
+      echo "$validation_composant  $Composant $OK/$NB="`echo $ECHO_OPTS "scale=3;$OK/$NB" | bc -l`" (=1) $baltik_pas_a_jour" #>> $MESSAGES_NUIT
    fi
    # Test sur les machines cible
    [ "$tot_cible" -eq 0 ] && tot_cible=-1
@@ -3460,17 +3463,17 @@ do
    then
       if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
       then
-          echo "$validation_composant  $Composant $nb_cible/0="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
+          echo "$validation_composant  $Composant $nb_cible/0="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1) $baltik_pas_a_jour" | tee -a $MESSAGES_NUIT
       else
-          echo "$validation_composant  $Composant $nb_cible/0="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)"
+          echo "$validation_composant  $Composant $nb_cible/0="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1) $baltik_pas_a_jour"
       fi
       tot_cible=0
    else
       if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
       then
-         echo "$validation_composant  $Composant $nb_cible/$tot_cible="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)" | tee -a $MESSAGES_NUIT
+         echo "$validation_composant  $Composant $nb_cible/$tot_cible="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1) $baltik_pas_a_jour" | tee -a $MESSAGES_NUIT
       else
-         echo "$validation_composant  $Composant $nb_cible/$tot_cible="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1)"
+         echo "$validation_composant  $Composant $nb_cible/$tot_cible="`echo $ECHO_OPTS "scale=3;$nb_cible/$tot_cible" | bc -l`" (=1) $baltik_pas_a_jour"
       fi
    fi
 #   if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta

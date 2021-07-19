@@ -13,6 +13,8 @@ installation_visit()
       [ $? != 0 ] && cat visit-install.log && echo "Installation of VisIt failed!" && echo "See `pwd`/visit-install.log" && exit -1
       rm -f $package
    fi
+   # Ajout d'un fichier pour dire si visit a ete telecharge
+   [ $DOWNLOADED -eq 1 ] && touch $TRUST_ROOT/exec/VisIt/downloaded_version
    # Ajout en debut du script visit d'un appel a check_visit
    # pour faire des verifications et ajouter des messages 
    # pour les utilisateurs:

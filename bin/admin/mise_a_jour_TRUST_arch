@@ -429,6 +429,24 @@ do
    then
       echo "==========================="
       ######################
+      # machine Titania ?
+      ######################
+      if [ "`id | grep dm2s-projet-trust_trio-r`" != "" ] #[ "`echo $TRUST_ROOT | grep trust_trio 2>/dev/null`" != "" ]
+      then
+	 echo "Titania=Yes"
+      else
+	 echo "Titania="
+      fi
+      #########################
+      # Type de carte graphique
+      #########################
+      if [ `nvidia-smi  -h &>/dev/null; echo $?` = 0 ]
+      then
+         echo "Nvidia=`nvidia-smi  -q | grep 'Product Name' | cut -d':' -f 2 | sed 's/^ //'`"
+      else
+         echo "Nvidia="
+      fi
+      ######################
       # MED est il compile ?
       ######################
       if [ -f $TRUST_MED_ROOT/lib/libmed.a ]
@@ -465,17 +483,20 @@ do
       then
          echo "VisIt=KO"
       else
+         visit_version=`source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1;readlink $TRUST_ROOT/exec/VisIt/current`
+         visit_downloaded=`source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1; [ -f $TRUST_ROOT/exec/VisIt/downloaded_version ] && echo Dow`
+         visit_version=$visit_version$visit_downloaded
          visit_help=`source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1;$TRUST_ROOT/exec/VisIt/bin/visit -help 2>&1`
          if [ $? = 0 ]
          then
             if [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
             then
-               echo "VisIt=PAR"
+               echo "VisIt=PAR-$visit_version"
             else
-               echo "VisIt=SEQ"
+               echo "VisIt=SEQ-$visit_version"
 	    fi
          else
-            echo "VisIt=KO"
+            echo "VisIt=KO-$visit_version"
 	    $TRUST_ROOT/exec/VisIt/bin/visit -help
 	 fi
       fi
