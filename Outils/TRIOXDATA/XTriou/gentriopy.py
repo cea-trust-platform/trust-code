@@ -38,6 +38,8 @@ def type_trio_vers_xdata(type_0):
             return 'My_Suppress'
         elif (typ=='entier'):
             return 'My_Int'
+        elif (typ=='long'):
+            return 'My_Int'
         elif  (typ=='chaine'):
             return 'My_String'
         elif (typ=='list'):
@@ -69,6 +71,8 @@ def type_trio_vers_xdata(type_0):
         if (typ2=='floattant'):
             str='XFloat'
         elif (typ2=='entier'):
+            str='XInt'
+        elif (typ2=='long'):
             str='XInt'
         elif  (typ2=='chaine'):
             str='XString'

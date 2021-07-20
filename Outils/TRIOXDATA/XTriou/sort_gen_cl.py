@@ -12,7 +12,7 @@ def add_class(*args,**kwargs):
 
 dico={}
 lst=[]
-for ob in 'suppress_param','objet_u','listobj_impl','chaine','floattant','entier','rien','listentier','listentierf','listchaine','listchainef','list','listf':
+for ob in 'suppress_param','objet_u','listobj_impl','chaine','floattant','entier','long','rien','listentier','listentierf','listchaine','listchainef','list','listf':
     dico[ob]=[1,"yy"]
     pass
 while (line):
