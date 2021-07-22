@@ -104,9 +104,9 @@ fi
 echo "@@@@@@@@@@@@ Creating env file ..."
 MC_ENV_FILE_tmp=$install_dir/env_tmp.sh
 MC_ENV_FILE=$install_dir/env.sh
-echo "export MED_COUPLING_ROOT=$install_dir"> $MC_ENV_FILE_tmp
-echo "export LD_LIBRARY_PATH=$install_dir/lib/:$TRUST_MED_ROOT/lib:$TRUST_ROOT/exec/python/lib/:\${LD_LIBRARY_PATH}" >> $MC_ENV_FILE_tmp
-echo "export PYTHONPATH=$install_dir/bin/:`find $install_dir/lib -name site-packages`/:\$PYTHONPATH" >> $MC_ENV_FILE_tmp
+#echo "export MED_COUPLING_ROOT=$install_dir"> $MC_ENV_FILE_tmp
+echo "export LD_LIBRARY_PATH=\$TRUST_MEDCOUPLING_ROOT/lib:\$TRUST_MED_ROOT/lib:\$TRUST_ROOT/exec/python/lib:\$LD_LIBRARY_PATH" > $MC_ENV_FILE_tmp
+echo "export PYTHONPATH=\$TRUST_MEDCOUPLING_ROOT/bin:\$TRUST_MEDCOUPLING_ROOT/lib/`cd $TRUST_MEDCOUPLING_ROOT/lib;find * -name site-packages`:\$PYTHONPATH" >> $MC_ENV_FILE_tmp
 echo "@@@@@@@@@@@@ Testing install ..."
 if [ $status -eq 0 ]  # install was successful
 then
@@ -116,6 +116,7 @@ then
   if [ "$USE_PYTHON" = ON ]
   then
      source $MC_ENV_FILE_tmp
+nedit  $MC_ENV_FILE_tmp
      python -c "import medcoupling"  # also provides MEDLoader functionalities
      if [ $? -eq 0 ]
      then
