@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -550,12 +550,12 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
   if (Process::je_suis_maitre())
     {
       // Open files if needed
-      SFichier Flux;
-      op.ouvrir_fichier(Flux,"",1);
-      SFichier Flux_moment;
-      op.ouvrir_fichier(Flux_moment,"moment",impr_mom);
-      SFichier Flux_sum;
-      op.ouvrir_fichier(Flux_sum,"sum",impr_sum);
+      //SFichier Flux;
+      if (!Flux.is_open()) op.ouvrir_fichier(Flux,"",1);
+      //SFichier Flux_moment;
+      if (!Flux_moment.is_open()) op.ouvrir_fichier(Flux_moment,"moment",impr_mom);
+      //SFichier Flux_sum;
+      if (!Flux_sum.is_open()) op.ouvrir_fichier(Flux_sum,"sum",impr_sum);
 
       // Write time
       Flux.add_col(sch.temps_courant());

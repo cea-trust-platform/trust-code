@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -125,23 +125,15 @@ void Sortie::set_ostream(ostream* os)
 
 int Sortie::add_col(const double& ob)
 {
-  if (bin_ or col_width_ == -1)
-    abort();
-  else
-    {
-      (*ostream_) << std::right << std::setw(col_width_) << ob;
-    }
+  assert(!bin_ && col_width_ != -1);
+  (*ostream_) << std::right << std::setw(col_width_) << ob;
   return ostream_->good();
 }
 
 int Sortie::add_col(const char * ob)
 {
-  if (bin_ or col_width_ == -1)
-    abort();
-  else
-    {
-      (*ostream_) << std::right << std::setw(col_width_) << ob;
-    }
+  assert(!bin_ && col_width_ != -1);
+  (*ostream_) << std::right << std::setw(col_width_) << ob;
   return ostream_->good();
 }
 

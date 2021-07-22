@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
 #define Op_VEF_Face_included
 
 #include <DoubleTab.h>
+#include <SFichier.h>
 class Matrice_Morse;
 class Zone_VEF;
 class Zone_Cl_VEF;
@@ -44,6 +45,7 @@ public :
   void modifier_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice, const Equation_base&) const ;
 private:
   mutable int controle_modifier_flux_;
+  mutable SFichier Flux, Flux_moment, Flux_sum;
 };
 
 #endif

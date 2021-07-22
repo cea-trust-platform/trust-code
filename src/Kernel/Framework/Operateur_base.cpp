@@ -339,6 +339,7 @@ void Operateur_base::set_fichier(const Nom& nom)
   out_=Objet_U::nom_du_cas();
   out_+="_";
   out_+=equation().probleme().le_nom()+"_"+nom;
+  if (nom=="") out_+="unknown_operator";
 }
 
 // Description:
@@ -365,8 +366,8 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
 
   if (!je_suis_maitre())
     {
-      Cerr<<"Pb with "<<type<<finl;
-      ::abort();
+      Cerr<<"Only master process can open "<<type<<" file. See Operateur_base::ouvrir_fichier()" << finl;
+      Process::abort();
     }
   const Equation_base& eqn = equation();
   const Probleme_base& pb=eqn.probleme();

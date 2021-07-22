@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@
 #include <Ref_Zone_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
 #include <Zone_CoviMAC.h>
+#include <SFichier.h>
 class Champ_Fonc;
 
 
@@ -91,6 +92,7 @@ protected:
 
   mutable int nu_a_jour_; //si on doit mettre a jour nu
   int nu_constant_;       //1 si nu est constant dans le temps
+  mutable SFichier Flux, Flux_moment, Flux_sum;
 };
 
 #endif

@@ -127,6 +127,7 @@ protected:
   int derniere_arete_bord;
   int premiere_arete_coin;
   int derniere_arete_coin;
+  mutable SFichier Flux, Flux_moment, Flux_sum;
 };
 
 template <class _TYPE_>
@@ -1142,12 +1143,12 @@ int T_It_VDF_Face<_TYPE_>::impr(Sortie& os) const
   mp_sum_for_each_item(flux_bords2);
   if (je_suis_maitre())
     {
-      SFichier Flux;
-      op_base->ouvrir_fichier(Flux,"",1);
-      SFichier Flux_moment;
-      op_base->ouvrir_fichier(Flux_moment,"moment",impr_mom);
-      SFichier Flux_sum;
-      op_base->ouvrir_fichier(Flux_sum,"sum",impr_sum);
+      //SFichier Flux;
+      if (!Flux.is_open()) op_base->ouvrir_fichier(Flux,"",1);
+      //SFichier Flux_moment;
+      if (!Flux_moment.is_open()) op_base->ouvrir_fichier(Flux_moment,"moment",impr_mom);
+      //SFichier Flux_sum;
+      if (!Flux_sum.is_open()) op_base->ouvrir_fichier(Flux_sum,"sum",impr_sum);
       Flux.add_col(sch.temps_courant());
       if (impr_mom) Flux_moment.add_col(sch.temps_courant());
       if (impr_sum) Flux_sum.add_col(sch.temps_courant());

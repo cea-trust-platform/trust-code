@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <SFichier.h>
 #include <communications.h>
 #include <DoubleTabs.h>
+#include <map>
 
 Implemente_base(Source_base,"Source_base",Objet_U);
 
@@ -203,6 +204,7 @@ void Source_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 // Exception:
 // Effets de bord:
 // Postcondition:
+static std::map<std::string, int> counters; // ToDo provisoire
 int Source_base::impr(Sortie& os) const
 {
   if (out_=="??")
@@ -320,7 +322,13 @@ void Source_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) 
   // flag nul on n'ouvre pas le fichier
   if (flag==0)
     return ;
-
+  // ToDo provisoire:
+  counters[type.getString()]++;
+  if (counters[type.getString()]>1 && type!="")
+    {
+      Cerr << "Code should be rewritten to have only one call to Source_base::ouvrir_fichier for " << type << " source and not " << counters[type.getString()] << " times." << finl;
+      Process::exit();
+    }
   const Probleme_base& pb=equation().probleme();
   const Schema_Temps_base& sch=pb.schema_temps();
   const int& precision = sch.precision_impr(), wcol = max(col_width_, sch.wcol()), gnuplot_header = sch.gnuplot_header();

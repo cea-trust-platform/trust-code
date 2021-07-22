@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 
 #include <DoubleTab.h>
 #include <Matrice_Morse.h>
+#include <SFichier.h>
 
 //class Matrice_Morse;
 class Zone_EF;
@@ -48,6 +49,7 @@ protected:
 private:
   mutable int controle_modifier_flux_;
   ArrOfInt marqueur_elem_;
+  mutable SFichier Flux, Flux_moment, Flux_sum; // Fichiers .out
 };
 
 #endif

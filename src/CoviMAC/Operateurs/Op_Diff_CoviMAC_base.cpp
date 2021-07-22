@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -147,12 +147,12 @@ int Op_Diff_CoviMAC_base::impr(Sortie& os) const
 
   if (je_suis_maitre() && nb_comp > 0)
     {
-      SFichier Flux;
-      ouvrir_fichier(Flux,"",1);
-      SFichier Flux_moment;
-      ouvrir_fichier(Flux_moment,"moment",impr_mom);
-      SFichier Flux_sum;
-      ouvrir_fichier(Flux_sum,"sum",impr_sum);
+      //SFichier Flux;
+      if (!Flux.is_open()) ouvrir_fichier(Flux,"",1);
+      //SFichier Flux_moment;
+      if (!Flux_moment.is_open()) ouvrir_fichier(Flux_moment,"moment",impr_mom);
+      //SFichier Flux_sum;
+      if (!Flux_sum.is_open()) ouvrir_fichier(Flux_sum,"sum",impr_sum);
       Flux.add_col(sch.temps_courant());
       if (impr_mom) Flux_moment.add_col(sch.temps_courant());
       if (impr_sum) Flux_sum.add_col(sch.temps_courant());

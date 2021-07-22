@@ -1,7 +1,9 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
-09/07/21 (TRUST)  Performance : A same advanced field used by several probes are now computed only once during each post-processing phasis
+20/07/21 (TRUST)  Performance : Output files (.out) are opened/closed at the first/last print and not at each print as before
+12/07/21 (TRUST)  Bug fix     : Source_generique source term couldn't be used for PolyMAC discretization
+XX/XX/21 (TRUST)  Performance : A same advanced field used by several probes are now computed only once during each post-processing phasis 
 05/07/21 (TRUST)  Portability : New CCRT cluster topaze supported (110592 AMD Milan Epyc cores)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3 : Enhancements, modifications and corrected bugs since version 1.8.2 :
@@ -14,7 +16,7 @@ Release notes version 1.8.3 : Enhancements, modifications and corrected bugs sin
 31/05/21 (TRUST)  New feature : Parallel partitionning (with ParMetis or Pt-Scotch libraries) thanks to parmetis or ptscotch option with partitionneur keyword
 27/05/21 (TRUST)  Major Change: Class and function templates are used now for the evaluator classes of the VDF diffusion operators
 21/05/21 (TRUST)  Bug fix     : Last backup was not always correctly done, especially within ICoCo context. 
-20/05/21 (TRUST)  New feature : New problem added which allows simulating binary mixture flows at iso-bar and iso-thermal conditions using a low Mach number approximation (turbulent version available in trioCFD)
+20/05/21 (TRUST)  New feature : New problem Pb_Hydraulique_Melange_Binaire_QC added which allows simulating binary mixture flows at iso-bar and iso-thermal conditions using a low Mach number approximation (turbulent version available in TrioCFD)
 12/05/21 (TRUST)  New feature : Add a new state equation Rho_T which defines the density as a function of the temperature field in a QC problem; i.e. rho=f(T) (independent of the thermo-dynamic pressure)
 11/05/21 (TRUST)  New feature : Add a solid/fluid coupling test case which illustrates the use of ICoCo (V2) with a python supervisor (docond_VEF_3D_ICoCo_py)
 10/05/21 (TRUST)  New keyword : Impliciting diffusive terms may now be used with a larger choice for solvers ('solveur' option in Paremetre_diffusion_implicite keyword). See diffusion_implicite_solveur validation sheet

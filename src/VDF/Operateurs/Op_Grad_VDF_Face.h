@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@
 #include <Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Matrice_Morse.h>
+#include <SFichier.h>
 
 //
 // .DESCRIPTION class Op_Grad_VDF_Face
@@ -88,7 +89,7 @@ private:
 protected:
 
   DoubleVect porosite_surf;
-
+  mutable SFichier Flux_grad, Flux_grad_moment, Flux_grad_sum;
 };
 
 inline double Op_Grad_VDF_Face::xp_(int elem, int ori)

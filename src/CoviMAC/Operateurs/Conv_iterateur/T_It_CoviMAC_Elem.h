@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,6 +95,7 @@ protected:
   void ajouter_contribution_bords_vitesse(const DoubleTab&, Matrice_Morse& ) const;
   const Milieu_base& milieu() const;
   IntTab elem;
+  mutable SFichier Flux, Flux_moment, Flux_sum;
 };
 template <class _TYPE_> inline T_It_CoviMAC_Elem<_TYPE_>::T_It_CoviMAC_Elem(const T_It_CoviMAC_Elem<_TYPE_>& iter)
   :Iterateur_CoviMAC_base(iter),
@@ -1127,8 +1128,8 @@ template <class _TYPE_>  int T_It_CoviMAC_Elem<_TYPE_>::impr(Sortie& os) const
   mp_sum_for_each_item(flux_bords2);
   if (je_suis_maitre())
     {
-      SFichier Flux;
-      op_base->ouvrir_fichier(Flux,"",1);
+      //SFichier Flux;
+      if (!Flux.is_open()) op_base->ouvrir_fichier(Flux,"",1);
       Flux.add_col(temps);
       for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
         {

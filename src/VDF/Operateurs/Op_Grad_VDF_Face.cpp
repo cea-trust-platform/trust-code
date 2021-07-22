@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -355,12 +355,12 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
   // Write the boundary fluxes:
   if (je_suis_maitre())
     {
-      SFichier Flux_grad;
-      ouvrir_fichier(Flux_grad,"",1);
-      SFichier Flux_grad_moment;
-      ouvrir_fichier(Flux_grad_moment,"moment",impr_mom);
-      SFichier Flux_grad_sum;
-      ouvrir_fichier(Flux_grad_sum,"sum",impr_sum);
+      //SFichier Flux_grad;
+      if (!Flux_grad.is_open()) ouvrir_fichier(Flux_grad,"",1);
+      //SFichier Flux_grad_moment;
+      if (!Flux_grad_moment.is_open()) ouvrir_fichier(Flux_grad_moment,"moment",impr_mom);
+      //SFichier Flux_grad_sum;
+      if (!Flux_grad_sum.is_open()) ouvrir_fichier(Flux_grad_sum,"sum",impr_sum);
       Flux_grad.add_col(sch.temps_courant());
       if (impr_mom) Flux_grad_moment.add_col(sch.temps_courant());
       if (impr_sum) Flux_grad_sum.add_col(sch.temps_courant());

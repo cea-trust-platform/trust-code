@@ -23,6 +23,7 @@
 #include <Sortie_Fichier_base.h>
 #include <Process.h>
 #include <Nom.h>
+#include <map>
 
 Implemente_base_sans_constructeur_ni_destructeur(Sortie_Fichier_base,"Sortie_Fichier_base",Objet_U);
 
@@ -156,6 +157,7 @@ void Sortie_Fichier_base::setf(IOS_FORMAT code)
     ofstream_->setf(code);
 }
 
+static std::map<std::string, int> counters;
 int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
 {
 #ifdef ver_file
@@ -196,6 +198,7 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
 
     }
 #endif
+  if (++counters[name]%1000==0) Cerr << "Warning, file " << name << " has been opened/closed " << counters[name] << " times..." << finl;
   if(ofstream_)
     delete ofstream_;
   IOS_OPEN_MODE ios_mod=mode;
