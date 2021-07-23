@@ -80,6 +80,7 @@ fd9a4e36e34a91d536330e16413295b9  SALOME/configuration-9.7.0.tar.gz
 049902066a370fe5bfb650756c4181ee  SALOME/medcoupling-9.7.0.tar.gz
 dae2b952c7ef8591e8322284ea244e73  SALOME/xdata-9.6.0.tar.gz
 7aae954eab2bedf602d8c131646173e7  SKIT/SPARSKIT2.tar.gz
+92ea7b772cc58ab8705a764c0afb1774  Vc-1.4.2.tar.gz
 642c81285e1bb833b14ab3f439964086  VisIt/Cython-0.25.2.tar.gz
 90a93507b8fdc88f46b9a8d7ed651c6c  VisIt/IceT-1-0-0.tar.gz
 fc14a54e1ce02a0225be8854bfba478e  VisIt/Imaging-1.1.7.tar.gz

@@ -1,0 +1,30 @@
+#!/bin/bash
+package=$1
+
+path_package=$TRUST_ROOT/externalpackages/$package.tar.gz
+[ ! -f $path_package ] && echo "$path_package inexistant! Mettre a jour makefile." && exit -1
+
+build_root=$TRUST_ROOT/build/lib
+cd $build_root
+gunzip -c $path_package > $package.tar
+tar xf $package.tar
+rm -f $package.tar
+Vc_dir=`ls | grep Vc 2>/dev/null`
+[ "$Vc_dir" = "" ] && echo "Vc dir not found." && exit -1
+
+install_dir=$TRUST_ROOT/lib/src/LIBVC
+build_dir=$build_root/Vc_build
+mkdir -p $build_dir
+cd $build_dir
+cmake ../$package -DCMAKE_INSTALL_PREFIX=$install_dir -DCMAKE_BUILD_TYPE=Release
+ 
+# Compilation
+$TRUST_MAKE 
+
+# Installation
+make install 
+cd ..
+# On efface les sources
+rm -r -f $build_dir
+
+exit 0
