@@ -52,6 +52,7 @@ public :
   virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
   virtual void abortTimeStep();
   virtual void calculer_pression_tot();
+  virtual void update_pressure_fields(double );
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
 
   // Methodes inlines
@@ -63,7 +64,7 @@ public :
 protected:
   Champ_Don Pth_xyz_;
   DoubleTab Pth_tab_, Pth_n_tab_;
-  int use_total_pressure_;
+  int use_total_pressure_; // the default value is 0 => i.e: do not use total P in EOS unless activated
 
 private:
   void initialiser_pth_xyz(const Probleme_base&);

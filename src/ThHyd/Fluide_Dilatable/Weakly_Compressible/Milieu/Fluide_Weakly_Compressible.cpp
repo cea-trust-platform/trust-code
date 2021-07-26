@@ -33,6 +33,7 @@
 
 Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable_base);
 
+// By default we do not use the total pressure
 Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0) {}
 
 // Description:
@@ -352,4 +353,13 @@ void Fluide_Weakly_Compressible::calculer_pression_tot()
   else tab_PHyd = pression_->valeurs();
 
   for (int i=0 ; i<n ; i++) tab_Ptot(i,0) = tab_PHyd(i,0) + Pth_tab_(i,0);
+
+  if (use_total_pressure_) Pth_tab_= tab_Ptot; // present dt
 }
+
+void Fluide_Weakly_Compressible::update_pressure_fields(double temps)
+{
+  Pth_n_tab_= Pth_tab_; // previous dt
+  Fluide_Dilatable_base::update_pressure_fields(temps);
+}
+

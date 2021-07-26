@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Pb_Dilatable_base.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -49,8 +49,9 @@ public:
   virtual void mettre_a_jour(double temps); // Ne met a jour que les postraitements
   virtual void associer_milieu_base(const Milieu_base& );
   virtual void associer_sch_tps_base(const Schema_Temps_base&);
+  virtual void update_pressure_fields(double );
   virtual bool iterateTimeStep(bool& converged);
-  virtual void solve_pressure_thermo() =0;
+  virtual void solve_pressure_thermo() = 0;
 
 protected :
   REF(Fluide_Dilatable_base) le_fluide_;

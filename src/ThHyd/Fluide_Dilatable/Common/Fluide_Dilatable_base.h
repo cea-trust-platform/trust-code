@@ -66,6 +66,7 @@ public :
   virtual void set_param(Param& param);
   virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
   virtual void mettre_a_jour(double );
+  virtual void update_pressure_fields(double );
   virtual void preparer_calcul();
   virtual void completer(const Probleme_base&);
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);

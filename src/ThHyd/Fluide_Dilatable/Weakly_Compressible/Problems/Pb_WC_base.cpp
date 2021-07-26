@@ -71,8 +71,8 @@ void Pb_WC_base::preparer_calcul()
 bool Pb_WC_base::initTimeStep(double dt)
 {
   bool ok = Pb_Dilatable_base::initTimeStep(dt);
-  Fluide_Weakly_Compressible& le_fluide = ref_cast(Fluide_Weakly_Compressible,le_fluide_.valeur());
-  le_fluide.preparer_pas_temps();
+  Fluide_Weakly_Compressible& le_fluide_WC = ref_cast(Fluide_Weakly_Compressible,le_fluide_.valeur());
+  le_fluide_WC.preparer_pas_temps();
   return ok;
 }
 

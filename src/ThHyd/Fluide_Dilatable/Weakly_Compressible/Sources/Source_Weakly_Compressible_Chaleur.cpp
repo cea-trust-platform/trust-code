@@ -127,14 +127,20 @@ DoubleTab& Source_Weakly_Compressible_Chaleur::ajouter(DoubleTab& resu) const
   if (dt_<=0) return resu;
 
   int i, nsom = resu.dimension(0);
-  double Pth = le_fluide->pression_th(), Pthn = le_fluide->pression_thn();
+
+  Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,le_fluide.valeur());
+  const DoubleTab& Ptot = FWC.pression_th_tab(); // present
+  const DoubleTab& Ptot_n = FWC.pression_thn_tab(); // passe
 
   // BUG HERE : TODO : FIXME : the term u.grad(P) is missing !
   Cerr << "BUG HERE : TODO : FIXME : the term u.grad(P) is missing ! " << finl;
 
   //Corrections pour equation
-  double dpth=(Pth-Pthn)/dt_;
-  for (i=0 ; i<nsom ; i++) resu(i) += dpth * volumes(i)*porosites(i);
+  for (i=0 ; i<nsom ; i++)
+    {
+      double dpth = ( Ptot(i,0) - Ptot_n(i,0) ) / dt_;
+      resu(i) += dpth * volumes(i)*porosites(i);
+    }
 
   return resu;
 }

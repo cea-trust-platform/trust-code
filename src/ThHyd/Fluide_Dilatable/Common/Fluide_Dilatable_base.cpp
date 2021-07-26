@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Fluide_Dilatable_base.h>
+#include <Fluide_Weakly_Compressible.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
@@ -474,8 +475,6 @@ void Fluide_Dilatable_base::get_noms_champs_postraitables(Noms& nom,Option opt) 
 // Postcondition:
 void Fluide_Dilatable_base::mettre_a_jour(double temps)
 {
-  calculer_pression_tot();
-  pression_tot_.mettre_a_jour(temps);
   rho.mettre_a_jour(temps);
   ch_temperature().mettre_a_jour(temps); // Note : it denotes the species Y1 for Pb_Hydraulique_Melange_Binaire_QC
   rho->changer_temps(temps);
@@ -484,9 +483,6 @@ void Fluide_Dilatable_base::mettre_a_jour(double temps)
   lambda->changer_temps(temps);
   Cp.mettre_a_jour(temps);
   update_rho_cp(temps);
-//  calculer_pression_tot();
-//  pression_tot_.mettre_a_jour(temps);
-
   write_mean_edo(temps); // si besoin (i.e. QC)
 }
 
@@ -508,13 +504,16 @@ void Fluide_Dilatable_base::preparer_calcul()
 {
   Cerr << "Fluide_Dilatable_base::preparer_calcul()" << finl;
   Milieu_base::preparer_calcul();
-  calculer_pression_tot();
-  pression_tot_.mettre_a_jour(0);
+  Fluide_Dilatable_base::update_pressure_fields(0); // Child can have an overload
   loi_etat_->preparer_calcul();
   prepare_pressure_edo(); // si besoin (i.e. QC)
   calculer_coeff_T();
-//  calculer_pression_tot();
-//  pression_tot_.mettre_a_jour(0);
+}
+
+void Fluide_Dilatable_base::update_pressure_fields(double temps)
+{
+  calculer_pression_tot();
+  pression_tot_.mettre_a_jour(temps);
 }
 
 // Description:

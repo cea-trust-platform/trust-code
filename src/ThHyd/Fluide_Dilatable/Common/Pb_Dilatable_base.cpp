@@ -139,6 +139,9 @@ bool Pb_Dilatable_base::iterateTimeStep(bool& converged)
   equation(0).inconnue().mettre_a_jour(temps_futur);
   statistiques().end_count(mettre_a_jour_counter_);
 
+  // Update pressure fields (total/thermo/hydro) if necessary
+  update_pressure_fields(temps_futur);
+
   // on recule les inconnues (le pb mettra a jour les equations)
   for (int i=0; i<nombre_d_equations(); i++)
     equation(i).inconnue().reculer();
@@ -152,3 +155,7 @@ bool Pb_Dilatable_base::iterateTimeStep(bool& converged)
   return true;
 }
 
+void Pb_Dilatable_base::update_pressure_fields(double t)
+{
+  le_fluide_->update_pressure_fields(t);
+}
