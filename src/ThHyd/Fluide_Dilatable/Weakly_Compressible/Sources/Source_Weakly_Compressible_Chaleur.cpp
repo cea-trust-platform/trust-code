@@ -23,7 +23,11 @@
 #include <Source_Weakly_Compressible_Chaleur.h>
 #include <Fluide_Weakly_Compressible.h>
 #include <Equation_base.h>
+#include <Probleme_base.h>
 #include <Schema_Temps_base.h>
+#include <Navier_Stokes_WC.h>
+#include <Zone_VF.h>
+#include <Neumann_sortie_libre.h>
 
 Implemente_base(Source_Weakly_Compressible_Chaleur,"Source_Weakly_Compressible_Chaleur",Source_base);
 
@@ -123,23 +127,100 @@ DoubleTab& Source_Weakly_Compressible_Chaleur::calculer(DoubleTab& resu) const
 DoubleTab& Source_Weakly_Compressible_Chaleur::ajouter(DoubleTab& resu) const
 {
   double dt_ = mon_equation->schema_temps().temps_courant() - mon_equation->schema_temps().temps_precedent();
-  // Si dt<=0 ce terme source n est pas defini : On ne le calcul pas
-  if (dt_<=0) return resu;
 
-  int i, nsom = resu.dimension(0);
+  if (dt_<=0) return resu; // On calcul pas ce terme source si dt<=0
+
+  /*
+   * The source term corresponds to :
+   * d P_tot / d t = del P / del t + u.grad(P_tot)
+   */
 
   Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,le_fluide.valeur());
-  const DoubleTab& Ptot = FWC.pression_th_tab(); // present
-  const DoubleTab& Ptot_n = FWC.pression_thn_tab(); // passe
+  const DoubleTab& Ptot = FWC.pression_th_tab(), Ptot_n = FWC.pression_thn_tab(); // present & passe
 
-  // BUG HERE : TODO : FIXME : the term u.grad(P) is missing !
-  Cerr << "BUG HERE : TODO : FIXME : the term u.grad(P) is missing ! " << finl;
+  // compute the grad
+  const Navier_Stokes_WC& eqHyd = ref_cast(Navier_Stokes_WC,mon_equation->probleme().equation(0));
+  const DoubleTab& la_vitesse = eqHyd.vitesse().valeurs();
+  DoubleTab grad_Ptot(eqHyd.grad_P().valeurs()); // initialize as grad(P) of NS
+  const Operateur_Grad& gradient = eqHyd.operateur_gradient();
+  gradient.calculer(Ptot,grad_Ptot); // compute grad(P_tot)
 
-  //Corrections pour equation
-  for (i=0 ; i<nsom ; i++)
+  // XXX : very important : sinon we have values * V !
+  const Solveur_Masse& solv_mass = eqHyd.solv_masse();
+  solv_mass.appliquer(grad_Ptot);
+
+  /*
+   * XXX XXX XXX
+   * READ CAREFULLY : We use the grad operator from Navier_Stokes_std
+   *    => created for the pressure normally
+   * There is a special treatement for Neumann bc (Neumann_sortie_libre)
+   * because we use explicitly the prescribed pressure.
+   * So if we calculate the grad of Ptot or rho for example, we will use
+   * P_ext defined in data file which is wrong !
+   *
+   * Now we do the following : we assume open bd as a wall => null gradient
+   */
+
+  // We use that of NS because we test the CL too (attention mon_equation is Chaleur...)
+  const Zone_dis_base& zone_dis = eqHyd.inconnue().zone_dis_base();
+  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
+  const Zone_Cl_dis& zone_cl = eqHyd.zone_Cl_dis();
+
+  if (zone_dis.que_suis_je() != "Zone_VDF")
     {
-      double dpth = ( Ptot(i,0) - Ptot_n(i,0) ) / dt_;
-      resu(i) += dpth * volumes(i)*porosites(i);
+      Cerr <<  "Source_Weakly_Compressible_Chaleur::ajouter Not coded yet for VEF !!" << finl;
+      Process::exit();
+    }
+
+  for (int n_bord=0; n_bord<zone.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zone_cl.les_conditions_limites(n_bord);
+      // corrige si Neumann_sortie_libre
+      if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
+        {
+          // recuperer face et remplace gradient par 0
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+
+          for (int num_face=ndeb; num_face<nfin; num_face++) grad_Ptot(num_face,0) = 0.;
+        }
+    }
+
+  // We compute u*grad(P_tot) on each face
+  DoubleTab UgradP(grad_Ptot); // field on faces
+  const int n = la_vitesse.dimension(0);
+  assert ( n == zone.nb_faces() );
+
+  for (int i=0 ; i <n ; i++) UgradP(i) = la_vitesse(i) * grad_Ptot(i);
+
+  const IntTab& elem_faces = zone.elem_faces();
+  assert ( Ptot.dimension(0) == zone.nb_elem() );
+
+  DoubleTab UgradP_elem(Ptot); // field on elem
+  int face_x_0,face_x_1,face_y_0,face_y_1,face_z_0,face_z_1;
+  double xx,yy,zz;
+  // u.grad(P_tot) on each elem
+  for (int num_elem=0; num_elem < zone.nb_elem(); num_elem++)
+    {
+      face_x_0 = elem_faces(num_elem,0);
+      face_x_1 = elem_faces(num_elem,dimension);
+      face_y_0 = elem_faces(num_elem,1);
+      face_y_1 = elem_faces(num_elem,1+dimension);
+      face_z_0 = (dimension == 3) ? elem_faces(num_elem,2) : 0;
+      face_z_1 = (dimension == 3) ? elem_faces(num_elem,2+dimension) : 0;
+
+      xx = UgradP(face_x_0,0) + UgradP(face_x_1,0);
+      yy = UgradP(face_y_0,0) + UgradP(face_y_1,0);
+      zz = (dimension == 3) ? UgradP(face_z_0,0) + UgradP(face_z_1,0) : 0.0;
+
+      UgradP_elem(num_elem,0) = 0.5 * ( xx + yy + zz ); // mean at elem
+    }
+
+  assert ( zone.nb_elem() == resu.dimension(0));
+  for (int i=0 ; i< zone.nb_elem() ; i++)
+    {
+      double dpth = ( Ptot(i,0) - Ptot_n(i,0) ) / dt_ +  UgradP_elem(i,0);
+      resu(i) += dpth * volumes(i)*porosites(i) ;
     }
 
   return resu;
