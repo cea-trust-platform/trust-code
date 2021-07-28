@@ -476,6 +476,11 @@ package_valgrind=$TRUST_ROOT/exec/valgrind
 #[ -d $package_valgrind ] && with_packages=$with_packages" --with-valgrind-dir=$package_valgrind --with-valgrind-include=$package_valgrind/include"
 [ -d $package_valgrind ] && with_packages=$with_packages" --with-valgrind-include=$package_valgrind/include"
 
+######
+# Gmsh
+######
+with_gmsh="--with-gmsh=0 --with-gmsh-exec=/bin/ls" # --with-gmsh=0 bugge donc hack avec pour empecher erreur sur "gmsh=/bin/ls -info"
+
 ########
 # PYTHON
 ########
@@ -496,7 +501,9 @@ fi
 with_64bit_indices=""
 if [ "$TRUST_INT64" = "1" ]
 then
-   with_64bit_indices="--with-64-bit-indices" 
+   with_64bit_indices="--with-64-bit-indices"
+   # Sur topaze, PETSc prend des "long long" pour PetscInt au lieu de "long" donc pour forcer (a noter que MUMPS ne fonctionne pas malgre cela):
+   [ "$HOST" = topaze ] && with_64bit_indices="--with-64-bit-indices --known-mpi-int64_t" 
    # with_64bit_indices="--with-64-bit-indices --with-64-bit-blas-indices" # Si on veut aussi activer int64 dans MKL Blas ou OpenBlas, pas d'interet pour le moment. Voir:
    # https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscBLASInt.html
 fi
@@ -542,7 +549,7 @@ do
    --with-clean=1 \
    --with-ssl=0 \
    --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install \
-   --with-gmsh=0 \
+   $with_gmsh \
    $with_packages \
    $with_blas \
    $with_gpu --CUDAFLAGS="$CUDAFLAGS" \
