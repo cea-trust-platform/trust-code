@@ -23,10 +23,7 @@
 #ifndef Sortie_libre_pression_imposee_QC_included
 #define Sortie_libre_pression_imposee_QC_included
 
-
 #include <Neumann_sortie_libre.h>
-
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -43,31 +40,21 @@
 //////////////////////////////////////////////////////////////////////////////
 class Sortie_libre_pression_imposee_QC : public Neumann_sortie_libre
 {
-
-  Declare_instanciable(Sortie_libre_pression_imposee_QC);
+  Declare_instanciable_sans_constructeur(Sortie_libre_pression_imposee_QC);
 
 public :
-
+  Sortie_libre_pression_imposee_QC();
+  void completer();
   int compatible_avec_eqn(const Equation_base&) const;
   double flux_impose(int i) const;
   double flux_impose(int i,int j) const;
-  void completer();
 
-  double get_Pth()
-  {
-    return Pthn;  // retourne la pression thermohydraulique
-  }
-  void set_Pth(double P)
-  {
-    Pthn = P;  // fixe la pression  thermohydraulique
-  }
-
+  // Methodes inlines
+  inline double get_Pth() { return Pthn; }// retourne la pression thermohydraulique
+  inline void set_Pth(double P) { Pthn = P; } // fixe la pression  thermohydraulique
 
 protected:
-  double Pthn; // pression thermohydraulique au temps n
-  double d_rho;
+  double Pthn, d_rho; // pression thermohydraulique au temps n, rho out
 };
 
-
-
-#endif
+#endif /* Sortie_libre_pression_imposee_QC_included */

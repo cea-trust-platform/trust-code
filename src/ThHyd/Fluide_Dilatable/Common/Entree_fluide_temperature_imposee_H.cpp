@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Entree_fluide_temperature_imposee_H.h>
-#include <Fluide_Quasi_Compressible.h>
+#include <Fluide_Dilatable_base.h>
 #include <Equation_base.h>
 #include <Motcle.h>
 
@@ -81,7 +81,7 @@ Entree& Entree_fluide_temperature_imposee_H::readOn(Entree& s)
 // Postcondition:
 void Entree_fluide_temperature_imposee_H::completer()
 {
-  le_fluide = ref_cast(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu());
+  le_fluide = ref_cast(Fluide_Dilatable_base,ma_zone_cl_dis->equation().milieu());
   modifier_val_imp = 1;
 }
 
@@ -141,7 +141,6 @@ double Entree_fluide_temperature_imposee_H::val_imp(int i) const
         return le_fluide->calculer_H(le_champ_front(0,0));
       else
         return le_champ_front(0,0);
-
     }
   else if (le_champ_front.valeurs().dimension(1)==1)
     {
@@ -149,7 +148,6 @@ double Entree_fluide_temperature_imposee_H::val_imp(int i) const
         return le_fluide->calculer_H(le_champ_front(i,0));
       else
         return le_champ_front(i,0);
-
     }
   else
     Cerr << "Temperature_imposee_paroi_H::val_imp erreur" << finl;
@@ -157,7 +155,6 @@ double Entree_fluide_temperature_imposee_H::val_imp(int i) const
   abort();
   return 0.;
 }
-
 
 // Description:
 //    Renvoie la valeur imposee sur la (i,j)-eme composante
@@ -187,7 +184,6 @@ double Entree_fluide_temperature_imposee_H::val_imp(int i, int j) const
         return le_fluide->calculer_H(le_champ_front(0,j));
       else
         return le_champ_front(0,j);
-
     }
   else
     {

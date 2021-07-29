@@ -14,18 +14,18 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Neumann_sortie_libre_Temp_H.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Cond_Lim
+// File:        Temperature_imposee_paroi_H.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Neumann_sortie_libre_Temp_H.h>
-#include <Fluide_Quasi_Compressible.h>
-#include <Equation_base.h>
+#include <Temperature_imposee_paroi_H.h>
 #include <Motcle.h>
+#include <Equation_base.h>
+#include <Fluide_Dilatable_base.h>
 
-Implemente_instanciable(Neumann_sortie_libre_Temp_H,"Sortie_libre_temperature_imposee_H",Neumann_sortie_libre);
+Implemente_instanciable(Temperature_imposee_paroi_H,"Paroi_temperature_imposee_H",Temperature_imposee_paroi);
 
 // Description:
 //    Ecrit le type de l'objet sur un flot de sortie.
@@ -41,16 +41,13 @@ Implemente_instanciable(Neumann_sortie_libre_Temp_H,"Sortie_libre_temperature_im
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Neumann_sortie_libre_Temp_H::printOn(Sortie& s ) const
+Sortie& Temperature_imposee_paroi_H::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
 // Description:
-//    Type le_champ_front en "Champ_front_uniforme".
-//    Lit les valeurs du champ exterieur si les conditions
-//    aux limites sont specifiees: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
-//    Produit une erreur sinon.
+//    Simple appel a: Dirichlet::readOn(Entree& )
 // Precondition:
 // Parametre: Entree& s
 //    Signification: un flot d'entree
@@ -60,17 +57,45 @@ Sortie& Neumann_sortie_libre_Temp_H::printOn(Sortie& s ) const
 // Retour: Entree& s
 //    Signification: le flot d'entree modifie
 //    Contraintes:
-// Exception: type de champ exterieur non reconnu,
-//            les types reconnus sont: "T_ext", "C_ext", "Y_ext" ou "K_Eps_ext"
+// Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Neumann_sortie_libre_Temp_H::readOn(Entree& s )
+Entree& Temperature_imposee_paroi_H::readOn(Entree& s )
 {
-  s >> le_champ_ext;
+  return Temperature_imposee_paroi::readOn(s) ;
+}
 
-  le_champ_front = le_champ_ext;
-
-  return s;
+// Description:
+//    Renvoie un booleen indiquant la compatibilite des conditions
+//    aux limites avec l'equation specifiee en parametre.
+//    Des CL de type Temperature_imposee_paroi sont compatibles
+//    avec une equation dont le domaine est la Thermique_H
+//    ie thermique avec inconnue l'enthalpie.
+// Precondition:
+// Parametre: Equation_base& eqn
+//    Signification: l'equation avec laquelle il faut verifier la compatibilite
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Retour: int
+//    Signification: valeur booleenne,
+//                   1 si les CL sont compatibles avec l'equation
+//                   0 sinon
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+int Temperature_imposee_paroi_H::compatible_avec_eqn(const Equation_base& eqn) const
+{
+  Motcle dom_app=eqn.domaine_application();
+  Motcle Thermique="Thermique_H";
+  if ( (dom_app==Thermique))
+    return 1;
+  else
+    {
+      err_pas_compatible(eqn);
+      return 0;
+    }
 }
 
 // Description:
@@ -87,48 +112,15 @@ Entree& Neumann_sortie_libre_Temp_H::readOn(Entree& s )
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Neumann_sortie_libre_Temp_H::completer()
+void Temperature_imposee_paroi_H::completer()
 {
-  le_fluide = ref_cast(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu());
+  le_fluide = ref_cast(Fluide_Dilatable_base,ma_zone_cl_dis->equation().milieu());
   modifier_val_imp = 1;
 }
 
 // Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Sortie_libre_pression_imposee sont compatibles
-//    avec une equation dont le domaine est l'hydraulique (Navier_Stokes)
-//    ou bien indetermine.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-int Neumann_sortie_libre_Temp_H::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique_H";
-  if ( (dom_app==Thermique))
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
-}
-
-// Description:
-//    Renvoie la valeur de la i-eme composante
-//    du champ impose a l'exterieur de la frontiere.
+//    Renvoie la valeur imposee sur la i-eme composante
+//    du champ a la frontiere.
 // Precondition:
 // Parametre: int i
 //    Signification: indice suivant la premiere dimension du champ
@@ -141,38 +133,32 @@ int Neumann_sortie_libre_Temp_H::compatible_avec_eqn(const Equation_base& eqn) c
 // Exception: deuxieme dimension du champ de frontiere superieur a 1
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-double Neumann_sortie_libre_Temp_H::val_ext(int i) const
+double Temperature_imposee_paroi_H::val_imp(int i) const
 {
-  if (le_champ_ext.valeurs().size()==1)
+  if (le_champ_front.valeurs().size()==1)
     {
       if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_ext(0,0));
+        return le_fluide->calculer_H(le_champ_front(0,0));
       else
-        return le_champ_ext(0,0);
-
+        return le_champ_front(0,0);
     }
-  else if (le_champ_ext.valeurs().dimension(1)==1)
+  else if (le_champ_front.valeurs().dimension(1)==1)
     {
       if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_ext(i,0));
+        return le_fluide->calculer_H(le_champ_front(i,0));
       else
-        return le_champ_ext(i,0);
-
+        return le_champ_front(i,0);
     }
   else
-    {
-      Cerr << "Neumann_sortie_libre_Temp_H::val_ext" << finl;
-      Cerr<<le_champ_ext<<finl;
-    }
+    Cerr << "Temperature_imposee_paroi_H::val_imp erreur" << finl;
 
   abort();
   return 0.;
 }
 
-
 // Description:
-//    Renvoie la valeur de la (i,j)-eme composante
-//    du champ impose a l'exterieur de la frontiere.
+//    Renvoie la valeur imposee sur la (i,j)-eme composante
+//    du champ a la frontiere.
 // Precondition:
 // Parametre: int i
 //    Signification: indice suivant la premiere dimension du champ
@@ -190,21 +176,20 @@ double Neumann_sortie_libre_Temp_H::val_ext(int i) const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-double Neumann_sortie_libre_Temp_H::val_ext(int i,int j) const
+double Temperature_imposee_paroi_H::val_imp(int i, int j) const
 {
-  if (le_champ_ext.valeurs().dimension(0)==1)
+  if (le_champ_front.valeurs().dimension(0)==1)
     {
       if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_ext(0,j));
+        return le_fluide->calculer_H(le_champ_front(0,j));
       else
-        return le_champ_ext(0,j);
-
+        return le_champ_front(0,j);
     }
   else
     {
       if (modifier_val_imp==1)
-        return le_fluide->calculer_H(le_champ_ext(i,j));
+        return le_fluide->calculer_H(le_champ_front(i,j));
       else
-        return le_champ_ext(i,j);
+        return le_champ_front(i,j);
     }
 }

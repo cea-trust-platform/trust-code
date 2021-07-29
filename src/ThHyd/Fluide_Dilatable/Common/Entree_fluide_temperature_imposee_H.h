@@ -14,83 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Echange_externe_impose_H.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Cond_Lim
-// Version:     /main/8
+// File:        Entree_fluide_temperature_imposee_H.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Echange_externe_impose_H_included
-#define Echange_externe_impose_H_included
+#ifndef Entree_fluide_temperature_imposee_H_included
+#define Entree_fluide_temperature_imposee_H_included
 
-#include <Echange_externe_impose.h>
-#include <Ref_Fluide_Quasi_Compressible.h>
+#include <Entree_fluide_temperature_imposee.h>
+#include <Ref_Fluide_Dilatable_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    Classe Echange_externe_impose_H:
-//    Cette classe represente le cas particulier de la classe
-//    Echange_externe_impose pour une equation en enthalpie..
-//
+//    classe Entree_fluide_temperature_imposee_H
+//    Cas particulier de la classe Entree_fluide_temperature_imposee
+//    pour une equation ayant l'enthalpie en inconnue
 // .SECTION voir aussi
-//    Echange_impose_base Echange_externe_impose
+//    Dirichlet_entree_fluide
 //////////////////////////////////////////////////////////////////////////////
-class Echange_externe_impose_H  : public Echange_externe_impose
+
+class Entree_fluide_temperature_imposee_H  : public Entree_fluide_temperature_imposee
 {
+  Declare_instanciable(Entree_fluide_temperature_imposee_H);
 
-  Declare_instanciable(Echange_externe_impose_H);
-
-  int compatible_avec_eqn(const Equation_base&) const;
+public :
   void completer();
-
-  double T_ext(int num) const;
-  double T_ext(int num,int k) const;
-  inline Champ_front& T_ext();
-  inline const Champ_front& T_ext() const;
+  int compatible_avec_eqn(const Equation_base&) const;
+  double val_imp(int i) const;
+  double val_imp(int i, int j) const;
 
 protected :
-  REF(Fluide_Quasi_Compressible) le_fluide;
-
+  REF(Fluide_Dilatable_base) le_fluide;
 };
 
-// Description:
-//    Renvoie le champ T_ext de temperature imposee a la frontiere.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_front&
-//    Signification: le champ T_ext de temperature imposee a la frontiere
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Champ_front& Echange_externe_impose_H::T_ext()
-{
-  return le_champ_front;
-}
-
-// Description:
-//    Renvoie le champ T_ext de temperature imposee a la frontiere.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_front&
-//    Signification: le champ T_ext de temperature imposee a la frontiere
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline const Champ_front& Echange_externe_impose_H::T_ext() const
-{
-  return le_champ_front;
-}
-
-#endif
+#endif /* Entree_fluide_temperature_imposee_H_included */

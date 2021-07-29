@@ -26,8 +26,9 @@
 #include <Milieu_base.h>
 #include <Motcle.h>
 
+Implemente_instanciable_sans_constructeur(Sortie_libre_pression_imposee_QC,"Frontiere_ouverte_pression_totale_imposee",Neumann_sortie_libre);
 
-Implemente_instanciable(Sortie_libre_pression_imposee_QC,"Frontiere_ouverte_pression_totale_imposee",Neumann_sortie_libre);
+Sortie_libre_pression_imposee_QC::Sortie_libre_pression_imposee_QC() : Pthn(1.e5), d_rho(-1) {}
 
 // Description:
 //    Ecrit le type de l'objet sur un flot de sortie.
@@ -47,8 +48,6 @@ Sortie& Sortie_libre_pression_imposee_QC::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
-
-
 
 // Description:
 //    Renvoie un booleen indiquant la compatibilite des conditions
@@ -128,7 +127,6 @@ Entree& Sortie_libre_pression_imposee_QC::readOn(Entree& s )
 // Postcondition:
 void Sortie_libre_pression_imposee_QC::completer()
 {
-  //Cerr << "Dans Sortie_libre_pression_imposee_QC::completer()" << finl;
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
   if (sub_type(Champ_Uniforme,mil.masse_volumique()))
     {
@@ -136,10 +134,7 @@ void Sortie_libre_pression_imposee_QC::completer()
       d_rho = rho(0,0);
     }
   else
-    {
-      d_rho = -1;
-    }
-  Pthn=1.e5;
+    d_rho = -1;
 }
 
 // Description:
@@ -166,24 +161,19 @@ double Sortie_libre_pression_imposee_QC::flux_impose(int i) const
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
   const Champ_base& rho=mil.masse_volumique();
   double rho_;
-  if (d_rho==-1)
-    {
-      rho_ = rho(i);
-    }
-  else
-    {
-      rho_ = d_rho;
-    }
+  if (d_rho==-1) rho_ = rho(i);
+  else rho_ = d_rho;
+
   if (le_champ_front.valeurs().size()==1)
-    return (le_champ_front(0,0)-Pthn)/rho_;
+    return ( le_champ_front(0,0) - Pthn ) / rho_;
   else if (le_champ_front.valeurs().dimension(1)==1)
-    return (le_champ_front(i,0)-Pthn)/rho_;
+    return ( le_champ_front(i,0) - Pthn ) / rho_;
   else
     Cerr << "Neumann::flux_impose erreur" << finl;
-  exit();
+
+  Process::exit();
   return 0.;
 }
-
 
 // Description:
 //    Renvoie la valeur du flux impose sur la (i,j)-eme composante
@@ -212,19 +202,12 @@ double Sortie_libre_pression_imposee_QC::flux_impose(int i,int j) const
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
   const Champ_base& rho=mil.masse_volumique();
   double rho_;
-  if (d_rho==-1)
-    {
-      rho_ = rho(i);
-    }
-  else
-    {
-      rho_ = d_rho;
-    }
+
+  if (d_rho==-1) rho_ = rho(i);
+  else rho_ = d_rho;
 
   if (le_champ_front.valeurs().dimension(0)==1)
-    return (le_champ_front(0,j)-Pthn)/rho_;
+    return ( le_champ_front(0,j) - Pthn ) / rho_;
   else
-    return (le_champ_front(i,j)-Pthn)/rho_;
+    return ( le_champ_front(i,j) - Pthn ) / rho_;
 }
-
-

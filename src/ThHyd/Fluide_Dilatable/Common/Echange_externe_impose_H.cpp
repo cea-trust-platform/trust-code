@@ -14,22 +14,21 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Temperature_imposee_paroi_H.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Cond_Lim
-// Version:     /main/8
+// File:        Echange_externe_impose_H.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Temperature_imposee_paroi_H.h>
-#include <Motcle.h>
+#include <Echange_externe_impose_H.h>
+#include <Fluide_Dilatable_base.h>
 #include <Equation_base.h>
-#include <Fluide_Quasi_Compressible.h>
+#include <Motcle.h>
 
-Implemente_instanciable(Temperature_imposee_paroi_H,"Paroi_temperature_imposee_H",Temperature_imposee_paroi);
-
+Implemente_instanciable(Echange_externe_impose_H,"Paroi_echange_externe_impose_H",Echange_externe_impose);
 
 // Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
+//    Ecrit le type de l'objet sur un flot de sortie
 // Precondition:
 // Parametre: Sortie& s
 //    Signification: un flot de sortie
@@ -42,61 +41,30 @@ Implemente_instanciable(Temperature_imposee_paroi_H,"Paroi_temperature_imposee_H
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Temperature_imposee_paroi_H::printOn(Sortie& s ) const
+Sortie& Echange_externe_impose_H::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
 // Description:
-//    Simple appel a: Dirichlet::readOn(Entree& )
+//    Simple appel a Echange_impose_base::readOn(Entree&)
+//    Lit les specifications des conditions aux limites
+//    a partir d'un flot d'entree.
 // Precondition:
 // Parametre: Entree& s
 //    Signification: un flot d'entree
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
+// Retour: Entree&
+//    Signification: le flot de sortie modifie
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Temperature_imposee_paroi_H::readOn(Entree& s )
+Entree& Echange_externe_impose_H::readOn(Entree& s )
 {
-  return Temperature_imposee_paroi::readOn(s) ;
-}
-
-// Description:
-//    Renvoie un booleen indiquant la compatibilite des conditions
-//    aux limites avec l'equation specifiee en parametre.
-//    Des CL de type Temperature_imposee_paroi sont compatibles
-//    avec une equation dont le domaine est la Thermique_H
-//    ie thermique avec inconnue l'enthalpie.
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation avec laquelle il faut verifier la compatibilite
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour: int
-//    Signification: valeur booleenne,
-//                   1 si les CL sont compatibles avec l'equation
-//                   0 sinon
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-int Temperature_imposee_paroi_H::compatible_avec_eqn(const Equation_base& eqn) const
-{
-  Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique_H";
-  if ( (dom_app==Thermique))
-    return 1;
-  else
-    {
-      err_pas_compatible(eqn);
-      return 0;
-    }
+  return Echange_externe_impose::readOn(s) ;
 }
 
 // Description:
@@ -113,28 +81,30 @@ int Temperature_imposee_paroi_H::compatible_avec_eqn(const Equation_base& eqn) c
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Temperature_imposee_paroi_H::completer()
+void Echange_externe_impose_H::completer()
 {
-  le_fluide = ref_cast(Fluide_Quasi_Compressible,ma_zone_cl_dis->equation().milieu());
+  Echange_impose_base::completer();
+  le_fluide = ref_cast(Fluide_Dilatable_base,ma_zone_cl_dis->equation().milieu());
   modifier_val_imp = 1;
 }
 
 // Description:
-//    Renvoie la valeur imposee sur la i-eme composante
-//    du champ a la frontiere.
+//    Renvoie la valeur de la temperature imposee
+//    sur la i-eme composante du champ de frontiere.
 // Precondition:
 // Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
+//    Signification: l'indice de la composante du champ de
+//                   de frontiere
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: entree
+//    Acces:
 // Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
+//    Signification:
 //    Contraintes:
-// Exception: deuxieme dimension du champ de frontiere superieur a 1
+// Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-double Temperature_imposee_paroi_H::val_imp(int i) const
+double Echange_externe_impose_H::T_ext(int i) const
 {
   if (le_champ_front.valeurs().size()==1)
     {
@@ -142,7 +112,6 @@ double Temperature_imposee_paroi_H::val_imp(int i) const
         return le_fluide->calculer_H(le_champ_front(0,0));
       else
         return le_champ_front(0,0);
-
     }
   else if (le_champ_front.valeurs().dimension(1)==1)
     {
@@ -150,37 +119,35 @@ double Temperature_imposee_paroi_H::val_imp(int i) const
         return le_fluide->calculer_H(le_champ_front(i,0));
       else
         return le_champ_front(i,0);
-
     }
   else
-    Cerr << "Temperature_imposee_paroi_H::val_imp erreur" << finl;
+    Cerr << "Echange_impose_base::T_ext erreur" << finl;
 
   abort();
   return 0.;
 }
 
-
 // Description:
-//    Renvoie la valeur imposee sur la (i,j)-eme composante
-//    du champ a la frontiere.
+//    Renvoie la valeur de la temperature imposee
+//    sur la (i,j)-eme composante du champ de frontiere.
 // Precondition:
 // Parametre: int i
-//    Signification: indice suivant la premiere dimension du champ
+//    Signification:
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: entree
+//    Acces:
 // Parametre: int j
-//    Signification: indice suivant la deuxieme dimension du champ
+//    Signification:
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: entree
+//    Acces:
 // Retour: double
-//    Signification: la valeur imposee sur la composante du champ specifiee
+//    Signification:
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-double Temperature_imposee_paroi_H::val_imp(int i, int j) const
+double Echange_externe_impose_H::T_ext(int i, int j) const
 {
   if (le_champ_front.valeurs().dimension(0)==1)
     {
@@ -188,7 +155,6 @@ double Temperature_imposee_paroi_H::val_imp(int i, int j) const
         return le_fluide->calculer_H(le_champ_front(0,j));
       else
         return le_champ_front(0,j);
-
     }
   else
     {
@@ -199,3 +165,33 @@ double Temperature_imposee_paroi_H::val_imp(int i, int j) const
     }
 }
 
+// Description:
+//    Verifie la compatibilite des conditions aux limites avec
+//    l'equation passee en parametre.
+//   Les conditions aux limites de type Ech_imp_base  sont
+//   compatibles avec des equations de type:
+//         - Thermique_H  (thermique avec inconnue = enthalpie)
+// Precondition:
+// Parametre: Equation_base& eqn
+//    Signification: l'equation avec laquelle on doit verifier la compatibilite
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: entree
+// Retour: int
+//    Signification: valeur booleenne, 1 si compatible 0 sinon
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+int Echange_externe_impose_H::compatible_avec_eqn(const Equation_base& eqn) const
+{
+  Motcle dom_app=eqn.domaine_application();
+  Motcle Thermique="Thermique_H";
+  if ( (dom_app==Thermique))
+    return 1;
+  else
+    {
+      err_pas_compatible(eqn);
+      return 0;
+    }
+}

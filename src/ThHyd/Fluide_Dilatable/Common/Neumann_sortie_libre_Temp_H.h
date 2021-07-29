@@ -14,45 +14,41 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Temperature_imposee_paroi_H.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Cond_Lim
+// File:        Neumann_sortie_libre_Temp_H.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Neumann_sortie_libre_Temp_H_included
+#define Neumann_sortie_libre_Temp_H_included
 
-#ifndef Temperature_imposee_paroi_H_included
-#define Temperature_imposee_paroi_H_included
-
-#include <Temperature_imposee_paroi.h>
-#include <Ref_Fluide_Quasi_Compressible.h>
+#include <Neumann_sortie_libre.h>
+#include <Ref_Fluide_Dilatable_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Temperature_imposee_paroi_H
-//    Impose la temperature de la paroi dans une equation de type
-//    Convection_Diffusion_Enthalpie
+//    classe  Neumann_sortie_libre_Temp_H
+//    Cette classe represente une frontiere ouverte a temperature imposee pour
+//    une equation de chaleur avec l'enthalpie comme iconnue
 // .SECTION voir aussi
-//    Dirichlet Convection_Diffusion_Enthalpie_QC
+//     Neumann Sortie_libre_pression_imposee
 //////////////////////////////////////////////////////////////////////////////
-class Temperature_imposee_paroi_H  : public Temperature_imposee_paroi
+
+class Neumann_sortie_libre_Temp_H : public Neumann_sortie_libre
 {
+  Declare_instanciable(Neumann_sortie_libre_Temp_H);
 
-  Declare_instanciable(Temperature_imposee_paroi_H);
-
-public :
-
-  int compatible_avec_eqn(const Equation_base& ) const;
+public:
   void completer();
-
-  double val_imp(int i) const;
-  double val_imp(int i, int j) const;
+  int compatible_avec_eqn(const Equation_base&) const;
+  double val_ext(int i) const;
+  double val_ext(int i,int j) const;
 
 protected :
-  REF(Fluide_Quasi_Compressible) le_fluide;
+  REF(Fluide_Dilatable_base) le_fluide;
 
 };
 
-
-#endif
+#endif /* Neumann_sortie_libre_Temp_H_included */

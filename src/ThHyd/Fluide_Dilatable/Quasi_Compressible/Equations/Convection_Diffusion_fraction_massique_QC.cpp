@@ -21,32 +21,16 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Convection_Diffusion_fraction_massique_QC.h>
-#include <Probleme_base.h>
-#include <Discret_Thyd.h>
-#include <Domaine.h>
-#include <Avanc.h>
-#include <Debog.h>
-#include <Frontiere_dis_base.h>
-#include <EcritureLectureSpecial.h>
+#include <Fluide_Quasi_Compressible.h>
 #include <Loi_Etat_Melange_GP.h>
-#include <Navier_Stokes_QC.h>
+#include <Probleme_base.h>
 #include <DoubleTrav.h>
-#include <Neumann_sortie_libre.h>
-#include <Matrice_Morse.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Convection_Diffusion_fraction_massique_QC,"Convection_Diffusion_fraction_massique_QC",Convection_Diffusion_std);
-
-Convection_Diffusion_fraction_massique_QC::Convection_Diffusion_fraction_massique_QC()
-{
-  /*  Noms& nom=champs_compris_.liste_noms_compris();
-      nom.dimensionner(1);
-      nom[0]="fraction_massique";
-  */
-}
+Implemente_instanciable(Convection_Diffusion_fraction_massique_QC,"Convection_Diffusion_fraction_massique_QC",Convection_Diffusion_fraction_massique_Fluide_Dilatable_base);
 
 // Description:
-//    Simple appel a: Convection_Diffusion_std::printOn(Sortie&)
+//    Simple appel a: Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::printOn(Sortie&)
 // Precondition:
 // Parametre: Sortie& is
 //    Signification: un flot de sortie
@@ -61,12 +45,12 @@ Convection_Diffusion_fraction_massique_QC::Convection_Diffusion_fraction_massiqu
 // Postcondition: la methode ne modifie pas l'objet
 Sortie& Convection_Diffusion_fraction_massique_QC::printOn(Sortie& is) const
 {
-  return Convection_Diffusion_std::printOn(is);
+  return Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::printOn(is);
 }
 
 // Description:
 //    Verifie si l'equation a une inconnue et un fluide associe
-//    et appelle Convection_Diffusion_std::readOn(Entree&).
+//    et appelle Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::readOn(Entree&).
 // Precondition: l'objet a une inconnue associee
 // Precondition: l'objet a un fluide associe
 // Parametre: Entree& is
@@ -82,28 +66,16 @@ Sortie& Convection_Diffusion_fraction_massique_QC::printOn(Sortie& is) const
 // Postcondition:
 Entree& Convection_Diffusion_fraction_massique_QC::readOn(Entree& is)
 {
-  assert(l_inco_ch.non_nul());
-  assert(le_fluide.non_nul());
   alias_=inconnue().le_nom();
-  Convection_Diffusion_std::readOn(is);
-
-  //A Completer
-  /*
-    terme_convectif.set_fichier("Convection_chaleur");
-    terme_convectif.set_description("Flux convectif=Integral(-Rho*Cp*T*u*ndS)");
-    terme_diffusif.set_fichier("Diffusion_chaleur");
-    terme_diffusif.set_description("Flux diffusif=Integral(lambda*grad(T)*ndS) [W]");
-  */
-  //inconnue()->fixer_nom_compo(0,alias_);
+  Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::readOn(is);
   champs_compris_.ajoute_champ(l_inco_ch);
   l_inco_ch.valeur().add_synonymous(alias_);
-
   return is;
 }
 
 void Convection_Diffusion_fraction_massique_QC::set_param(Param& param)
 {
-  Convection_Diffusion_std::set_param(param);
+  Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::set_param(param);
   param.ajouter("espece",&mon_espece_);
   param.ajouter("alias",&alias_);
 }
@@ -123,44 +95,8 @@ int Convection_Diffusion_fraction_massique_QC::lire_motcle_non_standard(const Mo
       return 1;
     }
   else
-    return Convection_Diffusion_std::lire_motcle_non_standard(mot,is);
+    return Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
   return 1;
-}
-
-// Description:
-//    Associe un milieu physique a l'equation,
-//    le milieu est en fait caste en Fluide_Quasi_Compressible
-// Precondition:
-// Parametre: Milieu_base& un_milieu
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//                 doit pourvoir etre force au type "Fluide_Quasi_Compressible"
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: les proprietes physiques du fluide ne sont pas toutes specifiees
-// Effets de bord:
-// Postcondition:
-void Convection_Diffusion_fraction_massique_QC::associer_milieu_base(const Milieu_base& un_milieu)
-{
-  const Fluide_Quasi_Compressible& un_fluideQC = ref_cast(Fluide_Quasi_Compressible,un_milieu);
-  associer_fluide(un_fluideQC);
-  /*
-    if  (un_fluideQC.conductivite().non_nul())
-    associer_fluide(un_fluideQC);
-    else {
-    Cerr << "Vous n'avez pas defini toutes les proprietes physiques du fluide " << finl;
-    Cerr << "necessaires pour resoudre l'equation d'energie " << finl;
-    abort();
-    }
-  */
-}
-
-const Champ_Don& Convection_Diffusion_fraction_massique_QC::diffusivite_pour_transport()
-{
-  return le_fluide->mu_sur_Schmidt();
 }
 
 const Champ_base& Convection_Diffusion_fraction_massique_QC::diffusivite_pour_pas_de_temps()
@@ -184,144 +120,11 @@ const Champ_base& Convection_Diffusion_fraction_massique_QC::diffusivite_pour_pa
 // Postcondition:
 void Convection_Diffusion_fraction_massique_QC::completer()
 {
-  Equation_base::completer();
+  Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::completer();
   Fluide_Quasi_Compressible& le_fluideQC=ref_cast(Fluide_Quasi_Compressible,fluide());
   Loi_Etat_Melange_GP& loi_etat = ref_cast_non_const(Loi_Etat_Melange_GP,le_fluideQC.loi_etat().valeur());
   loi_etat.associer_inconnue(l_inco_ch.valeur());
-  //loi_etat.associer_proprietes_physiques(*this);
   loi_etat.associer_espece(*this);
-
-  // remplissage de la zone cl modifiee avec 1 partout au bord...
-  zcl_modif_=(zone_Cl_dis());
-
-  Conds_lim& condlims=zcl_modif_.valeur().les_conditions_limites();
-  int nb=condlims.size();
-  for (int i=0; i<nb; i++)
-    {
-      // pour chaque condlim on recupere le champ_front et on met 1
-      // meme si la cond lim est un flux (dans ce cas la convection restera
-      // nullle.)
-      DoubleTab& T=condlims[i].valeur().champ_front().valeurs();
-      T=1.;
-      if (sub_type(Neumann_sortie_libre,condlims[i].valeur()))
-        ref_cast(Neumann_sortie_libre,condlims[i].valeur()).tab_ext()=1;
-    }
-}
-
-// Description:
-//    Discretise l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation est discretisee
-void Convection_Diffusion_fraction_massique_QC::discretiser()
-{
-  int nb_valeurs_temp = schema_temps().nb_valeurs_temporelles();
-  double temps = schema_temps().temps_courant();
-  const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-  Cerr << "Massic fraction equation discretization" << finl;
-  //On utilise temperature pour la directive car discretisation identique
-  dis.discretiser_champ("temperature",zone_dis(),"fraction_massique","sans_dimension",
-                        1 /* nb_composantes */,nb_valeurs_temp,temps,l_inco_ch);
-  Equation_base::discretiser();
-  Cerr << "Convection_Diffusion_fraction_massique_QC::discretiser() ok" << finl;
-}
-
-// Description:
-//    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Dilatable_base upcaste en Milieu_base)
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le Fluide_Dilatable_base upcaste en Milieu_base
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-const Milieu_base& Convection_Diffusion_fraction_massique_QC::milieu() const
-{
-  return fluide();
-}
-
-
-// Description:
-//    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Dilatable_base upcaste en Milieu_base)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le Fluide_Dilatable_base upcaste en Milieu_base
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Milieu_base& Convection_Diffusion_fraction_massique_QC::milieu()
-{
-  return fluide();
-}
-
-
-// Description:
-//    Renvoie le fluide incompressible associe a l'equation.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Fluide_Dilatable_base&
-//    Signification: le fluide incompressible associe a l'equation
-//    Contraintes: reference constante
-// Exception: pas de fluide associe a l'eqaution
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-const Fluide_Dilatable_base& Convection_Diffusion_fraction_massique_QC::fluide() const
-{
-  if (!le_fluide.non_nul())
-    {
-      Cerr << "You forgot to associate the fluid to the problem named " << probleme().le_nom() << finl;
-      Process::exit();
-    }
-  return le_fluide.valeur();
-}
-
-
-// Description:
-//    Renvoie le fluide incompressible associe a l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Fluide_Dilatable_base&
-//    Signification: le fluide incompressible associe a l'equation
-//    Contraintes:
-// Exception: pas de fluide associe a l'eqaution
-// Effets de bord:
-// Postcondition:
-Fluide_Dilatable_base& Convection_Diffusion_fraction_massique_QC::fluide()
-{
-  assert(le_fluide.non_nul());
-  return le_fluide.valeur();
 }
 
 // Description:
@@ -350,7 +153,7 @@ DoubleTab& Convection_Diffusion_fraction_massique_QC::derivee_en_temps_inco(Doub
       if(inf_strict(dt_op,dt))
         {
           Cerr<<"diffusion_implicite cannot be achieved for the case dt > dt_op_conv"<<finl;
-          exit();
+          Process::exit();
         }
     }
 
@@ -483,64 +286,11 @@ void Convection_Diffusion_fraction_massique_QC::assembler( Matrice_Morse& matric
   */
 }
 
-int Convection_Diffusion_fraction_massique_QC::sauvegarder(Sortie& os) const
-{
-  int bytes=0;
-  bytes += Equation_base::sauvegarder(os);
-  // en mode ecriture special seul le maitre ecrit
-  int a_faire,special;
-  EcritureLectureSpecial::is_ecriture_special(special,a_faire);
-
-  return bytes;
-}
-
-// Description:
-//     Effectue une reprise a partir d'un flot d'entree.
-//     Appelle Equation_base::reprendre()
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception: la reprise a echoue
-// Effets de bord:
-// Postcondition:
-int Convection_Diffusion_fraction_massique_QC::reprendre(Entree& is)
-{
-  Equation_base::reprendre(is);
-  return 1;
-
-}
-
-// Description:
-//    Impression des flux sur les bords sur un flot de sortie.
-//    Appelle Equation_base::impr(Sortie&)
-// Precondition: Sortie&
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-int Convection_Diffusion_fraction_massique_QC::impr(Sortie& os) const
-{
-  return Equation_base::impr(os);
-}
-
 const Champ_base& Convection_Diffusion_fraction_massique_QC::get_champ(const Motcle& nom) const
 {
   try
     {
-      return Convection_Diffusion_std::get_champ(nom);
+      return Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::get_champ(nom);
     }
   catch (Champs_compris_erreur)
     {
@@ -557,47 +307,4 @@ const Champ_base& Convection_Diffusion_fraction_massique_QC::get_champ(const Mot
 
   REF(Champ_base) ref_champ;
   return ref_champ;
-}
-
-
-
-// Description:
-//    Renvoie le nom du domaine d'application de l'equation.
-//    Ici "Thermique".
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Motcle&
-//    Signification: le nom du domaine d'application de l'equation
-//    Contraintes: toujours egal a "Thermique"
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-const Motcle& Convection_Diffusion_fraction_massique_QC::domaine_application() const
-{
-  static Motcle domaine ="Fraction_massique";
-  return domaine;
-}
-
-// Description:
-//    Associe un fluide de type Fluide_Quasi_Compressible a l'equation.
-// Precondition:
-// Parametre: Fluide_Dilatable_base& un_fluide
-//    Signification: le milieu a associer a l'equation
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation a un milieu associe
-void Convection_Diffusion_fraction_massique_QC::associer_fluide(const Fluide_Dilatable_base& un_fluide)
-{
-  assert(sub_type(Fluide_Quasi_Compressible,un_fluide));
-  le_fluide = ref_cast(Fluide_Quasi_Compressible,un_fluide);
 }
