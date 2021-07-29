@@ -33,20 +33,21 @@
 class Solv_AMGX : public Solv_Petsc
 {
   Declare_instanciable_sans_constructeur(Solv_AMGX);
-#ifdef PETSCKSP_H
-#ifdef PETSC_HAVE_CUDA
-public :
-  virtual void set_config(const Nom& filename)
-  {
-    this->config = filename;
-  }
+public:
   inline Solv_AMGX()
   {
     amgx_=true;
     config = Objet_U::nom_du_cas();
     config += ".amgx";
   };
+  virtual void set_config(const Nom& filename)
+  {
+    this->config = filename;
+  }
 protected :
+  Nom config; // Fichier de configuration
+#ifdef PETSCKSP_H
+#ifdef PETSC_HAVE_CUDA
   virtual void Create_objects(const Matrice_Morse&);
   virtual void Update_matrix(Mat&, const Matrice_Morse&);
   virtual int solve(ArrOfDouble& residual);
@@ -60,8 +61,6 @@ protected :
         amgx_initialized_ = false;
       }
   }
-protected:
-  Nom config; // Fichier de configuration
   AmgXSolver SolveurAmgX_; // Instance de AmgXWrapper
   /*
   int nRowsLocal, nRowsGlobal, nNz;
