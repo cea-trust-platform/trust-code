@@ -940,6 +940,7 @@ m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && expo
 ########
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
+   [ "$TRUST_DISABLE_PETSC" = 1 ] && echo "Error, you need PETSc with -cuda option." && exit -1
    check_nvidia_cuda
    [ "$CUDA_ROOT" = "" ] && echo "CUDA libraries not found!" && exit -1
    m="# PATH to CUDA";

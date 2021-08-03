@@ -25,6 +25,7 @@ CHOIX_MAKE()
 {
    # Partition de compilation
    BATCH="" #&& [ "${HOST#jean-zay}" != $HOST ] && BATCH="srun -p compil -A fej@cpu -t 10:00:00 -c 10 --hint=nomultithread "
+   #MAKE=$BATCH"make VERBOSE=1 "
    MAKE=$BATCH"make"
    if [ ${#CLEAN} = 0 ] && [ $1 = "multiple" ]
    then

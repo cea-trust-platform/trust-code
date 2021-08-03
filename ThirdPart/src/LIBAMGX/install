@@ -4,7 +4,10 @@
 AMGX_DIR=`dirname $1`
 LIB=`basename $1`
 ROOT=`pwd`
+# ToDo: remonter dans configure de TRUST pour partage avec PETSc ?
 [ -d $CUDA_ROOT/../math_libs ] &&  export CUDA_LIB_PATH=$CUDA_ROOT/../math_libs # Ajout sur orcus
+[ -d $CUDA_ROOT/math_libs ]    &&  export CUDA_LIB_PATH=$CUDA_ROOT/math_libs    && CUDA_NVCC_FLAGS="-DCUDA_NVCC_FLAGS=-I$CUDA_LIB_PATH/include;--compiler-options;-fPIC" # Ajout sur topaze
+# Fin ToDo
 log=$ROOT/perf_$LIB.log && rm -f $log
 rm -r -f $LIB
 if [ $LIB = AmgX ]
@@ -22,7 +25,7 @@ then
    fi
    cd $LIB && mkdir -p build && cd build
    # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
-   cmake -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
+   cmake -Wno-dev $CUDA_NVCC_FLAGS -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_C_COMPILER=$TRUST_cc .. && ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
    [ $? != 0 ] && exit -1
    # Test
    cd $AMGX_DIR/$LIB/lib/examples
