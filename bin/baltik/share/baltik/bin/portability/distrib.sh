@@ -25,7 +25,7 @@ base=`basename $archive .tar`
 # machine 	accesbile
 
 log_time=${base}_%_${machine_cible}${ext}_%_time.log
-echo Info_global date_debut `date` >${log_time}
+echo Info_global date_debut `date '+%d/%m %H:%M'` >${log_time}
 
 
 ssh -o "StrictHostKeyChecking no" ${machine_cible} 'echo `hostname`' 
@@ -70,11 +70,11 @@ for phase in prepare configure make make_check make_install
   #ssh -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh;${path_to_run}/englobe.sh ./$phase.sh $* 2>&1  " > ${log_phase}
   ssh -o "StrictHostKeyChecking no" -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh; ./$phase.sh $* 2>&1  " > ${log_phase}
   status=$? && [ "`grep "./$phase.sh: No such file or directory" ${log_phase}`" != "" ] && status=-1
-  echo Info date_fin_$phase `date` >>${log_time}
-  [ $status -ne 0 ] && echo Info $phase KO on $machine_cible  && tail  ${log_phase} && echo Info_global $phase KO >>  ${log_phase} && echo "Info_global date_fin `date`" >> ${log_time} && exit 4
+  echo Info date_fin_$phase `date '+%d/%m %H:%M'` >>${log_time}
+  [ $status -ne 0 ] && echo Info $phase KO on $machine_cible  && tail  ${log_phase} && echo Info_global $phase KO >>  ${log_phase} && echo "Info_global date_fin `date '+%d/%m %H:%M'`" >> ${log_time} && exit 4
   echo Info_global $phase OK >> ${log_phase}	
 done
-echo "Info_global date_fin `date`" >> ${log_time}
+echo "Info_global date_fin `date '+%d/%m %H:%M'`" >> ${log_time}
 echo $base OK sur $machine_cible
 # rm -f $Encours
 exit 0

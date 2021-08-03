@@ -223,7 +223,7 @@ make clean
 fi
 
 
-echo "Info_global release "`uname -r` 
+#echo "Info_global release "`uname -r`
 echo "Info_global model "`uname -m`
 mode=$MODE
 # [ "$VALGRIND" = "1" ] && mode=valgrind

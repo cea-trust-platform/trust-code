@@ -5,7 +5,7 @@ verbose=0
 list_machine=`ls ${project}_%_*_%_time.log |sed "s/_%_time.log//; s/${project}_%_//"`
 [ $verbose -eq 1 ] && echo machines ${list_machine}
 list_info_res=`grep Info_global ${project}_%_*.log | awk '{print $2}' | sort -u `
-list_info_base="date_debut date_fin Os model release cible prepare configure make make_check make_install"
+list_info_base="date_debut date_fin Os model CC cible prepare configure make make_check make_install"
 
 list_info=${list_info_base}
 
