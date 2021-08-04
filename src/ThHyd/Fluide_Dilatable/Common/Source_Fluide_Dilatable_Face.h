@@ -14,54 +14,59 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_QC_VDF_Face.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/VDF
+// File:        Source_Fluide_Dilatable_VDF_Face.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
 // Version:     /main/integration_fauchet_165/1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Source_QC_VDF_Face_included
-#define Source_QC_VDF_Face_included
+#ifndef Source_Fluide_Dilatable_VDF_Face_included
+#define Source_Fluide_Dilatable_VDF_Face_included
 
-#include <Source_Darcy_VDF_Face.h>
-#include <Terme_Source_Qdm_VDF_Face.h>
-#include <Source_Forchheimer_VDF_Face.h>
-#include <Source_Fluide_Dilatable_Face.h>
-#include <Perte_Charge_Reguliere_VDF_Face.h>
-#include <Perte_Charge_Singuliere_VDF_Face.h>
-#include <Terme_Source_Acceleration_VDF_Face.h>
+#include <DoubleTrav.h>
+#include <Milieu_base.h>
+#include <Matrice_Morse.h>
+#include <Modifier_pour_QC.h>
+#include <Source_QC_QDM_Gen.h>
 
-class Source_QC_VDF_Face
-{ };
-
-class Acceleration_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Terme_Source_Acceleration_VDF_Face>
+template <typename DERIVED_T>
+class Source_Fluide_Dilatable_VDF_Face : public DERIVED_T
 {
-  Declare_instanciable(Acceleration_QC_VDF_Face);
+public:
+  DoubleTab& ajouter(DoubleTab& ) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
 };
 
-class Source_qdm_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Terme_Source_Qdm_VDF_Face>
+/* Class template specializations */
+template <typename DERIVED_T>
+DoubleTab& Source_Fluide_Dilatable_VDF_Face<DERIVED_T>::ajouter(DoubleTab& resu ) const
 {
-  Declare_instanciable(Source_qdm_QC_VDF_Face);
-};
+  DoubleTrav trav(resu);
+  DERIVED_T::ajouter(trav);
+  multiplier_par_rho_si_qc(trav,DERIVED_T::equation().milieu());
+  resu+=trav;
+  return resu;
+}
 
-class Perte_Charge_Reguliere_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Perte_Charge_Reguliere_VDF_Face>
+template <typename DERIVED_T>
+void Source_Fluide_Dilatable_VDF_Face<DERIVED_T>::contribuer_a_avec(const DoubleTab& present, Matrice_Morse& matrice) const
 {
-  Declare_instanciable(Perte_Charge_Reguliere_QC_VDF_Face);
-};
 
-class Perte_Charge_Singuliere_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Perte_Charge_Singuliere_VDF_Face>
-{
-  Declare_instanciable(Perte_Charge_Singuliere_QC_VDF_Face);
-};
+  return; /* on ne fait rien pour l'instant ... */
 
-class Darcy_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Source_Darcy_VDF_Face>
-{
-  Declare_instanciable(Darcy_QC_VDF_Face);
-};
+  DoubleTrav toto(present);
+  ajouter(toto);
+  int nb_comp=toto.dimension(1);
+  for (int i=0; i < toto.dimension(0); i++)
+    for (int comp=0; comp<nb_comp; comp++)
+      {
+        if (present(i,comp)!=0)
+          {
+            double coef=toto(i,comp)/present(i,comp);
+            int i0=i*nb_comp+comp;
+            matrice(i0,i0)-=coef;
+          }
+      }
+}
 
-class Forchheimer_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Source_Forchheimer_VDF_Face>
-{
-  Declare_instanciable(Forchheimer_QC_VDF_Face);
-};
-
-#endif /* Source_QC_VDF_Face_included */
+#endif /* Source_Fluide_Dilatable_VDF_Face_included */

@@ -1,6 +1,0 @@
-#Pusemacro(sourceqc)(Acceleration_QC_VDF_Face,Terme_Source_Acceleration_VDF_Face,Terme_Source_Acceleration_VDF_Face.h)
-#Pusemacro(sourceqc)(Source_qdm_QC_VDF_Face,Terme_Source_Qdm_VDF_Face,Terme_Source_Qdm_VDF_Face.h)
-#Pusemacro(sourceqc)(Perte_Charge_Reguliere_QC_VDF_Face,Perte_Charge_Reguliere_VDF_Face,Perte_Charge_Reguliere_VDF_Face.h)
-#Pusemacro(sourceqc)(Perte_Charge_Singuliere_QC_VDF_Face,Perte_Charge_Singuliere_VDF_Face,Perte_Charge_Singuliere_VDF_Face.h)
-#Pusemacro(sourceqc)(Darcy_QC_VDF_Face,Source_Darcy_VDF_Face,Source_Darcy_VDF_Face.h)
-#Pusemacro(sourceqc)(Forchheimer_QC_VDF_Face,Source_Forchheimer_VDF_Face,Source_Forchheimer_VDF_Face.h)
