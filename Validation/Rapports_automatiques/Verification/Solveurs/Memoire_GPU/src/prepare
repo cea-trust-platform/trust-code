@@ -1,0 +1,34 @@
+#!/bin/bash
+cpu=2
+meshes="21x21x21 11x11x11 6x6x6"
+liste_cas="amg_gc_c-amg amgx_gc_sa-amg tuned_amgx_gc_c-amg"
+rtol=1.e-9
+option[1]="amgx gcp { precond  c-amg { } impr rtol $rtol }"
+option[2]="amgx gcp { precond sa-amg { } impr rtol $rtol }"
+option[3]="amgx cli { -file cli.amgx }"
+i=0
+for cas in $liste_cas
+do
+   let i=i+1
+   for mesh in $meshes
+   do
+      mkdir -p $mesh
+      cd $mesh
+      jdd=$cas.data
+      mesh=`echo $mesh | sed "1,$ s?x? ?g"`      
+      cp ../base.data $jdd
+      cp ../cli.amgx .
+      cp ../post_run .
+      sed -i "1,$ s?_solveur_pression_?${option[$i]}?g" $jdd
+      sed -i "1,$ s?_mesh_?$mesh?g" $jdd
+      make_PAR.data $jdd $cpu
+      mv PAR_$jdd $jdd
+      cd .. 1>/dev/null 2>&1
+   done
+done
+sed -i "1,$ s?_cpu_?$cpu?g" fiche.prm.P
+sed -i "1,$ s?_meshes_?$meshes?g" fiche.prm.P
+sed -i "1,$ s?_meshes_?$meshes?g" post_run
+sed -i "1,$ s?_liste_cas_?$liste_cas?g" fiche.prm.P
+python $TRUST_ROOT/bin/KSH/preprocessor.py fiche.prm.P fiche.prm
+exit 0
