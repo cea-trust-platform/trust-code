@@ -97,6 +97,7 @@ then
    [ "${HOST#mezel}"    != $HOST ] && HOST=mezel
    [ "${HOST#cobalt}"   != $HOST ] && HOST=cobalt
    [ "${HOST#irene}"    != $HOST ] && HOST=irene-ccrt
+   [ "${HOST#login}"    != $HOST ] && HOST=orcus-intel && [ "`grep AMD /proc/cpuinfo`" != "" ] && HOST=orcus-amd
 
 fi
 
@@ -146,6 +147,18 @@ then
 	    kill -9 $pid
 	 done   
       fi
+   done
+   # kill baltiks
+   utilisateur=`whoami`
+   fathers=`ps -elf | grep $utilisateur | grep -v baltik_check_portability | grep baltik_check | grep -v grep | grep -v kill | awk '{print $4}'`
+   for father in $fathers
+   do
+         pids=`$TRUST_ROOT/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $father`
+             # Kill
+         for pid in $pids
+             do
+               kill -9 $pid
+             done
    done
    exit 0
 fi

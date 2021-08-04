@@ -445,6 +445,7 @@ git_push()
    repos=`git remote`
    for repo in $repos
    do
+      remote_branch="triou/TMA" && [ "$repo" = "sf_write" ] && remote_branch="dev"
       repo_log=$REP_NUIT"/git_"$repo"_"$git_branch"_"$HOST".log"
       echo "TRUST git push on $HOST the `date` ...">$repo_log
       echo>>$repo_log
@@ -457,7 +458,7 @@ git_push()
 	    then
                git push $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push $repo $git_branch\" $TRUST_MAIL
 	    else
-               git push $repo $git_branch":triou/TMA" 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push $repo TMA\" $TRUST_MAIL
+               git push $repo $git_branch":"$remote_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push $repo TMA\" $TRUST_MAIL
 	    fi
          else
             git push --force $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push force $repo $git_branch\" $TRUST_MAIL
@@ -469,7 +470,7 @@ git_push()
 	    then
                git push --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo $git_branch\" $TRUST_MAIL
 	    else
-               git push --tags $repo $git_branch":triou/TMA" 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo TMA\" $TRUST_MAIL
+               git push --tags $repo $git_branch":"$remote_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo TMA\" $TRUST_MAIL
 	    fi
          else
             git push --force --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push force tags $repo $git_branch\" $TRUST_MAIL
@@ -882,12 +883,18 @@ fi
    echo "Call git push origin TMA"
    git_push -tags
    cd $TRUST_ROOT/externalpackages
-   echo " git push origin TMA in `pwd`"
-   git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
-   cat tmp.log
-   [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push origin TMA\" $TRUST_MAIL 
-   rm tmp.log 1>/dev/null 2>&1
+   repos=`git remote`
+   for repo in $repos
+   do
+     remote_branch="triou/TMA" && tags_="--tags" && [ "$repo" = "sf_write" ] && remote_branch="dev" && tags_=""
+     echo " git push $repo TMA in `pwd`"
+     git push $tags_ $repo Livraison:$remote_branch 1>tmp.log 2>&1
+     cat tmp.log
+     [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] externalpackages git push $repo TMA\" $TRUST_MAIL 
+     rm tmp.log 1>/dev/null 2>&1
+   done
    cd - 1>/dev/null 2>&1
+
       
    # BALTIK
    for Composant in $ComposantsGit 
@@ -917,6 +924,14 @@ fi
          else
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull OK \" $TRUST_MAIL
          fi
+         rm tmp.log 1>/dev/null 2>&1
+         git push origin_irene-ccrt Livraison:triou/TMA 1>tmp.log 2>&1
+         cat tmp.log
+         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin_irene-ccrt TMA\" $TRUST_MAIL 
+         rm tmp.log 1>/dev/null 2>&1
+         git push sf_write Livraison:dev 1>tmp.log 2>&1
+         cat tmp.log
+         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push sf_write TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
       elif [[ "$Composant" == "sympy_to_TRUST" || "$Composant" == "pemfc" ]]
       then
@@ -3426,7 +3441,7 @@ do
    if [ $validation_composant = 1 ]
    then
       echo "Release criterion: $Composant OK"
-      [ $nb_total != $tot_total ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
+      [ $nb_total != $tot_total ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL `[ "$Composant" = "triocfd" ] && echo $triocfd_project_leader`
    else
       echo "Release criterion: $Composant KO"
       if [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des composants GIT
@@ -3439,9 +3454,9 @@ do
       then
          if [ $tot_cible != 0 ]
 	 then
-	    cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL
+	    cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL `[ "$Composant" = "triocfd" ] && echo $triocfd_project_leader`
 	 else
-	    cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL
+	    cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL `[ "$Composant" = "triocfd" ] && echo $triocfd_project_leader`
 	 fi
       fi
    fi

@@ -1,5 +1,7 @@
 Version	Qui				Tache
 1.8.4   trust@cea.fr            compiler triocfd sur la partition compil sur jean-zay
+1.8.4   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC
+1.8.4   adrien.bruneton@cea.fr  Revoir ctest valgrind. cf mail 22/07/2021 17h21
 1.8.4   adrien.bruneton@cea.fr  Ajout d'echange_espace_virtuel dans Champ_front_xyz_debit.cpp. cf commit 76e425581
 1.8.4   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
 1.8.4   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
