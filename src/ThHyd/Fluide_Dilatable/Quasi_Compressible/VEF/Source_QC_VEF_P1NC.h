@@ -38,52 +38,52 @@
 class Source_QC_VEF_P1NC
 { };
 
-class Acceleration_QC_VEF_P1NC : public Source_Fluide_Dilatable_VDF_Face<Terme_Source_Acceleration_VEF_Face>
+class Acceleration_QC_VEF_P1NC : public Source_Fluide_Dilatable_Face<Terme_Source_Acceleration_VEF_Face>
 {
   Declare_instanciable(Acceleration_QC_VEF_P1NC);
 };
 
-class Perte_Charge_Circulaire_QC_VEF_P1NC : public Source_Fluide_Dilatable_VDF_Face<Perte_Charge_Circulaire_VEF_P1NC>
+class Perte_Charge_Circulaire_QC_VEF_P1NC : public Source_Fluide_Dilatable_Face<Perte_Charge_Circulaire_VEF_P1NC>
 {
   Declare_instanciable(Perte_Charge_Circulaire_QC_VEF_P1NC);
 };
 
-class Perte_Charge_Anisotrope_QC_VEF_P1NC : public Source_Fluide_Dilatable_VDF_Face<Perte_Charge_Anisotrope_VEF_P1NC>
+class Perte_Charge_Anisotrope_QC_VEF_P1NC : public Source_Fluide_Dilatable_Face<Perte_Charge_Anisotrope_VEF_P1NC>
 {
   Declare_instanciable(Perte_Charge_Anisotrope_QC_VEF_P1NC);
 };
 
-class Perte_Charge_Directionnelle_QC_VEF_P1NC : public Source_Fluide_Dilatable_VDF_Face<Perte_Charge_Directionnelle_VEF_P1NC>
+class Perte_Charge_Directionnelle_QC_VEF_P1NC : public Source_Fluide_Dilatable_Face<Perte_Charge_Directionnelle_VEF_P1NC>
 {
   Declare_instanciable(Perte_Charge_Directionnelle_QC_VEF_P1NC);
 };
 
-class Perte_Charge_Isotrope_QC_VEF_P1NC : public Source_Fluide_Dilatable_VDF_Face<Perte_Charge_Isotrope_VEF_P1NC>
+class Perte_Charge_Isotrope_QC_VEF_P1NC : public Source_Fluide_Dilatable_Face<Perte_Charge_Isotrope_VEF_P1NC>
 {
   Declare_instanciable(Perte_Charge_Isotrope_QC_VEF_P1NC);
 };
 
-class Perte_Charge_Reguliere_QC_VEF_P1NC : public Source_Fluide_Dilatable_VDF_Face<Perte_Charge_Reguliere_VEF_P1NC>
+class Perte_Charge_Reguliere_QC_VEF_P1NC : public Source_Fluide_Dilatable_Face<Perte_Charge_Reguliere_VEF_P1NC>
 {
   Declare_instanciable(Perte_Charge_Reguliere_QC_VEF_P1NC);
 };
 
-class Perte_Charge_Singuliere_QC_VEF_P1NC : public Source_Fluide_Dilatable_VDF_Face<Perte_Charge_Singuliere_VEF_Face>
+class Perte_Charge_Singuliere_QC_VEF_P1NC : public Source_Fluide_Dilatable_Face<Perte_Charge_Singuliere_VEF_Face>
 {
   Declare_instanciable(Perte_Charge_Singuliere_QC_VEF_P1NC);
 };
 
-class Source_qdm_QC_VEF_P1NC : public Source_Fluide_Dilatable_VDF_Face<Terme_Source_Qdm_VEF_Face>
+class Source_qdm_QC_VEF_P1NC : public Source_Fluide_Dilatable_Face<Terme_Source_Qdm_VEF_Face>
 {
   Declare_instanciable(Source_qdm_QC_VEF_P1NC);
 };
 
-class Darcy_QC_VEF_P1NC : public Source_Fluide_Dilatable_VDF_Face<Source_Darcy_VEF_Face>
+class Darcy_QC_VEF_P1NC : public Source_Fluide_Dilatable_Face<Source_Darcy_VEF_Face>
 {
   Declare_instanciable(Darcy_QC_VEF_P1NC);
 };
 
-class Forchheimer_QC_VEF_P1NC : public Source_Fluide_Dilatable_VDF_Face<Source_Forchheimer_VEF_Face>
+class Forchheimer_QC_VEF_P1NC : public Source_Fluide_Dilatable_Face<Source_Forchheimer_VEF_Face>
 {
   Declare_instanciable(Forchheimer_QC_VEF_P1NC);
 };

@@ -34,32 +34,32 @@
 class Source_QC_VDF_Face
 { };
 
-class Acceleration_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Terme_Source_Acceleration_VDF_Face>
+class Acceleration_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Terme_Source_Acceleration_VDF_Face>
 {
   Declare_instanciable(Acceleration_QC_VDF_Face);
 };
 
-class Source_qdm_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Terme_Source_Qdm_VDF_Face>
+class Source_qdm_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Terme_Source_Qdm_VDF_Face>
 {
   Declare_instanciable(Source_qdm_QC_VDF_Face);
 };
 
-class Perte_Charge_Reguliere_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Perte_Charge_Reguliere_VDF_Face>
+class Perte_Charge_Reguliere_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Perte_Charge_Reguliere_VDF_Face>
 {
   Declare_instanciable(Perte_Charge_Reguliere_QC_VDF_Face);
 };
 
-class Perte_Charge_Singuliere_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Perte_Charge_Singuliere_VDF_Face>
+class Perte_Charge_Singuliere_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Perte_Charge_Singuliere_VDF_Face>
 {
   Declare_instanciable(Perte_Charge_Singuliere_QC_VDF_Face);
 };
 
-class Darcy_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Source_Darcy_VDF_Face>
+class Darcy_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Source_Darcy_VDF_Face>
 {
   Declare_instanciable(Darcy_QC_VDF_Face);
 };
 
-class Forchheimer_QC_VDF_Face : public Source_Fluide_Dilatable_VDF_Face<Source_Forchheimer_VDF_Face>
+class Forchheimer_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Source_Forchheimer_VDF_Face>
 {
   Declare_instanciable(Forchheimer_QC_VDF_Face);
 };

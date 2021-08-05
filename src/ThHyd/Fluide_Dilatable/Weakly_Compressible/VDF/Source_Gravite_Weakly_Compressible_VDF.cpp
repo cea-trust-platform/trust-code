@@ -28,7 +28,7 @@
 #include <Dirichlet_homogene.h>
 #include <Zone_Cl_dis.h>
 
-Implemente_instanciable(Source_Gravite_Weakly_Compressible_VDF,"Source_Gravite_Weakly_Compressible_VDF",Source_Gravite_Weakly_Compressible_base);
+Implemente_instanciable(Source_Gravite_Weakly_Compressible_VDF,"Source_Gravite_Weakly_Compressible_VDF",Source_Gravite_Fluide_Dilatable_base);
 
 // Description:
 //    Imprime la source sur un flot de sortie.
@@ -87,25 +87,6 @@ void Source_Gravite_Weakly_Compressible_VDF::associer_zones(const Zone_dis& zone
 {
   la_zone = ref_cast(Zone_VDF,zone.valeur());
   la_zone_Cl = ref_cast(Zone_Cl_VDF,zone_cl.valeur());
-}
-
-// Description:
-//    Complete la source : rempli la ref sur le fluide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Source_Gravite_Weakly_Compressible_VDF::completer()
-{
-  Source_Gravite_Weakly_Compressible_base::completer();
 }
 
 // Description:

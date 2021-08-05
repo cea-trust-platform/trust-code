@@ -30,7 +30,7 @@
 #include <Symetrie.h>
 #include <Discretisation_base.h>
 
-Implemente_instanciable(Source_Gravite_Weakly_Compressible_VEF,"Source_Gravite_Weakly_Compressible_VEF",Source_Gravite_Weakly_Compressible_base);
+Implemente_instanciable(Source_Gravite_Weakly_Compressible_VEF,"Source_Gravite_Weakly_Compressible_VEF",Source_Gravite_Fluide_Dilatable_base);
 
 // Description:
 //    Imprime la source sur un flot de sortie.
@@ -89,25 +89,6 @@ void Source_Gravite_Weakly_Compressible_VEF::associer_zones(const Zone_dis& zone
 {
   la_zone = ref_cast(Zone_VEF,zone.valeur());
   la_zone_Cl = ref_cast(Zone_Cl_VEF,zone_cl.valeur());
-}
-
-// Description:
-//    Complete la source : rempli la ref sur le fluide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Source_Gravite_Weakly_Compressible_VEF::completer()
-{
-  Source_Gravite_Weakly_Compressible_base::completer();
 }
 
 // Description:

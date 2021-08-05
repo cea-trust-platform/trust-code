@@ -24,32 +24,28 @@
 #ifndef Source_Gravite_Quasi_Compressible_VDF_included
 #define Source_Gravite_Quasi_Compressible_VDF_included
 
-#include <Source_Gravite_Quasi_Compressible_base.h>
+#include <Source_Gravite_Fluide_Dilatable_base.h>
 #include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION class  Source_Gravite_Quasi_Compressible_VDF
 //
-// Cette classe represente un terme source supplementaire
-// a prendre en compte dans les equations de quantite de mouvement
-//  dans le cas ou le fluide est quasi compressible, en cas de gravite, et pour
-//  une discretisation VDF.
+//  Cette classe represente un terme source supplementaire a prendre en compte
+//  dans les equations de quantite de mouvement dans le cas ou le fluide est
+//  quasi compressible, en cas de gravite, et pour une discretisation VDF.
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Gravite_Quasi_Compressible_base
+// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Gravite_Quasi_Compressible_VDF : public Source_Gravite_Quasi_Compressible_base
+class Source_Gravite_Quasi_Compressible_VDF : public Source_Gravite_Fluide_Dilatable_base
 {
-
   Declare_instanciable(Source_Gravite_Quasi_Compressible_VDF);
 
 public:
-  void completer();
   DoubleTab& ajouter(DoubleTab& ) const;
 
 protected :
@@ -57,5 +53,5 @@ protected :
   REF(Zone_VDF) la_zone;
   REF(Zone_Cl_VDF) la_zone_Cl;
 };
-#endif
 
+#endif /* Source_Gravite_Quasi_Compressible_VDF_included */

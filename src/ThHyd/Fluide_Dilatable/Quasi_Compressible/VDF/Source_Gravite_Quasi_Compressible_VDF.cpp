@@ -28,8 +28,7 @@
 #include <Dirichlet_homogene.h>
 #include <Zone_Cl_dis.h>
 
-Implemente_instanciable(Source_Gravite_Quasi_Compressible_VDF,"Source_Gravite_Quasi_Compressible_VDF",Source_Gravite_Quasi_Compressible_base);
-
+Implemente_instanciable(Source_Gravite_Quasi_Compressible_VDF,"Source_Gravite_Quasi_Compressible_VDF",Source_Gravite_Fluide_Dilatable_base);
 
 // Description:
 //    Imprime la source sur un flot de sortie.
@@ -91,25 +90,6 @@ void Source_Gravite_Quasi_Compressible_VDF::associer_zones(const Zone_dis& zone,
 }
 
 // Description:
-//    Complete la source : rempli la ref sur le fluide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Source_Gravite_Quasi_Compressible_VDF::completer()
-{
-  Source_Gravite_Quasi_Compressible_base::completer();
-}
-
-// Description:
 //    Ajoute les termes sources
 // Precondition:
 // Parametre:
@@ -125,49 +105,34 @@ void Source_Gravite_Quasi_Compressible_VDF::completer()
 // Postcondition:
 DoubleTab& Source_Gravite_Quasi_Compressible_VDF::ajouter(DoubleTab& resu) const
 {
-  int face, nb_faces = la_zone->nb_faces();
-  int premiere_face_interne = la_zone->premiere_face_int();
-  //  const IntTab& face_voisins = la_zone->face_voisins();
+  int face, nb_faces = la_zone->nb_faces(), premiere_face_interne = la_zone->premiere_face_int();
   const IntVect& orientation = la_zone->orientation();
   const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
-  const DoubleTab& tab_rho = ref_cast(Fluide_Quasi_Compressible,le_fluide.valeur()).rho_discvit();
-  const Fluide_Quasi_Compressible& fluide=le_fluide.valeur();
   const DoubleVect& porosite_surf=la_zone->porosite_face();
-  double rho_m=0;
-  if (le_fluide.valeur().get_traitement_rho_gravite())
-    {
-      // On calcule rho_moy on le retire de la gravite
-      // sensiblement egale a Boussi
-      // Le But donner un sens a P=0 quand on a de la gravite
-
-      const DoubleTab& rho_elem=fluide.masse_volumique().valeurs();
-
-      rho_m=fluide.moyenne_vol(rho_elem) ;
-    }
+  const Fluide_Quasi_Compressible& fluide = ref_cast(Fluide_Quasi_Compressible,le_fluide.valeur());
+  const DoubleTab& tab_rho = fluide.rho_discvit();
+  const DoubleTab& rho_elem=fluide.masse_volumique().valeurs();
+  // On calcule rho_moy on le retire de la gravite sensiblement egale a Boussi (si get_traitement_rho_gravite() =1)
+  // Le But donner un sens a P=0 quand on a de la gravite
+  const double rho_m = fluide.get_traitement_rho_gravite() ? fluide.moyenne_vol(rho_elem) : 0.0;
 
   int num_cl;
   for (num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
     {
       const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(num_cl);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int ndeb = le_bord.num_premiere_face();
-      int nfin = ndeb + le_bord.nb_faces();
-      if (sub_type(Dirichlet,la_cl.valeur()) || sub_type(Dirichlet_homogene,la_cl.valeur()))
-        ;
+      int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+
+      if (sub_type(Dirichlet,la_cl.valeur()) || sub_type(Dirichlet_homogene,la_cl.valeur())) { /* Do nothing */ }
       else
-        for (face=ndeb ; face<nfin ; face++)
-          {
-            //resu(face) += g(orientation(face)) * volumes_entrelaces(face);
+        {
+          for (face=ndeb ; face<nfin ; face++)
             resu(face) += (tab_rho(face)-rho_m)*g(orientation(face)) * volumes_entrelaces(face)*porosite_surf(face);
-          }
+        }
     }
 
   for (face=premiere_face_interne ; face<nb_faces; face++)
-    {
-      //resu(face) += g(orientation(face)) * volumes_entrelaces(face);
-      resu(face) += (tab_rho(face)-rho_m)*g(orientation(face)) * volumes_entrelaces(face)*porosite_surf(face);
-    }
+    resu(face) += (tab_rho(face)-rho_m)*g(orientation(face)) * volumes_entrelaces(face)*porosite_surf(face);
 
   return resu;
 }
-

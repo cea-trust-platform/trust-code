@@ -23,7 +23,7 @@
 #ifndef Source_Gravite_Weakly_Compressible_VEF_included
 #define Source_Gravite_Weakly_Compressible_VEF_included
 
-#include <Source_Gravite_Weakly_Compressible_base.h>
+#include <Source_Gravite_Fluide_Dilatable_base.h>
 #include <Ref_Zone_VEF.h>
 #include <Ref_Zone_Cl_VEF.h>
 
@@ -37,16 +37,15 @@
 //  une discretisation VEF.
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Gravite_Weakly_Compressible_base
+// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Gravite_Weakly_Compressible_VEF : public Source_Gravite_Weakly_Compressible_base
+class Source_Gravite_Weakly_Compressible_VEF : public Source_Gravite_Fluide_Dilatable_base
 {
   Declare_instanciable(Source_Gravite_Weakly_Compressible_VEF);
 
 public:
-  void completer();
   DoubleTab& ajouter(DoubleTab& ) const;
 
 protected :

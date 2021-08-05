@@ -30,7 +30,7 @@
 #include <Symetrie.h>
 #include <Discretisation_base.h>
 
-Implemente_instanciable(Source_Gravite_Quasi_Compressible_VEF,"Source_Gravite_Quasi_Compressible_VEF",Source_Gravite_Quasi_Compressible_base);
+Implemente_instanciable(Source_Gravite_Quasi_Compressible_VEF,"Source_Gravite_Quasi_Compressible_VEF",Source_Gravite_Fluide_Dilatable_base);
 
 
 // Description:
@@ -93,25 +93,6 @@ void Source_Gravite_Quasi_Compressible_VEF::associer_zones(const Zone_dis& zone,
 }
 
 // Description:
-//    Complete la source : rempli la ref sur le fluide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Source_Gravite_Quasi_Compressible_VEF::completer()
-{
-  Source_Gravite_Quasi_Compressible_base::completer();
-}
-
-// Description:
 //    Ajoute les termes sources
 // Precondition:
 // Parametre:
@@ -127,24 +108,16 @@ void Source_Gravite_Quasi_Compressible_VEF::completer()
 // Postcondition:
 DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
 {
-  int nb_faces = la_zone->nb_faces();
-  int premiere_face_interne = la_zone->premiere_face_int();
+  int nb_faces = la_zone->nb_faces(), premiere_face_interne = la_zone->premiere_face_int();
   const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
   const DoubleVect& porosite_face = la_zone->porosite_face();
   const IntTab& face_voisins = la_zone->face_voisins();
-  const DoubleTab& face_normales = la_zone->face_normales();
-  const DoubleTab& xp = la_zone->xp();
-  const DoubleTab& xv = la_zone->xv();
-  const DoubleTab& tab_rho = ref_cast(Fluide_Quasi_Compressible,le_fluide.valeur()).rho_discvit();
-
-  double rho_m=0;
-  if (le_fluide->get_traitement_rho_gravite())
-    {
-      // On calcule rho_moy on le retire de la gravite
-      // sensiblement egale a Boussi
-      // Le But donner un sens a P=0 quand on a de la gravite
-      rho_m=le_fluide->moyenne_vol(tab_rho);
-    }
+  const DoubleTab& face_normales = la_zone->face_normales(), xp = la_zone->xp(), xv = la_zone->xv();
+  const Fluide_Quasi_Compressible& fluide = ref_cast(Fluide_Quasi_Compressible,le_fluide.valeur());
+  const DoubleTab& tab_rho = fluide.rho_discvit();
+  // On calcule rho_moy on le retire de la gravite sensiblement egale a Boussi (si get_traitement_rho_gravite() =1)
+  // Le But donner un sens a P=0 quand on a de la gravite
+  const double rho_m = fluide.get_traitement_rho_gravite() ? le_fluide->moyenne_vol(tab_rho) : 0.0;
 
   if (mon_equation->discretisation().que_suis_je()=="VEF")
     {
@@ -152,24 +125,19 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
         {
           const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(num_cl);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
+          int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
           if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
             {
               for (int face=ndeb ; face<nfin ; face++)
                 {
                   int elem1 = face_voisins(face,0);
-                  if (elem1==-1)
-                    {
-                      elem1 = face_voisins(face,1);
-                    }
+                  if (elem1==-1)  elem1 = face_voisins(face,1);
+
                   for (int comp=0 ; comp<dimension ; comp++)
                     {
                       double delta_coord = (xv(face,comp) - xp(elem1,comp));
                       for (int i=0 ; i<dimension ; i++)
-                        {
-                          resu(face,i) += (tab_rho(face)-rho_m)*delta_coord*face_normales(face,i)*g(comp);
-                        }
+                        resu(face,i) += (tab_rho(face)-rho_m)*delta_coord*face_normales(face,i)*g(comp);
                     }
                 }
             }
@@ -177,15 +145,12 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
             {
               for (int face=premiere_face_interne ; face<nb_faces; face++)
                 {
-                  int elem1 = face_voisins(face,0);
-                  int elem2 = face_voisins(face,1);
+                  int elem1 = face_voisins(face,0), elem2 = face_voisins(face,1);
                   for (int comp=0 ; comp<dimension ; comp++)
                     {
                       double delta_coord = (xp(elem2,comp) - xp(elem1,comp));
                       for (int i=0 ; i<dimension ; i++)
-                        {
-                          resu(face,i) += (tab_rho(face)-rho_m)*delta_coord*face_normales(face,i)*g(comp);
-                        }
+                        resu(face,i) += (tab_rho(face)-rho_m)*delta_coord*face_normales(face,i)*g(comp);
                     }
                 }
             }
@@ -193,15 +158,12 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
 
       for (int face=premiere_face_interne ; face<nb_faces; face++)
         {
-          int elem1 = face_voisins(face,0);
-          int elem2 = face_voisins(face,1);
+          int elem1 = face_voisins(face,0), elem2 = face_voisins(face,1);
           for (int comp=0 ; comp<dimension ; comp++)
             {
               double delta_coord = (xp(elem2,comp) - xp(elem1,comp));
               for (int i=0 ; i<dimension ; i++)
-                {
-                  resu(face,i) += (tab_rho(face)-rho_m)*delta_coord*face_normales(face,i)*g(comp);
-                }
+                resu(face,i) += (tab_rho(face)-rho_m)*delta_coord*face_normales(face,i)*g(comp);
             }
         }
     }
@@ -211,27 +173,18 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
         {
           const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(num_cl);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
+          int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
           if (sub_type(Neumann_sortie_libre,la_cl.valeur())||sub_type(Symetrie,la_cl.valeur())||sub_type(Periodique,la_cl.valeur()))
             {
               for (int face=ndeb ; face<nfin ; face++)
-                {
-                  for (int comp=0 ; comp<dimension ; comp++)
-                    {
-                      resu(face,comp) += (tab_rho(face)-rho_m)*volumes_entrelaces(face)*porosite_face(face)*g(comp);
-                    }
-                }
+                for (int comp=0 ; comp<dimension ; comp++)
+                  resu(face,comp) += (tab_rho(face)-rho_m)*volumes_entrelaces(face)*porosite_face(face)*g(comp);
             }
         }
 
       for (int face=premiere_face_interne ; face<nb_faces; face++)
-        {
-          for (int comp=0 ; comp<dimension ; comp++)
-            {
-              resu(face,comp) += (tab_rho(face)-rho_m)*volumes_entrelaces(face)*porosite_face(face)*g(comp);
-            }
-        }
+        for (int comp=0 ; comp<dimension ; comp++)
+          resu(face,comp) += (tab_rho(face)-rho_m)*volumes_entrelaces(face)*porosite_face(face)*g(comp);
     }
   else
     {
@@ -241,4 +194,3 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
 
   return resu;
 }
-
