@@ -14,16 +14,16 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Weakly_Compressible_Chaleur_VDF.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VDF
-// Version:     /main/21
+// File:        Source_QC_Chaleur_VEF.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/VEF
+// Version:     /main/22
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Source_Weakly_Compressible_Chaleur_VDF.h>
+#include <Source_QC_Chaleur_VEF.h>
 #include <Zone_VF.h>
 
-Implemente_instanciable(Source_Weakly_Compressible_Chaleur_VDF,"Source_Weakly_Compressible_Chaleur_VDF",Source_Weakly_Compressible_Chaleur);
+Implemente_instanciable(Source_QC_Chaleur_VEF,"Source_QC_Chaleur_VEF",Source_QC_Chaleur);
 
 // Description:
 //    Imprime la source sur un flot de sortie.
@@ -39,7 +39,7 @@ Implemente_instanciable(Source_Weakly_Compressible_Chaleur_VDF,"Source_Weakly_Co
 // Exception:
 // Effets de bord: le flot de sortie est modifie
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Source_Weakly_Compressible_Chaleur_VDF::printOn(Sortie& os) const
+Sortie& Source_QC_Chaleur_VEF::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
@@ -59,7 +59,7 @@ Sortie& Source_Weakly_Compressible_Chaleur_VDF::printOn(Sortie& os) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Source_Weakly_Compressible_Chaleur_VDF::readOn(Entree& is)
+Entree& Source_QC_Chaleur_VEF::readOn(Entree& is)
 {
   return is;
 }
@@ -78,8 +78,10 @@ Entree& Source_Weakly_Compressible_Chaleur_VDF::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Source_Weakly_Compressible_Chaleur_VDF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& )
+void Source_QC_Chaleur_VEF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& )
 {
-  volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes());
-  porosites.ref(ref_cast(Zone_VF,zone.valeur()).porosite_elem());
+  volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes_entrelaces());
+  porosites.ref(ref_cast(Zone_VF,zone.valeur()).porosite_face());
 }
+
+

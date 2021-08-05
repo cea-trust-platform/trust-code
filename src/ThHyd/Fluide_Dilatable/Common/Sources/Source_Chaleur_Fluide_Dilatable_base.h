@@ -14,44 +14,50 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Gravite_Weakly_Compressible_VEF.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VEF
-// Version:     /main/8
+// File:        Source_Chaleur_Fluide_Dilatable_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Sources
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Source_Gravite_Weakly_Compressible_VEF_included
-#define Source_Gravite_Weakly_Compressible_VEF_included
+#ifndef Source_Chaleur_Fluide_Dilatable_base_included
+#define Source_Chaleur_Fluide_Dilatable_base_included
 
-#include <Source_Gravite_Fluide_Dilatable_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Source_base.h>
+#include <Ref_Fluide_Dilatable_base.h>
+
+class Zone_dis;
+class Zone_Cl_dis;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class  Source_Gravite_Weakly_Compressible_VEF
+// .DESCRIPTION class Source_Chaleur_Fluide_Dilatable_base
 //
-// Cette classe represente un terme source supplementaire
-// a prendre en compte dans les equations de quantite de mouvement
-//  dans le cas ou le fluide est quasi compressible, en cas de gravite, et pour
-//  une discretisation VEF.
+// Cette classe represente un terme source supplementaire a prendre en compte dans
+// les equations de la chaleur dans le cas ou le fluide est quasi compressible
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
+// Source_base Fluide_Dilatable_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Gravite_Weakly_Compressible_VEF : public Source_Gravite_Fluide_Dilatable_base
+class Source_Chaleur_Fluide_Dilatable_base : public Source_base
 {
-  Declare_instanciable(Source_Gravite_Weakly_Compressible_VEF);
+  Declare_base(Source_Chaleur_Fluide_Dilatable_base);
 
 public:
-  DoubleTab& ajouter(DoubleTab& ) const;
+  void completer();
+  DoubleTab& calculer(DoubleTab& ) const;
+  virtual DoubleTab& ajouter(DoubleTab& ) const = 0;
 
-protected :
-  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
-  REF(Zone_VEF) la_zone;
-  REF(Zone_Cl_VEF) la_zone_Cl;
+  // Methodes inlines
+  inline void mettre_a_jour(double) { }
+  inline void associer_pb(const Probleme_base& ) { }
+
+protected:
+  virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& )=0;
+  REF(Fluide_Dilatable_base) le_fluide;
+  DoubleVect volumes,porosites;
 };
 
-#endif /* Source_Gravite_Weakly_Compressible_VEF_included */
+#endif /* Source_Chaleur_Fluide_Dilatable_base_included */

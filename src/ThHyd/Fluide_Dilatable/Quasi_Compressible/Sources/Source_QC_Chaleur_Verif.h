@@ -14,43 +14,54 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Gravite_Quasi_Compressible_VEF.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/VEF
-// Version:     /main/8
+// File:        Source_QC_Chaleur_Verif.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Sources
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Source_Gravite_Quasi_Compressible_VEF_included
-#define Source_Gravite_Quasi_Compressible_VEF_included
+#ifndef Source_QC_Chaleur_Verif_included
+#define Source_QC_Chaleur_Verif_included
 
-#include <Source_Gravite_Fluide_Dilatable_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Source_Chaleur_Fluide_Dilatable_base.h>
+#include <Ref_Fluide_Quasi_Compressible.h>
+
+class Zone_dis;
+class Zone_Cl_dis;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class  Source_Gravite_Quasi_Compressible_VEF
+// .DESCRIPTION class Source_QC_Chaleur_Verif
 //
-//  Cette classe represente un terme source supplementaire a prendre en compte
-//  dans les equations de quantite de mouvement dans le cas ou le fluide est
-//  quasi compressible, en cas de gravite, et pour une discretisation VEF.
+// Cette classe represente un terme source supplementaire a prendre en compte dans
+// les equations de la chaleur dans le cas ou le fluide est quasi compressible
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
+// Source_Chaleur_Fluide_Dilatable_base Fluide_Quasi_Compressible
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Gravite_Quasi_Compressible_VEF : public Source_Gravite_Fluide_Dilatable_base
+class Source_QC_Chaleur_Verif : public Source_Chaleur_Fluide_Dilatable_base
 {
-  Declare_instanciable(Source_Gravite_Quasi_Compressible_VEF);
+  Declare_instanciable_sans_constructeur(Source_QC_Chaleur_Verif);
 
 public:
-  DoubleTab& ajouter(DoubleTab& ) const;
+  Source_QC_Chaleur_Verif();
+  virtual DoubleTab& ajouter(DoubleTab& ) const ;
 
-protected :
-  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
-  REF(Zone_VEF) la_zone;
-  REF(Zone_Cl_VEF) la_zone_Cl;
+protected:
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) { }
+  int mode;
 };
 
-#endif /* Source_Gravite_Quasi_Compressible_VEF_included */
+class Source_QC_Chaleur_Verif_VEF : public Source_QC_Chaleur_Verif
+{
+  Declare_instanciable(Source_QC_Chaleur_Verif_VEF);
+};
+
+class Source_QC_Chaleur_Verif_VEF_P1NC : public Source_QC_Chaleur_Verif
+{
+  Declare_instanciable(Source_QC_Chaleur_Verif_VEF_P1NC);
+};
+
+#endif /* Source_QC_Chaleur_Verif_included */

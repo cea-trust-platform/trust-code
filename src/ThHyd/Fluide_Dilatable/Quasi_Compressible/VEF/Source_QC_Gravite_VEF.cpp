@@ -14,13 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Gravite_Quasi_Compressible_VEF.cpp
+// File:        Source_QC_Gravite_VEF.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/VEF
 // Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Source_Gravite_Quasi_Compressible_VEF.h>
+#include <Source_QC_Gravite_VEF.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Equation_base.h>
 #include <Zone_VEF.h>
@@ -30,8 +30,7 @@
 #include <Symetrie.h>
 #include <Discretisation_base.h>
 
-Implemente_instanciable(Source_Gravite_Quasi_Compressible_VEF,"Source_Gravite_Quasi_Compressible_VEF",Source_Gravite_Fluide_Dilatable_base);
-
+Implemente_instanciable(Source_QC_Gravite_VEF,"Source_QC_Gravite_VEF",Source_Gravite_Fluide_Dilatable_base);
 
 // Description:
 //    Imprime la source sur un flot de sortie.
@@ -47,7 +46,7 @@ Implemente_instanciable(Source_Gravite_Quasi_Compressible_VEF,"Source_Gravite_Qu
 // Exception:
 // Effets de bord: le flot de sortie est modifie
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Source_Gravite_Quasi_Compressible_VEF::printOn(Sortie& os) const
+Sortie& Source_QC_Gravite_VEF::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
@@ -67,7 +66,7 @@ Sortie& Source_Gravite_Quasi_Compressible_VEF::printOn(Sortie& os) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Source_Gravite_Quasi_Compressible_VEF::readOn(Entree& is)
+Entree& Source_QC_Gravite_VEF::readOn(Entree& is)
 {
   return is;
 }
@@ -86,7 +85,7 @@ Entree& Source_Gravite_Quasi_Compressible_VEF::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Source_Gravite_Quasi_Compressible_VEF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
+void Source_QC_Gravite_VEF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
 {
   la_zone = ref_cast(Zone_VEF,zone.valeur());
   la_zone_Cl = ref_cast(Zone_Cl_VEF,zone_cl.valeur());
@@ -106,7 +105,7 @@ void Source_Gravite_Quasi_Compressible_VEF::associer_zones(const Zone_dis& zone,
 // Exception:
 // Effets de bord:
 // Postcondition:
-DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
+DoubleTab& Source_QC_Gravite_VEF::ajouter(DoubleTab& resu) const
 {
   int nb_faces = la_zone->nb_faces(), premiere_face_interne = la_zone->premiere_face_int();
   const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
@@ -188,7 +187,7 @@ DoubleTab& Source_Gravite_Quasi_Compressible_VEF::ajouter(DoubleTab& resu) const
     }
   else
     {
-      Cerr<<"La discretisation "<<mon_equation->discretisation().que_suis_je()<<" n'est pas reconnue dans Source_Gravite_Quasi_Compressible_VEF"<<finl;
+      Cerr<<"La discretisation "<<mon_equation->discretisation().que_suis_je()<<" n'est pas reconnue dans Source_QC_Gravite_VEF"<<finl;
       Process::exit();
     }
 

@@ -454,13 +454,13 @@ void Loi_Etat_GP_WC::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  const DoubleTab& Ptot = FWC.pression_th_tab();
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  const DoubleTab& pres = FWC.pression_th_tab();
   const int n=tab_rho.size();
 
   for (int som=0 ; som<n ; som++)
     {
-      tab_rho_np1(som) = calculer_masse_volumique(Ptot(som,0),tab_ICh(som,0));
+      tab_rho_np1(som) = calculer_masse_volumique(pres(som,0),tab_ICh(som,0));
       tab_rho(som,0) = 0.5 * ( tab_rho_n(som) + tab_rho_np1(som) );
     }
   tab_rho.echange_espace_virtuel();

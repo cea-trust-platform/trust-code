@@ -56,18 +56,28 @@ public :
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
 
   // Methodes inlines
-  inline const DoubleTab& pression_th_tab() { return Pth_tab_; } // Pression thermodynamique
-  inline const DoubleTab& pression_thn_tab() { return Pth_n_tab_; } // Pression thermodynamique a l'etape precedente
+  inline const Champ_Don& pression_hydro() const { return pression_hydro_; }
+  inline Champ_Don& pression_hydro() { return pression_hydro_; }
+  inline const DoubleTab& pression_th_tab() { return Pth_tab_; } // Tab Pression thermodynamique
+  inline const DoubleTab& pression_thn_tab() { return Pth_n_tab_; } // Tab Pression thermodynamique a l'etape precedente
   inline void secmembre_divU_Z(DoubleTab& tab_W) const { eos_tools_->secmembre_divU_Z(tab_W); }
-  inline int use_total_pressure() { return use_total_pressure_; }
+  inline bool use_total_pressure() { return use_total_pressure_; }
+  inline bool use_hydrostatic_pressure() { return use_hydrostatic_pressure_; }
+  inline bool use_pth_xyz() { return Pth_xyz_.non_nul(); }
+  inline bool use_total_hydro_pressure() { return (use_total_pressure_||use_hydrostatic_pressure_); }
 
 protected:
-  Champ_Don Pth_xyz_;
+  Champ_Don Pth_xyz_,pression_hydro_;
   DoubleTab Pth_tab_, Pth_n_tab_;
-  int use_total_pressure_; // the default value is 0 => i.e: do not use total P in EOS unless activated
+  int use_total_pressure_, use_hydrostatic_pressure_; // the default value is 0 => i.e: do not use total P in EOS unless activated
 
 private:
+  void calculer_pression_hydro();
+  void initialiser_pth();
   void initialiser_pth_xyz(const Probleme_base&);
+  void initialiser_pth_for_EOS(const Probleme_base& pb);
+  void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot);
+  void remplir_champ_pression_for_EOS();
 };
 
 #endif /* Fluide_Weakly_Compressible_included */

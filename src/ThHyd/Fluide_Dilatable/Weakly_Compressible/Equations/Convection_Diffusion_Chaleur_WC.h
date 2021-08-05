@@ -39,10 +39,9 @@
 
 class Convection_Diffusion_Chaleur_WC : public Convection_Diffusion_Chaleur_Fluide_Dilatable_base
 {
-  Declare_instanciable_sans_constructeur(Convection_Diffusion_Chaleur_WC);
+  Declare_instanciable(Convection_Diffusion_Chaleur_WC);
 
 public :
-  Convection_Diffusion_Chaleur_WC();
   void set_param(Param& titi);
   const Champ_base& vitesse_pour_transport();
   int lire_motcle_non_standard(const Motcle&, Entree&);

@@ -14,13 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Weakly_Compressible_Chaleur.cpp
+// File:        Source_WC_Chaleur.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Sources
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Source_Weakly_Compressible_Chaleur.h>
+#include <Source_WC_Chaleur.h>
 #include <Fluide_Weakly_Compressible.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
@@ -29,8 +29,7 @@
 #include <Zone_VF.h>
 #include <Neumann_sortie_libre.h>
 
-Implemente_base(Source_Weakly_Compressible_Chaleur,"Source_Weakly_Compressible_Chaleur",Source_base);
-
+Implemente_base(Source_WC_Chaleur,"Source_WC_Chaleur",Source_Chaleur_Fluide_Dilatable_base);
 
 // Description:
 //    Imprime la source sur un flot de sortie.
@@ -46,7 +45,7 @@ Implemente_base(Source_Weakly_Compressible_Chaleur,"Source_Weakly_Compressible_C
 // Exception:
 // Effets de bord: le flot de sortie est modifie
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Source_Weakly_Compressible_Chaleur::printOn(Sortie& os) const
+Sortie& Source_WC_Chaleur::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
@@ -66,48 +65,9 @@ Sortie& Source_Weakly_Compressible_Chaleur::printOn(Sortie& os) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Source_Weakly_Compressible_Chaleur::readOn(Entree& is)
+Entree& Source_WC_Chaleur::readOn(Entree& is)
 {
   return is;
-}
-
-// Description:
-//    Complete la source : rempli la ref sur le fluide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Source_Weakly_Compressible_Chaleur::completer()
-{
-  Source_base::completer();
-  le_fluide = ref_cast(Fluide_Weakly_Compressible,mon_equation->milieu());
-}
-
-// Description:
-//    Calcule la contrinution de cette source
-// Precondition:
-// Parametre: DoubleTab& resu
-//    Signification: flux
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le flux
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-DoubleTab& Source_Weakly_Compressible_Chaleur::calculer(DoubleTab& resu) const
-{
-  return ajouter(resu);
 }
 
 // Description:
@@ -124,7 +84,7 @@ DoubleTab& Source_Weakly_Compressible_Chaleur::calculer(DoubleTab& resu) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-DoubleTab& Source_Weakly_Compressible_Chaleur::ajouter(DoubleTab& resu) const
+DoubleTab& Source_WC_Chaleur::ajouter(DoubleTab& resu) const
 {
   double dt_ = mon_equation->schema_temps().temps_courant() - mon_equation->schema_temps().temps_precedent();
 
@@ -166,9 +126,10 @@ DoubleTab& Source_Weakly_Compressible_Chaleur::ajouter(DoubleTab& resu) const
   const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
   const Zone_Cl_dis& zone_cl = eqHyd.zone_Cl_dis();
 
+  // TODO XXX : VEF
   if (zone_dis.que_suis_je() != "Zone_VDF")
     {
-      Cerr <<  "Source_Weakly_Compressible_Chaleur::ajouter Not coded yet for VEF !!" << finl;
+      Cerr <<  "Source_WC_Chaleur::ajouter Not coded yet for VEF !!" << finl;
       Process::exit();
     }
 

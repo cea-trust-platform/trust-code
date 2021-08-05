@@ -19,8 +19,6 @@
 // Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
-//
-//
 
 #ifndef Source_QC_QDM_Gen_included
 #define Source_QC_QDM_Gen_included
@@ -30,34 +28,33 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // .DESCRIPTION
-//     classe Source_QC_QDM_Gen
-//    Ces classes filles permettent  de calculer une source pour le QC
-// en faisant rho*source_incompressible
+//
+//  Classe Source_QC_QDM_Gen
+//  Ces classes filles permettent  de calculer une source pour le QC
+//  en faisant rho * source_incompressible
+//
 //////////////////////////////////////////////////////////////////////////////
+
 class Source_QC_QDM_Gen :  public Source_base
 {
   Declare_instanciable(Source_QC_QDM_Gen);
 
 public :
 
-  virtual DoubleTab& ajouter(DoubleTab& ) const;
-  virtual DoubleTab& calculer(DoubleTab& ) const;
+  Entree& readOn_spec(Entree& , Nom&);
   virtual void mettre_a_jour(double temps);
   virtual void completer();
-  virtual int impr(Sortie& os) const;
-  Entree& readOn_spec(Entree& , Nom&);
-  //Methodes de l interface des champs postraitables
-  /////////////////////////////////////////////////////
   virtual void creer_champ(const Motcle& motlu);
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
   virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
-protected :
+  virtual int impr(Sortie& os) const;
+  virtual const Champ_base& get_champ(const Motcle& nom) const;
+  virtual DoubleTab& ajouter(DoubleTab& ) const;
+  virtual DoubleTab& calculer(DoubleTab& ) const;
 
+protected :
   virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) ;
   virtual void associer_pb(const Probleme_base&  ) ;
   Source source_incompressible;
 };
 
-
-
-#endif
+#endif /* Source_QC_QDM_Gen_included */

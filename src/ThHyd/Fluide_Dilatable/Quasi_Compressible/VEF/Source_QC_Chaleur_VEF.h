@@ -14,53 +14,35 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Gravite_Fluide_Dilatable_base.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Sources
-// Version:     /main/8
+// File:        Source_QC_Chaleur_VEF.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/VEF
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Source_QC_Chaleur_VEF_included
+#define Source_QC_Chaleur_VEF_included
 
-#ifndef Source_Gravite_Fluide_Dilatable_base_included
-#define Source_Gravite_Fluide_Dilatable_base_included
-
-#include <Source_base.h>
-#include <Ref_Fluide_Dilatable_base.h>
-
-class Zone_dis;
-class Zone_Cl_dis;
-class DoubleTab;
+#include <Source_QC_Chaleur.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class Source_Gravite_Fluide_Dilatable_base
+// .DESCRIPTION class  Source_QC_Chaleur_VEF
 //
-//  Cette classe represente un terme source supplementaire
-//  a prendre en compte dans les equations de quantite de mouvement
-//  dans le cas ou le fluide est dilatable et s'il y a gravite
+// Cette classe represente un terme source supplementaire a prendre en compte
+// dans les equations de la chaleur dans le cas ou le fluide est quasi compressible
+// et pour une discretisation VEF
 //
 // .SECTION voir aussi
-// Source_base Fluide_Dilatable_base
+// Source_base Fluide_Quasi_Compressible Source_QC_Chaleur
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Gravite_Fluide_Dilatable_base : public Source_base
+class Source_QC_Chaleur_VEF : public Source_QC_Chaleur
 {
-  Declare_base(Source_Gravite_Fluide_Dilatable_base);
-
-public:
-  void completer();
-  DoubleTab& calculer(DoubleTab& ) const ;
-  virtual DoubleTab& ajouter(DoubleTab& ) const = 0;
-
-  // Methodes inlines
-  inline void mettre_a_jour(double) { }
-  inline void associer_pb(const Probleme_base& ) { }
-
+  Declare_instanciable(Source_QC_Chaleur_VEF);
 protected:
-  virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) = 0;
-  REF(Fluide_Dilatable_base) le_fluide;
-  DoubleVect g;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
 };
 
-#endif /* Source_Gravite_Fluide_Dilatable_base_included */
+#endif /* Source_QC_Chaleur_VEF_included */

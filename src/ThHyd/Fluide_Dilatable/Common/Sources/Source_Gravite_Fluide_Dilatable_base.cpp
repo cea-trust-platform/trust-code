@@ -105,8 +105,3 @@ DoubleTab& Source_Gravite_Fluide_Dilatable_base::calculer(DoubleTab& resu) const
 {
   return ajouter(resu);
 }
-
-void Source_Gravite_Fluide_Dilatable_base::mettre_a_jour(double temps)
-{
-  /* Do nothing */
-}

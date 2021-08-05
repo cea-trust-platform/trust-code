@@ -14,42 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Quasi_Compressible_Chaleur_VDF.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/VDF
+// File:        Source_WC_Chaleur.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Sources
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Source_WC_Chaleur_included
+#define Source_WC_Chaleur_included
 
-#ifndef Source_Quasi_Compressible_Chaleur_VDF_included
-#define Source_Quasi_Compressible_Chaleur_VDF_included
+#include <Source_Chaleur_Fluide_Dilatable_base.h>
+#include <Ref_Fluide_Weakly_Compressible.h>
 
-#include <Source_Quasi_Compressible_Chaleur.h>
+class Zone_dis;
+class Zone_Cl_dis;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class  Source_Quasi_Compressible_Chaleur_VDF
+// .DESCRIPTION class Source_WC_Chaleur
 //
 // Cette classe represente un terme source supplementaire
 // a prendre en compte dans les equations de la chaleur
-//  dans le cas ou le fluide est quasi compressible et pour
-//  une discretisation VDF
+//  dans le cas ou le fluide est quasi compressible
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Quasi_Compressible_Chaleur
+// Source_Chaleur_Fluide_Dilatable_base Fluide_Weakly_Compressible
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Quasi_Compressible_Chaleur_VDF : public Source_Quasi_Compressible_Chaleur
+class Source_WC_Chaleur : public Source_Chaleur_Fluide_Dilatable_base
 {
-
-  Declare_instanciable(Source_Quasi_Compressible_Chaleur_VDF);
+  Declare_base(Source_WC_Chaleur);
 
 public:
-
-protected :
-  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
-
+  DoubleTab& ajouter(DoubleTab& ) const;
 };
-#endif
 
+#endif /* Source_WC_Chaleur_included */

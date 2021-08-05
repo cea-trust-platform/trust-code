@@ -14,37 +14,43 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Weakly_Compressible_Chaleur_VEF.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VEF
-// Version:     /main/9
+// File:        Source_QC_Gravite_VEF.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/VEF
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Source_Weakly_Compressible_Chaleur_VEF_included
-#define Source_Weakly_Compressible_Chaleur_VEF_included
+#ifndef Source_QC_Gravite_VEF_included
+#define Source_QC_Gravite_VEF_included
 
-#include <Source_Weakly_Compressible_Chaleur.h>
+#include <Source_Gravite_Fluide_Dilatable_base.h>
+#include <Ref_Zone_VEF.h>
+#include <Ref_Zone_Cl_VEF.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class  Source_Weakly_Compressible_Chaleur_VEF
+// .DESCRIPTION class  Source_QC_Gravite_VEF
 //
-// Cette classe represente un terme source supplementaire
-// a prendre en compte dans les equations de la chaleur
-//  dans le cas ou le fluide est quasi compressible et pour
-//  une discretisation VEF
+//  Cette classe represente un terme source supplementaire a prendre en compte
+//  dans les equations de quantite de mouvement dans le cas ou le fluide est
+//  quasi compressible, en cas de gravite, et pour une discretisation VEF.
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Weakly_Compressible_Chaleur
+// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Weakly_Compressible_Chaleur_VEF : public Source_Weakly_Compressible_Chaleur
+class Source_QC_Gravite_VEF : public Source_Gravite_Fluide_Dilatable_base
 {
-  Declare_instanciable(Source_Weakly_Compressible_Chaleur_VEF);
+  Declare_instanciable( Source_QC_Gravite_VEF);
+
+public:
+  DoubleTab& ajouter(DoubleTab& ) const;
 
 protected :
   void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
+  REF(Zone_VEF) la_zone;
+  REF(Zone_Cl_VEF) la_zone_Cl;
 };
 
-#endif /* Source_Weakly_Compressible_Chaleur_VEF_included */
+#endif /* Source_QC_Gravite_VEF_included */

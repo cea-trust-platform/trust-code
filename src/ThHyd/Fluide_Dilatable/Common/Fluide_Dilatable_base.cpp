@@ -429,8 +429,8 @@ void Fluide_Dilatable_base::calculer_pression_tot()
       pression_->valeur().valeur_aux(centres_de_gravites,tab_PHyd);
     }
   else  tab_PHyd = pression_->valeurs();
-
-  for (int i=0 ; i<n ; i++) tab_Ptot(i) = tab_PHyd(i) + Pth_;
+  // impl dans les classes filles
+  remplir_champ_pression_tot(n,tab_PHyd,tab_Ptot);
 }
 
 const Champ_base& Fluide_Dilatable_base::get_champ(const Motcle& nom) const

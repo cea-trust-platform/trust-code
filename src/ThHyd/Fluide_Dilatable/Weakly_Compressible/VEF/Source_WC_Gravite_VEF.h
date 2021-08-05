@@ -14,76 +14,44 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Quasi_Compressible_Chaleur_Verif.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Sources
-// Version:     /main/9
+// File:        Source_WC_Gravite_VEF.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VEF
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Source_WC_Gravite_VEF_included
+#define Source_WC_Gravite_VEF_included
 
-#ifndef Source_Quasi_Compressible_Chaleur_Verif_included
-#define Source_Quasi_Compressible_Chaleur_Verif_included
-
-#include <Source_base.h>
-#include <Ref_Fluide_Quasi_Compressible.h>
-
-class Zone_dis;
-class Zone_Cl_dis;
+#include <Source_Gravite_Fluide_Dilatable_base.h>
+#include <Ref_Zone_VEF.h>
+#include <Ref_Zone_Cl_VEF.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class Source_Quasi_Compressible_Chaleur_Verif
+// .DESCRIPTION class  Source_WC_Gravite_VEF
 //
 // Cette classe represente un terme source supplementaire
-// a prendre en compte dans les equations de la chaleur
-//  dans le cas ou le fluide est quasi compressible
+// a prendre en compte dans les equations de quantite de mouvement
+//  dans le cas ou le fluide est quasi compressible, en cas de gravite, et pour
+//  une discretisation VEF.
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible
+// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Quasi_Compressible_Chaleur_Verif : public Source_base
+class Source_WC_Gravite_VEF : public Source_Gravite_Fluide_Dilatable_base
 {
-
-  Declare_instanciable(Source_Quasi_Compressible_Chaleur_Verif);
+  Declare_instanciable(Source_WC_Gravite_VEF);
 
 public:
+  DoubleTab& ajouter(DoubleTab& ) const;
 
-  inline void associer_pb(const Probleme_base& );
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis&)
-  {
-    ;
-  };
-
-  virtual DoubleTab& ajouter(DoubleTab& ) const ;
-  DoubleTab& calculer(DoubleTab& ) const ;
-  void completer();
-  void mettre_a_jour(double temps)
-  {
-    ;
-  }
-
-protected:
-  int mode;
-
-
-
+protected :
+  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
+  REF(Zone_VEF) la_zone;
+  REF(Zone_Cl_VEF) la_zone_Cl;
 };
-class Source_Quasi_Compressible_Chaleur_Verif_VEF : public Source_Quasi_Compressible_Chaleur_Verif
-{
 
-  Declare_instanciable(Source_Quasi_Compressible_Chaleur_Verif_VEF);
-
-};
-class Source_Quasi_Compressible_Chaleur_Verif_VEF_P1NC : public Source_Quasi_Compressible_Chaleur_Verif
-{
-
-  Declare_instanciable(Source_Quasi_Compressible_Chaleur_Verif_VEF_P1NC);
-
-};
-inline void Source_Quasi_Compressible_Chaleur_Verif::associer_pb(const Probleme_base& )
-{
-}
-#endif
-
+#endif /* Source_WC_Gravite_VEF_included */

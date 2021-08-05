@@ -14,38 +14,39 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Weakly_Compressible_Chaleur_VDF.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VDF
+// File:        Source_QC_Chaleur.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Sources
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Source_Weakly_Compressible_Chaleur_VDF_included
-#define Source_Weakly_Compressible_Chaleur_VDF_included
+#ifndef Source_QC_Chaleur_included
+#define Source_QC_Chaleur_included
 
-#include <Source_Weakly_Compressible_Chaleur.h>
+#include <Source_Chaleur_Fluide_Dilatable_base.h>
+#include <Ref_Fluide_Quasi_Compressible.h>
+
+class Zone_dis;
+class Zone_Cl_dis;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class  Source_Weakly_Compressible_Chaleur_VDF
+// .DESCRIPTION class Source_QC_Chaleur
 //
-// Cette classe represente un terme source supplementaire
-// a prendre en compte dans les equations de la chaleur
-//  dans le cas ou le fluide est quasi compressible et pour
-//  une discretisation VDF
+// Cette classe represente un terme source supplementaire a prendre en compte dans
+// les equations de la chaleur dans le cas ou le fluide est quasi compressible
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Weakly_Compressible_Chaleur
+// Source_Chaleur_Fluide_Dilatable_base Fluide_Quasi_Compressible
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Weakly_Compressible_Chaleur_VDF : public Source_Weakly_Compressible_Chaleur
+class Source_QC_Chaleur : public Source_Chaleur_Fluide_Dilatable_base
 {
-  Declare_instanciable(Source_Weakly_Compressible_Chaleur_VDF);
+  Declare_base(Source_QC_Chaleur);
 
-protected :
-  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
+public:
+  virtual DoubleTab& ajouter(DoubleTab& ) const;
 };
 
-#endif /* Source_Weakly_Compressible_Chaleur_VDF_included */
-
+#endif /* Source_QC_Chaleur_included */

@@ -14,44 +14,36 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Gravite_Quasi_Compressible_VDF.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/VDF
-// Version:     /main/8
+// File:        Source_WC_Chaleur_VDF.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VDF
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Source_WC_Chaleur_VDF_included
+#define Source_WC_Chaleur_VDF_included
 
-#ifndef Source_Gravite_Quasi_Compressible_VDF_included
-#define Source_Gravite_Quasi_Compressible_VDF_included
-
-#include <Source_Gravite_Fluide_Dilatable_base.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Source_WC_Chaleur.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class  Source_Gravite_Quasi_Compressible_VDF
+// .DESCRIPTION class  Source_WC_Chaleur_VDF
 //
-//  Cette classe represente un terme source supplementaire a prendre en compte
-//  dans les equations de quantite de mouvement dans le cas ou le fluide est
-//  quasi compressible, en cas de gravite, et pour une discretisation VDF.
+// Cette classe represente un terme source supplementaire
+// a prendre en compte dans les equations de la chaleur
+//  dans le cas ou le fluide est quasi compressible et pour
+//  une discretisation VDF
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
+// Source_base Fluide_Quasi_Compressible Source_WC_Chaleur
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Gravite_Quasi_Compressible_VDF : public Source_Gravite_Fluide_Dilatable_base
+class Source_WC_Chaleur_VDF : public Source_WC_Chaleur
 {
-  Declare_instanciable(Source_Gravite_Quasi_Compressible_VDF);
-
-public:
-  DoubleTab& ajouter(DoubleTab& ) const;
-
-protected :
-  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
-  REF(Zone_VDF) la_zone;
-  REF(Zone_Cl_VDF) la_zone_Cl;
+  Declare_instanciable(Source_WC_Chaleur_VDF);
+protected:
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
 };
 
-#endif /* Source_Gravite_Quasi_Compressible_VDF_included */
+#endif /* Source_WC_Chaleur_VDF_included */

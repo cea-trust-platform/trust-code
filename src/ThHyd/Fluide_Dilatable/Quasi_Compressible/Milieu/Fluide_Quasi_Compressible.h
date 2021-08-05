@@ -68,6 +68,7 @@ protected :
 
 private :
   void completer_edo(const Probleme_base& );
+  void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot);
 };
 
 inline void Fluide_Quasi_Compressible::Resoudre_EDO_PT()

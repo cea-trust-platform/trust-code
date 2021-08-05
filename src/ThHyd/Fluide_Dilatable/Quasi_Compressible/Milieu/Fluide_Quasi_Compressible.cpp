@@ -378,3 +378,8 @@ void Fluide_Quasi_Compressible::completer_edo(const Probleme_base& pb)
       fic<<"# Time sum(T*dv)/sum(dv)[K] sum(rho*dv)/sum(dv)[kg/m3] Pth[Pa]"<<finl;
     }
 }
+
+void Fluide_Quasi_Compressible::remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot)
+{
+  for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
+}

@@ -14,53 +14,38 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Quasi_Compressible_Chaleur.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Sources
+// File:        Source_QC_Chaleur_VDF.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/VDF
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Source_Quasi_Compressible_Chaleur_included
-#define Source_Quasi_Compressible_Chaleur_included
+#ifndef Source_QC_Chaleur_VDF_included
+#define Source_QC_Chaleur_VDF_included
 
-#include <Source_base.h>
-#include <Ref_Fluide_Quasi_Compressible.h>
-
-class Zone_dis;
-class Zone_Cl_dis;
+#include <Source_QC_Chaleur.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class Source_Quasi_Compressible_Chaleur
+// .DESCRIPTION class  Source_QC_Chaleur_VDF
 //
 // Cette classe represente un terme source supplementaire
 // a prendre en compte dans les equations de la chaleur
-//  dans le cas ou le fluide est quasi compressible
+//  dans le cas ou le fluide est quasi compressible et pour
+//  une discretisation VDF
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible
+// Source_base Fluide_Quasi_Compressible Source_QC_Chaleur
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Quasi_Compressible_Chaleur : public Source_base
+class Source_QC_Chaleur_VDF : public Source_QC_Chaleur
 {
-
-  Declare_base(Source_Quasi_Compressible_Chaleur);
-
-public:
-
-  inline void associer_pb(const Probleme_base& ) {};
-
-  DoubleTab& calculer(DoubleTab& ) const ;
-  void completer();
-  inline void mettre_a_jour(double) {};
-  DoubleTab& ajouter(DoubleTab& ) const;
+  Declare_instanciable(Source_QC_Chaleur_VDF);
 protected:
-  DoubleVect volumes,porosites;
-  virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) =0;
-  REF(Fluide_Quasi_Compressible) le_fluide;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
 };
 
-#endif
+#endif /* Source_QC_Chaleur_VDF_included */
 

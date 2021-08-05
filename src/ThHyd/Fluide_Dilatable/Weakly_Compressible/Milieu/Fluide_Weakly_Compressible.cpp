@@ -33,8 +33,8 @@
 
 Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable_base);
 
-// By default we do not use the total pressure
-Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0) {}
+// By default we do not use neither the total nor the hydrostatic pressure
+Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0), use_hydrostatic_pressure_(0) {}
 
 // Description:
 //    Ecrit les proprietes du fluide sur un flot de sortie.
@@ -57,7 +57,6 @@ Sortie& Fluide_Weakly_Compressible::printOn(Sortie& os) const
   return os;
 }
 
-
 // Description:
 //   Lit les caracteristiques du fluide a partir d'un flot
 //   d'entree.
@@ -79,33 +78,46 @@ Entree& Fluide_Weakly_Compressible::readOn(Entree& is)
   return is;
 }
 
+// TODO : FIXME : pass to ajouter (std)
 void Fluide_Weakly_Compressible::set_param(Param& param)
 {
   Fluide_Dilatable_base::set_param(param);
-  param.ajouter_non_std("pression_xyz",(this),Param::REQUIRED);
+  param.ajouter("pression_thermo",&Pth_);
+  param.ajouter("use_total_pressure",&use_total_pressure_);
+  param.ajouter("use_hydrostatic_pressure",&use_hydrostatic_pressure_);
+
+  // Param non-standard
   param.ajouter_non_std("loi_etat",(this),Param::REQUIRED);
-  //Lecture de mu et lambda pas specifiee obligatoire car option sutherland possible
+  param.ajouter_non_std("Traitement_PTh",(this));
+  param.ajouter("pression_xyz",&Pth_xyz_);
+  // Lecture de mu et lambda pas specifiee obligatoire car option sutherland possible
+  // On supprime.. et on ajoute non-standard
   param.supprimer("mu");
   param.ajouter_non_std("mu",(this));
   param.ajouter_non_std("sutherland",(this));
-  param.ajouter_non_std("Traitement_PTh",(this));
-  param.ajouter_non_std("use_total_pressure",(this));
   param.supprimer("beta_th");
   param.ajouter_non_std("beta_th",(this));
   param.supprimer("beta_co");
   param.ajouter_non_std("beta_co",(this));
-
 }
 
 int Fluide_Weakly_Compressible::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   Motcle motlu;
-  if (mot=="pression_xyz")
+  if (mot=="Traitement_PTh")
     {
-      is>>Pth_xyz_;
-      if (Pth_xyz_.valeur().que_suis_je() != "Champ_Fonc_xyz" )
+      Motcle trait;
+      is >> trait;
+      // TODO : FIXME : should have CONSERVATION_MASSE too !!
+      Motcles les_options(1);
+      {
+        les_options[0] = "constant";
+      }
+      traitement_PTh=les_options.search(trait);
+      if (traitement_PTh == -1)
         {
-          Cerr << "Pression_xyz should be defined with Champ_Fonc_xyz !" << finl;
+          Cerr<< trait << " is not understood as an option of the keyword " << motlu <<finl;
+          Cerr<< "One of the following options was expected : " << les_options << finl;
           Process::exit();
         }
       return 1;
@@ -170,28 +182,6 @@ int Fluide_Weakly_Compressible::lire_motcle_non_standard(const Motcle& mot, Entr
         }
       return 1;
     }
-  else if (mot=="Traitement_PTh")
-    {
-      Motcle trait;
-      is >> trait;
-      Motcles les_options(1);
-      {
-        les_options[0] = "constant";
-      }
-      traitement_PTh=les_options.search(trait);
-      if (traitement_PTh == -1)
-        {
-          Cerr<< trait << " is not understood as an option of the keyword " << motlu <<finl;
-          Cerr<< "One of the following options was expected : " << les_options << finl;
-          Process::exit();
-        }
-      return 1;
-    }
-  else if (mot=="use_total_pressure")
-    {
-      is >> use_total_pressure_;
-      return 1;
-    }
   else if ((mot=="beta_th") || (mot=="beta_co"))
     {
       Cerr<<"The keyword "<<mot<<" has not to be read for a "<<que_suis_je()<<" type medium."<<finl;
@@ -220,18 +210,67 @@ int Fluide_Weakly_Compressible::lire_motcle_non_standard(const Motcle& mot, Entr
 void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
 {
   Cerr<<"Fluide_Weakly_Compressible::completer" << finl;
-  initialiser_pth_xyz(pb);
+
+  if (Pth_xyz_.non_nul())
+    {
+      if (Pth_xyz_.valeur().que_suis_je() != "Champ_Fonc_xyz" ) // TODO : check if it is generic
+        {
+          Cerr << "Error in your data file : This is not allowed !"<< finl;
+          Cerr << "Pression_xyz should be defined with Champ_Fonc_xyz !" << finl;
+          Process::exit();
+        }
+      if (Pth_ != -1 || Pth_n != -1)
+        {
+          Cerr << "Error in your data file : This is not allowed !"<< finl;
+          Cerr << "You can not specify both pression_xyz and pression_thermo !" << finl;
+          Process::exit();
+        }
+      if (use_total_hydro_pressure())
+        {
+          Cerr << "Error in your data file : This is not allowed !"<< finl;
+          Cerr << "You need to define pression_thermo when using the flags use_total_pressure or use_hydrostatic_pressure !" << finl;
+          Process::exit();
+        }
+    }
+  else // pression_xyz not specified in data file
+    {
+      if (Pth_ != -1) Pth_n = Pth_;
+      else
+        {
+          Cerr << "Error in your data file : This is not allowed !"<< finl;
+          Cerr << "You need to specify either pression_xyz or pression_thermo !" << finl;
+          Process::exit();
+        }
+
+      if ( use_total_pressure_ && use_hydrostatic_pressure_ )
+        {
+          Cerr << "Error in your data file : This is not allowed !"<< finl;
+          Cerr << "Not possible to activate the two flags use_total_pressure and use_hydrostatic_pressure at same time !" << finl;
+          Process::exit();
+        }
+
+      if ( use_hydrostatic_pressure_ && !a_gravite() )
+        {
+          Cerr << "Error in your data file : This is not allowed !"<< finl;
+          Cerr << "Not possible to activate the flag use_hydrostatic_pressure without defining a gravity vector !" << finl;
+          Process::exit();
+        }
+    }
+
+  initialiser_pth_for_EOS(pb); // On l'a besoin pour initialiser rho ...
   Fluide_Dilatable_base::completer(pb);
+}
+
+void Fluide_Weakly_Compressible::initialiser_pth_for_EOS(const Probleme_base& pb)
+{
+  if (use_pth_xyz()) initialiser_pth_xyz(pb);
+  else initialiser_pth();
 }
 
 void Fluide_Weakly_Compressible::initialiser_pth_xyz(const Probleme_base& pb)
 {
   Cerr<<"Initializing the thermo-dynamic pressure Pth_xyz ..." << finl;
-  assert(Pth_xyz_.valeur().que_suis_je() == "Champ_Fonc_xyz" );
-  assert (Pth_ == -1. && Pth_n == -1.); // default by constructor
-
-  // VDF or VEF ??
-  int isVDF = 0;
+  int isVDF = 0; // VDF or VEF ??
   if (pb.equation(0).discretisation().que_suis_je()=="VDF") isVDF = 1;
 
   // We know that mu is always stored on elems and that Champ_Don rho_xyz_ is evaluated on elements
@@ -249,6 +288,16 @@ void Fluide_Weakly_Compressible::initialiser_pth_xyz(const Probleme_base& pb)
       ch_rho.affecter_(Pth_xyz_);
       Pth_tab_=Pth_n_tab_=ch_rho.valeurs();
     }
+}
+
+void Fluide_Weakly_Compressible::initialiser_pth()
+{
+  Cerr<<"Initializing the thermo-dynamic pressure ..." << finl;
+  // Pth_tab_ doit avoir meme dimensions que rho (elem en VDF et faces en VEF)
+  Pth_tab_ = masse_volumique().valeurs();
+  const int n = Pth_tab_.dimension_tot(0);
+  for (int i=0; i<n; i++) Pth_tab_(i) = Pth_;
+  Pth_n_tab_ = Pth_tab_;
 }
 
 // Description:
@@ -282,6 +331,7 @@ void Fluide_Weakly_Compressible::write_mean_edo(double t)
 
 void Fluide_Weakly_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
 {
+  // TODO : FIXME : we should be able to use this in closed cavities too !!
   int pression_imposee=0;
   int size=zone_cl.les_conditions_limites().size();
   assert(size!=0);
@@ -314,13 +364,29 @@ void Fluide_Weakly_Compressible::discretiser(const Probleme_base& pb, const  Dis
   if (type_fluide()!="Gaz_Parfait")
     loi_etat().valeur().champs_compris().ajoute_champ(ch_TK);
 
+  Champ_Don& phydro = pression_hydro();
+  // XXX XXX : comme la temperature car elem en VDF et faces en VEF
+  dis.discretiser_champ("temperature",zone_dis,"pression_hydro","Pa",1,temps,phydro);
+  champs_compris_.ajoute_champ(phydro);
+
   Fluide_Dilatable_base::discretiser(pb,dis);
 }
 
 void Fluide_Weakly_Compressible::abortTimeStep()
 {
-  loi_etat()->abortTimeStep();
-  Pth_tab_=Pth_n_tab_;
+  Fluide_Dilatable_base::abortTimeStep();
+  Pth_tab_ = Pth_n_tab_;
+}
+
+void Fluide_Weakly_Compressible::update_pressure_fields(double temps)
+{
+  Pth_n_tab_= Pth_tab_; // previous dt
+  Fluide_Dilatable_base::update_pressure_fields(temps);
+  if (a_gravite())
+    {
+      calculer_pression_hydro();
+      pression_hydro_.mettre_a_jour(temps);
+    }
 }
 
 // Description:
@@ -339,27 +405,69 @@ void Fluide_Weakly_Compressible::abortTimeStep()
 // Postcondition:
 void Fluide_Weakly_Compressible::calculer_pression_tot()
 {
-  DoubleTab& tab_Ptot = pression_tot_.valeurs();
-  const int n = tab_Ptot.dimension_tot(0);
-  DoubleTab tab_PHyd(n, 1);
-  if( n != pression_->valeurs().dimension_tot(0) )
-    {
-      // Interpolation de pression_ aux elements (ex: P1P0)
-      const Zone_dis_base& zone_dis= pression_-> zone_dis_base();
-      const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
-      const DoubleTab& centres_de_gravites=zone.xp();
-      pression_->valeur().valeur_aux(centres_de_gravites,tab_PHyd);
-    }
-  else tab_PHyd = pression_->valeurs();
-
-  for (int i=0 ; i<n ; i++) tab_Ptot(i,0) = tab_PHyd(i,0) + Pth_tab_(i,0);
-
-  if (use_total_pressure_) Pth_tab_= tab_Ptot; // present dt
+  Fluide_Dilatable_base::calculer_pression_tot();
+  if (use_total_hydro_pressure()) remplir_champ_pression_for_EOS();
 }
 
-void Fluide_Weakly_Compressible::update_pressure_fields(double temps)
+void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot)
 {
-  Pth_n_tab_= Pth_tab_; // previous dt
-  Fluide_Dilatable_base::update_pressure_fields(temps);
+  if ( use_pth_xyz() )
+    {
+      for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_tab_(i,0);
+    }
+  else
+    {
+      for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
+    }
 }
 
+// Description:
+//    Calcule la pression hydrostatique = rho*g*z
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Fluide_Weakly_Compressible::calculer_pression_hydro()
+{
+  DoubleTab& tab_Phydro = pression_hydro_.valeurs();
+  const Zone_dis_base& zone_dis= pression_-> zone_dis_base();
+  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
+  const DoubleTab& centres_de_gravites=zone.xp();
+  const DoubleTab& tab_rho = rho_np1();
+  const int n = tab_Phydro.dimension_tot(0);
+  assert (n ==  tab_rho.dimension_tot(0)); // TODO FIXME : VEF !! Now only VDF
+  assert (a_gravite());
+  const DoubleTab& grav = gravite().valeurs();
+  for (int i=0 ; i<n ; i++)
+    {
+      double gz=0.;
+      for (int dir=0; dir<dimension; dir++) gz+=centres_de_gravites(i,dir)*grav(0,dir);
+
+      tab_Phydro(i) =  tab_rho(i)*gz;
+    }
+  if (use_total_hydro_pressure()) remplir_champ_pression_for_EOS();
+}
+
+void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
+{
+  if (use_total_pressure()) Pth_tab_= pression_tot_.valeurs(); // present dt
+  else if (use_hydrostatic_pressure())
+    {
+      Pth_tab_ = pression_hydro_.valeurs();
+      const int n = Pth_tab_.dimension_tot(0);
+      for (int i=0 ; i<n ; i++) Pth_tab_(i) += Pth_; // present dt
+    }
+  else
+    {
+      Cerr << "The method Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS() should not be called !" << finl;
+      Process::exit();
+    }
+}

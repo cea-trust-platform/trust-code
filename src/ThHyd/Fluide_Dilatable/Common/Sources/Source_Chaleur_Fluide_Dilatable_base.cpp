@@ -14,21 +14,18 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Gravite_Weakly_Compressible_VDF.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VDF
-// Version:     /main/14
+// File:        Source_Chaleur_Fluide_Dilatable_base.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Sources
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Source_Gravite_Weakly_Compressible_VDF.h>
-#include <Fluide_Weakly_Compressible.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
-#include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Zone_Cl_dis.h>
+#include <Source_Chaleur_Fluide_Dilatable_base.h>
+#include <Fluide_Dilatable_base.h>
+#include <Equation_base.h>
+#include <Schema_Temps_base.h>
 
-Implemente_instanciable(Source_Gravite_Weakly_Compressible_VDF,"Source_Gravite_Weakly_Compressible_VDF",Source_Gravite_Fluide_Dilatable_base);
+Implemente_base(Source_Chaleur_Fluide_Dilatable_base,"Source_Chaleur_Fluide_Dilatable_base",Source_base);
 
 // Description:
 //    Imprime la source sur un flot de sortie.
@@ -44,9 +41,8 @@ Implemente_instanciable(Source_Gravite_Weakly_Compressible_VDF,"Source_Gravite_W
 // Exception:
 // Effets de bord: le flot de sortie est modifie
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Source_Gravite_Weakly_Compressible_VDF::printOn(Sortie& os) const
+Sortie& Source_Chaleur_Fluide_Dilatable_base::printOn(Sortie& os) const
 {
-  os <<que_suis_je()<< finl;
   return os;
 }
 
@@ -64,69 +60,48 @@ Sortie& Source_Gravite_Weakly_Compressible_VDF::printOn(Sortie& os) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Source_Gravite_Weakly_Compressible_VDF::readOn(Entree& is)
+Entree& Source_Chaleur_Fluide_Dilatable_base::readOn(Entree& is)
 {
   return is;
 }
 
 // Description:
-//    Remplit le tableau volumes
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Source_Gravite_Weakly_Compressible_VDF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
-{
-  la_zone = ref_cast(Zone_VDF,zone.valeur());
-  la_zone_Cl = ref_cast(Zone_Cl_VDF,zone_cl.valeur());
-}
-
-// Description:
-//    Ajoute les termes sources
+//    Complete la source : rempli la ref sur le fluide
 // Precondition:
 // Parametre:
 //    Signification:
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Entree&
+// Retour:
 //    Signification:
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-DoubleTab& Source_Gravite_Weakly_Compressible_VDF::ajouter(DoubleTab& resu) const
+void Source_Chaleur_Fluide_Dilatable_base::completer()
 {
-  int face, nb_faces = la_zone->nb_faces(), premiere_face_interne = la_zone->premiere_face_int();
-  const IntVect& orientation = la_zone->orientation();
-  const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
-  const DoubleTab& tab_rho = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur()).rho_discvit();
-  const DoubleVect& porosite_surf=la_zone->porosite_face();
+  Cerr<<"Source_Chaleur_Fluide_Dilatable_base::completer()"<<finl;
+  Source_base::completer();
+  le_fluide = ref_cast(Fluide_Dilatable_base,mon_equation->milieu());
+}
 
-  for (int num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
-    {
-      const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(num_cl);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int ndeb = le_bord.num_premiere_face();
-      int nfin = ndeb + le_bord.nb_faces();
-      if (sub_type(Dirichlet,la_cl.valeur()) || sub_type(Dirichlet_homogene,la_cl.valeur()))
-        { /* Do nothing */ }
-      else
-        for (face=ndeb ; face<nfin ; face++)
-          resu(face) += tab_rho(face) * g(orientation(face)) * volumes_entrelaces(face) * porosite_surf(face);
-    }
-
-  for (face=premiere_face_interne ; face<nb_faces; face++)
-    resu(face) += tab_rho(face) * g(orientation(face)) * volumes_entrelaces(face) * porosite_surf(face);
-
-  return resu;
+// Description:
+//    Calcule la contrinution de cette source
+// Precondition:
+// Parametre: DoubleTab& resu
+//    Signification: flux
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: DoubleTab&
+//    Signification: le flux
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+DoubleTab& Source_Chaleur_Fluide_Dilatable_base::calculer(DoubleTab& resu) const
+{
+  return ajouter(resu);
 }
 

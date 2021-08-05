@@ -24,9 +24,7 @@
 #include <Discretisation_base.h>
 #include <Op_Conv_negligeable.h>
 
-Implemente_instanciable_sans_constructeur(Convection_Diffusion_Chaleur_WC,"Convection_Diffusion_Chaleur_WC",Convection_Diffusion_Chaleur_Fluide_Dilatable_base);
-
-Convection_Diffusion_Chaleur_WC::Convection_Diffusion_Chaleur_WC() { }
+Implemente_instanciable(Convection_Diffusion_Chaleur_WC,"Convection_Diffusion_Chaleur_WC",Convection_Diffusion_Chaleur_Fluide_Dilatable_base);
 
 // Description:
 //    Simple appel a: Convection_Diffusion_Chaleur_Fluide_Dilatable_base::printOn(Sortie&)
@@ -84,10 +82,10 @@ int Convection_Diffusion_Chaleur_WC::lire_motcle_non_standard(const Motcle& mot,
       Cerr << "Source term creation of the energy equation :"<< finl;
       Source t;
       Source& so=les_sources.add(t);
-      Nom type_so = "Source_Weakly_Compressible_Chaleur_";
+      Nom type_so = "Source_WC_Chaleur_";
       Nom disc = discretisation().que_suis_je();
       if (disc=="VEFPreP1B") disc = "VEF";
-      type_so+=disc;
+      type_so += disc;
       so.typer_direct(type_so);
       so->associer_eqn(*this);
       Cerr<<so->que_suis_je()<<finl;

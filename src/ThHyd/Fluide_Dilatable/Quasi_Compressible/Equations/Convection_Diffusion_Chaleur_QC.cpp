@@ -90,11 +90,10 @@ int Convection_Diffusion_Chaleur_QC::lire_motcle_non_standard(const Motcle& mot,
       Cerr << "Source term creation of the energy equation :"<< finl;
       Source t;
       Source& so=les_sources.add(t);
-      Nom type_so = "Source_Quasi_Compressible_Chaleur_";
+      Nom type_so = "Source_QC_Chaleur_";
       Nom disc = discretisation().que_suis_je();
-      if (disc=="VEFPreP1B")
-        disc = "VEF";
-      type_so+=disc;
+      if (disc=="VEFPreP1B") disc = "VEF";
+      type_so += disc;
       so.typer_direct(type_so);
       so->associer_eqn(*this);
       Cerr<<so->que_suis_je()<<finl;

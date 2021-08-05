@@ -108,7 +108,7 @@ void Navier_Stokes_QC::completer()
       Cerr << "Creation of the buoyancy source term for the Navier_Stokes_QC equation : " << finl;
       Source t;
       Source& so=les_sources.add(t);
-      Nom type_so = "Source_Gravite_Quasi_Compressible_";
+      Nom type_so = "Source_QC_Gravite_";
       Nom disc = discretisation().que_suis_je();
       if (disc=="VEFPreP1B") disc = "VEF";
       type_so += disc;

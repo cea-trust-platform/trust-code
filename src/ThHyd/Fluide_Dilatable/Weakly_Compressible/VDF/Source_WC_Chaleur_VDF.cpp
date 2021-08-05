@@ -14,46 +14,72 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Gravite_Weakly_Compressible_VDF.h
+// File:        Source_WC_Chaleur_VDF.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VDF
-// Version:     /main/8
+// Version:     /main/21
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Source_WC_Chaleur_VDF.h>
+#include <Zone_VF.h>
 
-#ifndef Source_Gravite_Weakly_Compressible_VDF_included
-#define Source_Gravite_Weakly_Compressible_VDF_included
+Implemente_instanciable(Source_WC_Chaleur_VDF,"Source_WC_Chaleur_VDF",Source_WC_Chaleur);
 
-#include <Source_Gravite_Fluide_Dilatable_base.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class  Source_Gravite_Weakly_Compressible_VDF
-//
-// Cette classe represente un terme source supplementaire
-// a prendre en compte dans les equations de quantite de mouvement
-//  dans le cas ou le fluide est quasi compressible, en cas de gravite, et pour
-//  une discretisation VDF.
-//
-// .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Source_Gravite_Weakly_Compressible_VDF : public Source_Gravite_Fluide_Dilatable_base
+// Description:
+//    Imprime la source sur un flot de sortie.
+// Precondition:
+// Parametre: Sortie& os
+//    Signification: le flot de sortie pour l'impression
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord: le flot de sortie est modifie
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& Source_WC_Chaleur_VDF::printOn(Sortie& os) const
 {
-  Declare_instanciable(Source_Gravite_Weakly_Compressible_VDF);
+  os <<que_suis_je()<< finl;
+  return os;
+}
 
-public:
-  DoubleTab& ajouter(DoubleTab& ) const;
+// Description:
+//    Lecture de la source sur un flot d'entree.
+// Precondition:
+// Parametre: Entree& is
+//    Signification: le flot d'entree pour la lecture des parametres
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree&
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Entree& Source_WC_Chaleur_VDF::readOn(Entree& is)
+{
+  return is;
+}
 
-protected :
-  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
-  REF(Zone_VDF) la_zone;
-  REF(Zone_Cl_VDF) la_zone_Cl;
-};
-
-#endif /* Source_Gravite_Weakly_Compressible_VDF_included */
-
+// Description:
+//    Remplit le tableau volumes
+// Precondition:
+// Parametre: Entree& is
+//    Signification: le flot d'entree pour la lecture des parametres
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree&
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Source_WC_Chaleur_VDF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& )
+{
+  volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes());
+  porosites.ref(ref_cast(Zone_VF,zone.valeur()).porosite_elem());
+}

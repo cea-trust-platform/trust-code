@@ -14,50 +14,44 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Weakly_Compressible_Chaleur.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Sources
-// Version:     /main/11
+// File:        Source_WC_Gravite_VDF.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VDF
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Source_Weakly_Compressible_Chaleur_included
-#define Source_Weakly_Compressible_Chaleur_included
 
-#include <Source_base.h>
-#include <Ref_Fluide_Weakly_Compressible.h>
+#ifndef Source_WC_Gravite_VDF_included
+#define Source_WC_Gravite_VDF_included
 
-class Zone_dis;
-class Zone_Cl_dis;
+#include <Source_Gravite_Fluide_Dilatable_base.h>
+#include <Ref_Zone_VDF.h>
+#include <Ref_Zone_Cl_VDF.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION class Source_Weakly_Compressible_Chaleur
+// .DESCRIPTION class  Source_WC_Gravite_VDF
 //
-// Cette classe represente un terme source supplementaire
-// a prendre en compte dans les equations de la chaleur
-//  dans le cas ou le fluide est quasi compressible
+// Cette classe represente un terme source supplementaire a prendre en compte
+// dans les equations de quantite de mouvement dans le cas ou le fluide est
+// quasi compressible, en cas de gravite, et pour une discretisation VDF.
 //
 // .SECTION voir aussi
-// Source_base Fluide_Weakly_Compressible
+// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_Weakly_Compressible_Chaleur : public Source_base
+class Source_WC_Gravite_VDF : public Source_Gravite_Fluide_Dilatable_base
 {
-  Declare_base(Source_Weakly_Compressible_Chaleur);
-public:
-  void completer();
-  DoubleTab& calculer(DoubleTab& ) const ;
-  DoubleTab& ajouter(DoubleTab& ) const;
-  // Methodes inlines
-  inline void mettre_a_jour(double) {};
-  inline void associer_pb(const Probleme_base& ) {};
+  Declare_instanciable(Source_WC_Gravite_VDF);
 
-protected:
-  DoubleVect volumes, porosites;
-  virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) =0;
-  REF(Fluide_Weakly_Compressible) le_fluide;
+public:
+  DoubleTab& ajouter(DoubleTab& ) const;
+
+protected :
+  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
+  REF(Zone_VDF) la_zone;
+  REF(Zone_Cl_VDF) la_zone_Cl;
 };
 
-#endif /* Source_Weakly_Compressible_Chaleur_included */
-
+#endif /* Source_WC_Gravite_VDF_included */

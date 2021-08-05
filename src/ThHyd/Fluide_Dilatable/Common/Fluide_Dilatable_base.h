@@ -122,6 +122,7 @@ public :
   inline double moyenne_vol(const DoubleTab& A) const { return eos_tools_->moyenne_vol(A); }
 
 protected :
+  virtual void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot) = 0;
   int traitement_PTh; // flag pour le traitement de la pression thermo
   double Pth_, Pth_n, Pth1;
   REF(Champ_Inc) inco_chaleur_, vitesse_, pression_;

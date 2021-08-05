@@ -14,17 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Source_Weakly_Compressible_Chaleur_VEF.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/VEF
-// Version:     /main/22
+// File:        Source_QC_Chaleur_Verif.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Sources
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Source_Weakly_Compressible_Chaleur_VEF.h>
-#include <Zone_VF.h>
+#include <Source_QC_Chaleur_Verif.h>
+#include <Equation_base.h>
 
-Implemente_instanciable(Source_Weakly_Compressible_Chaleur_VEF,"Source_Weakly_Compressible_Chaleur_VEF",Source_Weakly_Compressible_Chaleur);
-
+Implemente_instanciable_sans_constructeur(Source_QC_Chaleur_Verif,"Source_QC_Chaleur_Verif_QC_VDF_P0_VDF",Source_Chaleur_Fluide_Dilatable_base);
+Source_QC_Chaleur_Verif::Source_QC_Chaleur_Verif() : mode(0) { }
 
 // Description:
 //    Imprime la source sur un flot de sortie.
@@ -40,7 +40,7 @@ Implemente_instanciable(Source_Weakly_Compressible_Chaleur_VEF,"Source_Weakly_Co
 // Exception:
 // Effets de bord: le flot de sortie est modifie
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Source_Weakly_Compressible_Chaleur_VEF::printOn(Sortie& os) const
+Sortie& Source_QC_Chaleur_Verif::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
@@ -60,27 +60,22 @@ Sortie& Source_Weakly_Compressible_Chaleur_VEF::printOn(Sortie& os) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Source_Weakly_Compressible_Chaleur_VEF::readOn(Entree& is)
+Entree& Source_QC_Chaleur_Verif::readOn(Entree& is)
 {
+  is >> mode;
   return is;
 }
 
-// Description:
-//    Remplit le tableau volumes
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Source_Weakly_Compressible_Chaleur_VEF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& )
+DoubleTab& Source_QC_Chaleur_Verif::ajouter(DoubleTab& resu) const
 {
-  volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes_entrelaces());
-  porosites.ref(ref_cast(Zone_VF,zone.valeur()).porosite_face());
+  resu = 0.;
+  return resu;
 }
+
+Implemente_instanciable(Source_QC_Chaleur_Verif_VEF,"Source_QC_Chaleur_Verif_QC_VEF",Source_QC_Chaleur_Verif);
+Entree& Source_QC_Chaleur_Verif_VEF::readOn(Entree& is) { return Source_QC_Chaleur_Verif::readOn(is); }
+Sortie& Source_QC_Chaleur_Verif_VEF::printOn(Sortie& is) const { return Source_QC_Chaleur_Verif::printOn(is); }
+
+Implemente_instanciable(Source_QC_Chaleur_Verif_VEF_P1NC,"Source_QC_Chaleur_Verif_QC_VEF_P1NC",Source_QC_Chaleur_Verif);
+Entree& Source_QC_Chaleur_Verif_VEF_P1NC::readOn(Entree& is) { return Source_QC_Chaleur_Verif::readOn(is); }
+Sortie& Source_QC_Chaleur_Verif_VEF_P1NC::printOn(Sortie& is) const { return Source_QC_Chaleur_Verif::printOn(is); }

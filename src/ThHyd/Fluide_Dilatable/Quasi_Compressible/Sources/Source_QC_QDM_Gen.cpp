@@ -71,13 +71,11 @@ Sortie& Source_QC_QDM_Gen::printOn(Sortie& os) const
 // Postcondition:
 Entree& Source_QC_QDM_Gen::readOn(Entree& is)
 {
-  //  Cerr<<"Source_QC_QDM_Gen n'a pas a etre mis dans le jdd"<<finl;
-  //  exit();
   Nom typ_complet;
   is >> typ_complet;
   readOn_spec( is,typ_complet);
   Cerr<<" Source_QC_QDM_Gen Pas teste encore.... on s'arrete "<<finl;
-  exit();
+  Process::exit();
   return is;
 }
 // Desciption: methode appele par les classes filles
@@ -164,7 +162,7 @@ int Source_QC_QDM_Gen::impr(Sortie& os) const
 }
 DoubleTab&  Source_QC_QDM_Gen::calculer(DoubleTab& resu) const
 {
-  resu=0;
+  resu=0.;
   ajouter(resu);
   return resu;
 }
@@ -174,15 +172,13 @@ void  Source_QC_QDM_Gen::associer_zones(const Zone_dis& z ,const Zone_Cl_dis& zc
 }
 void  Source_QC_QDM_Gen::associer_pb(const Probleme_base& pb )
 {
-  //source_incompressible->associer_pb(pb);
   if (!sub_type(Fluide_Quasi_Compressible,pb.equation(0).milieu()))
     {
       Cerr<<que_suis_je() <<" n'est a utiliser qu'en Quasi Compressible" <<finl;
-      exit();
+      Process::exit();
     }
 }
-//Methodes de l interface des champs postraitables
-/////////////////////////////////////////////////////
+
 void Source_QC_QDM_Gen::creer_champ(const Motcle& motlu)
 {
   source_incompressible->creer_champ(motlu);
@@ -195,5 +191,3 @@ void Source_QC_QDM_Gen::get_noms_champs_postraitables(Noms& nom,Option opt) cons
 {
   source_incompressible->get_noms_champs_postraitables(nom,opt);
 }
-
-
