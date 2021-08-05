@@ -16,8 +16,8 @@ define_modules_config()
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      cuda_version=10.2
-      module="gcc/8.3.1 openmpi/4.0.2-cuda cuda/$cuda_version"
+      module="gcc/8.3.1 openmpi/4.0.5-cuda cuda/11.2" # Pour essayer la partition A100 (gpu_p4) car la ligne suivante le calcul bloque sur A100
+      module="gcc/8.3.1 openmpi/4.0.2-cuda cuda/10.2"
    else
       # avec intel/intelmpi 19.0.2, les calculs bloquent
       #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
@@ -50,7 +50,8 @@ define_soumission_batch()
    if [ "$gpu" = 1 ]
    then
       # See http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm.html 
-      queue=gpu_p13 && constraint=v100-16g # pour gpu_p3 ou constraint=v100-32g (gpu_p1)        
+      queue=gpu_p13 && constraint=v100-16g # pour gpu_p3 ou constraint=v100-32g (gpu_p1)  
+      #queue=gpu_p4 # Partition A100      
       gpus_per_node=4 # Si on ne reserve qu'1 GPU plantage memoire possible...
       qos=qos_gpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_gpu-dev && cpu=120 
       #qos=qos_gpu-t4 && cpu=6000

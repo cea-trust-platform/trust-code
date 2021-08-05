@@ -29,7 +29,11 @@ Soit environ 1000 octets/maille (Resolution avec gradient conjugue).
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test gpu_3D (125000 mailles):
 -------------------------------------------------------------------------------------------------------
 Arch  Model  PhysicalCores@frequency     GPU/Cuda     	Processor Model	CPU     Machine                 (Compiler version)      SpeedUp(n=2)    TestCase version
-Linux x86_64     1*8@3.0-4.7Ghz         P400/11.0      	Xeon i7-9700    50.4s	is242981.intra.cea.fr   (g++ 10.0.1, OpenMPI 4.1.0)     1.20    gpu_3D   v1.8.3
+Linux x86_64 	2*64@1.5-3.5Ghz		A100/11.2	AMD Epyc 7763	10.5s	topaze.ccc.cea.fr	(g++ 8.3.0, OpenMPI 4.0.5)	0.77	gpu_3D   v1.8.3
+Linux x86_64	2*20@2.5-3.9Ghz		V100/10.2	Xeon Gold 6248	14.4s	jean-zay1.idris.fr	(g++ 8.3.1, OpenMPI 4.0.2-cuda) 0.98	gpu_3D   v1.8.3
+Linux x86_64 	2*64@2.5Ghz		V100/??		AMD Epyc 7502	17.9s	irene-amd.ccc.cea.fr	(g++ 8.3.1, OpenMPI 4.0.2)	0.99	gpu_3D   v1.8.3
+Linux x86_64	2*16@2.1Ghz		V100/??		AMD Epyc 7281		orcus-amd.intra.cea.fr 	(g++ 9.1.0, OpenMPI 3.1.4)
+Linux x86_64     1*8@3.0-4.7Ghz         P400/11.0      	Xeon i7-9700    64.4s	is242981.intra.cea.fr   (g++ 10.0.1,OpenMPI 4.1.0-cuda)	1.01    gpu_3D   v1.8.3
 
 <HR><h1>Performances TRUST sur differentes machines</h1><HR>
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test cpu_3D (125000 mailles):			
@@ -39,7 +43,7 @@ Linux x86_64	 1*8@3.0-4.7Ghz		32Go:12Mo	Xeon i7-9700 	1.5s	is242981.intra.cea.fr
 Linux x86_64	2*64@1.5-3.5Ghz        256Go:32Mo	AMD Epyc 7763   1.7s    topaze.ccc.cea.fr	(g++ 11.1.0, OpenMPI 4.0.5)	1.58	cpu_3D	 v1.8.3
 Linux x86_64	 1*4@2.5-4.2Ghz		16Go:8Mo	Xeon i5-8400H	1.8s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.7.9
 Linux x86_64	 1*6@2.9-4.1Ghz		 8Go:9Mo	Xeon i5-9400F	1.9s	pc fixe			(g++ 9.3.0)			1.52	cpu_3D	 v1.8.2
-Linux x86_64	2*64@2.5Ghz				AMD EPYC 7502	1.9s	irene-amd-ccrt.ccc.cea.fr (icpc 19.0.5, IntelMPI 2018.0.3) 1.38 cpu_3D	 v1.8.0
+Linux x86_64	2*64@2.5Ghz				AMD Epyc 7502	1.9s	irene-amd-ccrt.ccc.cea.fr (icpc 19.0.5, IntelMPI 2018.0.3) 1.38 cpu_3D	 v1.8.0
 Linux_x86_64 	 2*4@3.8-3.9Ghz       1000Go:16Mo       Xeon Gold 5222  2.0s 	is244274.intra.cea.fr 	(g++ 10.0.1)
 Linux x86_64 	 1*4@1.6-4.1Ghz		16Go:6Mo	Xeon i5-8365U	2.0s	is242568.intra.cea.fr   (g++ 7.0, OpenMPI)		1.16	cpu_3D   v1.8.1
 Linux x86_64	2*24@2.7Ghz		96Go:33Mo	Xeon Gold 8168 	2.3s    irene.ccc.cea.fr	(icpc 17.0.4, OpenMPI 2.0.2)	1.59	cpu_3D	 v1.7.7

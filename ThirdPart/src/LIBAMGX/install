@@ -107,6 +107,7 @@ then
    # cobalt     V100 ?		14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4		?	?
    # orcus	V100-PCIE-16Go 	14.1	 9.2 	10.1	6.5.0				1.32s	0.07s
    # jeanzay	V100-SXM2-16Go	14.0	10.2	10.2	8.3.1	OpenMPI	4.0.2-cuda	1.15s	0.048s (7500Euros...)
+   # topaze	A100-SXM-80GB 	?	11.2		8.3.0	OpenMPI 4.0.5		0.65s	0.039s
    #cd $ROOT && rm -r -f $LIB # On efface les sources ?	    
 fi
 exit 0
