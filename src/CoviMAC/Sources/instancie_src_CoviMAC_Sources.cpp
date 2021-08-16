@@ -14,6 +14,7 @@
 #include <Terme_Puissance_Thermique_CoviMAC_Elem.h>
 #include <Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC.h>
 #include <Terme_Source_Constituant_CoviMAC_Elem.h>
+#include <Terme_Source_Decroissance_Radioactive_P0_CoviMAC.h>
 #include <Terme_Source_Qdm_Face_CoviMAC.h>
 void instancie_src_CoviMAC_Sources() {
 Cerr << "src_CoviMAC_Sources" << finl;
@@ -28,5 +29,6 @@ Terme_Boussinesq_CoviMAC_Face inst8;verifie_pere(inst8);
 Terme_Puissance_Thermique_CoviMAC_Elem inst9;verifie_pere(inst9);
 Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC inst10;verifie_pere(inst10);
 Terme_Source_Constituant_CoviMAC_Elem inst11;verifie_pere(inst11);
-Terme_Source_Qdm_Face_CoviMAC inst12;verifie_pere(inst12);
+Terme_Source_Decroissance_Radioactive_P0_CoviMAC inst12;verifie_pere(inst12);
+Terme_Source_Qdm_Face_CoviMAC inst13;verifie_pere(inst13);
 }

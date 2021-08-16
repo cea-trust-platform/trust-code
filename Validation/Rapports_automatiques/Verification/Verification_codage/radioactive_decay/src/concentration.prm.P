@@ -6,7 +6,7 @@ Parameters
     Description "Le terme source radioactive_decay permet d'impliciter ce terme. Pour vérifier l'implémentation on néglige les termes de convection et de diffusion : \latex_(\begin{equation} \partial_t c = {\color{red}-\lambda c} + \text{Prod} \end{equation}\latex_)"
     Description "La solution de cette équation est : \latex_(\begin{equation} c = \frac{\text{Prod}}{\lambda} (e^{-\lambda t} - 1) \end{equation}\latex_)"
     Author "Y.G."
-#Pforeach _dis_ ( VEFPreP1B  PolyMAC )
+#Pforeach _dis_ ( VEFPreP1B  PolyMAC CoviMAC )
 #Pforeach _s_ ( decay source_constituant )
 #Pforeach _dt_ ( 0.1 1 )
     TestCase _dis_/dt_dt_ "_s_.data"
@@ -30,7 +30,7 @@ Chapter
         legend below title "Légende"
         width 12cm
 
-#Pforeach _dis_ ( VEFPreP1B  PolyMAC )
+#Pforeach _dis_ ( VEFPreP1B  PolyMAC CoviMAC )
 #Pforeach _s_ ( decay source_constituant )
 #Pforeach _dt_ ( 0.1 1 )
         Curve
