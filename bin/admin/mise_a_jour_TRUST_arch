@@ -96,6 +96,7 @@ then
    [ "${HOST#ceres2}"   != $HOST ] && HOST=ceres2
    [ "${HOST#mezel}"    != $HOST ] && HOST=mezel
    [ "${HOST#cobalt}"   != $HOST ] && HOST=cobalt
+   [ "${HOST#topaze}"   != $HOST ] && HOST=topaze
    [ "${HOST#irene}"    != $HOST ] && HOST=irene-ccrt
    [ "${HOST#login}"    != $HOST ] && HOST=orcus-intel && [ "`grep AMD /proc/cpuinfo`" != "" ] && HOST=orcus-amd
 

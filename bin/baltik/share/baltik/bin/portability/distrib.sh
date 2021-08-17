@@ -53,7 +53,6 @@ ssh -o "StrictHostKeyChecking no" ${machine_cible} "[ ! -d ${path_to_run} ] && m
 # echo $* >  $Encours
 
 scp `dirname $0`/list_pid_et_fils.sh ${archive} ${machine_cible}:${path_to_run}/
-      
 
 for phase in prepare configure make make_check make_install
   do
@@ -66,9 +65,15 @@ for phase in prepare configure make make_check make_install
   else
       detar=""
   fi
+
+  option=""
+  if [[ $machine_cible = *"jean-zay"* ]] && [ $phase !=  make_check ]
+  then
+      option="srun -p compil -A fej@cpu -t 10:00:00 -c 10 --hint=nomultithread "
+  fi
   
   #ssh -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh;${path_to_run}/englobe.sh ./$phase.sh $* 2>&1  " > ${log_phase}
-  ssh -o "StrictHostKeyChecking no" -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh; ./$phase.sh $* 2>&1  " > ${log_phase}
+  ssh -o "StrictHostKeyChecking no" -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh; $option ./$phase.sh $* 2>&1  " > ${log_phase}
   status=$? && [ "`grep "./$phase.sh: No such file or directory" ${log_phase}`" != "" ] && status=-1
   echo Info date_fin_$phase `date '+%d/%m %H:%M'` >>${log_time}
   [ $status -ne 0 ] && echo Info $phase KO on $machine_cible  && tail  ${log_phase} && echo Info_global $phase KO >>  ${log_phase} && echo "Info_global date_fin `date '+%d/%m %H:%M'`" >> ${log_time} && exit 4
