@@ -148,7 +148,8 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
-  int i, j, e, eb, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size();
+  int i, j, e, eb, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), M = vitesse_->valeurs().line_size();
+  if (!(N == M || M == 1)) Cerr << "Error : velocity has " << M << " components and the convected field has " << N << ", please fix this!" << finl, Process::exit();
   const Champ_Inc_base& cc = equation().champ_convecte();
 
   for (auto &&i_m : mats) if (i_m.first == "vitesse" || (cc.derivees().count(i_m.first) && !semi_impl.count(cc.le_nom().getString())))
@@ -156,18 +157,18 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
         Matrice_Morse mat;
         IntTrav stencil(0, 2);
         stencil.set_smart_resize(1);
-        int M = i_m.first == "pression" && sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
+        int Mp = i_m.first == "pression" && sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
 
         if (i_m.first == "vitesse") /* vitesse */
           {
             for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
-                  for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
+                  for (n = 0; n < N; n++) stencil.append_line(N * e + n, Mp * f + n * (Mp > 1));
           }
         else for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* inconnues scalaires */
-                for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * eb + n * (M > 1));
+                for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) stencil.append_line(N * e + n, Mp * eb + n * (Mp > 1));
 
         tableau_trier_retirer_doublons(stencil);
-        Matrix_tools::allocate_morse_matrix(N * ne_tot, M * (i_m.first == "vitesse" ? nf_tot : ne_tot), stencil, mat);
+        Matrix_tools::allocate_morse_matrix(N * ne_tot, Mp * (i_m.first == "vitesse" ? nf_tot : ne_tot), stencil, mat);
         i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
       }
 }
@@ -182,28 +183,29 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
   const Champ_Inc_base& cc = equation().champ_convecte();
   const std::string& nom_cc = cc.le_nom().getString();
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = semi_impl.count(nom_cc) ? semi_impl.at(nom_cc) : cc.valeurs(), bcc = cc.valeur_aux_bords();
-  int i, j, e, eb, f, n, N = vcc.line_size(), M = sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
+  int i, j, e, eb, f, n, m, N = vcc.line_size(), Mp = sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N,
+                            M = vit.line_size();
 
   Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL;
   std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>> d_cc; //liste des derivees de cc a renseigner : couples (derivee de cc, matrice, nb de compos de la variable)
   if (!semi_impl.count(nom_cc)) for (auto &i_m : mats) if (cc.derivees().count(i_m.first))
-        d_cc.push_back(std::make_tuple(&cc.derivees().at(i_m.first), i_m.second, i_m.first == "pression" ? M : N));
+        d_cc.push_back(std::make_tuple(&cc.derivees().at(i_m.first), i_m.second, i_m.first == "pression" ? Mp : N));
 
   DoubleTrav dv_flux(N), dc_flux(2, N); //derivees du flux convectif a la face par rapport a la vitesse / au champ convecte amont / aval
 
   /* convection aux faces internes (fcl(f, 0) == 0), de Neumann_val_ext ou de Dirichlet */
   for (f = 0; f < zone.nb_faces(); f++) if (!fcl(f, 0) || (fcl(f, 0) > 4 && fcl(f, 0) < 7))
       {
-        for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
+        for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (M > 1))
             {
-              double v = vit(f, n) ? vit(f, n) : DBL_MIN, fac = pf(f) * fs(f) * (1. + (v * (i ? -1 : 1) > 0 ? 1. : -1) * alpha) / 2;
+              double v = vit(f, m) ? vit(f, m) : DBL_MIN, fac = pf(f) * fs(f) * (1. + (v * (i ? -1 : 1) > 0 ? 1. : -1) * alpha) / 2;
               dv_flux(n) += fac * (e >= 0 ? vcc(e, n) : bcc(f, n)); //f est reelle -> indice trivial dans bcc
-              dc_flux(i, n) = e >= 0 ? fac * vit(f, n) : 0;
+              dc_flux(i, n) = e >= 0 ? fac * vit(f, m) : 0;
             }
 
         //second membre
-        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0; n < N; n++)
-              secmem(e, n) -= (i ? -1 : 1) * dv_flux(n) * vit(f, n);
+        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0, m = 0; n < N; n++, m += (M > 1))
+              secmem(e, n) -= (i ? -1 : 1) * dv_flux(n) * vit(f, m);
         //derivees : vitesse
         if (m_vit) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0; n < N; n++)
                 (*m_vit)(N * e + n, N * f + n) += (i ? -1 : 1) * dv_flux(n);
@@ -246,17 +248,18 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
   if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
 
 
-  int i, e, f, d, D = dimension, n, N = vcc.line_size(), nf_tot = zone.nb_faces_tot();
+  int i, e, f, d, D = dimension, n, m, N = vcc.line_size(), nf_tot = zone.nb_faces_tot(), M = vit.line_size();
   DoubleTrav cc_f(N); //valeur du champ convecte aux faces
   /* flux aux bords */
   for (f = 0; f < zone.premiere_face_int(); f++)
     {
-      for (cc_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
-          cc_f(n) +=  (1. + (vit(f, n) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
-      for (n = 0; n < N; n++) flux_bords_(f, n) = pf(f) * fs(f) * vit(f, n) * cc_f(n);
+      for (cc_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (M > 1))
+
+          cc_f(n) +=  (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
+      for (n = 0; n < N; n++) flux_bords_(f, n) = pf(f) * fs(f) * vit(f, m) * cc_f(n);
     }
 
-  if (cc_phases_.size()) for (n = 0; n < N; n++) if (cc_phases_[n].non_nul()) /* mise a jour des champs de debit */
+  if (cc_phases_.size()) for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (cc_phases_[n].non_nul()) /* mise a jour des champs de debit */
         {
           Champ_Face_CoviMAC& c_ph = ref_cast(Champ_Face_CoviMAC, cc_phases_[n].valeur());
           DoubleTab& v_ph = c_ph.valeurs();
@@ -264,8 +267,8 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
           for (f = 0; f < zone.nb_faces(); f++)
             {
               for (v_ph(f) = 0, i = 0; i < 2; i++)
-                v_ph(f) += (1. + (vit(f, n) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
-              v_ph(f) *= vit(f, n);
+                v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
+              v_ph(f) *= vit(f, m);
             }
           c_ph.update_ve(v_ph); //interpolation face -> element d'ordre 1 (sans matrices)
           for (f = 0; f < zone.nb_faces(); f++) v_ph(f) *= pf(f);
@@ -273,7 +276,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
           c_ph.changer_temps(temps);
         }
 
-  if (vd_phases_.size()) for (n = 0; n < N; n++) if (vd_phases_[n].non_nul()) /* mise a jour des champs de vitesse debitante */
+  if (vd_phases_.size()) for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (vd_phases_[n].non_nul()) /* mise a jour des champs de vitesse debitante */
         {
           Champ_Face_CoviMAC& c_ph = ref_cast(Champ_Face_CoviMAC, vd_phases_[n].valeur());
           DoubleTab& v_ph = c_ph.valeurs();
@@ -281,8 +284,8 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
           for (f = 0; f < zone.nb_faces(); f++)
             {
               for (v_ph(f) = 0, i = 0; i < 2; i++)
-                v_ph(f) += (1. + (vit(f, n) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
-              v_ph(f) *= vit(f, n);
+                v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
+              v_ph(f) *= vit(f, m);
             }
           c_ph.update_ve(v_ph); //interpolation face -> element d'ordre 1 (sans matrices)
           for (f = 0; f < zone.nb_faces(); f++) v_ph(f) *= pf(f);
