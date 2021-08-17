@@ -347,23 +347,84 @@ ArrOfInt& Zone::indice_elements(const IntTab& sommets,
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
+static double cached_memory=0;
+bool sameDoubleTab(const DoubleTab& a, const DoubleTab& b)
+{
+  int size_a = a.size_array();
+  int size_b = b.size_array();
+  if (size_a != size_b) return false;
+  for (int i=0; i<size_a; i++)
+    if (a.addr()[i] != b.addr()[i]) return false;
+  return true;
+}
 ArrOfInt& Zone::chercher_elements(const DoubleTab& positions,
                                   ArrOfInt& elements,
                                   int reel) const
 {
+  bool set_cache = false;
+  if (!domaine().deformable())
+    {
+      set_cache = true;
+      if (!deriv_octree_.non_nul() || !deriv_octree_.valeur().construit())
+        {
+          // Vide le cache
+          cached_elements_.reset();
+          cached_positions_.reset();
+        }
+      else // Recherche dans le cache:
+        for (int i = 0; i < cached_positions_.size(); i++)
+          if (sameDoubleTab(positions, cached_positions_[i]))
+            {
+              elements.resize_tab(cached_positions_[i].dimension(0), ArrOfInt::NOCOPY_NOINIT);
+              elements = cached_elements_[i];
+              /*
+              //Cerr << "Reuse " << i << "th array cached in memory for Zone::chercher_elements(...): " << finl;
+              if (i!=0)
+                {
+                  // Permute pour avoir le tableau en premier
+                  cached_elements_[i].resize_tab(cached_positions_[0].dimension(0), ArrOfInt::NOCOPY_NOINIT);
+                  cached_elements_[i] = cached_elements_[0];
+                  cached_elements_[0].resize_tab(cached_positions_[i].dimension(0), ArrOfInt::NOCOPY_NOINIT);
+                  cached_elements_[0] = elements;
+                  DoubleTab tmp(cached_positions_[i]);
+                  cached_positions_[i] = cached_positions_[0];
+                  cached_positions_[0] = tmp;
+                }
+                */
+              return elements;
+            }
+    }
   const OctreeRoot& octree = construit_octree(reel);
-  int i, sz=positions.dimension(0);
+  int sz=positions.dimension(0);
   const int dim = positions.dimension(1);
   // resize_tab est virtuelle, si c'est un Vect ou un Tab elle appelle le
   // resize de la classe derivee:
   elements.resize_tab(sz, ArrOfInt::NOCOPY_NOINIT);
   double x, y=0, z=0;
-  for (i=0; i<sz; i++)
+  for (int i=0; i<sz; i++)
     {
       x = positions(i,0);
       if (dim > 1) y = positions(i,1);
       if (dim > 2) z = positions(i,2);
       elements[i] = octree.rang_elem(x, y, z);
+    }
+  if (set_cache)
+    {
+      // Met en cache
+      cached_positions_.add(positions);
+      cached_elements_.add(elements);
+      cached_memory += positions.size_array() * sizeof(double);
+      cached_memory += elements.size_array() * sizeof(int);
+      if (cached_memory>1e7)   // 10Mo
+        {
+          Cerr << 2 * cached_positions_.size() << " arrays cached in memory for Zone::chercher_elements(...): ";
+          if (cached_memory < 1e6)
+            Cerr << int(cached_memory / 1024) << " KBytes" << finl;
+          else if (cached_memory < 1e9)
+            Cerr << int(cached_memory / 1024 / 1024) << " MBytes" << finl;
+          else
+            Cerr << int(cached_memory / 1024 / 1024 / 1024) << " GBytes" << finl;
+        }
     }
   return elements;
 }

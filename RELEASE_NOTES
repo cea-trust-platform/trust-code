@@ -1,9 +1,11 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
+17/08/21 (TRUST)  Performance : Arrays obtained from octree algorithm are cached. Useful for advanced fields computation needing interpolations each time-step 
+17/08/21 (TRUST)  Bug fixed   : Regression since 1.8.3 fixed (malformed .dt_ev file with missing columns for coupled problems)
 20/07/21 (TRUST)  Performance : Output files (.out) are opened/closed at the first/last print and not at each print as before
 12/07/21 (TRUST)  Bug fix     : Source_generique source term couldn't be used for PolyMAC discretization
-XX/XX/21 (TRUST)  Performance : A same advanced field used by several probes are now computed only once during each post-processing phasis 
+12/07/21 (TRUST)  Performance : A same advanced field used by several probes are now computed only once during each post-processing phasis 
 05/07/21 (TRUST)  Portability : New CCRT cluster topaze supported (110592 AMD Milan Epyc cores)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.3 : Enhancements, modifications and corrected bugs since version 1.8.2 :

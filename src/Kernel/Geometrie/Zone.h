@@ -32,7 +32,8 @@
 #include <Noms.h>
 #include <Deriv_OctreeRoot.h>
 #include <List_Nom.h>
-#include <DoubleTab.h>
+#include <DoubleTabs.h>
+#include <Vect_ArrOfInt.h>
 
 class Motcle;
 class IntList;
@@ -256,6 +257,9 @@ protected:
 private:
   // Volume total de la zone (somme sur tous les processeurs)
   double volume_total_;
+  // Cached infos to accelerate Zone::chercher_elements():
+  mutable DoubleTabs cached_positions_;
+  mutable VECT(ArrOfInt) cached_elements_;
 };
 
 inline const LIST(Nom)& Zone::Bords_a_imprimer() const
