@@ -1,0 +1,13 @@
+#!/bin/bash
+# Verification des .dt_ev par rapport a une reference
+jdd=docond
+ref=$jdd.dt_ev_ref
+# Bizarre qu'il faille rajouter un retour ligne pour compare_sonde...
+echo >> $jdd.dt_ev
+compare_sonde $jdd.dt_ev $ref 1>verifie.log 2>&1 || exit -1
+if [ PAR_$jdd.dt_ev -nt $jdd.dt_ev ]
+then
+   echo >> PAR_$jdd.dt_ev
+   compare_sonde PAR_$jdd.dt_ev $ref 1>>verifie.log 2>&1 || exit -1
+fi
+

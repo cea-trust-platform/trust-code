@@ -38,6 +38,7 @@
 Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
 // XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.
 
+static SFichier dt_ev_;
 void Schema_Temps_base::initialize()
 {
   // GF je remets le calculer_pas_de_temps car des schemas en temps implicites s'en servent pour dimensionner (en particulier ovap)
@@ -53,17 +54,22 @@ void Schema_Temps_base::initialize()
           // On initialise le fichier .dt_ev s'il n'existe pas ou si c'est un demarrage de calcul sans reprise
           if ((nb_pas_dt_==0) && ((stat(fichier,&f)) || !(pb_base().reprise_effectuee()==1)))
             {
-              dt_ev_.ouvrir(fichier,schema_impr() ? (ios::out) : (ios::app));
-              dt_ev_.setf(ios::scientific);
               if (schema_impr())
-                dt_ev_ << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
+                {
+                  dt_ev_.ouvrir(fichier, ios::out);
+                  dt_ev_.setf(ios::scientific);
+                  dt_ev_ << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
+                }
               for (int i=0; i<pb_base().nombre_d_equations(); i++)
                 dt_ev_ << pb_base().equation(i).expression_residu();
             }
           else
             {
-              dt_ev_.ouvrir(fichier,ios::app);
-              dt_ev_.setf(ios::scientific);
+              if (schema_impr())
+                {
+                  dt_ev_.ouvrir(fichier, ios::app);
+                  dt_ev_.setf(ios::scientific);
+                }
             }
         }
       if (!disable_progress() && !progress_.is_open())
@@ -221,7 +227,6 @@ void Schema_Temps_base::validateTimeStep()
           if ((residu_>0)&&(residu_old_slope_>0))
             cumul_slope_+=(log(residu_)-log(residu_old_slope_))/dt_;
           residu_old_slope_=residu_;
-
         }
       if (schema_impr()&&(nb_pas_dt()>0 && pas_de_temps()>0))
         {

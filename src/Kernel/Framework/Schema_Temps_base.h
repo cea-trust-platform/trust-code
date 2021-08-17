@@ -407,7 +407,6 @@ private:
   bool stationnaires_atteints_;	// Stationary reached by the calculation (means all the problems reach stationary)
   SFichier progress_;
   int disable_progress_; // Flag to disable the writing of the .progress file
-  SFichier dt_ev_;
   int disable_dt_ev_; // Flag to disable the writing of the .dt_ev file
 };
 
