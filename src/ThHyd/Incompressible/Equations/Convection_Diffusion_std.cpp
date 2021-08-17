@@ -204,7 +204,7 @@ const Champ_base& Convection_Diffusion_std::diffusivite_pour_pas_de_temps()
 
 const Champ_base& Convection_Diffusion_std::vitesse_pour_transport()
 {
-  return probleme().equation(0).inconnue();
+  return probleme().get_champ("vitesse");
 }
 
 // E. Saikali : Methodes utiles pour un heritage V
