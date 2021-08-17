@@ -34,7 +34,8 @@ define_modules_config()
       module="gnu/11.1.0 mpi/openmpi/4.0.5"
       module="intel/20.0.4 mpi/openmpi/4.0.5"
    fi
-   #
+   # Ajout pour charger l'espace disque a la place de SCRATCHDIR pas encore disponible sur topaze:
+   [ "`id | grep gch0504`" != "" ] && sw=dfldatadir/gch0504
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null || exit -1" >> $env
@@ -52,6 +53,7 @@ define_soumission_batch()
    [ "$prod" = 1 ] && soumission=1
    [ "$gpu"  = 1 ] && soumission=1
    ntasks=128 # AMD Milan 128 cores/node
+   [ "$NB_PROCS" = 1 ] && cpus_per_task=$ntasks # Pour avoir le max de memoire (celle du noeud) lors du decoupage
    # ccc_mqinfo :
 # Name     Partition  Priority  MaxCPUs  SumCPUs  MaxNodes  MaxRun  MaxSub     MaxTime
 # -------  ---------  --------  -------  -------  --------  ------  ------  ----------

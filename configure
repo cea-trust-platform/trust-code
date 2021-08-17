@@ -623,6 +623,10 @@ then
    then
       echo "pdflatex is missing..." >> NON_INSTALLED
       texerror=1
+   elif [ "`echo | makeindex -i 1>/dev/null 2>&1;echo $?`" != 0 ]
+   then
+      echo "makeindex is missing..." >> NON_INSTALLED # Ajoute pour Outils/TRIOXDATA
+      texerror=1
    else
       dest2=$TRUST_TMP/tmp_tex
       [ -d $dest2 ] && rm -r $dest2
