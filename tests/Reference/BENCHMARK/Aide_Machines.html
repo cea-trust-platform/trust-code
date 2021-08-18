@@ -28,12 +28,12 @@ Soit environ 1000 octets/maille (Resolution avec gradient conjugue).
 <HR><h1>Performances TRUST sur differents GPU</h1><HR>
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test gpu_3D (125000 mailles):
 -------------------------------------------------------------------------------------------------------
-Arch  Model  PhysicalCores@frequency     GPU/Cuda     	Processor Model	CPU     Machine                 (Compiler version)      SpeedUp(n=2)    TestCase version
-Linux x86_64 	2*64@1.5-3.5Ghz		A100/11.2	AMD Epyc 7763	10.5s	topaze.ccc.cea.fr	(g++ 8.3.0, OpenMPI 4.0.5)	0.77	gpu_3D   v1.8.3
-Linux x86_64	2*20@2.5-3.9Ghz		V100/10.2	Xeon Gold 6248	14.4s	jean-zay1.idris.fr	(g++ 8.3.1, OpenMPI 4.0.2-cuda) 0.98	gpu_3D   v1.8.3
-Linux x86_64 	2*64@2.5Ghz		V100/??		AMD Epyc 7502	17.9s	irene-amd.ccc.cea.fr	(g++ 8.3.1, OpenMPI 4.0.2)	0.99	gpu_3D   v1.8.3
-Linux x86_64	2*16@2.1Ghz		V100/??		AMD Epyc 7281		orcus-amd.intra.cea.fr 	(g++ 9.1.0, OpenMPI 3.1.4)
-Linux x86_64     1*8@3.0-4.7Ghz         P400/11.0      	Xeon i7-9700    64.4s	is242981.intra.cea.fr   (g++ 10.0.1,OpenMPI 4.1.0-cuda)	1.01    gpu_3D   v1.8.3
+Arch  Model  PhysicalCores@frequency     GPU/Cuda     	Processor Model	CPU     Machine                 (Compiler version)      2MPI:	1GPU 2GPU 3GPU 4GPU	TestCase version
+Linux x86_64 	2*64@1.5-3.5Ghz		4*A100/11.2	AMD Epyc 7763	10.5s	topaze.ccc.cea.fr	(g++ 8.3.0, OpenMPI 4.0.5)	               13.6	gpu_3D   v1.8.3
+Linux x86_64	2*20@2.5-3.9Ghz		4*V100/10.2	Xeon Gold 6248	14.4s	jean-zay1.idris.fr	(g++ 8.3.1, OpenMPI 4.0.2-cuda) 11.2 14.1 14.1 14.1	gpu_3D   v1.8.3
+Linux x86_64 	2*64@2.5-3.3Ghz		4*V100/??	AMD Epyc 7502	17.9s	irene-amd.ccc.cea.fr	(g++ 8.3.1, OpenMPI 4.0.2)				gpu_3D   v1.8.3
+Linux x86_64	2*16@2.1-2.7Ghz		4*V100/??	AMD Epyc 7281		orcus-amd.intra.cea.fr 	(g++ 9.1.0, OpenMPI 3.1.4)                              gpu_3D   v1.8.3
+Linux x86_64     1*8@3.0-4.7Ghz        	1*P400/11.0    	Xeon i7-9700    64.4s	is242981.intra.cea.fr   (g++ 10.0.1,OpenMPI 4.1.0-cuda)	63.7    		gpu_3D   v1.8.3
 
 <HR><h1>Performances TRUST sur differentes machines</h1><HR>
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test cpu_3D (125000 mailles):			

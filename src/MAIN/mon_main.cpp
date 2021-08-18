@@ -133,6 +133,38 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 #endif
 }
 
+#ifdef PETSC_HAVE_CUDA
+#include <cuda.h>
+#include <cuda_runtime.h>
+void init_cuda()
+{
+  char* local_rank_env;
+  int local_rank;
+  cudaError_t cudaRet;
+
+  /* Recuperation du rang local du processus via la variable d'environnement
+     positionnee par Slurm, l'utilisation de MPI_Comm_rank n'etant pas encore
+     possible puisque cette routine est utilisee AVANT l'initialisation de MPI */
+  local_rank_env = getenv("SLURM_LOCALID");
+
+  if (local_rank_env)
+    {
+      local_rank = atoi(local_rank_env);
+      /* Definition du GPU a utiliser pour chaque processus MPI */
+      cudaRet = cudaSetDevice(local_rank);
+      if(cudaRet != cudaSuccess)
+        {
+          printf("Error: cudaSetDevice failed\n");
+          Process::exit();
+        }
+    }
+  else
+    {
+      printf("Error : can't guess the local rank of the task\n");
+      Process::exit();
+    }
+}
+#endif
 ///////////////////////////////////////////////////////////
 // Desormais Petsc/MPI_Initialize et Petsc/MPI_Finalize
 // sont dans un seul fichier: mon_main
@@ -140,6 +172,11 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 //////////////////////////////////////////////////////////
 void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
 {
+#ifdef PETSC_HAVE_CUDA
+  // Necessaire sur JeanZay pour utiliser GPU Direct (http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-mpi-cuda-aware-gpudirect.html)
+  // mais performances moins bonnes (trust PAR_gpu_3D 2) donc desactive en attendant d'autres tests:
+  // init_cuda();
+#endif
   Nom arguments_info="";
   int must_mpi_initialize = 1;
   if (with_petsc != 0)

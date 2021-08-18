@@ -141,8 +141,9 @@ help()
    echo "-prod                         : Create a submission file and submit the job on the main production class with exclusive resource."
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
    echo "-queue queue                  : Create a submission file with the specified queue and submit the job."
-   echo "-c ncpus                      : Use ncpus CPUs allocated per task for a parallel calculation."
+   echo "-c n                          : Allocate n cores per task on each node."
 [ "$TRUST_USE_CUDA" = 1 ] && echo "-gpu                    : Create a submission file and submit the job on production class with GPU cards."
+[ "$TRUST_USE_CUDA" = 1 ] && echo "-gpus_per_node n        : Allocate n GPUs per node."
 #   [ -d /ccc ] && echo "-ipm                    : Use ipm to report MPI statistics."
    echo "datafile -help_trust          : Print options of TRUST_EXECUTABLE [CASE[.data]] [options]."
 
@@ -379,6 +380,9 @@ do
    elif [ "$1" = "-c" ]
    then
       shift && cpus_per_task=$1
+   elif [ "$1" = "-gpus_per_node" ]
+   then
+      shift && gpus_per_node=$1
    elif [ "$1" = "-monitor" ]
    then
       monitor=1

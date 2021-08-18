@@ -36,14 +36,17 @@ let i=$i+1;solver[$i]="Gen            { seuil $seuil solv_elem bicgstab precond 
 
 ################################
 # Solveurs matrices symetriques:
-################################
+################################P
 # References TRUST (GC+SSOR - Cholesky)
-let i=$i+1;solver[$i]="GCP            { seuil $seuil precond ssor { omega 1.65 } impr }"			;sym[$i]=1	;rank[$i]=1;
+let i=$i+1;solver[$i]="      GCP      { seuil $seuil precond ssor { omega 1.65 } impr }"			;sym[$i]=1	;rank[$i]=1;
 # Marche pas en VEF:
-#let i=$i+1;solver[$i]="GCP            { optimized seuil $seuil precond ssor { omega 1.65 } impr }"		;sym[$i]=1	
+#let i=$i+1;solver[$i]="      GCP      { optimized seuil $seuil precond ssor { omega 1.65 } impr }"		;sym[$i]=1	
 
 # Solveur Optimal
-let i=$i+1;solver[$i]="Optimal        { seuil $seuil impr }"        						;sym[$i]=1                  	
+let i=$i+1;solver[$i]="      Optimal  { seuil $seuil impr }"        						;sym[$i]=1                  	
+
+# Solveur Direct lapack
+let i=$i+1;solver[$i]="      Cholesky { impr }"                                                                 ;sym[$i]=1      ;par[$i]=0;
 
 # Cholesky Mumps (Fonctionne en non symetrique mais aucun interet pour TRUST)
 let i=$i+1;solver[$i]="Petsc Cholesky { impr }"									;sym[$i]=1 	;rank[$i]=3;
@@ -66,7 +69,7 @@ then
 fi
 let i=$i+1;solver[$i]="Petsc Cholesky_Cholmod { impr }"                               		;par[$i]=0      ;sym[$i]=1 
 let i=$i+1;solver[$i]="Petsc Cholesky_Umfpack { impr }"						;par[$i]=0	;sym[$i]=1 
-let i=$i+1;solver[$i]="Petsc Cholesky_Lapack { impr }"						;par[$i]=0	;sym[$i]=1 
+let i=$i+1;solver[$i]="Petsc Cholesky_Lapack  { impr }"						;par[$i]=0	;sym[$i]=1 
 
 # GC + SSOR / EISENSTAT / ASM 
 let i=$i+1;solver[$i]="Petsc GCP      { seuil $seuil precond SSOR { omega 1.65 } impr }"			;sym[$i]=1	;rank[$i]=2;

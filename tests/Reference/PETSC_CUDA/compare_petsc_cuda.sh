@@ -14,7 +14,7 @@ compare_performance()
    keys=`awk '(/Vec/ || /Mat/) && !/Assembly/ && ($3=="1.0") {print $1}' $1 $2 | sort -u`
    for key in $keys
    do
-      grep "$key " $1 $2 | awk -v key=$key '// {if (NR==1) {pourcentage=$16;mflops1=$NF}; \
+      grep "$key " $1 $2 | awk -v key=$key '// {if (NR==1) {pourcentage=$16;mflops1=$21}; \
       						if (NR==2) {mflops2=$NF; gain=(mflops1!=0?mflops2/mflops1:0)}} \
 						END {printf("%16s %d% \t%d \t%d \t*%2.1f\n",key,pourcentage,mflops1,mflops2,gain) }'
    done

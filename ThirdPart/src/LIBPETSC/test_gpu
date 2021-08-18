@@ -57,6 +57,11 @@ do
       #pc="-pc_type ilu -pc_factor_mat_solver_type cusparse" 	# ILU GPU mais attention aucun gain (confirme dans doc PETSc)
       pc="-pc_type bjacobi -sub_pc_type ilu -sub_pc_factor_levels 1" 			# Dispo en 2020 (ILU non GPU), *1.4 
       options="-ksp_type cg $pc -m $mesh_size -n $mesh_size"
+
+      #pc="-pc_type lu"                    # Dispo en 2020 (ILU non GPU), *1.4
+      #options="-ksp_type preonly $pc -m $mesh_size -n $mesh_size"
+
+
       gpu_options="-mat_type aijcusparse -vec_type cuda" 
       gpu_options="-mat_type aijviennacl -vec_type viennacl" # Semble mieux marcher !
 	# Obtenu le 20/05/2020 sur PC is234639: 

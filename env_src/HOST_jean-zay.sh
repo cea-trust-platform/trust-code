@@ -52,7 +52,7 @@ define_soumission_batch()
       # See http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm.html 
       queue=gpu_p13 && constraint=v100-16g # pour gpu_p3 ou constraint=v100-32g (gpu_p1)  
       #queue=gpu_p4 # Partition A100      
-      gpus_per_node=4 # Si on ne reserve qu'1 GPU plantage memoire possible...
+      [ "$gpus_per_node" = "" ] && gpus_per_node=4 # Si on ne reserve qu'1 GPU plantage memoire possible... Donc le max par defaut
       qos=qos_gpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_gpu-dev && cpu=120 
       #qos=qos_gpu-t4 && cpu=6000
       [ "`id | grep eia`" != "" ] && project="eia@gpu"
