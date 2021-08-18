@@ -65,7 +65,9 @@ then
    version=$3
    export HTTPS="https://github.com/visit-dav/visit/releases/download"
    version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
-   [ "$MPI_ROOT" != "" ] && [ "$TRUST_WITHOUT_HOST" = 0 ] && parallel="parallel" # Construction de VisIt parallele uniquement sur cluster desormais
+   [ "$MPI_ROOT" != "" ] && parallel="parallel"
+   # A partir de 1.8.4, on essaie de prendre sur PC+MPICH le binaire precompile avec MPICH:   
+   [ "$TRUST_WITHOUT_HOST" = 1 ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
 else
    # Ancienne procedure, peu a peu obsolete
    build=build.sh
@@ -75,7 +77,7 @@ else
    export PATH=$NEWPATH_
    export HTTPS="http://portal.nersc.gov/project/visit/releases https://wci.llnl.gov/simulation/computer-codes/visit/executables http://visit.ilight.com/svn/visit/trunk/releases"
    version_visit=`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
-  [ "$MPI_ROOT" != "" ] && parallel="parallel"
+   [ "$MPI_ROOT" != "" ] && parallel="parallel"
 fi   
 
 echo $version $what $version_visit
