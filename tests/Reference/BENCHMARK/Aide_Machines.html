@@ -42,12 +42,12 @@ Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU	Machine			
 Linux x86_64	 1*8@3.0-4.7Ghz		32Go:12Mo	Xeon i7-9700 	1.5s	is242981.intra.cea.fr	(g++ 10.0.1)			1.62	cpu_3D	 v1.8.1
 Linux x86_64	2*64@1.5-3.5Ghz        256Go:32Mo	AMD Epyc 7763   1.7s    topaze.ccc.cea.fr	(g++ 11.1.0, OpenMPI 4.0.5)	1.58	cpu_3D	 v1.8.3
 Linux x86_64	 1*4@2.5-4.2Ghz		16Go:8Mo	Xeon i5-8400H	1.8s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.7.9
-Linux x86_64	 1*6@2.9-4.1Ghz		 8Go:9Mo	Xeon i5-9400F	1.9s	pc fixe			(g++ 9.3.0)			1.52	cpu_3D	 v1.8.2
+Linux x86_64	 1*6@2.9-4.1Ghz		 8Go:9Mo	Xeon i5-9400F	1.9s	pc fixe	(wsl2)		(g++ 9.3.0)			1.52	cpu_3D	 v1.8.2
 Linux x86_64	2*64@2.5Ghz				AMD Epyc 7502	1.9s	irene-amd-ccrt.ccc.cea.fr (icpc 19.0.5, IntelMPI 2018.0.3) 1.38 cpu_3D	 v1.8.0
-Linux_x86_64 	 2*4@3.8-3.9Ghz       1000Go:16Mo       Xeon Gold 5222  2.0s 	is244274.intra.cea.fr 	(g++ 10.0.1)
+Linux x86_64 	 2*4@3.8-3.9Ghz       1000Go:16Mo       Xeon Gold 5222  2.0s 	is244274.intra.cea.fr 	(g++ 10.0.1)
 Linux x86_64 	 1*4@1.6-4.1Ghz		16Go:6Mo	Xeon i5-8365U	2.0s	is242568.intra.cea.fr   (g++ 7.0, OpenMPI)		1.16	cpu_3D   v1.8.1
 Linux x86_64	2*24@2.7Ghz		96Go:33Mo	Xeon Gold 8168 	2.3s    irene.ccc.cea.fr	(icpc 17.0.4, OpenMPI 2.0.2)	1.59	cpu_3D	 v1.7.7
-Linux x86_64	 1*4@2.1-3.7Ghz		16Go:4Mo        AMD Ryzen5 3550H2.3s    wsl2                    (g++ 9.3.0, MPICH 3.2)		1.39	cpu_3D	 v1.8.1
+Linux x86_64	 1*4@2.1-3.7Ghz		16Go:4Mo        AMD Ryzen5 3550H2.3s    pc portable (wsl2)      (g++ 9.3.0, MPICH 3.2)		1.39	cpu_3D	 v1.8.1
 Linux x86_64	2*14@2.4-2.4Ghz		64Go:35Mo	Xeon E5-2680 v4	2.4s	cobalt.ccc.cea.fr	(icpc 16.0.3, OpenMPI 1.8.8)		cpu_3D	 v1.7.7
 Linux x86_64	 1*4@3.0-3.5Ghz		16Go:8Mo	Xeon E3-1220 v5	2.4s	is231771.intra.cea.fr   (g++ 4.8.5, MPICH 3.2)		1.56	cpu_3D	 v1.7.7
 Linux x86_64	2*28@2.2Ghz            131Go:19Mo	Xeon Gold 5120  2.5s	pegasi2.intra.cea.fr	(g++ 4.8.5, MPICH 3.2)		1.74	cpu_3D	 v1.8.1	
@@ -58,7 +58,7 @@ Linux x86_64	 	1*4@3.20Ghz 	 8Go:8Mo	Xeon E3-1225	2.9s	malrif.intra.cea.fr	(g++ 
 Linux x86_64	 	2*8@2.70Ghz     32Go:20Mo 	Xeon E5-2680	3.1s	supermuc.lrz.de		(icpc 12.1.6)
 Linux x86_64	 	1*2@3.10Ghz      4Go:3Mo	i5-3210M	3.2s	grenat.si.c-s.fr	(g++ 4.4.5)		0.98		cpu_3D 	 v1.6.6
 Linux x86_64	 	2*6@2.67GHz     24Go:12Mo	Xeon X5650     	3.2s   antoinette3.intra.cea.fr	(g++ 4.4.6)		1.56		cpu_3D 	 v1.6.6
-Linux_x86_64	       2*10@2.80Ghz    264Go:25Mo	Xeon E5-2680	3.3s	callisto.intra.cea.fr   (icpc 14.0.2)		1.58		cpu_3D	 v1.6.9
+Linux x86_64	       2*10@2.80Ghz    264Go:25Mo	Xeon E5-2680	3.3s	callisto.intra.cea.fr   (icpc 14.0.2)		1.58		cpu_3D	 v1.6.9
 Linux x86_64	 	2*6@2.67Ghz     24Go:12Mo 	Xeon X5650	3.4s	laramon.intra.cea.fr	(g++ 4.4.1)		1.58		cpu_3D	 v1.6.4
 Linux_x86_64	       2*10@2.80Ghz    264Go:25Mo	Xeon E5-2680	3.5s	callisto.intra.cea.fr   (g++ 4.4.7)		1.59		cpu_3D	 v1.6.9
 Linux x86_64		1*2@3.30Ghz      4Go:3Mo	i3-2120		3.5s	estaris.intra.cea.fr	(g++ 4.4.1)
@@ -90,6 +90,7 @@ Linux x86_64 		8@3.00Ghz      	66Go:6Mo	? ?		6.6s	cesium.intra.cea.fr	(icc 10.1)
 Linux x86_64 		8@3.00Ghz      	66Go:6Mo	? ?		6.8s	cesium.intra.cea.fr	(g++ 4.1.2)		1.67		cpu_3D   v1.5.6
 Linux x86_64 		2*4@3.00Ghz     32Go:6Mo	? ?		7.0s	fluent.univ-perp.fr	(g++ 4.2.4)		1.91		cpu_3D   v1.5.5
 Linux x86_64 		2*4@2.83Ghz	 8Go:6Mo	? ?		7.2s	gre027058.intra.cea.fr	(g++ 4.2.3)		1.7-2.0		cpu_3D	 v1.5.7
+Linux aarch64	       4*12@1.80Ghz	32Go:		Fujitsu A64FX	8.9s	irene-arm-fr.ccc.cea.fr	(g++ 11.1.0)		1.56		cpu_3D	 v1.8.3
 Linux i686		1*2@2.66Ghz	 1Go:4Mo	? ?		9.3s	petichet.intra.cea.fr	(g++ 4.2.2)		1.18		cpu_3D	 v1.5.3
 Linux x86_64		4@2.66Ghz	 8Go:4Mo	? ?		9.6s	chloe.intra.cea.fr	(g++ 3.4.6)		1.61		cpu_3D	 v1.5.3
 Linux x86_64	 	3.2Ghz		 4Go:2Mo	? ?		10.4s	moleson.intra.cea.fr	(g++ 4.1.1)
@@ -184,7 +185,35 @@ nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite   
 128     |       	|       	|       	|               |               | 1 node (128 cores)
 256     | 0.228611      | 196.6 	| 0.000920183   | 82.671        | .322          | 2 nodes 
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST 1.8.2_beta Thu Jun 18 14:35:51 CEST 2020 sur orcus-amd : (AMD, AOCC 2.1.0, HPCX 2.6.0):
+Calcul parallele TRUST 1.8.3 Fri Jun 18 15:13:41 CEST 2021 sur irene-arm-ccrt : (a64fx, GNU 11.1.0, OpenMPI 4.0.5):
+------------------------------------------------------------------------------------
+nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
+------------------------------------------------------------------------------------
+1       | 92.1736       | 195.55        | 0.369726      | 1.000         | 1.000         |
+2       | 46.3909       | 195.55        | 0.187804      | 1.986         | .993          |
+4       | 22.6999       | 195.55        | 0.0924132     | 4.060         | 1.015         |
+8       | 11.7633       | 195.55        | 0.0473818     | 7.835         | .979          |
+16      | 6.27188       | 196.3 	| 0.0252233     | 14.696        | .918          |
+32      | 3.19533       | 196.35        | 0.0128889     | 28.846        | .901          |
+48      | 2.15061       | 196.55        | 0.00863862    | 42.859        | .892          | 1 node (48 cores)
+64      | 1.75339       | 196.55        | 0.00714826    | 52.568        | .821 		| 2 nodes  
+128     | 0.978927      | 196.6 	| 0.00400805    | 94.15         | .720          | 3 nodes
+256     | 0.610136      | 196.6 	| 0.0025538     | 151.11        | .577          | 6 nodes
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.8.3 Mon Jun 21 11:11:36 CEST 2021 sur irene-ccrt : (KNL, binaire construit sur skylake)
+------------------------------------------------------------------------------------
+nb_proc	| cpu(s) dt	| ngcp 		| cpu(s) igcp	| speed up	| efficacite	|
+------------------------------------------------------------------------------------
+1	| 132.447	| 195.55	| 0.586668	| 1.000		| 1.000		|
+2	| 70.442	| 195.55	| 0.312072	| 1.880		| .940		|
+4	| 34.565	| 195.55	| 0.152362	| 3.831		| .957		|
+8	| 18.234	| 195.55	| 0.0801831	| 7.263		| .907		|
+16	| 9.54249	| 196.3		| 0.0416307	| 13.879	| .867		|
+32	| 4.89412	| 196.35	| 0.0213604	| 27.062	| .845		|
+68	| 2.56624	| 196.55	| 0.0111754	| 51.611	| .758		| 1 node (64 cores)
+136	| 1.52789	| 196.6		| 0.00622859	| 86.686	| .637		| 2 nodes
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.8.2 Thu Jun 18 14:35:51 CEST 2020 sur orcus-amd : (AMD, AOCC 2.1.0, HPCX 2.6.0):
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
 ------------------------------------------------------------------------------------
