@@ -1102,8 +1102,8 @@ then
 	                       liste_no_ref_comparison=$liste_no_ref_comparison" $i"
 			    else		    
 			    # lance_test_seq_par will be replaced by compare_lata
-			    tool=lance_test_seq_par	# older program soon retired
-			    tool=compare_lata		# newer faster program
+			    tool=compare_lata	# newer faster program
+			    [ ! -f $TRUST_ROOT/exec/$tool ] && tool=lance_test_seq_par	# older program soon retired
 			    if [ ! -f $TRUST_ROOT/exec/$tool ]
 			    then
 			       echo "Tool $TRUST_ROOT/exec/$tool is not available."

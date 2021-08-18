@@ -24,6 +24,7 @@ define_modules_config()
    # qstat inexistente sur les dernieres machines du CCRT/TGCC
    echo "Command qstat created on $HOST"
    cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
+   module="fujitsu/1.1.0 mpi/openmpi/4.0.5 swig/4.0.2" 
    module="gnu/11.1.0 mpi/openmpi/4.0.5 swig/4.0.2" 
    #
    echo "# Module $module detected and loaded on $HOST."

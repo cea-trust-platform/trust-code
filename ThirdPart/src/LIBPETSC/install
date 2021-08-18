@@ -421,12 +421,12 @@ fi
 ##################
 # Solveurs directs
 ##################
-if [ "$TRUST_USE_MUMPS" = 1 ]
+if [ "$TRUST_USE_MUMPS" = 1 ] && [ "`uname -m`" != aarch64 ] # configure de PETSc plante sur mumps avec ARM
 then
    # On prend MUMPS (plus performant)
    add_package MUMPS
-   add_package metis
 fi
+add_package metis
 
 ##############
 # MPI or not #
@@ -470,7 +470,6 @@ then
    fi
 
    # MUMPS et SUPERLU necessitent desormais parmetis
-   [ "$TRUST_INT64" = "1" ] && add_package metis # Only in build 64 since MUMPS has been disabled ?
    add_package parmetis
 
    ##########
@@ -557,6 +556,8 @@ do
    fi
    CXXOPTFLAGS=$COPTFLAGS
    echo "Configuring PETSc..."
+   # Hack provisoire sur aarch64, python de conda fait planter le configure:
+   [ "`uname -m`" = aarch64 ] && PATH=/usr/bin:$PATH
    export TMPDIR=$TRUST_TMP # Par defaut, les fichiers temporaires de PETSC sont sous /tmp, cela peut probleme si pas de droit d'execution donnes
    ./configure --help 1>../configure.help 2>&1
    # Tous les paquets sont recuperes sur ftp://ftp.mcs.anl.gov/pub/petsc/externalpackages

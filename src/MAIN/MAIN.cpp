@@ -268,7 +268,9 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
             // Detect all NaNs (don't add FE_UNDERFLOW cause exp(-x) with x big throws an exception)
             // Test pre 1.7.0, on active en optimise:
 #ifndef _COMPILE_AVEC_CLANG
+#ifndef _COMPILE_AVEC_FCC // Crashes bizarres 
             feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+#endif
 #endif
 #endif
           }

@@ -621,9 +621,9 @@ case $arch in
 	TRUST_EDITOR="nedit kedit xemacs xedit emacs gedit"
 	# On met Intel en 1er/GNU car plus rapide que GNU
 	cuda="" && [ "$TRUST_USE_CUDA" = 1 ] && cuda="cuda-" # Uniquement si on demande Cuda, recherche en priorite des wrappers pour les compilateurs GNU
-	TRUST_CC_BASE=" nvc++	  icpc  "$cuda"g++      armclang++ g++"
-	TRUST_F77_BASE="nvfortran ifort "$cuda"gfortran armflang   gfortran"
-	TRUST_cc_BASE=" nvc	  icc   "$cuda"gcc      armclang   gcc"
+	TRUST_CC_BASE=" nvc++	  FCC icpc  "$cuda"g++      armclang++ g++"
+	TRUST_F77_BASE="nvfortran frt ifort "$cuda"gfortran armflang   gfortran"
+	TRUST_cc_BASE=" nvc	  fc  icc   "$cuda"gcc      armclang   gcc"
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
@@ -1547,6 +1547,14 @@ case $TRUST_ARCH_CC in
 	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags $AoccFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
+	;;
+   linux_FCC) TRUST_SUPPORTED=1
+        Defines="-D_COMPILE_AVEC_FCC"
+        CppFlags="-O3 -fPIC -Kfast" # -SSL2 ?
+        SYSLIBS=""
+        F77Flags="-O3 -fPIC -Kfast"
+        ccFLAGS="-O3 -fPIC -Kfast"
+        ShLibFlag="\$(TRUST_CC) -shared"
 	;;
    linux_pgCC|linux_nvc++) TRUST_SUPPORTED=1
         m="# TMPDIR ?";e="TMPDIR=\"$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut

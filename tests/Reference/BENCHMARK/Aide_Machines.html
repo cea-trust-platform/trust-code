@@ -95,6 +95,7 @@ Linux i686		1*2@2.66Ghz	 1Go:4Mo	? ?		9.3s	petichet.intra.cea.fr	(g++ 4.2.2)		1.
 Linux x86_64		4@2.66Ghz	 8Go:4Mo	? ?		9.6s	chloe.intra.cea.fr	(g++ 3.4.6)		1.61		cpu_3D	 v1.5.3
 Linux x86_64	 	3.2Ghz		 4Go:2Mo	? ?		10.4s	moleson.intra.cea.fr	(g++ 4.1.1)
 Linux i686	 	3.4Ghz		 3Go:2Mo	? ?		10.8s	213.131.76.207		(g++ 3.4.3)
+Linux aarch64								10.8s 	irene-arm.ccc.cea.fr	(FCC 1.1.0)		1.58		cpu_3D	 v1.8.3
 Linux x86_64		4@2.33Ghz	 8Go:4Mo	? ?		12.0s	kata.univ-perp.fr	(g++ 3.4.6)		1.30		cpu_3D	 v1.5.3
 Linux x86_64	 	3.6Ghz		 4Go:1Mo	? ?		12s	albisia5.cad.cea.fr	(g++ 3.2.3)
 Linux x86_64	 	2*2@2.0Ghz	 2Go:4Mo	Opteron 2210	12.6s	castor.intra.cea.fr	(g++ 3.4.6)
@@ -171,6 +172,20 @@ HP-UX 10.20 9000/819/K200     		800Mo: 			699s		midi.alpes.cea.fr       (Compilo
 #######################################
 Cas VDF (4096000 inconnues en pression)
 #######################################
+Calcul parallele TRUST 1.8.3_beta Mon Jun 28 11:14:34 CEST 2021 sur irene-arm-ccrt : (a64fx, FCC 1.1.0, OpenMPI 4.0.5)
+------------------------------------------------------------------------------------
+nb_proc	| cpu(s) dt	| ngcp 		| cpu(s) igcp	| speed up	| efficacite	|
+------------------------------------------------------------------------------------
+1	| 84.625	| 195.55	| 0.347274	| 1.000		| 1.000		|
+2	| 45.965	| 195.55	| 0.190953	| 1.841		| .920		|
+4	| 23.0878	| 195.55	| 0.0950458	| 3.665		| .916		|
+8	| 12.0957	| 195.55	| 0.0496686	| 6.996		| .874		|
+16	| 6.72811	| 196.3		| 0.0277144	| 12.577	| .786		|
+32	| 3.64714	| 196.35	| 0.0152677	| 23.203	| .725		| 
+48	| 2.36314	| 196.45	| 0.00974009	| 35.810	| .746		| 1 node (48 cores)
+64	| 1.77439	| 196.55	| 0.00735299	| 47.692	| .745		| 2 nodes
+128	| 1.08587	| 196.6		| 0.00461287	| 77.932	| .608		| 3 nodes
+------------------------------------------------------------------------------------
 Calcul parallele TRUST 1.8.3_beta Mon Jun 28 18:36:08 CEST 2021 sur topaze : (AMD Milan, Intel 20.0.4, OpenMPI 4.0.5)
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
