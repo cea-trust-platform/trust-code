@@ -2025,18 +2025,18 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
     else:
         if clname=='/*' or clname=='#' or clname=='champ_base' or clname=='champ_front_base':
             tstr+='}'
-
+    Clname = clname.capitalize()
     if pb:
-        tstr=tstr+' \index{'+clname+'} '
+        tstr=tstr+' \index{'+Clname+'} '
         pass
     tstra=""
     if clname not in list(dicobases.keys()):
         # if name != vrai_name_:
-        tstra = "\subsection{"+clname+"\label{"+name.replace('_','')+"} }\n"
+        tstra = "\subsection{"+Clname+"\label{"+name.replace('_','')+"} }\n"
         pass
     if issubclass(icl,objet_lecture) or issubclass(icl,listobj) :
         if (niveau>1):
-            tstra = "\subsubsection{"+clname+"\label{"+name.replace('_','')+"} }\n"
+            tstra = "\subsubsection{"+Clname+"\label{"+name.replace('_','')+"} }\n"
             pass
         pass
     # a t on un syno
@@ -2169,7 +2169,7 @@ def gen_doc(name,doc_gen,fr=1,l=None,niveau=-1):
                 if icl.name_trio_!='':tstr=tstr+clname+" "
             else:
                 if  icl.name_trio_=='': print("objet lecture???? ",clname,icl.name_trio_)
-                tstr+=clname+" obj\nLire obj "
+                tstr+=clname+" \\textit{str} { \\newline \\bf Read } \\textit{str} "
                 pass
             tstr+="\{  "
             tstr=tstr+'\n\\begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}\n'
