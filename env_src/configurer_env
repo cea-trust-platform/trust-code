@@ -621,9 +621,9 @@ case $arch in
 	TRUST_EDITOR="nedit kedit xemacs xedit emacs gedit"
 	# On met Intel en 1er/GNU car plus rapide que GNU
 	cuda="" && [ "$TRUST_USE_CUDA" = 1 ] && cuda="cuda-" # Uniquement si on demande Cuda, recherche en priorite des wrappers pour les compilateurs GNU
-	TRUST_CC_BASE=" nvc++	  FCC icpc  "$cuda"g++      armclang++ g++"
-	TRUST_F77_BASE="nvfortran frt ifort "$cuda"gfortran armflang   gfortran"
-	TRUST_cc_BASE=" nvc	  fc  icc   "$cuda"gcc      armclang   gcc"
+	TRUST_CC_BASE=" nvc++     FCC icpc  armclang++ "$cuda"g++      g++"
+	TRUST_F77_BASE="nvfortran frt ifort armflang   "$cuda"gfortran gfortran"
+	TRUST_cc_BASE=" nvc       fc  icc   armclang   "$cuda"gcc      gcc"
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
@@ -1515,7 +1515,7 @@ case $TRUST_ARCH_CC in
 	cherche_include_systeme
 	;;
     linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
-        [ "$TRUST_ARCH_CC" = linux_armclang++ ] && ArmFlags="-armpl -mcpu=native" # To add optimized machine-specific library
+        [ "$TRUST_ARCH_CC" = linux_armclang++ ] && ArmFlags="-armpl -ffast-math" # To add optimized machine-specific library. -ffast-math interessant sur irene-arm (*2 sur HPCG, rien sur GNU)
         [ "`$TRUST_CC_BASE -version 2>&1 | grep aocc`" != "" ] && AoccFlags="-march=znver1 -mfma -fvectorize -mfma -mavx2 -m3dnow -floop-unswitch-aggressive -fuse-ld=lld"
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
