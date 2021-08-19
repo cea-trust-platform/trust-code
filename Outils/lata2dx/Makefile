@@ -1,8 +1,8 @@
 env_lata2dx=$(TRUST_ROOT)/exec/lata2dx_install/env.sh
 
 all: $(env_lata2dx)
-
-$(env_lata2dx): lata2dx/CMakeLists.txt lata2dx/new_build.sh Makefile
+ 
+$(env_lata2dx): lata2dx/CMakeLists.txt lata2dx/new_build.sh Makefile $(TRUST_MEDCOUPLING_ROOT)/lib/libmedcoupling.a
 	(cd lata2dx;./new_build.sh)
 	(cd $(TRUST_ROOT)/exec;ln -sf lata2dx_install/bin/lata2dx .)
 	(cd $(TRUST_ROOT)/exec;ln -sf lata2dx_install/bin/compare_lata .)
