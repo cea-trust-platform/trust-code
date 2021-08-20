@@ -91,15 +91,13 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
       sm.echange_espace_virtuel();
       return sm;
     }
-  int nb_comp = sm.size()/nb_elem;
   int nb_dim=sm.nb_dim();
-  assert((nb_comp*nb_elem == sm.size())||(nb_dim==3));
-
   if (nb_dim == 1)
     for (int num_elem=0; num_elem<nb_elem; num_elem++)
       sm(num_elem) /= (volumes(num_elem)*porosite_elem(num_elem));
   else if (nb_dim == 2)
     {
+      int nb_comp = sm.size()/nb_elem;
       for (int num_elem=0; num_elem<nb_elem; num_elem++)
         for (int k=0; k<nb_comp; k++)
           sm(num_elem,k) /= (volumes(num_elem)*porosite_elem(num_elem));
