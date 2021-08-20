@@ -821,11 +821,14 @@ then
 	fi
 	REP=`dirname $file`
 	# Discard test case from Valgrind #
-        if [ "`grep -i "# VALGRIND NOT #" $REP/$file 2>/dev/null`" != "" ]
+        if [ "$VALGRIND" = 1 ]
 	then
-           echo "Test $i skipped (no valgrind)"
-	   liste_skipped=$liste_skipped" $i"
-	   i=""
+	   if [ "`grep -i "# VALGRIND NOT #" $file 2>/dev/null`" != "" ]
+           then
+              echo "Test $i skipped (no valgrind)"
+	      liste_skipped=$liste_skipped" $i"
+	      i=""
+           fi
         fi
         # Discard GPU test case 
         if [ "$TRUST_USE_CUDA" != 1 ]
