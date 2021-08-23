@@ -281,9 +281,9 @@ namespace ICoCo
     throw NotImplemented("type_of_Problem_not_set", "getOutputDoubleValue");
   }
 
-  void Problem::setIntputDoubleValue(const std::string& name, const double& val)
+  void Problem::setInputDoubleValue(const std::string& name, const double& val)
   {
-    throw NotImplemented("type_of_Problem_not_set", "setIntputDoubleValue");
+    throw NotImplemented("type_of_Problem_not_set", "setInputDoubleValue");
   }
 
   int Problem::getOutputIntValue(const std::string& name) const
@@ -291,9 +291,9 @@ namespace ICoCo
     throw NotImplemented("type_of_Problem_not_set", "getOutputIntValue");
   }
 
-  void Problem::setIntputIntValue(const std::string& name, const int& val)
+  void Problem::setInputIntValue(const std::string& name, const int& val)
   {
-    throw NotImplemented("type_of_Problem_not_set", "setIntputIntValue");
+    throw NotImplemented("type_of_Problem_not_set", "setInputIntValue");
   }
 
   std::string Problem::getOutputStringValue(const std::string& name) const
@@ -301,9 +301,9 @@ namespace ICoCo
     throw NotImplemented("type_of_Problem_not_set", "getOutputStringValue");
   }
 
-  void Problem::setIntputStringValue(const std::string& name, const std::string& val)
+  void Problem::setInputStringValue(const std::string& name, const std::string& val)
   {
-    throw NotImplemented("type_of_Problem_not_set", "setIntputStringValue");
+    throw NotImplemented("type_of_Problem_not_set", "setInputStringValue");
   }
 
 }  // end namespace ICoCo

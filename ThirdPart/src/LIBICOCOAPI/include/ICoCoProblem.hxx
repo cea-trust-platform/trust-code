@@ -613,7 +613,7 @@ namespace ICoCo
      * @param[in] val value passed to the code.
      * @throws ICoCo::WrongArgument exception if the scalar name ('name' parameter) is invalid.
      */
-    virtual void setIntputDoubleValue(const std::string& name, const double& val);
+    virtual void setInputDoubleValue(const std::string& name, const double& val);
 
     /*! @brief (Optional) Retrieve a scalar double value from the code.
      *
@@ -625,20 +625,20 @@ namespace ICoCo
      */
     virtual double getOutputDoubleValue(const std::string& name) const;
 
-    /*! @brief (Optional) Similar to setIntputDoubleValue() but for an int value.
-     * @sa setIntputDoubleValue()
+    /*! @brief (Optional) Similar to setInputDoubleValue() but for an int value.
+     * @sa setInputDoubleValue()
      */
-    virtual void setIntputIntValue(const std::string& name, const int& val);
+    virtual void setInputIntValue(const std::string& name, const int& val);
 
     /*! @brief (Optional) Similar to getOutputDoubleValue() but for an int value.
      * @sa getOutputDoubleValue()
      */
     virtual int getOutputIntValue(const std::string& name) const;
 
-    /*! @brief (Optional) Similar to setIntputDoubleValue() but for an string value.
-     * @sa setIntputDoubleValue()
+    /*! @brief (Optional) Similar to setInputDoubleValue() but for an string value.
+     * @sa setInputDoubleValue()
      */
-    virtual void setIntputStringValue(const std::string& name, const std::string& val);
+    virtual void setInputStringValue(const std::string& name, const std::string& val);
 
     /*! @brief (Optional) Similar to getOutputDoubleValue() but for an string value.
      * @sa getOutputDoubleValue()
