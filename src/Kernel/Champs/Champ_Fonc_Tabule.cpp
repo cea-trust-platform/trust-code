@@ -114,47 +114,38 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
   is >> val2;
   Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Tabule", val1, val2, nbcomp, nom_champ_parametre_);
   nbcomp=lire_dimension(nbcomp,que_suis_je());
-  if(nbcomp==1)
+  fixer_nb_comp(nbcomp);
+  is >> motlu;
+  if (motlu == accolade_ouverte)
     {
-      fixer_nb_comp(nbcomp);
+      nb_val=lire_dimension(is,que_suis_je());
+      DoubleVect param(nb_val);
+      DoubleTab tab_valeurs(nb_val, nbcomp);
+      for (i=0; i<nb_val; i++)
+        is >> param[i];
+      for (i = 0; i < nb_val; i++) for (int n = 0; n < nbcomp; n++)
+          is >> tab_valeurs(i, n);
+      la_table.remplir(param,tab_valeurs);
       is >> motlu;
-      if (motlu == accolade_ouverte)
-        {
-          nb_val=lire_dimension(is,que_suis_je());
-          DoubleVect param(nb_val);
-          DoubleVect tab_valeurs(nb_val);
-          for (i=0; i<nb_val; i++)
-            is >> param[i];
-          for (i=0; i<nb_val; i++)
-            is >> tab_valeurs[i];
-          la_table.remplir(param,tab_valeurs);
-          is >> motlu;
-          if (motlu != accolade_fermee)
-            {
-              Cerr << "Error reading from an object of type Champ_Fonc_Tabule" << finl;
-              Cerr << "We expected keyword } instead of " << motlu << finl;
-              exit();
-            }
-        }
-      else if (motlu=="fonction")
-        {
-          Cerr<<"The syntax has changed..." << finl;
-          Cerr<<"The syntax is now Champ_Fonc_fonction 1 field_expression"<<finl;
-          exit();
-          Cerr<<"We read the analytic function "<<finl;
-          la_table.lire_f(is,0);
-        }
-      else
+      if (motlu != accolade_fermee)
         {
           Cerr << "Error reading from an object of type Champ_Fonc_Tabule" << finl;
-          Cerr << "We expected keyword { or fonction instead of " << motlu << finl;
+          Cerr << "We expected keyword } instead of " << motlu << finl;
           exit();
         }
+    }
+  else if (motlu=="fonction")
+    {
+      Cerr<<"The syntax has changed..." << finl;
+      Cerr<<"The syntax is now Champ_Fonc_fonction 1 field_expression"<<finl;
+      exit();
+      Cerr<<"We read the analytic function "<<finl;
+      la_table.lire_f(is,0);
     }
   else
     {
       Cerr << "Error reading from an object of type Champ_Fonc_Tabule" << finl;
-      Cerr << "We know treating only the scalar fields " << finl;
+      Cerr << "We expected keyword { or fonction instead of " << motlu << finl;
       exit();
     }
   return is;

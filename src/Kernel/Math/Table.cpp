@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -167,15 +167,15 @@ double Table::val(const double& val_param, int ncomp) const
       int size;
       const DoubleVect& p = les_parametres[0];
       if (p[0] >= val_param)
-        return les_valeurs[0];
+        return les_valeurs(0, ncomp);
       else
         {
           size=p.size();
           for (int i=1; i<size; i++)
             if (p[i] == val_param)
-              return les_valeurs[i];
+              return les_valeurs(i, ncomp);
             else if (p[i] > val_param)
-              return (les_valeurs[i-1]+((les_valeurs[i]-les_valeurs[i-1])/(p[i]-p[i-1]))*(val_param-p[i-1]) );
+              return (les_valeurs(i - 1, ncomp) + ((les_valeurs(i, ncomp) - les_valeurs(i - 1, ncomp)) / (p[i] - p[i - 1])) * (val_param - p[i - 1]) );
         }
       return les_valeurs[size-1];
     }
