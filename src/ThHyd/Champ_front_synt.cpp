@@ -285,7 +285,7 @@ void Champ_front_synt::mettre_a_jour(double temps)
   sum_aire = mp_sum(sum_aire);
   double dmin = sum_aire / mp_sum(nb_face) ;
 
-  Cerr << "******" << dmin << finl;
+  //Cerr << "******" << dmin << finl;
   double turbScale = sqrt(2*turbKinEn/3);
   double eps = pow(turbKinEn,1.5);
 

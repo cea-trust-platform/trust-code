@@ -1,5 +1,3 @@
-
-
 #!/bin/bash
 # Script d'installation de PETSC
 package=$1
@@ -143,7 +141,13 @@ then
    # Creation de l'include pour le Kernel TRUST: petsc_for_kernel.h
    # et des includes pour les librairies ptscotch et parmetis
    #################################################################
+   folds=""
    for REP in `\ls $PETSC_ROOT 2>/dev/null`
+   do
+      [ ! -L $PETSC_ROOT/$REP ] && folds=$folds" "$REP
+   done
+
+   for REP in $folds
    do
       petsc_for_kernel=$PETSC_ROOT/$REP/include/petsc_for_kernel.h
       if [ "`grep "$string" $petsc_for_kernel 2>/dev/null`" = "" ]
@@ -524,7 +528,7 @@ if [ "$TRUST_INT64" = "1" ]
 then
    with_64bit_indices="--with-64-bit-indices"
    # Sur topaze, PETSc prend des "long long" pour PetscInt au lieu de "long" donc pour forcer (a noter que MUMPS ne fonctionne pas malgre cela):
-   [ "$HOST" = topaze ] && with_64bit_indices="--with-64-bit-indices --known-mpi-int64_t"
+   [ "$HOST" = topaze ] || [ "$HOST" = jean-zay ] && with_64bit_indices="--with-64-bit-indices --known-mpi-int64_t"
    # with_64bit_indices="--with-64-bit-indices --with-64-bit-blas-indices" # Si on veut aussi activer int64 dans MKL Blas ou OpenBlas, pas d'interet pour le moment. Voir:
    # https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscBLASInt.html
 fi
