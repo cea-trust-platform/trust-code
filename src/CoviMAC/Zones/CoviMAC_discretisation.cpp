@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -625,17 +625,17 @@ void CoviMAC_discretisation::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl,con
   ch_gt.changer_temps(ch_temperature.temps());
 #endif
 }
-void CoviMAC_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const Champ_base&  ch_temper) const
+void CoviMAC_discretisation::modifier_champ_tabule(const Zone_dis_base& Zone_CoviMAC,Champ_Fonc_Tabule& lambda_tab,const Champ_base&  ch_temper) const
 {
   Champ_Fonc& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
   lambda_tab_dis.typer("Champ_Fonc_Tabule_P0_CoviMAC");
   Champ_Fonc_Tabule_P0_CoviMAC& ch_tab_lambda_dis =
     ref_cast(Champ_Fonc_Tabule_P0_CoviMAC,lambda_tab_dis.valeur());
   //ch_tab_lambda_dis.nommer(nom_champ);
-  ch_tab_lambda_dis.associer_zone_dis_base(zone_vdf);
+  ch_tab_lambda_dis.associer_zone_dis_base(Zone_CoviMAC);
   ch_tab_lambda_dis.associer_param(ch_temper,lambda_tab.table());
   ch_tab_lambda_dis.fixer_nb_comp(lambda_tab.nb_comp());
-  ch_tab_lambda_dis.fixer_nb_valeurs_nodales(zone_vdf.nb_elem());
+  ch_tab_lambda_dis.fixer_nb_valeurs_nodales(Zone_CoviMAC.nb_elem());
 // ch_tab_lambda_dis.fixer_unite(unite);
   ch_tab_lambda_dis.changer_temps(ch_temper.temps());
 }
@@ -723,3 +723,34 @@ Nom  CoviMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, co
     }
   return type;
 }
+void CoviMAC_discretisation::residu( const Zone_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const
+{
+
+  Nom ch_name(ch_inco.le_nom());
+  ch_name += "_residu";
+  Cerr << "Discretization of " << ch_name << finl;
+
+  const Zone_CoviMAC& zone = ref_cast( Zone_CoviMAC, z.valeur( ) );
+
+  Motcle loc;
+  int nb_comp;
+  Nom type_ch = ch_inco.valeur().que_suis_je();
+  if (type_ch.debute_par("Champ_Face"))
+    {
+      loc= "champ_face";
+      nb_comp = dimension;
+    }
+  else
+    {
+      loc = "champ_elem";
+      nb_comp = ch_inco.valeurs().line_size();
+    }
+
+  Discretisation_base::discretiser_champ(loc,zone, ch_name ,"units_not_defined",nb_comp,ch_inco.temps(),champ);
+  Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,champ.valeur());
+  DoubleTab& tab=ch_fonc.valeurs();
+  tab = -10000.0 ;
+  Cerr << "[Information] Discretisation_base::residu : the residue is set to -10000.0 at initial time" <<finl;
+
+}
+

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,6 +89,7 @@ public :
   }
 
   Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF(Champ_base)& champ_sup ) const;
+  void residu( const Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const;
 
 private:
   void discretiser_champ_fonc_don(
