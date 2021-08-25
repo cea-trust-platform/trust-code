@@ -1185,9 +1185,19 @@ else
    then
       if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_MPI_NATIF" = 1 ]
       then
-         echo "Native MPI SHOULD be used on $HOST for optimal performances."
-         echo "Contact $HOST administrator to find native MPI libraries."
-         echo "Or use ./configure -force_provided_openmpi|mpich to force basic OpenMPI|MPICH installation."
+         if [ "$TRUST_WITHOUT_HOST" = 0 ]
+         then
+            echo "Native MPI SHOULD be used on $HOST for optimal performances."
+            echo "Check carefully the MPI version you want to use for parallel computing before installing the code, especially onto a HPC cluster."
+            echo "The command mpicxx should be found into the bin directory of the MPI version you plan to use, to check that, run:"
+            echo "  type mpicxx"
+            echo "Or contact $HOST administrator to find native MPI libraries or TRUST support team."
+         else
+            echo "MPI not detected by TRUST:"
+            echo " - On a HPC cluster, contact $HOST's administrator or TRUST support team."
+            echo " - On your computer, you can use: ./configure -force_provided_openmpi|mpich to force basic OpenMPI|MPICH installation."
+            echo "Contact TRUST support team for further questions."
+         fi
          [ -f $TRUST_ROOT/NON_INSTALLED ] && Display_Missing_packages
          exit -1
       fi

@@ -21,6 +21,7 @@ linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-TrioCFD          		 
 linux	rsync_ssh	tache	orcus-intel.intra.cea.fr	-limited	-TrioCFD -IJK-FT -STT -PEMFC -FLICA5   						-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd.intra.cea.fr		-limited	-TrioCFD -IJK-FT -FLICA5  						-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr	-limited	-TrioCFD -FLICA5 					-cuda										# CentOS 7.6	CEA Saclay
+linux	rsync_ssh	tache	altair-valgrind.intra.cea.fr    -limited  			 		    -ctest_valgrind -force_provided_mpich			# CentOS 7.9 serveur rackable pour TRUST
 linux	rsync_ssh	tache	pegasi2.intra.cea.fr	  	-TrioCFD  				 		     -force_provided_mpich			# CentOS 7.9 serveur rackable pour validation TrioCFD
 linux	rsync_ssh	tache	pegasi3.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD 	 		     -force_provided_mpich -without-pdflatex  			# Redhat 8.2 serveur rackable Titania
 linux	rsync_ssh	tache	is226425-bench.intra.cea.fr	-limited							-avx -benchmark	-force_provided_mpich -disable-tools						# Fedora 24	Bat 451 LGLS	bureau TMA TRUST ( ajuster pour tester g++ 4.1.2)
@@ -60,7 +61,7 @@ linux   rsync_ssh	non	is232973-gui.intra.cea.fr 		-all		-TrioCFD -GENEPI3      	
 linux   rsync_ssh	non	is241762.intra.cea.fr 		-all 		-TrioCFD  					    -g 		-force_provided_mpich -remote_install_TRUST_with_source 			# Fedora 30 	Bat 451	LMSF	Bureau Julie
 linux   rsync_ssh	non	is232974-gui.intra.cea.fr			-TrioCFD                         	-gui		-remote_install_TRUST_with_source -force_provided_openmpi				# CentOS 7.9 salle de formation
 linux	rsync_ssh	tache	is241481.intra.cea.fr				  					-check-valgrind		-without-pdflatex -force_provided_mpich								# CentOS 7.9 salle de formation
-linux	rsync_ssh	cible	is242979.intra.cea.fr			-TRUST -TrioCFD -GENEPI3 						-force_provided_mpich	 								# Ubuntu 20	Elie Bat 451 LGLS Bureau PL
+linux	rsync_ssh	cible	is242979.intra.cea.fr			-TRUST -TrioCFD -GENEPI3 -STT -PEMFC 						-force_provided_mpich	 								# Ubuntu 20	Elie Bat 451 LGLS Bureau PL
 linux   rsync_ssh	tache	is241478.intra.cea.fr 		-all		-TrioCFD -MPCube -FLICA5  					-g 		-force_provided_mpich 								# CentOS 7.9 salle de formation
 linux   rsync_ssh   tache   is233822.intra.cea.fr 			  					            -Semi_opt_gcov      	-force_provided_mpich 								# Fedora 26	pour Cath3D
 linux   rsync_ssh   tache   is229955.intra.cea.fr 			  					                                  	-force_provided_mpich 								# CentOS 7.9 de Nikos
