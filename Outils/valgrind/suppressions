@@ -22,12 +22,6 @@
    fun:_SCOTCHstratParserInit
    fun:_SCOTCHstratParserParse
    ...
-   fun:SCOTCH_stratDgraphMap
-   fun:SCOTCH_stratDgraphMapBuild
-   fun:SCOTCH_dgraphMapCompute
-   fun:SCOTCH_dgraphMap
-   fun:SCOTCH_dgraphPart
-   ...
 }
 
 ###

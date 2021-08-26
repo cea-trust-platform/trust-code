@@ -12,7 +12,7 @@ Version	Qui				Tache
 1.8.4   pierre.ledac@cea.fr     Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
 1.8.4   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
 1.8.4   trust@cea.fr            Corriger les problemes de F5 et de TrioCFD (Rayonnement_Cuve_2D en parallele) sur Fedora 34
-1.8.4   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE sur un cluster
+1.8.4   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE Canal_172M_PE_4913 sur un cluster
 1.8.4   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 185" (cf DI 188128)
 1.8.4   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
 1.8.4   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 188129)
@@ -43,7 +43,7 @@ Version	Qui				Tache
 1.8.x   pierre.ledac@cea.fr     Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
 1.8.x   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
 1.8.x   trust@cea.fr            Corriger les problemes de F5 et de TrioCFD (Rayonnement_Cuve_2D en parallele) sur Fedora 34
-1.8.x   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE sur un cluster
+1.8.x   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE Canal_172M_PE_4913 sur un cluster
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 185" (cf DI 188128)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 188129)
