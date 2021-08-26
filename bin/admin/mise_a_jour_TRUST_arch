@@ -185,7 +185,7 @@ echo "Usage: `basename $0` [-rsync|-sftp|-kill]"
 # Variable NUIT
 export NUIT=0 && [ `date '+%H'` -ge 18 ] || [ `date '+%H'` -lt 8 ] && NUIT=1 
 
-if [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "triou "`" != "" ] || [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "mr757596 "`" != "" ] 
+if [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "triou "`" != "" ] || [ "`ps -efl | grep make | grep TRUST | grep -v grep | grep "s-sac-dm2s-trust-tri "`" != "" ] 
 then
    # mail_ command not found at this moment
    echo $ECHO_OPTS "\n\nSorry, $QUI is now running on the $HOST machine... Try later." #| mail_ $QUI
@@ -862,6 +862,36 @@ do
 	       cp casmem $TRUST_TMP/.
 	    fi
 	 fi
+	 ############################################
+	 # Cherche les erreurs memoires avec valgrind sur Altair
+	 ############################################
+	 if [ $NUIT = 1 ]
+	 then
+	    if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-ctest_valgrind" | grep ^$HOST_BUILD"\."`" != "" ]
+	    then
+               echo "--------------------------------------------------------"
+	       echo "Search memory errors with ctest_valgrind at "`date '+%H:%M:%S'`
+	       cd $TRUST_ROOT/MonoDir_mpi_opt/src
+	       export VALGRIND=1
+	       ctest -j$TRUST_NB_PHYSICAL_CORES &> ctest_valgrind.log
+	       export VALGRIND=0
+	       nb_tests_tot=`grep "tests failed out of" ctest_valgrind.log  | cut -d' ' -f 9`
+	       nb_tests_ok=`grep Passed ctest_valgrind.log | wc -l`
+	       echo "succes_ctest_valgrind $nb_tests_ok/$nb_tests_tot" >> ctest_valgrind.log
+               if [ "`grep '100% tests passed' ctest_valgrind.log 2>/dev/null`" != "" ]
+               then
+                  echo "ctest valgrind tests successful" >> ctest_valgrind.log
+                  echo "OK $nb_tests_ok/$nb_tests_tot"
+               else
+                  echo "ctest valgrind tests failed" >> ctest_valgrind.log
+                  grep "Failed" ctest_valgrind.log
+                  echo "KO $nb_tests_ok/$nb_tests_tot"
+               fi
+	       cp ctest_valgrind.log $TRUST_TMP/.
+	       rm -r ctest_valgrind.log
+	       cd -
+	    fi
+	 fi
  
 	 ######################################
 	 # On lance les tests de non regression
@@ -1074,6 +1104,8 @@ do
          echo "File not found $CR_TESTS"
          echo "No test case passed KO!"
       fi
+      [ -f $TRUST_TMP/ctest_valgrind.log ] && cat $TRUST_TMP/ctest_valgrind.log >> $PERF
+      rm -f $TRUST_TMP/ctest_valgrind.log
       # Verification si la non regression est OK :
       if [ "`grep OK $PERF`" = "" ]
       then

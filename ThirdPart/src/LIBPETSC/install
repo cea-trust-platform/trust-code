@@ -528,7 +528,10 @@ if [ "$TRUST_INT64" = "1" ]
 then
    with_64bit_indices="--with-64-bit-indices"
    # Sur topaze, PETSc prend des "long long" pour PetscInt au lieu de "long" donc pour forcer (a noter que MUMPS ne fonctionne pas malgre cela):
-   [ "$HOST" = topaze ] || [ "$HOST" = jean-zay ] && with_64bit_indices="--with-64-bit-indices --known-mpi-int64_t"
+   if [ "$HOST" = topaze ] || [ "${HOST#jean-zay}" != $HOST ] || [ "${HOST_BUILD#jean-zay}" != $HOST_BUILD ]
+   then
+      with_64bit_indices="--with-64-bit-indices --known-mpi-int64_t"
+   fi
    # with_64bit_indices="--with-64-bit-indices --with-64-bit-blas-indices" # Si on veut aussi activer int64 dans MKL Blas ou OpenBlas, pas d'interet pour le moment. Voir:
    # https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Sys/PetscBLASInt.html
 fi

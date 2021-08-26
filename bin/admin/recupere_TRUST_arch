@@ -286,6 +286,7 @@ do
 	   TRUST_CC=`echo $TRUST_ARCH_CC | $TRUST_Awk -F'_' '{print $NF}'` && CC_PERF=`cat $PERF | $TRUST_Awk '/CC / {print $2" "$3}'` && [ "$CC_PERF" != "" ] && TRUST_CC=$CC_PERF
 	   #taille=`cat $PERF | $TRUST_Awk '/sizeMo/ {print $2"Mo"}'`
 	   executable=`$TRUST_Awk -F":" '/Binary:/    {print $2}' $PERF` && executable=`basename $executable` && executable=${executable#TRUST_}
+       [ "`grep 'ctest valgrind tests' $PERF`" != "" ] && executable="mpi_opt_valg"
 	   cpu3d=$cpu3d && [ "`grep CPU_3D=KO $CR`" != "" ] && cpu3d="<TD $ROUGE>KO</TD>"
 	   cpu=`cat $CR | grep "Mo|" | $TRUST_Awk -F"|" '/cpu_3D / && !/PAR_/ && !/NP/{print $4}'`
 	   cpu3d=$cpu3d && [ "`grep CPU_3D=OK $CR`" != "" ] && cpu3d="<TD $VERT>$cpu</TD>"
@@ -304,6 +305,7 @@ do
 	   if [ "$MPI" != "" ]
 	   then
 	      ptaux=`cat $PERF | $TRUST_Awk '/succes/ && (NF==2) {t=$2} END {print t}'`
+	      [ "`grep succes_ctest_valgrind $PERF`" != "" ] && ptaux=`cat $PERF | $TRUST_Awk '/succes_ctest_valgrind/ && (NF==2) {t=$2} END {print t}'`
 	   else
 	      ptaux="0/0"
 	   fi
@@ -311,6 +313,7 @@ do
 	   if [ "$staux" != "" ] && [ "$ptaux" != "" ] && [ "$ptaux" != 0 ]
 	   then
 	      taux=`echo $staux/$ptaux | $TRUST_Awk -F/ '{print $1+$3"/"$2+$4}'`
+	      [ "`grep succes_ctest_valgrind $PERF`" != "" ] &&  taux=$ptaux
 	      pourcent=`echo $ECHO_OPTS "scale=3\n$taux" | bc -l`
 	      COL2="" && [ "$pourcent" = "1.000" ] && COL2=$VERT
 	      [ "`echo $pourcent | $TRUST_Awk '{print $1<0.999}'`" = 1 ] && COL2=$ROUGE

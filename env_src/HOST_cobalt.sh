@@ -104,5 +104,6 @@ define_soumission_batch()
    #mpirun="mpirun -np \$BRIDGE_MSUB_NPROC"
    mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
-   [ "$project" = "" ] && login=`whoami` && project=`PATH=/usr/bin:$PATH ccc_myproject | grep ^$login | $TRUST_Awk '{print $2;exit}'`
+   # ND : 19/08/2021 : je desactive project car sinon le job pas soumis, ccc_myproject affiche des heures sur topaze meme en etant connecte sur cobalt
+   #[ "$project" = "" ] && login=`whoami` && project=`PATH=/usr/bin:$PATH ccc_myproject | grep ^$login | $TRUST_Awk '{print $2;exit}'`
 }
