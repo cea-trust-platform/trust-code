@@ -66,8 +66,19 @@ then
    export HTTPS="https://github.com/visit-dav/visit/releases/download"
    version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
    [ "$MPI_ROOT" != "" ] && parallel="parallel"
+   # See https://wci.llnl.gov/simulation/computer-codes/visit/executables
+   [ "`grep 'Ubuntu 16.04' /etc/issue 2>/dev/null`" != "" ] 				    && os=ubuntu16
+   [ "`grep 'Ubuntu 18.04' /etc/issue 2>/dev/null`" != "" ] 				    && os=ubuntu18
+   [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ] 				    && os=ubuntu19
+   [ "`grep 'Ubuntu 20'    /etc/issue 2>/dev/null`" != "" ] 				    && os=ubuntu20 && version=3_1_2 && version_visit=v3.1.2
+   [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian9
+   [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian10 && version=3_1_2 && version_visit=v3.1.2
+   [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8
+   [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27
+   [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27
+   [ "`grep 'release [7]' /etc/redhat-release 2>/dev/null`" != "" ]				&& os=rhel7      # NB: Le binaire rhel7 ne marche pas sur Redhat 8 (xml2cmake error)
    # A partir de 1.8.4, on essaie de prendre sur PC+MPICH le binaire precompile avec MPICH:   
-   [ "$TRUST_WITHOUT_HOST" = 1 ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
+   [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "$os" != "" ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
 else
    # Ancienne procedure, peu a peu obsolete
    build=build.sh
@@ -144,7 +155,7 @@ then
           echo "Try sequentiel compilation"
          ./$build clean
          ./$build $package
-	 status=$?
+         status=$?
       fi 
       cd $org_dir
    fi
@@ -155,29 +166,7 @@ then
       echo "###########################################"
       echo "# Trying to download a version for VisIt..."
       echo "###########################################"
-      # ce n est plus le cas: version telechargee est parallele
-#      if [ "`grep parallel host_*$HOST.xml 2>/dev/null | grep true`" != "" ]
-#      then
-#         echo "Can't download a sequential version of VisIt on $HOST cause the file `ls host_*$HOST.xml`"
-#	 echo "suppose VisIt should be parallel."
-#	 exit -1
-#      else
-	 if [ $version = 2_5_2 ]
-	 then
-            # Pour 2.5.2, rhel4 n'existe plus, choix possibles:
-	    # linux-rhel5
-	    # linux-x86_64-rhel5
-	    # linux-x86_64-rhel6
-	    # linux-x86_64-ubuntu11
-	    # linux-euclid
-	    rhel=rhel5 
-	    ARCH=linux-$rhel && [ "`uname -m`" = x86_64 ] && ARCH=linux-x86_64-$rhel
-	 elif [ $version = 2_10_0 ]
-	 then
-            # No 32bits version...
-            ARCH=linux-x86_64-rhel6
-	    #ARCH=linux-x86_64-ubuntu11
-	 elif [ $version = 2_12_1 ]
+	 if [ $version = 2_12_1 ]
 	 then
             if [ "`grep 'Ubuntu ' /etc/issue.net 2>/dev/null`" != "" ]
             then
@@ -187,26 +176,15 @@ then
             fi
 	 elif [ $version = 3_1_1 ]
 	 then
-            # See https://wci.llnl.gov/simulation/computer-codes/visit/executables
-            [ "`grep 'Ubuntu 16.04' /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu16
-            [ "`grep 'Ubuntu 18.04' /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu18
-            [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu19
-            [ "`grep 'Ubuntu 20'    /etc/issue 2>/dev/null`" != "" ] 				&& os=ubuntu20 && version=3_1_2 && version_visit=v3.1.2
-            [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian9
-            [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian10 && version=3_1_2 && version_visit=v3.1.2
-            [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8
-            [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
-            [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ] 		&& os=fedora27
-            [ "`grep 'Red' /etc/redhat-release 2>/dev/null`" != "" ]				&& os=rhel7
             [ "$os" = "" ] && echo "OS not detected." && exit -1
-	    ARCH=linux-x86_64-$os
+            ARCH=linux-x86_64-$os
 	 fi
 	 package=visit$version.$ARCH.tar.gz
 	 rm -f $package
 	 DOWNLOADED=0
 	 for HTTP in $HTTPS
 	 do
-            if [ $DOWNLOADED = 0 ]
+        if [ $DOWNLOADED = 0 ]
 	    then
 	       echo "Try to download $HTTP/$version_visit/$package..."
 	       # Regarde dans le cache:
