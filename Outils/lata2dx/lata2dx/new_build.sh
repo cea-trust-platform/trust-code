@@ -21,10 +21,12 @@ fi
 mkdir -p $Build
 #mkdir -p $TRUST_ROOT/exec/lata2dx
 cd $Build
+# Better detection of SWIG on Ubuntu 16
+SWIG_EXECUTABLE=`type -p swig`
 # GF ajout de -DCMAKE_CXX_COMPILER pour bien prendre le compilo choisi par trio 
 #cmake $ORG -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata2dx_install -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig
 # PL inutile de specifier swig (dans PATH normalement):
-cmake $ORG -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata2dx_install -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC
+cmake $ORG -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TRUST_ROOT/exec/lata2dx_install -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_COMPILER=$TRUST_CC -DSWIG_EXECUTABLE=$SWIG_EXECUTABLE
 make -j  $TRUST_NB_PROCS  install || exit -1
 cd ..
 rm -rf lata2dx
