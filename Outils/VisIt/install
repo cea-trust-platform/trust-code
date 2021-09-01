@@ -174,8 +174,7 @@ then
             else
                ARCH=linux-x86_64-rhel7-wmesa
             fi
-	 elif [ $version = 3_1_1 ]
-	 then
+	 else
             [ "$os" = "" ] && echo "OS not detected." && exit -1
             ARCH=linux-x86_64-$os
 	 fi
