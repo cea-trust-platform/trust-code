@@ -1,0 +1,213 @@
+Parameters
+{
+  Title "Validating the implementation of a weakly compressible model in TRUST"
+  Description "The present document aims at validating the weakly compressible problem implemented in TRUST. Unlike the quasi-compressible formulation, the weakly compressible approximation employs the total pressure in the equation of state (which is both time and space dependent). In this paper we show that such a formulation is necessary when the hydrostatic pressure is important as it can influence significantly the physical properties of the fluid; mainly the density which is calculated from a state equation. Such situation appears in a wide range of engineering applications; lets say the temperature stratification in the atmosphere or the underground gaz storage for example..."
+  VersionTrio_U "1.8.4"
+  Author "Elie Saikali, Adrien Bruneton \& Ulrich Bieder"
+  TestCase QC Cas_QC.data /* data file in appendix */
+  TestCase WC1 Cas_WC.data /* data file in appendix */
+  TestCase WC2 Cas_WC.data
+  TestCase WC3 Cas_WC.data
+  Description "\latex_(We consider a simplified rectangular cavity of width 1m and height 100 m, filled with air at rest. A free outlet is considered at the bottom boundary $(y=0)$ to avoid any  pressurization phenomenon (fixed hydro-static pressure). The remaining boundaries are adiabatic (no-slip for NS). The thermo-dynamic pressure is fixed to 1 bar (10.e5 Pa). Four simulations are considered and thus described in what follows.  \latex_) "
+}
+
+Chapter
+{
+Title "Quasi-compressible formulation"
+Description "\latex_(In order to illustrate the limitation of the quasi-compressible formulation in such a problem, we consider a uniform temperature (T) distribution in the cavity (equals to 333.15 K). This leads to a uniform density at the initial state (see figures 2.1 and 2.2). Since in the QC problem the constant/uniform thermo-dynamic pressure is used in the state equation, the temperature and rho fields remain constant till the steady state (see figures 2.3 and 2.4). This is WRONG and clearly shows the limitation of the QC model.\latex_) "
+
+visu {
+    title "QC : T initial"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles 0
+    pseudocolor QC/Cas_QC.lata TEMPERATURE_ELEM_dom
+  }
+  visu {
+    title "QC : rho initial"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles 0
+    pseudocolor QC/Cas_QC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+visu {
+    title "QC : T steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor QC/Cas_QC.lata TEMPERATURE_ELEM_dom
+  }
+visu {
+    title "QC : rho steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor QC/Cas_QC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+}
+
+Chapter
+{
+Title "Weakly compressible formulation - Case 1"
+Description "\latex_(In the WC problem, several options are available for the pressure used in the state equation. In this test case we show that the WC problem is identical to the QC problem when the user defines the pressure independent of the hydro-static one (i.e: constant/uniform as in the QC). See figures 3.1-3.4 and compare with section 2 (same initial conditions are considered). This is also WRONG ! .\latex_) "
+
+visu {
+    title "WC - Case 1 : T initial"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles 0
+    pseudocolor WC1/Cas_WC.lata TEMPERATURE_ELEM_dom
+  }
+  visu {
+    title "WC - Case 1 : rho initial"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles 0
+    pseudocolor WC1/Cas_WC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+visu {
+    title "WC - Case 1 : T steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC1/Cas_WC.lata TEMPERATURE_ELEM_dom
+  }
+visu {
+    title "WC - Case 1 : rho steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC1/Cas_WC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+}
+
+Chapter
+{
+Title "Weakly compressible formulation - Case 2"
+Description "\latex_(In this test case, the pressure used in the state equation is the sum of the thermo-dynamic and the hydro-static ones. We consider the same initial conditions at the begining of the simulation (uniform T and rho). As we see in figures 4.3 and 4.4, the expected solution is obtained, which is a perfect linear stratified profile (light at the top and heavier at the bottom. Clearly, the steady state is a bit longer compared to before (5000 vs 8 seconds !). The exact solution is depicted in figure 4.5 and the error (w.r.t. the temperature) in figure 4.6. The solution is now CORRECT !\latex_) "
+
+visu {
+    title "WC - Case 2 : T initial"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles 0
+    pseudocolor WC2/Cas_WC.lata TEMPERATURE_ELEM_dom
+  }
+  visu {
+    title "WC - Case 2 : rho initial"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles 0
+    pseudocolor WC2/Cas_WC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+visu {
+    title "WC - Case 2 : T steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC2/Cas_WC.lata TEMPERATURE_ELEM_dom
+  }
+visu {
+    title "WC - Case 2 : rho steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC2/Cas_WC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+ visu {
+    title "WC - Case 2 : T exact solution"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC2/Cas_WC.lata EXACT_T_ELEM_dom
+  }
+  visu {
+    title "WC - Case 2 : T relative error"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC2/Cas_WC.lata ERROR_T_ELEM_dom
+  }
+}
+
+Chapter
+{
+Title "Weakly compressible formulation - Case 3"
+Description "\latex_(In order to test further the WC problem, we consider in this test case a different initial condition (the pressure of the EOS is kept the same as the previous case). As shown in figure 5.1, a stratified initial condition is considered with a sharp gradient (100 K difference for the temperature). Note that this leads to a heavy fluid on the top of a light one at the initial state (see rho iso-contours in figure 5.2). Clearly, this will lead to instabilities (Reyleigh-Taylor) since the light fluid will move to the top. After a long steady state, we record the expected T and rho profiles shown in figures 5.3 and 5.4 (with the light fluid at the top !) Compared with the exact solution (figure 5.5) and the error (in 5.6), we can clearly note that the solution is now CORRECT ! This validates the weakly compressible formulation implemented in TRUST.\latex_) "
+
+visu {
+    title "WC - Case 3 : T initial"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles 0
+    pseudocolor WC3/Cas_WC.lata TEMPERATURE_ELEM_dom
+  }
+  visu {
+    title "WC - Case 3 : rho initial"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles 0
+    pseudocolor WC3/Cas_WC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+visu {
+    title "WC - Case 3 : T steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC3/Cas_WC.lata TEMPERATURE_ELEM_dom
+  }
+visu {
+    title "WC - Case 3 : rho steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC3/Cas_WC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+ visu {
+    title "WC - Case 3 : T exact solution"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC3/Cas_WC.lata EXACT_T_ELEM_dom
+  }
+  visu {
+    title "WC - Case 3 : T relative error"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC3/Cas_WC.lata ERROR_T_ELEM_dom
+  }
+}
+
+Chapter
+{
+  Title "Conclusions"
+Description "\latex_(In this report we show that the weakly compressible formulation (implemented recently in TRUST) is required for simulations that deal with an important  hydro-static pressure (large altitudes). The results obtained match well with the exact solution even with different initial conditions for the temperature and density and thus validate the model implementation.\latex_) "
+}
+
+Chapter
+{
+  Title "Computer performance"
+  tableau_performance {
+  }
+}

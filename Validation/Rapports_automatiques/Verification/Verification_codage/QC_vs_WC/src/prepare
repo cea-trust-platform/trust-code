@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Elie Saikali
+# Sept 2021
+# script to prepare files
+
+LISTE_CAS="QC WC1 WC2 WC3"
+
+for CAS in $LISTE_CAS; do
+  SRCDATA_QC=Cas_QC.data
+  SRCDATA_WC=Cas_WC.data
+  REP=./$CAS
+  mkdir $REP
+  DESTDATA_QC=$REP/$SRCDATA_QC
+  DESTDATA_WC=$REP/$SRCDATA_WC
+
+  if test "$CAS" = "QC"; then
+
+    cp $SRCDATA_QC $DESTDATA_QC
+
+  elif test "$CAS" = "WC1"; then
+
+    cp $SRCDATA_WC $DESTDATA_WC
+
+  elif test "$CAS" = "WC2"; then
+
+    sed "s~use_hydrostatic_pressure 0~use_hydrostatic_pressure 1~" $SRCDATA_WC > $DESTDATA_WC
+
+  else # WC3
+
+    sed "s~use_hydrostatic_pressure 0~use_hydrostatic_pressure 1~;
+         s~Champ_Uniforme 1 333.15~/\* Champ_Uniforme 1 333.15 \*/~;
+         s~/\* champ_fonc_xyz dom 1 333.15-y \*/~champ_fonc_xyz dom 1 333.15-y~;
+         s~tmax 5000.~tmax 100000.~" $SRCDATA_WC > $DESTDATA_WC
+
+  fi
+done
