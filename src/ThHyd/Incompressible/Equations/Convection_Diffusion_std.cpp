@@ -73,8 +73,6 @@ void Convection_Diffusion_std::set_param(Param& param)
   Equation_base::set_param(param);
   param.ajouter_non_std("diffusion",(this));
   param.ajouter_non_std("convection",(this));
-  param.ajouter_condition("is_read_diffusion","The diffusion operator must be read, select negligeable type if you want to neglect it.");
-  param.ajouter_condition("is_read_convection","The convection operator must be read, select negligeable type if you want to neglect it.");
 }
 
 

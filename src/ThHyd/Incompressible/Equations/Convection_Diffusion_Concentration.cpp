@@ -27,6 +27,7 @@
 #include <Discret_Thyd.h>
 #include <Frontiere_dis_base.h>
 #include <Param.h>
+#include <EChaine.h>
 
 Implemente_instanciable_sans_constructeur(Convection_Diffusion_Concentration,"Convection_Diffusion_Concentration",Convection_Diffusion_std);
 
@@ -73,14 +74,30 @@ Entree& Convection_Diffusion_Concentration::readOn(Entree& is)
 {
   assert(la_concentration.non_nul());
   Convection_Diffusion_std::readOn(is);
-  Nom nom="Convection_";
-  nom+=inconnue().le_nom(); // On ajoute le nom de l'inconnue pour prevoir une equation de scalaires passifs
-  terme_convectif.set_fichier(nom);
-  terme_convectif.set_description((Nom)"Convective mass transfer rate=Integral(-C*u*ndS)[m"+(Nom)(dimension+bidim_axi)+".Mol.s-1]");
-  nom="Diffusion_";
-  nom+=inconnue().le_nom();
-  terme_diffusif.set_fichier(nom);
-  terme_diffusif.set_description((Nom)"Diffusion mass transfer rate=Integral(alpha*grad(C)*ndS) [m"+(Nom)(dimension+bidim_axi)+".Mol.s-1]");
+  if (terme_convectif.op_non_nul())
+    {
+      Nom nom="Convection_";
+      nom+=inconnue().le_nom(); // On ajoute le nom de l'inconnue pour prevoir une equation de scalaires passifs
+      terme_convectif.set_fichier(nom);
+      terme_convectif.set_description((Nom)"Convective mass transfer rate=Integral(-C*u*ndS)[m"+(Nom)(dimension+bidim_axi)+".Mol.s-1]");
+    }
+  else
+    {
+      EChaine ech("{ negligeable }");
+      ech >> terme_convectif;
+    }
+  if (terme_diffusif.op_non_nul())
+    {
+      Nom nom="Diffusion_";
+      nom+=inconnue().le_nom();
+      terme_diffusif.set_fichier(nom);
+      terme_diffusif.set_description((Nom)"Diffusion mass transfer rate=Integral(alpha*grad(C)*ndS) [m"+(Nom)(dimension+bidim_axi)+".Mol.s-1]");
+    }
+  else
+    {
+      EChaine ech("{ negligeable }");
+      ech >> terme_diffusif;
+    }
   return is;
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,10 +95,7 @@ void Operateur_Diff::typer()
 {
   Cerr << "Operateur_Diff::typer("<<typ<<")" << finl;
   if (Motcle(typ)==Motcle("negligeable"))
-    {
-      DERIV(Operateur_Diff_base)::typer("Op_Diff_negligeable");
-      valeur().associer_diffusivite(diffusivite());
-    }
+    DERIV(Operateur_Diff_base)::typer("Op_Diff_negligeable");
   else
     {
       assert(la_diffusivite.non_nul());
