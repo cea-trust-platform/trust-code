@@ -774,10 +774,17 @@ class Write_tex:
 % \\usepackage[pdfpagemode=FullScreen,bookmarksopen=true,bookmarks=true]{hyperref}
 \\usepackage[bookmarksopen=true,bookmarks=true]{hyperref}
 \\usepackage{caption}
-
-% \\usepackage{verbatim}
+\\usepackage{bm}
+\\usepackage{lmodern}
+\\usepackage{footnote}
+\\makesavenoteenv{tabular}
+\\usepackage[makeroom]{cancel}
+\\usepackage{subcaption}
+\\usepackage{mdframed}
+\\usepackage{verbatim}
 %\\usepackage{moreverb}
 \\usepackage{listings}
+\\usepackage{adjustbox}
 
 \setlength\hoffset{0cm}
 \setlength\voffset{0cm}
