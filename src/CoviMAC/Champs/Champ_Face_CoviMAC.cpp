@@ -313,10 +313,10 @@ DoubleTab& Champ_Face_CoviMAC::valeur_aux_elems(const DoubleTab& positions, cons
 DoubleVect& Champ_Face_CoviMAC::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
-  int nf_tot = zone.nb_faces_tot(), D = dimension;
+  int nf_tot = zone.nb_faces_tot(), D = dimension, N = valeurs().line_size();
   assert(val.size() == polys.size());
 
-  for (int p = 0, e; p < polys.size(); p++) val(p) = (e = polys(p)) < 0 ? 0. : valeurs()(nf_tot + D * e, ncomp);
+  for (int p = 0, e; p < polys.size(); p++) val(p) = (e = polys(p)) < 0 ? 0. : valeurs().addr()[N * (nf_tot + D * e) + ncomp];
 
   return val;
 }

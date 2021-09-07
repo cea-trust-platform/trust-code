@@ -85,28 +85,23 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
   const DoubleVect& volumes = zone_PolyMAC.volumes();
   const DoubleVect& porosite_elem = zone_PolyMAC.porosite_elem();
 
-  int nb_elem = zone_PolyMAC.nb_elem();
+  const int nb_elem = zone_PolyMAC.nb_elem(), nb_dim = sm.nb_dim();
   if(nb_elem==0)
     {
       sm.echange_espace_virtuel();
       return sm;
     }
-  int nb_dim=sm.nb_dim();
-  if (nb_dim == 1)
-    for (int num_elem=0; num_elem<nb_elem; num_elem++)
-      sm(num_elem) /= (volumes(num_elem)*porosite_elem(num_elem));
-  else if (nb_dim == 2)
+
+  if (nb_dim == 2)
     {
-      int nb_comp = sm.size()/nb_elem;
+      const int nb_comp = sm.line_size();//sm.dimension_tot(0)/nb_elem;
       for (int num_elem=0; num_elem<nb_elem; num_elem++)
         for (int k=0; k<nb_comp; k++)
           sm(num_elem,k) /= (volumes(num_elem)*porosite_elem(num_elem));
     }
   else if (sm.nb_dim() == 3)
     {
-      //int d0=sm.dimension(0);
-      int d1=sm.dimension(1);
-      int d2=sm.dimension(2);
+      const int d1 = sm.dimension(1), d2 = sm.dimension(2);
       for (int num_elem=0; num_elem<nb_elem; num_elem++)
         for (int k=0; k<d1; k++)
           for (int d=0; d<d2; d++)
@@ -115,8 +110,7 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
   else
     {
       Cerr<< "Masse_PolyMAC_Elem::appliquer ne peut pas s'appliquer a un DoubleTab a "<<sm.nb_dim()<<" dimensions"<<endl;
-      assert(0);
-      exit();
+      Process::exit();
     }
   sm.echange_espace_virtuel();
   return sm;
