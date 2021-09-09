@@ -35,7 +35,7 @@ class Fluide_Dilatable_base;
 // .DESCRIPTION
 //     classe Loi_Etat_base
 //     Cette classe est la base de la hierarchie des lois d'etat.
-//     Associe a un fluide incompressible, elle definit un fluide quasi compressible
+//     Elle definit un fluide dilatable
 // .SECTION voir aussi
 //     Fluide_Dilatable_base
 //     Classe abstraite dont toutes les lois d'etat doivent deriver.

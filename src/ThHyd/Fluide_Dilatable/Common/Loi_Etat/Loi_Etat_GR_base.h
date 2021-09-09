@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_GR_rhoT.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Loi_Etat
+// File:        Loi_Etat_GR_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Loi_Etat
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_GR_rhoT_included
-#define Loi_Etat_GR_rhoT_included
+#ifndef Loi_Etat_GR_base_included
+#define Loi_Etat_GR_base_included
 
 #ifndef RU_
 //constante des gaz
@@ -33,48 +33,47 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     classe Loi_Etat_GR_rhoT
-//     Cette classe represente la loi d'etat pour les gaz reels.
-//     Associe a un fluide incompressible, elle definit un fluide quasi compressible
-//     dont la loi d'etat est :
+//     classe Loi_Etat_GR_base
+//     Cette classe represente la loi d'etat base pour les gaz reels.
+//     Elle definit un fluide dilatable dont la loi d'etat est :
 //         rho=rho(Pth,H)
 //         T  =  T(Pth,H)
 // .SECTION voir aussi
-//     Fluide_Quasi_Compressible Loi_Etat_base
+//     Fluide_Dilatable_base Loi_Etat_base
 //////////////////////////////////////////////////////////////////////////////
 
-class Loi_Etat_GR_rhoT : public Loi_Etat_base
+class Loi_Etat_GR_base : public Loi_Etat_base
 {
-  Declare_instanciable_sans_constructeur(Loi_Etat_GR_rhoT);
+  Declare_base_sans_constructeur(Loi_Etat_GR_base);
 
 public :
-
-  Loi_Etat_GR_rhoT();
+  Loi_Etat_GR_base();
   void initialiser_inco_ch();
   void calculer_lambda();
-  virtual void calculer_masse_volumique();
-  double calculer_temperature(double,double);
-  double calculer_H(double,double) const;
-  double Drho_DP(double,double) const;
-  double Drho_DT(double,double) const;
-  double De_DP(double,double) const;
-  double De_DT(double,double) const;
-  double DT_DH(double,double) const;
-  double Cp_calc(double,double) const;
-
-  const Nom type_fluide() const;
   void initialiser();
   void remplir_T();
   void calculer_Cp();
-  double calculer_masse_volumique(double,double) const;
+  const Nom type_fluide() const;
+  double De_DP(double,double) const;
+  double De_DT(double,double) const;
+  double Cp_calc(double,double) const;
   double inverser_Pth(double,double);
+  virtual void calculer_masse_volumique();
+
+  // Methodes virtuelles pures
+  virtual double calculer_temperature(double,double) = 0;
+  virtual double calculer_H(double,double) const = 0;
+  virtual double Drho_DP(double,double) const = 0;
+  virtual double Drho_DT(double,double) const = 0;
+  virtual double DT_DH(double,double) const = 0;
+  virtual double calculer_masse_volumique(double,double) const = 0;
 
   // Methodes inlines
   inline double masse_molaire() const { return MMole_; }
 
 protected :
-  DoubleTab PolyRho_,PolyT_,tab_TempC,tab_Cp;
-  double MMole_,Cp_,R;
+  double MMole_, Cp_, R;
+  DoubleTab tab_TempC, tab_Cp;
 };
 
-#endif /* Loi_Etat_GR_rhoT_included */
+#endif /* Loi_Etat_GR_base_included */

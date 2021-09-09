@@ -29,7 +29,7 @@
 #include <Debog.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
-#include <Loi_Etat_Melange_GP.h>
+#include <Loi_Etat_Multi_GP_QC.h>
 #include <Porosites_champ.h>
 #include <Zone_VEF.h>
 #include <Champ_P1NC.h>
@@ -273,14 +273,14 @@ double EDO_Pression_th_VEF::masse_totale(double P,const DoubleTab& T)
 
   DoubleVect tmp;
   tmp.copy(T, ArrOfDouble::NOCOPY_NOINIT); // just copy the structure
-  if (!sub_type(Loi_Etat_Melange_GP,loi_))
+  if (!sub_type(Loi_Etat_Multi_GP_QC,loi_))
     {
       for (int i = 0; i < nb_faces; i++)
         tmp[i] = loi_.calculer_masse_volumique(P, T[i]);
     }
   else
     {
-      const Loi_Etat_Melange_GP& loi_mel_GP = ref_cast(Loi_Etat_Melange_GP,loi_);
+      const Loi_Etat_Multi_GP_QC& loi_mel_GP = ref_cast(Loi_Etat_Multi_GP_QC,loi_);
       const DoubleTab& Masse_mol_mel = loi_mel_GP.masse_molaire();
       for (int i = 0; i < nb_faces; i++)
         {

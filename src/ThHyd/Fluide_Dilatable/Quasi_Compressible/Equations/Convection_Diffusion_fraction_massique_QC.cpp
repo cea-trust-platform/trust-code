@@ -22,7 +22,7 @@
 
 #include <Convection_Diffusion_fraction_massique_QC.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Loi_Etat_Melange_GP.h>
+#include <Loi_Etat_Multi_GP_QC.h>
 #include <Probleme_base.h>
 #include <DoubleTrav.h>
 #include <Param.h>
@@ -122,7 +122,7 @@ void Convection_Diffusion_fraction_massique_QC::completer()
 {
   Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::completer();
   Fluide_Quasi_Compressible& le_fluideQC=ref_cast(Fluide_Quasi_Compressible,fluide());
-  Loi_Etat_Melange_GP& loi_etat = ref_cast_non_const(Loi_Etat_Melange_GP,le_fluideQC.loi_etat().valeur());
+  Loi_Etat_Multi_GP_QC& loi_etat = ref_cast_non_const(Loi_Etat_Multi_GP_QC,le_fluideQC.loi_etat().valeur());
   loi_etat.associer_inconnue(l_inco_ch.valeur());
   loi_etat.associer_espece(*this);
 }

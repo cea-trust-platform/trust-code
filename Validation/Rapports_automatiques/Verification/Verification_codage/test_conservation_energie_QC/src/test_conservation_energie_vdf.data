@@ -42,7 +42,7 @@ Read heliumQC_plenum
         pression 7000000.
         Sutherland mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
 
-        loi_etat gaz_parfait {
+        loi_etat gaz_parfait_QC {
           Prandtl 0.67
           Cp 5193.
           gamma 1.666

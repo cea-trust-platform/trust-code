@@ -65,54 +65,58 @@ Entree& Loi_Etat::readOn(Entree& is)
   Motcle motlu;
   is>>motlu;
   Nom type = "Loi_Etat_";
-  Motcles les_mots_loi(7);
+  Motcles les_mots_loi(8);
   {
-    // QC
-    les_mots_loi[0] = "gaz_parfait";
-    les_mots_loi[1] = "gaz_reel_rhoe";
-    les_mots_loi[2] = "gaz_reel_rhoT";
-    les_mots_loi[3] = "melange_gaz_parfait";
-    les_mots_loi[4] = "rho_T";
-    les_mots_loi[5] = "melange_binaire";
-    // WC
-    les_mots_loi[6] = "gaz_parfait_WC";
+    les_mots_loi[0] = "gaz_parfait_QC";
+    les_mots_loi[1] = "gaz_parfait_WC";
+    les_mots_loi[2] = "binaire_gaz_parfait_QC";
+    les_mots_loi[3] = "binaire_gaz_parfait_WC";
+    les_mots_loi[4] = "multi_gaz_parfait_QC";
+    les_mots_loi[5] = "multi_gaz_parfait_WC";
+    les_mots_loi[6] = "rhoT_gaz_parfait_QC";
+    les_mots_loi[7] = "rhoT_gaz_reel_QC";
   }
   int rang_loi = les_mots_loi.search(motlu);
   switch(rang_loi)
     {
     case 0 :
       {
-        type += "Gaz_Parfait";
+        type += "Gaz_Parfait_QC";
         break;
       }
     case 1 :
       {
-        type += "Gaz_Reel_rhoe";
+        type += "Gaz_Parfait_WC";
         break;
       }
     case 2 :
       {
-        type += "Gaz_Reel_rhoT";
+        type += "Binaire_Gaz_Parfait_QC";
         break;
       }
     case 3 :
       {
-        type += "Melange_Gaz_Parfait";
+        type += "Binaire_Gaz_Parfait_WC";
         break;
       }
     case 4 :
       {
-        type += "Rho_T";
+        type += "Multi_Gaz_Parfait_QC";
         break;
       }
     case 5 :
       {
-        type += "Melange_Binaire";
+        type += "Multi_Gaz_Parfait_WC";
         break;
       }
     case 6 :
       {
-        type += "Gaz_Parfait_WC";
+        type += "rhoT_Gaz_Parfait_QC";
+        break;
+      }
+    case 7 :
+      {
+        type += "rhoT_Gaz_Reel_QC";
         break;
       }
     default :

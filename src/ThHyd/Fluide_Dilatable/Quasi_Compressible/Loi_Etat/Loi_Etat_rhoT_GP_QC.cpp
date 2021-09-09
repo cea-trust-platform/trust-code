@@ -14,20 +14,20 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Rho_T.cpp
+// File:        Loi_Etat_rhoT_GP_QC.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Loi_Etat
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat_Rho_T.h>
+#include <Loi_Etat_rhoT_GP_QC.h>
 #include <Fluide_Dilatable_base.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur( Loi_Etat_Rho_T, "Loi_Etat_Rho_T", Loi_Etat_GP ) ;
+Implemente_instanciable_sans_constructeur( Loi_Etat_rhoT_GP_QC, "Loi_Etat_rhoT_Gaz_Parfait_QC", Loi_Etat_GP_base ) ;
 // XD rho_T loi_etat_base rho_T -1 Defining a state equation of form rho = f(T).
 
-Loi_Etat_Rho_T::Loi_Etat_Rho_T() : is_exp_(false) { }
+Loi_Etat_rhoT_GP_QC::Loi_Etat_rhoT_GP_QC() : is_exp_(false) { }
 
 // Description:
 //    Imprime la loi sur un flot de sortie.
@@ -43,9 +43,9 @@ Loi_Etat_Rho_T::Loi_Etat_Rho_T() : is_exp_(false) { }
 // Exception:
 // Effets de bord: le flot de sortie est modifie
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Loi_Etat_Rho_T::printOn( Sortie& os ) const
+Sortie& Loi_Etat_rhoT_GP_QC::printOn( Sortie& os ) const
 {
-  Loi_Etat_GP::printOn( os );
+  Loi_Etat_GP_base::printOn( os );
   return os;
 }
 
@@ -63,7 +63,7 @@ Sortie& Loi_Etat_Rho_T::printOn( Sortie& os ) const
 // Exception: accolade ouvrante attendue
 // Effets de bord:
 // Postcondition: l'objet est construit avec les parametres lus
-Entree& Loi_Etat_Rho_T::readOn( Entree& is )
+Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
 {
   Nom expression_;
 
@@ -72,7 +72,6 @@ Entree& Loi_Etat_Rho_T::readOn( Entree& is )
   param.ajouter("Prandtl",&Pr_); // XD_ADD_P double Prandtl number of the gas Pr=mu*Cp/lambda
   param.ajouter("rho_xyz",&rho_xyz_); // XD_ADD_P field_base Defined with a Champ_Fonc_xyz to define a constant rho with time (space dependent)
   param.ajouter("rho_t",&expression_); // XD_ADD_P chaine Expression of T used to calculate rho. This can lead to a variable rho, both in space and in time.
-  param.ajouter("rho_constant_pour_debug",&rho_constant_pour_debug_); // XD_ADD_P flag To debug use this flag.
   param.lire_avec_accolades(is);
 
   if (expression_ != "??")
@@ -88,7 +87,7 @@ Entree& Loi_Etat_Rho_T::readOn( Entree& is )
     {
       if (rho_xyz_.valeur().que_suis_je() != "Champ_Fonc_xyz" )
         {
-          Cerr << "Error in Loi_Etat_Rho_T::readOn !" << finl;
+          Cerr << "Error in Loi_Etat_rhoT_GP_QC::readOn !" << finl;
           Cerr << "An expression of rho_t is not read in your data file !" << finl;
           Cerr << "Either use rho_t_expression followed by an expression of T," << finl;
           Cerr << "or use rho_t followed by a Champ_Fonc_xyz !" << finl;
@@ -101,7 +100,7 @@ Entree& Loi_Etat_Rho_T::readOn( Entree& is )
 
 // Method used to initialize rho from a Champ_Fonc_xyz
 // In this case the DoubleTab rho_ is initialized and remains constant with time
-void Loi_Etat_Rho_T::initialiser_rho()
+void Loi_Etat_rhoT_GP_QC::initialiser_rho()
 {
   assert(rho_xyz_.valeur().que_suis_je() == "Champ_Fonc_xyz" );
   int isVDF = 0;
@@ -147,7 +146,7 @@ void Loi_Etat_Rho_T::initialiser_rho()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Rho_T::initialiser_inco_ch()
+void Loi_Etat_rhoT_GP_QC::initialiser_inco_ch()
 {
   // required here for xyz !
   if ( !is_exp_ ) initialiser_rho();
@@ -177,7 +176,7 @@ void Loi_Etat_Rho_T::initialiser_inco_ch()
 // Exception:
 // Effets de bord:
 // Postcondition:
-double Loi_Etat_Rho_T::calculer_masse_volumique(double P, double T) const
+double Loi_Etat_rhoT_GP_QC::calculer_masse_volumique(double P, double T) const
 {
   /* Not useful for this state law */
   return -3000.;
@@ -199,13 +198,8 @@ double Loi_Etat_Rho_T::calculer_masse_volumique(double P, double T) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-double Loi_Etat_Rho_T::calculer_masse_volumique(double P, double T, int ind) const
+double Loi_Etat_rhoT_GP_QC::calculer_masse_volumique(double P, double T, int ind) const
 {
-  if (rho_constant_pour_debug_.non_nul())
-    {
-      return rho_constant_pour_debug_(0,0);
-    }
-
   if (inf_ou_egal(T,-1000))
     {
 
@@ -230,7 +224,7 @@ double Loi_Etat_Rho_T::calculer_masse_volumique(double P, double T, int ind) con
     }
 }
 
-double Loi_Etat_Rho_T::inverser_Pth(double T, double rho)
+double Loi_Etat_rhoT_GP_QC::inverser_Pth(double T, double rho)
 {
   abort();
   throw;
@@ -250,7 +244,7 @@ double Loi_Etat_Rho_T::inverser_Pth(double T, double rho)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Rho_T::calculer_masse_volumique()
+void Loi_Etat_rhoT_GP_QC::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();

@@ -60,7 +60,7 @@ Read fluide
     mu Champ_Uniforme 1 0.001
     pression 84000
     lambda Champ_Uniforme 1 1.0
-    loi_etat gaz_parfait
+    loi_etat gaz_parfait_QC
     {
         Prandtl 1.
         Cp 1000.

@@ -26,7 +26,7 @@
 #include <Zone_Cl_VEF.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
-#include <Loi_Etat_GP.h>
+#include <Loi_Etat_GP_QC.h>
 #include <Debog.h>
 #include <Schema_Temps.h>
 #include <Dirichlet.h>

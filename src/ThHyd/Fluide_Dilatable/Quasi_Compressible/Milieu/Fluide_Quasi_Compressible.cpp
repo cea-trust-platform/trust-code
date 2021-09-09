@@ -23,7 +23,7 @@
 #include <Fluide_Quasi_Compressible.h>
 #include <Probleme_base.h>
 #include <Discretisation_base.h>
-#include <Loi_Etat_Melange_GP.h>
+#include <Loi_Etat_Multi_GP_QC.h>
 #include <Param.h>
 #include <Champ_Fonc_Fonction.h>
 #include <Neumann_sortie_libre.h>
@@ -277,7 +277,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
 void Fluide_Quasi_Compressible::completer(const Probleme_base& pb)
 {
   Cerr<<"Fluide_Quasi_Compressible::completer Pth = " << Pth_ << finl;
-  if ((loi_etat_->que_suis_je() == "Loi_Etat_Rho_T" || loi_etat_->que_suis_je() == "Loi_Etat_Melange_Binaire" )
+  if ((loi_etat_->que_suis_je() == "Loi_Etat_rhoT_Gaz_Parfait_QC" || loi_etat_->que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_QC" )
       && traitement_PTh == 0)
     {
       Cerr << "The option Traitement_PTh EDO is not allowed with the state law " << loi_etat_->que_suis_je() << finl;

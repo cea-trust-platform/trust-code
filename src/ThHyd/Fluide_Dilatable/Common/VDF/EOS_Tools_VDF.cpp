@@ -24,7 +24,9 @@
 #include <Zone_VDF.h>
 #include <Debog.h>
 #include <Champ_Face.h>
-#include <Loi_Etat_Melange_GP.h>
+#include <Fluide_Dilatable_base.h>
+#include <Equation_base.h>
+#include <Schema_Temps.h>
 #include <Check_espace_virtuel.h>
 #include <communications.h>
 

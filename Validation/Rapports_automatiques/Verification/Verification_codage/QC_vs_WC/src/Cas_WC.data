@@ -55,7 +55,7 @@ Read fluide
 {
   mu champ_fonc_fonction temperature 1 5.e-3
   lambda champ_fonc_fonction temperature 1 5.e-3
-  loi_etat gaz_parfait_wc
+  loi_etat gaz_parfait_WC
   {
     Prandtl 0.71
     Cp 1005.

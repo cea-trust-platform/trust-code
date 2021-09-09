@@ -14,57 +14,52 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_GP.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Loi_Etat
-// Version:     /main/11
+// File:        Loi_Etat_Multi_GP_base.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Loi_Etat
+// Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_GP_included
-#define Loi_Etat_GP_included
+#include <Loi_Etat_Multi_GP_base.h>
 
-#include <Loi_Etat_base.h>
-#include <Champ.h>
+Implemente_base(Loi_Etat_Multi_GP_base,"Loi_Etat_Multi_Gaz_Parfait_base",Loi_Etat_Melange_GP_base);
+// XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
 
-class Fluide_Dilatable_base;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Loi_Etat_GP
-//     Cette classe represente la loi d'etat pour les gaz parfaits.
-//     Associe a un fluide dilatable, elle definit un fluide quasi compressible
-//     dont la loi d'eata est :
-//        Pth = rho*R*T
-// .SECTION voir aussi
-//     Fluide_Dilatable_base Loi_Etat_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Loi_Etat_GP : public Loi_Etat_base
+// Description:
+//    Imprime la loi sur un flot de sortie.
+// Precondition:
+// Parametre: Sortie& os
+//    Signification: le flot de sortie pour l'impression
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord: le flot de sortie est modifie
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& Loi_Etat_Multi_GP_base::printOn(Sortie& os) const
 {
-  Declare_instanciable_sans_constructeur(Loi_Etat_GP);
+  os <<que_suis_je()<< finl;
+  return os;
+}
 
-public :
-  Loi_Etat_GP();
-  void associer_fluide(const Fluide_Dilatable_base&);
-  void calculer_lambda();
-  void calculer_alpha();
-  virtual void calculer_masse_volumique();
-
-  const Nom type_fluide() const;
-  virtual void initialiser();
-  void remplir_T();
-  void calculer_Cp();
-  double calculer_masse_volumique(double,double) const;
-  double inverser_Pth(double,double);
-
-  // Methodes inlines
-  inline double R() const { return R_; }
-
-protected :
-  double Cp_, R_;
-  Champ rho_constant_pour_debug_;
-};
-
-#endif /* Loi_Etat_GP_included */
+// Description:
+//    Lecture d'une loi sur un flot d'entree.
+// Precondition:
+// Parametre: Entree& is
+//    Signification: le flot d'entree pour la lecture des parametres
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Entree&
+//    Signification: le flot d'entree modifie
+//    Contraintes:
+// Exception: accolade ouvrante attendue
+// Effets de bord:
+// Postcondition: l'objet est construit avec les parametres lus
+Entree& Loi_Etat_Multi_GP_base::readOn(Entree& is)
+{
+  return is;
+}

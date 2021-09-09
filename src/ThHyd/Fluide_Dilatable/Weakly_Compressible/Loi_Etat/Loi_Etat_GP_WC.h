@@ -23,10 +23,7 @@
 #ifndef Loi_Etat_GP_WC_included
 #define Loi_Etat_GP_WC_included
 
-#include <Loi_Etat_base.h>
-#include <Champ.h>
-
-class Fluide_Dilatable_base;
+#include <Loi_Etat_Mono_GP_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -37,33 +34,18 @@ class Fluide_Dilatable_base;
 //     dont la loi d'eata est :
 //        Pth = rho*R*T
 // .SECTION voir aussi
-//     Fluide_Dilatable_base Loi_Etat_base
+//     Fluide_Dilatable_base Loi_Etat_Mono_GP_base
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Loi_Etat_GP_WC : public Loi_Etat_base
+class Loi_Etat_GP_WC : public Loi_Etat_Mono_GP_base
 {
-  Declare_instanciable_sans_constructeur(Loi_Etat_GP_WC);
+  Declare_instanciable(Loi_Etat_GP_WC);
 
 public :
-  Loi_Etat_GP_WC();
-  const Nom type_fluide() const;
-  void associer_fluide(const Fluide_Dilatable_base&);
-  void calculer_lambda();
-  void calculer_alpha();
-  void remplir_T();
-  void calculer_Cp();
-  double calculer_masse_volumique(double,double) const;
-  double inverser_Pth(double,double);
-
   virtual void calculer_masse_volumique();
-  virtual void initialiser();
-
-  // Methodes inlines
-  inline double R() const { return R_; }
-
-protected :
-  double Cp_, R_;
+  virtual double calculer_masse_volumique(double,double) const;
+  virtual double inverser_Pth(double,double);
 };
 
 #endif /* Loi_Etat_GP_WC_included */

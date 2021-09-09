@@ -71,7 +71,7 @@ Read gaz
         pression 100000.
 	mu champ_uniforme 1 1e-6
 
-        loi_etat gaz_parfait {
+        loi_etat gaz_parfait_QC {
           Prandtl 1.
           Cp 1000.
           gamma 1.666

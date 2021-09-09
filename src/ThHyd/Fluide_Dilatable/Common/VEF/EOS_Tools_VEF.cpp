@@ -26,7 +26,8 @@
 #include <Debog.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
-#include <Loi_Etat_Melange_GP.h>
+#include <Fluide_Dilatable_base.h>
+#include <Loi_Etat_Melange_GP_base.h>
 #include <Porosites_champ.h>
 #include <Champ_P1NC.h>
 #include <Check_espace_virtuel.h>

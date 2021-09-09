@@ -26,7 +26,7 @@
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Discretisation_base.h>
-#include <Loi_Etat_Melange_GP.h>
+#include <Loi_Etat_Multi_GP_QC.h>
 #include <Champ_Fonc_Fonction.h>
 #include <Zone_VF.h>
 
@@ -303,9 +303,9 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
   if (mu.non_nul())
     {
       if (!(lambda.non_nul())||(!sub_type(Champ_Fonc_Tabule,lambda.valeur())))
-        if ((sub_type(Champ_Uniforme,mu.valeur()))&&(sub_type(Loi_Etat_GP,loi_etat_.valeur())))
+        if ((sub_type(Champ_Uniforme,mu.valeur()))&&(sub_type(Loi_Etat_GP_base,loi_etat_.valeur())))
           {
-            if (!sub_type(Loi_Etat_Melange_GP,loi_etat_.valeur()))
+            if (!sub_type(Loi_Etat_Multi_GP_QC,loi_etat_.valeur()))
               {
                 // Si mu uniforme et si la loi d'etat est celle d'un gaz parfait
                 double lold=-1;

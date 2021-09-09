@@ -68,7 +68,7 @@ Read eau
 {
 	mu Champ_Uniforme 1 1.
   	pression 325542.1336
-        loi_etat gaz_parfait {
+        loi_etat gaz_parfait_QC {
                 Prandtl 0.71034351145038165942
                 Cp 1006.
                 gamma 1.4

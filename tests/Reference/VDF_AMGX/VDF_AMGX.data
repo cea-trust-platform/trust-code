@@ -53,7 +53,7 @@ Lire air
 
     lambda Champ_Fonc_Fonction temperature 1 7.72e-5*(100000.0*0.02897)/(8.314472*284.15*((((0.02897/0.0020159)-1.0)*val)+1.00))
 
-    loi_etat gaz_parfait {
+    loi_etat gaz_parfait_QC {
 
         Prandtl 0.189301713586576
         Cp 1.

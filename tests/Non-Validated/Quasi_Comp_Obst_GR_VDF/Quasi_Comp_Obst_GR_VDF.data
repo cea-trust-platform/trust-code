@@ -93,7 +93,7 @@ Read fluide
 	mu Champ_Uniforme 1 2.9e-5
 	pression 50.e5
 	lambda Champ_Uniforme 1 0.0167
-	loi_etat gaz_reel_rhoT {
+	loi_etat rhoT_gaz_reel_QC {
 		Prandtl 0.68
 		Poly_T 2 2	 15.37959054		 0.6278911456e-4
 				-0.1610686344e-5	 0.2350537605e-12

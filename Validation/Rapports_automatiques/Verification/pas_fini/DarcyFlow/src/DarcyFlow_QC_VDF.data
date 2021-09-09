@@ -37,7 +37,7 @@ Fluide_quasi_compressible fluide
 Read fluide
 { 
 	pression 111582.205714
-	loi_etat gaz_parfait 
+	loi_etat gaz_parfait_QC 
 	{ 
 		Cp 1006.8
 		gamma 1.4

@@ -14,56 +14,33 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Melange_Binaire.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Loi_Etat
+// File:        Loi_Etat_Mono_GP_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Loi_Etat
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_Melange_Binaire_included
-#define Loi_Etat_Melange_Binaire_included
+#ifndef Loi_Etat_Mono_GP_base_included
+#define Loi_Etat_Mono_GP_base_included
 
-#include <Loi_Etat_GP.h>
-#include <Champ_Inc_base.h>
-#include <Ref_Champ_Inc_base.h>
+#include <Loi_Etat_GP_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     classe Loi_Etat_Melange_Binaire
-//     Cette classe represente la loi d'etat pour les melanges binaires.
-//     Associe a un fluide incompressible, elle definit un fluide binaire quasi compressible
-//     dont la loi d'eata est :
-//        Pth = rho*R*T*(Y1/M1+Y2/M2)
+//     classe Loi_Etat_Mono_GP_base
+//     Cette classe represente la loi d'etat base pour les gaz parfaits.
+//     Elle definit un fluide dilatable dont la loi d'etat est :
+//        Pth = rho*R*T
 // .SECTION voir aussi
-//     Loi_Etat_GP
+//     Fluide_Dilatable_base Loi_Etat_base Loi_Etat_GP_base
+//
 //////////////////////////////////////////////////////////////////////////////
 
-class Loi_Etat_Melange_Binaire : public Loi_Etat_GP
+class Loi_Etat_Mono_GP_base : public Loi_Etat_GP_base
 {
-  Declare_instanciable_sans_constructeur(Loi_Etat_Melange_Binaire);
-
+  Declare_base(Loi_Etat_Mono_GP_base);
 public :
-  Loi_Etat_Melange_Binaire();
-  void associer_fluide(const Fluide_Dilatable_base& fl);
-  void calculer_lambda();
-  void calculer_mu();
-  void calculer_mu_wilke();
-  void calculer_alpha();
-  void calculer_mu_sur_Sc(); // returns rho * D
-  void calculer_nu_sur_Sc(); // returns D
-  void calculer_masse_volumique();
-
-  const Nom type_fluide() const;
-  void calculer_Cp();
-  double calculer_masse_volumique(double P,double Y1) const;
-  double inverser_Pth(double,double);
-
-protected :
-  double massmol1_,massmol2_,mu1_,mu2_,tempr_,diff_coeff_;
-
-private :
-  static constexpr double R_GAS = 8.314472;
 };
 
-#endif /* Loi_Etat_Melange_Binaire_included */
+#endif /* Loi_Etat_Mono_GP_base_included */

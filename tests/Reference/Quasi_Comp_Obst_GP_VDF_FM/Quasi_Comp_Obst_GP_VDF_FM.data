@@ -92,7 +92,7 @@ Read fluide {
 
 	pression 81385.5334
         
-        loi_etat Melange_Gaz_Parfait {
+        loi_etat Multi_Gaz_Parfait_QC {
                 Prandtl 0.71034351145038165942
 		Sc 0.6                
 		correction_fraction   

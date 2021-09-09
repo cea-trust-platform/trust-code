@@ -27,7 +27,7 @@
 #include <Debog.h>
 #include <Convection_Diffusion_Temperature.h>
 #include <Champ_Face.h>
-#include <Loi_Etat_Melange_GP.h>
+#include <Loi_Etat_Multi_GP_QC.h>
 #include <Check_espace_virtuel.h>
 #include <communications.h>
 
@@ -92,7 +92,7 @@ double EDO_Pression_th_VDF::masse_totale(double P,const DoubleTab& T)
   const DoubleVect& volumes = la_zone->volumes();
   const Loi_Etat_base& loi_ = ref_cast(Loi_Etat_base,le_fluide_->loi_etat().valeur());
   double M=0;
-  if (!sub_type(Loi_Etat_Melange_GP,loi_))
+  if (!sub_type(Loi_Etat_Multi_GP_QC,loi_))
     {
       for (elem=0 ; elem<nb_elem ; elem++)
         {
@@ -102,7 +102,7 @@ double EDO_Pression_th_VDF::masse_totale(double P,const DoubleTab& T)
     }
   else
     {
-      const Loi_Etat_Melange_GP& loi_mel_GP = ref_cast(Loi_Etat_Melange_GP,loi_);
+      const Loi_Etat_Multi_GP_QC& loi_mel_GP = ref_cast(Loi_Etat_Multi_GP_QC,loi_);
       const DoubleTab& Masse_mol_mel = loi_mel_GP.masse_molaire();
 
       for (elem=0 ; elem<nb_elem ; elem++)

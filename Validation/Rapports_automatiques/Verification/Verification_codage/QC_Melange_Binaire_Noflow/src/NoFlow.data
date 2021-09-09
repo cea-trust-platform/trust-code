@@ -62,7 +62,7 @@ Read fluide
   pression 100000.
   traitement_pth CONSERVATION_MASSE
 
-  loi_etat melange_binaire
+  loi_etat binaire_gaz_parfait_QC 
   {
     temperature 323.
     diffusion_coeff 0.001268

@@ -14,13 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Melange_GP.cpp
+// File:        Loi_Etat_Multi_GP_QC.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Loi_Etat
 // Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat_Melange_GP.h>
+#include <Loi_Etat_Multi_GP_QC.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Debog.h>
@@ -33,10 +33,10 @@
 Implemente_liste(REF(Champ_Inc_base));
 Implemente_liste(REF(Espece));
 
-Implemente_instanciable_sans_constructeur(Loi_Etat_Melange_GP,"Loi_Etat_Melange_Gaz_Parfait",Loi_Etat_GP);
+Implemente_instanciable_sans_constructeur(Loi_Etat_Multi_GP_QC,"Loi_Etat_Multi_Gaz_Parfait_QC",Loi_Etat_Multi_GP_base);
 // XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
 
-Loi_Etat_Melange_GP::Loi_Etat_Melange_GP() : correction_fraction_(0),ignore_check_fraction_(0),
+Loi_Etat_Multi_GP_QC::Loi_Etat_Multi_GP_QC() : correction_fraction_(0),ignore_check_fraction_(0),
   Sc_(-1),dtol_fraction_(1.e-6) { }
 
 // Description:
@@ -53,7 +53,7 @@ Loi_Etat_Melange_GP::Loi_Etat_Melange_GP() : correction_fraction_(0),ignore_chec
 // Exception:
 // Effets de bord: le flot de sortie est modifie
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Loi_Etat_Melange_GP::printOn(Sortie& os) const
+Sortie& Loi_Etat_Multi_GP_QC::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
@@ -73,7 +73,7 @@ Sortie& Loi_Etat_Melange_GP::printOn(Sortie& os) const
 // Exception: accolade ouvrante attendue
 // Effets de bord:
 // Postcondition: l'objet est construit avec les parametres lus
-Entree& Loi_Etat_Melange_GP::readOn(Entree& is)
+Entree& Loi_Etat_Multi_GP_QC::readOn(Entree& is)
 {
   Pr_=-1;
   Param param(que_suis_je());
@@ -101,7 +101,7 @@ Entree& Loi_Etat_Melange_GP::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::associer_fluide(const Fluide_Dilatable_base& fl)
+void Loi_Etat_Multi_GP_QC::associer_fluide(const Fluide_Dilatable_base& fl)
 {
   Loi_Etat_base::associer_fluide(fl);
 }
@@ -120,7 +120,7 @@ void Loi_Etat_Melange_GP::associer_fluide(const Fluide_Dilatable_base& fl)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::initialiser_inco_ch()
+void Loi_Etat_Multi_GP_QC::initialiser_inco_ch()
 {
   const int num = liste_Y(0).valeur().valeurs().size();
   Masse_mol_mel.resize(num,1);
@@ -143,7 +143,7 @@ void Loi_Etat_Melange_GP::initialiser_inco_ch()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::associer_inconnue(const Champ_Inc_base& inconnue)
+void Loi_Etat_Multi_GP_QC::associer_inconnue(const Champ_Inc_base& inconnue)
 {
   REF(Champ_Inc_base) inco;
   inco = inconnue;
@@ -165,7 +165,7 @@ void Loi_Etat_Melange_GP::associer_inconnue(const Champ_Inc_base& inconnue)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::associer_espece(const Convection_Diffusion_fraction_massique_QC& eq)
+void Loi_Etat_Multi_GP_QC::associer_espece(const Convection_Diffusion_fraction_massique_QC& eq)
 {
   liste_especes.add(eq.espece());
 }
@@ -185,7 +185,7 @@ void Loi_Etat_Melange_GP::associer_espece(const Convection_Diffusion_fraction_ma
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::calculer_Cp()
+void Loi_Etat_Multi_GP_QC::calculer_Cp()
 {
   Champ_Don& Cp = le_fluide->capacite_calorifique();
   DoubleTab& tab_Cp = Cp.valeurs();
@@ -193,7 +193,7 @@ void Loi_Etat_Melange_GP::calculer_Cp()
   tab_Cp.echange_espace_virtuel();
 }
 
-void Loi_Etat_Melange_GP::calculer_tab_Cp(DoubleTab& tab_Cp) const
+void Loi_Etat_Multi_GP_QC::calculer_tab_Cp(DoubleTab& tab_Cp) const
 {
   // FIXME : Actuellement on suppose que Cp est pris constant pour chacune des especes
   tab_Cp=0;
@@ -221,13 +221,13 @@ void Loi_Etat_Melange_GP::calculer_tab_Cp(DoubleTab& tab_Cp) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::calculer_masse_molaire()
+void Loi_Etat_Multi_GP_QC::calculer_masse_molaire()
 {
   // rabot deplace
   calculer_masse_molaire(Masse_mol_mel);
 }
 
-void Loi_Etat_Melange_GP::calculer_masse_molaire(DoubleTab& tab_Masse_mol_mel) const
+void Loi_Etat_Multi_GP_QC::calculer_masse_molaire(DoubleTab& tab_Masse_mol_mel) const
 {
   const int size = tab_Masse_mol_mel.size();
   ArrOfDouble inv_M(size), numer_M(size);
@@ -259,7 +259,7 @@ void Loi_Etat_Melange_GP::calculer_masse_molaire(DoubleTab& tab_Masse_mol_mel) c
       tab_Masse_mol_mel(elem,0) = numer_M(elem) / inv_M(elem);
 }
 
-void Loi_Etat_Melange_GP::rabot(int futur)
+void Loi_Etat_Multi_GP_QC::rabot(int futur)
 {
   DoubleTab test( liste_Y(0).valeur().valeurs()) ;
   test=0;
@@ -323,7 +323,7 @@ void Loi_Etat_Melange_GP::rabot(int futur)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::calculer_lambda()
+void Loi_Etat_Multi_GP_QC::calculer_lambda()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
   const DoubleTab& tab_mu = mu.valeurs();
@@ -367,7 +367,7 @@ void Loi_Etat_Melange_GP::calculer_lambda()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::calculer_alpha()
+void Loi_Etat_Multi_GP_QC::calculer_alpha()
 {
   const Champ_Don& lambda = le_fluide->conductivite();
   const DoubleTab& tab_lambda = lambda.valeurs();
@@ -448,7 +448,7 @@ void Loi_Etat_Melange_GP::calculer_alpha()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::calculer_masse_volumique()
+void Loi_Etat_Multi_GP_QC::calculer_masse_volumique()
 {
   const DoubleTab& tab_ICh = le_fluide->inco_chaleur().valeurs();
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
@@ -470,8 +470,8 @@ void Loi_Etat_Melange_GP::calculer_masse_volumique()
   tab_rho.echange_espace_virtuel();
   tab_rho_np1.echange_espace_virtuel();
   le_fluide->calculer_rho_face(tab_rho_np1);
-  Debog::verifier("Loi_Etat_Melange_GP::calculer_masse_volumique, tab_rho_np1",tab_rho_np1);
-  Debog::verifier("Loi_Etat_Melange_GP::calculer_masse_volumique, tab_rho",tab_rho);
+  Debog::verifier("Loi_Etat_Multi_GP_QC::calculer_masse_volumique, tab_rho_np1",tab_rho_np1);
+  Debog::verifier("Loi_Etat_Multi_GP_QC::calculer_masse_volumique, tab_rho",tab_rho);
 }
 
 // Description:
@@ -488,7 +488,7 @@ void Loi_Etat_Melange_GP::calculer_masse_volumique()
 // Exception:
 // Effets de bord:
 // Postcondition:
-double Loi_Etat_Melange_GP::calculer_masse_volumique_case(double P, double T, double r, int som) const
+double Loi_Etat_Multi_GP_QC::calculer_masse_volumique_case(double P, double T, double r, int som) const
 {
   if (inf_ou_egal(T,0))
     {
@@ -513,7 +513,7 @@ double Loi_Etat_Melange_GP::calculer_masse_volumique_case(double P, double T, do
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::calculer_mu0()
+void Loi_Etat_Multi_GP_QC::calculer_mu0()
 {
   // With Wilke formulation: https://aip.scitation.org/doi/pdf/10.1063/1.1747673
   const int size = liste_Y(0).valeur().valeurs().size(), list_size = liste_Y.size();
@@ -571,7 +571,7 @@ void Loi_Etat_Melange_GP::calculer_mu0()
         }
     }
   tab_mu.echange_espace_virtuel();
-  Debog::verifier("tab_mu dans Loi_Etat_Melange_GP::calculer_mu0", tab_mu);
+  Debog::verifier("tab_mu dans Loi_Etat_Multi_GP_QC::calculer_mu0", tab_mu);
 }
 
 // Description:
@@ -588,7 +588,7 @@ void Loi_Etat_Melange_GP::calculer_mu0()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::calculer_mu()
+void Loi_Etat_Multi_GP_QC::calculer_mu()
 {
   Champ_Don& mu = le_fluide->viscosite_dynamique();
   if (!sub_type(Champ_Uniforme,mu.valeur()))
@@ -614,7 +614,7 @@ void Loi_Etat_Melange_GP::calculer_mu()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_GP::calculer_mu_sur_Sc()
+void Loi_Etat_Multi_GP_QC::calculer_mu_sur_Sc()
 {
   const Champ_Don& mu = le_fluide->viscosite_dynamique();
   const DoubleTab& tab_mu = mu.valeurs();
@@ -651,9 +651,9 @@ void Loi_Etat_Melange_GP::calculer_mu_sur_Sc()
 // Exception:
 // Effets de bord:
 // Postcondition:
-double Loi_Etat_Melange_GP::calculer_masse_volumique(double P, double T) const
+double Loi_Etat_Multi_GP_QC::calculer_masse_volumique(double P, double T) const
 {
-  Cerr << "Error: the Loi_Etat_Melange_GP::calculer_masse_volumique(double P, double T) method should not be used!" << finl;
+  Cerr << "Error: the Loi_Etat_Multi_GP_QC::calculer_masse_volumique(double P, double T) method should not be used!" << finl;
   Process::exit();
   return -1000.;
 }

@@ -69,7 +69,7 @@ Lire fluide
 	mu		champ_fonc_xyz dom 1 _MU_
 	lambda		champ_fonc_xyz dom 1 1
 	pression	1
-	loi_etat	rho_T { Prandtl 1 Cp 1 rho_xyz champ_fonc_xyz dom 1 _RHO_ }
+	loi_etat	rhoT_gaz_parfait_QC { Prandtl 1 Cp 1 rho_xyz champ_fonc_xyz dom 1 _RHO_ }
 	traitement_pth conservation_masse
 }
 

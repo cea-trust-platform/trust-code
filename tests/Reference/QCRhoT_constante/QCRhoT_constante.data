@@ -60,7 +60,7 @@ Lire fluide
 	/* mu		champ_fonc_fonction temperature 1 1 */
 	lambda		champ_fonc_fonction temperature 1 1
  	pression	1
- 	loi_etat	rho_T
+ 	loi_etat	rhoT_gaz_parfait_QC
 	{
 		Prandtl 1
 		Cp 1

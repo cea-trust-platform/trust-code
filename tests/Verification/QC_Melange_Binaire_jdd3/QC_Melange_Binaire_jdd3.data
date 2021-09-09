@@ -115,7 +115,7 @@ Lire air
   pression   100000.
   traitement_pth constant
 
-  loi_etat melange_binaire
+  loi_etat binaire_gaz_parfait_QC
   {
     temperature 284.15
     diffusion_coeff 7.72e-5

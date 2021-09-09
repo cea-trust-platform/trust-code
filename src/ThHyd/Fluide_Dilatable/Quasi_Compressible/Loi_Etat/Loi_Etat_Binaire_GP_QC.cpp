@@ -14,23 +14,23 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Melange_Binaire.cpp
+// File:        Loi_Etat_Binaire_GP_QC.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Loi_Etat
 // Version:     /main/25
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat_Melange_Binaire.h>
+#include <Loi_Etat_Binaire_GP_QC.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Debog.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Loi_Etat_Melange_Binaire,"Loi_Etat_Melange_Binaire",Loi_Etat_GP);
+Implemente_instanciable_sans_constructeur(Loi_Etat_Binaire_GP_QC,"Loi_Etat_Binaire_Gaz_Parfait_QC",Loi_Etat_Binaire_GP_base);
 // XD melange_binaire loi_etat_base melange_binaire -1 Mixing of a binary mixture uder the iso-thermal and iso-bar assumptions.
 
-Loi_Etat_Melange_Binaire::Loi_Etat_Melange_Binaire() :
+Loi_Etat_Binaire_GP_QC::Loi_Etat_Binaire_GP_QC() :
   massmol1_(-1),massmol2_(-1),mu1_(-1),mu2_(-1),tempr_(-1),diff_coeff_(-1) { }
 
 // Description:
@@ -47,7 +47,7 @@ Loi_Etat_Melange_Binaire::Loi_Etat_Melange_Binaire() :
 // Exception:
 // Effets de bord: le flot de sortie est modifie
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Loi_Etat_Melange_Binaire::printOn(Sortie& os) const
+Sortie& Loi_Etat_Binaire_GP_QC::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
@@ -67,7 +67,7 @@ Sortie& Loi_Etat_Melange_Binaire::printOn(Sortie& os) const
 // Exception: accolade ouvrante attendue
 // Effets de bord:
 // Postcondition: l'objet est construit avec les parametres lus
-Entree& Loi_Etat_Melange_Binaire::readOn(Entree& is)
+Entree& Loi_Etat_Binaire_GP_QC::readOn(Entree& is)
 {
   Cerr<<"Lecture de la loi d'etat Melange Binaire"<<finl;
 
@@ -97,7 +97,7 @@ Entree& Loi_Etat_Melange_Binaire::readOn(Entree& is)
 // Exception:
 // Effets de bord: le flot de sortie est modifie
 // Postcondition: la methode ne modifie pas l'objet
-const Nom Loi_Etat_Melange_Binaire::type_fluide() const
+const Nom Loi_Etat_Binaire_GP_QC::type_fluide() const
 {
   return "Melange_Binaire";
 }
@@ -116,7 +116,7 @@ const Nom Loi_Etat_Melange_Binaire::type_fluide() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_Binaire::associer_fluide(const Fluide_Dilatable_base& fl)
+void Loi_Etat_Binaire_GP_QC::associer_fluide(const Fluide_Dilatable_base& fl)
 {
   Loi_Etat_base::associer_fluide(fl);
 }
@@ -136,7 +136,7 @@ void Loi_Etat_Melange_Binaire::associer_fluide(const Fluide_Dilatable_base& fl)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_Binaire::calculer_Cp()
+void Loi_Etat_Binaire_GP_QC::calculer_Cp()
 {
   /* Do nothing */
 }
@@ -155,7 +155,7 @@ void Loi_Etat_Melange_Binaire::calculer_Cp()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_Binaire::calculer_lambda()
+void Loi_Etat_Binaire_GP_QC::calculer_lambda()
 {
   /* Do nothing */
 }
@@ -175,7 +175,7 @@ void Loi_Etat_Melange_Binaire::calculer_lambda()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_Binaire::calculer_mu_wilke()
+void Loi_Etat_Binaire_GP_QC::calculer_mu_wilke()
 {
   const DoubleTab& tab_Y1 = le_fluide->inco_chaleur().valeurs();
   DoubleTab& tab_mu = le_fluide->viscosite_dynamique().valeurs();
@@ -221,7 +221,7 @@ void Loi_Etat_Melange_Binaire::calculer_mu_wilke()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_Binaire::calculer_mu()
+void Loi_Etat_Binaire_GP_QC::calculer_mu()
 {
   Champ_Don& mu = le_fluide->viscosite_dynamique();
   if (!sub_type(Champ_Uniforme,mu.valeur()))
@@ -255,7 +255,7 @@ void Loi_Etat_Melange_Binaire::calculer_mu()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_Binaire::calculer_alpha()
+void Loi_Etat_Binaire_GP_QC::calculer_alpha()
 {
   /* Do nothing */
 }
@@ -274,7 +274,7 @@ void Loi_Etat_Melange_Binaire::calculer_alpha()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_Binaire::calculer_mu_sur_Sc()
+void Loi_Etat_Binaire_GP_QC::calculer_mu_sur_Sc()
 {
   /*
    * ====================================================================
@@ -325,7 +325,7 @@ void Loi_Etat_Melange_Binaire::calculer_mu_sur_Sc()
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_Binaire::calculer_nu_sur_Sc()
+void Loi_Etat_Binaire_GP_QC::calculer_nu_sur_Sc()
 {
   /*
    * ====================================================================
@@ -359,7 +359,7 @@ void Loi_Etat_Melange_Binaire::calculer_nu_sur_Sc()
 // Exception:
 // Effets de bord:
 // Postcondition:
-double Loi_Etat_Melange_Binaire::calculer_masse_volumique(double P, double Y1) const
+double Loi_Etat_Binaire_GP_QC::calculer_masse_volumique(double P, double Y1) const
 {
   /*
    * Mixing species state equation
@@ -392,7 +392,7 @@ double Loi_Etat_Melange_Binaire::calculer_masse_volumique(double P, double Y1) c
 // Exception:
 // Effets de bord:
 // Postcondition:
-double Loi_Etat_Melange_Binaire::inverser_Pth(double Y1, double rho)
+double Loi_Etat_Binaire_GP_QC::inverser_Pth(double Y1, double rho)
 {
   /*
   // THIS IS OK, but we dont want to enter here !
@@ -402,7 +402,7 @@ double Loi_Etat_Melange_Binaire::inverser_Pth(double Y1, double rho)
 
   return p_t;
   */
-  Cerr << "We should not enter in the method Loi_Etat_Melange_Binaire::inverser_Pth !" << finl;
+  Cerr << "We should not enter in the method Loi_Etat_Binaire_GP_QC::inverser_Pth !" << finl;
   Cerr << "This means that you are trying to solve an ODE for pth which is forbidden for this EOS!" << finl;
   abort();
   throw;
@@ -422,7 +422,7 @@ double Loi_Etat_Melange_Binaire::inverser_Pth(double Y1, double rho)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Melange_Binaire::calculer_masse_volumique()
+void Loi_Etat_Binaire_GP_QC::calculer_masse_volumique()
 {
   const DoubleTab& tab_Y1 = le_fluide->inco_chaleur().valeurs();
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();

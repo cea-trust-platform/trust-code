@@ -14,72 +14,46 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Melange_GP.h
+// File:        Loi_Etat_rhoT_GP_QC.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Loi_Etat
-// Version:     /main/9
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_Melange_GP_included
-#define Loi_Etat_Melange_GP_included
+#ifndef Loi_Etat_rhoT_GP_QC_included
+#define Loi_Etat_rhoT_GP_QC_included
 
-#include <Loi_Etat_GP.h>
-#include <Convection_Diffusion_fraction_massique_QC.h>
-#include <Ref_Champ_Inc_base.h>
-#include <Ref_Espece.h>
-#include <List.h>
+#include <Loi_Etat_GP_base.h>
+#include <Champ_Don.h>
+#include <DoubleTab.h>
+#include <Parser_U.h>
 
-class Fluide_Dilatable_base;
-
-//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION
-//     classe Loi_Etat_Melange_GP
-//     Cette classe represente la loi d'etat pour un melange de gaz parfaits.
+// .DESCRIPTION : class Loi_Etat_rhoT_GP_QC
 //
-// .SECTION voir aussi
-//     Fluide_Dilatable_base Loi_Etat_base Loi_Etat_GP
-//////////////////////////////////////////////////////////////////////////////
+// <Description of class Loi_Etat_rhoT_GP_QC>
+//
+/////////////////////////////////////////////////////////////////////////////
 
-Declare_liste(REF(Champ_Inc_base));
-Declare_liste(REF(Espece));
-
-class Loi_Etat_Melange_GP : public Loi_Etat_GP
+class Loi_Etat_rhoT_GP_QC : public Loi_Etat_GP_base
 {
-  Declare_instanciable_sans_constructeur(Loi_Etat_Melange_GP);
+  Declare_instanciable_sans_constructeur( Loi_Etat_rhoT_GP_QC ) ;
 
 public :
-
-  Loi_Etat_Melange_GP();
-  void associer_fluide(const Fluide_Dilatable_base&);
-  void associer_espece(const Convection_Diffusion_fraction_massique_QC& eq);
-  void calculer_lambda();
-  void calculer_alpha();
-  void calculer_mu();
-  void calculer_mu_sur_Sc();
-  void calculer_mu0();
+  Loi_Etat_rhoT_GP_QC();
+  void initialiser_inco_ch();
+  void initialiser_rho();
   void calculer_masse_volumique();
-  void calculer_masse_molaire();
-  void calculer_masse_molaire(DoubleTab& M) const;
-  void calculer_Cp();
-  double calculer_masse_volumique(double,double) const;
-
-  virtual void initialiser_inco_ch();
-  virtual void associer_inconnue(const Champ_Inc_base& inconnue);
-  virtual void calculer_tab_Cp(DoubleTab& cp) const;
-  virtual void rabot(int futur=0);
-  virtual double calculer_masse_volumique_case(double P,double T,double r, int som) const;
-
-  // Methodes inlines
-  inline const DoubleTab& masse_molaire() const { return Masse_mol_mel; }
-  inline DoubleTab& masse_molaire() { return Masse_mol_mel; }
+  double calculer_masse_volumique(double, double) const; // overrided
+  double calculer_masse_volumique(double, double, int) const;// overloaded
+  double inverser_Pth(double T, double rho); // forbidden
 
 protected :
-  int correction_fraction_,ignore_check_fraction_;
-  double Sc_,dtol_fraction_;
-  DoubleTab Masse_mol_mel;
-  LIST(REF(Champ_Inc_base)) liste_Y;
-  LIST(REF(Espece)) liste_especes;
+  bool is_exp_;
+  Champ_Don rho_xyz_;
+  DoubleTab rho_;
+  mutable Parser_U  parser_;
 };
 
-#endif /* Loi_Etat_Melange_GP_included */
+#endif /* Loi_Etat_rhoT_GP_QC_included */

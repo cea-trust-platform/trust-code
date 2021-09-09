@@ -71,7 +71,7 @@ Lire fluide
 	mu		champ_fonc_xyz dom 1 2+1*cos(2*pi*x)*cos(2*pi*y)
 	lambda		champ_fonc_xyz dom 1 1
 	pression	1
-	loi_etat	rho_T { Prandtl 1 Cp 1 rho_xyz champ_fonc_xyz dom 1 1/(2+sin(2*pi*x)*sin(2*pi*y)) }
+	loi_etat	rhoT_gaz_parfait_QC { Prandtl 1 Cp 1 rho_xyz champ_fonc_xyz dom 1 1/(2+sin(2*pi*x)*sin(2*pi*y)) }
 	traitement_pth conservation_masse
 }
 

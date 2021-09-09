@@ -25,7 +25,7 @@
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
 #include <Schema_Temps_base.h>
-#include <Loi_Etat_GP.h>
+#include <Loi_Etat_GP_QC.h>
 #include <Dirichlet.h>
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
@@ -280,7 +280,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
           //}
         }
     }
-  const Loi_Etat_GP& loi_ = ref_cast(Loi_Etat_GP,le_fluide_->loi_etat().valeur());
+  const Loi_Etat_GP_QC& loi_ = ref_cast(Loi_Etat_GP_QC,le_fluide_->loi_etat().valeur());
   S *= loi_.R();
 
   //   Cout<<"Volume="<<V<<finl;
@@ -317,7 +317,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   const DoubleTab& tempnp1 = le_fluide_->inco_chaleur().valeurs();       //actuel
   const DoubleTab& tempn = le_fluide_->inco_chaleur().passe();        //passe
   const DoubleTab& tab_rho = le_fluide_->masse_volumique().valeurs();    //actuel
-  const Loi_Etat_GP& loi_ = ref_cast(Loi_Etat_GP,le_fluide_->loi_etat().valeur());
+  const Loi_Etat_GP_QC& loi_ = ref_cast(Loi_Etat_GP_QC,le_fluide_->loi_etat().valeur());
 
 
   int elem, nb_elem=la_zone->nb_elem();

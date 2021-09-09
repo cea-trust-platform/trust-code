@@ -14,46 +14,50 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Rho_T.h
+// File:        Loi_Etat_rhoT_GR_QC.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Loi_Etat
-// Version:     1
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_Rho_T_included
-#define Loi_Etat_Rho_T_included
+#ifndef Loi_Etat_rhoT_GR_QC_included
+#define Loi_Etat_rhoT_GR_QC_included
 
-#include <Loi_Etat_GP.h>
-#include <Champ_Don.h>
-#include <DoubleTab.h>
-#include <Parser_U.h>
+#ifndef RU_
+//constante des gaz
+#define RU_ 8.3143*4.18448
+#endif
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Loi_Etat_Rho_T
-//
-// <Description of class Loi_Etat_Rho_T>
-//
-/////////////////////////////////////////////////////////////////////////////
+#include <Loi_Etat_GR_base.h>
 
-class Loi_Etat_Rho_T : public Loi_Etat_GP
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//     classe Loi_Etat_rhoT_GR_QC
+//     Cette classe represente la loi d'etat pour les gaz reels.
+//     Associe a un fluide incompressible, elle definit un fluide quasi compressible
+//     dont la loi d'etat est :
+//         rho=rho(Pth,H)
+//         T  =  T(Pth,H)
+// .SECTION voir aussi
+//     Fluide_Quasi_Compressible Loi_Etat_GR_base
+//////////////////////////////////////////////////////////////////////////////
+
+class Loi_Etat_rhoT_GR_QC : public Loi_Etat_GR_base
 {
-  Declare_instanciable_sans_constructeur( Loi_Etat_Rho_T ) ;
+  Declare_instanciable(Loi_Etat_rhoT_GR_QC);
 
 public :
-  Loi_Etat_Rho_T();
-  void initialiser_inco_ch();
-  void initialiser_rho();
   void calculer_masse_volumique();
-  double calculer_masse_volumique(double, double) const; // overrided
-  double calculer_masse_volumique(double, double, int) const;// overloaded
-  double inverser_Pth(double T, double rho); // forbidden
+  double calculer_temperature(double,double);
+  double calculer_H(double,double) const;
+  double Drho_DP(double,double) const;
+  double Drho_DT(double,double) const;
+  double DT_DH(double,double) const;
+  double calculer_masse_volumique(double,double) const;
 
 protected :
-  bool is_exp_;
-  Champ_Don rho_xyz_;
-  DoubleTab rho_;
-  mutable Parser_U  parser_;
+  DoubleTab PolyRho_,PolyT_;
 };
 
-#endif /* Loi_Etat_Rho_T_included */
+#endif /* Loi_Etat_rhoT_GR_QC_included */

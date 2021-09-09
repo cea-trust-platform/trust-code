@@ -22,7 +22,7 @@
 
 #include <Convection_Diffusion_fraction_massique_MB_QC.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Loi_Etat_Melange_Binaire.h>
+#include <Loi_Etat_Binaire_GP_QC.h>
 #include <Op_Conv_negligeable.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_QC.h>
@@ -165,7 +165,7 @@ int Convection_Diffusion_fraction_massique_MB_QC::preparer_calcul()
 // Postcondition:
 void Convection_Diffusion_fraction_massique_MB_QC::completer()
 {
-  assert(le_fluide->loi_etat().valeur().que_suis_je() == "Loi_Etat_Melange_Binaire");
+  assert(le_fluide->loi_etat().valeur().que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_QC");
   Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::completer();
 }
 
