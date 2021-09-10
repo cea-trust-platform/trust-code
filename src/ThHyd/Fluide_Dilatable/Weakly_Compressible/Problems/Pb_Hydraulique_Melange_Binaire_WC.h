@@ -14,36 +14,44 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Binaire_GP_WC.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Loi_Etat
+// File:        Pb_Hydraulique_Melange_Binaire_WC.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Problems
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_Binaire_GP_WC_included
-#define Loi_Etat_Binaire_GP_WC_included
+#ifndef Pb_Hydraulique_Melange_Binaire_WC_included
+#define Pb_Hydraulique_Melange_Binaire_WC_included
 
-#include <Loi_Etat_Binaire_GP_base.h>
+#include <Pb_WC_base.h>
+#include <Navier_Stokes_WC.h>
+#include <Convection_Diffusion_fraction_massique_MB_WC.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     classe Loi_Etat_Binaire_GP_WC
-//     Cette classe represente la loi d'etat pour les melanges binaires.
-//     Associe a un fluide dilatable, elle definit un fluide binaire weakly compressible
-//     dont la loi d'eata est :
-//        Pth = rho*R*T*(Y1/M1+Y2/M2)
+//    classe Pb_Hydraulique_Melange_Binaire_WC
+//     Cette classe represente un probleme de hydraulique binaire en fluide quasi compressible:
+//      - Equations de Navier_Stokes en regime laminaire
+//        pour un fluide quasi compressible
+//      - Equation de conv/diff fraction massique
+//        en regime laminaire pour un fluide quasi compressible
 // .SECTION voir aussi
-//     Loi_Etat_Binaire_GP_base
+//     Probleme_base Navier_Stokes_WC Convection_Diffusion_fraction_massique_MB_WC
 //////////////////////////////////////////////////////////////////////////////
 
-class Loi_Etat_Binaire_GP_WC : public Loi_Etat_Binaire_GP_base
+class Pb_Hydraulique_Melange_Binaire_WC : public Pb_WC_base
 {
-  Declare_instanciable(Loi_Etat_Binaire_GP_WC);
+  Declare_instanciable(Pb_Hydraulique_Melange_Binaire_WC);
+public:
+  int nombre_d_equations() const;
+  const Equation_base& equation(int) const ;
+  Equation_base& equation(int);
+  int verifier();
 
-public :
-  void calculer_masse_volumique();
-  double calculer_masse_volumique(double P,double Y1) const;
+protected:
+  Navier_Stokes_WC eq_hydraulique;
+  Convection_Diffusion_fraction_massique_MB_WC eq_frac_mass;
 };
 
-#endif /* Loi_Etat_Binaire_GP_WC_included */
+#endif /* Pb_Hydraulique_Melange_Binaire_WC_included */

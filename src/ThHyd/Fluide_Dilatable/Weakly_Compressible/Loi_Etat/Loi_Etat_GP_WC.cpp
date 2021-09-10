@@ -22,6 +22,7 @@
 
 #include <Loi_Etat_GP_WC.h>
 #include <Fluide_Weakly_Compressible.h>
+#include <Debog.h>
 
 Implemente_instanciable(Loi_Etat_GP_WC,"Loi_Etat_Gaz_Parfait_WC",Loi_Etat_Mono_GP_base);
 
@@ -142,4 +143,6 @@ void Loi_Etat_GP_WC::calculer_masse_volumique()
   tab_rho.echange_espace_virtuel();
   tab_rho_np1.echange_espace_virtuel();
   le_fluide->calculer_rho_face(tab_rho_np1);
+  Debog::verifier("Loi_Etat_GP_WC::calculer_masse_volumique, tab_rho_np1",tab_rho_np1);
+  Debog::verifier("Loi_Etat_GP_WC::calculer_masse_volumique, tab_rho",tab_rho);
 }

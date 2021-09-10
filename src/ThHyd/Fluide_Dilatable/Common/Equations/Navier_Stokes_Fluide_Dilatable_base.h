@@ -67,7 +67,7 @@ public :
   const Champ_Don& diffusivite_pour_transport();
   const Champ_base& diffusivite_pour_pas_de_temps();
   const Champ_base& vitesse_pour_transport();
-  DoubleTab& rho_vitesse(const DoubleTab& tab_rho,const DoubleTab& vitesse,DoubleTab& rhovitesse) const;
+  DoubleTab& rho_vitesse(const DoubleTab& tab_rho,const DoubleTab& vit,DoubleTab& rhovitesse) const;
 
   // Methodes virtuelles
   virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );

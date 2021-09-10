@@ -34,7 +34,7 @@
 Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable_base);
 
 // By default we do not use neither the total nor the hydrostatic pressure
-Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0), use_hydrostatic_pressure_(0) {}
+Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0), use_hydrostatic_pressure_(0), nb_pas_dt_pression_(-1) {}
 
 // Description:
 //    Ecrit les proprietes du fluide sur un flot de sortie.
@@ -83,13 +83,14 @@ void Fluide_Weakly_Compressible::set_param(Param& param)
 {
   Fluide_Dilatable_base::set_param(param);
   param.ajouter("pression_thermo",&Pth_);
+  param.ajouter("pression_xyz",&Pth_xyz_);
   param.ajouter("use_total_pressure",&use_total_pressure_);
   param.ajouter("use_hydrostatic_pressure",&use_hydrostatic_pressure_);
+  param.ajouter("nb_pas_dt_pression",&nb_pas_dt_pression_);
 
   // Param non-standard
   param.ajouter_non_std("loi_etat",(this),Param::REQUIRED);
   param.ajouter_non_std("Traitement_PTh",(this));
-  param.ajouter("pression_xyz",&Pth_xyz_);
   // Lecture de mu et lambda pas specifiee obligatoire car option sutherland possible
   // On supprime.. et on ajoute non-standard
   param.supprimer("mu");
@@ -210,6 +211,7 @@ int Fluide_Weakly_Compressible::lire_motcle_non_standard(const Motcle& mot, Entr
 void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
 {
   Cerr<<"Fluide_Weakly_Compressible::completer" << finl;
+  le_probleme_ = pb;
 
   if (Pth_xyz_.non_nul())
     {
@@ -242,6 +244,13 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
           Process::exit();
         }
 
+      if ( use_total_pressure_ && nb_pas_dt_pression_==-1 )
+        {
+          Cerr << "Error in your data file : This is not allowed !"<< finl;
+          Cerr << "You should define nb_pas_dt_pression when using the flag use_total_pressure !" << finl;
+          Process::exit();
+        }
+
       if ( use_total_pressure_ && use_hydrostatic_pressure_ )
         {
           Cerr << "Error in your data file : This is not allowed !"<< finl;
@@ -263,15 +272,15 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
 
 void Fluide_Weakly_Compressible::initialiser_pth_for_EOS(const Probleme_base& pb)
 {
-  if (use_pth_xyz()) initialiser_pth_xyz(pb);
+  if (use_pth_xyz()) initialiser_pth_xyz();
   else initialiser_pth();
 }
 
-void Fluide_Weakly_Compressible::initialiser_pth_xyz(const Probleme_base& pb)
+void Fluide_Weakly_Compressible::initialiser_pth_xyz()
 {
   Cerr<<"Initializing the thermo-dynamic pressure Pth_xyz ..." << finl;
   int isVDF = 0; // VDF or VEF ??
-  if (pb.equation(0).discretisation().que_suis_je()=="VDF") isVDF = 1;
+  if (le_probleme_->equation(0).discretisation().que_suis_je()=="VDF") isVDF = 1;
 
   // We know that mu is always stored on elems and that Champ_Don rho_xyz_ is evaluated on elements
   assert (Pth_xyz_.valeur().valeurs().size() == viscosite_dynamique().valeurs().size());
@@ -411,13 +420,21 @@ void Fluide_Weakly_Compressible::calculer_pression_tot()
 
 void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot)
 {
+  // XXX : Recall that this field will be used in the EOS.. So its not just a field that varies at each dt !!!
   if ( use_pth_xyz() )
     {
       for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_tab_(i,0);
     }
   else
     {
-      for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
+      if ( use_total_pressure() )
+        {
+          if (le_probleme_->schema_temps().nb_pas_dt() == nb_pas_dt_pression_ )
+            for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
+          else PTot = Pth_tab_;
+        }
+      else
+        for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
     }
 }
 

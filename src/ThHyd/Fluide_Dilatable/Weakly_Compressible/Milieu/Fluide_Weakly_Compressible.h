@@ -24,6 +24,7 @@
 #define Fluide_Weakly_Compressible_included
 
 #include <Fluide_Dilatable_base.h>
+#include <Ref_Probleme_base.h>
 
 class Zone_Cl_dis;
 
@@ -69,12 +70,13 @@ public :
 protected:
   Champ_Don Pth_xyz_,pression_hydro_;
   DoubleTab Pth_tab_, Pth_n_tab_;
-  int use_total_pressure_, use_hydrostatic_pressure_; // the default value is 0 => i.e: do not use total P in EOS unless activated
+  int use_total_pressure_, use_hydrostatic_pressure_,nb_pas_dt_pression_; // the default value is 0 => i.e: do not use total P in EOS unless activated
+  REF(Probleme_base) le_probleme_;
 
 private:
   void calculer_pression_hydro();
   void initialiser_pth();
-  void initialiser_pth_xyz(const Probleme_base&);
+  void initialiser_pth_xyz();
   void initialiser_pth_for_EOS(const Probleme_base& pb);
   void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot);
   void remplir_champ_pression_for_EOS();

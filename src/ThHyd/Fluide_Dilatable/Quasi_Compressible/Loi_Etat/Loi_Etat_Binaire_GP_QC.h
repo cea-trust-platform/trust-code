@@ -30,7 +30,7 @@
 // .DESCRIPTION
 //     classe Loi_Etat_Binaire_GP_QC
 //     Cette classe represente la loi d'etat pour les melanges binaires.
-//     Associe a un fluide incompressible, elle definit un fluide binaire quasi compressible
+//     Associe a un fluide dilatable, elle definit un fluide binaire quasi compressible
 //     dont la loi d'eata est :
 //        Pth = rho*R*T*(Y1/M1+Y2/M2)
 // .SECTION voir aussi
@@ -39,29 +39,11 @@
 
 class Loi_Etat_Binaire_GP_QC : public Loi_Etat_Binaire_GP_base
 {
-  Declare_instanciable_sans_constructeur(Loi_Etat_Binaire_GP_QC);
+  Declare_instanciable(Loi_Etat_Binaire_GP_QC);
 
 public :
-  Loi_Etat_Binaire_GP_QC();
-  void associer_fluide(const Fluide_Dilatable_base& fl);
-  void calculer_lambda();
-  void calculer_mu();
-  void calculer_mu_wilke();
-  void calculer_alpha();
-  void calculer_mu_sur_Sc(); // returns rho * D
-  void calculer_nu_sur_Sc(); // returns D
   void calculer_masse_volumique();
-
-  const Nom type_fluide() const;
-  void calculer_Cp();
   double calculer_masse_volumique(double P,double Y1) const;
-  double inverser_Pth(double,double);
-
-protected :
-  double massmol1_,massmol2_,mu1_,mu2_,tempr_,diff_coeff_;
-
-private :
-  static constexpr double R_GAS = 8.314472;
 };
 
 #endif /* Loi_Etat_Binaire_GP_QC_included */

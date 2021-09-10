@@ -21,11 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Loi_Etat_Binaire_GP_WC.h>
+#include <Fluide_Weakly_Compressible.h>
+#include <Debog.h>
 
-Implemente_instanciable_sans_constructeur(Loi_Etat_Binaire_GP_WC,"Loi_Etat_Binaire_Gaz_Parfait_WC",Loi_Etat_Binaire_GP_base);
+Implemente_instanciable(Loi_Etat_Binaire_GP_WC,"Loi_Etat_Binaire_Gaz_Parfait_WC",Loi_Etat_Binaire_GP_base);
 // XD melange_binaire loi_etat_base melange_binaire -1 Mixing of a binary mixture uder the iso-thermal and iso-bar assumptions.
-
-Loi_Etat_Binaire_GP_WC::Loi_Etat_Binaire_GP_WC() { }
 
 // Description:
 //    Imprime la loi sur un flot de sortie.
@@ -63,5 +63,57 @@ Sortie& Loi_Etat_Binaire_GP_WC::printOn(Sortie& os) const
 // Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_Binaire_GP_WC::readOn(Entree& is)
 {
-  return is;
+  Cerr<<"Lecture de la loi d'etat Melange Binaire WC ... "<<finl;
+  return Loi_Etat_Binaire_GP_base::readOn(is);
+}
+// Description:
+//    Recalcule la masse volumique
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+double Loi_Etat_Binaire_GP_WC::calculer_masse_volumique(double P, double Y1) const
+{
+  return Loi_Etat_Binaire_GP_base::calculer_masse_volumique(P,Y1);
+}
+
+// Description:
+//    Calcule la masse volumique
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Loi_Etat_Binaire_GP_WC::calculer_masse_volumique()
+{
+  const DoubleTab& tab_Y1 = le_fluide->inco_chaleur().valeurs();
+  Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
+  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
+  const DoubleTab& pres = FWC.pression_th_tab();
+  const int n = tab_rho.size();
+  for (int som=0 ; som<n ; som++)
+    {
+      tab_rho_np1(som) = calculer_masse_volumique(pres(som,0),tab_Y1(som,0));
+      tab_rho(som,0) = 0.5 * ( tab_rho_n(som) + tab_rho_np1(som) );
+    }
+  tab_rho.echange_espace_virtuel();
+  tab_rho_np1.echange_espace_virtuel();
+  le_fluide->calculer_rho_face(tab_rho_np1);
+  Debog::verifier("Loi_Etat_Binaire_GP_WC::calculer_masse_volumique, tab_rho_np1",tab_rho_np1);
+  Debog::verifier("Loi_Etat_Binaire_GP_WC::calculer_masse_volumique, tab_rho",tab_rho);
 }

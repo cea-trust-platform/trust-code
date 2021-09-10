@@ -25,13 +25,14 @@
 
 #include <Loi_Etat_Melange_GP_base.h>
 
+class Fluide_Dilatable_base;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
 //     classe Loi_Etat_Binaire_GP_base
 //     Cette classe represente la loi d'etat pour les melanges binaires.
-//     Associe a un fluide incompressible, elle definit un fluide binaire quasi compressible
-//     dont la loi d'eata est :
+//     Elle definit un fluide binaire dilatable dont la loi d'eata est :
 //        Pth = rho*R*T*(Y1/M1+Y2/M2)
 // .SECTION voir aussi
 //     Loi_Etat_Melange_GP_base
@@ -39,7 +40,28 @@
 
 class Loi_Etat_Binaire_GP_base : public Loi_Etat_Melange_GP_base
 {
-  Declare_base(Loi_Etat_Binaire_GP_base);
+  Declare_base_sans_constructeur(Loi_Etat_Binaire_GP_base);
+public:
+  Loi_Etat_Binaire_GP_base();
+  void associer_fluide(const Fluide_Dilatable_base& fl);
+  void calculer_lambda();
+  void calculer_mu();
+  void calculer_mu_wilke();
+  void calculer_alpha();
+  void calculer_mu_sur_Sc(); // returns rho * D
+  void calculer_nu_sur_Sc(); // returns D
+  void calculer_Cp();
+  const Nom type_fluide() const;
+  double inverser_Pth(double,double);
+  virtual double calculer_masse_volumique(double P,double Y1) const;
+  // Methode virtuelle pure
+  virtual void calculer_masse_volumique()=0;
+
+protected:
+  double massmol1_,massmol2_,mu1_,mu2_,tempr_,diff_coeff_;
+
+private :
+  static constexpr double R_GAS = 8.314472;
 };
 
 #endif /* Loi_Etat_Binaire_GP_base_included */

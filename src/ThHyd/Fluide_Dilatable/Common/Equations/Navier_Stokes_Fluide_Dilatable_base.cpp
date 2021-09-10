@@ -256,19 +256,19 @@ void Navier_Stokes_Fluide_Dilatable_base::discretiser()
 
 // Description:
 // Multiply density by velocity and return density*velocity (mass flux)
-DoubleTab& Navier_Stokes_Fluide_Dilatable_base::rho_vitesse(const DoubleTab& tab_rho,const DoubleTab& vitesse,DoubleTab& rhovitesse) const
+DoubleTab& Navier_Stokes_Fluide_Dilatable_base::rho_vitesse(const DoubleTab& tab_rho,const DoubleTab& vit,DoubleTab& rhovitesse) const
 {
-  int i,j, n = vitesse.dimension(0), ls = vitesse.line_size(), dim = Objet_U::dimension;
+  int i,j, n = vit.dimension(0), ls = vit.line_size(), dim = Objet_U::dimension;
   if (ls==1)
     {
       for (i=0 ; i<n ; i++)
-        rhovitesse(i) = tab_rho(i)*vitesse(i);
+        rhovitesse(i) = tab_rho(i)*vit(i);
     }
   else
     {
       for (i=0 ; i<n ; i++)
         for (j=0 ; j<dim ; j++)
-          rhovitesse(i,j) = tab_rho(i)*vitesse(i,j);
+          rhovitesse(i,j) = tab_rho(i)*vit(i,j);
     }
 
   rhovitesse.echange_espace_virtuel();

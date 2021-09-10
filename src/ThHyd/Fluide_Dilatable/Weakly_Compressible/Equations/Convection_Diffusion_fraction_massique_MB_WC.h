@@ -14,36 +14,44 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Binaire_GP_WC.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Loi_Etat
-// Version:     /main/11
+// File:        Convection_Diffusion_fraction_massique_MB_WC.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Equations
+// Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Loi_Etat_Binaire_GP_WC_included
-#define Loi_Etat_Binaire_GP_WC_included
+#ifndef Convection_Diffusion_fraction_massique_MB_WC_included
+#define Convection_Diffusion_fraction_massique_MB_WC_included
 
-#include <Loi_Etat_Binaire_GP_base.h>
+#include <Convection_Diffusion_fraction_massique_Fluide_Dilatable_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     classe Loi_Etat_Binaire_GP_WC
-//     Cette classe represente la loi d'etat pour les melanges binaires.
-//     Associe a un fluide dilatable, elle definit un fluide binaire weakly compressible
-//     dont la loi d'eata est :
-//        Pth = rho*R*T*(Y1/M1+Y2/M2)
+//     classe Convection_Diffusion_fraction_massique_MB_WC
+//     Cas particulier de Convection_Diffusion_fraction_massique_Fluide_Dilatable_base
+//     pour un fluide quasi conpressible iso-therme et iso-bar
 // .SECTION voir aussi
-//     Loi_Etat_Binaire_GP_base
+//     Convection_Diffusion_fraction_massique_Fluide_Dilatable_base
 //////////////////////////////////////////////////////////////////////////////
 
-class Loi_Etat_Binaire_GP_WC : public Loi_Etat_Binaire_GP_base
+class Convection_Diffusion_fraction_massique_MB_WC : public Convection_Diffusion_fraction_massique_Fluide_Dilatable_base
 {
-  Declare_instanciable(Loi_Etat_Binaire_GP_WC);
+  Declare_instanciable(Convection_Diffusion_fraction_massique_MB_WC);
 
 public :
-  void calculer_masse_volumique();
-  double calculer_masse_volumique(double P,double Y1) const;
+  void set_param(Param& titi);
+  void completer();
+  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
+  int lire_motcle_non_standard(const Motcle&, Entree&);
+  int preparer_calcul();
+  const Champ_base& diffusivite_pour_pas_de_temps();
+  const Champ_base& vitesse_pour_transport();
+  DoubleTab& derivee_en_temps_inco(DoubleTab& );
+
+private:
+  void calculer_div_rho_u(DoubleTab& res) const;
+  DoubleTab& derivee_en_temps_inco_sans_solveur_masse(DoubleTab& );
 };
 
-#endif /* Loi_Etat_Binaire_GP_WC_included */
+#endif /* Convection_Diffusion_fraction_massique_MB_WC_included */
