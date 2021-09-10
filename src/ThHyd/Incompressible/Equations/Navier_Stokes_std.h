@@ -93,6 +93,7 @@ public :
   virtual void discretiser();
   virtual void discretiser_vitesse();
   virtual void completer();
+  Entree& lire_cond_init(Entree&) override;
   virtual bool initTimeStep(double dt);
   virtual void mettre_a_jour(double temps);
   virtual void abortTimeStep();

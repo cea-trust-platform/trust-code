@@ -1,0 +1,10 @@
+#!/bin/bash
+trust reprise 1>reprise.out 2>reprise.err || exit -1
+# Verifie que la convergence se fait en 2 pas de temps
+if [ "`wc -l reprise.dt_ev | awk '{print $1}'`" != 2 ]
+then
+   echo "reprise test case should converge in 2 time steps, with Champ_fonc_reprise pression"
+   exit -1
+fi
+exit 0 
+

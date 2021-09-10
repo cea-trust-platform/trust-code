@@ -136,7 +136,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       reprend_modele_k_eps=1;
     }
   ref_ch = pb.get_champ(Motcle(nom_champ_inc));
-  if sub_type(Champ_Inc_base,ref_ch.valeur())
+  if (sub_type(Champ_Inc_base,ref_ch.valeur()))
     Cerr << nom_champ_inc << " is an unknown of problem " << nom_pb << finl;
   else
     {

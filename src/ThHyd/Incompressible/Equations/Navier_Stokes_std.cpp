@@ -831,6 +831,52 @@ Fluide_base& Navier_Stokes_std::fluide()
   return le_fluide.valeur();
 }
 
+Entree& Navier_Stokes_std::lire_cond_init(Entree& is)
+{
+  Cerr << "Reading of initial conditions\n";
+  Nom nom;
+  Motcle motlu;
+  is >> nom;
+  motlu = nom;
+  if(motlu!=Motcle("{"))
+    {
+      Cerr << "We expected a { while reading " << que_suis_je() << finl;
+      Cerr << "and not : " << nom << finl;
+      exit();
+    }
+  Motcles compris(3);
+  compris[0]="}";
+  compris[1]="vitesse";
+  compris[2]="pression";
+  int ind = -1;
+  while (ind!=0)
+    {
+      is >> nom;
+      motlu = nom;
+      ind = compris.rang(motlu);
+      if (ind==1)
+        {
+          Champ_Don ch_init;
+          is >> ch_init;
+          verifie_ch_init_nb_comp(inconnue(),ch_init.nb_comp());
+          inconnue()->affecter(ch_init.valeur());
+        }
+      else if (ind==2)
+        {
+          Champ_Don ch_init;
+          is >> ch_init;
+          verifie_ch_init_nb_comp(pression(),ch_init.nb_comp());
+          pression()->affecter(ch_init.valeur());
+        }
+      else if (ind==-1)
+        {
+          Cerr << nom << " is not understood. Keywords are:" << finl;
+          Cerr << compris << finl;
+          exit();
+        }
+    }
+  return is;
+}
 
 // Description:
 // Add a specific term for Navier Stokes (-gradP(n)) if necessary
@@ -1282,8 +1328,11 @@ int Navier_Stokes_std::preparer_calcul()
             if (mod)
               le_schema_en_temps->set_dt()=0;
           }
-
-        if (discretisation().que_suis_je() != "PolyMAC") //PolyMAC -> pas vraiment faisable
+        if (discretisation().que_suis_je() == "PolyMAC") //PolyMAC -> pas vraiment faisable
+          {
+            Cerr << "Not done with PolyMAC !" << finl;
+          }
+        else
           {
             solveur_masse.appliquer(vpoint);
             vpoint.echange_espace_virtuel();
@@ -1306,6 +1355,7 @@ int Navier_Stokes_std::preparer_calcul()
             // On veut que l'espace virtuel soit a jour, donc all_items
             operator_add(la_pression.valeurs(), inc_pre, VECT_ALL_ITEMS);
           }
+
         gradient.calculer(la_pression.valeurs(),gradient_P.valeurs());
         divergence.calculer(la_vitesse.valeurs(),divergence_U.valeurs());
         divergence_U.valeurs()=0.;  // on remet les bons flux bords pour div
