@@ -75,14 +75,13 @@ Sortie& Loi_Etat_Multi_GP_QC::printOn(Sortie& os) const
 // Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_Multi_GP_QC::readOn(Entree& is)
 {
-  Pr_=-1;
   Param param(que_suis_je());
   param.ajouter("Sc",&Sc_,Param::REQUIRED); // XD_ADD_P double Schmidt number of the gas Sc=nu/D (D: diffusion coefficient of the mixing).
-  param.ajouter( "Cp",&Cp_); // XD_ADD_P double Specific heat at constant pressure of the gas Cp.
   param.ajouter( "Prandtl",&Pr_,Param::REQUIRED); // XD_ADD_P double Prandtl number of the gas Pr=mu*Cp/lambda
+  param.ajouter( "Cp",&Cp_); // XD_ADD_P double Specific heat at constant pressure of the gas Cp.
+  param.ajouter( "dtol_fraction",&dtol_fraction_); // XD_ADD_P double Delta tolerance on mass fractions for check testing (default value 1.e-6).
   param.ajouter_flag( "correction_fraction",&correction_fraction_); // XD_ADD_P flag To force mass fractions between 0. and 1.
   param.ajouter_flag( "ignore_check_fraction",&ignore_check_fraction_); // XD_ADD_P flag Not to check if mass fractions between 0. and 1.
-  param.ajouter( "dtol_fraction",&dtol_fraction_); // XD_ADD_P double Delta tolerance on mass fractions for check testing (default value 1.e-6).
   param.lire_avec_accolades_depuis(is);
   return is;
 }

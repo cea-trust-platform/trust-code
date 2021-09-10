@@ -24,7 +24,6 @@
 #define Loi_Etat_GP_QC_included
 
 #include <Loi_Etat_Mono_GP_base.h>
-#include <Champ.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -46,9 +45,6 @@ class Loi_Etat_GP_QC : public Loi_Etat_Mono_GP_base
 public :
   virtual void calculer_masse_volumique();
   virtual double calculer_masse_volumique(double,double) const;
-
-protected :
-  Champ rho_constant_pour_debug_;
 };
 
 #endif /* Loi_Etat_GP_QC_included */

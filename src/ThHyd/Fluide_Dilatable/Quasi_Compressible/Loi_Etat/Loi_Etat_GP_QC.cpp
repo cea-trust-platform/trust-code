@@ -21,11 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Loi_Etat_GP_QC.h>
-#include <Motcle.h>
-#include <Fluide_Dilatable_base.h>
-#include <Champ_Uniforme.h>
-#include <Zone_VF.h>
-#include <Champ_Fonc_Tabule.h>
 
 Implemente_instanciable(Loi_Etat_GP_QC,"Loi_Etat_Gaz_Parfait_QC",Loi_Etat_Mono_GP_base);
 
@@ -65,105 +60,8 @@ Sortie& Loi_Etat_GP_QC::printOn(Sortie& os) const
 // Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_GP_QC::readOn(Entree& is)
 {
-  double Cv_ = -1;
-  double gamma_ = -1;
-
-  Motcle accferme="}";
-  Motcle accouverte="{";
-
-  Motcle motlu;
-  is >> motlu;
-  Cerr<<"Lecture de la loi d'etat Gaz Parfait"<<finl;
-  if (motlu != accouverte)
-    {
-      Cerr<<" On attendait "<<accouverte<<" au lieu de "<<motlu<<finl;
-      abort();
-    }
-  Motcles les_mots(7);
-  {
-    les_mots[0] = "Cp";
-    les_mots[1] = "capacite_calorifique_pression_constante";
-    les_mots[2] = "Cv";
-    les_mots[3] = "capacite_calorifique_volume_constant";
-    les_mots[4] = "gamma";
-    les_mots[5] = "Prandtl";
-    les_mots[6] = "rho_constant_pour_debug";
-  }
-  is >> motlu;
-  while(motlu != accferme )
-    {
-      int rang=les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :
-        case 1 :
-          {
-            is>>Cp_;
-            break;
-          }
-        case 2 :
-        case 3 :
-          {
-            is>>Cv_;
-            break;
-          }
-        case 4 :
-          {
-            is>>gamma_;
-            if (gamma_<0)
-              {
-                gamma_ = -gamma_;
-                debug=1;
-              }
-            else
-              debug=0;
-            break;
-          }
-        case 5 :
-          {
-            is>>Pr_;
-            break;
-          }
-        case 6 :
-          {
-            is>>rho_constant_pour_debug_;
-            break;
-          }
-        default :
-          {
-            Cerr<<"Une loi d'etat "<<que_suis_je()<<" n'a pas la propriete "<<motlu<<finl;
-            Cerr<<"On attendait un mot dans :"<<finl<<les_mots<<finl;
-            abort();
-          }
-        }
-      is >> motlu;
-    }
-
-  if (Pr_==-1)
-    {
-      Cerr<<"ERREUR : on attendait la definition du nombre de Prandtl (constante)"<<finl;
-      abort();
-    }
-  if (Cp_==-1)
-    {
-      Cerr<<"ERREUR : on attendait la definition du Cp (constante en gaz parfaits)"<<finl;
-      abort();
-    }
-  if (Cv_!=-1)
-    {
-      R_ = Cp_ - Cv_;
-    }
-  else if (gamma_!=-1)
-    {
-      R_ = Cp_ *(1.-1./gamma_);
-    }
-  else
-    {
-      Cerr<<"ERREUR : on attendait la definition du Cv (constante en gaz parfaits)"<<finl;
-      Cerr<<"ou de la constante gamma (constante en gaz parfaits)"<<finl;
-      abort();
-    }
-  return is;
+  Cerr << "Lecture de la loi d'etat gaz parfait pour le QC ... " << finl;
+  return Loi_Etat_Mono_GP_base::readOn(is);
 }
 
 // Description:

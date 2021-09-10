@@ -74,6 +74,15 @@ Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
   param.ajouter("rho_t",&expression_); // XD_ADD_P chaine Expression of T used to calculate rho. This can lead to a variable rho, both in space and in time.
   param.lire_avec_accolades(is);
 
+  if (expression_ == "??" && !rho_xyz_.non_nul())
+    {
+      Cerr << "Error in Loi_Etat_rhoT_GP_QC::readOn !" << finl;
+      Cerr << "The closure equation of rho is not read in your data file !" << finl;
+      Cerr << "Either use rho_t followed by an expression of T," << finl;
+      Cerr << "or use rho_xyz followed by a Champ_Fonc_xyz !" << finl;
+      Process::exit();
+    }
+
   if (expression_ != "??")
     {
       is_exp_ = true;
@@ -84,16 +93,7 @@ Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
       parser_.parseString();
     }
   else
-    {
-      if (rho_xyz_.valeur().que_suis_je() != "Champ_Fonc_xyz" )
-        {
-          Cerr << "Error in Loi_Etat_rhoT_GP_QC::readOn !" << finl;
-          Cerr << "An expression of rho_t is not read in your data file !" << finl;
-          Cerr << "Either use rho_t_expression followed by an expression of T," << finl;
-          Cerr << "or use rho_t followed by a Champ_Fonc_xyz !" << finl;
-          Process::exit();
-        }
-    }
+    assert(rho_xyz_.valeur().que_suis_je() == "Champ_Fonc_xyz" );
 
   return is;
 }
@@ -102,7 +102,6 @@ Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
 // In this case the DoubleTab rho_ is initialized and remains constant with time
 void Loi_Etat_rhoT_GP_QC::initialiser_rho()
 {
-  assert(rho_xyz_.valeur().que_suis_je() == "Champ_Fonc_xyz" );
   int isVDF = 0;
   if (le_fluide->masse_volumique().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
   // We know that mu is always stored on elems
@@ -202,7 +201,6 @@ double Loi_Etat_rhoT_GP_QC::calculer_masse_volumique(double P, double T, int ind
 {
   if (inf_ou_egal(T,-1000))
     {
-
       Cerr << finl << "Error, we find a temperature of " << T << " !" << finl;
       Cerr << "Either your calculation has diverged or you don't define" << finl;
       Cerr << "temperature in Kelvin somewhere in your data file." << finl;

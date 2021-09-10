@@ -70,7 +70,6 @@ Sortie& Loi_Etat_Binaire_GP_QC::printOn(Sortie& os) const
 Entree& Loi_Etat_Binaire_GP_QC::readOn(Entree& is)
 {
   Cerr<<"Lecture de la loi d'etat Melange Binaire"<<finl;
-
   Param param(que_suis_je());
   param.ajouter("molar_mass1",&massmol1_,Param::REQUIRED); // XD_ADD_P double Molar mass of species 1 (in kg/mol).
   param.ajouter("molar_mass2",&massmol2_,Param::REQUIRED); // XD_ADD_P double Molar mass of species 2 (in kg/mol).

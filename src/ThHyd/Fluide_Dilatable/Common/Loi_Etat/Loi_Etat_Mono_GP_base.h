@@ -24,6 +24,7 @@
 #define Loi_Etat_Mono_GP_base_included
 
 #include <Loi_Etat_GP_base.h>
+#include <Champ.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -40,7 +41,8 @@
 class Loi_Etat_Mono_GP_base : public Loi_Etat_GP_base
 {
   Declare_base(Loi_Etat_Mono_GP_base);
-public :
+protected :
+  Champ rho_constant_pour_debug_;
 };
 
 #endif /* Loi_Etat_Mono_GP_base_included */

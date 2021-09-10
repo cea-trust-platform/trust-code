@@ -29,7 +29,7 @@
 
 Implemente_base_sans_constructeur(Loi_Etat_base,"Loi_Etat_base",Objet_U);
 
-Loi_Etat_base::Loi_Etat_base() : Pr_(-1.), debug(-1) { }
+Loi_Etat_base::Loi_Etat_base() : Pr_(-1.), debug(0) { }
 
 // Description:
 //    Imprime la loi sur un flot de sortie.

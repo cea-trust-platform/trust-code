@@ -21,6 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Loi_Etat_Mono_GP_base.h>
+#include <Param.h>
+
 
 Implemente_base(Loi_Etat_Mono_GP_base,"Loi_Etat_Mono_Gaz_Parfait_base",Loi_Etat_GP_base);
 
@@ -60,5 +62,26 @@ Sortie& Loi_Etat_Mono_GP_base::printOn(Sortie& os) const
 // Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_Mono_GP_base::readOn(Entree& is)
 {
+  double Cv_ = -1, gamma_ = -1;
+  Param param(que_suis_je());
+  param.ajouter("Cp",&Cp_,Param::REQUIRED);
+  param.ajouter("Prandtl",&Pr_,Param::REQUIRED);
+  param.ajouter("Cv",&Cv_);
+  param.ajouter("gamma",&gamma_);
+  param.ajouter("rho_constant_pour_debug",&rho_constant_pour_debug_);
+  param.lire_avec_accolades_depuis(is);
+
+  debug = gamma_<0 ? 1 : 0;
+
+  if (gamma_<0) gamma_ = -gamma_;
+
+  if (Cv_!=-1) R_ = Cp_ - Cv_;
+  else if (gamma_!=-1) R_ = Cp_ *(1.-1./gamma_);
+  else
+    {
+      Cerr<<"ERREUR : on attendait la definition du Cv (constante en gaz parfaits)"<<finl;
+      Cerr<<"ou de la constante gamma (constante en gaz parfaits)"<<finl;
+      abort();
+    }
   return is;
 }

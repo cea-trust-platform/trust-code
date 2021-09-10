@@ -24,8 +24,6 @@
 #define Loi_Etat_Binaire_GP_QC_included
 
 #include <Loi_Etat_Binaire_GP_base.h>
-#include <Champ_Inc_base.h>
-#include <Ref_Champ_Inc_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -21,12 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Loi_Etat_GP_WC.h>
-#include <Motcle.h>
-#include <Fluide_Dilatable_base.h>
 #include <Fluide_Weakly_Compressible.h>
-#include <Champ_Uniforme.h>
-#include <Zone_VF.h>
-#include <Champ_Fonc_Tabule.h>
 
 Implemente_instanciable(Loi_Etat_GP_WC,"Loi_Etat_Gaz_Parfait_WC",Loi_Etat_Mono_GP_base);
 
@@ -66,101 +61,16 @@ Sortie& Loi_Etat_GP_WC::printOn(Sortie& os) const
 // Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_GP_WC::readOn(Entree& is)
 {
-  double Cv_ = -1;
-  double gamma_ = -1;
+  Cerr << "Lecture de la loi d'etat gaz parfait pour le WC ... " << finl;
+  Loi_Etat_Mono_GP_base::readOn(is);
 
-  Motcle accferme="}";
-  Motcle accouverte="{";
-
-  Motcle motlu;
-  is >> motlu;
-  Cerr<<"Lecture de la loi d'etat Gaz Parfait"<<finl;
-  if (motlu != accouverte)
+  if(rho_constant_pour_debug_.non_nul())
     {
-      Cerr<<" On attendait "<<accouverte<<" au lieu de "<<motlu<<finl;
-      abort();
-    }
-  Motcles les_mots(6);
-  {
-    les_mots[0] = "Cp";
-    les_mots[1] = "capacite_calorifique_pression_constante";
-    les_mots[2] = "Cv";
-    les_mots[3] = "capacite_calorifique_volume_constant";
-    les_mots[4] = "gamma";
-    les_mots[5] = "Prandtl";
-  }
-  is >> motlu;
-  while(motlu != accferme )
-    {
-      int rang=les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :
-        case 1 :
-          {
-            is>>Cp_;
-            break;
-          }
-        case 2 :
-        case 3 :
-          {
-            is>>Cv_;
-            break;
-          }
-        case 4 :
-          {
-            is>>gamma_;
-            if (gamma_<0)
-              {
-                gamma_ = -gamma_;
-                debug=1;
-              }
-            else
-              debug=0;
-            break;
-          }
-        case 5 :
-          {
-            is>>Pr_;
-            break;
-          }
-        default :
-          {
-            Cerr<<"Une loi d'etat "<<que_suis_je()<<" n'a pas la propriete "<<motlu<<finl;
-            Cerr<<"On attendait un mot dans :"<<finl<<les_mots<<finl;
-            abort();
-          }
-        }
-      is >> motlu;
-    }
-
-  if (Pr_==-1)
-    {
-      Cerr<<"ERREUR : on attendait la definition du nombre de Prandtl (constante)"<<finl;
-      abort();
-    }
-  if (Cp_==-1)
-    {
-      Cerr<<"ERREUR : on attendait la definition du Cp (constante en gaz parfaits)"<<finl;
-      abort();
-    }
-  if (Cv_!=-1)
-    {
-      R_ = Cp_ - Cv_;
-    }
-  else if (gamma_!=-1)
-    {
-      R_ = Cp_ *(1.-1./gamma_);
-    }
-  else
-    {
-      Cerr<<"ERREUR : on attendait la definition du Cv (constante en gaz parfaits)"<<finl;
-      Cerr<<"ou de la constante gamma (constante en gaz parfaits)"<<finl;
-      abort();
+      Cerr << "Remove the keyword rho_constant_pour_debug from your data file !" << finl;
+      Process::exit();
     }
   return is;
 }
-
 
 // Description:
 //    Recalcule la masse volumique
