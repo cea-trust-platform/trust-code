@@ -41,6 +41,7 @@ class Matrice_Morse_Sym;
 class Matrice_Morse;
 
 
+enum solveur_direct_ { no, mumps, superlu_dist, petsc, umfpack, pastix, cholmod, cli };
 
 class Solv_Petsc : public SolveurSys_base
 {
@@ -235,7 +236,7 @@ inline void Solv_Petsc::initialize()
   save_matrix_=0;
   mataij_=0;
   factored_matrix_="";
-  solveur_direct_=0;
+  solveur_direct_=no;
   controle_residu_=0;
   gpu_=false;
   amgx_=false;

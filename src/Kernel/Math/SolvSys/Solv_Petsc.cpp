@@ -47,6 +47,7 @@
 #include <ctime>
 #include <EFichier.h>
 
+static bool verbose = false;
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
 
 // printOn
@@ -250,7 +251,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 }
               else
                 {
-                  if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=666; // Activate direct solveur if using -ksp_preonly ...
+                  if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=cli; // Activate direct solveur if using -ksp_preonly ...
                   add_option(motlu.suffix("-"), valeur, 1);
                   is >> motlu;
                 }
@@ -329,7 +330,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       {
         // Si MUMPS est present, on le prend par defaut (solveur_direct_=1) sinon SuperLU (solveur_direct_=2):
 #ifdef PETSC_HAVE_MUMPS
-        solveur_direct_=1;
+        solveur_direct_ = mumps;
         // Ajout de l'option
         // Par defaut le cas PAR_Canal_incline_VEF plante sur 4 processeurs si -mat_mumps_icntl_14 inferieur a 35...
         // On revient a 75 car parfois VEF_258 plante... C'est pas clair au niveau memoire...
@@ -339,22 +340,24 @@ void Solv_Petsc::create_solver(Entree& entree)
         // et le calcul parallele (voir peut etre une separation entre plus et moins de 16 processeurs...)
         // Peut etre equiper le script trust d'une detection des erreurs INFO(1)=-9 ...
         // On passe de 35 a 40 pour faire passer le cas cavite_entrainee_2D_jdd2 (suite passage a MUMPS 5.2.0)
-        if (Process::nproc()==1)
-          add_option("mat_mumps_icntl_14","40");
+        if (Process::nproc() == 1)
+          add_option("mat_mumps_icntl_14", "40");
         else
-          add_option("mat_mumps_icntl_14","90");
+          add_option("mat_mumps_icntl_14", "90");
 
         // Option out_of_core
-        if (rang==4) add_option("mat_mumps_icntl_22","1");
+        if (rang == 4) add_option("mat_mumps_icntl_22", "1");
 
         // Option BLR
-        if (rang==16)
+        if (rang == 16)
           {
-            Cerr << "Activating BLR factorization. For more info, see http://mumps.enseeiht.fr/doc/userguide_5.1.2.pdf (page 18, 51, 52)." << finl;
-            add_option("mat_mumps_icntl_35","1");
+            Cerr
+                << "Activating BLR factorization. For more info, see http://mumps.enseeiht.fr/doc/userguide_5.1.2.pdf (page 18, 51, 52)."
+                << finl;
+            add_option("mat_mumps_icntl_35", "1");
           }
 #else
-        solveur_direct_=2;
+        solveur_direct_=superlu_dist;
 #endif
         KSPSetType(SolveurPetsc_, KSPPREONLY);
         break;
@@ -378,7 +381,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       }
     case 7:
       {
-        solveur_direct_=2;
+        solveur_direct_=superlu_dist;
         // SuperLU_dist, parallel but not faster than MUMPS
 #ifdef PETSC_HAVE_OPENMP
         // Version GPU disponible de SuperLU si OpenMP active (necessaire)
@@ -389,14 +392,17 @@ void Solv_Petsc::create_solver(Entree& entree)
       }
     case 11:
       {
-        solveur_direct_=3;
-        // Lapack, old and slow
+        if (Process::nproc()>1) Process::exit("Cholesky_lapack can't be used for parallel calculation.");
+        solveur_direct_=petsc;
+        // Lapack, old and slow (non pas vrai sur petites matrices d'ordre 100 - 10000 !)
+        add_option("pc_factor_nonzeros_along_diagonal", ""); // Moins robuste que MUMPS pour un pivot nul donc on reordonne pour eviter
         KSPSetType(SolveurPetsc_, KSPPREONLY);
         break;
       }
     case 12:
       {
-        solveur_direct_=4;
+        if (Process::nproc()>1) Process::exit("Cholesky_umfpack can't be used for parallel calculation.");
+        solveur_direct_=umfpack;
         // Umfpack, sequential only but fast...
         KSPSetType(SolveurPetsc_, KSPPREONLY);
         //more robustness
@@ -405,15 +411,16 @@ void Solv_Petsc::create_solver(Entree& entree)
       }
     case 13:
       {
-        solveur_direct_=5;
+        solveur_direct_=pastix;
         // Pastix supports sbaij but seems slow...
         KSPSetType(SolveurPetsc_, KSPPREONLY);
         break;
       }
     case 17:
       {
-        solveur_direct_=6;
-        // Cholmod Cholesky (pas LU) supporte multi-GPU
+        if (Process::nproc()>1) Process::exit("Cholesky_cholmod can't be used for parallel calculation.");
+        solveur_direct_=cholmod;
+        // Cholmod Cholesky (pas LU), sequentiel, supporte multi-GPU
         if (!matrice_symetrique_)
           {
             Cerr << ksp << " is only supported for symmetric linear system." << finl;
@@ -525,17 +532,17 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 fixer_limpr(1);
                 // Si MUMPS on ajoute des impressions sur la decomposition
-                if (solveur_direct_==1)
+                if (solveur_direct_==mumps)
                   add_option("mat_mumps_icntl_4","3");
-                else if (solveur_direct_==2)
+                else if (solveur_direct_==superlu_dist)
                   add_option("mat_superlu_dist_statprint","");
-                else if (solveur_direct_==3)
+                else if (solveur_direct_==petsc)
                   {}
-                else if (solveur_direct_==4)
+                else if (solveur_direct_==umfpack)
                   add_option("mat_umfpack_prl","2");
-                else if (solveur_direct_==5)
+                else if (solveur_direct_==pastix)
                   add_option("mat_pastix_verbose","2");
-                else if (solveur_direct_==6)
+                else if (solveur_direct_==cholmod)
                   add_option("mat_cholmod_print","3");
                 else if (solveur_direct_)
                   {
@@ -675,7 +682,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                     Cerr << "factored_matrix option is not available for parallel calculation." << finl;
                     exit();
                   }
-                if (solveur_direct_!=3)
+                if (solveur_direct_!=petsc)
                   {
                     // Switch to PETSc Cholesky cause MUMPS or SUPERLU don't give access to LU ?
                     Cerr << "Only cholesky_lapack keyword may be used with the option factored_matrix." << finl;
@@ -740,7 +747,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 is >> motlu;
                 // Si pas MUMPS on previent
-                if (solveur_direct_!=1)
+                if (solveur_direct_!=mumps)
                   {
                     Cerr << "Ordering keyword for a solver is limited to Cholesky only." << finl;
                     Process::exit();
@@ -837,7 +844,7 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 19:
               {
                 // Si pas MUMPS on previent
-                if (solveur_direct_!=1)
+                if (solveur_direct_!=mumps)
                   {
                     Cerr << les_parametres_solveur[rang] << " keyword for a solver is limited to " << les_solveurs[14] << " only." << finl;
                     Process::exit();
@@ -1603,7 +1610,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                << finl;
           exit();
         }
-      if (amgx_) Cout << "[Petsc] Time to convert matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+      if (verbose) Cout << "[Petsc] Time to convert matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 
       // Verification stockage de la matrice
       check_aij(matrice_morse_intermediaire);
@@ -1628,33 +1635,38 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         {
           // Create objects
           Create_objects(matrice_morse);
-#ifdef PETSC_HAVE_CUDA
-          if (!amgx_) Cout << "[Petsc] Time to build matrix and others: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
-#endif
         }
       else
         {
+          start = std::clock();
           Update_matrix(MatricePetsc_, matrice_morse);
-#ifdef PETSC_HAVE_CUDA
-          if (!amgx_) Cout << "[Petsc] Time to update matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
-#endif
+          if (verbose) Cout << "[Petsc] Time to update matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
         }
     }
-
+  std::clock_t start = std::clock();
   // Assemblage du second membre et de la solution
+  // ToDo calculer ix au moment de item_to_keep_
   int size=secmem.size_array();
   int colonne_globale=decalage_local_global_;
+  ArrOfInt ix(size);
   for (int i=0; i<size; i++)
     if (items_to_keep_[i])
       {
-        VecSetValues(SecondMembrePetsc_, 1, &colonne_globale, &secmem(i), INSERT_VALUES);
-        VecSetValues(SolutionPetsc_, 1, &colonne_globale, &solution(i), INSERT_VALUES);
+        ix[i] = colonne_globale;
         colonne_globale++;
       }
+    else
+      ix[i] = -1;
+  VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
+  VecSetValues(SecondMembrePetsc_, size, ix.addr(), secmem.addr(), INSERT_VALUES);
+  VecSetOption(SolutionPetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
+  VecSetValues(SolutionPetsc_, size, ix.addr(), solution.addr(), INSERT_VALUES);
   VecAssemblyBegin(SecondMembrePetsc_);
   VecAssemblyEnd(SecondMembrePetsc_);
   VecAssemblyBegin(SolutionPetsc_);
   VecAssemblyEnd(SolutionPetsc_);
+  if (verbose) Cout << "[Petsc] Time to update vectors: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+
 //  VecView(SecondMembrePetsc_,PETSC_VIEWER_STDOUT_WORLD);
 //  VecView(SolutionPetsc_,PETSC_VIEWER_STDOUT_WORLD);
 
@@ -1662,7 +1674,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   // if the matrix has changed...
   if (nouvelle_matrice())
     {
-      std::clock_t start = std::clock();
+      start = std::clock();
       if (save_matrix_==1)
         SaveObjectsToFile();
       else if (save_matrix_==2)
@@ -1710,7 +1722,9 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   int size_residu = nb_it_max_ + 1;
   //DoubleTrav residu(size_residu); // bad_alloc sur gros cas, curie pourquoi ?
   ArrOfDouble residu(size_residu);
+  start = std::clock();
   int nbiter = solve(residu);
+  if (verbose) Cout << finl << "[Petsc] Time to solve system: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
   if (limpr()>-1)
     {
       double residu_relatif=(residu(0)>0?residu(nbiter)/residu(0):residu(nbiter));
@@ -1718,6 +1732,8 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     }
 
   // Recuperation de la solution
+  start = std::clock();
+  // ToDo un seul VecGetValues comme VecSetValues
   if (different_partition_)
     {
       // TRUST and PETSc has different partition, a local vector LocalSolutionPetsc_ is gathered from the global vector SolutionPetsc_ :
@@ -1736,17 +1752,11 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   else
     {
       // TRUST and PETSc has same partition, local solution can be accessed from the global vector:
-      colonne_globale=decalage_local_global_;
-      for (int i=0; i<size; i++)
-        if (items_to_keep_[i])
-          {
-            VecGetValues(SolutionPetsc_, 1, &colonne_globale, &solution(i));
-            colonne_globale++;
-          }
+      VecGetValues(SolutionPetsc_, size, ix.addr(), solution.addr());
     }
   solution.echange_espace_virtuel();
   fixer_nouvelle_matrice(0);
-
+  if (verbose) Cout << finl << "[Petsc] Time to update solution: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
   // Calcul du vrai residu sur matrice initiale sur GPU:
   if (amgx_ || gpu_)
     {
@@ -1894,9 +1904,9 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
 
   // Dans le cas de SUPERLU_DIST pour Cholesky, je n'arrive pas a faire marcher le stockage
   // symetrique donc l'utilisation de SUPERLU_DIST n'est pas encore optimale en RAM...
-  if (solveur_direct_==2) mataij_=1;
+  if (solveur_direct_==superlu_dist) mataij_=1;
   // IDEM pour UMFPACK qui ne supporte que le format AIJ:
-  if (solveur_direct_==4) mataij_=1;
+  if (solveur_direct_==umfpack) mataij_=1;
 
   // Dans le cas GPU, seul le format AIJ est supporte pour le moment:
   if (gpu_ || amgx_) mataij_=1;
@@ -1972,6 +1982,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
   if (matrice_symetrique_ && type_pc_ == "hypre")
     preconditionnement_non_symetrique_ = 1;
 
+  std::clock_t start = std::clock();
   if (preconditionnement_non_symetrique_)
     Create_MatricePetsc(MatricePrecondionnementPetsc, 1, mat);
 
@@ -1981,6 +1992,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
       if (MatricePetsc_!=NULL) MatDestroy(&MatricePetsc_);
       Create_MatricePetsc(MatricePetsc_, mataij_, mat);
     }
+  if (verbose) Cout << "[Petsc] Time to build matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 
   /* Seems petsc_decide=1 have no interest. On PETSC_GCP with n=2 (20000cell/n), the ratio is 99%-101% and petsc_decide is slower
   Even with n=9, ratio is 97%-103%, and petsc_decide is slower by 10%. Better load balance but increased MPI cost and lower convergence...
@@ -2007,7 +2019,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
       if (type_pc_ == PCLU)
         {
           // PCCHOLESKY is only supported for sbaij format or since PETSc 3.9.2, SUPERLU, CHOLMOD
-          if (mataij_ == 0 || solveur_direct_ == 2 || solveur_direct_ == 6)
+          if (mataij_ == 0 || solveur_direct_ == superlu_dist || solveur_direct_ == cholmod)
             PCSetType(PreconditionneurPetsc_, PCCHOLESKY); // Precond PCLU -> PCCHOLESKY
         }
       else if (type_pc_ == PCSOR)
@@ -2018,7 +2030,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
   /* Choix du package pour le solveur direct */
   /*******************************************/
   static int message_affi = 1;
-  if (solveur_direct_ == 1)
+  if (solveur_direct_ == mumps)
     {
       // Message pour prevenir
       if (message_affi)
@@ -2041,45 +2053,40 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
         }
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERMUMPS);
     }
-  else if (solveur_direct_ == 2)
+  else if (solveur_direct_ == superlu_dist)
     {
       if (message_affi)
-        {
-          Cout << "Cholesky from SUPERLU_DIST may take several minutes, please wait..." << finl;
-        }
+        Cout << "Cholesky from SUPERLU_DIST may take several minutes, please wait..." << finl;
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERSUPERLU_DIST);
     }
-  else if (solveur_direct_ == 3)
+  else if (solveur_direct_ == petsc)
     {
       if (message_affi)
-        {
-          Cout << "Cholesky from PETSc may take several minutes, please wait...";
-        }
+        Cout << "Cholesky from PETSc may take several minutes, please wait...";
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERPETSC);
     }
-  else if (solveur_direct_ == 4)
+  else if (solveur_direct_ == umfpack)
     {
       if (message_affi)
-        {
-          Cout << "Cholesky from UMFPACK may take several minutes, please wait...";
-        }
+        Cout << "Cholesky from UMFPACK may take several minutes, please wait...";
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERUMFPACK);
     }
-  else if (solveur_direct_ == 5)
+  else if (solveur_direct_ == pastix)
     {
       if (message_affi)
-        {
-          Cout << "Cholesky from Pastix may take several minutes, please wait...";
-        }
+        Cout << "Cholesky from Pastix may take several minutes, please wait...";
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERPASTIX);
     }
-  else if (solveur_direct_ == 6)
+  else if (solveur_direct_ == cholmod)
     {
       if (message_affi)
-        {
-          Cout << "Cholesky from Cholmod may take several minutes, please wait...";
-        }
+        Cout << "Cholesky from Cholmod may take several minutes, please wait...";
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERCHOLMOD);
+    }
+  else if (solveur_direct_ == cli)
+    {
+      if (message_affi)
+        Cout << "LU factorization may take several minutes, please wait...";
     }
   else if (solveur_direct_)
     {
@@ -2088,7 +2095,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
       exit();
     }
 
-  if ((solveur_direct_ > 1) && (message_affi))
+  if ((solveur_direct_ > mumps) && (message_affi))
     {
       Cout << " OK " << finl;
       message_affi = 0;
@@ -2204,7 +2211,9 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
   /*************************************/
   /* Mise en place du preconditionneur */
   /*************************************/
+  start = std::clock();
   KSPSetUp(SolveurPetsc_);
+  if (verbose) Cout << "[Petsc] Time to setup solver: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Calcul du residu de la meme maniere que le GCP de TRUST : ||Ax-B|| pour pouvoir comparer les performances//
@@ -2514,7 +2523,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   // et si on supprime les zeros de la matrice, lors d'un update on peut avoir une allocation -> erreur
   if (mataij_ && clean_matrix_)
     {
-      if (amgx_) Cout << "Cleaning zero coefficients into PETSc matrix..." << finl;
+      //if (amgx_) Cout << "Cleaning zero coefficients into PETSc matrix..." << finl;
       MatSetOption(MatricePetsc, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); // Ne stocke pas les zeros
     }
   // Genere une erreur (ou pas) si une case de la matrice est remplie sans allocation auparavant:
@@ -2600,6 +2609,17 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
   MatAssemblyBegin(MatricePetsc, MAT_FINAL_ASSEMBLY);
   MatAssemblyEnd(MatricePetsc, MAT_FINAL_ASSEMBLY);
 
+#ifndef NDEBUG
+  if (mataij_)
+    {
+      std::clock_t start = std::clock();
+      // Verifie la non symetrie de la matrice (au moins une fois)
+      PetscBool IsSymmetric;
+      MatIsSymmetric(MatricePetsc, 0.0, &IsSymmetric);
+      if (IsSymmetric) Cerr << "Warning: The PETSc matrix is aij but is symmetric. May be use sbaij ?" << finl;
+      if (verbose) Cout << "[Petsc] Time to check symmetry: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+    }
+#endif
   // Ignore les coefficients ajoutes:
   if (!nouveau_stencil_ && ignore_new_nonzero_)
     MatSetOption(MatricePetsc, MAT_NEW_NONZERO_LOCATIONS, PETSC_FALSE);
@@ -2616,7 +2636,7 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
 
 int Solv_Petsc::check_stencil(const Matrice_Morse& matrice_morse)
 {
-  // Verification de nnz et avertissement
+  // Verification de nnz
   ArrOfDouble nnz(2); // Pas ArrOfInt car nnz peut depasser 2^32 facilement
   nnz(0)=0;
   nnz(1)=matrice_morse.nb_coeff();

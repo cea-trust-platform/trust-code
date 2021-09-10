@@ -1,13 +1,8 @@
-XX/XX/XX (TRUST)  Convergence : Use the true residual (instead of preconditioned one) for convergence test with PETSc GMRES solver (may be necessary to lower seuil option to have same results than 1.8.3)
-10/09/21 (TRUST)  Keyword     : Add pression option to Navier Stokes initial conditions to initialize velocity and pressure field
-17/08/21 (TRUST)  Portability : ARM partition (a64fx processors) of Irene Joliot cluster supported
-17/08/21 (TRUST)  Performance : Arrays obtained from octree algorithm are cached. Useful for advanced fields computation needing interpolations each time-step 
-17/08/21 (TRUST)  Bug fixed   : Regression since 1.8.3 fixed (malformed .dt_ev file with missing columns for coupled problems)
-20/07/21 (TRUST)  Performance : Output files (.out) are opened/closed at the first/last print and not at each print as before
-12/07/21 (TRUST)  Bug fix     : Source_generique source term couldn't be used for PolyMAC discretization
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
+23/11/21 (TRUST)  Convergence : Use the true residual (instead of preconditioned one) for convergence test with PETSc GMRES solver (may be necessary to lower seuil option to have same results than 1.8.3)
+23/11/21 (TRUST)  Keyword     : Add pression option to Navier Stokes initial conditions to initialize velocity and pressure field
 15/11/21 (TRUST)  Fix         : Several problems solving different physics on a same domain produced corrupted lml/lata/med files (mesh repeated) during post-processing
 29/10/21 (TRUST)  Keyword     : Syntax change for Champ_Fonc_tabule. The new syntax is Champ_fonc_tabule { pb field } nbcomp { table } (the old syntax was Champ_fonc_tabule field nbcomp { table } )
 29/10/21 (TRUST)  Keyword     : Syntax change for Champ_Fonc_Fonction, Champ_Fonc_Fonction_txyz, and Sutherland where the problem name should be passed before that of the field
