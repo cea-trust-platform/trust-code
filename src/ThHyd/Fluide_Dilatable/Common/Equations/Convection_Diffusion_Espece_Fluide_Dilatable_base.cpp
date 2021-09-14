@@ -14,13 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Convection_Diffusion_fraction_massique_Fluide_Dilatable_base.cpp
+// File:        Convection_Diffusion_Espece_Fluide_Dilatable_base.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Equations
 // Version:     /main/27
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Convection_Diffusion_fraction_massique_Fluide_Dilatable_base.h>
+#include <Convection_Diffusion_Espece_Fluide_Dilatable_base.h>
 #include <Fluide_Dilatable_base.h>
 #include <EcritureLectureSpecial.h>
 #include <Neumann_sortie_libre.h>
@@ -28,7 +28,7 @@
 #include <Discret_Thyd.h>
 #include <Avanc.h>
 
-Implemente_base(Convection_Diffusion_fraction_massique_Fluide_Dilatable_base,"Convection_Diffusion_fraction_massique_Fluide_Dilatable_base",Convection_Diffusion_std);
+Implemente_base(Convection_Diffusion_Espece_Fluide_Dilatable_base,"Convection_Diffusion_Espece_Fluide_Dilatable_base",Convection_Diffusion_std);
 
 // Description:
 //    Simple appel a: Convection_Diffusion_std::printOn(Sortie&)
@@ -44,7 +44,7 @@ Implemente_base(Convection_Diffusion_fraction_massique_Fluide_Dilatable_base,"Co
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::printOn(Sortie& is) const
+Sortie& Convection_Diffusion_Espece_Fluide_Dilatable_base::printOn(Sortie& is) const
 {
   return Convection_Diffusion_std::printOn(is);
 }
@@ -65,19 +65,19 @@ Sortie& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::printOn(So
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::readOn(Entree& is)
+Entree& Convection_Diffusion_Espece_Fluide_Dilatable_base::readOn(Entree& is)
 {
   assert(l_inco_ch.non_nul() && le_fluide.non_nul());
   Convection_Diffusion_std::readOn(is);
   return is;
 }
 
-void Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::set_param(Param& param)
+void Convection_Diffusion_Espece_Fluide_Dilatable_base::set_param(Param& param)
 {
   Convection_Diffusion_std::set_param(param);
 }
 
-int Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+int Convection_Diffusion_Espece_Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   return Convection_Diffusion_std::lire_motcle_non_standard(mot,is);
 }
@@ -98,14 +98,14 @@ int Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::lire_motcle_no
 // Exception: les proprietes physiques du fluide ne sont pas toutes specifiees
 // Effets de bord:
 // Postcondition:
-void Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::associer_milieu_base(const Milieu_base& un_milieu)
+void Convection_Diffusion_Espece_Fluide_Dilatable_base::associer_milieu_base(const Milieu_base& un_milieu)
 {
   const Fluide_Dilatable_base& un_fluideQC = ref_cast(Fluide_Dilatable_base,un_milieu);
   associer_fluide(un_fluideQC);
 }
 
 // Description:
-//    Associe un fluide de type Fluide_Quasi_Compressible a l'equation.
+//    Associe un fluide de type Fluide_Dilatable_base a l'equation.
 // Precondition:
 // Parametre: Fluide_Dilatable_base& un_fluide
 //    Signification: le milieu a associer a l'equation
@@ -118,12 +118,12 @@ void Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::associer_mili
 // Exception:
 // Effets de bord:
 // Postcondition: l'equation a un milieu associe
-void Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::associer_fluide(const Fluide_Dilatable_base& un_fluide)
+void Convection_Diffusion_Espece_Fluide_Dilatable_base::associer_fluide(const Fluide_Dilatable_base& un_fluide)
 {
   le_fluide = un_fluide;
 }
 
-const Champ_Don& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::diffusivite_pour_transport()
+const Champ_Don& Convection_Diffusion_Espece_Fluide_Dilatable_base::diffusivite_pour_transport()
 {
   return le_fluide->mu_sur_Schmidt();  // rho * D
 }
@@ -142,7 +142,7 @@ const Champ_Don& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::d
 // Exception:
 // Effets de bord:
 // Postcondition:
-int Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::preparer_calcul()
+int Convection_Diffusion_Espece_Fluide_Dilatable_base::preparer_calcul()
 {
   Convection_Diffusion_std::preparer_calcul();
 
@@ -179,7 +179,7 @@ int Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::preparer_calcu
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::completer()
+void Convection_Diffusion_Espece_Fluide_Dilatable_base::completer()
 {
   Convection_Diffusion_std::completer();
 }
@@ -198,7 +198,7 @@ void Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::completer()
 // Exception:
 // Effets de bord:
 // Postcondition: l'equation est discretisee
-void Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::discretiser()
+void Convection_Diffusion_Espece_Fluide_Dilatable_base::discretiser()
 {
   int nb_valeurs_temp = schema_temps().nb_valeurs_temporelles();
   double temps = schema_temps().temps_courant();
@@ -208,7 +208,7 @@ void Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::discretiser()
   dis.discretiser_champ("temperature",zone_dis(),"fraction_massique","sans_dimension",
                         1 /* nb_composantes */,nb_valeurs_temp,temps,l_inco_ch);
   Convection_Diffusion_std::discretiser();
-  Cerr << "Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::discretiser() ok" << finl;
+  Cerr << "Convection_Diffusion_Espece_Fluide_Dilatable_base::discretiser() ok" << finl;
 }
 
 // Description:
@@ -227,7 +227,7 @@ void Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::discretiser()
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Milieu_base& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::milieu() const
+const Milieu_base& Convection_Diffusion_Espece_Fluide_Dilatable_base::milieu() const
 {
   return fluide();
 }
@@ -247,13 +247,13 @@ const Milieu_base& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base:
 // Exception:
 // Effets de bord:
 // Postcondition:
-Milieu_base& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::milieu()
+Milieu_base& Convection_Diffusion_Espece_Fluide_Dilatable_base::milieu()
 {
   return fluide();
 }
 
 // Description:
-//    Renvoie le fluide incompressible associe a l'equation.
+//    Renvoie le fluide dilatable associe a l'equation.
 //    (version const)
 // Precondition:
 // Parametre:
@@ -267,7 +267,7 @@ Milieu_base& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::milie
 // Exception: pas de fluide associe a l'eqaution
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Fluide_Dilatable_base& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::fluide() const
+const Fluide_Dilatable_base& Convection_Diffusion_Espece_Fluide_Dilatable_base::fluide() const
 {
   if (!le_fluide.non_nul())
     {
@@ -278,7 +278,7 @@ const Fluide_Dilatable_base& Convection_Diffusion_fraction_massique_Fluide_Dilat
 }
 
 // Description:
-//    Renvoie le fluide incompressible associe a l'equation.
+//    Renvoie le fluide dilatable associe a l'equation.
 // Precondition:
 // Parametre:
 //    Signification:
@@ -291,13 +291,13 @@ const Fluide_Dilatable_base& Convection_Diffusion_fraction_massique_Fluide_Dilat
 // Exception: pas de fluide associe a l'eqaution
 // Effets de bord:
 // Postcondition:
-Fluide_Dilatable_base& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::fluide()
+Fluide_Dilatable_base& Convection_Diffusion_Espece_Fluide_Dilatable_base::fluide()
 {
   assert(le_fluide.non_nul());
   return le_fluide.valeur();
 }
 
-int Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::sauvegarder(Sortie& os) const
+int Convection_Diffusion_Espece_Fluide_Dilatable_base::sauvegarder(Sortie& os) const
 {
   int bytes=0;
   bytes += Equation_base::sauvegarder(os);
@@ -323,7 +323,7 @@ int Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::sauvegarder(So
 // Exception: la reprise a echoue
 // Effets de bord:
 // Postcondition:
-int Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::reprendre(Entree& is)
+int Convection_Diffusion_Espece_Fluide_Dilatable_base::reprendre(Entree& is)
 {
   Convection_Diffusion_std::reprendre(is);
   return 1;
@@ -344,7 +344,7 @@ int Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::reprendre(Entr
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-int Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::impr(Sortie& os) const
+int Convection_Diffusion_Espece_Fluide_Dilatable_base::impr(Sortie& os) const
 {
   return Convection_Diffusion_std::impr(os);
 }
@@ -364,7 +364,7 @@ int Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::impr(Sortie& o
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Motcle& Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::domaine_application() const
+const Motcle& Convection_Diffusion_Espece_Fluide_Dilatable_base::domaine_application() const
 {
   static Motcle domaine ="Fraction_massique";
   return domaine;

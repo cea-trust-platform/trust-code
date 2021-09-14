@@ -96,7 +96,7 @@ Read pb
     initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
     boundary_conditions { WALL   paroi_fixe }
   }
-  Convection_Diffusion_fraction_massique_MB_QC
+  Convection_Diffusion_Espece_Binaire_QC 
   {
     diffusion { }
     convection { amont }

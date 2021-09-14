@@ -14,44 +14,32 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Hydraulique_Melange_Binaire_QC.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Problems
-// Version:     /main/11
+// File:        Convection_Diffusion_Espece_Binaire_WC.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Equations
+// Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Pb_Hydraulique_Melange_Binaire_QC_included
-#define Pb_Hydraulique_Melange_Binaire_QC_included
+#ifndef Convection_Diffusion_Espece_Binaire_WC_included
+#define Convection_Diffusion_Espece_Binaire_WC_included
 
-#include <Pb_QC_base.h>
-#include <Navier_Stokes_QC.h>
-#include <Convection_Diffusion_Espece_Binaire_QC.h>
+#include <Convection_Diffusion_Espece_Binaire_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Pb_Hydraulique_Melange_Binaire_QC
-//     Cette classe represente un probleme de hydraulique binaire en fluide quasi compressible:
-//      - Equations de Navier_Stokes en regime laminaire
-//        pour un fluide quasi compressible
-//      - Equation de conv/diff fraction massique
-//        en regime laminaire pour un fluide quasi compressible
+//     classe Convection_Diffusion_Espece_Binaire_WC
+//     Cas particulier de Convection_Diffusion_Espece_Binaire_base
+//     pour un fluide weakly conpressible iso-therme et iso-bar
 // .SECTION voir aussi
-//     Probleme_base Navier_Stokes_QC Convection_Diffusion_Espece_Binaire_QC
+//     Convection_Diffusion_Espece_Binaire_base
 //////////////////////////////////////////////////////////////////////////////
 
-class Pb_Hydraulique_Melange_Binaire_QC : public Pb_QC_base
+class Convection_Diffusion_Espece_Binaire_WC : public Convection_Diffusion_Espece_Binaire_base
 {
-  Declare_instanciable(Pb_Hydraulique_Melange_Binaire_QC);
-public:
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const ;
-  Equation_base& equation(int);
-  int verifier();
-
-protected:
-  Navier_Stokes_QC eq_hydraulique;
-  Convection_Diffusion_Espece_Binaire_QC eq_frac_mass;
+  Declare_instanciable(Convection_Diffusion_Espece_Binaire_WC);
+public :
+  virtual void completer();
 };
 
-#endif /* Pb_Hydraulique_Melange_Binaire_QC_included */
+#endif /* Convection_Diffusion_Espece_Binaire_WC_included */

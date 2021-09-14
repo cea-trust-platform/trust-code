@@ -24,7 +24,7 @@
 #define Loi_Etat_Multi_GP_QC_included
 
 #include <Loi_Etat_Multi_GP_base.h>
-#include <Convection_Diffusion_fraction_massique_QC.h>
+#include <Convection_Diffusion_Espece_Multi_QC.h>
 #include <Ref_Champ_Inc_base.h>
 #include <Ref_Espece.h>
 #include <List.h>
@@ -52,7 +52,7 @@ public :
 
   Loi_Etat_Multi_GP_QC();
   void associer_fluide(const Fluide_Dilatable_base&);
-  void associer_espece(const Convection_Diffusion_fraction_massique_QC& eq);
+  void associer_espece(const Convection_Diffusion_Espece_Multi_QC& eq);
   void calculer_lambda();
   void calculer_alpha();
   void calculer_mu();

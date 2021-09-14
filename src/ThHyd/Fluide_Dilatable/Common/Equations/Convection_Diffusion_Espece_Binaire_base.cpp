@@ -14,68 +14,36 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Convection_Diffusion_fraction_massique_MB_QC.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Equations
+// File:        Convection_Diffusion_Espece_Binaire_base.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Equations
 // Version:     /main/27
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Convection_Diffusion_fraction_massique_MB_QC.h>
-#include <Fluide_Quasi_Compressible.h>
-#include <Loi_Etat_Binaire_GP_QC.h>
+#include <Convection_Diffusion_Espece_Binaire_base.h>
+#include <Navier_Stokes_Fluide_Dilatable_base.h>
+#include <Fluide_Dilatable_base.h>
 #include <Op_Conv_negligeable.h>
 #include <Probleme_base.h>
-#include <Navier_Stokes_QC.h>
 #include <DoubleTrav.h>
 
-Implemente_instanciable(Convection_Diffusion_fraction_massique_MB_QC,"Convection_Diffusion_fraction_massique_MB_QC",Convection_Diffusion_fraction_massique_Fluide_Dilatable_base);
+Implemente_base(Convection_Diffusion_Espece_Binaire_base,"Convection_Diffusion_Espece_Binaire_base",Convection_Diffusion_Espece_Fluide_Dilatable_base);
 
-// Description:
-//    Simple appel a: Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& is
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& Convection_Diffusion_fraction_massique_MB_QC::printOn(Sortie& is) const
+Sortie& Convection_Diffusion_Espece_Binaire_base::printOn(Sortie& is) const
 {
-  return Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::printOn(is);
+  return Convection_Diffusion_Espece_Fluide_Dilatable_base::printOn(is);
 }
 
-// Description:
-//    Verifie si l'equation a une inconnue et un fluide associe
-//    et appelle Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::readOn(Entree&).
-// Precondition: l'objet a une inconnue associee
-// Precondition: l'objet a un fluide associe
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& Convection_Diffusion_fraction_massique_MB_QC::readOn(Entree& is)
+Entree& Convection_Diffusion_Espece_Binaire_base::readOn(Entree& is)
 {
-  Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::readOn(is);
-  terme_convectif.set_fichier("Convection_fraction_massique_MB");
+  Convection_Diffusion_Espece_Fluide_Dilatable_base::readOn(is);
+  terme_convectif.set_fichier("Convection_Espece_Binaire");
   terme_convectif.set_description((Nom)"Convective flux =Integral(-rho*Y*u*ndS) [kg/s] if SI units used");
-  terme_diffusif.set_fichier("Diffusion_fraction_massique_MB");
+  terme_diffusif.set_fichier("Diffusion_Espece_Binaire");
   terme_diffusif.set_description((Nom)"Diffusive flux=Integral(rho*D*grad(Y)*ndS) [kg/s] if SI units used");
 
   //On modifie le nom ici pour que le champ puisse etre reconnu si une sonde de fraction_massique est demandee
-  if (le_fluide->type_fluide()=="Melange_Binaire")
-    l_inco_ch->nommer("fraction_massique");
+  if (le_fluide->type_fluide()=="Melange_Binaire") l_inco_ch->nommer("fraction_massique");
   else
     {
       Cerr << "Error in your data file !" << finl;
@@ -83,16 +51,15 @@ Entree& Convection_Diffusion_fraction_massique_MB_QC::readOn(Entree& is)
       Process::exit();
     }
   champs_compris_.ajoute_champ(l_inco_ch);
-
   return is;
 }
 
-void Convection_Diffusion_fraction_massique_MB_QC::set_param(Param& param)
+void Convection_Diffusion_Espece_Binaire_base::set_param(Param& param)
 {
-  Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::set_param(param);
+  Convection_Diffusion_Espece_Fluide_Dilatable_base::set_param(param);
 }
 
-int Convection_Diffusion_fraction_massique_MB_QC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+int Convection_Diffusion_Espece_Binaire_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   if (mot=="diffusion")
     {
@@ -109,16 +76,16 @@ int Convection_Diffusion_fraction_massique_MB_QC::lire_motcle_non_standard(const
       return 1;
     }
   else
-    return Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
+    return Convection_Diffusion_Espece_Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
 
 }
 
-const Champ_base& Convection_Diffusion_fraction_massique_MB_QC::diffusivite_pour_pas_de_temps()
+const Champ_base& Convection_Diffusion_Espece_Binaire_base::diffusivite_pour_pas_de_temps()
 {
   return le_fluide->nu_sur_Schmidt(); // D (diffusion coefficient)
 }
 
-const Champ_base& Convection_Diffusion_fraction_massique_MB_QC::vitesse_pour_transport()
+const Champ_base& Convection_Diffusion_Espece_Binaire_base::vitesse_pour_transport()
 {
   // we need rho * u and not u
   const Probleme_base& pb = probleme();
@@ -127,49 +94,19 @@ const Champ_base& Convection_Diffusion_fraction_massique_MB_QC::vitesse_pour_tra
   return vitessetransportante;
 }
 
-
-// Description:
-//    Tout ce qui ne depend pas des autres problemes eventuels.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-int Convection_Diffusion_fraction_massique_MB_QC::preparer_calcul()
+int Convection_Diffusion_Espece_Binaire_base::preparer_calcul()
 {
-  Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::preparer_calcul();
+  Convection_Diffusion_Espece_Fluide_Dilatable_base::preparer_calcul();
   zcl_modif_.les_conditions_limites().set_modifier_val_imp(0);
   return 1;
 }
 
-// Description:
-//    Associe l inconnue de l equation a la loi d etat,
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Convection_Diffusion_fraction_massique_MB_QC::completer()
+void Convection_Diffusion_Espece_Binaire_base::completer()
 {
-  assert(le_fluide->loi_etat().valeur().que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_QC");
-  Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::completer();
+  Convection_Diffusion_Espece_Fluide_Dilatable_base::completer();
 }
 
-void Convection_Diffusion_fraction_massique_MB_QC::calculer_div_rho_u(DoubleTab& Div) const
+void Convection_Diffusion_Espece_Binaire_base::calculer_div_rho_u(DoubleTab& Div) const
 {
   // No convective operator:
   if (sub_type(Op_Conv_negligeable,operateur(1).l_op_base()))
@@ -203,7 +140,7 @@ void Convection_Diffusion_fraction_massique_MB_QC::calculer_div_rho_u(DoubleTab&
 // Exception:
 // Effets de bord: des communications (si version parallele) sont generees pas cet appel
 // Postcondition:
-DoubleTab& Convection_Diffusion_fraction_massique_MB_QC::derivee_en_temps_inco(DoubleTab& derivee)
+DoubleTab& Convection_Diffusion_Espece_Binaire_base::derivee_en_temps_inco(DoubleTab& derivee)
 {
   derivee=0;
   derivee_en_temps_inco_sans_solveur_masse(derivee);
@@ -215,7 +152,7 @@ DoubleTab& Convection_Diffusion_fraction_massique_MB_QC::derivee_en_temps_inco(D
   return derivee;
 }
 
-DoubleTab& Convection_Diffusion_fraction_massique_MB_QC::derivee_en_temps_inco_sans_solveur_masse(DoubleTab& derivee)
+DoubleTab& Convection_Diffusion_Espece_Binaire_base::derivee_en_temps_inco_sans_solveur_masse(DoubleTab& derivee)
 {
   /*
    * The equation is like that :
@@ -298,7 +235,7 @@ DoubleTab& Convection_Diffusion_fraction_massique_MB_QC::derivee_en_temps_inco_s
   return derivee;
 }
 
-void Convection_Diffusion_fraction_massique_MB_QC::assembler( Matrice_Morse& matrice,const DoubleTab& inco, DoubleTab& resu)
+void Convection_Diffusion_Espece_Binaire_base::assembler( Matrice_Morse& matrice,const DoubleTab& inco, DoubleTab& resu)
 {
   const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   int n = tab_rho.dimension(0);

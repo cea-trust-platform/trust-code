@@ -14,23 +14,23 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Convection_Diffusion_fraction_massique_QC.cpp
+// File:        Convection_Diffusion_Espece_Multi_QC.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Equations
 // Version:     /main/27
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Convection_Diffusion_fraction_massique_QC.h>
+#include <Convection_Diffusion_Espece_Multi_QC.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <Probleme_base.h>
 #include <DoubleTrav.h>
 #include <Param.h>
 
-Implemente_instanciable(Convection_Diffusion_fraction_massique_QC,"Convection_Diffusion_fraction_massique_QC",Convection_Diffusion_fraction_massique_Fluide_Dilatable_base);
+Implemente_instanciable(Convection_Diffusion_Espece_Multi_QC,"Convection_Diffusion_Espece_Multi_QC",Convection_Diffusion_Espece_Fluide_Dilatable_base);
 
 // Description:
-//    Simple appel a: Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::printOn(Sortie&)
+//    Simple appel a: Convection_Diffusion_Espece_Fluide_Dilatable_base::printOn(Sortie&)
 // Precondition:
 // Parametre: Sortie& is
 //    Signification: un flot de sortie
@@ -43,14 +43,14 @@ Implemente_instanciable(Convection_Diffusion_fraction_massique_QC,"Convection_Di
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-Sortie& Convection_Diffusion_fraction_massique_QC::printOn(Sortie& is) const
+Sortie& Convection_Diffusion_Espece_Multi_QC::printOn(Sortie& is) const
 {
-  return Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::printOn(is);
+  return Convection_Diffusion_Espece_Fluide_Dilatable_base::printOn(is);
 }
 
 // Description:
 //    Verifie si l'equation a une inconnue et un fluide associe
-//    et appelle Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::readOn(Entree&).
+//    et appelle Convection_Diffusion_Espece_Fluide_Dilatable_base::readOn(Entree&).
 // Precondition: l'objet a une inconnue associee
 // Precondition: l'objet a un fluide associe
 // Parametre: Entree& is
@@ -64,23 +64,23 @@ Sortie& Convection_Diffusion_fraction_massique_QC::printOn(Sortie& is) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Entree& Convection_Diffusion_fraction_massique_QC::readOn(Entree& is)
+Entree& Convection_Diffusion_Espece_Multi_QC::readOn(Entree& is)
 {
   alias_=inconnue().le_nom();
-  Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::readOn(is);
+  Convection_Diffusion_Espece_Fluide_Dilatable_base::readOn(is);
   champs_compris_.ajoute_champ(l_inco_ch);
   l_inco_ch.valeur().add_synonymous(alias_);
   return is;
 }
 
-void Convection_Diffusion_fraction_massique_QC::set_param(Param& param)
+void Convection_Diffusion_Espece_Multi_QC::set_param(Param& param)
 {
-  Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::set_param(param);
+  Convection_Diffusion_Espece_Fluide_Dilatable_base::set_param(param);
   param.ajouter("espece",&mon_espece_);
   param.ajouter("alias",&alias_);
 }
 
-int Convection_Diffusion_fraction_massique_QC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+int Convection_Diffusion_Espece_Multi_QC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   if (mot=="diffusion")
     {
@@ -95,11 +95,11 @@ int Convection_Diffusion_fraction_massique_QC::lire_motcle_non_standard(const Mo
       return 1;
     }
   else
-    return Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
+    return Convection_Diffusion_Espece_Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
   return 1;
 }
 
-const Champ_base& Convection_Diffusion_fraction_massique_QC::diffusivite_pour_pas_de_temps()
+const Champ_base& Convection_Diffusion_Espece_Multi_QC::diffusivite_pour_pas_de_temps()
 {
   return le_fluide->mu_sur_Schmidt();
 }
@@ -118,9 +118,9 @@ const Champ_base& Convection_Diffusion_fraction_massique_QC::diffusivite_pour_pa
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Convection_Diffusion_fraction_massique_QC::completer()
+void Convection_Diffusion_Espece_Multi_QC::completer()
 {
-  Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::completer();
+  Convection_Diffusion_Espece_Fluide_Dilatable_base::completer();
   Fluide_Quasi_Compressible& le_fluideQC=ref_cast(Fluide_Quasi_Compressible,fluide());
   Loi_Etat_Multi_GP_QC& loi_etat = ref_cast_non_const(Loi_Etat_Multi_GP_QC,le_fluideQC.loi_etat().valeur());
   loi_etat.associer_inconnue(l_inco_ch.valeur());
@@ -143,7 +143,7 @@ void Convection_Diffusion_fraction_massique_QC::completer()
 // Exception:
 // Effets de bord: des communications (si version parallele) sont generees pas cet appel
 // Postcondition:
-DoubleTab& Convection_Diffusion_fraction_massique_QC::derivee_en_temps_inco(DoubleTab& derivee)
+DoubleTab& Convection_Diffusion_Espece_Multi_QC::derivee_en_temps_inco(DoubleTab& derivee)
 {
   if (schema_temps().diffusion_implicite())
     {
@@ -197,7 +197,7 @@ DoubleTab& Convection_Diffusion_fraction_massique_QC::derivee_en_temps_inco(Doub
   return derivee;
 }
 
-void Convection_Diffusion_fraction_massique_QC::assembler( Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
+void Convection_Diffusion_Espece_Multi_QC::assembler( Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
 
   resu=0;
@@ -280,17 +280,17 @@ void Convection_Diffusion_fraction_massique_QC::assembler( Matrice_Morse& matric
     }
   matrice.ajouter_multvect(inco,resu);
   /*
-    Cerr<<" Convection_Diffusion_fraction_massique_QC::assembler non code "<<finl;
+    Cerr<<" Convection_Diffusion_Espece_Multi_QC::assembler non code "<<finl;
     Cerr<<"vous ne pouvez pas faire d'implicite avec des fracions massiques "<<finl;
     exit();
   */
 }
 
-const Champ_base& Convection_Diffusion_fraction_massique_QC::get_champ(const Motcle& nom) const
+const Champ_base& Convection_Diffusion_Espece_Multi_QC::get_champ(const Motcle& nom) const
 {
   try
     {
-      return Convection_Diffusion_fraction_massique_Fluide_Dilatable_base::get_champ(nom);
+      return Convection_Diffusion_Espece_Fluide_Dilatable_base::get_champ(nom);
     }
   catch (Champs_compris_erreur)
     {

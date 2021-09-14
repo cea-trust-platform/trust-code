@@ -91,7 +91,7 @@ int Pb_Hydraulique_Melange_Binaire_WC::nombre_d_equations() const
 // Description:
 //    Renvoie l'equation d'hydraulique de type Navier_Stokes_QC si i=0
 //    Renvoie l'equation de conv/diff fraction massique de type
-//    Convection_Diffusion_fraction_massique_QC si i=1
+//    Convection_Diffusion_Espece_Multi_QC si i=1
 //    (version const)
 // Precondition:
 // Parametre: int i
@@ -121,7 +121,7 @@ const Equation_base& Pb_Hydraulique_Melange_Binaire_WC::equation(int i) const
 // Description:
 //    Renvoie l'equation d'hydraulique de type Navier_Stokes_QC si i=0
 //    Renvoie l'equation de conv/diff fraction massique de type
-//    Convection_Diffusion_fraction_massique_QC si i=1
+//    Convection_Diffusion_Espece_Multi_QC si i=1
 // Precondition:
 // Parametre: int i
 //    Signification: l'index de l'equation a renvoyer

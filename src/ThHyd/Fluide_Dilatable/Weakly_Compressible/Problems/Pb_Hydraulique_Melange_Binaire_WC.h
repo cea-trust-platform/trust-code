@@ -25,7 +25,7 @@
 
 #include <Pb_WC_base.h>
 #include <Navier_Stokes_WC.h>
-#include <Convection_Diffusion_fraction_massique_MB_WC.h>
+#include <Convection_Diffusion_Espece_Binaire_WC.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -37,7 +37,7 @@
 //      - Equation de conv/diff fraction massique
 //        en regime laminaire pour un fluide quasi compressible
 // .SECTION voir aussi
-//     Probleme_base Navier_Stokes_WC Convection_Diffusion_fraction_massique_MB_WC
+//     Probleme_base Navier_Stokes_WC Convection_Diffusion_Espece_Binaire_WC
 //////////////////////////////////////////////////////////////////////////////
 
 class Pb_Hydraulique_Melange_Binaire_WC : public Pb_WC_base
@@ -51,7 +51,7 @@ public:
 
 protected:
   Navier_Stokes_WC eq_hydraulique;
-  Convection_Diffusion_fraction_massique_MB_WC eq_frac_mass;
+  Convection_Diffusion_Espece_Binaire_WC eq_frac_mass;
 };
 
 #endif /* Pb_Hydraulique_Melange_Binaire_WC_included */

@@ -14,44 +14,30 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Convection_Diffusion_fraction_massique_MB_QC.h
+// File:        Convection_Diffusion_Espece_Binaire_QC.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Equations
-// Version:     /main/15
+// Version:     /main/27
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Convection_Diffusion_fraction_massique_MB_QC_included
-#define Convection_Diffusion_fraction_massique_MB_QC_included
+#include <Convection_Diffusion_Espece_Binaire_QC.h>
+#include <Fluide_Quasi_Compressible.h>
+#include <Loi_Etat_Binaire_GP_QC.h>
 
-#include <Convection_Diffusion_fraction_massique_Fluide_Dilatable_base.h>
+Implemente_instanciable(Convection_Diffusion_Espece_Binaire_QC,"Convection_Diffusion_Espece_Binaire_QC",Convection_Diffusion_Espece_Binaire_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_fraction_massique_MB_QC
-//     Cas particulier de Convection_Diffusion_fraction_massique_Fluide_Dilatable_base
-//     pour un fluide quasi conpressible iso-therme et iso-bar
-// .SECTION voir aussi
-//     Convection_Diffusion_fraction_massique_Fluide_Dilatable_base
-//////////////////////////////////////////////////////////////////////////////
-
-class Convection_Diffusion_fraction_massique_MB_QC : public Convection_Diffusion_fraction_massique_Fluide_Dilatable_base
+Sortie& Convection_Diffusion_Espece_Binaire_QC::printOn(Sortie& is) const
 {
-  Declare_instanciable(Convection_Diffusion_fraction_massique_MB_QC);
+  return Convection_Diffusion_Espece_Binaire_base::printOn(is);
+}
 
-public :
-  void set_param(Param& titi);
-  void completer();
-  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  int lire_motcle_non_standard(const Motcle&, Entree&);
-  int preparer_calcul();
-  const Champ_base& diffusivite_pour_pas_de_temps();
-  const Champ_base& vitesse_pour_transport();
-  DoubleTab& derivee_en_temps_inco(DoubleTab& );
+Entree& Convection_Diffusion_Espece_Binaire_QC::readOn(Entree& is)
+{
+  return Convection_Diffusion_Espece_Binaire_base::readOn(is);
+}
 
-private:
-  void calculer_div_rho_u(DoubleTab& res) const;
-  DoubleTab& derivee_en_temps_inco_sans_solveur_masse(DoubleTab& );
-};
-
-#endif /* Convection_Diffusion_fraction_massique_MB_QC_included */
+void Convection_Diffusion_Espece_Binaire_QC::completer()
+{
+  assert(le_fluide->loi_etat().valeur().que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_QC");
+  Convection_Diffusion_Espece_Binaire_base::completer();
+}

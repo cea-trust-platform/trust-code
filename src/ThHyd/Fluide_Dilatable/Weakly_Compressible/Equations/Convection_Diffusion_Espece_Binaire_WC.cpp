@@ -14,50 +14,30 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Convection_Diffusion_fraction_massique_QC.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Quasi_Compressible/Equations
-// Version:     /main/15
+// File:        Convection_Diffusion_Espece_Binaire_WC.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Weakly_Compressible/Equations
+// Version:     /main/27
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Convection_Diffusion_fraction_massique_QC_included
-#define Convection_Diffusion_fraction_massique_QC_included
+#include <Convection_Diffusion_Espece_Binaire_WC.h>
+#include <Fluide_Weakly_Compressible.h>
+#include <Loi_Etat_Binaire_GP_WC.h>
 
-#include <Convection_Diffusion_fraction_massique_Fluide_Dilatable_base.h>
-#include <Espece.h>
+Implemente_instanciable(Convection_Diffusion_Espece_Binaire_WC,"Convection_Diffusion_Espece_Binaire_WC",Convection_Diffusion_Espece_Binaire_base);
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Convection_Diffusion_fraction_massique_QC
-//     Cas particulier de Convection_Diffusion_fraction_massique_Fluide_Dilatable_base
-//     pour un fluide quasi conpressible quand le scalaire subissant le transport est
-//     la fraction massique
-// .SECTION voir aussi
-//     Convection_Diffusion_fraction_massique_Fluide_Dilatable_base
-//////////////////////////////////////////////////////////////////////////////
-
-class Convection_Diffusion_fraction_massique_QC : public Convection_Diffusion_fraction_massique_Fluide_Dilatable_base
+Sortie& Convection_Diffusion_Espece_Binaire_WC::printOn(Sortie& is) const
 {
-  Declare_instanciable(Convection_Diffusion_fraction_massique_QC);
+  return Convection_Diffusion_Espece_Binaire_base::printOn(is);
+}
 
-public :
-  void set_param(Param& titi);
-  void completer();
-  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  int lire_motcle_non_standard(const Motcle&, Entree&);
-  const Champ_base& diffusivite_pour_pas_de_temps();
-  const Champ_base& get_champ(const Motcle& nom) const;
-  DoubleTab& derivee_en_temps_inco(DoubleTab& );
+Entree& Convection_Diffusion_Espece_Binaire_WC::readOn(Entree& is)
+{
+  return Convection_Diffusion_Espece_Binaire_base::readOn(is);
+}
 
-  // Methodes inlines
-  inline const Motcle& get_alias() const { return alias_; }
-  inline const Espece& espece() const { return mon_espece_; }
-  inline Espece& espece() { return mon_espece_; }
-
-protected :
-  Espece mon_espece_;
-  Motcle alias_;
-};
-
-#endif /* Convection_Diffusion_fraction_massique_QC_included */
+void Convection_Diffusion_Espece_Binaire_WC::completer()
+{
+  assert(le_fluide->loi_etat().valeur().que_suis_je() == "Loi_Etat_Binaire_Gaz_Parfait_WC");
+  Convection_Diffusion_Espece_Binaire_base::completer();
+}

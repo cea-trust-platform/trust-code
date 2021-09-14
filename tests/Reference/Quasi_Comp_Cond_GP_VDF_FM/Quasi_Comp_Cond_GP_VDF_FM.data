@@ -113,7 +113,7 @@ Read pb
         }
 	Equations_Scalaires_Passifs
 	{
-	  Convection_Diffusion_fraction_massique_QC {
+	  Convection_Diffusion_Espece_Multi_QC {
 	  
 			diffusion { }
 			convection { amont }

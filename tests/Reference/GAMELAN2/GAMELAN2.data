@@ -97,7 +97,7 @@ Lire pb1
     }
   }
 
-  Convection_Diffusion_fraction_massique_MB_QC
+  Convection_Diffusion_Espece_Binaire_QC 
   {
     convection  { quick }
     diffusion { }

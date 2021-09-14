@@ -164,7 +164,7 @@ void Loi_Etat_Multi_GP_QC::associer_inconnue(const Champ_Inc_base& inconnue)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Multi_GP_QC::associer_espece(const Convection_Diffusion_fraction_massique_QC& eq)
+void Loi_Etat_Multi_GP_QC::associer_espece(const Convection_Diffusion_Espece_Multi_QC& eq)
 {
   liste_especes.add(eq.espece());
 }
