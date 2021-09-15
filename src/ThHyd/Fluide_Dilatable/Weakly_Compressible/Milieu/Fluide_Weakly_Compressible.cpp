@@ -33,23 +33,9 @@
 
 Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable_base);
 
-// By default we do not use neither the total nor the hydrostatic pressure
-Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0), use_hydrostatic_pressure_(0), nb_pas_dt_pression_(-1) {}
+Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0), use_hydrostatic_pressure_(0),
+  nb_pas_dt_pression_(-1), sim_resumed_(0) {}
 
-// Description:
-//    Ecrit les proprietes du fluide sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Fluide_Weakly_Compressible::printOn(Sortie& os) const
 {
   os << que_suis_je() << finl;
@@ -57,28 +43,12 @@ Sortie& Fluide_Weakly_Compressible::printOn(Sortie& os) const
   return os;
 }
 
-// Description:
-//   Lit les caracteristiques du fluide a partir d'un flot
-//   d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition:
 Entree& Fluide_Weakly_Compressible::readOn(Entree& is)
 {
   Fluide_Dilatable_base::readOn(is);
   return is;
 }
 
-// TODO : FIXME : pass to ajouter (std)
 void Fluide_Weakly_Compressible::set_param(Param& param)
 {
   Fluide_Dilatable_base::set_param(param);
@@ -212,10 +182,12 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
 {
   Cerr<<"Fluide_Weakly_Compressible::completer" << finl;
   le_probleme_ = pb;
+  // XXX : currently we support only open configurations
+  checkTraitementPth(le_probleme_->equation(0).zone_Cl_dis());
 
   if (Pth_xyz_.non_nul())
     {
-      if (Pth_xyz_.valeur().que_suis_je() != "Champ_Fonc_xyz" ) // TODO : check if it is generic
+      if (Pth_xyz_->que_suis_je() != "Champ_Fonc_xyz" ) // TODO : check if it is generic
         {
           Cerr << "Error in your data file : This is not allowed !"<< finl;
           Cerr << "Pression_xyz should be defined with Champ_Fonc_xyz !" << finl;
@@ -266,7 +238,7 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
         }
     }
 
-  initialiser_pth_for_EOS(pb); // On l'a besoin pour initialiser rho ...
+  if ( !use_saved_data() ) initialiser_pth_for_EOS(pb); // On l'a besoin pour initialiser rho ...
   Fluide_Dilatable_base::completer(pb);
 }
 
@@ -283,12 +255,12 @@ void Fluide_Weakly_Compressible::initialiser_pth_xyz()
   if (le_probleme_->equation(0).discretisation().que_suis_je()=="VDF") isVDF = 1;
 
   // We know that mu is always stored on elems and that Champ_Don rho_xyz_ is evaluated on elements
-  assert (Pth_xyz_.valeur().valeurs().size() == viscosite_dynamique().valeurs().size());
+  assert (Pth_xyz_->valeurs().size() == viscosite_dynamique().valeurs().size());
 
   if (isVDF)
     {
       // Disc VDF => Pth_xyz_ on elems => we do nothing
-      Pth_tab_=Pth_n_tab_=Pth_xyz_.valeur().valeurs();
+      Pth_tab_=Pth_n_tab_=Pth_xyz_->valeurs();
     }
   else
     {
@@ -309,20 +281,6 @@ void Fluide_Weakly_Compressible::initialiser_pth()
   Pth_n_tab_ = Pth_tab_;
 }
 
-// Description:
-//    Prepare le pas de temps
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 void Fluide_Weakly_Compressible::preparer_pas_temps()
 {
   Fluide_Dilatable_base::preparer_pas_temps();
@@ -371,7 +329,7 @@ void Fluide_Weakly_Compressible::discretiser(const Probleme_base& pb, const  Dis
     dis.discretiser_champ("temperature",zone_dis,"temperature","K",1,temps,ch_TK);
 
   if (type_fluide()!="Gaz_Parfait")
-    loi_etat().valeur().champs_compris().ajoute_champ(ch_TK);
+    loi_etat()->champs_compris().ajoute_champ(ch_TK);
 
   Champ_Don& phydro = pression_hydro();
   // XXX XXX : comme la temperature car elem en VDF et faces en VEF
@@ -423,13 +381,15 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleT
   // XXX : Recall that this field will be used in the EOS.. So its not just a field that varies at each dt !!!
   if ( use_pth_xyz() )
     {
+      // here its just a post-processing field and not used in EOS (pth_xyzis used)
       for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_tab_(i,0);
     }
   else
     {
       if ( use_total_pressure() )
         {
-          if (le_probleme_->schema_temps().nb_pas_dt() == nb_pas_dt_pression_ )
+          // TODO : FIXME : Should not be like that
+          if (le_probleme_->schema_temps().nb_pas_dt() == nb_pas_dt_pression_  && !use_saved_data() )
             for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
           else PTot = Pth_tab_;
         }
@@ -478,9 +438,13 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
   if (use_total_pressure()) Pth_tab_= pression_tot_.valeurs(); // present dt
   else if (use_hydrostatic_pressure())
     {
-      Pth_tab_ = pression_hydro_.valeurs();
-      const int n = Pth_tab_.dimension_tot(0);
-      for (int i=0 ; i<n ; i++) Pth_tab_(i) += Pth_; // present dt
+      if ( le_probleme_->schema_temps().nb_pas_dt() ==0 && use_saved_data() ) { }
+      else
+        {
+          Pth_tab_ = pression_hydro_.valeurs();
+          const int n = Pth_tab_.dimension_tot(0);
+          for (int i=0 ; i<n ; i++) Pth_tab_(i) += Pth_; // present dt
+        }
     }
   else
     {

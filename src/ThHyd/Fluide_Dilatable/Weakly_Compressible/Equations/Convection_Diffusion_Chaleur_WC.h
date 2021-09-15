@@ -47,6 +47,10 @@ public :
   int lire_motcle_non_standard(const Motcle&, Entree&);
   int preparer_calcul();
 
+  virtual int sauvegarder(Sortie&) const;
+  virtual int reprendre(Entree&);
+
+protected:
   void calculer_div_u_ou_div_rhou(DoubleTab& res) const;
   bool is_generic();
 };

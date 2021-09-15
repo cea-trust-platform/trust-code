@@ -56,8 +56,6 @@ public :
   Fluide_Dilatable_base& fluide();
   const Champ_Don& diffusivite_pour_transport();
   const Champ_base& diffusivite_pour_pas_de_temps();
-  int sauvegarder(Sortie&) const;
-  int reprendre(Entree&);
   int preparer_calcul();
   int remplir_cl_modifiee();
   int lire_motcle_non_standard(const Motcle&, Entree&);
@@ -69,6 +67,8 @@ public :
   virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
   virtual DoubleTab& derivee_en_temps_inco_sans_solveur_masse(DoubleTab& );
   virtual void calculer_div_u_ou_div_rhou(DoubleTab& res) const =0;
+  virtual int sauvegarder(Sortie&) const;
+  virtual int reprendre(Entree&);
   virtual bool is_generic()=0;
 
   // Methodes inlines

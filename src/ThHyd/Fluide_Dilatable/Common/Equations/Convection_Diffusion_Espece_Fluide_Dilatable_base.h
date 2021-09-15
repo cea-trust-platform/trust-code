@@ -46,8 +46,6 @@ public :
   void associer_fluide(const Fluide_Dilatable_base& );
   void discretiser();
   void associer_milieu_base(const Milieu_base& );
-  int sauvegarder(Sortie&) const;
-  int reprendre(Entree&);
   const Milieu_base& milieu() const;
   const Fluide_Dilatable_base& fluide() const;
   const Champ_Don& diffusivite_pour_transport();
@@ -56,6 +54,8 @@ public :
 
   virtual void completer();
   virtual void set_param(Param& titi);
+  virtual int sauvegarder(Sortie&) const;
+  virtual int reprendre(Entree&);
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
   virtual int preparer_calcul();
   virtual int impr(Sortie& os) const;

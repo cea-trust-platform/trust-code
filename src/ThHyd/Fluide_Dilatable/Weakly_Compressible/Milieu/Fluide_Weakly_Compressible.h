@@ -62,15 +62,18 @@ public :
   inline const DoubleTab& pression_th_tab() { return Pth_tab_; } // Tab Pression thermodynamique
   inline const DoubleTab& pression_thn_tab() { return Pth_n_tab_; } // Tab Pression thermodynamique a l'etape precedente
   inline void secmembre_divU_Z(DoubleTab& tab_W) const { eos_tools_->secmembre_divU_Z(tab_W); }
+  inline void set_pression_th_tab(DoubleTab& Pth_tab) { Pth_n_tab_ = Pth_tab_ = Pth_tab; }
+  inline void set_resume_flag() { sim_resumed_ = 1; }
   inline bool use_total_pressure() { return use_total_pressure_; }
   inline bool use_hydrostatic_pressure() { return use_hydrostatic_pressure_; }
   inline bool use_pth_xyz() { return Pth_xyz_.non_nul(); }
   inline bool use_total_hydro_pressure() { return (use_total_pressure_||use_hydrostatic_pressure_); }
+  inline bool use_saved_data() { return sim_resumed_; }
 
 protected:
   Champ_Don Pth_xyz_,pression_hydro_;
   DoubleTab Pth_tab_, Pth_n_tab_;
-  int use_total_pressure_, use_hydrostatic_pressure_,nb_pas_dt_pression_; // the default value is 0 => i.e: do not use total P in EOS unless activated
+  int use_total_pressure_, use_hydrostatic_pressure_,nb_pas_dt_pression_, sim_resumed_; // the default value is 0 => i.e: do not use total P in EOS unless activated
   REF(Probleme_base) le_probleme_;
 
 private:

@@ -38,8 +38,11 @@
 class Convection_Diffusion_Espece_Binaire_WC : public Convection_Diffusion_Espece_Binaire_base
 {
   Declare_instanciable(Convection_Diffusion_Espece_Binaire_WC);
+
 public :
   virtual void completer();
+  virtual int sauvegarder(Sortie&) const;
+  virtual int reprendre(Entree&);
 };
 
 #endif /* Convection_Diffusion_Espece_Binaire_WC_included */

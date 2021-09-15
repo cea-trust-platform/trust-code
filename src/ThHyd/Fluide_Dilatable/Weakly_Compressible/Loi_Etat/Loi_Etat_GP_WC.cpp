@@ -133,8 +133,7 @@ void Loi_Etat_GP_WC::calculer_masse_volumique()
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
   DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
   const DoubleTab& pres = FWC.pression_th_tab();
-  const int n=tab_rho.size();
-
+  const int n = tab_rho.size();
   for (int som=0 ; som<n ; som++)
     {
       tab_rho_np1(som) = calculer_masse_volumique(pres(som,0),tab_ICh(som,0));
