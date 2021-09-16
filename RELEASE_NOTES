@@ -1,6 +1,15 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
+16/09/21 (TRUST)  New feature : Solveur_U_P is now unified for Poly/Covi-MAC discretizations and allows the monolithic resolution of the NS equation
+16/09/21 (TRUST)  New feature : Decouper_multi allows to partition multiple domains while accounting for connections via Raccords (allows for easier implementation of thermique_monolithique in parallel)
+16/09/21 (TRUST)  Major Change: All DoubleTabs associated with fields (Champ_Inc, Champ_Don, ...) have now dimension >= 2
+16/09/21 (TRUST)  New feature : Add interface_bloc which is a generalization of the "contribuer_a_avec" and "ajouter" API for equation, Operateur, Source to fill the jacobian matrix and the right hand side of a coupled system of equation
+16/09/21 (TRUST)  New feature : New "SETS" and "ICE" solveur for Schema_Euler_Implicite. Can be used with Pb_Multiphase to solve the coupled system of equations using a newton method and a pressure reduction of the linear system. ICE must respect CFL condition, SETS adds prediction steps to increase numerical stability, allowing to perform CFL>1
+16/09/21 (TRUST)  New feature : New medium "Milieu_Composite" to aggregate differents Fluide_base media. Can be used within a Pb_multiphase
+16/09/21 (TRUST)  New feature : New medium "Fluide_reel_base" to define pressure and temperature dependant laws
+16/09/21 (TRUST)  New Feature : A new discretization "CoviMAC" (Numerical schema on polyedrons, main difference with PolyMAC : no more auxiliary variables for scalar unknowns) is now available and can be used with Pb_Multiphase. Implemented with the new Interface_bloc API
+16/09/21 (TRUST)  New feature : New problem "Pb_multiphase" with 3 equations (mass, momentum and energy conservation), having each N components. N=1 corresponds to a single phase model, N=2 corresponds to a 2 fluid model, and N>2 to a multi-field model
 19/08/21 (TRUST)  Portability : ARM partition of Irene Joliot cluster supported
 19/08/21 (TRUST)  Performance : Arrays obtained from octree algorithm are cached. Useful for advanced fields computation needing interpolations each time-step 
 19/08/21 (TRUST)  Bug fixed   : Regression since 1.8.3 fixed (malformed .dt_ev file with missing columns for coupled problems)
