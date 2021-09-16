@@ -51,7 +51,7 @@ Lire sch
   facsec 0.9
   diffusion_implicite 1
   seuil_diffusion_implicite 1.e-8
-  nb_pas_dt_max 250 
+  nb_pas_dt_max 200 
 }
 
 Fluide_Weakly_Compressible air
@@ -149,13 +149,14 @@ Lire pb
     }
 
     format lml
-    Champs dt_post 0.005
+    Champs dt_post 0.05
     {
     vitesse som
     fraction_massique elem
     masse_volumique som
-    pression elem
-    pression_tot elem
+    pression elem /* P_NS */
+    pression_eos elem /* pressure used in EOS */
+    pression_tot elem /* pth + P_NS */
     }
   }
 

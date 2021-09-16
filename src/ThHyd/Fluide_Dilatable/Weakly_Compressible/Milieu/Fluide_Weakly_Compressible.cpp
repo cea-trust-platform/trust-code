@@ -237,8 +237,10 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
           Process::exit();
         }
     }
+  // XXX : On l'a besoin pour initialiser rho ...
+  if ( !use_saved_data() ) initialiser_pth_for_EOS(pb); // soit à initialiser
+  else pression_eos_.valeurs() = Pth_tab_; // soit à reprendre
 
-  if ( !use_saved_data() ) initialiser_pth_for_EOS(pb); // On l'a besoin pour initialiser rho ...
   Fluide_Dilatable_base::completer(pb);
 }
 
@@ -246,6 +248,9 @@ void Fluide_Weakly_Compressible::initialiser_pth_for_EOS(const Probleme_base& pb
 {
   if (use_pth_xyz()) initialiser_pth_xyz();
   else initialiser_pth();
+
+  pression_eos_.valeurs() = Pth_tab_;
+  pression_eos_.mettre_a_jour(0.);
 }
 
 void Fluide_Weakly_Compressible::initialiser_pth_xyz()
@@ -331,12 +336,16 @@ void Fluide_Weakly_Compressible::discretiser(const Probleme_base& pb, const  Dis
   if (type_fluide()!="Gaz_Parfait")
     loi_etat()->champs_compris().ajoute_champ(ch_TK);
 
+  Fluide_Dilatable_base::discretiser(pb,dis);
+
+  // XXX XXX : Champs pour WC : comme la temperature car elem en VDF et faces en VEF
   Champ_Don& phydro = pression_hydro();
-  // XXX XXX : comme la temperature car elem en VDF et faces en VEF
   dis.discretiser_champ("temperature",zone_dis,"pression_hydro","Pa",1,temps,phydro);
   champs_compris_.ajoute_champ(phydro);
 
-  Fluide_Dilatable_base::discretiser(pb,dis);
+  Champ_Don& peos = pression_eos();
+  dis.discretiser_champ("temperature",zone_dis,"pression_eos","Pa",1,temps,peos);
+  champs_compris_.ajoute_champ(peos);
 }
 
 void Fluide_Weakly_Compressible::abortTimeStep()
@@ -354,6 +363,9 @@ void Fluide_Weakly_Compressible::update_pressure_fields(double temps)
       calculer_pression_hydro();
       pression_hydro_.mettre_a_jour(temps);
     }
+  // for post-processing
+  pression_eos_.valeurs() = Pth_tab_;
+  pression_eos_.mettre_a_jour(temps);
 }
 
 // Description:
@@ -378,24 +390,11 @@ void Fluide_Weakly_Compressible::calculer_pression_tot()
 
 void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot)
 {
-  // XXX : Recall that this field will be used in the EOS.. So its not just a field that varies at each dt !!!
+  P_NS_ = PHydro;
   if ( use_pth_xyz() )
-    {
-      // here its just a post-processing field and not used in EOS (pth_xyzis used)
-      for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_tab_(i,0);
-    }
+    for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_tab_(i,0);
   else
-    {
-      if ( use_total_pressure() )
-        {
-          // TODO : FIXME : Should not be like that
-          if (le_probleme_->schema_temps().nb_pas_dt() == nb_pas_dt_pression_  && !use_saved_data() )
-            for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
-          else PTot = Pth_tab_;
-        }
-      else
-        for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
-    }
+    for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_;
 }
 
 // Description:
@@ -433,12 +432,33 @@ void Fluide_Weakly_Compressible::calculer_pression_hydro()
   if (use_total_hydro_pressure()) remplir_champ_pression_for_EOS();
 }
 
+// Description:
+//    Calcule la pression utilisee dans les lois d'etat WC
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
 {
-  if (use_total_pressure()) Pth_tab_= pression_tot_.valeurs(); // present dt
+  if (use_total_pressure())
+    {
+      // TODO : FIXME : Should not be like that
+      if (le_probleme_->schema_temps().nb_pas_dt() == nb_pas_dt_pression_  && !use_saved_data() )
+        {
+          for (int i=0 ; i<Pth_tab_.dimension_tot(0) ; i++) Pth_tab_(i,0) = P_NS_(i,0) + Pth_;
+        }
+    }
   else if (use_hydrostatic_pressure())
     {
-      if ( le_probleme_->schema_temps().nb_pas_dt() ==0 && use_saved_data() ) { }
+      if ( le_probleme_->schema_temps().nb_pas_dt() ==0 && use_saved_data() ) { /* do nothing &  use saved data */ }
       else
         {
           Pth_tab_ = pression_hydro_.valeurs();
