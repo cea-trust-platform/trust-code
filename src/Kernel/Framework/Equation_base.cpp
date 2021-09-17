@@ -1611,7 +1611,7 @@ double Equation_base::calculer_pas_de_temps() const
           if (i == 0)
             {
               Cout << " " << finl;
-              Cout << "Printing of the time steps for the equation: " << que_suis_je() << finl;
+              Cout << "Printing of the next provisional time steps for the equation: " << que_suis_je() << finl;
             }
           if (sub_type(Operateur_Conv_base,op))
             Cout << "   convective";

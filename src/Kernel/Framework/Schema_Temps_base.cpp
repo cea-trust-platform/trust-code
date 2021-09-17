@@ -608,9 +608,9 @@ int Schema_Temps_base::impr(Sortie& os) const
 {
   os << finl;
   os << "-------------------------------------------------------------------" << finl;
-  os << "We treat the time step number "<< nb_pas_dt_ << " , for the time scheme ..." << finl
-     << "   dt = " << dt_ << finl
-     << "   time = " << temps_courant_ << finl;
+  os << "We finished treating the time step number "<< nb_pas_dt_ << " , for the time scheme ..." << finl
+     << "   stable dt used = " << dt_ << finl /* dt_stab_ peut etre ? c'est pareil je pense */
+     << "   time achieved (in seconds) = " << temps_courant_ << finl;
   return 0;
 }
 
