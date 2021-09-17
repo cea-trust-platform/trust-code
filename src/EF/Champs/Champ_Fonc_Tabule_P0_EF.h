@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #define Champ_Fonc_Tabule_P0_EF_included
 
 #include <Champ_Fonc_P0_EF.h>
-#include <Ref_Champ_base.h>
+#include <Vect_Ref_Champ_base.h>
 #include <Ref_Table.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -39,13 +39,13 @@ class Champ_Fonc_Tabule_P0_EF : public Champ_Fonc_P0_EF
 
 public:
 
-  void associer_param(const Champ_base&, const Table& );
+  void associer_param(const VECT(REF(Champ_base))&, const Table& );
   void mettre_a_jour(double );
   int initialiser(const double& temps);
 
 protected:
 
-  REF(Champ_base) le_champ_parametre;
+  VECT(REF(Champ_base)) les_ch_param;
   REF(Table) la_table;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,29 +83,14 @@ Entree& Champ_Tabule_Temps::readOn(Entree& is)
   if (motlu == accolade_ouverte)
     {
       nb_val=lire_dimension(is,que_suis_je());
-      if (nb_compo_ == 1)
-        {
-          DoubleVect param(nb_val);
-          DoubleVect les_valeurs(nb_val);
-          int i;
-          for (i=0; i<nb_val; i++)
-            is >> param[i];
-          for (i=0; i<nb_val; i++)
-            is >> les_valeurs[i];
-          la_table.remplir(param,les_valeurs);
-        }
-      else
-        {
-          DoubleVect param(nb_val);
-          DoubleTab les_valeurs(nb_val,nb_compo_);
-          int i;
-          for (i=0; i<nb_val; i++)
-            is >> param[i];
-          for (i=0; i<nb_val; i++)
-            for (int k=0; k<nb_compo_; k++)
-              is >> les_valeurs(i,k);
-          la_table.remplir(param,les_valeurs);
-        }
+      DoubleVect param(nb_val);
+      DoubleTab les_valeurs(nb_val, nb_compo_);
+      for (int i = 0; i < nb_val; i++)
+        is >> param[i];
+      for (int i = 0; i < nb_val; i++)
+        for (int k = 0; k < nb_compo_; k++)
+          is >> les_valeurs(i, k);
+      la_table.remplir(param, les_valeurs);
 
       is >> motlu;
       if (motlu != accolade_fermee)

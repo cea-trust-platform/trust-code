@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Table.h>
+#include <utility>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Table,"Table",Objet_U);
 
@@ -142,6 +143,36 @@ Entree& Table::readOn(Entree& s )
   return s ;
 }
 
+// Computes the n-linear interpolant of data at point x inside a hyper-rectangle defined by gridpoints.
+// The shapes should be (n) for x, (n, 2) for gridpoints and (2, 2, 2, ..., 2) n times for data (stored as a single vector here)
+double nlinear_interpolation(const std::vector<double>& x, const std::vector<std::pair<double, double>>& gridpoints, const std::vector<double>& data)
+{
+  const int n = x.size();
+
+  // on construit les poids pour chaque sommet de l'hyper-rectangle
+  std::vector<std::pair<double, double>> Wvecs;
+  for (int i = 0; i < n; i++)
+    {
+      const double weight = min(1.0, max(0.0, (x[i] - gridpoints[i].first) / (gridpoints[i].second - gridpoints[i].first)));
+      Wvecs.push_back({1 - weight, weight});
+    }
+
+  // le calcul est effecte en utilisant une representation en bit j (int) -> index (n valeurs 0 ou 1)
+  // j=0 -> index=00...000 ; j=1 -> index=00...001 ; j=2 -> index=00...010
+  double interpolant = 0.0;
+  for (int j = 0; j < pow(2, n); j++)
+    {
+      std::vector<int> index(n, 0);
+      for (int k = 0; k < n; k++) index[n - 1 - k] = ((j >> k) & 1);
+      double prodw = 1.0;
+      for (int i = 0; i < n; i++) prodw *= index[i] ? Wvecs[i].second : Wvecs[i].first;
+      // for (int i = 0; i < n; i++) prodw *= std::get<index[i]>(Wvecs[i]);
+      int k = index.back();
+      for (int i = 0; i < n - 1; i++) k += pow(2, n - i - 1) * index[i];
+      interpolant += data[k] * prodw;
+    }
+  return interpolant;
+}
 
 // Description:
 //    Retourne la valeur calculee pour le point val_param
@@ -162,37 +193,60 @@ Entree& Table::readOn(Entree& s )
 // Postcondition:
 double Table::val(const double& val_param, int ncomp) const
 {
-  if (les_parametres.size() == 1)
-    {
-      int size;
-      const DoubleVect& p = les_parametres[0];
-      if (p[0] >= val_param)
-        return les_valeurs(0, ncomp);
-      else
-        {
-          size=p.size();
-          for (int i=1; i<size; i++)
-            if (p[i] == val_param)
-              return les_valeurs(i, ncomp);
-            else if (p[i] > val_param)
-              return (les_valeurs(i - 1, ncomp) + ((les_valeurs(i, ncomp) - les_valeurs(i - 1, ncomp)) / (p[i] - p[i - 1])) * (val_param - p[i - 1]) );
-        }
-      return les_valeurs[size-1];
-    }
-  else if (isf==1)
-    {
-      // Plus rapide que parser(0).setVar("val",val_param);
-      parser(ncomp).setVar(0,val_param);
-      return parser(ncomp).eval();
-    }
-  else
-    {
-      Cerr << "Error in a Table::val : it misses some parameters." << finl;
-      exit();
-    }
-  return 0;
+  std::vector<double> vals_param {val_param};
+  return val(vals_param, ncomp);
 }
 
+double Table::val(const std::vector<double>& vals_param, int ncomp) const
+{
+  const int nb_param = les_parametres.size();
+  int nb_comp = les_valeurs.size();
+  if (nb_param == (int)vals_param.size())
+    {
+      std::vector<double> data;
+      std::vector<int> icube;
+      std::vector<std::pair<double, double>> gridpoints;
+
+      for (int ip = 0; ip < nb_param; ip++)
+        {
+          const DoubleVect& p = les_parametres[ip];
+          nb_comp /= p.size();
+          int i_interval = p.size() - 1;
+          for (int i = 1; i < p.size(); i++)
+            if (vals_param[ip] < p[i])
+              {
+                i_interval = i;
+                break;
+              }
+          icube.push_back(i_interval - 1);
+          gridpoints.push_back({p[i_interval - 1], p[i_interval]});
+        }
+      for (int j = 0; j < pow(2, nb_param); j++)
+        {
+          std::vector<int> index(nb_param, 0);
+          for (int k = 0; k < nb_param; k++) index[nb_param - 1 - k] = icube[nb_param - 1 - k] + ((j >> k) & 1);
+
+          // indice dans le tableau global des valeurs tabulees
+          int k = index[0];
+          for (int i = 1; i < nb_param; i++)
+            k = k * les_parametres[i].size() + index[i];
+          k = k * nb_comp + ncomp;
+
+          data.push_back(les_valeurs[k]);
+        }
+
+      return nlinear_interpolation(vals_param, gridpoints, data);
+    }
+  else if (isf == 1 && vals_param.size() == 1)
+    {
+      // Plus rapide que parser(0).setVar("val",val_param);
+      parser(ncomp).setVar(0,vals_param[0]);
+      return parser(ncomp).eval();
+    }
+  else Process::exit("Error in a Table::val : wrong number of parameters.");
+
+  return 0;
+}
 
 // Description:
 //    Pas encore code. Sort en erreur.
@@ -325,35 +379,6 @@ DoubleTab& Table::valeurs(const DoubleTab& val_param,const DoubleTab& pos,const 
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Parametre: const DoubleVect& val
-//    Signification: les valeurs
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Table::remplir(const DoubleVect& param,const DoubleVect& aval)
-{
-  //DoubleVect& les_valeurs2=ref_cast(DoubleVect,les_valeurs);
-  //les_valeurs2.ref(val);
-  les_valeurs=aval;
-  les_parametres.dimensionner(1);
-  les_parametres[0].ref(param);
-}
-
-
-// Description:
-//    Affecte les parametres et les valeurs de la table
-// Precondition:
-// Parametre: const DoubleVect& param
-//    Signification: les parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
 // Parametre: const DoubleTab& val
 //    Signification: les valeurs
 //    Valeurs par defaut:
@@ -370,4 +395,11 @@ void Table::remplir(const DoubleVect& param,const DoubleTab& aval)
   les_valeurs.ref(aval);
   les_parametres.dimensionner(1);
   les_parametres[0].ref(param);
+}
+
+void Table::remplir(const VECT(DoubleVect)& params, const DoubleVect& aval)
+{
+  les_valeurs = aval;
+  les_parametres.dimensionner(params.size());
+  for (int i = 0; i < params.size(); i++) les_parametres[i].ref(params[i]);
 }

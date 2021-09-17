@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -110,27 +110,13 @@ Entree& Champ_Uniforme_Morceaux_Tabule_Temps::readOn(Entree& is)
           Table la_table;
           is >> nb_val;
           DoubleVect param(nb_val);
-          if (dim == 1)
-            {
-              DoubleVect tab_valeurs(nb_val);
-              int i;
-              for (i=0; i<nb_val; i++)
-                is >> param[i];
-              for (i=0; i<nb_val; i++)
-                is >> tab_valeurs[i];
-              la_table.remplir(param,tab_valeurs);
-            }
-          else
-            {
-              DoubleTab tab_valeurs(nb_val,dim);
-              int i;
-              for (i=0; i<nb_val; i++)
-                is >> param[i];
-              for (i=0; i<nb_val; i++)
-                for (k=0; k<dim; k++)
-                  is >> tab_valeurs(i,k);
-              la_table.remplir(param,tab_valeurs);
-            }
+          DoubleTab tab_valeurs(nb_val,dim);
+          for (int i = 0; i < nb_val; i++)
+            is >> param[i];
+          for (int i = 0; i < nb_val; i++)
+            for (k = 0; k < dim; k++)
+              is >> tab_valeurs(i, k);
+          la_table.remplir(param,tab_valeurs);
           les_tables.add(la_table);
           is >> motlu;
           if (motlu !=  Motcle("}") )

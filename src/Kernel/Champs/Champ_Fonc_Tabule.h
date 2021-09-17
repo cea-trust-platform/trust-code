@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,16 +71,16 @@ public:
   inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
                                               DoubleVect&, int) const;
   virtual Champ_base& affecter_(const Champ_base& ) ;
-  inline Nom& nom_champ_parametre()
+  inline Noms& noms_champs_parametre()
   {
-    return nom_champ_parametre_;
+    return noms_champs_parametre_;
   };
 
   static void Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param);
 
 protected:
 
-  Nom nom_champ_parametre_;
+  Noms noms_champs_parametre_;
   Nom nom_domaine;
   Table la_table;
   Champ_Fonc le_champ_tabule_dis;

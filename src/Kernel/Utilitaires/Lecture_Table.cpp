@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017 , CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Lecture_Table.cpp
-// Directory : $FLICA5_ROOT/src/Utilitaires
+// File:        Lecture_Table.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Lecture_Table.h>
 
@@ -57,13 +58,13 @@ Entree& Lecture_Table::lire_table(Entree& is, Table& la_table)
   is >> nb_val;
 
   DoubleVect param(nb_val);
-  DoubleVect tab_valeurs(nb_val);
+  DoubleTab tab_valeurs(nb_val, 1);
 
   for (i=0; i<nb_val; i++)
     is >> param[i];
 
   for (i=0; i<nb_val; i++)
-    is >> tab_valeurs[i];
+    is >> tab_valeurs(i, 0);
 
   la_table.remplir(param,tab_valeurs);
 

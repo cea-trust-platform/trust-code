@@ -351,7 +351,7 @@ void Discretisation_base::residu(const Zone_dis& , const Champ_Inc&, Champ_Fonc&
   exit();
 }
 
-void Discretisation_base::modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const Champ_base& ch_inc) const
+void Discretisation_base::modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const
 {
   Cerr<<que_suis_je()<<" must overload Discretisation_base::modifier_champ_tabule"<<finl;
   Cerr<<__FILE__<<(int)__LINE__<<" uncoded"<<finl;
@@ -367,9 +367,15 @@ void Discretisation_base::nommer_completer_champ_physique(const Zone_dis_base& z
   le_champ.fixer_unite(unite);
   if (sub_type(Champ_Fonc_Tabule,le_champ))
     {
-      Motcle nom_variable = ref_cast(Champ_Fonc_Tabule,le_champ).nom_champ_parametre();
-      const Champ_base& champ_equation= pb.get_champ(nom_variable);
-      modifier_champ_tabule(zone_dis,ref_cast(Champ_Fonc_Tabule,le_champ),champ_equation);
+      Noms noms_variables = ref_cast(Champ_Fonc_Tabule,le_champ).noms_champs_parametre();
+      VECT(REF(Champ_base)) les_ch_eq;
+      for (int i = 0; i < noms_variables.size(); i++)
+        {
+          REF(Champ_base) champ;
+          champ = pb.get_champ(Motcle(noms_variables[i]));
+          les_ch_eq.add(champ);
+        }
+      modifier_champ_tabule(zone_dis,ref_cast(Champ_Fonc_Tabule,le_champ), les_ch_eq);
     }
 }
 

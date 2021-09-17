@@ -105,27 +105,43 @@ Sortie& Champ_Fonc_Tabule::printOn(Sortie& os) const
 Entree& Champ_Fonc_Tabule::readOn(Entree& is)
 {
   Motcle motlu;
-  int nb_val;
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
-  int nbcomp,i;
-  Nom val1, val2;
-  is >> val1;
-  is >> val2;
-  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Tabule", val1, val2, nbcomp, nom_champ_parametre_);
-  nbcomp=lire_dimension(nbcomp,que_suis_je());
+  const Motcle accolade_ouverte("{"), accolade_fermee("}");
+  int nbcomp;
+  is >> motlu;
+  assert (motlu == accolade_ouverte);
+  while (true)
+    {
+      is >> motlu;
+      if (motlu == "}") break;
+      noms_champs_parametre_.add(motlu);
+    }
+  const int nb_param = noms_champs_parametre_.size();
+  is >> nbcomp;
+
   fixer_nb_comp(nbcomp);
   is >> motlu;
   if (motlu == accolade_ouverte)
     {
-      nb_val=lire_dimension(is,que_suis_je());
-      DoubleVect param(nb_val);
-      DoubleTab tab_valeurs(nb_val, nbcomp);
-      for (i=0; i<nb_val; i++)
-        is >> param[i];
-      for (i = 0; i < nb_val; i++) for (int n = 0; n < nbcomp; n++)
-          is >> tab_valeurs(i, n);
-      la_table.remplir(param,tab_valeurs);
+      /* 1. lecture de la grille de parametres */
+      VECT(DoubleVect) params;
+      for (int n = 0; n < nb_param; n++)
+        {
+          const int nb_val = lire_dimension(is, que_suis_je());
+          DoubleVect param(nb_val);
+          for (int i = 0; i < nb_val; i++) is >> param[i];
+          params.add(param);
+        }
+
+      /* 2. lecture des valeurs des parametres */
+      // taille totale du tableau de valeurs
+      int size = nbcomp;
+      for (int n = 0; n < nb_param; n++) size *= params[n].size();
+
+      // lecture : tout dans un tableau 1D
+      DoubleVect tab_valeurs(size);
+      for (int i = 0; i < size; i++) is >> tab_valeurs[i];
+      la_table.remplir(params, tab_valeurs);
+
       is >> motlu;
       if (motlu != accolade_fermee)
         {

@@ -695,7 +695,7 @@ void VEF_discretisation::taux_cisaillement(const Zone_dis& z, const Zone_Cl_dis&
   ch.changer_temps(ch_vitesse.temps());
 }
 
-void VEF_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_dis, Champ_Fonc_Tabule& le_champ_tabule, const Champ_base& ch_inc) const
+void VEF_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_dis, Champ_Fonc_Tabule& le_champ_tabule, const VECT(REF(Champ_base))& ch_inc) const
 {
   le_champ_tabule.le_champ_tabule_discretise().typer("Champ_Fonc_Tabule_P0_VEF");
   Champ_Fonc_Tabule_P0_VEF& le_champ_tabule_dis = ref_cast(Champ_Fonc_Tabule_P0_VEF,le_champ_tabule.le_champ_tabule_discretise().valeur());
@@ -704,7 +704,7 @@ void VEF_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_dis, Ch
   le_champ_tabule_dis.nommer(le_champ_tabule.le_nom()); // We give a name to this field, help for debug
   le_champ_tabule_dis.fixer_nb_comp(le_champ_tabule.nb_comp());
   le_champ_tabule_dis.fixer_nb_valeurs_nodales(zone_dis.nb_elem());
-  le_champ_tabule_dis.changer_temps(ch_inc.temps());
+  le_champ_tabule_dis.changer_temps(ch_inc[0].valeur().temps());
 }
 
 void VEF_discretisation::residu( const Zone_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const

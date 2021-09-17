@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,7 +94,7 @@ private:
   void discretiser_champ_fonc_don(const Motcle& directive, const Zone_dis_base& z,
                                   Nature_du_champ nature, const Noms& noms, const Noms& unites,
                                   int nb_comp, double temps, Objet_U& champ) const;
-  void modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const Champ_base& ch_inc) const;
+  void modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const;
 };
 
 #endif

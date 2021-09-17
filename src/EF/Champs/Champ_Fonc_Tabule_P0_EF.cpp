@@ -42,41 +42,48 @@ Entree& Champ_Fonc_Tabule_P0_EF::readOn(Entree& s)
   return s ;
 }
 
-void Champ_Fonc_Tabule_P0_EF::associer_param(const Champ_base& un_champ_inc,
+void Champ_Fonc_Tabule_P0_EF::associer_param(const VECT(REF(Champ_base))& les_champs,
                                              const Table& une_table)
 {
-  le_champ_parametre = un_champ_inc;
+  les_ch_param = les_champs;
+  // for (int i = 0; i < les_champs.size(); i++)
+  //   {
+  //     REF(Champ_base) champ;
+  //     champ = les_champs[i].valeur();
+  //     les_ch_param.add(champ);
+  //   }
   la_table = une_table;
 }
-
 
 void Champ_Fonc_Tabule_P0_EF::mettre_a_jour(double t)
 {
   const Zone_EF& zone_EF =la_zone_EF.valeur();
   const Table& table = la_table.valeur();
-  const DoubleTab& val_param = le_champ_parametre->valeurs();
   DoubleTab& mes_valeurs = valeurs();
-  if (!(val_param.nb_dim() == mes_valeurs.nb_dim()))
+  int nb_elem = zone_EF.nb_elem(), nb_elem_tot = zone_EF.nb_elem_tot(), nb_param = les_ch_param.size();
+  VECT(DoubleTab) val_params_aux_elems;
+  for (int i = 0; i < nb_param; i++)
     {
-      Cerr << "Erreur a la mise a jour d'un Champ_Fonc_Tabule" << finl;
-      Cerr << "Le champ parametre et le champ a initialiser ne sont pas compatibles" << finl;
-      exit();
+      DoubleTab vp(nb_elem_tot, mes_valeurs.dimension(1));
+      val_params_aux_elems.add(vp);
     }
-  int nb_elem=zone_EF.nb_elem();
-  int nb_elem_tot=zone_EF.nb_elem_tot();
-  const int nbcomp=mes_valeurs.line_size();
-  DoubleTab val_param_aux_elems(nb_elem_tot,nbcomp);
-  const DoubleTab& centres_de_gravites=zone_EF.xp();
+  const DoubleTab& centres_de_gravites = zone_EF.xp();
   IntVect les_polys(nb_elem_tot);
-  for(int elem=0; elem<nb_elem_tot; elem++)
-    {
-      les_polys(elem)=elem;
-    }
-  le_champ_parametre.valeur().valeur_aux_elems(centres_de_gravites, les_polys, val_param_aux_elems);
+  for(int elem = 0; elem < nb_elem_tot; elem++) les_polys(elem) = elem;
 
-  for (int num_elem=0; num_elem<nb_elem; num_elem++)
-    for (int ncomp=0; ncomp<nbcomp; ncomp++)
-      mes_valeurs(num_elem,ncomp) = table.val(val_param_aux_elems(num_elem,ncomp));
+  // Estimate the field parameter on cells:
+  for (int i = 0; i < nb_param; i++)
+    les_ch_param[i].valeur().valeur_aux_elems(centres_de_gravites, les_polys, val_params_aux_elems[i]);
+  // Compute the field according to the parameter field
+  const int nbcomp = mes_valeurs.dimension(1);
+  for (int num_elem = 0; num_elem < nb_elem; num_elem++)
+    for (int ncomp = 0; ncomp < nbcomp; ncomp++)
+      {
+        std::vector<double> vals;
+        for (int n = 0; n < nb_param; n++) vals.push_back(val_params_aux_elems[n](num_elem, ncomp));
+        mes_valeurs(num_elem, ncomp) = table.val(vals, ncomp);
+      }
+
   Champ_Fonc_base::mettre_a_jour(t);
 }
 

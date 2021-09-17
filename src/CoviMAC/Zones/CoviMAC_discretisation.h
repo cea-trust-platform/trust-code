@@ -99,7 +99,7 @@ private:
     int nb_comp, double temps,
     Objet_U& champ) const;
 
-  void modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const Champ_base&  ch_temper) const;
+  void modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const;
 
 
 

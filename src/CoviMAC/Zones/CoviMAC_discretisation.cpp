@@ -625,7 +625,7 @@ void CoviMAC_discretisation::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl,con
   ch_gt.changer_temps(ch_temperature.temps());
 #endif
 }
-void CoviMAC_discretisation::modifier_champ_tabule(const Zone_dis_base& Zone_CoviMAC,Champ_Fonc_Tabule& lambda_tab,const Champ_base&  ch_temper) const
+void CoviMAC_discretisation::modifier_champ_tabule(const Zone_dis_base& Zone_CoviMAC,Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base))&  champs_param) const
 {
   Champ_Fonc& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
   lambda_tab_dis.typer("Champ_Fonc_Tabule_P0_CoviMAC");
@@ -633,11 +633,11 @@ void CoviMAC_discretisation::modifier_champ_tabule(const Zone_dis_base& Zone_Cov
     ref_cast(Champ_Fonc_Tabule_P0_CoviMAC,lambda_tab_dis.valeur());
   //ch_tab_lambda_dis.nommer(nom_champ);
   ch_tab_lambda_dis.associer_zone_dis_base(Zone_CoviMAC);
-  ch_tab_lambda_dis.associer_param(ch_temper,lambda_tab.table());
+  ch_tab_lambda_dis.associer_param(champs_param, lambda_tab.table());
   ch_tab_lambda_dis.fixer_nb_comp(lambda_tab.nb_comp());
   ch_tab_lambda_dis.fixer_nb_valeurs_nodales(Zone_CoviMAC.nb_elem());
 // ch_tab_lambda_dis.fixer_unite(unite);
-  ch_tab_lambda_dis.changer_temps(ch_temper.temps());
+  ch_tab_lambda_dis.changer_temps(champs_param[0].valeur().temps());
 }
 
 Nom  CoviMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn,  const REF(Champ_base)& champ_sup) const

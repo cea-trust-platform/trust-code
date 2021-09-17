@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #define Discretisation_base_included
 
 #include <Champ_base.h> // Pour Nature_du_champ
-#include <Ref_Champ_base.h>
+#include <Vect_Ref_Champ_base.h>
 class Schema_Temps_base;
 class Champ_Inc_base;
 class Champ_Inc;
@@ -171,7 +171,7 @@ private:
     const Nom& type, const Nom& nom, const Nom& unite,
     int nb_comp, int nb_ddl, double temps);
 
-  virtual void modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const Champ_base& ch_inc) const ;
+  virtual void modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const ;
 };
 
 #endif

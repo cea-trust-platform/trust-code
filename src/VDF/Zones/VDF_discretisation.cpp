@@ -472,7 +472,7 @@ void VDF_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,const C
   ch_tp.changer_temps(eqn.inconnue().temps());
 } */
 
-void VDF_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_dis, Champ_Fonc_Tabule& le_champ_tabule,const Champ_base& ch_inc) const
+void VDF_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_dis, Champ_Fonc_Tabule& le_champ_tabule,const VECT(REF(Champ_base))& ch_inc) const
 {
   le_champ_tabule.le_champ_tabule_discretise().typer("Champ_Fonc_Tabule_P0_VDF");
   Champ_Fonc_Tabule_P0_VDF& le_champ_tabule_dis = ref_cast(Champ_Fonc_Tabule_P0_VDF,le_champ_tabule.le_champ_tabule_discretise().valeur());
@@ -481,7 +481,7 @@ void VDF_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_dis, Ch
   le_champ_tabule_dis.nommer(le_champ_tabule.le_nom()); // We give a name to this field, help for debug
   le_champ_tabule_dis.fixer_nb_comp(le_champ_tabule.nb_comp());
   le_champ_tabule_dis.fixer_nb_valeurs_nodales(zone_dis.nb_elem());
-  le_champ_tabule_dis.changer_temps(ch_inc.temps());
+  le_champ_tabule_dis.changer_temps(ch_inc[0].valeur().temps());
 }
 
 

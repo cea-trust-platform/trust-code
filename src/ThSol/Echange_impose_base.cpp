@@ -309,10 +309,8 @@ int Echange_impose_base::compatible_avec_discr(const Discretisation_base& discr)
 int Echange_impose_base::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique";
-  Motcle indetermine="indetermine";
-  Motcle FracMass="fraction_massique";
-  if ( (dom_app==Thermique) || (dom_app==indetermine) || (dom_app==FracMass) )
+  Motcle Thermique = "Thermique", Neutronique = "Neutronique", indetermine = "indetermine", FracMass="fraction_massique";
+  if ( (dom_app == Thermique) || (dom_app == Neutronique) || (dom_app == indetermine) || (dom_app==FracMass))
     return 1;
   else
     {

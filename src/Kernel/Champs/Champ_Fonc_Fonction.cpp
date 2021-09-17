@@ -76,7 +76,9 @@ Entree& Champ_Fonc_Fonction::readOn(Entree& is)
   Nom val1, val2;
   is >> val1;
   is >> val2;
-  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction", val1, val2, nbcomp, nom_champ_parametre_);
+  Nom tmp_nom;
+  noms_champs_parametre_.add(tmp_nom);
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction", val1, val2, nbcomp, noms_champs_parametre_[0]);
   nbcomp = lire_dimension(nbcomp,que_suis_je());
   fixer_nb_comp(nbcomp);
   Cerr<<"We read the analytic function "<<finl;

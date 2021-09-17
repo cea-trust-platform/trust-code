@@ -38,39 +38,50 @@ Entree& Champ_Fonc_Tabule_P0_VDF::readOn(Entree& s)
   return s ;
 }
 
-void Champ_Fonc_Tabule_P0_VDF::associer_param(const Champ_base& un_champ_inc,
+void Champ_Fonc_Tabule_P0_VDF::associer_param(const VECT(REF(Champ_base))& les_champs,
                                               const Table& une_table)
 {
-  le_champ_parametre = un_champ_inc;
+  les_ch_param = les_champs;
   la_table = une_table;
 }
 
 
 void Champ_Fonc_Tabule_P0_VDF::mettre_a_jour(double t)
 {
-  const Zone_VDF& zone_VDF =la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const Table& table = la_table.valeur();
-  const int& isfct = table.isfonction();
-  const DoubleTab& val_param = le_champ_parametre->valeurs();
   DoubleTab& mes_valeurs = valeurs();
-  if (!(val_param.line_size() == mes_valeurs.line_size()))
+  const int nb_elem = zone_VDF.nb_elem(), nb_elem_tot = zone_VDF.nb_elem_tot(), nb_param = les_ch_param.size();
+  VECT(DoubleTab) val_params_aux_elems;
+  for (int i = 0; i < nb_param; i++)
     {
-      Cerr << "Erreur a l'initialisation d'un Champ_Fonc_Tabule" << finl;
-      Cerr << "Le champ parametre et le champ a initialiser ne sont pas compatibles" << finl;
-      exit();
+      DoubleTab vp(nb_elem_tot, mes_valeurs.dimension(1));
+      val_params_aux_elems.add(vp);
     }
-  if (isfct!=2)
+  const DoubleTab& centres_de_gravites = zone_VDF.xp();
+  IntVect les_polys(nb_elem_tot);
+  for(int elem = 0; elem < nb_elem_tot; elem++) les_polys(elem) = elem;
+
+  // Estimate the field parameter on cells:
+  for (int i = 0; i < nb_param; i++)
+    les_ch_param[i].valeur().valeur_aux_elems(centres_de_gravites, les_polys, val_params_aux_elems[i]);
+  // Compute the field according to the parameter field
+  if (table.isfonction() != 2)
     {
-      const int nb_elems = zone_VDF.nb_elem(), N = val_param.line_size();
-      for (int num_elem=0; num_elem<nb_elems; num_elem++)
-        for (int n = 0; n < N; n++)
-          mes_valeurs(num_elem, n) = table.val(val_param(num_elem, n));
+      const int nbcomp = mes_valeurs.dimension(1);
+      for (int num_elem = 0; num_elem < nb_elem; num_elem++)
+        for (int ncomp = 0; ncomp < nbcomp; ncomp++)
+          {
+            std::vector<double> vals;
+            for (int n = 0; n < nb_param; n++) vals.push_back(val_params_aux_elems[n](num_elem, ncomp));
+            mes_valeurs(num_elem, ncomp) = table.val(vals, ncomp);
+          }
     }
   else
     {
-      const DoubleTab& centres_de_gravites = zone_VDF.xp();
-      table.valeurs(val_param,centres_de_gravites,t,mes_valeurs);
+      table.valeurs(val_params_aux_elems[0], centres_de_gravites, t, mes_valeurs);
     }
+
 
   Champ_Fonc_base::mettre_a_jour(t);
 }
