@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,6 +47,9 @@
 
 #include <Process.h>
 #include <EntreeSortie.h>
+
+// used for signal_callback_handler & initialized from mon_main::dowork
+Nom NOM_DU_CAS_;
 
 // This structure mirrors the one found in /usr/include/asm/ucontext.h
 typedef struct _sig_ucontext
@@ -122,7 +125,6 @@ void crit_err_hdlr(True_int sig_num, siginfo_t * info, void * ucontext)
   Process::exit();
 }
 
-
 /*
  * Install error handlers catching SIGABRT and SIGFPE
  */
@@ -149,4 +151,37 @@ void install_handlers()
   std::cerr << "Custom error handlers correctly installed. SIGFPE and SIGABRT redirected." << std::endl;
 }
 
-#endif
+/*
+ * Define the function to be called when ctrl-c (SIGINT) is sent to process
+ */
+void signal_callback_handler(int signum)
+{
+  if (Process::je_suis_maitre())
+    {
+      std::cerr << " " << std::endl;
+      std::cerr << "=======================================================" << std::endl;
+      std::cerr << " " << std::endl;
+      std::cerr << "Caught signal " << signum << std::endl;
+      std::cerr << "We are trying to finish the simulation correctly ... " << std::endl;
+      std::cerr << " " << std::endl;
+      std::cerr << "=======================================================" << std::endl;
+      std::cerr << " " << std::endl;
+    }
+
+  // Terminate TRUST correctly => print 1 in stop file
+  Nom command = "echo '1' > ";
+  command += NOM_DU_CAS_;
+  command += ".stop";
+
+  int err = system(command);
+  if (err)
+    {
+      if (Process::je_suis_maitre())
+        std::cerr << "We can not finish the simulation correctly because the stop file " << NOM_DU_CAS_<<".stop is not in the directory !" << std::endl;
+      Process::exit();
+    }
+}
+
+void set_nom_cas_pour_signal(const Nom& cas) { NOM_DU_CAS_ = cas ; }
+
+#endif /* catch_and_trace_H */

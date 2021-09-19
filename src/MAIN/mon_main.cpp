@@ -268,6 +268,10 @@ void mon_main::finalize()
 
 void mon_main::dowork(const Nom& nom_du_cas)
 {
+  // Register signal and signal handler (SIGINT) if user presses ctrl-c during exec
+  set_nom_cas_pour_signal(nom_du_cas);
+  signal(SIGINT, signal_callback_handler);
+
   // Initialisation des compteurs pour les statistiques
   // avant tout appel a envoyer, recevoir, ...
   if (!les_statistiques_trio_U_nom_long_pour_decourager_l_utilisation_directe)
