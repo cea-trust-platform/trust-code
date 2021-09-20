@@ -1,5 +1,6 @@
 # Tests des solveurs NP sur un cas 3D avec pression imposee #
 # PARALLEL OK #
+# VALGRIND NOT #
 dimension 3
 Pb_hydraulique pb
 Domaine dom
