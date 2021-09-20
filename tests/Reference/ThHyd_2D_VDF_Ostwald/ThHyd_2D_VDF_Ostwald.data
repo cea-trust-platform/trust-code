@@ -52,7 +52,7 @@ Read sch
 Fluide_Ostwald fluide
 Read fluide
 {
-	K champ_fonc_tabule temperature 1  { 9 20. 25. 30. 35. 40. 45. 50. 55. 60. 4.983711 3.842698  2.962919  2.284563  1.761516  1.358222  1.047257  0.807490  0.622616 }
+	K champ_fonc_tabule { temperature } 1  { 9 20. 25. 30. 35. 40. 45. 50. 55. 60. 4.983711 3.842698  2.962919  2.284563  1.761516  1.358222  1.047257  0.807490  0.622616 }
 	rho Champ_Uniforme 1 995
 	n Champ_Uniforme 1 0.66
 	mu champ_ostwald
