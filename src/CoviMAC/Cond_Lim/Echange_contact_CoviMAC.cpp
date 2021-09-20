@@ -282,7 +282,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
               else for (l = 0; l < 2; l++) for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < whm.dimension(1); m++) for (m_s = 0; m_s < whm.dimension(2); m_s++) //pt harmonique d'Echange_contact : melange...
                         tphi(k, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * whm(pe_ext(f_sb, 2), m, m_s, j);
             }
-          else for (k = std::find(p_e.begin(), p_e.end(), std::make_pair(0, ne_tot + f_s)) - p_e.begin(), l = 0; l < 2; l++) //pas d'elem source -> dependance en la CL
+          else for (k = std::find(p_e.begin(), p_e.end(), std::make_pair((int)0, ne_tot + f_s)) - p_e.begin(), l = 0; l < 2; l++) //pas d'elem source -> dependance en la CL
               for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < wh.dimension(1); m++)
                   tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m)
                                    * (wh(f_s, m) < 1 ? 1 - wh(f_s, m) : - zone.dist_norm_bord(f_s) * fs(f_s) * fs(f_s) / zone.nu_dot(&nu, f_e(f_s, 0), m, &nf(f_s, 0), &nf(f_s, 0)));

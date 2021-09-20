@@ -918,11 +918,11 @@ void Zone_CoviMAC::fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTa
                 else for (n = 0; n < N; n++) for (m = 0; m < M; m++) for (l = 0; l < nrhs; l++) //pt harmonique a une Echange_contact -> melange des composantes
                         phi(k, n, m, l) += (l ? -1 : 1) / r_int(n, l) * interp(i, n, l) * (*whm)((*pe_ext)(f_sb, 2), n, m, j);
               }
-            else for (k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(0, ne_tot + f_s)) - p_e.begin(), n = 0; n < N; n++) //face de bord -> dependance en la CL
+            else for (k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair((int)0, ne_tot + f_s)) - p_e.begin(), n = 0; n < N; n++) //face de bord -> dependance en la CL
                 for (l = 0; l < nrhs; l++) phi(k, n, n, l) += (l ? -1 : 1) / r_int(n, l) * interp(i, n, l)
                                                                 * (wh(f_s, n) < 1 ? 1 - wh(f_s, n) : dist_norm_bord(f_s) / (nu_grad ? -nu_dot(nu, f_e(f_s, 0), n, &nf(f_s, 0), &nf(f_s, 0)) / (fs(f_s) * fs(f_s)) : 1));
         //amont/aval
-        for (i = 0; i < nrhs; i++) for (k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(0, f_e(f, i))) - p_e.begin(), n = 0; n < N; n++)
+        for (i = 0; i < nrhs; i++) for (k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair((int)0, f_e(f, i))) - p_e.begin(), n = 0; n < N; n++)
             phi(k, n, n, i) += (i ? 1 : -1) / r_int(n, i);
 
         /* remplissage de phif_e/pe/c/pc */

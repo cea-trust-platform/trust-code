@@ -246,7 +246,12 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       cv = 1;
       for (auto && n_v : incr) cv &= (mp_max_abs_vect(n_v.second) < crit_conv.at(n_v.first));
 
-      if (!Process::me()) fprintf(stderr, "%4d", it + 1);
+      if (!Process::me())
+#ifndef INT_is_64_
+        fprintf(stderr, "%4d", it + 1);
+#else
+        fprintf(stderr, "%4ld", it + 1);
+#endif
       for (auto &&n_v : incr)
         {
           double x = mp_max_abs_vect(n_v.second);

@@ -426,7 +426,7 @@ int Format_Post_Lml::ecrire_domaine_lml(const Domaine& domaine,Nom& nom_fich)
             s << sommet_elem( nelem,j)+1+2*nb_som_PE << " ", count++;
           for (j=0; j<nb_som_elem && (sommet_elem( nelem,j) > -1); j++)
             s << sommet_elem( nelem,j)+1+2*nb_som_PE+nsom << " ", count++;
-          for (int k = count; k < 2 * nb_som_elem; k++) s << 0 << " ";
+          for (int k = count; k < 2 * nb_som_elem; k++) s << (int)0 << " ";
           s << "" << finl;
           s.flush();
         }
