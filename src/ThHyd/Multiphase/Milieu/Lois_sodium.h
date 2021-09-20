@@ -118,7 +118,7 @@ inline double MuL( double T )
 /* conductivite du liquide */
 inline double LambdaL( double T )
 {
-  return max(124.67 + Tk * (-.11381 + Tk * (5.5226e-5 - Tk * 1.1848e-8)), 0.045);
+  return std::max(124.67 + Tk * (-.11381 + Tk * (5.5226e-5 - Tk * 1.1848e-8)), 0.045);
 }
 /* tension superficielle */
 inline double SigmaL(double T)
