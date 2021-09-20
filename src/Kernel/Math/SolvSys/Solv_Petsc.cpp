@@ -73,6 +73,16 @@ void check_not_defined(option o)
     }
 }
 
+//check to see if a string is a number
+#ifdef PETSCKSP_H
+static bool is_number(const std::string& s)
+{
+  std::string::const_iterator it = s.begin();
+  while (it != s.end() && std::isdigit(*it)) ++it;
+  return !s.empty() && it == s.end();
+}
+#endif
+
 // Lecture et creation du solveur
 void Solv_Petsc::create_solver(Entree& entree)
 {
@@ -677,7 +687,9 @@ void Solv_Petsc::create_solver(Entree& entree)
                   {
                     is >> valeur;
                     // "-option val" ou "-option" ?
-                    if (valeur.debute_par("-") || valeur==accolade_fermee)
+                    // adding a test to support negative value
+                    bool negative_value = is_number(valeur.getSuffix("-").getString());
+                    if ((valeur.debute_par("-") && !negative_value) || valeur==accolade_fermee)
                       {
                         add_option(motlu.suffix("-"), "");
                         motlu = valeur;
