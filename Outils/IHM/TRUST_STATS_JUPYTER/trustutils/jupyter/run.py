@@ -12,8 +12,44 @@ from subprocess import Popen, PIPE, STDOUT
 import subprocess
 from trustutils.jupyter import plot
 from datetime import date
+from trustutils.jupyter.filelist import FileAccumulator
+    
+#TODO : faire les fonction du .prm (TRUST-1.8.3/Validation/Outils/Genere_courbe/scripts)
+def saveFileAccumulator(data):
+    """
+    Method for saving files.
+        
+    Parameters
+    --------- 
+    data : str 
+        name of the file we want to save. 
+
+    Returns
+    ------- 
+    """
+        
+    origin=os.getcwd(); 
+    path=origin
+    os.chdir(path)
+        
+    FileAccumulator.active = True 
+    FileAccumulator.Append(data)
+    
+    os.chdir(origin)
     
 def Introduction(auteur):
+    """
+    Function that create a introduction cell Mardown  
+
+    Parameters
+    ---------
+    auteur : str
+        Name of the author of the test case. 
+
+    Returns
+    -------
+    Mardown Cell
+    """
     from IPython.display import display, Markdown
     today = date.today()
     dat = today.strftime("%d/%m/%Y")
@@ -21,10 +57,36 @@ def Introduction(auteur):
     display(Markdown('## Introduction \n Validation made by : '+auteur+'\n \n Report generated '+dat))
     
 def Description(text): 
+    """
+    Function that create a Description cell Mardown  
+
+    Parameters
+    ---------
+    text : str
+        Description test. 
+
+    Returns
+    -------
+    Mardown Cell
+    """
     from IPython.display import display, Markdown
     display(Markdown('### Description \n'+text))
     
 def Parameters_TRUST(Version="",Param=[]): 
+    """
+    Function that create a Parameters_TRUST cell Mardown  
+
+    Parameters
+    ---------
+    Version : str
+        Version of trust
+    Param : str list
+        List of Parameter used in this test case
+
+    Returns
+    -------
+    Mardown Cell
+    """
     from IPython.display import display, Markdown
     Binary="Binary"
     
@@ -34,6 +96,17 @@ def Parameters_TRUST(Version="",Param=[]):
     display(Markdown(text)) 
     
 def Test_cases(): 
+    """
+    Function which prints the test case in a cell Mardown. 
+
+    Parameters
+    ---------
+    None
+    
+    Returns
+    -------
+    Mardown Cell
+    """
     from IPython.display import display, Markdown
     text='### Test cases \n'
     display(Markdown(text)) 
@@ -55,11 +128,13 @@ class TRUSTCase(object):
         ---------
 
         directory: str
-            Adress of the file
-        caseName : str
+            Adress of the file       
+        dataName: str
             Name of the case we want to run.
+        caseName : str
+            Name of the new .data file we will run.
         nbProcs : int
-        Number of Processeurs we want to use.
+            Number of Processeurs we want to use.
 
         Returns
         -------
@@ -76,6 +151,11 @@ class TRUSTCase(object):
 
         Parameters
         --------- 
+        
+        subtitue : str
+            Text we want to substitute.
+        remplassant : int
+            Substituted text.
 
         None
 
@@ -119,10 +199,19 @@ class TRUSTCase(object):
 
     def copy(self,directory=None,dataName=None,caseName=None,nbProcs=None):
         """
-        Substitue a part of the plot   
+        Copy a TRUST Case.   
 
         Parameters
         ---------
+
+        directory: str
+            Adress of the file       
+        dataName: str
+            Name of the case we want to run.
+        caseName : str
+            Name of the new .data file we will run.
+        nbProcs : int
+            Number of Processeurs we want to use.
 
         None
 
@@ -143,7 +232,7 @@ class TRUSTCase(object):
             nbProcs  =self.nbProcs_   
         
         
-        return(addCase(directoryOrCase=directory,dataName=self.data,caseName=caseName, nbProcs=nbProcs) ) 
+        return(addCase(directory=directory,dataName=self.data,caseName=caseName, nbProcs=nbProcs) ) 
 
     def showDataset(self):
         """
@@ -164,10 +253,15 @@ class TRUSTCase(object):
 
     def addfile(self,file,complementDir=""):
         """
-        Loremp Ipsum
+        Add a file to the TRUST case repository, idealy the mesh the trust case uses.
 
         Parameters
         ---------
+
+        file: str
+            Adress of the file       
+        complementDir: str
+            complement d'adresse.
 
         None
 
@@ -182,7 +276,6 @@ class TRUSTCase(object):
         dir1="./src/"+complementDir
         #directory in which the file will be executed
         dir2="./build/"+self.dir_+"/" 
-        #print('cp '+dir1+file+' '+dir2+file)
         status = subprocess.call('cp '+dir1+file+' '+dir2+file, shell=True)
 
 
@@ -252,19 +345,24 @@ def dumpData(fiche,list_Trust_user_word=[]):
     ### Print the coloured .data file ###
     print(''.join(test)) 
 
-def addCase(directoryOrCase,dataName ,caseName=None , nbProcs=1,complementDir=""):
+def addCase(directory,dataName ,caseName=None , nbProcs=1,complementDir=""):
     """
     
     Add a case to run.
     
     Parameters
     ---------
-    directoryOrCase: str
-        Adress of the file 
+
+    directory: str
+        Adress of the file       
+    dataName: str
+        Name of the case we want to run.
     caseName : str
-        name of the file
+        Name of the new .data file we will run.
     nbProcs : int
         Number of proceseurs
+    complementDir : str
+        complement d'adresse.
         
     Returns
     -------
@@ -280,41 +378,43 @@ def addCase(directoryOrCase,dataName ,caseName=None , nbProcs=1,complementDir=""
         if nbProcs is None:
             ### test if there is an error. ###
             raise ValueError("addCase method must be either called with a TRUSTCase instance or with a directory, and case name!!")
-        case = directoryOrCase
+        case = directory
     else:
-        case = TRUSTCase(directoryOrCase,dataName, caseName, nbProcs)
+        case = TRUSTCase(directory,dataName, caseName, nbProcs)
     listCases.append(case)
 
     origin=os.getcwd();
     # creation fichier build
-    path=origin+"/build"  
-    #print(path)
+    path=origin+"/build"   
     if not os.path.exists(path): subprocess.run("cp -ar src/ build", shell=True)
     os.chdir(path) 
     
     # creation des fichier      
-    if directoryOrCase!="." :arborescence(directoryOrCase) 
+    if directory!="." :arborescence(directory) 
     os.chdir(origin)  
-    
     #directory data file
-    dir1="./src/"+complementDir
+    dir1="src/"+complementDir 
     #directory in which the file will be executed
-    dir2="./build/"+directoryOrCase+"/" 
-    #print('cp '+dir1+dataName+' '+dir2+caseName)
-    status = subprocess.call('cp '+dir1+dataName+' '+dir2+caseName, shell=True)
+    dir2="build/"+directory+"/"   
+    status = subprocess.call('cp '+dir1+dataName+' '+dir2+caseName, shell=True) 
         
 
     return case
 
-def runCases(verbose=0,baltik=False):
+def runCases(verbose=False,baltik=False,Prerequisite=[]):
     """
     
     Lance trust pour une fiche de Validation
     
     Parameters
     ---------
+    
     verbose: bool
         Whether to print the console output of the run.
+    baltik: bool
+        baltik
+    Prerequisite: str list
+        List of prerequisite function needed.
         
     Returns
     -------
@@ -329,13 +429,12 @@ def runCases(verbose=0,baltik=False):
     ### Change the root to build file ###
     origin=os.getcwd();
     path=origin+"/build"  
-    os.chdir(path)
-
+    os.chdir(path) 
     ### Run Prepare ###
     if os.path.exists("./prepare"):
         subprocess.check_output("chmod u+x prepare", shell=True)
         
-        output = subprocess.check_output("./prepare" , shell=True)
+        output = subprocess.call("./prepare" , shell=True)
         if verbose: 
             print("./prepare")
             print(output.decode('ascii')) 
@@ -350,38 +449,46 @@ def runCases(verbose=0,baltik=False):
 
         direct=path+"/"+case.dir_
 
-        ### Root Case directory ### 
+        ### Root Case directory ###  
         try: 
             os.chdir(direct) 
         except:
-            print("An exception occurred") 
+            raise ValueError("An exception occurred") 
         
         ### Run pre_run ###
         if os.path.exists("./pre_run"):
             subprocess.check_output("chmod u+x pre_run", shell=True)
             ### Mit en comentaire parce que ./pre_run ne retourne rien et produit un bug  ###
             #output = subprocess.check_output("./pre_run" , shell=True)
-            subprocess.run("./pre_run" , shell=True)
+            commande="./pre_run %s" % (case.name_.split(".")[0])
+            subprocess.call(commande, shell=True) 
             if verbose:
                 print("."+direct+"/pre_run")
-            #    print(output.decode('ascii'))
+                print(output.decode('ascii'))
+                
+        if len(Prerequisite)!=0:   
+            for i in Prerequisite:  
+                print(direct) 
+                print("./"+i+" "+direct) 
+                subprocess.call("./"+i+" "+direct , shell=True)  
+                    
+            
         
-        ### Run Case ###
+        ### Run Case ### 
         if not baltik:  
                 baseName = case.name_.split(".")[0]
                 err_file = baseName + ".err"
                 out_file = baseName + ".out"
-                comande = "trust %s %s 2>%s 1>%s"  % (case.name_, str(case.nbProcs_), err_file, out_file) 
-                output = subprocess.call(comande , shell=True)
+                comande  = "trust %s %s 2>%s 1>%s"  % (case.name_, str(case.nbProcs_), err_file, out_file)  
+                output   = subprocess.call(comande , shell=True)
                 if verbose:
                     print(comande)
-                    print(output.decode('ascii'))  
+                    print(output.decode('ascii'))   
             
         ### baltik ###
         if baltik: 
             os.chdir('/export/home/vicban/projects/Gitspace/TRUST_perte_charge/') 
             comande="./TRUST_perte_charge  tests/Reference/New/build/"+direc
-            print(comande)
             output = subprocess.check_output(comande , shell=True)
             if verbose:
                 print(comande)
@@ -389,12 +496,12 @@ def runCases(verbose=0,baltik=False):
             
         ### Run post_run ###
         if os.path.exists("./post_run"):
-            process = Popen("chmod u+x post_run", shell=True, stdout=PIPE)
-            if verbose==0:
-                subprocess.run("./post_run "+path+'/'+direc, shell=True, stdout=PIPE)
-            else:
-                process = Popen("./post_run "+path+'/'+direc, shell=True,stdout=PIPE)
-                print(process.stdout.read())
+            subprocess.check_output("chmod u+x post_run", shell=True)
+            commande="./post_run %s"  % (case.name_.split(".")[0]) 
+            subprocess.call(commande, shell=True)
+            if verbose:
+                print("."+direct+"/post_run")
+                print(output.decode('ascii'))
 
         ### Root in build ###
         os.chdir(origin)
@@ -442,12 +549,20 @@ def tablePerf():
         comande=comande+"/Validation/Outils/Genere_courbe/scripts/extract_perf "+ nom 
         subprocess.run(comande , shell=True) 
         
+        ## Save the file
+        saveFileAccumulator(nom+".perf") 
+        
         ### Run post_run ###
         f=open(nom+".perf","r") 
         
         row=(f.readlines()[0].replace("\n","").split(" ")[1:])
 
         ### Root in build ###
+        if len(row)==6:
+            row_arrange=row[0:5]
+            row_arrange[4]=str(row[4])+"-"+str(row[5])
+            row=row_arrange
+            
         Table.addLigne([row],case.dir_+"/"+nom) 
         
         
@@ -456,7 +571,56 @@ def tablePerf():
     os.chdir(origin) 
     return(Table.df)
         
+def Extract_histogram(domain,Out,file):
+    """
+    
+    Extract the histogram.
+    
+    Parameters
+    ---------
+    domain : str
+        domain.
+    Out    : str
+        Output.
+    file   :str
+        file in which we save the data.
+    
         
+    Returns
+    -------
+    None
+    
+    """       
+    
+    #print("# generated by : `basename %s"  % (domain) )
+
+    origin=os.getcwd();
+    path=origin+"/build"  
+    os.chdir(path) 
+
+    tmp=""
+    flag=False
+    document=open(Out,"r")
+    lines= document.readlines()
+    text="Histogram of the largest angle of each element found into the mesh %s :\n" % (domain)  
+
+    for i in lines:
+        if flag:
+            tmp=tmp+i
+        if i==text:
+            flag=True
+        if i=="\n":
+            flag=False
+
+    if os.path.exists(file):
+        os.remove(file)
+
+    f = open(file, "a")
+    f.write(tmp)
+    f.close()
+
+    os.chdir(origin) 
+    
 def dumpList():
     """
     
@@ -479,11 +643,12 @@ def dumpList():
 def arborescence(directoryOrCase):
     """
     
-    Show the list of cases
+    Create the TRUSTcase repository.
     
     Parameters
     ---------
-    None
+    directoryOrCase:str
+        Adress of the TRUSTcase repository.
         
     Returns
     -------
@@ -493,7 +658,8 @@ def arborescence(directoryOrCase):
     
     direct=directoryOrCase.split("/")
     if (direct[0]==".")|(direct[0]==""): direct=direct[1:]
-    for i in direct:
+    for i in direct: 
         if not os.path.exists(i):
             if not os.path.exists(i):subprocess.call("mkdir "+i, shell=True)
-            os.chdir(i)  
+            os.chdir(i)   
+        else:os.chdir(i) 

@@ -19,7 +19,7 @@ from .trust_statistical_tools_base import StatisticalPostProcessing
 
 
 class SpatialPostProcessing(StatisticalPostProcessing):
-    r"""
+    """
 
     Spatial post processing to analyze lata files.
     Mainly, we give the possibility for the user to extract profiles from visit Query.
@@ -51,8 +51,8 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         if os.path.exists("tmp.out"):
             os.remove("tmp.out")
 
-    def _getCurveFile(self,name):
-        r"""
+    def _getFile(self,name,ext=".curve"):
+        """
 
         Return the name of the curve file
 
@@ -66,10 +66,10 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         The curvefile name (egg. "name" returns CurveFiles/name.curve)
 
         """
-        return(self.temp_folder+name+".curve")
+        return(self.temp_folder + name + ext)
     
     def plot(self,x1,y1,label1="",linestyle1="-",linewidth1=0.5,**kwargs):
-        r"""
+        """
 
         Method to plot one are multiple data. Calls the StatisticalPostProcessing plot.
 
@@ -91,7 +91,7 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         Examples
         --------
         
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/plot_example.py
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/plot_example.py
    
         """
         save_path = kwargs.get("save_path")
@@ -103,7 +103,7 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         StatisticalPostProcessing._plot(self,x1,y1,label1=label1,linestyle1=linestyle1,linewidth1=linewidth1,**kwargs)
 
     def extract_profile(self,lata,field,start_point,end_point,name,frame=-1):
-        r"""
+        """
 
         Method to extract profile from by launching visit and save the result as .curve file. 
         By default frame = -1 that means the last frame of the simulation.
@@ -130,8 +130,7 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         Examples
         --------
 
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/extract_profile_example.py
-
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/extract_profile_example.py
 
         """
         StatisticalPostProcessing._checkPath(self,lata)
@@ -140,17 +139,24 @@ class SpatialPostProcessing(StatisticalPostProcessing):
             os.mkdir(self.temp_folder)
         
         StatisticalPostProcessing.COUNT_CURVE_FILES += 1
-        elb = export_lata_base(lata,"Pseudocolor",field,self.temp_folder + name)
+        elb = export_lata_base(lata,"Pseudocolor",field,self.temp_folder + name,frame=frame)
         SpatialPostProcessing.L_NAME += [name]
-        elb.setFrame(frame)
         # elb.lineout(start_point,end_point) 
         elb.query(start_point,end_point)
         elb.save()
         return()
 
+    def getDimensions(self,lata,field,frame = -1):
+        """
+
+        Get dimensions, [Nx, Ny, Nz].
+
+        """
+        elb = export_lata_base(lata,"Pseudocolor",field,None,frame=frame)
+        return(elb.getDimensions())
     
     def getFrames(self,lata,field):
-        r"""
+        """
         
         Get total number of frames 
 
@@ -169,7 +175,7 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         return(elb.getFrames())
 
     def getSpatialValues(self,name):
-        r"""
+        """
 
         Return the spatial values.
 
@@ -189,16 +195,48 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         --------
         How to use this method.
 
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/getSpatialValues_example.py
-
-
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/getSpatialValues_example.py
 
         """
         X, Y = self._getValuesFromCurve(name)
         return(X,Y)
 
+    def getField(self,name,format="IJK",dimX = -1, dimY = -1, dimZ = -1):
+        """
+
+        Return the fields.
+
+        Parameters
+        ----------
+        name : str
+            Name of the .okc file gived by the user in extract_field method or already stored.
+
+        Returns
+        -------
+        field : array
+            Return the field in the format asked. 
+        X : array
+            X coordinates. If format = "XYZ".
+        Y : array
+            Y coordinates. If format = "XYZ".
+        Z : array
+            Z coordinates. If format = "XYZ".
+
+
+        """
+        X,Y,Z,field = self._getFieldsFromOKC(name)
+        
+        if format == "XYZ":
+            return(field,X,Y,Z)
+
+        if format == "IJK":
+            if dimX <= 0 or dimY <= 0 or dimZ <= 0:
+                raise Exception("Wrong dimensions input.")
+
+            return(field.reshape((dimX,dimY,dimZ)).T)
+
     def spatialAutoCorrelation(self,X,Y,max_lag = None, fit = False):
-        r"""
+        """
 
         Computes spatial signal autocorrelation.
 
@@ -228,7 +266,7 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         --------
         How to use this method.
 
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/spatialAutoCorrelation_example.py
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/spatialAutoCorrelation_example.py
 
         """
         dist, autocorr = StatisticalPostProcessing._computeAutocorrelation(self,X,Y,max_lag)
@@ -239,7 +277,7 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         return(res)
 
     def spatialEnergySpectrum(self,X,Y):
-        r"""
+        """
 
         Computes spatial energy spectrum with Welch method.
 
@@ -262,10 +300,50 @@ class SpatialPostProcessing(StatisticalPostProcessing):
         How to use this method.
 
         
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/spatialEnergySpectrum_example.py
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/spatialEnergySpectrum_example.py
 
         """
         lambd, power = StatisticalPostProcessing._computeWelch(self,X,Y)
         return(lambd,power)
+    
+    def extract_field(self,lata,field,name,frame=-1):
+        """
+
+        Method to extract field from by launching visit and save the result as .okc file. 
+        By default, frame = -1 that means we choose the last frame of the simulation.
+
+        Parameters
+        ----------
+        lata : str
+            Path to the lata file.
+        field : str
+            Name of the field. Example: "VITESSE_X_ELEM_dom" 
+        name : str 
+            Name of the saved .okc file
+        frame : int 
+            Selected frame, frame = -1 for the last frame, optional.  
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Spatial/extract_profile_example.py
+
+
+        """
+        StatisticalPostProcessing._checkPath(self,lata)
+        StatisticalPostProcessing._checkName(self,name)
+        if not os.path.exists(self.temp_folder):
+            os.mkdir(self.temp_folder)
+        
+        # StatisticalPostProcessing.COUNT_CURVE_FILES += 1
+        elb = export_lata_base(lata,"Pseudocolor",field,self.temp_folder + name)
+        elb.setFrame(frame)
+        SpatialPostProcessing.L_NAME += [name]
+        elb.save(type="Xmdv")
+        return()
     
 

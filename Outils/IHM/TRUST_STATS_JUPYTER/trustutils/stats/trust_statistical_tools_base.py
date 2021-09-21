@@ -19,7 +19,7 @@ import sys
 import re
 
 class StatisticalPostProcessing:
-    r"""
+    """
 
     This is the main class of the Statistical StatisticalPostProcessing code of TRUST.
     See also its main derived classes : 
@@ -45,7 +45,6 @@ class StatisticalPostProcessing:
         pass
 
 
-
     ########### 
     ### Spatial 
     ########### 
@@ -69,14 +68,45 @@ class StatisticalPostProcessing:
         Parameters
         ---------
         name : str
-            name of the curve file
+            name of the curve file.
             
         Returns
         -------
         Two arrays: the first one corresponds to the first column and the second one to the second column.
         """
-        curveFile = self._getCurveFile(name)
+        curveFile = self._getFile(name)
         L = np.loadtxt(curveFile)
+        return(L.T)
+    
+    def _getFieldsFromOKC(self,name,maxrows=100):
+        """
+
+        Takes a .okc file and return arrays of fields.
+        Used by SpatialPostProcessing.
+
+        Parameters
+        ---------
+        name : str
+            name of the .okc file.
+            
+        Returns
+        -------
+        Four arrays : array.
+            Returns X, Y, Z and field. 
+        """
+        okcFile = self._getFile(name,ext = ".okc")
+        i = 0
+        # Looks to the first raw of data
+        # and ignores raised warning 
+        while (i<maxrows):
+            try:
+                L = np.loadtxt(okcFile,skiprows=i)
+                break
+            except:
+                i = i + 1 
+        if (i>=maxrows):
+            raise Exception("First row of data not found")
+
         return(L.T)
     
     ############ 
@@ -304,15 +334,16 @@ class StatisticalPostProcessing:
 
         Entries=tf.SonFile(sonFiles[0],None).getEntries()
         field = self._getFieldSon(sonFiles[0])
-
+        # print(Entries)
         for entry in Entries:
-            if field + "_X" in entry: # On verifie si on a VITESSE_X dans entry 
+            if field + "_" + component in entry: # On verifie si on a VITESSE_X dans entry 
                 vec = self._extract_coor_from_entry(entry)
                 if np.linalg.norm(vec_user - vec) < tol: # On verifie si il y a des coordonnees plus proches
                     tol = np.linalg.norm(vec_user - vec )
                     res = entry        
-            elif field + " " in entry :  # Sinon on regarde d'autre champs (pression, etc.)     
-                vec = self._extract_coor_from_entry(entry)
+            elif field + " " in entry :  # Sinon on regarde d'autre champs (pression, etc.)    
+                entry_no_field = entry.replace(field,"")
+                vec = self._extract_coor_from_entry(entry_no_field)
                 if np.linalg.norm(vec_user - vec) < tol:
                     tol = np.linalg.norm(vec_user - vec )
                     res = entry  
@@ -465,7 +496,9 @@ class StatisticalPostProcessing:
         return(time, field, entry)
         
     def _fluc(self,sonFiles,x,y,z,component,startTime):
-        """Computes fluctuation.
+        """
+        
+        Computes fluctuation.
 
         Parameters
         ----------- 
@@ -555,8 +588,6 @@ class StatisticalPostProcessing:
     def _getAverageWindows(self, sonFiles,x ,y ,z=None, component = "X",startTime = None, endTime = None, window = 1,mode = None ):
         """
 
-
-
         Parameters
         ----------
         sonFiles : list
@@ -619,7 +650,9 @@ class StatisticalPostProcessing:
         
     def _baseTables(self, time, field,nb_windows,startTime,window):
         """
+
         Used in _buildTables and _buildTablesStatsConvEvol methods. Building tables to be used in those methods.
+
         Parameters
         ----------
         time : array
@@ -878,7 +911,7 @@ class StatisticalPostProcessing:
     ### Temporal & Spatial 
     ######################
     
-    def _plot(self,x1,y1,label1="",linestyle1="-",linewidth1=0.5,**kwargs):
+    def _plot(self,x1,y1,label1="",linestyle1="-",linewidth1=0.5,color1=None,**kwargs):
         """
 
         Method to plot one are multiple data.
@@ -906,7 +939,7 @@ class StatisticalPostProcessing:
         plt.rc('ytick', labelsize=14)
         plt.rcParams.update({'font.size': 14})
 
-        plt.plot(x1,y1,label = label1, linestyle = linestyle1, linewidth = linewidth1)
+        plt.plot(x1,y1,label = label1, linestyle = linestyle1, linewidth = linewidth1, color = color1)
         i = 2
         varb = kwargs.get("x{0}".format(i))
         # Multiplot
@@ -916,9 +949,10 @@ class StatisticalPostProcessing:
             label = kwargs.get("label{0}".format(i))
             linestyle = kwargs.get("linestyle{0}".format(i))
             linewidth = kwargs.get("linewidth{0}".format(i))
+            color = kwargs.get("color{0}".format(i))
             if linewidth == None:
                 linewidth = 0.5
-            plt.plot(x,y,label = label, linestyle = linestyle, linewidth = linewidth)
+            plt.plot(x,y,label = label, linestyle = linestyle, linewidth = linewidth, color = color)
             i = i + 1 
             varb = kwargs.get("x{0}".format(i))  
 
@@ -936,7 +970,11 @@ class StatisticalPostProcessing:
         save_path = kwargs.get("save_path")
         loc = kwargs.get("loc")
         borderpad = kwargs.get("label_size")
+        format = kwargs.get("format")
 
+        # Setting default values
+        if title == None:
+            title = ""          
         if save_path == None:
             save_path = "results/"
         if (xscale) == (None):
@@ -953,26 +991,26 @@ class StatisticalPostProcessing:
         if ymax != None:
             plt.ylim(ymax = ymax)
         if loc == None:
-            loc = 'best'
+            loc = 'upper right'
         if borderpad == None:
             borderpad = 0.4
+        if format == None:
+            format = 'png'
 
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         plt.title(title)
         plt.xscale(xscale)
         plt.yscale(yscale) 
-        plt.grid()
-        plt.legend(loc = loc, borderpad = borderpad)
+        plt.grid(True,which="both",ls = "-",color='0.65')
+        plt.legend(loc = loc, borderpad = borderpad,fontsize = 11)
         if save_path != None and not os.path.exists(save_path):
             os.mkdir(save_path)
         if (name) == None :    
             StatisticalPostProcessing.COUNT += 1
-            plt.savefig(save_path + "fig_" + str(StatisticalPostProcessing.COUNT)+".png",format='png')
+            plt.savefig(save_path + "fig_" + str(StatisticalPostProcessing.COUNT)+"."+format,format=format,bbox_inches="tight")
         else:
-            plt.savefig(save_path + name + ".png",format='png')
-
-        #plt.show()
+            plt.savefig(save_path + name +"."+ format,format=format,bbox_inches="tight")
         plt.close()
         return()
     
@@ -1021,7 +1059,8 @@ class StatisticalPostProcessing:
 
         Return
         ------
-        next higher power of 2 of of every element of array
+        y : array 
+            next higher power of 2 of of every element of array
 
         """
         return(np.ceil(np.log2(x)))
@@ -1103,7 +1142,7 @@ class StatisticalPostProcessing:
         xf : array
 
         fft : array
-            fourrier transform
+            Fourier transform
 
         """
         steps = self._getSteps(X)

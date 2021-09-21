@@ -29,7 +29,7 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         pass
 
     def plot(self,x1,y1,label1="",linestyle1="-",linewidth1=0.5,**kwargs):
-        r"""
+        """
         
         Method to plot one are multiple data. Calls the StatisticalPostProcessing plot.
 
@@ -56,32 +56,32 @@ class TemporalPostProcessing(StatisticalPostProcessing):
 
         .. code-block:: python
 
-            # Simple plot
             obj.plot(
                 X, 
                 Y, 
-                label = "Vitesse_x",     
-                linestyle = '-',        
-                linewidth=0.5,          
-                scale="linear",         
+                label1 = "Vitesse_x",     
+                linestyle1 = '-',        
+                linewidth1=0.5,          
+                xscale="linear",    # or "log" ...
+                yscale="linear",    # or "log" ... 
                 title="My title",
                 xlabel="distance",
-                ylabel="Vitesse_x"
+                ylabel="Vitesse_x",
+                name = "profX"
                 ) 
 
             # Multi-plot 
             obj.plot(
-                X, Y, label = "Vitesse_X",
-                x1 = X1, y1 = Y1, label1 = "Vitesse_Y",
-                x2 = ..., y2 = ..., label2 = ...,
-                title = "Velocities", xlabel="distance", ylabel="Velocities"
-                )
+                x1 = X, y1  = Y, label1 = "Vitesse_X",
+                x2 = X2, y2 = Y2, label2 = "Vitesse_Y",
+                title = "Velocities", xlabel="distance", ylabel="Velocities", name = "ProfY"
+            )
 
         """
         StatisticalPostProcessing._plot(self,x1,y1,label1=label1,linestyle1=linestyle1,linewidth1=linewidth1,**kwargs)
     
     def instantaneousValues(self,sonFiles,x ,y ,z=None,component="X"):
-        r"""
+        """
 
         Get fields (time, velocities, ...)
 
@@ -110,15 +110,15 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         Examples
         --------
 
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/instantaneousValues_example.py
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/instantaneousValues_example.py
 
 
         """
         X, Y, label = StatisticalPostProcessing._getInstantaneous(self,sonFiles ,x ,y ,z,component)
         return(X,Y,label)
     
-    def getdtValues(self, sonFiles, entry="dt"): # To be fixed
-        r"""
+    def getdtValues(self, sonFiles, entry="dt"): 
+        """
 
         This method plots the data found in the FILE.dt_ev
 
@@ -142,7 +142,7 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         Examples
         --------
 
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/getdtValues_example.py
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/getdtValues_example.py
 
 
         """
@@ -150,7 +150,7 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         return(X,Y)
 
     def temporalFluctuations(self,sonFiles ,x ,y ,z=None, startTime = None,component = "X"):
-        r"""
+        """
 
         Method that computes fluctuation of a signal
 
@@ -183,14 +183,14 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         Examples
         --------
 
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/temporalFluctuations_example.py
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalFluctuations_example.py
 
         """
         X, Y, label = StatisticalPostProcessing._getFluctuation(self,sonFiles ,x ,y , z, startTime, component)
         return(X,Y,label)
 
     def temporalAverageWindows(self, sonFiles, x ,y ,z=None, component = "X",startTime = None, endTime = None, window = 1,mode = None):
-        r"""
+        """
 
         Window averaging, statistical convergence, etc.
         
@@ -231,14 +231,14 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         Examples
         --------
 
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/temporalAverageWindows_example.py
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalAverageWindows_example.py
 
         """
         X, Y, label = StatisticalPostProcessing._getAverageWindows(self,sonFiles,x ,y ,z, component, startTime, endTime , window, mode)
         return(X, Y,label)
 
     def temporalSegmentSpatialMean(self, sonFiles, component = "X"):
-        r"""
+        """
 
         Performs the temporal spatial average on a segment.
 
@@ -259,7 +259,7 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         Examples
         --------
 
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/temporalSegmentSpatialMean_example.py
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalSegmentSpatialMean_example.py
 
         """  
         X, Y, label = StatisticalPostProcessing._getSegmentSpatialMean(self,sonFiles,component)
@@ -268,7 +268,7 @@ class TemporalPostProcessing(StatisticalPostProcessing):
     def temporalAutoCorrelation(self, sonFiles, x ,y ,z=None, digit = 5,
                                 component = "X", startTime = None, max_lag = None, 
                                 fit = False, mode = "autocorrelation"):
-        r"""
+        """
 
         Performs temporal autocorrelation on signal.
 
@@ -293,7 +293,7 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         mode : str
                 You can select a mode as this:
                     - mode = ``"autocorrelation"`` (default)
-                    - mode = ``"fft"`` returns only fourrier transform of autocorrlation
+                    - mode = ``"fft"`` returns only Fourier transform of autocorrlation
                     - mode = ``"autocorrelation fft"`` for both
      
         Returns
@@ -309,14 +309,14 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         Xfft : array
             Array of frenquencies, Only if ``"fft"`` is in mode.
         Yfft : array
-            Fourrier transform of autocorrelation,  Only if ``"fft"`` is in mode.
+            Fourier transform of autocorrelation,  Only if ``"fft"`` is in mode.
         label : str
             Label of the field (can be used as label in plot method)
 
         Examples
         --------
 
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/temporalAutoCorrelation_example.py
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalAutoCorrelation_example.py
  
 
         """
@@ -330,12 +330,12 @@ class TemporalPostProcessing(StatisticalPostProcessing):
             res = res + [Xfit,Yfit]
         if "fft" in mode:
             Xfft, Yfft = StatisticalPostProcessing._computeFFT(self,X,Y)
-            res = res + [Xfft, Yfft,"Fourrier transform of autocorrelation"]
+            res = res + [Xfft, Yfft,"Fourier transform of autocorrelation"]
         return(res)
 
 
     def energySpectrum(self, sonFiles,x ,y ,z=None, component = "X",startTime = None,hanning=False,fft=False):
-        r"""
+        """
 
         Computes the temporal energy spectrum using the Welch method.
 
@@ -366,7 +366,7 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         Examples
         --------
 
-        .. literalinclude:: ../../tests/stats/trust_statistical_examples/energySpectrum_example.py
+        .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/energySpectrum_example.py
  
         """
         if hanning:

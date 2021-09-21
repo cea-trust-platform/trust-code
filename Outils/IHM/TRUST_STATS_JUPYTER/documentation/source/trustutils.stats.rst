@@ -27,6 +27,14 @@ trustutils.stats.trust\_statistical\_tools\_temporal module
    :members:
    :undoc-members:
    :show-inheritance:
+   
+trustutils.stats.trust\_statistical\_tools\_IJK module
+-----------------------------------------------------------
+
+.. automodule:: trustutils.stats.trust_statistical_tools_IJK
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------

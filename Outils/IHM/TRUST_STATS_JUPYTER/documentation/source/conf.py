@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Reference manual'
-author = 'Morad BEN TAYEB'
+author = 'Morad BEN TAYEB and Victor BANON GARCIA'
 
 
 # -- General configuration ---------------------------------------------------
@@ -55,7 +55,7 @@ man_pages = [
 latex_show_urls = 'footnote'
 
 # To show or not private members 
-autodoc_default_options = {     "members": True,     "undoc-members": True,     "private-members": True  }
+autodoc_default_options = {     "members": True,     "undoc-members": True,     "private-members": False  }
 
 
 # generate autosummary even if no references
