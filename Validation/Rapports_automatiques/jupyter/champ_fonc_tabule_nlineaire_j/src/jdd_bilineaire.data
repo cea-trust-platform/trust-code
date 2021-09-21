@@ -1,0 +1,129 @@
+# PARALLEL OK 8 #
+dimension 2
+pb_thermohydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0 0
+        Nombre_de_Noeuds 20 20
+        Longueurs 1 1
+    }
+    {
+        bord paroi Y = 0 0 <= X <= 1
+        bord paroi Y = 1 0 <= X <= 1
+        bord paroi X = 0 0 <= Y <= 1
+        bord paroi X = 1 0 <= Y <= 1
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+system "rm -rf decoup; mkdir -p decoup"
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones decoup/dom
+    ecrire_decoupage decoup/dom.txt
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter decoup/dom.Zones    dom
+/* Read_file dom_ssz_par.geo ; */
+END SCATTER #
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0
+    nb_pas_dt_max 0
+    solveur implicite { solveur petsc cli { } }
+}
+
+VDF dis
+
+fluide_incompressible  mil_fluide
+lire mil_fluide
+{
+    rho      champ_uniforme 1  2000.0
+    cp       champ_uniforme 1  3075.0
+    beta_th  champ_fonc_tabule { viscosite_dynamique conductivite } 1
+    {
+        2 0 1 # viscosite #
+        2 0 1 # conductivite #
+
+        # valeurs_v_c #
+        0 # v = 0 c = 0 #
+        1 # v = 0 c = 1 #
+        2 3 # pareil pour v = 1 #
+    }
+    mu       champ_fonc_xyz dom 1 x
+    lambda   champ_fonc_xyz dom 1 y
+}
+
+associate pb dom
+associate pb mil_fluide
+
+associate pb sch
+discretize pb dis
+
+Read pb
+{
+    navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection  { amont }
+        diffusion   { }
+        initial_conditions  { vitesse champ_uniforme 2 0 0 }
+        boundary_conditions { paroi paroi_fixe }
+    }
+
+    convection_diffusion_temperature
+    {
+        convection  { amont }
+        diffusion   { }
+        initial_conditions  { temperature champ_uniforme 1 0 }
+        boundary_conditions
+        { paroi paroi_adiabatique }
+    }
+
+    Post_processing
+    {
+        Definition_champs
+        {
+            erreur_interp transformation
+            {
+                methode formule expression 1 abs(b-int_b)
+                sources
+                {
+                    refChamp { Pb_champ pb dilatabilite nom_source b } ,
+                    transformation
+                    {
+                        methode formule expression 1 0*(1-x)*(1-y)+2*(x)*(1-y)+3*(x)*(y)+1*(1-x)*(y) localisation elem nom_source int_b source refChamp { Pb_champ pb pression }
+                    }
+                }
+            }
+            erreur_L2 reduction_0D { methode l2_norm sources_reference { erreur_interp } }
+
+        }
+        probes { err erreur_L2 periode 1e-6 Numero_elem_sur_maitre 0 }
+        format lata
+        fields dt_post 1e8
+        {
+            viscosite_dynamique elem
+            conductivite        elem
+            dilatabilite        elem
+            erreur_interp       elem
+        }
+    }
+}
+
+Solve pb
+End
