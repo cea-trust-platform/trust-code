@@ -375,7 +375,7 @@ void Milieu_base::calculer_alpha()
       tabalpha = lambda.valeurs();
 
       // [ABN]: allows variable rho, Cp at this level (will be used by Solide_Milieu_Variable for instance).
-      if (sub_type(Champ_Uniforme,rho))
+      if (sub_type(Champ_Uniforme,rho.valeur()))
         tabalpha /= rho.valeurs()(0,0);
       else
         tab_divide_any_shape(tabalpha,rho.valeurs());
