@@ -80,7 +80,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
   Motcle localisation;
   double un_temps;
   s>>chaine_lue;
-  int use_existing_domain=0, field_size;
+  int use_existing_domain=0, field_size, nom_decoup_lu = 0;
   last_time_only_=0;
   if (chaine_lue=="use_existing_domain")
     {
@@ -92,7 +92,6 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
       last_time_only_=1;
       s>>chaine_lue;
     }
-  nom_decoup = Nom("decoup/") + nom_dom + ".txt";
   if (chaine_lue=="decoup")
     {
       s>>nom_decoup;
@@ -107,9 +106,11 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
           Cerr << "Error: you need to use use_existing_domain option with Decoup option." << finl;
           Process::exit();
         }
+      nom_decoup_lu = 1;
     }
   nom_fichier_med_ = chaine_lue;
   lire_nom_med(nom_dom,s);
+  if (!nom_decoup_lu) nom_decoup = Nom("decoup/") + nom_dom + ".txt"; //valeur par defaut de nom_decoup
   lire_nom_med(nom_champ,s);
   s>>localisation;
   s>>un_temps;
