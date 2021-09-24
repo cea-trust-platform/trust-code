@@ -1519,7 +1519,7 @@ case $TRUST_ARCH_CC in
         fi
 	F77Flags="-O3 $FPIC" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -fdefault-integer-8"
 	# -fallow-argument-mismatch pour gfortran>=10.0.0 (plusieurs librairies Fortran ne compilent pas sinon dont LIBSKIT la premiere):
-        [ "`echo $TRUST_VERSION_GNU | awk -F. '{print $1>=10}'`" = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
+        [ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>=10)}'`" = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
 	ccFLAGS="-O3 $FPIC $PTHREAD"
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
