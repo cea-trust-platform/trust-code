@@ -209,8 +209,12 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       if(!rho_cp_comme_T_.non_nul())
         {
           const double temps = pb.schema_temps().temps_courant();
-          dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "J/m^3/K", rho.nb_comp(), temps, rho_cp_comme_T_);
-          dis.discretiser_champ( "champ_elem", zone_dis,    "rho_cp_elem", "J/m^3/K", rho.nb_comp(), temps,    rho_cp_elem_);
+          // E. Saikali
+          // XXX : j'ai remis nb_comp = 1, sinon ca bloque dans Solveur_Masse_base => tab_divide_any_shape
+          // parce qu'on a pas line_size % line_size_vx == 0 (cas nb_comp >1 pour rho et cp
+          // TODO : FIXME : faut coder un cas generique dans DoubleVect::tab_divide_any_shape... bon courage
+          dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "J/m^3/K", 1 /* rho.nb_comp() */, temps, rho_cp_comme_T_);
+          dis.discretiser_champ( "champ_elem", zone_dis,    "rho_cp_elem", "J/m^3/K", 1 /* rho.nb_comp() */, temps,    rho_cp_elem_);
         }
       champs_compris_.ajoute_champ(rho_cp_comme_T_.valeur());
       champs_compris_.ajoute_champ(rho_cp_elem_.valeur());
