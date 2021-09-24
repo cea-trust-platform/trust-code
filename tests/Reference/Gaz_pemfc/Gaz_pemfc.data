@@ -59,7 +59,7 @@ Lire air
 {
   pression_thermo   100000.
   use_total_pressure 1 /* 0 is by default */
-  nb_pas_dt_pression 100 /* Use the total pressure in the EOS */
+  time_activate_ptot 0.00001 /* In seconds : use the total pressure in the EOS */
   loi_etat binaire_gaz_parfait_WC
   {
     temperature 373.15

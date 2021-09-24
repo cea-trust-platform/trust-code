@@ -34,7 +34,7 @@
 Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable_base);
 
 Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0), use_hydrostatic_pressure_(0),
-  nb_pas_dt_pression_(-1), sim_resumed_(0) {}
+  sim_resumed_(0), time_activate_ptot_(-1.) {}
 
 Sortie& Fluide_Weakly_Compressible::printOn(Sortie& os) const
 {
@@ -56,7 +56,7 @@ void Fluide_Weakly_Compressible::set_param(Param& param)
   param.ajouter("pression_xyz",&Pth_xyz_);
   param.ajouter("use_total_pressure",&use_total_pressure_);
   param.ajouter("use_hydrostatic_pressure",&use_hydrostatic_pressure_);
-  param.ajouter("nb_pas_dt_pression",&nb_pas_dt_pression_);
+  param.ajouter("time_activate_ptot",&time_activate_ptot_);
 
   // Param non-standard
   param.ajouter_non_std("loi_etat",(this),Param::REQUIRED);
@@ -216,10 +216,10 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
           Process::exit();
         }
 
-      if ( use_total_pressure_ && nb_pas_dt_pression_==-1 )
+      if ( use_total_pressure_ && time_activate_ptot_==-1. )
         {
           Cerr << "Error in your data file : This is not allowed !"<< finl;
-          Cerr << "You should define nb_pas_dt_pression when using the flag use_total_pressure !" << finl;
+          Cerr << "You should define time_activate_ptot when using the flag use_total_pressure !" << finl;
           Process::exit();
         }
 
@@ -450,11 +450,10 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
 {
   if (use_total_pressure())
     {
-      // TODO : FIXME : Should not be like that
-      if (le_probleme_->schema_temps().nb_pas_dt() == nb_pas_dt_pression_  && !use_saved_data() )
-        {
-          for (int i=0 ; i<Pth_tab_.dimension_tot(0) ; i++) Pth_tab_(i,0) = P_NS_(i,0) + Pth_;
-        }
+      double t0= le_probleme_->schema_temps().temps_courant(), t1 = le_probleme_->schema_temps().temps_futur(1);
+      // time to activate ptot and change the eos pressure
+      if ( t0 < time_activate_ptot_ && t1 > time_activate_ptot_ )
+        for (int i=0 ; i<Pth_tab_.dimension_tot(0) ; i++) Pth_tab_(i,0) = P_NS_(i,0) + Pth_;
     }
   else if (use_hydrostatic_pressure())
     {

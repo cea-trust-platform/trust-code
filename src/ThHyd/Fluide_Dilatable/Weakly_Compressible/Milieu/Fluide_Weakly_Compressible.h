@@ -75,7 +75,8 @@ public :
 protected:
   Champ_Don Pth_xyz_,pression_hydro_,pression_eos_;
   DoubleTab Pth_tab_, Pth_n_tab_,P_NS_;
-  int use_total_pressure_, use_hydrostatic_pressure_,nb_pas_dt_pression_, sim_resumed_; // the default value is 0 => i.e: do not use total P in EOS unless activated
+  int use_total_pressure_, use_hydrostatic_pressure_, sim_resumed_;
+  double time_activate_ptot_;
   REF(Probleme_base) le_probleme_;
 
 private:
