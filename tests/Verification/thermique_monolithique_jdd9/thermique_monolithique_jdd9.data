@@ -1,5 +1,5 @@
 # Thermohydraulique 2D couplee a conduction 2D #
-# PARALLEL OK 8 #
+# PARALLEL OK 2 #
 dimension 2
 Pb_conduction pb1
 Pb_Thermohydraulique pb2
