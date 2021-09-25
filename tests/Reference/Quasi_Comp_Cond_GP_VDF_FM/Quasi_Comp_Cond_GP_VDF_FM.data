@@ -1,7 +1,7 @@
 # ThermoHydraulique 3D : conduite chauffee quasi compressible gaz parfait VDF #
 # PARALLEL OK 8 #
 dimension 3
-Pb_Thermohydraulique_QC_fraction_massique pb
+Pb_Thermohydraulique_especes_QC pb
 Domaine dom
 # BEGIN MESH #
 Mailler dom 

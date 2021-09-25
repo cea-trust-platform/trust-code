@@ -285,7 +285,7 @@ double EDO_Pression_th_VEF::masse_totale(double P,const DoubleTab& T)
       for (int i = 0; i < nb_faces; i++)
         {
           double r = 8.3143 / Masse_mol_mel[i];
-          tmp[i] = loi_mel_GP.calculer_masse_volumique_case(P, T[i], r,i);
+          tmp[i] = loi_mel_GP.calculer_masse_volumique(P, T[i], r);
         }
     }
   const double M = Champ_P1NC::calculer_integrale_volumique(la_zone.valeur(), tmp, FAUX_EN_PERIO);

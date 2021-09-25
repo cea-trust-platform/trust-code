@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,29 +15,23 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Problemes_Scalaires_Passifs.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Turbulence
+// Directory:   $TRUST_ROOT/src/ThHyd/Incompressible/Problems
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Problemes_Scalaires_Passifs_inclus
 #define Problemes_Scalaires_Passifs_inclus
 
-#include <MacPbeqsup.h>
-
+#include <Pb_Thermohydraulique_Concentration.h>
+#include <Pb_Hydraulique_Concentration.h>
 #include <Pb_Thermohydraulique.h>
 #include <Pb_Conduction.h>
-#include <Pb_Thermohydraulique_QC.h>
+#include <MacPbeqsup.h>
 
-#include <Pb_Hydraulique_Concentration.h>
-#include <Pb_Thermohydraulique_Concentration.h>
-
+declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Concentration_Scalaires_Passifs,Pb_Thermohydraulique_Concentration)
+declare_instanciable_pb_eq_sup(Pb_Hydraulique_Concentration_Scalaires_Passifs,Pb_Hydraulique_Concentration)
 declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Scalaires_Passifs,Pb_Thermohydraulique)
 declare_instanciable_pb_eq_sup(Pb_Conduction_Scalaires_Passifs,Pb_Conduction)
-declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_QC_fraction_massique,Pb_Thermohydraulique_QC)
 
-declare_instanciable_pb_eq_sup(Pb_Hydraulique_Concentration_Scalaires_Passifs,Pb_Hydraulique_Concentration)
-declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Concentration_Scalaires_Passifs,Pb_Thermohydraulique_Concentration)
-
-#endif
+#endif /* Problemes_Scalaires_Passifs_inclus */

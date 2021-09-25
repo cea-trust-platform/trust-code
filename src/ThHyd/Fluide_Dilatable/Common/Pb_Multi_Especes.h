@@ -14,53 +14,20 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Melange_GP_base.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Loi_Etat
-// Version:     /main/14
+// File:        Pb_Multi_Especes.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat_Melange_GP_base.h>
-#include <Champ_Uniforme.h>
-#include <Champ_Fonc_Tabule.h>
-#include <Debog.h>
-#include <Zone_VF.h>
-#include <Probleme_base.h>
-#include <Param.h>
-#include <Champ_Inc_base.h>
-#include <DoubleTab.h>
+#ifndef Pb_Multi_Especes_inclus
+#define Pb_Multi_Especes_inclus
 
-Implemente_base(Loi_Etat_Melange_GP_base,"Loi_Etat_Melange_Gaz_Parfait_base",Loi_Etat_GP_base);
-// XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
+#include <Pb_Thermohydraulique_QC.h>
+#include <Pb_Thermohydraulique_WC.h>
+#include <MacPbeqsup.h>
 
-Sortie& Loi_Etat_Melange_GP_base::printOn(Sortie& os) const
-{
-  os <<que_suis_je()<< finl;
-  return os;
-}
+declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Especes_QC,Pb_Thermohydraulique_QC)
+declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Especes_WC,Pb_Thermohydraulique_WC)
 
-Entree& Loi_Etat_Melange_GP_base::readOn(Entree& is)
-{
-  return is;
-}
-
-// Description:
-//    Associe le fluide a la loi d'etat
-// Precondition:
-// Parametre: Fluide_Quasi_Compressible& fl
-//    Signification: le fluide associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: lecture
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Loi_Etat_Melange_GP_base::associer_fluide(const Fluide_Dilatable_base& fl)
-{
-  Loi_Etat_base::associer_fluide(fl);
-}
-
-
+#endif /* Pb_Multi_Especes_inclus */

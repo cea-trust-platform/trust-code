@@ -57,10 +57,13 @@ public :
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
 
   // Methodes inlines
+  inline Probleme_base& get_problem() { return le_probleme_.valeur(); }
   inline const Champ_Don& pression_hydro() const { return pression_hydro_; }
   inline Champ_Don& pression_hydro() { return pression_hydro_; }
   inline const Champ_Don& pression_eos() const { return pression_eos_; }
   inline Champ_Don& pression_eos() { return pression_eos_; }
+  inline const Champ_Don& fraction_massique_nonresolue() const { return unsolved_species_; }
+  inline Champ_Don& fraction_massique_nonresolue() { return unsolved_species_; }
   inline const DoubleTab& pression_th_tab() { return Pth_tab_; } // Tab Pression thermodynamique
   inline const DoubleTab& pression_thn_tab() { return Pth_n_tab_; } // Tab Pression thermodynamique a l'etape precedente
   inline void secmembre_divU_Z(DoubleTab& tab_W) const { eos_tools_->secmembre_divU_Z(tab_W); }
@@ -73,7 +76,7 @@ public :
   inline bool use_saved_data() { return sim_resumed_; }
 
 protected:
-  Champ_Don Pth_xyz_,pression_hydro_,pression_eos_;
+  Champ_Don Pth_xyz_,pression_hydro_,pression_eos_,unsolved_species_;
   DoubleTab Pth_tab_, Pth_n_tab_,P_NS_;
   int use_total_pressure_, use_hydrostatic_pressure_, sim_resumed_;
   double time_activate_ptot_;

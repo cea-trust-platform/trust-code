@@ -43,7 +43,6 @@ class Loi_Etat_Binaire_GP_base : public Loi_Etat_Melange_GP_base
   Declare_base_sans_constructeur(Loi_Etat_Binaire_GP_base);
 public:
   Loi_Etat_Binaire_GP_base();
-  void associer_fluide(const Fluide_Dilatable_base& fl);
   void calculer_lambda();
   void calculer_mu();
   void calculer_mu_wilke();
@@ -59,9 +58,6 @@ public:
 
 protected:
   double massmol1_,massmol2_,mu1_,mu2_,tempr_,diff_coeff_;
-
-private :
-  static constexpr double R_GAS = 8.314472;
 };
 
 #endif /* Loi_Etat_Binaire_GP_base_included */

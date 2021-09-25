@@ -14,53 +14,15 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Melange_GP_base.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Loi_Etat
-// Version:     /main/14
+// File:        Problemes_Scalaires_Passifs.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Incompressible/Problems
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat_Melange_GP_base.h>
-#include <Champ_Uniforme.h>
-#include <Champ_Fonc_Tabule.h>
-#include <Debog.h>
-#include <Zone_VF.h>
-#include <Probleme_base.h>
-#include <Param.h>
-#include <Champ_Inc_base.h>
-#include <DoubleTab.h>
+#include <Problemes_Scalaires_Passifs.h>
 
-Implemente_base(Loi_Etat_Melange_GP_base,"Loi_Etat_Melange_Gaz_Parfait_base",Loi_Etat_GP_base);
-// XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
-
-Sortie& Loi_Etat_Melange_GP_base::printOn(Sortie& os) const
-{
-  os <<que_suis_je()<< finl;
-  return os;
-}
-
-Entree& Loi_Etat_Melange_GP_base::readOn(Entree& is)
-{
-  return is;
-}
-
-// Description:
-//    Associe le fluide a la loi d'etat
-// Precondition:
-// Parametre: Fluide_Quasi_Compressible& fl
-//    Signification: le fluide associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: lecture
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Loi_Etat_Melange_GP_base::associer_fluide(const Fluide_Dilatable_base& fl)
-{
-  Loi_Etat_base::associer_fluide(fl);
-}
-
-
+implemente_pb_eq_sup(Pb_Thermohydraulique_Concentration_Scalaires_Passifs,"Pb_Thermohydraulique_Concentration_Scalaires_Passifs",Pb_Thermohydraulique_Concentration,3)
+implemente_pb_eq_sup(Pb_Hydraulique_Concentration_Scalaires_Passifs,"Pb_Hydraulique_Concentration_Scalaires_Passifs",Pb_Hydraulique_Concentration,2)
+implemente_pb_eq_sup(Pb_Thermohydraulique_Scalaires_Passifs,"Pb_Thermohydraulique_Scalaires_Passifs",Pb_Thermohydraulique,2)
+implemente_pb_eq_sup(Pb_Conduction_Scalaires_Passifs,"Pb_Conduction_Scalaires_Passifs",Pb_Conduction,1)

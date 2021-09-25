@@ -30,41 +30,11 @@
 
 Implemente_base(Convection_Diffusion_Espece_Fluide_Dilatable_base,"Convection_Diffusion_Espece_Fluide_Dilatable_base",Convection_Diffusion_std);
 
-// Description:
-//    Simple appel a: Convection_Diffusion_std::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& is
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Convection_Diffusion_Espece_Fluide_Dilatable_base::printOn(Sortie& is) const
 {
   return Convection_Diffusion_std::printOn(is);
 }
 
-// Description:
-//    Verifie si l'equation a une inconnue et un fluide associe
-//    et appelle Convection_Diffusion_std::readOn(Entree&).
-// Precondition: l'objet a une inconnue associee
-// Precondition: l'objet a un fluide associe
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Convection_Diffusion_Espece_Fluide_Dilatable_base::readOn(Entree& is)
 {
   assert(l_inco_ch.non_nul() && le_fluide.non_nul());

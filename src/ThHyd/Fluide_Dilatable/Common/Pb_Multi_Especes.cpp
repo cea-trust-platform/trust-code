@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,16 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Problemes_Scalaires_Passifs.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Turbulence
+// File:        Pb_Multi_Especes.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Problemes_Scalaires_Passifs.h>
-implemente_pb_eq_sup(Pb_Thermohydraulique_Scalaires_Passifs,"Pb_Thermohydraulique_Scalaires_Passifs",Pb_Thermohydraulique,2)
-implemente_pb_eq_sup(Pb_Conduction_Scalaires_Passifs,"Pb_Conduction_Scalaires_Passifs",Pb_Conduction,1)
-implemente_pb_eq_sup(Pb_Thermohydraulique_QC_fraction_massique,"Pb_Thermohydraulique_QC_fraction_massique",Pb_Thermohydraulique_QC,2)
+#include <Pb_Multi_Especes.h>
 
-implemente_pb_eq_sup(Pb_Hydraulique_Concentration_Scalaires_Passifs,"Pb_Hydraulique_Concentration_Scalaires_Passifs",Pb_Hydraulique_Concentration,2)
-implemente_pb_eq_sup(Pb_Thermohydraulique_Concentration_Scalaires_Passifs,"Pb_Thermohydraulique_Concentration_Scalaires_Passifs",Pb_Thermohydraulique_Concentration,3)
+implemente_pb_eq_sup(Pb_Thermohydraulique_Especes_QC,"Pb_Thermohydraulique_Especes_QC",Pb_Thermohydraulique_QC,2)
+implemente_pb_eq_sup(Pb_Thermohydraulique_Especes_WC,"Pb_Thermohydraulique_Especes_WC",Pb_Thermohydraulique_WC,2)

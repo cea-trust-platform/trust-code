@@ -23,13 +23,9 @@
 #ifndef Loi_Etat_Multi_GP_QC_included
 #define Loi_Etat_Multi_GP_QC_included
 
-#include <Loi_Etat_Multi_GP_base.h>
 #include <Convection_Diffusion_Espece_Multi_QC.h>
-#include <Ref_Champ_Inc_base.h>
+#include <Loi_Etat_Multi_GP_base.h>
 #include <Ref_Espece.h>
-#include <List.h>
-
-class Fluide_Dilatable_base;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -41,7 +37,6 @@ class Fluide_Dilatable_base;
 //     Fluide_Dilatable_base Loi_Etat_base Loi_Etat_Multi_GP_base
 //////////////////////////////////////////////////////////////////////////////
 
-Declare_liste(REF(Champ_Inc_base));
 Declare_liste(REF(Espece));
 
 class Loi_Etat_Multi_GP_QC : public Loi_Etat_Multi_GP_base
@@ -49,37 +44,23 @@ class Loi_Etat_Multi_GP_QC : public Loi_Etat_Multi_GP_base
   Declare_instanciable_sans_constructeur(Loi_Etat_Multi_GP_QC);
 
 public :
-
   Loi_Etat_Multi_GP_QC();
-  void associer_fluide(const Fluide_Dilatable_base&);
   void associer_espece(const Convection_Diffusion_Espece_Multi_QC& eq);
-  void calculer_lambda();
-  void calculer_alpha();
-  void calculer_mu();
-  void calculer_mu_sur_Sc();
-  void calculer_mu0();
-  void calculer_masse_volumique();
-  void calculer_masse_molaire();
   void calculer_masse_molaire(DoubleTab& M) const;
-  void calculer_Cp();
+  void calculer_tab_Cp(DoubleTab& cp) const;
+  void calculer_masse_volumique();
+  void calculer_mu_sur_Sc();
   double calculer_masse_volumique(double,double) const;
-
-  virtual void initialiser_inco_ch();
-  virtual void associer_inconnue(const Champ_Inc_base& inconnue);
-  virtual void calculer_tab_Cp(DoubleTab& cp) const;
-  virtual void rabot(int futur=0);
-  virtual double calculer_masse_volumique_case(double P,double T,double r, int som) const;
-
-  // Methodes inlines
-  inline const DoubleTab& masse_molaire() const { return Masse_mol_mel; }
-  inline DoubleTab& masse_molaire() { return Masse_mol_mel; }
+  double calculer_masse_volumique(double P,double T,double r) const;
 
 protected :
+  void rabot(int futur = 0);
+  LIST(REF(Espece)) liste_especes;
   int correction_fraction_,ignore_check_fraction_;
   double Sc_,dtol_fraction_;
-  DoubleTab Masse_mol_mel;
-  LIST(REF(Champ_Inc_base)) liste_Y;
-  LIST(REF(Espece)) liste_especes;
+
+private:
+  void calculer_mu_wilke();
 };
 
 #endif /* Loi_Etat_Multi_GP_QC_included */

@@ -24,6 +24,7 @@
 #define Loi_Etat_Multi_GP_WC_included
 
 #include <Loi_Etat_Multi_GP_base.h>
+#include <Champ_Inc.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -41,7 +42,28 @@ class Loi_Etat_Multi_GP_WC : public Loi_Etat_Multi_GP_base
 
 public :
   Loi_Etat_Multi_GP_WC();
+  void initialiser_inco_ch();
+  void calculer_masse_molaire(DoubleTab& M) const;
+  void calculer_tab_Cp(DoubleTab& cp) const;
+  void calculer_masse_volumique();
+  void calculer_mu_sur_Sc(); // returns rho * D
+  void calculer_nu_sur_Sc(); // returns D
+  double calculer_masse_volumique(double,double) const;
+  double calculer_masse_volumique(double P,double T,double r) const;
 
+  // Methodes inlines
+  inline const Champ_Don& masse_molaire_especes() const { return molar_mass_; }
+  inline const Champ_Don& visc_dynamique_especes() const { return mu_; }
+  inline const Champ_Don& coeff_diffusion_especes() const { return diffusion_coeff_; }
+  inline const Champ_Don& cp_especes() const { return cp_; }
+
+protected:
+  Champ_Don molar_mass_, mu_, diffusion_coeff_, cp_;
+  int num_espece_;
+
+private :
+  void calculer_mu_wilke();
+  void update_Yn_values(Champ_Don& Yn, double temps) ;
 };
 
 #endif /* Loi_Etat_Multi_GP_WC_included */

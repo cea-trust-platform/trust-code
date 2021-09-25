@@ -30,7 +30,6 @@
 #include <Champ_Inc_base.h>
 #include <DoubleTab.h>
 
-Implemente_liste(REF(Champ_Inc_base));
 Implemente_liste(REF(Espece));
 
 Implemente_instanciable_sans_constructeur(Loi_Etat_Multi_GP_QC,"Loi_Etat_Multi_Gaz_Parfait_QC",Loi_Etat_Multi_GP_base);
@@ -39,40 +38,12 @@ Implemente_instanciable_sans_constructeur(Loi_Etat_Multi_GP_QC,"Loi_Etat_Multi_G
 Loi_Etat_Multi_GP_QC::Loi_Etat_Multi_GP_QC() : correction_fraction_(0),ignore_check_fraction_(0),
   Sc_(-1),dtol_fraction_(1.e-6) { }
 
-// Description:
-//    Imprime la loi sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Loi_Etat_Multi_GP_QC::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
 }
 
-// Description:
-//    Lecture d'une loi sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_Multi_GP_QC::readOn(Entree& is)
 {
   Param param(que_suis_je());
@@ -84,69 +55,6 @@ Entree& Loi_Etat_Multi_GP_QC::readOn(Entree& is)
   param.ajouter_flag( "ignore_check_fraction",&ignore_check_fraction_); // XD_ADD_P flag Not to check if mass fractions between 0. and 1.
   param.lire_avec_accolades_depuis(is);
   return is;
-}
-
-// Description:
-//    Associe le fluide a la loi d'etat
-// Precondition:
-// Parametre: Fluide_Quasi_Compressible& fl
-//    Signification: le fluide associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: lecture
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Loi_Etat_Multi_GP_QC::associer_fluide(const Fluide_Dilatable_base& fl)
-{
-  Loi_Etat_base::associer_fluide(fl);
-}
-
-//Description:
-//
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Loi_Etat_Multi_GP_QC::initialiser_inco_ch()
-{
-  const int num = liste_Y(0).valeur().valeurs().size();
-  Masse_mol_mel.resize(num,1);
-  calculer_masse_molaire();
-  Loi_Etat_base::initialiser_inco_ch();
-}
-
-// Description:
-// Associe l inconnue de chaque equation de
-// fraction massique a la loi d'etat
-// Precondition:
-// Parametre: inconnue
-//    Signification: l inconnue associee
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: lecture
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Loi_Etat_Multi_GP_QC::associer_inconnue(const Champ_Inc_base& inconnue)
-{
-  REF(Champ_Inc_base) inco;
-  inco = inconnue;
-  liste_Y.add(inco);
 }
 
 // Description:
@@ -170,42 +78,6 @@ void Loi_Etat_Multi_GP_QC::associer_espece(const Convection_Diffusion_Espece_Mul
 }
 
 // Description:
-//    Calcule le Cp du melange
-//    Le Cp depend du Cp de chaque espece et de la composition du melange (Yi)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Loi_Etat_Multi_GP_QC::calculer_Cp()
-{
-  Champ_Don& Cp = le_fluide->capacite_calorifique();
-  DoubleTab& tab_Cp = Cp.valeurs();
-  calculer_tab_Cp(tab_Cp);
-  tab_Cp.echange_espace_virtuel();
-}
-
-void Loi_Etat_Multi_GP_QC::calculer_tab_Cp(DoubleTab& tab_Cp) const
-{
-  // FIXME : Actuellement on suppose que Cp est pris constant pour chacune des especes
-  tab_Cp=0;
-  for (int i=0; i<liste_Y.size(); i++)
-    {
-      const DoubleTab& Y_i=liste_Y(i).valeur().valeurs();
-      const double& cp_i=liste_especes(i).valeur().capacite_calorifique().valeurs()(0,0);
-      assert(cp_i>0);
-      for (int elem=0; elem<Y_i.size(); elem++) tab_Cp(elem,0) += Y_i(elem,0)*cp_i;
-    }
-}
-
-// Description:
 //    Calcule la masse molaire du melange (M)
 //    M depend de la mase molaire de chaque espece et de la composition du melange (Yi)
 // Precondition:
@@ -220,15 +92,9 @@ void Loi_Etat_Multi_GP_QC::calculer_tab_Cp(DoubleTab& tab_Cp) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Multi_GP_QC::calculer_masse_molaire()
+void Loi_Etat_Multi_GP_QC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) const
 {
-  // rabot deplace
-  calculer_masse_molaire(Masse_mol_mel);
-}
-
-void Loi_Etat_Multi_GP_QC::calculer_masse_molaire(DoubleTab& tab_Masse_mol_mel) const
-{
-  const int size = tab_Masse_mol_mel.size();
+  const int size = tab_masse_mol_mel.size();
   ArrOfDouble inv_M(size), numer_M(size);
 
   for (int i=0; i<liste_Y.size(); i++)
@@ -255,9 +121,52 @@ void Loi_Etat_Multi_GP_QC::calculer_masse_molaire(DoubleTab& tab_Masse_mol_mel) 
 
   for (int elem=0; elem<size; elem++)
     if (inv_M(elem)>1.e-8)
-      tab_Masse_mol_mel(elem,0) = numer_M(elem) / inv_M(elem);
+      tab_masse_mol_mel(elem,0) = numer_M(elem) / inv_M(elem);
 }
 
+// Description:
+//    Calcule le Cp du melange
+//    Le Cp depend du Cp de chaque espece et de la composition du melange (Yi)
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Loi_Etat_Multi_GP_QC::calculer_tab_Cp(DoubleTab& tab_Cp) const
+{
+  // FIXME : Actuellement on suppose que Cp est pris constant pour chacune des especes
+  tab_Cp=0;
+  for (int i=0; i<liste_Y.size(); i++)
+    {
+      const DoubleTab& Y_i=liste_Y(i).valeur().valeurs();
+      const double& cp_i=liste_especes(i).valeur().capacite_calorifique().valeurs()(0,0);
+      assert(cp_i>0);
+      for (int elem=0; elem<Y_i.size(); elem++) tab_Cp(elem,0) += Y_i(elem,0)*cp_i;
+    }
+}
+
+// Description:
+//    Corrections explicites pour les fractions massiques pour forcer
+//    la somme a 1 et sans valeurs negatives
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
 void Loi_Etat_Multi_GP_QC::rabot(int futur)
 {
   DoubleTab test( liste_Y(0).valeur().valeurs()) ;
@@ -309,131 +218,6 @@ void Loi_Etat_Multi_GP_QC::rabot(int futur)
 }
 
 // Description:
-//    Calcule la conductivite
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Loi_Etat_Multi_GP_QC::calculer_lambda()
-{
-  const Champ_Don& mu = le_fluide->viscosite_dynamique();
-  const DoubleTab& tab_mu = mu.valeurs();
-  Champ_Don& lambda = le_fluide->conductivite();
-  DoubleTab& tab_lambda = lambda.valeurs();
-  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique().valeurs();
-  int i, n = tab_lambda.size();
-
-  //La conductivite est soit un champ uniforme soit calculee a partir de la viscosite dynamique et du Pr
-  if (sub_type(Champ_Fonc_Tabule,lambda.valeur()))
-    {
-      lambda.valeur().mettre_a_jour(temperature_.valeur().temps());
-      return;
-    }
-  if (!sub_type(Champ_Uniforme,lambda.valeur()))
-    {
-      if (sub_type(Champ_Uniforme,mu.valeur()))
-        {
-          double mu0 = tab_mu(0,0);
-          for (i=0 ; i<n ; i++)  tab_lambda(i,0) = mu0 * Cp_ / Pr_;
-        }
-      else
-        {
-          for (i=0 ; i<n ; i++) tab_lambda(i,0) = tab_mu(i,0) * tab_Cp(i,0) / Pr_;
-        }
-    }
-  tab_lambda.echange_espace_virtuel();
-}
-
-// Description:
-//    Calcule la diffusivite
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Loi_Etat_Multi_GP_QC::calculer_alpha()
-{
-  const Champ_Don& lambda = le_fluide->conductivite();
-  const DoubleTab& tab_lambda = lambda.valeurs();
-  Champ_Don& alpha=le_fluide->diffusivite();
-  DoubleTab& tab_alpha = le_fluide->diffusivite().valeurs();
-  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  const DoubleTab& tab_Cp = le_fluide->capacite_calorifique().valeurs();
-  int i, n = tab_alpha.size(), isVDF = 0;
-  if (alpha.valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
-
-  if (isVDF)
-    {
-      if (sub_type(Champ_Uniforme,lambda.valeur()))
-        {
-          double lambda0 = tab_lambda(0,0);
-          for (i=0 ; i<n ; i++)  tab_alpha(i,0) = lambda0 / ( tab_rho(i,0) * tab_Cp(i,0) );
-        }
-      else
-        {
-          for (i=0 ; i<n ; i++) tab_alpha(i,0) = tab_lambda(i,0) / ( tab_rho(i,0) * tab_Cp(i,0) );
-        }
-    }
-  else // VEF
-    {
-      const IntTab& elem_faces=ref_cast(Zone_VF,le_fluide->vitesse().zone_dis_base()).elem_faces();
-      double rhoelem, Cpelem;
-      int face, nfe = elem_faces.line_size();
-
-      if (sub_type(Champ_Uniforme,lambda.valeur()))
-        {
-          double lambda0 = tab_lambda(0,0);
-          for (i=0 ; i<n ; i++)
-            {
-              rhoelem = 0;
-              Cpelem = 0;
-              for (face=0; face<nfe; face++)
-                {
-                  rhoelem += tab_rho(elem_faces(i,face),0);
-                  Cpelem += tab_Cp(elem_faces(i,face),0);
-                }
-              rhoelem /= nfe;
-              Cpelem /= nfe;
-              tab_alpha(i,0) = lambda0 / ( rhoelem * Cpelem );
-            }
-        }
-      else
-        {
-          for (i=0 ; i<n ; i++)
-            {
-              rhoelem = 0;
-              Cpelem = 0;
-              for (face=0; face<nfe; face++)
-                {
-                  rhoelem += tab_rho(elem_faces(i,face),0);
-                  Cpelem += tab_Cp(elem_faces(i,face),0);
-                }
-              rhoelem /= nfe;
-              Cpelem /= nfe;
-              tab_alpha(i,0) = tab_lambda(i,0) / ( rhoelem * Cpelem );
-            }
-        }
-    }
-  tab_alpha.echange_espace_virtuel();
-  Debog::verifier("alpha",tab_alpha);
-}
-
-// Description:
 //    Recalcule la masse volumique
 // Precondition:
 // Parametre:
@@ -454,14 +238,14 @@ void Loi_Etat_Multi_GP_QC::calculer_masse_volumique()
 
   if (correction_fraction_) rabot(0);
 
-  calculer_masse_molaire();
+  Loi_Etat_Multi_GP_base::calculer_masse_molaire();
 
   double Pth = le_fluide->pression_th();
   int n = tab_rho.size();
   for (int som=0 ; som<n ; som++)
     {
-      double r = 8.3143 / Masse_mol_mel(som);
-      tab_rho_np1(som) = calculer_masse_volumique_case(Pth,tab_ICh(som,0),r,som);
+      double r = 8.3143 / masse_mol_mel(som);
+      tab_rho_np1(som) = calculer_masse_volumique(Pth,tab_ICh(som,0),r);
       tab_rho(som,0) = 0.5 * ( tab_rho_n(som) + tab_rho_np1(som) );
     }
   const Champ_base& rho_m=le_fluide->get_champ("rho_gaz");
@@ -473,29 +257,14 @@ void Loi_Etat_Multi_GP_QC::calculer_masse_volumique()
   Debog::verifier("Loi_Etat_Multi_GP_QC::calculer_masse_volumique, tab_rho",tab_rho);
 }
 
-// Description:
-//    Recalcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-double Loi_Etat_Multi_GP_QC::calculer_masse_volumique_case(double P, double T, double r, int som) const
+double Loi_Etat_Multi_GP_QC::calculer_masse_volumique(double P, double T, double r) const
 {
-  if (inf_ou_egal(T,0))
-    {
-      Cerr << finl << "Warning: Temperature T must be defined in Kelvin." << finl;
-      Cerr << "Check your data file." << finl;
-      Process::exit();
-    }
-  return P / ( r * T );
+  return Loi_Etat_Multi_GP_base::calculer_masse_volumique(P,T,r);
+}
+
+double Loi_Etat_Multi_GP_QC::calculer_masse_volumique(double P, double T) const
+{
+  return Loi_Etat_Multi_GP_base::calculer_masse_volumique(P,T);
 }
 
 // Description:
@@ -512,7 +281,7 @@ double Loi_Etat_Multi_GP_QC::calculer_masse_volumique_case(double P, double T, d
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Loi_Etat_Multi_GP_QC::calculer_mu0()
+void Loi_Etat_Multi_GP_QC::calculer_mu_wilke()
 {
   // With Wilke formulation: https://aip.scitation.org/doi/pdf/10.1063/1.1747673
   const int size = liste_Y(0).valeur().valeurs().size(), list_size = liste_Y.size();
@@ -541,62 +310,14 @@ void Loi_Etat_Multi_GP_QC::calculer_mu0()
             double phi_ij=a*a/b;
 
             const DoubleVect& y_j = liste_Y(j).valeur().valeurs();
-            // node is elem (VEF) or face (VEF)
+            // node is elem (VDF) or face (VEF)
             for (int node=0; node<y_j.size(); node++) phi(node) += y_j(node)*phi_ij;
           }
       // We add the mass fraction when i = j
       const DoubleVect& y_i = liste_Y(i).valeur().valeurs();
       for (int node=0; node<y_i.size(); node++) mu(node) += mu_i * y_i(node)/ ( y_i(node) + phi(node) );
     }
-
-  // Dynamic viscosity is on elem
-  DoubleTab& tab_mu = le_fluide->viscosite_dynamique().valeurs();
-  const int nb_elem = tab_mu.size();
-  if (nb_elem==size) // VDF
-    {
-      for (int elem=0; elem < nb_elem; elem++) tab_mu(elem,0) = mu(elem);
-    }
-  else // VEF (average on elem from values on face);
-    {
-      const IntTab& elem_faces=ref_cast(Zone_VF,le_fluide->vitesse().zone_dis_base()).elem_faces();
-      int nfe = elem_faces.line_size();
-      tab_mu = 0;
-      for (int elem=0; elem<nb_elem; elem++)
-        {
-          for (int face = 0; face < nfe; face++)
-            tab_mu(elem,0) += mu(elem_faces(elem, face));
-
-          tab_mu(elem,0) /= nfe;
-        }
-    }
-  tab_mu.echange_espace_virtuel();
-  Debog::verifier("tab_mu dans Loi_Etat_Multi_GP_QC::calculer_mu0", tab_mu);
-}
-
-// Description:
-//    Calcule la viscosite dynamique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Loi_Etat_Multi_GP_QC::calculer_mu()
-{
-  Champ_Don& mu = le_fluide->viscosite_dynamique();
-  if (!sub_type(Champ_Uniforme,mu.valeur()))
-    {
-      if (sub_type(Champ_Fonc_Tabule,mu.valeur()))
-        mu.mettre_a_jour(temperature_.valeur().temps());
-      else
-        calculer_mu0();
-    }
+  calculer_tab_mu(mu, size);
 }
 
 // Description:
@@ -634,25 +355,4 @@ void Loi_Etat_Multi_GP_QC::calculer_mu_sur_Sc()
   double temps_champ = mu->temps();
   mu_sur_Sc.valeur().changer_temps(temps_champ);
   tab_mu_sur_Sc.echange_espace_virtuel();
-}
-
-// Description:
-//    Recalcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-double Loi_Etat_Multi_GP_QC::calculer_masse_volumique(double P, double T) const
-{
-  Cerr << "Error: the Loi_Etat_Multi_GP_QC::calculer_masse_volumique(double P, double T) method should not be used!" << finl;
-  Process::exit();
-  return -1000.;
 }

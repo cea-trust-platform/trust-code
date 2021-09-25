@@ -21,12 +21,13 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Fluide_Weakly_Compressible.h>
-#include <Champ_Fonc_Fonction.h>
+#include <Loi_Etat_Multi_GP_WC.h>
 #include <Neumann_sortie_libre.h>
+#include <Champ_Fonc_Fonction.h>
+#include <Discretisation_base.h>
+#include <Schema_Temps_base.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Schema_Temps_base.h>
-#include <Discretisation_base.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_VF.h>
 #include <Param.h>
@@ -346,6 +347,14 @@ void Fluide_Weakly_Compressible::discretiser(const Probleme_base& pb, const  Dis
   Champ_Don& peos = pression_eos();
   dis.discretiser_champ("temperature",zone_dis,"pression_eos","Pa",1,temps,peos);
   champs_compris_.ajoute_champ(peos);
+
+  // Seulement pour multi-especes
+  if (pb.que_suis_je()=="Pb_Thermohydraulique_Especes_WC")
+    {
+      Champ_Don& yn = fraction_massique_nonresolue();
+      dis.discretiser_champ("temperature",zone_dis,"fraction_massique_nonresolue","neant",1,temps,yn);
+      champs_compris_.ajoute_champ(yn);
+    }
 }
 
 void Fluide_Weakly_Compressible::abortTimeStep()

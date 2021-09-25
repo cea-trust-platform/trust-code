@@ -24,6 +24,10 @@
 #define Loi_Etat_Multi_GP_base_included
 
 #include <Loi_Etat_Melange_GP_base.h>
+#include <Ref_Champ_Inc_base.h>
+#include <List.h>
+
+class Champ_Inc_base;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -35,9 +39,36 @@
 //     Fluide_Dilatable_base Loi_Etat_base Loi_Etat_Melange_GP_base
 //////////////////////////////////////////////////////////////////////////////
 
+Declare_liste(REF(Champ_Inc_base));
+
 class Loi_Etat_Multi_GP_base : public Loi_Etat_Melange_GP_base
 {
   Declare_base(Loi_Etat_Multi_GP_base);
+
+public:
+  void calculer_masse_molaire();
+  void calculer_Cp();
+  void calculer_lambda();
+  void calculer_alpha();
+  void calculer_mu();
+
+  virtual void associer_inconnue(const Champ_Inc_base& inconnue);
+  virtual void initialiser_inco_ch();
+  virtual double calculer_masse_volumique(double,double) const;
+  virtual void calculer_masse_volumique()=0;
+  virtual void calculer_masse_molaire(DoubleTab& M) const = 0;
+  virtual void calculer_tab_Cp(DoubleTab& cp) const = 0;
+  virtual void calculer_mu_wilke()=0;
+
+  // Methodes inlines
+  inline const DoubleTab& masse_molaire() const { return masse_mol_mel; }
+  inline DoubleTab& masse_molaire() { return masse_mol_mel; }
+  virtual double calculer_masse_volumique(double P,double T,double r) const;
+
+protected :
+  void calculer_tab_mu(const DoubleTab& mu, int size);
+  LIST(REF(Champ_Inc_base)) liste_Y;
+  DoubleTab masse_mol_mel;
 };
 
 #endif /* Loi_Etat_Multi_GP_base_included */

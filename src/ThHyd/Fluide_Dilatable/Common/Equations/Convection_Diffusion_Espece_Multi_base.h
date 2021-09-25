@@ -14,53 +14,42 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Loi_Etat_Melange_GP_base.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Loi_Etat
-// Version:     /main/14
+// File:        Convection_Diffusion_Espece_Multi_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable/Common/Equations
+// Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat_Melange_GP_base.h>
-#include <Champ_Uniforme.h>
-#include <Champ_Fonc_Tabule.h>
-#include <Debog.h>
-#include <Zone_VF.h>
-#include <Probleme_base.h>
-#include <Param.h>
-#include <Champ_Inc_base.h>
-#include <DoubleTab.h>
+#ifndef Convection_Diffusion_Espece_Multi_base_included
+#define Convection_Diffusion_Espece_Multi_base_included
 
-Implemente_base(Loi_Etat_Melange_GP_base,"Loi_Etat_Melange_Gaz_Parfait_base",Loi_Etat_GP_base);
-// XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
+#include <Convection_Diffusion_Espece_Fluide_Dilatable_base.h>
 
-Sortie& Loi_Etat_Melange_GP_base::printOn(Sortie& os) const
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//     classe Convection_Diffusion_Espece_Multi_base
+//     Cas particulier de Convection_Diffusion_Espece_Fluide_Dilatable_base
+//     pour un fluide quasi conpressible quand le scalaire subissant le transport est
+//     la fraction massique
+// .SECTION voir aussi
+//     Convection_Diffusion_Espece_Fluide_Dilatable_base
+//////////////////////////////////////////////////////////////////////////////
+
+class Convection_Diffusion_Espece_Multi_base : public Convection_Diffusion_Espece_Fluide_Dilatable_base
 {
-  os <<que_suis_je()<< finl;
-  return os;
-}
+  Declare_base(Convection_Diffusion_Espece_Multi_base);
 
-Entree& Loi_Etat_Melange_GP_base::readOn(Entree& is)
-{
-  return is;
-}
+public:
+  const Champ_base& get_champ(const Motcle& nom) const;
+  virtual void set_param(Param& titi);
+  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
 
-// Description:
-//    Associe le fluide a la loi d'etat
-// Precondition:
-// Parametre: Fluide_Quasi_Compressible& fl
-//    Signification: le fluide associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: lecture
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Loi_Etat_Melange_GP_base::associer_fluide(const Fluide_Dilatable_base& fl)
-{
-  Loi_Etat_base::associer_fluide(fl);
-}
+  // Methodes inlines
+  inline const Motcle& get_alias() const { return alias_; }
 
+protected:
+  Motcle alias_;
+};
 
+#endif /* Convection_Diffusion_Espece_Multi_base_included */

@@ -109,7 +109,7 @@ double EDO_Pression_th_VDF::masse_totale(double P,const DoubleTab& T)
         {
           double v = volumes(elem);
           double r = 8.3143/Masse_mol_mel(elem);
-          M += v*loi_mel_GP.calculer_masse_volumique_case(P,T[elem],r,elem);
+          M += v*loi_mel_GP.calculer_masse_volumique(P,T[elem],r);
         }
     }
   M=Process::mp_sum(M);

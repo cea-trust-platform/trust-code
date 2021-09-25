@@ -43,8 +43,11 @@ class Loi_Etat_Melange_GP_base : public Loi_Etat_GP_base
 {
   Declare_base(Loi_Etat_Melange_GP_base);
 
-public :
+public:
+  void associer_fluide(const Fluide_Dilatable_base&);
 
+protected:
+  static constexpr double R_GAS = 8.314472;
 };
 
 #endif /* Loi_Etat_Melange_GP_base_included */
