@@ -47,6 +47,10 @@ public :
   {
     return 1; /* par defaut oui */
   }
+  virtual int nb_valeurs_temporelles_pression() const /* nombre de valeurs temporelles des champs de pression dont le solveur a besoin */
+  {
+    return 1; /* par defaut 1 */
+  }
 
 protected :
 

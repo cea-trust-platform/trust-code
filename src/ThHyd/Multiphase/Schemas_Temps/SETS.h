@@ -43,6 +43,10 @@ public :
 
   SETS();
   virtual Entree& lire(const Motcle&, Entree&); /* mot-cle "criteres_convergence" */
+  virtual int nb_valeurs_temporelles_pression() const /* nombres de valeurs temporelles du champ de pression */
+  {
+    return 3; /* autant que les autres variables */
+  }
 
   virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok);
   virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok);

@@ -26,6 +26,8 @@
 #include <Zone_VF.h>
 #include <Champ_Fonc.h>
 #include <Champ_Inc.h>
+#include <Schema_Implicite_base.h>
+#include <Solveur_Implicite_Base.h>
 
 Implemente_base(Discret_Thyd,"Discret_Thyd",Discret_Thermique);
 
@@ -104,7 +106,8 @@ void Discret_Thyd::pression(const Schema_Temps_base& sch,
                             Champ_Inc& ch) const
 {
   Cerr << "Pressure discretization" << finl;
-  discretiser_champ("pression",z.valeur(),"pression","Pa.m3/kg",1,sch.nb_valeurs_temporelles(),
+  discretiser_champ("pression",z.valeur(),"pression","Pa.m3/kg",1,
+                    sub_type(Schema_Implicite_base, sch) ? ref_cast(Schema_Implicite_base, sch).solveur()->nb_valeurs_temporelles_pression() : 1,
                     sch.temps_courant(),ch);
 
 }
@@ -113,7 +116,8 @@ void Discret_Thyd::pression_en_pa(const Schema_Temps_base& sch,
                                   Champ_Inc& ch) const
 {
   Cerr << "Pressure pa discretization" << finl;
-  discretiser_champ("pression",z.valeur(),"pression_pa","Pa",1,sch.nb_valeurs_temporelles(),
+  discretiser_champ("pression",z.valeur(),"pression_pa","Pa",1,
+                    sub_type(Schema_Implicite_base, sch) ? ref_cast(Schema_Implicite_base, sch).solveur()->nb_valeurs_temporelles_pression() : 1,
                     sch.temps_courant(),ch);
 
 }
