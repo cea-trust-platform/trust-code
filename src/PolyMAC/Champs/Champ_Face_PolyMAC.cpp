@@ -121,8 +121,10 @@ Champ_base& Champ_Face_PolyMAC::affecter_(const Champ_base& ch)
         }
     }
   else if (sub_type(Champ_Fonc_reprise, ch))
-    for (int f = 0; f < nb_faces; f++)
-      val(f) = ch.valeurs()(f);
+    {
+      for (int num_face=0; num_face<nb_faces; num_face++)
+        val(num_face) = ch.valeurs()[num_face];
+    }
   else
     {
       //      int ndeb_int = zone_PolyMAC.premiere_face_int();
@@ -169,9 +171,10 @@ void Champ_Face_PolyMAC::init_cl() const
   for (n = 0; n < cls.size(); n++)
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
-      int idx = sub_type(Neumann, cls[n].valeur()) + sub_type(Neumann_homogene, cls[n].valeur())
+      int idx = sub_type(Neumann, cls[n].valeur())
                 + 2 * sub_type(Symetrie, cls[n].valeur())
-                + 3 * sub_type(Dirichlet, cls[n].valeur()) + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
+                + 3 * sub_type(Dirichlet, cls[n].valeur()) + 3 * sub_type(Neumann_homogene, cls[n].valeur())
+                + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
       if (!idx) Cerr << "Champ_Face_PolyMAC : CL non codee rencontree!" << finl, Process::exit();
       for (i = 0; i < fvf.nb_faces_tot(); i++)
         f = fvf.num_face(i), icl(f, 0) = idx, icl(f, 1) = n, icl(f, 2) = i;
@@ -405,6 +408,31 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
             }
 }
 
+/* vitesse aux elements sur une liste d'elements */
+void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_polys, DoubleTab& val, bool is_vit) const
+{
+  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
+  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  int e, f, j, r;
+
+  zone.init_ve();
+  for (int poly = 0; poly < les_polys.size(); poly++)
+    {
+      e = les_polys(poly);
+      if (e!=-1)
+        {
+          for (r = 0; r < dimension; r++)
+            val(e, r) = 0;
+          for (j = zone.vedeb(e); j < zone.vedeb(e + 1); j++)
+            {
+              f = zone.veji(j);
+              const double coef = is_vit ? pf(f) / pe(e) : 1.0;
+              for (r = 0; r < dimension; r++) val(e, r) += zone.veci(j, r) * inco(f) * coef;
+            }
+        }
+    }
+}
+
 /* gradient d_j v_i aux elements */
 void Champ_Face_PolyMAC::interp_gve(const DoubleTab& inco, DoubleTab& vals) const
 {
@@ -479,7 +507,7 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, cons
   zone.zone().domaine().creer_tableau_elements(ve);
   bool is_vit = cha.le_nom().debute_par("vitesse");
   interp_ve(cha.valeurs(), ve, is_vit);
-  for (int p = 0; p < les_polys.size(); p++) for (int r = 0, e = les_polys(p); e < zone.nb_elem() && r < dimension; r++) val(p, r) = ve(e, r);
+  for (int p = 0; p < les_polys.size(); p++) for (int r = 0, e = les_polys(p); e < zone.nb_elem() && r < dimension; r++) val(p, r) = (e==-1) ? 0. : ve(e, r);
   return val;
 }
 
@@ -602,4 +630,10 @@ DoubleTab& Champ_Face_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x,
     }
 
   return x;
+}
+
+int Champ_Face_PolyMAC::nb_valeurs_nodales() const
+{
+  ConstDoubleTab_parts val_part(valeurs());
+  return val_part[0].dimension(0) + val_part[1].dimension(0);
 }

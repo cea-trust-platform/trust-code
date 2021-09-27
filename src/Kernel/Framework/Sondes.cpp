@@ -22,9 +22,10 @@
 
 #include <Sondes.h>
 #include <LecFicDiffuse_JDD.h>
+#include <Postraitement.h>
 
-Implemente_instanciable(Sondes,"Sondes|Probes",LIST(Sonde));
 Implemente_liste(Sonde);
+Implemente_instanciable(Sondes,"Sondes|Probes",LIST(Sonde));
 Implemente_liste(Champ);
 
 // Description:
@@ -68,6 +69,8 @@ Entree& Sondes::readOn(Entree& s )
 
   if (motlu == "FICHIER")
     {
+      Cerr<<"Warning: Sondes { FICHIER .... } no more allowed, use Sondes_fichier { FICHIER .... } " <<finl;
+      exit();
       depuisFichier = true;
       s >> nom_fichier;
     }
@@ -77,7 +80,7 @@ Entree& Sondes::readOn(Entree& s )
       Cerr << "You have not defined any probe" << finl;
       exit();
     }
-
+  set_noms_champs_postraitables();
   if (depuisFichier)
     {
       lire_fichier(nom_fichier);
@@ -106,6 +109,7 @@ Entree& Sondes::readOn(Entree& s )
 
 void Sondes::lire_fichier(const Nom& nom_fichier)
 {
+  set_noms_champs_postraitables();
   LecFicDiffuse_JDD f(nom_fichier);
   Motcle motlu;
 
@@ -146,6 +150,29 @@ Sortie& Sondes::printOn(Sortie& s ) const
   return s ;
 }
 
+void Sondes::set_noms_champs_postraitables()
+{
+  // Reconstruit noms_champs_postraitables_
+  if (mon_post.non_nul())
+    {
+      Noms noms;
+      mon_post->probleme().get_noms_champs_postraitables(noms);
+      noms_champs_postraitables_.dimensionner_force(noms.size());
+      for (int i = 0; i < noms.size(); i++)
+        noms_champs_postraitables_[i] = noms[i];
+    }
+}
+
+void Sondes::completer()
+{
+  set_noms_champs_postraitables();
+  LIST_CURSEUR(Sonde) curseur=*this;
+  while(curseur)
+    {
+      curseur->completer();
+      ++curseur;
+    }
+}
 
 // Description:
 //    Effectue le postraitement sur chacune des sondes de

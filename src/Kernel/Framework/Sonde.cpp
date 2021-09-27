@@ -125,15 +125,10 @@ void Sonde::completer()
   const Motcle& nom_domaine = Pb.domaine().le_nom();
 
   Motcle nom_champ_ref;
-  Noms liste_noms;
-  Pb.get_noms_champs_postraitables(liste_noms);
-  Motcles mots_compare(liste_noms.size());
-  for (int i=0; i<liste_noms.size(); i++)
-    mots_compare[i] = liste_noms[i];
-
   Motcle nom_macro=nom_champ_lu_;
   Motcle nom_macro_test, nom1("_not_def"), nom2("_not_def");
-  if (!(mots_compare.contient_(nom_champ_lu_)||mon_post->comprend_champ_post(nom_champ_lu_)))
+  const Motcles& noms_champs_postraitables = mon_post->les_sondes().get_noms_champs_postraitables();
+  if (!(noms_champs_postraitables.contient_(nom_champ_lu_)||mon_post->comprend_champ_post(nom_champ_lu_)))
     {
       if (nom_champ_lu_.debute_par("MOYENNE_"))
         nom_macro = nom_macro.suffix("MOYENNE_");
@@ -144,19 +139,19 @@ void Sonde::completer()
         {
           nom_macro_test = nom_champ_lu_;
           nom_macro_test = nom_macro_test.suffix("CORRELATION_");
-          for (int i=0; i<mots_compare.size(); i++)
+          for (int i=0; i<noms_champs_postraitables.size(); i++)
             {
-              nom_macro_test = nom_macro_test.suffix(mots_compare[i]);
+              nom_macro_test = nom_macro_test.suffix(noms_champs_postraitables[i]);
               if (nom_macro_test.debute_par("_"))
                 {
-                  nom1 = mots_compare[i];
+                  nom1 = noms_champs_postraitables[i];
                   nom2 = nom_macro_test.suffix("_");
                 }
             }
         }
     }
 
-  if (mots_compare.contient_(nom_macro))
+  if (noms_champs_postraitables.contient_(nom_macro))
     {
       if (nom_macro==Motcle(nom_champ_lu_))
         {
@@ -179,7 +174,7 @@ void Sonde::completer()
   else
     {
       //Cas des correlations
-      if ((mots_compare.contient_(nom1)) && (mots_compare.contient_(nom2)))
+      if ((noms_champs_postraitables.contient_(nom1)) && (noms_champs_postraitables.contient_(nom2)))
         {
           nom_champ_ref = "Correlation_";
           nom_champ_ref += nom1+"_natif_"+nom_domaine+"_"+nom2+"_natif_"+nom_domaine;
@@ -262,16 +257,9 @@ Entree& Sonde::readOn(Entree& is)
 
   //Creation des Champ_Generique_refChamp necessaire pour l initialisation de la REF a Champ_Generique_base
   //Si le champ demande est un Champ_base connu du probleme on cree le Champ_Generique_refChamp correspondant
-
-  Noms liste_noms;
   Probleme_base& Pb = mon_post->probleme();
-  Pb.get_noms_champs_postraitables(liste_noms);
-
-  Motcles mots_compare(liste_noms.size());
-  for (int i=0; i<liste_noms.size(); i++)
-    mots_compare[i] = liste_noms[i];
-
-  if (mots_compare.contient_(nom_champ_lu_))
+  const Motcles& noms_champs_postraitables = mon_post->les_sondes().get_noms_champs_postraitables();
+  if (noms_champs_postraitables.contient_(nom_champ_lu_))
     {
       Pb.creer_champ(nom_champ_lu_);
       //On va creer un Champ_Generique_refChamp dont le nom a pour base
@@ -356,11 +344,11 @@ Entree& Sonde::readOn(Entree& is)
             rang = 1;
             dim = 0;
             is >> nbre_points;
-            les_positions_.resize(nbre_points,dimension);
+            les_positions_sondes_initiales_.resize(nbre_points,dimension);
 
             for (int i=0; i<nbre_points; i++)
               for (int j=0; j<dimension; j++)
-                is >> les_positions_(i,j);
+                is >> les_positions_sondes_initiales_(i,j);
 
             break;
           }
@@ -371,7 +359,7 @@ Entree& Sonde::readOn(Entree& is)
             dim=0;
             gravcl = false;
             is >> numero_elem_;
-            les_positions_.resize(1,dimension);
+            les_positions_sondes_initiales_.resize(1,dimension);
             break;
           }
         case 3:
@@ -405,7 +393,7 @@ Entree& Sonde::readOn(Entree& is)
             DoubleVect dx(dimension);
             int i=0,j=0;
             is >> nbre_points;
-            les_positions_.resize(nbre_points,dimension);
+            les_positions_sondes_initiales_.resize(nbre_points,dimension);
 
             for (; i<dimension; i++)
               {
@@ -426,7 +414,7 @@ Entree& Sonde::readOn(Entree& is)
                 dx(i)=(extremite(i)-origine(i))/(nbre_points-1);
             for (i=0; i<nbre_points; i++)
               for (j=0; j<dimension; j++)
-                les_positions_(i,j)=origine(j)+i*dx(j);
+                les_positions_sondes_initiales_(i,j)=origine(j)+i*dx(j);
             break;
           }
         case 4:
@@ -446,7 +434,7 @@ Entree& Sonde::readOn(Entree& is)
             is >> nbre_points1;
             is >> nbre_points2;
             nbre_points=nbre_points1*nbre_points2;
-            les_positions_.resize(nbre_points,dimension);
+            les_positions_sondes_initiales_.resize(nbre_points,dimension);
 
             for (; i<dimension; i++)
               is >> origine(i);
@@ -471,7 +459,7 @@ Entree& Sonde::readOn(Entree& is)
             for (i=0; i<nbre_points1; i++)
               for (j=0; j<nbre_points2; j++)
                 for (k=0; k<dimension; k++)
-                  les_positions_(i*nbre_points2+j,k)=origine(k)+i*dx1(k)+j*dx2(k);
+                  les_positions_sondes_initiales_(i*nbre_points2+j,k)=origine(k)+i*dx1(k)+j*dx2(k);
             break;
           }
 
@@ -493,7 +481,7 @@ Entree& Sonde::readOn(Entree& is)
             is >> nbre_points2;
             is >> nbre_points3;
             nbre_points=nbre_points1*nbre_points2*nbre_points3;
-            les_positions_.resize(nbre_points,dimension);
+            les_positions_sondes_initiales_.resize(nbre_points,dimension);
 
             for (; i<dimension; i++)
               is >> origine(i);
@@ -513,7 +501,7 @@ Entree& Sonde::readOn(Entree& is)
               for (j=0; j<nbre_points2; j++)
                 for (int m=0; m<nbre_points3; m++)
                   for (k=0; k<dimension; k++)
-                    les_positions_(i+j*nbre_points1+m*nbre_points1*nbre_points2,k)=origine(k)+i*dx1(k)+j*dx2(k)+m*dx3(k);
+                    les_positions_sondes_initiales_(i+j*nbre_points1+m*nbre_points1*nbre_points2,k)=origine(k)+i*dx1(k)+j*dx2(k)+m*dx3(k);
             break;
           }
         case 8:
@@ -527,7 +515,7 @@ Entree& Sonde::readOn(Entree& is)
             double radius, teta1, teta2;
             DoubleVect origine(dimension);
             is >> nbre_points;
-            les_positions_.resize(nbre_points,dimension);
+            les_positions_sondes_initiales_.resize(nbre_points,dimension);
             for (int i=0; i<dimension; i++)
               is >> origine(i);
             if (dimension==3) is >> dir;
@@ -551,28 +539,28 @@ Entree& Sonde::readOn(Entree& is)
                 angle*=M_PI/180;
                 if (dimension==2)
                   {
-                    les_positions_(i,0)=origine(0)+radius*cos(angle);
-                    les_positions_(i,1)=origine(1)+radius*sin(angle);
+                    les_positions_sondes_initiales_(i,0)=origine(0)+radius*cos(angle);
+                    les_positions_sondes_initiales_(i,1)=origine(1)+radius*sin(angle);
                   }
                 else if (dimension==3)
                   {
                     if (dir==0)
                       {
-                        les_positions_(i,0)=origine(0);
-                        les_positions_(i,1)=origine(1)+radius*cos(angle);
-                        les_positions_(i,2)=origine(2)+radius*sin(angle);
+                        les_positions_sondes_initiales_(i,0)=origine(0);
+                        les_positions_sondes_initiales_(i,1)=origine(1)+radius*cos(angle);
+                        les_positions_sondes_initiales_(i,2)=origine(2)+radius*sin(angle);
                       }
                     else if (dir==1)
                       {
-                        les_positions_(i,0)=origine(0)+radius*cos(angle);
-                        les_positions_(i,1)=origine(1);
-                        les_positions_(i,2)=origine(2)+radius*sin(angle);
+                        les_positions_sondes_initiales_(i,0)=origine(0)+radius*cos(angle);
+                        les_positions_sondes_initiales_(i,1)=origine(1);
+                        les_positions_sondes_initiales_(i,2)=origine(2)+radius*sin(angle);
                       }
                     else if (dir==2)
                       {
-                        les_positions_(i,0)=origine(0)+radius*cos(angle);
-                        les_positions_(i,1)=origine(1)+radius*sin(angle);
-                        les_positions_(i,2)=origine(2);
+                        les_positions_sondes_initiales_(i,0)=origine(0)+radius*cos(angle);
+                        les_positions_sondes_initiales_(i,1)=origine(1)+radius*sin(angle);
+                        les_positions_sondes_initiales_(i,2)=origine(2);
                       }
                   }
               }
@@ -589,7 +577,7 @@ Entree& Sonde::readOn(Entree& is)
             double theta, radius1, radius2;
             DoubleVect origine(dimension);
             is >> nbre_points;
-            les_positions_.resize(nbre_points,dimension);
+            les_positions_sondes_initiales_.resize(nbre_points,dimension);
             for (int i=0; i<dimension; i++)
               is >> origine(i);
             is >> theta >> radius1 >> radius2;
@@ -610,9 +598,9 @@ Entree& Sonde::readOn(Entree& is)
             for (int i=0; i<nbre_points; i++)
               {
                 double radius = radius1+(radius2-radius1)*i/(nbre_points-1);
-                les_positions_(i,0)=origine(0)+radius*cos(theta);
-                les_positions_(i,1)=origine(1)+radius*sin(theta);
-                les_positions_(i,2)=origine(2);
+                les_positions_sondes_initiales_(i,0)=origine(0)+radius*cos(theta);
+                les_positions_sondes_initiales_(i,1)=origine(1)+radius*sin(theta);
+                les_positions_sondes_initiales_(i,2)=origine(2);
               }
             break;
           }
@@ -638,7 +626,7 @@ Entree& Sonde::readOn(Entree& is)
             // on recupere  les_positions_
             const Sonde& la_sonde_ref=les_sondes(m);
             type_ = la_sonde_ref.get_type();
-            les_positions_=la_sonde_ref.les_positions();
+            les_positions_sondes_initiales_=la_sonde_ref.les_positions_sondes_initiales();
             dim =  la_sonde_ref.get_dim();
             rang=1;
             break;
@@ -731,17 +719,19 @@ void Sonde::associer_post(const Postraitement& le_post)
 // Postcondition: la sonde est initialisee
 void Sonde::initialiser()
 {
+  // Calcul des positions exactes a partir des positions initiales des sondes:
+  les_positions_sondes_ = les_positions_sondes_initiales_;
   // Dimension the elem_ array:
-  int nbre_points = les_positions_.dimension(0);
-  if(elem_.size() != nbre_points)
-    elem_.resize(nbre_points);
+  int nbre_points_tot = les_positions_sondes_.dimension(0);
+  if(elem_.size() != nbre_points_tot)
+    elem_.resize(nbre_points_tot);
 
   const Zone& zone_geom = mon_champ->get_ref_domain().zone(0);
 
   if (numero_elem_==-1)
     {
       // Location of probes is given by coordinates in the les_positions_ array:
-      int nb_coord = les_positions_.dimension(1);
+      int nb_coord = les_positions_sondes_.dimension(1);
       if (nb_coord != Objet_U::dimension)
         {
           Cerr << "You can't specify the probe named " << nom_ << " with "<< nb_coord << " coordinates on the domain named " <<zone_geom.domaine().le_nom()<<finl;
@@ -752,7 +742,7 @@ void Sonde::initialiser()
           Process::exit();
         }
       // Fill the elem_ array (which list real cells containing all the probes):
-      zone_geom.chercher_elements(les_positions_,elem_,1);
+      zone_geom.chercher_elements(les_positions_sondes_,elem_,1);
     }
   else
     {
@@ -769,7 +759,7 @@ void Sonde::initialiser()
               int soml=les_elems(numero_elem_,s);
               if (soml>-1)
                 for (int dir=0; dir<dimension; dir++)
-                  les_positions_(0,dir)+=coord(soml,dir)/nb_som;
+                  les_positions_sondes_(0,dir)+=coord(soml,dir)/nb_som;
             }
         }
       else
@@ -777,31 +767,19 @@ void Sonde::initialiser()
           if (je_suis_maitre())
             {
               Cerr<<" On the probe named " << nom_ << " , the element number "<<numero_elem_<<" does not exist on the master processor, we put the position to zero"<<finl;
-              les_positions_=0;
+              les_positions_sondes_=0;
             }
           elem_[0]=-1;
         }
     }
   // Check if some probes are outside the domain:
-  ArrOfDouble tmp(nbre_points);
-  for (int i=0; i<nbre_points; i++)
+  ArrOfDouble tmp(nbre_points_tot);
+  for (int i=0; i<nbre_points_tot; i++)
     tmp(i) = elem_[i];
   mp_max_for_each_item(tmp);
-  for (int i=0; i<nbre_points; i++)
+  for (int i=0; i<nbre_points_tot; i++)
     if (tmp(i)==-1)
       Cerr << "WARNING: The point number " << i+1 << " of the probe named " << nom_ << " is outside the computational domain " << zone_geom.domaine().le_nom() << finl;
-
-  if (je_suis_maitre()&&(nproc()>1))
-    {
-      if (ncomp == -1)
-        {
-          const Noms noms_comp = mon_champ->get_property("composantes");
-          int nb_comp = noms_comp.size();
-          valeurs_sur_maitre.resize(nbre_points,nb_comp);
-        }
-      else
-        valeurs_sur_maitre.resize(nbre_points, 1);
-    }
 
   // Probes may be moved to cog, face, vertex:
   const Zone& zone = mon_champ->get_ref_domain().zone(0);
@@ -812,22 +790,22 @@ void Sonde::initialiser()
       DoubleTab coords_bords(2,dimension);
       for (int idim=0; idim<dimension; idim++)
         {
-          coords_bords(0,idim) = les_positions_(0,idim);
-          coords_bords(1,idim) = les_positions_(nbre_points-1,idim);
+          coords_bords(0,idim) = les_positions_sondes_(0,idim);
+          coords_bords(1,idim) = les_positions_sondes_(nbre_points_tot-1,idim);
         }
 
       Cerr<<"The location of the probe named "<<nom_<<" are modified (to centers of gravity). Check the .log files to see the new location."<<finl;
       const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
-      const DoubleTab xp = zoneVF.xp();
-      for (int i=0; i<nbre_points; i++)
+      const DoubleTab& xp = zoneVF.xp();
+      for (int i=0; i<nbre_points_tot; i++)
         {
           if(elem_[i]!=-1)
             {
               Journal()<<"The point " << i << " of the probe "<<nom_<<" is moved:";
               for (int dir=0; dir<dimension; dir++)
                 {
-                  Journal() << " x(" << dir << "): " << les_positions_(i,dir) << " -> " << xp(elem_[i],dir);
-                  les_positions_(i,dir)=xp(elem_[i],dir);
+                  Journal() << " x(" << dir << "): " << les_positions_sondes_(i,dir) << " -> " << xp(elem_[i],dir);
+                  les_positions_sondes_(i,dir)=xp(elem_[i],dir);
                 }
               Journal() << finl;
             }
@@ -839,7 +817,7 @@ void Sonde::initialiser()
   else if (nodes)
     {
       const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
-      const DoubleTab xv = zoneVF.xv();
+      const DoubleTab& xv = zoneVF.xv();
       const IntTab& elem_faces = zoneVF.elem_faces();
       if (mp_max(elem_faces.size_array())==0)
         {
@@ -857,7 +835,7 @@ void Sonde::initialiser()
         }
       Cerr<<"The location of the probe named "<<nom_<<" are modified (to faces). Check the .log files to see the new location."<<finl;
       const int nfaces_par_element = zone.nb_faces_elem() ;
-      for (int i=0; i<nbre_points; i++)
+      for (int i=0; i<nbre_points_tot; i++)
         {
           double dist_min=DMAXFLOAT;
           int face_min=-1;
@@ -875,7 +853,7 @@ void Sonde::initialiser()
                       double dist=0.;
 
                       for (int dir=0; dir<dimension; dir++)
-                        dist+=(xv(face,dir)-les_positions_(i,dir))*(xv(face,dir)-les_positions_(i,dir));
+                        dist+=(xv(face,dir)-les_positions_sondes_(i,dir))*(xv(face,dir)-les_positions_sondes_(i,dir));
 
                       if(dist<=dist_min)
                         {
@@ -887,8 +865,8 @@ void Sonde::initialiser()
 
               for (int dir=0; dir<dimension; dir++)
                 {
-                  Journal() << " x(" << dir << "): " << les_positions_(i,dir) << " -> " << xv(face_min,dir);
-                  les_positions_(i,dir)=xv(face_min,dir);
+                  Journal() << " x(" << dir << "): " << les_positions_sondes_(i,dir) << " -> " << xv(face_min,dir);
+                  les_positions_sondes_(i,dir)=xv(face_min,dir);
                 }
               Journal() << " (" << (face_min < zoneVF.premiere_face_int() ? "boundary face " : "internal face ") << face_min<<")" << finl;
             }
@@ -909,7 +887,7 @@ void Sonde::initialiser()
       const IntTab& sommet_elem = zone.les_elems();
       const int sommets_par_element = zone.les_elems().dimension(1);
       const DoubleTab& coord = zone.domaine().les_sommets();
-      for (int i=0; i<nbre_points; i++)
+      for (int i=0; i<nbre_points_tot; i++)
         {
           double dist_min=DMAXFLOAT;
           int sommet_min=-1;
@@ -920,7 +898,7 @@ void Sonde::initialiser()
                 {
                   double dist=0.;
                   for (int dir=0; dir<dimension; dir++)
-                    dist+=(coord(sommet,dir)-les_positions_(i,dir))*(coord(sommet,dir)-les_positions_(i,dir));
+                    dist+=(coord(sommet,dir)-les_positions_sondes_(i,dir))*(coord(sommet,dir)-les_positions_sondes_(i,dir));
 
                   if(dist<=dist_min)
                     {
@@ -931,104 +909,150 @@ void Sonde::initialiser()
 
               for (int dir=0; dir<dimension; dir++)
                 {
-                  Journal() << " x(" << dir << "): " << les_positions_(i,dir) << " -> " << coord(sommet_min,dir);
-                  les_positions_(i,dir)=coord(sommet_min,dir);
+                  Journal() << " x(" << dir << "): " << les_positions_sondes_(i,dir) << " -> " << coord(sommet_min,dir);
+                  les_positions_sondes_(i,dir)=coord(sommet_min,dir);
                 }
               Journal() << finl;
             }
         }
     }
+  bool supprime_doublons = true; // Nouveaute 1.8.4 (unicite des points de sondes)
+  ArrOfInt doublon(elem_.size_array());
+  if (supprime_doublons)
+    {
+      int doublons=0;
+      int size = elem_.size();
+      for (int i=0; i<size; i++)
+        {
+          for (int j=i+1; j<size; j++)
+            {
+              bool same = true;
+              if (elem_[i]!=elem_[j])
+                same = false;
+              else
+                for (int dir = 0; dir < dimension; dir++)
+                  if (les_positions_sondes_(i, dir) != les_positions_sondes_(j, dir))
+                    {
+                      same = false;
+                      break;
+                    }
+              if (same)
+                {
+                  doublon[i] = 1;
+                  doublons++;
+                  break;
+                }
+            }
+        }
+      if (doublons)
+        Cerr << "We remove " << doublons << " duplicated points from the probe " << nom_ << finl;
+    }
 
   // chaque processeur a regarde s'il avait le point
   // le maitre construit un tableau (prop) determinant qui
   // va donner la valeur au maitre
-
   // Le maitre construit aussi le vect(ArrOfInt) participant
   // lui donnant pour un proc les differents elements de celui-ci
   IntVect prop(elem_);
   if (je_suis_maitre())
     {
-      IntVect elems2(elem_);
-
-      prop=0;
-      // Par defaut c'est le maitre le proprio (en particulier pour les sondes en dehors)
-      IntVect elem_prov(elem_);
-      DoubleTab positions_prov(les_positions_);
-      int p;
+      ArrOfInt elems2(elem_);
+      prop=0; // Par defaut c'est le maitre le proprio (en particulier pour les sondes en dehors)
+      ArrOfInt elem_recu, doublon_recu;
+      DoubleTab positions_recu;
       int nbproc=Process::nproc();
-      for(p=1; p<nbproc; p++)
+      for(int p=1; p<nbproc; p++)
         {
-          recevoir(elem_prov,p,0,2002+p);
-          recevoir(positions_prov,p,0,2001+p);
-          for (int el=0; el<nbre_points; el++)
-            if (elem_prov[el]!=-1)
+          recevoir(doublon_recu,p,2003+p);
+          recevoir(elem_recu,p,0,2002+p);
+          recevoir(positions_recu,p,0,2001+p);
+          for (int el=0; el<nbre_points_tot; el++)
+            if (elems2[el]==-1 && elem_recu[el]!=-1)
               {
-                if  (elems2[el]==-1)
-                  {
-                    elems2[el]=elem_prov[el];
-                    prop[el]=p;
-                    for (int j=0; j<dimension; j++)
-                      les_positions_(el,j)=positions_prov(el,j);
-                  }
+                elems2[el]=elem_recu[el];
+                doublon[el]=doublon_recu[el];
+                prop[el]=p;
+                for (int j=0; j<dimension; j++)
+                  les_positions_sondes_(el,j)=positions_recu(el,j);
               }
         }
       // OK On a rempli le tableau prop;
-
       // le maitre dimensionne participant;
       participant.dimensionner(nbproc);
-      for(p=0; p<nbproc; p++)
+      for(int p=0; p<nbproc; p++)
         {
           int size=0;
-          for (int el=0; el<nbre_points; el++)
-            if (prop[el]==p) size++;
+          for (int el=0; el<nbre_points_tot; el++)
+            if (prop[el]==p&&!doublon(el)) size++;
           participant[p].resize_array(size);
           participant[p]=-1;
           int pos=0;
-          for (int el=0; el<nbre_points; el++)
-            if (prop[el]==p)
+          int pt=0;
+          for (int el=0; el<nbre_points_tot; el++)
+            if (!doublon[el])
               {
-                participant[p][pos]=el;
-                pos++;
+                if (prop[el] == p)
+                  {
+                    participant[p][pos] = pt;
+                    pos++;
+                  }
+                pt++;
               }
           assert((size==0)||(min_array(participant[p])>-1));
         }
     }
   else
     {
+      envoyer(doublon, Process::me(),0,2003+Process::me());
       envoyer(elem_,Process::me(),0,2002+Process::me());
-      envoyer(les_positions_,Process::me(),0,2001+Process::me());
+      envoyer(les_positions_sondes_,Process::me(),0,2001+Process::me());
     }
-
   envoyer_broadcast(prop, 0);
-
-  les_positions_sondes_=les_positions_;
-
-  nbre_points_tot=nbre_points;
-
   //
-  // on redimensionne les tableaux a la taille reel a partir de prop
-  nbre_points=0;
-  for (int el=0; el<nbre_points_tot; el++)
-    if (prop(el)==me()) nbre_points++;
-  DoubleTab new_positions(nbre_points,dimension);
-  IntVect new_elem(nbre_points);
-  int comp=0;
-  for (int el=0; el<nbre_points_tot; el++)
-    if (prop(el)==me())
-      {
-        new_elem(comp)=elem_(el);
-        for (int dir=0; dir<dimension; dir++)
-          new_positions(comp,dir)=les_positions_(el,dir);
-        comp++;
-      }
-  int test=nbre_points;
-  test=mp_sum(test);
-  assert(test==nbre_points_tot);
-  elem_=new_elem;
-  les_positions_=new_positions;
-  //
-
-  // on dimensionne le tableau valeurs_locales
+  // on redimensionne les tableaux a la taille locale a partir de prop et en supprimant les doublons
+  int nbre_points=0;
+  nbre_points_tot=0;
+  les_positions_=les_positions_sondes_;
+  for (int el=0; el<prop.size(); el++)
+    {
+      if (!doublon(el))
+        {
+          if (prop(el) == me())
+            {
+              elem_(nbre_points) = elem_(el);
+              for (int dir = 0; dir < dimension; dir++)
+                les_positions_(nbre_points, dir) = les_positions_(el, dir);
+              nbre_points++;
+            }
+          for (int dir = 0; dir < dimension; dir++)
+            les_positions_sondes_(nbre_points_tot, dir) = les_positions_sondes_(el, dir);
+          nbre_points_tot++;
+        }
+    }
+#ifndef NDEBUG
+  int test=mp_sum(nbre_points);
+  //cerr << "Remove " << Process::me() << " " << nbre_points << " " << nbre_points_tot << " = " << test << endl;
+  if (je_suis_maitre()) assert(test==nbre_points_tot);
+#endif
+  elem_.resize(nbre_points);
+  les_positions_.resize(nbre_points, dimension);
+  if (je_suis_maitre()) // Tableau uniquement sur le maitre:
+    les_positions_sondes_.resize(nbre_points_tot, dimension);
+  else
+    les_positions_sondes_.resize(0,0);
+  // Dimensionnement de valeurs_sur_maitre
+  if (je_suis_maitre()&&(nproc()>1))
+    {
+      if (ncomp == -1)
+        {
+          const Noms noms_comp = mon_champ->get_property("composantes");
+          int nb_comp = noms_comp.size();
+          valeurs_sur_maitre.resize(nbre_points_tot,nb_comp);
+        }
+      else
+        valeurs_sur_maitre.resize(nbre_points_tot, 1);
+    }
+  // Dimensionnement de valeurs_locales
   if (ncomp == -1)
     {
       const Noms noms_comp = mon_champ->get_property("composantes");
@@ -1037,7 +1061,6 @@ void Sonde::initialiser()
     }
   else
     valeurs_locales.resize(nbre_points, 1);
-
 }
 
 
@@ -1061,6 +1084,7 @@ void Sonde::ouvrir_fichier()
     {
       if (!le_fichier_.is_open())
         {
+          //struct stat f {}; Pb sur 4.8.5
           struct stat f;
           const char *sonde_file = nom_fichier_;
           if (stat(sonde_file, &f))
@@ -1266,8 +1290,9 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
       // Si le maillage est deformable il faut reconstruire les sondes
       if (mon_post->probleme().domaine().deformable())
         {
-          if (les_positions_sondes_.dimension(0) > 0 )
-            les_positions_=   les_positions_sondes_;
+          // Fait desormais dans ::initialiser:
+          //if (les_positions_sondes_initiales_.dimension(0) > 0)
+          //    les_positions_sondes_ = les_positions_sondes_initiales_;
           initialiser();
         }
       nb_bip=nb;
@@ -1303,35 +1328,28 @@ void Sonde::postraiter()
     {
       Champ_base& ma_source_mod =ref_cast_non_const(Champ_base,ma_source.valeur());
       if (ncomp == -1)
-        ma_source_mod.valeur_aux_elems_smooth(les_positions_,elem_, valeurs_locales);
+        ma_source_mod.valeur_aux_elems_smooth(les_positions(),elem_, valeurs_locales);
       else
-        ma_source_mod.valeur_aux_elems_compo_smooth(les_positions_,elem_,valeurs_locales, ncomp);
+        ma_source_mod.valeur_aux_elems_compo_smooth(les_positions(),elem_,valeurs_locales, ncomp);
     }
   else
     {
       if (ncomp == -1)
-        ma_source.valeur().valeur_aux_elems(les_positions_,elem_, valeurs_locales);
+        ma_source.valeur().valeur_aux_elems(les_positions(),elem_, valeurs_locales);
       else
-        ma_source.valeur().valeur_aux_elems_compo(les_positions_,elem_,valeurs_locales, ncomp);
+        ma_source.valeur().valeur_aux_elems_compo(les_positions(),elem_,valeurs_locales, ncomp);
     }
 
   if (gravcl)
     mettre_a_jour_bords();
-  //int i;
   const int N = valeurs_locales.line_size();
-  //  int nbre_points = les_positions_.dimension(0);
 
-  // le maitre reconstruit le tableau valeurs
-  // a partir des differents contributeurs
-
+  // le maitre reconstruit le tableau valeurs a partir des differents contributeurs
   if(je_suis_maitre())
     {
       ouvrir_fichier();
-      int p;
       int nbproc = Process::nproc();
       DoubleTab valeurs_pe;
-
-
       DoubleTab& valeurs=(nbproc==1?valeurs_locales:valeurs_sur_maitre);
       if (nbproc==1)
         ;//valeurs=valeurs_locales;
@@ -1341,9 +1359,7 @@ void Sonde::postraiter()
           for(int i=0; i<nb_val; i++)
             for(int n = 0; n < N; n++)
               valeurs(participant[0][i], n) = valeurs_locales(i, n);
-        }
-
-      for(p=1; p<nbproc; p++)
+      for(int p=1; p<nbproc; p++)
         {
           // le message n'est envoye que si le proc participe
           if (participant[p].size_array()!=0)
@@ -1378,8 +1394,7 @@ void Sonde::postraiter()
       else if (dim==2 || dim==3)
         {
           Nom nom_post;
-          int nbre_points = les_positions_.dimension(0);
-          nbre_points =nbre_points_tot;
+          int nbre_points = valeurs.dimension(0);
           const Noms noms_comp = mon_champ->get_property("composantes");
           int nb_comp = noms_comp.size();
           const Noms unites = mon_champ->get_property("unites");
@@ -1479,9 +1494,9 @@ void Sonde::ajouter_bords(const DoubleTab& coords_bords)
   double eps = mon_champ->get_ref_domain().epsilon();
   const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
 
-  const DoubleTab xv = zoneVF.xv();
+  const DoubleTab& xv = zoneVF.xv();
   const IntTab& e_f = zoneVF.elem_faces(), &f_e = zoneVF.face_voisins();
-  int nbre_points = les_positions_.dimension(0), face;
+  int nbre_points = les_positions_sondes_.dimension(0), face;
 
   faces_bords_.set_smart_resize(1);
 
@@ -1507,7 +1522,7 @@ void Sonde::ajouter_bords(const DoubleTab& coords_bords)
                     {
                       faces_bords_.append_array(face);
                       for (int idim=0; idim<dimension; idim++)
-                        les_positions_(e,idim) = coords_bords(i,idim);
+                        les_positions_sondes_(e,idim) = coords_bords(i,idim);
                     }
                 }
             }

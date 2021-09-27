@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,6 +68,7 @@ public :
   DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double, int distant ) const;
 
   Champ_base& affecter_(const Champ_base& );
+  int nb_valeurs_nodales() const;
 
   const Zone_VF& zone_vf() const
   {
@@ -97,6 +98,7 @@ public :
 
   //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
   void interp_ve (const DoubleTab& inco, DoubleTab& val, bool is_vit=true) const;
+  void interp_ve (const DoubleTab& inco, const IntVect&, DoubleTab& val, bool is_vit=true) const;
   void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
 
 

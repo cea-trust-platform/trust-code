@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,8 +62,9 @@ public :
   void completer();
   inline void fermer_fichier();
   inline const Champ_Generique_base& le_champ() const;
-  inline const DoubleTab& les_positions() const;
-  inline const DoubleTab& les_positions_sondes() const;
+  inline const DoubleTab& les_positions_sondes_initiales() const; // Positions initiales
+  inline const DoubleTab& les_positions_sondes() const; // Positions apres deplacement
+  inline const DoubleTab& les_positions() const; // Positions locales au proc
   inline const IntVect& les_poly() const;
   inline void fixer_periode(double);
   inline double temps() const;
@@ -99,15 +100,15 @@ protected :
   int ncomp;                              // Numero de la composante a sonder
   // Si ncomp = -1 la sonde s'applique a toutes les
   // composantes du champ
-  DoubleTab les_positions_;               // les coordonnees des sondes ponctuelles
-  DoubleTab les_positions_sondes_;        // les coordonnees des sondes ponctuelles non modifie
+  DoubleTab les_positions_sondes_initiales_;    // les coordonnees des sondes ponctuelles initiales
+  DoubleTab les_positions_sondes_;        // les coordonnees des sondes sur tout le domaine apres deplacement (uniquement sur le maitre)
+  DoubleTab les_positions_;       // les coordonnees des sondes locales sur chaque proc
   int numero_elem_;                       // vaut -1 si pas defini et vaut le numero de l'elem sur le maitre
-  IntVect elem_;                          // les elements contenant les sondes ponctuelles
+  IntVect elem_;                          // les elements contenant les sondes ponctuelles locales
   double periode;                         // periode d'echantillonnage
   // cles pour typage des sondes (sondes redefinies aux noeuds ou d'apres les valeurs aux sommets ou au centre de gravite ou aux sommets)
   bool nodes,chsom,grav,gravcl,som;
   DoubleTab valeurs_locales,valeurs_sur_maitre;     // valeurs_locales les valeurs sur chaque proc, valeurs_sur_maitre les valeurs regroupes sur le maitre
-  int nbre_points_tot;
   double nb_bip;
   SFichier le_fichier_;
   Motcle nom_champ_lu_;
@@ -221,9 +222,10 @@ inline const Champ_Generique_base& Sonde::le_champ() const
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-inline const DoubleTab& Sonde::les_positions() const
+
+inline const DoubleTab& Sonde::les_positions_sondes_initiales() const
 {
-  return les_positions_;
+  return les_positions_sondes_initiales_;
 }
 
 inline const DoubleTab& Sonde::les_positions_sondes() const
@@ -231,6 +233,10 @@ inline const DoubleTab& Sonde::les_positions_sondes() const
   return les_positions_sondes_;
 }
 
+inline const DoubleTab& Sonde::les_positions() const
+{
+  return les_positions_;
+}
 
 // Description:
 //    Renvoie le tableau des elements qui sont sondes.

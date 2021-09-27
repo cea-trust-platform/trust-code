@@ -53,7 +53,7 @@ public:
 
   inline void ouvrir_fichiers();
   inline void fermer_fichiers();
-  inline void completer();
+  void completer();
   inline void init_bords();
   void associer_post(const Postraitement&);
   void postraiter();
@@ -61,54 +61,17 @@ public:
   void lire_fichier(const Nom& nom_fichier);
   REF(Champ_base) get_from_cache(REF(Champ_Generique_base)& mon_champ, const Nom& nom_champ_lu_);
   void clear_cache();
+  void set_noms_champs_postraitables();
+  const Motcles& get_noms_champs_postraitables() const { return noms_champs_postraitables_; }
 private:
   // Mecanisme de cache pour les sondes:
   LIST(REF(Champ_base)) sourceList;
   LIST(Champ) espaceStockageList;
   Noms sourceNoms;
   REF(Postraitement) mon_post;
+  Motcles noms_champs_postraitables_;
 };
 
-// Description:
-//   Complete la lecture des sondes
-//
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: les fichiers associes des sondes sont ouverts
-inline void Sondes::completer()
-{
-  LIST_CURSEUR(Sonde) curseur=*this;
-  while(curseur)
-    {
-      curseur->completer();
-      ++curseur;
-    }
-}
-
-// Description:
-//   Complete la lecture des sondes
-//
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline void Sondes::init_bords()
 {
   LIST_CURSEUR(Sonde) curseur=*this;
