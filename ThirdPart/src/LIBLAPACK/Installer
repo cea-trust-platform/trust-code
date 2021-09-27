@@ -10,10 +10,10 @@ install_OpenBlas()
 
    # Installation
    rm -r -f *-OpenBLAS-*
-   echo "Installation of $package..."
+   echo "Installation of $package (USE_THREAD=$PETSC_HAVE_OPENMP)..."
    gunzip -f -c $package | tar -xf -
    cd OpenBLAS-$version_openblas
-   $TRUST_MAKE CC=$TRUST_cc FC=$TRUST_F77
+   $TRUST_MAKE CC=$TRUST_cc FC=$TRUST_F77 USE_THREAD=$PETSC_HAVE_OPENMP
 
    # On copie la librairie si elle existe sinon on sort
    if [ -f $lib ]
