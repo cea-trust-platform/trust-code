@@ -1,0 +1,44 @@
+Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ROOT)/src/Kernel/Champs\
+	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
+	-I$(TRUST_ROOT)/src/Kernel/Framework\
+	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
+	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
+	-I$(TRUST_ROOT)/src/Kernel/Math/SolvSys\
+	-I$(TRUST_ROOT)/src/Kernel/Math\
+	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
+	-I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
+	-I$(TRUST_ROOT)/src/Kernel/Statistiques_temps\
+	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/P1NCP1B/Zones\
+	-I$(TRUST_ROOT)/src/ThHyd\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Champs\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Problems\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Loi_Etat\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Problems\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Cond_Lim\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Loi_Etat\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable\
+	-I$(TRUST_ROOT)/src/ThSol\
+	-I$(TRUST_ROOT)/src/VEF/Champs\
+	-I$(TRUST_ROOT)/src/VEF/Sources/Evaluateurs\
+	-I$(TRUST_ROOT)/src/VEF/Sources/Iterateurs\
+	-I$(TRUST_ROOT)/src/VEF/Sources\
+	-I$(TRUST_ROOT)/src/VEF/Zones\
+	
+
+Lib = $(TRUST_LIB)/libthhydwcVEF
