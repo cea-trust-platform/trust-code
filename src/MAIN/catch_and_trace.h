@@ -154,7 +154,7 @@ void install_handlers()
 /*
  * Define the function to be called when ctrl-c (SIGINT) is sent to process
  */
-void signal_callback_handler(int signum)
+void signal_callback_handler(True_int signum)
 {
   if (Process::je_suis_maitre())
     {
