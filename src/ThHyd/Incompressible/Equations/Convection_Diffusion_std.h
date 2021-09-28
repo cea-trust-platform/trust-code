@@ -72,6 +72,10 @@ public :
   virtual const Champ_base& diffusivite_pour_pas_de_temps();
   virtual const Champ_base& vitesse_pour_transport();
 
+  // E. Saikali : Methodes utiles pour un heritage V
+  int sauvegarder_base(Sortie&) const;
+  int reprendre_base(Entree&);
+
 protected :
 
   REF(Champ_Inc_base) la_vitesse_transportante;

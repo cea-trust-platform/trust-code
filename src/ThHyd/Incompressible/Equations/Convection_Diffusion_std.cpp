@@ -206,3 +206,13 @@ const Champ_base& Convection_Diffusion_std::vitesse_pour_transport()
 {
   return probleme().equation(0).inconnue();
 }
+
+// E. Saikali : Methodes utiles pour un heritage V
+int Convection_Diffusion_std::sauvegarder_base(Sortie& os) const
+{
+  return Equation_base::sauvegarder(os);
+}
+int Convection_Diffusion_std::reprendre_base(Entree& is)
+{
+  return Equation_base::reprendre(is);
+}
