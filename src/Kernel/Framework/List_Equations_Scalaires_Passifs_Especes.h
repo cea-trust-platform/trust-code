@@ -14,116 +14,89 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        List_Equations_Scalaires_Passifs.h
+// File:        List_Equations_Scalaires_Passifs_Especes.h
 // Directory:   $TRUST_ROOT/src/Kernel/Framework
 // Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef List_Equations_Scalaires_Passifs_Especes_included
+#define List_Equations_Scalaires_Passifs_Especes_included
 
-#ifndef List_Equations_Scalaires_Passifs_included
-#define List_Equations_Scalaires_Passifs_included
-
-
-
-#include <List_Equation.h>
 #include <Ref_Milieu_base.h>
+#include <List_Equation.h>
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     classe List_Equations_Scalaires_Passifs
-//     Represente une liste d'equations de scalaires passifs
-//     List_Equations_Scalaires_Passifs comprend une liste d'equations
-//     de scalaires passifs et est vue comme une equation
+//     classe List_Equations_Scalaires_Passifs_Especes
+//     Represente une liste d'equations de scalaires passifs ou especes
+//     List_Equations_Scalaires_Passifs_Especes comprend une liste d'equations
+//     de scalaires passifs ou especes et est vue comme une equation
 //     elle porte une vraie liste d'equations
 // .SECTION voir aussi
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-
-class List_Equations_Scalaires_Passifs : public Equation_base
+class List_Equations_Scalaires_Passifs_Especes : public Equation_base
 {
-  Declare_instanciable(List_Equations_Scalaires_Passifs);
-public :
+  Declare_instanciable(List_Equations_Scalaires_Passifs_Especes);
 
+public :
+  const  Equation_base& equation(int i) const { return list_eq(i).valeur(); }
+  int nb_equation() { return list_eq.size(); }
+  int nb_equation() const { return list_eq.size(); }
+  int complete() { return complet; }
+  int complete() const { return complet; }
+  virtual void discretiser() { };
+  virtual void associer_milieu_equation();
+  virtual void associer_milieu_base(const Milieu_base& mil1) { mil=mil1; }
+  virtual const Milieu_base& milieu() const { return mil.valeur(); }
+  virtual Milieu_base& milieu() { return mil.valeur(); }
+  virtual int nombre_d_operateurs() const { return 0; }
 
   Equation_base& equation(int i)
   {
     if (nb_equation()==0)
       {
-        Cerr << "\nError in List_Equations_Scalaires_Passifs::equation() : The equation list is empty !" << finl;
+        Cerr << "\nError in List_Equations_Scalaires_Passifs_Especes::equation() : The equation list is empty !" << finl;
         Process::exit();
       }
     return list_eq(i).valeur();
   };
-  const  Equation_base& equation(int i) const
-  {
-    return list_eq(i).valeur();
-  };
-  virtual int nombre_d_operateurs() const
-  {
-    return 0;
-  };
+
   virtual const Operateur& operateur(int) const
   {
-    exit();
+    Process::exit();
     Equation bidon;;
     return bidon.operateur(0);
-  };
+  }
+
   virtual Operateur& operateur(int)
   {
-    exit();
+    Process::exit();
     Equation bidon;
     return bidon.operateur(0);
-  };
+  }
+
   virtual const Champ_Inc& inconnue() const
   {
-    exit(); ;
+    Process::exit(); ;
     Equation bidon;
     return bidon.inconnue();
-  };
+  }
+
   virtual Champ_Inc& inconnue()
   {
-    exit();
+    Process::exit();
     Equation bidon ;
     return bidon.inconnue();
-  };
-  virtual void associer_milieu_base(const Milieu_base& mil1)
-  {
-    mil=mil1;
-  };
-  virtual const Milieu_base& milieu() const
-  {
-    return mil.valeur();
-  };
-  virtual Milieu_base& milieu()
-  {
-    return mil.valeur();
-  } ;
-  virtual void discretiser() { };
-  int nb_equation()
-  {
-    return list_eq.size();
-  };
-  int nb_equation() const
-  {
-    return list_eq.size();
-  };
-  int complete()
-  {
-    return complet;
-  };
-  int complete() const
-  {
-    return complet;
-  };
-  virtual void associer_milieu_equation();
+  }
+
 protected :
   LIST(Equation) list_eq;
   REF(Milieu_base) mil;
   int complet;
 };
 
-
-#endif
+#endif /* List_Equations_Scalaires_Passifs_Especes_included */

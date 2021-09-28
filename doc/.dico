@@ -324,7 +324,7 @@
  EOS_Tools_VDF EOS_Tools_VDF EOS_Tools_VDF.h
  EOS_Tools_VEF EOS_Tools_VEF EOS_Tools_VEF.h
  Equation Equation Equation.h
- Equations_Scalaires_Passifs List_Equations_Scalaires_Passifs List_Equations_Scalaires_Passifs.h
+ Equations_Scalaires_Passifs|Equations_Especes List_Equations_Scalaires_Passifs_Especes List_Equations_Scalaires_Passifs_Especes.h
  Equation_base Equation_base Equation_base.h
  Erf Erf StdFunction.h
  ErgunDarcy ModPerm_ErgunPourDarcy ModPerm_ErgunPourDarcy.h

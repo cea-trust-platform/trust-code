@@ -24,6 +24,7 @@
 #define Convection_Diffusion_Espece_Multi_WC_included
 
 #include <Convection_Diffusion_Espece_Multi_base.h>
+#include <Convection_Diffusion_Fluide_Dilatable_Proto.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -36,7 +37,8 @@
 //     Convection_Diffusion_Espece_Multi_base
 //////////////////////////////////////////////////////////////////////////////
 
-class Convection_Diffusion_Espece_Multi_WC : public Convection_Diffusion_Espece_Multi_base
+class Convection_Diffusion_Espece_Multi_WC : public Convection_Diffusion_Espece_Multi_base,
+  public Convection_Diffusion_Fluide_Dilatable_Proto
 {
   Declare_instanciable(Convection_Diffusion_Espece_Multi_WC);
 
@@ -46,10 +48,6 @@ public :
   const Champ_base& diffusivite_pour_pas_de_temps();
   const Champ_base& vitesse_pour_transport();
   DoubleTab& derivee_en_temps_inco(DoubleTab& );
-
-private:
-  void calculer_div_rho_u(DoubleTab& res) const;
-  DoubleTab& derivee_en_temps_inco_sans_solveur_masse(DoubleTab& );
 };
 
 #endif /* Convection_Diffusion_Espece_Multi_WC_included */

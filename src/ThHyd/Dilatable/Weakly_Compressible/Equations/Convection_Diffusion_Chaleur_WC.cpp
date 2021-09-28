@@ -20,14 +20,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Convection_Diffusion_Fluide_Dilatable_Proto.h>
 #include <Convection_Diffusion_Chaleur_WC.h>
-#include <Fluide_Weakly_Compressible.h>
-#include <EcritureLectureSpecial.h>
 #include <Discretisation_base.h>
 #include <Op_Conv_negligeable.h>
-#include <Probleme_base.h>
-#include <Domaine.h>
-#include <Avanc.h>
 
 Implemente_instanciable(Convection_Diffusion_Chaleur_WC,"Convection_Diffusion_Chaleur_WC",Convection_Diffusion_Chaleur_Fluide_Dilatable_base);
 
@@ -101,55 +97,11 @@ bool Convection_Diffusion_Chaleur_WC::is_generic()
 
 int Convection_Diffusion_Chaleur_WC::sauvegarder(Sortie& os) const
 {
-  int bytes=0,a_faire,special;
-  bytes += Equation_base::sauvegarder(os);
-  EcritureLectureSpecial::is_ecriture_special(special,a_faire);
-
-  if (a_faire)
-    {
-      Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,le_fluide.valeur());
-      Champ_Inc p_tab = FWC.inco_chaleur(); // Initialize with same discretization
-      p_tab->nommer("Pression_EOS");
-      p_tab->valeurs() = FWC.pression_th_tab(); // Use good values
-      if (special && Process::nproc() > 1)
-        Cerr << "ATTENTION : For a parallel calculation, the field Pression_EOS is not saved in xyz format ... " << finl;
-      else
-        bytes += p_tab->sauvegarder(os);
-    }
-
-  return bytes;
+  return Convection_Diffusion_Fluide_Dilatable_Proto::sauvegarder_WC(os,*this,le_fluide.valeur());
 }
 
 int Convection_Diffusion_Chaleur_WC::reprendre(Entree& is)
 {
-  // start resuming
-  Equation_base::reprendre(is);
-  // XXX : should be set so that Pression_EOS is read and not initialized from data file
-  Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
-  FWC.set_resume_flag();
-  // resume EOS pressure field
   double temps = schema_temps().temps_courant();
-  Champ_Inc p_tab = inconnue(); // Same discretization normally
-  p_tab->nommer("Pression_EOS");
-  Nom field_tag(p_tab->le_nom());
-  field_tag += p_tab.valeur().que_suis_je();
-  field_tag += probleme().domaine().le_nom();
-  field_tag += Nom(temps,probleme().reprise_format_temps());
-
-  if (EcritureLectureSpecial::is_lecture_special() && Process::nproc() > 1)
-    {
-      Cerr << "Error in Convection_Diffusion_Espece_Binaire_WC::reprendre !" << finl;
-      Cerr << "Use the sauv file to resume a parallel WC calculation (Pression_EOS is required) ... " << finl;
-      Process::exit();
-    }
-  else
-    {
-      avancer_fichier(is, field_tag);
-      p_tab->reprendre(is);
-    }
-
-  // set good field
-  FWC.set_pression_th_tab(p_tab->valeurs());
-
-  return 1;
+  return Convection_Diffusion_Fluide_Dilatable_Proto::reprendre_WC(is,temps,*this,le_fluide.valeur(),l_inco_ch,probleme());
 }

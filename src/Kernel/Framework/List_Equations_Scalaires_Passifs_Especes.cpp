@@ -14,38 +14,25 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        List_Equations_Scalaires_Passifs.cpp
+// File:        List_Equations_Scalaires_Passifs_Especes.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Framework
 // Version:     /main/14
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <List_Equations_Scalaires_Passifs.h>
+#include <List_Equations_Scalaires_Passifs_Especes.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable_sans_constructeur(List_Equations_Scalaires_Passifs,"Equations_Scalaires_Passifs",Equation_base);
+Implemente_instanciable_sans_constructeur(List_Equations_Scalaires_Passifs_Especes,"Equations_Scalaires_Passifs|Equations_Especes",Equation_base);
 
-List_Equations_Scalaires_Passifs::List_Equations_Scalaires_Passifs()
+List_Equations_Scalaires_Passifs_Especes::List_Equations_Scalaires_Passifs_Especes() : complet(0) { }
+
+Sortie& List_Equations_Scalaires_Passifs_Especes::printOn(Sortie& os) const
 {
-  complet=0;
+  return os;
 }
 
-// Description:
-//    Surcharge Objet_U::readOn(Entree& is)
-//    NE FAIT RIEN.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree passe en parametre
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& List_Equations_Scalaires_Passifs::readOn(Entree& is)
+Entree& List_Equations_Scalaires_Passifs_Especes::readOn(Entree& is)
 {
   // Ici se situe un gros piratage
   Motcle accolade_ouverte("{");
@@ -54,8 +41,8 @@ Entree& List_Equations_Scalaires_Passifs::readOn(Entree& is)
   is >> motlu;
   if (motlu!=accolade_ouverte)
     {
-      Cerr<<" big problem in List_Equations_Scalaires_Passifs::readOn , we expected "<<accolade_ouverte;
-      exit();
+      Cerr<<"Big problem in List_Equations_Scalaires_Passifs_Especes::readOn , we expected "<<accolade_ouverte;
+      Process::exit();
     }
   is >> motlu;
   while (motlu!=accolade_fermee)
@@ -65,17 +52,14 @@ Entree& List_Equations_Scalaires_Passifs::readOn(Entree& is)
       Equation& Eqn_nvelle=list_eq.add(toto);
       Eqn_nvelle.typer(motlu);
       Equation_base& Eqn = ref_cast(Equation_base,Eqn_nvelle.valeur());
+
       // maintenant on associe le pb
-
       Eqn.associer_pb_base(probleme());
-
       Eqn.associer_milieu_base(mil.valeur());
-
       Eqn.associer_sch_tps_base(schema_temps());
 
       // on la discretise (pas fait par discretiser)
       Eqn.associer_zone_dis(probleme().domaine_dis().zone_dis(0));
-
       Eqn.discretiser();
 
       // on change le nom de l'inconnue et de l equation
@@ -93,36 +77,12 @@ Entree& List_Equations_Scalaires_Passifs::readOn(Entree& is)
       // enfin on lit
       is >> Eqn;
       is >> motlu;
-
     }
   complet=1;
   return is ;
 }
 
-void List_Equations_Scalaires_Passifs::associer_milieu_equation()
+void List_Equations_Scalaires_Passifs_Especes::associer_milieu_equation()
 {
-  for (int i = 0; i < nb_equation(); i++)
-    equation(i).associer_milieu_equation();
+  for (int i = 0; i < nb_equation(); i++) equation(i).associer_milieu_equation();
 }
-
-// Description:
-//    Surcharge Objet_U::printOn(Sortie&)
-//    Imprime les problemes couples sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie sur lequel imprimer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition:
-Sortie& List_Equations_Scalaires_Passifs::printOn(Sortie& os) const
-{
-
-  return os;
-}
-

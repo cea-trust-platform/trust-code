@@ -21,56 +21,26 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Convection_Diffusion_Chaleur_Fluide_Dilatable_base.h>
-#include <Fluide_Dilatable_base.h>
-#include <Probleme_base.h>
-#include <Discret_Thyd.h>
-#include <Domaine.h>
-#include <Avanc.h>
 #include <EcritureLectureSpecial.h>
-#include <Champ_Uniforme.h>
-#include <Matrice_Morse.h>
-#include <Navier_Stokes_std.h>
-#include <DoubleTrav.h>
+#include <Fluide_Dilatable_base.h>
 #include <Neumann_sortie_libre.h>
 #include <Op_Conv_negligeable.h>
+#include <Navier_Stokes_std.h>
+#include <Champ_Uniforme.h>
+#include <Probleme_base.h>
+#include <Discret_Thyd.h>
+#include <Matrice_Morse.h>
+#include <DoubleTrav.h>
+#include <Domaine.h>
+#include <Avanc.h>
 
 Implemente_base(Convection_Diffusion_Chaleur_Fluide_Dilatable_base,"Convection_Diffusion_Chaleur_Fluide_Dilatable_base",Convection_Diffusion_std);
 
-// Description:
-//    Simple appel a: Convection_Diffusion_std::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& is
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::printOn(Sortie& is) const
 {
   return Convection_Diffusion_std::printOn(is);
 }
 
-// Description:
-//    Verifie si l'equation a une inconnue et un fluide associe
-//    et appelle Convection_Diffusion_std::readOn(Entree&).
-// Precondition: l'objet a une inconnue associee
-// Precondition: l'objet a un fluide associe
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::readOn(Entree& is)
 {
   assert(l_inco_ch.non_nul());
@@ -539,7 +509,6 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::reprendre(Entree& is)
   double pth;
   is>>pth;
   le_fluide->set_pression_th(pth);
-
   return 1;
 }
 
@@ -581,10 +550,7 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::impr(Sortie& os) const
 const Motcle& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::domaine_application() const
 {
   static Motcle domaine = "Thermique_H";
-  if (le_fluide->type_fluide()=="Gaz_Parfait")
-    {
-      domaine = "Thermique";
-    }
+  if (le_fluide->type_fluide()=="Gaz_Parfait") domaine = "Thermique";
   return domaine;
 }
 

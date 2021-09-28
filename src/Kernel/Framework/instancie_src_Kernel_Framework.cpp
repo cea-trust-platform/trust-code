@@ -30,7 +30,7 @@
 #include <Format_Post_Lata_V1.h>
 #include <Format_Post_Lml.h>
 #include <Format_Post_XYZ.h>
-#include <List_Equations_Scalaires_Passifs.h>
+#include <List_Equations_Scalaires_Passifs_Especes.h>
 #include <Liste_Champ_Generique.h>
 #include <Loi_Fermeture_Test.h>
 #include <Loi_horaire.h>
@@ -92,7 +92,7 @@ Format_Post_Lata inst28;verifie_pere(inst28);
 Format_Post_Lata_V1 inst29;verifie_pere(inst29);
 Format_Post_Lml inst30;verifie_pere(inst30);
 Format_Post_XYZ inst31;verifie_pere(inst31);
-List_Equations_Scalaires_Passifs inst32;verifie_pere(inst32);
+List_Equations_Scalaires_Passifs_Especes inst32;verifie_pere(inst32);
 Liste_Champ_Generique inst33;verifie_pere(inst33);
 Loi_Fermeture_Test inst34;verifie_pere(inst34);
 Loi_horaire inst35;verifie_pere(inst35);

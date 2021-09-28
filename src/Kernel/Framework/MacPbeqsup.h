@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 
 #ifndef MacPbeqsup_inclus
 #define MacPbeqsup_inclus
-#include <List_Equations_Scalaires_Passifs.h>
+#include <List_Equations_Scalaires_Passifs_Especes.h>
 #define declare_instanciable_pb_eq_sup(NEWCLASS,CLASSMERE)        \
   class NEWCLASS : public CLASSMERE                                \
   {                                                                \
@@ -33,7 +33,7 @@
     Equation_base& equation(int);                                \
     void associer_milieu_base(const Milieu_base& );                \
   protected:                                                        \
-    List_Equations_Scalaires_Passifs list_eq_supp;                \
+    List_Equations_Scalaires_Passifs_Especes list_eq_supp;                \
     int is_lecture;                                                \
   };
 #define implemente_pb_eq_sup(NEWCLASS,NEWCLASSNAME,CLASSMERE,nbequation_class_mere) \
