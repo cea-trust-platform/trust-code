@@ -35,7 +35,7 @@ class Zone_Cl_dis;
 //
 // Cette classe represente un terme source supplementaire
 // a prendre en compte dans les equations de la chaleur
-//  dans le cas ou le fluide est quasi compressible
+//  dans le cas ou le fluide est weakly compressible
 //
 // .SECTION voir aussi
 // Source_Chaleur_Fluide_Dilatable_base Fluide_Weakly_Compressible
@@ -48,6 +48,9 @@ class Source_WC_Chaleur : public Source_Chaleur_Fluide_Dilatable_base
 
 public:
   DoubleTab& ajouter(DoubleTab& ) const;
+
+protected:
+  virtual void compute_interpolate_gradP(DoubleTab& gradP, const DoubleTab& Ptot) const = 0;
 };
 
 #endif /* Source_WC_Chaleur_included */

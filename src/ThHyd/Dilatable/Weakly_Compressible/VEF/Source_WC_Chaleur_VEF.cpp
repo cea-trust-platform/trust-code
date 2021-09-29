@@ -20,46 +20,22 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Convection_Diffusion_Chaleur_WC.h>
 #include <Source_WC_Chaleur_VEF.h>
+#include <Neumann_sortie_libre.h>
+#include <Navier_Stokes_WC.h>
+#include <Probleme_base.h>
+#include <Milieu_base.h>
 #include <Zone_VF.h>
 
 Implemente_instanciable(Source_WC_Chaleur_VEF,"Source_WC_Chaleur_VEF",Source_WC_Chaleur);
 
-
-// Description:
-//    Imprime la source sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Source_WC_Chaleur_VEF::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
 }
 
-// Description:
-//    Lecture de la source sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Source_WC_Chaleur_VEF::readOn(Entree& is)
 {
   return is;
@@ -83,4 +59,77 @@ void Source_WC_Chaleur_VEF::associer_zones(const Zone_dis& zone,const Zone_Cl_di
 {
   volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes_entrelaces());
   porosites.ref(ref_cast(Zone_VF,zone.valeur()).porosite_face());
+}
+
+void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, const DoubleTab& Ptot) const
+{
+  /*
+   * NOTA BENE :
+   * On a discretisé P_EOS avec une directive = temperature qui donne en VEF :
+   * Ptot => aux faces
+   * la_vitesse => faces car vef
+   * grad_Ptot => elem
+   *
+   * L'equation est une equation de scalaire => aux faces car vef
+   * On a d P_tot / d t = del P / del t + u.grad(P_tot)
+   *
+   * del P / del t => aux faces
+   * u.grad(P_tot) !!! faut interpoler grad(P_tot) aux faces
+   */
+
+  const Navier_Stokes_WC& eqHyd = ref_cast(Navier_Stokes_WC,mon_equation->probleme().equation(0));
+  const DoubleTab& la_vitesse = eqHyd.vitesse().valeurs();
+
+  // On sait que grad_Ptot est un champ elem => on pense à la conductivite (elem en vef !! )
+  DoubleTab grad_Ptot;
+  const DoubleTab& lambda = eqHyd.milieu().conductivite()->valeurs();
+  const int nb = lambda.size(), nbcomp = la_vitesse.line_size();
+  assert (nb == lambda.dimension(0) && lambda.line_size() == 1);
+  grad_Ptot.resize(nb,nbcomp);
+
+  const Convection_Diffusion_Chaleur_WC& eq_chal = ref_cast(Convection_Diffusion_Chaleur_WC,mon_equation.valeur());
+  const Operateur_Grad& Op_Grad = eq_chal.operateur_gradient_WC();
+  Op_Grad.calculer(Ptot,grad_Ptot); // compute grad(P_tot)
+
+  const Zone_dis_base& zone_dis = mon_equation->inconnue().zone_dis_base();
+  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
+  assert (zone_dis.que_suis_je() == "Zone_VEFPreP1b" || zone_dis.que_suis_je() == "Zone_VEF");
+
+  // We compute u*grad(P_tot) on each face
+  DoubleTab UgradP(eq_chal.inconnue()->valeurs()), grad_Ptot_face(la_vitesse); // champs sur les faces
+
+  // get grad_Ptot on faces
+  elem_to_face(zone,grad_Ptot,grad_Ptot_face);
+  const int n = la_vitesse.dimension(0);
+  assert (UgradP.dimension(0) == n && grad_Ptot_face.dimension(0) == n);
+  assert (UgradP.line_size() == 1 && n == zone.nb_faces());
+  for (int i=0 ; i <n ; i++)
+    {
+      UgradP(i,0) = 0.;
+      for (int j=0 ; j <nbcomp ; j++) UgradP(i,0) += la_vitesse(i,j) * grad_Ptot_face(i,j);
+    }
+}
+
+// On peut utiliser les methodes statics de Discretisation_tools... mais faut creer de Champ_base ...
+void Source_WC_Chaleur_VEF::elem_to_face(const Zone_VF& zone, const DoubleTab& grad_Ptot,DoubleTab& grad_Ptot_face) const
+{
+  const DoubleVect& vol = zone.volumes();
+  const IntTab& elem_faces = zone.elem_faces();
+  const int nb_face_elem = elem_faces.line_size(), nb_elem = zone.nb_elem(), nb_comp = grad_Ptot_face.line_size();
+  assert (grad_Ptot.dimension(0) == nb_elem && grad_Ptot_face.dimension(0) == zone.nb_faces());
+  assert (grad_Ptot.line_size() == nb_comp);
+
+  grad_Ptot_face = 0.;
+  for (int ele = 0; ele < nb_elem; ele++)
+    for (int s = 0; s < nb_face_elem; s++)
+      {
+        const int face = elem_faces(ele,s);
+        for (int comp = 0; comp < nb_comp; comp++) grad_Ptot_face(face,comp) += grad_Ptot(ele,comp)*vol(ele);
+      }
+
+  for (int f=0; f<zone.premiere_face_int(); f++)
+    for (int comp=0; comp<nb_comp; comp++) grad_Ptot_face(f,comp) /= volumes(f)*nb_face_elem;
+
+  for (int f=zone.premiere_face_int(); f<zone.nb_faces(); f++)
+    for (int comp=0; comp<nb_comp; comp++) grad_Ptot_face(f,comp) /= volumes(f)*nb_face_elem;
 }

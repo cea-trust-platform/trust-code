@@ -24,6 +24,7 @@
 #define Source_WC_Chaleur_VEF_included
 
 #include <Source_WC_Chaleur.h>
+class Zone_VF;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -42,8 +43,13 @@
 class Source_WC_Chaleur_VEF : public Source_WC_Chaleur
 {
   Declare_instanciable(Source_WC_Chaleur_VEF);
+
 protected:
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void compute_interpolate_gradP(DoubleTab& UgradP_face, const DoubleTab& Ptot) const;
+
+private:
+  void elem_to_face(const Zone_VF& zone, const DoubleTab& grad_Ptot,DoubleTab& grad_Ptot_face) const;
 };
 
 #endif /* Source_WC_Chaleur_VEF_included */
