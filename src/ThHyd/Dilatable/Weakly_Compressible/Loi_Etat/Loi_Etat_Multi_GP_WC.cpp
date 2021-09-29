@@ -82,7 +82,8 @@ void Loi_Etat_Multi_GP_WC::initialiser_inco_ch()
   Fluide_Weakly_Compressible& FWC = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur());
   Champ_Don& Yn = FWC.fraction_massique_nonresolue();
   Yn.nommer("fraction_massique_nonresolue");
-  update_Yn_values(Yn,0.);
+  double t = le_fluide->masse_volumique().temps(); // pas 0 car reprise pt etre
+  update_Yn_values(Yn,t);
   Loi_Etat_Multi_GP_base::initialiser_inco_ch();
 }
 

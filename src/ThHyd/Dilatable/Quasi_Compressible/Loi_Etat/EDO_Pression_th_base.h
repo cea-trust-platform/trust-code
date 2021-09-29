@@ -23,13 +23,13 @@
 #ifndef EDO_Pression_th_base_included
 #define EDO_Pression_th_base_included
 
-#include <Objet_U.h>
 #include <Ref_Fluide_Quasi_Compressible.h>
+#include <Objet_U.h>
 
-class Zone_Cl_dis;
-class Zone_dis;
 class Fluide_Quasi_Compressible;
+class Zone_Cl_dis;
 class DoubleTab;
+class Zone_dis;
 
 //////////////////////////////////////////////////////////////////////////////
 //

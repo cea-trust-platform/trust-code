@@ -33,20 +33,6 @@ Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quas
 Fluide_Quasi_Compressible::Fluide_Quasi_Compressible() : traitement_rho_gravite_(0),
   temps_debut_prise_en_compte_drho_dt_(-DMAXFLOAT),omega_drho_dt_(1.) { }
 
-// Description:
-//    Ecrit les proprietes du fluide sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Fluide_Quasi_Compressible::printOn(Sortie& os) const
 {
   os << que_suis_je() << finl;
@@ -54,21 +40,6 @@ Sortie& Fluide_Quasi_Compressible::printOn(Sortie& os) const
   return os;
 }
 
-// Description:
-//   Lit les caracteristiques du fluide a partir d'un flot
-//   d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition:
 Entree& Fluide_Quasi_Compressible::readOn(Entree& is)
 {
   Fluide_Dilatable_base::readOn(is);
@@ -332,7 +303,7 @@ void Fluide_Quasi_Compressible::prepare_pressure_edo()
 {
   if (traitement_PTh != 2) EDO_Pth_->completer();
 
-  eos_tools_->mettre_a_jour(0.);
+  eos_tools_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 }
 
 void Fluide_Quasi_Compressible::write_mean_edo(double temps)

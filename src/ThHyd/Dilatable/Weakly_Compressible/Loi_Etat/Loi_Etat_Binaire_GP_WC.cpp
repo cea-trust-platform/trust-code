@@ -20,66 +20,25 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat_Binaire_GP_WC.h>
 #include <Fluide_Weakly_Compressible.h>
+#include <Loi_Etat_Binaire_GP_WC.h>
 #include <Debog.h>
 
 Implemente_instanciable(Loi_Etat_Binaire_GP_WC,"Loi_Etat_Binaire_Gaz_Parfait_WC",Loi_Etat_Binaire_GP_base);
 // XD melange_binaire loi_etat_base melange_binaire -1 Mixing of a binary mixture uder the iso-thermal and iso-bar assumptions.
 
-// Description:
-//    Imprime la loi sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Loi_Etat_Binaire_GP_WC::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
 }
 
-// Description:
-//    Lecture d'une loi sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_Binaire_GP_WC::readOn(Entree& is)
 {
   Cerr<<"Lecture de la loi d'etat Melange Binaire WC ... "<<finl;
   return Loi_Etat_Binaire_GP_base::readOn(is);
 }
-// Description:
-//    Recalcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+
 double Loi_Etat_Binaire_GP_WC::calculer_masse_volumique(double P, double Y1) const
 {
   return Loi_Etat_Binaire_GP_base::calculer_masse_volumique(P,Y1);

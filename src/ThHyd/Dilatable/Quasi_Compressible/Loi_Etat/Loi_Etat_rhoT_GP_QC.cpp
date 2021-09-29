@@ -20,8 +20,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat_rhoT_GP_QC.h>
 #include <Fluide_Dilatable_base.h>
+#include <Loi_Etat_rhoT_GP_QC.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur( Loi_Etat_rhoT_GP_QC, "Loi_Etat_rhoT_Gaz_Parfait_QC", Loi_Etat_GP_base ) ;
@@ -29,40 +29,12 @@ Implemente_instanciable_sans_constructeur( Loi_Etat_rhoT_GP_QC, "Loi_Etat_rhoT_G
 
 Loi_Etat_rhoT_GP_QC::Loi_Etat_rhoT_GP_QC() : is_exp_(false) { }
 
-// Description:
-//    Imprime la loi sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Loi_Etat_rhoT_GP_QC::printOn( Sortie& os ) const
 {
   Loi_Etat_GP_base::printOn( os );
   return os;
 }
 
-// Description:
-//    Lecture d'une loi sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
 {
   Nom expression_;
@@ -129,52 +101,14 @@ void Loi_Etat_rhoT_GP_QC::initialiser_rho()
     }
 }
 
-// Overloaded method from Loi_Etat_base
-
-// Description:
-//    Initialise l'inconnue de l'equation de chaleur
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 void Loi_Etat_rhoT_GP_QC::initialiser_inco_ch()
 {
   // required here for xyz !
   if ( !is_exp_ ) initialiser_rho();
-
-  DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  tab_rho_n=tab_rho;
-  tab_rho_np1=tab_rho;
-  calculer_masse_volumique();
-  mettre_a_jour(0.);
-  tab_rho.echange_espace_virtuel();
-  tab_rho_np1.echange_espace_virtuel();
+  Loi_Etat_base::initialiser_inco_ch();
 }
 
 // Override
-
-// Description:
-//    Recalcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 double Loi_Etat_rhoT_GP_QC::calculer_masse_volumique(double P, double T) const
 {
   /* Not useful for this state law */
@@ -182,21 +116,6 @@ double Loi_Etat_rhoT_GP_QC::calculer_masse_volumique(double P, double T) const
 }
 
 // Overload
-
-// Description:
-//    Recalcule la masse volumique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 double Loi_Etat_rhoT_GP_QC::calculer_masse_volumique(double P, double T, int ind) const
 {
   if (inf_ou_egal(T,-1000))

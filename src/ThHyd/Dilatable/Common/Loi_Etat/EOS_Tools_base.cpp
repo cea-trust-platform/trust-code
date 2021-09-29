@@ -24,59 +24,8 @@
 
 Implemente_base(EOS_Tools_base,"EOS_Tools_base",Objet_U);
 
-// Description:
-//    Imprime la loi sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& EOS_Tools_base::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& EOS_Tools_base::printOn(Sortie& os) const { return os; }
 
-// Description:
-//    Lecture d'une loi sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition: l'objet est construit avec les parametres lus
-Entree& EOS_Tools_base::readOn(Entree& is)
-{
-  return is;
-}
+Entree& EOS_Tools_base::readOn(Entree& is) { return is; }
 
-// Description:
-//    Associe le fluide
-// Precondition:
-// Parametre: Fluide_Dilatable_base& fl
-//    Signification: le fluide associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: lecture
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void EOS_Tools_base::associer_fluide(const Fluide_Dilatable_base& fl)
-{
-  le_fluide_ = fl;
-}
+void EOS_Tools_base::associer_fluide(const Fluide_Dilatable_base& fl) { le_fluide_ = fl; }

@@ -20,55 +20,26 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Fluide_Dilatable_base.h>
 #include <Fluide_Weakly_Compressible.h>
+#include <Fluide_Dilatable_base.h>
+#include <Loi_Etat_Multi_GP_QC.h>
+#include <Discretisation_base.h>
+#include <Champ_Fonc_Fonction.h>
+#include <Navier_Stokes_std.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
-#include <Navier_Stokes_std.h>
-#include <Discretisation_base.h>
-#include <Loi_Etat_Multi_GP_QC.h>
-#include <Champ_Fonc_Fonction.h>
 #include <Zone_VF.h>
 
 Implemente_base_sans_constructeur(Fluide_Dilatable_base,"Fluide_Dilatable_base",Fluide_base);
 
 Fluide_Dilatable_base::Fluide_Dilatable_base():traitement_PTh(0),Pth_(-1.),Pth_n(-1.),Pth1(-1.) {}
 
-// Description:
-//    Ecrit les proprietes du fluide sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Fluide_Dilatable_base::printOn(Sortie& os) const
 {
   Fluide_base::ecrire(os);
   return os;
 }
 
-// Description:
-//   Lit les caracteristiques du fluide a partir d'un flot
-//   d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition:
 Entree& Fluide_Dilatable_base::readOn(Entree& is)
 {
   Fluide_base::readOn(is);
@@ -285,8 +256,8 @@ Champ_Don& Fluide_Dilatable_base::ch_temperature()
 // Postcondition:
 void Fluide_Dilatable_base::preparer_pas_temps()
 {
-  loi_etat_->mettre_a_jour(0);
-  eos_tools_->mettre_a_jour(0);
+  loi_etat_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+  eos_tools_->mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 }
 
 void Fluide_Dilatable_base::abortTimeStep()
@@ -459,20 +430,6 @@ void Fluide_Dilatable_base::get_noms_champs_postraitables(Noms& nom,Option opt) 
   loi_etat_->get_noms_champs_postraitables(nom,opt);
 }
 
-// Description:
-//    A surcharger dans les classes filles
-// Precondition:
-// Parametre: double temps
-//    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 void Fluide_Dilatable_base::mettre_a_jour(double temps)
 {
   rho.mettre_a_jour(temps);
@@ -504,7 +461,7 @@ void Fluide_Dilatable_base::preparer_calcul()
 {
   Cerr << "Fluide_Dilatable_base::preparer_calcul()" << finl;
   Milieu_base::preparer_calcul();
-  Fluide_Dilatable_base::update_pressure_fields(0); // Child can have an overload
+  Fluide_Dilatable_base::update_pressure_fields(le_probleme_->schema_temps().temps_courant()); // Child can have an overload
   loi_etat_->preparer_calcul();
   prepare_pressure_edo(); // si besoin (i.e. QC)
   calculer_coeff_T();
@@ -532,6 +489,7 @@ void Fluide_Dilatable_base::update_pressure_fields(double temps)
 // Postcondition:
 void Fluide_Dilatable_base::completer(const Probleme_base& pb)
 {
+  le_probleme_ = pb;
   inco_chaleur_ = pb.equation(1).inconnue();
   vitesse_ = pb.equation(0).inconnue();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,pb.equation(0));
@@ -543,7 +501,8 @@ void Fluide_Dilatable_base::completer(const Probleme_base& pb)
   eos_tools_.typer(typ);
   eos_tools_->associer_zones(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
   eos_tools_->associer_fluide(*this);
+  loi_etat_->assoscier_probleme(pb);
   initialiser_inco_ch();
-  eos_tools_->mettre_a_jour(0.);
+  eos_tools_->mettre_a_jour(pb.schema_temps().temps_courant());
   loi_etat_->initialiser();
 }

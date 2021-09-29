@@ -182,9 +182,9 @@ int Fluide_Weakly_Compressible::lire_motcle_non_standard(const Motcle& mot, Entr
 void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
 {
   Cerr<<"Fluide_Weakly_Compressible::completer" << finl;
-  le_probleme_ = pb;
+
   // XXX : currently we support only open configurations
-  checkTraitementPth(le_probleme_->equation(0).zone_Cl_dis());
+  checkTraitementPth(pb.equation(0).zone_Cl_dis());
 
   if (Pth_xyz_.non_nul())
     {
@@ -238,27 +238,42 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
           Process::exit();
         }
     }
+
   // XXX : On l'a besoin pour initialiser rho ...
   if ( !use_saved_data() ) initialiser_pth_for_EOS(pb); // soit à initialiser
   else pression_eos_.valeurs() = Pth_tab_; // soit à reprendre
 
+
   Fluide_Dilatable_base::completer(pb);
+
+  mettre_a_jour_bis();
+}
+
+void Fluide_Weakly_Compressible::mettre_a_jour_bis()
+{
+  assert(pression_eos_.non_nul());
+  pression_eos_.mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+
+  if (pression_hydro_.non_nul())
+    pression_hydro_.mettre_a_jour(le_probleme_->schema_temps().temps_courant());
+
+  if (unsolved_species_.non_nul())
+    unsolved_species_.mettre_a_jour(le_probleme_->schema_temps().temps_courant());
 }
 
 void Fluide_Weakly_Compressible::initialiser_pth_for_EOS(const Probleme_base& pb)
 {
-  if (use_pth_xyz()) initialiser_pth_xyz();
+  if (use_pth_xyz()) initialiser_pth_xyz(pb);
   else initialiser_pth();
 
   pression_eos_.valeurs() = Pth_tab_;
-  pression_eos_.mettre_a_jour(0.);
 }
 
-void Fluide_Weakly_Compressible::initialiser_pth_xyz()
+void Fluide_Weakly_Compressible::initialiser_pth_xyz(const Probleme_base& pb)
 {
   Cerr<<"Initializing the thermo-dynamic pressure Pth_xyz ..." << finl;
   int isVDF = 0; // VDF or VEF ??
-  if (le_probleme_->equation(0).discretisation().que_suis_je()=="VDF") isVDF = 1;
+  if (pb.equation(0).discretisation().que_suis_je()=="VDF") isVDF = 1;
 
   // We know that mu is always stored on elems and that Champ_Don rho_xyz_ is evaluated on elements
   assert (Pth_xyz_->valeurs().size() == viscosite_dynamique().valeurs().size());

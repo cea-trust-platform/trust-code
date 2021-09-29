@@ -22,52 +22,22 @@
 
 #include <Convection_Diffusion_Chaleur_QC.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Probleme_base.h>
-#include <Discret_Thyd.h>
+#include <Op_Conv_negligeable.h>
 #include <Frontiere_dis_base.h>
 #include <Navier_Stokes_std.h>
-#include <Op_Conv_negligeable.h>
+#include <Probleme_base.h>
+#include <Discret_Thyd.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Convection_Diffusion_Chaleur_QC,"Convection_Diffusion_Chaleur_QC",Convection_Diffusion_Chaleur_Fluide_Dilatable_base);
 
 Convection_Diffusion_Chaleur_QC::Convection_Diffusion_Chaleur_QC():mode_convection_(2) { }
 
-// Description:
-//    Simple appel a: Convection_Diffusion_Chaleur_Fluide_Dilatable_base::printOn(Sortie&)
-// Precondition:
-// Parametre: Sortie& is
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Convection_Diffusion_Chaleur_QC::printOn(Sortie& is) const
 {
   return Convection_Diffusion_Chaleur_Fluide_Dilatable_base::printOn(is);
 }
 
-// Description:
-//    Verifie si l'equation a une inconnue et un fluide associe
-//    et appelle Convection_Diffusion_Chaleur_Fluide_Dilatable_base::readOn(Entree&).
-// Precondition: l'objet a une inconnue associee
-// Precondition: l'objet a un fluide associe
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& is
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Convection_Diffusion_Chaleur_QC::readOn(Entree& is)
 {
   Convection_Diffusion_Chaleur_Fluide_Dilatable_base::readOn(is);

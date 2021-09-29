@@ -24,7 +24,6 @@
 #define Fluide_Weakly_Compressible_included
 
 #include <Fluide_Dilatable_base.h>
-#include <Ref_Probleme_base.h>
 
 class Zone_Cl_dis;
 
@@ -57,7 +56,6 @@ public :
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
 
   // Methodes inlines
-  inline Probleme_base& get_problem() { return le_probleme_.valeur(); }
   inline const Champ_Don& pression_hydro() const { return pression_hydro_; }
   inline Champ_Don& pression_hydro() { return pression_hydro_; }
   inline const Champ_Don& pression_eos() const { return pression_eos_; }
@@ -76,16 +74,16 @@ public :
   inline bool use_saved_data() { return sim_resumed_; }
 
 protected:
+  void mettre_a_jour_bis();
   Champ_Don Pth_xyz_,pression_hydro_,pression_eos_,unsolved_species_;
   DoubleTab Pth_tab_, Pth_n_tab_,P_NS_;
   int use_total_pressure_, use_hydrostatic_pressure_, sim_resumed_;
   double time_activate_ptot_;
-  REF(Probleme_base) le_probleme_;
 
 private:
   void calculer_pression_hydro();
   void initialiser_pth();
-  void initialiser_pth_xyz();
+  void initialiser_pth_xyz(const Probleme_base& pb);
   void initialiser_pth_for_EOS(const Probleme_base& pb);
   void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot);
   void remplir_champ_pression_for_EOS();

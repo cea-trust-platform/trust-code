@@ -20,49 +20,21 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat_GR_base.h>
-#include <Motcle.h>
 #include <Fluide_Quasi_Compressible.h>
+#include <Loi_Etat_GR_base.h>
 #include <Champ_Uniforme.h>
+#include <Motcle.h>
 
 Implemente_base_sans_constructeur(Loi_Etat_GR_base,"Loi_Etat_Gaz_Reel_base",Loi_Etat_base);
 
 Loi_Etat_GR_base::Loi_Etat_GR_base() : MMole_(-1),Cp_(-1),R(-1) { }
 
-// Description:
-//    Imprime la loi sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Loi_Etat_GR_base::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
 }
 
-// Description:
-//    Lecture d'une loi sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_GR_base::readOn(Entree& is)
 {
   return is;

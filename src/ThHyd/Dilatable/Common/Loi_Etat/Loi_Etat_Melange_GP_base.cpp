@@ -21,14 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Loi_Etat_Melange_GP_base.h>
-#include <Champ_Uniforme.h>
-#include <Champ_Fonc_Tabule.h>
-#include <Debog.h>
-#include <Zone_VF.h>
-#include <Probleme_base.h>
-#include <Param.h>
-#include <Champ_Inc_base.h>
-#include <DoubleTab.h>
 
 Implemente_base(Loi_Etat_Melange_GP_base,"Loi_Etat_Melange_Gaz_Parfait_base",Loi_Etat_GP_base);
 // XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
@@ -62,5 +54,3 @@ void Loi_Etat_Melange_GP_base::associer_fluide(const Fluide_Dilatable_base& fl)
 {
   Loi_Etat_base::associer_fluide(fl);
 }
-
-

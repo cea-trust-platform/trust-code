@@ -27,4 +27,4 @@
 class Fluide_Dilatable_base;
 Declare_ref(Fluide_Dilatable_base);
 
-#endif
+#endif /* Ref_Fluide_Dilatable_base_included */

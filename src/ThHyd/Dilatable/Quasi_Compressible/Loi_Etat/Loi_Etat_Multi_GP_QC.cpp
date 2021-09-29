@@ -21,14 +21,14 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Loi_Etat_Multi_GP_QC.h>
-#include <Champ_Uniforme.h>
 #include <Champ_Fonc_Tabule.h>
-#include <Debog.h>
-#include <Zone_VF.h>
+#include <Champ_Uniforme.h>
 #include <Probleme_base.h>
-#include <Param.h>
 #include <Champ_Inc_base.h>
 #include <DoubleTab.h>
+#include <Zone_VF.h>
+#include <Debog.h>
+#include <Param.h>
 
 Implemente_liste(REF(Espece));
 

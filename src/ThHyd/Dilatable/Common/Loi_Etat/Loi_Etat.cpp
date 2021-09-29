@@ -26,39 +26,11 @@
 Implemente_deriv(Loi_Etat_base);
 Implemente_instanciable(Loi_Etat,"Loi_Etat",DERIV(Loi_Etat_base));
 
-// Description:
-//    Impression de la loi d'etat sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Loi_Etat::printOn(Sortie& os) const
 {
   return DERIV(Loi_Etat_base)::printOn(os);
 }
 
-// Description:
-//    Lecture de la loi d'etat sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
 Entree& Loi_Etat::readOn(Entree& is)
 {
   Cerr<<"Lecture et typage de la loi d'etat :"<<finl;
@@ -131,7 +103,6 @@ Entree& Loi_Etat::readOn(Entree& is)
   is >> valeur();
   return is;
 }
-
 
 // Description:
 //    Type la loi d'etat

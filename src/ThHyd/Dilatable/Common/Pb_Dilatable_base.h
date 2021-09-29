@@ -23,8 +23,8 @@
 #ifndef Pb_Dilatable_base_included
 #define Pb_Dilatable_base_included
 
-#include <Pb_Fluide_base.h>
 #include <Ref_Fluide_Dilatable_base.h>
+#include <Pb_Fluide_base.h>
 
 class Fluide_Dilatable_base;
 

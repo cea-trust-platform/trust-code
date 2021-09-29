@@ -25,39 +25,11 @@
 Implemente_deriv(EOS_Tools_base);
 Implemente_instanciable(EOS_Tools,"EOS_Tools",DERIV(EOS_Tools_base));
 
-// Description:
-//    Impression de la loi d'etat sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& EOS_Tools::printOn(Sortie& os) const
 {
   return DERIV(EOS_Tools_base)::printOn(os);
 }
 
-// Description:
-//    Lecture de la loi d'etat sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
 Entree& EOS_Tools::readOn(Entree& is)
 {
   return is;

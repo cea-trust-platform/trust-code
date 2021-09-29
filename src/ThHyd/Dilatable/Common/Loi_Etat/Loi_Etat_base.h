@@ -24,9 +24,10 @@
 #define Loi_Etat_base_included
 
 #include <Ref_Fluide_Dilatable_base.h>
-#include <Champ_Don.h>
-#include <Champs_compris.h>
 #include <Champs_compris_interface.h>
+#include <Ref_Probleme_base.h>
+#include <Champs_compris.h>
+#include <Champ_Don.h>
 
 class Fluide_Dilatable_base;
 
@@ -51,6 +52,7 @@ class Loi_Etat_base : public Objet_U, public Champs_compris_interface
 
 public :
   Loi_Etat_base();
+  void assoscier_probleme(const Probleme_base& pb);
   void mettre_a_jour(double);
   void calculer_nu();
   Champ_Don& ch_temperature();
@@ -94,6 +96,7 @@ public :
 
 protected :
   REF(Fluide_Dilatable_base) le_fluide;
+  REF(Probleme_base) le_prob_;
   Champ_Don temperature_;
   DoubleTab tab_rho_n, tab_rho_np1;    //rho a l'etape precedente et l'etape suivante
   double Pr_;

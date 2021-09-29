@@ -23,9 +23,9 @@
 #ifndef Pb_Hydraulique_Melange_Binaire_QC_included
 #define Pb_Hydraulique_Melange_Binaire_QC_included
 
-#include <Pb_QC_base.h>
-#include <Navier_Stokes_QC.h>
 #include <Convection_Diffusion_Espece_Binaire_QC.h>
+#include <Navier_Stokes_QC.h>
+#include <Pb_QC_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

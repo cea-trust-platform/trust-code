@@ -20,10 +20,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Loi_Etat_base.h>
-#include <Champ_Uniforme.h>
 #include <Fluide_Dilatable_base.h>
+#include <Schema_Temps_base.h>
 #include <Champ_Fonc_Tabule.h>
+#include <Champ_Uniforme.h>
+#include <Loi_Etat_base.h>
+#include <Probleme_base.h>
 #include <Zone_VF.h>
 #include <Debog.h>
 
@@ -31,40 +33,12 @@ Implemente_base_sans_constructeur(Loi_Etat_base,"Loi_Etat_base",Objet_U);
 
 Loi_Etat_base::Loi_Etat_base() : Pr_(-1.), debug(0) { }
 
-// Description:
-//    Imprime la loi sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Loi_Etat_base::printOn(Sortie& os) const
 {
   os << que_suis_je() << finl;
   return os;
 }
 
-// Description:
-//    Lecture d'une loi sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition: l'objet est construit avec les parametres lus
 Entree& Loi_Etat_base::readOn(Entree& is)
 {
   return is;
@@ -87,6 +61,25 @@ Entree& Loi_Etat_base::readOn(Entree& is)
 void Loi_Etat_base::associer_fluide(const Fluide_Dilatable_base& fl)
 {
   le_fluide = fl;
+}
+
+// Description:
+//    Associe le probleme a la loi d'etat
+// Precondition:
+// Parametre: Fluide_Dilatable_base& fl
+//    Signification: le fluide associe
+//    Valeurs par defaut:
+//    Contraintes: reference constante
+//    Acces: lecture
+// Retour:
+//    Signification:
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Loi_Etat_base::assoscier_probleme(const Probleme_base& pb)
+{
+  le_prob_ = pb;
 }
 
 // Description:
@@ -133,7 +126,8 @@ void Loi_Etat_base::initialiser_inco_ch()
   tab_rho_n=tab_rho;
   tab_rho_np1=tab_rho;
   calculer_masse_volumique();
-  mettre_a_jour(0.);
+  double t = le_prob_->schema_temps().temps_courant();
+  mettre_a_jour(t);
   tab_rho.echange_espace_virtuel();
   tab_rho_np1.echange_espace_virtuel();
 }
@@ -156,11 +150,12 @@ void Loi_Etat_base::preparer_calcul()
 {
   remplir_T();
   calculer_masse_volumique();
-  mettre_a_jour(0.);
+  double t = le_prob_->schema_temps().temps_courant();
+  mettre_a_jour(t);
 }
 
 // Description:
-//    Met a jour la loi d'etat
+//    Met a jour la loi d'etat et le champ rho
 // Precondition:
 // Parametre: double temps
 //    Signification: le temps de calcul
@@ -183,6 +178,7 @@ void Loi_Etat_base::mettre_a_jour(double temps)
       tab_rho_n(i) = tab_rho_np1(i);
       tab_rho(i,0) = tab_rho_np1(i);
     }
+  le_fluide->masse_volumique().mettre_a_jour(temps);
 }
 
 // Description:

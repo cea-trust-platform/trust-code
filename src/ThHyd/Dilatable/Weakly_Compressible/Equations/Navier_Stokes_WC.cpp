@@ -26,48 +26,11 @@
 
 Implemente_instanciable(Navier_Stokes_WC,"Navier_Stokes_WC",Navier_Stokes_Fluide_Dilatable_base);
 
-// Description:
-//    Simple appel a: Equation_base::printOn(Sortie&)
-//    Ecrit l'equation sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet la methode ne modifie pas l'objet
 Sortie& Navier_Stokes_WC::printOn(Sortie& is) const
 {
   return Navier_Stokes_Fluide_Dilatable_base::printOn(is);
 }
 
-// Description:
-//    Appel Equation_base::readOn(Entree& is)
-//    En sortie verifie que l'on a bien lu:
-//        - le terme diffusif,
-//        - le terme convectif,
-//        - le solveur en pression
-// Precondition: l'equation doit avoir un milieu fluide associe
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: terme diffusif non specifie dans jeu de donnees, specifier
-//            un type negligeable pour l'operateur si il est a negliger
-// Exception: terme convectif non specifie dans jeu de donnees, specifier
-//            un type negligeable pour l'operateur si il est a negliger
-// Exception: solveur pression non defini dans jeu de donnees
-// Effets de bord:
-// Postcondition:
 Entree& Navier_Stokes_WC::readOn(Entree& is)
 {
   Navier_Stokes_Fluide_Dilatable_base::readOn(is);

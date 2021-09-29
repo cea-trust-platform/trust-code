@@ -25,41 +25,11 @@
 
 Implemente_instanciable(Pb_Hydraulique_Melange_Binaire_QC,"Pb_Hydraulique_Melange_Binaire_QC",Pb_QC_base);
 
-// Description:
-//    Simple appel a: Probleme_base::printOn(Sortie&)
-//    Ecrit le probleme sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Pb_Hydraulique_Melange_Binaire_QC::printOn(Sortie& os) const
 {
   return Probleme_base::printOn(os);
 }
 
-// Description:
-//    Simple appel a: Probleme_base::readOn(Entree&)
-//    Lit le probleme a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Pb_Hydraulique_Melange_Binaire_QC::readOn(Entree& is)
 {
   return Probleme_base::readOn(is);
