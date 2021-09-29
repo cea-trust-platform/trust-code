@@ -36,6 +36,13 @@ Entree& Convection_Diffusion_Espece_Multi_base::readOn(Entree& is)
 {
   alias_=inconnue().le_nom();
   Convection_Diffusion_Espece_Fluide_Dilatable_base::readOn(is);
+  Nom conv = "Convection_", diff = "Diffusion_";
+  conv += alias_;
+  diff += alias_;
+  terme_convectif.set_fichier(conv);
+  terme_convectif.set_description((Nom)"Convective flux =Integral(-rho*Y*u*ndS) [kg/s] if SI units used");
+  terme_diffusif.set_fichier(diff);
+  terme_diffusif.set_description((Nom)"Diffusive flux=Integral(rho*D*grad(Y)*ndS) [kg/s] if SI units used");
   champs_compris_.ajoute_champ(l_inco_ch);
   l_inco_ch.valeur().add_synonymous(alias_);
   return is;
