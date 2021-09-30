@@ -218,7 +218,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
   matrice.ajouter_multvect(inco,resu);
 }
 
-int Convection_Diffusion_Fluide_Dilatable_Proto::sauvegarder_WC(Sortie& os,
+int Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(Sortie& os,
                                                                 const Convection_Diffusion_std& eq,
                                                                 const Fluide_Dilatable_base& fld)
 {
@@ -241,7 +241,7 @@ int Convection_Diffusion_Fluide_Dilatable_Proto::sauvegarder_WC(Sortie& os,
   return bytes;
 }
 
-int Convection_Diffusion_Fluide_Dilatable_Proto::reprendre_WC(Entree& is,
+int Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(Entree& is,
                                                               double temps,
                                                               Convection_Diffusion_std& eq,
                                                               Fluide_Dilatable_base& fld,

@@ -45,8 +45,8 @@ public:
   // Convection_Diffusion_std parce que on a un heritage V et on va appeler la classe mere de l'autre cote ...
   // Sinon il faut mettre les methodes dans Equation_base... a voir ...
   // [ Vive les classes templates ... dommage !]
-  static int sauvegarder_WC(Sortie& os, const Convection_Diffusion_std& eq, const Fluide_Dilatable_base& fld);
-  static int reprendre_WC(Entree& is, double temps,Convection_Diffusion_std& eq, Fluide_Dilatable_base& fld,
+  static int Sauvegarder_WC(Sortie& os, const Convection_Diffusion_std& eq, const Fluide_Dilatable_base& fld);
+  static int Reprendre_WC(Entree& is, double temps,Convection_Diffusion_std& eq, Fluide_Dilatable_base& fld,
                           Champ_Inc& inco, Probleme_base& pb);
 
 protected:
@@ -58,14 +58,12 @@ protected:
                       const Operateur& op_diff,const Operateur& op_conv, const Sources& src,
                       Solveur_Masse& solv);
 
-
   DoubleTab& derivee_en_temps_inco_sans_solveur_masse_imp(DoubleTab& derivee, const Operateur& op_diff,
                                                           const Operateur& op_conv, const Sources& src,
                                                           Solveur_Masse& solv, const bool is_expl);
 
 private:
   void calculer_div_rho_u_impl(DoubleTab& res, const Operateur& op_conv) const;
-
   REF(Zone_Cl_dis) zcl_dis_modif_, zcl_dis_;
   REF(Fluide_Dilatable_base) fld_;
   REF(Schema_Temps_base) sch_;

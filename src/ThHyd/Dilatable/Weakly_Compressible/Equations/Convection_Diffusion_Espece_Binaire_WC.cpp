@@ -46,11 +46,11 @@ void Convection_Diffusion_Espece_Binaire_WC::completer()
 int Convection_Diffusion_Espece_Binaire_WC::sauvegarder(Sortie& os) const
 {
   Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,le_fluide.valeur());
-  return Convection_Diffusion_Fluide_Dilatable_Proto::sauvegarder_WC(os,*this,FWC);
+  return Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(os,*this,FWC);
 }
 
 int Convection_Diffusion_Espece_Binaire_WC::reprendre(Entree& is)
 {
   double temps = schema_temps().temps_courant();
-  return Convection_Diffusion_Fluide_Dilatable_Proto::reprendre_WC(is,temps,*this, le_fluide.valeur(),l_inco_ch,probleme());
+  return Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(is,temps,*this, le_fluide.valeur(),l_inco_ch,probleme());
 }

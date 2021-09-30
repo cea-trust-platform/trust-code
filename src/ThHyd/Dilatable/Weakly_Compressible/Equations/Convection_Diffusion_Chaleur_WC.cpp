@@ -97,11 +97,11 @@ bool Convection_Diffusion_Chaleur_WC::is_generic()
 
 int Convection_Diffusion_Chaleur_WC::sauvegarder(Sortie& os) const
 {
-  return Convection_Diffusion_Fluide_Dilatable_Proto::sauvegarder_WC(os,*this,le_fluide.valeur());
+  return Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(os,*this,le_fluide.valeur());
 }
 
 int Convection_Diffusion_Chaleur_WC::reprendre(Entree& is)
 {
   double temps = schema_temps().temps_courant();
-  return Convection_Diffusion_Fluide_Dilatable_Proto::reprendre_WC(is,temps,*this,le_fluide.valeur(),l_inco_ch,probleme());
+  return Convection_Diffusion_Fluide_Dilatable_Proto::Reprendre_WC(is,temps,*this,le_fluide.valeur(),l_inco_ch,probleme());
 }
