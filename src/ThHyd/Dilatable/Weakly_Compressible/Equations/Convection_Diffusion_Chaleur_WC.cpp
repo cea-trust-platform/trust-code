@@ -68,6 +68,20 @@ int Convection_Diffusion_Chaleur_WC::lire_motcle_non_standard(const Motcle& mot,
   return 1;
 }
 
+void Convection_Diffusion_Chaleur_WC::completer()
+{
+  Convection_Diffusion_Chaleur_Fluide_Dilatable_base::completer(); // en fait c'est Equation_base::completer() mais on sais pas un jour ...
+
+  // initialiser l'operateur grad
+  Op_Grad_WC_.associer_eqn(*this);
+  Op_Grad_WC_.typer();
+  Op_Grad_WC_.l_op_base().associer_eqn(*this);
+  const Zone_dis& zdis = zone_dis();
+  const Zone_Cl_dis& zcl = zone_Cl_dis();
+  const Champ_Inc& inco = inconnue();
+  Op_Grad_WC_->associer(zdis, zcl, inco);
+}
+
 const Champ_base& Convection_Diffusion_Chaleur_WC::vitesse_pour_transport()
 {
   return Convection_Diffusion_Chaleur_Fluide_Dilatable_base::vitesse_pour_transport();

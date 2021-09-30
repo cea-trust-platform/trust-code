@@ -24,6 +24,7 @@
 #define Convection_Diffusion_Chaleur_WC_included
 
 #include <Convection_Diffusion_Chaleur_Fluide_Dilatable_base.h>
+#include <Operateur_Grad.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -43,6 +44,7 @@ class Convection_Diffusion_Chaleur_WC : public Convection_Diffusion_Chaleur_Flui
 
 public :
   void set_param(Param& titi);
+  void completer();
   const Champ_base& vitesse_pour_transport();
   int lire_motcle_non_standard(const Motcle&, Entree&);
   int preparer_calcul();
@@ -50,9 +52,15 @@ public :
   virtual int sauvegarder(Sortie&) const;
   virtual int reprendre(Entree&);
 
+  // l'equation Convection_Diffusion_Chaleur_WC a un terme source supplementaire
+  //  d P_tot / d t = del P / del t + u.grad(P_tot)
+  // Il faut donc un operateur grad
+  inline const Operateur_Grad& operateur_gradient_WC() const { return Op_Grad_WC_;}
+
 protected:
   void calculer_div_u_ou_div_rhou(DoubleTab& res) const;
   bool is_generic();
+  Operateur_Grad Op_Grad_WC_;
 };
 
 #endif /* Convection_Diffusion_Chaleur_WC_included */
