@@ -26,7 +26,7 @@
 #include <Ref_Equation_base.h>
 #include <Zone_VEF.h>
 #include <Milieu_base.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 
 Implemente_instanciable(Traitement_particulier_NS_canal_VEF,"Traitement_particulier_NS_CANAL_VEF",Traitement_particulier_NS_canal);
 
@@ -156,7 +156,7 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_vitesse_rho_
   double c;
 
 
-  const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible,mon_equation->milieu());
+  const Fluide_base& le_fluide = ref_cast(Fluide_base,mon_equation->milieu());
   const DoubleTab& visco_dyn = le_fluide.viscosite_dynamique();
   const DoubleTab& tab_rho_face = le_fluide.masse_volumique().valeurs();
   int taille_mu=visco_dyn.dimension(0);

@@ -27,7 +27,7 @@
 #include <Echange_externe_impose.h>
 #include <Neumann_paroi.h>
 #include <Neumann_homogene.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <Scalaire_impose_paroi.h>
 #include <Champ_Uniforme.h>
 #include <Operateur.h>
@@ -571,7 +571,7 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const Equation_base& eqn_hydr = equation();
-  const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
+  const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
 

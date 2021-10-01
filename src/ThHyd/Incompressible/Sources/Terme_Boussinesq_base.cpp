@@ -23,7 +23,7 @@
 #include <Terme_Boussinesq_base.h>
 #include <Motcle.h>
 #include <Convection_Diffusion_std.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 
 Implemente_base(Terme_Boussinesq_base,"Terme_Boussinesq_base",Source_base);
 
@@ -61,7 +61,7 @@ void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
     }
 
   // Fill la_gravite_ and beta_ attributes
-  const Fluide_Incompressible& fluide=ref_cast(Fluide_Incompressible,pb.milieu());
+  const Fluide_base& fluide=ref_cast(Fluide_base,pb.milieu());
   la_gravite_=fluide.gravite();
 
   //this variable indicates if the beta field is valid or not

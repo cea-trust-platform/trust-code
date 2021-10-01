@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #include <Zone_VDF.h>
 #include <Pave.h>
 
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <Navier_Stokes_std.h>
 #include <Mod_turb_hyd_base.h>
 
@@ -269,7 +269,7 @@ void Traitement_particulier_NS_canal_VDF::calculer_moyenne_spatiale_vitesse_rho_
   int num_elem,i;
   int face_x_0,face_y_0,face_y_1,face_z_0;
 
-  const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible,mon_equation->milieu());
+  const Fluide_base& le_fluide = ref_cast(Fluide_base,mon_equation->milieu());
   const DoubleTab& visco_dyn = le_fluide.viscosite_dynamique();
   const DoubleTab& tab_rho_elem = le_fluide.masse_volumique().valeurs();
   int taille_mu=visco_dyn.dimension(0);

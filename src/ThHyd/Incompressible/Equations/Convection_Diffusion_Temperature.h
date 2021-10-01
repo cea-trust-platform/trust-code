@@ -25,7 +25,7 @@
 #define Convection_Diffusion_Temperature_included
 
 #include <Convection_Diffusion_std.h>
-#include <Ref_Fluide_Incompressible.h>
+#include <Ref_Fluide_base.h>
 #include <Champ_Fonc.h>
 #include <DoubleTabs.h>
 Declare_vect(RefObjU);
@@ -47,13 +47,13 @@ public :
   Convection_Diffusion_Temperature();
   void set_param(Param& titi);
   int lire_motcle_non_standard(const Motcle&, Entree&);
-  inline void associer_fluide(const Fluide_Incompressible& );
+  inline void associer_fluide(const Fluide_base& );
   inline const Champ_Inc& inconnue() const;
   inline Champ_Inc& inconnue();
   void discretiser();
   const Milieu_base& milieu() const;
-  const Fluide_Incompressible& fluide() const;
-  Fluide_Incompressible& fluide();
+  const Fluide_base& fluide() const;
+  Fluide_base& fluide();
   Milieu_base& milieu();
   void associer_milieu_base(const Milieu_base& );
   virtual int impr(Sortie& os) const;
@@ -75,7 +75,7 @@ public :
 protected :
 
   Champ_Inc la_temperature;
-  REF(Fluide_Incompressible) le_fluide;
+  REF(Fluide_base) le_fluide;
 
 //  Champ_Fonc temperature_paroi;
   Champ_Fonc gradient_temperature;
@@ -112,7 +112,7 @@ protected :
 // Description:
 //    Associe un fluide incompressible a l'equation.
 // Precondition:
-// Parametre: Fluide_Incompressible& un_fluide
+// Parametre: Fluide_base& un_fluide
 //    Signification: le milieu fluide incompressible a associer a l'equation
 //    Valeurs par defaut:
 //    Contraintes: reference constante
@@ -123,7 +123,7 @@ protected :
 // Exception:
 // Effets de bord:
 // Postcondition: l'equation a un milieu associe
-inline void Convection_Diffusion_Temperature::associer_fluide(const Fluide_Incompressible& un_fluide)
+inline void Convection_Diffusion_Temperature::associer_fluide(const Fluide_base& un_fluide)
 {
   le_fluide = un_fluide;
 }

@@ -34,7 +34,7 @@
 #include <Schema_Temps_base.h>
 #include <DoubleTrav.h>
 #include <communications.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <DoubleVect.h>
 #include <Champ_Uniforme.h>
 
@@ -784,7 +784,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
       // Hypotheses :    1ere condition de Dirichlet = paroi basse
       //                 2eme condition de Dirichlet = paroi haute
       //                 maillage regulier suivant x
-      const Fluide_Incompressible& fluide = ref_cast(Fluide_Incompressible,mon_equation.valeur().probleme().equation(0).milieu());
+      const Fluide_base& fluide = ref_cast(Fluide_base,mon_equation.valeur().probleme().equation(0).milieu());
       const Turbulence_paroi& loipar           = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur()).loi_paroi();
       DoubleTab tau_tan;
       tau_tan.ref(loipar->Cisaillement_paroi());

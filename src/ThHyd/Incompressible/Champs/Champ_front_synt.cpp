@@ -25,7 +25,7 @@
 #include <Frontiere.h>
 #include <Navier_Stokes_std.h>
 #include <Zone_VF.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <Champ_Uniforme.h>
 #include <Schema_Temps.h>
 
@@ -241,7 +241,7 @@ void Champ_front_synt::mettre_a_jour(double temps)
   /// 	   donnees d'initialisation        ///
   ////////////////////////////////////////////
 
-  double visc = ref_cast(Fluide_Incompressible,mil).viscosite_cinematique().valeur()(0,0);
+  double visc = ref_cast(Fluide_base,mil).viscosite_cinematique().valeur()(0,0);
   const Front_VF& front = ref_cast(Front_VF,la_frontiere_dis.valeur());
   int nb_face = front.nb_faces(); // real only
   const Faces& tabFaces = front.frontiere().faces(); // recuperation des faces

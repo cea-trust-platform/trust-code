@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #include <Champ_Uniforme.h>
 #include <Zone_Cl_VDF.h>
 #include <Dirichlet_paroi_fixe.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <Equation_base.h>
 #include <Mod_turb_hyd_base.h>
 #include <distances_VDF.h>
@@ -568,7 +568,7 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntVect& orientation = zone_VDF.orientation();
   const Equation_base& eqn_hydr = equation();
-  const Fluide_Incompressible& le_fluide = ref_cast(Fluide_Incompressible, eqn_hydr.milieu());
+  const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
   const DoubleTab& tab_visco = ref_cast(DoubleTab,ch_visco_cin->valeurs());
   //DoubleTab& tab_visco = ch_visco_cin.valeur().valeurs();

@@ -33,7 +33,7 @@
 #include <Pb_Fluide_base.h>
 #include <Convection_Diffusion_Temperature.h>
 #include <Navier_Stokes_std.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <DoubleTrav.h>
 
 Implemente_instanciable(Terme_Source_inc_th_VDF_Face,"inc_th_VDF_P0_VDF",Source_base);
@@ -74,7 +74,7 @@ void Terme_Source_inc_th_VDF_Face::associer_pb(const Probleme_base& pb)
       Cerr << "The source term "<<que_suis_je()<<" cannot be activated for the problem "<<pb.que_suis_je()<< finl;
       exit();
     }
-  const Fluide_Incompressible& fluide=eq_thermique().fluide();
+  const Fluide_base& fluide=eq_thermique().fluide();
   beta_t_=fluide.beta_t();
 }
 

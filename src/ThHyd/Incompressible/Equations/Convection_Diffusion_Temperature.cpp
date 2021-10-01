@@ -29,7 +29,7 @@
 #include <Param.h>
 
 #include <Transport_Interfaces_base.h>
-#include <Fluide_Incompressible.h>
+#include <Fluide_base.h>
 #include <DoubleTrav.h>
 #include <IntTrav.h>
 #include <SFichier.h>
@@ -174,13 +174,13 @@ int Convection_Diffusion_Temperature::lire_motcle_non_standard(const Motcle& un_
 
 // Description:
 //    Associe un milieu physique a l'equation,
-//    le milieu est en fait caste en Fluide_Incompressible ou en Fluide_Ostwald.
+//    le milieu est en fait caste en Fluide_base ou en Fluide_Ostwald.
 // Precondition:
 // Parametre: Milieu_base& un_milieu
 //    Signification:
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//                 doit pourvoir etre force au type "Fluide_Incompressible"
+//                 doit pourvoir etre force au type "Fluide_base"
 //    Acces: entree
 // Retour:
 //    Signification:
@@ -206,9 +206,9 @@ void Convection_Diffusion_Temperature::associer_milieu_base(const Milieu_base& u
           exit();
         }
     }
-  else if (sub_type(Fluide_Incompressible,un_milieu))
+  else if (sub_type(Fluide_base,un_milieu))
     {
-      const Fluide_Incompressible& un_fluide = ref_cast(Fluide_Incompressible,un_milieu);
+      const Fluide_base& un_fluide = ref_cast(Fluide_base,un_milieu);
       if  ((un_fluide.conductivite().non_nul()) &&
            ((un_fluide.capacite_calorifique().non_nul()) && (un_fluide.beta_t().non_nul())))
         associer_fluide(un_fluide);
@@ -226,7 +226,7 @@ void Convection_Diffusion_Temperature::associer_milieu_base(const Milieu_base& u
   else
     {
       if (Process::je_suis_maitre())
-        Cerr << "le fluide considere n'est un sous fluide de Fluide_Incompressible, \n"
+        Cerr << "le fluide considere n'est un sous fluide de Fluide_base, \n"
              << "ni un sous fluide de Fluide_Ostwald. " << finl;
     }
 }
@@ -262,7 +262,7 @@ void Convection_Diffusion_Temperature::discretiser()
 
 // Description:
 //    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Incompressible upcaste en Milieu_base)
+//    (un Fluide_base upcaste en Milieu_base)
 //    (version const)
 // Precondition:
 // Parametre:
@@ -271,7 +271,7 @@ void Convection_Diffusion_Temperature::discretiser()
 //    Contraintes:
 //    Acces:
 // Retour: Milieu_base&
-//    Signification: le Fluide_Incompressible upcaste en Milieu_base
+//    Signification: le Fluide_base upcaste en Milieu_base
 //    Contraintes: reference constante
 // Exception:
 // Effets de bord:
@@ -284,7 +284,7 @@ const Milieu_base& Convection_Diffusion_Temperature::milieu() const
 
 // Description:
 //    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Incompressible upcaste en Milieu_base)
+//    (un Fluide_base upcaste en Milieu_base)
 // Precondition:
 // Parametre:
 //    Signification:
@@ -292,7 +292,7 @@ const Milieu_base& Convection_Diffusion_Temperature::milieu() const
 //    Contraintes:
 //    Acces:
 // Retour: Milieu_base&
-//    Signification: le Fluide_Incompressible upcaste en Milieu_base
+//    Signification: le Fluide_base upcaste en Milieu_base
 //    Contraintes:
 // Exception:
 // Effets de bord:
@@ -312,13 +312,13 @@ Milieu_base& Convection_Diffusion_Temperature::milieu()
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Fluide_Incompressible&
+// Retour: Fluide_base&
 //    Signification: le fluide incompressible associe a l'equation
 //    Contraintes: reference constante
 // Exception: pas de fluide associe a l'eqaution
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Fluide_Incompressible& Convection_Diffusion_Temperature::fluide() const
+const Fluide_base& Convection_Diffusion_Temperature::fluide() const
 {
   if(!le_fluide.non_nul())
     {
@@ -338,13 +338,13 @@ const Fluide_Incompressible& Convection_Diffusion_Temperature::fluide() const
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Fluide_Incompressible&
+// Retour: Fluide_base&
 //    Signification: le fluide incompressible associe a l'equation
 //    Contraintes:
 // Exception: pas de fluide associe a l'eqaution
 // Effets de bord:
 // Postcondition:
-Fluide_Incompressible& Convection_Diffusion_Temperature::fluide()
+Fluide_base& Convection_Diffusion_Temperature::fluide()
 {
   if(!le_fluide.non_nul())
     {
@@ -1336,7 +1336,7 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
 
       const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis().valeur());
       const DoubleVect& vol_maille = zone_vf.volumes();
-      const Fluide_Incompressible& fluide_inc = ref_cast(Fluide_Incompressible, milieu());
+      const Fluide_base& fluide_inc = ref_cast(Fluide_base, milieu());
       const DoubleTab& tab_rho = fluide_inc.masse_volumique().valeurs();
       const double rho = tab_rho(0,0);
       const DoubleTab& tab_cp = fluide_inc.capacite_calorifique().valeur().valeurs();
