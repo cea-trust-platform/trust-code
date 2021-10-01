@@ -14,67 +14,52 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Navier_Stokes_Fluide_Dilatable_base.h
+// File:        Navier_Stokes_Fluide_Dilatable_Proto.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common/Equations
 // Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Navier_Stokes_Fluide_Dilatable_base_included
-#define Navier_Stokes_Fluide_Dilatable_base_included
+#ifndef Navier_Stokes_Fluide_Dilatable_Proto_included
+#define Navier_Stokes_Fluide_Dilatable_Proto_included
 
-#include <Navier_Stokes_Fluide_Dilatable_Proto.h>
-#include <Navier_Stokes_std.h>
+#include <Ref_IntVect.h>
 #include <Champ_Inc.h>
-#include <Champ_Don.h>
 
+class Navier_Stokes_std;
 class Matrice_Morse;
+class Fluide_base;
+class Assembleur;
 class DoubleTab;
+class Matrice;
+class Sortie;
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Navier_Stokes_Fluide_Dilatable_base
-//    Cette classe basse porte les termes de l'equation de la dynamique
-//    pour un fluide sans modelisation de la turbulence.
-//    On suppose l'hypothese de fluide dilatable.
-//    Sous ces hypotheses, on utilise la forme suivante des equations de
-//    Navier_Stokes:
-//       DU/dt = div(terme visqueux) - gradP/rho + sources/rho
-//       div U = W
-//    avec DU/dt : derivee particulaire de la vitesse
-//         rho   : masse volumique
-//    Rq : l'implementation de la classe permet bien sur de negliger
-//         certains termes de l'equation (le terme visqueux, le terme
-//         convectif, tel ou tel terme source).
-//    L'inconnue est le champ de vitesse.
-// .SECTION voir aussi
-//      Navier_Stokes_std
+//    classe Navier_Stokes_Fluide_Dilatable_Proto
 //
 //////////////////////////////////////
 
-class Navier_Stokes_Fluide_Dilatable_base : public Navier_Stokes_std, public Navier_Stokes_Fluide_Dilatable_Proto
+class Navier_Stokes_Fluide_Dilatable_Proto
 {
-  Declare_base(Navier_Stokes_Fluide_Dilatable_base);
-
 public :
-  void discretiser();
-  int preparer_calcul();
-  const Champ_Don& diffusivite_pour_transport();
-  const Champ_base& diffusivite_pour_pas_de_temps();
-  const Champ_base& vitesse_pour_transport();
+  Navier_Stokes_Fluide_Dilatable_Proto();
+  DoubleTab& rho_vitesse_impl(const DoubleTab& tab_rho,const DoubleTab& vit,DoubleTab& rhovitesse) const;
+  int impr_impl(const Navier_Stokes_std& eqn,Sortie& os) const;
+  void assembler_impl( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem);
+  void assembler_avec_inertie_impl(const Navier_Stokes_std& eqn, Matrice_Morse& mat_morse,
+                                   const DoubleTab& present, DoubleTab& secmem);
+  DoubleTab& derivee_en_temps_inco_impl(Navier_Stokes_std&,DoubleTab&,  Fluide_base& le_fluide,
+                                        const Matrice& matrice_pression_, Assembleur& assembleur_pression_, int is_implicite);
 
-  // Methodes virtuelles
-  virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void completer();
-  virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  virtual void assembler_avec_inertie( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  virtual int impr(Sortie& os) const;
-  virtual bool initTimeStep(double dt);
+protected:
+  Champ_Inc rho_la_vitesse_;
+  IntVect orientation_VDF_;
+  DoubleTab tab_W; // RHS of div(rho.U)
 
-  // Methodes inlines
-  inline const Champ_Inc& rho_la_vitesse() const { return rho_la_vitesse_; }
+private:
+  mutable double cumulative_;
 };
 
-#endif /* Navier_Stokes_Fluide_Dilatable_base_included */
+#endif /* Navier_Stokes_Fluide_Dilatable_Proto_included */
