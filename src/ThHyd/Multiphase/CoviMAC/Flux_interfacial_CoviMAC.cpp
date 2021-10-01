@@ -91,7 +91,7 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &pvit = ch_vit.passe(),
                    &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL,
                     &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
-                     &p_ar = ch_a_r.passe()/*, &a_r = ch_a_r.valeurs()*/;
+                     &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs();
   Matrice_Morse *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
                  *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL,
                   *Ma = matrices.count("alpha") ? matrices.at("alpha") : NULL;
@@ -184,7 +184,7 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
               else if (sub_type(Energie_Multiphase, equation())) //eq d'energie -> transfert de chaleur
                 {
                   //on suppose que la limite thermique s'applique d'un cote : c (=0,1) / n_c (=k,l) / signe du flux sortant de la phase k : s_c (=1,-1)
-                  int c = 1 /* (a_r(e, k) > a_r(e, l)) */, n_c = c ? l : k, n_d = c ? k : l, s_c = c ? -1 : 1;
+                  int c = (a_r(e, k) > a_r(e, l)), n_c = c ? l : k, n_d = c ? k : l, s_c = c ? -1 : 1;
                   double Tc = c ? Tl : Tk, hc = c ? hl : hk, dT_hc = c ? dTl_hl : dTk_hk, dP_hc = c ? dP_hl : dP_hk;
                   for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * (s_c * hi(n_c, n_d) * (Tc - Ts) + G * hc);
                   /* derivees (y compris celles en G, sauf dans le cas limite)*/
@@ -194,7 +194,7 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                         (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * (dT_hi(n_c, n_d, n) * (Tc - Ts) + (n == n_c) * hi(n_c, n_d)) + (n_lim < 0) * dT_G(n) * hc + G * (n == n_c) * dT_hc);
                   if (Mp) for (i = 0; i < 2; i++) //derivees en p
                       (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * (s_c * (dP_hi(n_c, n_d) * (Tc - Ts) - hi(n_c, n_d) * dP_Ts) + (n_lim < 0) * dP_G * hc + G * dP_hc);
-                  if (n_lim >= 0) for (auto &s_d : vec_m) /* derivees de G dans le cas evanexcent */
+                  if (n_lim >= 0) for (auto &s_d : vec_m) /* derivees de G dans le cas evanescent */
                       for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)
                         for (col = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
                           (*s_d[1])(N * e + (i ? l : k), col) += (i ? -1 : 1) * hc * sgn * x;
