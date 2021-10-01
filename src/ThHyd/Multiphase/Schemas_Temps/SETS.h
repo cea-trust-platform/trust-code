@@ -117,6 +117,10 @@ public:
   {
     return 0; /* non: ICE est explicite en la thermique */
   }
+  virtual double get_default_facsec_max() const /* facsec_max recommande */
+  {
+    return 1; /* SETS est semi-implicite */
+  }
 
 };
 

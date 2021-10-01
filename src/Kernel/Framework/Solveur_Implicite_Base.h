@@ -32,6 +32,7 @@
 
 #include <Objet_U.h>
 #include <List_Ref_Equation_base.h>
+#include <Double.h>
 
 class Equation_base;
 class DoubleTab;
@@ -50,6 +51,10 @@ public :
   virtual int nb_valeurs_temporelles_pression() const /* nombre de valeurs temporelles des champs de pression dont le solveur a besoin */
   {
     return 1; /* par defaut 1 */
+  }
+  virtual double get_default_facsec_max() const /* facsec_max recommande pour ce schema */
+  {
+    return DMAXFLOAT; /* par defaut pas de limite : on est en implicite */
   }
 
 protected :

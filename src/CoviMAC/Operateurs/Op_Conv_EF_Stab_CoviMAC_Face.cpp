@@ -113,7 +113,7 @@ double Op_Conv_EF_Stab_CoviMAC_Face::calculer_dt_stab() const
     {
       for (vol = pe(e) * ve(e), flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
           {
-            flux(n) += pf(f) * fs(f) * dabs(vit(f, n));
+            flux(n) += pf(f) * fs(f) * max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
             if (0 && fcl(f, 0) < 2) vol(n) = min(vol(n), pf(f) * vf(f) / mu_f(f, n, e != f_e(f, 0))); //prise en compte de la contribution aux faces
           }
       for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = min(dt, vol(n) / flux(n));
