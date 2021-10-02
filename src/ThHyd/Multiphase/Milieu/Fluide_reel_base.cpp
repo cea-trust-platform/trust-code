@@ -117,8 +117,8 @@ void Fluide_reel_base::mettre_a_jour(double t)
       {
         const double T = (T_ref_ > 0) ? T_ref_ : temp(i, id_composite), P = (P_ref_ > 0) ? P_ref_ : pres(i);
         tab_Cp(i) = cp_(T, P);
-        tab_mu(i) = mu_(T);
-        tab_lambda(i) = lambda_(T);
+        tab_mu(i) = mu_(T, P);
+        tab_lambda(i) = lambda_(T, P);
         tab_nu(i) = tab_mu(i) / tab_rho(i);
         tab_alpha(i) = tab_lambda(i) / tab_rho(i) / tab_Cp(i);
       }

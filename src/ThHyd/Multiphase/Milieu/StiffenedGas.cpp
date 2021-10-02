@@ -79,12 +79,12 @@ double StiffenedGas::cp_(const double T, const double P) const
   return gamma_ * R_ / (gamma_ - 1.0);
 }
 
-double StiffenedGas::mu_(const double T) const
+double StiffenedGas::mu_(const double T, const double P) const
 {
   return mu__;
 }
 
-double StiffenedGas::lambda_(const double T) const
+double StiffenedGas::lambda_(const double T, const double P) const
 {
   return lambda__;
 }

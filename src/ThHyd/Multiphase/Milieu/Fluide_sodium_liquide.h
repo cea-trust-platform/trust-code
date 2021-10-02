@@ -53,8 +53,8 @@ protected :
   // lois champs "faibles" -> pas de derivees
   virtual double      cp_(const double T, const double P) const;
   virtual double    beta_(const double T, const double P) const;
-  virtual double      mu_(const double T) const;
-  virtual double  lambda_(const double T) const;
+  virtual double      mu_(const double T, const double P) const;
+  virtual double  lambda_(const double T, const double P) const;
 };
 
 #endif

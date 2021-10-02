@@ -71,12 +71,12 @@ double Fluide_sodium_gaz::cp_(const double T, const double P) const
   return DTHV(T, P);
 }
 
-double Fluide_sodium_gaz::mu_(const double T) const
+double Fluide_sodium_gaz::mu_(const double T, const double P) const
 {
   return MuV(T);
 }
 
-double Fluide_sodium_gaz::lambda_(const double T) const
+double Fluide_sodium_gaz::lambda_(const double T, const double P) const
 {
   return LambdaV(T);
 }

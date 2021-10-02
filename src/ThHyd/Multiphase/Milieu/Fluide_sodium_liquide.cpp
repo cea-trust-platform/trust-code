@@ -71,12 +71,12 @@ double Fluide_sodium_liquide::cp_(const double T, const double P) const
   return DTHL(T, P);
 }
 
-double Fluide_sodium_liquide::mu_(const double T) const
+double Fluide_sodium_liquide::mu_(const double T, const double P) const
 {
   return MuL(T);
 }
 
-double Fluide_sodium_liquide::lambda_(const double T) const
+double Fluide_sodium_liquide::lambda_(const double T, const double P) const
 {
   return LambdaL(T);
 }
