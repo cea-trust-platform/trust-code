@@ -20,6 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Convection_Diffusion_Fluide_Dilatable_base.h>
 #include <Convection_Diffusion_Fluide_Dilatable_Proto.h>
 #include <Fluide_Weakly_Compressible.h>
 #include <Convection_Diffusion_std.h>
@@ -36,22 +37,10 @@
 #include <Domaine.h>
 #include <Avanc.h>
 
-void Convection_Diffusion_Fluide_Dilatable_Proto::completer_common_impl
-(const Champ_Inc& inco, const Zone_Cl_dis& zcl_dis_modif,
- const Zone_Cl_dis& zcl_dis, const Schema_Temps_base& sch,
- const Fluide_Dilatable_base& fld, Equation_base& eq)
-{
-  zcl_dis_modif_ = zcl_dis_modif;
-  zcl_dis_ = zcl_dis;
-  inco_ = inco;
-  sch_ = sch;
-  fld_ = fld;
-  eq_ = eq;
-}
-
 void Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl
-(DoubleTab& Div, const Operateur& op_conv) const
+(DoubleTab& Div, const Convection_Diffusion_Fluide_Dilatable_base& eqn) const
 {
+  const Operateur& op_conv = eqn.operateur(1);
   // No convective operator:
   if (sub_type(Op_Conv_negligeable,op_conv.l_op_base()))
     {
@@ -59,12 +48,12 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl
       return;
     }
 
-  DoubleTrav unite(inco_->valeurs());
+  DoubleTrav unite(eqn.inconnue().valeurs());
   unite=1;
-  ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_zone_cl_dis(zcl_dis_modif_->valeur());
+  ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_zone_cl_dis(eqn.zone_cl_modif());
 
   op_conv.ajouter(unite,Div);
-  ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_zone_cl_dis(zcl_dis_->valeur());
+  ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_zone_cl_dis(eqn.zone_Cl_dis());
 
 }
 
@@ -84,9 +73,8 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl
 // Exception:
 // Effets de bord: des communications (si version parallele) sont generees pas cet appel
 // Postcondition:
-DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sans_solveur_masse_imp
-(DoubleTab& derivee,const Operateur& op_diff,const Operateur& op_conv,  const Sources& src,
- Solveur_Masse& solv, const bool is_expl)
+DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sans_solveur_masse_impl
+(Convection_Diffusion_Fluide_Dilatable_base& eqn, DoubleTab& derivee, const bool is_expl)
 {
   /*
    * The equation is like that :
@@ -105,24 +93,25 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
    * This is what we code here with derivee = d(Y)/dt
    */
 
-  const Schema_Temps_base& sch = sch_.valeur();
+  const Schema_Temps_base& sch = eqn.schema_temps();
   int diffusion_implicite=sch.diffusion_implicite();
-  zcl_dis_->les_conditions_limites().set_modifier_val_imp(0);
+  eqn.zone_Cl_dis().les_conditions_limites().set_modifier_val_imp(0);
 
   /*
    * FIRST TERM : diffusive
    * derivee = div( rho*D*grad(Y) )
    */
-  if (!diffusion_implicite) op_diff.ajouter(derivee);
+  if (!diffusion_implicite) eqn.operateur(0).ajouter(derivee);
 
-  zcl_dis_->les_conditions_limites().set_modifier_val_imp(1);
+  eqn.zone_Cl_dis().les_conditions_limites().set_modifier_val_imp(1);
   derivee.echange_espace_virtuel();
 
   // Add source term (if any)
-  src.ajouter(derivee);
+  eqn.sources().ajouter(derivee);
 
   // On divise derivee  par rho
-  const DoubleTab& tab_rho = fld_->masse_volumique().valeurs();
+  const Fluide_Dilatable_base& fluide_dil = eqn.fluide();
+  const DoubleTab& tab_rho = fluide_dil.masse_volumique().valeurs();
   int n = tab_rho.dimension(0);
   for (int som=0 ; som<n ; som++)
     derivee(som) /= tab_rho(som);
@@ -136,14 +125,14 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   DoubleTrav convection(derivee);
 
   // Add Y div (rho*u)
-  const DoubleTab& Y=inco_->valeurs();
-  calculer_div_rho_u_impl(convection, op_conv);
+  const DoubleTab& Y= eqn.inconnue().valeurs();
+  calculer_div_rho_u_impl(convection, eqn);
 
   for (int som=0 ; som<n ; som++)
     convection(som) *= (-Y(som));
 
   // Add convection operator: - div( rho*u*Y )
-  op_conv.ajouter(convection);
+  eqn.operateur(1).ajouter(convection);
 
   // Divide by rho
   for (int som=0 ; som<n ; som++)
@@ -156,20 +145,20 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
 
   if (diffusion_implicite)
     {
-      const DoubleTab& Tfutur=inco_->futur();
+      const DoubleTab& Tfutur=eqn.inconnue().futur();
       DoubleTrav secmem(derivee);
       secmem=derivee;
-      solv.appliquer(secmem);
+      eqn.solv_masse().appliquer(secmem);
       derivee=(Tfutur);
-      solv->set_name_of_coefficient_temporel("masse_volumique");
-      eq_->Gradient_conjugue_diff_impl(secmem,derivee);
-      solv->set_name_of_coefficient_temporel("no_coeff");
+      eqn.solv_masse()->set_name_of_coefficient_temporel("masse_volumique");
+      eqn.Gradient_conjugue_diff_impl(secmem,derivee);
+      eqn.solv_masse()->set_name_of_coefficient_temporel("no_coeff");
     }
 
   // 100% explicite
-  if (!sch_->diffusion_implicite() && is_expl)
+  if (!sch.diffusion_implicite() && is_expl)
     {
-      solv.appliquer(derivee);
+      eqn.solv_masse().appliquer(derivee);
       derivee.echange_espace_virtuel();
     }
 
@@ -177,18 +166,18 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
 }
 
 void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
-( Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu,
-  const Operateur& op_diff, const Operateur& op_conv,
-  const Sources& src, Solveur_Masse& solv)
+( Convection_Diffusion_Fluide_Dilatable_base& eqn,
+  Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
-  const DoubleTab& tab_rho = fld_->masse_volumique().valeurs();
+  const Fluide_Dilatable_base& fluide_dil = eqn.fluide();
+  const DoubleTab& tab_rho = fluide_dil.masse_volumique().valeurs();
   const int n = tab_rho.dimension(0);
 
   // ajout diffusion (avec rho, D et Y)
-  op_diff.l_op_base().contribuer_a_avec(inco, matrice );
+  eqn.operateur(0).l_op_base().contribuer_a_avec(inco, matrice );
 
   // Add source term (if any)
-  src.contribuer_a_avec(inco,matrice);
+  eqn.sources().contribuer_a_avec(inco,matrice);
 
   const IntVect& tab1= matrice.get_tab1();
   DoubleVect& coeff=matrice.get_set_coeff();
@@ -197,11 +186,11 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
   // on calcule les coefficients de l'op de convection on obtient les coeff de div (rho*u*Y)
   coeff=0;
 
-  op_conv.l_op_base().contribuer_a_avec(inco, matrice );
+  eqn.operateur(1).l_op_base().contribuer_a_avec(inco, matrice );
 
   // on calcule div(rho * u)
   DoubleTrav derivee2(resu);
-  calculer_div_rho_u_impl(derivee2,op_conv);
+  calculer_div_rho_u_impl(derivee2,eqn);
 
   for (int som=0 ; som<n ; som++)
     {
@@ -214,10 +203,13 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
 
   // on a la matrice approchee on recalcule le residu;
   resu=0;
-  derivee_en_temps_inco_sans_solveur_masse_imp(resu,op_diff,op_conv,src,solv,false /* implicit */);
+  derivee_en_temps_inco_sans_solveur_masse_impl(eqn,resu,false /* implicit */);
   matrice.ajouter_multvect(inco,resu);
 }
 
+/*
+ * Methodes statiques
+ */
 int Convection_Diffusion_Fluide_Dilatable_Proto::Sauvegarder_WC(Sortie& os,
                                                                 const Convection_Diffusion_std& eq,
                                                                 const Fluide_Dilatable_base& fld)

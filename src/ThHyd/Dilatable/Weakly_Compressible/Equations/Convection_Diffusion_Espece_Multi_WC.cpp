@@ -75,22 +75,16 @@ void Convection_Diffusion_Espece_Multi_WC::completer()
   Fluide_Weakly_Compressible& le_fluideQC=ref_cast(Fluide_Weakly_Compressible,fluide());
   Loi_Etat_Multi_GP_WC& loi_etat = ref_cast_non_const(Loi_Etat_Multi_GP_WC,le_fluideQC.loi_etat().valeur());
   loi_etat.associer_inconnue(l_inco_ch.valeur());
-  completer_common_impl(inconnue(),zcl_modif_,zone_Cl_dis(),schema_temps(),le_fluide,*this);
 }
 
 DoubleTab& Convection_Diffusion_Espece_Multi_WC::derivee_en_temps_inco(DoubleTab& derivee)
 {
   derivee=0.;
-  const Operateur& op_diff = operateur(0);
-  const Operateur& op_conv = operateur(1);
-  return derivee_en_temps_inco_sans_solveur_masse_imp(derivee,op_diff,op_conv,
-                                                      les_sources,solveur_masse,true /* explicit */);
+  return derivee_en_temps_inco_sans_solveur_masse_impl(*this,derivee,true /* explicit */);
 }
 
 void Convection_Diffusion_Espece_Multi_WC::assembler( Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
-  const Operateur& op_diff = operateur(0);
-  const Operateur& op_conv = operateur(1);
-  assembler_impl(matrice,inco,resu,op_diff,op_conv,les_sources,solveur_masse);
+  assembler_impl(*this,matrice,inco,resu);
 }
 

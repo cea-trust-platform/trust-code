@@ -14,56 +14,53 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Navier_Stokes_Fluide_Dilatable_Proto.h
+// File:        Convection_Diffusion_Fluide_Dilatable_base.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common/Equations
-// Version:     /main/15
+// Version:     /main/20
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Navier_Stokes_Fluide_Dilatable_Proto_included
-#define Navier_Stokes_Fluide_Dilatable_Proto_included
+#ifndef Convection_Diffusion_Fluide_Dilatable_base_included
+#define Convection_Diffusion_Fluide_Dilatable_base_included
 
-#include <Ref_IntVect.h>
-#include <Champ_Inc.h>
-
-class Fluide_Dilatable_base;
-class Navier_Stokes_std;
-class Matrice_Morse;
-class DoubleTab;
-class Sortie;
+#include <Convection_Diffusion_std.h>
+#include <Ref_Fluide_Dilatable_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Navier_Stokes_Fluide_Dilatable_Proto
+//     classe Convection_Diffusion_Fluide_Dilatable_base pour un fluide dilatable
 //
-//////////////////////////////////////
+// .SECTION voir aussi
+//     Conv_Diffusion_std Convection_Diffusion_Temperature
+//////////////////////////////////////////////////////////////////////////////
 
-class Navier_Stokes_Fluide_Dilatable_Proto
+class Convection_Diffusion_Fluide_Dilatable_base : public Convection_Diffusion_std
 {
+  Declare_base(Convection_Diffusion_Fluide_Dilatable_base);
+
 public :
-  Navier_Stokes_Fluide_Dilatable_Proto();
-  int impr_impl(const Navier_Stokes_std& eqn,Sortie& os) const;
-  void assembler_impl( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem);
-  void assembler_avec_inertie_impl(const Navier_Stokes_std& eqn,Matrice_Morse& mat_morse,const DoubleTab& present,DoubleTab& secmem);
-  DoubleTab& derivee_en_temps_inco_impl(Navier_Stokes_std&,DoubleTab& res);
-  DoubleTab& rho_vitesse_impl(const DoubleTab& tab_rho,const DoubleTab& vit,DoubleTab& rhovitesse) const;
+  void associer_fluide(const Fluide_Dilatable_base& );
+  void associer_milieu_base(const Milieu_base& );
+  int impr(Sortie& os) const;
+  const Fluide_Dilatable_base& fluide() const;
+  Fluide_Dilatable_base& fluide();
+  const Milieu_base& milieu() const;
+  Milieu_base& milieu();
+
+  virtual void set_param(Param& titi);
+  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+
+  // Methodes inlines
+  inline const Champ_Inc& inconnue() const { return l_inco_ch; }
+  inline Champ_Inc& inconnue() { return l_inco_ch; }
+  inline const Zone_Cl_dis& zone_cl_modif() const { return zcl_modif_ ;}
+  inline Zone_Cl_dis& zone_cl_modif() { return zcl_modif_ ;}
 
 protected:
-  Champ_Inc rho_la_vitesse_;
-  IntVect orientation_VDF_;
-  DoubleTab tab_W; // RHS of div(rho.U)
-
-private:
-  mutable double cumulative_;
-
-  // private methods called from derivee_en_temps_inco_impl
-  void prepare_and_solve_u_star(Navier_Stokes_std& eqn,const Fluide_Dilatable_base& fluide_dil,DoubleTab& rhoU,DoubleTab& vpoint);
-  void update_vpoint_on_boundaries(const Navier_Stokes_std& eqn,const Fluide_Dilatable_base& fluide_dil,DoubleTab& vpoint);
-  void solve_pressure_increment(Navier_Stokes_std& eqn,const Fluide_Dilatable_base& fluide_dil,DoubleTab& rhoU,
-                                DoubleTab& secmem,DoubleTab& inc_pre,DoubleTab& vpoint );
-  void correct_and_compute_u_np1(Navier_Stokes_std& eqn,const Fluide_Dilatable_base& fluide_dil,DoubleTab& rhoU,
-                                 DoubleTab& Mmoins1grad,DoubleTab& inc_pre,DoubleTab& gradP,DoubleTab& vpoint);
+  Champ_Inc l_inco_ch;
+  Zone_Cl_dis zcl_modif_;
+  REF(Fluide_Dilatable_base) le_fluide;
 };
 
-#endif /* Navier_Stokes_Fluide_Dilatable_Proto_included */
+#endif /* Convection_Diffusion_Fluide_Dilatable_base_included */

@@ -29,23 +29,20 @@
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Discret_Thyd.h>
-#include <Matrice_Morse.h>
 #include <DoubleTrav.h>
 #include <Domaine.h>
 #include <Avanc.h>
 
-Implemente_base(Convection_Diffusion_Chaleur_Fluide_Dilatable_base,"Convection_Diffusion_Chaleur_Fluide_Dilatable_base",Convection_Diffusion_std);
+Implemente_base(Convection_Diffusion_Chaleur_Fluide_Dilatable_base,"Convection_Diffusion_Chaleur_Fluide_Dilatable_base",Convection_Diffusion_Fluide_Dilatable_base);
 
 Sortie& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::printOn(Sortie& is) const
 {
-  return Convection_Diffusion_std::printOn(is);
+  return Convection_Diffusion_Fluide_Dilatable_base::printOn(is);
 }
 
 Entree& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::readOn(Entree& is)
 {
-  assert(l_inco_ch.non_nul());
-  assert(le_fluide.non_nul());
-  Convection_Diffusion_std::readOn(is);
+  Convection_Diffusion_Fluide_Dilatable_base::readOn(is);
   terme_convectif.set_fichier("Convection_chaleur");
   terme_convectif.set_description((Nom)"Convective heat transfer rate=Integral(-rho*cp*T*u*ndS) [W] if SI units used");
   terme_diffusif.set_fichier("Diffusion_chaleur");
@@ -53,38 +50,6 @@ Entree& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::readOn(Entree& is)
   //On modifie le nom ici pour que le champ puisse etre reconnu si une sonde d enthalpie est demandee
   if (le_fluide->type_fluide()=="Gaz_Reel") l_inco_ch->nommer("enthalpie");
   return is;
-}
-
-void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::set_param(Param& param)
-{
-  Convection_Diffusion_std::set_param(param);
-}
-
-int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
-{
-  return Convection_Diffusion_std::lire_motcle_non_standard(mot,is);
-}
-
-// Description:
-//    Associe un milieu physique a l'equation,
-//    le milieu est en fait caste en Fluide_Dilatable_base ou en Fluide_Ostwald.
-// Precondition:
-// Parametre: Milieu_base& un_milieu
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//                 doit pourvoir etre force au type "Fluide_Dilatable_base"
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception: les proprietes physiques du fluide ne sont pas toutes specifiees
-// Effets de bord:
-// Postcondition:
-void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::associer_milieu_base(const Milieu_base& un_milieu)
-{
-  const Fluide_Dilatable_base& un_fluide = ref_cast(Fluide_Dilatable_base,un_milieu);
-  associer_fluide(un_fluide);
 }
 
 const Champ_Don& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::diffusivite_pour_transport()
@@ -105,20 +70,6 @@ const Champ_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::vitesse_po
   return vitessetransportante;
 }
 
-// Description:
-//    Discretise l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: l'equation est discretisee
 void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::discretiser()
 {
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
@@ -127,97 +78,6 @@ void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::discretiser()
   champs_compris_.ajoute_champ(l_inco_ch);
   Equation_base::discretiser();
   Cerr << "Convection_Diffusion_Chaleur_Fluide_Dilatable_base::discretiser() ok" << finl;
-}
-
-// Description:
-//    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Dilatable_base upcaste en Milieu_base)
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le Fluide_Dilatable_base upcaste en Milieu_base
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-const Milieu_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::milieu() const
-{
-  return fluide();
-}
-
-// Description:
-//    Renvoie le milieu physique de l'equation.
-//    (un Fluide_Dilatable_base upcaste en Milieu_base)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Milieu_base&
-//    Signification: le Fluide_Dilatable_base upcaste en Milieu_base
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Milieu_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::milieu()
-{
-  return fluide();
-}
-
-// Description:
-//    Renvoie le fluide incompressible associe a l'equation.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Fluide_Dilatable_base&
-//    Signification: le fluide incompressible associe a l'equation
-//    Contraintes: reference constante
-// Exception: pas de fluide associe a l'eqaution
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-const Fluide_Dilatable_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::fluide() const
-{
-  if (!le_fluide.non_nul())
-    {
-      Cerr << "You forgot to associate the fluid to the problem named " << probleme().le_nom() << finl;
-      Process::exit();
-    }
-  return le_fluide.valeur();
-}
-
-void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::associer_fluide(const Fluide_Dilatable_base& un_fluide)
-{
-  le_fluide = un_fluide;
-}
-
-// Description:
-//    Renvoie le fluide incompressible associe a l'equation.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Fluide_Dilatable_base&
-//    Signification: le fluide incompressible associe a l'equation
-//    Contraintes:
-// Exception: pas de fluide associe a l'eqaution
-// Effets de bord:
-// Postcondition:
-Fluide_Dilatable_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::fluide()
-{
-  assert(le_fluide.non_nul());
-  return le_fluide.valeur();
 }
 
 void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::calculer_div_u(DoubleTab& Div) const
@@ -512,24 +372,30 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::reprendre(Entree& is)
   return 1;
 }
 
-// Description:
-//    Impression des flux sur les bords sur un flot de sortie.
-//    Appelle Equation_base::impr(Sortie&)
-// Precondition: Sortie&
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::impr(Sortie& os) const
+int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::preparer_calcul()
 {
-  return Equation_base::impr(os);
+  Convection_Diffusion_Fluide_Dilatable_base::preparer_calcul();
+  return 1;
+}
+
+// Description:
+// remplissage de la zone cl modifiee avec 1 partout au bord...
+int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee()
+{
+  zcl_modif_=(zone_Cl_dis());
+  Conds_lim& condlims=zcl_modif_.valeur().les_conditions_limites();
+  int nb=condlims.size();
+  // pour chaque condlim on recupere le champ_front et on met 1
+  // meme si la cond lim est un flux (dans ce cas la convection restera nullle.)
+  for (int i=0; i<nb; i++)
+    {
+      DoubleTab& T=condlims[i].valeur().champ_front().valeurs();
+      T=1.;
+      if (sub_type(Neumann_sortie_libre,condlims[i].valeur()))
+        ref_cast(Neumann_sortie_libre,condlims[i].valeur()).tab_ext()=1;
+    }
+  zcl_modif_.les_conditions_limites().set_modifier_val_imp(0);
+  return 1;
 }
 
 // Description:
@@ -552,30 +418,4 @@ const Motcle& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::domaine_applic
   static Motcle domaine = "Thermique_H";
   if (le_fluide->type_fluide()=="Gaz_Parfait") domaine = "Thermique";
   return domaine;
-}
-
-int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::preparer_calcul()
-{
-  Convection_Diffusion_std::preparer_calcul();
-  return 1;
-}
-
-// Description:
-// remplissage de la zone cl modifiee avec 1 partout au bord...
-int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee()
-{
-  zcl_modif_=(zone_Cl_dis());
-  Conds_lim& condlims=zcl_modif_.valeur().les_conditions_limites();
-  int nb=condlims.size();
-  // pour chaque condlim on recupere le champ_front et on met 1
-  // meme si la cond lim est un flux (dans ce cas la convection restera nullle.)
-  for (int i=0; i<nb; i++)
-    {
-      DoubleTab& T=condlims[i].valeur().champ_front().valeurs();
-      T=1.;
-      if (sub_type(Neumann_sortie_libre,condlims[i].valeur()))
-        ref_cast(Neumann_sortie_libre,condlims[i].valeur()).tab_ext()=1;
-    }
-  zcl_modif_.les_conditions_limites().set_modifier_val_imp(0);
-  return 1;
 }

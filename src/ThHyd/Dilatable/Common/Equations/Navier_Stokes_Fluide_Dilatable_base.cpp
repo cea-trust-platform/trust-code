@@ -46,7 +46,7 @@ int Navier_Stokes_Fluide_Dilatable_base::impr(Sortie& os) const
 }
 
 // Description:
-//     cf Equation_base::preparer_calcul()
+//     Appel Equation_base::preparer_calcul()
 //     Assemblage du solveur pression et
 //     initialisation de la pression.
 // Precondition:
@@ -153,8 +153,7 @@ void Navier_Stokes_Fluide_Dilatable_base::discretiser()
 
 DoubleTab& Navier_Stokes_Fluide_Dilatable_base::derivee_en_temps_inco(DoubleTab& vpoint)
 {
-  return Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl((*this),vpoint,le_fluide.valeur(),matrice_pression_,
-                                                                          assembleur_pression_,schema_temps().diffusion_implicite());
+  return Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl(*this,vpoint);
 }
 
 void Navier_Stokes_Fluide_Dilatable_base::assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem)
