@@ -23,6 +23,7 @@
 #ifndef Convection_Diffusion_Fluide_Dilatable_base_included
 #define Convection_Diffusion_Fluide_Dilatable_base_included
 
+#include <Convection_Diffusion_Fluide_Dilatable_Proto.h>
 #include <Convection_Diffusion_std.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
@@ -35,7 +36,8 @@
 //     Conv_Diffusion_std Convection_Diffusion_Temperature
 //////////////////////////////////////////////////////////////////////////////
 
-class Convection_Diffusion_Fluide_Dilatable_base : public Convection_Diffusion_std
+class Convection_Diffusion_Fluide_Dilatable_base : public Convection_Diffusion_std,
+  public Convection_Diffusion_Fluide_Dilatable_Proto
 {
   Declare_base(Convection_Diffusion_Fluide_Dilatable_base);
 
@@ -43,6 +45,7 @@ public :
   void associer_fluide(const Fluide_Dilatable_base& );
   void associer_milieu_base(const Milieu_base& );
   int impr(Sortie& os) const;
+  const Champ_Don& diffusivite_pour_transport();
   const Fluide_Dilatable_base& fluide() const;
   Fluide_Dilatable_base& fluide();
   const Milieu_base& milieu() const;
@@ -50,6 +53,11 @@ public :
 
   virtual void set_param(Param& titi);
   virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+
+  // je sais, je sais ... mais pas maintenant !
+  virtual void calculer_div_u_ou_div_rhou(DoubleTab& res) const = 0;
+  virtual bool is_thermal() = 0;
+  virtual bool is_generic() = 0;
 
   // Methodes inlines
   inline const Champ_Inc& inconnue() const { return l_inco_ch; }

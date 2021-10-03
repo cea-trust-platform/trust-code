@@ -233,4 +233,3 @@ void Convection_Diffusion_Espece_Multi_QC::assembler( Matrice_Morse& matrice, co
     exit();
   */
 }
-

@@ -44,15 +44,19 @@ public:
   static int Reprendre_WC(Entree& is, double temps,Convection_Diffusion_std& eq, Fluide_Dilatable_base& fld,
                           Champ_Inc& inco, Probleme_base& pb);
 
+  virtual ~Convection_Diffusion_Fluide_Dilatable_Proto() {}
+
 protected:
+  void calculer_div_rho_u_impl(DoubleTab& res, const Convection_Diffusion_Fluide_Dilatable_base& eqn ) const;
   void assembler_impl(Convection_Diffusion_Fluide_Dilatable_base& eqn,
                       Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem);
 
   DoubleTab& derivee_en_temps_inco_sans_solveur_masse_impl(Convection_Diffusion_Fluide_Dilatable_base& eqn,
                                                            DoubleTab& derivee, const bool is_expl);
 
-private:
-  void calculer_div_rho_u_impl(DoubleTab& res, const Convection_Diffusion_Fluide_Dilatable_base& eqn ) const;
+  virtual void calculer_div_u_ou_div_rhou(DoubleTab& res) const = 0;
+  virtual bool is_thermal() = 0;
+  virtual bool is_generic() = 0;
 };
 
 #endif /* Convection_Diffusion_Fluide_Dilatable_Proto_included */

@@ -43,10 +43,8 @@ class Convection_Diffusion_Chaleur_Fluide_Dilatable_base : public Convection_Dif
 
 public :
   void discretiser();
-  void calculer_div_u(DoubleTab& res) const;
   int preparer_calcul();
   int remplir_cl_modifiee();
-  const Champ_Don& diffusivite_pour_transport();
   const Champ_base& diffusivite_pour_pas_de_temps();
   virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& resu);
   virtual int sauvegarder(Sortie&) const;
@@ -54,10 +52,13 @@ public :
   virtual const Champ_base& vitesse_pour_transport();
   virtual const Motcle& domaine_application() const;
   virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
-  virtual DoubleTab& derivee_en_temps_inco_sans_solveur_masse(DoubleTab& );
+
   // Methodes virtuelles pure
   virtual bool is_generic()=0;
-  virtual void calculer_div_u_ou_div_rhou(DoubleTab& res) const =0;
+  virtual void calculer_div_u_ou_div_rhou(DoubleTab& res) const =0; // encore une fois desole
+
+  // Methodes inlines
+  inline bool is_thermal() { return true; }
 };
 
 #endif /* Convection_Diffusion_Chaleur_Fluide_Dilatable_base_included */

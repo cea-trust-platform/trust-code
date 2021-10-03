@@ -104,14 +104,12 @@ int Convection_Diffusion_Chaleur_QC::lire_motcle_non_standard(const Motcle& mot,
 
 const Champ_base& Convection_Diffusion_Chaleur_QC::vitesse_pour_transport()
 {
-  if (mode_convection_==2)
-    return Convection_Diffusion_Chaleur_Fluide_Dilatable_base::vitesse_pour_transport();
+  if (mode_convection_==2) return Convection_Diffusion_Chaleur_Fluide_Dilatable_base::vitesse_pour_transport();
   else
     {
       const Probleme_base& pb = probleme();
       const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,pb.equation(0));
-      const Champ_Inc& vitessetransportante = eqn_hydr.inconnue(); // u
-      return vitessetransportante;
+      return eqn_hydr.inconnue() /* u */ ;
     }
 }
 
@@ -125,7 +123,7 @@ void Convection_Diffusion_Chaleur_QC::calculer_div_u_ou_div_rhou(DoubleTab& Div)
     }
 
   if (mode_convection_!=0)
-    Convection_Diffusion_Chaleur_Fluide_Dilatable_base::calculer_div_u(Div);
+    Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl(Div,*this);
   else
     {
       // Compute Div([rho]u) with Divergence operator
@@ -138,38 +136,25 @@ void Convection_Diffusion_Chaleur_QC::calculer_div_u_ou_div_rhou(DoubleTab& Div)
       eqn_hydr.operateur_divergence().calculer(vitesse.valeurs(),Div_on_pressure_nodes);
 
       // Test on the discretization:
-      if (vitesse.valeurs().line_size() > 1)
+      if (vitesse.valeurs().line_size() > 1) // VEF
         {
-          // VEF (temperature and pressure are not the same)
-          // so Div extrapolated on velocity nodes:
+          // VEF (temperature and pressure are not the same) =>  Div extrapolated on velocity nodes:
           DoubleTab Div_on_temperature_nodes(inconnue().valeurs());
           Div_on_pressure_nodes.echange_espace_virtuel();
           ref_cast_non_const(Fluide_Quasi_Compressible,le_fluide.valeur()).divu_discvit(Div_on_pressure_nodes,Div_on_temperature_nodes);
+          const int nsom = Div_on_temperature_nodes.dimension_tot(0);
+          for (int i=0 ; i<nsom ; i++) Div(i)=Div_on_temperature_nodes(i);
+        }
+      else// VDF (temperature and pressure nodes are the same):
+        Div = Div_on_pressure_nodes;
 
-          int nsom = Div_on_temperature_nodes.dimension_tot(0);
-          for (int i=0 ; i<nsom ; i++)
-            Div(i)=Div_on_temperature_nodes(i);
-        }
-      else
-        {
-          // VDF (temperature and pressure nodes are the same):
-          Div = Div_on_pressure_nodes;
-        }
-      Div*=-1;
+      Div *= -1;
     }
 }
 
 int Convection_Diffusion_Chaleur_QC::preparer_calcul()
 {
   Convection_Diffusion_Chaleur_Fluide_Dilatable_base::preparer_calcul();
-  if (mode_convection_==0) return 1;
-  return Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee();
-}
-
-bool Convection_Diffusion_Chaleur_QC::is_generic()
-{
-  if (mode_convection_==2)
-    return true;
-  else
-    return false;
+  return mode_convection_ == 0 ? 1 :
+         Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee();
 }

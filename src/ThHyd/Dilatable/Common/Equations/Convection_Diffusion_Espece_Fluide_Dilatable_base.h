@@ -43,7 +43,7 @@ class Convection_Diffusion_Espece_Fluide_Dilatable_base : public Convection_Diff
 
 public :
   void discretiser();
-  const Champ_Don& diffusivite_pour_transport();
+  void calculer_div_u_ou_div_rhou(DoubleTab& res) const;
   virtual int sauvegarder(Sortie&) const;
   virtual int reprendre(Entree&);
   virtual int preparer_calcul();
@@ -53,6 +53,10 @@ public :
   virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) = 0;
   virtual const Champ_base& diffusivite_pour_pas_de_temps() = 0;
   virtual DoubleTab& derivee_en_temps_inco(DoubleTab& ) = 0;
+
+  // Methodes inlines
+  inline bool is_thermal() { return false; }
+  inline bool is_generic() { return true; }
 };
 
 #endif /* Convection_Diffusion_Espece_Fluide_Dilatable_base_included */

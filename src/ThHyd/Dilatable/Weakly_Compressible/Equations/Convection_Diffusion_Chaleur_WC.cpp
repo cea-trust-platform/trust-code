@@ -89,24 +89,13 @@ const Champ_base& Convection_Diffusion_Chaleur_WC::vitesse_pour_transport()
 
 void Convection_Diffusion_Chaleur_WC::calculer_div_u_ou_div_rhou(DoubleTab& Div) const
 {
-  // No convective operator:
-  if (sub_type(Op_Conv_negligeable,operateur(1).l_op_base()))
-    {
-      Div=0;
-      return;
-    }
-  Convection_Diffusion_Chaleur_Fluide_Dilatable_base::calculer_div_u(Div);
+  Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl(Div,*this);
 }
 
 int Convection_Diffusion_Chaleur_WC::preparer_calcul()
 {
   Convection_Diffusion_Chaleur_Fluide_Dilatable_base::preparer_calcul();
   return Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee();
-}
-
-bool Convection_Diffusion_Chaleur_WC::is_generic()
-{
-  return true;
 }
 
 int Convection_Diffusion_Chaleur_WC::sauvegarder(Sortie& os) const

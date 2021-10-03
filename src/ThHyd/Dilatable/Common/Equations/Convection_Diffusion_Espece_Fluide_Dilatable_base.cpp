@@ -37,11 +37,6 @@ Entree& Convection_Diffusion_Espece_Fluide_Dilatable_base::readOn(Entree& is)
   return Convection_Diffusion_Fluide_Dilatable_base::readOn(is);
 }
 
-const Champ_Don& Convection_Diffusion_Espece_Fluide_Dilatable_base::diffusivite_pour_transport()
-{
-  return le_fluide->mu_sur_Schmidt();  // rho * D
-}
-
 int Convection_Diffusion_Espece_Fluide_Dilatable_base::preparer_calcul()
 {
   Convection_Diffusion_Fluide_Dilatable_base::preparer_calcul();
@@ -75,6 +70,11 @@ void Convection_Diffusion_Espece_Fluide_Dilatable_base::discretiser()
                         1 /* nb_composantes */,nb_valeurs_temp,temps,l_inco_ch);
   Equation_base::discretiser();
   Cerr << "Convection_Diffusion_Espece_Fluide_Dilatable_base::discretiser() ok" << finl;
+}
+
+void Convection_Diffusion_Espece_Fluide_Dilatable_base::calculer_div_u_ou_div_rhou(DoubleTab& Div) const
+{
+  Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl(Div,*this);
 }
 
 int Convection_Diffusion_Espece_Fluide_Dilatable_base::sauvegarder(Sortie& os) const

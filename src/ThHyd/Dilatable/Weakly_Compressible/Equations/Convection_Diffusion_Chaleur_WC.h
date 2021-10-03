@@ -56,10 +56,10 @@ public :
   //  d P_tot / d t = del P / del t + u.grad(P_tot)
   // Il faut donc un operateur grad
   inline const Operateur_Grad& operateur_gradient_WC() const { return Op_Grad_WC_;}
+  inline bool is_generic() { return true; }
 
 protected:
   void calculer_div_u_ou_div_rhou(DoubleTab& res) const;
-  bool is_generic();
   Operateur_Grad Op_Grad_WC_;
 };
 

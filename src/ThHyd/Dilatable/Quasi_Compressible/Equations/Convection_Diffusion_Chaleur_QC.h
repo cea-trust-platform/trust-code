@@ -44,12 +44,13 @@ class Convection_Diffusion_Chaleur_QC : public Convection_Diffusion_Chaleur_Flui
 public :
   Convection_Diffusion_Chaleur_QC();
   void set_param(Param& titi);
-  const Champ_base& vitesse_pour_transport();
+  void calculer_div_u_ou_div_rhou(DoubleTab& res) const;
   int lire_motcle_non_standard(const Motcle&, Entree&);
   int preparer_calcul();
+  const Champ_base& vitesse_pour_transport();
 
-  void calculer_div_u_ou_div_rhou(DoubleTab& res) const;
-  bool is_generic();
+  // Methodes inlines
+  inline bool is_generic() { return mode_convection_ == 2 ? true : false;}
 
 protected :
   int mode_convection_; // 0 par divergence u 1 par conv(u) 2 par conv(rho u)

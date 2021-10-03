@@ -87,11 +87,8 @@ const Champ_base& Convection_Diffusion_Espece_Binaire_base::diffusivite_pour_pas
 
 const Champ_base& Convection_Diffusion_Espece_Binaire_base::vitesse_pour_transport()
 {
-  // we need rho * u and not u
-  const Probleme_base& pb = probleme();
-  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,pb.equation(0));
-  const Champ_Inc& vitessetransportante = eqn_hydr.rho_la_vitesse() ;
-  return vitessetransportante;
+  const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,probleme().equation(0));
+  return eqn_hydr.rho_la_vitesse() /* rho * u and not u */;
 }
 
 int Convection_Diffusion_Espece_Binaire_base::preparer_calcul()
@@ -114,5 +111,5 @@ DoubleTab& Convection_Diffusion_Espece_Binaire_base::derivee_en_temps_inco(Doubl
 
 void Convection_Diffusion_Espece_Binaire_base::assembler( Matrice_Morse& matrice,const DoubleTab& inco, DoubleTab& resu)
 {
-  assembler_impl(*this,matrice,inco,resu);
+  Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl(*this,matrice,inco,resu);
 }

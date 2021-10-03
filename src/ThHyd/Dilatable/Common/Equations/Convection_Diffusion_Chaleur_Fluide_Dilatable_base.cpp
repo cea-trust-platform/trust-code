@@ -24,12 +24,9 @@
 #include <EcritureLectureSpecial.h>
 #include <Fluide_Dilatable_base.h>
 #include <Neumann_sortie_libre.h>
-#include <Op_Conv_negligeable.h>
 #include <Navier_Stokes_std.h>
-#include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Discret_Thyd.h>
-#include <DoubleTrav.h>
 #include <Domaine.h>
 #include <Avanc.h>
 
@@ -50,11 +47,6 @@ Entree& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::readOn(Entree& is)
   //On modifie le nom ici pour que le champ puisse etre reconnu si une sonde d enthalpie est demandee
   if (le_fluide->type_fluide()=="Gaz_Reel") l_inco_ch->nommer("enthalpie");
   return is;
-}
-
-const Champ_Don& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::diffusivite_pour_transport()
-{
-  return milieu().conductivite();
 }
 
 const Champ_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::diffusivite_pour_pas_de_temps()
@@ -80,242 +72,15 @@ void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::discretiser()
   Cerr << "Convection_Diffusion_Chaleur_Fluide_Dilatable_base::discretiser() ok" << finl;
 }
 
-void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::calculer_div_u(DoubleTab& Div) const
-{
-  // No convective operator:
-  if (sub_type(Op_Conv_negligeable,operateur(1).l_op_base()))
-    {
-      Div=0;
-      return;
-    }
-
-  // Compute Div(u) with convection operator
-  DoubleTrav unite(inconnue().valeurs());
-  unite=1;
-  ref_cast_non_const(Operateur_base,operateur(1).l_op_base()).associer_zone_cl_dis(zcl_modif_.valeur());
-
-  operateur(1).ajouter(unite,Div);
-  ref_cast_non_const(Operateur_base,operateur(1).l_op_base()).associer_zone_cl_dis(zone_Cl_dis().valeur());
-}
-
-// Description:
-//     Renvoie la derivee en temps de l'inconnue de l'equation.
-//     Le calcul est le suivant:
-//         d(inconnue)/dt = M^{-1} * (sources - somme(Op_{i}(inconnue))) / rho
-// Precondition:
-// Parametre: DoubleTab& derivee
-//    Signification: le tableau des valeurs de la derivee en temps du champ inconnu
-//    Valeurs par defaut:
-//    Contraintes: ce parametre est remis a zero des l'entree de la methode
-//    Acces: sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs de la derivee en temps du champ inconnu
-//    Contraintes:
-// Exception:
-// Effets de bord: des communications (si version parallele) sont generees pas cet appel
-// Postcondition:
 DoubleTab& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::derivee_en_temps_inco(DoubleTab& derivee)
 {
   derivee=0;
-  derivee_en_temps_inco_sans_solveur_masse(derivee);
-  if (!schema_temps().diffusion_implicite())
-    {
-      solveur_masse.appliquer(derivee);
-      derivee.echange_espace_virtuel();
-    }
-  return derivee;
+  return derivee_en_temps_inco_sans_solveur_masse_impl(*this,derivee,true /* explicit */);
 }
 
-DoubleTab& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::derivee_en_temps_inco_sans_solveur_masse(DoubleTab& derivee)
-{
-  // Compute derivee= Div(lambda*grad(T))+S)/(rho*Cp) - ugrad(T)
-  const Schema_Temps_base& sch=schema_temps();
-  int diffusion_implicite=sch.diffusion_implicite();
-  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  int n = tab_rho.dimension(0);
-  la_zone_Cl_dis.les_conditions_limites().set_modifier_val_imp(0);
-  // Calcul de derivee=Div(lambda*gradient(temperature))
-  if (le_fluide->type_fluide()=="Gaz_Parfait")
-    {
-      if (!diffusion_implicite)
-        operateur(0).ajouter(derivee);
-    }
-  else
-    {
-      operateur(0).ajouter(le_fluide->temperature(),derivee);
-      if (diffusion_implicite)
-        {
-          Cerr << "Error: diffusion implicit not implemented in Convection_Diffusion_Chaleur_Fluide_Dilatable_base" << finl;
-          Process::exit();
-        }
-    }
-
-  la_zone_Cl_dis.les_conditions_limites().set_modifier_val_imp(1);
-  derivee.echange_espace_virtuel();
-
-  // On ajoute le terme source a derivee
-  les_sources.ajouter(derivee);
-
-  // on stocke rho_cp
-  // On divise derivee par rho*Cp dans le cas d'un gaz parfait, par rho dans le cas d'un gaz reel
-  if (le_fluide->type_fluide()=="Gaz_Parfait")
-    {
-      le_fluide->update_rho_cp(schema_temps().temps_courant());
-      const DoubleTab& rhoCp = get_champ("rho_cp_comme_T").valeurs();
-      for (int som=0 ; som<n ; som++)
-        derivee(som) /= rhoCp(som);
-    }
-  else
-    {
-      for (int som=0 ; som<n ; som++)
-        derivee(som) /= tab_rho(som);
-    }
-  derivee.echange_espace_virtuel();
-
-  // We need to compute convection = -ugrad(T) = ( T*div([rho*]u) - div([rho*]u*T) )[/rho]
-  DoubleTrav convection(derivee);
-
-  // Add T*div([rho*]u*1)
-  const DoubleTab& T=inconnue().valeurs();
-  calculer_div_u_ou_div_rhou(convection);
-
-  for (int som=0 ; som<n ; som++)
-    convection(som) *= (-T(som));
-
-  // Add convection operator: -div([rho*]u*T)
-  operateur(1).ajouter(convection);
-
-  // Divide by volume mass if necessary:
-  if (is_generic())
-    for (int som=0 ; som<n ; som++) convection(som) /= tab_rho(som);
-
-  derivee+=convection;
-
-  if (diffusion_implicite)
-    {
-      const DoubleTab& Tfutur=inconnue().futur();
-      DoubleTrav secmem(derivee);
-      secmem=derivee;
-      solv_masse().appliquer(secmem);
-      derivee=(Tfutur);
-      solveur_masse->set_name_of_coefficient_temporel("rho_cp_comme_T");
-      Equation_base::Gradient_conjugue_diff_impl( secmem, derivee ) ;
-      solveur_masse->set_name_of_coefficient_temporel("no_coeff");
-    }
-  return derivee;
-}
-
-// derivee_en_temps_inco non std donc assembler non plus
 void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::assembler( Matrice_Morse& matrice,const DoubleTab& inco, DoubleTab& resu)
 {
-  int test_op=0;
-  {
-    char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE");
-    if (theValue != NULL) test_op=2;
-  }
-  {
-    char* theValue = getenv("TRUST_TEST_OPERATEUR_IMPLICITE_BLOQUANT");
-    if (theValue != NULL) test_op=1;
-  }
-
-  const DoubleTab& tab_rho = le_fluide->masse_volumique().valeurs();
-  int n = tab_rho.dimension(0);
-
-  //ajout diffusion (avec la conductivite et la temperature)
-  operateur(0).l_op_base().contribuer_a_avec(inco, matrice );
-  les_sources.contribuer_a_avec(inco,matrice);
-  const IntVect& tab1= matrice.get_tab1();
-  DoubleVect& coeff=matrice.get_set_coeff();
-  DoubleVect coeff_diffusif(coeff);
-  // on calcule les coefficients de l'op de convection on obtient les coeff de div(p*u*T)
-  // il faudrait multiplier par cp puis divisier par rho cp on le fera d'un coup...
-  coeff=0;
-  operateur(1).l_op_base().contribuer_a_avec(inco, matrice );
-
-  // on calcule div(rhou)
-  DoubleTrav derivee2(resu);
-  calculer_div_u_ou_div_rhou(derivee2);
-
-  int som;
-  if (le_fluide->type_fluide()=="Gaz_Parfait")
-    {
-      le_fluide->update_rho_cp(schema_temps().temps_courant());
-      const DoubleTab& rhoCp = get_champ("rho_cp_comme_T").valeurs();
-
-      for (som=0 ; som<n ; som++)
-        {
-          double inv_rho = 1. / tab_rho(som);
-
-          if (!is_generic()) inv_rho = 1.;
-
-          double rapport = 1. / rhoCp(som);
-
-          // il faut multiplier toute la ligne de la matrice par rapport
-          for (int k=tab1(som)-1; k<tab1(som+1)-1; k++)
-            coeff(k)= (coeff(k)*inv_rho+coeff_diffusif(k)*rapport);
-
-          // ajout de Tdiv(rhou )/rho
-          matrice(som,som)+=derivee2(som)*inv_rho;
-        }
-    }
-  else
-    {
-      Cerr<<"The implicit algorithm is available only for perfect gas."<<finl;
-      Process::exit();
-    }
-
-  // on a la matrice approchee on recalcule le residu;
-  resu=0;
-  derivee_en_temps_inco_sans_solveur_masse(resu);
-  matrice.ajouter_multvect(inco,resu);
-
-
-  if (test_op)
-    {
-      DoubleTrav diff(resu);
-      DoubleTrav conv(resu);
-      operateur(0).l_op_base().contribuer_au_second_membre(diff);
-      operateur(1).l_op_base().contribuer_au_second_membre(conv);
-      les_sources.ajouter(diff);
-      double Cp=-5;
-      int is_cp_unif=sub_type(Champ_Uniforme,le_fluide->capacite_calorifique().valeur());
-      const DoubleTab& tab_cp =le_fluide->capacite_calorifique().valeurs();
-      if (is_cp_unif)
-        Cp=tab_cp(0,0);
-      for (som=0 ; som<n ; som++)
-        {
-          if (!is_cp_unif) Cp=tab_cp(som);
-
-          double inv_rho=1./tab_rho(som);
-
-          if (!is_generic()) inv_rho=1;
-
-          double rapport=1./(tab_rho(som)*Cp);
-
-          diff(som)=resu(som)-conv(som)*inv_rho-diff(som)*rapport;
-        }
-      solv_masse().appliquer(diff);
-      double err=mp_max_abs_vect(diff);
-      Cerr<<que_suis_je()<<" erreur assemblage "<<err<<finl;;
-
-      if (err>1e-5)
-        {
-          {
-            DoubleVect& diff_=diff;
-            Cerr<<" size "<< diff_.size()<<finl;
-            for (int i=0; i<diff_.size(); i++)
-              if (dabs(diff_(i))>1e-5)
-                {
-                  Cerr<<i << " "<< diff_(i)<< " "<<finl;
-                }
-          }
-          if (test_op==1)
-            {
-              Cerr<<" pb max case "<<imin_array(diff)<<" ou " <<imax_array(diff)<<finl;
-              Process::exit();
-            }
-        }
-    }
+  Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl(*this,matrice,inco,resu);
 }
 
 int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) const

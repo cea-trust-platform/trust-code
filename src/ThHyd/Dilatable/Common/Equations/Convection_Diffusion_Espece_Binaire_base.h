@@ -24,7 +24,6 @@
 #define Convection_Diffusion_Espece_Binaire_base_included
 
 #include <Convection_Diffusion_Espece_Fluide_Dilatable_base.h>
-#include <Convection_Diffusion_Fluide_Dilatable_Proto.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -36,8 +35,7 @@
 //     Convection_Diffusion_Espece_Fluide_Dilatable_base
 //////////////////////////////////////////////////////////////////////////////
 
-class Convection_Diffusion_Espece_Binaire_base : public Convection_Diffusion_Espece_Fluide_Dilatable_base,
-  public Convection_Diffusion_Fluide_Dilatable_Proto
+class Convection_Diffusion_Espece_Binaire_base : public Convection_Diffusion_Espece_Fluide_Dilatable_base
 {
   Declare_base(Convection_Diffusion_Espece_Binaire_base);
 
