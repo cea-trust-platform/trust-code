@@ -83,8 +83,8 @@ void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, co
   // On sait que grad_Ptot est un champ elem => on pense à la conductivite (elem en vef !! )
   DoubleTab grad_Ptot;
   const DoubleTab& lambda = eqHyd.milieu().conductivite()->valeurs();
-  const int nb = lambda.size(), nbcomp = la_vitesse.line_size();
-  assert (nb == lambda.dimension(0) && lambda.line_size() == 1);
+  const int nb = lambda.size_totale(), nbcomp = la_vitesse.line_size();
+  assert (nb == lambda.dimension_tot(0) && lambda.line_size() == 1);
   grad_Ptot.resize(nb,nbcomp);
 
   const Convection_Diffusion_Chaleur_WC& eq_chal = ref_cast(Convection_Diffusion_Chaleur_WC,mon_equation.valeur());
@@ -95,18 +95,22 @@ void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, co
   const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
   assert (zone_dis.que_suis_je() == "Zone_VEFPreP1b" || zone_dis.que_suis_je() == "Zone_VEF");
 
+  // grad should be zero at boundary
+  correct_grad_boundary(zone,grad_Ptot);
+
   // We compute u*grad(P_tot) on each face
-  DoubleTab UgradP(eq_chal.inconnue()->valeurs()), grad_Ptot_face(la_vitesse); // champs sur les faces
+  DoubleTab grad_Ptot_face(la_vitesse); // champs sur les faces
 
   // get grad_Ptot on faces
   elem_to_face(zone,grad_Ptot,grad_Ptot_face);
-  const int n = la_vitesse.dimension(0);
-  assert (UgradP.dimension(0) == n && grad_Ptot_face.dimension(0) == n);
-  assert (UgradP.line_size() == 1 && n == zone.nb_faces());
+
+  const int n = la_vitesse.dimension_tot(0);
+  assert (UgradP_face.dimension_tot(0) == n && grad_Ptot_face.dimension_tot(0) == n);
+  assert (UgradP_face.line_size() == 1 && n == zone.nb_faces_tot());
   for (int i=0 ; i <n ; i++)
     {
-      UgradP(i,0) = 0.;
-      for (int j=0 ; j <nbcomp ; j++) UgradP(i,0) += la_vitesse(i,j) * grad_Ptot_face(i,j);
+      UgradP_face(i,0) = 0.;
+      for (int j=0 ; j <nbcomp ; j++) UgradP_face(i,0) += la_vitesse(i,j) * grad_Ptot_face(i,j);
     }
 }
 
@@ -115,21 +119,18 @@ void Source_WC_Chaleur_VEF::elem_to_face(const Zone_VF& zone, const DoubleTab& g
 {
   const DoubleVect& vol = zone.volumes();
   const IntTab& elem_faces = zone.elem_faces();
-  const int nb_face_elem = elem_faces.line_size(), nb_elem = zone.nb_elem(), nb_comp = grad_Ptot_face.line_size();
-  assert (grad_Ptot.dimension(0) == nb_elem && grad_Ptot_face.dimension(0) == zone.nb_faces());
+  const int nb_face_elem = elem_faces.line_size(), nb_elem_tot = zone.nb_elem_tot(), nb_comp = grad_Ptot_face.line_size();
+  assert (grad_Ptot.dimension_tot(0) == nb_elem_tot && grad_Ptot_face.dimension_tot(0) == zone.nb_faces_tot());
   assert (grad_Ptot.line_size() == nb_comp);
 
   grad_Ptot_face = 0.;
-  for (int ele = 0; ele < nb_elem; ele++)
+  for (int ele = 0; ele < nb_elem_tot; ele++)
     for (int s = 0; s < nb_face_elem; s++)
       {
         const int face = elem_faces(ele,s);
         for (int comp = 0; comp < nb_comp; comp++) grad_Ptot_face(face,comp) += grad_Ptot(ele,comp)*vol(ele);
       }
 
-  for (int f=0; f<zone.premiere_face_int(); f++)
-    for (int comp=0; comp<nb_comp; comp++) grad_Ptot_face(f,comp) /= volumes(f)*nb_face_elem;
-
-  for (int f=zone.premiere_face_int(); f<zone.nb_faces(); f++)
+  for (int f=0; f<zone.nb_faces_tot(); f++)
     for (int comp=0; comp<nb_comp; comp++) grad_Ptot_face(f,comp) /= volumes(f)*nb_face_elem;
 }

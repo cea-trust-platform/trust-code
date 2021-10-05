@@ -8,6 +8,9 @@ Parameters
   TestCase WC1 Cas_WC.data /* data file in appendix */
   TestCase WC2 Cas_WC.data
   TestCase WC3 Cas_WC.data
+  TestCase WC1_vef Cas_WC.data
+  TestCase WC2_vef Cas_WC.data
+  TestCase WC3_vef Cas_WC.data
   Description "\latex_(We consider a simplified rectangular cavity of width 1m and height 100 m, filled with air at rest. A free outlet is considered at the bottom boundary $(y=0)$ to avoid any  pressurization phenomenon (fixed hydro-static pressure). The remaining boundaries are adiabatic (no-slip for NS). The thermo-dynamic pressure is fixed to 1 bar (10.e5 Pa). Four simulations are considered and thus described in what follows.  \latex_) "
 }
 
@@ -201,8 +204,109 @@ visu {
 
 Chapter
 {
+Title "Weakly compressible formulation - Case 1_vef"
+Description "\latex_(Same as Case 1 but in VEF.\latex_) "
+
+visu {
+    title "WC - Case 1 : T steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC1_vef/Cas_WC.lata TEMPERATURE_ELEM_dom
+  }
+visu {
+    title "WC - Case 1 : rho steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC1_vef/Cas_WC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+}
+
+Chapter
+{
+Title "Weakly compressible formulation - Case 2_vef"
+Description "\latex_( Same as Case 2 but in VEF.\latex_) "
+
+visu {
+    title "WC - Case 2_vef : T steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC2_vef/Cas_WC.lata TEMPERATURE_ELEM_dom
+  }
+visu {
+    title "WC - Case 2_vef : rho steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC2_vef/Cas_WC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+ visu {
+    title "WC - Case 2_vef : T exact solution"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC2_vef/Cas_WC.lata EXACT_T_ELEM_dom
+  }
+  visu {
+    title "WC - Case 2_vef : T relative error"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC2_vef/Cas_WC.lata ERROR_T_ELEM_dom
+  }
+}
+
+Chapter
+{
+Title "Weakly compressible formulation - Case 3_vef"
+Description "\latex_(Same as Case 3 but in VEF. ATTENTION : STEADY STATE IS NOT YET REACHED !!!!!!!!! \latex_) "
+
+visu {
+    title "WC - Case 3_vef : T steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC3_vef/Cas_WC.lata TEMPERATURE_ELEM_dom
+  }
+visu {
+    title "WC - Case 3_vef : rho steady state"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC3_vef/Cas_WC.lata MASSE_VOLUMIQUE_ELEM_dom
+  }
+ visu {
+    title "WC - Case 3_vef : T exact solution"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC3_vef/Cas_WC.lata EXACT_T_ELEM_dom
+  }
+  visu {
+    title "WC - Case 3_vef : T relative error"
+    Width 9cm
+    #operator no_databaseinfo
+    #operator_to_all no_legend
+    cycles -1
+    pseudocolor WC3_vef/Cas_WC.lata ERROR_T_ELEM_dom
+  }
+}
+
+Chapter
+{
   Title "Conclusions"
-Description "\latex_(In this report we show that the weakly compressible formulation (implemented recently in TRUST) is required for simulations that deal with an important  hydro-static pressure (large altitudes). The results obtained match well with the exact solution even with different initial conditions for the temperature and density and thus validate the model implementation.\latex_) "
+Description "\latex_(In this report we show that the weakly compressible formulation (implemented recently in TRUST) is required for simulations that deal with an important  hydro-static pressure (large altitudes). The results obtained in VDF and VEF match well with the exact solution even with different initial conditions for the temperature and density and thus validate the model implementation.\latex_) "
 }
 
 Chapter

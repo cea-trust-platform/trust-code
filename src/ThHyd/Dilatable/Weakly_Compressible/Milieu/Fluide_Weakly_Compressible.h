@@ -62,8 +62,10 @@ public :
   inline Champ_Don& pression_eos() { return pression_eos_; }
   inline const Champ_Don& fraction_massique_nonresolue() const { return unsolved_species_; }
   inline Champ_Don& fraction_massique_nonresolue() { return unsolved_species_; }
-  inline const DoubleTab& pression_th_tab() { return Pth_tab_; } // Tab Pression thermodynamique
-  inline const DoubleTab& pression_thn_tab() { return Pth_n_tab_; } // Tab Pression thermodynamique a l'etape precedente
+  inline const DoubleTab& pression_th_tab() const { return Pth_tab_; } // Tab Pression thermodynamique
+  inline DoubleTab& pression_th_tab() { return Pth_tab_; } // Tab Pression thermodynamique
+  inline const DoubleTab& pression_thn_tab() const { return Pth_n_tab_; } // Tab Pression thermodynamique a l'etape precedente
+  inline DoubleTab& pression_thn_tab() { return Pth_n_tab_; } // Tab Pression thermodynamique a l'etape precedente
   inline void secmembre_divU_Z(DoubleTab& tab_W) const { eos_tools_->secmembre_divU_Z(tab_W); }
   inline void set_pression_th_tab(DoubleTab& Pth_tab) { Pth_n_tab_ = Pth_tab_ = Pth_tab; }
   inline void set_resume_flag() { sim_resumed_ = 1; }

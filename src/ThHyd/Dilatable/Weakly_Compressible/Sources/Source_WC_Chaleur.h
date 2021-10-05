@@ -26,8 +26,9 @@
 #include <Source_Chaleur_Fluide_Dilatable_base.h>
 #include <Ref_Fluide_Weakly_Compressible.h>
 
-class Zone_dis;
 class Zone_Cl_dis;
+class Zone_dis;
+class Zone_VF;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -50,6 +51,7 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const;
 
 protected:
+  const DoubleTab& correct_grad_boundary(const Zone_VF& zone, DoubleTab& grad_Ptot) const;
   virtual void compute_interpolate_gradP(DoubleTab& gradP, const DoubleTab& Ptot) const = 0;
 };
 

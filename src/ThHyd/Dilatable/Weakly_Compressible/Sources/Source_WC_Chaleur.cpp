@@ -24,6 +24,7 @@
 #include <Source_WC_Chaleur.h>
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>
+#include <Zone_VF.h>
 
 Implemente_base(Source_WC_Chaleur,"Source_WC_Chaleur",Source_Chaleur_Fluide_Dilatable_base);
 
@@ -59,17 +60,35 @@ DoubleTab& Source_WC_Chaleur::ajouter(DoubleTab& resu) const
   if (dt_ <= 0.) return resu; // On calcul pas ce terme source si dt<=0
 
   Fluide_Weakly_Compressible& FWC = ref_cast_non_const(Fluide_Weakly_Compressible,le_fluide.valeur());
-  const DoubleTab& Ptot = FWC.pression_th_tab(), Ptot_n = FWC.pression_thn_tab(); // present & passe
+  DoubleTab& Ptot = FWC.pression_th_tab(), Ptot_n = FWC.pression_thn_tab(); // present & passe
+
+  Ptot.echange_espace_virtuel();
+
   DoubleTab UgradP(Ptot); // champ elem en vdf et face en vef
   compute_interpolate_gradP(UgradP,Ptot);
 
   assert (resu.dimension(0) == UgradP.dimension(0));
   assert (resu.size() == UgradP.size());
 
-  for (int i=0 ; i< resu.dimension(0) /* zone.nb_elem() */ ; i++)
+  for (int i=0 ; i< resu.dimension(0); i++)
     {
       double dpth = ( Ptot(i,0) - Ptot_n(i,0) ) / dt_ +  UgradP(i,0);
       resu(i) += dpth * volumes(i)*porosites(i) ;
     }
   return resu;
+}
+
+const DoubleTab& Source_WC_Chaleur::correct_grad_boundary(const Zone_VF& zone, DoubleTab& grad_Ptot) const
+{
+  // We dont have a CL for Ptot => we apply explicitly to have a null gradient on the boundary ...
+  const Zone_Cl_dis& zone_cl = mon_equation->zone_Cl_dis();
+  for (int n_bord=0; n_bord<zone.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zone_cl.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      // recuperer face et remplace gradient par 0
+      const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+      for (int num_face=ndeb; num_face<nfin; num_face++) grad_Ptot(num_face,0) = 0.;
+    }
+  return grad_Ptot;
 }

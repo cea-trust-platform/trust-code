@@ -20,7 +20,7 @@ Mailler dom
     Bord wall Y = 100.0 0. <= X <= 1.0
   }
 }
-# END MESH #
+trianguler_fin dom # END MESH #
 
 # BEGIN PARTITION
 Partition dom
@@ -36,7 +36,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VDF dis
+vefpreP1b dis
 Scheme_euler_explicit sch
 Read sch
 {
@@ -63,7 +63,7 @@ Read fluide
     gamma 1.4
   }
   pression_thermo 1.E5
-  use_hydrostatic_pressure 1 /* 0 is by default */
+  use_hydrostatic_pressure 0 /* 0 is by default */
 }
 
 Champ_Uniforme gravite

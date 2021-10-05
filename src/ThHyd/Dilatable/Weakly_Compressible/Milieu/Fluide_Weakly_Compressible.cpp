@@ -440,12 +440,11 @@ void Fluide_Weakly_Compressible::calculer_pression_hydro()
   DoubleTab& tab_Phydro = pression_hydro_.valeurs();
   const Zone_dis_base& zone_dis= pression_-> zone_dis_base();
   const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
-  const DoubleTab& centres_de_gravites=zone.xp();
-  const DoubleTab& tab_rho = rho_np1();
+  int is_VDF = zone_dis.que_suis_je() == "Zone_VDF" ? 1 : 0;
+  const DoubleTab& centres_de_gravites = is_VDF ? zone.xp() : zone.xv();
+  const DoubleTab& tab_rho = rho_np1(), grav = gravite().valeurs();
   const int n = tab_Phydro.dimension_tot(0);
-  assert (n ==  tab_rho.dimension_tot(0)); // TODO FIXME : VEF !! Now only VDF
-  assert (a_gravite());
-  const DoubleTab& grav = gravite().valeurs();
+  assert (n ==  tab_rho.dimension_tot(0) && a_gravite());
   for (int i=0 ; i<n ; i++)
     {
       double gz=0.;

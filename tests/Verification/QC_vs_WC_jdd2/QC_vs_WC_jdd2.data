@@ -119,7 +119,7 @@ Read pb
       error_t transformation { methode formule expression 1 (exact_t-temp)/temp sources_reference { exact_t , temp } localisation elem }
     }
     Format lml
-    fields dt_post 500.
+    fields dt_post 5000.
     {
       vitesse elem
       masse_volumique elem

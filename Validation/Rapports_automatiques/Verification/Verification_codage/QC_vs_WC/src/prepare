@@ -4,7 +4,7 @@
 # Sept 2021
 # script to prepare files
 
-LISTE_CAS="QC WC1 WC2 WC3"
+LISTE_CAS="QC WC1 WC2 WC3 WC1_vef WC2_vef WC3_vef"
 
 for CAS in $LISTE_CAS; do
   SRCDATA_QC=Cas_QC.data
@@ -26,12 +26,35 @@ for CAS in $LISTE_CAS; do
 
     sed "s~use_hydrostatic_pressure 0~use_hydrostatic_pressure 1~" $SRCDATA_WC > $DESTDATA_WC
 
-  else # WC3
+  elif test "$CAS" = "WC3"; then 
 
     sed "s~use_hydrostatic_pressure 0~use_hydrostatic_pressure 1~;
          s~Champ_Uniforme 1 333.15~/\* Champ_Uniforme 1 333.15 \*/~;
          s~/\* champ_fonc_xyz dom 1 333.15-y \*/~champ_fonc_xyz dom 1 333.15-y~;
+         s~# PARALLEL NOT #~# PARALLEL OK 4 #~;
          s~tmax 5000.~tmax 100000.~" $SRCDATA_WC > $DESTDATA_WC
+         
+  elif test "$CAS" = "WC1_vef"; then
+  
+     sed "s~# END MESH #~trianguler_fin dom # END MESH #~;
+     	  s~VDF dis~vefpreP1b dis~" $SRCDATA_WC > $DESTDATA_WC
+     	  
+  elif test "$CAS" = "WC2_vef"; then
+  
+     sed "s~# END MESH #~trianguler_fin dom # END MESH #~;
+     	  s~VDF dis~vefpreP1b dis~;
+     	  s~# PARALLEL NOT #~# PARALLEL OK 4 #~
+     	  s~use_hydrostatic_pressure 0~use_hydrostatic_pressure 1~" $SRCDATA_WC > $DESTDATA_WC
+     	  
+  else # WC3_vef
+  
+      sed "s~use_hydrostatic_pressure 0~use_hydrostatic_pressure 1~;
+         s~# END MESH #~trianguler_fin dom # END MESH #~;
+         s~VDF dis~vefpreP1b dis~;
+         s~Champ_Uniforme 1 333.15~/\* Champ_Uniforme 1 333.15 \*/~;
+         s~/\* champ_fonc_xyz dom 1 333.15-y \*/~champ_fonc_xyz dom 1 333.15-y~;
+         s~tmax 5000.~tmax 1000.~
+         s~# PARALLEL NOT #~# PARALLEL OK 4 #~" $SRCDATA_WC > $DESTDATA_WC
 
   fi
 done

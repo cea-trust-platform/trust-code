@@ -88,11 +88,14 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP(DoubleTab& UgradP_elem, co
   const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
   assert (zone_dis.que_suis_je() == "Zone_VDF");
 
+  // grad should be zero at boundary
+  correct_grad_boundary(zone,grad_Ptot);
+
   // We compute u*grad(P_tot) on each face
   DoubleTab UgradP(grad_Ptot); // field on faces
-  const int n = la_vitesse.dimension(0);
-  assert ( n == zone.nb_faces() && la_vitesse.line_size() == 1);
-  assert ( Ptot.dimension(0) == zone.nb_elem() );
+  const int n = la_vitesse.dimension_tot(0);
+  assert ( n == zone.nb_faces_tot() && la_vitesse.line_size() == 1);
+  assert ( Ptot.dimension_tot(0) == zone.nb_elem_tot() );
 
   for (int i=0 ; i <n ; i++) UgradP(i,0) = la_vitesse(i,0) * grad_Ptot(i,0);
   face_to_elem(zone,UgradP,UgradP_elem);
@@ -102,15 +105,14 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP(DoubleTab& UgradP_elem, co
 void Source_WC_Chaleur_VDF::face_to_elem(const Zone_VF& zone, const DoubleTab& UgradP,DoubleTab& UgradP_elem) const
 {
   const IntTab& elem_faces = zone.elem_faces();
-  const int nb_face_elem=elem_faces.line_size(), nb_elem=zone.nb_elem();
-  assert (UgradP_elem.dimension(0) == nb_elem && UgradP.dimension(0) == zone.nb_faces());
+  const int nb_face_elem = elem_faces.line_size(), nb_elem_tot= zone.nb_elem_tot();
+  assert (UgradP_elem.dimension_tot(0) == nb_elem_tot && UgradP.dimension_tot(0) == zone.nb_faces_tot());
 
   UgradP_elem = 0.;
-  for (int ele=0; ele<nb_elem; ele++)
+  for (int ele=0; ele<nb_elem_tot; ele++)
     for (int s=0; s<nb_face_elem; s++) UgradP_elem(ele,0) += UgradP(elem_faces(ele,s),0);
 
-  double inv_nb_face_elem=1./(nb_face_elem);
-  UgradP_elem *= inv_nb_face_elem;
+  UgradP_elem *= 0.5;
 }
 
 // marche bien mais pas bon pour le vef ... P en vef est partout, grad sur les faces mais pas bon pour nous

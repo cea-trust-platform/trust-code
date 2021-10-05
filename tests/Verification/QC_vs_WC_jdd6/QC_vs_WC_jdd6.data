@@ -1,5 +1,5 @@
 # ThermoHydraulique_WC 2D : weakly compressible gaz parfait VDF #
-# PARALLEL NOT #
+# PARALLEL OK 4 #
 Dimension 2
 Pb_Thermohydraulique_WC pb
 Domaine dom
@@ -20,7 +20,7 @@ Mailler dom
     Bord wall Y = 100.0 0. <= X <= 1.0
   }
 }
-# END MESH #
+trianguler_fin dom # END MESH #
 
 # BEGIN PARTITION
 Partition dom
@@ -36,7 +36,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VDF dis
+vefpreP1b dis
 Scheme_euler_explicit sch
 Read sch
 {

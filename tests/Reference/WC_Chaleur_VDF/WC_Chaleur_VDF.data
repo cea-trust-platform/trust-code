@@ -1,5 +1,5 @@
 # ThermoHydraulique_WC 2D : weakly compressible gaz parfait VDF #
-# PARALLEL NOT #
+# PARALLEL OK 4 #
 Dimension 2
 Pb_Thermohydraulique_WC pb
 Domaine dom
@@ -41,8 +41,8 @@ Scheme_euler_explicit sch
 Read sch
 {
   tinit 0.
-	nb_pas_dt_max 3
-  tmax 5000.
+  nb_pas_dt_max 50
+  tmax 100000.
   dt_min 1.e-11
   dt_max 5000.
   dt_impr 1.e1
@@ -100,8 +100,8 @@ Read pb
     initial_conditions
     {
       Temperature
-      Champ_Uniforme 1 333.15
-      /* champ_fonc_xyz dom 1 333.15-y */
+      /* Champ_Uniforme 1 333.15 */
+      champ_fonc_xyz dom 1 333.15-y
     }
     boundary_conditions
     {
@@ -127,8 +127,6 @@ Read pb
       pression_tot elem
       Pression_hydro elem
       temperature elem
-      exact_t elem
-      error_t elem
     }
   }
 }
