@@ -60,7 +60,7 @@ Entree& Solveur_U_P::readOn(Entree& is )
 //k designe une iteration
 void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,double dt,Matrice_Morse& matrice_inut,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge)
 {
-  if (eqn.probleme().is_QC())
+  if (eqn.probleme().is_dilatable())
     {
       Cerr<<" Solveur_U_P cannot be used with a quasi-compressible fluid."<<finl;
       Cerr<<__FILE__<<(int)__LINE__<<" non code" <<finl;

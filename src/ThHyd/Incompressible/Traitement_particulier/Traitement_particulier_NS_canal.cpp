@@ -28,7 +28,6 @@
 #include <Probleme_base.h>
 #include <Discretisation_base.h>
 #include <Zone_VF.h>
-#include <Fluide_Quasi_Compressible.h>
 #include <Zone_Cl_dis_base.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Schema_Temps_base.h>
@@ -867,7 +866,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                         }
                     }
                   tauw_diri_tmp=mp_sum(tauw_diri_tmp)/mp_sum(nbfaces_bord_diri);
-                  if(!(mon_equation.valeur().probleme().is_QC()))
+                  if(!(mon_equation.valeur().probleme().is_dilatable()))
                     tauw_diri_tmp *= rho ;
 
                   if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )
@@ -990,7 +989,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                         }
                     }
                   tauw_robin_tmp=mp_sum(tauw_robin_tmp)/mp_sum(nbfaces_bord_robin);
-                  if(!(mon_equation.valeur().probleme().is_QC()))
+                  if(!(mon_equation.valeur().probleme().is_dilatable()))
                     tauw_robin_tmp *= rho ;
 
                   if ( !sub_type(Champ_Uniforme,fluide.masse_volumique()) )

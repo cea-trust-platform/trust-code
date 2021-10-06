@@ -30,7 +30,7 @@
 #include <Symetrie.h>
 #include <Periodique.h>
 #include <Pb_Thermohydraulique.h>
-#include <Fluide_Quasi_Compressible.h>
+#include <Fluide_Dilatable_base.h>
 
 Implemente_instanciable(Terme_Source_Canal_perio_VDF_Front_Tracking,"Canal_perio_VDF_Front_Tracking",Terme_Source_Canal_perio_VDF_Face);
 
@@ -183,14 +183,14 @@ void Terme_Source_Canal_perio_VDF_Face::calculer_debit(double& debit_e) const
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces()/2;
 
-              if (equation().probleme().is_QC()==1)
+              if (equation().probleme().is_dilatable()==1)
                 {
-                  // Si l'on est en Quasi Compressible, il faut conserver
+                  // Si l'on est en Quasi/Weakly Compressible, il faut conserver
                   // le debit massique et non pas le debit volumique.
-                  // C'est pour cela que dans le cas QC, on multiplie les vecteurs vitesse
+                  // C'est pour cela que dans le cas QC/WC, on multiplie les vecteurs vitesse
                   // par la masse volumique discretisee aux faces pour que lorsqu'on integre sur la surface,
                   // on obtienne bien un debit massique et non pas un debit volumique.
-                  const DoubleTab& tab_rho_face = ref_cast(Fluide_Quasi_Compressible,equation().milieu()).rho_discvit();
+                  const DoubleTab& tab_rho_face = ref_cast(Fluide_Dilatable_base,equation().milieu()).rho_discvit();
 
                   for (num_face=ndeb; num_face<nfin; num_face++)
                     {

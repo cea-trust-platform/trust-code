@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,6 @@
 #include <Convection_Diffusion_Chaleur_QC.h>
 #include <Probleme_base.h>
 #include <Fluide_Incompressible.h>
-#include <Fluide_Quasi_Compressible.h>
 #include <Navier_Stokes_std.h>
 
 Implemente_instanciable(Traitement_particulier_NS_temperature_VEF,"Traitement_particulier_NS_temperature_VEF",Traitement_particulier_NS_temperature);

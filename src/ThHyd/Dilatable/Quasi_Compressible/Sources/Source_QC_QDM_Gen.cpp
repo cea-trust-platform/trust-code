@@ -26,7 +26,7 @@
 #include <Probleme_base.h>
 #include <Milieu_base.h>
 #include <Champ_Uniforme.h>
-#include <Modifier_pour_QC.h>
+#include <Modifier_pour_fluide_dilatable.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <DoubleTrav.h>
 #include <Matrice_Morse.h>
@@ -92,7 +92,7 @@ DoubleTab& Source_QC_QDM_Gen::ajouter(DoubleTab& resu) const
   DoubleTrav trav(resu);
   source_incompressible.ajouter(trav);
   // multiplication par rho de trav
-  multiplier_par_rho_si_qc(trav,equation().milieu());
+  multiplier_par_rho_si_dilatable(trav,equation().milieu());
   resu+=trav;
   return resu;
 }

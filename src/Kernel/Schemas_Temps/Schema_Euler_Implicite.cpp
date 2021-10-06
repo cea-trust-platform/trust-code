@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -180,7 +180,7 @@ int Schema_Euler_Implicite::Iterer_Pb(Probleme_base& pb,int compteur)
   int ii;
   bool convergence_pb = true;
   bool convergence_eqn = false;
-  int drap = (pb.milieu().que_suis_je()=="Fluide_Quasi_Compressible");
+  int drap = pb.is_dilatable();
   Cout << "=======================================================================================" << finl;
   Cout << "Schema_Euler_Implicite: Implicit iteration " << compteur << " on the " << pb.que_suis_je() << " problem " << pb.le_nom() << " :" << finl;
   Cout << "=======================================================================================" << finl;

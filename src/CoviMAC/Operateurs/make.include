@@ -35,6 +35,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Problems\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
 	-I$(TRUST_ROOT)/src/ThHyd\

@@ -27,7 +27,7 @@
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>
-#include <Fluide_Quasi_Compressible.h>
+#include <Fluide_Dilatable_base.h>
 #include <Debog.h>
 #include <DoubleTrav.h>
 #include <communications.h>
@@ -153,14 +153,14 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
               int ndeb = le_bord.num_premiere_face();
               int nfin = ndeb + le_bord.nb_faces()/2;
               int axe = direction_ecoulement_;
-              if (equation().probleme().is_QC()==1)
+              if (equation().probleme().is_dilatable()==1)
                 {
                   // Si l'on est en Quasi Compressible, il faut conserver
                   // le debit massique et non pas le debit volumique.
                   // C'est pour cela que dans le cas QC, on multiplie les vecteurs vitesse
                   // par la masse volumique discretisee aux faces pour que lorsqu'on integre sur la surface,
                   // on obtienne bien un debit massique et non pas un debit volumique.
-                  const DoubleTab& tab_rho_face = ref_cast(Fluide_Quasi_Compressible,equation().milieu()).rho_discvit();
+                  const DoubleTab& tab_rho_face = ref_cast(Fluide_Dilatable_base,equation().milieu()).rho_discvit();
 
                   if (axe>=0)
                     for (int num_face=ndeb; num_face<nfin; num_face++)

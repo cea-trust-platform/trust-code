@@ -23,11 +23,11 @@
 #ifndef Source_Fluide_Dilatable_Face_included
 #define Source_Fluide_Dilatable_Face_included
 
-#include <DoubleTrav.h>
-#include <Milieu_base.h>
-#include <Matrice_Morse.h>
-#include <Modifier_pour_QC.h>
+#include <Modifier_pour_fluide_dilatable.h>
 #include <Source_QC_QDM_Gen.h>
+#include <Matrice_Morse.h>
+#include <Milieu_base.h>
+#include <DoubleTrav.h>
 
 template <typename DERIVED_T>
 class Source_Fluide_Dilatable_Face : public DERIVED_T
@@ -43,7 +43,7 @@ DoubleTab& Source_Fluide_Dilatable_Face<DERIVED_T>::ajouter(DoubleTab& resu ) co
 {
   DoubleTrav trav(resu);
   DERIVED_T::ajouter(trav);
-  multiplier_par_rho_si_qc(trav,DERIVED_T::equation().milieu());
+  multiplier_par_rho_si_dilatable(trav,DERIVED_T::equation().milieu());
   resu+=trav;
   return resu;
 }

@@ -31,7 +31,7 @@
 #include <Periodique.h>
 #include <Pb_Fluide_base.h>
 #include <Navier_Stokes_std.h>
-#include <Fluide_Quasi_Compressible.h>
+#include <Fluide_Dilatable_base.h>
 
 // Ajoute pour compatibilite avec Quasi-Compressible
 Implemente_instanciable(Terme_Source_Coriolis_QC_VDF_Face,"Coriolis_QC_VDF_Face",Terme_Source_Coriolis_VDF_Face);
@@ -239,15 +239,20 @@ void Terme_Source_Coriolis_VDF_Face::calculer_force_de_Coriolis() const
       }
     }
 
-
+  if (eq_hydraulique().milieu().que_suis_je()=="Fluide_Weakly_Compressible")
+    {
+      Cerr << "Terme_Source_Coriolis_VDF_Face is not yet tested for a Weakly Compressible fluid !" << finl;
+      Cerr << "Contact the TRUST support if you want to use this source term." << finl;
+      Process::exit();
+    }
 
   // Si l'on est en Quasi Compressible, le terme source doit etre
   // multiplie par la masse volumique puisque c'est sous cette forme
   // qu'est ecrite l'equation de NS.
   const Probleme_base& pb = eq_hydraulique().probleme();
-  if(pb.is_QC())
+  if(pb.is_dilatable())
     {
-      const Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,eq_hydraulique().milieu());
+      const Fluide_Dilatable_base& le_fluide = ref_cast(Fluide_Dilatable_base,eq_hydraulique().milieu());
       const DoubleTab& tab_rho_elem = le_fluide.masse_volumique().valeurs();
       double rhoelem;
       for (num_elem=0; num_elem <nb_elems; num_elem++)

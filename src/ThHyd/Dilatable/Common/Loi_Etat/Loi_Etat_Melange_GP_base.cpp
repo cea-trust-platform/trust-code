@@ -36,20 +36,6 @@ Entree& Loi_Etat_Melange_GP_base::readOn(Entree& is)
   return is;
 }
 
-// Description:
-//    Associe le fluide a la loi d'etat
-// Precondition:
-// Parametre: Fluide_Quasi_Compressible& fl
-//    Signification: le fluide associe
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: lecture
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 void Loi_Etat_Melange_GP_base::associer_fluide(const Fluide_Dilatable_base& fl)
 {
   Loi_Etat_base::associer_fluide(fl);

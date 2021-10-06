@@ -1002,7 +1002,7 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
 // Postcondition:
 void Navier_Stokes_std::projeter()
 {
-  if (probleme().is_QC() && probleme().reprise_effectuee())
+  if (probleme().is_dilatable() && probleme().reprise_effectuee())
     {
       Cerr<<"WARNING: Quasi compressible model --> no projection (except the first time step)."<<finl;
     }
@@ -1924,7 +1924,7 @@ void Navier_Stokes_std::get_noms_champs_postraitables(Noms& nom,Option opt) cons
 int Navier_Stokes_std::impr(Sortie& os) const
 {
   // Affichage des bilans volumiques si on n'est pas en QC, ni en Front Tracking
-  if (!probleme().is_QC() && probleme().que_suis_je()!="Probleme_FT_Disc_gen")
+  if (!probleme().is_dilatable() && probleme().que_suis_je()!="Probleme_FT_Disc_gen")
     {
       double LocalFlowRateError=mp_max_abs_vect(divergence_U.valeurs());
       os << finl;

@@ -25,7 +25,7 @@
 #include <DoubleTrav.h>
 #include <Discretisation_base.h>
 #include <Champ.h>
-#include <Modifier_pour_QC.h>
+#include <Modifier_pour_fluide_dilatable.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
@@ -124,7 +124,7 @@ void Op_Conv_CoviMAC_base::calculer_pour_post(Champ& espace_stockage,const Nom& 
         }
       //fluent.echange_espace_virtuel();
       if (vitesse().le_nom()=="rho_u")
-        diviser_par_rho_si_qc(fluent,equation().milieu());
+        diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
       int zone_VDF_nb_elem=zone_VDF.nb_elem();
       for (int num_poly=0; num_poly<zone_VDF_nb_elem; num_poly++)

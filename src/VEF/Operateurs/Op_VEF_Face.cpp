@@ -400,7 +400,7 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
       int rho_uniforme=(sub_type(Champ_Uniforme,rho) ? 1:0);
       int cp_uniforme=(sub_type(Champ_Uniforme,Cp.valeur()) ? 1:0);
       double Cp_=0,rho_=0;
-      int is_rho_u=pb.is_QC();
+      int is_rho_u=pb.is_dilatable();
       if (is_rho_u)
         {
           is_rho_u=0;

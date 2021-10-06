@@ -99,7 +99,7 @@ void Terme_Puissance_Thermique::mettre_a_jour(double temps)
 
 void Terme_Puissance_Thermique::preparer_source(const Probleme_base& pb)
 {
-  if (!pb.is_QC())
+  if (!pb.is_dilatable())
     {
       if (!pb.milieu().capacite_calorifique().non_nul())
         {

@@ -14,29 +14,27 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Modifier_pour_QC.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Quasi_Compressible
+// File:        Modifier_pour_fluide_dilatable.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common
 // Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Modifier_pour_QC.h>
-#include <Fluide_Quasi_Compressible.h>
+#include <Modifier_pour_fluide_dilatable.h>
+#include <Fluide_Dilatable_base.h>
 #include <Zone_VF.h>
-#include <Debog.h>
+//#include <Debog.h>
 
 static void multiplier_ou_diviser(DoubleVect& x, const DoubleVect& y, int diviser)
 {
-  if (!diviser)
-    tab_multiply_any_shape(x, y ,VECT_REAL_ITEMS);
-  else
-    tab_divide_any_shape(x, y ,VECT_REAL_ITEMS);
+  if (!diviser) tab_multiply_any_shape(x, y ,VECT_REAL_ITEMS);
+  else tab_divide_any_shape(x, y ,VECT_REAL_ITEMS);
   x.echange_espace_virtuel();
   //Debog::verifier("multiplier_ou_diviser x/y apres x:",x);
 }
 
 // Modif B.M: on ne remplit que la partie reelle du tableau.
-void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Quasi_Compressible& le_fluide,int diviser)
+void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Dilatable_base& le_fluide,int diviser)
 {
   const Zone_VF& zvf = ref_cast(Zone_VF,le_fluide.vitesse().valeur().zone_dis_base());
   // Descripteurs des tableaux aux elements et aux faces:
@@ -47,7 +45,7 @@ void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Quasi_Compressible& le_
 
   if (tab.get_md_vector() == md_faces_bord)
     {
-      const DoubleTab& rho = ref_cast(Fluide_Quasi_Compressible,le_fluide).rho_discvit();
+      const DoubleTab& rho = ref_cast(Fluide_Dilatable_base,le_fluide).rho_discvit();
       DoubleVect rho_bord;
       // B.M. je cree une copie sinon il faut truander les tests sur les tailles dans multiply_any_shape
       // ou creer un DoubleTab qui pointe sur rho...
@@ -59,7 +57,7 @@ void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Quasi_Compressible& le_
 
   if (tab.get_md_vector() == md_faces)
     {
-      const DoubleTab& rho_faces = ref_cast(Fluide_Quasi_Compressible,le_fluide).rho_discvit();
+      const DoubleTab& rho_faces = ref_cast(Fluide_Dilatable_base,le_fluide).rho_discvit();
       multiplier_ou_diviser(tab,rho_faces,diviser);
       return;
     }
@@ -95,26 +93,30 @@ void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Quasi_Compressible& le_
       return;
     }
 
-  Cerr << "Error in Modifier_pour_QC.cpp: multiplier_rho. Invalid discretization of tab and rho." << finl;
+  Cerr << "Error in Modifier_pour_fluide_dilatable.cpp: multiplier_rho. Invalid discretization of tab and rho." << finl;
   Process::exit();
 }
 
-// Description: multiplie le tableau val par la masse volumique si le fluide est QC.
+// Description: multiplie le tableau val par la masse volumique si le fluide est dilatable.
 //  Le tableau val peut avoir diverses localisations (determinees a partir de get_md_vector())
 //  et peut etre de type DoubleTab avec des dimension(i>0) quelconques (plusieurs composantes)
-void multiplier_par_rho_si_qc(DoubleVect& val,const Milieu_base& mil)
+void multiplier_par_rho_si_dilatable(DoubleVect& val,const Milieu_base& mil)
 {
-  if (sub_type(Fluide_Quasi_Compressible,mil))
+  if (sub_type(Fluide_Dilatable_base,mil)) multiplier_diviser_rho(val,ref_cast(Fluide_Dilatable_base,mil), 0 /* multiplier */);
+  else
     {
-      multiplier_diviser_rho(val,ref_cast(Fluide_Quasi_Compressible,mil), 0 /* multiplier */);
+      Cerr << "What ?? The method multiplier_par_rho_si_dilatable should not be called since your fluid is not dilatable !!" << finl;
+      Process::exit();
     }
 }
 
-// Description: Idem que multiplier_par_rho_si_qc mais on divise par rho.
-void diviser_par_rho_si_qc(DoubleVect& val,const Milieu_base& mil)
+// Description: Idem que multiplier_par_rho_si_dilatable mais on divise par rho.
+void diviser_par_rho_si_dilatable(DoubleVect& val,const Milieu_base& mil)
 {
-  if (sub_type(Fluide_Quasi_Compressible,mil))
+  if (sub_type(Fluide_Dilatable_base,mil)) multiplier_diviser_rho(val,ref_cast(Fluide_Dilatable_base,mil), 1 /* diviser */);
+  else
     {
-      multiplier_diviser_rho(val,ref_cast(Fluide_Quasi_Compressible,mil), 1 /* diviser */);
+      Cerr << "What ?? The method diviser_par_rho_si_dilatable should not be called since your fluid is not dilatable !!" << finl;
+      Process::exit();
     }
 }

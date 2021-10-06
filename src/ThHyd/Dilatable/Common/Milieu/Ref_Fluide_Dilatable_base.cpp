@@ -14,20 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Multi_Especes.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common
-// Version:     /main/7
+// File:        Ref_Fluide_Dilatable_base.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common/Milieu
+// Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Pb_Multi_Especes_inclus
-#define Pb_Multi_Especes_inclus
+#include <Ref_Fluide_Dilatable_base.h>
+#include <Fluide_Dilatable_base.h>
 
-#include <Pb_Thermohydraulique_QC.h>
-#include <Pb_Thermohydraulique_WC.h>
-#include <MacPbeqsup.h>
-
-declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Especes_QC,Pb_Thermohydraulique_QC)
-declare_instanciable_pb_eq_sup(Pb_Thermohydraulique_Especes_WC,Pb_Thermohydraulique_WC)
-
-#endif /* Pb_Multi_Especes_inclus */
+Implemente_ref(Fluide_Dilatable_base);

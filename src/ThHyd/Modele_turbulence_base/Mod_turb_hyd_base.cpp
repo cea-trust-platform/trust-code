@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -314,13 +314,13 @@ void Mod_turb_hyd_base::discretiser()
 void Mod_turb_hyd_base::discretiser_visc_turb(const Schema_Temps_base& sch,
                                               Zone_dis& z, Champ_Fonc& ch) const
 {
-  int is_QC = equation().probleme().is_QC();
-  if (!is_QC)
+  int is_dilat = equation().probleme().is_dilatable();
+  if (!is_dilat)
     Cerr << "Turbulent viscosity field discretization" << finl;
   else
     Cerr << "Turbulent dynamic viscosity field discretization" << finl;
-  Nom nom = (is_QC==1) ? "viscosite_dynamique_turbulente" : "viscosite_turbulente";
-  Nom unite = (is_QC==1) ? "kg/(m.s)" : "m2/s";
+  Nom nom = (is_dilat==1) ? "viscosite_dynamique_turbulente" : "viscosite_turbulente";
+  Nom unite = (is_dilat==1) ? "kg/(m.s)" : "m2/s";
   const Discretisation_base& dis = mon_equation->discretisation();
   dis.discretiser_champ("champ_elem",z.valeur(),nom,unite,1,sch.temps_courant(),ch);
 }

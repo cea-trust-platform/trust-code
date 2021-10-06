@@ -1909,9 +1909,9 @@ void Probleme_base::postraiter_interfaces(const Nom& nomfich, Sortie& s, const N
 }
 
 // En attendant de mieux poser les equations
-int Probleme_base::is_QC() const
+int Probleme_base::is_dilatable() const
 {
-  return (milieu().que_suis_je()=="Fluide_Quasi_Compressible");
+  return (milieu().que_suis_je()=="Fluide_Quasi_Compressible" || milieu().que_suis_je()=="Fluide_Weakly_Compressible");
 }
 
 // Description:

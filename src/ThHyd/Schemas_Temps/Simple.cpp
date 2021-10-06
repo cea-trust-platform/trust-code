@@ -33,7 +33,7 @@
 #include <Schema_Temps_base.h>
 #include <DoubleTrav.h>
 #include <Schema_Euler_Implicite.h>
-#include <Fluide_Quasi_Compressible.h>
+#include <Fluide_Dilatable_base.h>
 #include <Probleme_base.h>
 #include <MD_Vector_composite.h>
 #include <MD_Vector_tools.h>
@@ -87,8 +87,8 @@ Entree& Simple::lire(const Motcle& motlu,Entree& is)
 
 void diviser_par_rho_np1_face(Equation_base& eqn,DoubleTab& tab)
 {
-  Fluide_Quasi_Compressible& fluide_QC = ref_cast(Fluide_Quasi_Compressible,eqn.milieu());
-  const DoubleTab& rho = fluide_QC.rho_face_np1();
+  Fluide_Dilatable_base& fluide_dil = ref_cast(Fluide_Dilatable_base,eqn.milieu());
+  const DoubleTab& rho = fluide_dil.rho_face_np1();
   int nbdim = tab.nb_dim();
   int taille_0_tot = tab.dimension_tot(0);
 
@@ -524,7 +524,7 @@ void Simple::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression
   DoubleTrav correction_en_pression(pression);
   DoubleTrav correction_en_vitesse(current);
   DoubleTrav resu(current);
-  int is_QC = eqn.probleme().is_QC();
+  int is_dilat = eqn.probleme().is_dilatable();
 
   //int deux_entrees = 0;
   //if (current.nb_dim()==2) deux_entrees = 1;
@@ -565,12 +565,12 @@ void Simple::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression
   solveur_pression_.valeur().reinit();
 
   //Calcul de secmem = BU* (en incompressible) BU* -drho/dt (en quasi-compressible)
-  if (is_QC)
+  if (is_dilat)
     {
       if (with_d_rho_dt_)
         {
-          Fluide_Quasi_Compressible& fluide_QC = ref_cast(Fluide_Quasi_Compressible,eqn.milieu());
-          fluide_QC.secmembre_divU_Z(secmem);
+          Fluide_Dilatable_base& fluide_dil = ref_cast(Fluide_Dilatable_base,eqn.milieu());
+          fluide_dil.secmembre_divU_Z(secmem);
           secmem *= -1;
         }
       else secmem = 0;
@@ -600,7 +600,7 @@ void Simple::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression
 
   current += correction_en_vitesse;
 
-  if (is_QC)
+  if (is_dilat)
     diviser_par_rho_np1_face(eqn,current);
 
 }

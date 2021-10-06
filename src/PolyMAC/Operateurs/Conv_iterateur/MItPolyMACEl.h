@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -954,7 +954,7 @@ modifier_flux() ;  						\
         const IntTab& face_voisins=la_zone_vdf.face_voisins();                \
         int rho_uniforme=(sub_type(Champ_Uniforme,rho) ? 1:0); \
         int cp_uniforme=(sub_type(Champ_Uniforme,Cp.valeur()) ? 1:0); \
-        int is_rho_u=op_base->equation().probleme().is_QC();                \
+        int is_rho_u=op_base->equation().probleme().is_dilatable();                \
         if (is_rho_u)                                                   \
           {                                                                \
             const Operateur_base& op=op_base.valeur();                        \
@@ -977,7 +977,7 @@ modifier_flux() ;  						\
             else                                                        \
               if (rho.nb_comp()==1) rho_=rho(num_elem);                        \
               else rho_=rho(num_elem,0);                                \
-            /* si on est en QC temperature on a calcule div(rhou * T) */ \
+            /* si on est en QC/WC temperature on a calcule div(rhou * T) */ \
             /* il ne faut pas remultiplier par rho */                        \
             if (is_rho_u) rho_=1;                                        \
             flux_bords(face,0) *= (rho_*Cp_);                                \

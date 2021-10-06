@@ -99,7 +99,7 @@ void DP_Impose_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
   for (int i = 0; i < num_faces.size(); i++) for (int j = 0; j < dimension; j++) xvf(i, j) = zone_CoviMAC.xv()(num_faces(i), j);
   DP_.valeur().valeur_aux(xvf, DP);
 
-  double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_QC() ? 1.0 : 1.0 / rho;
+  double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;
 
   for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_CoviMAC.nb_faces())
       {

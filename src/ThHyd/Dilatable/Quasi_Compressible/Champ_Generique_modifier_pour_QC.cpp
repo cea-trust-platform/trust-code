@@ -22,7 +22,7 @@
 
 #include <Champ_Generique_modifier_pour_QC.h>
 #include <Postraitement.h>
-#include <Modifier_pour_QC.h>
+#include <Modifier_pour_fluide_dilatable.h>
 #include <Equation_base.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Param.h>

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -163,7 +163,7 @@ public:
   Domaine& domaine();
   const Domaine_dis& domaine_dis() const;
   Domaine_dis& domaine_dis();
-  int is_QC() const;
+  int is_dilatable() const;
 
   virtual int allocate_file_size(long int& size) const;
   virtual int file_size_xyz() const;

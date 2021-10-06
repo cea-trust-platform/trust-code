@@ -391,7 +391,7 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
       type = type_operateur;
       Nom disc = eqn.discretisation().que_suis_je();
 
-      int isQC=eqn.probleme().is_QC();
+      int isQC=eqn.probleme().is_dilatable();
 
       if ((isQC) && ((eqn.que_suis_je()!="Transport_K_Eps")
                      && (eqn.que_suis_je()!="Transport_K_Eps_Bas_Reynolds")

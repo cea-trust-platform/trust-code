@@ -32,11 +32,11 @@ class Zone_VF;
 //
 // Cette classe represente un terme source supplementaire
 // a prendre en compte dans les equations de la chaleur
-//  dans le cas ou le fluide est quasi compressible et pour
+//  dans le cas ou le fluide est weakly compressible et pour
 //  une discretisation VEF
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_WC_Chaleur
+// Source_base Fluide_Weakly_Compressible Source_WC_Chaleur
 //
 //////////////////////////////////////////////////////////////////////////////
 

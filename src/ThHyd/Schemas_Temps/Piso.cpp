@@ -30,7 +30,7 @@
 #include <Statistiques.h>
 #include <Schema_Temps_base.h>
 #include <DoubleTrav.h>
-#include <Fluide_Quasi_Compressible.h>
+#include <Fluide_Dilatable_base.h>
 #include <Dirichlet.h>
 #include <Probleme_base.h>
 
@@ -145,7 +145,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   DoubleTrav gradP(current);
   DoubleTrav correction_en_pression(pression);
   DoubleTrav resu(current);
-  int is_QC = eqn.probleme().is_QC();
+  int is_dilat = eqn.probleme().is_dilatable();
 
   double vitesse_norme,vitesse_norme_old ;
   double pression_norme,pression_norme_old ;
@@ -245,12 +245,12 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   Debog::verifier("Piso::iterer_NS current apres solveur",current);
 
   //Calcul de secmem = BU* (en incompressible) BU* -drho/dt (en quasi-compressible)
-  if (is_QC)
+  if (is_dilat)
     {
       if (with_d_rho_dt_)
         {
-          Fluide_Quasi_Compressible& fluide_QC = ref_cast(Fluide_Quasi_Compressible,eqn.milieu());
-          fluide_QC.secmembre_divU_Z(secmem);
+          Fluide_Dilatable_base& fluide_dil = ref_cast(Fluide_Dilatable_base,eqn.milieu());
+          fluide_dil.secmembre_divU_Z(secmem);
           secmem *= -1;
         }
       else secmem = 0;
@@ -317,7 +317,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       pression.echange_espace_virtuel();
       Debog::verifier("Piso::iterer_NS pression finale",pression);
       Debog::verifier("Piso::iterer_NS current final",current);
-      if (is_QC)
+      if (is_dilat)
         {
           // on redivise par rho_np_1 avant de sortir
           diviser_par_rho_np1_face(eqn,current);
@@ -390,7 +390,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       if ( (vitesse_norme>vitesse_norme_old) || (pression_norme>pression_norme_old) )
         {
           Cout <<"PISO : "<< compt+1 <<" corrections to perform the projection."<< finl;
-          if (is_QC)
+          if (is_dilat)
             {
               // on redivise par rho_np_1 avant de sortir
               diviser_par_rho_np1_face(eqn,current);
@@ -412,7 +412,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       Debog::verifier("Piso::iterer_NS apres correction pression",pression);
       Debog::verifier("Piso::iterer_NS apres correction vitesse",current);
     }
-  if (is_QC)
+  if (is_dilat)
     {
       diviser_par_rho_np1_face(eqn,current);
       //ref_cast(Navier_Stokes_QC,eqn).impr_impl(eqnNS, Cout);

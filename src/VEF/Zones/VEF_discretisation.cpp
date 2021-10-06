@@ -40,7 +40,6 @@
 #include <Tetra_VEF.h>
 #include <Quadri_VEF.h>
 #include <Hexa_VEF.h>
-#include <Fluide_Quasi_Compressible.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Fonc_Q1NC.h>
 #include <Schema_Temps.h>

@@ -14,47 +14,31 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Dilatable_base.h
+// File:        Modifier_pour_fluide_dilatable.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common
-// Version:     /main/9
+// Version:     /main/3
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Pb_Dilatable_base_included
-#define Pb_Dilatable_base_included
-
-#include <Ref_Fluide_Dilatable_base.h>
-#include <Pb_Fluide_base.h>
-
-class Fluide_Dilatable_base;
+#ifndef Modifier_pour_fluide_dilatable
+#define Modifier_pour_fluide_dilatable
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Pb_Dilatable_base
-//    Cette classe est censee factoriser ce qui est commun a l'ensemble
-//    des problemes dilatables.
+//     Fonctions destinees a multiplier ou diviser un tableau de valeurs par un vecteur.
+//     Ces fonctions sont utilisees ici pour multiplier ou diviser un tableau par rho
+//     pour le cas ou le milieu est un Fluide_Dilatable_base
 //
-// .SECTION voir Pb_Fluide_base
-//
+// .SECTION
 //////////////////////////////////////////////////////////////////////////////
 
-class Pb_Dilatable_base : public Pb_Fluide_base
-{
-  Declare_base(Pb_Dilatable_base);
+class Fluide_Dilatable_base;
+class Milieu_base;
+class DoubleVect;
 
-public:
-  virtual bool initTimeStep(double dt);
-  virtual void preparer_calcul();
-  virtual void mettre_a_jour(double temps); // Ne met a jour que les postraitements
-  virtual void associer_milieu_base(const Milieu_base& );
-  virtual void associer_sch_tps_base(const Schema_Temps_base&);
-  virtual void update_pressure_fields(double );
-  virtual bool iterateTimeStep(bool& converged);
-  virtual void solve_pressure_thermo() = 0;
+void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Dilatable_base& le_fluide,int diviser=0);
+void diviser_par_rho_si_dilatable(DoubleVect& val,const Milieu_base& mil);
+void multiplier_par_rho_si_dilatable(DoubleVect& val,const Milieu_base& mil);
 
-protected :
-  REF(Fluide_Dilatable_base) le_fluide_;
-};
-
-#endif /* Pb_Dilatable_base_included */
+#endif /* Modifier_pour_fluide_dilatable */

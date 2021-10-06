@@ -33,11 +33,11 @@
 //
 // Cette classe represente un terme source supplementaire
 // a prendre en compte dans les equations de quantite de mouvement
-//  dans le cas ou le fluide est quasi compressible, en cas de gravite, et pour
+//  dans le cas ou le fluide est weakly compressible, en cas de gravite, et pour
 //  une discretisation VEF.
 //
 // .SECTION voir aussi
-// Source_base Fluide_Quasi_Compressible Source_Gravite_Fluide_Dilatable_base
+// Source_base Fluide_Weakly_Compressible Source_Gravite_Fluide_Dilatable_base
 //
 //////////////////////////////////////////////////////////////////////////////
 

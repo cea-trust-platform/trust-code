@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -172,7 +172,7 @@ int Schema_Implicite_Multi_TimeStep_base::Iterer_Pb(Probleme_base& pb,int ite)
   int  ii              = 0;
   bool convergence_pb  = true;
   bool convergence_eqn = false;
-  int  drap            = (pb.milieu().que_suis_je()=="Fluide_Quasi_Compressible");
+  int  drap = pb.is_dilatable();
 
   for(i=0; i<pb.nombre_d_equations(); i++)
     {

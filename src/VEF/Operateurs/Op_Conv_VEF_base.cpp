@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
 #include <DoubleTrav.h>
 #include <Discretisation_base.h>
 #include <Champ.h>
-#include <Modifier_pour_QC.h>
+#include <Modifier_pour_fluide_dilatable.h>
 
 Implemente_base(Op_Conv_VEF_base,"Op_Conv_VEF_base",Operateur_Conv_base);
 
@@ -77,7 +77,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
   remplir_fluent(fluent);
   if (vitesse().le_nom()=="rho_u")
-    diviser_par_rho_si_qc(fluent,equation().milieu());
+    diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
   double dt_face,dt_stab =1.e30;
 
@@ -129,7 +129,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   Op_Conv_VEF_base& op = ref_cast_non_const(Op_Conv_VEF_base,*this);
   op.fixer_dt_stab_conv(dt_stab);
   if (vitesse().le_nom()=="rho_u")
-    multiplier_par_rho_si_qc(fluent,equation().milieu());
+    multiplier_par_rho_si_dilatable(fluent,equation().milieu());
 
   return dt_stab;
 }
@@ -151,7 +151,7 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
           double dt_face;
           remplir_fluent(fluent);
           if (vitesse().le_nom()=="rho_u")
-            diviser_par_rho_si_qc(fluent,equation().milieu());
+            diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
           // On traite les conditions aux limites
           // Si une face porte une condition de Dirichlet on n'en tient pas compte
@@ -198,7 +198,7 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
 
           assert(mp_min_vect(es_valeurs)==calculer_dt_stab());
           if (vitesse().le_nom()=="rho_u")
-            multiplier_par_rho_si_qc(fluent,equation().milieu());
+            multiplier_par_rho_si_dilatable(fluent,equation().milieu());
         }
     }
   else

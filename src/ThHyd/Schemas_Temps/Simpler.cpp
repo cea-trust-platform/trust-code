@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -156,7 +156,7 @@ int inverser_par_diagonale(const Matrice_Morse& matrice,const DoubleTrav& resu,c
 
 void Simpler::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,double dt,Matrice_Morse& matrice,double seuil_resol,DoubleTrav& secmem,int nb_ite,int& converge)
 {
-  if (eqn.probleme().is_QC())
+  if (eqn.probleme().is_dilatable())
     {
       Cerr<<" Simpler cannot be used with a quasi-compressible fluid."<<finl;
       Cerr<<__FILE__<<(int)__LINE__<<" non code" <<finl;

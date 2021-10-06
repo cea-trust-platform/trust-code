@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 #include <DoubleTrav.h>
 #include <Discretisation_base.h>
 #include <Champ.h>
-#include <Modifier_pour_QC.h>
+#include <Modifier_pour_fluide_dilatable.h>
 
 Implemente_base(Op_Conv_PolyMAC_iterateur_base,"Op_Conv_PolyMAC_iterateur_base",Operateur_Conv_base);
 
@@ -118,7 +118,7 @@ double Op_Conv_PolyMAC_iterateur_base::calculer_dt_stab() const
 
   // Calcul du pas de temps de stabilite a partir du tableau fluent
   if (vitesse().le_nom()=="rho_u")
-    diviser_par_rho_si_qc(fluent,equation().milieu());
+    diviser_par_rho_si_dilatable(fluent,equation().milieu());
   double dt_stab = 1.e30;
   int zone_PolyMAC_nb_elem=zone_PolyMAC.nb_elem();
   // dt_stab = min ( 1 / ( |U|/dx + |V|/dy + |W|/dz ) )
@@ -199,7 +199,7 @@ void Op_Conv_PolyMAC_iterateur_base::calculer_pour_post(Champ& espace_stockage,c
         }
       //fluent.echange_espace_virtuel();
       if (vitesse().le_nom()=="rho_u")
-        diviser_par_rho_si_qc(fluent,equation().milieu());
+        diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
       int zone_PolyMAC_nb_elem=zone_PolyMAC.nb_elem();
       for (int num_poly=0; num_poly<zone_PolyMAC_nb_elem; num_poly++)

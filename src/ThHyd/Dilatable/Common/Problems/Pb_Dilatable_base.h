@@ -14,32 +14,47 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Modifier_pour_QC.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Quasi_Compressible
-// Version:     /main/3
+// File:        Pb_Dilatable_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common/Problems
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Pb_Dilatable_base_included
+#define Pb_Dilatable_base_included
 
-#ifndef Modifier_pour_QC
-#define Modifier_pour_QC
+#include <Ref_Fluide_Dilatable_base.h>
+#include <Pb_Fluide_base.h>
+
+class Fluide_Dilatable_base;
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     Fonctions destinees a multiplier ou diviser un tableau de valeurs par un vecteur.
-//     Ces fonctions sont utilisees ici pour multiplier ou diviser un tableau par rho
-//     pour le cas ou le milieu est un Fluide_Quasi_Compressible
+//    classe Pb_Dilatable_base
+//    Cette classe est censee factoriser ce qui est commun a l'ensemble
+//    des problemes dilatables.
 //
-// .SECTION
+// .SECTION voir Pb_Fluide_base
+//
 //////////////////////////////////////////////////////////////////////////////
 
-class DoubleVect;
-class Milieu_base;
-class Fluide_Quasi_Compressible;
+class Pb_Dilatable_base : public Pb_Fluide_base
+{
+  Declare_base(Pb_Dilatable_base);
 
-void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Quasi_Compressible& le_fluide,int diviser=0);
-void diviser_par_rho_si_qc(DoubleVect& val,const Milieu_base& mil);
-void multiplier_par_rho_si_qc(DoubleVect& val,const Milieu_base& mil);
+public:
+  virtual bool initTimeStep(double dt);
+  virtual void preparer_calcul();
+  virtual void mettre_a_jour(double temps); // Ne met a jour que les postraitements
+  virtual void associer_milieu_base(const Milieu_base& );
+  virtual void associer_sch_tps_base(const Schema_Temps_base&);
+  virtual void update_pressure_fields(double );
+  virtual bool iterateTimeStep(bool& converged);
+  virtual void solve_pressure_thermo() = 0;
 
-#endif
+protected :
+  REF(Fluide_Dilatable_base) le_fluide_;
+};
+
+#endif /* Pb_Dilatable_base_included */

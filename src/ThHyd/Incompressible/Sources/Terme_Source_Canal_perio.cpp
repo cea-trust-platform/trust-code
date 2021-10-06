@@ -245,7 +245,7 @@ void Terme_Source_Canal_perio::write_flow_rate(const Nom& ext_nom_source_, doubl
   // on met des commentaires dans l'entete du fichier
   if ((tps <= (tps_init+dt)) && premiere_ecriture)
     {
-      if (equation().probleme().is_QC()==1)
+      if (equation().probleme().is_dilatable()==1)
         flow_rate_file_ << "# Time t     Flow rate Q(t) in [kg.s-1] if SI units used" << finl;
       else
         flow_rate_file_ << "# Time t     Flow rate Q(t) in [m3.s-1] if SI units used" << finl;
@@ -421,7 +421,7 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
         }
       if (sub_type(Convection_Diffusion_std,equation()))
         {
-          if (equation().probleme().is_QC())
+          if (equation().probleme().is_dilatable())
             {
               Cerr << "Source term not validated yet for Quasi Compressible formulation." << finl;
               Cerr << "Contact TRUST support." << finl;
@@ -484,7 +484,7 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
                 }
               if ((tps <= (tps_init+dt)) && premiere_ecriture)
                 {
-                  if (equation().probleme().is_QC()==1)
+                  if (equation().probleme().is_dilatable()==1)
                     pressure_gradient_file_ << "# Time t     gradP(t)      gradP(t)-gradP(t-dt) in [kg.s-2.m-2] if SI units used" << finl;
                   else
                     pressure_gradient_file_ << "# Time t     gradP(t)      gradP(t)-gradP(t-dt) in [m.s-2] if SI units used" << finl;
@@ -502,7 +502,7 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
                 }
               if ((tps <= (tps_init+dt)) && premiere_ecriture)
                 {
-                  if (equation().probleme().is_QC()==1)
+                  if (equation().probleme().is_dilatable()==1)
                     restart_file_ << "# Time t       Flow rate Q(t)    Flow rate Q(0) in [kg.s-1]   gradP(t) in [kg.s-2.m-2] if SI units used" << finl;
                   else
                     restart_file_ << "# Time t       Flow rate Q(t)    Flow rate Q(0) in [m3.s-1]   gradP(t) in [m.s-2] if SI units used" << finl;

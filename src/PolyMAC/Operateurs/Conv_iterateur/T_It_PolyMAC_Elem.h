@@ -1055,7 +1055,7 @@ template <class _TYPE_>  void  T_It_PolyMAC_Elem<_TYPE_>::modifier_flux() const
       const IntTab& face_voisins=la_zone_vdf.face_voisins();
       int rho_uniforme=(sub_type(Champ_Uniforme,rho) ? 1:0);
       int cp_uniforme=(sub_type(Champ_Uniforme,Cp.valeur()) ? 1:0);
-      int is_rho_u=op_base->equation().probleme().is_QC();
+      int is_rho_u=op_base->equation().probleme().is_dilatable();
       if (is_rho_u)
         {
           const Operateur_base& op=op_base.valeur();

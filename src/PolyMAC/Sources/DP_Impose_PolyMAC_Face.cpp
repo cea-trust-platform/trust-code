@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,7 +97,7 @@ DoubleTab& DP_Impose_PolyMAC_Face::ajouter(DoubleTab& resu) const
   for (int i = 0; i < num_faces.size(); i++) for (int j = 0; j < dimension; j++) xvf(i, j) = zone_PolyMAC.xv()(num_faces(i), j);
   DP_.valeur().valeur_aux(xvf, DP);
 
-  double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_QC() ? 1.0 : 1.0 / rho;
+  double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;
 
   for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
       resu(f) += fs(f) * pf(f) * sgn(i) * (DP(i, 0) + DP(i, 1) * (surf * sgn(i) * vit(f) - DP(i, 2))) * fac_rho;
@@ -120,7 +120,7 @@ void DP_Impose_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Mo
   for (int i = 0; i < num_faces.size(); i++) for (int j = 0; j < dimension; j++) xvf(i, j) = zone_PolyMAC.xv()(num_faces(i), j);
   DP_.valeur().valeur_aux(xvf, DP);
 
-  double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_QC() ? 1.0 : 1.0 / rho;
+  double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;
   for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
       mat(f, f) -= fs(f) * pf(f) * DP(i, 1) * surf * fac_rho;
 }
