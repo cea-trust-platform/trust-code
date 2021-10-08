@@ -21,60 +21,22 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Fluide_Quasi_Compressible.h>
-#include <Loi_Fermeture_base.h>
-#include <Probleme_Couple.h>
-#include <Equation_base.h>
 #include <Pb_QC_base.h>
-#include <Domaine.h>
-#include <Debog.h>
 
 Implemente_base(Pb_QC_base,"Pb_QC_base",Pb_Dilatable_base);
 
-Sortie& Pb_QC_base::printOn(Sortie& os) const
-{
-  return Pb_Dilatable_base::printOn(os);
-}
+Sortie& Pb_QC_base::printOn(Sortie& os) const { return Pb_Dilatable_base::printOn(os); }
 
-Entree& Pb_QC_base::readOn(Entree& is)
-{
-  return Pb_Dilatable_base::readOn(is);
-}
+Entree& Pb_QC_base::readOn(Entree& is) { return Pb_Dilatable_base::readOn(is); }
 
 void Pb_QC_base::associer_milieu_base(const Milieu_base& mil)
 {
-  if (sub_type(Fluide_Quasi_Compressible,mil))
-    {
-      Pb_Dilatable_base::associer_milieu_base(mil);
-    }
+  if (sub_type(Fluide_Quasi_Compressible,mil)) Pb_Dilatable_base::associer_milieu_base(mil);
   else
     {
-      Cerr << "Un milieu de type " << mil.que_suis_je()
-           << " ne peut etre associe a "<< finl
-           << "un probleme quasi-compressible" << finl;
+      Cerr << "Un milieu de type " << mil.que_suis_je() << " ne peut etre associe a un probleme Quasi Compressible !" << finl;
       Process::exit();
     }
-}
-
-void Pb_QC_base::preparer_calcul()
-{
-  Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,milieu());
-
-  if (le_fluide.type_fluide()=="Gaz_Reel") equation(1).inconnue()->nommer("temperature");
-  if (le_fluide.type_fluide()=="Melange_Binaire") equation(1).inconnue()->nommer("fraction_massique");
-
-  le_fluide.completer(*this);
-  le_fluide.preparer_calcul();
-  Pb_Dilatable_base::preparer_calcul();
-  le_fluide.calculer_masse_volumique();
-  le_fluide.preparer_calcul();
-}
-
-bool Pb_QC_base::initTimeStep(double dt)
-{
-  bool ok = Pb_Dilatable_base::initTimeStep(dt);
-  Fluide_Quasi_Compressible& le_fluide = ref_cast(Fluide_Quasi_Compressible,le_fluide_.valeur());
-  le_fluide.preparer_pas_temps();
-  return ok;
 }
 
 void Pb_QC_base::solve_pressure_thermo()

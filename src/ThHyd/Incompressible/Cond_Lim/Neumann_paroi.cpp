@@ -30,40 +30,11 @@
 
 Implemente_instanciable(Neumann_paroi,"Neumann_paroi",Neumann);
 
-
-// Description:
-//    Ecrit le type de l'objet sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Neumann_paroi::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
 }
 
-// Description:
-//    Simple appel a: Cond_lim_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree& s
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Neumann_paroi::readOn(Entree& s )
 {
   return Cond_lim_base::readOn(s) ;
@@ -92,13 +63,10 @@ Entree& Neumann_paroi::readOn(Entree& s )
 int Neumann_paroi::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
-  Motcle Thermique="Thermique";
-  Motcle Diphasique="diphasique_moyenne";
-  Motcle indetermine="indetermine";
-  Motcle Concentration="Concentration";
-  Motcle FracMass="fraction_massique";
+  Motcle Thermique="Thermique", Thermique_H ="Thermique_H",Diphasique="diphasique_moyenne";
+  Motcle indetermine="indetermine",Concentration="Concentration",FracMass="fraction_massique";
 
-  if ( (dom_app==Thermique) || (dom_app==Diphasique) || (dom_app==indetermine)
+  if ( (dom_app==Thermique) || (dom_app==Thermique_H) || (dom_app==Diphasique) || (dom_app==indetermine)
        || (dom_app==Concentration) || (dom_app==FracMass))
     return 1;
   else
@@ -126,7 +94,7 @@ double Neumann_paroi::flux_impose(int i) const
     return le_champ_front(i,0);
   else
     Cerr << "Neumann_paroi::flux_impose erreur" << finl;
-  exit();
+  Process::exit();
   return 0.;
 }
 

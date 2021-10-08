@@ -33,42 +33,8 @@
 
 Implemente_instanciable(Source_QC_QDM_Gen,"Source_QC_QDM_Gen_QC",Source_base);
 
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Imprime la source sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& Source_QC_QDM_Gen::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Source_QC_QDM_Gen::printOn(Sortie& os) const { return os; }
 
-// Description:
-//    NE FAIT RIEN
-//    A surcharger dans les classes derivees.
-//    Lecture d'un terme source sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot d'entree est modifie
-// Postcondition:
 Entree& Source_QC_QDM_Gen::readOn(Entree& is)
 {
   Nom typ_complet;
@@ -78,6 +44,7 @@ Entree& Source_QC_QDM_Gen::readOn(Entree& is)
   Process::exit();
   return is;
 }
+
 // Desciption: methode appele par les classes filles
 // pour typer le terme source
 Entree& Source_QC_QDM_Gen::readOn_spec(Entree& is,Nom& typ)
@@ -87,6 +54,7 @@ Entree& Source_QC_QDM_Gen::readOn_spec(Entree& is,Nom& typ)
   is >> source_incompressible.valeur();
   return is;
 }
+
 DoubleTab& Source_QC_QDM_Gen::ajouter(DoubleTab& resu) const
 {
   DoubleTrav trav(resu);

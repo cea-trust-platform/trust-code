@@ -21,123 +21,33 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Pb_Thermohydraulique_QC.h>
-#include <Verif_Cl.h>
 
 Implemente_instanciable(Pb_Thermohydraulique_QC,"Pb_Thermohydraulique_QC",Pb_QC_base);
 
-Sortie& Pb_Thermohydraulique_QC::printOn(Sortie& os) const
-{
-  return Probleme_base::printOn(os);
-}
+Sortie& Pb_Thermohydraulique_QC::printOn(Sortie& os) const { return Probleme_base::printOn(os); }
 
-Entree& Pb_Thermohydraulique_QC::readOn(Entree& is)
-{
-  return Probleme_base::readOn(is);
-}
+Entree& Pb_Thermohydraulique_QC::readOn(Entree& is) { return Probleme_base::readOn(is); }
 
 // Description:
-//    Renvoie le nombre d'equation,
-//    Renvoie 2 car il y a 2 equations a un probleme de
-//    thermo-hydraulique standard:
-//        l'equation de Navier Stokes
-//        l' equation de la thermique de type Convection_Diffusion_Temperature
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'equation
-//    Contraintes: toujours 2 car il y a 2 equations au probleme
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-int Pb_Thermohydraulique_QC::nombre_d_equations() const
-{
-  return 2;
-}
+//    Renvoie 2 car il y a 2 equations : Navier_Stokes_QC et Convection_Diffusion_Chaleur_QC
+int Pb_Thermohydraulique_QC::nombre_d_equations() const { return 2; }
 
 // Description:
 //    Renvoie l'equation d'hydraulique de type Navier_Stokes_QC si i=0
-//    Renvoie l'equation de la thermique de type
-//    Convection_Diffusion_Chaleur_QC si i=1
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: 0 <= i <= 1
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation correspondante a l'index
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+//    Renvoie l'equation de la thermique de type Convection_Diffusion_Chaleur_QC si i=1
 const Equation_base& Pb_Thermohydraulique_QC::equation(int i) const
 {
-  if ( !( i==0 || i==1 ) )
-    {
-      Cerr << "\nError in Pb_Thermohydraulique_QC::equation() : Wrong number of equation !" << finl;
-      Process::exit();
-    }
-  if (i == 0)
-    return eq_hydraulique;
-  else
-    return eq_thermique;
+  return equation_impl(i,eq_hydraulique,eq_thermique);
 }
 
-// Description:
-//    Renvoie l'equation d'hydraulique de type Navier_Stokes_QC si i=0
-//    Renvoie l'equation de la thermique de type
-//    Convection_Diffusion_Chaleur_QC si i=1
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: 0 <= i <= 1
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation correspondante a l'index
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Equation_base& Pb_Thermohydraulique_QC::equation(int i)
 {
-  if ( !( i==0 || i==1 ) )
-    {
-      Cerr << "\nError in Pb_Thermohydraulique_QC::equation() : Wrong number of equation !" << finl;
-      Process::exit();
-    }
-  if (i == 0)
-    return eq_hydraulique;
-  else
-    return eq_thermique;
+  return equation_impl(i,eq_hydraulique,eq_thermique);
 }
 
 // Description:
-//    Teste la compatibilite des equations de la thermique
-//    et de l'hydraulique. Le test se fait sur les conditions
-//    aux limites discretisees de chaque equation.
-//    Appel la fonction de librairie hors classe:
-//      tester_compatibilite_hydr_thermique(const Zone_Cl_dis&,const Zone_Cl_dis&)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+//    Teste la compatibilite des equations de la thermique et de l'hydraulique.
 int Pb_Thermohydraulique_QC::verifier()
 {
-  const Zone_Cl_dis& zone_Cl_hydr = eq_hydraulique.zone_Cl_dis();
-  const Zone_Cl_dis& zone_Cl_th = eq_thermique.zone_Cl_dis();
-  return tester_compatibilite_hydr_thermique(zone_Cl_hydr,zone_Cl_th);
+  return verifier_impl(eq_hydraulique,eq_thermique, true /* is_thermal */);
 }

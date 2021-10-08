@@ -14,40 +14,33 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Pb_Thermohydraulique_WC.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Weakly_Compressible/Problems
-// Version:     /main/15
+// File:        Source_Fluide_Dilatable_VDF_Proto.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common/VDF
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Pb_Thermohydraulique_WC.h>
+#ifndef Source_Fluide_Dilatable_VDF_Proto_included
+#define Source_Fluide_Dilatable_VDF_Proto_included
 
-Implemente_instanciable(Pb_Thermohydraulique_WC,"Pb_Thermohydraulique_WC",Pb_WC_base);
+#include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Zone_VDF.h>
 
-Sortie& Pb_Thermohydraulique_WC::printOn(Sortie& os) const { return Probleme_base::printOn(os); }
+class Equation_base;
+class Zone_Cl_dis;
+class DoubleVect;
+class DoubleTab;
+class Zone_dis;
 
-Entree& Pb_Thermohydraulique_WC::readOn(Entree& is) { return Probleme_base::readOn(is); }
-
-// Description:
-//    Renvoie 2 car il y a 2 equations : Navier_Stokes_WC et Convection_Diffusion_Chaleur_WC
-int Pb_Thermohydraulique_WC::nombre_d_equations() const { return 2; }
-
-// Description:
-//    Renvoie l'equation d'hydraulique de type Navier_Stokes_WC si i=0
-//    Renvoie l'equation de la thermique de type Convection_Diffusion_Chaleur_WC si i=1
-const Equation_base& Pb_Thermohydraulique_WC::equation(int i) const
+class Source_Fluide_Dilatable_VDF_Proto
 {
-  return equation_impl(i,eq_hydraulique,eq_thermique);
-}
+protected:
+  void associer_zones_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl);
+  void associer_volume_porosite_impl(const Zone_dis& zone, DoubleVect& volumes, DoubleVect& porosites);
+  void ajouter_impl( const DoubleVect& g, const double rho_m, const DoubleTab& tab_rho, DoubleTab& resu) const;
 
-Equation_base& Pb_Thermohydraulique_WC::equation(int i)
-{
-  return equation_impl(i,eq_hydraulique,eq_thermique);
-}
+  REF(Zone_Cl_VDF) la_zone_Cl;
+  REF(Zone_VDF) la_zone;
+};
 
-// Description:
-//    Teste la compatibilite des equations de la thermique et de l'hydraulique.
-int Pb_Thermohydraulique_WC::verifier()
-{
-  return verifier_impl(eq_hydraulique,eq_thermique, true /* is_thermal */);
-}
+#endif /* Source_Fluide_Dilatable_VDF_Proto_included */

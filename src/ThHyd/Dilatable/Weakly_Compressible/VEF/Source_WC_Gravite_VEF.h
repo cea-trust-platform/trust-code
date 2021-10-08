@@ -24,8 +24,7 @@
 #define Source_WC_Gravite_VEF_included
 
 #include <Source_Gravite_Fluide_Dilatable_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Source_Fluide_Dilatable_VEF_Proto.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -41,7 +40,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_WC_Gravite_VEF : public Source_Gravite_Fluide_Dilatable_base
+class Source_WC_Gravite_VEF : public Source_Gravite_Fluide_Dilatable_base,
+  public Source_Fluide_Dilatable_VEF_Proto
 {
   Declare_instanciable(Source_WC_Gravite_VEF);
 
@@ -50,8 +50,6 @@ public:
 
 protected :
   void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
-  REF(Zone_VEF) la_zone;
-  REF(Zone_Cl_VEF) la_zone_Cl;
 };
 
 #endif /* Source_WC_Gravite_VEF_included */

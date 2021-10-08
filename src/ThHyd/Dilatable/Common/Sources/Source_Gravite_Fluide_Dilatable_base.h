@@ -24,12 +24,12 @@
 #ifndef Source_Gravite_Fluide_Dilatable_base_included
 #define Source_Gravite_Fluide_Dilatable_base_included
 
-#include <Source_base.h>
 #include <Ref_Fluide_Dilatable_base.h>
+#include <Source_base.h>
 
-class Zone_dis;
 class Zone_Cl_dis;
 class DoubleTab;
+class Zone_dis;
 
 //////////////////////////////////////////////////////////////////////////////
 //

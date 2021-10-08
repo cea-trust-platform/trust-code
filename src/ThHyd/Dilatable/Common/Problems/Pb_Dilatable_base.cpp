@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Pb_Dilatable_base.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Fluide_Dilatable_base/Quasi_Compressible/Problems
+// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common/Problems
 // Version:     /main/19
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -36,15 +36,9 @@
 
 Implemente_base(Pb_Dilatable_base,"Pb_Dilatable_base",Pb_Fluide_base);
 
-Sortie& Pb_Dilatable_base::printOn(Sortie& os) const
-{
-  return Pb_Fluide_base::printOn(os);
-}
+Sortie& Pb_Dilatable_base::printOn(Sortie& os) const { return Pb_Fluide_base::printOn(os); }
 
-Entree& Pb_Dilatable_base::readOn(Entree& is)
-{
-  return Pb_Fluide_base::readOn(is);
-}
+Entree& Pb_Dilatable_base::readOn(Entree& is) { return Pb_Fluide_base::readOn(is); }
 
 void Pb_Dilatable_base::associer_milieu_base(const Milieu_base& mil)
 {
@@ -72,12 +66,22 @@ void Pb_Dilatable_base::associer_sch_tps_base(const Schema_Temps_base& sch)
 
 void Pb_Dilatable_base::preparer_calcul()
 {
+  Fluide_Dilatable_base& le_fluide = ref_cast(Fluide_Dilatable_base,milieu());
+  if (le_fluide.type_fluide()=="Gaz_Reel") equation(1).inconnue()->nommer("temperature");
+  if (le_fluide.type_fluide()=="Melange_Binaire") equation(1).inconnue()->nommer("fraction_massique");
+
+  le_fluide.completer(*this);
+  le_fluide.preparer_calcul();
   Pb_Fluide_base::preparer_calcul();
+  le_fluide.calculer_masse_volumique();
+  le_fluide.preparer_calcul();
 }
 
 bool Pb_Dilatable_base::initTimeStep(double dt)
 {
-  return Pb_Fluide_base::initTimeStep(dt);
+  bool ok = Pb_Fluide_base::initTimeStep(dt);
+  le_fluide_->preparer_pas_temps();
+  return ok;
 }
 
 void Pb_Dilatable_base::mettre_a_jour(double temps)

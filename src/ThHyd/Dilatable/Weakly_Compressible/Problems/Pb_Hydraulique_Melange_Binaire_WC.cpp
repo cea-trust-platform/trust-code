@@ -21,154 +21,33 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Pb_Hydraulique_Melange_Binaire_WC.h>
-#include <Verif_Cl.h>
 
 Implemente_instanciable(Pb_Hydraulique_Melange_Binaire_WC,"Pb_Hydraulique_Melange_Binaire_WC",Pb_WC_base);
 
-// Description:
-//    Simple appel a: Probleme_base::printOn(Sortie&)
-//    Ecrit le probleme sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& Pb_Hydraulique_Melange_Binaire_WC::printOn(Sortie& os) const
-{
-  return Probleme_base::printOn(os);
-}
+Sortie& Pb_Hydraulique_Melange_Binaire_WC::printOn(Sortie& os) const { return Probleme_base::printOn(os); }
+
+Entree& Pb_Hydraulique_Melange_Binaire_WC::readOn(Entree& is) { return Probleme_base::readOn(is); }
 
 // Description:
-//    Simple appel a: Probleme_base::readOn(Entree&)
-//    Lit le probleme a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& Pb_Hydraulique_Melange_Binaire_WC::readOn(Entree& is)
-{
-  return Probleme_base::readOn(is);
-}
+//    Renvoie 2 car il y a 2 equations : Navier_Stokes_WC et Convection_Diffusion_Espece_Binaire_WC
+int Pb_Hydraulique_Melange_Binaire_WC::nombre_d_equations() const { return 2; }
 
 // Description:
-//    Renvoie le nombre d'equation,
-//    Renvoie 2 car il y a 2 equations a un probleme de
-//    Hydraulique Melange Binaire :
-//        l'equation de Navier Stokes
-//        l' equation de conv/diff fraction massique
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre d'equation
-//    Contraintes: toujours 2 car il y a 2 equations au probleme
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-int Pb_Hydraulique_Melange_Binaire_WC::nombre_d_equations() const
-{
-  return 2;
-}
-
-// Description:
-//    Renvoie l'equation d'hydraulique de type Navier_Stokes_QC si i=0
-//    Renvoie l'equation de conv/diff fraction massique de type
-//    Convection_Diffusion_Espece_Multi_QC si i=1
-//    (version const)
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: 0 <= i <= 1
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation correspondante a l'index
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+//    Renvoie l'equation d'hydraulique de type Navier_Stokes_WC si i=0
+//    Renvoie l'equation de conv/diff fraction massique de type Convection_Diffusion_Espece_Binaire_WC si i=1
 const Equation_base& Pb_Hydraulique_Melange_Binaire_WC::equation(int i) const
 {
-  if ( !( i==0 || i==1 ) )
-    {
-      Cerr << "\nError in Pb_Hydraulique_Melange_Binaire_WC::equation() : Wrong number of equation !" << finl;
-      Process::exit();
-    }
-  if (i == 0)
-    return eq_hydraulique;
-  else
-    return eq_frac_mass;
+  return equation_impl(i,eq_hydraulique,eq_frac_mass);
 }
 
-// Description:
-//    Renvoie l'equation d'hydraulique de type Navier_Stokes_QC si i=0
-//    Renvoie l'equation de conv/diff fraction massique de type
-//    Convection_Diffusion_Espece_Multi_QC si i=1
-// Precondition:
-// Parametre: int i
-//    Signification: l'index de l'equation a renvoyer
-//    Valeurs par defaut:
-//    Contraintes: 0 <= i <= 1
-//    Acces:
-// Retour: Equation_base&
-//    Signification: l'equation correspondante a l'index
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Equation_base& Pb_Hydraulique_Melange_Binaire_WC::equation(int i)
 {
-  if ( !( i==0 || i==1 ) )
-    {
-      Cerr << "\nError in Pb_Hydraulique_Melange_Binaire_WC::equation() : Wrong number of equation !" << finl;
-      Process::exit();
-    }
-  if (i == 0)
-    return eq_hydraulique;
-  else
-    return eq_frac_mass;
+  return equation_impl(i,eq_hydraulique,eq_frac_mass);
 }
 
 // Description:
-//    Teste la compatibilite des equations de la thermique
-//    et de l'hydraulique. Le test se fait sur les conditions
-//    aux limites discretisees de chaque equation.
-//    Appel la fonction de librairie hors classe:
-//      tester_compatibilite_hydr_concentration(const Zone_Cl_dis&,const Zone_Cl_dis&)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+//    Teste la compatibilite des equations de la fraction massique et de l'hydraulique.
 int Pb_Hydraulique_Melange_Binaire_WC::verifier()
 {
-  const Zone_Cl_dis& zone_Cl_hydr = eq_hydraulique.zone_Cl_dis();
-  const Zone_Cl_dis& zone_Cl_fm = eq_frac_mass.zone_Cl_dis();
-
-  return tester_compatibilite_hydr_fraction_massique(zone_Cl_hydr,zone_Cl_fm);
+  return verifier_impl(eq_hydraulique,eq_frac_mass,false /* is_thermal */);
 }

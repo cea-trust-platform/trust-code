@@ -33,6 +33,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Sources\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Problems\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/VEF\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable\
 	-I$(TRUST_ROOT)/src/ThSol\

@@ -20,13 +20,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Source_WC_Gravite_VDF.h>
 #include <Fluide_Weakly_Compressible.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
-#include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Zone_Cl_dis.h>
+#include <Source_WC_Gravite_VDF.h>
 
 Implemente_instanciable(Source_WC_Gravite_VDF,"Source_WC_Gravite_VDF",Source_Gravite_Fluide_Dilatable_base);
 
@@ -36,70 +31,17 @@ Sortie& Source_WC_Gravite_VDF::printOn(Sortie& os) const
   return os;
 }
 
-Entree& Source_WC_Gravite_VDF::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Source_WC_Gravite_VDF::readOn(Entree& is) { return is; }
 
-// Description:
-//    Remplit le tableau volumes
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 void Source_WC_Gravite_VDF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
 {
-  la_zone = ref_cast(Zone_VDF,zone.valeur());
-  la_zone_Cl = ref_cast(Zone_Cl_VDF,zone_cl.valeur());
+  associer_zones_impl(zone,zone_cl);
 }
 
-// Description:
-//    Ajoute les termes sources
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 DoubleTab& Source_WC_Gravite_VDF::ajouter(DoubleTab& resu) const
 {
-  int face, nb_faces = la_zone->nb_faces(), premiere_face_interne = la_zone->premiere_face_int();
-  const IntVect& orientation = la_zone->orientation();
-  const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
   const DoubleTab& tab_rho = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur()).rho_discvit();
-  const DoubleVect& porosite_surf=la_zone->porosite_face();
-
-  for (int num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
-    {
-      const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(num_cl);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int ndeb = le_bord.num_premiere_face();
-      int nfin = ndeb + le_bord.nb_faces();
-      if (sub_type(Dirichlet,la_cl.valeur()) || sub_type(Dirichlet_homogene,la_cl.valeur())) { /* Do nothing */ }
-      else
-        {
-          for (face=ndeb ; face<nfin ; face++)
-            resu(face) += tab_rho(face) * g(orientation(face)) * volumes_entrelaces(face) * porosite_surf(face);
-        }
-    }
-
-  for (face=premiere_face_interne ; face<nb_faces; face++)
-    resu(face) += tab_rho(face) * g(orientation(face)) * volumes_entrelaces(face) * porosite_surf(face);
-
+  ajouter_impl(g,0.,tab_rho,resu);
   return resu;
 }
 

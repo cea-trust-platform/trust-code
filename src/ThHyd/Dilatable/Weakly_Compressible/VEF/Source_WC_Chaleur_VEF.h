@@ -23,6 +23,7 @@
 #ifndef Source_WC_Chaleur_VEF_included
 #define Source_WC_Chaleur_VEF_included
 
+#include <Source_Fluide_Dilatable_VEF_Proto.h>
 #include <Source_WC_Chaleur.h>
 class Zone_VF;
 
@@ -40,7 +41,7 @@ class Zone_VF;
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_WC_Chaleur_VEF : public Source_WC_Chaleur
+class Source_WC_Chaleur_VEF : public Source_WC_Chaleur, public Source_Fluide_Dilatable_VEF_Proto
 {
   Declare_instanciable(Source_WC_Chaleur_VEF);
 

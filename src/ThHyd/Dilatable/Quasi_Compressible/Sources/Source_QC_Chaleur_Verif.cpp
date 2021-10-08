@@ -26,40 +26,12 @@
 Implemente_instanciable_sans_constructeur(Source_QC_Chaleur_Verif,"Source_QC_Chaleur_Verif_QC_VDF_P0_VDF",Source_Chaleur_Fluide_Dilatable_base);
 Source_QC_Chaleur_Verif::Source_QC_Chaleur_Verif() : mode(0) { }
 
-// Description:
-//    Imprime la source sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Source_QC_Chaleur_Verif::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
 }
 
-// Description:
-//    Lecture de la source sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Source_QC_Chaleur_Verif::readOn(Entree& is)
 {
   is >> mode;

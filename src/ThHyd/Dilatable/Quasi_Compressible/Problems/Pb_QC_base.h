@@ -41,8 +41,6 @@ class Pb_QC_base : public Pb_Dilatable_base
 {
   Declare_base(Pb_QC_base);
 public:
-  virtual bool initTimeStep(double dt);
-  virtual void preparer_calcul();
   virtual void associer_milieu_base(const Milieu_base& );
   virtual void solve_pressure_thermo();
 };

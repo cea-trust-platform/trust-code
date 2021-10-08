@@ -23,9 +23,10 @@
 #ifndef Pb_Thermohydraulique_QC_included
 #define Pb_Thermohydraulique_QC_included
 
-#include <Pb_QC_base.h>
-#include <Navier_Stokes_QC.h>
 #include <Convection_Diffusion_Chaleur_QC.h>
+#include <Pb_Dilatable_Proto.h>
+#include <Navier_Stokes_QC.h>
+#include <Pb_QC_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -40,14 +41,14 @@
 //     Probleme_base Navier_Stokes_QC Convection_Diffusion_Chaleur_QC
 //////////////////////////////////////////////////////////////////////////////
 
-class Pb_Thermohydraulique_QC : public Pb_QC_base
+class Pb_Thermohydraulique_QC : public Pb_QC_base, public Pb_Dilatable_Proto
 {
   Declare_instanciable(Pb_Thermohydraulique_QC);
 public:
+  int verifier();
   int nombre_d_equations() const;
   const Equation_base& equation(int) const ;
   Equation_base& equation(int);
-  int verifier();
 
 protected:
   Navier_Stokes_QC eq_hydraulique;

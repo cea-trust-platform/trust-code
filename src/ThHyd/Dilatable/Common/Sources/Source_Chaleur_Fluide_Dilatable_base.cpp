@@ -22,63 +22,21 @@
 
 #include <Source_Chaleur_Fluide_Dilatable_base.h>
 #include <Fluide_Dilatable_base.h>
-#include <Equation_base.h>
 #include <Schema_Temps_base.h>
+#include <Equation_base.h>
 
 Implemente_base(Source_Chaleur_Fluide_Dilatable_base,"Source_Chaleur_Fluide_Dilatable_base",Source_base);
 
-// Description:
-//    Imprime la source sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Source_Chaleur_Fluide_Dilatable_base::printOn(Sortie& os) const
 {
   return os;
 }
 
-// Description:
-//    Lecture de la source sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Source_Chaleur_Fluide_Dilatable_base::readOn(Entree& is)
 {
   return is;
 }
 
-// Description:
-//    Complete la source : rempli la ref sur le fluide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 void Source_Chaleur_Fluide_Dilatable_base::completer()
 {
   Cerr<<"Source_Chaleur_Fluide_Dilatable_base::completer()"<<finl;
@@ -86,22 +44,7 @@ void Source_Chaleur_Fluide_Dilatable_base::completer()
   le_fluide = ref_cast(Fluide_Dilatable_base,mon_equation->milieu());
 }
 
-// Description:
-//    Calcule la contrinution de cette source
-// Precondition:
-// Parametre: DoubleTab& resu
-//    Signification: flux
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le flux
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 DoubleTab& Source_Chaleur_Fluide_Dilatable_base::calculer(DoubleTab& resu) const
 {
   return ajouter(resu);
 }
-

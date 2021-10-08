@@ -14,42 +14,23 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Neumann_paroi_QC.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Quasi_Compressible/Cond_Lim
+// File:        Pb_Dilatable_Proto.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common/Problems
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Neumann_paroi_QC_included
-#define Neumann_paroi_QC_included
+#ifndef Pb_Dilatable_Proto_included
+#define Pb_Dilatable_Proto_included
 
+#include <Equation_base.h>
 
-
-#include <Neumann_paroi.h>
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe Neumann_paroi_QC
-//    Cette condition limite correspond a un flux impose pour l'equation de
-//    transport d'un scalaire. Ex: une paroi chauffante pour l'equation de
-//    transport de la temperature.
-//    Le flux impose est uniforme. Version Quasi compressible
-// .SECTION voir aussi
-//    Neumann_paroi
-//////////////////////////////////////////////////////////////////////////////
-class Neumann_paroi_QC : public Neumann_paroi
+class Pb_Dilatable_Proto
 {
-
-  Declare_instanciable(Neumann_paroi_QC);
-
-public :
-  int compatible_avec_eqn(const Equation_base&) const;
-  virtual double flux_impose(int i) const;
-  virtual double flux_impose(int i,int j) const;
+protected:
+  const Equation_base& equation_impl(int i, const Equation_base& eq1, const Equation_base& eq2) const ;
+  Equation_base& equation_impl(int i, Equation_base& eq1, Equation_base& eq2);
+  int verifier_impl(const Equation_base& eq1, const Equation_base& eq2, const bool is_thermal);
 };
 
-
-
-#endif
+#endif /* Pb_Dilatable_Proto_included */

@@ -31,27 +31,9 @@ Sortie& Source_QC_Chaleur_VEF::printOn(Sortie& os) const
   return os;
 }
 
-Entree& Source_QC_Chaleur_VEF::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Source_QC_Chaleur_VEF::readOn(Entree& is) { return is; }
 
-// Description:
-//    Remplit le tableau volumes
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 void Source_QC_Chaleur_VEF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& )
 {
-  volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes_entrelaces());
-  porosites.ref(ref_cast(Zone_VF,zone.valeur()).porosite_face());
+  associer_volume_porosite_impl(zone,volumes,porosites);
 }

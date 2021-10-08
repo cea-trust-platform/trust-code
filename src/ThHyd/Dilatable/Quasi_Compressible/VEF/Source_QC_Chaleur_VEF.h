@@ -23,6 +23,7 @@
 #ifndef Source_QC_Chaleur_VEF_included
 #define Source_QC_Chaleur_VEF_included
 
+#include <Source_Fluide_Dilatable_VEF_Proto.h>
 #include <Source_QC_Chaleur.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -38,7 +39,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Source_QC_Chaleur_VEF : public Source_QC_Chaleur
+class Source_QC_Chaleur_VEF : public Source_QC_Chaleur, public Source_Fluide_Dilatable_VEF_Proto
 {
   Declare_instanciable(Source_QC_Chaleur_VEF);
 protected:

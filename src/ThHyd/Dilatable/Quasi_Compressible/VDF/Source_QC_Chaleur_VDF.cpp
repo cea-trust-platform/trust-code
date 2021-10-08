@@ -21,65 +21,18 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Source_QC_Chaleur_VDF.h>
-#include <Zone_VF.h>
 
 Implemente_instanciable(Source_QC_Chaleur_VDF,"Source_QC_Chaleur_VDF",Source_QC_Chaleur);
 
-// Description:
-//    Imprime la source sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie pour l'impression
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord: le flot de sortie est modifie
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Source_QC_Chaleur_VDF::printOn(Sortie& os) const
 {
   os <<que_suis_je()<< finl;
   return os;
 }
 
-// Description:
-//    Lecture de la source sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& Source_QC_Chaleur_VDF::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Source_QC_Chaleur_VDF::readOn(Entree& is) { return is; }
 
-// Description:
-//    Remplit le tableau volumes
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 void Source_QC_Chaleur_VDF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& )
 {
-  volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes());
-  porosites.ref(ref_cast(Zone_VF,zone.valeur()).porosite_elem());
+  associer_volume_porosite_impl(zone,volumes,porosites);
 }

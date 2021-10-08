@@ -35,29 +35,11 @@ Sortie& Source_WC_Chaleur_VDF::printOn(Sortie& os) const
   return os;
 }
 
-Entree& Source_WC_Chaleur_VDF::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Source_WC_Chaleur_VDF::readOn(Entree& is) { return is; }
 
-// Description:
-//    Remplit le tableau volumes
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree pour la lecture des parametres
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 void Source_WC_Chaleur_VDF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& zcl)
 {
-  volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes());
-  porosites.ref(ref_cast(Zone_VF,zone.valeur()).porosite_elem());
+  associer_volume_porosite_impl(zone,volumes,porosites);
 }
 
 void Source_WC_Chaleur_VDF::compute_interpolate_gradP(DoubleTab& UgradP_elem, const DoubleTab& Ptot) const
