@@ -134,7 +134,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       if(lambda_nb_comp >1) // Pour anisotrope
         ch_lambda.valeur().fixer_nature_du_champ(multi_scalaire);
 
-      dis.nommer_completer_champ_physique(zone_dis,"conductivite","W/m/K",ch_lambda.valeur(),pb);
+      dis.nommer_completer_champ_physique(zone_dis,"conductivite","W/m/K",ch_lambda.valeur());
 
       // le vrai nom sera donne plus tard
       if (sub_type(Champ_Fonc_Tabule,ch_lambda.valeur()))
@@ -147,7 +147,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
           Champ_Tabule_Morceaux& lambda_tabule = ref_cast(Champ_Tabule_Morceaux,ch_lambda.valeur());
 
           for (int i=0 ; i<lambda_tabule.nb_champs_tabules(); i++)
-            dis.nommer_completer_champ_physique(zone_dis,"conductivite","W/m/K",lambda_tabule.champ_tabule(i),pb);
+            dis.nommer_completer_champ_physique(zone_dis,"conductivite","W/m/K",lambda_tabule.champ_tabule(i));
         }
 
       champs_compris_.ajoute_champ(ch_lambda.valeur());
@@ -160,37 +160,37 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
   if (ch_alpha.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"diffusivite_thermique","m2/s",ch_alpha.valeur(),pb);
+      dis.nommer_completer_champ_physique(zone_dis,"diffusivite_thermique","m2/s",ch_alpha.valeur());
       champs_compris_.ajoute_champ(ch_alpha.valeur());
     }
   if (ch_beta_th.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"dilatabilite","K-1",ch_beta_th.valeur(),pb);
+      dis.nommer_completer_champ_physique(zone_dis,"dilatabilite","K-1",ch_beta_th.valeur());
       champs_compris_.ajoute_champ(ch_beta_th.valeur());
     }
   if  (Cp.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"capacite_calorifique","J/kg/K",Cp.valeur(),pb);
+      dis.nommer_completer_champ_physique(zone_dis,"capacite_calorifique","J/kg/K",Cp.valeur());
 
       if (sub_type(Champ_Tabule_Morceaux,Cp.valeur()))
         {
           Champ_Tabule_Morceaux& Cp_tabule = ref_cast(Champ_Tabule_Morceaux,Cp.valeur());
 
           for (int i=0 ; i<Cp_tabule.nb_champs_tabules(); i++)
-            dis.nommer_completer_champ_physique(zone_dis,"capacite_calorifique","J/kg/K",Cp_tabule.champ_tabule(i),pb);
+            dis.nommer_completer_champ_physique(zone_dis,"capacite_calorifique","J/kg/K",Cp_tabule.champ_tabule(i));
         }
       champs_compris_.ajoute_champ(Cp.valeur());
     }
   if  (rho.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho,pb);
+      dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho);
 
       if (sub_type(Champ_Tabule_Morceaux,rho))
         {
           Champ_Tabule_Morceaux& rho_tabule = ref_cast(Champ_Tabule_Morceaux,rho);
 
           for (int i=0 ; i<rho_tabule.nb_champs_tabules(); i++)
-            dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","J/kg/K",rho_tabule.champ_tabule(i),pb);
+            dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","J/kg/K",rho_tabule.champ_tabule(i));
         }
       champs_compris_.ajoute_champ(rho);
     }

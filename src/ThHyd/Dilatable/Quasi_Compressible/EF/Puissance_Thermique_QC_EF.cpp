@@ -68,7 +68,7 @@ void Puissance_Thermique_QC_EF::associer_zones(const Zone_dis& zone_dis,
 void Puissance_Thermique_QC_EF::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),"Puissance_volumique","W/m3",la_puissance,pb);
+  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),"Puissance_volumique","W/m3",la_puissance);
 
   Eval_Puiss_Th_QC_EF& eval_puis = (Eval_Puiss_Th_QC_EF&) iter.evaluateur();
   eval_puis.associer_puissance(la_puissance);
