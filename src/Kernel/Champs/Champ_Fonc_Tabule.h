@@ -76,11 +76,17 @@ public:
     return noms_champs_parametre_;
   };
 
+  inline Noms& noms_problemes()
+  {
+    return noms_pbs_;
+  };
+
   static void Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param);
 
 protected:
 
   Noms noms_champs_parametre_;
+  Noms noms_pbs_;
   Nom nom_domaine;
   Table la_table;
   Champ_Fonc le_champ_tabule_dis;

@@ -113,6 +113,8 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
     {
       is >> motlu;
       if (motlu == "}") break;
+      noms_pbs_.add(motlu);
+      is >> motlu;
       noms_champs_parametre_.add(motlu);
     }
   const int nb_param = noms_champs_parametre_.size();

@@ -28,7 +28,7 @@
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Champ_Uniforme.h>
-
+#include <Interprete.h>
 
 Implemente_base(Discretisation_base,"Discretisation_base",Objet_U);
 
@@ -367,12 +367,14 @@ void Discretisation_base::nommer_completer_champ_physique(const Zone_dis_base& z
   le_champ.fixer_unite(unite);
   if (sub_type(Champ_Fonc_Tabule,le_champ))
     {
-      Noms noms_variables = ref_cast(Champ_Fonc_Tabule,le_champ).noms_champs_parametre();
+      Noms& noms_variables = ref_cast(Champ_Fonc_Tabule, le_champ).noms_champs_parametre();
+      Noms& noms_pbs = ref_cast(Champ_Fonc_Tabule, le_champ).noms_problemes();
       VECT(REF(Champ_base)) les_ch_eq;
       for (int i = 0; i < noms_variables.size(); i++)
         {
           REF(Champ_base) champ;
-          champ = pb.get_champ(Motcle(noms_variables[i]));
+          Probleme_base& pb_ch = ref_cast(Probleme_base, Interprete::objet(noms_pbs[i]));
+          champ = pb_ch.get_champ(Motcle(noms_variables[i]));
           les_ch_eq.add(champ);
         }
       modifier_champ_tabule(zone_dis,ref_cast(Champ_Fonc_Tabule,le_champ), les_ch_eq);
