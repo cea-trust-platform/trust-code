@@ -33,6 +33,18 @@ using namespace MEDCoupling;
 #endif
 
 Implemente_instanciable(Decouper_multi,"Decouper_multi|Partition_multi",Interprete);
+// XD partition_multi interprete decouper_multi 0 allows to partition multiple domains while accounting for connections via Raccords (allows for easier implementation of thermique_monolithique in parallel). By default, this keyword is commented in the reference test cases.
+// XD attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
+// XD attr domaine1 chaine(into=["domaine"]) domaine1 0 not set.
+// XD attr dom ref_domaine dom 0 Name of the first domain to be cut.
+// XD attr blocdecoupdom1 bloc_decouper blocdecoupdom1 0 Partition bloc for the first domain.
+// XD attr domaine2 chaine(into=["domaine"]) domaine2 0 not set.
+// XD attr dom2 ref_domaine dom2 0 Name of the second domain to be cut.
+// XD attr blocdecoupdom2 bloc_decouper blocdecoupdom2 0 Partition bloc for the second domain.
+// XD attr raccords chaine(into=["raccords"]) raccords 0 not set.
+// XD attr blocracc bloc_lecture blocracc 0 Indicates the joints between both domains. The syntax is { dom1 bord1 dom2 bord2 ... }
+// XD attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
+
 
 Sortie& Decouper_multi::printOn(Sortie& os) const
 {
