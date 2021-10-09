@@ -61,7 +61,7 @@ void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
     }
 
   // Fill la_gravite_ and beta_ attributes
-  const Fluide_base& fluide=ref_cast(Fluide_base,pb.milieu());
+  const Fluide_base& fluide=ref_cast(Fluide_base,equation().milieu());
   la_gravite_=fluide.gravite();
 
   //this variable indicates if the beta field is valid or not
