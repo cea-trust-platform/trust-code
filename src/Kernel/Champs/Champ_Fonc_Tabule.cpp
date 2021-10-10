@@ -104,7 +104,7 @@ Sortie& Champ_Fonc_Tabule::printOn(Sortie& os) const
 // Postcondition:
 Entree& Champ_Fonc_Tabule::readOn(Entree& is)
 {
-  Motcle motlu;
+  Nom motlu;
   const Motcle accolade_ouverte("{"), accolade_fermee("}");
   int nbcomp;
   is >> motlu;

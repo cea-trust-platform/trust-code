@@ -95,7 +95,10 @@ void Operateur_Diff::typer()
 {
   Cerr << "Operateur_Diff::typer("<<typ<<")" << finl;
   if (Motcle(typ)==Motcle("negligeable"))
-    DERIV(Operateur_Diff_base)::typer("Op_Diff_negligeable");
+    {
+      DERIV(Operateur_Diff_base)::typer("Op_Diff_negligeable");
+      valeur().associer_diffusivite(diffusivite());
+    }
   else
     {
       assert(la_diffusivite.non_nul());
