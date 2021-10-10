@@ -55,7 +55,7 @@ Solide sol
 Read sol
 {
 	rho Champ_Uniforme 1 2
-	lambda champ_fonc_tabule { temperature } 1 { 3 0. 0.5 1.
+	lambda champ_fonc_tabule { pb temperature } 1 { 3 0. 0.5 1.
 						 2. 3. 4. }
 	Cp Champ_Uniforme 1 1
 }
