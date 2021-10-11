@@ -489,6 +489,7 @@ void Fluide_base::creer_e_int() const
                                         eq.inconnue()->nb_valeurs_temporelles(), eq.inconnue()->temps(), e_int_inc);
   e_int_inc.associer_eqn(eq), e_int_inc->init_champ_calcule(*this, calculer_e_int);
   e_int = e_int_inc;
+  e_int.mettre_a_jour(eq.inconnue()->temps());
   e_int_auto_ = 1;
 }
 
