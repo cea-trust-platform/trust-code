@@ -336,7 +336,7 @@ void Masse_Multiphase::calculer_alpha_rho(const Objet_U& obj, DoubleTab& val, Do
 
   /* valeur aux bords */
   /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
-  ch_rho.a_une_zone_dis_base() ? bval = ch_rho.valeur_aux_bords() : ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis()).xv_bord(), bval);
+  ch_rho.a_une_zone_dis_base() ? bval = ch_rho.valeur_aux_bords() : ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), bval);
   tab_multiply_any_shape(bval, ch_alpha.valeur_aux_bords());
 
   /* derivees */

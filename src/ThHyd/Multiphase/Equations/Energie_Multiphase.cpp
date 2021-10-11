@@ -373,7 +373,7 @@ void Energie_Multiphase::calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_en = ch_en.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
   if (ch_rho.a_une_zone_dis_base()) b_rho = ch_rho.valeur_aux_bords();
-  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis()).xv_bord(), b_rho);
+  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), b_rho);
   for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_en(i, n);
 
   DoubleTab& d_a = deriv["alpha"];//derivee en alpha : rho * en
@@ -412,7 +412,7 @@ void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_h = ch_h.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
   if (ch_rho.a_une_zone_dis_base()) b_rho = ch_rho.valeur_aux_bords();
-  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis()).xv_bord(), b_rho);
+  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), b_rho);
   for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_h(i, n);
 
   DoubleTab& d_a = deriv["alpha"];//derivee en alpha : rho * h
