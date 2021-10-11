@@ -1,0 +1,14 @@
+#!/bin/bash
+# Resolution par AmgX des matrices
+exec=$TRUST_ROOT/lib/src/LIBAMGX/AmgX/lib/examples/amgx_capi
+for matrix in *.mtx
+do
+   config=`echo $matrix | sed "1,$ s?_matrix?_solver?g" | sed "1,$ s?mtx?amgx?g"`
+   if [ -f $config ]
+   then
+      echo "Solving with AmgX:"
+      echo "Linear system:"$matrix
+      echo "With config  :"$config
+      trust dummy -m $matrix -c $config 1>verifie.log 2>&1 || exit -1
+   fi
+done

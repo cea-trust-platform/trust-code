@@ -143,9 +143,11 @@ let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond SA-AMG { } impr }" 
 
 let i=$i+1;solver[$i]="      GMRES    { seuil $seuil DIAG controle_residu 1 impr }" 		 	;amgx[$i]=1	;sym[$i]=0
 let i=$i+1;solver[$i]="PETSC GMRES    { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	;sym[$i]=0	
-let i=$i+1;solver[$i]="AMGX  GMRES    { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	;sym[$i]=0	
-let i=$i+1;solver[$i]="AMGX  GMRES    { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=0
-let i=$i+1;solver[$i]="AMGX  GMRES    { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }" 	;amgx[$i]=1	;sym[$i]=0	
+# GMRES faux dans AmgX !
+let i=$i+1;solver[$i]="AMGX  FGMRES   { seuil $seuil precond DIAG { } impr }" 				;amgx[$i]=1	;sym[$i]=0	
+let i=$i+1;solver[$i]="AMGX  FGMRES   { seuil $seuil precond C-AMG { } impr }" 				;amgx[$i]=1	;sym[$i]=0
+let i=$i+1;solver[$i]="AMGX  FGMRES   { seuil $seuil precond BLOCK_JACOBI_ILU { level 0 } impr }" 	;amgx[$i]=1	;sym[$i]=0	
+let i=$i+1;solver[$i]="AMGX  GCP      { seuil $seuil precond SSOR { } impr }" 				;amgx[$i]=1	;sym[$i]=0	
 
 #let i=$i+1;solver[$i]="Petsc_GPU CLI       { -ksp_type cg -pc_type saviennacl -mat_type aijviennacl -vec_type viennacl -ksp_divtol 1e6 -ksp_atol $seuil }"	   ;amgx[$i]=1	;sym[$i]=1; par[$i]=0 # ToDo
 #let i=$i+1;solver[$i]="Petsc_GPU CLI       { -ksp_type cg -pc_type rowscalingviennacl -mat_type aijviennacl -vec_type viennacl -ksp_divtol 1e6 -ksp_atol $seuil }" ;amgx[$i]=1	;sym[$i]=1; par[$i]=0 # ToDo

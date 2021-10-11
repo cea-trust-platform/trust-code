@@ -51,9 +51,9 @@ void Solv_AMGX::initialize()
   3. (uppercase) letter: whether the vector precision is float (F) or double (D).
   4. (uppercase) letter: whether the index type is 32-bit int (I) or else (not currently supported).
   typedef enum { AMGX_mode_hDDI, AMGX_mode_hDFI, AMGX_mode_hFFI, AMGX_mode_dDDI, AMGX_mode_dDFI, AMGX_mode_dFFI } AMGX_Mode; */
-  Cerr << "Initializing Amgx and reading the " << config << " file." << finl;
+  Cerr << "Initializing Amgx and reading the " << config() << " file." << finl;
   std::clock_t start = std::clock();
-  SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), config.getString());
+  SolveurAmgX_.initialize(PETSC_COMM_WORLD, AmgXmode.getString(), config().getString());
   Cout << "[AmgX] Time to initialize: " << ( std::clock() - start ) / (double) CLOCKS_PER_SEC << finl;
   amgx_initialized_ = true;
   // MPI_Barrier(PETSC_COMM_WORLD); Voir dans https://github.com/barbagroup/AmgXWrapper/pull/30/commits/1554808a3689f51fa43ab81a35c47a9a1525939a

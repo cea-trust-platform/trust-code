@@ -1,3 +1,4 @@
+XX/XX/XX (TRUST)  Convergence : Use the true residual (instead of preconditioned one) for convergence test with PETSc GMRES solver (may be necessary to lower seuil option to have same results than 1.8.3)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------

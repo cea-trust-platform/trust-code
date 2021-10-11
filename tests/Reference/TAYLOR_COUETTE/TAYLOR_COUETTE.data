@@ -41,9 +41,9 @@ Lire sch
     seuil_statio 1.e-4
     solveur implicite
     {
-        seuil_convergence_implicite 1.e-10
-        seuil_convergence_solveur  1e-10
-        solveur Petsc IBICGSTAB { precond diag { } seuil 1e-10 }
+        seuil_convergence_implicite 1.e-15
+        seuil_convergence_solveur  1e-15
+        solveur Petsc IBICGSTAB { precond diag { } seuil 1e-15 }
     }
     dt_start dt_calc
     dt_max 0.1

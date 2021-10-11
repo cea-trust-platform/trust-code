@@ -37,8 +37,6 @@ public:
   inline Solv_AMGX()
   {
     amgx_=true;
-    config = Objet_U::nom_du_cas();
-    config += ".amgx";
   };
   virtual void set_config(const Nom& filename)
   {

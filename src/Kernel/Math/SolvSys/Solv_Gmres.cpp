@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -263,11 +263,10 @@ int gmres_local( const Matrice_Morse& A, const DoubleVect& b,DoubleVect& x1,doub
   v0 *= -1. ;
   v0+=b;
   v0.echange_espace_virtuel();
+  double res0 = mp_norme_vect(v0);
   for (ii=0; ii<ns2; ii++)
     v0(ii)*=Diag(ii);
-
   res = mp_norme_vect(v0);
-  double res0 = res;
   if (limpr_==1)
     Cout<<"Gmres : initial residual = "<<res0<<finl;
   // See http://stackoverflow.com/questions/3437085/check-nan-number
@@ -375,7 +374,7 @@ l5:
             {
               Cout << "Gmres : Number of iterations to reach convergence : " << it+1 << finl;
               double residu_relatif = (res0>0?res2/res0:res2);
-              Cout << "Final residue: " << res2 << " ( " << residu_relatif << " )";
+              Cout << "Final residue: " << res2 << " ( " << residu_relatif << " )" << finl;
             }
           return it+1;
         }
@@ -392,7 +391,7 @@ l5:
             {
               Cout << "Gmres : Stopped after "<< it+1 <<" iterations (=nb_it_max)"<< finl;
               double residu_relatif = (res0>0?res2/res0:res2);
-              Cout << "Final residue: " << res2 << " ( " << residu_relatif << " )";
+              Cout << "Final residue: " << res2 << " ( " << residu_relatif << " )" << finl;
             }
           if (it == (nb_ligne_tot-1))
             {
@@ -409,7 +408,6 @@ l5:
       for (ii=0; ii<ns2; ii++) v0(ii)*=Diag(ii);
       res = mp_norme_vect(v0);
     }
-
   return -1;
 }
 

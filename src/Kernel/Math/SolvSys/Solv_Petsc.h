@@ -162,6 +162,7 @@ protected :
   int read_matrix_;		// Read constant matrix in a file
   bool gpu_;                    // Utilisation des solveurs GPU de PETSc
   bool amgx_;			// Utilisation des solveurs GPU de AMGX
+  const Nom config();    // Nom du fichier de config eventuel
   bool amgx_initialized_;	// Amgx initialise
   // Options dev:
   bool ignore_new_nonzero_;

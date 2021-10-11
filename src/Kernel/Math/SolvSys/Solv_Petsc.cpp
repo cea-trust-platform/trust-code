@@ -164,7 +164,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   // mais egalement pouvoir appeler les options Petsc avec une chaine { -ksp_type cg -pc_type sor ... }
   // Les options non reconnues doivent arreter le code
   // Reprendre le formalisme de GCP { precond ssor { omega val } seuil val }
-  Motcles les_solveurs(19);
+  Motcles les_solveurs(20);
   {
     les_solveurs[0] = "CLI";
     les_solveurs[1] = "GCP";
@@ -185,6 +185,7 @@ void Solv_Petsc::create_solver(Entree& entree)
     les_solveurs[16] = "CHOLESKY_MUMPS_BLR";
     les_solveurs[17] = "CHOLESKY_CHOLMOD";
     les_solveurs[18] = "PIPECG2";
+    les_solveurs[19] = "FGMRES";
   }
   int solver_supported_on_gpu_by_petsc=0;
   int solver_supported_on_gpu_by_amgx=0;
@@ -214,6 +215,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                     is >> motlu;
                     if (Process::je_suis_maitre())
                       {
+                        Cerr << "Reading AmgX config file " << motlu << " :" << finl;
                         EFichier config(motlu);
                         std::string line;
                         while (!config.eof())
@@ -221,6 +223,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                             std::getline(config.get_ifstream(), line);
                             if (line.find("#") && line.find("config_version"))
                               {
+                                Cerr << line.c_str() << finl;
                                 amgx_option+=line.c_str();
                                 amgx_option+="\n";
                               }
@@ -294,7 +297,22 @@ void Solv_Petsc::create_solver(Entree& entree)
         KSPSetType(SolveurPetsc_, KSPGMRES);
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        //if (amgx_) amgx_option+="solver(s)=GMRES\n"; // GMRES
+        if (amgx_) amgx_option+="solver(s)=GMRES\n"; // GMRES
+        break;
+      }
+    case 19:
+      {
+        KSPSetType(SolveurPetsc_, KSPFGMRES);
+        solver_supported_on_gpu_by_petsc=1;
+        solver_supported_on_gpu_by_amgx=1;
+        if (amgx_) amgx_option+="solver(s)=FGMRES\n"; // FGMRES
+        break;
+      }
+    case 20:
+      {
+        KSPSetType(SolveurPetsc_, KSPFGMRES);
+        solver_supported_on_gpu_by_petsc=1;
+        solver_supported_on_gpu_by_amgx=1;
         if (amgx_) amgx_option+="solver(s)=FGMRES\n"; // Flexible GMRES
         break;
       }
@@ -457,7 +475,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(26);
+      Motcles les_parametres_solveur(27);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil"; // Seuil absolu (atol)
@@ -485,6 +503,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[23] = "rebuild_matrix";
         les_parametres_solveur[24] = "allow_realloc";
         les_parametres_solveur[25] = "clean_matrix";
+        les_parametres_solveur[26] = "save_matrix_mtx_format";
       }
       option_double omega("omega",1.5);
       option_int    level("level",1);
@@ -634,7 +653,6 @@ void Solv_Petsc::create_solver(Entree& entree)
               }
             case 15:
               {
-                //abort();
                 save_matrice_=1;
                 break;
               }
@@ -642,6 +660,12 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 // on sauvegarde au format petsc
                 save_matrix_=1;
+                break;
+              }
+            case 26:
+              {
+                // on sauvegarde au format matrix market
+                save_matrix_=2;
                 break;
               }
             case 6:
@@ -800,9 +824,9 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 KSPType type_ksp_method;
                 KSPGetType(SolveurPetsc_, &type_ksp_method);
-                if ((Nom)type_ksp_method != Nom("gmres"))
+                if ((Nom)type_ksp_method != Nom("gmres") && ((Nom)type_ksp_method != Nom("fgmres")))
                   {
-                    Cerr << "restart option is available only with gmres method" << finl;
+                    Cerr << "restart option is available only with [f]gmres methods" << finl;
                     exit();
                   }
                 int restart_gmres;
@@ -1236,9 +1260,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 // Creation du fichier de config .amgx (NB: les objets PETSc sont crees mais ne seront pas utilises)
   if (amgx_ && Process::je_suis_maitre())
     {
-      Nom filename(Objet_U::nom_du_cas());
-      filename+=".amgx";
-      SFichier s(filename);
+      SFichier s(config());
       // Syntax: See https://github.com/NVIDIA/AMGX/raw/master/doc/AMGX_Reference.pdf
       s << "# AmgX config file" << finl << "config_version=2" << finl << amgx_option;
       if (!amgx_option.contient("s:print_config"))     s << "s:print_config=1" << finl;
@@ -1249,7 +1271,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       if (!amgx_option.contient("s:max_iters"))         s << "s:max_iters=10000" << finl; // 100 par defaut trop bas...
       s << "# determinism_flag=1" << finl; // Plus lent de 15% mais resultat deterministique et repetable
       s << "# communicator=MPI_DIRECT" << finl; // MPI_CUDA aware
-      Cerr << "Writing the AmgX config file: " << filename << finl;
+      Cerr << "Writing the AmgX config file: " << config() << finl;
     }
 #else
   Cerr << "Error, the code is not built with PETSc support." << finl;
@@ -1257,6 +1279,14 @@ void Solv_Petsc::create_solver(Entree& entree)
   Process::exit();
 #endif
 
+}
+const Nom Solv_Petsc::config()
+{
+  Nom str(Objet_U::nom_du_cas());
+  str+="_solver";
+  str+=(Nom)instance;
+  str+=amgx_ ? ".amgx" : ".petsc";
+  return str;
 }
 
 int Solv_Petsc::instance=-1;
@@ -1630,9 +1660,49 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 
   // Save the matrix and the RHS
   // if the matrix has changed...
-  if (save_matrix_ && nouvelle_matrice())
-    SaveObjectsToFile();
-
+  if (nouvelle_matrice())
+    {
+      std::clock_t start = std::clock();
+      if (save_matrix_==1)
+        SaveObjectsToFile();
+      else if (save_matrix_==2)
+        {
+          // Format matrix market
+          if (Process::nproc()>1) Process::exit("Error, matrix market format is not available yet in parallel.");
+          Nom filename(Objet_U::nom_du_cas());
+          filename+="_matrix";
+          filename+=(Nom)instance;
+          filename+=".mtx";
+          SFichier mtx(filename);
+          PetscInt rows;
+          const PetscInt *ia, *ja;
+          PetscBool done;
+          MatGetRowIJ(MatricePetsc_, 0, PETSC_FALSE, PETSC_FALSE, &rows, &ia, &ja, &done);
+          if (!done) Process::exit("Error in MatGetRowIJ");
+          PetscScalar *v;
+          MatType mat_type;
+          MatGetType(MatricePetsc_,&mat_type);
+          if (strcmp(mat_type,MATSEQAIJ)==0)
+            MatSeqAIJGetArray(MatricePetsc_, &v);
+          else if (strcmp(mat_type,MATSEQSBAIJ)==0)
+            MatSeqSBAIJGetArray(MatricePetsc_, &v);
+          else Process::exit("Matrix type not supported.");
+          Cerr << "Matrix (" << rows << " lines) written into file with RHS and solution: " << filename << finl;
+          mtx << "%%MatrixMarket matrix coordinate real general" << finl;
+          mtx << "%%AMGX rhs solution" << finl;
+          mtx << rows << " " << rows << " " << ia[rows] << finl;
+          for (int row=0; row<rows; row++)
+            for (int j=ia[row]; j<ia[row+1]; j++)
+              mtx << row+1 << " " << ja[j]+1 << " " << v[j] << finl;
+          mtx << "%%" << finl << "%% optional rhs " << secmem.size_array() << finl;
+          for (int i=0; i<secmem.size_array(); i++)
+            mtx << secmem(i) << finl;
+          mtx << "%%" << finl << "%% optional solution " << solution.size_array() << finl;
+          for (int i=0; i<solution.size_array(); i++)
+            mtx << solution(i) << finl;
+        }
+      Cout << "[Petsc] Time to write matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+    }
   //////////////////////////
   // Solve the linear system
   //////////////////////////
@@ -1676,6 +1746,26 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     }
   solution.echange_espace_virtuel();
   fixer_nouvelle_matrice(0);
+
+  // Calcul du vrai residu sur matrice initiale sur GPU:
+  if (amgx_ || gpu_)
+    {
+      DoubleVect test(secmem);
+      test*=-1;
+      la_matrice.ajouter_multvect(solution,test);
+      double vrai_residu = mp_norme_vect(test);
+      Cerr << "||Ax-b||=" << vrai_residu << finl;
+      // Verification de la solution sur la matrice initiale
+      if (nbiter>0 && Process::je_suis_maitre())
+        {
+          if (residu(0)>0 && vrai_residu>10*residu(nbiter))
+            {
+              Cerr << "Error, computed solution x is false !" << finl;
+              Cerr << "True residual is much higher than convergence residual!" << finl;
+              Process::exit();
+            }
+        }
+    }
   return nbiter;
 #else
   return -1;
@@ -1819,7 +1909,7 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
 
   // Dans le cas de save_matrix_ en parallele
   // Sinon, cela bloque avec sbaij:
-  if (save_matrix_ && Process::nproc()>1) mataij_=1;
+  if (save_matrix_==1 && Process::nproc()>1) mataij_=1;
 
   // Error in PETSc when read/save the factored matrix if matrix is sbaij
   // so aij is selected instead:
@@ -2119,37 +2209,35 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Calcul du residu de la meme maniere que le GCP de TRUST : ||Ax-B|| pour pouvoir comparer les performances//
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  if (matrice_symetrique_)
+  if (type_ksp_ == KSPCG || type_ksp_ == KSPPIPECG || type_ksp_ == KSPPIPECG2 || type_ksp_ == KSPGROPPCG ||
+      type_ksp_ == KSPRICHARDSON)
     {
-      if (type_ksp_ == KSPCG || type_ksp_ == KSPPIPECG || type_ksp_ == KSPPIPECG2 || type_ksp_ == KSPGROPPCG ||
-          type_ksp_ == KSPRICHARDSON)
-        {
-          // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
-          KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
-        }
-      else if (type_ksp_ == KSPPGMRES)
-        {
-          // PGMRES ne peut etre que preconditionne a gauche (CAx=Cb)
-          // et on ne peut avoir que le residu preconditionne (||CAx-Cb||)
-          // -> on ne peut comparer la convergence avec le GMRES...
-          KSPSetPCSide(SolveurPetsc_, PC_LEFT);
-          // KSPSetNormType(SolveurPetsc, KSP_NORM_UNPRECONDITIONED);
-        }
-      else
-        {
-          // Le preconditionnement a droite permet que le residu utilise pour la convergence
-          // soit le residu reel ||Ax-b|| et non le residu preconditionne pour certains solveurs
-          // avec un preconditionnement a gauche (ex: GMRES). Ainsi, on peut comparer strictement
-          // les performances des solveurs (TRUST ou PETSC) entre eux
-          KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
-          // Pour un certain nombre de solveurs, il faut preciser la facon dont la norme ||Ax-b||
-          // sera calculee:
-          if (type_ksp_ == KSPBCGS || type_ksp_ == KSPIBCGS || type_ksp_ == KSPGMRES)
-            {
-              KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
-            }
-        }
+      // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
+      KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
     }
+  else if (type_ksp_ == KSPPGMRES)
+    {
+      // PGMRES ne peut etre que preconditionne a gauche (CAx=Cb)
+      // et on ne peut avoir que le residu preconditionne (||CAx-Cb||)
+      // -> on ne peut comparer la convergence avec le GMRES...
+      KSPSetPCSide(SolveurPetsc_, PC_LEFT);
+      // KSPSetNormType(SolveurPetsc, KSP_NORM_UNPRECONDITIONED);
+    }
+  else if (type_ksp_ == KSPGMRES || type_ksp_ == KSPFGMRES)
+    {
+      // Le preconditionnement a droite permet que le residu utilise pour la convergence
+      // soit le residu reel ||Ax-b|| et non le residu preconditionne pour certains solveurs
+      // avec un preconditionnement a gauche (ex: GMRES). Ainsi, on peut comparer strictement
+      // les performances des solveurs (TRUST ou PETSC) entre eux
+      KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
+      KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
+    }
+  /* On verra en temps utile:
+  else if (type_ksp_ == KSPBCGS || type_ksp_ == KSPIBCGS)
+    {
+      KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
+      KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
+    } */
 }
 
 void Solv_Petsc::Create_vectors(const DoubleVect& b)
