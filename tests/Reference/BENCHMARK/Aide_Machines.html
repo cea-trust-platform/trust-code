@@ -28,39 +28,42 @@ Soit environ 1000 octets/maille (Resolution avec gradient conjugue).
 <HR><h1>Performances TRUST sur differents GPU</h1><HR>
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test gpu_3D (125000 mailles):
 -------------------------------------------------------------------------------------------------------
-Arch  Model  PhysicalCores@frequency     GPU/Cuda     	Processor Model	CPU     Machine                 (Compiler version)      2MPI:	1GPU 2GPU 3GPU 4GPU	TestCase version
-Linux x86_64 	2*64@1.5-3.5Ghz		4*A100/11.2	AMD Epyc 7763	10.5s	topaze.ccc.cea.fr	(g++ 8.3.0, OpenMPI 4.0.5)	               13.6	gpu_3D   v1.8.3
-Linux x86_64	2*20@2.5-3.9Ghz		4*V100/10.2	Xeon Gold 6248	14.4s	jean-zay1.idris.fr	(g++ 8.3.1, OpenMPI 4.0.2-cuda) 11.2 14.1 14.1 14.1	gpu_3D   v1.8.3
-Linux x86_64 	2*64@2.5-3.3Ghz		4*V100/??	AMD Epyc 7502	17.9s	irene-amd.ccc.cea.fr	(g++ 8.3.1, OpenMPI 4.0.2)				gpu_3D   v1.8.3
-Linux x86_64	2*16@2.1-2.7Ghz		4*V100/??	AMD Epyc 7281		orcus-amd.intra.cea.fr 	(g++ 9.1.0, OpenMPI 3.1.4)                              gpu_3D   v1.8.3
-Linux x86_64     1*8@3.0-4.7Ghz        	1*P400/11.0    	Xeon i7-9700    64.4s	is242981.intra.cea.fr   (g++ 10.0.1,OpenMPI 4.1.0-cuda)	63.7    		gpu_3D   v1.8.3
+Arch  Model  PhysicalCores@frequency    GPU/Cuda/Mem   	Processor     1MPI+1GPU	Machine                 (Compiler version)         2MPI+1GPU 2GPU 	TestCase version  1MPI (Petsc)
+Linux x86_64 	2*64@1.5-3.5Ghz	     4*A100/11.2/320Go	AMD Epyc 7763	10.5s	topaze.ccc.cea.fr	(g++ 8.3.0, OpenMPI 4.0.5)	 7.8 12.0 	gpu_3D   v1.8.3
+Linux x86_64	2*20@2.5-3.9Ghz	     4*V100/10.2/64Go	Xeon Gold 6248	14.4s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.2-cuda) 11.2 14.1 	gpu_3D   v1.8.3   	 # GPU direct non active 
+Linux x86_64	2*24@2.4-4.0Ghz	     4*A100/11.2/160Go	Xeon Gold 6240	15.0s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.5-cuda) 16.6 23.2 	gpu_3D   v1.8.3   ???.?s # A100 Tres decevant sur JeanZay
+Linux x86_64	2*20@2.5-3.9Ghz	     4*V100/11.2/64Go	Xeon Gold 6248	16.5s	jean-zay1.idris.fr 	(g++ 8.3.1, OpenMPI 4.0.5-cuda) ??.? ??.? 	gpu_3D   v1.8.3   159.8s # Moins bien avec Cuda 11?
+Linux x86_64	2*16@2.1-2.7Ghz	     2*V100/11.1/32Go	AMD Epyc 7281	16.9s	orcus-amd.intra.cea.fr 	(g++ 9.1.0, OpenMPI 3.1.4)    	??.? 14.6       gpu_3D   v1.8.3
+Linux x86_64 	2*64@2.5-3.3Ghz	     4*V100/10.2/64Go	AMD Epyc 7502	17.9s	irene-amd.ccc.cea.fr	(g++ 8.3.1, OpenMPI 4.0.2)	12.4 15.2	gpu_3D   v1.8.3	  138.2s
+Linux x86_64	 1*6@2.9-4.1Ghz	  1*RTX2060/11.2/6Go	Xeon i5-9400F	50.4s	pc fixe	(wsl2)		(g++ 9.3.0, OpenMPI 4.1.0-cuda) 42.5  --	gpu_3D	 v1.8.3	  126.8S		
+Linux x86_64     1*8@3.0-4.7Ghz      1*P400/11.0/2Go	Xeon i7-9700    64.4s	is242981.intra.cea.fr   (g++ 10.0.1,OpenMPI 4.1.0-cuda)	63.7  --	gpu_3D   v1.8.3	  101.8s
 
 <HR><h1>Performances TRUST sur differentes machines</h1><HR>
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test cpu_3D (125000 mailles):			
 -------------------------------------------------------------------------------------------------------
 Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU	Machine			(Compiler version) 	SpeedUp(n=2) 	TestCase version
 Linux x86_64	 1*8@3.0-4.7Ghz		32Go:12Mo	Xeon i7-9700 	1.5s	is242981.intra.cea.fr	(g++ 10.0.1)			1.62	cpu_3D	 v1.8.1
-Linux x86_64	2*64@1.5-3.5Ghz        256Go:32Mo	AMD Epyc 7763   1.7s    topaze.ccc.cea.fr	(g++ 11.1.0, OpenMPI 4.0.5)	1.58	cpu_3D	 v1.8.3
+Linux x86_64	2*64@1.5-3.5Ghz        256Go:32Mo	AMD Epyc 7763   1.7s    topaze.ccc.cea.fr	(g++5118 11.1.0, OpenMPI 4.0.5)	1.58	cpu_3D	 v1.8.3
 Linux x86_64	 1*4@2.5-4.2Ghz		16Go:8Mo	Xeon i5-8400H	1.8s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.7.9
 Linux x86_64	 1*6@2.9-4.1Ghz		 8Go:9Mo	Xeon i5-9400F	1.9s	pc fixe	(wsl2)		(g++ 9.3.0)			1.52	cpu_3D	 v1.8.2
-Linux x86_64	2*64@2.5Ghz				AMD Epyc 7502	1.9s	irene-amd-ccrt.ccc.cea.fr (icpc 19.0.5, IntelMPI 2018.0.3) 1.38 cpu_3D	 v1.8.0
+Linux x86_64	2*32@2.5-3.3Ghz				AMD Epyc 7502	1.9s	irene-amd-ccrt.ccc.cea.fr (icpc 19.0.5, IntelMPI 2018)  1.38    cpu_3D	 v1.8.0
+Linux x86_64	2*24@2.3-3.2Ghz        ???Go:16Mo	AMD Epyc 7352   2.0s	orcus-amd.intra.cea.fr 	(icpc 19.0.3, IntelMPI 2019)	1.57	cpu_3D	 v1.8.3
 Linux x86_64 	 2*4@3.8-3.9Ghz       1000Go:16Mo       Xeon Gold 5222  2.0s 	is244274.intra.cea.fr 	(g++ 10.0.1)
 Linux x86_64 	 1*4@1.6-4.1Ghz		16Go:6Mo	Xeon i5-8365U	2.0s	is242568.intra.cea.fr   (g++ 7.0, OpenMPI)		1.16	cpu_3D   v1.8.1
-Linux x86_64	2*24@2.7Ghz		96Go:33Mo	Xeon Gold 8168 	2.3s    irene.ccc.cea.fr	(icpc 17.0.4, OpenMPI 2.0.2)	1.59	cpu_3D	 v1.7.7
+Linux x86_64	2*24@2.7-3.7Ghz		96Go:33Mo	Xeon Gold 8168 	2.3s    irene.ccc.cea.fr	(icpc 17.0.4, OpenMPI 2.0.2)	1.59	cpu_3D	 v1.7.7
 Linux x86_64	 1*4@2.1-3.7Ghz		16Go:4Mo        AMD Ryzen5 3550H2.3s    pc portable (wsl2)      (g++ 9.3.0, MPICH 3.2)		1.39	cpu_3D	 v1.8.1
 Linux x86_64	2*14@2.4-2.4Ghz		64Go:35Mo	Xeon E5-2680 v4	2.4s	cobalt.ccc.cea.fr	(icpc 16.0.3, OpenMPI 1.8.8)		cpu_3D	 v1.7.7
 Linux x86_64	 1*4@3.0-3.5Ghz		16Go:8Mo	Xeon E3-1220 v5	2.4s	is231771.intra.cea.fr   (g++ 4.8.5, MPICH 3.2)		1.56	cpu_3D	 v1.7.7
-Linux x86_64	2*28@2.2Ghz            131Go:19Mo	Xeon Gold 5120  2.5s	pegasi2.intra.cea.fr	(g++ 4.8.5, MPICH 3.2)		1.74	cpu_3D	 v1.8.1	
-Linux x86_64	2*24@2.3Ghz    	       192Go:16Mo	Xeon Gold 5118	2.5s	orcusloginint1.intra.cea.fr (icpc 19.0.3, IntelMPI 2019)1.61	cpu_3D	 v1.8.0
-Linux x86_64	2*32@2.1Ghz    	       128Go:32Mo	AMD Epyc 7281   2.7s	orcusloginamd1.intra.cea.fr (icpc 19.0.3, IntelMPI 2019)1.70	cpu_3D	 v1.8.0
-Linux x86_64		2*16@2.1Ghz    128Go:4Mo	AMD Epyc 7281   2.7s	orcus-amd.intra.cea.fr  (aocc 2.1.0, HPC-X 2.6.0)	1.52	cpu_3D	 v1.8.1
+Linux x86_64	2*28@2.2-3.9Ghz        131Go:19Mo	Xeon Gold 5120  2.5s	pegasi2.intra.cea.fr	(g++ 4.8.5, MPICH 3.2)		1.74	cpu_3D	 v1.8.1	
+Linux x86_64	2*24@2.3-3.2Ghz        192Go:16Mo	Xeon Gold 5118	2.5s	orcus-intel.intra.cea.fr (icpc 19.0.3, IntelMPI 2019)	1.61	cpu_3D	 v1.8.0
+Linux x86_64	2*32@2.1-2.7Ghz        128Go:32Mo	AMD Epyc 7281   2.7s	orcus-amd.intra.cea.fr  (icpc 19.0.3, IntelMPI 2019)	ss1.70	cpu_3D	 v1.8.0
 Linux x86_64	 	1*4@3.20Ghz 	 8Go:8Mo	Xeon E3-1225	2.9s	malrif.intra.cea.fr	(g++ 4.4.1)		1.49		cpu_3D	 v1.6.8
 Linux x86_64	 	2*8@2.70Ghz     32Go:20Mo 	Xeon E5-2680	3.1s	supermuc.lrz.de		(icpc 12.1.6)
 Linux x86_64	 	1*2@3.10Ghz      4Go:3Mo	i5-3210M	3.2s	grenat.si.c-s.fr	(g++ 4.4.5)		0.98		cpu_3D 	 v1.6.6
 Linux x86_64	 	2*6@2.67GHz     24Go:12Mo	Xeon X5650     	3.2s   antoinette3.intra.cea.fr	(g++ 4.4.6)		1.56		cpu_3D 	 v1.6.6
 Linux x86_64	       2*10@2.80Ghz    264Go:25Mo	Xeon E5-2680	3.3s	callisto.intra.cea.fr   (icpc 14.0.2)		1.58		cpu_3D	 v1.6.9
 Linux x86_64	 	2*6@2.67Ghz     24Go:12Mo 	Xeon X5650	3.4s	laramon.intra.cea.fr	(g++ 4.4.1)		1.58		cpu_3D	 v1.6.4
-Linux_x86_64	       2*10@2.80Ghz    264Go:25Mo	Xeon E5-2680	3.5s	callisto.intra.cea.fr   (g++ 4.4.7)		1.59		cpu_3D	 v1.6.9
+Linux_x86_64	       2*10@2.80Ghz    264Go:25Mo	Xeon E5-2680	3.5s	callisto.intra.cea.fr   (g++5118 4.4.7)		1.59		cpu_3D	 v1.6.9
 Linux x86_64		1*2@3.30Ghz      4Go:3Mo	i3-2120		3.5s	estaris.intra.cea.fr	(g++ 4.4.1)
 Linux x86_64	       2*10@2.80Ghz	64Go:25Mo	Xeon E5-2680	3.5s	airain.ccc.cea.fr	(icpc 13.1.3)				cpu_3D 	 v1.6.8
 Linux x86_64		2*8@2.70Ghz     64Go:20Mo 	Xeon E5-2680	3.5s	airain.ccc.cea.fr	(icpc 12.1.0)	        1.57		cpu_3D   v1.6.5
@@ -228,7 +231,34 @@ nb_proc	| cpu(s) dt	| ngcp 		| cpu(s) igcp	| speed up	| efficacite	|
 68	| 2.56624	| 196.55	| 0.0111754	| 51.611	| .758		| 1 node (64 cores)
 136	| 1.52789	| 196.6		| 0.00622859	| 86.686	| .637		| 2 nodes
 ------------------------------------------------------------------------------------
-Calcul parallele TRUST 1.8.2 Thu Jun 18 14:35:51 CEST 2020 sur orcus-amd : (AMD, AOCC 2.1.0, HPCX 2.6.0):
+Calcul parallele TRUST 1.8.4_beta Mon Oct  4 09:59:08 CEST 2021 sur orcus-amd-rome : (Intel 19.0.3, Intelmpi/2019 update 3, binding "-m block:block --cpu-bind=rank"):
+------------------------------------------------------------------------------------
+nb_proc	| cpu(s) dt	| ngcp 		| cpu(s) igcp	| speed up	| efficacite	|
+------------------------------------------------------------------------------------
+1	| 24.8066	| 195.55	| 0.107413	| 1.000		| 1.000		|
+2	| 14.9856	| 195.55	| 0.0654083	| 1.655		| .827		|
+4	| 11.3828	| 195.55	| 0.051237	| 2.179		| .544		|
+8	| 8.36899	| 195.55	| 0.0387636	| 2.964		| .370		|
+16	| 4.15765	| 196.3		| 0.0189094	| 5.966		| .372		|
+32	| 2.16255	| 196.35	| 0.00971999	| 11.470	| .358		|
+48	| 1.27431	| 196.45	| 0.00559588	| 19.466	| .405		| 1 node (48 cores)
+64	| 0.80007	| 196.55	| 0.00342564	| 31.005	| .484		| 2 nodes
+96	| 0.411051	| 196.65	| 0.00164991	| 60.357	| .628		| 2 nodes (96 cores)
+128	| 0.301381	| 196.6		| 0.00122364	| 82.309	| .643		| 3 nodes										
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.8.3 Mon Oct  4 09:53:51 CEST 2021 sur orcus-amd-naples : (Intel 19.0.3, Intelmpi/2019 update 3, binding "-m block:block --cpu-bind=rank"):
+------------------------------------------------------------------------------------
+nb_proc	| cpu(s) dt	| ngcp 		| cpu(s) igcp	| speed up	| efficacite	|
+------------------------------------------------------------------------------------
+1	| 31.0803	| 195.55	| 0.136055	| 1.000		| 1.000		|
+2	| 16.7393	| 195.55	| 0.0736206	| 1.856		| .928		|
+4	| 8.40469	| 195.55	| 0.0365381	| 3.697		| .924		|
+8	| 4.44198	| 195.55	| 0.0194889	| 6.996		| .874		|
+16	| 2.46641	| 196.3		| 0.0107334	| 12.601	| .787		|
+32	| 1.83164	| 196.35	| 0.00808526	| 16.968	| .530		| 1 node (32 cores)
+64	| 0.921205	| 196.55	| 0.0040165	| 33.738	| .527		| 2 nodes
+------------------------------------------------------------------------------------
+Calcul parallele TRUST 1.8.2 Thu Jun 18 14:35:51 CEST 2020 sur orcus-amd-naples : (AOCC 2.1.0, HPCX 2.6.0):
 ------------------------------------------------------------------------------------
 nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
 ------------------------------------------------------------------------------------
@@ -239,18 +269,6 @@ nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite   
 16      | 2.53296       | 196.3 	| 0.0112231     | 12.563        | .785          |
 32      | 1.82093       | 196.35        | 0.00813435    | 17.47         | .546          | 1 node (32 cores)
 64      | 0.875195      | 196.55        | 0.0038366     | 36.36         | .568          | 2 nodes
-------------------------------------------------------------------------------------
-Calcul parallele TRUST 1.8.1 Tue Nov 12 19:18:15 CET 2019 sur orcus-amd : (AMD, Intel 19.0.3, Intelmpi/2019 update 3, binding "-m block:block --cpu-bind=rank"):
-------------------------------------------------------------------------------------
-nb_proc | cpu(s) dt     | ngcp  	| cpu(s) igcp   | speed up      | efficacite    |
-------------------------------------------------------------------------------------
-1       | 31.7519       | 195.55        | 0.142848      | 1.000         | 1.000         |
-2       | 16.0967       | 195.55        | 0.0719657     | 1.972         | .986          |
-4       | 8.69032       | 195.55        | 0.0387601     | 3.653         | .913          |
-8       | 4.31069       | 195.55        | 0.0192113     | 7.365         | .920          |
-16      | 2.46993       | 196.3 	| 0.0109613     | 12.855        | .803          |
-32      | 1.83387       | 196.35        | 0.00813929    | 17.314        | .541          | 1 node (32 cores)
-64      | 0.936332      | 196.55        | 0.00413962    | 33.910        | .529          | 2 nodes
 ------------------------------------------------------------------------------------
 Calcul parallele TRUST 1.8.1 Fri Nov 15 12:45:07 CET 2019 sur orcus-intel : (Skylake 5118, Intel 19.0.3, Intelmpi/2019 update 3, binding "-m block:block --cpu-bind=rank"):
 ------------------------------------------------------------------------------------

@@ -897,9 +897,11 @@ then
 		[ "$project" != "" ] && echo "#SBATCH -A $project"	>> $sub_file	# Account
 		echo "#SBATCH -n $NB_PROCS"				>> $sub_file	# Number of tasks
 		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
-		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"	>> $sub_file	# Number of cores per task
-		[ "$gpus_per_node" != "" ] && echo "#SBATCH --gres=gpu:$gpus_per_node"	>> $sub_file	# Number of GPUs per node (jean-zay/IDRIS)	
-		[ "$hintnomultithread" != "" ] && echo "#SBATCH --hint=nomultithread"	>> $sub_file	# Option for jean-zay/IDRIS
+		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"			>> $sub_file	# Number of cores per task
+		[ "$gpus_per_node" != "" ] && echo "#SBATCH --gres=gpu:$gpus_per_node"		>> $sub_file	# Number of GPUs per node
+                # Deux options importantes for jean-zay/IDRIS sinon crashes possibles avec MPI-Cuda-Aware:	
+		[ "$hintnomultithread" != "" ] && echo "#SBATCH --hint=nomultithread"		>> $sub_file
+		[ "$hintnomultithread" != "" ] && echo "#SBATCH --ntasks-per-node=$ntasks"	>> $sub_file
 		[ "$node" = 1 ] && echo "#SBATCH --exclusive"		>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
 		echo "set -x"				 		>> $sub_file 

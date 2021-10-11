@@ -47,6 +47,7 @@ cb_config_list *:1" > ROMIO_HINTS.env
       module="intel/18.0.3.222 mpi/openmpi/4.0.2" # Validation sur les calculs PE a 7800 coeurs
    fi
    #
+   # module switch feature/hcoll/multicast/disable # Bon retour de performances en int64 (PE)
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
    echo "module load $module 1>/dev/null" >> $env

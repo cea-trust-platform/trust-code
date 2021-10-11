@@ -611,6 +611,8 @@ then
    echo "TRUST_WITHOUT_HOST=$TRUST_WITHOUT_HOST && export TRUST_WITHOUT_HOST	# Disable/enable reading of HOST file"	>> configure.env
    . ./configure.env
 fi
+# ToDo: Forcer TRUST_DISABLE_CHECK_SRC=1 sur clusters ?
+[ $HOST = jean-zay ] && [ "$TRUST_DISABLE_CHECK_SRC" = 0 ] && echo "Add -disable-check_sources to configure on JeanZay cause very slow." && exit -1
 
 #######################
 # Quelle architecture ?
@@ -1562,8 +1564,8 @@ case $TRUST_ARCH_CC in
 #	cherche_include_systeme
 	;;
    linux_FCC) TRUST_SUPPORTED=1
-        Defines="-D_COMPILE_AVEC_FCC"
-        CppFlags="-O3 -fPIC -Kfast" # -SSL2 ?
+        Defines="-D_COMPILE_AVEC_FCC" # Kfast: induces the standard options to exploit the full performance of the A64FX such as SIMDization, software pipelining
+        CppFlags="-O3 -fPIC -Kfast" # -SSL2 (for Fujitsu Blas+Lapack) -Nnoclang (fugaku for Trad mode, default)
         SYSLIBS=""
         F77Flags="-O3 -fPIC -Kfast"
         ccFLAGS="-O3 -fPIC -Kfast"

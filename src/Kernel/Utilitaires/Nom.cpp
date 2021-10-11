@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -607,6 +607,13 @@ Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
           //digits=6;
           digits=5;
           diviseur=10000;
+        }
+      else if (Process::nproc()<=1000000)
+        {
+          //the underscore will be taken into account later
+          //digits=7;
+          digits=6;
+          diviseur=100000;
         }
       else
         {

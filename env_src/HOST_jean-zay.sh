@@ -16,8 +16,7 @@ define_modules_config()
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      module="gcc/8.3.1 openmpi/4.0.5-cuda cuda/11.2" # Pour essayer la partition A100 (gpu_p4) car la ligne suivante le calcul bloque sur A100
-      module="gcc/8.3.1 openmpi/4.0.2-cuda cuda/10.2"
+      module="gcc/8.3.1 openmpi/4.0.5-cuda cuda/11.2" # Fonctionne sur gpu_p13 et gpu_p4
    else
       # avec intel/intelmpi 19.0.2, les calculs bloquent
       #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
@@ -55,12 +54,12 @@ define_soumission_batch()
       [ "$gpus_per_node" = "" ] && gpus_per_node=4 # Si on ne reserve qu'1 GPU plantage memoire possible... Donc le max par defaut
       qos=qos_gpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_gpu-dev && cpu=120 
       #qos=qos_gpu-t4 && cpu=6000
-      [ "`id | grep eia`" != "" ] && project="eia@gpu"
+      [ "`id | grep aih`" != "" ] && project="aih@gpu" # GENDEN
    else
       queue=cpu_p1
       qos=qos_cpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_cpu-dev && cpu=120 
       #qos=qos_cpu-t4 && cpu=6000
-      [ "`id | grep fej`" != "" ] && project="fej@cpu"
+      [ "`id | grep aih`" != "" ] && project="aih@cpu" # GENDEN
    fi
    hintnomultithread=1
    ntasks=40 # number of cores max
