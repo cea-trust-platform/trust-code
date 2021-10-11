@@ -31,6 +31,7 @@
 #include <Convection_Diffusion_Concentration.h>
 #include <Convection_Diffusion_Temperature.h>
 #include <Navier_Stokes_std.h>
+#include <Pb_Multiphase.h>
 #include <Synonyme_info.h>
 
 Implemente_instanciable(Terme_Boussinesq_CoviMAC_Face,"Boussinesq_CoviMAC_Face",Terme_Boussinesq_base);
@@ -63,14 +64,16 @@ void Terme_Boussinesq_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
   const DoubleVect& grav = gravite().valeurs();
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur()).fcl();
-  const DoubleTab& xv = zone.xv(), &xp = zone.xp();
+  const DoubleTab& xv = zone.xv(), &xp = zone.xp(), &rho = equation().milieu().masse_volumique().passe(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+
   const DoubleVect& pf = zone.porosite_face();
   const DoubleVect& fs = zone.face_surfaces();
 
   DoubleVect g(dimension);
   g = grav;
 
-  int nb_dim = param.line_size();
+  const int nb_dim = param.line_size(), cR = (rho.dimension_tot(0) == 1);
 
   // Verifie la validite de T0:
   check();
@@ -78,7 +81,7 @@ void Terme_Boussinesq_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab
   for (f = 0; f < zone.nb_faces(); f++) for (i = 0; fcl(f, 0) < 2 && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
       {
         double coeff = 0;
-        for (n = 0; n < nb_dim; n++) coeff += valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));
+        for (n = 0; n < nb_dim; n++) coeff += (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));
         secmem(f) += coeff * (i ? -1 : 1) * zone.dot(&xv(f, 0), g.addr(), &xp(e, 0)) * fs(f) * pf(f);
       }
 }
