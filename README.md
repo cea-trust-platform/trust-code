@@ -14,7 +14,7 @@ BSD3 license
 
 ```
 
-# **How to install ?**
+# **How to install TRUST-1.8.3 version ?**
 
 ### **First method**
 
@@ -22,15 +22,14 @@ BSD3 license
     $> cd TRUST-1.8.3
     $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.8.3.tar
     $> tar xf externalpackages-1.8.3.tar
-    $> ./configure $OPTIONS
+    $> ./configure -help # To see the possible configure options. On various OS, we configure TRUST with OPTIONS -force_provided_mpich (DO NOT use it on HPC clusters!)
+    $> ./configure $OPTIONS  # At the end of configure, file env/machine.env will be created. You can then edit it and some others (env/make.linux*) to change some default values.
     $> make
 
-To see the available OPTIONS, run
+**Warning:** Check carefully the MPI version you want to use for parallel computing before installing the code, especially onto a HPC cluster.
 
-    $> ./configure -help
-
-Warning: Check carefully the MPI version you want to use for parallel computing before installing the code, especially onto a HPC cluster.
 Run the following command, mpicxx should be found into the bin directory of the MPI version you plan to use:
+
     $> type mpicxx
 
 ### **Second method**
@@ -41,22 +40,28 @@ Run the following command, mpicxx should be found into the bin directory of the 
     $> ./configure $OPTIONS
     $> make
 
+# **How to install TRUST development version  ?**
+**for developers and those interested in new features only.**
+
+**<span style="color:red">Warning: "next" branch may not compile or some tests fail if important developments merged</span>**
+
+    $> git clone https://github.com/cea-trust-platform/trust-code.git TRUST-next
+    $> cd TRUST-next
+    $> git checkout next
+    $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-next.tar
+    $> tar xf externalpackages-next.tar
+    $> ./configure $OPTIONS 
+    $> make
 
 # **How to start ?**
 
-To detect the environment, run:
-
-	$> ./configure
-
-A file env/machine.env will be created. You can then edit this file and some others (env/make.linux*) to change some default values.
-
-To initialize:
+To initialize TRUST:
 
 	$> source ./env_TRUST.sh
 
 To build a binary with a single directory build:
 
-	$> make # Create an optimized debug binaries
+	$> make       # Create optimized and debug binaries and tools
 	$> make optim # Create an optimized binary
 	$> make debug # Create a debug binary
 	$> make prof  # Create a profiled binary  
@@ -99,21 +104,25 @@ To clean also the third party libraries:
 
 # **Quick files description**
 
-> - **DEVELOPER_NOTES**	=> Developer notes (manually and regulary updated by support)
+> - **README.md**			=> This file
 
-> - **Makefile** =>	List of targets to build the code
+> - **env_TRUST.sh**		=> Script loading TRUST environment
 
-> - **README.md** => This file
+> - **env_for_python.sh**	=> TRUST python tools initialization script
 
-> - **RELEASE_NOTES** => Release notes (manually and regulary updated by support)
+> - **RELEASE_NOTES**		=> Release notes (manually and regulary updated by support)
 
-> - **ToDo** => List of tasks to do
+> - **DEVELOPER_NOTES**		=> Developer notes (manually and regulary updated by support)
 
-> - **configure** => configure script
+> - **Makefile**			=>	List of targets to build the code
 
-> - **index.html** => Index description
+> - **ToDo**				=> List of tasks to do
 
-> - **license** => TRUST and third party licences
+> - **configure**			=> configure script
+
+> - **index.html**			=> Index description (gives access to documentation, tutorials, ...)
+
+> - **license**				=> TRUST and third party licences
 
 
 # **How to run a TRUST preinstalled version**
