@@ -141,21 +141,32 @@ void Echange_contact_CoviMAC::harmonic_points(DoubleTab& xh, DoubleTab& wh, Doub
         for (n = 0; n < oN; n++) for (lambda(1, n) = zone.nu_dot(&o_nu, o_e, n, &nf(f, 0), &nf(f, 0)) / (fs(f) * fs(f)), d = 0; d < D; d++)
             lambda_t(1, n, d) = (zone.nu_dot(&o_nu, o_e, n, i3[d], &nf(f, 0)) - lambda(1, n) * nf(f, d)) / fs(f);
 
-        //xh_c / wh_c : point harmonique commun, correspondant a la temperature de paroi du cote du pb courant
-        den = 0, xh_c = 0, wh_c = 0; //denominateur des expressions, position, poids des temperatures amont/aval
-        for (n = 0; n <  N; n++) for (den += (wh_c(0, n) = lambda(0, n) / (def(0) + invh(fb, n) * lambda(0, n))), d = 0; d < D; d++)
-            xh_c(d) += (lambda(0, n) * xef(0, d) + def(0) * lambda_t(0, n, d)) / (def(0) + invh(fb, n) * lambda(0, n));
-        for (n = 0; n < oN; n++) for (den += (wh_c(1, n) = lambda(1, n) / (def(1) + (o_invh(o_fb, n) + invh_paroi_) * lambda(1, n))), d = 0; d < D; d++)
-            xh_c(d) += (lambda(1, n) * xef(1, d) - def(1) * lambda_t(1, n, d)) / (def(1) + (o_invh(o_fb, n) + invh_paroi_) * lambda(1, n));
-        xh_c /= den, wh_c /= den; //normalisation
-
-        for (n = 0; n < N; n++) for (d = 0; d < D; d++) //position du point pour chaque composante -> dans xh (tableau sur toutes les faces)
-            xh(f, n, d) = (def(0) * xh_c(d) + invh(fb, n) * (lambda(0, n) * xef(0, d) + def(0) * lambda_t(0, n, d))) / (def(0) + invh(fb, n) * lambda(0, n));
-        for (n = 0; n < N; n++) //poids de chaque cote -> dans whm
+        if (invh_paroi_ || oN != N) /* paroi fine ou nb de composantes differents -> couplage par le flux total */
           {
-            for (m = 0; m <  N; m++) whm(i_mono, n, m, 0) = (def(0) * wh_c(0, m) + (m == n) * invh(fb, n) * lambda(0, n)) / (def(0) + invh(fb, n) * lambda(0, n));
-            for (m = 0; m < oN; m++) whm(i_mono, n, m, 1) = def(0) * wh_c(1, m) / (def(0) + invh(fb, n) * lambda(0, n));
+            //xh_c / wh_c : point harmonique commun, correspondant a la temperature de paroi du cote du pb courant
+            den = 0, xh_c = 0, wh_c = 0; //denominateur des expressions, position, poids des temperatures amont/aval
+            for (n = 0; n <  N; n++) for (den += (wh_c(0, n) = lambda(0, n) / (def(0) + invh(fb, n) * lambda(0, n))), d = 0; d < D; d++)
+                xh_c(d) += (lambda(0, n) * xef(0, d) + def(0) * lambda_t(0, n, d)) / (def(0) + invh(fb, n) * lambda(0, n));
+            for (n = 0; n < oN; n++) for (den += (wh_c(1, n) = lambda(1, n) / (def(1) + (o_invh(o_fb, n) + invh_paroi_) * lambda(1, n))), d = 0; d < D; d++)
+                xh_c(d) += (lambda(1, n) * xef(1, d) - def(1) * lambda_t(1, n, d)) / (def(1) + (o_invh(o_fb, n) + invh_paroi_) * lambda(1, n));
+            xh_c /= den, wh_c /= den; //normalisation
+
+            for (n = 0; n < N; n++) for (d = 0; d < D; d++) //position du point pour chaque composante -> dans xh (tableau sur toutes les faces)
+                xh(f, n, d) = (def(0) * xh_c(d) + invh(fb, n) * (lambda(0, n) * xef(0, d) + def(0) * lambda_t(0, n, d))) / (def(0) + invh(fb, n) * lambda(0, n));
+            for (n = 0; n < N; n++) //poids de chaque cote -> dans whm
+              {
+                for (m = 0; m <  N; m++) whm(i_mono, n, m, 0) = (def(0) * wh_c(0, m) + (m == n) * invh(fb, n) * lambda(0, n)) / (def(0) + invh(fb, n) * lambda(0, n));
+                for (m = 0; m < oN; m++) whm(i_mono, n, m, 1) = def(0) * wh_c(1, m) / (def(0) + invh(fb, n) * lambda(0, n));
+              }
           }
+        else for (n = 0; n < N; n++) /* sinon -> couplage composante par composante */
+            {
+              for (d = 0; d < D; d++) /* position du "harmonic average point "*/
+                xh(f, n, d) = (lambda(1, n) * def(0) * xef(1, d) + lambda(0, n) * def(1) * xef(0, d) + def(0) * def(1) * (lambda_t(1, n, d) - lambda_t(0, n, d)))
+                              / (lambda(1, n) * def(0) + lambda(0, n) * def(1));
+              for (n = 0; n < N; n++) for (m = 0; m < M; m++) /* poids de l'amont dans la valeur a ce point */
+                  whm(i_mono, n, m, 0) = (m == n) * lambda(0, n) * def(1) / (lambda(1, n) * def(0) + lambda(0, n) * def(1)), whm(i_mono, n, m, 1) = (m == n) - whm(i_mono, m, n, 0);
+            }
         for (n = 0; n < N; n++) wh(f, n) = 0; //pour indiquer que la face a ete traitee
       }
 }
@@ -172,7 +183,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
                    &nu = diff->nu(), &invh = diff->invh(), &o_nu = o_diff->nu(), &o_invh = o_diff->invh(), &xh = diff->xh(), &o_xh = o_diff->xh(),
                     &wh = diff->wh(), &o_wh = o_diff->wh(), &whm = diff->whm(), &o_whm = o_diff->whm();
   const DoubleVect& fs = zone.face_surfaces(), &o_fs = o_zone.face_surfaces();
-  double i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }};
+  double i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }}, tphi;
   char trans = 'N';
 
   //traduction des indices de probleme dans o_diff en indices de problemes dans diff (avec extension de op_ext si necessaire)
@@ -187,16 +198,14 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
   assert(phif_d.dimension(0) == fvf->num_face(0) + 1 && phif_w.dimension(0) == zone.nb_faces());
 
   std::vector<std::pair<int, int>> p_e; //stencil aux elemens : { { pb, elem/bord }, ... }
-  DoubleTrav base, A , B, lambda(2, M), r_int(2, M), h(2, M), xef(2, M, D), interp, tphi, W(1); //base de champs possibles, systeme A.x = B,
-  base.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), interp.set_smart_resize(1), tphi.set_smart_resize(1), W.set_smart_resize(1);
+  DoubleTrav base, A , B, lambda(2, M), r_int(2, M), h(2, M), xef(2, M, D), interp,  phi, W(1); //base de champs possibles, systeme A.x = B,
+  base.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), interp.set_smart_resize(1), phi.set_smart_resize(1), W.set_smart_resize(1);
   for (i_f = 0; i_f < fvf->nb_faces(); i_f++, phif_d.append_line(phif_e.dimension(0), phif_pe.dimension(0)))
     {
       f = fvf->num_face(i_f), e = f_e(f, 0), o_f = fe_d(i_f, 0), o_e = fe_d(i_f, 1), fb = zone.fbord(f), o_fb = o_zone.fbord(o_f);
 
       const int *fa = &zone.fsten_f(zone.fsten_d(f)), *o_fa = &o_zone.fsten_f(o_zone.fsten_d(o_f)); //debuts des stencils de chaque cote
-      int n_f = zone.fsten_d(f + 1) - zone.fsten_d(f), o_n_f = o_zone.fsten_d(o_f + 1) - o_zone.fsten_d(o_f), n_tf = n_f + o_n_f + 2,
-          nrhs = N + oN, ng = D + N + oN - 2, nl = ng + 1, nc = N * (n_f + 1) + oN * (o_n_f + 1), nnz, hdiag, ok = 1;
-
+      int n_f = zone.fsten_d(f + 1) - zone.fsten_d(f), o_n_f = o_zone.fsten_d(o_f + 1) - o_zone.fsten_d(o_f), n_tf = n_f + o_n_f + 2, nnz, hdiag, ok = 1;
       /* verification qu'on dispose de tous les points harmoniques dont on a besoin */
       for (i = 0; i <   n_f; i++) ok &= (  wh(  fa[i], 0) >= 0);
       for (i = 0; i < o_n_f; i++) ok &= (o_wh(o_fa[i], 0) >= 0);
@@ -204,7 +213,6 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
                                + " ! Have you used Decouper_multi?");
 
       double h_max[2] = { 0, }, h_tot[2] = { 0, }, dist[2] = { zone.dist_norm_bord(f), o_zone.dist_norm_bord(o_f) }; //coeff d'echange max de chaque cote, distances
-      B.resize(nrhs, nc), A.resize(nc, nl);
 
       /* nf.lambda.nf de chaque cote + identification des phases dominantes (-> diffusant le plus) */
       const double *xe; //coordonnees de l'amont/aval
@@ -217,43 +225,79 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
             if (h(i, n) > h_max[i]) h_max[i] = h(i, n), *(i ? &on_max : &n_max) = n;
           }
 
-      /* base de gradients amont/aval */
-      //D premiers : diffusion dans les phases dominantes
-      base.resize(ng, 2, M, D), base = 0;
-      for (i = 0; i < D; i++) for (j = 0; j < 2; j++) for (d = 0; d < D; d++)
-            base(i, j, j ? on_max : n_max, d) = i3[i][d] + (j ? -1 : 1) * (zone.nu_dot(&o_nu, o_e, on_max, &nf(f, 0), i3[i]) - zone.nu_dot(&nu, e, n_max, &nf(f, 0), i3[i]))
-                                                * nf(f, d) / (2 * fs(f) * fs(f) * lambda(j, j ? on_max : n_max));
-      //N + oN - 2 suivants : gradient normal dans la phase n (non dominante) d'un cote, compense par la phase dominante de l'autre
-      for (i--, n = 0; n <  N; n++) if (n != n_max) for (i++, j = 0; j < 2; j++) for (d = 0; d < D; d++)
-              base(i, j, j ? on_max : n, d) = nf(f, d) / fs(f) * (j ? lambda(0, n) / lambda(1, on_max) : 1);
-      for (n = 0; n < oN; n++) if (n != on_max) for (i++, j = 0; j < 2; j++) for (d = 0; d < D; d++)
-              base(i, j, j ? n : n_max, d)  = nf(f, d) / fs(f) * (j ? 1 : lambda(1, n) / lambda(0, n_max));
-
-      /* seconds membres : pour les N + oN interpolations a calculer, une equation par gradient possible + une pour la constante */
-      for (B = 0, i = 0, j = 0; i < 2; i++) for (n = 0; n < (i ? oN : N); n++, j++) for (k = 0; k < nl; k++)
-            B(j, k) = k < ng ? zone.dot(&xef(i, n, 0), &base(k, i, n, 0), i ? &o_xh(o_f, n, 0) : &xh(f, n, 0)) : 0;
-
-      /* poids par defaut : */
+      /* interpolation des points projetes de chaque cote */
       interp.resize(2, M, n_tf, M); //ordre des colonnes : faces de zone.fsten_f -> xh local -> faces de o_zone.fsten_f -> xh distant
       for (interp = 0, i = 0; i < 2; i++) for (n = 0; n < (i ? oN : N); n++) interp(i, n, i ? n_tf - 1 : n_f, n) = 1;
-      if (std::pow(1e6 * local_max_abs_vect(B), D - 1) > fs(f)) //pts projetes distants des pts harmoniques -> recherche d'interpolation
+      if (invh_paroi_ > 0 || oN != N) /* paroi fine ou nombre de composantes differents -> partition du flux total */
         {
-          /* matrice */
-          for (i = 0, ic = 0; i <= n_f; i++) for (n = 0; n < N; n++, ic++) for (il = 0; il <= ng; il++) //cote interne
-                A(ic, il) = il < ng ? zone.dot(&xh(i < n_f ? fa[i] : f, n, 0), &base(il, 0, n, 0), &xv(f, 0))
-                            + (invh(fb, n) + invh_paroi_ / 2) * zone.nu_dot(&nu, e, n, &nf(f, 0), &base(il, 0, n, 0)) / fs(f) : 1;
-          for (i = 0; i <= o_n_f; i++) for (n = 0; n < oN; n++, ic++) for (il = 0; il <= ng; il++) //cote externe
-                A(ic, il) = il < ng ? zone.dot(&o_xh(i < o_n_f ? o_fa[i] : o_f, n, 0), &base(il, 1, n, 0), &xv(f, 0))
-                            - (o_invh(o_fb, n) + invh_paroi_ / 2) * zone.nu_dot(&o_nu, o_e, n, &nf(f, 0), &base(il, 1, n, 0)) / fs(f) : 1;
+          int nrhs = N + oN, ng = D + N + oN - 2, nl = ng + 1, nc = N * (n_f + 1) + oN * (o_n_f + 1);
+          B.resize(nrhs, nc), A.resize(nc, nl), base.resize(ng, 2, M, D), base = 0;
+          /* base de gradients amont/aval */
+          //D premiers : diffusion dans les phases dominantes
+          for (i = 0; i < D; i++) for (j = 0; j < 2; j++) for (d = 0; d < D; d++)
+                base(i, j, j ? on_max : n_max, d) = i3[i][d] + (j ? -1 : 1) * (zone.nu_dot(&o_nu, o_e, on_max, &nf(f, 0), i3[i]) - zone.nu_dot(&nu, e, n_max, &nf(f, 0), i3[i]))
+                                                    * nf(f, d) / (2 * fs(f) * fs(f) * lambda(j, j ? on_max : n_max));
+          //N + oN - 2 suivants : gradient normal dans la phase n (non dominante) d'un cote, compense par la phase dominante de l'autre
+          for (i--, n = 0; n <  N; n++) if (n != n_max) for (i++, j = 0; j < 2; j++) for (d = 0; d < D; d++)
+                  base(i, j, j ? on_max : n, d) = nf(f, d) / fs(f) * (j ? lambda(0, n) / lambda(1, on_max) : 1);
+          for (n = 0; n < oN; n++) if (n != on_max) for (i++, j = 0; j < 2; j++) for (d = 0; d < D; d++)
+                  base(i, j, j ? n : n_max, d)  = nf(f, d) / fs(f) * (j ? 1 : lambda(1, n) / lambda(0, n_max));
 
-          /* resolution */
-          nw = -1, F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
-          W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
+          /* seconds membres : pour les N + oN interpolations a calculer, une equation par gradient possible + une pour la constante */
+          for (B = 0, i = 0, j = 0; i < 2; i++) for (n = 0; n < (i ? oN : N); n++, j++) for (k = 0; k < nl; k++)
+                B(j, k) = k < ng ? zone.dot(&xef(i, n, 0), &base(k, i, n, 0), i ? &o_xh(o_f, n, 0) : &xh(f, n, 0)) : 0;
 
-          /* correction de interp (avec ecretage) */
-          for (i = 0, j = 0; i < 2; i++) for (n = 0; n < (i ? oN : N); n++, j++) for (k = 0, il = 0; k < n_tf; k++)
-                for (m = 0; m < (k > n_f ? oN : N); m++, il++) interp(i, n, k, m) += dabs(B(j, il)) > 1e-8 ? B(j, il) : 0;
+          /* poids par defaut : pt harmonique du bon cote */
+          if (std::pow(1e6 * local_max_abs_vect(B), D - 1) > fs(f)) //pts projetes distants des pts harmoniques -> recherche d'interpolation
+            {
+              /* matrice */
+              for (i = 0, ic = 0; i <= n_f; i++) for (n = 0; n < N; n++, ic++) for (il = 0; il <= ng; il++) //cote interne
+                    A(ic, il) = il < ng ? zone.dot(&xh(i < n_f ? fa[i] : f, n, 0), &base(il, 0, n, 0), &xv(f, 0))
+                                + (invh(fb, n) + invh_paroi_ / 2) * zone.nu_dot(&nu, e, n, &nf(f, 0), &base(il, 0, n, 0)) / fs(f) : 1;
+              for (i = 0; i <= o_n_f; i++) for (n = 0; n < oN; n++, ic++) for (il = 0; il <= ng; il++) //cote externe
+                    A(ic, il) = il < ng ? zone.dot(&o_xh(i < o_n_f ? o_fa[i] : o_f, n, 0), &base(il, 1, n, 0), &xv(f, 0))
+                                - (o_invh(o_fb, n) + invh_paroi_ / 2) * zone.nu_dot(&o_nu, o_e, n, &nf(f, 0), &base(il, 1, n, 0)) / fs(f) : 1;
+
+              /* resolution */
+              nw = -1, F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
+              W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
+
+              /* correction de interp (avec ecretage) */
+              for (i = 0, j = 0; i < 2; i++) for (n = 0; n < (i ? oN : N); n++, j++) for (k = 0, il = 0; k < n_tf; k++)
+                    for (m = 0; m < (k > n_f ? oN : N); m++, il++) interp(i, n, k, m) += dabs(B(j, il)) > 1e-8 ? B(j, il) : 0;
+            }
         }
+      else for (n = 0; n < N; n++) /* sinon -> composante par composante */
+          {
+            int nrhs = 2, nl = D + 1, nc = n_tf;
+            B.resize(nrhs, nc), A.resize(nc, nl), base.resize(2, D, D);
+            /* base : base de "vecteurs tests" amont/aval d'un gradient verifiant nf.nu_am.vec_am = nf.nu_av.vec_av */
+            for (i = 0; i < 2; i++) for (j = 0; j < D; j++) for (d = 0; d < D; d++)
+                  base(i, j, d) = i3[j][d] + (i ? -1 : 1) * (zone.nu_dot(&o_nu, o_e, n, &nf(f, 0), i3[j]) - zone.nu_dot(&nu, e, n, &nf(f, 0), i3[j])) * nf(f, d) / (2 * lambda(i, n) * fs(f) * fs(f));
+
+            /* seconds membres : au passage, on calcule la resistance interne r = d / lambda */
+            for (B = 0, i = 0; i < 2; i++) for (d = 0; d < D; d++)
+                B(i, d) = (i ? o_xp(o_e, d) : xp(e, d)) + (i ? -1 : 1) * r_int(i, n) * zone.nu_dot(i ? &o_nu : &nu, i ? o_e : e, n, &nf(f, 0), i3[d]) / fs(f) - xh(f, n, d);
+
+            /* interpolation des points projetes amont / aval */
+            if (std::pow(1e6 * local_max_abs_vect(B), D - 1) > fs(f)) //si les pts projetes ne sont pas dessus -> corrections
+              {
+                /* matrice */
+                for (i = 0, ic = 0; i <= n_f; i++, ic++) for (il = 0; il <= D; il++) //cote interne
+                    A(ic, il) = il < D ? zone.dot(&xh(i < n_f ? fa[i] : f, n, 0), &base(0, il, 0), &xv(f, 0))
+                                + (invh(fb, n) + invh_paroi_ / 2) * zone.nu_dot(&nu, e, n, &nf(f, 0), &base(0, il, 0)) / fs(f) : 1;
+                for (i = 0; i <= o_n_f; i++, ic++) for (il = 0; il <= D; il++) //cote externe
+                    A(ic, il) = il < D ? zone.dot(&o_xh(i < o_n_f ? o_fa[i] : o_f, n, 0), &base(1, il, 0), &xv(f, 0))
+                                - (o_invh(o_fb, n) + invh_paroi_ / 2) * zone.nu_dot(&o_nu, o_e, n, &nf(f, 0), &base(1, il, 0)) / fs(f) : 1;
+
+                /* resolution */
+                nw = -1, F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
+                W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
+                /* correction de interp (avec ecretage) */
+                for (i = 0; i < 2; i++) for (j = 0; j < nc; j++) interp(i, n, j, n) += dabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
+              }
+
+          }
 
       /* stencil aux elements */
       for (p_e.clear(), i = 0; i < n_f; i++) for (f_s = fa[i], f_sb = zone.fbord(f_s), j = 0; j < 2; j++) //cote interne
@@ -266,11 +310,11 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
           else if (f_sb >= 0) p_e.push_back({ trad[0], o_ne_tot + f_s }); //CL non Echange_contact -> dependance en les valeurs aux bords
       std::sort(p_e.begin(), p_e.end()), p_e.erase(std::unique(p_e.begin(), p_e.end()), p_e.end()); //classement + deduplication
 
-      /* tphi : parties amont/aval du flux total */
-      tphi.resize(p_e.size(), M, 2), tphi = 0;
+      /* flux par composante */
+      phi.resize(p_e.size(), M, M, 2), phi = 0;
       //dependances points amont/aval
       for (i = 0; i < 2; i++) for (k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(i ? trad[0] : 0, i ? o_e : e)) - p_e.begin(), n = 0; n < (i ? oN : N); n++)
-          tphi(k, n, i) += (i ? 1 : -1) / r_int(i, n);
+          phi(k, n, n, i) += (i ? 1 : -1) / r_int(i, n);
 
       //dependances cote local
       for (i = 0; i <= n_f; i++) for (f_s = i < n_f ? fa[i] : f, f_sb = zone.fbord(f_s), j = 0; j < 2; j++)
@@ -278,14 +322,14 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
             {
               k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(f_e(f_s, j) >= 0 ? 0 : pe_ext(f_sb, 0), e_s)) - p_e.begin();
               if (f_sb < 0 || pe_ext(f_sb, 0) < 0) for (l = 0; l < 2; l++) for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < wh.dimension(1); m++) //pt harmonique normal : dependance diagonale
-                      tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * (j ? 1 - wh(f_s, m) : wh(f_s, m));
+                      phi(k, n, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * (j ? 1 - wh(f_s, m) : wh(f_s, m));
               else for (l = 0; l < 2; l++) for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < whm.dimension(1); m++) for (m_s = 0; m_s < whm.dimension(2); m_s++) //pt harmonique d'Echange_contact : melange...
-                        tphi(k, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * whm(pe_ext(f_sb, 2), m, m_s, j);
+                        phi(k, n, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * whm(pe_ext(f_sb, 2), m, m_s, j);
             }
           else for (k = std::find(p_e.begin(), p_e.end(), std::make_pair((int)0, ne_tot + f_s)) - p_e.begin(), l = 0; l < 2; l++) //pas d'elem source -> dependance en la CL
               for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < wh.dimension(1); m++)
-                  tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m)
-                                   * (wh(f_s, m) < 1 ? 1 - wh(f_s, m) : - zone.dist_norm_bord(f_s) * fs(f_s) * fs(f_s) / zone.nu_dot(&nu, f_e(f_s, 0), m, &nf(f_s, 0), &nf(f_s, 0)));
+                  phi(k, n, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m)
+                                     * (wh(f_s, m) < 1 ? 1 - wh(f_s, m) : - zone.dist_norm_bord(f_s) * fs(f_s) * fs(f_s) / zone.nu_dot(&nu, f_e(f_s, 0), m, &nf(f_s, 0), &nf(f_s, 0)));
 
       //dependances cote distant
       for (i = n_f + 1; i < n_tf; i++) for (f_s = i < n_tf - 1 ? o_fa[i - (n_f + 1)] : o_f, f_sb = o_zone.fbord(f_s), j = 0; j < 2; j++)
@@ -293,26 +337,36 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
             {
               k = std::lower_bound(p_e.begin(), p_e.end(), std::make_pair(trad[o_f_e(f_s, j) >= 0 ? 0 : o_pe_ext(f_sb, 0)], e_s)) - p_e.begin();
               if (f_sb < 0 || o_pe_ext(f_sb, 0) < 0) for (l = 0; l < 2; l++) for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < o_wh.dimension(1); m++) //pt harmonique normal : dependance diagonale
-                      tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * (j ? 1 - o_wh(f_s, m) : o_wh(f_s, m));
+                      phi(k, n, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * (j ? 1 - o_wh(f_s, m) : o_wh(f_s, m));
               else for (l = 0; l < 2; l++) for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < o_whm.dimension(1); m++) for (m_s = 0; m_s < o_whm.dimension(2); m_s++) //pt harmonique d'Echange_contact : melange...
-                        tphi(k, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * o_whm(o_pe_ext(f_sb, 2), m, m_s, j);
+                        phi(k, n, m_s, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m) * o_whm(o_pe_ext(f_sb, 2), m, m_s, j);
             }
           else for (k = std::find(p_e.begin(), p_e.end(), std::make_pair(trad[0], o_ne_tot + f_s)) - p_e.begin(), l = 0; l < 2; l++) //pas d'elem source -> dependance en la CL
               for (n = 0; n < (l ? oN : N); n++) for (m = 0; m < o_wh.dimension(1); m++)
-                  tphi(k, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m)
-                                   * (o_wh(f_s, m) < 1 ? 1 - o_wh(f_s, m) : - o_zone.dist_norm_bord(f_s) * o_fs(f_s) * o_fs(f_s) / o_zone.nu_dot(&o_nu, o_f_e(f_s, 0), m, &o_nf(f_s, 0), &o_nf(f_s, 0)));
+                  phi(k, n, m, l) += (l ? -1 : 1) / r_int(l, n) * interp(l, n, i, m)
+                                     * (o_wh(f_s, m) < 1 ? 1 - o_wh(f_s, m) : - o_zone.dist_norm_bord(f_s) * o_fs(f_s) * o_fs(f_s) / o_zone.nu_dot(&o_nu, o_f_e(f_s, 0), m, &o_nf(f_s, 0), &o_nf(f_s, 0)));
+
+      if (invh_paroi_ > 0 || oN != N) /* paroi fine ou nombre de composantes differents -> calcul du flux total, puis partition entre composantes */
+        {
+          for (n = 0; n < N; n++) phif_w(f, n) = h_tot[1] / (h_tot[0] + h_tot[1]); //poids amont/aval : par le flux total
+          for (i = 0; i < (int) p_e.size(); i++) for (m = 0; m < M; m++) for (j = 0; j < 2; j++)
+                {
+                  for (tphi = 0, n = 0; n < (j ? oN : N); n++) tphi += phi(i, n, m, j); //contrib de l'item i au flux total
+                  for (n = 0; n < (j ? oN : N); n++) phi(i, n, m, j) = h(0, n) / h_tot[0] * tphi; //re-repartition
+                }
+        }
+      else for (n = 0; n < N; n++) phif_w(f, n) = h(1, n) / (h(0, n) + h(1, n)); //poids amont/aval : par composante
 
       /* remplissage */
-      for (n = 0; n < N; n++) phif_w(f, n) = h_tot[1] / (h_tot[0] + h_tot[1]); //poids amont/aval : par le flux total
       for (i = 0; i < (int) p_e.size(); i++)
         {
-          for (nnz = 0, hdiag = 0, n = 0; n < N; n++) for (m = 0; m < M; m++) for (j = 0; j < 2; j++) if (h(0, n) / h_tot[0] * tphi(i, m, j) != 0) nnz++, hdiag += (n != m);
+          for (nnz = 0, hdiag = 0, n = 0; n < N; n++) for (m = 0; m < M; m++) for (j = 0; j < 2; j++) if (phi(i, n, m, j) != 0) nnz++, hdiag += (n != m);
           if (!nnz && !full_stencil) continue; //on peut sauter cette dependance
           if (p_e[i].first == 0 && hdiag == 0) //coeffs diagonaux et probleme local -> phif_e / phif_c
             for (phif_e.append_line(p_e[i].second), phif_c.resize((k = phif_c.dimension(0)) + 1, N, 2), n = 0; n < N; n++) for (j = 0; j < 2; j++)
-                phif_c(k, n, j) = h(0, n) / h_tot[0] * tphi(i, n, j);
+                phif_c(k, n, j) = phi(i, n, n, j);
           else for (phif_pe.append_line(p_e[i].first, p_e[i].second), phif_pc.resize((k = phif_pc.dimension(0)) + 1, N, M, 2), n = 0; n < N; n++) for (m = 0; m < M; m++) for (j = 0; j < 2; j++)
-                  phif_pc(k, n, m, j) = h(0, n) / h_tot[0] * tphi(i, m, j); //sinon -> phif_pe / phif_pc
+                  phif_pc(k, n, m, j) = phi(i, n, m, j); //sinon -> phif_pe / phif_pc
         }
     }
 }
