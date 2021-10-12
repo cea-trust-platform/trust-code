@@ -445,7 +445,9 @@ git_push()
    repos=`git remote`
    for repo in $repos
    do
-      remote_branch="triou/TMA" && [ "$repo" = "sf_write" ] && remote_branch="dev"
+      remote_branch="triou/TMA" 
+      [ "$repo" = "sf_write" ] && remote_branch="dev"
+      [ "$repo" = "github_write" ] && remote_branch="next"
       repo_log=$REP_NUIT"/git_"$repo"_"$git_branch"_"$HOST".log"
       echo "TRUST git push on $HOST the `date` ...">$repo_log
       echo>>$repo_log
@@ -932,6 +934,10 @@ fi
          git push sf_write Livraison:dev 1>tmp.log 2>&1
          cat tmp.log
          [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push sf_write TMA\" $TRUST_MAIL 
+         rm tmp.log 1>/dev/null 2>&1
+         git push github_write Livraison:next 1>tmp.log 2>&1
+         cat tmp.log
+         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push github TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
       elif [[ "$Composant" == "sympy_to_TRUST" || "$Composant" == "pemfc" ]]
       then
@@ -1650,7 +1656,9 @@ echo "Move $version_arch packages to $GRAVAGE"
 mv $TRUST_ROOT/$version_arch $GRAVAGE/.
 ls $GRAVAGE/$version_arch
 cd $TRUST_ROOT
-rm -f TRUST.tar.gz externalpackages.tar
+mv externalpackages.tar externalpackages-next.tar
+cp_ftp externalpackages-next.tar $PUBLIC/../externalpackages/
+rm -f TRUST.tar.gz externalpackages-next.tar
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 #
 #
@@ -1674,8 +1682,10 @@ Composant="triocfd"
 #done
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST/TrioCFD WEB site:    http://triocfd.cea.fr" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST distribution site:   http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TrioCFD distribution site: http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST's new distribution site:   https://github.com/cea-trust-platform/trust-code" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST's old distribution site:   http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TrioCFD's new distribution site: https://github.com/cea-trust-platform/TrioCFD-code" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TrioCFD's old distribution site: http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST environment at Saclay:   source /home/triou/env_TRUST_$old.sh" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST environment at Saclay:   source /home/trust_trio-public/env_TRUST-$old.sh" >> $MESSAGES_NUIT
@@ -3019,7 +3029,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=80.05 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=80.09 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
@@ -4253,7 +4263,8 @@ This software is OpenSource (BSD license).
 -----------------------------------
 New TrioCFD version released v$new
 -----------------------------------
-is available at http://sourceforge.net/projects/triocfd/
+is now available on Github: https://github.com/cea-trust-platform/TrioCFD-code
+and on sourceforge: http://sourceforge.net/projects/triocfd/
 
 -----------------
 Table of contents

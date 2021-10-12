@@ -145,6 +145,14 @@ setfacl -Rm g:dm2s-user-cat-a:rx $projet
 setfacl -Rdm g:dm2s-user-cat-a:rx $projet
 setfacl -Rx g:dm2s-projet-trust_trio-r $projet
 cd $projet/$projet" >> make.sh
+elif [ "$project" = genepi3 ] && [ "`id | grep dm2s-projet-trust_trio-r`" != "" ] 
+then
+  echo "cd ../../
+setfacl -Rdm g:dm2s-projet-genepi-rw:rwx .
+setfacl -Rm g:dm2s-projet-genepi-rw:rwx $projet
+setfacl -Rdm g:dm2s-projet-genepi-rw:rwx $projet
+setfacl -Rx g:dm2s-projet-trust_trio-r $projet
+cd $projet/$projet" >> make.sh
 fi
 
 if [ "$cases" != ""  ]
@@ -209,6 +217,14 @@ then
    setfacl -Rdm g:dm2s-user-cat-b:rx flica5
    setfacl -Rm g:dm2s-user-cat-a:rx flica5
    setfacl -Rdm g:dm2s-user-cat-a:rx flica5
+   cd -
+elif [ "$project" = genepi3 ] && [ "`id | grep dm2s-projet-trust_trio-r`" != "" ] 
+then
+   # droits au moment de la creation du dossier
+   cd ..
+   setfacl -Rx g:dm2s-projet-trust_trio-r genepi3
+   setfacl -Rm g:dm2s-projet-genepi-rw:rwx genepi3
+   setfacl -Rdm g:dm2s-projet-genepi-rw:rwx genepi3
    cd -
 fi
 

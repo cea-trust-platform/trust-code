@@ -43,6 +43,13 @@ change_droits()
   # changer les droits sur les dossiers car c'est la qu'il y a probleme
   #find . -type d -exec chmod 755 {} \;
   find . -type d -not -path "./*/genepi3*" -not -path "./*/flica5*" -not -path "./*/ijk*" -not -path "./*/mpcube*" -not -path "./*/mathys*" -not -path "./*/triomc*"  -not -path "./*/pemfc*" -not -path "./*/sympy_to_TRUST*" -not -path "./*/scorpio*" -not -path "./*/sides*" -exec chmod 755 {} \;
+  if [ "`id | grep dm2s-projet-trust_trio-rw`" != "" ] 
+  then
+     setfacl -dm g:dm2s-projet-trust_trio-rw:rwx $WORKDIR
+     setfacl -dm g:dm2s-projet-genepi-rw:rx $WORKDIR
+     setfacl -dm g:dm2s-projet-trust_trio-rw:rwx $TRUST_ROOT/../
+     setfacl -dm g:dm2s-projet-genepi-rw:rx $TRUST_ROOT/../
+  fi
 }
 
 #########

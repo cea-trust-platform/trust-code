@@ -30,6 +30,7 @@ Version	Qui				Tache
 1.8.4   trust@cea.fr            LDC: envoyer BDL
 1.8.4   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 1.8.4   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
+1.8.4   trust@cea.fr            [Titania] Changer pour supporter les PC portables titania pour lesquels on an /nfs/home au lieu de /home
 
 
 1.8.x   adrien.bruneton@cea.fr  Ajout d'echange_espace_virtuel dans Champ_front_xyz_debit.cpp. cf commit 76e425581
