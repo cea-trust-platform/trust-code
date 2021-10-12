@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -363,8 +363,8 @@ void paroi_contact::complement(Nom& ajout)
       ajout= "paroi_echange_contact_CoviMAC ";
       ajout+=nom_autre_pb;
       ajout+=" ";
-      ajout+=nom_autre_bord;
-      ajout+=" temperature 1.e10";
+      ajout+=nom_autre_bord + " ";
+      ajout+=mon_equation->inconnue().le_nom() + " 1.e10";
     }
   else
     {
