@@ -1,0 +1,144 @@
+# Pb_Hydraulique_Melange_Binaire_WC 3D GAZ PEMFC #
+# PARALLEL OK 4 #
+dimension 3
+Pb_Hydraulique_Melange_Binaire_WC pb
+
+Domaine dom
+# BEGIN MESH #
+Mailler dom
+{
+  Pave DOM_DOM
+  {
+    Origine 0. 0. 0.
+    Nombre_de_Noeuds 6 101 6
+    Longueurs 2.e-3 80.e-3 2.e-3
+  }
+  {
+    bord wall2 Z = 0.0 0.0 <= X <= 2.e-3 0.0 <= Y <= 80.e-3
+    bord wall Z = 2.e-3 0.0 <= X <= 2.e-3 0.0 <= Y <= 80.e-3
+    bord wall X = 0.0 0.0 <= Y <= 80.e-3 0.0 <= Z <= 2.e-3
+    bord wall X = 2.e-3 0.0 <= Y <= 80.e-3 0.0 <= Z <= 2.e-3
+    bord in Y = 0.0 0.0 <= X <= 2.e-3 0.0 <= Z <= 2.e-3
+    bord out Y = 80.e-3 0.0 <= X <= 2.e-3 0.0 <= Z <= 2.e-3
+  }
+}
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+  Partition_tool Tranche { tranches 2 2 2 }
+  Larg_joint 2
+  zones_name dom
+}
+End
+END PARTITION #
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+VDF dis
+Runge_Kutta_Rationnel_ordre_2 sch
+
+Lire sch
+{
+  tinit 0.
+  dt_start dt_calc
+  tmax 0.25
+  dt_min 1.e-7
+  dt_max 6.e-3
+  seuil_statio 1.e-14
+  facsec 0.9
+  diffusion_implicite 1
+  seuil_diffusion_implicite 1.e-8
+  nb_pas_dt_max 45
+}
+
+Fluide_Weakly_Compressible air
+Lire air
+{
+  pression_thermo   100000.
+  loi_etat BINAIRE_GAZ_PARFAIT_WC
+  {
+    temperature 373.15
+    diffusion_coeff 20.2e-6
+
+    # O2 rho 1.087902314582734 #
+    molar_mass1 32e-3
+    mu1 2.32e-5
+    
+    # H20 rho 0.580168818959181 #
+    molar_mass2 18e-3
+    mu2 0.0017916
+  }
+
+}
+
+Champ_Uniforme gravite
+Lire gravite 3 0 0. -9.81
+
+Associer air gravite
+
+Associer pb dom
+Associer pb air
+Associer pb sch
+
+option_vdf { p_imposee_aux_faces oui }
+
+Discretiser pb dis
+
+Lire pb
+{
+  Navier_Stokes_WC
+  {
+    parametre_equation parametre_diffusion_implicite
+    {
+      solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-13 impr }
+    }
+    solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-12 impr   }
+    convection { centre }
+    diffusion { }
+    conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
+    conditions_limites
+    {
+      wall paroi_fixe
+      wall2 paroi_fixe
+      in  frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 1.2 0.
+      out    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -0.580168818959181*9.81*z
+    }
+  }
+
+  Convection_Diffusion_Espece_Binaire_WC
+  {
+    parametre_equation parametre_diffusion_implicite
+    {
+      solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-13 impr }
+    }
+    convection  { quick }
+    diffusion { }
+    conditions_initiales { fraction_massique Champ_fonc_XYZ dom 1 0.0 }
+    conditions_limites
+    {
+      wall paroi
+      wall2 Paroi_flux_impose Champ_front_Uniforme 1 0.001
+      in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 1.0
+      out  frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
+    }
+  }
+
+  Postraitement
+  {
+    format lml
+    Champs dt_post 0.05
+    {
+    vitesse som
+    fraction_massique elem
+    masse_volumique som
+    pression elem
+    pression_tot elem
+    }
+  }
+
+}
+
+Resoudre pb
+Fin

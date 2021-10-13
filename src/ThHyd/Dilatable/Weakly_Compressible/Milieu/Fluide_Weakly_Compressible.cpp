@@ -183,8 +183,10 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
 {
   Cerr<<"Fluide_Weakly_Compressible::completer" << finl;
 
-  // XXX : currently we support only open configurations
-  checkTraitementPth(pb.equation(0).zone_Cl_dis());
+  // XXX : currently we support only open configurations if use_total_hydro_pressure
+  // THERE IS A PROBLEM HERE
+  // TODO : FIXME
+  if (use_total_hydro_pressure()) checkTraitementPth(pb.equation(0).zone_Cl_dis());
 
   if (Pth_xyz_.non_nul())
     {

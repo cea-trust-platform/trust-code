@@ -41,7 +41,7 @@ Scheme_euler_explicit sch
 Read sch
 {
   tinit 0.
-  nb_pas_dt_max 50
+  nb_pas_dt_max 20 
   tmax 100000.
   dt_min 1.e-11
   dt_max 5000.

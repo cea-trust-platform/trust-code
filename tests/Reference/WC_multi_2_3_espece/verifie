@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Compare binary_QC and binary_WC simulations
+compare_lata WC_multi_2_espece.lml WC_multi_2_3_espece.lml 1>verifie.log 2>&1 || exit -1
+
+numb_diff=`awk '$1=="Number"{print $5}' verifie.log`
+if [[ "$numb_diff" -gt "0" ]]
+then
+  echo "   ===> Error ! The simulations do not give identical results !"
+  exit -1
+else
+  echo "   ===> All OK ! The simulations performed with WC give, as expected, identical results !"
+fi

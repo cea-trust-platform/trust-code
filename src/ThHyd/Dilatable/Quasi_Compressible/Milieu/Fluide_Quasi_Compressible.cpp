@@ -311,7 +311,7 @@ void Fluide_Quasi_Compressible::write_mean_edo(double temps)
   double Ch_m = eos_tools_->moyenne_vol(inco_chaleur_->valeurs());
   double rhom = eos_tools_->moyenne_vol(rho.valeurs());
 
-  if(je_suis_maitre())
+  if(je_suis_maitre() && traitement_PTh != 2)
     {
       SFichier fic (output_file_,ios::app);
       fic<<temps <<" "<<Ch_m<<" "<<rhom<<" "<<Pth_<<finl;

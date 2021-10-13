@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Run a binary_QC mixture data file
+trust WC_multi_2_espece.data 1&>WC_multi_2_espece.out 2&>WC_multi_2_espece.err
