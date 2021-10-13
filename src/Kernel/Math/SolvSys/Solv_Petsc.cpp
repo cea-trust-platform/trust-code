@@ -1704,7 +1704,8 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
   // Analyse de la convergence par Petsc
   KSPConvergedReason Reason;
   KSPGetConvergedReason(SolveurPetsc_, &Reason);
-  if (Reason<0)
+  if (Reason==KSP_DIVERGED_ITS && convergence_with_nb_it_max_) Reason = KSP_CONVERGED_ITS;
+  if (Reason<0 && limpr()>-1)
     {
       Cerr << "No convergence on the resolution with the Petsc solver." << finl;
       Cerr << "Reason given by Petsc: ";
@@ -1718,18 +1719,13 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
       else if (Reason==KSP_DIVERGED_INDEFINITE_MAT)      Cerr << "KSP_DIVERGED_INDEFINITE_MAT" << finl;
       else if (Reason==KSP_DIVERGED_ITS)
         {
-          if (convergence_with_nb_it_max_)
-            Reason = KSP_CONVERGED_ITS;
-          else
-            {
-              Cerr << "KSP_DIVERGED_ITS" << finl;
-              Cerr << "That means the solver didn't converge within the maximal iterations number." << finl;
-              Cerr << "You can change the maximal number of iterations with the -ksp_max_it option." << finl;
-            }
+          Cerr << "KSP_DIVERGED_ITS" << finl;
+          Cerr << "That means the solver didn't converge within the maximal iterations number." << finl;
+          Cerr << "You can change the maximal number of iterations with the -ksp_max_it option." << finl;
         }
       else Cerr << (int)Reason << finl;
-      if (Reason<0) exit();
     }
+  if (Reason<0 && !return_on_error_) exit();
   int nbiter=-1;
   KSPGetIterationNumber(SolveurPetsc_, &nbiter);
   if (limpr()>-1)
@@ -1752,7 +1748,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
           VecNorm(SecondMembrePetsc_, NORM_2, &residu(nbiter));
         }
     }
-  return nbiter;
+  return Reason < 0 ? Reason : nbiter;
 }
 #endif
 

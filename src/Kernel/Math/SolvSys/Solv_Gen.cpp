@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,7 +82,7 @@ Entree& Solv_Gen::readOn(Entree& is )
       exit();
     }
   is >> motlu;
-  save_matrice_=0, return_ = 0;
+  save_matrice_=0;
   while (motlu != accolade_fermee)
     {
       rang = les_parametres.search(motlu);
@@ -131,7 +131,7 @@ Entree& Solv_Gen::readOn(Entree& is )
           }
         case 8:
           {
-            return_ = 1;
+            return_on_error_ = 1;
             break;
           }
         default :
@@ -387,7 +387,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
               Cerr<<"return due to some non-numerical reasons, "<<finl;
               Cerr<<"e.g. invalid floating-point numbers etc."<<finl;
             }
-          if (!return_) exit();
+          if (!return_on_error_) exit();
           return(-1);
         }
       ret = ipar[0];

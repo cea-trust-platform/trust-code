@@ -269,10 +269,11 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       /* resolution : seulement si l'erreur en alpha (dans secmem_pression) depasse un seuil */
       if (mp_max_abs_vect(secmem_pression) > 1e-16)
         {
-          SolveurSys& solv_p = eq_qdm.solveur_pression();
-          solv_p.valeur().reinit();
           matrice_pression.ajouter_multvect(inco["pression"]->valeurs(), secmem_pression); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
-          solv_p.resoudre_systeme(matrice_pression, secmem_pression, incr["pression"]);
+          SolveurSys& solv_p = eq_qdm.solveur_pression();
+          solv_p.valeur().reinit(), solv_p.valeur().set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
+          ok = (solv_p.resoudre_systeme(matrice_pression, secmem_pression, incr["pression"]) >= 0);
+          if (!ok) break; //le solveur a echoue -> on sort
           incr["pression"] -= inco["pression"]->valeurs();
         }
       else incr["pression"] = 0;

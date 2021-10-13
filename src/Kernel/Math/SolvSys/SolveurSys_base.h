@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,10 @@ public :
   {
     limpr_=l;
   };
+  inline void set_return_on_error(int ret)
+  {
+    return_on_error_ = ret;
+  }
   // Print solver convergence if impr option set in the solver AND if time scheme gives authorization
   inline int limpr() const
   {
@@ -93,6 +97,7 @@ public :
 protected :
   int nouvelle_matrice_; // Drapeau pour savoir si un stockage ou une factorisation est a refaire
   int save_matrice_;     // Drapeau pour savoir si un stockage disque est a refaire
+  int return_on_error_ = 0; //drapeau pour savoir si on doit faire exit() ou renvoyer -1 si resoudre_
 private:
   int limpr_;            // Drapeau pour impression ou non de la convergence du solveur
   int schema_temps_limpr_; // Authorization printing flag set by the time scheme
