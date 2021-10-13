@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -90,6 +90,7 @@ Champ_front_base& Champ_front_MED::affecter_(const Champ_front_base& ch)
 
 void Champ_front_MED::mettre_a_jour(double temps)
 {
+  champ_volumique_->mettre_a_jour(temps);
   DoubleTab& tab=valeurs_au_temps(temps);
   remplir_tab(tab,temps);
 //  Cerr<<" VIN MAX" <<mp_max_abs_vect(valeurs_au_temps(temps))<<finl;

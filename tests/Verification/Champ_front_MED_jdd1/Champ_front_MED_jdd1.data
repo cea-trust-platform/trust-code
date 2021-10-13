@@ -1,0 +1,74 @@
+# PARALLEL OK #
+dimension 3
+Pb_Hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Lire_MED dom dom mesh.med
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 1 1 2 }
+    Larg_joint 1
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+option_vdf { P_imposee_aux_faces oui }
+VDF dis
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    dt_max 0.1
+    tmax 2
+    facsec 100
+    solveur implicite { seuil_convergence_solveur 1.e-8 }
+}
+Fluide_Incompressible fluide
+Read fluide
+{
+    mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 1.0
+}
+Associate pb dom
+Associate pb sch
+Associate pb fluide
+Discretize pb dis
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { Amont }
+        diffusion { }
+        initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
+        boundary_conditions {
+            Wall   paroi_fixe
+            Outlet frontiere_ouverte_pression_imposee Champ_front_MED
+                   Champ_fonc_MED use_existing_domain fields.med dom pression elem 0.
+            Inlet  frontiere_ouverte_vitesse_imposee Champ_front_MED
+                   Champ_fonc_MED_Tabule use_existing_domain fields.med dom vitesse elem -1
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_vitesse 	nodes 	vitesse periode 0.01 	points 1 0. 0.5 0.5
+            inlet 		nodes	vitesse periode 0.01 	segment 20 0.0 0.0 0.5 0.0 1.0 0.5
+        }
+        format lml
+        fields dt_post 20.
+        {
+            vitesse elem
+        }
+    }
+}
+Solve pb
+

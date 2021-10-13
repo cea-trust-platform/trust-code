@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,6 @@ void Champ_Fonc_MED_Tabule::mettre_a_jour(double le_temps)
     }
   if (le_temps>=temps2_)
     {
-      Cerr<<" il faut mettre a jour les tab"<<finl;
       int i,nbt=temps_sauv_.size_array();
       int trouve=0;
       for (i=0; i<nbt-1; i++)

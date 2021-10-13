@@ -1,0 +1,91 @@
+Parameters {
+	Title "Champ_front_MED verification"
+	Author "Pierre LEDAC"
+	VersionTRUST 1.8.4
+ 	TestCase . base.data
+	IncludeData 1
+	Description "Define a time and spatial dependent boundary condition by reading fields from a MED file."
+	Description "In this test case (flow in a 3D channel), inlet boundary condition on velocity is concerned."
+	Description "Champ_front_MED and Champ_Fonc_MED_Tabule are the keywords to use for such a task."
+	Description "See below in the data file the syntax."	
+}
+
+Chapter {
+	Title "Champ_front_MED time-dependence verification" 
+	figure { 
+		title "Inlet velocity evolution at (x,y,z)=(0.0,0.5,0.5)"
+		Width 12cm
+		include_description_curves 0
+		rangeY 0 2
+		labelX "Time"
+		labelY "Speed"
+		curve {
+			file base_SONDE_VITESSE.son
+			columns ($1) ($2)
+			legende "Inlet boundary condition"
+			style points
+		}
+		curve {
+			fonction 4*0.5*(1-0.5)+0.5*cos(5*x)
+			legende "Ux=4*y*(1-y)+0.5*cos(5*t)"
+			style lines
+		}
+	}
+}
+Chapter {
+	Title "Champ_front_MED space-dependence verification" 
+	figure { 
+		title "Inlet velocity profile at different times"
+		Width 12cm
+		include_description_curves 0
+		rangeX 0 1
+		rangeY -1 2
+		labelX "Y"
+		labelY "Speed"
+		curve {
+			file base_INLET.coupe.0.00000000e+00
+			columns ($1) ($2)
+			legende "t=0.0"
+			style points
+		}
+		curve {
+			fonction 4*x*(1-x)+0.5*cos(5*0)
+			legende "Ux(t=0)"
+			style lines
+		}
+		curve {
+			file base_INLET.coupe.5.00000000e-01
+			columns ($1) ($2)
+			legende "t=0.5"
+			style points
+		}
+		curve {
+			fonction 4*x*(1-x)+0.5*cos(5*0.5)
+			legende "Ux(t=0.5)"
+			style lines
+		}
+		curve {
+			file base_INLET.coupe.1.00000000e+00
+			columns ($1) ($2)
+			legende "t=1.0"
+			style points
+		}
+		curve {
+			fonction 4*x*(1-x)+0.5*cos(5*1.0)
+			legende "Ux(t=1.0)"
+			style lines
+		}
+		curve {
+			file base_INLET.coupe.1.50000000e+00
+			columns ($1) ($2)
+			legende "t=1.5"
+			style points
+		}
+		curve {
+			fonction 4*x*(1-x)+0.5*cos(5*1.5)
+			legende "Ux(t=1.5)"
+			style lines
+		}
+	}
+}
+

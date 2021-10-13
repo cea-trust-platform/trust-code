@@ -1,0 +1,11 @@
+#!/bin/bash
+# Creation du maillage mesh.med:
+trust mesh 1>mesh.out_err 2>&1 || exit -1
+
+# Creation de champs variables en temps dans le fichier fields.med:
+source $TRUST_ROOT/env_for_python.sh
+python ./prepare.py || exit -1
+
+# Dump du field.med cree:
+echo -e "1\n1\n0\n" | $TRUST_ROOT/lib/src/LIBMED/bin/mdump --structure fields.med
+

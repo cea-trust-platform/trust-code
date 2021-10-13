@@ -349,10 +349,10 @@ void Champ_Fonc_MED::lire(double t, int given_it)
             }
           int iteration = time_steps_[given_it].first;
           int order = time_steps_[given_it].second;
-          Cerr << " at time " << t << " ... " << finl;
 
           // Only one MCAuto below to avoid double deletion:
           MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, iteration, order);
+          Cerr << " at time " << t << " ... " << finl;
           MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
           if (field == 0)
             {
@@ -645,7 +645,7 @@ MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName,
 {
   // Flag pour lecture plus rapide du field sans lecture du mesh si le maillage MED est deja disponible:
   bool fast = meshName.c_str() == domaine().le_nom() && domaine().getUMesh() != NULL;
-  Cerr << "Champ_Fonc_MED::lire() Reading" << (fast ? " (fast)" : "") << " the field " << fieldName.c_str() << " on the " << meshName.c_str() << " mesh in " << fileName.c_str() << finl;
+  Cerr << "Reading" << (fast ? " (fast)" : "") << " the field " << fieldName.c_str() << " on the " << meshName.c_str() << " mesh into " << fileName.c_str() << " file";
   MCAuto<MEDCouplingField> ffield;
   if (fast)
     {

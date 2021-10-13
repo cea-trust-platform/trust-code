@@ -1,3 +1,4 @@
+XX/XX/21 (TRUST)  Fix         : Champ_front_MED may now be combined with Champ_Fonc_MED_Tabule to enable time & space dependent boundary conditions read from MED file
 XX/XX/21 (TRUST)  Output      : Suppress probe duplicated points into .son files
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
