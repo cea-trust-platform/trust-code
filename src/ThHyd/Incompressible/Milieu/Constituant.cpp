@@ -28,45 +28,18 @@
 #include <Param.h>
 
 Implemente_instanciable(Constituant,"Constituant",Milieu_base);
+// XD constituant milieu_base constituant -1 Constituent.
+// XD attr rho field_base rho 1 Density (kg.m-3).
+// XD attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
+// XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
+// XD attr coefficient_diffusion field_base coefficient_diffusion 1 Constituent diffusion coefficient value (m2.s-1). If a multi-constituent problem is being processed, the diffusivite will be a vectorial and each components will be the diffusion of the constituent.
+// XD ref gravite field_base
 
-
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Constituant::printOn(Sortie& os) const
 {
   return os;
 }
 
-// Description:
-//    Lit les specification d'un (ou plusieurs) constituant(s)
-//    a partir d'un flot d'entree.
-//    Format:
-//      coefficient_diffusion type_champ bloc de lecture du champ
-// cf Milieu_base::readOn
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Constituant::readOn(Entree& is)
 {
   Milieu_base::readOn(is);

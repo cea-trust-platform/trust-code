@@ -33,7 +33,7 @@
 Implemente_liste(REF(Espece));
 
 Implemente_instanciable_sans_constructeur(Loi_Etat_Multi_GP_QC,"Loi_Etat_Multi_Gaz_Parfait_QC",Loi_Etat_Multi_GP_base);
-// XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
+// XD multi_gaz_parfait_QC loi_etat_gaz_parfait_base multi_gaz_parfait_QC -1 Class for perfect gas multi-species mixtures state law used with a quasi-compressible fluid.
 
 Loi_Etat_Multi_GP_QC::Loi_Etat_Multi_GP_QC() : correction_fraction_(0),ignore_check_fraction_(0),
   Sc_(-1),dtol_fraction_(1.e-6) { }

@@ -30,7 +30,6 @@
 
 Implemente_liste(REF(Champ_Inc_base));
 Implemente_base(Loi_Etat_Multi_GP_base,"Loi_Etat_Multi_Gaz_Parfait_base",Loi_Etat_Melange_GP_base);
-// XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
 
 Sortie& Loi_Etat_Multi_GP_base::printOn(Sortie& os) const
 {

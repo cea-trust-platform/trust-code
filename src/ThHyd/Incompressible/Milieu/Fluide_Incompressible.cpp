@@ -33,62 +33,24 @@
 #include <Champ_Fonc_MED.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Incompressible,"Fluide_Incompressible",Fluide_base);
+// XD fluide_incompressible fluide_base fluide_incompressible -1 Class for non-compressible fluids.
+// XD attr beta_th field_base beta_th 1 Thermal expansion (K-1).
+// XD attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
+// XD attr beta_co field_base beta_co 1 Volume expansion coefficient values in concentration.
+// XD attr indice field_base indice 1 Refractivity of fluid.
+// XD attr kappa field_base kappa 1 Absorptivity of fluid (m-1).
+// XD attr rho field_base rho 1 Density (kg.m-3).
+// XD attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
+// XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
+// XD ref gravite field_base
 
-Fluide_Incompressible::Fluide_Incompressible()
-{
-  /*  Noms& nom=champs_compris_.liste_noms_compris();
-      nom.dimensionner(2);
-      nom[0]="viscosite_dynamique";
-      nom[1]="viscosite_cinematique";
-  */
-}
+Fluide_Incompressible::Fluide_Incompressible() { }
 
-// Description:
-//    Ecrit les proprietes du fluide sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Fluide_Incompressible::printOn(Sortie& os) const
 {
   return Fluide_base::printOn(os);
 }
 
-
-// Description:
-//   Lit les caracteristiques du fluide a partir d'un flot
-//   d'entree.
-//   Format:
-//     Fluide_Incompressible
-//     {
-//      Mu type_champ bloc de lecture de champ
-//      Rho Champ_Uniforme 1 vrel
-//      [Cp Champ_Uniforme 1 vrel]
-//      [Lambda type_champ bloc de lecture de champ]
-//      [Beta_th type_champ bloc de lecture de champ]
-//      [Beta_co type_champ bloc de lecture de champ]
-//     }
-// cf Milieu_base::readOn
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition:
 Entree& Fluide_Incompressible::readOn(Entree& is)
 {
   Fluide_base::readOn(is);

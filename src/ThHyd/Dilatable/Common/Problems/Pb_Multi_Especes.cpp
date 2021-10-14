@@ -24,3 +24,12 @@
 
 implemente_pb_eq_sup(Pb_Thermohydraulique_Especes_QC,"Pb_Thermohydraulique_Especes_QC",Pb_Thermohydraulique_QC,2)
 implemente_pb_eq_sup(Pb_Thermohydraulique_Especes_WC,"Pb_Thermohydraulique_Especes_WC",Pb_Thermohydraulique_WC,2)
+
+// XD pb_thermohydraulique_especes_QC pb_avec_passif pb_thermohydraulique_especes_QC -1 Resolution of thermo-hydraulic problem for a multi-species quasi-compressible fluid.
+// XD attr navier_stokes_QC navier_stokes_QC navier_stokes_QC 0 Navier-Stokes equation for a quasi-compressible fluid.
+// XD attr convection_diffusion_chaleur_QC convection_diffusion_chaleur_QC convection_diffusion_chaleur_QC 0 Temperature equation for a quasi-compressible fluid.
+
+// XD pb_thermohydraulique_especes_WC pb_avec_passif pb_thermohydraulique_especes_WC -1 Resolution of thermo-hydraulic problem for a multi-species weakly-compressible fluid.
+// XD attr navier_stokes_WC navier_stokes_WC navier_stokes_WC 0 Navier-Stokes equation for a weakly-compressible fluid.
+// XD attr convection_diffusion_chaleur_WC convection_diffusion_chaleur_WC convection_diffusion_chaleur_QC 0 Temperature equation for a weakly-compressible fluid.
+

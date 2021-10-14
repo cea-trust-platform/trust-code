@@ -26,6 +26,7 @@
 #include <Loi_Etat_Binaire_GP_WC.h>
 
 Implemente_instanciable(Convection_Diffusion_Espece_Binaire_WC,"Convection_Diffusion_Espece_Binaire_WC",Convection_Diffusion_Espece_Binaire_base);
+// XD convection_diffusion_espece_binaire_WC eqn_base convection_diffusion_espece_binaire_WC -1 Species conservation equation for a binary weakly-compressible fluid.
 
 Sortie& Convection_Diffusion_Espece_Binaire_WC::printOn(Sortie& is) const
 {

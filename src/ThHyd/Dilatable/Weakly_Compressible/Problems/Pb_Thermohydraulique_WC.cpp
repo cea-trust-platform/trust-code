@@ -23,6 +23,9 @@
 #include <Pb_Thermohydraulique_WC.h>
 
 Implemente_instanciable(Pb_Thermohydraulique_WC,"Pb_Thermohydraulique_WC",Pb_WC_base);
+// XD pb_thermohydraulique_WC Pb_base pb_thermohydraulique_WC -1 Resolution of thermo-hydraulic problem for a weakly-compressible fluid. NL2 Keywords for the unknowns other than pressure, velocity, temperature are : NL2 masse_volumique : density NL2 pression : reduced pressure NL2 pression_tot : total pressure NL2 pression_hydro : hydro-static pressure NL2 pression_eos : pressure used in state equation.
+// XD attr navier_stokes_WC navier_stokes_WC navier_stokes_WC 0 Navier-Stokes equation for a weakly-compressible fluid.
+// XD attr convection_diffusion_chaleur_WC convection_diffusion_chaleur_WC convection_diffusion_chaleur_WC 0 Temperature equation for a weakly-compressible fluid.
 
 Sortie& Pb_Thermohydraulique_WC::printOn(Sortie& os) const { return Probleme_base::printOn(os); }
 

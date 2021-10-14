@@ -23,6 +23,12 @@
 #include <Loi_Etat_GP_QC.h>
 
 Implemente_instanciable(Loi_Etat_GP_QC,"Loi_Etat_Gaz_Parfait_QC",Loi_Etat_Mono_GP_base);
+// XD perfect_gaz_QC loi_etat_gaz_parfait_base gaz_parfait_QC 1 Class for perfect gas state law used with a quasi-compressible fluid.
+// XD attr Cp double Cp 0 Specific heat at constant pressure (J/kg/K).
+// XD attr Cv double Cv 1 Specific heat at constant volume (J/kg/K).
+// XD attr gamma double gamma 1 Cp/Cv
+// XD attr Prandtl double Prandtl 0 Prandtl number of the gas Pr=mu*Cp/lambda
+// XD attr rho_constant_pour_debug field_base rho_constant_pour_debug 1 For developers to debug the code with a constant rho.
 
 Sortie& Loi_Etat_GP_QC::printOn(Sortie& os) const
 {

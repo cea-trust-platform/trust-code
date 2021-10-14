@@ -34,31 +34,21 @@
 // .SECTION voir aussi
 //     Milieu_base Fluide_Incompressible Fluide_Quasi_Compressible
 //////////////////////////////////////////////////////////////////////////////
+
 class Espece : public Fluide_Quasi_Compressible
 {
-  Declare_instanciable(Espece);
+  Declare_instanciable_sans_constructeur(Espece);
 
 public :
+  Espece();
   void set_param(Param& param);
   void creer_champs_non_lus() { };
   void verifier_coherence_champs(int& err,Nom& message);
-  inline double& masse_molaire();
-  inline const double& masse_molaire() const;
+  inline double& masse_molaire() { return Masse_mol_; }
+  inline const double& masse_molaire() const { return Masse_mol_; }
 
 protected :
   double Masse_mol_;
-
 };
 
-inline double& Espece::masse_molaire()
-{
-  return Masse_mol_;
-}
-
-inline const double& Espece::masse_molaire() const
-{
-  return Masse_mol_;
-}
-
-
-#endif
+#endif /* Espece_included */

@@ -25,6 +25,7 @@
 #include <Loi_Etat_Binaire_GP_QC.h>
 
 Implemente_instanciable(Convection_Diffusion_Espece_Binaire_QC,"Convection_Diffusion_Espece_Binaire_QC",Convection_Diffusion_Espece_Binaire_base);
+// XD convection_diffusion_espece_binaire_QC eqn_base convection_diffusion_espece_binaire_QC -1 Species conservation equation for a binary quasi-compressible fluid.
 
 Sortie& Convection_Diffusion_Espece_Binaire_QC::printOn(Sortie& is) const
 {

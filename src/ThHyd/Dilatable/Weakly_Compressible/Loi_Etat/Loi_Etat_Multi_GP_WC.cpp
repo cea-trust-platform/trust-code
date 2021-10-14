@@ -30,7 +30,7 @@
 #include <Debog.h>
 
 Implemente_instanciable_sans_constructeur(Loi_Etat_Multi_GP_WC,"Loi_Etat_Multi_Gaz_Parfait_WC",Loi_Etat_Multi_GP_base);
-// XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
+// XD multi_gaz_parfait_WC loi_etat_gaz_parfait_base multi_gaz_parfait_WC -1 Class for perfect gas multi-species mixtures state law used with a weakly-compressible fluid.
 
 Loi_Etat_Multi_GP_WC::Loi_Etat_Multi_GP_WC() : num_espece_(-1) { }
 
@@ -43,12 +43,12 @@ Sortie& Loi_Etat_Multi_GP_WC::printOn(Sortie& os) const
 Entree& Loi_Etat_Multi_GP_WC::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("Species_number",&num_espece_,Param::REQUIRED);
-  param.ajouter("Diffusion_coeff",&diffusion_coeff_,Param::REQUIRED);
-  param.ajouter("Molar_mass",&molar_mass_,Param::REQUIRED);
-  param.ajouter("Mu",&mu_,Param::REQUIRED);
-  param.ajouter("Prandtl",&Pr_,Param::REQUIRED);
-  param.ajouter("Cp",&cp_,Param::REQUIRED);
+  param.ajouter("Species_number",&num_espece_,Param::REQUIRED); // XD_ADD_P int Number of species you are considering in your problem.
+  param.ajouter("Diffusion_coeff",&diffusion_coeff_,Param::REQUIRED); // XD_ADD_P field_base Diffusion coefficient of each species, defined with a Champ_uniforme of dimension equals to the species_number.
+  param.ajouter("Molar_mass",&molar_mass_,Param::REQUIRED); // XD_ADD_P field_base Molar mass of each species, defined with a Champ_uniforme of dimension equals to the species_number.
+  param.ajouter("Mu",&mu_,Param::REQUIRED); // XD_ADD_P field_base Dynamic viscosity of each species, defined with a Champ_uniforme of dimension equals to the species_number.
+  param.ajouter("Cp",&cp_,Param::REQUIRED);// XD_ADD_P double Specific heat at constant pressure of the gas Cp, defined with a Champ_uniforme of dimension equals to the species_number..
+  param.ajouter("Prandtl",&Pr_,Param::REQUIRED); // XD_ADD_P double Prandtl number of the gas Pr=mu*Cp/lambda.
   param.lire_avec_accolades_depuis(is);
 
   // XXX

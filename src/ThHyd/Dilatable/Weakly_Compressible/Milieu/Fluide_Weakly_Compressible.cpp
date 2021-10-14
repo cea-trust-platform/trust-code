@@ -33,6 +33,13 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable_base);
+// XD fluide_weakly_compressible fluide_dilatable_base fluide_weakly_compressible -1 Weakly-compressible flow with a low mach number assumption; this means that the thermo-dynamic pressure (used in state law) can vary in space.
+// XD attr sutherland bloc_sutherland sutherland 1 Sutherland law for viscosity and for conductivity.
+// XD attr beta_th suppress_param beta_th 1 suppress
+// XD attr beta_co suppress_param beta_co 1 suppress
+// XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
+// XD attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
+// XD ref gravite field_base
 
 Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0), use_hydrostatic_pressure_(0),
   sim_resumed_(0), time_activate_ptot_(-1.) {}
@@ -53,14 +60,14 @@ Entree& Fluide_Weakly_Compressible::readOn(Entree& is)
 void Fluide_Weakly_Compressible::set_param(Param& param)
 {
   Fluide_Dilatable_base::set_param(param);
-  param.ajouter("pression_thermo",&Pth_);
-  param.ajouter("pression_xyz",&Pth_xyz_);
-  param.ajouter("use_total_pressure",&use_total_pressure_);
-  param.ajouter("use_hydrostatic_pressure",&use_hydrostatic_pressure_);
-  param.ajouter("time_activate_ptot",&time_activate_ptot_);
+  param.ajouter("pression_thermo",&Pth_); // XD_ADD_P double Initial thermo-dynamic pressure used in the assosciated state law.
+  param.ajouter("pression_xyz",&Pth_xyz_); // XD_ADD_P field_base Initial thermo-dynamic pressure used in the assosciated state law. It should be defined with as a Champ_Fonc_xyz.
+  param.ajouter("use_total_pressure",&use_total_pressure_); // XD_ADD_P int Flag (0 or 1) used to activate and use the total pressure in the assosciated state law.
+  param.ajouter("use_hydrostatic_pressure",&use_hydrostatic_pressure_); // XD_ADD_P int Flag (0 or 1) used to activate and use the hydro-static pressure in the assosciated state law.
+  param.ajouter("time_activate_ptot",&time_activate_ptot_); // XD_ADD_P double Time (in seconds) at which the total pressure will be used in the assosciated state law.
 
   // Param non-standard
-  param.ajouter_non_std("loi_etat",(this),Param::REQUIRED);
+  param.ajouter_non_std("loi_etat",(this),Param::REQUIRED); // XD_ADD_P loi_etat_base The state law that will be associated to the Weakly-compressible fluid.
   param.ajouter_non_std("Traitement_PTh",(this));
   // Lecture de mu et lambda pas specifiee obligatoire car option sutherland possible
   // On supprime.. et on ajoute non-standard

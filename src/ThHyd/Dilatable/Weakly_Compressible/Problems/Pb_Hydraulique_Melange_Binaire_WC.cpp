@@ -23,6 +23,9 @@
 #include <Pb_Hydraulique_Melange_Binaire_WC.h>
 
 Implemente_instanciable(Pb_Hydraulique_Melange_Binaire_WC,"Pb_Hydraulique_Melange_Binaire_WC",Pb_WC_base);
+// XD pb_hydraulique_melange_binaire_WC Pb_base pb_hydraulique_melange_binaire_WC -1 Resolution of a binary mixture problem for a weakly-compressible fluid with an iso-thermal condition. NL2 Keywords for the unknowns other than pressure, velocity, fraction_massique are : NL2 masse_volumique : density NL2 pression : reduced pressure NL2 pression_tot : total pressure NL2 pression_hydro : hydro-static pressure NL2 pression_eos : pressure used in state equation.
+// XD attr navier_stokes_WC navier_stokes_WC navier_stokes_WC 0 Navier-Stokes equation for a weakly-compressible fluid.
+// XD attr convection_diffusion_espece_binaire_WC convection_diffusion_espece_binaire_WC convection_diffusion_espece_binaire_WC 0 Species conservation equation for a binary weakly-compressible fluid.
 
 Sortie& Pb_Hydraulique_Melange_Binaire_WC::printOn(Sortie& os) const { return Probleme_base::printOn(os); }
 

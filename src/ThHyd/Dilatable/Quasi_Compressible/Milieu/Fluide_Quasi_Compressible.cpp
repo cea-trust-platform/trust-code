@@ -29,6 +29,29 @@
 #include <Neumann_sortie_libre.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quasi_Compressible",Fluide_Dilatable_base);
+// XD fluide_quasi_compressible fluide_dilatable_base fluide_quasi_compressible -1 Quasi-compressible flow with a low mach number assumption; this means that the thermo-dynamic pressure (used in state law) is uniform in space.
+// XD attr sutherland bloc_sutherland sutherland 1 Sutherland law for viscosity and for conductivity.
+// XD attr pression double pression 1 Initial thermo-dynamic pressure used in the assosciated state law.
+// XD attr loi_etat loi_etat_base loi_etat 1 State law.
+// XD attr traitement_pth chaine(into=["edo","constant","conservation_masse"]) traitement_pth 1 Particular treatment for the thermodynamic pressure Pth ; there are three possibilities: NL2 1) with the keyword \'edo\' the code computes Pth solving an O.D.E. ; in this case, the mass is not strictly conserved (it is the default case for quasi compressible computation): NL2 2) the keyword \'conservation_masse\' forces the conservation of the mass (closed geometry or with periodic boundaries condition) NL2 3) the keyword \'constant\' makes it possible to have a constant Pth ; it\'s the good choice when the flow is open (e.g. with pressure boundary conditions). NL2 It is possible to monitor the volume averaged value for temperature and density, plus Pth evolution in the .evol_glob file.
+// XD attr traitement_rho_gravite chaine(into=["standard","moins_rho_moyen"]) traitement_rho_gravite 1 It may be :1) \`standard\` : the gravity term is evaluted with rho*g (It is the default). 2) \`moins_rho_moyen\` : the gravity term is evaluated with (rho-rhomoy) *g. Unknown pressure is then P*=P+rhomoy*g*z. It is useful when you apply uniforme pressure boundary condition like P*=0.
+// XD attr temps_debut_prise_en_compte_drho_dt double temps_debut_prise_en_compte_drho_dt 1 While time<value, dRho/dt is set to zero (Rho, volumic mass). Useful for some calculation during the first time steps with big variation of temperature and volumic mass.
+// XD attr omega_relaxation_drho_dt double omega_relaxation_drho_dt 1 Optional option to have a relaxed algorithm to solve the mass equation. value is used (1 per default) to specify omega.
+// XD attr beta_th suppress_param beta_th 1 suppress
+// XD attr beta_co suppress_param beta_co 1 suppress
+// XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
+// XD attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
+// XD ref gravite field_base
+
+// XD bloc_sutherland objet_lecture nul 0 Sutherland law for viscosity mu(T)=mu0*((T0+C)/(T+C))*(T/T0)**1.5 and (optional) for conductivity lambda(T)=mu0*Cp/Prandtl*((T0+Slambda)/(T+Slambda))*(T/T0)**1.5
+// XD attr m chaine(into=["mu0"]) m 0 not_set
+// XD attr mu0 double mu0 0 not_set
+// XD attr t chaine(into=["T0"]) t 0 not_set
+// XD attr t0 double t0 0 not_set
+// XD attr ms chaine(into=["Slambda"]) ms 1 not_set
+// XD attr s double s 1 not_set
+// XD attr mc chaine(into=["C"]) mc 0 not_set
+// XD attr c double c 0 not_set
 
 Fluide_Quasi_Compressible::Fluide_Quasi_Compressible() : traitement_rho_gravite_(0),
   temps_debut_prise_en_compte_drho_dt_(-DMAXFLOAT),omega_drho_dt_(1.) { }

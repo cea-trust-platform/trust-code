@@ -23,7 +23,6 @@
 #include <Loi_Etat_Melange_GP_base.h>
 
 Implemente_base(Loi_Etat_Melange_GP_base,"Loi_Etat_Melange_Gaz_Parfait_base",Loi_Etat_GP_base);
-// XD melange_gaz_parfait loi_etat_base melange_gaz_parfait -1 Mixing of perfect gas.
 
 Sortie& Loi_Etat_Melange_GP_base::printOn(Sortie& os) const
 {

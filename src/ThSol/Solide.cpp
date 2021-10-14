@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,10 @@
 
 Implemente_instanciable(Solide,"Solide",Milieu_base);
 // XD Solide milieu_base Solide -1 Solid with cp and/or rho non-uniform.
-//
+// XD attr rho field_base rho 1 Density (kg.m-3).
+// XD attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
+// XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
+// XD ref gravite field_base
 
 // Description:
 //    Ecrit les caracteristiques du milieu su run flot de sortie.

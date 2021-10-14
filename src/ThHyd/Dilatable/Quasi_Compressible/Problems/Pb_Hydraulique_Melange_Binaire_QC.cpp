@@ -23,6 +23,9 @@
 #include <Pb_Hydraulique_Melange_Binaire_QC.h>
 
 Implemente_instanciable(Pb_Hydraulique_Melange_Binaire_QC,"Pb_Hydraulique_Melange_Binaire_QC",Pb_QC_base);
+// XD pb_hydraulique_melange_binaire_QC Pb_base pb_hydraulique_melange_binaire_QC -1 Resolution of a binary mixture problem for a quasi-compressible fluid with an iso-thermal condition. NL2 Keywords for the unknowns other than pressure, velocity, fraction_massique are : NL2 masse_volumique : density NL2 pression : reduced pressure NL2 pression_tot : total pressure.
+// XD attr navier_stokes_QC navier_stokes_QC navier_stokes_QC 0 Navier-Stokes equation for a quasi-compressible fluid.
+// XD attr convection_diffusion_espece_binaire_QC convection_diffusion_espece_binaire_QC convection_diffusion_espece_binaire_QC 0 Species conservation equation for a binary quasi-compressible fluid.
 
 Sortie& Pb_Hydraulique_Melange_Binaire_QC::printOn(Sortie& os) const { return Probleme_base::printOn(os); }
 

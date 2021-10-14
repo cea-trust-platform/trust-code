@@ -31,17 +31,11 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Ostwald,"Fluide_Ostwald",Fluide_Incompressible);
+// XD fluide_ostwald fluide_incompressible fluide_ostwald -1 Non-Newtonian fluids governed by Ostwald\'s law. The law applicable to stress tensor is: NL2 tau=K(T)*(D:D/2)**((n-1)/2)*D Where: NL2 D refers to the deformation tensor NL2 K refers to fluid consistency (may be a function of the temperature T) NL2 n refers to the fluid structure index n=1 for a Newtonian fluid, n<1 for a rheofluidifier fluid, n>1 for a rheothickening fluid.
+// XD attr k field_base k 1 Fluid consistency.
+// XD attr n field_base n 1 Fluid structure index.
 
-Fluide_Ostwald::Fluide_Ostwald()
-{
-  /*
-    Noms& nom=champs_compris_.liste_noms_compris();
-    nom.dimensionner(1);
-    nom[0]="consistance";
-  */
-}
-//
-// printOn et readOn
+Fluide_Ostwald::Fluide_Ostwald() { }
 
 Sortie& Fluide_Ostwald::printOn(Sortie& s ) const
 {
@@ -54,7 +48,6 @@ Sortie& Fluide_Ostwald::printOn(Sortie& s ) const
   return s;
 }
 
-// cf Milieu_base::readOn
 Entree& Fluide_Ostwald::readOn(Entree& is)
 {
   Fluide_Incompressible::readOn(is);

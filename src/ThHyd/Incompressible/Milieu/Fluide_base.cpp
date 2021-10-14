@@ -34,15 +34,9 @@
 #include <EChaine.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_base,"Fluide_base",Milieu_base);
+// XD fluide_base milieu_base fluide_base -1 Basic class for fluids.
 
-Fluide_base::Fluide_base()
-{
-  /*  Noms& nom=champs_compris_.liste_noms_compris();
-      nom.dimensionner(2);
-      nom[0]="viscosite_dynamique";
-      nom[1]="viscosite_cinematique";
-  */
-}
+Fluide_base::Fluide_base() { }
 
 // Description:
 //    Ecrit les proprietes du fluide sur un flot de sortie.
@@ -108,7 +102,7 @@ void Fluide_base::set_param(Param& param)
 {
   Milieu_base::set_param(param);
   //La lecture de rho n est pas specifiee obligatoire ici car ce
-  //champ ne doit pas etre lu pour un fluide quasi-compressible
+  //champ ne doit pas etre lu pour un fluide dilatable
   param.ajouter("mu",&mu,Param::REQUIRED);
   param.ajouter("beta_co",&beta_co);
   param.ajouter("kappa",&coeff_absorption_);

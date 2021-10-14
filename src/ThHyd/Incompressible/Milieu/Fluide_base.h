@@ -107,9 +107,6 @@ protected :
 
   void creer_nu();
   virtual void calculer_nu();
-
-protected:
-
 };
 
 

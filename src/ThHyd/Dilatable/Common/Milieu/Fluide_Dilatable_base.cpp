@@ -31,6 +31,7 @@
 #include <Zone_VF.h>
 
 Implemente_base_sans_constructeur(Fluide_Dilatable_base,"Fluide_Dilatable_base",Fluide_base);
+// XD fluide_dilatable_base fluide_base fluide_dilatable_base -1 Basic class for dilatable fluids.
 
 Fluide_Dilatable_base::Fluide_Dilatable_base():traitement_PTh(0),Pth_(-1.),Pth_n(-1.),Pth1(-1.) {}
 

@@ -28,7 +28,6 @@
 #include <Debog.h>
 
 Implemente_base_sans_constructeur(Loi_Etat_Binaire_GP_base,"Loi_Etat_Binaire_Gaz_Parfait_base",Loi_Etat_Melange_GP_base);
-// XD melange_binaire loi_etat_base melange_binaire -1 Mixing of a binary mixture uder the iso-thermal and iso-bar assumptions.
 
 Loi_Etat_Binaire_GP_base::Loi_Etat_Binaire_GP_base():
   massmol1_(-1),massmol2_(-1),mu1_(-1),mu2_(-1),tempr_(-1),diff_coeff_(-1) { }
@@ -42,12 +41,12 @@ Sortie& Loi_Etat_Binaire_GP_base::printOn(Sortie& os) const
 Entree& Loi_Etat_Binaire_GP_base::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("molar_mass1",&massmol1_,Param::REQUIRED); // XD_ADD_P double Molar mass of species 1 (in kg/mol).
-  param.ajouter("molar_mass2",&massmol2_,Param::REQUIRED); // XD_ADD_P double Molar mass of species 2 (in kg/mol).
-  param.ajouter("mu1",&mu1_,Param::REQUIRED); // XD_ADD_P double Dynamic viscosity of species 1 (in kg/m.s).
-  param.ajouter("mu2",&mu2_,Param::REQUIRED); // XD_ADD_P double Dynamic viscosity of species 2 (in kg/m.s).
-  param.ajouter("temperature",&tempr_,Param::REQUIRED); // XD_ADD_P double Temperature (in Kelvin) which will be constant during the simulation since this state law only works for iso-thermal conditions.
-  param.ajouter("diffusion_coeff",&diff_coeff_,Param::REQUIRED); // XD_ADD_P double Diffusion coefficient assumed the same for both species (in m2/s).
+  param.ajouter("molar_mass1",&massmol1_,Param::REQUIRED);
+  param.ajouter("molar_mass2",&massmol2_,Param::REQUIRED);
+  param.ajouter("mu1",&mu1_,Param::REQUIRED);
+  param.ajouter("mu2",&mu2_,Param::REQUIRED);
+  param.ajouter("temperature",&tempr_,Param::REQUIRED);
+  param.ajouter("diffusion_coeff",&diff_coeff_,Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
   return is;
 }

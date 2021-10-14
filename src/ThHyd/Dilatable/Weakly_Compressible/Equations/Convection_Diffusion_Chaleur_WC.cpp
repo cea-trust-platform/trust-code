@@ -26,6 +26,7 @@
 #include <Op_Conv_negligeable.h>
 
 Implemente_instanciable(Convection_Diffusion_Chaleur_WC,"Convection_Diffusion_Chaleur_WC",Convection_Diffusion_Chaleur_Fluide_Dilatable_base);
+// XD convection_diffusion_chaleur_WC eqn_base convection_diffusion_chaleur_WC -1 Temperature equation for a weakly-compressible fluid.
 
 Sortie& Convection_Diffusion_Chaleur_WC::printOn(Sortie& is) const
 {

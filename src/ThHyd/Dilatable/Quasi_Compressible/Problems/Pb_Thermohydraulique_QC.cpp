@@ -23,6 +23,9 @@
 #include <Pb_Thermohydraulique_QC.h>
 
 Implemente_instanciable(Pb_Thermohydraulique_QC,"Pb_Thermohydraulique_QC",Pb_QC_base);
+// XD pb_thermohydraulique_QC Pb_base pb_thermohydraulique_QC -1 Resolution of thermo-hydraulic problem for a quasi-compressible fluid. NL2 Keywords for the unknowns other than pressure, velocity, temperature are : NL2 masse_volumique : density NL2 enthalpie : enthalpy NL2 pression : reduced pressure NL2 pression_tot : total pressure.
+// XD attr navier_stokes_QC navier_stokes_QC navier_stokes_QC 0 Navier-Stokes equation for a quasi-compressible fluid.
+// XD attr convection_diffusion_chaleur_QC convection_diffusion_chaleur_QC convection_diffusion_chaleur_QC 0 Temperature equation for a quasi-compressible fluid.
 
 Sortie& Pb_Thermohydraulique_QC::printOn(Sortie& os) const { return Probleme_base::printOn(os); }
 

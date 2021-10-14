@@ -25,7 +25,7 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur( Loi_Etat_rhoT_GP_QC, "Loi_Etat_rhoT_Gaz_Parfait_QC", Loi_Etat_GP_base ) ;
-// XD rho_T loi_etat_base rho_T -1 Defining a state equation of form rho = f(T).
+// XD rhoT_gaz_parfait_QC loi_etat_gaz_parfait_base rhoT_gaz_parfait_QC -1 Class for perfect gas used with a aquasi-compressible fluid where the state equation is defined as rho = f(T).
 
 Loi_Etat_rhoT_GP_QC::Loi_Etat_rhoT_GP_QC() : is_exp_(false) { }
 

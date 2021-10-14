@@ -25,6 +25,7 @@
 #include <Discretisation_base.h>
 
 Implemente_instanciable(Navier_Stokes_WC,"Navier_Stokes_WC",Navier_Stokes_Fluide_Dilatable_base);
+// XD navier_stokes_WC navier_stokes_standard navier_stokes_WC -1 Navier-Stokes equation for a weakly-compressible fluid.
 
 Sortie& Navier_Stokes_WC::printOn(Sortie& is) const
 {

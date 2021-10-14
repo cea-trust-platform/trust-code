@@ -35,21 +35,12 @@
 #include <EChaine.h>
 
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
-
+// XD milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
 
 Milieu_base::Milieu_base()
 {
   indic_rayo_ = NONRAYO;
   deja_associe=0;
-  /*
-     Noms& nom=champs_compris_.liste_noms_compris();
-     nom.dimensionner(5);
-     nom[0]="masse_volumique";
-     nom[1]="conductivite";
-     nom[2]="diffusivite";
-     nom[3]="dilatabilite";
-     nom[4]="capacite_calorifique";
-  */
 }
 
 // Description:
@@ -75,7 +66,6 @@ Sortie& Milieu_base::printOn(Sortie& os) const
   os << "}" << finl;
   return os;
 }
-
 
 // Description:
 //    Ecrit un objet milieu sur un flot de sortie.

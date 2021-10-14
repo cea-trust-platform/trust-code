@@ -25,6 +25,11 @@
 #include <Debog.h>
 
 Implemente_instanciable(Loi_Etat_GP_WC,"Loi_Etat_Gaz_Parfait_WC",Loi_Etat_Mono_GP_base);
+// XD perfect_gaz_WC loi_etat_gaz_parfait_base gaz_parfait_WC 1 Class for perfect gas state law used with a weakly-compressible fluid.
+// XD attr Cp double Cp 0 Specific heat at constant pressure (J/kg/K).
+// XD attr Cv double Cv 1 Specific heat at constant volume (J/kg/K).
+// XD attr gamma double gamma 1 Cp/Cv
+// XD attr Prandtl double Prandtl 0 Prandtl number of the gas Pr=mu*Cp/lambda
 
 Sortie& Loi_Etat_GP_WC::printOn(Sortie& os) const
 {

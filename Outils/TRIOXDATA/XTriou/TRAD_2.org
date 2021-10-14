@@ -485,16 +485,6 @@ turbulence_paroi_scalaire_base objet_u turbulence_paroi_scalaire_base -1 Basic c
 modele_turbulence_scal_base objet_u modele_turbulence_scal_base -1 Basic class for turbulence model for energy equation.
   attr turbulence_paroi turbulence_paroi_scalaire_base turbulence_paroi 0 Keyword to set the wall law.
   attr dt_impr_nusselt floattant dt_impr_nusselt 1 Keyword to print local values of Nusselt number and temperature near a wall during a turbulent calculation. The values will be printed in the _Nusselt.face file each dt_impr_nusselt time period. The local Nusselt expression is as follows : Nu = ((lambda+lambda_t)/lambda)*d_wall/d_eq where d_wall is the distance from the first mesh to the wall and d_eq is given by the wall law. This option also gives the value of d_eq and h = (lambda+lambda_t)/d_eq and the fluid temperature of the first mesh near the wall. NL2 For the Neumann boundary conditions (flux_impose), the <<equivalent>> wall temperature given by the wall law is also printed (Tparoi equiv.) preceded for VEF calculation by the edge temperature <<T face de bord>>.
-navier_stokes_qc navier_stokes_standard navier_stokes_qc -1 Navier-Stokes equations under low Mach number.
-convection_diffusion_chaleur_qc eqn_base convection_diffusion_chaleur_qc -1 Energy equation under low Mach number.
-  attr mode_calcul_convection chaine(into=["ancien","divuT_moins_Tdivu","divrhouT_moins_Tdivrhou"]) mode_calcul_convection 1 Option to set the form of the convective operatorNL2 divrhouT_moins_Tdivrhou (the default since 1.6.8): rho.u.gradT = div(rho.u.T )- Tdiv(rho.u.1) NL2ancien: u.gradT = div(u.T) - T.div(u) NL2 divuT_moins_Tdivu : u.gradT = div(u.T) - Tdiv(u.1)
-pb_thermohydraulique_qc Pb_base pb_thermohydraulique_qc -1 Resolution of thermohydraulic problem under low Mach number. NL2 Keywords for the unknowns other than pressure, velocity, temperature are : NL2 masse_volumique : density NL2 enthalpie : enthalpy NL2 pression : reduced pressure NL2 pression_tot : total pressure.
-  attr navier_stokes_qc navier_stokes_qc navier_stokes_qc 0 Navier-Stokes equations under low Mach number.
-  attr convection_diffusion_chaleur_qc convection_diffusion_chaleur_qc convection_diffusion_chaleur_qc 0 Energy equation under low Mach number.
-convection_diffusion_fraction_massique_mb_qc eqn_base convection_diffusion_fraction_massique_mb_qc -1 Species conservation equation under low Mach number.
-pb_hydraulique_melange_binaire_qc Pb_base pb_hydraulique_melange_binaire_qc -1 Resolution of a binary mixture problem under low Mach number and iso-thermal conditions. NL2 Keywords for the unknowns other than pressure, velocity, fraction_massique are : NL2 masse_volumique : density NL2 pression : reduced pressure NL2 pression_tot : total pressure.
-  attr navier_stokes_qc navier_stokes_qc navier_stokes_qc 0 Navier-Stokes equations under low Mach number.
-  attr convection_diffusion_fraction_massique_mb_qc convection_diffusion_fraction_massique_mb_qc convection_diffusion_fraction_massique_mb_qc 0 Species conservation equation under low Mach number.
 paroi_fixe condlim_base paroi_fixe -1 Keyword to designate a situation of adherence to the wall called bord (edge) (normal and tangential velocity at the edge is zero).
 paroi_ft_disc_deriv objet_lecture paroi_ft_disc_deriv 0 not_set
 paroi_ft_disc_symetrie paroi_ft_disc_deriv symetrie 0 Symetrie condition in the case of two-phase flows
@@ -642,51 +632,10 @@ boundary_field_inward front_field_base boundary_field_inward 1 this field is use
   attr normal_value chaine normal_value 0 normal vector value (positive value for a vector oriented outside to inside) which can depend of the time.
 champ_front_pression_from_u front_field_base champ_front_pression_from_u 0 this field is used to define a pressure field depending of a velocity field.
   attr expression chaine expression 0 value depending of a velocity (like $2*u_moy^2$).
-milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
-  attr rho field_base rho 1 Density (kg.m-3).
-  attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
-  attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
-  ref gravite field_base
-constituant milieu_base constituant -1 Constituent.
-  attr coefficient_diffusion field_base coefficient_diffusion 1 Constituent diffusion coefficient value (m2.s-1). If a multi-constituent problem is being processed, the diffusivite will be a vectorial and each components will be the diffusion of the constituent.
 source_constituant source_base source_constituant 0 Keyword to specify source rates, in [[C]/s], for each one of the nb constituents. [C] is the concentration unit.
   attr ch field_base ch 0 Field type.
 radioactive_decay source_base radioactive_decay 0 Radioactive decay source term of the form $-\lambda_i c_i$, where $0 \leq i \leq N$, N is the number of component of the constituent, $c_i$ and $\lambda_i$ are the concentration and the decay constant of the i-th component of the constituant.
   attr val list val 0 n is the number of decay constants to read (int), and val1, val2... are the decay constants (double)
-fluide_incompressible milieu_base fluide_incompressible -1 This is a uncompressible fluid.
-  attr beta_th field_base beta_th 1 Thermal expansion (K-1).
-  attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
-  attr beta_co field_base beta_co 1 Volume expansion coefficient values in concentration.
-  attr indice field_base indice 1 Refractivity of fluid.
-  attr kappa field_base kappa 1 Absorptivity of fluid (m-1).
-loi_etat_base objet_u loi_etat_base -1 Basic class for state laws.
-perfect_gaz loi_etat_base gaz_parfait 1 Perfect gas.
-  attr Cp floattant Cp 0 Specific heat at constant pressure (J/kg/K).
-  attr Cv floattant Cv 1 Specific heat at constant volume (J/kg/K).
-  attr gamma floattant gamma 1 Cp/Cv
-  attr Prandtl floattant Prandtl 0 Prandtl number of the gas Pr=mu*Cp/lambda
-  attr rho_constant_pour_debug field_base rho_constant_pour_debug 1 not_set
-gaz_reel_rhot loi_etat_base gaz_reel_rhot 0 Real gas.
-  attr bloc bloc_lecture bloc 0 Description.
-bloc_sutherland objet_lecture nul 0 Sutherland law for viscosity mu(T)=mu0*((T0+C)/(T+C))*(T/T0)**1.5 and (optional) for conductivity lambda(T)=mu0*Cp/Prandtl*((T0+Slambda)/(T+Slambda))*(T/T0)**1.5
-  attr m chaine(into=["mu0"]) m 0 not_set
-  attr mu0 floattant mu0 0 not_set
-  attr t chaine(into=["T0"]) t 0 not_set
-  attr t0 floattant t0 0 not_set
-  attr ms chaine(into=["Slambda"]) ms 1 not_set
-  attr s floattant s 1 not_set
-  attr mc chaine(into=["C"]) mc 0 not_set
-  attr c floattant c 0 not_set
-fluide_quasi_compressible fluide_incompressible fluide_quasi_compressible -1 Compressible flow at low mach number.
-  attr sutherland bloc_sutherland sutherland 1 Sutherland law for viscosity and for conductivity.
-  attr pression floattant pression 1 Initial pressure.
-  attr loi_etat loi_etat_base loi_etat 1 State law.
-  attr traitement_pth chaine(into=["edo","constant","conservation_masse"]) traitement_pth 1 Particular treatment for the thermodynamic pressure Pth ; there are three possibilities: NL2 1) with the keyword \'edo\' the code computes Pth solving an O.D.E. ; in this case, the mass is not strictly conserved (it is the default case for quasi compressible computation): NL2 2) the keyword \'conservation_masse\' forces the conservation of the mass (closed geometry or with periodic boundaries condition) NL2 3) the keyword \'constant\' makes it possible to have a constant Pth ; it\'s the good choice when the flow is open (e.g. with pressure boundary conditions). NL2 It is possible to monitor the volume averaged value for temperature and density, plus Pth evolution in the .evol_glob file.
-  attr traitement_rho_gravite chaine(into=["standard","moins_rho_moyen"]) traitement_rho_gravite 1 It may be :1) \`standard\` : the gravity term is evaluted with rho*g (It is the default). 2) \`moins_rho_moyen\` : the gravity term is evaluated with (rho-rhomoy) *g. Unknown pressure is then P*=P+rhomoy*g*z. It is useful when you apply uniforme pressure boundary condition like P*=0. 
-  attr temps_debut_prise_en_compte_drho_dt floattant temps_debut_prise_en_compte_drho_dt 1 While time<value, dRho/dt is set to zero (Rho, volumic mass). Useful for some calculation during the first time steps with big variation of temperature and volumic mass.
-  attr omega_relaxation_drho_dt floattant omega_relaxation_drho_dt 1 Optional option to have a relaxed algorithm to solve the mass equation. value is used (1 per default) to specify omega.
-  attr beta_th suppress_param beta_th 1 suppress
-  attr beta_co suppress_param beta_co 1 suppress
 form_a_nb_points objet_lecture nul 0 The structure fonction is calculated on nb points and we should add the 2 directions (0:OX, 1:OY, 2:OZ) constituting the homegeneity planes. Example for channel flows, planes parallel to the walls.
   attr nb entier(into=[4]) nb 0 Number of points.
   attr dir1 entier(max=2) dir1 0 First direction.
@@ -954,9 +903,6 @@ paroi_echange_externe_impose_h paroi_echange_externe_impose paroi_echange_extern
 entree_temperature_imposee_h frontiere_ouverte_temperature_imposee entree_temperature_imposee_h -1 Particular case of class frontiere_ouverte_temperature_imposee for enthalpy equation.
 sortie_libre_temperature_imposee_h neumann sortie_libre_temperature_imposee_h 0 Open boundary for heat equation with enthalpy as unknown.
   attr ch front_field_base ch 0 Boundary field type.
-fluide_ostwald fluide_incompressible fluide_ostwald -1 Non-Newtonian fluids governed by Ostwald\'s law. The law applicable to stress tensor is: NL2 tau=K(T)*(D:D/2)**((n-1)/2)*D Where: NL2 D refers to the deformation tensor NL2 K refers to fluid consistency (may be a function of the temperature T) NL2 n refers to the fluid structure index n=1 for a Newtonian fluid, n<1 for a rheofluidifier fluid, n>1 for a rheothickening fluid.
-  attr k field_base k 1 Fluid consistency.
-  attr n field_base n 1 Fluid structure index.
 champ_ostwald field_base champ_ostwald 0 This keyword is used to define the viscosity variation law: NL2 Mu(T)= K(T)*(D:D/2)**((n-1)/2)
 tayl_green champ_don_base tayl_green 0 Class Tayl_green.
   attr dim entier dim 0 Dimension.
@@ -1117,30 +1063,6 @@ extrudeparoi interprete extrudeparoi 1 Keyword dedicated in 3D (VEF) to create p
   attr epaisseur list epaisseur 1 n r1 r2 .... rn : (relative or absolute) width for each layer.
   attr critere_absolu entier critere_absolu 1 relative (0, the default) or absolute (1) width for each layer.
   attr projection_normale_bord rien projection_normale_bord 1 keyword to project layers on the same plane that contiguous boundaries. defaut values are : epaisseur_relative 1 0.5 projection_normale_bord 1
-listeqn listobj nul 1 eqn_base 0 List of equations.
-pb_avec_passif Pb_base pb_avec_passif -1 Class to create a classical problem with a scalar transport equation (e.g: temperature or concentration) and an additional set of passive scalars (e.g: temperature or concentration) equations.
-  attr equations_scalaires_passifs listeqn equations_scalaires_passifs 0 Passive scalar equations. The unknowns of the passive scalar equation number N are named temperatureN or concentrationN or fraction_massiqueN. This keyword is used to define initial conditions and the post processing fields. This kind of problem is very useful to test in only one data file (and then only one calculation) different schemes or different boundary conditions for the scalar transport equation.
-pb_thermohydraulique_concentration_scalaires_passifs pb_avec_passif pb_thermohydraulique_concentration_scalaires_passifs -1 Resolution of Navier-Stokes/energy/multiple constituent transport equations, with the additional passive scalar equations.
-  attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
-  attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport equations (concentration diffusion convection).
-  attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equations (temperature diffusion convection).
-  ref constituant constituant
-pb_thermohydraulique_scalaires_passifs pb_avec_passif pb_thermohydraulique_scalaires_passifs -1 Resolution of thermohydraulic problem, with the additional passive scalar equations.
-  attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
-  attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equations (temperature diffusion convection).
-pb_hydraulique_concentration_scalaires_passifs pb_avec_passif pb_hydraulique_concentration_scalaires_passifs -1 Resolution of Navier-Stokes/multiple constituent transport equations with the additional passive scalar equations.
-  attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
-  attr convection_diffusion_concentration convection_diffusion_concentration convection_diffusion_concentration 1 Constituent transport equations (concentration diffusion convection).
-  ref constituant constituant
-pb_thermohydraulique_qc_fraction_massique pb_avec_passif pb_thermohydraulique_qc_fraction_massique -1 Resolution of thermohydraulic problem under low Mach number with passive scalar equations.
-  attr navier_stokes_qc navier_stokes_qc navier_stokes_qc 0 Navier-Stokes equations under low Mach number.
-  attr convection_diffusion_chaleur_qc convection_diffusion_chaleur_qc convection_diffusion_chaleur_qc 0 Energy equation under low Mach number.
-espece objet_u nul -1 not_set
-  attr cp field_base cp 0 Specific heat value (J.kg-1.K-1).
-  attr mu field_base mu 0 Dynamic viscosity value (kg.m-1.s-1).
-  attr masse_molaire floattant masse_molaire 0 Gas molar mass.
-convection_diffusion_fraction_massique_qc eqn_base convection_diffusion_fraction_massique_qc -1 not_set
-  attr espece espece espece 0 not_set
 frontiere_ouverte_fraction_massique_imposee condlim_base frontiere_ouverte_fraction_massique_imposee -1 not_set
   attr ch front_field_base ch 0 Boundary field type.
 paroi_echange_contact_correlation_vdf condlim_base paroi_echange_contact_correlation_vdf 1 Class to define a thermohydraulic 1D model which will apply to a boundary of 2D or 3D domain. NL2 Warning : For parallel calculation, the only possible partition will be according the axis of the model with the keyword Tranche.
