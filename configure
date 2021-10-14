@@ -575,6 +575,12 @@ else
     echo "unset  TRUST_USE_EXTERNAL_HDF" >> $var
     #echo "unset HDF5_ROOT_DIR" >> $var
 fi
+# IF HDF5 tools are not installed, detect h5dump version mismatch
+if [ "`h5dump -help 1>/dev/null 2>&1;echo $?`" = 0 ]; then
+    h5versionOK=`h5dump --version 2>/dev/null | awk '/h5dump/ {split($3,a,".");v=a[1]*1000+a[2]*10+a[3];print (v<=1103?1:0)}'`
+    [ "$h5versionOK" != 1 ] && echo "export HDF5_DISABLE_VERSION_CHECK=2 # to ignore warnings about hdf5 version" >> $var
+fi
+
 
 ##########################################################
 #     Check if trust has already been built in 64bits    #

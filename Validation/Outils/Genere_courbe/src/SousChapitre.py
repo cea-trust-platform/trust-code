@@ -25,7 +25,7 @@ from lib import _accoladeF,verifie_accolade_suivante
 
 class SousChapitre(Chapitre):  ## WARNING heriting from Chapitre
     '''Classe decrivant un sous-chapitre tel qu il devra apparaitre dans le rapport de validation de TRUST.
-    ATTENTION, ici on hérite de Chapitre.
+    ATTENTION, ici on herite de Chapitre.
     '''
 
     def __init__(self, verbose=0, output=''):

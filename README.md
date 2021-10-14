@@ -43,7 +43,7 @@ Run the following command, mpicxx should be found into the bin directory of the 
 # **How to install TRUST development version  ?**
 **for developers and those interested in new features only.**
 
-**<span style="color:red">Warning: "next" branch may not compile or some tests fail if important developments merged</span>**
+**Warning: "next" branch may not compile or some tests fail if important developments merged**
 
     $> git clone https://github.com/cea-trust-platform/trust-code.git TRUST-next
     $> cd TRUST-next
@@ -64,7 +64,7 @@ To build a binary with a single directory build:
 	$> make       # Create optimized and debug binaries and tools
 	$> make optim # Create an optimized binary
 	$> make debug # Create a debug binary
-	$> make prof  # Create a profiled binary  
+	$> make prof  # Create a profiled binary
 
 To check:
 
@@ -83,21 +83,21 @@ To clean also the third party libraries:
 
 > - **TRUST scripts** => bin/
 
-> - **Documentation files** => doc/		
+> - **Documentation files** => doc/
 
 > - **Environment files** => env_src/ & env/
 
-> - **Binaries** => exec/		
+> - **Binaries** => exec/
 
 > - **Link to all TRUST include files (automatically updated)** => include/
 
 > - **Libraries** => ThirdPart/ & lib/
 
-> - **TRUST sources** => src/		 
+> - **TRUST sources** => src/
 
-> - **TRUST tests** => tests/		
+> - **TRUST tests** => tests/
 
-> - **Tools to build TRUST** => Outils/		
+> - **Tools to build TRUST** => Outils/
 
 > - **Location of Validation forms** => Validation/
 
