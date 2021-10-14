@@ -42,7 +42,7 @@ Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Wea
 // XD ref gravite field_base
 
 Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0), use_hydrostatic_pressure_(0),
-  sim_resumed_(0), time_activate_ptot_(-1.) {}
+  use_grad_pression_eos_(1), sim_resumed_(0), time_activate_ptot_(-1.) {}
 
 Sortie& Fluide_Weakly_Compressible::printOn(Sortie& os) const
 {
@@ -62,8 +62,9 @@ void Fluide_Weakly_Compressible::set_param(Param& param)
   Fluide_Dilatable_base::set_param(param);
   param.ajouter("pression_thermo",&Pth_); // XD_ADD_P double Initial thermo-dynamic pressure used in the assosciated state law.
   param.ajouter("pression_xyz",&Pth_xyz_); // XD_ADD_P field_base Initial thermo-dynamic pressure used in the assosciated state law. It should be defined with as a Champ_Fonc_xyz.
-  param.ajouter("use_total_pressure",&use_total_pressure_); // XD_ADD_P int Flag (0 or 1) used to activate and use the total pressure in the assosciated state law.
-  param.ajouter("use_hydrostatic_pressure",&use_hydrostatic_pressure_); // XD_ADD_P int Flag (0 or 1) used to activate and use the hydro-static pressure in the assosciated state law.
+  param.ajouter("use_total_pressure",&use_total_pressure_); // XD_ADD_P int Flag (0 or 1) used to activate and use the total pressure in the assosciated state law. The default value of this Flag is 0.
+  param.ajouter("use_hydrostatic_pressure",&use_hydrostatic_pressure_); // XD_ADD_P int Flag (0 or 1) used to activate and use the hydro-static pressure in the assosciated state law. The default value of this Flag is 0.
+  param.ajouter("use_grad_pression_eos",&use_grad_pression_eos_); // XD_ADD_P int Flag (0 or 1) used to specify whether or not the gradient of the thermo-dynamic pressure will be taken into account in the source term of the temperature equation (case of a non-uniform pressure). The default value of this Flag is 1 which means that the gradient is used in the source.
   param.ajouter("time_activate_ptot",&time_activate_ptot_); // XD_ADD_P double Time (in seconds) at which the total pressure will be used in the assosciated state law.
 
   // Param non-standard

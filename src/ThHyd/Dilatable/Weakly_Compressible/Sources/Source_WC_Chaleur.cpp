@@ -67,8 +67,8 @@ DoubleTab& Source_WC_Chaleur::ajouter(DoubleTab& resu) const
   DoubleTab UgradP(Ptot); // champ elem en vdf et face en vef
   UgradP = 0.;
 
-  // Only if non uniform
-  if (FWC.use_total_hydro_pressure()) compute_interpolate_gradP(UgradP,Ptot);
+  // Only if non uniform and if the flag use_grad_pression_eos is 1
+  if (FWC.use_total_hydro_pressure() && FWC.use_grad_pression_eos()) compute_interpolate_gradP(UgradP,Ptot);
 
   assert (resu.dimension(0) == UgradP.dimension(0));
   assert (resu.size() == UgradP.size());
