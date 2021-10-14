@@ -1,6 +1,9 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
+14/10/21 (TRUST)  Major Change: Media with variable densities do not inherit anymore from "Fluide_Incompressible"
+14/10/21 (TRUST)  New feature : New medium "Fluide_Dilatable_base" from which the Quasi-Compressible and the Weakly-Compressible media inherit
+14/10/21 (TRUST)  New feature : New problems "Pb_Thermohydraulique_WC", "Pb_Thermohydraulique_Especes_WC" and "Pb_Hydraulique_Melange_Binaire_WC" introduced to solve thermo-hydraulic and/or binary/multi species flows using a Weakly Compressible formulation (non-uniform pressure in the state equation)
 16/09/21 (TRUST)  New feature : Solveur_U_P is now unified for Poly/Covi-MAC discretizations and allows the monolithic resolution of the NS equation
 16/09/21 (TRUST)  New feature : Decouper_multi allows to partition multiple domains while accounting for connections via Raccords (allows for easier implementation of thermique_monolithique in parallel)
 16/09/21 (TRUST)  Major Change: All DoubleTabs associated with fields (Champ_Inc, Champ_Don, ...) have now dimension >= 2
