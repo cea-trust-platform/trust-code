@@ -684,4 +684,6 @@ if [ $TRUST_WITHOUT_DOC -eq 1 ]
 then
    (cd $PETSC_ROOT/$TRUST_ARCH"_opt" ; rm -rf docs share src)
 fi
+# on met le chemin relatif et non absolu dans la config de petsc
+sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $TRUST_ROOT/lib/src/LIBPETSC/petsc/linux_opt/lib/petsc/conf/petscvariables
 exit 0

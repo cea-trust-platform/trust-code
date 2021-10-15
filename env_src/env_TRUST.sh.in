@@ -24,7 +24,10 @@ else
       exit -1
    fi
    # GF on revient a TRUST_ROOT en dur sinon pb avec chemin relatif 
-   TRUST_ROOT=path_to_trio
+   #TRUST_ROOT=path_to_trio
+   # ND on detecte TRUST_ROOT de maniere interactive
+   DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+   [ -f $DIR/RELEASE_NOTES ] && TRUST_ROOT=$DIR || TRUST_ROOT=$DIR"/.."
    export TRUST_ROOT
 
    #################################

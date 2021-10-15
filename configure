@@ -728,10 +728,10 @@ then
    echo $ECHO_OPTS "doxygen:\n\t(source ./env_TRUST.sh && make_Doxyfile)" 			>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "validation:\n\t(source ./env_TRUST.sh && cd Validation/Rapports_automatiques && ./lance_tout)" >> $TRUST_ROOT/Makefile
    #echo $ECHO_OPTS "init:\n\tsource ./env_TRUST.sh" 		>> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "check:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_opt $Build )" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "check:\n\t(source ./env_TRUST.sh && echo 0 | lance_test \${exec_opt} \${TRUST_ROOT}/build )" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "check_optim:\tcheck" >> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "check_semi_opt:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_semi_opt $Build )" >> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "check_debug:\n\t(source ./env_TRUST.sh && echo 0 | lance_test $exec_debug $Build )" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "check_semi_opt:\n\t(source ./env_TRUST.sh && echo 0 | lance_test \${exec_semi_opt} \${TRUST_ROOT}/build )" >> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "check_debug:\n\t(source ./env_TRUST.sh && echo 0 | lance_test \${exec_debug} \${TRUST_ROOT}/build )" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "ctest_debug:\n\t(source ./env_TRUST.sh && cd MonoDir$COMM/src && ctest -j$TRUST_NB_PHYSICAL_CORES)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "ctest_optim:\n\t(source ./env_TRUST.sh && cd MonoDir$COMM"_opt"/src && ctest -j$TRUST_NB_PHYSICAL_CORES)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "ctest_semi_opt:\n\t(source ./env_TRUST.sh && cd MonoDir$COMM"_semi_opt"/src && ctest -j$TRUST_NB_PHYSICAL_CORES)" >> $TRUST_ROOT/Makefile

@@ -1250,6 +1250,9 @@ else
 	 m="# Compiler F77" && e="TRUST_F77=\"$MPI_ROOT/bin/mpif77\" && export TRUST_F77" && ecrit $m"|"$e"|"$env;eval $e
 	 echo "ADD_PATH $MPI_ROOT/bin" >> $env
 	 MPI_LIB="";export MPI_LIB
+	 sed -i "s@${TRUST_ROOT}@\$TRUST_ROOT@g" $TRUST_ROOT/lib/src/LIBMPI/mpich/bin/mpicxx
+	 sed -i "s@${TRUST_ROOT}@\$TRUST_ROOT@g" $TRUST_ROOT/lib/src/LIBMPI/mpich/bin/mpicc
+	 sed -i "s@${TRUST_ROOT}@\$TRUST_ROOT@g" $TRUST_ROOT/lib/src/LIBMPI/mpich/bin/mpif77
       else
          echo "$MPI_ROOT not supported yet."
          [ -f $TRUST_ROOT/NON_INSTALLED ] && Display_Missing_packages
