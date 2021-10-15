@@ -14,6 +14,10 @@ Parameters
     TestCase PolyMAC/dt1 "decay.data"
     TestCase PolyMAC/dt0.1 "source_constituant.data"
     TestCase PolyMAC/dt1 "source_constituant.data"
+    TestCase CoviMAC/dt0.1 "decay.data"
+    TestCase CoviMAC/dt1 "decay.data"
+    TestCase CoviMAC/dt0.1 "source_constituant.data"
+    TestCase CoviMAC/dt1 "source_constituant.data"
 }
 
 Chapter
@@ -84,6 +88,34 @@ Chapter
             file PolyMAC/dt1/source_constituant_C.son
             columns 1 (column(1+1))
             legend Concentration 1 PolyMAC - source_constituant - dt = 1 s
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/dt0.1/decay_C.son
+            columns 1 (column(1+1))
+            legend Concentration 1 CoviMAC - decay - dt = 0.1 s
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/dt1/decay_C.son
+            columns 1 (column(1+1))
+            legend Concentration 1 CoviMAC - decay - dt = 1 s
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/dt0.1/source_constituant_C.son
+            columns 1 (column(1+1))
+            legend Concentration 1 CoviMAC - source_constituant - dt = 0.1 s
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/dt1/source_constituant_C.son
+            columns 1 (column(1+1))
+            legend Concentration 1 CoviMAC - source_constituant - dt = 1 s
             style linespoints
         }
         Courbe
@@ -157,6 +189,34 @@ Chapter
             file PolyMAC/dt1/source_constituant_C.son
             columns 1 (column(1+2))
             legend Concentration 2 PolyMAC - source_constituant - dt = 1 s
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/dt0.1/decay_C.son
+            columns 1 (column(1+2))
+            legend Concentration 2 CoviMAC - decay - dt = 0.1 s
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/dt1/decay_C.son
+            columns 1 (column(1+2))
+            legend Concentration 2 CoviMAC - decay - dt = 1 s
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/dt0.1/source_constituant_C.son
+            columns 1 (column(1+2))
+            legend Concentration 2 CoviMAC - source_constituant - dt = 0.1 s
+            style linespoints
+        }
+        Curve
+        {
+            file CoviMAC/dt1/source_constituant_C.son
+            columns 1 (column(1+2))
+            legend Concentration 2 CoviMAC - source_constituant - dt = 1 s
             style linespoints
         }
         Courbe
