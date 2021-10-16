@@ -50,6 +50,7 @@
 
 // used for signal_callback_handler & initialized from mon_main::dowork
 Nom NOM_DU_CAS_;
+int nb_caught_signals = 0; // we give the user 2 tries before a forced exit !
 
 // This structure mirrors the one found in /usr/include/asm/ucontext.h
 typedef struct _sig_ucontext
@@ -156,22 +157,41 @@ void install_handlers()
  */
 void signal_callback_handler(True_int signum)
 {
-  if (Process::je_suis_maitre())
+  if (nb_caught_signals < 2)
     {
-      std::cerr << " " << std::endl;
-      std::cerr << "=======================================================" << std::endl;
-      std::cerr << " " << std::endl;
-      std::cerr << "Caught signal " << signum << std::endl;
-      std::cerr << "We are trying to finish the simulation correctly ... " << std::endl;
-      std::cerr << " " << std::endl;
-      std::cerr << "=======================================================" << std::endl;
-      std::cerr << " " << std::endl;
+      if (Process::je_suis_maitre())
+        {
+          std::cerr << " " << std::endl;
+          std::cerr << "=======================================================" << std::endl;
+          std::cerr << " " << std::endl;
+          std::cerr << "Caught signal " << signum << std::endl;
+          std::cerr << "We are trying to finish the simulation correctly ... " << std::endl;
+          std::cerr << " " << std::endl;
+          std::cerr << "=======================================================" << std::endl;
+          std::cerr << " " << std::endl;
+        }
+    }
+  else // force an exit
+    {
+      if (Process::je_suis_maitre())
+        {
+          std::cerr << " " << std::endl;
+          std::cerr << "=======================================================" << std::endl;
+          std::cerr << " " << std::endl;
+          std::cerr << "Multiple signals " << signum <<" are caught !" << std::endl;
+          std::cerr << "We are forcing the exit of the processors ... " << std::endl;
+          std::cerr << " " << std::endl;
+          std::cerr << "=======================================================" << std::endl;
+          std::cerr << " " << std::endl;
+        }
+      Process::exit();
     }
 
   // Terminate TRUST correctly => print 1 in stop file
   Nom command = "echo '1' > ";
   command += NOM_DU_CAS_;
   command += ".stop";
+  nb_caught_signals++; // force an exit when nb_caught_signals = 2 (3 tries)
 
   int err = system(command);
   if (err)
