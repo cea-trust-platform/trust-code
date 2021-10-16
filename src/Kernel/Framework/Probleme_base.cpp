@@ -1868,7 +1868,6 @@ void Probleme_base::preparer_calcul()
       loi.preparer_calcul();
       ++curseur;
     }
-  mettre_a_jour(temps);
 }
 
 

@@ -66,6 +66,7 @@ public:
   void mettre_a_jour(double temps);
   virtual Entree& lire_equations(Entree& is);
   virtual Entree& lire_correlations(Entree& is);
+  virtual void preparer_calcul();
 
   /* nombre de phases du probleme */
   int nb_phases() const

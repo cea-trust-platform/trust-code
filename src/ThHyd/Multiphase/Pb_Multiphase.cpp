@@ -288,3 +288,10 @@ void Pb_Multiphase::mettre_a_jour(double temps)
     }
 
 }
+
+void Pb_Multiphase::preparer_calcul()
+{
+  Pb_Fluide_base::preparer_calcul();
+  const double temps = schema_temps().temps_courant();
+  mettre_a_jour(temps);
+}
