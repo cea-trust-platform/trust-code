@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -133,6 +133,28 @@ extern "C"
                          const int*    const, // LWORK
                          const int*    const  // INFO
                         );
+
+  void F77DECLARE(DSYEVR)(const char*   const, // JOBZ
+                          const char*   const, // RANGE
+                          const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const double* const, // VL
+                          const double* const, // VU
+                          const int*    const, // IL
+                          const int*    const, // IU
+                          const double* const, // ABSTOL
+                          const int*    const, // M
+                          const double* const, // W
+                          const double* const, // Z
+                          const int*    const, // LDZ
+                          const double* const, // WORK
+                          const int*    const, // LWORK
+                          const int*    const, // IWORK
+                          const int*    const, // LIWORK
+                          const int*    const  // INFO
+                         );
 
   void F77DECLARE(DSYEVD)(const char*   const, // JOBZ
                           const char*   const, // UPLO
@@ -348,6 +370,27 @@ extern "C"
                          const int*    const  // INFO
                         );
 
+  void F77DECLARE(dsyevr)(const char*   const, // JOBZ
+                          const char*   const, // RANGE
+                          const char*   const, // UPLO
+                          const int*    const, // N
+                          const double* const, // A
+                          const int*    const, // LDA
+                          const double* const, // VL
+                          const double* const, // VU
+                          const int*    const, // IL
+                          const int*    const, // IU
+                          const double* const, // ABSTOL
+                          const int*    const, // M
+                          const double* const, // W
+                          const double* const, // Z
+                          const int*    const, // LDZ
+                          const double* const, // WORK
+                          const int*    const, // LWORK
+                          const int*    const, // IWORK
+                          const int*    const, // LIWORK
+                          const int*    const  // INFO
+                         );
 
   void F77DECLARE(dsyevd)(const char*   const, // JOBZ
                           const char*   const, // UPLO
@@ -613,6 +656,31 @@ inline void F77NAME(DSYEV)(const char*   const JOBZ,
                           )
 {
   F77NAME(dsyev)(JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO);
+}
+
+inline void F77DECLARE(DSYEVR)(const char*   const JOBZ,
+                               const char*   const RANGE,
+                               const char*   const UPLO,
+                               const int*    const N,
+                               const double* const A,
+                               const int*    const LDA,
+                               const double* const VL,
+                               const double* const VU,
+                               const int*    const IL,
+                               const int*    const IU,
+                               const double* const ABSTOL,
+                               const int*    const M,
+                               const double* const W,
+                               const double* const Z,
+                               const int*    const LDZ,
+                               const double* const WORK,
+                               const int*    const LWORK,
+                               const int*    const IWORK,
+                               const int*    const LIWORK,
+                               const int*    const INFO
+                              )
+{
+  F77NAME(dsyevr)(JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK, LWORK, IWORK, LIWORK, INFO);
 }
 
 inline void F77NAME(DSYEVD)(const char*   const JOBZ,

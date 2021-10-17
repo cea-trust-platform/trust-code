@@ -33,7 +33,7 @@ class Faces;
 #include <IntTab.h>
 #include <Ref_Champ_Inc.h>
 #include <MD_Vector_tools.h>
-#include <Op_Diff_CoviMAC_base.h>
+#include <Op_Diff_CoviMAC_Elem.h>
 #include <vector>
 
 ////////////////////////////////////////////////////////////////
@@ -56,28 +56,17 @@ public :
 
   REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
   int i_fvf, i_o_fvf;  //indices de frontiere de chaque cote
-  REF(Op_Diff_CoviMAC_base) diff, o_diff; //operateurs de diffusion de chaque cote
+  REF(Op_Diff_CoviMAC_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
 
-  /* elements / face de l'autre cote de la frontiere */
-  const IntTab& fe_dist() const //liste (i_face, i_elem) dans la Zone distante
-  {
-    init_fe_dist();
-    return fe_dist_;
-  }
+  /* faces, sommets de l'autre cote de la frontiere */
+  void init_fs_dist() const; //initialisation de f_dist, s_dist
+  mutable IntTab f_dist;     //face de l'autre cote de chaque face de la frontiere
+  mutable std::map<int, int> s_dist; //s_dist[sommet de ce cote] = sommet de l'autre cote
+  mutable int fs_dist_init_ = 0;
 
-  /* positions et poids des points harmoniques : appele par Zone_CoviMAC::harmonic_points */
-  void harmonic_points(DoubleTab& xh, DoubleTab& wh, DoubleTab& whm) const;
-
-  /* remplissage de nu.grad T aux faces reelles de la CL : appele par Zone_CoviMAC::fgrad */
-  void fgrad(int full_stencil, DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab& phif_pe, DoubleTab& phif_pc) const;
+  double invh_paroi; //resistance thermique (1 / h) de la paroi
 
 protected :
   Nom nom_autre_pb_, nom_bord_, nom_champ_; //nom du probleme distant, du bord, du champ
-  double invh_paroi_; //resistance thermique (1 / h) de la paroi
-  double t_last_maj_; //dernier temps auquel on a appele mettre_a_jour()
-
-  void init_fe_dist() const; //initialisation
-  mutable IntTab fe_dist_;
-  mutable int fe_init_;
 };
 #endif

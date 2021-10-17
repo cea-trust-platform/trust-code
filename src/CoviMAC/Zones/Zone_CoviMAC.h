@@ -150,42 +150,30 @@ public :
   mutable IntTab ved, vej; //reconstruction de ve par (vej, vec)[ved(e), ved(e + 1)[ (faces)
   mutable DoubleTab vec;
 
-  //stencils : fsten -> pour le gradient aux faces "fgrad", esten -> pour le gradient aux elems "egrad"
+  //stencil du gradient aux faces fgrad : fsten_eb([fsten_d(f), fsten_d(f + 1)[]) -> elements e, faces de bord ne_tot + f
   void init_stencils() const;
-  mutable IntTab fsten_d, fsten_f;
+  mutable IntTab fsten_d, fsten_eb;
+
+  void init_som_elem() const;
+  mutable Static_Int_Lists som_elem;
 
   //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
   inline double nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 
-  //construction des "points harmoniques" aux faces lies au gradient d'un champ aux elements
-  //entrees : cls          : conditions aux limites
-  //          is_p         : cas de la pression dans Navier-Stokes (CL de Neumann -> Dirichlet, le reste -> Neumann homogene)
-  //          nu_grad      : 1 si on veut nf.(nu.grad T), 0 si on veut nf.grad T
-  //          nu(e, n, ..) : diffusivite aux elements (optionnel)
-  //          invh(f, n)   : resistivite (1 / h) aux faces de bord (optionnel)
-  //sorties : xh(f, n, d)           : point harmonique a la face f pour la composante n
-  //          wh(f, n)              : pour les faces internes : Th(f, n) = wh(f, n) * Te(amont, n) + (1 - wh(f, n)) * Te(aval, n) si interne
-  //          whm(f_ech, n, 0/1, m) : pour les faces Echange_contact : Th(f, n) = sum_m,i whm(f_ech, n, i, m) T(f_e(f, i), m)
-  void harmonic_points(const Conds_lim& cls, int is_p, int nu_grad, const DoubleTab *nu, const DoubleTab *invh, DoubleTab& xh, DoubleTab& wh, DoubleTab *whm) const;
-
-
-  //pour u.n champ T aux elements, interpole [n_f.grad T]_f (si nu_grad = 0) ou [n_f.nu.grad T]_f
+  //pour u.n champ T aux elements, interpole [n_f.nu.grad T]_f
   //en preservant exactement les champs verifiant [nu grad T]_e = cte.
-  //Entrees : cls           : conditions aux limites
+  //Entrees : N             : nombre de composantes
+  //          is_p          : 1 si on traite le champ de pression (inversion Neumann / Dirichlet)
+  //          cls           : conditions aux limites
   //          fcl(f, 0/1/2) : donnes sur les CLs (type de CL, indice de CL, indice dans la CL) (cf. Champ_{P0,Face}_CoviMAC)
   //          nu(e, n, ..)  : diffusivite aux elements (optionnel)
-  //          invh(f, n)    : resistivite (1/h) aux bords (optionnel)
-  //          xh, wh, whm   : donnees sur les points harmoniques retournees par harmonic_points()
-  //          pe_ext        : donnees sur les CL Echange_contact retournees par Op_Diff_CoviMAC_base
-  //          nu_grad       : 1 si on veut nf.(nu.grad T), 0 si on veut nf.grad T
+  //          som_ext       : liste de sommets a ne pas traiter (ex. : traitement direct des Echange_Contact dans Op_Diff_CoviMAC_Elem)
+  //          virt          : 1 si on veut aussi le flux aux faces virtuelles
   //          full_stencil  : 1 si on veut le stencil complet (pour dimensionner())
-  //Sorties : phif_w(f, n)                         : poids de l'amont dans la compo n du flux
-  //          phif_d(f, 0/1)                       : indices dans phif_{e,c} / phif_{pe,pc} du flux a f dans [phif_d(f, 0/1), phif_d(f + 1, 0/1)[
+  //Sorties : phif_d(f, 0/1)                       : indices dans phif_{e,c} / phif_{pe,pc} du flux a f dans [phif_d(f, 0/1), phif_d(f + 1, 0/1)[
   //          phif_e(i), phif_c(i, n, c)           : indices/coefficients locaux (pas d'Echange_contact) et diagonaux (composantes independantes)
-  //          phif_pe(i, 0/1), phif_pc(i, n, m, c) : indices (pb, elem) /coefficients distants et/ou non diagonaux
-  void fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const DoubleTab *invh,
-             const DoubleTab& xh, const DoubleTab& wh, const DoubleTab *whm, const IntTab *pe_ext, int nu_grad, int full_stencil,
-             DoubleTab& phif_w, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c, IntTab *phif_pe, DoubleTab *phif_pc) const;
+  void fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fcl, const DoubleTab *nu, const IntTab *som_ext,
+             int virt, int full_stencil, IntTab& phif_d, IntTab& phif_e, DoubleTab& phif_c) const;
 
   //MD_Vectors pour Champ_Face_CoviMAC (faces + d x elems)
   MD_Vector mdv_ch_face;
@@ -200,6 +188,7 @@ private:
   IntVect rang_elem_non_std_;		 // rang_elem_non_std_= -1 si l'element est standard
   // rang_elem_non_std_= rang de l'element dans les tableaux
   // relatifs aux elements non standards
+  mutable int first_fgrad_ = 1; //pour n'afficher le message "MPFA-O MPFA-O(h) VFSYM" qu'une seule fois par calcul
 
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
   void remplir_elem_faces() override {};

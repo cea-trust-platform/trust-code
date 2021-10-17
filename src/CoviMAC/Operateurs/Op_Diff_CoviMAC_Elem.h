@@ -45,32 +45,30 @@ public :
   // virtual void calculer_flux_bord(const DoubleTab& inco) const { abort(); };
 
   /* interface {dimensionner,ajouter}_blocs */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  int has_interface_blocs() const override { return 1; }
   double calculer_dt_stab() const override;
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-
-
   void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override { };
+
+private:
+  /* sommets connectes a un autre probleme par un Echange_contact */
+  void init_s_dist() const;
+  mutable std::map<int, std::map<const Operateur_Diff_base *, int>> s_dist; //s_dist[som] = { { pb1, som1 }, { pb2, som2 }, ... }
+  mutable int s_dist_init_ = 0;
+
+  /* tableaux op_ext et pe_ext */
+  void init_som_ext() const; //initialisation
+  mutable IntTab som_mix, som_ext_d, som_ext_pe, som_ext_pf; //sommet s = som_ext(i) : melange-t-il les composantes, couple (probleme, elem) dans som_ext_e([som_ext_d(i, 0), som_ext_d(i + 1, 0)[, 0/1)
+  //faces Echange_contact (pb1, face1, pb2, face2) dans som_ext_f([som_ext_d(i, 1), som_ext_d(i + 1, 1)[, 0/1/2/3)
+  mutable int som_ext_init_ = 0;
 };
 
 /* comme des synonymes, mais avec l'info de ce qu'on est dans que_suis_je() */
-class Op_Diff_Nonlinear_CoviMAC_Elem : public Op_Diff_CoviMAC_Elem
-{
-  Declare_instanciable( Op_Diff_Nonlinear_CoviMAC_Elem ) ;
-};
-
 class Op_Dift_CoviMAC_Elem : public Op_Diff_CoviMAC_Elem
 {
   Declare_instanciable( Op_Dift_CoviMAC_Elem ) ;
 };
 
-class Op_Dift_Nonlinear_CoviMAC_Elem : public Op_Diff_CoviMAC_Elem
-{
-  Declare_instanciable( Op_Dift_Nonlinear_CoviMAC_Elem ) ;
-};
-
+Declare_ref(Op_Diff_CoviMAC_Elem);
 #endif /* Op_Diff_CoviMAC_Elem_included */

@@ -74,7 +74,8 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, la_zone_CoviMAC.valeur());
   const Op_Grad_CoviMAC_Face& grad = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur());
-  const DoubleTab& mu_f = grad.mu_f(), &fgrad_c = grad.fgrad_c;
+  grad.mu_f();
+  const DoubleTab& fgrad_c = grad.fgrad_c;
   const IntTab& f_e = zone.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_e = grad.fgrad_e;
   const DoubleVect& pf = zone.porosite_face(), &fs = zone.face_surfaces();
   int i, j, e, eb, f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot();
@@ -108,7 +109,7 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
   /* 2. remplissage des coefficients : style Op_Diff_PolyMAC_Elem */
   for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < ne) for (j = fgrad_d(f); j < fgrad_d(f + 1); j++) if ((eb = fgrad_e(j)) < ne_tot)
-            mat(e, eb) += (i ? 1 : -1) * pf(f) * fs(f) * (mu_f(f, 0, 0) * fgrad_c(j, 0, 0) + mu_f(f, 0, 1) * fgrad_c(j, 0, 1));
+            mat(e, eb) += (i ? 1 : -1) * pf(f) * fs(f) * fgrad_c(j, 0);
 
   if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
 

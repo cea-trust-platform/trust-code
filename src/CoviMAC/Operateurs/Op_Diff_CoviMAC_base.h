@@ -78,37 +78,15 @@ public:
   /* diffusivite / conductivite. Attension : stockage nu(element, composante[, dim 1[, dim 2]]) */
   inline const DoubleTab& nu() const /* aux elements */
   {
-    if (!nu_a_jour_) update_nu_invh();
+    if (!nu_a_jour_) update_nu();
     return nu_;
   }
-  inline const DoubleTab& invh() const /* aux faces de bord */
-  {
-    if (!nu_a_jour_) update_nu_invh();
-    return invh_;
-  }
 
-  /* points harmoniques aux faces (cf. Zone_CoviMAC::harmonic_points) */
-  inline const DoubleTab& xh() const //position
-  {
-    if (!xwh_a_jour_) update_xwh();
-    return xh_;
-  }
-  inline const DoubleTab& wh() const //poids de l'amont (faces internes ou de bord)
-  {
-    if (!xwh_a_jour_) update_xwh();
-    return wh_;
-  }
-  inline const DoubleTab& whm() const //poids (faces Echange_contact)
-  {
-    if (!xwh_a_jour_) update_xwh();
-    return whm_;
-  }
-
-  /* flux aux faces : cf. Zone_CoviMAC::fgrad */
+  /* flux aux faces (hors Echange_contact): cf. Zone_CoviMAC::fgrad */
   void update_phif(int full_stencil = 0) const;
-  //indices : elems locaux dans phif_e([phif_d(f), phif_d(f + 1)[), (i_op, elem distant) dans phif_e([phif_d(f), phif_d(f + 1)[)
-  mutable IntTab phif_d, phif_e, phif_pe; //stencils
-  mutable DoubleTab phif_w, phif_c, phif_pc; //ponderation amont/aval, ponderation, coefficients
+  //indices : elems locaux dans phif_e([phif_d(f), phif_d(f + 1)[)
+  mutable IntTab phif_d, phif_e; //stencils
+  mutable DoubleTab phif_c; //coefficients
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
@@ -120,21 +98,15 @@ protected:
 
   double t_last_maj_ = -1e10; //pour detecter quand on doit recalculer nu, xh, wh et fgrad
 
-  /* diffusivite aux elems, 1 / h aux faces de bord */
-  void update_nu_invh() const; //mise a jour
-  mutable DoubleTab nu_, invh_;
+  /* diffusivite aux elems */
+  void update_nu() const; //mise a jour
+  mutable DoubleTab nu_;
 
-  /* tableaux op_ext et pe_ext */
-  void init_op_ext() const; //initialisation
+  /* liste de sommets traites directement par l'operateur et non par Zone_CoviMAC::fgrad() (cf. Op_Diff_CoviMAC_Elem) */
+  mutable IntTab som_ext;
 
-  /* points harmoniques aux faces */
-  void update_xwh() const; //mise a jour
-  mutable DoubleTab xh_, wh_, whm_; //position, poids de l'amont, partie constante (1 par composante pour Op_.._Elem, D par composante pour Op_.._Face), partie Echange_contact (melange les composantes)
-
-  mutable int nu_constant_, nu_a_jour_ = 0, op_ext_init_ = 0, xwh_a_jour_ = 0, phif_a_jour_ = 0; //nu constant / nu a jour / xh,wh,whm,kh a jour / phif a jour
+  mutable int nu_constant_, nu_a_jour_ = 0, s_dist_init_ = 0, som_ext_init_ = 0, phif_a_jour_ = 0; //nu constant / nu a jour / phif a jour
 
   mutable SFichier Flux, Flux_moment, Flux_sum;
 };
-
-Declare_ref(Op_Diff_CoviMAC_base);
 #endif

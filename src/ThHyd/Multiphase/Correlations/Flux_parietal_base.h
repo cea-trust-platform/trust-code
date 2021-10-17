@@ -30,10 +30,10 @@
 // .DESCRIPTION
 //    classe Flux_parietal_base
 //      correlations de flux parietal de la forme
-//        flux de chaleur : q_{pk}  = F(alpha_l, T_l, p, T_p, v_l, D_h, D_h, D_ch)
-//        flux de masse : Gamma_{pk} = G(alpha_l, T_l, p, T_p, v_l, D_h, D_h, D_ch)
-//          (par ex ebullition nucleee : Gamma_{pg} = -Gamma_{pl} = q_{pi} / Lvap)
-//      cette classe definit deux fonctions flux_chaleur, flux_masse avec :
+//        flux de chaleur sensible : q_{p}(k)     = F(alpha_f, p, T_f, T_p, v_f, D_h, D_ch)
+//        flux de chaleur latente  : q_{pi}(k, l) = F(alpha_f, p, T_f, T_p, v_f, D_h, D_ch)
+//          (par ex ebullition nucleee : Gamma_{kl} = q_{pi}(k, l) / Lvap)
+//      cette classe definit deux fonctions q_pk, q_pi avec :
 //    entrees :
 //        N : nombre de phases
 //        D_h, D_ch -> diametre hyd, diametre hyd chauffant
@@ -42,28 +42,35 @@
 //        p         -> pression
 //        v[n]      -> norme de la vitesse de la phase n
 //        Tp        -> temperature de la paroi (une seule!)
-//        lambda[n], mu[n], rho[n], rho_Cp[n] -> diverses proprietes physiques de la phase n
+//        lambda[n], mu[n], rho[n], Cp[n] -> diverses proprietes physiques de la phase n
 //
 //    sorties :
-//        {F,G}[n]           -> flux de chaleur/masse vers la phase n
-//       d{F,G}a[N * n + m]  -> derivee par rapport a alpha_m
-//       d{F,G}p[n]          -> derivee par rapport a p
-//       d{F,G}tf[N * n + m] -> derivee par rapport a T[m]
-//       d{F,G}tp[n]         -> derivee par rapport a Tp
+//           qpk[n]         -> flux de chaleur vers la phase n
+//        da_qpk[N * n + m] -> derivee par rapport a alpha_m
+//        dp_qpk[n]         -> derivee par rapport a p
+//        dv_qpk[N * n + m] -> derivee par rapport a v[m]
+//       dTf_qpk[N * n + m] -> derivee par rapport a T[m]
+//       dTp_qpk[n]         -> derivee par rapport a Tp
+//           qpi[N * k + l]           -> flux de masse de la phase k vers la phase l (a remplir pour k < l)
+//        da_qpi[N * (N * k + l) + m] -> derivee par rapport a alpha_m
+//        dp_qpi[N * k + l]           -> derivee par rapport a p
+//        dv_qpi[N * k + l]           -> derivee par rapport a v[m]
+//       dTf_qpi[N * (N * k + l) + m] -> derivee par rapport a T[m]
+//       dTp_qpi[N * k + l]           -> derivee par rapport a Tp
 //////////////////////////////////////////////////////////////////////////////
 
 class Flux_parietal_base : public Correlation_base
 {
   Declare_base(Flux_parietal_base);
 public:
-  virtual void flux_chaleur(int N, double D_h, double D_ch,
-                            const double *alpha, const double *T, const double p, const double *v, const double Tp,
-                            const double *lambda, const double *mu, const double *rho, const double *rho_Cp,
-                            double *F, double *dFa, double *dFp, double *dFv, double *dFtl, double *dFtp) const = 0;
-  virtual void flux_masse(int N, double D_h, double D_ch,
-                          const double *alpha, const double *T, const double p, const double *v, const double Tp,
-                          const double *lambda, const double *mu, const double *rho, const double *rho_Cp,
-                          double *G, double *dGa, double *dGp, double *dGv, double *dGtl, double *dGtp) const = 0;
+  virtual void q_pk(int N, double D_h, double D_ch,
+                    const double *alpha, const double *T, const double p, const double *v, const double Tp,
+                    const double *lambda, const double *mu, const double *rho, const double *Cp,
+                    double *qpk, double *da_qpk, double *dp_qpk, double *dv_qpk, double *dTf_qpk, double *dTp_qpk) const = 0;
+  virtual void q_pi(int N, double D_h, double D_ch,
+                    const double *alpha, const double *T, const double p, const double *v, const double Tp,
+                    const double *lambda, const double *mu, const double *rho, const double *Cp,
+                    double *qpi, double *da_qpi, double *dp_qpi, double *dv_qpi, double *dTf_qpi, double *dTp_qpi) const = 0;
 };
 
 #endif
