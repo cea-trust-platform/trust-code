@@ -129,7 +129,7 @@ double Op_Dift_VDF_Elem::calculer_dt_stab() const
   const IntTab& elem_faces = zone_VDF.elem_faces();
   double alpha = diffusivite().valeurs()(0, 0);
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
-  bool is_concentration = (equation().que_suis_je().debute_par("Convection_Diffusion_Concentration") || equation().que_suis_je().debute_par("Convection_Diffusion_fraction"));
+  bool is_concentration = (equation().que_suis_je().debute_par("Convection_Diffusion_Concentration") || equation().que_suis_je().debute_par("Convection_Diffusion_Espece"));
 
 
   // Calcul du pas de temps de stabilite :
