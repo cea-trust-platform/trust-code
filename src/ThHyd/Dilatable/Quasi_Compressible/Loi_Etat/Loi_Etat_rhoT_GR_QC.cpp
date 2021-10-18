@@ -26,9 +26,9 @@
 #include <Champ_Uniforme.h>
 
 Implemente_instanciable(Loi_Etat_rhoT_GR_QC,"Loi_Etat_rhoT_Gaz_Reel_QC",Loi_Etat_GR_base);
-// XD rhoT_gaz_reel_QC loi_etat_gaz_reel_base rhoT_gaz_reel_QC 1 Class for real gas state law used with a quasi-compressible fluid.
-// XD attr Prandtl double Prandtl 0 Prandtl number.
-// XD attr masse_molaire double masse_molaire 0 Molar mass.
+// XD rhoT_gaz_reel_QC loi_etat_gaz_reel_base rhoT_gaz_reel_QC 0 Class for real gas state law used with a quasi-compressible fluid.
+// XD attr bloc bloc_lecture bloc 0 Description.
+
 
 Sortie& Loi_Etat_rhoT_GR_QC::printOn(Sortie& os) const
 {

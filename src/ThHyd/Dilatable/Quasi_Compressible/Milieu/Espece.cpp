@@ -25,7 +25,7 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Espece,"Espece",Fluide_Quasi_Compressible);
-// XD espece objet_u espece -1 not_set
+// XD espece interprete nul 1 not_set
 
 Espece::Espece() : Masse_mol_(-1.) { }
 

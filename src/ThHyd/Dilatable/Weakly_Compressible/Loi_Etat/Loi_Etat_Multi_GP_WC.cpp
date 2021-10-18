@@ -47,7 +47,7 @@ Entree& Loi_Etat_Multi_GP_WC::readOn(Entree& is)
   param.ajouter("Diffusion_coeff",&diffusion_coeff_,Param::REQUIRED); // XD_ADD_P field_base Diffusion coefficient of each species, defined with a Champ_uniforme of dimension equals to the species_number.
   param.ajouter("Molar_mass",&molar_mass_,Param::REQUIRED); // XD_ADD_P field_base Molar mass of each species, defined with a Champ_uniforme of dimension equals to the species_number.
   param.ajouter("Mu",&mu_,Param::REQUIRED); // XD_ADD_P field_base Dynamic viscosity of each species, defined with a Champ_uniforme of dimension equals to the species_number.
-  param.ajouter("Cp",&cp_,Param::REQUIRED);// XD_ADD_P double Specific heat at constant pressure of the gas Cp, defined with a Champ_uniforme of dimension equals to the species_number..
+  param.ajouter("Cp",&cp_,Param::REQUIRED);// XD_ADD_P field_base Specific heat at constant pressure of the gas Cp, defined with a Champ_uniforme of dimension equals to the species_number..
   param.ajouter("Prandtl",&Pr_,Param::REQUIRED); // XD_ADD_P double Prandtl number of the gas Pr=mu*Cp/lambda.
   param.lire_avec_accolades_depuis(is);
 

@@ -25,7 +25,7 @@
 #include <Debog.h>
 
 Implemente_instanciable(Loi_Etat_Binaire_GP_QC,"Loi_Etat_Binaire_Gaz_Parfait_QC",Loi_Etat_Binaire_GP_base);
-// XD binaire_gaz_parfait_QC loi_etat_gaz_parfait_base binaire_gaz_parfait_parfait_QC -1 Class for perfect gas binary mixtures state law used with a quasi-compressible fluid under the iso-thermal and iso-bar assumptions.
+// XD binaire_gaz_parfait_QC loi_etat_gaz_parfait_base binaire_gaz_parfait_QC -1 Class for perfect gas binary mixtures state law used with a quasi-compressible fluid under the iso-thermal and iso-bar assumptions.
 // XD attr molar_mass1 double molar_mass1 0 Molar mass of species 1 (in kg/mol).
 // XD attr molar_mass2 double molar_mass2 0 Molar mass of species 2 (in kg/mol).
 // XD attr mu1 double mu1 0 Dynamic viscosity of species 1 (in kg/m.s).
