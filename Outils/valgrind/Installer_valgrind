@@ -31,10 +31,13 @@ then
   cp $TRUST_ROOT/Outils/valgrind/readelf.c $TRUST_ROOT/Outils/valgrind/valgrind-3.15.0/coregrind/m_debuginfo/readelf.c
 fi
 echo "patching configure"
-[ -f ../configure_valgrind_$version"_patched" ] && cat ../configure_valgrind_$version"_patched" > configure
+if [ -f ../configure_valgrind_$version"_patched" ]
+then
+   cat ../configure_valgrind_$version"_patched" > configure || exit -1
+fi
 echo patching mpiwrap
 cp mpi/libmpiwrap.c mpi/libmpiwrap.c.org
-sed 's?before(\"Finalize\");?before(\"Finalize\");if (sReqs) { free(sReqs); sReqs=0; }?;s?before("Allreduce");?before("Allreduce"); if (sendbuf!=MPI_IN_PLACE)? ' -i mpi/libmpiwrap.c
+sed 's?before(\"Finalize\");?before(\"Finalize\");if (sReqs) { free(sReqs); sReqs=0; }?;s?before("Allreduce");?before("Allreduce"); if (sendbuf!=MPI_IN_PLACE)? ' -i mpi/libmpiwrap.c || exit -1
  
 diff mpi/libmpiwrap.c.org mpi/libmpiwrap.c
 [ $? -eq 0 ] && echo erreur patch&& exit
