@@ -43,7 +43,7 @@ class Solveur_Implicite_Base : public  Objet_U
 
 public :
   virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok) =0;
-  virtual bool iterer_eqs(LIST(REF(Equation_base)) eqs, int n, bool test_convergence, int& ok);
+  virtual bool iterer_eqs(LIST(REF(Equation_base)) eqs, int n, int& ok);
   virtual bool est_compatible_avec_th_mono() const /* ce solveur est-il  compatible avec une resolution monolithique de la thermique ? */
   {
     return 1; /* par defaut oui */

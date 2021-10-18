@@ -48,7 +48,6 @@ Entree& Schema_Euler_Implicite::readOn(Entree& s)
   nb_ite_max=200;
   residu_old_=0;
   facsec_max_=DMAXFLOAT;
-  thermique_monolithique_ = 0;
   Schema_Implicite_base::readOn(s);
   if (facsec_max_ == DMAXFLOAT) /* facsec_max non regle par l'utilisateur -> on demande sa preference au solveur */
     facsec_max_ = le_solveur->get_default_facsec_max();
@@ -60,8 +59,8 @@ Entree& Schema_Euler_Implicite::readOn(Entree& s)
            << "Solveur solver_name [ solver parameters ] " << finl;
       exit();
     }
-  if (thermique_monolithique_ && !le_solveur->est_compatible_avec_th_mono())
-    Cerr << que_suis_je() << " : deactivating thermique_monolithique for the implicit solver " << le_solveur->que_suis_je() << finl, thermique_monolithique_ = 0;
+  if (resolution_monolithique_.size() && !le_solveur->est_compatible_avec_th_mono())
+    Cerr << que_suis_je() << " : deactivating thermique_monolithique for the implicit solver " << le_solveur->que_suis_je() << finl, resolution_monolithique_.clear();
   if (diffusion_implicite())
     {
       Cerr << "diffusion_implicite option cannot be used with an implicit time scheme." << finl;
@@ -107,8 +106,40 @@ void Schema_Euler_Implicite::set_param(Param& param)
   // XD schema_euler_implicite schema_implicite_base schema_euler_implicite -1 This is the Euler implicit scheme.
   param.ajouter("max_iter_implicite",&nb_ite_max);
   param.ajouter("facsec_max", &facsec_max_); // XD_ADD_P floattant 1 Maximum ratio allowed between time step and stability time returned by CFL condition. The initial ratio given by facsec keyword is changed during the calculation with the implicit scheme but it couldn\'t be higher than facsec_max value.NL2 Warning: Some implicit schemes do not permit high facsec_max, example Schema_Adams_Moulton_order_3 needs facsec=facsec_max=1. NL2 Advice:NL2 The calculation may start with a facsec specified by the user and increased by the algorithm up to the facsec_max limit. But the user can also choose to specify a constant facsec (facsec_max will be set to facsec value then). Faster convergence has been seen and depends on the kind of calculation: NL2-Hydraulic only or thermal hydraulic with forced convection and low coupling between velocity and temperature (Boussinesq value beta low), facsec between 20-30NL2-Thermal hydraulic with forced convection and strong coupling between velocity and temperature (Boussinesq value beta high), facsec between 90-100 NL2-Thermohydralic with natural convection, facsec around 300NL2 -Conduction only, facsec can be set to a very high value (1e8) as if the scheme was unconditionally stableNL2These values can also be used as rule of thumb for initial facsec with a facsec_max limit higher.
-  param.ajouter("thermique_monolithique", &thermique_monolithique_); // XD_ADD_P int Activate monolithic thermal coupling of equations for coupled problems. 0 = no, 1 = yes, 2 = yes and test convergence
+  param.ajouter_non_std("resolution_monolithique", (this)); // XD_ADD_P int Activate monolithic resolution for coupled problems. Solves together the equations corresponding to the application domains given.
   Schema_Implicite_base::set_param(param);
+}
+
+int Schema_Euler_Implicite::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  if (mot == "resolution_monolithique")
+    {
+      Motcle m;
+      is >> m;
+      assert (m == "{");
+      is >> m;
+      while (m != "}")
+        {
+          if (m == "{") // bloc d'equations resolues ensemble
+            {
+              std::set<std::string> bloc_domap;
+              is >> m;
+              while (m != "}")
+                {
+                  bloc_domap.insert(m.getString());
+                  is >> m;
+                }
+              resolution_monolithique_.push_back(bloc_domap);
+            }
+          else
+            {
+              resolution_monolithique_.push_back({m.getString()});
+              is >> m;
+            }
+        }
+    }
+  else return Schema_Implicite_base::lire_motcle_non_standard(mot, is);
+  return 1;
 }
 
 bool Schema_Euler_Implicite::initTimeStep(double dt)
@@ -311,18 +342,6 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
 
   int cv = 0;
   int compteur;
-  // structure pour ranger les equations par domaine d'application
-  // -> les hydrauliques, les thermiques, et les autres
-  std::map<std::string, std::vector<std::array<int, 2>>> map_problems;
-  for(i = 0; i < pbc.nb_problemes(); i++) for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
-      {
-        Motcle type = ref_cast(Probleme_base,pbc.probleme(i)).equation(j).domaine_application();
-        if (type != "Hydraulique" && type != "Thermique") type = "Autres";
-        map_problems[type.getString()].push_back({{ i, j}});
-      }
-
-  //ordre de resolution des domaines d'application
-  std::vector<std::string> dom_app = {"HYDRAULIQUE", "THERMIQUE", "AUTRES"};
 
   while (!cv)
     {
@@ -345,33 +364,58 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
 
             }
 
-          if (thermique_monolithique_ > 0)
+          if (resolution_monolithique_.size())
             {
-              for (auto && da : dom_app) if (map_problems.count(da))
-                  {
-                    Cout << "RESOLUTION " << da.c_str() << finl;
-                    Cout << "-------------------------" << finl;
-                    if (da == "THERMIQUE" && map_problems[da].size() > 1)
-                      {
-                        Cout << "Thermique monolithique! the equations {";
-                        LIST(REF(Equation_base)) eqs;
-                        for (auto && pbeqs : map_problems[da])
-                          {
-                            Equation_base& eq = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
-                            Cout << " " << eq.que_suis_je();
-                            pbc.probleme(pbeqs[0]).updateGivenFields();
-                            eqs.add(eq);
-                          }
-                        Cout << " } are solved by assembling a single matrix." << finl;
-                        bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, thermique_monolithique_ == 2, ok);
-                        convergence_pbc = convergence_pbc && convergence_eqs;
-                      }
-                    else
-                      for (auto && pbeqs : map_problems[da])
-                        {
-                          pbc.probleme(pbeqs[0]).updateGivenFields();
+              //make sure all application domains are in resolution_monolithique_
+              std::set<std::string> doms_app, doms_mono;
+              for(i = 0; i < pbc.nb_problemes(); i++) for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
+                  doms_app.insert(ref_cast(Probleme_base,pbc.probleme(i)).equation(j).domaine_application().getString());
+              for (auto && s : resolution_monolithique_) for (auto &&d : s) doms_mono.insert((Nom(d.c_str())).getSuffix("_").getString());
+              if (doms_mono != doms_app)
+                {
+                  Cerr << "Error : all the application domains should be given in the resolution_monolitique block to impose the order of resolution" << finl;
+                  Cerr << "and some are missing among :";
+                  for (auto &&n: doms_app) Cerr << Nom(" ") + n.c_str();
+                  Cerr << finl << "(an underscore can be put at the begining of the application domains for which a standard resolution is wanted)" << finl;
+                  Process::exit();
+                }
 
-                          Equation_base& eqn = ref_cast(Probleme_base,pbc.probleme(pbeqs[0])).equation(pbeqs[1]);
+              for (auto && s : resolution_monolithique_)
+                {
+                  // serach all equations of this dom app
+                  LIST(REF(Equation_base)) eqs;
+                  for(i = 0; i < pbc.nb_problemes(); i++)
+                    for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
+                      {
+                        const Probleme_base& pb = ref_cast(Probleme_base,pbc.probleme(i));
+                        const Motcle type = pb.equation(j).domaine_application();
+                        if (s.count(type.getString()) || s.count((Nom("_") + type).getString())) eqs.add(pb.equation(j));
+                      }
+
+                  Cout << "RESOLUTION {";
+                  for (auto &&d : s) Cout << Nom(" ") + d.c_str();
+                  Cout << " }" << finl;
+                  Cout << "-------------------------" << finl;
+                  const bool mono = !(s.size() == 1 && Nom((*s.begin()).c_str()).debute_par("_"));
+                  if (mono)
+                    {
+                      Cout << "Resolution monolithique! the equations {";
+                      for (int k = 0; k < eqs.size(); k++)
+                        {
+                          Cout << " " << eqs[k]->que_suis_je();
+                          eqs[k]->probleme().updateGivenFields();
+                        }
+                      Cout << " } are solved by assembling a single matrix." << finl;
+                      bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, ok);
+                      convergence_pbc = convergence_pbc && convergence_eqs;
+                    }
+                  else
+                    {
+                      for (int k = 0; k < eqs.size(); k++)
+                        {
+                          Equation_base& eqn = eqs[k].valeur();
+                          eqn.probleme().updateGivenFields();
+
                           DoubleTab& present = eqn.inconnue().valeurs();
                           DoubleTab& futur = eqn.inconnue().futur();
                           double temps = temps_courant_ + dt_;
@@ -390,7 +434,8 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                           eqn.inconnue().valeur().Champ_base::changer_temps(temps);
                           Cout << finl;
                         }
-                  }
+                    }
+                }
             }
           else
             {
@@ -567,4 +612,10 @@ int Schema_Euler_Implicite::reprendre(Entree&)
         }
     }
   return 1;
+}
+
+int Schema_Euler_Implicite::resolution_monolithique(const Nom& nom) const
+{
+  for (auto &&s : resolution_monolithique_) if (s.count(nom.getString())) return 1;
+  return 0;
 }

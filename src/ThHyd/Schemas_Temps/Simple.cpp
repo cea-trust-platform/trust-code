@@ -354,7 +354,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
   return (ok && converge==1);
 }
 
-bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_convergence, int& ok)
+bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
 {
   // on recupere le solveur de systeme lineaire
   Parametre_implicite& param = get_and_set_parametre_implicite(eqs[0]);
@@ -376,9 +376,13 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   int interface_blocs_ok = 1;
   for (i = 0; i < eqs.size(); i++) interface_blocs_ok &= eqs[i]->has_interface_blocs();
   std::vector<matrices_t> mats(eqs.size()); //ligne de matrices de l'equation i
-  const std::string& nom_inco = eqs[0]->inconnue().le_nom().getString();
   for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
-      mats[i][j == i ? nom_inco : nom_inco + "_" + eqs[j]->probleme().le_nom().getString()] = &ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
+      {
+        Nom nom_i = eqs[j]->inconnue().le_nom();
+        // champ d'un autre probleme : on ajoute un suffixe
+        if (eqs[i]->probleme().le_nom().getString() != eqs[j]->probleme().le_nom().getString()) nom_i += Nom("_") + eqs[j]->probleme().le_nom();
+        mats[i][nom_i.getString()] = &ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
+      }
 
   //MD_Vector global
   MD_Vector_composite mdc; //version composite
@@ -446,19 +450,14 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
       double dudt_norme = mp_norme_vect(dudt_parts[i]);
       eqs[i]->inconnue().valeurs() = inconnues_parts[i];
 
-      if (test_convergence)
+      converge &= (dudt_norme < seuil_convg);
+      if (!converge)
         {
-          converge &= (dudt_norme < seuil_convg);
-          if (!converge)
-            {
-              Cout<<eqs[i]->que_suis_je()<<" is not converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" > implicit threshold "<<seuil_convg<<" )"<<finl;
-              if (nb_iter>=10) Cout << "Consider lowering facsec_max value. Look at the reference manual for advice to set facsec_max value according to the problem type." << finl;
-            }
-          else
-            Cout<<eqs[i]->que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
+          Cout<<eqs[i]->que_suis_je()<<" is not converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" > implicit threshold "<<seuil_convg<<" )"<<finl;
+          if (nb_iter>=10) Cout << "Consider lowering facsec_max value. Look at the reference manual for advice to set facsec_max value according to the problem type." << finl;
         }
       else
-        Cout<<eqs[i]->que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" )"<<finl;
+        Cout<<eqs[i]->que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
       eqs[i]->inconnue().futur() = eqs[i]->inconnue().valeurs();
       const double t = eqs[i]->schema_temps().temps_courant() + eqs[i]->schema_temps().pas_de_temps();
       eqs[i]->zone_Cl_dis()->imposer_cond_lim(eqs[i]->inconnue(), t);
@@ -470,9 +469,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, bool test_con
   //on desalloue les tableaux de coeffs
   for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++) ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()).get_set_coeff().reset();
 
-  // avec une resolution monolithique, on est forcement converge
-  // (la deuxieme iteration donnera des residus de 1e-13)
-  return test_convergence ? converge : true;
+  return converge;
 }
 
 void Simple::calculer_correction_en_vitesse(const DoubleTrav& correction_en_pression,DoubleTrav& gradP,DoubleTrav& correction_en_vitesse,const Matrice_Morse& matrice,const Operateur_Grad& gradient)

@@ -35,7 +35,7 @@ Entree& Solveur_Implicite_Base::readOn(Entree& is )
   return is;
 }
 
-bool Solveur_Implicite_Base::iterer_eqs(LIST(REF(Equation_base)) eqs, int n, bool test_convergence, int& ok)
+bool Solveur_Implicite_Base::iterer_eqs(LIST(REF(Equation_base)) eqs, int n, int& ok)
 {
   Cerr << "iterer_eqs non code" << finl;
   Process::exit();

@@ -29,6 +29,8 @@
 //  le Simpler pour effectuer les Faire_un_pas_de_temps..
 
 #include <Schema_Implicite_base.h>
+#include <vector>
+#include <set>
 class Probleme_Couple;
 
 class Schema_Euler_Implicite : public Schema_Implicite_base
@@ -40,6 +42,7 @@ public :
 
   virtual bool initTimeStep(double dt);
   void set_param(Param& );
+  virtual int lire_motcle_non_standard(const Motcle& mot, Entree& is);
 
   ////////////////////////////////
   //                            //
@@ -71,15 +74,12 @@ public :
   virtual int mettre_a_jour();
   virtual int reprendre(Entree& );
   inline virtual void completer(void) { } ;
-  int thermique_monolithique() const
-  {
-    return thermique_monolithique_;
-  }
+  int resolution_monolithique(const Nom& nom) const;
 protected:
   int nb_ite_max;
   double residu_old_,facsec_max_;
   int nb_ite_sans_accel_;
-  int thermique_monolithique_;
+  std::vector<std::set<std::string>> resolution_monolithique_;
 };
 
 #endif

@@ -295,7 +295,7 @@ int Echange_contact_VDF::initialiser(double temps)
   ch.initialiser(temps,zone_Cl_dis().equation().inconnue());
 
   monolithic = sub_type(Schema_Euler_Implicite, o_eqn.schema_temps()) ?
-               ref_cast(Schema_Euler_Implicite, o_eqn.schema_temps()).thermique_monolithique() : 0;
+               ref_cast(Schema_Euler_Implicite, o_eqn.schema_temps()).resolution_monolithique(o_eqn.domaine_application()) : 0;
   if (!monolithic) return 1; //pas besoin du reste
   o_zone.init_virt_e_map();
 
