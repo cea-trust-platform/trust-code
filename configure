@@ -581,6 +581,7 @@ if [ "`h5dump -help 1>/dev/null 2>&1;echo $?`" = 0 ]; then
     [ "$h5versionOK" != 1 ] && echo "export HDF5_DISABLE_VERSION_CHECK=2 # to ignore warnings about hdf5 version" >> $var
 fi
 
+echo "# TRUST_ROOT=$TRUST_ROOT  # Path of the install" >> $var
 
 ##########################################################
 #     Check if trust has already been built in 64bits    #
