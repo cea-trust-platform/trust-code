@@ -76,7 +76,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
   remplir_fluent(fluent);
-  if (vitesse().le_nom()=="rho_u")
+  if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
   double dt_face,dt_stab =1.e30;
@@ -128,7 +128,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   // astuce pour contourner le type const de la methode
   Op_Conv_VEF_base& op = ref_cast_non_const(Op_Conv_VEF_base,*this);
   op.fixer_dt_stab_conv(dt_stab);
-  if (vitesse().le_nom()=="rho_u")
+  if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
     multiplier_par_rho_si_dilatable(fluent,equation().milieu());
 
   return dt_stab;
@@ -150,7 +150,7 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
           const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
           double dt_face;
           remplir_fluent(fluent);
-          if (vitesse().le_nom()=="rho_u")
+          if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
             diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
           // On traite les conditions aux limites
@@ -197,7 +197,7 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
             }
 
           assert(mp_min_vect(es_valeurs)==calculer_dt_stab());
-          if (vitesse().le_nom()=="rho_u")
+          if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
             multiplier_par_rho_si_dilatable(fluent,equation().milieu());
         }
     }

@@ -24,6 +24,7 @@
 #include <Debog.h>
 #include <DoubleTrav.h>
 #include <Discretisation_base.h>
+#include <Probleme_base.h>
 #include <Champ.h>
 #include <Modifier_pour_fluide_dilatable.h>
 
@@ -117,7 +118,7 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
     }
 
   // Calcul du pas de temps de stabilite a partir du tableau fluent
-  if (vitesse().le_nom()=="rho_u")
+  if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(fluent,equation().milieu());
   double dt_stab = 1.e30;
   int zone_VDF_nb_elem=zone_VDF.nb_elem();
@@ -189,7 +190,7 @@ void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
 
 
   // Calcul du pas de temps de stabilite a partir du tableau fluent
-  if (vitesse().le_nom()=="rho_u")
+  if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
 
@@ -319,7 +320,7 @@ void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
           eval_fluent(psc,face_voisins(face,0),face_voisins(face,1),fluent);
         }
       //fluent.echange_espace_virtuel();
-      if (vitesse().le_nom()=="rho_u")
+      if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
         diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
       int zone_VDF_nb_elem=zone_VDF.nb_elem();
