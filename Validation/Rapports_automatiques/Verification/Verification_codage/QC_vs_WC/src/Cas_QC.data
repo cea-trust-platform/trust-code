@@ -53,8 +53,8 @@ Read sch
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-  mu champ_fonc_fonction temperature 1 5.e-3
-  lambda champ_fonc_fonction temperature 1 5.e-3
+  mu champ_fonc_fonction pb temperature 1 5.e-3
+  lambda champ_fonc_fonction pb temperature 1 5.e-3
   loi_etat gaz_parfait_QC
   {
     Prandtl 0.71
