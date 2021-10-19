@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Run a binary_QC mixture data file
-trust binaire_QC.data 1&>binaire_QC.out 2&>binaire_QC.err
+trust binaire_QC.data 1>binaire_QC.out 2>binaire_QC.err

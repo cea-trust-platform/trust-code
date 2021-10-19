@@ -167,6 +167,7 @@
 <TR><TD><SMALL><A HREF="#Flux_paroi_contact_inclinee">Flux_paroi_contact_inclinee</A></TD><TD><SMALL># Egalite des flux sur paroi_contact inclinee #</TD></TR>
 <TR><TD><SMALL><A HREF="#GAMELAN">GAMELAN</A></TD><TD><SMALL># Warning: Degraded data file of GAMELAN simulation. Do not use except for non regression testing ! #</TD></TR>
 <TR><TD><SMALL><A HREF="#GAMELAN2">GAMELAN2</A></TD><TD><SMALL># Pb_Hydraulique_Melange_Binaire_QC 3D GAMELAN #</TD></TR>
+<TR><TD><SMALL><A HREF="#Gaz_pemfc">Gaz_pemfc</A></TD><TD><SMALL># Pb_Hydraulique_Melange_Binaire_WC 3D GAZ PEMFC #</TD></TR>
 <TR><TD><SMALL><A HREF="#Himp_var">Himp_var</A></TD><TD><SMALL># Thermohydraulique 2D : Conditions limites instationnaires #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_2D_PolyMAC">Hyd_2D_PolyMAC</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_Axi">Hyd_Axi</A></TD><TD><SMALL># Hydraulique 2D Axi #</TD></TR>
@@ -334,8 +335,11 @@
 <TR><TD><SMALL><A HREF="#QCRhoT_variable">QCRhoT_variable</A></TD><TD><SMALL># Hydraulique 2D : obstacle quasi compressible gaz parfait VEFPreP1B #</TD></TR>
 <TR><TD><SMALL><A HREF="#QC_VDF_diff_impl">QC_VDF_diff_impl</A></TD><TD><SMALL># ThermoHydraulique 3D : canal quasi compressible gaz parfait VDF turbulent #</TD></TR>
 <TR><TD><SMALL><A HREF="#QC_VEF_diff_impl">QC_VEF_diff_impl</A></TD><TD><SMALL># ThermoHydraulique 3D : canal quasi compressible gaz parfait VDF turbulent #</TD></TR>
+<TR><TD><SMALL><A HREF="#QC_vs_WC_binaire">QC_vs_WC_binaire</A></TD><TD><SMALL># Pb_Hydraulique_Melange_Binaire_WC 3D GAZ PEMFC #</TD></TR>
 <TR><TD><SMALL><A HREF="#Quasi_Comp_Cond_GP_VDF">Quasi_Comp_Cond_GP_VDF</A></TD><TD><SMALL># ThermoHydraulique 3D : conduite chauffee quasi compressible gaz parfait VDF #</TD></TR>
+<TR><TD><SMALL><A HREF="#Quasi_Comp_Cond_GP_VDF_FM">Quasi_Comp_Cond_GP_VDF_FM</A></TD><TD><SMALL># ThermoHydraulique 3D : conduite chauffee quasi compressible gaz parfait VDF #</TD></TR>
 <TR><TD><SMALL><A HREF="#Quasi_Comp_Obst_GP_VDF">Quasi_Comp_Obst_GP_VDF</A></TD><TD><SMALL># Hydraulique 2D : obstacle quasi compressible gaz parfait VDF #</TD></TR>
+<TR><TD><SMALL><A HREF="#Quasi_Comp_Obst_GP_VDF_FM">Quasi_Comp_Obst_GP_VDF_FM</A></TD><TD><SMALL># Hydraulique 2D : obstacle quasi compressible gaz parfait VDF #</TD></TR>
 <TR><TD><SMALL><A HREF="#Quasi_Comp_Obst_GP_VDF_Pmoy">Quasi_Comp_Obst_GP_VDF_Pmoy</A></TD><TD><SMALL># Hydraulique 2D : obstacle quasi compressible gaz parfait VDF #</TD></TR>
 <TR><TD><SMALL><A HREF="#Quasi_Comp_Obst_GP_VEF">Quasi_Comp_Obst_GP_VEF</A></TD><TD><SMALL># ThermoHydraulique 2D : obstacle quasi compressible gaz parfait VEF #</TD></TR>
 <TR><TD><SMALL><A HREF="#Quasi_Comp_Obst_GP_VEF_Pmoy">Quasi_Comp_Obst_GP_VEF_Pmoy</A></TD><TD><SMALL># ThermoHydraulique 2D : obstacle quasi compressible gaz parfait VEF #</TD></TR>
@@ -436,6 +440,8 @@
 <TR><TD><SMALL><A HREF="#VER_QUAD">VER_QUAD</A></TD><TD><SMALL># test si la maille a bien ete reordonne #</TD></TR>
 <TR><TD><SMALL><A HREF="#Verif_Duplic_ICoCo">Verif_Duplic_ICoCo</A></TD><TD><SMALL># Test of last time step post-processing #</TD></TR>
 <TR><TD><SMALL><A HREF="#VerifierCoin">VerifierCoin</A></TD><TD><SMALL># Thermohydraulique VEF 2D couplee a conduction 2D #</TD></TR>
+<TR><TD><SMALL><A HREF="#WC_Chaleur_VDF">WC_Chaleur_VDF</A></TD><TD><SMALL># ThermoHydraulique_WC 2D : weakly compressible gaz parfait VDF #</TD></TR>
+<TR><TD><SMALL><A HREF="#WC_multi_2_3_espece">WC_multi_2_3_espece</A></TD><TD><SMALL># Pb_ThermoHydraulique_Especes_WC 3D GAZ PEMFC #</TD></TR>
 <TR><TD><SMALL><A HREF="#centre4_VDF">centre4_VDF</A></TD><TD><SMALL># Hydraulique 2D : plaque boundary layer #</TD></TR>
 <TR><TD><SMALL><A HREF="#centre4_VDF_periodique">centre4_VDF_periodique</A></TD><TD><SMALL># Hydraulique 2D : plaque boundary layer parallele #</TD></TR>
 <TR><TD><SMALL><A HREF="#centre4_VEF">centre4_VEF</A></TD><TD><SMALL># Thermohydraulique 2D VEF P1NC/P1Bulle Runge_Kutta_3+centre4 Boussinesq #</TD></TR>
@@ -1160,6 +1166,10 @@
 <CENTER># Pb_Hydraulique_Melange_Binaire_QC 3D GAMELAN #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/GAMELAN2/GAMELAN2.data>Edit</a> GAMELAN2.data </CENTER>
+<HR><CENTER><B><A NAME=Gaz_pemfc>Gaz_pemfc</A></B></CENTER>
+<CENTER># Pb_Hydraulique_Melange_Binaire_WC 3D GAZ PEMFC #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Gaz_pemfc/Gaz_pemfc.data>Edit</a> Gaz_pemfc.data </CENTER>
 <HR><CENTER><B><A NAME=Himp_var>Himp_var</A></B></CENTER>
 <CENTER># Thermohydraulique 2D : Conditions limites instationnaires #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -1879,14 +1889,26 @@
 <CENTER># ThermoHydraulique 3D : canal quasi compressible gaz parfait VDF turbulent #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/QC_VEF_diff_impl/QC_VEF_diff_impl.data>Edit</a> QC_VEF_diff_impl.data </CENTER>
+<HR><CENTER><B><A NAME=QC_vs_WC_binaire>QC_vs_WC_binaire</A></B></CENTER>
+<CENTER># Pb_Hydraulique_Melange_Binaire_WC 3D GAZ PEMFC #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/QC_vs_WC_binaire/QC_vs_WC_binaire.data>Edit</a> QC_vs_WC_binaire.data </CENTER>
 <HR><CENTER><B><A NAME=Quasi_Comp_Cond_GP_VDF>Quasi_Comp_Cond_GP_VDF</A></B></CENTER>
 <CENTER># ThermoHydraulique 3D : conduite chauffee quasi compressible gaz parfait VDF #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Quasi_Comp_Cond_GP_VDF/Quasi_Comp_Cond_GP_VDF.data>Edit</a> Quasi_Comp_Cond_GP_VDF.data </CENTER>
+<HR><CENTER><B><A NAME=Quasi_Comp_Cond_GP_VDF_FM>Quasi_Comp_Cond_GP_VDF_FM</A></B></CENTER>
+<CENTER># ThermoHydraulique 3D : conduite chauffee quasi compressible gaz parfait VDF #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Quasi_Comp_Cond_GP_VDF_FM/Quasi_Comp_Cond_GP_VDF_FM.data>Edit</a> Quasi_Comp_Cond_GP_VDF_FM.data </CENTER>
 <HR><CENTER><B><A NAME=Quasi_Comp_Obst_GP_VDF>Quasi_Comp_Obst_GP_VDF</A></B></CENTER>
 <CENTER># Hydraulique 2D : obstacle quasi compressible gaz parfait VDF #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Quasi_Comp_Obst_GP_VDF/Quasi_Comp_Obst_GP_VDF.data>Edit</a> Quasi_Comp_Obst_GP_VDF.data </CENTER>
+<HR><CENTER><B><A NAME=Quasi_Comp_Obst_GP_VDF_FM>Quasi_Comp_Obst_GP_VDF_FM</A></B></CENTER>
+<CENTER># Hydraulique 2D : obstacle quasi compressible gaz parfait VDF #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Quasi_Comp_Obst_GP_VDF_FM/Quasi_Comp_Obst_GP_VDF_FM.data>Edit</a> Quasi_Comp_Obst_GP_VDF_FM.data </CENTER>
 <HR><CENTER><B><A NAME=Quasi_Comp_Obst_GP_VDF_Pmoy>Quasi_Comp_Obst_GP_VDF_Pmoy</A></B></CENTER>
 <CENTER># Hydraulique 2D : obstacle quasi compressible gaz parfait VDF #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -2309,6 +2331,14 @@
 <CENTER># Thermohydraulique VEF 2D couplee a conduction 2D #</CENTER>
 <CENTER><a href=../tests/Reference/VerifierCoin/VerifierCoin.lml.gif><img src=../tests/Reference/VerifierCoin/VerifierCoin.lml.gif.fin></a></CENTER>
 <CENTER><a href=../tests/Reference/VerifierCoin/VerifierCoin.data>Edit</a> VerifierCoin.data </CENTER>
+<HR><CENTER><B><A NAME=WC_Chaleur_VDF>WC_Chaleur_VDF</A></B></CENTER>
+<CENTER># ThermoHydraulique_WC 2D : weakly compressible gaz parfait VDF #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/WC_Chaleur_VDF/WC_Chaleur_VDF.data>Edit</a> WC_Chaleur_VDF.data </CENTER>
+<HR><CENTER><B><A NAME=WC_multi_2_3_espece>WC_multi_2_3_espece</A></B></CENTER>
+<CENTER># Pb_ThermoHydraulique_Especes_WC 3D GAZ PEMFC #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/WC_multi_2_3_espece/WC_multi_2_3_espece.data>Edit</a> WC_multi_2_3_espece.data </CENTER>
 <HR><CENTER><B><A NAME=centre4_VDF>centre4_VDF</A></B></CENTER>
 <CENTER># Hydraulique 2D : plaque boundary layer #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
