@@ -1,0 +1,110 @@
+# PARALLEL OK #
+dimension 3
+Domaine dom_fluide
+
+# BEGIN MESH #
+Mailler dom_fluide
+{
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 3 3 4
+        Longueurs 1. 1. 1.
+    }
+    {
+        Bord defaut  X = 1. 0. <= Y <= 1. 0. <= Z <= 1.
+        Bord defaut  X = 0. 0. <= Y <= 1. 0. <= Z <= 1.
+        Bord defaut  Y = 1. 0. <= X <= 1. 0. <= Z <= 1.
+        Bord defaut  Y = 0. 0. <= X <= 1. 0. <= Z <= 1.
+        Bord defaut  Z = 0. 0. <= X <= 1. 0. <= Y <= 1.
+        Bord defaut  Z = 1. 0. <= X <= 1. 0. <= Y <= 1.
+    }
+}
+Polyedriser dom_fluide
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_fluide
+{
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 2
+    zones_name DOM2
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM2.Zones dom_fluide
+END SCATTER #
+
+fluide_incompressible mil_fluide
+lire mil_fluide
+{
+    mu      champ_uniforme 1 0.0101475
+    rho     champ_uniforme 1 4125
+}
+
+Pb_hydraulique_concentration pb_fluide
+associate pb_fluide dom_fluide
+associate pb_fluide mil_fluide
+
+Schema_euler_implicite sch
+lire sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    dt_max 1
+    tmax 10
+    facsec 1e8
+    dt_impr 1e-8
+    seuil_statio -1
+    Solveur implicite
+    {
+        solveur petsc cholesky { }
+        seuil_convergence_implicite 1e20
+    }
+}
+associate  pb_fluide sch
+
+constituant precurseur
+read precurseur
+{
+    coefficient_diffusion champ_uniforme 2 0.01 0.01
+}
+associate  pb_fluide precurseur
+
+CoviMAC  dis
+Discretize pb_fluide dis
+
+Read pb_fluide
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { negligeable }
+        diffusion { negligeable }
+        initial_conditions { vitesse Champ_Uniforme 3 0 0 0 }
+        boundary_conditions { defaut symetrie }
+    }
+    Convection_diffusion_Concentration
+    {
+        diffusion { negligeable }
+        convection { negligeable }
+        boundary_conditions { defaut paroi }
+        initial_conditions { concentration Champ_Uniforme 2 0 0 }
+        sources
+        {
+            source_Constituant champ_uniforme 2 0.5 0.8 ,
+            radioactive_decay 2 0.01 2.0
+        }
+    }
+
+    postraitement
+    {
+        format lml
+        Probes { c concentration periode 0 numero_elem_sur_maitre 0 }
+        fields dt_post 1e8 { concentration elem }
+    }
+}
+
+resoudre pb_fluide
