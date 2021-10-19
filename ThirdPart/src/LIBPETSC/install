@@ -686,4 +686,7 @@ then
 fi
 # on met le chemin relatif et non absolu dans la config de petsc
 sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $TRUST_ROOT/lib/src/LIBPETSC/petsc/linux_opt/lib/petsc/conf/petscvariables
+sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $TRUST_ROOT/lib/src/LIBPETSC/petsc/linux_opt/lib/petsc/conf/variables
+sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $TRUST_ROOT/lib/src/LIBPETSC/petsc/linux_opt/lib/petsc/conf/rules
+sed -i "s@${TRUST_ROOT}@\${TRUST_ROOT}@g" $TRUST_ROOT/lib/src/LIBPETSC/petsc/linux_opt/lib/petsc/conf/petscrules
 exit 0
