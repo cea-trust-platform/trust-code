@@ -11,6 +11,16 @@ Parameters
 
     TestCase n100 Toro1.data
     TestCase n800 Toro1.data
+    TestCase n100 Toro2.data
+    TestCase n800 Toro2.data
+    TestCase n100 Toro4.data
+    TestCase n800 Toro4.data
+    TestCase n100 Toro5.data
+    TestCase n800 Toro5.data
+    TestCase n100 Toro6.data
+    TestCase n800 Toro6.data
+    TestCase n100 Toro7.data
+    TestCase n800 Toro7.data
     TestCase n100 PWR1.data
     TestCase n800 PWR1.data
     TestCase n100 PWR2.data
@@ -158,6 +168,691 @@ Chapter
         Curve
         {
             file Toro1.ex
+            columns "x" "EINT"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+}
+Chapter
+{
+    Title "Cas test Toro2"
+
+    figure
+    {
+        title_figure Profil de RHO
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY RHO
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro2 RHO
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro2 RHO
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro2.ex
+            columns "x" "RHO"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de P
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY P
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro2 P
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro2 P
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro2.ex
+            columns "x" "P"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de V
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY V
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro2 V
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro2 V
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro2.ex
+            columns "x" "V"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de EINT
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY EINT
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro2 EINT
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro2 EINT
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro2.ex
+            columns "x" "EINT"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+}
+Chapter
+{
+    Title "Cas test Toro4"
+
+    figure
+    {
+        title_figure Profil de RHO
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY RHO
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro4 RHO
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro4 RHO
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro4.ex
+            columns "x" "RHO"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de P
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY P
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro4 P
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro4 P
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro4.ex
+            columns "x" "P"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de V
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY V
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro4 V
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro4 V
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro4.ex
+            columns "x" "V"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de EINT
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY EINT
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro4 EINT
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro4 EINT
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro4.ex
+            columns "x" "EINT"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+}
+Chapter
+{
+    Title "Cas test Toro5"
+
+    figure
+    {
+        title_figure Profil de RHO
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY RHO
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro5 RHO
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro5 RHO
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro5.ex
+            columns "x" "RHO"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de P
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY P
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro5 P
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro5 P
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro5.ex
+            columns "x" "P"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de V
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY V
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro5 V
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro5 V
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro5.ex
+            columns "x" "V"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de EINT
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY EINT
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro5 EINT
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro5 EINT
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro5.ex
+            columns "x" "EINT"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+}
+Chapter
+{
+    Title "Cas test Toro6"
+
+    figure
+    {
+        title_figure Profil de RHO
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY RHO
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro6 RHO
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro6 RHO
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro6.ex
+            columns "x" "RHO"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de P
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY P
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro6 P
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro6 P
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro6.ex
+            columns "x" "P"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de V
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY V
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro6 V
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro6 V
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro6.ex
+            columns "x" "V"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de EINT
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY EINT
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro6 EINT
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro6 EINT
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro6.ex
+            columns "x" "EINT"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+}
+Chapter
+{
+    Title "Cas test Toro7"
+
+    figure
+    {
+        title_figure Profil de RHO
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY RHO
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro7 RHO
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro7 RHO
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro7.ex
+            columns "x" "RHO"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de P
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY P
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro7 P
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro7 P
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro7.ex
+            columns "x" "P"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de V
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY V
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro7 V
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro7 V
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro7.ex
+            columns "x" "V"
+            legend "Exact solution"
+            style lines
+            typeligne -1
+            linewidth 2
+        }
+    }
+    figure
+    {
+        title_figure Profil de EINT
+        include_description_curves 0
+        legend left Left reverse
+        labelX "z[m]"
+        labelY EINT
+        nb_img_without_newline 2
+        width 7.5cm
+        curve
+        {
+            segment n100/Toro7 EINT
+            legend Trust - N=100
+            style lines
+            linewidth 1.5
+        }
+        curve
+        {
+            segment n800/Toro7 EINT
+            legend Trust - N=800
+            style lines
+            linewidth 1.5
+        }
+        Curve
+        {
+            file Toro7.ex
             columns "x" "EINT"
             legend "Exact solution"
             style lines

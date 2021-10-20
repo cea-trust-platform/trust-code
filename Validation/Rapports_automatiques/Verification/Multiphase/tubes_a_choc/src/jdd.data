@@ -31,10 +31,8 @@ Read sch
     dt_max  __dt__
     tmax __tmax__
     seuil_statio -1
-    # nb_pas_dt_max 1 #
     solveur ice
     {
-        criteres_convergence { alpha 1e-5 }
         solveur petsc cli { }
         seuil_convergence_implicite 1e30
     }
@@ -66,8 +64,8 @@ Read pb
         {
             haut symetrie
             bas symetrie
-            gauche frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 2 __vl__ 0
-            droite frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 2 __vr__ 0
+            gauche frontiere_ouverte_pression_imposee champ_front_uniforme 1 __pl__
+            droite frontiere_ouverte_pression_imposee champ_front_uniforme 1 __pr__
         }
     }
     Masse_Multiphase

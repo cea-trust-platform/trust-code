@@ -9,7 +9,7 @@ Parameters
     code TRUST
 
 #Pset(_list_meshes_ 100 800 )
-#Pset(_list_tests_ Toro1 PWR1 PWR2 PWR3 )
+#Pset(_list_tests_ Toro1 Toro2 Toro4 Toro5 Toro6 Toro7 PWR1 PWR2 PWR3 )
 
 #Pforeach _v_ (_list_tests_)
 #Pforeach _d_ (_list_meshes_)

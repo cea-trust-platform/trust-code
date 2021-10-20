@@ -17,13 +17,10 @@ Read sch
     dt_max 1e-2
     tmax 10
     seuil_statio 1e-6
-    solveur sets
+    solveur ice
     {
         solveur petsc cli { }
-        criteres_convergence
-        {
-            vitesse 1e-3
-        }
+        criteres_convergence { vitesse 1e-3 }
     }
 }
 

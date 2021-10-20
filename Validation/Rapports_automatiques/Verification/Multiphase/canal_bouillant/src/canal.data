@@ -28,9 +28,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-    dt_max  1e-4
-    tmax 3
-    seuil_statio 1e-2
+    seuil_statio 1e-3
     solveur ice
     {
         criteres_convergence { alpha 1e-5 }
@@ -59,7 +57,7 @@ Read pb
 {
     correlations
     {
-        flux_interfacial coef_constant { hl 1e10 hv 1e10 }
+        flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10 }
     }
     QDM_Multiphase
     {
