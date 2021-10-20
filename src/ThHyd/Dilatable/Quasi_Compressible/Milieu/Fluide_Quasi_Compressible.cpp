@@ -149,9 +149,9 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
     }
   else if (mot=="sutherland")
     {
-      double mu0,T0,C=-1;
-      double Slambda=-1;
-
+      double mu0,T0,C=-1,Slambda=-1;
+      Nom prob;
+      is>>prob;
       is>>motlu;
       if (motlu!="MU0")
         {
@@ -181,7 +181,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
 
       mu.typer("Sutherland");
       Sutherland& mu_suth = ref_cast(Sutherland,mu.valeur());
-      mu_suth.set_val_params(mu0,C,T0);
+      mu_suth.set_val_params(prob,mu0,C,T0);
       mu_suth.lire_expression();
 
       //On stocke la valeur de C (ici Slambda) pour construire(cf creer_champs_non_lus())
@@ -190,6 +190,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
         {
           lambda.typer("Sutherland");
           Sutherland& lambda_suth = ref_cast(Sutherland,lambda.valeur());
+          lambda_suth.set_prob(prob);
           lambda_suth.set_Tref(T0);
           lambda_suth.set_C(Slambda);
         }

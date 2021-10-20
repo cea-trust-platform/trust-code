@@ -26,20 +26,6 @@
 Implemente_instanciable(Champ_Fonc_Fonction,"Champ_Fonc_Fonction",Champ_Fonc_Tabule);
 
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Champ_Fonc_Fonction::printOn(Sortie& os) const
 {
   return os;
@@ -75,11 +61,10 @@ Entree& Champ_Fonc_Fonction::readOn(Entree& is)
   int nbcomp;
   Nom val1, val2;
   is >> val1;
+  noms_pbs_.add(val1);
   is >> val2;
-  Nom tmp_nom;
-  noms_champs_parametre_.add(tmp_nom);
-  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction", val1, val2, nbcomp, noms_champs_parametre_[0]);
-  nbcomp = lire_dimension(nbcomp,que_suis_je());
+  noms_champs_parametre_.add(val2);
+  is >> nbcomp;
   fixer_nb_comp(nbcomp);
   Cerr<<"We read the analytic function "<<finl;
   la_table.lire_f(is, nbcomp);
@@ -87,27 +72,8 @@ Entree& Champ_Fonc_Fonction::readOn(Entree& is)
 }
 Implemente_instanciable_sans_constructeur(Sutherland,"Sutherland",Champ_Fonc_Fonction);
 
-Sutherland::Sutherland()
-{
-  A_ = -1;
-  C_ = -1;
-  Tref_ = -1;
-}
+Sutherland::Sutherland() : A_(-1.), C_(-1.), Tref_(-1.) { }
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 Sortie& Sutherland::printOn(Sortie& os) const
 {
   return os;
@@ -141,8 +107,8 @@ Sortie& Sutherland::printOn(Sortie& os) const
 Entree& Sutherland::readOn(Entree& is)
 {
 
-  Cerr<< "Sutherland::readOn usage { A a C c TREF Tref }"<<finl;
-  Cerr<<"== Champ_Fonc_Fonction Temperature 1 a*(c+Tref)/(c+val)*(val/Tref)^1.5"<<finl;
+  Cerr<< "Sutherland::readOn usage { prob A a C c TREF Tref }"<<finl;
+  Cerr<<"== Champ_Fonc_Fonction prob Temperature 1 a*(c+Tref)/(c+val)*(val/Tref)^1.5"<<finl;
   Motcle accferme="}";
   Motcle accouverte="{";
 
@@ -161,12 +127,12 @@ Entree& Sutherland::readOn(Entree& is)
     les_mots[0] = "A";
     les_mots[1] = "C";
     les_mots[2] = "Tref";
-
   }
 
   is >> motlu;
   while(motlu != accferme )
     {
+      is >> prob_;
       int rang=les_mots.search(motlu);
       switch(rang)
         {
@@ -207,8 +173,9 @@ Entree& Sutherland::readOn(Entree& is)
 void Sutherland::lire_expression()
 {
   // On cree une chaine correspondant a Sutherland
-  // c.a.d Champ_Fonc_fonction 1 temperature A * (Tref+C)/(val+C) * pow(val/Tref,1.5);
-  Nom chaine("temperature 1 ");
+  // c.a.d Champ_Fonc_fonction 1 prob temperature A * (Tref+C)/(val+C) * pow(val/Tref,1.5);
+  Nom chaine = get_prob();
+  chaine += " temperature 1 ";
   Nom nA(A_);
   Nom nT(Tref_);
   Nom nC(C_);

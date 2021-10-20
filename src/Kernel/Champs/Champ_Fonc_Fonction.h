@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,9 +26,6 @@
 
 #include <Champ_Fonc_Tabule.h>
 
-
-
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -46,62 +43,36 @@ class Champ_Fonc_Fonction : public Champ_Fonc_Tabule
 
 };
 
-
 class Sutherland : public Champ_Fonc_Fonction
 {
   Declare_instanciable_sans_constructeur(Sutherland);
 
 public :
   Sutherland();
-
   void lire_expression();
-  inline void set_val_params(const double& A, const double& C,const double& Tref);
-  inline void set_A(const double& A);
-  inline void set_C(const double& C);
-  inline void set_Tref(const double& Tref);
-  inline const double& get_A() const;
-  inline const double& get_C() const;
-  inline const double& get_Tref() const;
+
+  // Methodes inlines
+  inline void set_val_params(const Nom& prob,const double& A, const double& C,const double& Tref);
+  inline void set_prob(const Nom& prob) { prob_ = prob ;}
+  inline void set_A(const double& A) { A_ = A; }
+  inline void set_C(const double& C) { C_ = C; }
+  inline void set_Tref(const double& Tref) { Tref_ = Tref; }
+  inline Nom& get_prob() { return prob_; }
+  inline const double& get_A() const { return A_; }
+  inline const double& get_C() const { return C_; }
+  inline const double& get_Tref() const { return Tref_; }
 
 protected:
   double A_, C_, Tref_;
+  Nom prob_;
 };
 
-inline void Sutherland::set_val_params(const double& A,const double& C,const double& Tref)
+inline void Sutherland::set_val_params(const Nom& prob,const double& A,const double& C,const double& Tref)
 {
+  set_prob(prob);
   set_A(A);
   set_C(C);
   set_Tref(Tref);
 }
 
-inline void Sutherland::set_A(const double& A)
-{
-  A_ = A;
-}
-
-inline void Sutherland::set_C(const double& C)
-{
-  C_ = C;
-}
-
-inline void Sutherland::set_Tref(const double& Tref)
-{
-  Tref_ = Tref;
-}
-
-inline const double& Sutherland::get_A() const
-{
-  return A_;
-}
-
-inline const double& Sutherland::get_C() const
-{
-  return C_;
-}
-
-inline const double& Sutherland::get_Tref() const
-{
-  return Tref_;
-}
-
-#endif
+#endif /* Champ_Fonc_Fonction_included */
