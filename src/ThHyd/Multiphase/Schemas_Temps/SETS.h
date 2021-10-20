@@ -81,6 +81,11 @@ public :
   static void assembler(const std::string inco_p, const std::vector<std::string> extra_eq, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p,
                         const std::map<std::string, matrices_t>& mats, const tabs_t& sec, const DoubleTab& inco_a, Matrice_Morse& matrice, DoubleTab& secmem, int p_degen);
 
+  virtual double get_default_growth_factor() const /* taux de croissance du pas de temps */
+  {
+    return 1.2; /* en cas de pas de temps rate, on remonte doucement */
+  }
+
   int iteration;  //numero de l'iteration en cours (pour les operateurs d'evanescence)
   int p_degen;    //1 si la pression est degeneree (milieu incompressible + pas de CLs de pression imposee)
   int sets_;      // 1 si on fait l'etape de prediction des vitesses

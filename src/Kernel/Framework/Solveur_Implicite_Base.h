@@ -56,6 +56,10 @@ public :
   {
     return DMAXFLOAT; /* par defaut pas de limite : on est en implicite */
   }
+  virtual double get_default_growth_factor() const /* taux de croissance du pas de temps */
+  {
+    return DMAXFLOAT; /* par defaut pas de limite : on est en implicite */
+  }
 
 protected :
 
