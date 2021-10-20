@@ -84,10 +84,10 @@ nb_pas_dt_max 2
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-        mu champ_fonc_fonction temperature 1 (1.461e-6*(val^1.5)/(val+111.))
+        mu champ_fonc_fonction pb temperature 1 (1.461e-6*(val^1.5)/(val+111.))
         pression 100000.
-        lambda champ_fonc_fonction temperature 1 (2.06803521126761000000e-3*(val^1.5)/(val+111.))
-        loi_etat gaz_parfait_QC 	{
+        lambda champ_fonc_fonction pb temperature 1 (2.06803521126761000000e-3*(val^1.5)/(val+111.))
+        loi_etat gaz_parfait_qc 	{
                 		Prandtl 0.71
                 		Cp 1005
                 		gamma 1.4

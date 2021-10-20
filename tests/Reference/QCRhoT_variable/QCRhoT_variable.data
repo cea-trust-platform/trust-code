@@ -95,8 +95,8 @@ Fluide_Quasi_Compressible fluide
 Read fluide
 {
         pression 5.e6
-	mu     Champ_Fonc_Fonction temperature 1  3.64910e-2*val^(-1.06130)
-        lambda Champ_Fonc_Fonction temperature 1 ((-5.792978E-06*val+1.580872E-03)*val)+5.832125E-01
+	mu     Champ_Fonc_Fonction pb temperature 1  3.64910e-2*val^(-1.06130)
+        lambda Champ_Fonc_Fonction pb temperature 1 ((-5.792978E-06*val+1.580872E-03)*val)+5.832125E-01
         loi_etat rhoT_gaz_parfait_QC 
 	{
                 Cp 4305.

@@ -57,8 +57,8 @@ Fluide_quasi_compressible fluide
 Lire fluide
 {
 	mu		champ_fonc_xyz dom 1  1/(sin(2*Pi*x)*sin(2*Pi*y)+2)
-	/* mu		champ_fonc_fonction temperature 1 1 */
-	lambda		champ_fonc_fonction temperature 1 1
+	/* mu		champ_fonc_fonction pb temperature 1 1 */
+	lambda		champ_fonc_fonction pb temperature 1 1
  	pression	1
  	loi_etat	rhoT_gaz_parfait_QC
 	{

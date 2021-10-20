@@ -63,7 +63,7 @@ Read fluide
     rho Champ_Uniforme 1 1.17
     lambda Champ_Uniforme 1 0.0262
     Cp Champ_Uniforme 1 1006
-    beta_th champ_fonc_fonction temperature 1 1/(val+273)
+    beta_th champ_fonc_fonction pb temperature 1 1/(val+273)
 }
 
 Champ_Uniforme gravite

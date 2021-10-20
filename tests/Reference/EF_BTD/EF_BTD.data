@@ -76,7 +76,7 @@ Read fluid
     rho Champ_Uniforme 1 1.0
     lambda Champ_Uniforme 1 1.0
     cp Champ_Uniforme 1 1.0
-    beta_th champ_fonc_fonction temperature 1 1.0
+    beta_th champ_fonc_fonction pb temperature 1 1.0
 }
 
 Associer pb dom

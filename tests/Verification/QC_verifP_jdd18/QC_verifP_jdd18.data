@@ -56,7 +56,7 @@ Read sch
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-	Sutherland mu0  5.0134715e-5 T0 1. Slambda 0.368 C 1.
+	Sutherland pb mu0  5.0134715e-5 T0 1. Slambda 0.368 C 1.
 	pression 1.
 	loi_etat gaz_parfait_QC {
 		Prandtl 0.71
