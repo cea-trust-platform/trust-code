@@ -25,7 +25,7 @@ trianguler_fin dom # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-  Partition_tool tranche { tranches 1 4 }
+  Partition_tool metis { nb_parts 4 }
   Larg_joint 2
   zones_name DOM
 }
