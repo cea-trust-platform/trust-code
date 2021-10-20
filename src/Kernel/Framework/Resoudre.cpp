@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
 #include <Probleme_Couple.h>
 #include <Debog.h>
 #include <stat_counters.h>
+#include <Catch_SIGINIT.h>
 
 Implemente_instanciable(Resoudre,"Resoudre|Solve",Interprete);
 
@@ -86,6 +87,14 @@ Entree& Resoudre::interpreter(Entree& is)
   Cerr << string << finl;
   // Initialize the problem
   pb.initialize();
+
+  // Register signal and signal handler (SIGINT) if user presses ctrl-c during exec
+  if (!Objet_U::DEACTIVATE_SIGINT_CATCH)
+    {
+      Catch_SIGINIT sig;
+      sig.set_nom_cas_pour_signal(pb.nom_du_cas());
+      signal(SIGINT, Catch_SIGINIT::signal_callback_handler);
+    }
 
   Cerr << string << finl;
   Cerr << "Solving of the problem " << pb.le_nom() << " ("<<que_suis_je()<<") in progress ... " << finl;

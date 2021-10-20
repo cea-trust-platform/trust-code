@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -81,6 +81,7 @@ public:
   static int format_precision_geom;
   static int axi;
   static int bidim_axi;
+  static int DEACTIVATE_SIGINT_CATCH; // flag to not enter the overloaded function signal_callback_handler
   static const Nom& nom_du_cas();
   static Nom& get_set_nom_du_cas();
 

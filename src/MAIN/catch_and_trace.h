@@ -48,10 +48,6 @@
 #include <Process.h>
 #include <EntreeSortie.h>
 
-// used for signal_callback_handler & initialized from mon_main::dowork
-Nom NOM_DU_CAS_;
-int nb_caught_signals = 0; // we give the user 2 tries before a forced exit !
-
 // This structure mirrors the one found in /usr/include/asm/ucontext.h
 typedef struct _sig_ucontext
 {
@@ -151,57 +147,5 @@ void install_handlers()
     }
   std::cerr << "Custom error handlers correctly installed. SIGFPE and SIGABRT redirected." << std::endl;
 }
-
-/*
- * Define the function to be called when ctrl-c (SIGINT) is sent to process
- */
-void signal_callback_handler(True_int signum)
-{
-  if (nb_caught_signals < 2)
-    {
-      if (Process::je_suis_maitre())
-        {
-          std::cerr << " " << std::endl;
-          std::cerr << "=======================================================" << std::endl;
-          std::cerr << " " << std::endl;
-          std::cerr << "Caught signal " << signum << std::endl;
-          std::cerr << "We are trying to finish the simulation correctly ... " << std::endl;
-          std::cerr << " " << std::endl;
-          std::cerr << "=======================================================" << std::endl;
-          std::cerr << " " << std::endl;
-        }
-    }
-  else // force an exit
-    {
-      if (Process::je_suis_maitre())
-        {
-          std::cerr << " " << std::endl;
-          std::cerr << "=======================================================" << std::endl;
-          std::cerr << " " << std::endl;
-          std::cerr << "Multiple signals " << signum <<" are caught !" << std::endl;
-          std::cerr << "We are forcing the exit of the processors ... " << std::endl;
-          std::cerr << " " << std::endl;
-          std::cerr << "=======================================================" << std::endl;
-          std::cerr << " " << std::endl;
-        }
-      Process::exit();
-    }
-
-  // Terminate TRUST correctly => print 1 in stop file
-  Nom command = "echo '1' > ";
-  command += NOM_DU_CAS_;
-  command += ".stop";
-  nb_caught_signals++; // force an exit when nb_caught_signals = 2 (3 tries)
-
-  int err = system(command);
-  if (err)
-    {
-      if (Process::je_suis_maitre())
-        std::cerr << "We can not finish the simulation correctly because the stop file " << NOM_DU_CAS_<<".stop is not in the directory !" << std::endl;
-      Process::exit();
-    }
-}
-
-void set_nom_cas_pour_signal(const Nom& cas) { NOM_DU_CAS_ = cas ; }
 
 #endif /* catch_and_trace_H */

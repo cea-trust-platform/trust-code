@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@ int Objet_U::format_precision_geom=11;
 int Objet_U::axi=0;
 int Objet_U::bidim_axi=0;
 int Objet_U::static_obj_counter_=0;
+int Objet_U::DEACTIVATE_SIGINT_CATCH=0;
 Interprete* Objet_U::l_interprete=0;
 
 int Objet_U::disable_TU=0; // Flag to disable or not the writing of the .TU files

@@ -31,7 +31,7 @@
 #include <mon_main.h>
 #include <ICoCoTrioField.h>
 #include <Schema_Temps_base.h>
-
+#include <Catch_SIGINIT.h>
 #include <Init_Params.h>
 
 #include <Motcle.h>
@@ -200,6 +200,15 @@ bool ProblemTrio::initialize()
   if (res || !pb)
     throw WrongArgument((*my_params).problem_name,"initialize","problem_name","No problem of that name found in data file");
   initialize_pb(*pb);
+
+  // Register signal and signal handler (SIGINT) if user presses ctrl-c during exec
+  if (!Objet_U::DEACTIVATE_SIGINT_CATCH)
+    {
+      Catch_SIGINIT sig;
+      sig.set_nom_cas_pour_signal(pb->nom_du_cas());
+      signal(SIGINT, Catch_SIGINIT::signal_callback_handler);
+    }
+
   // Print the initialization CPU statistics
   if (!Objet_U::disable_TU)
     {
