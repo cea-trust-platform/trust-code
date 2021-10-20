@@ -31,9 +31,3 @@ nb_pas_dt_max 3
 Champ_uniforme g
 lire g 2 0 1
 
-Fluide_Incompressible eau
-Lire eau
-{
-       mu Champ_Uniforme 1 1.85e-2
-       rho Champ_Uniforme 1 1.
-}
