@@ -1,0 +1,177 @@
+# PARALLEL OK #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+# Lire_med family_names_from_group_names dom mesh mesh.med #
+mailler  dom
+{
+    pave carre
+    {
+        origine  0.0  0.0
+        nombre_de_noeuds  2 51
+        longueurs 1 1
+    }
+    {
+        bord  bas       Y = 0.0    0.0 <= X <= 1.0
+        bord  haut      Y = 1  0.0 <= X <= 1.0
+        bord  boundary  X = 0.0    0.0 <= Y <= 1
+        bord  boundary  X = 1.0    0.0 <= Y <= 1
+    }
+}
+# END MESH #
+
+CoviMAC  dis
+option_covimac {  }
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    seuil_statio 1e-3
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5 }
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+typer_lire sodium_liquide Fluide_sodium_liquide { P_ref 100000.0 T_ref 800  }
+typer_lire sodium_gaz     Fluide_sodium_gaz     { P_ref 100000.0 T_ref 879.9430097752451 }
+typer_lire saturation_sodium saturation_sodium  { P_ref 100000.0 T_ref 879.9430097752451 }
+
+Pb_Multiphase pb
+phases pb
+{
+    liquide { sodium }
+    gaz     { sodium }
+}
+associate  pb dom
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    correlations
+    {
+        flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10 }
+    }
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions
+        {
+            vitesse  Champ_Fonc_xyz dom 4 0 0 1 1
+            pression Champ_Fonc_xyz dom 1 100000.0
+        }
+        boundary_conditions
+        {
+            boundary symetrie
+            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 4 0 0 1 1
+            haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 2 1 0 }
+        convection { amont }
+        boundary_conditions
+        {
+            boundary paroi
+            bas  frontiere_ouverte a_ext Champ_Front_Uniforme 2 1 0
+            haut frontiere_ouverte a_ext Champ_Front_Uniforme 2 1 0
+        }
+        sources { flux_interfacial }
+    }
+    Energie_Multiphase
+    {
+        diffusion { negligeable }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 2 800 879.9430097752451 }
+        boundary_conditions
+        {
+            boundary paroi_adiabatique
+            bas    frontiere_ouverte T_ext Champ_Front_Uniforme 2 800 879.9430097752451
+            haut   frontiere_ouverte T_ext Champ_Front_Uniforme 2 800 879.9430097752451
+        }
+        sources
+        {
+            puissance_thermique champ_uniforme 2 100000000.0 0 ,
+            flux_interfacial
+        }
+    }
+    Post_processing
+    {
+        Definition_champs
+        {
+            h_analytique transformation
+            {
+                methode formule expression 1 1112202.375281125+y*100000000.0/763.0630276367231/1 localisation elem source refChamp { Pb_champ pb pression }
+            }
+
+            erreur_h transformation
+            {
+                methode formule expression 1 abs(h-h_ex)
+                sources
+                {
+                    refChamp { Pb_champ pb enthalpie_sodium_melange nom_source h } ,
+                    transformation
+                    {
+                        methode formule expression 1 1112202.375281125+y*100000000.0/763.0630276367231/1 localisation elem nom_source h_ex source refChamp { Pb_champ pb pression }
+                    }
+                }
+            }
+            a_analytique transformation
+            {
+                methode formule expression 1 (y>0.7677865701190698)*763.0630276367231*(h_analytique-1212821.3991770903)/(0.2915276412098244*(5095896.777735285-h_analytique)+763.0630276367231*(h_analytique-1212821.3991770903))
+                sources_reference { h_analytique }
+                # localisation elem nom_source sol source refChamp { Pb_champ pb pression } #
+            }
+        }
+        probes
+        {
+                 erreur_h_trust                       erreur_h periode 1e8 segment 500 0.5 0 0.5 1
+                    rho_m_trust masse_volumique_sodium_melange periode 1e8 segment 500 0.5 0 0.5 1
+                      h_m_trust       enthalpie_sodium_melange periode 1e8 segment 500 0.5 0 0.5 1
+                 h_m_analytique                   h_analytique periode 1e8 segment 500 0.5 0 0.5 1
+                 pression_trust                    pression_pa periode 1e8 segment 500 0.5 0 0.5 1
+                    alpha_trust               alpha_gaz_sodium periode 1e8 segment 500 0.5 0 0.5 1
+               alpha_analytique                   a_analytique periode 1e8 segment 500 0.5 0 0.5 1
+            temperature_l_trust     temperature_liquide_sodium periode 1e8 segment 500 0.5 0 0.5 1
+            temperature_g_trust         temperature_gaz_sodium periode 1e8 segment 500 0.5 0 0.5 1
+                vitesse_l_trust         vitesse_liquide_sodium periode 1e8 segment 500 0.5 0 0.5 1
+                vitesse_g_trust             vitesse_gaz_sodium periode 1e8 segment 500 0.5 0 0.5 1
+        }
+        Format lml
+        fields dt_post 1e-2
+        {
+            vitesse_liquide_sodium elem
+            vitesse_gaz_sodium elem
+            alpha_gaz_sodium elem
+            alpha elem
+            pression elem
+            pression_pa elem
+            temperature elem
+            masse_volumique elem
+            viscosite_cinematique elem
+            viscosite_dynamique elem
+            conductivite elem
+            capacite_calorifique elem
+            energie_interne elem
+            enthalpie elem
+            masse_volumique_sodium_melange elem
+            enthalpie_sodium_melange elem
+            h_analytique elem
+            a_analytique elem
+        }
+    }
+}
+Solve pb
+End
