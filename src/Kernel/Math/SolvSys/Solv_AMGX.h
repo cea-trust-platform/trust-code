@@ -38,12 +38,7 @@ public:
   {
     amgx_=true;
   };
-  virtual void set_config(const Nom& filename)
-  {
-    this->config = filename;
-  }
 protected :
-  Nom config; // Fichier de configuration
 #ifdef PETSCKSP_H
 #ifdef PETSC_HAVE_CUDA
   virtual void Create_objects(const Matrice_Morse&);

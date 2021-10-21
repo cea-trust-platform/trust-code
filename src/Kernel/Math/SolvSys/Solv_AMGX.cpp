@@ -71,6 +71,7 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat)
   // Creation de la matrice Petsc si necessaire
   std::clock_t start = std::clock();
   if (!rebuild_matrix_) clean_matrix_ = false; // ToDo : on ne peut pas enlever les 0 de la matrice PETSc car le stencil de la matrice PETSc (CPU) et le stencil de la matrice GPU doivent etre identiques pour updateA...
+  if (MatricePetsc_!=NULL) MatDestroy(&MatricePetsc_);
   Create_MatricePetsc(MatricePetsc_, mataij_, mat);
   petscToCSR(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_);
   Cout << "[Petsc] Time to build matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
