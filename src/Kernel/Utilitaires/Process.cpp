@@ -378,16 +378,18 @@ void Process::imprimer_ram_totale(int all_process)
     {
       int Mo=1024*1024;
       if (all_process) Journal() << (int)(memoire/Mo) << " MBytes of RAM taken by the processor " << Process::me() << finl;
-      if (Process::nproc()>100)
-        {
-          memoire=Process::nproc()*memoire;
-          Cout << (int)(memoire/Mo) << " MBytes of RAM taken by the calculation (estimation)." << finl;
-        }
-      else
-        {
-          memoire=Process::mp_sum(memoire);
-          Cout << (int)(memoire/Mo) << " MBytes of RAM taken by the calculation." << finl;
-        }
+      /*      if (Process::nproc()>100)
+              {
+                memoire=Process::nproc()*memoire;
+                Cout << (int)(memoire/Mo) << " MBytes of RAM taken by the calculation (estimation)." << finl;
+              }
+            else */
+      {
+        //int max_memoire=Process::mp_max(memoire); // int au lieu de double provoque un segfault comment detecter ?
+        double max_memoire=Process::mp_max(memoire);
+        double total_memoire=Process::mp_sum(memoire);
+        Cout << (int)(total_memoire/Mo) << " MBytes of RAM taken by the calculation (max on a rank: "<<(int)(max_memoire/Mo)<<" MB)." << finl;
+      }
     }
 }
 

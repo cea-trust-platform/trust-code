@@ -117,6 +117,7 @@ int Solv_AMGX::solve(ArrOfDouble& residu)
     VecDuplicate(SolutionPetsc_, &ResidualPetsc_);
     MatResidual(MatricePetsc_, SecondMembrePetsc_, SolutionPetsc_, ResidualPetsc_);
     VecNorm(ResidualPetsc_, NORM_2, &residu(0));
+    VecDestroy(&ResidualPetsc_);
     if (residu(0) < seuil_)
       {
         Cout << "[AmgX] Not solved on GPU to avoid a (ToDo: fix) crash as it's already converged: ||Ax-b||="<<residu(0)<<"<"<<seuil_<< finl;
