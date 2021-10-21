@@ -5,4 +5,10 @@ jdd=`basename $jdd`
 matrix=`ls -rt Matrix_*.petsc | tail -1`
 echo "Testing reading $matrix with petsc_matrix.sh..."
 ./petsc_matrix.sh $matrix 1>petsc_matrix.log 2>&1
-exit $?
+if [ ! -f PAR_$jdd.TU ] && [ "$TRUST_WITHOUT_HOST" = 1 ] && [ -f $TRUST_ROOT/exec/valgrind/bin/valgrind ]
+then
+   echo "Quick valgrind check on a smaller test case ..."
+   sed "1,$ s?11 11?3 3?g" $jdd.data > valgrind.data || exit -1
+   trust -valgrind valgrind 1>valgrind.out_err 2>&1 || exit -1
+fi
+exit 0
