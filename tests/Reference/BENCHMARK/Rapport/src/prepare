@@ -3,7 +3,7 @@
 # de gerer en configuration ?
 rm -f *.cpu
 #BENCH=`ls /work/triou/.thunderbird/vajr3qw6.default/Mail/*/BENCH`
-BENCH=`ls  ~/.thunderbird/n6ijsx63.default/Mail/*/BENCH`
+BENCH=`ls  ~/.thunderbird/t6tja1fg.default-default/Mail/*/BENCH`
 [ ! -f "$BENCH" ] && echo "Fichier $BENCH inexistant." && exit -1
 cp "$BENCH" .
 dos2unix_ BENCH
