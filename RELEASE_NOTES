@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
+21/10/21 (TRUST)  Library     : Add of the vectorization library Vc (1.4.2)
 18/10/21 (TRUST)  New feature : Possibility to correctly stop the simulation once launched in interactive way using Ctrl+C
 18/10/21 (TRUST)  Major Change: Media with variable densities do not inherit anymore from "Fluide_Incompressible"
 18/10/21 (TRUST)  New feature : New medium "Fluide_Dilatable_base" from which the Quasi-Compressible and the Weakly-Compressible media inherit
