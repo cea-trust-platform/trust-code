@@ -6,4 +6,4 @@ $(lib):  makefile Install
 	./Install $(Vc);
 
 clean:
-	rm -r -f $(Vc) ../../../lib/src/LIBVC/include ../../../lib/src/LIBVC/lib
+	rm -r -f $(Vc) ../../../lib/src/LIBVC

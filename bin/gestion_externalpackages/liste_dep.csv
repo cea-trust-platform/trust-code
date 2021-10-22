@@ -7,6 +7,7 @@ General,astyle_2.03_linux.tar.gz,outil,GF,LGPL,http://astyle.sourceforge.net/,ht
 General,doxygen-1.7.4.linux.bin.tar.gz,outil,GF,GPL,https://sourceforge.net/projects/doxygen/,http://sourceforge.net/projects/doxygen/files/rel-1.7.4/doxygen-1.7.4.linux.bin.tar.gz/download,
 General,hwloc-1.9.tar.gz,,GF,BSD,http://www.open-mpi.org/projects/hwloc/,https://download.open-mpi.org/release/hwloc/v1.9/hwloc-1.9.tar.gz,
 General,makedepend-1.0.5.tar.bz2,,GF,"BSD like",https://github.com/ioerror/makedepend/,ftp://ftp.x.org/pub/individual/util/makedepend-1.0.5.tar.bz2,
+General,Vc-1.4.2.tar.gz,,AK,"BSD-3 Clause",https://github.com/VcDevel/Vc,https://github.com/VcDevel/Vc/releases/download/1.4.2/Vc-1.4.2.tar.gz,
 MPI,mvapich2-2.1.tgz,,GF,BSD,http://mvapich.cse.ohio-state.edu/,http://mvapich.cse.ohio-state.edu/download/mvapich/mv2/mvapich2-2.1.tar.gz,"archive introuvable, update !!"
 MPI,openmpi-2.0.4.tar.gz,,GF,BSD,https://www.open-mpi.org/,https://download.open-mpi.org/release/open-mpi/v2.0/openmpi-2.0.4.tar.gz,
 MPI,mpich-3.2.tar.gz,,SV,"BSD-like license",https://www.mpich.org/,http://www.mpich.org/static/downloads/3.2/mpich-3.2.tar.gz,"pour la licence, verifiez. j'ai tire l'info de http://lists.mpich.org/pipermail/discuss/2014-October/003306.html"
