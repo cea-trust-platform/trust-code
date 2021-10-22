@@ -31,37 +31,69 @@
 #include <Perte_Charge_Singuliere_VDF_Face.h>
 #include <Terme_Source_Acceleration_VDF_Face.h>
 
+#ifdef DOXYGEN_SHOULD_SKIP_THIS
 class Source_QC_VDF_Face
 { };
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-class Acceleration_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Terme_Source_Acceleration_VDF_Face>
+/*
+ * HERITAGE V ABSOLUMENT INUTILE :-(
+ * JUSTE POUR COMPLIQUER LA VIE
+ * C'EST JUSTE DU BRICOLAGE POUR QUE CHECK_SOURCES ET VERIFIE_PERE MARCHENT ... DESOLEE ...
+ */
+
+class Acceleration_QC_VDF_Face :public Terme_Source_Acceleration_VDF_Face,  public Source_Fluide_Dilatable_Face<Acceleration_QC_VDF_Face>
 {
   Declare_instanciable(Acceleration_QC_VDF_Face);
+public:
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
-class Source_qdm_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Terme_Source_Qdm_VDF_Face>
+class Source_qdm_QC_VDF_Face : public Terme_Source_Qdm_VDF_Face, public Source_Fluide_Dilatable_Face<Source_qdm_QC_VDF_Face>
 {
   Declare_instanciable(Source_qdm_QC_VDF_Face);
+public:
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
-class Perte_Charge_Reguliere_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Perte_Charge_Reguliere_VDF_Face>
+class Perte_Charge_Reguliere_QC_VDF_Face : public Perte_Charge_Reguliere_VDF_Face, public Source_Fluide_Dilatable_Face<Perte_Charge_Reguliere_QC_VDF_Face>
 {
   Declare_instanciable(Perte_Charge_Reguliere_QC_VDF_Face);
+public:
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
-class Perte_Charge_Singuliere_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Perte_Charge_Singuliere_VDF_Face>
+class Perte_Charge_Singuliere_QC_VDF_Face : public Perte_Charge_Singuliere_VDF_Face, public Source_Fluide_Dilatable_Face<Perte_Charge_Singuliere_QC_VDF_Face>
 {
   Declare_instanciable(Perte_Charge_Singuliere_QC_VDF_Face);
+public:
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
-class Darcy_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Source_Darcy_VDF_Face>
+class Darcy_QC_VDF_Face : public Source_Darcy_VDF_Face, public Source_Fluide_Dilatable_Face<Darcy_QC_VDF_Face>
 {
   Declare_instanciable(Darcy_QC_VDF_Face);
+public:
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
-class Forchheimer_QC_VDF_Face : public Source_Fluide_Dilatable_Face<Source_Forchheimer_VDF_Face>
+class Forchheimer_QC_VDF_Face : public Source_Forchheimer_VDF_Face, public Source_Fluide_Dilatable_Face<Forchheimer_QC_VDF_Face>
 {
   Declare_instanciable(Forchheimer_QC_VDF_Face);
+public:
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
 #endif /* Source_QC_VDF_Face_included */

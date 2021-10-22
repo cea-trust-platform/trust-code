@@ -30,32 +30,51 @@
 #include <DoubleTrav.h>
 
 template <typename DERIVED_T>
-class Source_Fluide_Dilatable_Face : public DERIVED_T
+class Source_Fluide_Dilatable_Face
 {
 public:
-  DoubleTab& ajouter(DoubleTab& ) const;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  DoubleTab& ajouter_impl(DoubleTab& ) const;
+  void contribuer_a_avec_impl(const DoubleTab&, Matrice_Morse&) const;
+protected:
+  DoubleTab& ajouter_mere_impl(DoubleTab& ) const;
+  const Milieu_base& milieu_impl() const;
 };
+
+/*
+ * CRTP PATTERN SUITE AU BRICOLAGE POUR QUE CHECK_SOURCES ET VERIFIE_PERE MARCHENT ... DESOLEE ...
+ */
+
+template <typename DERIVED_T>
+DoubleTab& Source_Fluide_Dilatable_Face<DERIVED_T>::ajouter_mere_impl(DoubleTab& resu) const
+{
+  return static_cast<const DERIVED_T *>(this)->ajouter_mere(resu);
+}
+
+template <typename DERIVED_T>
+const Milieu_base& Source_Fluide_Dilatable_Face<DERIVED_T>::milieu_impl() const
+{
+  return static_cast<const DERIVED_T *>(this)->equation().milieu();
+}
 
 /* Class template specializations */
 template <typename DERIVED_T>
-DoubleTab& Source_Fluide_Dilatable_Face<DERIVED_T>::ajouter(DoubleTab& resu ) const
+DoubleTab& Source_Fluide_Dilatable_Face<DERIVED_T>::ajouter_impl(DoubleTab& resu ) const
 {
   DoubleTrav trav(resu);
-  DERIVED_T::ajouter(trav);
-  multiplier_par_rho_si_dilatable(trav,DERIVED_T::equation().milieu());
+  ajouter_mere_impl(trav);
+  multiplier_par_rho_si_dilatable(trav,milieu_impl());
   resu+=trav;
   return resu;
 }
 
 template <typename DERIVED_T>
-void Source_Fluide_Dilatable_Face<DERIVED_T>::contribuer_a_avec(const DoubleTab& present, Matrice_Morse& matrice) const
+void Source_Fluide_Dilatable_Face<DERIVED_T>::contribuer_a_avec_impl(const DoubleTab& present, Matrice_Morse& matrice) const
 {
 
   return; /* on ne fait rien pour l'instant ... */
 
   DoubleTrav toto(present);
-  ajouter(toto);
+  ajouter_impl(toto);
   int nb_comp=toto.dimension(1);
   for (int i=0; i < toto.dimension(0); i++)
     for (int comp=0; comp<nb_comp; comp++)

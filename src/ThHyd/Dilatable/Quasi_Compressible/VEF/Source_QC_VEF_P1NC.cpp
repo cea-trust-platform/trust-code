@@ -25,39 +25,69 @@
 Implemente_instanciable(Acceleration_QC_VEF_P1NC,"Acceleration_QC_VEF_P1NC",Terme_Source_Acceleration_VEF_Face);
 Sortie& Acceleration_QC_VEF_P1NC::printOn(Sortie& os) const { return Terme_Source_Acceleration_VEF_Face::printOn(os); }
 Entree& Acceleration_QC_VEF_P1NC::readOn(Entree& is) { return Terme_Source_Acceleration_VEF_Face::readOn(is); }
+DoubleTab& Acceleration_QC_VEF_P1NC::ajouter_mere(DoubleTab& resu) const { return Terme_Source_Acceleration_VEF_Face::ajouter(resu); }
+DoubleTab& Acceleration_QC_VEF_P1NC::ajouter(DoubleTab& resu ) const { return ajouter_impl(resu); }
+void Acceleration_QC_VEF_P1NC::contribuer_a_avec(const DoubleTab& resu, Matrice_Morse& mat) const { contribuer_a_avec_impl(resu,mat); }
 
 Implemente_instanciable(Perte_Charge_Circulaire_QC_VEF_P1NC,"Perte_Charge_Circulaire_QC_VEF_P1NC",Perte_Charge_Circulaire_VEF_P1NC);
 Sortie& Perte_Charge_Circulaire_QC_VEF_P1NC::printOn(Sortie& os) const { return Perte_Charge_Circulaire_VEF_P1NC::printOn(os); }
 Entree& Perte_Charge_Circulaire_QC_VEF_P1NC::readOn(Entree& is) {  return Perte_Charge_Circulaire_VEF_P1NC::readOn(is); }
+DoubleTab& Perte_Charge_Circulaire_QC_VEF_P1NC::ajouter_mere(DoubleTab& resu) const { return Perte_Charge_Circulaire_VEF_P1NC::ajouter(resu); }
+DoubleTab& Perte_Charge_Circulaire_QC_VEF_P1NC::ajouter(DoubleTab& resu ) const { return ajouter_impl(resu); }
+void Perte_Charge_Circulaire_QC_VEF_P1NC::contribuer_a_avec(const DoubleTab& resu, Matrice_Morse& mat) const { contribuer_a_avec_impl(resu,mat); }
 
 Implemente_instanciable(Perte_Charge_Anisotrope_QC_VEF_P1NC,"Perte_Charge_Anisotrope_QC_VEF_P1NC",Perte_Charge_Anisotrope_VEF_P1NC);
 Sortie& Perte_Charge_Anisotrope_QC_VEF_P1NC::printOn(Sortie& os) const { return Perte_Charge_Anisotrope_VEF_P1NC::printOn(os); }
 Entree& Perte_Charge_Anisotrope_QC_VEF_P1NC::readOn(Entree& is) { return Perte_Charge_Anisotrope_VEF_P1NC::readOn(is); }
+DoubleTab& Perte_Charge_Anisotrope_QC_VEF_P1NC::ajouter_mere(DoubleTab& resu) const { return Perte_Charge_Anisotrope_VEF_P1NC::ajouter(resu); }
+DoubleTab& Perte_Charge_Anisotrope_QC_VEF_P1NC::ajouter(DoubleTab& resu ) const { return ajouter_impl(resu); }
+void Perte_Charge_Anisotrope_QC_VEF_P1NC::contribuer_a_avec(const DoubleTab& resu, Matrice_Morse& mat) const { contribuer_a_avec_impl(resu,mat); }
 
 Implemente_instanciable(Perte_Charge_Directionnelle_QC_VEF_P1NC,"Perte_Charge_Directionnelle_QC_VEF_P1NC",Perte_Charge_Directionnelle_VEF_P1NC);
 Sortie& Perte_Charge_Directionnelle_QC_VEF_P1NC::printOn(Sortie& os) const { return Perte_Charge_Directionnelle_VEF_P1NC::printOn(os); }
 Entree& Perte_Charge_Directionnelle_QC_VEF_P1NC::readOn(Entree& is) { return Perte_Charge_Directionnelle_VEF_P1NC::readOn(is); }
+DoubleTab& Perte_Charge_Directionnelle_QC_VEF_P1NC::ajouter_mere(DoubleTab& resu) const { return Perte_Charge_Directionnelle_VEF_P1NC::ajouter(resu); }
+DoubleTab& Perte_Charge_Directionnelle_QC_VEF_P1NC::ajouter(DoubleTab& resu ) const { return ajouter_impl(resu); }
+void Perte_Charge_Directionnelle_QC_VEF_P1NC::contribuer_a_avec(const DoubleTab& resu, Matrice_Morse& mat) const { contribuer_a_avec_impl(resu,mat); }
 
 Implemente_instanciable(Perte_Charge_Isotrope_QC_VEF_P1NC,"Perte_Charge_Isotrope_QC_VEF_P1NC",Perte_Charge_Isotrope_VEF_P1NC);
 Sortie& Perte_Charge_Isotrope_QC_VEF_P1NC::printOn(Sortie& os) const { return Perte_Charge_Isotrope_VEF_P1NC::printOn(os); }
 Entree& Perte_Charge_Isotrope_QC_VEF_P1NC::readOn(Entree& is) { return Perte_Charge_Isotrope_VEF_P1NC::readOn(is); }
+DoubleTab& Perte_Charge_Isotrope_QC_VEF_P1NC::ajouter_mere(DoubleTab& resu) const { return Perte_Charge_Isotrope_VEF_P1NC::ajouter(resu); }
+DoubleTab& Perte_Charge_Isotrope_QC_VEF_P1NC::ajouter(DoubleTab& resu ) const { return ajouter_impl(resu); }
+void Perte_Charge_Isotrope_QC_VEF_P1NC::contribuer_a_avec(const DoubleTab& resu, Matrice_Morse& mat) const { contribuer_a_avec_impl(resu,mat); }
 
 Implemente_instanciable(Perte_Charge_Reguliere_QC_VEF_P1NC,"Perte_Charge_Reguliere_QC_VEF_P1NC",Perte_Charge_Reguliere_VEF_P1NC);
 Sortie& Perte_Charge_Reguliere_QC_VEF_P1NC::printOn(Sortie& os) const { return Perte_Charge_Reguliere_VEF_P1NC::printOn(os); }
 Entree& Perte_Charge_Reguliere_QC_VEF_P1NC::readOn(Entree& is) { return Perte_Charge_Reguliere_VEF_P1NC::readOn(is); }
+DoubleTab& Perte_Charge_Reguliere_QC_VEF_P1NC::ajouter_mere(DoubleTab& resu) const { return Perte_Charge_Reguliere_VEF_P1NC::ajouter(resu); }
+DoubleTab& Perte_Charge_Reguliere_QC_VEF_P1NC::ajouter(DoubleTab& resu ) const { return ajouter_impl(resu); }
+void Perte_Charge_Reguliere_QC_VEF_P1NC::contribuer_a_avec(const DoubleTab& resu, Matrice_Morse& mat) const { contribuer_a_avec_impl(resu,mat); }
 
 Implemente_instanciable(Perte_Charge_Singuliere_QC_VEF_P1NC,"Perte_Charge_Singuliere_QC_VEF_P1NC",Perte_Charge_Singuliere_VEF_Face);
 Sortie& Perte_Charge_Singuliere_QC_VEF_P1NC::printOn(Sortie& os) const { return Perte_Charge_Singuliere_VEF_Face::printOn(os); }
 Entree& Perte_Charge_Singuliere_QC_VEF_P1NC::readOn(Entree& is) { return Perte_Charge_Singuliere_VEF_Face::readOn(is); }
+DoubleTab& Perte_Charge_Singuliere_QC_VEF_P1NC::ajouter_mere(DoubleTab& resu) const { return Perte_Charge_Singuliere_VEF_Face::ajouter(resu); }
+DoubleTab& Perte_Charge_Singuliere_QC_VEF_P1NC::ajouter(DoubleTab& resu ) const { return ajouter_impl(resu); }
+void Perte_Charge_Singuliere_QC_VEF_P1NC::contribuer_a_avec(const DoubleTab& resu, Matrice_Morse& mat) const { contribuer_a_avec_impl(resu,mat); }
 
 Implemente_instanciable(Source_qdm_QC_VEF_P1NC,"Source_qdm_QC_VEF_P1NC",Terme_Source_Qdm_VEF_Face);
 Sortie& Source_qdm_QC_VEF_P1NC::printOn(Sortie& os) const { return Terme_Source_Qdm_VEF_Face::printOn(os); }
 Entree& Source_qdm_QC_VEF_P1NC::readOn(Entree& is) { return Terme_Source_Qdm_VEF_Face::readOn(is); }
+DoubleTab& Source_qdm_QC_VEF_P1NC::ajouter_mere(DoubleTab& resu) const { return Terme_Source_Qdm_VEF_Face::ajouter(resu); }
+DoubleTab& Source_qdm_QC_VEF_P1NC::ajouter(DoubleTab& resu ) const { return ajouter_impl(resu); }
+void Source_qdm_QC_VEF_P1NC::contribuer_a_avec(const DoubleTab& resu, Matrice_Morse& mat) const { contribuer_a_avec_impl(resu,mat); }
 
 Implemente_instanciable(Darcy_QC_VEF_P1NC,"Darcy_QC_VEF_P1NC",Source_Darcy_VEF_Face);
 Sortie& Darcy_QC_VEF_P1NC::printOn(Sortie& os) const { return Source_Darcy_VEF_Face::printOn(os); }
 Entree& Darcy_QC_VEF_P1NC::readOn(Entree& is) { return Source_Darcy_VEF_Face::readOn(is); }
+DoubleTab& Darcy_QC_VEF_P1NC::ajouter_mere(DoubleTab& resu) const { return Source_Darcy_VEF_Face::ajouter(resu); }
+DoubleTab& Darcy_QC_VEF_P1NC::ajouter(DoubleTab& resu ) const { return ajouter_impl(resu); }
+void Darcy_QC_VEF_P1NC::contribuer_a_avec(const DoubleTab& resu, Matrice_Morse& mat) const { contribuer_a_avec_impl(resu,mat); }
 
 Implemente_instanciable(Forchheimer_QC_VEF_P1NC,"Forchheimer_QC_VEF_P1NC",Source_Forchheimer_VEF_Face);
 Sortie& Forchheimer_QC_VEF_P1NC::printOn(Sortie& os) const { return Source_Forchheimer_VEF_Face::printOn(os); }
 Entree& Forchheimer_QC_VEF_P1NC::readOn(Entree& is) { return Source_Forchheimer_VEF_Face::readOn(is); }
+DoubleTab& Forchheimer_QC_VEF_P1NC::ajouter_mere(DoubleTab& resu) const { return Source_Forchheimer_VEF_Face::ajouter(resu); }
+DoubleTab& Forchheimer_QC_VEF_P1NC::ajouter(DoubleTab& resu ) const { return ajouter_impl(resu); }
+void Forchheimer_QC_VEF_P1NC::contribuer_a_avec(const DoubleTab& resu, Matrice_Morse& mat) const { contribuer_a_avec_impl(resu,mat); }
