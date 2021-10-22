@@ -1,0 +1,70 @@
+#!/bin/bash
+
+if test "${PWD##*/}" = "SEQ_C1" ; then
+ awk '$1=="Cas"{print 1 " " $4}' Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_2_C1" ; then
+ awk '$1=="PAR_Cas"{print 2 " " $4}' PAR_Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_4_C1" ; then
+ awk '$1=="PAR_Cas"{print 4 " " $4}' PAR_Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_8_C1" ; then
+ awk '$1=="PAR_Cas"{print 8 " " $4}' PAR_Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_16_C1" ; then
+ awk '$1=="PAR_Cas"{print 16 " " $4}' PAR_Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_32_C1" ; then
+ awk '$1=="PAR_Cas"{print 32 " " $4}' PAR_Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_64_C1" ; then
+ awk '$1=="PAR_Cas"{print 64 " " $4}' PAR_Cas.perf > Cas.perf.txt
+ # write all in one file...
+ cat ../SEQ_C1/Cas.perf.txt ../PAR_2_C1/Cas.perf.txt ../PAR_4_C1/Cas.perf.txt ../PAR_8_C1/Cas.perf.txt ../PAR_16_C1/Cas.perf.txt ../PAR_32_C1/Cas.perf.txt Cas.perf.txt > Cas_all.perf.txt
+# Next series
+elif test "${PWD##*/}" = "SEQ_C2" ; then
+ awk '$1=="Cas2"{print 1 " " $4}' Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_2_C2" ; then
+ awk '$1=="PAR_Cas2"{print 2 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_4_C2" ; then
+ awk '$1=="PAR_Cas2"{print 4 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_8_C2" ; then
+ awk '$1=="PAR_Cas2"{print 8 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_16_C2" ; then
+ awk '$1=="PAR_Cas2"{print 16 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_32_C2" ; then
+ awk '$1=="PAR_Cas2"{print 32 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_64_C2" ; then
+ awk '$1=="PAR_Cas2"{print 64 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+ # write all in one file...
+ cat ../SEQ_C2/Cas2.perf.txt ../PAR_2_C2/Cas2.perf.txt ../PAR_4_C2/Cas2.perf.txt ../PAR_8_C2/Cas2.perf.txt ../PAR_16_C2/Cas2.perf.txt ../PAR_32_C2/Cas2.perf.txt Cas2.perf.txt > Cas_all2.perf.txt
+elif test "${PWD##*/}" = "SEQ_C3" ; then
+ awk '$1=="Cas"{print 1 " " $4}' Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_2_C3" ; then
+ awk '$1=="PAR_Cas"{print 2 " " $4}' PAR_Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_4_C3" ; then
+ awk '$1=="PAR_Cas"{print 4 " " $4}' PAR_Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_8_C3" ; then
+ awk '$1=="PAR_Cas"{print 8 " " $4}' PAR_Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_16_C3" ; then
+ awk '$1=="PAR_Cas"{print 16 " " $4}' PAR_Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_32_C3" ; then
+ awk '$1=="PAR_Cas"{print 32 " " $4}' PAR_Cas.perf > Cas.perf.txt
+elif test "${PWD##*/}" = "PAR_64_C3" ; then
+ awk '$1=="PAR_Cas"{print 64 " " $4}' PAR_Cas.perf > Cas.perf.txt
+ # write all in one file...
+ cat ../SEQ_C3/Cas.perf.txt ../PAR_2_C3/Cas.perf.txt ../PAR_4_C3/Cas.perf.txt ../PAR_8_C3/Cas.perf.txt ../PAR_16_C3/Cas.perf.txt ../PAR_32_C3/Cas.perf.txt Cas.perf.txt > Cas_all.perf.txt
+# Next series
+elif test "${PWD##*/}" = "SEQ_C4" ; then
+ awk '$1=="Cas2"{print 1 " " $4}' Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_2_C4" ; then
+ awk '$1=="PAR_Cas2"{print 2 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_4_C4" ; then
+ awk '$1=="PAR_Cas2"{print 4 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_8_C4" ; then
+ awk '$1=="PAR_Cas2"{print 8 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_16_C4" ; then
+ awk '$1=="PAR_Cas2"{print 16 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_32_C4" ; then
+ awk '$1=="PAR_Cas2"{print 32 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+elif test "${PWD##*/}" = "PAR_64_C4" ; then
+ awk '$1=="PAR_Cas2"{print 64 " " $4}' PAR_Cas2.perf > Cas2.perf.txt
+ # write all in one file...
+ cat ../SEQ_C4/Cas2.perf.txt ../PAR_2_C4/Cas2.perf.txt ../PAR_4_C4/Cas2.perf.txt ../PAR_8_C4/Cas2.perf.txt ../PAR_16_C4/Cas2.perf.txt ../PAR_32_C4/Cas2.perf.txt Cas2.perf.txt > Cas_all2.perf.txt
+fi
+##

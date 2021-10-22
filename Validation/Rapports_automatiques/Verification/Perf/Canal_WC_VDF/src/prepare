@@ -1,0 +1,171 @@
+#!/bin/bash
+
+# Elie Saikali
+# Sept 2021
+# script to prepare files
+
+LISTE_CAS="SEQ_C1 PAR_2_C1 PAR_4_C1 PAR_8_C1 PAR_16_C1 PAR_32_C1 PAR_64_C1
+           SEQ_C2 PAR_2_C2 PAR_4_C2 PAR_8_C2 PAR_16_C2 PAR_32_C2 PAR_64_C2
+           SEQ_C3 PAR_2_C3 PAR_4_C3 PAR_8_C3 PAR_16_C3 PAR_32_C3 PAR_64_C3
+           SEQ_C4 PAR_2_C4 PAR_4_C4 PAR_8_C4 PAR_16_C4 PAR_32_C4 PAR_64_C4
+           "
+
+for CAS in $LISTE_CAS; do
+  SRCDATA=Cas.data
+  SRCDATA2=Cas2.data
+  SRCPRERUN=pre_run
+  SRCPOSTRUN=post_run
+  REP=./$CAS
+  mkdir $REP
+  DESTDATA=$REP/$SRCDATA
+  DESTDATA2=$REP/$SRCDATA2
+  DESTPRERUN=$REP/$SRCPRERUN
+
+  cp $SRCPOSTRUN $REP/$SRCPOSTRUN
+  if test "$CAS" = "SEQ_C1"; then
+
+    cp $SRCDATA $DESTDATA
+    
+  elif test "$CAS" = "PAR_2_C1"; then
+
+    cp $SRCDATA $DESTDATA
+    cp $SRCPRERUN $DESTPRERUN
+
+  elif test "$CAS" = "PAR_4_C1"; then
+
+    sed "s~tranches 1 2 1~tranches 1 4 1~" $SRCDATA > $DESTDATA
+    sed "s~.data 2~.data 4~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_8_C1"; then
+
+    sed "s~tranches 1 2 1~tranches 1 8 1~" $SRCDATA > $DESTDATA
+    sed "s~.data 2~.data 8~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_16_C1"; then
+
+    sed "s~tranches 1 2 1~tranches 1 16 1~" $SRCDATA > $DESTDATA
+    sed "s~.data 2~.data 16~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_32_C1"; then
+    
+    sed "s~tranches 1 2 1~tranches 1 32 1~" $SRCDATA > $DESTDATA
+    sed "s~.data 2~.data 32~" $SRCPRERUN > $DESTPRERUN
+    
+  elif test "$CAS" = "PAR_64_C1"; then
+    
+    sed "s~tranches 1 2 1~tranches 2 32 1~" $SRCDATA > $DESTDATA
+    sed "s~.data 2~.data 64~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "SEQ_C2"; then
+
+    cp $SRCDATA2 $DESTDATA2
+
+  elif test "$CAS" = "PAR_2_C2"; then
+
+    cp $SRCDATA2 $DESTDATA2
+    cp $SRCPRERUN $DESTPRERUN
+
+  elif test "$CAS" = "PAR_4_C2"; then
+
+    sed "s~tranches 1 2 1~tranches 1 4 1~" $SRCDATA2 > $DESTDATA2
+    sed "s~.data 2~.data 4~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_8_C2"; then
+
+    sed "s~tranches 1 2 1~tranches 1 8 1~" $SRCDATA2 > $DESTDATA2
+    sed "s~.data 2~.data 8~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_16_C2"; then
+
+    sed "s~tranches 1 2 1~tranches 1 16 1~" $SRCDATA2 > $DESTDATA2
+    sed "s~.data 2~.data 16~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_32_C2"; then
+    
+    sed "s~tranches 1 2 1~tranches 1 32 1~" $SRCDATA2 > $DESTDATA2
+    sed "s~.data 2~.data 32~" $SRCPRERUN > $DESTPRERUN
+    
+  elif test "$CAS" = "PAR_64_C2"; then
+    
+    sed "s~tranches 1 2 1~tranches 2 32 1~" $SRCDATA2 > $DESTDATA2
+    sed "s~.data 2~.data 64~" $SRCPRERUN > $DESTPRERUN
+    
+  elif test "$CAS" = "SEQ_C3"; then
+
+    sed "s~22 101 22~43 26 43~" $SRCDATA > $DESTDATA
+    
+  elif test "$CAS" = "PAR_2_C3"; then
+
+    cp $SRCPRERUN $DESTPRERUN
+    sed "s~22 101 22~43 26 43~" $SRCDATA > $DESTDATA
+
+  elif test "$CAS" = "PAR_4_C3"; then
+
+    sed "s~22 101 22~43 26 43~;
+    	 s~tranches 1 2 1~tranches 1 4 1~" $SRCDATA > $DESTDATA
+    sed "s~.data 2~.data 4~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_8_C3"; then
+
+    sed "s~22 101 22~43 26 43~;
+         s~tranches 1 2 1~tranches 1 8 1~" $SRCDATA > $DESTDATA
+    sed "s~.data 2~.data 8~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_16_C3"; then
+
+    sed "s~22 101 22~43 26 43~;
+    	 s~tranches 1 2 1~tranches 1 16 1~" $SRCDATA > $DESTDATA
+    sed "s~.data 2~.data 16~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_32_C3"; then
+    
+    sed "s~22 101 22~43 26 43~;
+    	 s~tranches 1 2 1~tranches 2 16 1~" $SRCDATA > $DESTDATA
+    sed "s~.data 2~.data 32~" $SRCPRERUN > $DESTPRERUN
+    
+  elif test "$CAS" = "PAR_64_C3"; then
+    
+    sed "s~22 101 22~43 26 43~;
+    	 s~tranches 1 2 1~tranches 4 16 1~" $SRCDATA > $DESTDATA
+    sed "s~.data 2~.data 64~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "SEQ_C4"; then
+
+    sed "s~22 101 22~43 26 43~" $SRCDATA2 > $DESTDATA2
+
+  elif test "$CAS" = "PAR_2_C4"; then
+
+    sed "s~22 101 22~43 26 43~" $SRCDATA2 > $DESTDATA2
+    cp $SRCPRERUN $DESTPRERUN
+
+  elif test "$CAS" = "PAR_4_C4"; then
+
+    sed "s~tranches 1 2 1~tranches 1 4 1~" $SRCDATA2 > $DESTDATA2
+    sed "s~.data 2~.data 4~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_8_C4"; then
+
+    sed "s~22 101 22~43 26 43~;
+    	 s~tranches 1 2 1~tranches 1 8 1~" $SRCDATA2 > $DESTDATA2
+    sed "s~.data 2~.data 8~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_16_C4"; then
+
+    sed "s~22 101 22~43 26 43~;
+    	 s~tranches 1 2 1~tranches 1 16 1~" $SRCDATA2 > $DESTDATA2
+    sed "s~.data 2~.data 16~" $SRCPRERUN > $DESTPRERUN
+
+  elif test "$CAS" = "PAR_32_C4"; then
+    
+    sed "s~22 101 22~43 26 43~;
+    	 s~tranches 1 2 1~tranches 2 16 1~" $SRCDATA2 > $DESTDATA2
+    sed "s~.data 2~.data 32~" $SRCPRERUN > $DESTPRERUN
+    
+  else # PAR_64_C4 
+    
+    sed "s~22 101 22~43 26 43~;
+    	 s~tranches 1 2 1~tranches 4 16 1~" $SRCDATA2 > $DESTDATA2
+    sed "s~.data 2~.data 64~" $SRCPRERUN > $DESTPRERUN
+    
+  fi
+done
