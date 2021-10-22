@@ -1621,7 +1621,9 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                                            : matrice_morse_intermediaire;
 
       // Verification stencil de la matrice
+      start = std::clock();
       nouveau_stencil_ = check_stencil(matrice_morse);
+      if (verbose) Cout << "[Petsc] Time to check stencil: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
       start = std::clock();
       if (SecondMembrePetsc_ == NULL)
         {
@@ -2128,6 +2130,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
           // Advice: stat file from master and broadcast
           if (Process::je_suis_maitre())
             {
+              // struct stat f {}; pb sur gcc 4.8.5
               struct stat f;
               if (!stat(filename, &f)) filename_found = 1;
             }
@@ -2644,40 +2647,35 @@ int Solv_Petsc::check_stencil(const Matrice_Morse& matrice_morse)
     if (matrice_morse.get_coeff()(i)!=0)
       nnz(0)+=1;
   mp_sum_for_each_item(nnz);
+  if (nnz[1]-nnz[0]>0)
+    {
+      if (verbose) Cout << "[Petsc] Discarding " << nnz[1]-nnz[0] << " zeros from TRUST matrix into the PETSc matrix ..." << finl;
+      rebuild_matrix_ = true;
+      clean_matrix_   = true;
+    }
 
-  // Est ce un nouveau stencil ? Verification limitee aux colonnes...
-  int new_stencil;
-  if (rebuild_matrix_ || read_matrix_)
+  // Est ce un nouveau stencil ?
+  int new_stencil=0;
+  if (rebuild_matrix_ || read_matrix_ || previous_tab2_.size() != matrice_morse.get_tab2().size())
     new_stencil = 1;
   else
     {
-      new_stencil = 0;
-      if (previous_tab2_.size() != matrice_morse.get_tab2().size())
-        new_stencil = 1;
-      else
-        for (int i = 0; i < previous_tab2_.size(); i++)
-          if (previous_tab2_(i) != matrice_morse.get_tab2()(i))
-            {
-              new_stencil = 1;
-              break;
-            }
-      new_stencil = mp_max(new_stencil) != 0;
-      if (new_stencil)
-        previous_tab2_ = matrice_morse.get_tab2();
+      // Verification limitee aux colonnes...
+      for (int i = 0; i < previous_tab2_.size(); i++)
+        if (previous_tab2_(i) != matrice_morse.get_tab2()(i))
+          {
+            new_stencil = 1;
+            break;
+          }
     }
+  new_stencil = mp_max(new_stencil) != 0;
+  if (new_stencil)
+    previous_tab2_ = matrice_morse.get_tab2();
   if (limpr() == 1)
     {
       Cout << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
            << (petsc_cpus_selection_ ? (int) (nb_rows_tot_ / petsc_nb_cpus_) : nb_rows_)
-           << " unknowns per PETSc process ) " << (new_stencil ? "New stencil." : "Same stencil.");
-      if (nnz[1]>0 && amgx_)
-        {
-          Cout << " (nonzeros: " << nnz[0] << "/" << nnz[1] << ")" << finl;
-          double ratio = 1-(double)nnz(0) / (double)nnz(1);
-          if (ratio > 0.2)
-            Cout << "Warning! Trust matrix contains a lot of useless stored zeros: " << (int) (ratio * 100) << "%" << finl;
-        }
-      else Cout << finl;
+           << " unknowns per PETSc process ) " << (new_stencil ? "New stencil." : "Same stencil.") << finl;
     }
   return new_stencil != 0;
 }

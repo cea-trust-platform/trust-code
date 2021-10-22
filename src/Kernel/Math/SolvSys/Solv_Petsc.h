@@ -252,9 +252,9 @@ inline void Solv_Petsc::initialize()
   VecScatter_ = NULL;
   // Dev:
   ignore_new_nonzero_ = false;
-  rebuild_matrix_ = true;
+  rebuild_matrix_ = false;
   allow_realloc_ = true;
-  clean_matrix_ = true;
+  clean_matrix_ = false;
   if (instance==-1)
     {
       // First initialization:
