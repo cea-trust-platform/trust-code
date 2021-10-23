@@ -254,9 +254,10 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
   for (f = 0; f < zone.premiere_face_int(); f++)
     {
       for (cc_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (M > 1))
-
           cc_f(n) +=  (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
-      for (n = 0; n < N; n++) flux_bords_(f, n) = pf(f) * fs(f) * vit(f, m) * cc_f(n);
+
+      const int mm = ( m == 0 ) ? m : m-1; // E Saikali : m-1 car si M > 1, on obtient m = M à la fin de la boucle...
+      for (n = 0; n < N; n++) flux_bords_(f, n) = pf(f) * fs(f) * vit(f, mm) * cc_f(n);
     }
 
   if (cc_phases_.size()) for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (cc_phases_[n].non_nul()) /* mise a jour des champs de debit */
