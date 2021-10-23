@@ -32,7 +32,7 @@ Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quas
 // XD fluide_quasi_compressible fluide_dilatable_base fluide_quasi_compressible -1 Quasi-compressible flow with a low mach number assumption; this means that the thermo-dynamic pressure (used in state law) is uniform in space.
 // XD attr sutherland bloc_sutherland sutherland 1 Sutherland law for viscosity and for conductivity.
 // XD attr pression double pression 1 Initial thermo-dynamic pressure used in the assosciated state law.
-// XD attr loi_etat loi_etat_base loi_etat 1 State law.
+// XD attr loi_etat loi_etat_base loi_etat 1 The state law that will be associated to the Quasi-compressible fluid.
 // XD attr traitement_pth chaine(into=["edo","constant","conservation_masse"]) traitement_pth 1 Particular treatment for the thermodynamic pressure Pth ; there are three possibilities: NL2 1) with the keyword \'edo\' the code computes Pth solving an O.D.E. ; in this case, the mass is not strictly conserved (it is the default case for quasi compressible computation): NL2 2) the keyword \'conservation_masse\' forces the conservation of the mass (closed geometry or with periodic boundaries condition) NL2 3) the keyword \'constant\' makes it possible to have a constant Pth ; it\'s the good choice when the flow is open (e.g. with pressure boundary conditions). NL2 It is possible to monitor the volume averaged value for temperature and density, plus Pth evolution in the .evol_glob file.
 // XD attr traitement_rho_gravite chaine(into=["standard","moins_rho_moyen"]) traitement_rho_gravite 1 It may be :1) \`standard\` : the gravity term is evaluted with rho*g (It is the default). 2) \`moins_rho_moyen\` : the gravity term is evaluated with (rho-rhomoy) *g. Unknown pressure is then P*=P+rhomoy*g*z. It is useful when you apply uniforme pressure boundary condition like P*=0.
 // XD attr temps_debut_prise_en_compte_drho_dt double temps_debut_prise_en_compte_drho_dt 1 While time<value, dRho/dt is set to zero (Rho, volumic mass). Useful for some calculation during the first time steps with big variation of temperature and volumic mass.
@@ -118,85 +118,13 @@ void Fluide_Quasi_Compressible::set_param(Param& param)
   Fluide_Dilatable_base::set_param(param);
   param.ajouter("temps_debut_prise_en_compte_drho_dt",&temps_debut_prise_en_compte_drho_dt_);
   param.ajouter("omega_relaxation_drho_dt",&omega_drho_dt_);
-  param.ajouter_non_std("loi_etat",(this),Param::REQUIRED);
-  //Lecture de mu et lambda pas specifiee obligatoire car option sutherland possible
-  param.supprimer("mu");
-  param.ajouter_non_std("mu",(this));
-  param.ajouter_non_std("sutherland",(this));
   param.ajouter_non_std("pression",(this),Param::REQUIRED);
-  param.ajouter_non_std("Traitement_PTh",(this));
   param.ajouter_non_std("Traitement_rho_gravite",(this));
-  param.supprimer("beta_th");
-  param.ajouter_non_std("beta_th",(this));
-  param.supprimer("beta_co");
-  param.ajouter_non_std("beta_co",(this));
 }
 
 int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  Motcle motlu;
-  if (mot=="loi_etat")
-    {
-      is>>loi_etat_;
-      loi_etat_->associer_fluide(*this);
-      return 1;
-    }
-  else if (mot=="mu")
-    {
-      is>>mu;
-      mu->nommer("mu");
-      return 1;
-    }
-  else if (mot=="sutherland")
-    {
-      double mu0,T0,C=-1,Slambda=-1;
-      Nom prob;
-      is>>prob;
-      is>>motlu;
-      if (motlu!="MU0")
-        {
-          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          Process::exit();
-        }
-      is>>mu0;
-      is>>motlu;
-      if (motlu!="T0")
-        {
-          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          Process::exit();
-        }
-      is>>T0;
-      is>>motlu;
-      if (motlu=="SLAMBDA")
-        {
-          is >> Slambda;
-          is >> motlu;
-        }
-      if (motlu!="C")
-        {
-          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          Process::exit();
-        }
-      is>>C;
-
-      mu.typer("Sutherland");
-      Sutherland& mu_suth = ref_cast(Sutherland,mu.valeur());
-      mu_suth.set_val_params(prob,mu0,C,T0);
-      mu_suth.lire_expression();
-
-      //On stocke la valeur de C (ici Slambda) pour construire(cf creer_champs_non_lus())
-      //la loi de Sutherland qui concerne la conductivite
-      if (Slambda!=-1)
-        {
-          lambda.typer("Sutherland");
-          Sutherland& lambda_suth = ref_cast(Sutherland,lambda.valeur());
-          lambda_suth.set_prob(prob);
-          lambda_suth.set_Tref(T0);
-          lambda_suth.set_C(Slambda);
-        }
-      return 1;
-    }
-  else if (mot=="pression")
+  if (mot=="pression")
     {
       is>>Pth_;
       Pth_n = Pth_;
@@ -219,7 +147,7 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
       traitement_PTh=les_options.search(trait);
       if (traitement_PTh == -1)
         {
-          Cerr<< trait << " is not understood as an option of the keyword " << motlu <<finl;
+          Cerr<< trait << " is not understood as an option of the keyword " << mot <<finl;
           Cerr<< "One of the following options was expected : " << les_options << finl;
           Process::exit();
         }
@@ -237,21 +165,13 @@ int Fluide_Quasi_Compressible::lire_motcle_non_standard(const Motcle& mot, Entre
       traitement_rho_gravite_=les_options.search(trait);
       if (traitement_rho_gravite_ == -1)
         {
-          Cerr<< trait << " is not understood as an option of the keyword " << motlu <<finl;
+          Cerr<< trait << " is not understood as an option of the keyword " << mot <<finl;
           Cerr<< "One of the following options was expected : " << les_options << finl;
           Process::exit();
         }
       return 1;
     }
-  else if ((mot=="beta_th") || (mot=="beta_co"))
-    {
-      Cerr<<"The keyword "<<mot<<" has not to be read for a "<<que_suis_je()<<" type medium."<<finl;
-      Cerr<<"Please remove it from your data set."<<finl;
-      Process::exit();
-      return -1;
-    }
-  else
-    return Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
+  else return Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
 }
 
 // Description:

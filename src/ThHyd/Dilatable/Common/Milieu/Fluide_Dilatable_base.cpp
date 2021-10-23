@@ -29,6 +29,7 @@
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Zone_VF.h>
+#include <Param.h>
 
 Implemente_base_sans_constructeur(Fluide_Dilatable_base,"Fluide_Dilatable_base",Fluide_base);
 // XD fluide_dilatable_base fluide_base fluide_dilatable_base -1 Basic class for dilatable fluids.
@@ -94,11 +95,91 @@ void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discreti
 void Fluide_Dilatable_base::set_param(Param& param)
 {
   Fluide_base::set_param(param);
+  param.ajouter_non_std("loi_etat",(this),Param::REQUIRED);
+  param.ajouter_non_std("Traitement_PTh",(this));
+  // Lecture de mu et lambda pas specifiee obligatoire car option sutherland possible
+  // On supprime.. et on ajoute non-standard
+  param.supprimer("mu");
+  param.ajouter_non_std("mu",(this));
+  param.ajouter_non_std("sutherland",(this));
+  param.supprimer("beta_th");
+  param.ajouter_non_std("beta_th",(this));
+  param.supprimer("beta_co");
+  param.ajouter_non_std("beta_co",(this));
 }
 
 int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  return Fluide_base::lire_motcle_non_standard(mot,is);
+  Motcle motlu;
+  if (mot=="loi_etat")
+    {
+      is>>loi_etat_;
+      loi_etat_->associer_fluide(*this);
+      return 1;
+    }
+  else if (mot=="mu")
+    {
+      is>>mu;
+      mu->nommer("mu");
+      return 1;
+    }
+  else if (mot=="sutherland")
+    {
+      double mu0,T0,C=-1,Slambda=-1;
+      Nom prob;
+      is>>prob;
+      is>>motlu;
+      if (motlu!="MU0")
+        {
+          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
+          Process::exit();
+        }
+      is>>mu0;
+      is>>motlu;
+      if (motlu!="T0")
+        {
+          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
+          Process::exit();
+        }
+      is>>T0;
+      is>>motlu;
+      if (motlu=="SLAMBDA")
+        {
+          is >> Slambda;
+          is >> motlu;
+        }
+      if (motlu!="C")
+        {
+          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
+          Process::exit();
+        }
+      is>>C;
+
+      mu.typer("Sutherland");
+      Sutherland& mu_suth = ref_cast(Sutherland,mu.valeur());
+      mu_suth.set_val_params(prob,mu0,C,T0);
+      mu_suth.lire_expression();
+
+      //On stocke la valeur de C (ici Slambda) pour construire(cf creer_champs_non_lus())
+      //la loi de Sutherland qui concerne la conductivite
+      if (Slambda!=-1)
+        {
+          lambda.typer("Sutherland");
+          Sutherland& lambda_suth = ref_cast(Sutherland,lambda.valeur());
+          lambda_suth.set_prob(prob);
+          lambda_suth.set_Tref(T0);
+          lambda_suth.set_C(Slambda);
+        }
+      return 1;
+    }
+  else if ((mot=="beta_th") || (mot=="beta_co"))
+    {
+      Cerr<<"The keyword "<<mot<<" has not to be read for a "<<que_suis_je()<<" type medium."<<finl;
+      Cerr<<"Please remove it from your data set."<<finl;
+      Process::exit();
+      return -1;
+    }
+  else return Fluide_base::lire_motcle_non_standard(mot,is);
 }
 
 // Description:

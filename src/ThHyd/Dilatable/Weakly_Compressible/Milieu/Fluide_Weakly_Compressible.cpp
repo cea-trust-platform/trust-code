@@ -35,6 +35,7 @@
 
 Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable_base);
 // XD fluide_weakly_compressible fluide_dilatable_base fluide_weakly_compressible -1 Weakly-compressible flow with a low mach number assumption; this means that the thermo-dynamic pressure (used in state law) can vary in space.
+// XD attr loi_etat loi_etat_base loi_etat 1 The state law that will be associated to the Weakly-compressible fluid.
 // XD attr sutherland bloc_sutherland sutherland 1 Sutherland law for viscosity and for conductivity.
 // XD attr traitement_pth chaine(into=["constant"]) traitement_pth 1 Particular treatment for the thermodynamic pressure Pth ; there is currently one possibility: NL2 1) the keyword \'constant\' makes it possible to have a constant Pth but not uniform in space ; it\'s the good choice when the flow is open (e.g. with pressure boundary conditions).
 // XD attr beta_th suppress_param beta_th 1 suppress
@@ -67,24 +68,10 @@ void Fluide_Weakly_Compressible::set_param(Param& param)
   param.ajouter("use_hydrostatic_pressure",&use_hydrostatic_pressure_); // XD_ADD_P int Flag (0 or 1) used to activate and use the hydro-static pressure in the assosciated state law. The default value of this Flag is 0.
   param.ajouter("use_grad_pression_eos",&use_grad_pression_eos_); // XD_ADD_P int Flag (0 or 1) used to specify whether or not the gradient of the thermo-dynamic pressure will be taken into account in the source term of the temperature equation (case of a non-uniform pressure). The default value of this Flag is 1 which means that the gradient is used in the source.
   param.ajouter("time_activate_ptot",&time_activate_ptot_); // XD_ADD_P double Time (in seconds) at which the total pressure will be used in the assosciated state law.
-
-  // Param non-standard
-  param.ajouter_non_std("loi_etat",(this),Param::REQUIRED); // XD_ADD_P loi_etat_base The state law that will be associated to the Weakly-compressible fluid.
-  param.ajouter_non_std("Traitement_PTh",(this));
-  // Lecture de mu et lambda pas specifiee obligatoire car option sutherland possible
-  // On supprime.. et on ajoute non-standard
-  param.supprimer("mu");
-  param.ajouter_non_std("mu",(this));
-  param.ajouter_non_std("sutherland",(this));
-  param.supprimer("beta_th");
-  param.ajouter_non_std("beta_th",(this));
-  param.supprimer("beta_co");
-  param.ajouter_non_std("beta_co",(this));
 }
 
 int Fluide_Weakly_Compressible::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  Motcle motlu;
   if (mot=="Traitement_PTh")
     {
       Motcle trait;
@@ -97,82 +84,13 @@ int Fluide_Weakly_Compressible::lire_motcle_non_standard(const Motcle& mot, Entr
       traitement_PTh=les_options.search(trait);
       if (traitement_PTh == -1)
         {
-          Cerr<< trait << " is not understood as an option of the keyword " << motlu <<finl;
+          Cerr<< trait << " is not understood as an option of the keyword " << mot <<finl;
           Cerr<< "One of the following options was expected : " << les_options << finl;
           Process::exit();
         }
       return 1;
     }
-  else if (mot=="loi_etat")
-    {
-      is>>loi_etat_;
-      loi_etat_->associer_fluide(*this);
-      return 1;
-    }
-  else if (mot=="mu")
-    {
-      is>>mu;
-      mu->nommer("mu");
-      return 1;
-    }
-  else if (mot=="sutherland")
-    {
-      double mu0,T0,C=-1,Slambda=-1;
-      Nom prob;
-      is>>prob;
-      is>>motlu;
-      if (motlu!="MU0")
-        {
-          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          Process::exit();
-        }
-      is>>mu0;
-      is>>motlu;
-      if (motlu!="T0")
-        {
-          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          Process::exit();
-        }
-      is>>T0;
-      is>>motlu;
-      if (motlu=="SLAMBDA")
-        {
-          is >> Slambda;
-          is >> motlu;
-        }
-      if (motlu!="C")
-        {
-          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          Process::exit();
-        }
-      is>>C;
-
-      mu.typer("Sutherland");
-      Sutherland& mu_suth = ref_cast(Sutherland,mu.valeur());
-      mu_suth.set_val_params(prob,mu0,C,T0);
-      mu_suth.lire_expression();
-
-      //On stocke la valeur de C (ici Slambda) pour construire(cf creer_champs_non_lus())
-      //la loi de Sutherland qui concerne la conductivite
-      if (Slambda!=-1)
-        {
-          lambda.typer("Sutherland");
-          Sutherland& lambda_suth = ref_cast(Sutherland,lambda.valeur());
-          lambda_suth.set_prob(prob);
-          lambda_suth.set_Tref(T0);
-          lambda_suth.set_C(Slambda);
-        }
-      return 1;
-    }
-  else if ((mot=="beta_th") || (mot=="beta_co"))
-    {
-      Cerr<<"The keyword "<<mot<<" has not to be read for a "<<que_suis_je()<<" type medium."<<finl;
-      Cerr<<"Please remove it from your data set."<<finl;
-      Process::exit();
-      return -1;
-    }
-  else
-    return Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
+  else return Fluide_Dilatable_base::lire_motcle_non_standard(mot,is);
 }
 
 // Description:
