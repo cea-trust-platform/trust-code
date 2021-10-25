@@ -72,6 +72,7 @@ public :
   //void creer_face_sommets_virt();
   void calculer_porosites();
   void calculer_diametres_hydrauliques();
+  void calculer_sections_passage();
   void calculer_coefficient_echange_thermique();
   void calculer_coefficient_frottement();
   void marquer_faces_double_contrib(const Conds_lim&);
@@ -96,6 +97,7 @@ public :
   inline double porosite_face(int ) const;
   inline double porosite_elem(int ) const;
   inline double diametre_hydraulique_face(int ) const;
+  inline double section_passage_face(int ) const;
   inline double coefficient_frottement(int ) const;
   inline double coefficient_echange_thermique(int ) const;
 
@@ -127,6 +129,7 @@ public :
   inline const DoubleVect& porosite_elem() const;
   inline DoubleVect& diametre_hydraulique_face();
   inline const DoubleVect& diametre_hydraulique_face() const;
+  inline const DoubleVect section_passage_face() const;
   inline DoubleTab& diametre_hydraulique_elem();
   inline const DoubleTab& diametre_hydraulique_elem() const;
   inline DoubleVect& coefficient_frottement();
@@ -342,6 +345,22 @@ inline const DoubleVect& Zone_VF::diametre_hydraulique_face() const
 inline double Zone_VF::diametre_hydraulique_face(int i) const
 {
   return diametre_hydraulique_face_[i];
+}
+
+// Description:
+inline const DoubleVect Zone_VF::section_passage_face() const
+{
+  // remplissage des sections de passage
+  DoubleVect section_passage_face_(face_surfaces_);
+  for (int i=0; i<face_surfaces_.size_array(); i++)
+    section_passage_face_[i] = section_passage_face(i);
+  return section_passage_face_;
+}
+
+// Description:
+inline double Zone_VF::section_passage_face(int i) const
+{
+  return face_surfaces_[i] * porosite_face_[i];
 }
 
 // Description:
