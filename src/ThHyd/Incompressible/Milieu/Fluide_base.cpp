@@ -35,6 +35,9 @@
 
 Implemente_instanciable_sans_constructeur(Fluide_base,"Fluide_base",Milieu_base);
 // XD fluide_base milieu_base fluide_base -1 Basic class for fluids.
+// XD attr indice field_base indice 1 Refractivity of fluid.
+// XD attr kappa field_base kappa 1 Absorptivity of fluid (m-1).
+
 
 Fluide_base::Fluide_base() { }
 

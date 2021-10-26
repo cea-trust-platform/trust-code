@@ -41,7 +41,6 @@ Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quas
 // XD attr beta_co suppress_param beta_co 1 suppress
 // XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
 // XD attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
-// XD ref gravite field_base
 
 // XD bloc_sutherland objet_lecture nul 0 Sutherland law for viscosity mu(T)=mu0*((T0+C)/(T+C))*(T/T0)**1.5 and (optional) for conductivity lambda(T)=mu0*Cp/Prandtl*((T0+Slambda)/(T+Slambda))*(T/T0)**1.5
 // XD attr m chaine(into=["mu0"]) m 0 not_set

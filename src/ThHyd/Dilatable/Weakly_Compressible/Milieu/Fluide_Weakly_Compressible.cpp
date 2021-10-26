@@ -41,7 +41,6 @@ Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Wea
 // XD attr beta_co suppress_param beta_co 1 suppress
 // XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
 // XD attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
-// XD ref gravite field_base
 
 Fluide_Weakly_Compressible::Fluide_Weakly_Compressible() : use_total_pressure_(0), use_hydrostatic_pressure_(0),
   use_grad_pression_eos_(1), sim_resumed_(0), time_activate_ptot_(-1.) {}

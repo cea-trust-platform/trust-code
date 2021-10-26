@@ -36,6 +36,7 @@
 
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 // XD milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
+// XD ref gravite field_base
 
 Milieu_base::Milieu_base()
 {
