@@ -45,7 +45,7 @@ fi
 ###############################
 # Creation du rapport NUIT.html
 ###############################
-REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
+REP_NUIT=/home/trust_trio/triou/tmptrust/tmptrust/Historique/NUIT
 [ ! -d $REP_NUIT ] && mkdir -p $REP_NUIT
 NUIT=$REP_NUIT/NUIT.html
 NUIT_DIPHA=$REP_NUIT/NUIT_dipha.html
@@ -286,7 +286,7 @@ do
 	   TRUST_CC=`echo $TRUST_ARCH_CC | $TRUST_Awk -F'_' '{print $NF}'` && CC_PERF=`cat $PERF | $TRUST_Awk '/CC / {print $2" "$3}'` && [ "$CC_PERF" != "" ] && TRUST_CC=$CC_PERF
 	   #taille=`cat $PERF | $TRUST_Awk '/sizeMo/ {print $2"Mo"}'`
 	   executable=`$TRUST_Awk -F":" '/Binary:/    {print $2}' $PERF` && executable=`basename $executable` && executable=${executable#TRUST_}
-       [ "`grep 'ctest valgrind tests' $PERF`" != "" ] && executable="mpi_opt_valg"
+	   [ "`grep 'ctest valgrind tests' $PERF`" != "" ] && executable="mpi_opt_valg"
 	   cpu3d=$cpu3d && [ "`grep CPU_3D=KO $CR`" != "" ] && cpu3d="<TD $ROUGE>KO</TD>"
 	   cpu=`cat $CR | grep "Mo|" | $TRUST_Awk -F"|" '/cpu_3D / && !/PAR_/ && !/NP/{print $4}'`
 	   cpu3d=$cpu3d && [ "`grep CPU_3D=OK $CR`" != "" ] && cpu3d="<TD $VERT>$cpu</TD>"
@@ -339,7 +339,7 @@ do
 	PLOT2D=$COOL 	 && [ "`grep IHM:OK $CR`" != "" ] 	  && PLOT2D="<TD $VERT>OK</TD>"
 	[ "`grep IHM: $CR`" = "" ] && PLOT2D="<TD $BLANC>NOT</TD>"
 	ICOCO=$COOL 	 && [ "`grep ICoCo:OK $CR`" != "" ] 	  && ICOCO="<TD $VERT>OK</TD>"
-	GMSH=$COOL 	 && [ "`grep Gmsh:OK $CR`" != "" ] 	  && GMSH="<TD $VERT>OK</TD>"
+	GMSH=$COOL 	 && [ "`grep Gmsh:OK $CR`" != "" ] 	  && GMSH="<TD $VERT>OK</TD>" && RUN=`$TRUST_Awk -F= '/Gmsh=/ {print $2}' $CR` && GMSH="<TD $VERT>$RUN</TD>"
 	VISIT=$COOL 	 && [ "`grep VisIt:OK $CR`" != "" ] 	  && RUN=`$TRUST_Awk -F= '/VisIt=/ {print $2}' $CR` && VISIT="<TD `[ ${RUN#PAR} != $RUN ] && echo $VERT`>$RUN</TD>"
 	ATELIER=$STRICT  && [ "`grep ATELIER=OK $CR`" != "" ] 	  && ATELIER="<TD $VERT>OK</TD>" && [ "$machine_cible" = 1 ] && let portabilite_atelier=$portabilite_atelier+1
 	ASSERT=$STRICT   && [ "`grep ASSERT=OK $CR`" != "" ] 	  && ASSERT="<TD $VERT>OK</TD>"	 && [ "$machine_cible" = 1 ] && let portabilite_assert=$portabilite_assert+1

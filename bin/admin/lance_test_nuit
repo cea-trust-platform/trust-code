@@ -583,8 +583,8 @@ echo " "
 
 export DATE=`date '+%d%m%y'`
 export NUIT=1
-REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
-REP_HIST=/data/tmptrust/tmptrust/Historique/HIST
+REP_NUIT=/home/trust_trio/triou/tmptrust/tmptrust/Historique/NUIT
+REP_HIST=/home/trust_trio/triou/tmptrust/tmptrust/Historique/HIST
 MESSAGES_NUIT=$REP_NUIT/MESSAGES_NUIT
 MESSAGES_LIVRAISON=~/MESSAGES_LIVRAISON
 
@@ -3029,7 +3029,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=80.09 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=81.03 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0

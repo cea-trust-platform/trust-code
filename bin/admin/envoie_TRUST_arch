@@ -45,9 +45,11 @@ liste_machines=$TRUST_ROOT/bin/admin/liste.machines
 # Liste des machines #
 ######################
 liste=`liste_machines`
+liste_titania=`liste_machines titania`
 if [ $all = 1 ]
 then
    liste_adr=$liste
+   liste_adr_titania=$liste_titania
 else
    for machine in $machines
    do
@@ -56,6 +58,7 @@ else
       do 
          [ $adr = $machine ] && liste_adr=$liste_adr" "$adr && reconnue=1 && break
       done
+      [ "`echo $liste_titania | grep $machine 2>/dev/null`" != "" ] && liste_adr_titania=$liste_adr_titania" "$machine
       [ $reconnue = 0 ] && echo "$machine not found in $TRUST_ROOT/bin/admin/liste.machines..." && exit
    done
 fi
@@ -109,6 +112,17 @@ Build=$TRUST_ROOT/build
 [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
 echo "------------------------------------"
 liste_machines_KO=""
+# On boucle sur les machines titania
+for adr in $liste_adr_titania
+do
+  ssh_log=$Build/ssh_$machine.log
+  log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
+  if [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n pwd 1>>$ssh_log 2>&1;echo $?`" != 0 ] || [ "$NUIT" = "1" ]
+  then
+     sshpass -p $(gpg2 -q -d ~/mon_service.gpg) ssh_ -o ConnectTimeout=30 $log@$adr 1>>$ssh_log 2>&1
+  fi
+done
+
 for adr in $liste_adr
 do
    #machine=`echo $adr | awk -F"." '{print $1}'`

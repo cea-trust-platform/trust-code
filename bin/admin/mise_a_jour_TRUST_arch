@@ -158,7 +158,7 @@ then
    done
    # kill baltiks
    utilisateur=`whoami`
-   fathers=`ps -elf | grep $utilisateur | grep -v baltik_check_portability | grep baltik_check | grep -v grep | grep -v kill | awk '{print $4}'`
+   fathers=`ps -elf | grep $utilisateur | grep -v baltik_check_portability | grep -v Cathare3D | grep baltik_check | grep -v grep | grep -v kill | awk '{print $4}'`
    for father in $fathers
    do
          pids=`$TRUST_ROOT/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $father`
@@ -362,7 +362,7 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang40" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-4.0/bin/clang++ -cc=/usr/lib/llvm-4.0/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -force_even_unsupported"
 # Compilation en INT64
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_64_bit" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -with-64-bit-indices"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-build_64_bit" | grep ^$HOST"\."`" != "" ] || [ "`echo $HOST | grep build64 2>/dev/null`" != "" ]	&& option_configure=$option_configure" -with-64-bit-indices"
 
 ########################
 # Lancement du configure
@@ -443,6 +443,22 @@ do
    else
       echo "The build directory is NOT deleted."
    fi
+   if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-move-install" | grep ^$HOST_BUILD"\."`" != "" ] 
+   then
+      cd $TRUST_ROOT
+      cd ..
+      [ -d TRUST_moved ] && rm -rf TRUST_moved
+      mv TRUST TRUST_moved
+      cd TRUST_moved
+      source env_TRUST.sh
+      rm -rf ../TRUST  # il reste exec/python/var/cache/fontconfig/*.cache*
+      ROOT=$version/TRUST_moved
+      PERF=$ROOT/PERF_$code$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD
+      echo "***********************************************************"
+      echo ROOT=$ROOT
+      echo PERF=$PERF
+      
+   fi
    echo "==========================="
    # on met les bons droits d'execution
    $TRUST_ROOT/bin/admin/change_droits_install.sh .
@@ -512,14 +528,32 @@ do
          then
             if [ "`ls $TRUST_ROOT/exec/VisIt/current/*/bin/engine_par 2>/dev/null`" != "" ]
             then
-               echo "VisIt=PAR-$visit_version"
+               msg_visit="PAR-$visit_version"
             else
-               echo "VisIt=SEQ-$visit_version"
+               msg_visit="SEQ-$visit_version"
 	    fi
+	    source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1; rm -f $TRUST_ROOT/build/Outils/VisIt/test/ok ; cd Outils/VisIt ; make $TRUST_ROOT/build/Outils/VisIt/test/ok 
+	    [ $? != 0 ] && msg_visit="KO_"$msg_visit
+	    cd -
+	    echo "VisIt=$msg_visit"
          else
             echo "VisIt=KO-$visit_version"
 	    $TRUST_ROOT/exec/VisIt/bin/visit -help
 	 fi
+      fi
+      ########################
+      # Gmsh fonctionne-t-il ?
+      ########################
+      if [ -f $TRUST_ROOT/exec/gmsh/bin/gmsh ]
+      then
+         source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1; cd Outils/Gmsh ; make demo
+	 if [ $? != 0 ] 
+	 then
+	    echo "Gmsh=KO"
+	 else
+	    echo "Gmsh=OK"
+	 fi
+	 cd -
       fi
       ######################
       # MPI est il compile ?
@@ -674,7 +708,6 @@ do
       then
 	 cd $TRUST_ROOT
 	 source env_TRUST.sh 1>/dev/null 2>&1
-         
 	 ###################
 	 # Test du MPI livre
 	 ###################
@@ -1129,7 +1162,15 @@ done
 ########################################################
 # Recherche des fichiers qui n'ont pas les bons droits #
 ########################################################
-cd $TRUST_ROOT
+if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-move-install" | grep ^$HOST_BUILD"\."`" != "" ] 
+then
+   cd $TRUST_ROOT/..
+   rm -rf TRUST  # necessaire car il reste exec/python/var/cache/fontconfig/*.cache*
+   mv TRUST_moved TRUST
+   cd TRUST
+   source env_TRUST.sh
+fi
+
 # On met les bons droits
 change_droits
 # Ajout des droits d'execution car mal faits

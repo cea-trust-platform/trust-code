@@ -9,7 +9,7 @@ patch=`ls_ftp $PUBLIC/patch/Patch_$stable.tar.gz`
 patch="" # Temporary
 patch_branch=patch_`echo $stable | awk '{gsub("\\\.","",$0);print $0}'`
 beta=`awk '/Release notes/ && /beta/ {print $4;exit}' $TRUST_ROOT/RELEASE_NOTES`
-REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
+REP_NUIT=/home/trust_trio/triou/tmptrust/tmptrust/Historique/NUIT
 ######################################
 # Debut creation de la page index.html
 ######################################

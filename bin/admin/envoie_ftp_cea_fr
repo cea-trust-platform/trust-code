@@ -127,7 +127,7 @@ cp_ftp /tmp/index.html $SECRET/exec/.
 #################################
 # Copie sur une machine de Saclay
 #################################
-depot=/data/tmptrust/tmptrust/archives
+depot=/home/trust_trio/triou/tmptrust/tmptrust/archives
 for machine in `liste_machines "\-rsync"`
 do
    cible=$machine:$depot/.
@@ -160,7 +160,7 @@ fi
 ##################################################
 # Copie des fichiers issus de recupere_TRUST_arch 
 ##################################################
-REP_NUIT=/data/tmptrust/tmptrust/Historique/NUIT
+REP_NUIT=/home/trust_trio/triou/tmptrust/tmptrust/Historique/NUIT
 if [ -d $REP_NUIT ]
 then
    echo "Send night reports at `date` ..."
