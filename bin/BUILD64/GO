@@ -7,7 +7,7 @@ touch .build64
 
 # Apply patch
 cp -r bin/BUILD64/patch/*  .
-cp bin/BUILD64/Modifie bin/BUILD64/replace_int_entier.py bin/BUILD64/replace_int_entier_mc.py bin/BUILD64/GO .
+cp bin/BUILD64/Modifie bin/BUILD64/replace_int_entier.py bin/BUILD64/GO .
 
 # Apply Modifie script and exclude many file extensions that should not be edited if possible
 # arch.h is already compatible with BUILD64, it provides from patch, so we do not edit it

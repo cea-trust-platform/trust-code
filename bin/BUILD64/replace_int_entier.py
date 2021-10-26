@@ -7,6 +7,18 @@ int
 ([^a-zA-Z0-9_])   #  ( ... ) --> \2
 """,re.VERBOSE)
 
+p_mc = re.compile(r"""
+([^a-zA-Z_])      #  ( ... ) --> \1  see groups in re
+DataArrayInt
+([^a-zA-Z0-9_])   #  ( ... ) --> \2
+""",re.VERBOSE)
+
+p_vc = re.compile(r"""
+([^a-zA-Z_])      #  ( ... ) --> \1  see groups in re
+int_v
+([^a-zA-Z0-9_])   #  ( ... ) --> \2
+""",re.VERBOSE)
+
 def replace(text):
     # print text
     # adding ' ' before and after if text begins or ends with 'int'
@@ -20,6 +32,21 @@ def replace(text):
         if newS == text:
             break
         text = newS
+
+    # replacing medcoupling arrays of int with arrays of long 
+    while True:
+        newS = p_mc.sub(r'\1DataArrayInt64\2', text)
+        if newS == text:
+            break
+        text = newS
+
+    # replacing vc vectors of int with vectors of long
+    while True:
+        newS = p_vc.sub(r'\1long_v\2', text)
+        if newS == text:
+            break
+        text = newS
+
     # removing the added ' '
     new = newS[1:-1]
     print(new, end='')

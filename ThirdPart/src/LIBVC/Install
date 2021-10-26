@@ -24,7 +24,4 @@ $TRUST_MAKE || exit -1
 
 # Installation
 make install || exit -1
-cd ..
-# On efface les sources
-rm -rf $build_dir
 exit 0
