@@ -123,7 +123,6 @@ protected :
   double seuil_relatif_;
   double divtol_;
   bool nouveau_stencil_;
-  IntVect previous_tab2_;
 
   // Objets Petsc
   Mat MatricePetsc_;
@@ -254,7 +253,7 @@ inline void Solv_Petsc::initialize()
   ignore_new_nonzero_ = false;
   rebuild_matrix_ = false;
   allow_realloc_ = true;
-  clean_matrix_ = false;
+  clean_matrix_ = true;
   if (instance==-1)
     {
       // First initialization:

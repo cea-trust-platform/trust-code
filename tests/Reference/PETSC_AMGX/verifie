@@ -9,6 +9,7 @@ if [ -f PETSC_AMGX.TU ] && [ ! -f PAR_PETSC_AMGX.TU ] && [ "$TRUST_WITHOUT_HOST"
 then
    echo "Quick valgrind check on a smaller test case ..."
    sed "1,$ s?11 11?3 3?g" $jdd.data > valgrind.data || exit -1
-   trust -valgrind valgrind 1>valgrind.out_err 2>&1 || exit -1
+   trust -valgrind valgrind 1>valgrind.out_err 2>&1
+   [ $? != 0 ] && echo "Valgrind errors ! Check `pwd`/valgrind.out_err" && exit -1
 fi
 exit 0

@@ -1621,9 +1621,8 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                                            : matrice_morse_intermediaire;
 
       // Verification stencil de la matrice
-      start = std::clock();
-      nouveau_stencil_ = check_stencil(matrice_morse);
-      if (verbose) Cout << "[Petsc] Time to check stencil: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+      nouveau_stencil_ = (MatricePetsc_ == NULL ? true : check_stencil(matrice_morse));
+
       start = std::clock();
       if (SecondMembrePetsc_ == NULL)
         {
@@ -1641,6 +1640,12 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       else
         {
           Update_matrix(MatricePetsc_, matrice_morse);
+        }
+      if (limpr() == 1)
+        {
+          Cout << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
+               << (petsc_cpus_selection_ ? (int) (nb_rows_tot_ / petsc_nb_cpus_) : nb_rows_)
+               << " unknowns per PETSc process ) " << (nouveau_stencil_ ? "New stencil." : "Same stencil.") << finl;
         }
     }
   std::clock_t start = std::clock();
@@ -1724,7 +1729,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   ArrOfDouble residu(size_residu);
   start = std::clock();
   int nbiter = solve(residu);
-  if (verbose) Cout << finl << "[Petsc] Time to solve system: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  if (verbose) Cout << "[Petsc] Time to solve system: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
   if (limpr()>-1)
     {
       double residu_relatif=(residu(0)>0?residu(nbiter)/residu(0):residu(nbiter));
@@ -1764,7 +1769,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       test*=-1;
       la_matrice.ajouter_multvect(solution,test);
       double vrai_residu = mp_norme_vect(test);
-      Cerr << "||Ax-b||=" << vrai_residu << finl;
+      if (verbose) Cout << "||Ax-b||=" << vrai_residu << finl;
       // Verification de la solution sur la matrice initiale
       if (nbiter>0 && Process::je_suis_maitre())
         {
@@ -2431,6 +2436,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   int derniere_colonne_globale = nb_rows_ + decalage_local_global_;
   const ArrOfInt& tab1 = mat_morse.get_tab1();
   const ArrOfInt& tab2 = mat_morse.get_tab2();
+  const ArrOfDouble& coeff = mat_morse.get_coeff();
   int cpt = 0;
   for (int i = 0; i < tab1.size_array() - 1; i++)
     {
@@ -2522,10 +2528,26 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
 
   // ToDo: nettoyer la matrice TRUST en amont... Car le nnz des matrices peut varier (ex: implicite, Hyd_Cx_impl ou PolyMAC)
   // et si on supprime les zeros de la matrice, lors d'un update on peut avoir une allocation -> erreur
-  if (mataij_ && clean_matrix_)
+  if (mataij_)
     {
-      //if (amgx_) Cout << "Cleaning zero coefficients into PETSc matrix..." << finl;
-      MatSetOption(MatricePetsc, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); // Ne stocke pas les zeros
+      if (clean_matrix_) MatSetOption(MatricePetsc, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); // Ne stocke pas les zeros
+      if (verbose)
+        {
+          ArrOfDouble nonzeros(2); // Pas ArrOfInt car nonzeros peut depasser 2^32 facilement
+          nonzeros(0) = 0;
+          nonzeros(1) = mat_morse.nb_coeff();
+          for (int i=0; i<nonzeros(1); i++)
+            if (mat_morse.get_coeff()(i)!=0)
+              nonzeros(0)+=1;
+          mp_sum_for_each_item(nonzeros);
+          if (nonzeros[1] > 0)
+            {
+              double ratio = 1 - (double) nonzeros(0) / (double) nonzeros(1);
+              if (ratio > 0.2) Cout << "Warning! Trust matrix contains a lot of useless stored zeros: " << (int) (ratio * 100) << "% (" << nonzeros[0] << "/" << nonzeros[1] << ")" << finl;
+            }
+          int zero_discarded = nonzeros[1] - nonzeros[0];
+          if (zero_discarded) Cout << "[Petsc] Discarding " << zero_discarded << " zeros from TRUST matrix into the PETSc matrix ..." << finl;
+        }
     }
   // Genere une erreur (ou pas) si une case de la matrice est remplie sans allocation auparavant:
   MatSetOption(MatricePetsc, MAT_NEW_NONZERO_ALLOCATION_ERR, allow_realloc_ ? PETSC_FALSE : PETSC_TRUE);
@@ -2635,58 +2657,85 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
   if (verbose) Cout << "[Petsc] Time to update matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 }
 
-bool Solv_Petsc::check_stencil(const Matrice_Morse& matrice_morse)
+bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
 {
-  // Verification de nnz
-  ArrOfDouble nnz(2); // Pas ArrOfInt car nnz peut depasser 2^32 facilement
-  nnz(0)=0;
-  nnz(1)=matrice_morse.nb_coeff();
-  for (int i=0; i<nnz(1); i++)
-    if (matrice_morse.get_coeff()(i)!=0)
-      nnz(0)+=1;
-  mp_sum_for_each_item(nnz);
-  if (nnz[1]-nnz[0]>0)
-    {
-      rebuild_matrix_ = true;
-      clean_matrix_   = true;
-    }
-
   // Est ce un nouveau stencil ?
+  std::clock_t start = std::clock();
   int new_stencil=0;
-  if (rebuild_matrix_ || read_matrix_ || previous_tab2_.size() != matrice_morse.get_tab2().size())
+  if (rebuild_matrix_ || read_matrix_ || !mataij_)
     new_stencil = 1;
   else
     {
-      // Verification limitee aux colonnes...
-      for (int i = 0; i < previous_tab2_.size(); i++)
-        if (previous_tab2_(i) != matrice_morse.get_tab2()(i))
-          {
-            new_stencil = 1;
-            break;
-          }
-    }
-  new_stencil = mp_max(new_stencil);
-  if (new_stencil)
-    previous_tab2_ = matrice_morse.get_tab2();
-  if (limpr() == 1)
-    {
-      Cout << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
-           << (petsc_cpus_selection_ ? (int) (nb_rows_tot_ / petsc_nb_cpus_) : nb_rows_)
-           << " unknowns per PETSc process ) " << (new_stencil ? "New stencil." : "Same stencil.");
-      if (verbose)
+      PetscBool done;
+      MatType type;
+      Mat localA;
+      PetscInt nRowsLocal, nRowsGlobal, nNz;
+      const PetscInt *colIndices = nullptr, *rowOffsets = nullptr;
+      if (Process::nproc()==1) // sequential AIJ
         {
-          if (nnz[1] > 0)
-            {
-              Cout << " (nonzeros: " << nnz[0] << "/" << nnz[1] << ")" << finl;
-              double ratio = 1 - (double) nnz(0) / (double) nnz(1);
-              if (ratio > 0.2)
-                Cout << "Warning! Trust matrix contains a lot of useless stored zeros: " << (int) (ratio * 100) << "%" << finl;
-            }
-          if (clean_matrix_ && nnz[1]-nnz[0]>0) Cout << "[Petsc] Discarding " << nnz[1]-nnz[0] << " zeros from TRUST matrix into the PETSc matrix ..." << finl;
+          // Make localA point to the same memory space as A does
+          localA = MatricePetsc_;
         }
       else
-        Cout << finl;
+        {
+          // Get local matrix from redistributed matrix
+          MatMPIAIJGetLocalMat(MatricePetsc_, MAT_INITIAL_MATRIX, &localA);
+        }
+      MatGetRowIJ(localA, 0, PETSC_FALSE, PETSC_FALSE, &nRowsLocal, &rowOffsets, &colIndices, &done);
+
+      const ArrOfInt& tab1 = mat_morse.get_tab1();
+      const ArrOfInt& tab2 = mat_morse.get_tab2();
+      const ArrOfDouble& coeff = mat_morse.get_coeff();
+      const ArrOfInt& renum_array = renum_;
+      int RowLocal = 0;
+      Journal() << "Provisoire: nb_rows_=" << nb_rows_ << " nb_rows_tot_=" << nb_rows_tot_ << finl;
+      for (int i = 0; i < tab1.size_array() - 1; i++)
+        {
+          if (items_to_keep_[i])
+            {
+              int nnz_row = 0;
+              for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
+                if (coeff(k) != 0) nnz_row++;
+              if (nnz_row != rowOffsets[RowLocal + 1] - rowOffsets[RowLocal])
+                {
+                  Journal() << "Provisoire: Number of non-zero will change from " << rowOffsets[RowLocal + 1] - rowOffsets[RowLocal] << " to " << nnz_row << " on row " << RowLocal << finl;
+                  new_stencil = 1;
+                  break;
+                }
+              else
+                {
+                  for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
+                    {
+                      if (coeff(k) != 0)
+                        {
+                          bool found = false;
+                          int col = renum_array[tab2(k) - 1];
+                          // Boucle pour voir si le coeff est sur le GPU:
+                          int RowGlobal = decalage_local_global_+RowLocal;
+                          for (int kk = rowOffsets[RowLocal]; kk < rowOffsets[RowLocal + 1]; kk++)
+                            {
+                              if (colIndices[kk] == col)
+                                {
+                                  // values[kk] = coeff(k); // On met a jour le coefficient
+                                  found = true;
+                                  break;
+                                }
+                            }
+                          if (!found)
+                            {
+                              Journal() << "Provisoire: mat_morse(" << RowGlobal << "," << col << ")!=0 new " << finl;
+                              new_stencil = 1;
+                              break;
+                            }
+                        }
+                    }
+                }
+              RowLocal++;
+            }
+        }
+      new_stencil = mp_max(new_stencil);
     }
-  return new_stencil != 0;
+  if (verbose) Cout << "[Petsc] Time to check stencil: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  return new_stencil;
 }
 #endif

@@ -46,6 +46,7 @@ Read sch
 {
 	tinit 0.
 	tmax 1.
+	dt_impr 0.00001
 	dt_min 0.00001
 	dt_max 100
 	dt_sauv 100

@@ -60,63 +60,97 @@ void Solv_AMGX::initialize()
 }
 
 // Creation des objets
-void Solv_AMGX::Create_objects(const Matrice_Morse& mat)
+void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse)
 {
   initialize();
   if (read_matrix_)
     {
-      Cerr << "Read matrix not supported on GPU yet." << finl;
+      Cerr << "Read_matrix not supported on GPU yet." << finl;
       Process::exit();
     }
-  // Creation de la matrice Petsc si necessaire
   std::clock_t start = std::clock();
-  // ToDo coder sans passer par une Matrice Petsc
-  if (MatricePetsc_!=NULL) MatDestroy(&MatricePetsc_);
-  Create_MatricePetsc(MatricePetsc_, mataij_, mat);
+  // Creation de la matrice Petsc (CSR pointeurs dessus)
+  if (MatricePetsc_ != NULL) MatDestroy(&MatricePetsc_);
+  Create_MatricePetsc(MatricePetsc_, mataij_, mat_morse);
   petscToCSR(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_);
-  Cout << "[AmgX] Time to build matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
-  /*
-   // ToDo essayer de s'affranchir avec la nouvelle API de la matrice/vec PETSc, encore un pb en parallele en VEF (items communs?)
-      nRowsGlobal = nb_rows_tot_;
-      nRowsLocal = nb_rows_;
-      // Numerotation archaique (Fortran) de Matrice_morse qui fait suer:
-      ArrOfInt rowOffsets(mat.get_tab1());
-      rowOffsets-=1;
-      ArrOfInt colIndices(mat.get_tab2());
-      colIndices-=1;
-      nNz = rowOffsets[nRowsLocal];
-      VecGetArray(SolutionPetsc_, &lhs);
-      VecGetArray(SecondMembrePetsc_, &rhs);
-  SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets.addr(), colIndices.addr(), mat.get_coeff().addr(), nullptr);
-  */
+  Cout << "[AmgX] Time to build PETSc matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  start = std::clock();
   SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets, colIndices, values, nullptr);
   Cout << "[AmgX] Time to set matrix (copy+setup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 }
 
-void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat)
+// Fonction de conversion Petsc ->CSR
+PetscErrorCode Solv_AMGX::petscToCSR(Mat& A, Vec& lhs_petsc, Vec& rhs_petsc)
 {
-  Solv_Petsc::Update_matrix(MatricePetsc, mat);
+  PetscFunctionBeginUser;
+  PetscBool done;
+  MatType type;
+  Mat localA;
+
+  // Get the Mat type
+  PetscErrorCode ierr = MatGetType(A, &type);
+  CHKERRQ(ierr);
+
+  // Check whether the Mat type is supported
+  if (std::strcmp(type, MATSEQAIJ) == 0) // sequential AIJ
+    {
+      // Make localA point to the same memory space as A does
+      localA = A;
+    }
+  else if (std::strcmp(type, MATMPIAIJ) == 0)
+    {
+      // Get local matrix from redistributed matrix
+      ierr = MatMPIAIJGetLocalMat(A, MAT_INITIAL_MATRIX, &localA);
+      CHKERRQ(ierr);
+    }
+  else
+    {
+      SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG,"Mat type %s is not supported!\n", type);
+    }
+
+  // Get row and column indices in compressed row format
+  ierr = MatGetRowIJ(localA, 0, PETSC_FALSE, PETSC_FALSE, &nRowsLocal, &rowOffsets, &colIndices, &done);
+  if (done==PETSC_FALSE) Process::abort();
+  CHKERRQ(ierr);
+
+  ierr = MatSeqAIJGetArray(localA, &values);
+  CHKERRQ(ierr);
+
+  // Get pointers to the raw data of local vectors
+  ierr = VecGetArray(lhs_petsc, &lhs);
+  CHKERRQ(ierr);
+  ierr = VecGetArray(rhs_petsc, &rhs);
+  CHKERRQ(ierr);
+
+  // Calculate the number of rows in nRowsGlobal
+  ierr = MPI_Allreduce(&nRowsLocal, &nRowsGlobal, 1, MPI_INT, MPI_SUM, PETSC_COMM_WORLD);
+  CHKERRQ(ierr);
+
+  // Store the number of non-zeros
+  nNz = rowOffsets[nRowsLocal];
+  PetscFunctionReturn(0);
+}
+
+void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
+{
+  // La matrice CSR de PETSc a ete mise a jour dans check_stencil
   std::clock_t start = std::clock();
-  petscToCSR(MatricePetsc, SolutionPetsc_, SecondMembrePetsc_); // Semble utile en //. Pourquoi ?
-  Cout << "[AmgX] Time to petscToCSR: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
-  start = std::clock();
-  SolveurAmgX_.updateA(nRowsLocal, nNz, values);
-  //SolveurAmgX_.updateA(nRowsLocal, nNz, mat.get_coeff().addr());
+  SolveurAmgX_.updateA(nRowsLocal, nNz, values);  // ToDo erreur valgrind au premier appel de updateA...
   Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 }
 
 // Check and return true if new stencil
 bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 {
+  std::clock_t start = std::clock();
   // Parcours de la matrice_morse (qui peut contenir des 0 et qui n'est pas triee par colonnes croissantes)
   // si matrice sur le GPU deja construite (qui est sans 0 et qui est triee par colonnes croissantes):
-  if (nRowsGlobal==0)
-    return true;
   const ArrOfInt& tab1 = mat_morse.get_tab1();
   const ArrOfInt& tab2 = mat_morse.get_tab2();
   const ArrOfDouble& coeff = mat_morse.get_coeff();
   const ArrOfInt& renum_array = renum_;
-  int new_stencil = 0, RowLocal = 0, nnz_local = 0;
+  int new_stencil = 0, RowLocal = 0;
+  Journal() << "Provisoire: nb_rows_=" << nb_rows_ << " nb_rows_tot_=" << nb_rows_tot_ << finl;
   for (int i = 0; i < tab1.size_array() - 1; i++)
     {
       if (items_to_keep_[i])
@@ -124,9 +158,9 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
           int nnz_row = 0;
           for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
             if (coeff(k) != 0) nnz_row++;
-          if (nnz_row != rowOffsets[i + 1] - rowOffsets[i])
+          if (nnz_row != rowOffsets[RowLocal + 1] - rowOffsets[RowLocal])
             {
-              Journal() << "Provisoire: Number of non-zero on GPU will change from " << rowOffsets[i + 1] - rowOffsets[i] << " to " << nnz_row << " on row " << RowLocal << finl;
+              Journal() << "Provisoire: Number of non-zero on GPU will change from " << rowOffsets[RowLocal + 1] - rowOffsets[RowLocal] << " to " << nnz_row << " on row " << RowLocal << finl;
               new_stencil = 1;
               break;
             }
@@ -138,21 +172,23 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
                     {
                       bool found = false;
                       int col = renum_array[tab2(k) - 1];
-                      //Journal() << "Provisoire: mat_morse(" << RowLocal << "," << col << ")!=0";
                       // Boucle pour voir si le coeff est sur le GPU:
-                      for (int kk = rowOffsets[i]; kk < rowOffsets[i + 1]; kk++)
-                        if (colIndices[kk] == col)
-                          {
-                            found = true;
-                            break;
-                          }
+                      int RowGlobal = decalage_local_global_+RowLocal;
+                      for (int kk = rowOffsets[RowLocal]; kk < rowOffsets[RowLocal + 1]; kk++)
+                        {
+                          if (colIndices[kk] == col)
+                            {
+                              values[kk] = coeff(k); // On met a jour le coefficient
+                              found = true;
+                              break;
+                            }
+                        }
                       if (!found)
                         {
-                          Journal() << "Provisoire: mat_morse(" << RowLocal << "," << col << ")!=0 new on GPU " << finl;
+                          Journal() << "Provisoire: mat_morse(" << RowGlobal << "," << col << ")!=0 new on GPU " << finl;
                           new_stencil = 1;
                           break;
                         }
-                      nnz_local++;
                     }
                 }
             }
@@ -160,38 +196,8 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
         }
     }
   new_stencil = mp_max(new_stencil);
-  if (new_stencil)
-    {
-      rebuild_matrix_ = true;
-      clean_matrix_   = true;
-    }
-  int nnz_global = mp_sum(nnz_local);
-  Journal() << "Provisoire: Solv_AMGX::check_stencil nnz_global(mat_morse)=" << nnz_global << " Same stencil on GPU ? " << (new_stencil ? "Yes" : "No") << finl;
-  if (limpr() == 1)
-    {
-      bool verbose = true;
-      ArrOfDouble nnz(2); // Pas ArrOfInt car nnz peut depasser 2^32 facilement
-      nnz(0)=nnz_global;
-      nnz(1)=mat_morse.nb_coeff();
-      Cout << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
-           << (petsc_cpus_selection_ ? (int) (nb_rows_tot_ / petsc_nb_cpus_) : nb_rows_)
-           << " unknowns per PETSc process ) " << (new_stencil ? "New stencil." : "Same stencil.");
-      if (verbose)
-        {
-          if (nnz[1] > 0)
-            {
-              Cout << " (nonzeros: " << nnz[0] << "/" << nnz[1] << ")" << finl;
-              double ratio = 1 - (double) nnz(0) / (double) nnz(1);
-              if (ratio > 0.2)
-                Cout << "Warning! Trust matrix contains a lot of useless stored zeros: " << (int) (ratio * 100) << "%" << finl;
-            }
-          if (clean_matrix_ && nnz[1]-nnz[0]>0) Cout << "[AmgX] Discarding " << nnz[1]-nnz[0] << " zeros from TRUST matrix into the PETSc matrix ..." << finl;
-        }
-      else
-        Cout << finl;
-    }
+  Cout << "[AmgX] Time to check stencil: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
   return new_stencil;
-  //return Solv_Petsc::check_stencil(mat_morse);
 }
 
 // Resolution
