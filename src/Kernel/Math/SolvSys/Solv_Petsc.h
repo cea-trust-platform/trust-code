@@ -106,7 +106,7 @@ protected :
   virtual void Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse); // Fill the (previously allocated) PETSc matrix with mat_morse coefficients
   virtual int solve(ArrOfDouble& residual); // Solve Ax=b and return residual
   virtual void finalize() {};
-  int check_stencil(const Matrice_Morse&);
+  virtual bool check_stencil(const Matrice_Morse&);
   bool nouveau_stencil()
   {
     return nouveau_stencil_;

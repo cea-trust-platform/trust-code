@@ -43,6 +43,7 @@ protected :
 #ifdef PETSC_HAVE_CUDA
   virtual void Create_objects(const Matrice_Morse&);
   virtual void Update_matrix(Mat&, const Matrice_Morse&);
+  virtual bool check_stencil(const Matrice_Morse&);
   virtual int solve(ArrOfDouble& residual);
   int nbiter(ArrOfDouble& residual);
   void initialize();
@@ -55,11 +56,6 @@ protected :
       }
   }
   AmgXSolver SolveurAmgX_; // Instance de AmgXWrapper
-  /*
-  int nRowsLocal, nRowsGlobal, nNz;
-  //const int *colIndices = nullptr, *rowOffsets = nullptr;
-  double *lhs, *rhs;
-  */
   PetscInt nRowsLocal, nRowsGlobal, nNz;
   const PetscInt *colIndices = nullptr, *rowOffsets = nullptr;
   double *lhs, *rhs;

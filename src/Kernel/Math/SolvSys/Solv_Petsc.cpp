@@ -47,7 +47,6 @@
 #include <ctime>
 #include <EFichier.h>
 
-static bool verbose = false;
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
 
 // printOn
@@ -83,10 +82,11 @@ static bool is_number(const std::string& s)
   return !s.empty() && it == s.end();
 }
 #endif
-
+static bool verbose = false;
 // Lecture et creation du solveur
 void Solv_Petsc::create_solver(Entree& entree)
 {
+  if (amgx_) verbose = true;
 #ifdef PETSCKSP_H
   lecture(entree);
   EChaine is(get_chaine_lue());
@@ -1640,9 +1640,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         }
       else
         {
-          start = std::clock();
           Update_matrix(MatricePetsc_, matrice_morse);
-          if (verbose) Cout << "[Petsc] Time to update matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
         }
     }
   std::clock_t start = std::clock();
@@ -1681,7 +1679,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         SaveObjectsToFile();
       else if (save_matrix_==2)
         {
-          // Format matrix market
+          // Format matrix market ToDo : method
           if (Process::nproc()>1) Process::exit("Error, matrix market format is not available yet in parallel.");
           Nom filename(Objet_U::nom_du_cas());
           filename+="_matrix";
@@ -2542,6 +2540,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
 
 void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
 {
+  std::clock_t start = std::clock();
   bool journal = nb_rows_tot_ < 20 ? true : false;
   journal = false;
 
@@ -2615,12 +2614,10 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
 #ifndef NDEBUG
   if (mataij_)
     {
-      std::clock_t start = std::clock();
       // Verifie la non symetrie de la matrice (au moins une fois)
       PetscBool IsSymmetric;
       MatIsSymmetric(MatricePetsc, 0.0, &IsSymmetric);
       if (IsSymmetric) Cerr << "Warning: The PETSc matrix is aij but is symmetric. May be use sbaij ?" << finl;
-      if (verbose) Cout << "[Petsc] Time to check symmetry: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
     }
 #endif
   // Ignore les coefficients ajoutes:
@@ -2635,9 +2632,10 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
       MatGetInfo(MatricePetsc,MAT_GLOBAL_MAX,&info);
       Cerr << "Max memory used by matrix on a MPI rank: " << (int)(info.memory/1024/1024) << " MB" << finl;
     }*/
+  if (verbose) Cout << "[Petsc] Time to update matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 }
 
-int Solv_Petsc::check_stencil(const Matrice_Morse& matrice_morse)
+bool Solv_Petsc::check_stencil(const Matrice_Morse& matrice_morse)
 {
   // Verification de nnz
   ArrOfDouble nnz(2); // Pas ArrOfInt car nnz peut depasser 2^32 facilement
@@ -2649,7 +2647,6 @@ int Solv_Petsc::check_stencil(const Matrice_Morse& matrice_morse)
   mp_sum_for_each_item(nnz);
   if (nnz[1]-nnz[0]>0)
     {
-      if (verbose) Cout << "[Petsc] Discarding " << nnz[1]-nnz[0] << " zeros from TRUST matrix into the PETSc matrix ..." << finl;
       rebuild_matrix_ = true;
       clean_matrix_   = true;
     }
@@ -2668,14 +2665,27 @@ int Solv_Petsc::check_stencil(const Matrice_Morse& matrice_morse)
             break;
           }
     }
-  new_stencil = mp_max(new_stencil) != 0;
+  new_stencil = mp_max(new_stencil);
   if (new_stencil)
     previous_tab2_ = matrice_morse.get_tab2();
   if (limpr() == 1)
     {
       Cout << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
            << (petsc_cpus_selection_ ? (int) (nb_rows_tot_ / petsc_nb_cpus_) : nb_rows_)
-           << " unknowns per PETSc process ) " << (new_stencil ? "New stencil." : "Same stencil.") << finl;
+           << " unknowns per PETSc process ) " << (new_stencil ? "New stencil." : "Same stencil.");
+      if (verbose)
+        {
+          if (nnz[1] > 0)
+            {
+              Cout << " (nonzeros: " << nnz[0] << "/" << nnz[1] << ")" << finl;
+              double ratio = 1 - (double) nnz(0) / (double) nnz(1);
+              if (ratio > 0.2)
+                Cout << "Warning! Trust matrix contains a lot of useless stored zeros: " << (int) (ratio * 100) << "%" << finl;
+            }
+          if (clean_matrix_ && nnz[1]-nnz[0]>0) Cout << "[Petsc] Discarding " << nnz[1]-nnz[0] << " zeros from TRUST matrix into the PETSc matrix ..." << finl;
+        }
+      else
+        Cout << finl;
     }
   return new_stencil != 0;
 }

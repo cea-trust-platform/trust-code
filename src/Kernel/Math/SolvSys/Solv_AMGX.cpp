@@ -70,11 +70,11 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat)
     }
   // Creation de la matrice Petsc si necessaire
   std::clock_t start = std::clock();
-  if (!rebuild_matrix_) clean_matrix_ = false; // ToDo : on ne peut pas enlever les 0 de la matrice PETSc car le stencil de la matrice PETSc (CPU) et le stencil de la matrice GPU doivent etre identiques pour updateA...
+  // ToDo coder sans passer par une Matrice Petsc
   if (MatricePetsc_!=NULL) MatDestroy(&MatricePetsc_);
   Create_MatricePetsc(MatricePetsc_, mataij_, mat);
   petscToCSR(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_);
-  Cout << "[Petsc] Time to build matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to build matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
   /*
    // ToDo essayer de s'affranchir avec la nouvelle API de la matrice/vec PETSc, encore un pb en parallele en VEF (items communs?)
       nRowsGlobal = nb_rows_tot_;
@@ -95,16 +95,103 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat)
 
 void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat)
 {
-  std::clock_t start = std::clock();
   Solv_Petsc::Update_matrix(MatricePetsc, mat);
-  Cout << "[Petsc] Time to update matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
-  start = std::clock();
+  std::clock_t start = std::clock();
   petscToCSR(MatricePetsc, SolutionPetsc_, SecondMembrePetsc_); // Semble utile en //. Pourquoi ?
-  Cout << "[Petsc] Time to petscToCSR: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to petscToCSR: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
   start = std::clock();
   SolveurAmgX_.updateA(nRowsLocal, nNz, values);
   //SolveurAmgX_.updateA(nRowsLocal, nNz, mat.get_coeff().addr());
   Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+}
+
+// Check and return true if new stencil
+bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
+{
+  // Parcours de la matrice_morse (qui peut contenir des 0 et qui n'est pas triee par colonnes croissantes)
+  // si matrice sur le GPU deja construite (qui est sans 0 et qui est triee par colonnes croissantes):
+  if (nRowsGlobal==0)
+    return true;
+  const ArrOfInt& tab1 = mat_morse.get_tab1();
+  const ArrOfInt& tab2 = mat_morse.get_tab2();
+  const ArrOfDouble& coeff = mat_morse.get_coeff();
+  const ArrOfInt& renum_array = renum_;
+  int new_stencil = 0, RowLocal = 0, nnz_local = 0;
+  for (int i = 0; i < tab1.size_array() - 1; i++)
+    {
+      if (items_to_keep_[i])
+        {
+          int nnz_row = 0;
+          for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
+            if (coeff(k) != 0) nnz_row++;
+          if (nnz_row != rowOffsets[i + 1] - rowOffsets[i])
+            {
+              Journal() << "Provisoire: Number of non-zero on GPU will change from " << rowOffsets[i + 1] - rowOffsets[i] << " to " << nnz_row << " on row " << RowLocal << finl;
+              new_stencil = 1;
+              break;
+            }
+          else
+            {
+              for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
+                {
+                  if (coeff(k) != 0)
+                    {
+                      bool found = false;
+                      int col = renum_array[tab2(k) - 1];
+                      //Journal() << "Provisoire: mat_morse(" << RowLocal << "," << col << ")!=0";
+                      // Boucle pour voir si le coeff est sur le GPU:
+                      for (int kk = rowOffsets[i]; kk < rowOffsets[i + 1]; kk++)
+                        if (colIndices[kk] == col)
+                          {
+                            found = true;
+                            break;
+                          }
+                      if (!found)
+                        {
+                          Journal() << "Provisoire: mat_morse(" << RowLocal << "," << col << ")!=0 new on GPU " << finl;
+                          new_stencil = 1;
+                          break;
+                        }
+                      nnz_local++;
+                    }
+                }
+            }
+          RowLocal++;
+        }
+    }
+  new_stencil = mp_max(new_stencil);
+  if (new_stencil)
+    {
+      rebuild_matrix_ = true;
+      clean_matrix_   = true;
+    }
+  int nnz_global = mp_sum(nnz_local);
+  Journal() << "Provisoire: Solv_AMGX::check_stencil nnz_global(mat_morse)=" << nnz_global << " Same stencil on GPU ? " << (new_stencil ? "Yes" : "No") << finl;
+  if (limpr() == 1)
+    {
+      bool verbose = true;
+      ArrOfDouble nnz(2); // Pas ArrOfInt car nnz peut depasser 2^32 facilement
+      nnz(0)=nnz_global;
+      nnz(1)=mat_morse.nb_coeff();
+      Cout << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
+           << (petsc_cpus_selection_ ? (int) (nb_rows_tot_ / petsc_nb_cpus_) : nb_rows_)
+           << " unknowns per PETSc process ) " << (new_stencil ? "New stencil." : "Same stencil.");
+      if (verbose)
+        {
+          if (nnz[1] > 0)
+            {
+              Cout << " (nonzeros: " << nnz[0] << "/" << nnz[1] << ")" << finl;
+              double ratio = 1 - (double) nnz(0) / (double) nnz(1);
+              if (ratio > 0.2)
+                Cout << "Warning! Trust matrix contains a lot of useless stored zeros: " << (int) (ratio * 100) << "%" << finl;
+            }
+          if (clean_matrix_ && nnz[1]-nnz[0]>0) Cout << "[AmgX] Discarding " << nnz[1]-nnz[0] << " zeros from TRUST matrix into the PETSc matrix ..." << finl;
+        }
+      else
+        Cout << finl;
+    }
+  return new_stencil;
+  //return Solv_Petsc::check_stencil(mat_morse);
 }
 
 // Resolution
