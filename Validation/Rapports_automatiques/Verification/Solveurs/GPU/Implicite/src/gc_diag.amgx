@@ -1,0 +1,14 @@
+# AmgX config file
+config_version=2
+solver(s)=PCG
+s:convergence=RELATIVE_INI_CORE
+s:tolerance=1.000000e-02
+s:preconditioner(p)=BLOCK_JACOBI
+s:print_config=1
+s:store_res_history=1
+s:monitor_residual=1
+s:print_solve_stats=1
+s:obtain_timings=1
+s:max_iters=10000
+# determinism_flag=1
+# communicator=MPI_DIRECT

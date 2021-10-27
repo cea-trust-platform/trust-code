@@ -1,7 +1,7 @@
 #!/bin/bash
 cpu=2
 meshes="21x21x21 11x11x11 6x6x6"
-liste_cas="amg_gc_c-amg amgx_gc_sa-amg tuned_amgx_gc_c-amg"
+liste_cas="amgx_gc_c-amg amgx_gc_sa-amg tuned_amgx_gc_c-amg"
 rtol=1.e-9
 option[1]="amgx gcp { precond  c-amg { } impr rtol $rtol }"
 option[2]="amgx gcp { precond sa-amg { } impr rtol $rtol }"

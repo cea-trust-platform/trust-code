@@ -1,0 +1,38 @@
+#!/bin/bash
+meshes="21x21x21 11x11x11 6x6x6"
+meshes="10x10x10" && cpu=2
+#meshes="19x19x19" && cpu=8
+liste_cas="" 
+seuil=1.e-3
+option[0]="amgx fgmres 		{ precond ssor 	{ } impr rtol  $seuil }"	&& liste_cas=$liste_cas"amgx_fgmres_ssor "  
+option[1]="amgx bicgstab 	{ precond ssor 	{ } impr rtol  $seuil }"	&& liste_cas=$liste_cas"amgx_bicgstab_ssor "  
+option[2]="amgx gcp   		{ precond ssor 	{ } impr rtol  $seuil }"	&& liste_cas=$liste_cas"amgx_gc_ssor "  
+option[3]="amgx fgmres 		{ precond c-amg { } impr rtol  $seuil }"	&& liste_cas=$liste_cas"amgx_fgmres_c-amg "
+#option[4]="amgx cli 		{ -file gc_diag.amgx }" 			&& liste_cas=$liste_cas"amgx_gc_diag "  
+i=-1
+for cas in $liste_cas
+do
+   let i=i+1
+   for mesh in $meshes
+   do
+      mkdir -p $mesh
+      cd $mesh
+      jdd=$cas.data
+      mesh=`echo $mesh | sed "1,$ s?x? ?g"`      
+      cp ../base.data $jdd
+      cp ../cli.amgx .
+      cp ../post_run .
+      sed -i "1,$ s?_solveur_pression_?Petsc cholesky { }?g" $jdd
+      sed -i "1,$ s?_solveur_implicite_?${option[$i]}?g" $jdd
+      sed -i "1,$ s?_mesh_?$mesh?g" $jdd
+      make_PAR.data $jdd $cpu
+      mv PAR_$jdd $jdd
+      cd .. 1>/dev/null 2>&1
+   done
+done
+sed -i "1,$ s?_cpu_?$cpu?g" fiche.prm.P
+sed -i "1,$ s?_meshes_?$meshes?g" fiche.prm.P
+sed -i "1,$ s?_meshes_?$meshes?g" post_run
+sed -i "1,$ s?_liste_cas_?$liste_cas?g" fiche.prm.P
+python $TRUST_ROOT/bin/KSH/preprocessor.py fiche.prm.P fiche.prm
+exit 0
