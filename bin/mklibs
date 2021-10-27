@@ -156,12 +156,7 @@ if [ -f  $TRUST_MED_ROOT/lib/libhdf5.so ] ; then
 fi
 MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a \$(TRUST_MED_ROOT)/lib/libhdf5_hl.a $lz-lm -ldl"
 
-if [ -f $TRUST_ROOT/lib/src/LIBVC/lib/libVc.a ]
-then
-    VC="-L\$(TRUST_ROOT)/lib/src/LIBVC/lib -lVc"
-else
-    VC=""
-fi 
+VC="-L\$(TRUST_ROOT)/lib/src/LIBVC/lib -lVc"
 
 #################################################
 # Construction des fichiers $TRUST_ENV/make.lib?
