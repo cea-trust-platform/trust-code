@@ -539,7 +539,6 @@ for THIRD_PARTY in $LIST_THIRD_PARTY
 do
    VAR=TRUST_DISABLE_$THIRD_PARTY
    echo "$VAR=${!VAR} && export $VAR 	# Disable/enable $THIRD_PARTY"  					>> $var
-   [ "$THIRD_PARTY" = "GNUPLOT" ] && [ "$TRUST_DISABLE_GNUPLOT" != "1" ] && echo "GNUPLOT_DRIVER_DIR=\$(dirname \`find \$TRUST_ROOT/ -name gnuplot_x11\` 2>/dev/null)" >> $var
 done
 echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
 echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_PETSC_DEBUG	# Disable/enable PETSc debug"	>> $var
