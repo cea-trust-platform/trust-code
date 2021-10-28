@@ -1,8 +1,11 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
+28/10/21 (TRUST)  Major Change: Tables defined with a Champ_fonc_tabule should be strictly monotonic (declaring a multiple times and/or a decreasing time order will stop the code execution) 
+28/10/21 (TRUST)  Major Change: Champ_fonc_tabule supports arbitrary number of parameter fields from variables instanced in any problem
 21/10/21 (TRUST)  Library     : Add of the vectorization library Vc (1.4.2)
 18/10/21 (TRUST)  New feature : Possibility to correctly stop the simulation once launched in interactive way using Ctrl+C
+18/10/21 (TRUST)  Major Change: Syntax/keyword modified : state laws for a dilatable fluid ends now with _QC (for quasi-compressible fluid) and with _WC (for weakly-compressible fluid). For example, the EOS gaz_parfait becomes either gaz_parfait_QC or gaz_parfait_WC 
 18/10/21 (TRUST)  Major Change: Media with variable densities do not inherit anymore from "Fluide_Incompressible"
 18/10/21 (TRUST)  New feature : New medium "Fluide_Dilatable_base" from which the Quasi-Compressible and the Weakly-Compressible media inherit
 18/10/21 (TRUST)  New feature : New problems "Pb_Thermohydraulique_WC", "Pb_Thermohydraulique_Especes_WC" and "Pb_Hydraulique_Melange_Binaire_WC" introduced to solve thermo-hydraulic and/or binary/multi species flows using a Weakly Compressible formulation (non-uniform pressure in the state equation)
