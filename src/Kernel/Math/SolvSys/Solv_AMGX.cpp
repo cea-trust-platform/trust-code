@@ -68,15 +68,16 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse)
       Cerr << "Read_matrix not supported on GPU yet." << finl;
       Process::exit();
     }
-  std::clock_t start = std::clock();
   // Creation de la matrice Petsc (CSR pointeurs dessus)
   if (MatricePetsc_ != NULL) MatDestroy(&MatricePetsc_);
+
   Create_MatricePetsc(MatricePetsc_, mataij_, mat_morse);
+  std::clock_t start = std::clock();
   petscToCSR(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_);
-  Cout << "[AmgX] Time to build PETSc matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to create CSR pointers: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
   start = std::clock();
   SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets, colIndices, values, nullptr);
-  Cout << "[AmgX] Time to set matrix (copy+setup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to set matrix (copy+setup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl; // Attention balise lue par fiche de validation
 }
 
 // Fonction de conversion Petsc ->CSR
@@ -85,7 +86,6 @@ PetscErrorCode Solv_AMGX::petscToCSR(Mat& A, Vec& lhs_petsc, Vec& rhs_petsc)
   PetscFunctionBeginUser;
   PetscBool done;
   MatType type;
-  Mat localA;
 
   // Get the Mat type
   PetscErrorCode ierr = MatGetType(A, &type);
@@ -100,6 +100,7 @@ PetscErrorCode Solv_AMGX::petscToCSR(Mat& A, Vec& lhs_petsc, Vec& rhs_petsc)
   else if (std::strcmp(type, MATMPIAIJ) == 0)
     {
       // Get local matrix from redistributed matrix
+      if (localA!=NULL) MatDestroy(&localA); // Suite accroissement memoire !
       ierr = MatMPIAIJGetLocalMat(A, MAT_INITIAL_MATRIX, &localA);
       CHKERRQ(ierr);
     }
@@ -136,7 +137,7 @@ void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
   // La matrice CSR de PETSc a ete mise a jour dans check_stencil
   std::clock_t start = std::clock();
   SolveurAmgX_.updateA(nRowsLocal, nNz, values);  // ToDo erreur valgrind au premier appel de updateA...
-  Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl; // Attention balise lue par fiche de validation
 }
 
 // Check and return true if new stencil
@@ -203,24 +204,27 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 // Resolution
 int Solv_AMGX::solve(ArrOfDouble& residu)
 {
-  {
-    // Crash d'AmgX (non reproduit sur les cas poisson d'AmgXWrapper), peut etre a cause d'une creation differente
-    // des vecteurs PETSc (via DM) par rapport a la notre (VecCreate), si deja converge (nbiter=0)
-    // Contournement en calculant le residu avant le solve et on ne resout pas si inferieur au seuil:
-    Vec ResidualPetsc_;
-    VecDuplicate(SolutionPetsc_, &ResidualPetsc_);
-    MatResidual(MatricePetsc_, SecondMembrePetsc_, SolutionPetsc_, ResidualPetsc_);
-    VecNorm(ResidualPetsc_, NORM_2, &residu(0));
-    VecDestroy(&ResidualPetsc_);
-    if (residu(0) < seuil_)
-      {
-        Cout << "[AmgX] Not solved on GPU to avoid a (ToDo: fix) crash as it's already converged: ||Ax-b||="<<residu(0)<<"<"<<seuil_<< finl;
-        return 0;
-      }
-  }
+  if (seuil_relatif_==0)
+    {
+      // Crash d'AmgX (non reproduit sur les cas poisson d'AmgXWrapper), peut etre a cause d'une creation differente
+      // des vecteurs PETSc (via DM) par rapport a la notre (VecCreate), si deja converge a cause d'un seuil absolu trop haut (nbiter=0)
+      // Contournement en calculant le residu avant le solve et on ne resout pas si inferieur au seuil:
+      Vec ResidualPetsc_;
+      VecDuplicate(SolutionPetsc_, &ResidualPetsc_);
+      MatResidual(MatricePetsc_, SecondMembrePetsc_, SolutionPetsc_, ResidualPetsc_);
+      VecNorm(ResidualPetsc_, NORM_2, &residu(0));
+      VecDestroy(&ResidualPetsc_);
+      if (residu(0) < seuil_)
+        {
+          Cerr << "[AmgX] The residual seems to small to be solved on GPU: ||Ax-b||="<<residu(0)<<"<"<<seuil_<< finl;
+          Cerr << "Please, try to use a relative tolerance, with rtol option or lower the absolute tolerance atol." << finl;
+          return 0;
+          //Process::exit();
+        }
+    }
   std::clock_t start = std::clock();
   SolveurAmgX_.solve(lhs, rhs, nRowsLocal);
-  Cout << "[AmgX] Time to solve on GPU: " << ( std::clock() - start ) / (double) CLOCKS_PER_SEC << finl;
+  Cout << "[AmgX] Time to solve system on GPU: " << ( std::clock() - start ) / (double) CLOCKS_PER_SEC << finl;
   return nbiter(residu);
 }
 

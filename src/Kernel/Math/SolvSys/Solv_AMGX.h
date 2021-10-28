@@ -59,6 +59,7 @@ protected :
 
   PetscErrorCode petscToCSR(Mat& A, Vec& lhs_petsc, Vec& rhs_petsc);
   PetscInt nRowsLocal, nRowsGlobal, nNz;
+  Mat localA = nullptr;
   const PetscInt *colIndices = nullptr, *rowOffsets = nullptr;
   double *lhs, *rhs;
   PetscScalar *values;

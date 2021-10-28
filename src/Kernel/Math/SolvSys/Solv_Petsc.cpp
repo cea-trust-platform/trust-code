@@ -298,7 +298,11 @@ void Solv_Petsc::create_solver(Entree& entree)
         KSPSetType(SolveurPetsc_, KSPGMRES);
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver(s)=GMRES\n"; // GMRES
+        if (amgx_)
+          {
+            amgx_option+="solver(s)=GMRES\n"; // GMRES
+            Process::exit("Gmres solver on GPU with AmgX fails to return a valid solution. Try GCP, BiCGSTAB or FGMRES solvers.");
+          }
         break;
       }
     case 19:
@@ -307,14 +311,6 @@ void Solv_Petsc::create_solver(Entree& entree)
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
         if (amgx_) amgx_option+="solver(s)=FGMRES\n"; // FGMRES
-        break;
-      }
-    case 20:
-      {
-        KSPSetType(SolveurPetsc_, KSPFGMRES);
-        solver_supported_on_gpu_by_petsc=1;
-        solver_supported_on_gpu_by_amgx=1;
-        if (amgx_) amgx_option+="solver(s)=FGMRES\n"; // Flexible GMRES
         break;
       }
     case 8:
@@ -1058,7 +1054,11 @@ void Solv_Petsc::create_solver(Entree& entree)
                 PCSetType(PreconditionneurPetsc_, PCJACOBI);
                 pc_supported_on_gpu_by_petsc=1;
                 pc_supported_on_gpu_by_amgx=1;
-                if (amgx_) amgx_option+="s:preconditioner(p)=BLOCK_JACOBI\n";
+                if (amgx_)
+                  {
+                    amgx_option += "s:preconditioner(p)=BLOCK_JACOBI\n";
+                    Process::exit("Diagonal preconditioner on GPI with AmgX is slow to converge. Try SSOR preconditioner.");
+                  }
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
@@ -1536,9 +1536,9 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   // Si on utilise un solver petsc on le signale pour les stats finales
   statistiques().begin_count(solv_sys_petsc_counter_);
   statistiques().end_count(solv_sys_petsc_counter_,1,1);
+  std::clock_t start = std::clock();
   if (nouvelle_matrice())
     {
-      std::clock_t start = std::clock();
       matrice_symetrique_ = 1;      // On suppose que la matrice est symetrique
 
       // Construction de la numerotation globale:
@@ -1623,7 +1623,6 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       // Verification stencil de la matrice
       nouveau_stencil_ = (MatricePetsc_ == NULL ? true : check_stencil(matrice_morse));
 
-      start = std::clock();
       if (SecondMembrePetsc_ == NULL)
         {
           // Build x and b during the first matrix creation
@@ -1633,14 +1632,9 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         }
       // Construit ou update la matrice
       if (nouveau_stencil_)
-        {
-          // Create objects
-          Create_objects(matrice_morse);
-        }
+        Create_objects(matrice_morse);
       else
-        {
-          Update_matrix(MatricePetsc_, matrice_morse);
-        }
+        Update_matrix(MatricePetsc_, matrice_morse);
       if (limpr() == 1)
         {
           Cout << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
@@ -1648,7 +1642,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                << " unknowns per PETSc process ) " << (nouveau_stencil_ ? "New stencil." : "Same stencil.") << finl;
         }
     }
-  std::clock_t start = std::clock();
+  start = std::clock();
   // Assemblage du second membre et de la solution
   // ToDo calculer ix au moment de item_to_keep_
   int size=secmem.size_array();
@@ -1718,7 +1712,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
           for (int i=0; i<solution.size_array(); i++)
             mtx << solution(i) << finl;
         }
-      Cout << "[Petsc] Time to write matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+      if (save_matrix_ && verbose) Cout << "[Petsc] Time to write matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
     }
   //////////////////////////
   // Solve the linear system
@@ -1773,10 +1767,11 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       // Verification de la solution sur la matrice initiale
       if (nbiter>0 && Process::je_suis_maitre())
         {
-          if (residu(0)>0 && vrai_residu>10*residu(nbiter))
+          double precision_machine=1.e-12;
+          if (residu(0)>0 && residu(nbiter)/residu(0)>precision_machine && vrai_residu>10*residu(nbiter))
             {
               Cerr << "Error, computed solution x is false !" << finl;
-              Cerr << "True residual is much higher than convergence residual!" << finl;
+              Cerr << "True residual (" << vrai_residu << ") is much higher than convergence residual (" << residu(nbiter) << ") !" << finl;
               Process::exit();
             }
         }
@@ -1790,6 +1785,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 #ifdef PETSCKSP_H
 int Solv_Petsc::solve(ArrOfDouble& residu)
 {
+  std::clock_t start = std::clock();
   // Affichage par MyKSPMonitor
   if (!solveur_direct_)
     {
@@ -1853,6 +1849,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
           VecNorm(SecondMembrePetsc_, NORM_2, &residu(nbiter));
         }
     }
+  if (verbose) Cout << "[Petsc] Time to solve system: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
   return Reason < 0 ? (int)Reason : nbiter;
 }
 #endif
@@ -1987,7 +1984,6 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
   if (matrice_symetrique_ && type_pc_ == "hypre")
     preconditionnement_non_symetrique_ = 1;
 
-  std::clock_t start = std::clock();
   if (preconditionnement_non_symetrique_)
     Create_MatricePetsc(MatricePrecondionnementPetsc, 1, mat);
 
@@ -1997,7 +1993,6 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
       if (MatricePetsc_!=NULL) MatDestroy(&MatricePetsc_);
       Create_MatricePetsc(MatricePetsc_, mataij_, mat);
     }
-  if (verbose) Cout << "[Petsc] Time to build matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 
   /* Seems petsc_decide=1 have no interest. On PETSC_GCP with n=2 (20000cell/n), the ratio is 99%-101% and petsc_decide is slower
   Even with n=9, ratio is 97%-103%, and petsc_decide is slower by 10%. Better load balance but increased MPI cost and lower convergence...
@@ -2217,7 +2212,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
   /*************************************/
   /* Mise en place du preconditionneur */
   /*************************************/
-  start = std::clock();
+  std::clock_t start = std::clock();
   KSPSetUp(SolveurPetsc_);
   if (verbose) Cout << "[Petsc] Time to setup solver: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 
@@ -2392,6 +2387,7 @@ int Solv_Petsc::compute_nb_rows_petsc(int nb_rows_tot)
 // Creation d'une matrice Petsc depuis une matrice Matrice_Morse
 void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matrice_Morse& mat_morse)
 {
+  std::clock_t start = std::clock();
   // Recuperation des donnees
   bool journal = nb_rows_tot_ < 20 ? true : false;
   journal = false;
@@ -2436,7 +2432,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   int derniere_colonne_globale = nb_rows_ + decalage_local_global_;
   const ArrOfInt& tab1 = mat_morse.get_tab1();
   const ArrOfInt& tab2 = mat_morse.get_tab2();
-  const ArrOfDouble& coeff = mat_morse.get_coeff();
+  //const ArrOfDouble& coeff = mat_morse.get_coeff();
   int cpt = 0;
   for (int i = 0; i < tab1.size_array() - 1; i++)
     {
@@ -2556,6 +2552,8 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   if (ignore_new_nonzero_)
     MatSetOption(MatricePetsc, MAT_USE_HASH_TABLE, PETSC_TRUE);
 
+  if (verbose) Cout << "[Petsc] Time to create the matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+
   // Fill the matrix
   Solv_Petsc::Update_matrix(MatricePetsc, mat_morse);
 }
@@ -2654,7 +2652,7 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
       MatGetInfo(MatricePetsc,MAT_GLOBAL_MAX,&info);
       Cerr << "Max memory used by matrix on a MPI rank: " << (int)(info.memory/1024/1024) << " MB" << finl;
     }*/
-  if (verbose) Cout << "[Petsc] Time to update matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  if (verbose) Cout << "[Petsc] Time to fill the matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
 }
 
 bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
@@ -2667,9 +2665,8 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
   else
     {
       PetscBool done;
-      MatType type;
       Mat localA;
-      PetscInt nRowsLocal, nRowsGlobal, nNz;
+      PetscInt nRowsLocal;
       const PetscInt *colIndices = nullptr, *rowOffsets = nullptr;
       if (Process::nproc()==1) // sequential AIJ
         {
@@ -2733,6 +2730,7 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
               RowLocal++;
             }
         }
+      if (Process::nproc()>1) MatDestroy(&localA);
       new_stencil = mp_max(new_stencil);
     }
   if (verbose) Cout << "[Petsc] Time to check stencil: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
