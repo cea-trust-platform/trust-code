@@ -28,7 +28,7 @@ static Motcles motcle_obsolete;
 // Parcours du jeu de donnees pour verification des mots cles obsoletes
 void verifie(const Nom& type)
 {
-  int n=57;
+  int n=67;
   if( motcle_obsolete.size()!=n)
     {
       int i=0;
@@ -91,6 +91,16 @@ void verifie(const Nom& type)
       motcle_obsolete[i++] = "Temperature_paroi_NOPASPOURGENEPI";
       motcle_obsolete[i++] = "Read_MED_For_Testing_No_Verify_Option";
       motcle_obsolete[i++] = "Reordonner_faces_periodiques";
+      motcle_obsolete[i++] = "gaz_parfait";
+      motcle_obsolete[i++] = "gaz_reel_rhoT";
+      motcle_obsolete[i++] = "melange_gaz_parfait";
+      motcle_obsolete[i++] = "melange_binaire";
+      motcle_obsolete[i++] = "Convection_Diffusion_fraction_massique_MB_QC";
+      motcle_obsolete[i++] = "Convection_Diffusion_fraction_massique_QC";
+      motcle_obsolete[i++] = "Pb_Thermohydraulique_QC_fraction_massique";
+      motcle_obsolete[i++] = "Convection_Diffusion_fraction_massique_MB_Turbulent_QC";
+      motcle_obsolete[i++] = "Convection_Diffusion_fraction_massique_Turbulent_QC";
+      motcle_obsolete[i++] = "Pb_Thermohydraulique_Turbulent_QC_fraction_massique";
       assert(i==n);
     }
   // GF on ne constuit les noms de la nouvelle syntaxe que si necessaire
@@ -159,6 +169,16 @@ void verifie(const Nom& type)
       nouvelle_syntaxe[i++] = "1.6.9.";
       nouvelle_syntaxe[i++] = "1.7.6, never use that keyword!!!";
       nouvelle_syntaxe[i++] = "1.8.1, use corriger_frontiere_periodique keyword instead";
+      nouvelle_syntaxe[i++] = "1.8.4, you should use gaz_parfait_QC";
+      nouvelle_syntaxe[i++] = "1.8.4, you should use rhoT_gaz_reel_QC";
+      nouvelle_syntaxe[i++] = "1.8.4, you should use multi_gaz_parfait_QC";
+      nouvelle_syntaxe[i++] = "1.8.4, you should use binaire_gaz_parfait_QC";
+      nouvelle_syntaxe[i++] = "1.8.4, you should use Convection_Diffusion_Espece_Binaire_QC";
+      nouvelle_syntaxe[i++] = "1.8.4, you should use Convection_Diffusion_Espece_Multi_QC";
+      nouvelle_syntaxe[i++] = "1.8.4, you should use Pb_Thermohydraulique_Especes_QC";
+      nouvelle_syntaxe[i++] = "1.8.4, you should use Convection_Diffusion_Espece_Binaire_Turbulent_QC";
+      nouvelle_syntaxe[i++] = "1.8.4, you should use Convection_Diffusion_Espece_Multi_Turbulent_QC";
+      nouvelle_syntaxe[i++] = "1.8.4, you should use Pb_Thermohydraulique_Especes_Turbulent_QC";
       assert(i==n);
       Cerr << "The keyword " << motcle_obsolete[rang] << " is now obsolete," << finl;
       Cerr << "since the version " << nouvelle_syntaxe[rang] << finl << finl;
