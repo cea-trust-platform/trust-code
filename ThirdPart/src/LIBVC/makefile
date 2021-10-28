@@ -13,7 +13,7 @@ $(lib): makefile Install test_VC.cpp
 
 test: test_VC.cpp
 	cp test_VC.cpp $(TRUST_TMP)/build/lib/Vc_build; cd $(TRUST_TMP)/build/lib/Vc_build; \
-	$(TRUST_CC) -o $@ $< $(CppFlags) $(Libs) $(all_Includes) || exit -1; pwd; \
+	$(TRUST_CC) -o $@ $< $(CppFlags) -L$(TRUST_ROOT)/lib/src/LIBVC/lib -lVc -I$(TRUST_ROOT)/lib/src/LIBVC/include || exit -1; pwd; \
 	./test && echo "VC Library OK" && rm -rf $(TRUST_TMP)/build/lib/Vc_build && exit 0 || (echo "VC Library KO, we remove .a"; rm $(TRUST_ROOT)/lib/src/LIBVC/lib/libVc.a; exit -1)
 
 
