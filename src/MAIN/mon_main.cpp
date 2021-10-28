@@ -183,7 +183,7 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   // Absolument necessaire sur JeanZay (si OpenMPU-Cuda car sinon plantages lors des IO)
   // Voir: https://www.open-mpi.org/faq/?category=runcuda#mpi-cuda-aware-support pour activer ou non a la compilation !
 #if defined(MPIX_CUDA_AWARE_SUPPORT) && MPIX_CUDA_AWARE_SUPPORT
-    init_cuda();
+  init_cuda();
 #endif /* MPIX_CUDA_AWARE_SUPPORT */
 #endif
   Nom arguments_info="";

@@ -886,6 +886,7 @@ then
    ###########################################
    case $sub in
    	SLURM)
+		# http://www.idris.fr/media/su/idrischeatsheet.pdf
 		echo "#!/bin/bash"					>> $sub_file	# Shell
 		echo "#SBATCH -J $NOM" 					>> $sub_file	# Job name
 		[ "$queue" != "" ] && echo "#SBATCH -p $queue"		>> $sub_file	# Partition
@@ -904,6 +905,8 @@ then
 		[ "$hintnomultithread" != "" ] && echo "#SBATCH --ntasks-per-node=$ntasks"	>> $sub_file
 		[ "$node" = 1 ] && echo "#SBATCH --exclusive"		>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
+		echo "##SBATCH --mail-user=email"			>> $sub_file
+		echo "##SBATCH --mail-type=BEGIN,END"			>> $sub_file
 		echo "set -x"				 		>> $sub_file 
 		echo "cd \$SLURM_SUBMIT_DIR" 				>> $sub_file    # Submit directory for reprise_auto script
 		;;
@@ -955,9 +958,10 @@ then
 		echo "#MSUB -n $NB_PROCS" 					>> $sub_file 
 		[ "$noeuds" != "" ] && echo "#MSUB -N $noeuds" 			>> $sub_file 
 		[ "$cpus_per_task" != "" ] && echo "#MSUB -c $cpus_per_task"	>> $sub_file
-		[ "$node" = 1 ] && echo "#MSUB -x"				>> $sub_file	# Exclusive use of nodes during production run	
+		[ "$node" = 1 ] && echo "#MSUB -x"				>> $sub_file # Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#MSUB -M $ram" 			>> $sub_file 
-		[ "$espacedir" != "" ] && echo "#MSUB -m $espacedir"	>> $sub_file 
+		[ "$espacedir" != "" ] && echo "#MSUB -m $espacedir"		>> $sub_file
+		echo "##MSUB -@ email:begin,end"				>> $sub_file
 		echo "set -x"				 			>> $sub_file 
 		echo "cd \$BRIDGE_MSUB_PWD" 					>> $sub_file
  		;;

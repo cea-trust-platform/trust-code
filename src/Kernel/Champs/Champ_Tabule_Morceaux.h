@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,7 +70,6 @@ public :
 protected:
 
   LIST(Champ_Fonc_Tabule) champs_tabules;
-  Champ_Fonc_Tabule ch_tab2;
 
   LIST(REF(Sous_Zone)) les_sous_zones;
   REF(Domaine) mon_domaine;

@@ -1355,10 +1355,11 @@ void Sonde::postraiter()
         ;//valeurs=valeurs_locales;
       else
         {
-          int nb_val=valeurs_locales.dimension(0);
-          for(int i=0; i<nb_val; i++)
-            for(int n = 0; n < N; n++)
+          int nb_val = valeurs_locales.dimension(0);
+          for (int i = 0; i < nb_val; i++)
+            for (int n = 0; n < N; n++)
               valeurs(participant[0][i], n) = valeurs_locales(i, n);
+        }
       for(int p=1; p<nbproc; p++)
         {
           // le message n'est envoye que si le proc participe
