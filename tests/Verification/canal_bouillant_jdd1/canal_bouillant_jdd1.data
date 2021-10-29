@@ -48,7 +48,6 @@ phases pb
     liquide { sodium }
     gaz     { sodium }
 }
-associate  pb dom
 
 Associate  pb dom
 Associate  pb sch

@@ -42,7 +42,6 @@ typer_lire eau_liquide StiffenedGas { gamma __gamma__ pinf __pinf__ }
 
 Pb_Multiphase pb
 phases pb { liquide { eau } }
-associate  pb dom
 
 Associate  pb dom
 Associate  pb sch
