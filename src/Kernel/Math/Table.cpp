@@ -393,9 +393,9 @@ DoubleTab& Table::valeurs(const DoubleTab& val_param,const DoubleTab& pos,const 
 void Table::remplir(const DoubleVect& param,const DoubleTab& aval)
 {
   // on verifie que param est strictement monotone
-  double val = param[0];
+  double val_ = param[0];
   for (int i = 1; i < param.size(); i++)
-    if (val < param[i]) val = param[i];
+    if (val_ < param[i]) val_ = param[i];
     else Process::exit("A table is not strictly monotonic!");
 
   les_valeurs.ref(aval);
@@ -408,9 +408,9 @@ void Table::remplir(const VECT(DoubleVect)& params, const DoubleVect& aval)
   // on verifie que les params sont strictement monotones
   for (int n = 0; n < params.size(); n++)
     {
-      double val = params[n][0];
+      double val_ = params[n][0];
       for (int i = 1; i < params[n].size(); i++)
-        if (val < params[n][i]) val = params[n][i];
+        if (val_ < params[n][i]) val_ = params[n][i];
         else Process::exit("A table is not strictly monotonic!");
     }
 
