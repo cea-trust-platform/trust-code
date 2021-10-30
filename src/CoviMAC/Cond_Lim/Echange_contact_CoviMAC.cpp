@@ -159,14 +159,14 @@ void Echange_contact_CoviMAC::harmonic_points(DoubleTab& xh, DoubleTab& wh, Doub
                 for (m = 0; m < oN; m++) whm(i_mono, n, m, 1) = def(0) * wh_c(1, m) / (def(0) + invh(fb, n) * lambda(0, n));
               }
           }
-        else for (n = 0; n < N; n++) /* sinon -> couplage composante par composante */
-            {
-              for (d = 0; d < D; d++) /* position du "harmonic average point "*/
+        else  /* sinon -> couplage composante par composante */
+          {
+            for (n = 0; n < N; n++) for (d = 0; d < D; d++) /* position du "harmonic average point "*/
                 xh(f, n, d) = (lambda(1, n) * def(0) * xef(1, d) + lambda(0, n) * def(1) * xef(0, d) + def(0) * def(1) * (lambda_t(1, n, d) - lambda_t(0, n, d)))
                               / (lambda(1, n) * def(0) + lambda(0, n) * def(1));
-              for (n = 0; n < N; n++) for (m = 0; m < M; m++) /* poids de l'amont dans la valeur a ce point */
-                  whm(i_mono, n, m, 0) = (m == n) * lambda(0, n) * def(1) / (lambda(1, n) * def(0) + lambda(0, n) * def(1)), whm(i_mono, n, m, 1) = (m == n) - whm(i_mono, m, n, 0);
-            }
+            for (n = 0; n < N; n++) for (m = 0; m < M; m++) /* poids de l'amont dans la valeur a ce point */
+                whm(i_mono, n, m, 0) = (m == n) * lambda(0, n) * def(1) / (lambda(1, n) * def(0) + lambda(0, n) * def(1)), whm(i_mono, n, m, 1) = (m == n) - whm(i_mono, m, n, 0);
+          }
         for (n = 0; n < N; n++) wh(f, n) = 0; //pour indiquer que la face a ete traitee
       }
 }
