@@ -111,10 +111,10 @@ public:
   //
   Postraitement();
 
-  inline const Sondes& les_sondes() const;
-  inline Sondes& les_sondes();
-  inline Probleme_base& probleme();
-  inline const Probleme_base& probleme() const;
+  inline const Sondes& les_sondes() const { return les_sondes_; }
+  inline Sondes& les_sondes() { return les_sondes_; }
+  inline Probleme_base& probleme() { return mon_probleme.valeur(); }
+  inline const Probleme_base& probleme() const { return mon_probleme.valeur(); }
 
   void init();
   void set_param(Param& param);
@@ -134,60 +134,24 @@ public:
   inline int lpost(double, double) const;
   inline int lpost_champ(double) const;
   inline int lpost_stat(double) const;
-  inline int ind_post(int);
-  inline double dt_post_ch() const
-  {
-    return dt_post_ch_;
-  };
-  inline Nom nom_fich() const
-  {
-    return nom_fich_;
-  };
+  inline int ind_post(int nb_pas_dt) { return (nb_pas_dt%nb_pas_dt_post_==0) ? 1 : 0; }
+
+  inline double dt_post_ch() const { return dt_post_ch_; }
+  inline Nom nom_fich() const { return nom_fich_; };
   // int contient_champ_fonc(const Motcle& );
   inline int lpost_tab(double) const;
-  static inline LIST(Nom)& noms_fichiers_sondes()
-  {
-    return noms_fichiers_sondes_;
-  };
-  inline int& est_le_premier_postraitement_pour_nom_fich()
-  {
-    return est_le_premier_postraitement_pour_nom_fich_;
-  };
-  inline int& est_le_dernier_postraitement_pour_nom_fich()
-  {
-    return est_le_dernier_postraitement_pour_nom_fich_;
-  };
-  inline Operateurs_Statistique_tps& les_statistiques()
-  {
-    return les_statistiques_;
-  };
-  inline int sondes_demande()
-  {
-    return sondes_demande_;
-  }
-  inline int champs_demande()
-  {
-    return champs_demande_;
-  }
-  inline int stat_demande() const
-  {
-    return stat_demande_;
-  }
-  inline int stat_demande_definition_champs() const
-  {
-    return stat_demande_definition_champs_;
-  }
-  inline int tableaux_demande()
-  {
-    return tableaux_demande_;
-  }
-  inline bool besoin_postraiter_champs()
-  {
-    return (champs_demande_) || (stat_demande_) || (stat_demande_definition_champs_);
-  }
-
-  inline LIST(Nom)& noms_champs_a_post();
-  inline const Liste_Champ_Generique& champs_post_complet() const;
+  static inline LIST(Nom)& noms_fichiers_sondes() { return noms_fichiers_sondes_; }
+  inline int& est_le_premier_postraitement_pour_nom_fich() { return est_le_premier_postraitement_pour_nom_fich_; }
+  inline int& est_le_dernier_postraitement_pour_nom_fich() { return est_le_dernier_postraitement_pour_nom_fich_; }
+  inline Operateurs_Statistique_tps& les_statistiques() { return les_statistiques_; }
+  inline int sondes_demande() { return sondes_demande_; }
+  inline int champs_demande() { return champs_demande_; }
+  inline int stat_demande() const { return stat_demande_; }
+  inline int stat_demande_definition_champs() const { return stat_demande_definition_champs_; }
+  inline int tableaux_demande() { return tableaux_demande_; }
+  inline bool besoin_postraiter_champs() { return (champs_demande_) || (stat_demande_) || (stat_demande_definition_champs_); }
+  inline LIST(Nom)& noms_champs_a_post() { return noms_champs_a_post_; }
+  inline const Liste_Champ_Generique& champs_post_complet() const { return champs_post_complet_; }
 
   //On distingue le postraitement d un tableau et d un tenseur
   int postraiter(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int& ncomp,
@@ -239,8 +203,7 @@ public:
 
 protected:
 
-  int est_le_premier_postraitement_pour_nom_fich_;
-  int est_le_dernier_postraitement_pour_nom_fich_;
+  int est_le_premier_postraitement_pour_nom_fich_, est_le_dernier_postraitement_pour_nom_fich_;
   double dt_post_ch_ ;           // ecriture des champs sur fichier nom_du_cas.lml tous les dt_post
   double dt_post_stat_;         // ecriture des statistiques sur fichier nom_du_cas.lml tous les dt_stat
   double dt_post_tab;           // ecriture des tableaux d'entiers sur fichier nom_du_cas.lml
@@ -272,100 +235,14 @@ protected:
 
 private :
   static LIST(Nom) noms_fichiers_sondes_;
-  int sondes_demande_;
-  int champs_demande_;
-  int stat_demande_;
-  int stat_demande_definition_champs_;
-  int binaire;
-  int tableaux_demande_;
-  Nom nom_fich_;
-  Nom format;
-  double temps_;
+  int sondes_demande_, champs_demande_, stat_demande_, stat_demande_definition_champs_;
+  int binaire, tableaux_demande_;
+  Nom nom_fich_, format, option_para;
+  double temps_, dernier_temps; // temps du precedent appel a postraiter()
   static Motcles formats_supportes;
   REF(Domaine) le_domaine;
-  double dernier_temps; // temps du precedent appel a postraiter()
-  Nom option_para;
-
   REF(Zone_dis_base) zone_dis_pour_faces;
 };
-
-
-
-
-// Description:
-//    Renvoie les Sondes associees au postraitement.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sondes&
-//    Signification: les Sondes associees au postraitement
-//    Contraintes: reference cosntante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline const Sondes& Postraitement::les_sondes() const
-{
-  return les_sondes_;
-}
-inline Sondes& Postraitement::les_sondes()
-{
-  return les_sondes_;
-}
-
-inline LIST(Nom)& Postraitement::noms_champs_a_post()
-{
-  return noms_champs_a_post_;
-}
-
-
-inline const Liste_Champ_Generique& Postraitement::champs_post_complet() const
-{
-  return champs_post_complet_;
-}
-
-// Description:
-//    Renvoie une reference sur le probleme associe.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Probleme_base&
-//    Signification: le probleme associe
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Probleme_base& Postraitement::probleme()
-{
-  return mon_probleme.valeur();
-}
-
-
-// Description:
-//    Renvoie une reference sur le probleme associe.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Probleme_base&
-//    Signification: le probleme associe
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline const Probleme_base& Postraitement::probleme() const
-{
-  return mon_probleme.valeur();
-}
-
 
 inline int Postraitement::lpost(double temps_courant, double dt_post) const
 {
@@ -381,15 +258,6 @@ inline int Postraitement::lpost(double temps_courant, double dt_post) const
       return ( i>j );
     }
 }
-
-inline int Postraitement::ind_post(int nb_pas_dt)
-{
-  if (nb_pas_dt%nb_pas_dt_post_==0)
-    return 1;
-  else
-    return 0;
-}
-
 
 // Description:
 //    Test de postraitement en tenant compte de l'evolution en temps
@@ -415,34 +283,11 @@ inline int Postraitement::ind_post(int nb_pas_dt)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-inline int Postraitement::lpost_champ(double temps_courant) const
-{
-  return lpost(temps_courant, dt_post_ch_);
-}
+inline int Postraitement::lpost_champ(double temps_courant) const { return lpost(temps_courant, dt_post_ch_); }
+inline int Postraitement::lpost_stat(double temps_courant) const { return lpost(temps_courant, dt_post_stat_); }
+inline int Postraitement::lpost_tab(double temps_courant) const { return lpost(temps_courant, dt_post_tab); }
+inline int& Postraitement::compteur_champ_stat() { return nb_champs_stat_; }
+inline const double& Postraitement::tstat_deb() const { return tstat_deb_; }
+inline const double& Postraitement::tstat_fin() const { return tstat_fin_; }
 
-inline int Postraitement::lpost_stat(double temps_courant) const
-{
-  return lpost(temps_courant, dt_post_stat_);
-}
-
-inline int Postraitement::lpost_tab(double temps_courant) const
-{
-  return lpost(temps_courant, dt_post_tab);
-}
-
-inline int& Postraitement::compteur_champ_stat()
-{
-  return nb_champs_stat_;
-}
-inline const double& Postraitement::tstat_deb() const
-{
-  return tstat_deb_;
-}
-inline const double& Postraitement::tstat_fin() const
-{
-  return tstat_fin_;
-}
-
-
-#endif
-
+#endif /* Postraitement_included */

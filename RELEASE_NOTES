@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
+09/11/21 (TRUST)  Fix         : Several problems solving different physics on a same domain produced corrupted lml/lata/med files (mesh repeated) during post-processing
 29/10/21 (TRUST)  Keyword     : Syntax change for Champ_Fonc_tabule. The new syntax is Champ_fonc_tabule { pb field } nbcomp { table } (the old syntax was Champ_fonc_tabule field nbcomp { table } )
 29/10/21 (TRUST)  Keyword     : Syntax change for Champ_Fonc_Fonction, Champ_Fonc_Fonction_txyz, and Sutherland where the problem name should be passed before that of the field
 29/10/21 (TRUST)  Major Change: Tables defined with a Champ_fonc_tabule should be strictly monotonic (declaring a multiple times and/or a decreasing time order will stop the code execution) 

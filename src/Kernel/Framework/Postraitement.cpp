@@ -1080,6 +1080,10 @@ int Postraitement::lire_tableaux_a_postraiter(Entree& s)
   return 1;
 }
 
+// E Saikali : on ajoute cette liste qui est utile pour un probleme couple
+// dans le cas ou on ecrit sur le meme domaine
+static Noms liste_dom_ecrit;
+
 // Description:
 //    Initialise le postraitement.
 //    Cree le fichier associe au postraitement, ecrit
@@ -1215,13 +1219,16 @@ void Postraitement::init()
       }
   }
 
+  const Nom token = nom_du_domaine+"_"+nom_fich_; // format est deja dans nom_fich_ (xxx.lml, lata ou med)
+  const bool already_written_domain = liste_dom_ecrit.contient_(token);
 
   ////////////////////////////////////////////////////////////////////
   // If domain is not time dependant, we write it in the ::init() method
   // else we write it at each postraiter_champs() call
   // PL: On ecrit le domaine que si le postraitement des champs est demande
-  if(!dom.deformable() && besoin_postraiter_champs())
+  if(!dom.deformable() && besoin_postraiter_champs() && !already_written_domain)
     {
+      liste_dom_ecrit.add(token); // on ajoute dans la liste !
       format_post->ecrire_domaine_dis(dom,zone_dis_pour_faces,est_le_premier_postraitement_pour_nom_fich_);
       // zone_dis_pour_faces non_nul() si on demande un postraitement d'un champ aux faces:
       if (zone_dis_pour_faces.non_nul() && Motcle(format) != "LML")
