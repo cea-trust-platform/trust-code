@@ -20,7 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Champ_Fonc_Fonction_included
 #define Champ_Fonc_Fonction_included
 
@@ -40,7 +39,6 @@
 class Champ_Fonc_Fonction : public Champ_Fonc_Tabule
 {
   Declare_instanciable(Champ_Fonc_Fonction);
-
 };
 
 class Sutherland : public Champ_Fonc_Fonction

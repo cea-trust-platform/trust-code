@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,14 +41,6 @@
 class Champ_Fonc_Fonction_txyz : public Champ_Fonc_Fonction
 {
   Declare_instanciable(Champ_Fonc_Fonction_txyz);
-
-public :
-
-protected :
-
-private :
-
 };
 
-#endif
-
+#endif /* Champ_Fonc_Fonction_txyz_included */

@@ -25,10 +25,7 @@
 Implemente_instanciable(Champ_Fonc_Fonction_txyz,"Champ_Fonc_Fonction_txyz",Champ_Fonc_Fonction);
 // XD champ_fonc_fonction_txyz champ_fonc_fonction champ_fonc_fonction_txyz -1 this refers to a field that is a function of another field and time and/or space coordinates
 
-Sortie& Champ_Fonc_Fonction_txyz::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Champ_Fonc_Fonction_txyz::printOn(Sortie& os) const { return os; }
 
 // Voir Champ_Fonction_fonction
 // Lecture du Champ a partir d'un flot d'entree (On ne sait traiter que les champs scalaires.)
@@ -39,6 +36,7 @@ Entree& Champ_Fonc_Fonction_txyz::readOn(Entree& is)
   is >> val1;
   noms_pbs_.add(val1);
   is >> val2;
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Fonction_txyz", val1, val2);
   noms_champs_parametre_.add(val2);
   is >> nbcomp;
   if(nbcomp==1)

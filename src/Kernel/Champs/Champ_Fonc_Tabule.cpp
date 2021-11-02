@@ -31,15 +31,10 @@ Implemente_instanciable(Champ_Fonc_Tabule,"Champ_Fonc_Tabule",Champ_Fonc_base);
 
 #include <string>
 #include <algorithm>
+
 void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param)
 {
-  std::string s((const char*)val1);
-  // lambda checking whehter a char is not a digit:
-  auto checkNotDig = [](unsigned char c)
-  {
-    return !std::isdigit(c);
-  };
-  bool isNum = !s.empty() && std::find_if(s.begin(), s.end(), checkNotDig) == s.end();
+  const bool isNum = Check_if_int(val1);
   if (!isNum) // val1 is not a num - this is the correct new syntax
     {
       param = val1;
@@ -52,26 +47,45 @@ void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax(const char * nom_class, const N
       Cerr << "Error in call to " << nom_class << ":" << finl;
       Cerr << "The syntax has changed in version 1.8.2." << finl;
       Cerr << "You should now pass the dimension/number of components AFTER the field/parameter name." << finl;
-      Cerr << "Please update your dataset or contact TRUST support team" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      exit();
+      Cerr << "Please update your dataset or contact TRUST support team." << finl;
+      Process::exit();
     }
 }
 
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
+void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184(const char * nom_class, const Nom& prob, const Nom& field)
+{
+  if ((std::string)nom_class == "Champ_Fonc_Tabule")
+    {
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "Error in call to " << nom_class << ":" << finl;
+      Cerr << "The syntax has changed in version 1.8.4. It should be now defined as follows : " << finl;
+      Cerr << finl << "  " << nom_class << "  {  problem_name(s)   field_name  }  dimension  { ... your_table ... }" << finl;
+      Cerr << finl << "Please update your dataset or contact TRUST support team." << finl;
+      Process::exit();
+    }
+  else
+    {
+      const bool isNum = Check_if_int(prob), isNum2 = Check_if_int(field);
+      if (isNum || isNum2)
+        {
+          Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+          Cerr << "Error in call to " << nom_class << ":" << finl;
+          Cerr << "The syntax has changed in version 1.8.4. It should be now defined as follows : " << finl;
+          Cerr << finl << "  " << nom_class << "   problem_name   field_name   dimension   { ... your_expression ... }" << finl;
+          Cerr << finl << "Please update your dataset or contact TRUST support team." << finl;
+          Process::exit();
+        }
+    }
+}
+
+bool Champ_Fonc_Tabule::Check_if_int(const Nom& val)
+{
+  std::string s((const char*)val);
+  // lambda checking whehter a char is not a digit:
+  auto checkNotDig = [](unsigned char c) {  return !std::isdigit(c); };
+  return (!s.empty() && std::find_if(s.begin(), s.end(), checkNotDig) == s.end());
+}
+
 Sortie& Champ_Fonc_Tabule::printOn(Sortie& os) const
 {
   return os;
@@ -81,9 +95,7 @@ Sortie& Champ_Fonc_Tabule::printOn(Sortie& os) const
 //     Lecture du Champ a partir d'un flot d'entree,
 //     (On ne sait traiter que les champs scalaires.)
 //     exemple:
-//     Champ_Fonc_Tabule ch
-//     Lire ch
-//     champ  (ch est fonction d'un champ ch)
+//     Champ_Fonc_Tabule { probleme ch }
 //     1 (nombre de composantes)
 //     {
 //     2
@@ -108,7 +120,8 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
   const Motcle accolade_ouverte("{"), accolade_fermee("}");
   int nbcomp;
   is >> motlu;
-  assert (motlu == accolade_ouverte);
+  if (motlu != accolade_ouverte) Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Tabule","rien","rien");
+
   while (true)
     {
       is >> motlu;

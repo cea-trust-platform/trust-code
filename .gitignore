@@ -18,6 +18,7 @@ md5.check
 __pycache__
 .toto
 .check_sources.ok
+make.lock
 
 # XDATA stuff
 
@@ -51,6 +52,7 @@ Outils/Python_modules/distribute-0.6.28/
 Outils/Python_modules/distribute-0.7.3/
 Outils/ICoCo/ICoCo_src/share/swig/install/
 
+
 # Doc
 doc/Coverage/dico.pkl
 doc/Coverage/html/
@@ -71,9 +73,13 @@ src/Readme_eclipse.pdf
 doc/TRUST/Tutorial/ICoCo_tutorial.pdf
 doc/TRUST/Tutorial/TRUST_tutorial.pdf
 doc/TRUST/Tutorial/Baltik_tutorial.pdf
+doc/tmp
+doc/tmp_files
 
 # Eclipse
 .cproject
 .project
 .settings/
+.pydevproject
+
 

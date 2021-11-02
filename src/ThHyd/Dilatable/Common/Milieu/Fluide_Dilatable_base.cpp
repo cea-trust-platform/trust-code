@@ -129,18 +129,10 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
       Nom prob;
       is>>prob;
       is>>motlu;
-      if (motlu!="MU0")
-        {
-          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          Process::exit();
-        }
+      if (motlu!="MU0") warn_syntax_Sutherland();
       is>>mu0;
       is>>motlu;
-      if (motlu!="T0")
-        {
-          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          Process::exit();
-        }
+      if (motlu!="T0") warn_syntax_Sutherland();
       is>>T0;
       is>>motlu;
       if (motlu=="SLAMBDA")
@@ -148,11 +140,7 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
           is >> Slambda;
           is >> motlu;
         }
-      if (motlu!="C")
-        {
-          Cerr<<"A specification of kind : sutherland mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected."<<finl;
-          Process::exit();
-        }
+      if (motlu!="C") warn_syntax_Sutherland();
       is>>C;
 
       mu.typer("Sutherland");
@@ -180,6 +168,16 @@ int Fluide_Dilatable_base::lire_motcle_non_standard(const Motcle& mot, Entree& i
       return -1;
     }
   else return Fluide_base::lire_motcle_non_standard(mot,is);
+}
+
+void Fluide_Dilatable_base::warn_syntax_Sutherland()
+{
+  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+  Cerr << "Error in call to Sutherland function :" << finl;
+  Cerr << "The syntax has changed in version 1.8.4." << finl;
+  Cerr << finl << "  A specification of kind : sutherland problem_name mu0 1.85e-5 T0 300 [Slambda 10] C 10 was expected. "<<finl;
+  Cerr << finl << "Please update your dataset or contact TRUST support team." << finl;
+  Process::exit();
 }
 
 // Description:

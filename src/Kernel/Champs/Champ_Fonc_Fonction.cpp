@@ -25,19 +25,13 @@
 
 Implemente_instanciable(Champ_Fonc_Fonction,"Champ_Fonc_Fonction",Champ_Fonc_Tabule);
 
-
-Sortie& Champ_Fonc_Fonction::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Champ_Fonc_Fonction::printOn(Sortie& os) const { return os; }
 
 // Description:
 //     Lecture du Champ a partir d'un flot d'entree,
 //     (On ne sait traiter que les champs scalaires.)
 //     exemple:
-//     Champ_Fonc_Fonction ch
-//     Lire ch
-//     temperature  (ch est fonction de la temperature)
+//     Champ_Fonc_Fonction probleme ch
 //     1 (nombre de composantes)
 //     {
 //     2
@@ -63,6 +57,7 @@ Entree& Champ_Fonc_Fonction::readOn(Entree& is)
   is >> val1;
   noms_pbs_.add(val1);
   is >> val2;
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Fonction", val1, val2);
   noms_champs_parametre_.add(val2);
   is >> nbcomp;
   fixer_nb_comp(nbcomp);
@@ -74,45 +69,13 @@ Implemente_instanciable_sans_constructeur(Sutherland,"Sutherland",Champ_Fonc_Fon
 
 Sutherland::Sutherland() : A_(-1.), C_(-1.), Tref_(-1.) { }
 
-Sortie& Sutherland::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Sutherland::printOn(Sortie& os) const { return os; }
 
-// Description:
-//     Lecture du Champ a partir d'un flot d'entree,
-//     (On ne sait traiter que les champs scalaires.)
-//     exemple:
-//     Sutherland ch
-//     Lire ch
-//     temperature  (ch est fonction de la temperature)
-//     1 (nombre de composantes)
-//     {
-//     2
-//     0 500 0 250  (ch(0)=0 && ch(500)=250
-//     }
-// Precondition: seul les champs scalaires sont traites
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: accolade fermante attendue
-// Exception: accolade ouvrante attendue
-// Effets de bord:
-// Postcondition:
 Entree& Sutherland::readOn(Entree& is)
 {
-
   Cerr<< "Sutherland::readOn usage { prob A a C c TREF Tref }"<<finl;
-  Cerr<<"== Champ_Fonc_Fonction prob Temperature 1 a*(c+Tref)/(c+val)*(val/Tref)^1.5"<<finl;
-  Motcle accferme="}";
-  Motcle accouverte="{";
-
-  Motcle motlu;
+  Cerr<<"== Champ_Fonc_Fonction problem_name Temperature 1 a*(c+Tref)/(c+val)*(val/Tref)^1.5"<<finl;
+  Motcle accferme="}", accouverte="{", motlu;
   is >> motlu;
   Cerr<<"Reading Sutherland"<<finl;
   if (motlu != accouverte)
@@ -121,7 +84,6 @@ Entree& Sutherland::readOn(Entree& is)
       abort();
     }
 
-  //   Motcles les_mots(8);
   Motcles les_mots(3);
   {
     les_mots[0] = "A";
@@ -194,6 +156,3 @@ void Sutherland::lire_expression()
   Champ_Fonc_Fonction::readOn(echaine);
   Cerr<<table().val(2)<<finl;
 }
-
-
-

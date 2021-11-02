@@ -29,8 +29,6 @@
 
 class Zone_dis_base;
 
-
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -47,50 +45,38 @@ class Champ_Fonc_Tabule : public Champ_Fonc_base
   Declare_instanciable(Champ_Fonc_Tabule);
 
 public:
-
-  inline void mettre_a_jour(double un_temps);
-  inline int initialiser(const double& un_temps);
   using Champ_Fonc_base::valeurs;
-  inline DoubleTab& valeurs();
-  inline const DoubleTab& valeurs() const;
+
+  inline int initialiser(const double& un_temps);
+  inline void mettre_a_jour(double un_temps);
   inline void associer_zone_dis_base(const Zone_dis_base&);
+  inline const DoubleTab& valeurs() const;
   inline const Zone_dis_base& zone_dis_base() const;
   inline const Champ_Fonc& le_champ_tabule_discretise() const;
-  inline Champ_Fonc& le_champ_tabule_discretise();
-  inline const Table& table() const;
-  inline Table& table();
-  inline DoubleVect& valeur_a_elem(const DoubleVect& position,
-                                   DoubleVect& valeurs,
-                                   int le_poly) const ;
-  inline virtual double valeur_a_elem_compo(const DoubleVect& position,
-                                            int le_poly,int ncomp) const ;
-  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleTab& valeurs) const;
+  inline Champ_Fonc& le_champ_tabule_discretise() { return le_champ_tabule_dis; }
+  inline const Table& table() const { return la_table; }
+  inline Table& table() { return la_table; }
+  inline DoubleTab& valeurs();
+  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const ;
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const;
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
   inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                              DoubleVect&, int) const;
+  inline Noms& noms_champs_parametre() { return noms_champs_parametre_; };
+  inline Noms& noms_problemes() { return noms_pbs_; };
+
+  inline virtual double valeur_a_elem_compo(const DoubleVect& position, int le_poly,int ncomp) const ;
   virtual Champ_base& affecter_(const Champ_base& ) ;
-  inline Noms& noms_champs_parametre()
-  {
-    return noms_champs_parametre_;
-  };
 
-  inline Noms& noms_problemes()
-  {
-    return noms_pbs_;
-  };
-
+  // Methodes utiles pour notifier l'utilisateur suite au changement du syntaxe
   static void Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param);
+  static void Warn_old_chp_fonc_syntax_V_184(const char * nom_class, const Nom& pb, const Nom& field);
+  static bool Check_if_int(const Nom& val);
 
 protected:
-
-  Noms noms_champs_parametre_;
-  Noms noms_pbs_;
+  Noms noms_champs_parametre_, noms_pbs_;
   Nom nom_domaine;
   Table la_table;
   Champ_Fonc le_champ_tabule_dis;
-
 };
 
 // Description:
@@ -282,62 +268,4 @@ inline const Champ_Fonc& Champ_Fonc_Tabule::le_champ_tabule_discretise() const
   return le_champ_tabule_dis;
 }
 
-// Description:
-//    Renvoie le champ tabule calcule
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Champ_Fonc&
-//    Signification: le champ tabule calcule
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Champ_Fonc& Champ_Fonc_Tabule::le_champ_tabule_discretise()
-{
-  return le_champ_tabule_dis;
-}
-
-// Description:
-//    Renvoie la table du champ tabule.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Table&
-//    Signification: la table du champ tabule
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline const Table& Champ_Fonc_Tabule::table() const
-{
-  return la_table;
-}
-
-// Description:
-//    Renvoie la table du champ tabule
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Table&
-//    Signification: la table du champ tabule
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Table& Champ_Fonc_Tabule::table()
-{
-  return la_table;
-}
-
-#endif
+#endif /* Champ_Fonc_Tabule_included */
