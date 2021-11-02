@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,8 @@
 #include <Param.h>
 
 Implemente_instanciable(Option_CoviMAC,"Option_CoviMAC",Interprete);
-// Option_CoviMAC interprete Option_CoviMAC 1 Class of CoviMAC options.
+// XD Option_CoviMAC interprete Option_CoviMAC 1 Class of CoviMAC options.
+// XD attr interp_ve1 entier interp_ve1 1 Flag to enable a first order velocity face-to-element interpolation (the default value is 0 which means a second order interpolation)
 
 int Option_CoviMAC::interp_ve1 = 0;
 

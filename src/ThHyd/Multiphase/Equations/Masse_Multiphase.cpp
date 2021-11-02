@@ -37,6 +37,7 @@
 #include <EChaine.h>
 
 Implemente_instanciable_sans_constructeur(Masse_Multiphase,"Masse_Multiphase",Convection_Diffusion_std);
+// XD Masse_Multiphase eqn_base Masse_Multiphase -1 Mass consevation equation for a multi-phase problem where the unknown is the alpha (void fraction)
 
 Masse_Multiphase::Masse_Multiphase()
 {

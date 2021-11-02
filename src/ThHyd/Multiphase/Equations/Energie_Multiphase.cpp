@@ -43,6 +43,7 @@
 #define old_forme
 
 Implemente_instanciable(Energie_Multiphase,"Energie_Multiphase",Convection_Diffusion_std);
+// XD Energie_Multiphase eqn_base Energie_Multiphase -1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature
 
 // Description:
 //    Simple appel a: Convection_Diffusion_std::printOn(Sortie&)

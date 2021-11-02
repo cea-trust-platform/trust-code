@@ -201,10 +201,7 @@ discretize interprete discretiser -1 Keyword to discretise a problem problem_nam
 condinit objet_lecture nul 0 Initial condition.
   attr nom chaine nom 0 Name of initial condition field.
   attr ch field_base ch 0 Type field and the initial values.
-condinits objet_lecture nul 0 Initial conditions.
-  attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
-  attr condinit condinit condinit 0 CI
-  attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
+condinits listobj condinits -1 condinit 0 Initial conditions.
 condlim_base objet_u condlim_base 0 Basic class of boundary conditions.
 condlimlu objet_lecture nul 0 Boundary condition specified.
   attr bord chaine bord 0 Name of the edge where the boundary condition applies.
@@ -376,13 +373,20 @@ simpler solveur_implicite_base simpler 1 Simpler method for incompressible syste
 piso simpler piso -1 Piso (Pressure Implicit with Split Operator) - method to solve N_S.
   attr seuil_convergence_implicite floattant seuil_convergence_implicite 1 Convergence criteria.
   attr nb_corrections_max entier nb_corrections_max 1 Maximum number of corrections performed by the PISO algorithm to achieve the projection of the velocity field. The algorithm may perform less corrections then nb_corrections_max if the accuracy of the projection is sufficient. (By default nb_corrections_max is set to 21).
+ice piso ice -1 Implicit Continuous-fluid Eulerian solver which is useful for a multiphase problem. Robust pressure reduction resolution.
+  attr criteres_convergence criteres_convergence criteres_convergence 1 Set the convergence thresholds for each unknown (i.e: alpha, temperature, velocity and pressure). The default values are respectively 0.01, 0.1, 0.01 and 100 
+criteres_convergence interprete nul 0 convergence criteria
+  attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
+  attr inco chaine inco 1 Unknown (i.e: alpha, temperature, velocity and pressure)
+  attr val floattant val 1 Convergence threshold
+  attr acof chaine(into=["}"]) acof 0 Closing curly bracket.
 implicite piso implicite -1 similar to PISO, but as it looks like a simplified solver, it will use fewer timesteps. But it may run faster because the pressure matrix is not re-assembled and thus provides CPU gains.
 simple piso simple -1 SIMPLE type algorithm
   attr relax_pression floattant relax_pression 1 Value between 0 and 1 (by default 1), this keyword is used only by the SIMPLE algorithm for relaxing the increment of pressure.
 solveur_u_p simple solveur_u_p 1 similar to simple.
 schema_implicite_base schema_temps_base schema_implicite_base -1 Basic class for implicite time scheme.
   attr max_iter_implicite entier max_iter_implicite 1 Maximum number of iterations allowed for the solver (by default 200).
-  attr solveur solveur_implicite_base solveur 0 This keyword is used to designate the solver selected in the situation where the time scheme is an implicit scheme. solver is the name of the solver that allows equation diffusion and convection operators to be set as implicit terms. Keywords corresponding to this functionality are Simple (SIMPLE type algorithm), Simpler (SIMPLER type algorithm) for incompressible systems, Piso (Pressure Implicit with Split Operator), and Implicite (similar to PISO, but as it looks like a simplified solver, it will use fewer timesteps. But it may run faster because the pressure matrix is not re-assembled and thus provides CPU gains. NL2 Advice: Since the 1.6.0 version, we recommend to use first the Implicite or Simple, then Piso, and at least Simpler. Because the two first give a fastest convergence (several times) than Piso and the Simpler has not been validated. It seems also than Implicite and Piso schemes give better results than the Simple scheme when the flow is not fully stationary. Thus, if the solution obtained with Simple is not stationary, it is recommended to switch to Piso or Implicite scheme.
+  attr solveur solveur_implicite_base solveur 0 This keyword is used to designate the solver selected in the situation where the time scheme is an implicit scheme. solver is the name of the solver that allows equation diffusion and convection operators to be set as implicit terms. Keywords corresponding to this functionality are Simple (SIMPLE type algorithm), Simpler (SIMPLER type algorithm) for incompressible systems, Piso (Pressure Implicit with Split Operator), and Implicite (similar to PISO, but as it looks like a simplified solver, it will use fewer timesteps, and ICE (for PB_multiphase). But it may run faster because the pressure matrix is not re-assembled and thus provides CPU gains. NL2 Advice: Since the 1.6.0 version, we recommend to use first the Implicite or Simple, then Piso, and at least Simpler. Because the two first give a fastest convergence (several times) than Piso and the Simpler has not been validated. It seems also than Implicite and Piso schemes give better results than the Simple scheme when the flow is not fully stationary. Thus, if the solution obtained with Simple is not stationary, it is recommended to switch to Piso or Implicite scheme.
 un_pb objet_lecture nul 0 pour les groupes
   attr mot ref_Pb_base mot 0 the string
 list_un_pb listobj nul 1 un_pb 1 pour les groupes
@@ -515,7 +519,7 @@ frontiere_ouverte_pression_imposee_orlansky neumann frontiere_ouverte_pression_i
 frontiere_ouverte_pression_moyenne_imposee neumann frontiere_ouverte_pression_moyenne_imposee 0 Class for open boundary with pressure mean level imposed.
   attr pext floattant pext 0 Mean pressure.
 frontiere_ouverte neumann frontiere_ouverte -1 Boundary outlet condition on the boundary called bord (edge) (diffusion flux zero). This condition must be associated with a boundary outlet hydraulic condition.
-  attr var_name chaine(into=["T_ext","C_ext","Y_ext","K_Eps_ext","Fluctu_Temperature_ext","Flux_Chaleur_Turb_ext","V2_ext"]) var_name 0 Field name.
+  attr var_name chaine(into=["T_ext","C_ext","Y_ext","K_Eps_ext","Fluctu_Temperature_ext","Flux_Chaleur_Turb_ext","V2_ext","a_ext"]) var_name 0 Field name.
   attr ch front_field_base ch 0 Boundary field type.
 frontiere_ouverte_temperature_imposee dirichlet frontiere_ouverte_temperature_imposee -1 Imposed temperature condition at the open boundary called bord (edge) (in the case of fluid inlet). This condition must be associated with an imposed inlet velocity condition. The imposed temperature value is expressed in oC or K.
   attr ch front_field_base ch 0 Boundary field type.
@@ -862,6 +866,7 @@ champ_fonc_fonction champ_fonc_tabule champ_fonc_fonction 0 Field that is a func
   attr dim suppress_param dim 1 del
   attr bloc suppress_param bloc 1 del
   attr inco suppress_param inco 1 del
+  attr problem_name ref_Pb_base problem_name 0 Name of problem.
   attr inco chaine inco 0 Name of the field (for example: temperature).
   attr expression listchaine expression 0 Number of field components followed by the analytical expression for each field component.
 frontiere_ouverte_gradient_pression_impose_vefprep1b frontiere_ouverte_gradient_pression_impose frontiere_ouverte_gradient_pression_impose_vefprep1b -1 Keyword for an outlet boundary condition in VEF P1B/P1NC on the gradient of the pressure.
@@ -1355,3 +1360,56 @@ interpolation_ibm_elem_fluid interpolation_ibm_base ibm_element_fluide 1 Immerse
   attr elements_fluides field_base elements_fluides 1 Node field giving the number of the element (cell) containing the pure fluid point
   attr correspondance_elements field_base correspondance_elements 1 Cell field giving the SALOME cell number
 
+
+saturation_base fluide_base saturation_base 1 Basic class for phase change management (used in pb_multiphase)
+saturation_sodium saturation_base saturation_sodium -1 Class for saturation sodium
+  attr P_ref floattant P_ref 1 Use to fix the pressure value in the closure law. If not specified, the value of the pressure unknown will be used
+  attr T_ref floattant T_ref 1 Use to fix the temperature value in the closure law. If not specified, the value of the temperature unknown will be used
+saturation_constant saturation_base saturation_constant -1 Class for saturation constant
+  attr P_sat floattant P_sat 1 Define the saturation pressure value (this is a required parameter)
+  attr T_sat floattant T_sat 1 Define the saturation temperature value (this is a required parameter)
+  attr Lvap floattant Lvap 1 Latent heat of vaporization
+  attr Hlsat floattant Hlsat 1 Liquid saturation enthalpy
+  attr Hvsat floattant Hvsat 1 Vapor saturation enthalpy
+flux_interfacial source_base flux_interfacial 0 Source term of mass transfer between phases connected by the saturation object defined in saturation_xxxx
+travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
+frottement_interfacial source_base frottement_interfacial 0 Source term which corresponds to the phases friction at the interface
+  attr bulles chaine bulles 1 Correlation for friction in bubbly flows
+  attr bloc_bulles bloc_b bloc_bulles 1 not set
+  attr sonnenburg chaine sonnenburg 1 Correlation for drift flux de Sonnenburg
+  attr wallis chaine wallis 1 Correlation for friction in annular flows
+bloc_b interprete nul 1 not set
+  attr rayon_bulle floattant rayon_bulle 1 Radius of the bubbles (useful for the correlation and it is required)
+  attr coeff_derive floattant coeff_derive 1 Drift coefficient (useful for the correlation and it is required)
+  
+typer_lire interprete typer_lire 0 TRUST interpretor which declares and reads the object
+  attr object_name chaine object_name 0 Name of the object that will be read
+  attr object_type fluide_base object_type 1 Type of the instanced object. TODO: in XDATA, we use it for fluids only
+  attr proprietes bloc_proprietes propriete 1 Read the properties of the object
+bloc_proprietes interprete nul 1 definition of object properties. TODO: in XDATA we use it for fluids only
+  attr beta_th field_base beta_th 1 Thermal expansion (K-1).
+  attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
+  attr beta_co field_base beta_co 1 Volume expansion coefficient values in concentration.
+  attr rho field_base rho 1 Density (kg.m-3).
+  attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
+  attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
+  attr P_ref floattant P_ref 1 Use to set the pressure value in the closure law. If not specified, the value of the pressure unknown will be used
+  attr T_ref floattant T_ref 1 Use to set the temperature value in the closure law. If not specified, the value of the temperature unknown will be used
+phases interprete phases 0 Declare the phases that will be considered
+  attr problem_name ref_Pb_base problem_name 0 Name of problem.
+  attr phases_def bloc_phases phases_def 0 bloc to define phases
+bloc_phases interprete nul 1 not_set
+  attr liquide bloc_lecture liquide 1 definition of the liquid phase
+  attr gaz bloc_lecture gaz 1 definition of the gazeous phase
+fluide_reel_base fluide_base fluide_reel_base -1 Class for real fluids.
+Fluide_sodium_liquide fluide_reel_base Fluide_sodium_liquide -1 Class for Fluide_sodium_liquide
+  attr P_ref floattant P_ref 1 Use to set the pressure value in the closure law. If not specified, the value of the pressure unknown will be used
+  attr T_ref floattant T_ref 1 Use to set the temperature value in the closure law. If not specified, the value of the temperature unknown will be used
+Fluide_sodium_gaz fluide_reel_base Fluide_sodium_gaz -1 Class for Fluide_sodium_liquide
+  attr P_ref floattant P_ref 1 Use to set the pressure value in the closure law. If not specified, the value of the pressure unknown will be used
+  attr T_ref floattant T_ref 1 Use to set the temperature value in the closure law. If not specified, the value of the temperature unknown will be used
+StiffenedGas fluide_reel_base StiffenedGas -1 Class for Stiffened Gas
+  attr gamma floattant gamma 1 Heat capacity ratio (Cp/Cv)
+  attr pinf floattant pinf 1 Stiffened gas pressure constant (if set to zero, the state law becomes identical to that of perfect gases)
+  attr mu floattant mu 1 Dynamic viscosity
+  attr lambda floattant lambda 1 Thermal conductivity

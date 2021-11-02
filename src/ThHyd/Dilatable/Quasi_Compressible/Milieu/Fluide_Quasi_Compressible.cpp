@@ -43,14 +43,15 @@ Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quas
 // XD attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
 
 // XD bloc_sutherland objet_lecture nul 0 Sutherland law for viscosity mu(T)=mu0*((T0+C)/(T+C))*(T/T0)**1.5 and (optional) for conductivity lambda(T)=mu0*Cp/Prandtl*((T0+Slambda)/(T+Slambda))*(T/T0)**1.5
-// XD attr m chaine(into=["mu0"]) m 0 not_set
-// XD attr mu0 double mu0 0 not_set
-// XD attr t chaine(into=["T0"]) t 0 not_set
-// XD attr t0 double t0 0 not_set
-// XD attr ms chaine(into=["Slambda"]) ms 1 not_set
+// XD attr problem_name ref_Pb_base problem_name 0 Name of problem.
+// XD attr mu0 chaine(into=["mu0"]) mu0 0 not_set
+// XD attr mu0_val double mu0_val 0 not_set
+// XD attr t0 chaine(into=["T0"]) t0 0 not_set
+// XD attr t0_val double t0_val 0 not_set
+// XD attr Slambda chaine(into=["Slambda"]) Slambda 1 not_set
 // XD attr s double s 1 not_set
-// XD attr mc chaine(into=["C"]) mc 0 not_set
-// XD attr c double c 0 not_set
+// XD attr C chaine(into=["C"]) C 0 not_set
+// XD attr c_val double c_val 0 not_set
 
 Fluide_Quasi_Compressible::Fluide_Quasi_Compressible() : traitement_rho_gravite_(0),
   temps_debut_prise_en_compte_drho_dt_(-DMAXFLOAT),omega_drho_dt_(1.) { }
