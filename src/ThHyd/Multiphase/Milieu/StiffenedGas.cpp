@@ -37,6 +37,7 @@ Entree& StiffenedGas::readOn(Entree& is)
 
 void StiffenedGas::set_param(Param& param)
 {
+  Fluide_reel_base::set_param(param);
   param.ajouter("gamma",&gamma_);
   param.ajouter("pinf",&pinf_);
   param.ajouter("mu",&mu__);

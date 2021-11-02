@@ -32,8 +32,8 @@ Sortie& Saturation_constant::printOn(Sortie& os) const
 Entree& Saturation_constant::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("Tsat", &tsat_);
-  param.ajouter("Psat", &psat_);
+  param.ajouter("Tsat", &tsat_,Param::REQUIRED);
+  param.ajouter("Psat", &psat_,Param::REQUIRED);
   param.ajouter("Lvap", &lvap_);
   param.ajouter("Hlsat", &hls_);
   param.ajouter("Hvsat", &hvs_);
