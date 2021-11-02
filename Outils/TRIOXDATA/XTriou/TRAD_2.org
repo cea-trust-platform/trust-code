@@ -1374,10 +1374,8 @@ saturation_constant saturation_base saturation_constant -1 Class for saturation 
 flux_interfacial source_base flux_interfacial 0 Source term of mass transfer between phases connected by the saturation object defined in saturation_xxxx
 travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
 frottement_interfacial source_base frottement_interfacial 0 Source term which corresponds to the phases friction at the interface
-  attr bulles chaine bulles 1 Correlation for friction in bubbly flows
+  attr model chaine(into=["bulles","wallis","sonnenburg"]) model 1 Correlation for friction in bubbly flows if bulles, Correlation for drift flux of Sonnenburg if sonnenburg or Correlation for friction in annular flows if wallis
   attr bloc_bulles bloc_b bloc_bulles 1 not set
-  attr sonnenburg chaine sonnenburg 1 Correlation for drift flux de Sonnenburg
-  attr wallis chaine wallis 1 Correlation for friction in annular flows
 bloc_b interprete nul 1 not set
   attr rayon_bulle floattant rayon_bulle 1 Radius of the bubbles (useful for the correlation and it is required)
   attr coeff_derive floattant coeff_derive 1 Drift coefficient (useful for the correlation and it is required)
