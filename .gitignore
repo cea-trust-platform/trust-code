@@ -17,6 +17,7 @@ liste_cas
 md5.check
 __pycache__
 .toto
+.check_sources.ok
 
 # XDATA stuff
 
@@ -48,6 +49,7 @@ Outils/ICoCo/ICoCo_src/env_MEDICoCo.sh
 Outils/ICoCo/ICoCo_src/full_env_MEDICoCo.sh
 Outils/Python_modules/distribute-0.6.28/
 Outils/Python_modules/distribute-0.7.3/
+Outils/ICoCo/ICoCo_src/share/swig/install/
 
 # Doc
 doc/Coverage/dico.pkl

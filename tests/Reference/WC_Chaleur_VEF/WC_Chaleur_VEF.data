@@ -26,7 +26,7 @@ trianguler_fin dom
 # BEGIN PARTITION
 Partition dom
 {
-  Partition_tool tranche { tranches 1 4 }
+  Partition_tool metis { nb_parts 4 }
   Larg_joint 2
   zones_name DOM
 }
@@ -42,7 +42,7 @@ Scheme_euler_explicit sch
 Read sch
 {
   tinit 0.
-  nb_pas_dt_max 50
+  nb_pas_dt_max 15 
   tmax 1000.
   dt_min 1.e-11
   dt_max 5000.
