@@ -20,6 +20,8 @@ then
    then
       echo "   aucun "
    fi
+else
+   echo "traduction terminee"
 fi
 
 cd ..
