@@ -1748,7 +1748,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
           VecNorm(SecondMembrePetsc_, NORM_2, &residu(nbiter));
         }
     }
-  return Reason < 0 ? Reason : nbiter;
+  return Reason < 0 ? (int)Reason : nbiter;
 }
 #endif
 
