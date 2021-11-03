@@ -59,7 +59,7 @@ void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184(const char * nom_class, c
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
       Cerr << "Error in call to " << nom_class << ":" << finl;
       Cerr << "The syntax has changed in version 1.8.4. It should be now defined as follows : " << finl;
-      Cerr << finl << "  " << nom_class << "  {  problem_name(s)   field_name  }  dimension  { ... your_table ... }" << finl;
+      Cerr << finl << " " << nom_class << " {  problem_name field_name [ problem2_name field2_name ] } dimension { ... your_table ... }" << finl;
       Cerr << finl << "Please update your dataset or contact TRUST support team." << finl;
       Process::exit();
     }

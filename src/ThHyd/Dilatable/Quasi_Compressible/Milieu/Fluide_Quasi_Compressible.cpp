@@ -37,8 +37,6 @@ Implemente_instanciable_sans_constructeur(Fluide_Quasi_Compressible,"Fluide_Quas
 // XD attr traitement_rho_gravite chaine(into=["standard","moins_rho_moyen"]) traitement_rho_gravite 1 It may be :1) \`standard\` : the gravity term is evaluted with rho*g (It is the default). 2) \`moins_rho_moyen\` : the gravity term is evaluated with (rho-rhomoy) *g. Unknown pressure is then P*=P+rhomoy*g*z. It is useful when you apply uniforme pressure boundary condition like P*=0.
 // XD attr temps_debut_prise_en_compte_drho_dt double temps_debut_prise_en_compte_drho_dt 1 While time<value, dRho/dt is set to zero (Rho, volumic mass). Useful for some calculation during the first time steps with big variation of temperature and volumic mass.
 // XD attr omega_relaxation_drho_dt double omega_relaxation_drho_dt 1 Optional option to have a relaxed algorithm to solve the mass equation. value is used (1 per default) to specify omega.
-// XD attr beta_th suppress_param beta_th 1 suppress
-// XD attr beta_co suppress_param beta_co 1 suppress
 // XD attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
 // XD attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
 

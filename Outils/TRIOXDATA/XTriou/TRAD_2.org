@@ -1385,14 +1385,6 @@ typer_lire interprete typer_lire 0 TRUST interpretor which declares and reads th
   attr object_type fluide_base object_type 1 Type of the instanced object. TODO: in XDATA, we use it for fluids only
   attr proprietes bloc_proprietes propriete 1 Read the properties of the object
 bloc_proprietes interprete nul 1 definition of object properties. TODO: in XDATA we use it for fluids only
-  attr beta_th field_base beta_th 1 Thermal expansion (K-1).
-  attr mu field_base mu 1 Dynamic viscosity (kg.m-1.s-1).
-  attr beta_co field_base beta_co 1 Volume expansion coefficient values in concentration.
-  attr rho field_base rho 1 Density (kg.m-3).
-  attr cp field_base cp 1 Specific heat (J.kg-1.K-1).
-  attr lambda field_base lambda_u 1 Conductivity (W.m-1.K-1).
-  attr P_ref floattant P_ref 1 Use to set the pressure value in the closure law. If not specified, the value of the pressure unknown will be used
-  attr T_ref floattant T_ref 1 Use to set the temperature value in the closure law. If not specified, the value of the temperature unknown will be used
 phases interprete phases 0 Declare the phases that will be considered
   attr problem_name ref_Pb_base problem_name 0 Name of problem.
   attr phases_def bloc_phases phases_def 0 bloc to define phases
