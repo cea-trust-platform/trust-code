@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,69 +14,15 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Conv_VDF.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/6
+// File:        Eval_Amont_VDF_Elem2.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Conv
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
+#include <Eval_Amont_VDF_Elem2.h>
 
-
-#ifndef Eval_Conv_VDF_included
-#define Eval_Conv_VDF_included
-
-#include <Evaluateur_VDF.h>
-#include <Ref_Champ_Face.h>
-
-class Champ_Inc_base;
-
-//
-// .DESCRIPTION class Eval_Conv_VDF
-//
-// classe de base des evaluateurs de convection VDF
-
-//
-// .SECTION voir aussi Evaluateur_VDF
-//
-
-
-class Eval_Conv_VDF : public Evaluateur_VDF
-{
-
-public:
-
-  inline Eval_Conv_VDF();
-  inline Eval_Conv_VDF(const Eval_Conv_VDF&);
-  void associer(const Champ_Face& );
-  void mettre_a_jour( );
-  const Champ_Inc_base& vitesse() const;
-  Champ_Inc_base& vitesse();
-
-  // pour CRTP
-  inline int get_elem(int i, int j) { return elem_(i,j); }
-  inline double get_dt_vitesse(int face) { return dt_vitesse(face); }
-  inline double get_surface_porosite(int face) { return surface(face) * porosite(face); }
-
-protected:
-
-  REF(Champ_Face) vitesse_;
-  DoubleTab dt_vitesse;
-
-};
-
-//
-//  Fonctions inline de la classe Eval_Conv_VDF
-//
-// Description:
-// constructeur par defaut
-inline Eval_Conv_VDF::Eval_Conv_VDF()
-{}
-
-inline Eval_Conv_VDF::Eval_Conv_VDF(const Eval_Conv_VDF& eval)
-  :Evaluateur_VDF(eval), vitesse_(eval.vitesse_)
-{
-  dt_vitesse.ref(eval.dt_vitesse);
-}
-
-
-
-#endif
+// TODO : XXX
+// Remove this file later
+// We are obliged to have at least one cpp file in the folder Evaluateurs_Diff
+// This is because of TRUST check_source and make include.
+// If CMakeLists and make include are removed, TRUST compile ... but not its baltiks that include Eval* headears ...

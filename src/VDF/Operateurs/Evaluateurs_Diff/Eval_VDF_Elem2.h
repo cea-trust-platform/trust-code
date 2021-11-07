@@ -26,7 +26,7 @@
 
 #include <Ref_Champ_base.h>
 #include <Champ_P0_VDF.h>
-
+class Echange_externe_impose;
 //
 // .DESCRIPTION class Eval_VDF_Elem
 //

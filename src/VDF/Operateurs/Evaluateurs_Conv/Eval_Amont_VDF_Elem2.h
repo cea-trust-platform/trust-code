@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,69 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Conv_VDF.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/6
+// File:        Eval_Amont_VDF_Elem2.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Conv
+// Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Eval_Conv_VDF_included
-#define Eval_Conv_VDF_included
 
-#include <Evaluateur_VDF.h>
-#include <Ref_Champ_Face.h>
+#ifndef Eval_Amont_VDF_Elem2_included
+#define Eval_Amont_VDF_Elem2_included
 
-class Champ_Inc_base;
-
-//
-// .DESCRIPTION class Eval_Conv_VDF
-//
-// classe de base des evaluateurs de convection VDF
+#include <Eval_Conv_VDF_Elem.h>
+#include <Eval_Conv_VDF.h>
 
 //
-// .SECTION voir aussi Evaluateur_VDF
+// .DESCRIPTION class Eval_Amont_VDF_Elem2
 //
+// Evaluateur VDF pour la convection
+// Le champ convecte est scalaire (Champ_P0_VDF)
+// Schema de convection Amont
+// Rq:Les evaluateurs de flux convectifs calculent en fait le terme
+// convectif qui figure au second membre de l'equation d'evolution
+// c.a.d l'oppose du flux convectif pour la methode EXPLICITE.
+//
+// Dans le cas de la methode IMPLICITE les evaluateurs calculent la quantite qui figure
+// dans le premier membre de l'equation, nous ne prenons pas par consequent l'oppose en
+// ce qui concerne les termes pour la matrice, par contre pour le second membre nous
+// procedons comme en explicite mais en ne fesant intervenir que les valeurs fournies
+// par les conditions limites.
 
-
-class Eval_Conv_VDF : public Evaluateur_VDF
+class Eval_Amont_VDF_Elem2 : public Eval_Conv_VDF_Elem<Eval_Amont_VDF_Elem2>, public Eval_Conv_VDF
 {
-
 public:
-
-  inline Eval_Conv_VDF();
-  inline Eval_Conv_VDF(const Eval_Conv_VDF&);
-  void associer(const Champ_Face& );
-  void mettre_a_jour( );
-  const Champ_Inc_base& vitesse() const;
-  Champ_Inc_base& vitesse();
-
-  // pour CRTP
-  inline int get_elem(int i, int j) { return elem_(i,j); }
-  inline double get_dt_vitesse(int face) { return dt_vitesse(face); }
-  inline double get_surface_porosite(int face) { return surface(face) * porosite(face); }
-
-protected:
-
-  REF(Champ_Face) vitesse_;
-  DoubleTab dt_vitesse;
-
+  static constexpr bool IS_AMONT = true;
 };
 
-//
-//  Fonctions inline de la classe Eval_Conv_VDF
-//
-// Description:
-// constructeur par defaut
-inline Eval_Conv_VDF::Eval_Conv_VDF()
-{}
-
-inline Eval_Conv_VDF::Eval_Conv_VDF(const Eval_Conv_VDF& eval)
-  :Evaluateur_VDF(eval), vitesse_(eval.vitesse_)
-{
-  dt_vitesse.ref(eval.dt_vitesse);
-}
-
-
-
-#endif
+#endif /* Eval_Amont_VDF_Elem2_included */
