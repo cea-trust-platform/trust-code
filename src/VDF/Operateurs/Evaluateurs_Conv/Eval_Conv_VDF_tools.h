@@ -31,6 +31,8 @@ public:
   virtual int amont_amont(int face, int i) const { throw; }
   virtual double quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { throw; }
   virtual void quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { throw; }
+  virtual double qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { throw; }
+  virtual void qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { throw; }
 };
 
 #endif /* Eval_Conv_VDF_tools_included */

@@ -57,6 +57,7 @@ public:
   inline double get_dt_vitesse(int face) const { return dt_vitesse(face); }
   inline double get_surface_porosite(int face) const { return surface(face) * porosite(face); }
 
+
 protected:
 
   REF(Champ_Face) vitesse_;

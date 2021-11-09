@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,23 +24,10 @@
 
 Implemente_instanciable_sans_constructeur(Op_Conv_centre_VDF_Elem,"Op_Conv_Centre_VDF_P0_VDF",Op_Conv_VDF_base);
 
-implemente_It_VDF_Elem(Eval_centre_VDF_Elem)
+implemente_It_VDF_Elem(Eval_centre_VDF_Elem2)
 
-//// printOn
-//
-
-Sortie& Op_Conv_centre_VDF_Elem::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-//// readOn
-//
-
-Entree& Op_Conv_centre_VDF_Elem::readOn(Entree& s )
-{
-  return s ;
-}
+Sortie& Op_Conv_centre_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Conv_centre_VDF_Elem::readOn(Entree& s ) { return s ; }
 
 
 // Description:
@@ -55,7 +42,7 @@ void Op_Conv_centre_VDF_Elem::associer(const Zone_dis& zone_dis,
 
   iter.associer(zvdf, zclvdf, *this);
 
-  Eval_centre_VDF_Elem& eval_conv = (Eval_centre_VDF_Elem&) iter.evaluateur();
+  Eval_centre_VDF_Elem2& eval_conv = dynamic_cast<Eval_centre_VDF_Elem2&> (iter.evaluateur());
   eval_conv.associer_zones(zvdf, zclvdf );          // Evaluateur_VDF::associer_zones
   eval_conv.associer_inconnue(inco );        // Eval_VDF_Elem::associer_inconnue
 
@@ -63,13 +50,13 @@ void Op_Conv_centre_VDF_Elem::associer(const Zone_dis& zone_dis,
 
 const Champ_Inc_base& Op_Conv_centre_VDF_Elem::vitesse() const
 {
-  Eval_centre_VDF_Elem& eval_conv = (Eval_centre_VDF_Elem&) iter.evaluateur();
+  const Eval_centre_VDF_Elem2& eval_conv = dynamic_cast<const Eval_centre_VDF_Elem2&> (iter.evaluateur());
   return eval_conv.vitesse();
 }
 
 Champ_Inc_base& Op_Conv_centre_VDF_Elem::vitesse()
 {
-  Eval_centre_VDF_Elem& eval_conv = (Eval_centre_VDF_Elem&) iter.evaluateur();
+  Eval_centre_VDF_Elem2& eval_conv = dynamic_cast<Eval_centre_VDF_Elem2&> (iter.evaluateur());
   return eval_conv.vitesse();
 }
 
@@ -79,6 +66,6 @@ Champ_Inc_base& Op_Conv_centre_VDF_Elem::vitesse()
 // Description:
 // constructeur
 Op_Conv_centre_VDF_Elem::Op_Conv_centre_VDF_Elem() :
-  Op_Conv_VDF_base(It_VDF_Elem(Eval_centre_VDF_Elem)())
+  Op_Conv_VDF_base(It_VDF_Elem(Eval_centre_VDF_Elem2)())
 {
 }

@@ -576,6 +576,29 @@ inline double Eval_centre_VDF_Elem::secmem_face(int, const Neumann_paroi&, int )
   return 0;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //// flux_face avec Neumann_paroi_adiabatique
 //
 
@@ -606,6 +629,8 @@ inline double Eval_centre_VDF_Elem::secmem_face(int, const Neumann_paroi_adiabat
 {
   return 0;
 }
+
+
 
 //// flux_face avec Neumann_sortie_libre
 //
@@ -899,6 +924,30 @@ inline double Eval_centre_VDF_Elem::secmem_faces_interne(int) const
 //// flux_face avec Dirichlet_entree_fluide
 //
 
+
+/*
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 inline void Eval_centre_VDF_Elem::flux_face(const DoubleTab& inco, int face,
                                             const Dirichlet_entree_fluide& la_cl,
                                             int num1, DoubleVect& flux) const
