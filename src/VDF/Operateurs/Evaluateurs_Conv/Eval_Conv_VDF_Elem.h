@@ -50,6 +50,9 @@ public:
   inline int elem_(int i, int j) const;
   inline double dt_vitesse(int face) const;
   inline double surface_porosite(int face) const;
+  inline int amont_amont_(int face, int i) const;
+  inline double quick_fram_(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
+  inline void quick_fram_(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
 
   // TODO : all these should have the same name with different attributes
   // so that they become a function template
@@ -94,10 +97,15 @@ public:
   inline void coeffs_faces_interne(int, double& aii, double& ajj ) const;
 
   // contribution de la derivee en vitesse d'une equation scalaire
+  // Generic return
+  template <typename BC_TYPE>
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int ) const { return 0.; }
+  // Overloaded
   inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
   inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
   inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Periodique&, int ) const;
   inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const NSCBC&, int ) const;
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const { return 0.; }
   inline double coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int ) const;
 
   // Generic return
@@ -167,6 +175,26 @@ template <typename DERIVED_T>
 inline double Eval_Conv_VDF_Elem<DERIVED_T>::surface_porosite(int face) const
 {
   return static_cast<const DERIVED_T *>(this)->get_surface_porosite(face);
+}
+
+template <typename DERIVED_T>
+inline int Eval_Conv_VDF_Elem<DERIVED_T>::amont_amont_(int face, int i) const
+{
+  return static_cast<const DERIVED_T *>(this)->amont_amont(face,i);
+}
+
+template <typename DERIVED_T>
+inline double Eval_Conv_VDF_Elem<DERIVED_T>::quick_fram_(const double& psc, const int num0, const int num1,
+                                                         const int num0_0, const int num1_1, const int face, const DoubleTab& transporte) const
+{
+  return static_cast<const DERIVED_T *>(this)->quick_fram(psc,num0,num1,num0_0, num1_1, face,  transporte);
+}
+
+template <typename DERIVED_T>
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::quick_fram_(const double& psc, const int num0, const int num1,
+                                                       const int num0_0, const int num1_1, const int face, const DoubleTab& transporte,ArrOfDouble& flux) const
+{
+  static_cast<const DERIVED_T *>(this)->quick_fram(psc, num0, num1, num0_0, num1_1, face, transporte, flux);
 }
 
 //************************
@@ -328,7 +356,14 @@ inline double Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, in
                                                        const Periodique& la_cl, int  ) const
 {
   double flux, psc = dt_vitesse(face)*surface_porosite(face);
-  flux = (psc > 0) ? psc*inco(elem_(face,0)) : psc*inco(elem_(face,1));
+  if (DERIVED_T::IS_QUICK)
+    {
+      const int n0 = elem_(face,0), n1 = elem_(face,1), n0_0 = amont_amont_(face,0), n1_1 = amont_amont_(face,1);
+      flux = quick_fram_(psc,n0,n1,n0_0,n1_1,face,inco); // on applique le schema Quick_fram
+    }
+  else // AMONT
+    flux = (psc > 0) ? psc*inco(elem_(face,0)) : psc*inco(elem_(face,1));
+
   return -flux;
 }
 
@@ -398,7 +433,21 @@ template <typename DERIVED_T>
 inline double Eval_Conv_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& inco, int face) const
 {
   double flux, psc = dt_vitesse(face)*surface_porosite(face);
-  flux = (psc > 0) ? psc*inco(elem_(face,0)) : psc*inco(elem_(face,1));
+  if (DERIVED_T::IS_QUICK)
+    {
+      const int n0 = elem_(face,0), n1 = elem_(face,1), n0_0 = amont_amont_(face,0), n1_1 = amont_amont_(face,1);
+      /*
+       * Pierre L. 14/10/04: Correction car le centre explose sur le cas VALIDA
+       * On revient au quick en essayant d'ameliorer: on prend le quick si psc
+       * est encore favorable pour avoir les 3 points necessaires au calcul du
+       * quick. Cela est deja ce qui est fait pour le quick-sharp de l'evaluateur aux faces.
+       */
+      if ((n0_0 == -1 && psc >= 0 ) || (n1_1 == -1 && psc <= 0 )) flux = (psc > 0) ? psc*inco(n0) : psc*inco(n1);
+      else flux = quick_fram_(psc,n0,n1,n0_0,n1_1,face,inco); // on applique le schema Quick_fram
+    }
+  else // AMONT
+    flux = (psc > 0) ? psc*inco(elem_(face,0)) : psc*inco(elem_(face,1));
+
   return -flux;
 }
 
@@ -438,10 +487,19 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int 
   int k, elem1 = elem_(face,0), elem2 = elem_(face,1);
   double psc = dt_vitesse(face)*surface_porosite(face);
 
-  if (psc > 0)
-    for(k=0; k<flux.size(); k++) flux(k) = -psc*inco(elem1,k);
-  else
-    for(k=0; k<flux.size(); k++) flux(k) = -psc*inco(elem2,k);
+  if (DERIVED_T::IS_QUICK)
+    {
+      const int n0_0 = amont_amont_(face,0),n1_1 = amont_amont_(face,1);
+      quick_fram_(psc,elem1,elem2,n0_0,n1_1,face,inco,flux); // on applique le schema Quick
+      for (k=0; k<flux.size(); k++) flux(k) *= -1;
+    }
+  else // AMONT
+    {
+      if (psc > 0)
+        for(k=0; k<flux.size(); k++) flux(k) = -psc*inco(elem1,k);
+      else
+        for(k=0; k<flux.size(); k++) flux(k) = -psc*inco(elem2,k);
+    }
 }
 
 template <typename DERIVED_T>
@@ -627,10 +685,35 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& i
 {
   int k, n0 = elem_(face,0), n1 = elem_(face,1);
   double psc = dt_vitesse(face)*surface_porosite(face);
-  if (psc > 0)
-    for(k=0; k<flux.size(); k++) flux(k) = -psc*inco(n0,k);
-  else
-    for(k=0; k<flux.size(); k++) flux(k) = -psc*inco(n1,k);
+  if (DERIVED_T::IS_QUICK)
+    {
+      const int n0_0 = amont_amont_(face,0), n1_1 = amont_amont_(face,1);
+      /*
+       * Pierre L. 14/10/04: Correction car le centre explose sur le cas VALIDA
+       * On revient au quick en essayant d'ameliorer: on prend le quick si psc
+       * est encore favorable pour avoir les 3 points necessaires au calcul du
+       * quick. Cela est deja ce qui est fait pour le quick-sharp de l'evaluateur aux faces.
+       */
+      if ( (n0_0 == -1 && psc >= 0 ) || (n1_1 == -1 && psc <= 0 ) )
+        {
+          if (psc > 0)
+            for (k=0; k<flux.size(); k++) flux(k) = -psc*inco(n0,k);
+          else
+            for (k=0; k<flux.size(); k++) flux(k) = -psc*inco(n1,k);
+        }
+      else // on applique le schema Quick
+        {
+          quick_fram_(psc,n0,n1,n0_0,n1_1,face,inco,flux);
+          for (k=0; k<flux.size(); k++) flux(k) *= -1;
+        }
+    }
+  else // AMONT
+    {
+      if (psc > 0)
+        for(k=0; k<flux.size(); k++) flux(k) = -psc*inco(n0,k);
+      else
+        for(k=0; k<flux.size(); k++) flux(k) = -psc*inco(n1,k);
+    }
 }
 
 template <typename DERIVED_T>

@@ -14,70 +14,23 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Conv_VDF.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/6
+// File:        Eval_Conv_VDF_tools.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Conv
+// Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Eval_Conv_VDF_tools_included
+#define Eval_Conv_VDF_tools_included
 
-#ifndef Eval_Conv_VDF_included
-#define Eval_Conv_VDF_included
-
-#include <Evaluateur_VDF.h>
-#include <Ref_Champ_Face.h>
-#include <Eval_Conv_VDF_tools.h>
-
-class Champ_Inc_base;
-
-//
-// .DESCRIPTION class Eval_Conv_VDF
-//
-// classe de base des evaluateurs de convection VDF
-
-//
-// .SECTION voir aussi Evaluateur_VDF
-//
-
-
-class Eval_Conv_VDF : public Evaluateur_VDF, public Eval_Conv_VDF_tools
+class Eval_Conv_VDF_tools
 {
-
 public:
-
-  inline Eval_Conv_VDF();
-  inline Eval_Conv_VDF(const Eval_Conv_VDF&);
-  void associer(const Champ_Face& );
-  void mettre_a_jour( );
-  const Champ_Inc_base& vitesse() const;
-  Champ_Inc_base& vitesse();
-
-  // pour CRTP
-  inline int get_elem(int i, int j) const { return elem_(i,j); }
-  inline double get_dt_vitesse(int face) const { return dt_vitesse(face); }
-  inline double get_surface_porosite(int face) const { return surface(face) * porosite(face); }
-
-protected:
-
-  REF(Champ_Face) vitesse_;
-  DoubleTab dt_vitesse;
-
+  virtual ~Eval_Conv_VDF_tools() {}
+  // DANGER !!!! FAUT JAMAIS ENTRER
+  virtual int amont_amont(int face, int i) const { throw; }
+  virtual double quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { throw; }
+  virtual void quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { throw; }
 };
 
-//
-//  Fonctions inline de la classe Eval_Conv_VDF
-//
-// Description:
-// constructeur par defaut
-inline Eval_Conv_VDF::Eval_Conv_VDF()
-{}
-
-inline Eval_Conv_VDF::Eval_Conv_VDF(const Eval_Conv_VDF& eval)
-  :Evaluateur_VDF(eval), vitesse_(eval.vitesse_)
-{
-  dt_vitesse.ref(eval.dt_vitesse);
-}
-
-
-
-#endif
+#endif /* Eval_Conv_VDF_tools_included */

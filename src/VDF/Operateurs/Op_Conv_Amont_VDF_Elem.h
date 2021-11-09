@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 #define Op_Conv_Amont_VDF_Elem_included
 
 #include <ItVDFEl.h>
-#include <Eval_Amont_VDF_Elem.h>
+#include <Eval_Amont_VDF_Elem2.h>
 #include <Op_VDF_Elem.h>
 
 //
@@ -37,14 +37,14 @@
 //  Le champ convecte est scalaire
 //  Le schema de convection est du type Amont
 //  L'iterateur associe est de type Iterateur_VDF_Elem
-//  L'evaluateur associe est de type Eval_Amont_VDF_Elem
+//  L'evaluateur associe est de type Eval_Amont_VDF_Elem2
 
 //
 // .SECTION voir aussi
 //
 //
 
-declare_It_VDF_Elem(Eval_Amont_VDF_Elem)
+declare_It_VDF_Elem(Eval_Amont_VDF_Elem2)
 
 //////////////////////////////////////////////////////////////////////////////
 //

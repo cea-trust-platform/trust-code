@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 #define Op_Conv_Quick_VDF_Elem_included
 
 #include <ItVDFEl.h>
-#include <Eval_Quick_VDF_Elem.h>
+#include <Eval_Quick_VDF_Elem2.h>
 #include <Op_VDF_Elem.h>
 //
 // .DESCRIPTION class Op_Conv_Quick_VDF_Elem
@@ -36,13 +36,13 @@
 //  Le champ convecte est scalaire
 //  Le schema de convection est du type Quick
 //  L'iterateur associe est de type Iterateur_VDF_Elem
-//  L'evaluateur associe est de type Eval_Quick_VDF_Elem
+//  L'evaluateur associe est de type Eval_Quick_VDF_Elem2
 
 //
 // .SECTION voir aussi
 //
 //
-declare_It_VDF_Elem(Eval_Quick_VDF_Elem)
+declare_It_VDF_Elem(Eval_Quick_VDF_Elem2)
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -80,7 +80,7 @@ inline void Op_Conv_Quick_VDF_Elem::associer_vitesse(const Champ_base& ch_vit)
 {
   const Champ_Face& vit = (Champ_Face&) ch_vit;
 
-  Eval_Quick_VDF_Elem& eval_conv = (Eval_Quick_VDF_Elem&) iter.evaluateur();
+  Eval_Quick_VDF_Elem2& eval_conv = dynamic_cast<Eval_Quick_VDF_Elem2&>(iter.evaluateur());
   eval_conv.associer(vit );                // Eval_Conv_VDF::associer
 }
 
