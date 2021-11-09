@@ -222,7 +222,7 @@ inline void Solv_Petsc::initialize()
 {
   matrice_symetrique_=-1;
   preconditionnement_non_symetrique_=0;
-  seuil_ = 1e-12;
+  seuil_ = 0;
   seuil_relatif_ = 0;
   divtol_ = 0;
   nouveau_stencil_ = true;
