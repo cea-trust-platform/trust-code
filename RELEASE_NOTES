@@ -1,10 +1,10 @@
-XX/XX/21 (TRUST)  Fix         : Several AmgX GPU solvers (BiCgstab, FGMRES) may be used for Euler implicit scheme. See Solveurs/GPU/Implicite verification sheet
-XX/XX/21 (TRUST)  Fix         : Memory leaks fixed with GPU solvers
-XX/XX/21 (TRUST)  Fix         : Champ_front_MED may now be combined with Champ_Fonc_MED_Tabule to enable time & space dependent boundary conditions read from MED file
-XX/XX/21 (TRUST)  Output      : Suppress probe duplicated points into .son files
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
+23/11/21 (TRUST)  Fix         : Read_MED option convertAllToPoly improved to convert hybrid meshes (tetrahHexa+pyramids cells) from MG-Hybrid Salome tool to polyhedron meshes for PolyMAC discretization
+23/11/21 (TRUST)  Fix         : Several AmgX GPU solvers (BiCGstab, FGMRES) may be used for Euler implicit scheme + memory leak fixes. See Solveurs/GPU/Implicite verification sheet
+23/11/21 (TRUST)  Fix         : Champ_front_MED may now be combined with Champ_Fonc_MED_Tabule to enable time & space dependent boundary conditions read from MED file
+23/11/21 (TRUST)  Output      : Suppress probe duplicated points into .son files
 23/11/21 (TRUST)  Convergence : Use the true residual (instead of preconditioned one) for convergence test with PETSc GMRES solver (may be necessary to lower seuil option to have same results than 1.8.3)
 23/11/21 (TRUST)  Keyword     : Add pression option to Navier Stokes initial conditions to initialize velocity and pressure field
 15/11/21 (TRUST)  Fix         : Several problems solving different physics on a same domain produced corrupted lml/lata/med files (mesh repeated) during post-processing

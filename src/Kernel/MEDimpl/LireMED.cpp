@@ -1227,6 +1227,8 @@ Nom type_medcoupling_to_type_geo_trio(const int& type_cell, const int& isvef, co
     type_elem="Prisme";
   else if (type_cell==INTERP_KERNEL::NORM_POLYHED)
     type_elem="Polyedre";
+  else if (type_cell==INTERP_KERNEL::NORM_PYRA5)
+    type_elem="Pyramide";
   else if (type_cell==INTERP_KERNEL::NORM_POLYGON)
     type_elem= cell_from_boundary ? "POLYGONE_3D" : "Polygone";
   else if(type_cell==INTERP_KERNEL::NORM_HEXGP12)
@@ -1372,12 +1374,12 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
               if (type_cell != mesh_type_cell)
                 {
                   Cerr << "Elements of kind " << type_elem << " has already been read" << finl;
-                  Cerr << "TRUST does not support different element types for the mesh." << finl;
                   Cerr << "New elements of kind "
                        << type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary, axi1d);
                   if (!convertAllToPoly)
                     {
                       Cerr << " are not read." << finl;
+                      Cerr << "TRUST does not support different element types for the mesh." << finl;
                       Cerr << "Either you remesh your domain with a single element type," << finl;
                       Cerr << "or you convert your cells to polyedrons and polygons by inserting an option in your command line:" << finl;
                       Cerr << "Read_MED convertAllToPoly ... " << finl;
@@ -1388,7 +1390,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                   Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
                   Cerr << "Conversion to polyedrons and polygons..." << finl;
                   Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-                  mesh->convertAllToPoly();
+                  mesh->convertAllToPoly(); // Conversion maillage volumique
                   break;
                 }
               if (i==ncells-1) supported_mesh = true;
@@ -1517,6 +1519,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           // Get boundary mesh:
           assert(nel[1] == -1);
           MCAuto<MEDCouplingUMesh> boundary_mesh(file->getMeshAtLevel(nel[1])); // ToDo can not make it const because of ArrayOfInt
+          if (dimension==3 && convertAllToPoly) boundary_mesh->convertAllToPoly(); // Conversion maillage frontiere
           int nfaces = boundary_mesh->getNumberOfCells();
           cell_from_boundary = true;
           //conn = boundary_mesh->getNodalConnectivity()->begin();
@@ -1539,7 +1542,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
               if (i == nfaces - 1 || conn[connIndex[i]] != conn[connIndex[i + 1]])
                 {
                   type_cell = conn[connIndex[i]];
-                  Nom type_face_lu = type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary,axi1d);
+                  Nom type_face_lu = type_medcoupling_to_type_geo_trio(type_cell, isvef, axis_type, cell_from_boundary, axi1d);
                   if (tp>=type_face.size())
                     {
                       Cerr << "Error, it does not support another face type: " << type_face_lu << finl;
@@ -1569,7 +1572,6 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
               // Next type of face ?
               if (i == nfaces - 1 || conn[connIndex[i]] != conn[connIndex[i + 1]])
                 {
-
                   nface = 0;
                   tp++;
                 }
