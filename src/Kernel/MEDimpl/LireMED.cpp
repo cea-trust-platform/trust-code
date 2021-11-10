@@ -162,7 +162,7 @@ Entree& LireMED::interpreter_(Entree& is)
   if (nom_fic2==nom_fic)
     {
       Cerr<<"Error, the MED file should have .med as extension."<<finl;
-      Cerr<<"See the syntax of LireMED keyword." << finl;
+      Cerr<<"See the syntax of Read_MED keyword." << finl;
       exit();
     }
   Nom nom_fic3(nom_fic2);
@@ -1380,7 +1380,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                       Cerr << " are not read." << finl;
                       Cerr << "Either you remesh your domain with a single element type," << finl;
                       Cerr << "or you convert your cells to polyedrons and polygons by inserting an option in your command line:" << finl;
-                      Cerr << "LireMED convertAllToPoly ... " << finl;
+                      Cerr << "Read_MED convertAllToPoly ... " << finl;
                       Cerr << "After that, you should use a discretization supporting polyedrons !" << finl;
                       Process::exit();
                     }
