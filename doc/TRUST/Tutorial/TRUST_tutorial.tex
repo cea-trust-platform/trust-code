@@ -169,14 +169,13 @@ CEA Saclay \\ % Your institution for the title page
 \frametitle{Initialization}
 \begin{block}{}
 
+To initialize the TRUST environment. 
 \begin{itemize}
-\item First, initialize the TRUST environment. 
-\begin{itemize}
-\item On new CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.3):\\
+\item On new CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.4):\\
 %\vspace{0.2cm}
 \textbf{source  /home/trust\_trio-public/env\_TRUST-X.Y.Z.sh}
 %\vspace{0.5cm}
-\item On old CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.3):\\
+\item On old CEA Saclay PCs, TRUST versions are available with (e.g. X.Y.Z=1.8.4):\\
 %\vspace{0.2cm}
 \textbf{source  /home/triou/env\_TRUST\_X.Y.Z.sh}
 %\vspace{0.5cm}
@@ -186,12 +185,28 @@ CEA Saclay \\ % Your institution for the title page
 %\vspace{0.5cm}
 \end{itemize}
 
-\item Second, several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) can be configured to highlight TRUST keywords in the data files. If you prefer using \textbf{nedit}, please do the following:
 
+\end{block}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Text editor configuration}
+\begin{block}{}
+Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) can be configured to highlight TRUST keywords in the data files. 
+
+\begin{itemize}
+ \item If you prefer using \textbf{nedit}, please do the following:
     \begin{itemize}
     \item [$\circ$] Run \textbf{nedit}, and select Preferences $\rightarrow$ Save Defaults.
     \item [$\circ$] Then run \textbf{trust -config\index{trust -config} nedit}, the message "nedit.rc updated" should appear.
     \end{itemize}
+
+ \item If you prefer using \textbf{gedit}, run:
+    \begin{itemize}
+    \item [$\circ$] \textbf{trust -config\index{trust -config} gedit}.
+    \end{itemize}
+
 \end{itemize}
 
 \end{block}
@@ -281,22 +296,7 @@ CEA Saclay \\ % Your institution for the title page
 \item Edit the data file Obstacle.data and set the time step to 0.004s:\\
 \textbf{nedit Obstacle.data \&}\\
 
-\item Add to the post-processing block of Obstacle.data the following elements:\\
-
-    \begin{itemize}
-    \item [$\circ$] A pressure probes segment (22 probes between points (0.01, 0.12) and (0.91, 0.12)).
-    \vspace{0.1cm}
-
-    \item [$\circ$] A velocity probes segment (22 probes between points (0.92, 0.00) and (0.92, 0.22)) to plot the velocity profile behind the square cylinder.
-    \vspace{0.1cm}
-
-    \item [$\circ$] Add the vorticity to the fields being post-processed and change the saving period to 0.5s. To find the appropriate keyword for this field, you can open the Generic Guide with:\\
-    \textbf{trust -doc \&\index{trust -doc \&}}
-    \vspace{0.1cm}
-
-    \item [$\circ$] Replace the keyword "\textbf{format lml}" with "\textbf{format lata\index{format lata}}" inside the block, just before the keyword \textbf{fields} in order to use the post-processing tool VisIt during and/or after the calculation.
-    \vspace{0.1cm}
-    \end{itemize}
+\item Replace the keyword "\textbf{format lml}" with "\textbf{format lata\index{format lata}}" inside the block, just before the keyword \textbf{fields} in order to use the post-processing tool VisIt during and/or after the calculation.
 \end{itemize}
 
 \end{block}
@@ -308,9 +308,6 @@ CEA Saclay \\ % Your institution for the title page
 \begin{block}{}
 
 \begin{itemize}
-\item [$\rightarrow$] You have access to useful resources in the \$TRUST\_ROOT/index.html file with your favorite browser (e.g.: firefox). Take few minutes to find test case examples containing a particular keyword using the \underline{Keywords} link: \\
-\textbf{firefox \$TRUST\_ROOT/index.html \&} 
-or \textbf{trust -index \&\index{trust -index}}\\
 
 \item Launch the "PLOT2D" tool with: \\
 \textbf{trust -evol\index{trust -evol} Obstacle \&} \\
@@ -463,7 +460,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \begin{itemize}
 \item Find the last backup time of the previous calculation in the .err file (or in the bottom right file in the "PLOT2D" tool if it is still running).
 
-\item \label{save_restart} Edit your data file with "Edit data" or "Edit with xdata", then modify \textbf{tinit\index{tinit}}, \textbf{tmax\index{tmax}} values in the object "mon\_schema".
+\item \label{save_restart} Edit your data file with "Edit data", then modify \textbf{tinit\index{tinit}}, \textbf{tmax\index{tmax}} values in the object "mon\_schema".
 
 \item Add in the problem description block just before the last "\}":\\
 \textbf{reprise binaire\index{reprise binaire} Obstacle\_pb.sauv}\\
@@ -480,6 +477,41 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Probes and fields}
+\begin{block}{}
+
+\begin{itemize}
+\item Edit the data file Obstacle.data:\\
+\textbf{nedit Obstacle.data \&}\\
+
+\item Add to the post-processing block of Obstacle.data the following elements:\\
+
+    \begin{itemize}
+    \item [$\circ$] A pressure probes segment (22 probes between points (0.01, 0.12) and (0.91, 0.12)).
+    \vspace{0.1cm}
+
+    \item [$\circ$] A velocity probes segment (22 probes between points (0.92, 0.00) and (0.92, 0.22)) to plot the velocity profile behind the square cylinder.
+    \vspace{0.1cm}
+
+    \item [$\circ$] Change fields post-processing period from 1s to 0.5s.
+    \vspace{0.1cm}
+    
+     \item [$\circ$] Add the vorticity to the fields to the list of post-processed fields. To find the appropriate keyword, have a look to the Generic Guide:\\
+    \textbf{trust -doc \&\index{trust -doc \&}}
+    \vspace{0.1cm}
+    \item [$\rightarrow$] You have access to useful resources in the TRUST index. Take few minutes to find test cases containing a particular keyword using the \underline{Keywords} link: \\
+\textbf{trust -index \&\index{trust -index}}\\
+\vspace{0.1cm}
+    
+    \end{itemize}
+
+\end{itemize}
+
+\end{block}
+\end{frame}
 
 
 \subsection{Parallel calculation} \label{exo_para_1}
@@ -551,20 +583,22 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 
 \item Uncomment the \textbf{Scatter} keyword which will read the partitioned mesh. 
 
-\item Visualize it with VisIt:\\
+\item Visualize partitioning with:\\
 \textbf{trust -mesh\index{trust -mesh} PAR\_Obstacle}
 
 \item Now, run a parallel calculation with TRUST:\\
 \textbf{trust PAR\_Obstacle 2}
 
-\item The post-processing step is identical in sequential or parallel mode. You have the
-probes into the .son files and the whole fields in the .lata files. To run VisIt with the
-command line:\\
+\item Post-processing step is identical in sequential or parallel modes. Probes are written into .son files and fields into .lata files. Run VisIt with:\\
 \textbf{visit\index{visit} -o PAR\_Obstacle.lata \&}
 
 \item Select the last time step and visualize the blocks (with Plots: Add $\rightarrow$ Subset $\rightarrow$ blocks)
 which represent the parts of the domain partition, then the velocity fields. You can
 also visualize a field only on a selected part (block) with the menu Control $\rightarrow$ Subset.
+
+\item Visualize probes at the end of the calculation using:\\
+\textbf{trust -evol\index{trust -evol} PAR\_Obstacle \&}
+
 \end{itemize}
 
 \end{block}
@@ -576,8 +610,6 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 \begin{block}{}
 
 \begin{itemize}
-\item To visualize probes after the end of the calculation, you can run the command line:\\
-\textbf{trust -evol\index{trust -evol} PAR\_Obstacle \&}
 
 \item The existing tool \textbf{trust -partition\index{trust -partition}} is useful on the data files \underline{which have} the marks MAILLAGE/MESH, DECOUPAGE/PARTITION and LECTURE/SCATTER. If you run the following commands: \\
 \vspace{0.2cm}
@@ -695,7 +727,7 @@ You will run it like:\\
 \begin{block}{}
 NB: On CEA Clusters, TRUST is already installed and the procedure of launching calculation is described below. Out of CEA, your cluster administrator should install and configure TRUST. In addition, submission files and procedure depend on the cluster itself and could be different from those presented below.
 \begin{itemize}
-\item Login to the CEA cluster "orcus" and initialize the TRUST environment (for example, X.Y.Z = 1.8.3): \\
+\item Login to the CEA cluster "orcus" and initialize the TRUST environment (for example, X.Y.Z = 1.8.4): \\
 {\small{
 \textbf{ssh -X yourlogin@orcusloginint1(.intra.cea.fr)} or\\
 \textbf{ssh -X yourlogin@orcusloginamd1(.intra.cea.fr)} \\
@@ -829,7 +861,7 @@ $$
 \item Now open your data file with "Plot2D" tool:\\
 \textbf{trust -evol\index{trust -evol} docond  \&} \\
 
-\item Click on "Edit data" (you can also use "Edit with xdata").
+\item Click on "Edit data".
 
 \item We want to modify the data file to have the 2 domains on a mesh of 40x40 cells ($\Delta x= \Delta y=0.025m$). 
 \end{itemize}
