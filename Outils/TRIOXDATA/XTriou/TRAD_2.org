@@ -1360,46 +1360,9 @@ interpolation_ibm_elem_fluid interpolation_ibm_base ibm_element_fluide 1 Immerse
   attr elements_fluides field_base elements_fluides 1 Node field giving the number of the element (cell) containing the pure fluid point
   attr correspondance_elements field_base correspondance_elements 1 Cell field giving the SALOME cell number
 
-
-saturation_base fluide_base saturation_base 1 Basic class for phase change management (used in pb_multiphase)
-saturation_sodium saturation_base saturation_sodium -1 Class for saturation sodium
-  attr P_ref floattant P_ref 1 Use to fix the pressure value in the closure law. If not specified, the value of the pressure unknown will be used
-  attr T_ref floattant T_ref 1 Use to fix the temperature value in the closure law. If not specified, the value of the temperature unknown will be used
-saturation_constant saturation_base saturation_constant -1 Class for saturation constant
-  attr P_sat floattant P_sat 1 Define the saturation pressure value (this is a required parameter)
-  attr T_sat floattant T_sat 1 Define the saturation temperature value (this is a required parameter)
-  attr Lvap floattant Lvap 1 Latent heat of vaporization
-  attr Hlsat floattant Hlsat 1 Liquid saturation enthalpy
-  attr Hvsat floattant Hvsat 1 Vapor saturation enthalpy
-flux_interfacial source_base flux_interfacial 0 Source term of mass transfer between phases connected by the saturation object defined in saturation_xxxx
-travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
-frottement_interfacial source_base frottement_interfacial 0 Source term which corresponds to the phases friction at the interface
-  attr model chaine(into=["bulles","wallis","sonnenburg"]) model 1 Correlation for friction in bubbly flows if bulles, Correlation for drift flux of Sonnenburg if sonnenburg or Correlation for friction in annular flows if wallis
-  attr bloc_bulles bloc_b bloc_bulles 1 not set
-bloc_b interprete nul 1 not set
-  attr rayon_bulle floattant rayon_bulle 1 Radius of the bubbles (useful for the correlation and it is required)
-  attr coeff_derive floattant coeff_derive 1 Drift coefficient (useful for the correlation and it is required)
-  
-typer_lire interprete typer_lire 0 TRUST interpretor which declares and reads the object
-  attr object_name chaine object_name 0 Name of the object that will be read
-  attr object_type fluide_base object_type 1 Type of the instanced object. TODO: in XDATA, we use it for fluids only
-  attr proprietes bloc_proprietes propriete 1 Read the properties of the object
-bloc_proprietes interprete nul 1 definition of object properties. TODO: in XDATA we use it for fluids only
 phases interprete phases 0 Declare the phases that will be considered
   attr problem_name ref_Pb_base problem_name 0 Name of problem.
   attr phases_def bloc_phases phases_def 0 bloc to define phases
 bloc_phases interprete nul 1 not_set
   attr liquide bloc_lecture liquide 1 definition of the liquid phase
   attr gaz bloc_lecture gaz 1 definition of the gazeous phase
-fluide_reel_base fluide_base fluide_reel_base -1 Class for real fluids.
-Fluide_sodium_liquide fluide_reel_base Fluide_sodium_liquide -1 Class for Fluide_sodium_liquide
-  attr P_ref floattant P_ref 1 Use to set the pressure value in the closure law. If not specified, the value of the pressure unknown will be used
-  attr T_ref floattant T_ref 1 Use to set the temperature value in the closure law. If not specified, the value of the temperature unknown will be used
-Fluide_sodium_gaz fluide_reel_base Fluide_sodium_gaz -1 Class for Fluide_sodium_liquide
-  attr P_ref floattant P_ref 1 Use to set the pressure value in the closure law. If not specified, the value of the pressure unknown will be used
-  attr T_ref floattant T_ref 1 Use to set the temperature value in the closure law. If not specified, the value of the temperature unknown will be used
-StiffenedGas fluide_reel_base StiffenedGas -1 Class for Stiffened Gas
-  attr gamma floattant gamma 1 Heat capacity ratio (Cp/Cv)
-  attr pinf floattant pinf 1 Stiffened gas pressure constant (if set to zero, the state law becomes identical to that of perfect gases)
-  attr mu floattant mu 1 Dynamic viscosity
-  attr lambda floattant lambda 1 Thermal conductivity

@@ -22,6 +22,12 @@
 
 #include <Frottement_interfacial_base.h>
 Implemente_base(Frottement_interfacial_base, "Frottement_interfacial_base", Correlation_base);
+// XD frottement_interfacial source_base frottement_interfacial 0 Source term which corresponds to the phases friction at the interface
+// XD attr model chaine(into=["bulles","wallis","sonnenburg"]) model 1 Correlation for friction in bubbly flows if bulles, Correlation for drift flux of Sonnenburg if sonnenburg or Correlation for friction in annular flows if wallis
+// XD attr bloc_bulles bloc_b bloc_bulles 1 not set
+// XD bloc_b interprete nul 1 not set
+// XD attr rayon_bulle floattant rayon_bulle 1 Radius of the bubbles (useful for the correlation and it is required)
+// XD attr coeff_derive floattant coeff_derive 1 Drift coefficient (useful for the correlation and it is required)
 
 Sortie& Frottement_interfacial_base::printOn(Sortie& os) const
 {

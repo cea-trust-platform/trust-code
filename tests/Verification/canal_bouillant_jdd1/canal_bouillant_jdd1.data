@@ -38,9 +38,12 @@ Read sch
     }
 }
 
-typer_lire sodium_liquide Fluide_sodium_liquide { P_ref 100000.0 T_ref 800  }
-typer_lire sodium_gaz     Fluide_sodium_gaz     { P_ref 100000.0 T_ref 879.9430097752451 }
-typer_lire saturation_sodium saturation_sodium  { P_ref 100000.0 T_ref 879.9430097752451 }
+Fluide_sodium_liquide sodium_liquide
+Read sodium_liquide  { P_ref 100000.0 T_ref 800  }
+Fluide_sodium_gaz sodium_gaz
+Read sodium_gaz { P_ref 100000.0 T_ref 879.9430097752451 }
+saturation_sodium saturation_sodium
+Read saturation_sodium { P_ref 100000.0 T_ref 879.9430097752451 }
 
 Pb_Multiphase pb
 phases pb

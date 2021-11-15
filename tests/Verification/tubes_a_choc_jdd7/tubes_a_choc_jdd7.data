@@ -39,7 +39,8 @@ Read sch
     }
 }
 
-typer_lire eau_liquide StiffenedGas { gamma 1.58 pinf 353637173.0 }
+StiffenedGas eau_liquide
+Read eau_liquide { gamma 1.58 pinf 353637173.0 }
 
 Pb_Multiphase pb
 phases pb { liquide { eau } }

@@ -23,6 +23,11 @@
 #include <StiffenedGas.h>
 
 Implemente_instanciable(StiffenedGas, "StiffenedGas", Fluide_reel_base);
+// XD StiffenedGas fluide_reel_base StiffenedGas -1 Class for Stiffened Gas
+// XD attr gamma floattant gamma 1 Heat capacity ratio (Cp/Cv)
+// XD attr pinf floattant pinf 1 Stiffened gas pressure constant (if set to zero, the state law becomes identical to that of perfect gases)
+// XD attr mu floattant mu 1 Dynamic viscosity
+// XD attr lambda floattant lambda 1 Thermal conductivity
 
 Sortie& StiffenedGas::printOn(Sortie& os) const
 {

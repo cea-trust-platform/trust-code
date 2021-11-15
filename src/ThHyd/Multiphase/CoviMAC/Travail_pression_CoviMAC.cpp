@@ -30,6 +30,7 @@
 #include <cfloat>
 
 Implemente_instanciable(Travail_pression_CoviMAC,"Travail_pression_P0_CoviMAC", Source_base);
+// XD travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
 
 Sortie& Travail_pression_CoviMAC::printOn(Sortie& os) const
 {

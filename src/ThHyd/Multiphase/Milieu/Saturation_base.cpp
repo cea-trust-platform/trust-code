@@ -22,7 +22,7 @@
 
 #include <Saturation_base.h>
 Implemente_base(Saturation_base, "Saturation_base", Objet_U);
-
+// XD saturation_base objet_u saturation_base -1 Basic class for phase change management (used in pb_multiphase)
 Sortie& Saturation_base::printOn(Sortie& os) const
 {
   return os;

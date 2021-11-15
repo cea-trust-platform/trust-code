@@ -37,9 +37,12 @@ Read sch
     }
 }
 
-typer_lire sodium_liquide Fluide_sodium_liquide { P_ref __p__ T_ref __Tin__  }
-typer_lire sodium_gaz     Fluide_sodium_gaz     { P_ref __p__ T_ref __Tsat__ }
-typer_lire saturation_sodium saturation_sodium  { P_ref __p__ T_ref __Tsat__ }
+Fluide_sodium_liquide sodium_liquide
+Read sodium_liquide  { P_ref __p__ T_ref __Tin__  }
+Fluide_sodium_gaz sodium_gaz
+Read sodium_gaz { P_ref __p__ T_ref __Tsat__ }
+saturation_sodium saturation_sodium
+Read saturation_sodium { P_ref __p__ T_ref __Tsat__ }
 
 Pb_Multiphase pb
 phases pb

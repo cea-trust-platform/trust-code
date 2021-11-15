@@ -31,6 +31,7 @@
 #include <cfloat>
 
 Implemente_base(Fluide_reel_base, "Fluide_reel_base", Fluide_base);
+// XD fluide_reel_base fluide_base fluide_reel_base -1 Class for real fluids.
 
 Entree& Fluide_reel_base::readOn(Entree& is)
 {
