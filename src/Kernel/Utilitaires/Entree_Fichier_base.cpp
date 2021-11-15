@@ -83,11 +83,30 @@ int Entree_Fichier_base::ouvrir(const char* name, IOS_OPEN_MODE mode)
       (*this) >> test;
       if (test!="INT64")
         {
-          Cerr<<"Problem "<<name<< " is binary and with int32 "<<finl;
+          Cerr<<"Opening " <<name<< " which is an int32 binary file..."<<finl;
           delete ifstream_;
           // on recharge le fichier
           ifstream_ = new ifstream(name,ios_mod);
-          is_int32_=1;
+          is_different_int_size_=true;
+          ok = ifstream_->good();
+          set_istream(ifstream_);
+        }
+    }
+#else
+  if (bin_)
+    {
+      Nom test;
+      (*this) >> test;
+      if (test=="INT64")
+        {
+          Cerr<<"Opening " << name<< " which is an int64 binary file..."<<finl;
+          is_different_int_size_=true;
+        }
+      else
+        {
+          delete ifstream_;
+          // on recharge le fichier
+          ifstream_ = new ifstream(name,ios_mod);
           ok = ifstream_->good();
           set_istream(ifstream_);
         }

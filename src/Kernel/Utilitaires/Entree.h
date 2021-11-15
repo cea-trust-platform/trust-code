@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -116,7 +116,7 @@ protected:
   inline int error_handle(int fail_flag);
   virtual int error_handle_(int fail_flag);
   int bin_;
-  int is_int32_;
+  bool is_different_int_size_; // File with int32 (or int64) whereas version is int64 (or int32à
   int check_types_;
   Error_Action error_action_;
   int diffuse_; // By default 1, but some child classes (eg: LecFicDiffuse) could set temporary to 0 to not diffuse to other processes

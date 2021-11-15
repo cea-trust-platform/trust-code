@@ -65,7 +65,7 @@ Entree& Entree::operator >>(ios& (*f)(ios&))
 Entree::Entree()
 {
   bin_=0;
-  is_int32_=0;
+  is_different_int_size_=false;
   istream_ = 0;
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -75,7 +75,7 @@ Entree::Entree()
 Entree::Entree(istream& is)
 {
   bin_=0;
-  is_int32_=0;
+  is_different_int_size_=false;
   istream_ = new istream(is.rdbuf());
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -85,7 +85,7 @@ Entree::Entree(istream& is)
 Entree::Entree(const Entree& is)
 {
   bin_=0;
-  is_int32_=0;
+  is_different_int_size_=false;
   istream_ = new istream(is.get_istream().rdbuf());
   check_types_ = 0;
   error_action_ = ERROR_CONTINUE;
@@ -256,16 +256,22 @@ Entree& Entree::operator>>(int& ob)
   assert(istream_!=0);
   if (bin_)
     {
-#ifdef INT_is_64_
-      if (is_int32_)
+      if (is_different_int_size_)
         {
+#ifdef INT_is_64_
           True_int pr;
           char * ptr = (char*) &pr;
           istream_->read(ptr, sizeof(True_int));
           ob=pr;
+#else
+          long pr;
+          char * ptr = (char*) &pr;
+          istream_->read(ptr, sizeof(long));
+          if (pr>INT32_MAX) Process::exit("Can't read this int64 binary file with an int32 binary: overflow.");
+          ob=pr;
+#endif
         }
       else
-#endif
         {
           char * ptr = (char*) &ob;
           istream_->read(ptr, sizeof(int));
@@ -299,14 +305,12 @@ int Entree::get(int * ob, int n)
   assert(n >= 0);
   if (bin_)
     {
-#ifdef INT_is_64_
-      if (is_int32_)
+      if (is_different_int_size_)
         {
           for (int i=0; i<n; i++)
             (*this)>> ob[i];
         }
       else
-#endif
         {
           char * ptr = (char*) ob;
           // En binaire: lecture optimisee en bloc:
