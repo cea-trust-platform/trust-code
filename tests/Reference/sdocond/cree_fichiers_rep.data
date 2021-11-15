@@ -70,15 +70,13 @@ Mailler dom_fluide
 # BEGIN PARTITION
 Partition dom_solide
 {
-	Tranche 2 1
-	Nb_parts 2
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
 	zones_name DOM1
 }
 Partition dom_fluide
 {
-	Tranche 2 1
-	Nb_parts 2
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
 	zones_name DOM2
 }

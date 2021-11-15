@@ -369,7 +369,7 @@ Probleme_base::Probleme_base() :
   //ficsauv(0),
   osauv_hdf_(0),
   reprise_effectuee_(0),
-  reprise_version_(155),
+  reprise_version_(0),
   restart_file(0),
   initialized(false),
   terminated(false),
@@ -411,7 +411,7 @@ Sortie& Probleme_base::printOn(Sortie& os) const
 // 151 pour dire que c'est la version initiee a la version 1.5.1 de TRUST
 inline int version_format_sauvegarde()
 {
-  return 155;
+  return 184;
 }
 
 // Description:
@@ -625,7 +625,7 @@ Entree& Probleme_base::readOn(Entree& is)
             }
           else
             {
-              // Lecture du format de sauvegarde
+              // Lecture du format de Lsauvegarde
               if(format_rep != "single_hdf")
                 fic.valeur() >> reprise_version_;
               else
@@ -641,8 +641,9 @@ Entree& Probleme_base::readOn(Entree& is)
                 }
               if (reprise_version_>version_format_sauvegarde())
                 {
-                  Cerr << "The format " << reprise_version_ << " of the resumption file " << nomfic << " is not compatible" << finl;
-                  Cerr << "with the format "<<version_format_sauvegarde()<<" recognized by this version of TRUST." << finl;
+                  Cerr << "The format " << reprise_version_ << " of the resumption file " << nomfic << " is posterior" << finl;
+                  Cerr << "to the format "<<version_format_sauvegarde()<<" recognized by this version of TRUST." << finl;
+                  Cerr << "Please use a more recent version." << finl;
                   exit();
                 }
             }

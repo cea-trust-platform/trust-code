@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
+23/11/21 (TRUST)  Fix         : Restart calculation of previous old calculation with TRUST<=1.8.3 
 23/11/21 (TRUST)  Fix         : Read_MED option convertAllToPoly improved to convert hybrid meshes (tetrahHexa+pyramids cells) from MG-Hybrid Salome tool to polyhedron meshes for PolyMAC discretization
 23/11/21 (TRUST)  Fix         : Several AmgX GPU solvers (BiCGstab, FGMRES) may be used for Euler implicit scheme + memory leak fixes. See Solveurs/GPU/Implicite verification sheet
 23/11/21 (TRUST)  Fix         : Champ_front_MED may now be combined with Champ_Fonc_MED_Tabule to enable time & space dependent boundary conditions read from MED file

@@ -891,6 +891,9 @@ void __Scalar__Tab::lit(Entree & is, int resize_and_read)
     for (int i = 0; i < nb_dim_; i++)
       if (dimension_tot(i) != tmp[i])
         ok = 0;
+  // Autorisation ancien format des champs scalaire 183:
+  if (tmp.size_array()==1 && nb_dim_==2 && dimension(1)==1 && dimension_tot(0) == tmp[0])
+    ok = 1;
   if (resize_and_read)	
   {
      if (size_array() == 0 && (!get_md_vector().non_nul())) {
