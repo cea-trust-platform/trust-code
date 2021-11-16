@@ -110,9 +110,9 @@ DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& position
 double Champ_Face_implementation::interpolation(const double val1, const double val2, const double psi) const
 {
   double epsilon=1.e-12;
-  if (dabs(psi) < epsilon)
+  if (fabs(psi) < epsilon)
     return val1 ;
-  else if (dabs(1.-psi) < epsilon)
+  else if (fabs(1.-psi) < epsilon)
     return val2 ;
   else
     return val1 + psi * (val2-val1) ;
@@ -445,7 +445,7 @@ int Champ_Face_implementation::imprime_Face(Sortie& os, int ncomp) const
           while (n2<ni)
             {
               n1=n2;
-              n2=::min(ni,n2+cmax);
+              n2=std::min(ni,n2+cmax);
               os << finl;
               os << "I=     ";
               for(i=n1; i<n2; i++)
@@ -489,7 +489,7 @@ int Champ_Face_implementation::imprime_Face(Sortie& os, int ncomp) const
       while (n2<ni)
         {
           n1=n2;
-          n2=::min(ni,n2+cmax);
+          n2=std::min(ni,n2+cmax);
           os << finl;
           os << "I=     ";
           for(i=n1; i<n2; i++)

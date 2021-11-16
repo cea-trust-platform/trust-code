@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ void trier_abs(const DoubleVect& a, ArrOfInt& c)
   c.resize_array(a.size_array());
   int i;
 
-  for (i=0; i<a2.size_array(); i++) a2[i]=dabs(a[i]);
+  for (i=0; i<a2.size_array(); i++) a2[i]=fabs(a[i]);
   for ( i=0; i<c.size_array(); i++) c[i]=i;
 
   QuickSort(a2, 0, a2.size_array()-1, c);

@@ -1222,10 +1222,10 @@ double Op_Conv_EF::calculer_dt_stab() const
         double vx[3];
         for (int d=0; d<3; d++)
           {
-            dx2=dabs(coord(elems(elem,0),d)-coord(elems(elem,7),d));
-            dx2+=dabs(coord(elems(elem,1),d)-coord(elems(elem,6),d));
-            dx2+=dabs(coord(elems(elem,2),d)-coord(elems(elem,5),d));
-            dx2+=dabs(coord(elems(elem,3),d)-coord(elems(elem,4),d));
+            dx2=fabs(coord(elems(elem,0),d)-coord(elems(elem,7),d));
+            dx2+=fabs(coord(elems(elem,1),d)-coord(elems(elem,6),d));
+            dx2+=fabs(coord(elems(elem,2),d)-coord(elems(elem,5),d));
+            dx2+=fabs(coord(elems(elem,3),d)-coord(elems(elem,4),d));
             dx2*=0.25;
             dx2*=dx2;
 
@@ -1285,7 +1285,7 @@ double Op_Conv_EF::calculer_dt_stab() const
                 for (int d=0; d<dimension; d++)
                   {
                     double c=vx[d]*dt0;
-                    if (dabs(c)>1e-16)
+                    if (fabs(c)>1e-16)
                       s+=c/(2.*diffu  +c*btd_);
                   }
                 if (s>0)
@@ -1295,8 +1295,8 @@ double Op_Conv_EF::calculer_dt_stab() const
                     exit();
                   }
               }
-            dt2=min(dt2,dt0);
-            dt_l=min(dt2,dt_l);
+            dt2=std::min(dt2,dt0);
+            dt_l=std::min(dt2,dt_l);
           }
       }
   min_dx_=mp_min(min_dx_);

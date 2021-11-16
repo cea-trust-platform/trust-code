@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -93,8 +93,8 @@ DoubleTab& Perte_Charge_Singuliere_PolyMAC_Face::ajouter(DoubleTab& resu) const
   for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
       {
         double Ud = vit(f) * p_f(f),
-               surf = direction_perte_charge() < 0 ? zone_PolyMAC.face_surfaces(f) : dabs(zone_PolyMAC.face_normales(f,direction_perte_charge())); // Taking account of inclined plane
-        resu(f) -= 0.5 * surf * p_f(f) * K() * Ud * dabs(Ud);
+               surf = direction_perte_charge() < 0 ? zone_PolyMAC.face_surfaces(f) : fabs(zone_PolyMAC.face_normales(f,direction_perte_charge())); // Taking account of inclined plane
+        resu(f) -= 0.5 * surf * p_f(f) * K() * Ud * fabs(Ud);
       }
   return resu;
 }
@@ -114,8 +114,8 @@ void Perte_Charge_Singuliere_PolyMAC_Face::contribuer_a_avec(const DoubleTab& in
   for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
       {
         double Ud = vit(f) * p_f(f),
-               surf = direction_perte_charge() < 0 ? zone_PolyMAC.face_surfaces(f) : dabs(zone_PolyMAC.face_normales(f,direction_perte_charge())); // Taking account of inclined plane
-        matrice.coef(f, f) += surf * p_f(f) * K() * p_f(f) * dabs(Ud);
+               surf = direction_perte_charge() < 0 ? zone_PolyMAC.face_surfaces(f) : fabs(zone_PolyMAC.face_normales(f,direction_perte_charge())); // Taking account of inclined plane
+        matrice.coef(f, f) += surf * p_f(f) * K() * p_f(f) * fabs(Ud);
       }
 }
 

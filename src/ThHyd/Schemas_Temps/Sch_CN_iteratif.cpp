@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,7 +83,7 @@ void Sch_CN_iteratif::ajuster_facsec(type_convergence cv)
     default:
       break;
     }
-  facsec_=min(facsec_,facsec_max);
+  facsec_=std::min(facsec_,facsec_max);
 }
 void Sch_CN_iteratif::set_param(Param& param)
 {

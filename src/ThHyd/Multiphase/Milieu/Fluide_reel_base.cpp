@@ -133,8 +133,8 @@ int Fluide_reel_base::check_unknown_range() const
     {
       const DoubleTab& vals = i_r.first == "pression" ? ref_cast(Navier_Stokes_std, equation("vitesse")).pression().valeurs() : equation(i_r.first).inconnue().valeurs();
       double vmin = DBL_MAX, vmax = -DBL_MAX;
-      for (int i = 0, j = min(max(id_composite, 0), vals.dimension(1) - 1); i < vals.dimension(0); i++)
-        vmin = min(vmin, vals(i, j)), vmax = max(vmax, vals(i, j));
+      for (int i = 0, j = std::min(std::max(id_composite, 0), vals.dimension(1) - 1); i < vals.dimension(0); i++)
+        vmin = std::min(vmin, vals(i, j)), vmax = std::max(vmax, vals(i, j));
       ok &= Process::mp_min(vmin) >= i_r.second[0] && Process::mp_max(vmax) <= i_r.second[1];
     }
   return ok;
@@ -168,7 +168,7 @@ void Fluide_reel_base::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
   const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
                         &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
-  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
+  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = std::max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
          incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
   double rho0 = incomp ? fl.rho_(fl.T_ref_, fl.P_ref_) : -1;
   for (i = 0; i < Ni; i++) val(i) = rhoc(T(i, n), p(i, m));
@@ -190,7 +190,7 @@ void Fluide_reel_base::calculer_enthalpie(const Objet_U& obj, DoubleTab& val, Do
   const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
                         &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
-  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
+  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = std::max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
          incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
   double h0 = incomp ? fl.h_(fl.T_ref_, fl.P_ref_) : -1, Cp0 = incomp ? fl.dT_h_(fl.T_ref_, fl.P_ref_) : -1;
 
@@ -210,7 +210,7 @@ void Fluide_reel_base::calculer_energie_interne(const Objet_U& obj, DoubleTab& v
   const Champ_Inc_base& ch_T = fl.equation("temperature").inconnue().valeur(),
                         &ch_p = ref_cast(Navier_Stokes_std, fl.equation("vitesse")).pression().valeur();
   const DoubleTab& T = ch_T.valeurs(), &p = ch_p.valeurs();
-  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
+  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n = std::max(fl.id_composite, 0), m = p.line_size() == T.line_size() ? n : 0,
          incomp = fl.T_ref_ >= 0 && fl.P_ref_ >= 0;
   if (incomp) return calculer_enthalpie(obj, val, bval, deriv); //en incompressible, on prend e_int = h
 

@@ -153,7 +153,7 @@ double nlinear_interpolation(const std::vector<double>& x, const std::vector<std
   std::vector<std::pair<double, double>> Wvecs;
   for (int i = 0; i < n; i++)
     {
-      const double weight = min(1.0, max(0.0, (x[i] - gridpoints[i].first) / (gridpoints[i].second - gridpoints[i].first)));
+      const double weight = std::min(1.0, std::max(0.0, (x[i] - gridpoints[i].first) / (gridpoints[i].second - gridpoints[i].first)));
       Wvecs.push_back({1 - weight, weight});
     }
 

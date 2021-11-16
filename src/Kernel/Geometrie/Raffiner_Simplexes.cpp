@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1041,7 +1041,7 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
                           for (int dir=0; dir<dimension; dir++)
                             {
                               double test=nodes_dest(node,dir)-(nodes_dest(io,dir)+nodes_dest(s,dir))*0.5;
-                              if (dabs(test)>1e-7)
+                              if (fabs(test)>1e-7)
                                 {
                                   Cerr<<" pB position ?"<<test <<finl;
                                   exit();

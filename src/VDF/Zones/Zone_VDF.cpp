@@ -334,8 +334,8 @@ void Zone_VDF::calculer_volumes_entrelaces()
                   const double r1 = xv(num_face, 0);
                   const double r2 = xp(elem, 0);
                   const double dz = dim_elem(elem, 1);
-                  const double dr = dabs(r1 - r2);
-                  const double r = min(r1, r2);
+                  const double dr = fabs(r1 - r2);
+                  const double r = std::min(r1, r2);
                   volumes_entrelaces_dir_(num_face, dir) = 2. * M_PI * (r * dr + 0.5 * dr * dr) * dz;
                 }
               else
@@ -618,11 +618,11 @@ void Zone_VDF::calcul_h()
           {
             for (int j=0; j<zone_geom.nb_faces_elem(); j++)
               numfa[j] = elem_faces(num_poly,j);
-            h_x_ = min(h_x_,xv_(numfa[2],0) - xv_(numfa[0],0));
+            h_x_ = std::min(h_x_,xv_(numfa[2],0) - xv_(numfa[0],0));
             d_teta = xv_(numfa[3],1) - xv_(numfa[1],1);
             if (d_teta < 0)
               d_teta += deux_pi;
-            h_y_ = min(h_y_,d_teta*xv_(numfa[1],0));
+            h_y_ = std::min(h_y_,d_teta*xv_(numfa[1],0));
           }
       }
     else
@@ -632,12 +632,12 @@ void Zone_VDF::calcul_h()
           {
             for (int j=0; j<zone_geom.nb_faces_elem(); j++)
               numfa[j] = elem_faces(num_poly,j);
-            h_x_ = min(h_x_,xv_(numfa[3],0) - xv_(numfa[0],0));
+            h_x_ = std::min(h_x_,xv_(numfa[3],0) - xv_(numfa[0],0));
             d_teta = xv_(numfa[4],1) - xv_(numfa[1],1);
             if (d_teta < 0)
               d_teta += deux_pi;
-            h_y_ = min(h_y_,d_teta*xv_(numfa[1],0));
-            h_z_ = min(h_z_,xv_(numfa[5],2) - xv_(numfa[2],2));
+            h_y_ = std::min(h_y_,d_teta*xv_(numfa[1],0));
+            h_z_ = std::min(h_z_,xv_(numfa[5],2) - xv_(numfa[2],2));
           }
       }
   else
@@ -648,8 +648,8 @@ void Zone_VDF::calcul_h()
             {
               for (int j=0; j<zone_geom.nb_faces_elem(); j++)
                 numfa[j] = elem_faces(num_poly,j);
-              h_x_ = min(h_x_,xv_(numfa[2],0) - xv_(numfa[0],0));
-              h_y_ = min(h_y_,xv_(numfa[3],1) - xv_(numfa[1],1));
+              h_x_ = std::min(h_x_,xv_(numfa[2],0) - xv_(numfa[0],0));
+              h_y_ = std::min(h_y_,xv_(numfa[3],1) - xv_(numfa[1],1));
             }
         }
       else
@@ -658,9 +658,9 @@ void Zone_VDF::calcul_h()
             {
               for (int j=0; j<zone_geom.nb_faces_elem(); j++)
                 numfa[j] = elem_faces(num_poly,j);
-              h_x_ = min(h_x_,xv_(numfa[3],0) - xv_(numfa[0],0));
-              h_y_ = min(h_y_,xv_(numfa[4],1) - xv_(numfa[1],1));
-              h_z_ = min(h_z_,xv_(numfa[5],2) - xv_(numfa[2],2));
+              h_x_ = std::min(h_x_,xv_(numfa[3],0) - xv_(numfa[0],0));
+              h_y_ = std::min(h_y_,xv_(numfa[4],1) - xv_(numfa[1],1));
+              h_z_ = std::min(h_z_,xv_(numfa[5],2) - xv_(numfa[2],2));
             }
         }
     }

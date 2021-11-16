@@ -75,7 +75,7 @@ void Courant_maille_Champ_Face::mettre_a_jour(double tps)
       // Calcul de la taille de maille entourant la face
       double taille_maille = zone_vdf().volumes_entrelaces()(face) / zone_vdf().face_surfaces(face);
       // Calcul du Courant de maille
-      co(face) = dabs(vitesse_->valeurs()(face)) * dt / taille_maille ; // Courant_maille = |Uface| * dt / taille_maille
+      co(face) = fabs(vitesse_->valeurs()(face)) * dt / taille_maille ; // Courant_maille = |Uface| * dt / taille_maille
     }
 
   changer_temps(tps);

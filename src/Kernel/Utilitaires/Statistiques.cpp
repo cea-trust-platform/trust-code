@@ -1346,9 +1346,9 @@ void Statistiques::compute_avg_min_max_var_per_step(int tstep)
       //moyenne courante
       si.counters_avg_min_max_var_per_step[i][1] = ((si.counters_avg_min_max_var_per_step[i][1] * step) + counter_time_step) / (step + 1);
       //min courant
-      si.counters_avg_min_max_var_per_step[i][2] = min(si.counters_avg_min_max_var_per_step[i][2],counter_time_step);
+      si.counters_avg_min_max_var_per_step[i][2] = std::min(si.counters_avg_min_max_var_per_step[i][2],counter_time_step);
       //max courant
-      si.counters_avg_min_max_var_per_step[i][3] = max(si.counters_avg_min_max_var_per_step[i][3],counter_time_step);
+      si.counters_avg_min_max_var_per_step[i][3] = std::max(si.counters_avg_min_max_var_per_step[i][3],counter_time_step);
       //variance courante
       si.counters_avg_min_max_var_per_step[i][4] = (si.counters_avg_min_max_var_per_step[i][4] + old_moy*old_moy)* step;
       si.counters_avg_min_max_var_per_step[i][4] += counter_time_step*counter_time_step;

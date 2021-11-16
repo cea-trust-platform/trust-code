@@ -167,7 +167,7 @@ void Traitement_particulier_NS_Profils_VDF::post_traitement_particulier()
       calculer_moyenne_spatiale_uv(uv_moy_p,corresp_uv_p,compt_uv_p,Nuv,xUVp);
       static double temps_dern_post_inst = -100.;
 
-      if (dabs(tps-temps_dern_post_inst)>=dt_post_inst)
+      if (fabs(tps-temps_dern_post_inst)>=dt_post_inst)
         {
           ecriture_fichiers_moy_spat(umoy_x_m,umoy_2_m,umoy_3_m,umoy_4_m,umoy_x_p,umoy_2_p,umoy_3_p,umoy_4_p,delta_Um,delta_Up,Nxy,Yu_m,0);
           ecriture_fichiers_moy_spat(umoy_y_m,vmoy_2_m,vmoy_3_m,vmoy_4_m,umoy_y_p,vmoy_2_p,vmoy_3_p,vmoy_4_p,delta_Vm,delta_Vp,Nyy,Yv_m,1);
@@ -184,7 +184,7 @@ void Traitement_particulier_NS_Profils_VDF::post_traitement_particulier()
       calculer_moyenne_spatiale_nut(nu_t_inst_p,corresp_uv_p,compt_uv_p,Nuv,xUVp);
 
       static double temps_dern_post_inst_nut = -100.;
-      if (dabs(tps-temps_dern_post_inst_nut)>=dt_post_inst)
+      if (fabs(tps-temps_dern_post_inst_nut)>=dt_post_inst)
         {
           ecriture_fichiers_moy_spat_1col(nu_t_inst_m,nu_t_inst_p,Yuv_m,delta_UVm,delta_UVp,Nuv,4);
           temps_dern_post_inst_nut = tps;
@@ -228,7 +228,7 @@ void Traitement_particulier_NS_Profils_VDF::post_traitement_particulier()
             calculer_integrale_temporelle(nu_t_temp,nu_t_inst_m,nu_t_inst_p,delta_UVm,delta_UVp);
 
           static double temps_dern_post_stat = -100.;
-          if (dabs(tpsbis-temps_dern_post_stat)>=dt_post_stat)
+          if (fabs(tpsbis-temps_dern_post_stat)>=dt_post_stat)
             {
               double dt = tpsbis-temps_deb;
 
@@ -1211,8 +1211,8 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_spat(const Dou
           for (j=0; j<NN(i)  ; j++)
             {
               val_moy = umoy(i,j);
-              // Pour eviter NAN, on prend le dmax(,0):
-              val2 = sqrt(dmax(umoy_2(i,j)-val_moy*val_moy,0));
+              // Pour eviter NAN, on prend le std::max(,0):
+              val2 = sqrt(std::max(umoy_2(i,j)-val_moy*val_moy,0.0));
 
               if (val2 ==0 )
                 {
@@ -1228,7 +1228,7 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_spat(const Dou
                   val4 = val4/pow(val2,4);
                 }
 
-              if ((val_moy<0.)&&(dabs(val_moy)<1.e-10)) val_moy=0.;
+              if ((val_moy<0.)&&(fabs(val_moy)<1.e-10)) val_moy=0.;
               fic << Y (i,j) << "   " << umoy(i,j) << "   " << val2 << "   " << val3 << "   " << val4 << finl;
             }
           fic.flush();
@@ -1373,10 +1373,10 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_temp(const Dou
             {
               val_moy = umoy(i,j)/dt;
               val2 = umoy_2(i,j)/dt -val_moy*val_moy;
-              // Pour eviter NAN, on prend le dmax(,0):
-              val2 = sqrt(dmax(val2,0));
+              // Pour eviter NAN, on prend le std::max(,0):
+              val2 = sqrt(std::max(val2,0.0));
 
-              if (val2 ==0 )
+              if (val2 ==0.0 )
                 {
                   val3=0.;
                   val4=0.;
@@ -1389,7 +1389,7 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_temp(const Dou
                   val4 = umoy_4(i,j)/dt-4*umoy_3(i,j)/dt*val_moy+6*umoy_2(i,j)/dt*val_moy*val_moy-3*val_moy*val_moy*val_moy*val_moy;
                   val4 = val4/pow(val2,4);
                 }
-              if ((val_moy<0.)&&(dabs(val_moy)<1.e-10)) val_moy=0.;
+              if ((val_moy<0.)&&(fabs(val_moy)<1.e-10)) val_moy=0.;
               fic << Y (i,j) << "   " << val_moy << "   "  << val2 <<  "   " << val3 <<  "   " << val4 << finl;
             }
           fic.flush();

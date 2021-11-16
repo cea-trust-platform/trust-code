@@ -95,7 +95,7 @@ double visc_Q1(const Zone_VEF& la_zone,int num_face,int num2,
       Valeur=la_zone.face_normales(num_face,0)*
              la_zone.face_normales(num2,1) -
              la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,0);
-      Valeur=constante*dabs(Valeur)*(la_zone.porosite_face(num_face)* la_zone.porosite_face(num2));
+      Valeur=constante*fabs(Valeur)*(la_zone.porosite_face(num_face)* la_zone.porosite_face(num2));
     }
   else if (dimension == 3)
     {
@@ -105,7 +105,7 @@ double visc_Q1(const Zone_VEF& la_zone,int num_face,int num2,
               la_zone.face_normales(num_face,0)*la_zone.face_normales(num2,2)) +
              (la_zone.face_normales(num_face,0)*la_zone.face_normales(num2,1) -
               la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,0));
-      Valeur=constante*dabs(Valeur)*(la_zone.porosite_face(num_face)* la_zone.porosite_face(num2));
+      Valeur=constante*fabs(Valeur)*(la_zone.porosite_face(num_face)* la_zone.porosite_face(num2));
     }
   // Cerr << "Valeur " << Valeur << finl;
   return Valeur;

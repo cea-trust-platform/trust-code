@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -209,7 +209,7 @@ double distance_2D(int fac,int elem,const Zone_VEF& zone)
   double x1=xp(elem,0);
   double y1=xp(elem,1);
 
-  return dabs(r0*(x1-x0)+r1*(y1-y0));
+  return fabs(r0*(x1-x0)+r1*(y1-y0));
 }
 
 double norm_2D_vit1_k(const DoubleTab& vit,int fac,int num1,
@@ -487,7 +487,7 @@ double distance_3D(int fac,int elem,const Zone_VEF& zone)
   double y1=xp(elem,1);
   double z1=xp(elem,2);
 
-  return dabs(r0*(x1-x0)+r1*(y1-y0)+r2*(z1-z0));
+  return fabs(r0*(x1-x0)+r1*(y1-y0)+r2*(z1-z0));
 }
 
 DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& methode, const Zone_VEF& zone)
@@ -530,7 +530,7 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
 
               distance = distance_sommets(som_1, som_2, zone);
               distance/=sqrt(2.);
-              longueur_filtre(element) = max(longueur_filtre(element), distance);
+              longueur_filtre(element) = std::max(longueur_filtre(element), distance);
             }
     }
   else if (methode ==  Motcle("Scotti"))  // application de Scotti a un pseudo-cube
@@ -651,7 +651,7 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
           {
             som_0 = les_sommets(element, som1);
             som_1 = dom.get_renum_som_perio(som_0);
-            longueur_filtre_sommet(som_1) = max(longueur_filtre(element), longueur_filtre_sommet(som_1));
+            longueur_filtre_sommet(som_1) = std::max(longueur_filtre(element), longueur_filtre_sommet(som_1));
           }
 
       longueur_filtre=-1.;
@@ -661,7 +661,7 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
           {
             som_0 = les_sommets(element, som1);
             som_1 = dom.get_renum_som_perio(som_0);
-            longueur_filtre(element) = max (longueur_filtre(element), longueur_filtre_sommet(som_1));
+            longueur_filtre(element) = std::max (longueur_filtre(element), longueur_filtre_sommet(som_1));
           }
     }
 
@@ -714,7 +714,7 @@ double som_pscal(const int som0, const int som1, const int som2, const int som3,
   v2/=n2;
   v3/=n3;
 
-  double som_psc=dabs(dotproduct_array(v1,v2))+dabs(dotproduct_array(v2,v3))+dabs(dotproduct_array(v3,v1));
+  double som_psc=fabs(dotproduct_array(v1,v2))+fabs(dotproduct_array(v2,v3))+fabs(dotproduct_array(v3,v1));
   return som_psc;
 }
 

@@ -85,7 +85,7 @@ void Perte_Charge_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   //            dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
   //     for (j = zone.ved(e), ve = 0; j < zone.ved(e + 1); j++) for (r = 0; r < dimension; r++)
   //         fb = zone.vej(j), ve(r) += zone.vec(j, r) * vit(fb) * pf(fb) / pe(e);
-  //     double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
+  //     double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = std::max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
   //     coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
   //
   //     /* contributions aux faces de e */

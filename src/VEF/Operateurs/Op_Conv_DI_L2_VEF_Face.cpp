@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ void flora(DoubleTab A, int& N , DoubleVect B, DoubleVect& U, int& test_flora)
   for(m=0; m<N1; m++)
     {
       m1 = m+1;
-      if(dabs(A(m,m)) > 1e-20)
+      if(fabs(A(m,m)) > 1e-20)
         {
           for(i=m1; i<N; i++)
             {
@@ -83,7 +83,7 @@ void flora(DoubleTab A, int& N , DoubleVect B, DoubleVect& U, int& test_flora)
         }
 
     }
-  if(dabs(A(N-1,N-1)) >= 1e-20)
+  if(fabs(A(N-1,N-1)) >= 1e-20)
     {
       U(N-1) = B(N-1)/A(N-1,N-1);
       for(l=0; l<N1; l++)
@@ -115,7 +115,7 @@ void flora_p(DoubleTab& A, int& N, DoubleVect& B, DoubleVect& U, int& test_flora
   for(m=0; m<N1; m++)
     {
       m1 = m+1;
-      if(dabs(A(m,m))  >= 1.e-10)
+      if(fabs(A(m,m))  >= 1.e-10)
         {
           for(i=m1; i<N; i++)
             {
@@ -130,7 +130,7 @@ void flora_p(DoubleTab& A, int& N, DoubleVect& B, DoubleVect& U, int& test_flora
           j=m+1;
           while(j<N && test == 0)
             {
-              if(dabs(A(m,j)) >= 1.e-10) test =1;
+              if(fabs(A(m,j)) >= 1.e-10) test =1;
               j++;
             }
           if(j == N)
@@ -155,7 +155,7 @@ void flora_p(DoubleTab& A, int& N, DoubleVect& B, DoubleVect& U, int& test_flora
         }
 
     }
-  if(dabs(A(N-1,N-1)) >= 1.e-10)
+  if(fabs(A(N-1,N-1)) >= 1.e-10)
     {
       U(N-1) = B(N-1)/A(N-1,N-1);
       for(l=0; l<N1; l++)
@@ -190,8 +190,8 @@ void qrdcmp(DoubleTab& A, int& N, DoubleVect& C, DoubleVect& D, int& sing)
     {
       scale = 0.;
       for(i=k; i<N; i++)
-        if(scale < dabs(A(i,k)))                scale = dabs(A(i,k));
-      if(dabs(scale)<1.e-15)
+        if(scale < fabs(A(i,k)))                scale = fabs(A(i,k));
+      if(fabs(scale)<1.e-15)
         {
           //cas singulier
           Cerr << " huhu " << finl ;
@@ -218,7 +218,7 @@ void qrdcmp(DoubleTab& A, int& N, DoubleVect& C, DoubleVect& D, int& sing)
         }
     }
   D(N-1) = A(N-1,N-1);
-  if(dabs(D(N-1)) <1.e-12)
+  if(fabs(D(N-1)) <1.e-12)
     {
       Cerr << " hoho " << finl ;
       sing =1;
@@ -852,8 +852,8 @@ void Op_Conv_DI_L2_VEF_Face::reconst_DI_L2_2d(DoubleTab& derive ,int poly,
                          + derive(0)*dist(0)*dist(1)    ;
 
               dtrans_cen =  transporte(amont) + transporte(aval) - trans_c_g(0) ;
-              dtrans_max =  dmax( transporte(amont), dtrans_cen ) ;
-              dtrans_min =  dmin( transporte(amont), dtrans_cen ) ;
+              dtrans_max =  std::max( transporte(amont), dtrans_cen ) ;
+              dtrans_min =  std::min( transporte(amont), dtrans_cen ) ;
             }
           else
             {
@@ -867,10 +867,10 @@ void Op_Conv_DI_L2_VEF_Face::reconst_DI_L2_2d(DoubleTab& derive ,int poly,
               //dtrans_cen =  1./2.*(transporte(amont,j) + transporte(aval,j)) ;
               dtrans_cen =  transporte(num1,j) + transporte(num2,j) - trans_c_g(j) ;
 
-              //dtrans_max =  dmax( transporte(amont,j), transporte(aval,j)) ;
-              dtrans_max =  dmax( transporte(amont,j) , dtrans_cen) ;
-              dtrans_min =  dmin( transporte(amont,j) , dtrans_cen) ;
-              //dtrans_min =  dmin( dtrans_min, dtrans_cen) ;
+              //dtrans_max =  std::max( transporte(amont,j), transporte(aval,j)) ;
+              dtrans_max =  std::max( transporte(amont,j) , dtrans_cen) ;
+              dtrans_min =  std::min( transporte(amont,j) , dtrans_cen) ;
+              //dtrans_min =  std::min( dtrans_min, dtrans_cen) ;
 
             }
 
@@ -1081,10 +1081,10 @@ void Op_Conv_DI_L2_VEF_Face::reconst_DI_L2_3d(DoubleTab& derive, int poly,
                              + derive(0)*dist(1)*dist(2) ;
 
                   dtrans_cen =  transporte(amont) + transporte(aval) - trans_c_g(0) ;
-                  //dtrans_max =  dmax( transporte(amont), transporte(aval) ) ;
-                  dtrans_max =  dmax( transporte(amont), dtrans_cen ) ;
-                  dtrans_min =  dmin( transporte(amont), dtrans_cen ) ;
-                  //dtrans_min =  dmin( dtrans_min, dtrans_cen ) ;
+                  //dtrans_max =  std::max( transporte(amont), transporte(aval) ) ;
+                  dtrans_max =  std::max( transporte(amont), dtrans_cen ) ;
+                  dtrans_min =  std::min( transporte(amont), dtrans_cen ) ;
+                  //dtrans_min =  std::min( dtrans_min, dtrans_cen ) ;
                 }
               else
                 {
@@ -1097,9 +1097,9 @@ void Op_Conv_DI_L2_VEF_Face::reconst_DI_L2_3d(DoubleTab& derive, int poly,
                              +         derive(0,j)*dist(1)*dist(2) ;
 
                   dtrans_cen  =  transporte(amont,j) + transporte(aval,j) - trans_c_g(j) ;
-                  dtrans_max =  dmax( transporte(amont,j), dtrans_cen ) ;
+                  dtrans_max =  std::max( transporte(amont,j), dtrans_cen ) ;
 
-                  dtrans_min =  dmin( transporte(amont,j), dtrans_cen ) ;
+                  dtrans_min =  std::min( transporte(amont,j), dtrans_cen ) ;
 
                 }
 

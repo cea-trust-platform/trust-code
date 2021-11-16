@@ -56,7 +56,7 @@ void Frottement_interfacial_Sonnenburg::coefficient(const DoubleTab& alpha, cons
 {
   coeff = 0;
   if (alpha(n_l) < 1e-8 || alpha(n_g) < 1e-8) return;
-  double a_u = 32, b_u = 9. / 16 * sqrt(rho(n_g) / rho(n_l)), c_u = 40, alp = min(max(alpha(n_g), 1e-3), 0.999),
+  double a_u = 32, b_u = 9. / 16 * sqrt(rho(n_g) / rho(n_l)), c_u = 40, alp = std::min(std::max(alpha(n_g), 1e-3), 0.999),
          fac = 16. / 9 * (1 - alp * (1 - b_u)) / (tanh(a_u * alp) * (1 - std::pow(alp, c_u)));
   coeff(n_l, n_g, 1) = coeff(n_g, n_l, 1) = alpha(n_l) * alpha(n_g) * rho(n_l) / Dh * fac * fac;
   coeff(n_l, n_g, 0) = coeff(n_g, n_l, 0) = coeff(n_l, n_g, 1) * ndv(n_l, n_g);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -420,7 +420,7 @@ coefficient_penalisation(const int& Numero_face) const
       coefficientpenalisation = 1./diametre(voisin1);
       eta = 1./diametre(voisin2);
 
-      coefficientpenalisation = min(coefficientpenalisation,eta);
+      coefficientpenalisation = std::min(coefficientpenalisation,eta);
     }
 
   if (voisin1 == -1)

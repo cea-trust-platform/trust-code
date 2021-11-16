@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -141,10 +141,10 @@ int Rectangle::reordonner_elem()
             co(i,j) = dom.coord(S(i), j);
         }
 
-      xmin=min(co(0, 0), co(1, 0));
-      xmin=min(xmin, co(2, 0));
-      ymin=min(co(0, 1), co(1, 1));
-      ymin=min(ymin, co(2, 1));
+      xmin=std::min(co(0, 0), co(1, 0));
+      xmin=std::min(xmin, co(2, 0));
+      ymin=std::min(co(0, 1), co(1, 1));
+      ymin=std::min(ymin, co(2, 1));
 
       for(i=0; i<4; i++)
         if ( est_egal(co(i, 0),xmin) && est_egal(co(i, 1),ymin))

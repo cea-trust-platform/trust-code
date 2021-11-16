@@ -358,7 +358,7 @@ void Source_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) 
     }
   const Probleme_base& pb=equation().probleme();
   const Schema_Temps_base& sch=pb.schema_temps();
-  const int& precision = sch.precision_impr(), wcol = max(col_width_, sch.wcol()), gnuplot_header = sch.gnuplot_header();
+  const int& precision = sch.precision_impr(), wcol = std::max(col_width_, sch.wcol()), gnuplot_header = sch.gnuplot_header();
   os.set_col_width(wcol);
 
   Nom nomfichier(out_);

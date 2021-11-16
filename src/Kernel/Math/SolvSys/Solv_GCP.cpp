@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -411,7 +411,7 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
     const int nb_items_seq = solution.get_md_vector().valeur().nb_items_seq_tot();
     const int ls = secmem.line_size();
     const int nb_inco_tot = nb_items_seq * ls;
-    nmax = max(nb_inco_tot, nmax);
+    nmax = std::max(nb_inco_tot, nmax);
   }
 
   const int avec_precond = le_precond_.non_nul();

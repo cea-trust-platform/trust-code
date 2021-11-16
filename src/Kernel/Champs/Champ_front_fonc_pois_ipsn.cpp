@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -133,26 +133,26 @@ int Champ_front_fonc_pois_ipsn::initialiser(double temps, const Champ_Inc_base& 
       double ray2 = R_tube*R_tube ;
 
       dummy = loc_local(0)*loc_local(1)*ray2 ;
-      tab(fac,2) = dabs(dummy) ;
+      tab(fac,2) = fabs(dummy) ;
       dummy = loc_local(0)*loc_local(2)*ray2 ;
-      tab(fac,1) = dabs(dummy) ;
+      tab(fac,1) = fabs(dummy) ;
       dummy = loc_local(1)*loc_local(2)*ray2 ;
-      tab(fac,0) = dabs(dummy) ;
+      tab(fac,0) = fabs(dummy) ;
 
       dummy = loc_local(0)*loc_local(0)*loc_local(0)*loc_local(1) ;
-      tab(fac,2) -= dabs(dummy) ;
+      tab(fac,2) -= fabs(dummy) ;
       dummy = loc_local(1)*loc_local(1)*loc_local(1)*loc_local(0) ;
-      tab(fac,2) -= dabs(dummy) ;
+      tab(fac,2) -= fabs(dummy) ;
 
       dummy = loc_local(0)*loc_local(0)*loc_local(0)*loc_local(2) ;
-      tab(fac,1) -= dabs(dummy) ;
+      tab(fac,1) -= fabs(dummy) ;
       dummy = loc_local(2)*loc_local(2)*loc_local(2)*loc_local(0) ;
-      tab(fac,1) -= dabs(dummy) ;
+      tab(fac,1) -= fabs(dummy) ;
 
       dummy = loc_local(2)*loc_local(2)*loc_local(2)*loc_local(1) ;
-      tab(fac,0) -= dabs(dummy) ;
+      tab(fac,0) -= fabs(dummy) ;
       dummy = loc_local(1)*loc_local(1)*loc_local(1)*loc_local(2) ;
-      tab(fac,0) -= dabs(dummy) ;
+      tab(fac,0) -= fabs(dummy) ;
 
       for ( i=0; i<dim; i++)
         tab(fac,i) *= U_moy(i) ;

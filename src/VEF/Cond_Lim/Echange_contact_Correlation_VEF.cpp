@@ -298,7 +298,7 @@ void Echange_contact_Correlation_VEF::completer()
 
   init();
 
-  T=min(Tinf,Tsup);
+  T=std::min(Tinf,Tsup);
   calculer_prop_physique();
   if (T(0)==Tinf)
     U=debit/rho(0);
@@ -528,12 +528,12 @@ void Echange_contact_Correlation_VEF::init()
   correspondance_solide_fluide.resize(nb_faces_bord);
   for(int i=0; i<nb_faces_bord; i++)
     {
-      double min=dabs(xv(i+ndeb,dir)-coord(1));
+      double min=fabs(xv(i+ndeb,dir)-coord(1));
       double tmp=0.;
       int jmin=1;
       for (int j=2; j<N-1; j++)
         {
-          if ((tmp=dabs(xv(i+ndeb,dir)-coord(j))) < min)
+          if ((tmp=fabs(xv(i+ndeb,dir)-coord(j))) < min)
             {
               min = tmp;
               jmin = j;
@@ -604,7 +604,7 @@ void Echange_contact_Correlation_VEF::init()
                         {
                           pscal += normale(idim)*(coord_som(sj_0,idim)-coord_som(s0,idim));
                         }
-                      if (dabs(pscal) < precision)
+                      if (fabs(pscal) < precision)
                         {
                           traite(j) = 1;
                           if (compteur_face==MAX_FACES_PATCH)

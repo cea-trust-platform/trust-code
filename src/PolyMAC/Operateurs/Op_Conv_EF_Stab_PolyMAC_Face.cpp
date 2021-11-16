@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,7 +79,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
           {
-            for (k = 0, ok = 1; ok && k < dimension; k++) ok &= dabs((xv(f1, k) - xp(e1, k)) - (xv(f2, k) - xp(e2, k))) < 1e-6;
+            for (k = 0, ok = 1; ok && k < dimension; k++) ok &= fabs((xv(f1, k) - xp(e1, k)) - (xv(f2, k) - xp(e2, k))) < 1e-6;
             if (ok) equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++;
           }
   if (mp_somme_vect(ntot)) Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de convection directe!" << finl;
@@ -113,7 +113,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
                     if (ch.icl(fc = e_f(ea[k], zone.m2j(m)), 0) < 2) stencil.append_line(f, fc);
             }
           else for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++) for (l = zone.vedeb(eb); l < zone.vedeb(eb + 1); l++) //sinon -> convection de ve.(xv-xp)
-                if (dabs(zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0))) > 1e-8 * vf(f) / fs(f) && ch.icl(fc = zone.veji(l), 0) < 2)
+                if (fabs(zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0))) > 1e-8 * vf(f) / fs(f) && ch.icl(fc = zone.veji(l), 0) < 2)
                   stencil.append_line(f, fc);
         }
 
@@ -199,7 +199,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
                     }
                 }
               else for (l = zone.vedeb(eb); l < zone.vedeb(eb + 1); l++) //face interne sans equivalence -> convection de ve
-                  if (ch.icl(fc = zone.veji(l), 0) < 2 && dabs(zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0))) > 1e-8 * vf(f) / fs(f))
+                  if (ch.icl(fc = zone.veji(l), 0) < 2 && fabs(zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0))) > 1e-8 * vf(f) / fs(f))
                     matrice(f, fc) += fac * fs(f) * zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0)) * pe(eb);
             }
 

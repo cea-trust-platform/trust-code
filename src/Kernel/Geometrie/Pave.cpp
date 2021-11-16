@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -233,8 +233,8 @@ Entree& Pave::readOn(Entree& is)
                   while ( x_tmp > x1 )
                     {
                       xa_tanh+=pow(10.,-decimale);
-                      xa_tanh = min(xa_tanh,1-Objet_U::precision_geom);
-                      if ( dabs(xa_tanh) < Objet_U::precision_geom)
+                      xa_tanh = std::min(xa_tanh,1-Objet_U::precision_geom);
+                      if ( fabs(xa_tanh) < Objet_U::precision_geom)
                         {
                           Cerr << "Error: The coefficient xa_tanh has a value of : " << xa_tanh << finl ;
                           Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
@@ -245,8 +245,8 @@ Entree& Pave::readOn(Entree& is)
                       x_tmp=Longueurs(0)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mx-1)*1.))*atanh(xa_tanh))/xa_tanh);
                     }
                   xa_tanh-=pow(10.,-decimale);
-                  xa_tanh = min(xa_tanh,1-Objet_U::precision_geom);
-                  if ( dabs(xa_tanh) < Objet_U::precision_geom)
+                  xa_tanh = std::min(xa_tanh,1-Objet_U::precision_geom);
+                  if ( fabs(xa_tanh) < Objet_U::precision_geom)
                     {
                       Cerr << "Error: The coefficient xa_tanh has a value of : " << xa_tanh << finl ;
                       Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
@@ -286,8 +286,8 @@ Entree& Pave::readOn(Entree& is)
                   while ( y_tmp > y1 )
                     {
                       a_tanh+=pow(10.,-decimale);
-                      a_tanh = min(a_tanh,1-Objet_U::precision_geom);
-                      if ( dabs(a_tanh) < Objet_U::precision_geom)
+                      a_tanh = std::min(a_tanh,1-Objet_U::precision_geom);
+                      if ( fabs(a_tanh) < Objet_U::precision_geom)
                         {
                           Cerr << "Error: The coefficient ya_tanh has a value of : " << a_tanh << finl ;
                           Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
@@ -298,8 +298,8 @@ Entree& Pave::readOn(Entree& is)
                       y_tmp=Longueurs(1)/fac_sym*(1.+tanh((-1.+fac_sym*1./((My-1)*1.))*atanh(a_tanh))/a_tanh);
                     }
                   a_tanh-=pow(10.,-decimale);
-                  a_tanh = min(a_tanh,1-Objet_U::precision_geom);
-                  if ( dabs(a_tanh) < Objet_U::precision_geom)
+                  a_tanh = std::min(a_tanh,1-Objet_U::precision_geom);
+                  if ( fabs(a_tanh) < Objet_U::precision_geom)
                     {
                       Cerr << "Error: The coefficient ya_tanh has a value of : " << a_tanh << finl ;
                       Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
@@ -339,8 +339,8 @@ Entree& Pave::readOn(Entree& is)
                   while ( z_tmp > z1 )
                     {
                       za_tanh+=pow(10.,-decimale);
-                      za_tanh = min(za_tanh,1-Objet_U::precision_geom);
-                      if ( dabs(za_tanh) < Objet_U::precision_geom)
+                      za_tanh = std::min(za_tanh,1-Objet_U::precision_geom);
+                      if ( fabs(za_tanh) < Objet_U::precision_geom)
                         {
                           Cerr << "Error: The coefficient za_tanh has a value of : " << za_tanh << finl ;
                           Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
@@ -351,8 +351,8 @@ Entree& Pave::readOn(Entree& is)
                       z_tmp=Longueurs(2)/fac_sym*(1.+tanh((-1.+fac_sym*1./((Mz-1)*1.))*atanh(za_tanh))/za_tanh);
                     }
                   za_tanh-=pow(10.,-decimale);
-                  za_tanh = min(za_tanh,1-Objet_U::precision_geom);
-                  if ( dabs(za_tanh) < Objet_U::precision_geom)
+                  za_tanh = std::min(za_tanh,1-Objet_U::precision_geom);
+                  if ( fabs(za_tanh) < Objet_U::precision_geom)
                     {
                       Cerr << "Error: The coefficient za_tanh has a value of : " << za_tanh << finl ;
                       Cerr << "So the mesh can't be generated with tanh (hyperbolic tangent) variation!" << finl ;
@@ -553,9 +553,9 @@ void Pave::maille1D()
       Longueurs(0)=-Longueurs(0);
       Facteurs(0)=1./Facteurs(0);
     }
-  if( (!Symetrique(0)) || (dabs(Facteurs(0)-1.)<epsilon_geom)   )
+  if( (!Symetrique(0)) || (fabs(Facteurs(0)-1.)<epsilon_geom)   )
     {
-      if(dabs(Facteurs(0)-1.)>epsilon_geom)
+      if(fabs(Facteurs(0)-1.)>epsilon_geom)
         Pas(0)=Longueurs(0)*(Facteurs(0)-1)/(pow(Facteurs(0),Nx)-1);
       else
         Pas(0)=Longueurs(0)/Nx;
@@ -639,7 +639,7 @@ void Pave::maille2D()
       Longueurs(1)=-Longueurs(1);
       Facteurs(1)=1./Facteurs(1);
     }
-  if( (!Symetrique(0)) || (dabs(Facteurs(0)-1.)<epsilon_geom) )
+  if( (!Symetrique(0)) || (fabs(Facteurs(0)-1.)<epsilon_geom) )
     {
       assert(!est_egal(xa_tanh,-123.));
       if ((xa_tanh>epsilon_geom)&&(xa_tanh<1.) )
@@ -705,7 +705,7 @@ void Pave::maille2D()
                   pourcent=tmp;
                   Cerr << "It was created " << pourcent << "% of coordx" << flush;
                 }
-              if (dabs(Facteurs(0)-1.)>epsilon_geom)
+              if (fabs(Facteurs(0)-1.)>epsilon_geom)
                 x=Origine(0)+Longueurs(0)*(pow(Facteurs(0),i)-1)/(pow(Facteurs(0),Nx)-1);
               else
                 x=Origine(0)+Longueurs(0)*i/Nx;
@@ -760,7 +760,7 @@ void Pave::maille2D()
     }
   pourcent=0;
   //
-  if( (!Symetrique(1)) || (dabs(Facteurs(1)-1.)<epsilon_geom) )
+  if( (!Symetrique(1)) || (fabs(Facteurs(1)-1.)<epsilon_geom) )
     {
       assert(!est_egal(a_tanh,-123.));
       if ((a_tanh>epsilon_geom)&&(a_tanh<1.) )
@@ -826,7 +826,7 @@ void Pave::maille2D()
                   pourcent=tmp;
                   Cerr << "It was created " << pourcent << "% of coordy" << flush;
                 }
-              if (dabs(Facteurs(1)-1.)>epsilon_geom)
+              if (fabs(Facteurs(1)-1.)>epsilon_geom)
                 y=Origine(1)+Longueurs(1)*(pow(Facteurs(1),j)-1)/(pow(Facteurs(1),Ny)-1);
               else
                 y=Origine(1)+Longueurs(1)*j/Ny;
@@ -923,7 +923,7 @@ void Pave::maille3D()
       Longueurs(2)=-Longueurs(2);
       Facteurs(2)=1./Facteurs(2);
     }
-  if( (!Symetrique(0)) || (dabs(Facteurs(0)-1.)<epsilon_geom) )
+  if( (!Symetrique(0)) || (fabs(Facteurs(0)-1.)<epsilon_geom) )
     {
       assert(!est_egal(xa_tanh,-123.));
       if ((xa_tanh>epsilon_geom)&&(xa_tanh<1.) )
@@ -992,7 +992,7 @@ void Pave::maille3D()
                   pourcent=tmp;
                   Cerr << "It was created " << pourcent << "% of coordx" << flush;
                 }
-              if(dabs(Facteurs(0)-1.)>epsilon_geom)
+              if(fabs(Facteurs(0)-1.)>epsilon_geom)
                 x=Origine(0)+Longueurs(0)*(pow(Facteurs(0),i)-1)/(pow(Facteurs(0),Nx)-1);
               else
                 x=Origine(0)+Longueurs(0)*i/Nx;
@@ -1052,7 +1052,7 @@ void Pave::maille3D()
   //
   pourcent=0;
   Cerr << finl;
-  if( (!Symetrique(1)) || (dabs(Facteurs(1)-1.)<epsilon_geom) )
+  if( (!Symetrique(1)) || (fabs(Facteurs(1)-1.)<epsilon_geom) )
     {
       assert(!est_egal(a_tanh,-123.));
       if ((a_tanh>epsilon_geom)&&(a_tanh<1.) )
@@ -1120,7 +1120,7 @@ void Pave::maille3D()
                   pourcent=tmp;
                   Cerr << "It was created " << pourcent << "% of coordy" << flush;
                 }
-              if(dabs(Facteurs(1)-1.)>epsilon_geom)
+              if(fabs(Facteurs(1)-1.)>epsilon_geom)
                 y=Origine(1)+Longueurs(1)*(pow(Facteurs(1),j)-1)/(pow(Facteurs(1),Ny)-1);
               else
                 y=Origine(1)+Longueurs(1)*j/Ny;
@@ -1181,7 +1181,7 @@ void Pave::maille3D()
   //
   pourcent=0;
   Cerr << finl;
-  if( (!Symetrique(2)) ||( dabs(Facteurs(2)-1.)<epsilon_geom)    )
+  if( (!Symetrique(2)) ||( fabs(Facteurs(2)-1.)<epsilon_geom)    )
     {
       assert(!est_egal(za_tanh,-123.));
       if ((za_tanh>epsilon_geom)&&(za_tanh<1.) )
@@ -1249,7 +1249,7 @@ void Pave::maille3D()
                   pourcent=tmp;
                   Cerr << "It was created " << pourcent << "% of coordz" << flush;
                 }
-              if(dabs(Facteurs(2)-1.)>epsilon_geom)
+              if(fabs(Facteurs(2)-1.)>epsilon_geom)
                 z=Origine(2)+Longueurs(2)*(pow(Facteurs(2),k)-1)/(pow(Facteurs(2),Nz)-1);
               else
                 z=Origine(2)+Longueurs(2)*k/Nz;

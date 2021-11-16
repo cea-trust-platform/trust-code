@@ -1023,8 +1023,8 @@ void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
                                   // Pour assurer des entrees "correctes" (1D) on remedie a ce probleme via l'operation suivante
                                   // (en supposant que les entrees sont alignees avec une des directions d'espace)
 
-                                  if(dabs(val0)>0.999) {val0=1.;val1=0.;}
-                                  if(dabs(val1)>0.999) {val0=0.;val1=1.;}
+                                  if(fabs(val0)>0.999) {val0=1.;val1=0.;}
+                                  if(fabs(val1)>0.999) {val0=0.;val1=1.;}
                                   */
 
                                   valeurs(fac,0)=(norm_v-u_tau/kappa)*val0;
@@ -1053,9 +1053,9 @@ void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
                                   // Pour assurer des entrees "correctes" (1D) on remedie a ce probleme via l'operation suivante
                                   // (en supposant que les entrees sont alignees suivant une des directions d'espace)
 
-                                  if(dabs(val0)>0.999) {val0=1.;val1=0.;val2=0.;}
-                                  if(dabs(val1)>0.999) {val0=0.;val1=1.;val2=0.;}
-                                  if(dabs(val2)>0.999) {val0=0.;val1=0.;val2=1.;}
+                                  if(fabs(val0)>0.999) {val0=1.;val1=0.;val2=0.;}
+                                  if(fabs(val1)>0.999) {val0=0.;val1=1.;val2=0.;}
+                                  if(fabs(val2)>0.999) {val0=0.;val1=0.;val2=1.;}
                                   */
                                   valeurs(fac,0)=(norm_v-u_tau/kappa)*val0;
                                   valeurs(fac,1)=(norm_v-u_tau/kappa)*val1;
@@ -1661,8 +1661,8 @@ valeur_aux_sommets(const Domaine& dom,
                           if (face_adj != j )
                             {
                               face_glob = elem_faces(num_elem, face_adj);
-                              min_som(num_som,ncomp) = min ( ch(face_glob,ncomp),min_som(num_som,ncomp) ) ;
-                              max_som(num_som,ncomp) = max ( ch(face_glob,ncomp),max_som(num_som,ncomp) ) ;
+                              min_som(num_som,ncomp) = std::min ( ch(face_glob,ncomp),min_som(num_som,ncomp) ) ;
+                              max_som(num_som,ncomp) = std::max ( ch(face_glob,ncomp),max_som(num_som,ncomp) ) ;
                             }
                         }
                     }
@@ -1816,9 +1816,9 @@ valeur_aux_sommets_compo(const Domaine& dom,
                       if (face_adj != j )
                         {
                           face_glob = elem_faces(num_elem, face_adj);
-                          min_som(num_som) = min
+                          min_som(num_som) = std::min
                                              ( ch(face_glob,ncomp),min_som(num_som) ) ;
-                          max_som(num_som) = max
+                          max_som(num_som) = std::max
                                              ( ch(face_glob,ncomp),max_som(num_som) ) ;
                         }
                     }

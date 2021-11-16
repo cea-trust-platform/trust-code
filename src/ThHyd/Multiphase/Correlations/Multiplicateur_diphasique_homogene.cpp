@@ -53,10 +53,10 @@ void Multiplicateur_diphasique_homogene::coefficient(const double *alpha, const 
                                                      const double *mu, const double Dh, const double gamma, const double *Fk,
                                                      const double Fm, DoubleTab& coeff) const
 {
-  double G = alpha[n_l] * rho[n_l] * dabs(v[n_l]) + alpha[n_g] * rho[n_g] * dabs(v[n_g]), //debit total
+  double G = alpha[n_l] * rho[n_l] * fabs(v[n_l]) + alpha[n_g] * rho[n_g] * fabs(v[n_g]), //debit total
          x = G ? alpha[n_g] * rho[n_g] * v[n_g] / G : 0, //titre
          Phi2 = 1 + x * (rho[n_l] / rho[n_g] - 1), //le multiplicateur!
-         frac_g = min(max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), frac_l = 1 - frac_g; //fraction appliquee a la vapeur
+         frac_g = std::min(std::max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), frac_l = 1 - frac_g; //fraction appliquee a la vapeur
   coeff = 0;
   coeff(n_l, 0) = frac_l * Phi2;
   coeff(n_g, 0) = frac_g ? frac_g / (alpha[n_g] * alpha[n_g]) : 0; //basculement vers le frottement "vapeur seule"

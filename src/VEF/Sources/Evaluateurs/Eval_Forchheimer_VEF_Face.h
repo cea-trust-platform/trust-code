@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,7 +98,7 @@ inline void Eval_Forchheimer_VEF_Face::calculer_terme_source(int num_face, Doubl
   for (int i=0; i<size; i++)
     {
       double U = vitesse->valeurs()(num_face,i);
-      source(i) = -Cf/sqrt(modK->getK(porosite))*volumes(num_face)*porosite_surf(num_face)*dabs(U)*U;
+      source(i) = -Cf/sqrt(modK->getK(porosite))*volumes(num_face)*porosite_surf(num_face)*fabs(U)*U;
     }
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -152,7 +152,7 @@ void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
               xgl*=0.25;
               S1+=  moinsS0;
               S2+=  moinsS0;
-              double vol_l= dabs(
+              double vol_l= fabs(
                               S1[0] * ( S2[1] * S3[2] - S3[1] * S2[2] )
                               + S2[0] * ( S3[1] * S1[2] - S1[1] * S3[2] )
                               + S3[0] * ( S1[1] * S2[2] - S2[1] * S1[2] ) );
@@ -407,7 +407,7 @@ void Polyedre::calculer_volumes(DoubleVect& volumes) const
               Vecteur3 S2(coord(n2,0),coord(n2,1),coord(n2,2));
               S1+=  moinsS0;
               S2+=  moinsS0;
-              volume += dabs(
+              volume += fabs(
                           S1[0] * ( S2[1] * S3[2] - S3[1] * S2[2] )
                           + S2[0] * ( S3[1] * S1[2] - S1[1] * S3[2] )
                           + S3[0] * ( S1[1] * S2[2] - S2[1] * S1[2] ) );
@@ -589,7 +589,7 @@ void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& n
   int nb_new_elem=new_elems.dimension(0);
   int nb_som_old_elem=les_elems.dimension(1);
   int nb_som_new_elem=new_elems.dimension(1);
-  nb_som_elem_max_ = max(nb_som_old_elem,nb_som_new_elem);
+  nb_som_elem_max_ = std::max(nb_som_old_elem,nb_som_new_elem);
   les_elems.set_smart_resize(1);
   les_elems.resize(nb_old_elem+nb_new_elem,nb_som_elem_max_, ArrOfInt::COPY_NOINIT);
   for (int el=0; el<nb_new_elem; el++)
@@ -605,8 +605,8 @@ void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& n
   type_elem.get_tab_faces_sommets_locaux(faces_som_local);
   int nb_face_new_elem=faces_som_local.dimension(0);
   int nb_som_face_new_elem=faces_som_local.dimension(1);
-  nb_face_elem_max_=max(nb_face_elem_max_,nb_face_new_elem);
-  nb_som_face_max_=max(nb_som_face_max_,nb_som_face_new_elem);
+  nb_face_elem_max_=std::max(nb_face_elem_max_,nb_face_new_elem);
+  nb_som_face_max_=std::max(nb_som_face_max_,nb_som_face_new_elem);
 
   PolyhedronIndex_.set_smart_resize(1);
   PolyhedronIndex_.resize_array(1+nb_old_elem+nb_new_elem);

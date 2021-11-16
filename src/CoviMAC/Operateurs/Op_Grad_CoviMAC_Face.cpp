@@ -132,7 +132,7 @@ void Op_Grad_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
   Matrice_Morse *mat_p = matrices["pression"], *mat_v = !semi_impl.count(nom_inc) && matrices.count(nom_inc) ? matrices.at(nom_inc) : NULL, mat2_p, mat2_v;
   std::map<int, std::set<int>> dpb_v, dgp_pb; //dependances vitesses -(dpb_v)-> pressions au bord -(dgp_pb)-> gradient
   if (mat_v) for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl(f, 0) > 1) for (e = f_e(f, 0), n = 0, m = 0; n < N; n++, m += (M > 1))
-          for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (dabs(nf(f, d)) > 1e-6 * fs(f))
+          for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (fabs(nf(f, d)) > 1e-6 * fs(f))
               for (dpb_v[M * f + m].insert(N * i + n), j = mat_v->get_tab1()(N * i + n) - 1; j < mat_v->get_tab1()(N * i + n + 1) - 1; j++)
                 dpb_v[M * f + m].insert(mat_v->get_tab2()(j) - 1);
 
@@ -152,14 +152,14 @@ void Op_Grad_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
       if (fcl(f, 0) < 2) for (n = 0, m = 0; n < N; n++, m += (M > 1)) for (auto &c : dfgpf[n]) dgp_pb[N * f + n].insert(M * c + m);
       /* elems amont/aval -> ve(e) * phi grad p */
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (d = 0; d < D; d++)
-            if (fs(f) * dabs(xv(f, d) - xp(e, d)) > 1e-6 * ve(e)) for (n = 0, m = 0; n < N; n++, m += (M > 1)) for (auto &c : dfgpf[n])
+            if (fs(f) * fabs(xv(f, d) - xp(e, d)) > 1e-6 * ve(e)) for (n = 0, m = 0; n < N; n++, m += (M > 1)) for (auto &c : dfgpf[n])
                   dgp_pb[N * (nf_tot + D * e + d) + n].insert(M * c + m);
       for (n = 0; n < N; n++) dfgpf[n].clear();
     }
 
   /* aux elements : gradient aux elems */
   for (e = 0; e < zone.nb_elem(); e++) for (i = zone.ved(e); i < zone.ved(e + 1); i++) for (f = zone.vej(i), j = fgrad_d(f); j < fgrad_d(f + 1); j++)
-        if ((eb = fgrad_e(j)) < ne_tot) for (d = 0; d < D; d++)  if (dabs(zone.vec(i, d)) > 1e-6) for (n = 0, m = 0; n < N; n++, m += (M > 1))
+        if ((eb = fgrad_e(j)) < ne_tot) for (d = 0; d < D; d++)  if (fabs(zone.vec(i, d)) > 1e-6) for (n = 0, m = 0; n < N; n++, m += (M > 1))
                 sten_p.append_line(N * (nf_tot + D * e + d) + n, M * eb + m);
 
   /* sten_v en une ligne */
@@ -194,7 +194,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
         {
           double fac = 1. / (fs(f) * ve(e));
           std::map<int, double> *dv = mat_v ? &dgb_v[M * f + m] : NULL; //dv[indice dans mat_NS] = coeff
-          for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (dabs(nf(f, d)) > 1e-6 * fs(f)) //boucle sur la direction : i est l'indice dans mat_v
+          for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (fabs(nf(f, d)) > 1e-6 * fs(f)) //boucle sur la direction : i est l'indice dans mat_v
               {
                 gb(f, m) += fac * nf(f, d) * secmem(i, n); //partie constante -> directement dans pfb
                 if (dv) for (j = mat_v->get_tab1()(N * i + n) - 1; j < mat_v->get_tab1()(N * i + n + 1) - 1; j++) //partie lineaire -> dans dgb_v
@@ -229,7 +229,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             }
       /* elems amont/aval -> ve(e) * phi grad p */
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (d = 0; d < D; d++)
-            if (fs(f) * dabs(xv(f, d) - xp(e, d)) > 1e-6 * ve(e)) for (n = 0, m = 0; n < N; n++, m += (M > 1))
+            if (fs(f) * fabs(xv(f, d) - xp(e, d)) > 1e-6 * ve(e)) for (n = 0, m = 0; n < N; n++, m += (M > 1))
                 {
                   double fac = (i ? -1 : 1) * fs(f) * pe(e) * (xv(f, d) - xp(e, d)) * (alp ? (*alp)(e, n) : 1);
                   secmem(nf_tot + D * e + d, n) -= fac * gf(n, i);

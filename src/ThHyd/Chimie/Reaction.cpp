@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -371,7 +371,7 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
                 if (coeff_Y_[i]>0.) // c'est un reactif
                   {
                     if (proportion > C(i)/coeff_stoechio_[i]*securite) Cerr<<" on limite" <<finl;
-                    proportion=min(proportion,C(i)/coeff_stoechio_[i]*securite);
+                    proportion=std::min(proportion,C(i)/coeff_stoechio_[i]*securite);
                   }
               }
           else
@@ -380,11 +380,11 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
                 if (coeff_Y_[i]<0.) // c'est un reactif car on est dans le cas contre treaction
                   {
                     // on prend le max car proportion et Y_i(elem)/coeff_Y_[i] sont negatifs
-                    proportion=max(proportion,C(i)/coeff_stoechio_[i]*securite);
+                    proportion=std::max(proportion,C(i)/coeff_stoechio_[i]*securite);
                   }
               }
         }
-      proportion_max_sur_delta_t_=max(proportion_max_sur_delta_t_,dabs(proportion));
+      proportion_max_sur_delta_t_=std::max(proportion_max_sur_delta_t_,fabs(proportion));
       //if (ite==0)
       //  proportion_directe_es=proportion_directe;
       for (int i=0; i<nbc; i++)
@@ -412,7 +412,7 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
                   exit();
                 //pond=0;
                 double nc=((C0(i)-proportion*coeff_stoechio_[i]/2.+pond/2.*C(i))/(1.+pond/2.)-C(i));
-                double dc=dabs(nc);
+                double dc=fabs(nc);
                 C(i)+=nc;
                 if (dc>dmax)
                   dmax=dc;
@@ -423,7 +423,7 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
           {
             double nc=C0(i)-proportion*coeff_stoechio_[i]/2.-C(i);
             C(i)+=nc;
-            double dc=dabs(nc);
+            double dc=fabs(nc);
             if (dc>dmax)
               dmax=dc;
           }

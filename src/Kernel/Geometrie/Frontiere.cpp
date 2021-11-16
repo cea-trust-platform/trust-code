@@ -303,7 +303,7 @@ void Frontiere::add(const Frontiere& front)
   int nbf1=les_faces.nb_faces();
   int nbf2=a_ajouter.nb_faces();
   //max to treat the case where my front is empty
-  int nbs=max(les_faces.nb_som_faces(), a_ajouter.nb_som_faces());
+  int nbs=std::max(les_faces.nb_som_faces(), a_ajouter.nb_som_faces());
   int face;
   les_faces.les_sommets().resize(nbf1+nbf2, nbs);
   for(face=0; face<nbf2; face++)

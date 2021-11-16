@@ -179,9 +179,9 @@ void Moyenne_volumique::eval_filtre(const DoubleTab& coords, ArrOfDouble& result
             const double y = coords(i, 1);
             const double z = (dim == 3) ? coords(i, 2) : 0.;
             double resu = 0.;
-            const double ax = dabs(x);
-            const double ay = dabs(y);
-            const double az = dabs(z);
+            const double ax = fabs(x);
+            const double ay = fabs(y);
+            const double az = fabs(z);
             if (ax <= l_ && ay <= l_ && az <= l_)
               resu = (l_-ax) * (l_-ay) * (l_-az) * facteur;
             result[i] = resu;

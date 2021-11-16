@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -308,7 +308,7 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                     {
 
                       // facilite le debugage
-                      if (dabs(min_array(t1))>max_array(t1))
+                      if (fabs(min_array(t1))>max_array(t1))
                         t1*=-1;
                       t1/=norme_array(t1);
 
@@ -339,7 +339,7 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                   if (norme_array(t2)>(1e-4*sqrt(s)))
                     {
                       // facilite le debugage
-                      if (dabs(min_array(t2))>max_array(t2))
+                      if (fabs(min_array(t2))>max_array(t2))
                         t2*=-1;
                       t2/=norme_array(t2);
                       Cerr<<face<<" "<<nbf<<" sommet "<<som<<" "<<norme_array(t2)/s<<" on doit annuler une troiseme direction"<<t2(0) << " " <<t2(1)<<" "<<t2(2)<<finl;
@@ -574,7 +574,7 @@ void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, Dou
                   {
 
                     for (int comp=0; comp<nb_comp; comp++)
-                      if (dabs(normale(comp))>1e-5)
+                      if (fabs(normale(comp))>1e-5)
                         {
                           int j=tab2[tab1[som*nb_comp+comp]-1+k]-1;
                           if (j!=(som*nb_comp+comp))
@@ -627,7 +627,7 @@ void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, Dou
               for (int comp=0; comp<nb_comp; comp++)
                 somme_b2+=secmem(som,comp)*normale[comp];
               //Cerr<<" lllllllll "<<somme_b2<<" "<<tt<<finl;
-              assert(dabs(somme_b2) <1e-8);
+              assert(fabs(somme_b2) <1e-8);
               // on retire secmem.n n
               for (int comp=0; comp<nb_comp; comp++)
                 secmem(som,comp)-=somme_b2*normale[comp];

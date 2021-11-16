@@ -224,7 +224,7 @@ void Champ_Face_PolyMAC::init_ra() const
         }
       //remplissage
       double la = dimension < 3 ? 1 : zone.longueur_aretes()(a);
-      for (auto &&kv : rami) if (dabs(kv.second) > 1e-8 * la)
+      for (auto &&kv : rami) if (fabs(kv.second) > 1e-8 * la)
           raji.append_line(kv.first), raci.append_line(kv.second * la);
       for (auto &&kv : ramf) if (zone.dot(&kv.second[0], &kv.second[0]) > 1e-16 * la * la)
           rajf.append_line(kv.first), racf.append_line(kv.second[0] * la, kv.second[1] * la, kv.second[2] * la);
@@ -302,7 +302,7 @@ void Champ_Face_PolyMAC::init_va() const
               std::array<double, 3> vsurf3 = zone.cross(dimension, dimension, &xe(i, 0), &xv(fa[j], 0), &xa(a, 0), &xa(a, 0));
               //orientation par rapport a ta
               for (k = 0, l = (dimension < 3 ? vsurf3[2] < 0 : zone.dot(&ta(a, 0), &vsurf3[0]) < 0); k < 3; k++) vsurf3[k] *=  (l ? -1. : 1.) / 2;
-              surf(i, j) = dimension < 3 ? dabs(vsurf3[2]) : sqrt(zone.dot(&vsurf3[0], &vsurf3[0]));
+              surf(i, j) = dimension < 3 ? fabs(vsurf3[2]) : sqrt(zone.dot(&vsurf3[0], &vsurf3[0]));
               surf_tot += surf(i, j);
               for (k = 0; surf(i, j) > 1e-16 && k < 3; k++) nsurf(i, j, k) = vsurf3[k] / surf(i, j);
               for (k = 0; k < dimension; k++) xg[k] += surf(i, j) * (xv(fa[j], k) + xe(i, k) - 2 * xa(a, k)) / 3;
@@ -367,7 +367,7 @@ void Champ_Face_PolyMAC::init_va() const
 
       //inversion de M et remplissage
       double eps = Matrice33::inverse(M, iM, 0);
-      if (dabs(eps) < 1e-24) continue;
+      if (fabs(eps) < 1e-24) continue;
       for (auto && kv : vami)
         {
           double inc[3] = { 0, 0, 0 };

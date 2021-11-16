@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,8 +57,8 @@ void Faces_VDF::calculer_orientation(IntVect& tab_orientation,
     {
       if(dimension == 2)
         {
-          dx = dabs(dom.coord(sommet(face, 1), 0)-dom.coord(sommet(face, 0), 0));
-          dy = dabs(dom.coord(sommet(face, 1), 1)-dom.coord(sommet(face, 0), 1));
+          dx = fabs(dom.coord(sommet(face, 1), 0)-dom.coord(sommet(face, 0), 0));
+          dy = fabs(dom.coord(sommet(face, 1), 1)-dom.coord(sommet(face, 0), 1));
         }
       else if(dimension == 3)
         {
@@ -68,9 +68,9 @@ void Faces_VDF::calculer_orientation(IntVect& tab_orientation,
               Cerr << "There is a problem with mesh or with chosen discretization." << finl;
               exit();
             }
-          dx = dabs(dom.coord(sommet(face, 3), 0)-dom.coord(sommet(face, 0), 0));
-          dy = dabs(dom.coord(sommet(face, 3), 1)-dom.coord(sommet(face, 0), 1));
-          dz = dabs(dom.coord(sommet(face, 3), 2)-dom.coord(sommet(face, 0), 2));
+          dx = fabs(dom.coord(sommet(face, 3), 0)-dom.coord(sommet(face, 0), 0));
+          dy = fabs(dom.coord(sommet(face, 3), 1)-dom.coord(sommet(face, 0), 1));
+          dz = fabs(dom.coord(sommet(face, 3), 2)-dom.coord(sommet(face, 0), 2));
         }
       if(axi)
         {

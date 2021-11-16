@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -114,10 +114,10 @@ Entree& Redresser_hexaedres_vdf::interpreter_(Entree& is)
                   // verifier que le sommet est bien dans la boite (l'octree
                   // renvoie les sommets "potentiellement" a l'interieur
                   const double coord = les_sommets(j, direction);
-                  if (dabs(coord-coord_ref) > epsilon)
+                  if (fabs(coord-coord_ref) > epsilon)
                     continue;
 
-                  correction_max=max(correction_max,dabs(coord_ref-les_sommets(j, direction)));
+                  correction_max=std::max(correction_max,fabs(coord_ref-les_sommets(j, direction)));
                   // Corriger:
                   les_sommets(j, direction) = coord_ref;
                   marqueurs[j] = 1; // sommet traite !

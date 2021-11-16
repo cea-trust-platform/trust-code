@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,8 +59,8 @@ inline double minmod(double grad1, double grad2, double gradc)
   double gradlim;
   if ((s1==s2) && (s2==sc))
     {
-      gradlim=dmin(dabs(grad1), dabs(grad2));
-      gradlim=dmin(dabs(gradlim), dabs(gradc));
+      gradlim=std::min(fabs(grad1), fabs(grad2));
+      gradlim=std::min(fabs(gradlim), fabs(gradc));
       return sc*gradlim;
     }
   else

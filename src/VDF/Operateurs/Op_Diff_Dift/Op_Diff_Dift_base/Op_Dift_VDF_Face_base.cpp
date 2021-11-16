@@ -61,12 +61,12 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
             }
           double mu_physique = diffu(elem, 0),  mu_turbulent = diffu_turb(elem, 0);
 
-          for (int ncomp = 1; ncomp < diffu.line_size(); ncomp++) mu_physique = max(mu_physique, diffu(elem, ncomp));
-          for (int ncomp = 1; ncomp < diffu_turb.line_size(); ncomp++) mu_turbulent = max(mu_turbulent, diffu_turb(elem, ncomp));
+          for (int ncomp = 1; ncomp < diffu.line_size(); ncomp++) mu_physique = std::max(mu_physique, diffu(elem, ncomp));
+          for (int ncomp = 1; ncomp < diffu_turb.line_size(); ncomp++) mu_turbulent = std::max(mu_turbulent, diffu_turb(elem, ncomp));
 
           const double inv_rho = 1./valeurs_rho(elem) ;
           diflo *= (mu_physique + mu_turbulent) * inv_rho;
-          coef = max(coef, diflo);
+          coef = std::max(coef, diflo);
         }
     }
   else
@@ -86,18 +86,18 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
           int item = (diffu_variable ? elem : 0);
           double mu_physique = diffu(item, 0), mu_turbulent = diffu_turb(elem, 0);
 
-          for (int ncomp = 1; ncomp < diffu.line_size(); ncomp++) mu_physique = max(mu_physique, diffu(item, ncomp));
-          for (int ncomp = 1; ncomp < diffu_turb.line_size(); ncomp++) mu_turbulent = max(mu_turbulent, diffu_turb(elem, ncomp));
+          for (int ncomp = 1; ncomp < diffu.line_size(); ncomp++) mu_physique = std::max(mu_physique, diffu(item, ncomp));
+          for (int ncomp = 1; ncomp < diffu_turb.line_size(); ncomp++) mu_turbulent = std::max(mu_turbulent, diffu_turb(elem, ncomp));
 
           item = (diffu_dt_variable ? elem : 0);
           double diffu_dt_l = diffu_dt(item, 0);
 
-          for (int ncomp = 1; ncomp < diffu_dt.line_size(); ncomp++) diffu_dt_l = max(diffu_dt_l, diffu_dt(item, ncomp));
+          for (int ncomp = 1; ncomp < diffu_dt.line_size(); ncomp++) diffu_dt_l = std::max(diffu_dt_l, diffu_dt(item, ncomp));
 
           // si on a associe mu au lieu de nu , on a nu sans diffu_dt
           // le pas de temps de stab est nu+nu_t, on calcule (mu+mu_t)*(nu/mu)=(mu+mu_t)/rho=nu+nu_t (avantage par rapport a la division par rho ca marche aussi pour alpha et lambda et en VEF
           diflo *= (mu_physique + mu_turbulent)*(diffu_dt_l)/mu_physique ;
-          coef = max(coef, diflo);
+          coef = std::max(coef, diflo);
         }
     }
   coef = Process::mp_max(coef);

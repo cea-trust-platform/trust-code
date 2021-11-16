@@ -253,7 +253,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
   ipar[2] = 2;
   ipar[3] = w.size_array();; //taille maximale de w
   ipar[4] = 10;
-  int nmax = max(Process::mp_sum(n), 100);
+  int nmax = std::max(Process::mp_sum(n), 100);
   ipar[5] = nmax; // nb max de produit matrice vect
   // si nb negatif on s arrete a la convergence
   // Si gros calcul (Process::mp_sum(n)>2147483647), specifier nb_it_max et imposer ipar[5] = -1

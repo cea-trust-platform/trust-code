@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -662,7 +662,7 @@ void Matrix_tools::extend_matrix(Matrice_Morse& mat, int nl, int nc)
 
   IntVect& tab1 = mat.get_set_tab1(), old_tab1 = tab1;
   tab1.reset(), tab1.resize(nl + 1);
-  for (int i = 0; i <= nl; i++) tab1(i) = old_tab1(min(i, old_tab1.size() - 1));
+  for (int i = 0; i <= nl; i++) tab1(i) = old_tab1(std::min(i, old_tab1.size() - 1));
   mat.set_nb_columns(nc); //plus facile
 }
 

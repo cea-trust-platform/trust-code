@@ -116,7 +116,7 @@ double Source_PDF_base::fonct_coeff(const double& rho_m, const double& aire, con
       // double bco = 100.*(1.-exp(-0.1/echelle_relax_)); // tps_cour_intersection = 0.1 * temps_relax_
       double deltrel = tps_cour - temps_relax_;
       double coeff_relax = (1.+tanh(deltrel/(echelle_relax_ * temps_relax_)))/2.;
-      // double coeff_relax = min (1., max(1.-bco*deltrel*deltrel/temps_relax_/temps_relax_, exp(deltrel/(echelle_relax_ * temps_relax_))));
+      // double coeff_relax = min (1., std::max(1.-bco*deltrel*deltrel/temps_relax_/temps_relax_, exp(deltrel/(echelle_relax_ * temps_relax_))));
       // double coeff_relax = 1.0 - exp(-tps_cour / temps_relax_);
       // double coeff_relax = tanh(tps_cour / temps_relax_);
       val_coeff *= coeff_relax ;

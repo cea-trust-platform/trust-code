@@ -56,7 +56,7 @@ void Multiplicateur_diphasique_Friedel::coefficient(const double *alpha, const d
                                                     const double Fm, DoubleTab& coeff) const
 {
   int min_ = min_sensas_ || min_lottes_flinn_;
-  double G = alpha[n_l] * rho[n_l] * dabs(v[n_l]) + alpha[n_g] * rho[n_g] * dabs(v[n_g]), //debit total
+  double G = alpha[n_l] * rho[n_l] * fabs(v[n_l]) + alpha[n_g] * rho[n_g] * fabs(v[n_g]), //debit total
          x = G ? alpha[n_g] * rho[n_g] * v[n_g] / G : 0, //titre
          E = (1 - x) * (1 - x) + x * x * (rho[n_l] * f[n_g] / rho[n_g] * f[n_l]),
          F = std::pow(x, 0.78) * std::pow(1 - x, 0.224),
@@ -64,8 +64,8 @@ void Multiplicateur_diphasique_Friedel::coefficient(const double *alpha, const d
          rho_m = alpha[n_l] * rho[n_l] + alpha[n_g] * rho[n_g], //masse volumlque du melange
          Fr = G * G / (9.81 * Dh * rho_m), We = G * G * Dh / (gamma * rho_m), //Froude, Weber,
          Phi2 = E + 3.24 * F * H * std::pow(Fr, -0.045) * std::pow(We, -0.035), //le multiplicateur!
-         frac_g = min(max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), frac_l = 1 - frac_g, //fraction appliquee a la vapeur
-         mul = min_sensas_ ? min(1., 1.4429 * std::pow(alpha[n_l], 0.6492)) : 1;
+         frac_g = std::min(std::max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), frac_l = 1 - frac_g, //fraction appliquee a la vapeur
+         mul = min_sensas_ ? std::min(1., 1.4429 * std::pow(alpha[n_l], 0.6492)) : 1;
   coeff = 0;
   if (min_ && Fk[n_l] * mul < Phi2 * Fm * (alpha[n_l] * alpha[n_l])) /* Lottes-Flinn/SENSAS sur le liquide donne un frottement plus bas -> on le prend*/
     coeff(n_l, 0) = frac_l * min_ / (alpha[n_l] * alpha[n_l]), coeff(n_g, 0) = frac_g * min_ / (alpha[n_l] * alpha[n_l]);

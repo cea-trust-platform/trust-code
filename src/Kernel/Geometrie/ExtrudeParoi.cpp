@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -306,7 +306,7 @@ void ExtrudeParoi::extrude(Domaine& dom)
               for(int k=0; k<3; k++)
                 {
                   int som=som_face[k];
-                  dmin_som(som) = dmin(dmin_som(som),dabs(dist_paroi));
+                  dmin_som(som) = std::min(dmin_som(som),fabs(dist_paroi));
                   for(int j=0; j<3; j++) normale_som(som,j) += normale(j);
                 }
             }
@@ -508,8 +508,8 @@ void ExtrudeParoi::extrude(Domaine& dom)
 
               int stot=s1+s2+s3;
 
-              int i1=min(min(s1,s2),s3);
-              int i3=max(max(s1,s2),s3);
+              int i1=std::min(std::min(s1,s2),s3);
+              int i3=std::max(std::max(s1,s2),s3);
               int i2=stot-i1-i3;
 
               int i4=oldnbsom+List_som.rang(i1);

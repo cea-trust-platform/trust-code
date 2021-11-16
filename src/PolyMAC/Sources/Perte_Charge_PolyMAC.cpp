@@ -85,7 +85,7 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
              dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
       for (j = zone.vedeb(e), ve = 0; j < zone.vedeb(e + 1); j++) for (r = 0; r < dimension; r++)
           fb = zone.veji(j), ve(r) += zone.veci(j, r) * vit(fb) * pf(fb) / pe(e);
-      double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
+      double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = std::max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
       coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
 
       /* contributions aux faces de e */
@@ -95,7 +95,7 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
             for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
               fb = e_f(e, zone.m2j(k)), m2vf += pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * vit(fb) * pf(fb) / pe(e);
             contrib = C_iso * m2vf + fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&ve(0), &dir(0)) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
-            if (contrib <= min(C_dir, C_iso) * m2vf) contrib = min(C_dir, C_iso) * m2vf; //pour garantir un frottement minimal
+            if (contrib <= std::min(C_dir, C_iso) * m2vf) contrib = std::min(C_dir, C_iso) * m2vf; //pour garantir un frottement minimal
             resu(f) -= contrib;
           }
     }
@@ -126,7 +126,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
              dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
       for (j = zone.vedeb(e), ve = 0; j < zone.vedeb(e + 1); j++) for (r = 0; r < dimension; r++)
           fb = zone.veji(j), ve(r) += zone.veci(j, r) * vit(fb) * pf(fb) / pe(e);
-      double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
+      double n_ve = sqrt(zone.dot(ve.addr(), ve.addr())), Re = std::max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
       coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
 
       /* contributions aux faces de e */
@@ -136,7 +136,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
             for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
               fb = e_f(e, zone.m2j(k)), m2vf += pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * vit(fb) * pf(fb) / pe(e);
             contrib = C_iso * m2vf + fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&ve(0), &dir(0)) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
-            if (contrib >= min(C_dir, C_iso) * m2vf)
+            if (contrib >= std::min(C_dir, C_iso) * m2vf)
               {
                 for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
                     matrice(f, fb) += C_iso * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
@@ -146,7 +146,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
             else
               {
                 for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
-                    matrice(f, fb) += min(C_dir, C_iso) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
+                    matrice(f, fb) += std::min(C_dir, C_iso) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
               }
           }
     }

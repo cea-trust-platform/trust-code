@@ -206,8 +206,8 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
                   for(int ncomp=0; ncomp<nb_compo; ncomp++)
                     {
                       //vale(ncomp)+=ch(face)*normales(face,ncomp);
-                      vale(ncomp)+=ch(face)*dabs(normales(face,ncomp));
-                      s(ncomp)+=dabs(normales(face,ncomp));
+                      vale(ncomp)+=ch(face)*fabs(normales(face,ncomp));
+                      s(ncomp)+=fabs(normales(face,ncomp));
                     }
                 }
 

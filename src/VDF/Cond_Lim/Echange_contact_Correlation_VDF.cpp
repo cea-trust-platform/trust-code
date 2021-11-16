@@ -222,7 +222,7 @@ void Echange_contact_Correlation_VDF::completer()
 {
   Echange_impose_base::completer();
   trier_coord();
-  T=min(Tinf,Tsup);
+  T=std::min(Tinf,Tsup);
   calculer_prop_physique();
   if (T(0)==Tinf)
     U=debit/rho(0);

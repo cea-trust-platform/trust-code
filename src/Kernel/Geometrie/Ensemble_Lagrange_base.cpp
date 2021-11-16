@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -123,14 +123,14 @@ void Ensemble_Lagrange_base::generer_marqueurs_sz(DoubleTab& soms_tmp)
             for(le_som=0; le_som<nb_som; le_som++)
               {
                 poly = sz(le_poly);
-                xmin=min(xmin,dom.coord(mazone.sommet_elem(poly,le_som),0));
-                ymin=min(ymin,dom.coord(mazone.sommet_elem(poly,le_som),1));
+                xmin=std::min(xmin,dom.coord(mazone.sommet_elem(poly,le_som),0));
+                ymin=std::min(ymin,dom.coord(mazone.sommet_elem(poly,le_som),1));
                 if (dim==3)
-                  zmin=min(zmin,dom.coord(mazone.sommet_elem(poly,le_som),2));
-                xmax=max(xmax,dom.coord(mazone.sommet_elem(poly,le_som),0));
-                ymax=max(ymax,dom.coord(mazone.sommet_elem(poly,le_som),1));
+                  zmin=std::min(zmin,dom.coord(mazone.sommet_elem(poly,le_som),2));
+                xmax=std::max(xmax,dom.coord(mazone.sommet_elem(poly,le_som),0));
+                ymax=std::max(ymax,dom.coord(mazone.sommet_elem(poly,le_som),1));
                 if (dim==3)
-                  zmax=max(zmax,dom.coord(mazone.sommet_elem(poly,le_som),2));
+                  zmax=std::max(zmax,dom.coord(mazone.sommet_elem(poly,le_som),2));
               }
         } //Fin if (nb_elem!=0)
 

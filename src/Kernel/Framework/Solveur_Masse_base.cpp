@@ -202,7 +202,7 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice
         {
           double penal=0;
           for(int i=0; i<sz; i++)
-            penal=dmax(penal, matmo(i,i));
+            penal=std::max(penal, matmo(i,i));
           penal=mp_max(penal);
           penalisation_=(mp_max_vect(diag)/dt + penal)*1.e3;
           prems=1;
@@ -274,7 +274,7 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse_dt_local(DoubleVect& dt_locaux, 
         {
           double penal=0;
           for(int i=0; i<sz; i++)
-            penal=dmax(penal, matmo(i,i));
+            penal=std::max(penal, matmo(i,i));
           penal=mp_max(penal);
           penalisation_=(mp_max_vect(diag)/dt_locaux.local_max_vect() + penal)*1.e3;
           prems=1;

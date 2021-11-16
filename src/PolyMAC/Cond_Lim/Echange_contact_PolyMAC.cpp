@@ -114,7 +114,7 @@ int Echange_contact_PolyMAC::initialiser(double temps)
           int idx = o_zone.nb_elem_tot() + o_e_f(e, o_zone.w2j(k));
           o_proc(f, l) = src(idx, 0), o_item(f, l) = src(idx, 1);
         }
-      for (c_max = max(c_max, l); l < o_n_f; l++) o_proc(f, l) = o_item(f, l) = -1; //on finit avec des -1
+      for (c_max = std::max(c_max, l); l < o_n_f; l++) o_proc(f, l) = o_item(f, l) = -1; //on finit avec des -1
     }
   c_max = Process::mp_max(c_max);
 

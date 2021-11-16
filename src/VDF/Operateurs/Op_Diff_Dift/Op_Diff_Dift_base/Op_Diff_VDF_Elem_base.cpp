@@ -77,7 +77,7 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
               h += 1./(l*l);
             }
           alpha_loc = diffu(elem,0);
-          for (int ncomp=1; ncomp<diffu.dimension(1); ncomp++) alpha_loc = max(alpha_loc,diffu(elem,ncomp));
+          for (int ncomp=1; ncomp<diffu.dimension(1); ncomp++) alpha_loc = std::max(alpha_loc,diffu(elem,ncomp));
           if (has_champ_masse_volumique())
             {
               const DoubleTab& rho = get_champ_masse_volumique().valeurs();

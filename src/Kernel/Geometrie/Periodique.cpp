@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,7 +89,7 @@ void Periodique::completer()
   direction_xyz_ = -2;
   for (i = 0; i < dim; i++)
     {
-      if (dabs(direction_perio_[i]) > precision_geom)
+      if (fabs(direction_perio_[i]) > precision_geom)
         {
           if (direction_xyz_ == -2)
             direction_xyz_ = i;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,7 +79,7 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   Cerr << "Number of groups            : " << NGROUPE << finl;
   //
   ArrOfInt NGELEM(NGROUPE);
-  ArrOfInt WORK(max(NTETRA,NFACB*4));
+  ArrOfInt WORK(std::max(NTETRA,NFACB*4));
   //
   //Passage F77 a C++: les indices entre les deux langages sont inverses
   // (methode de stockage differente)

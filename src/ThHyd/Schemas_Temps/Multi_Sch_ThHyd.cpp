@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,7 +83,7 @@ Entree& Multi_Sch_ThHyd::readOn(Entree& s)
 //    Ici : le max des deux schemas utilises.
 int Multi_Sch_ThHyd::nb_valeurs_temporelles() const
 {
-  return max(sch_ns.valeur().nb_valeurs_temporelles(),sch_scalaires.valeur().nb_valeurs_temporelles());
+  return std::max(sch_ns.valeur().nb_valeurs_temporelles(),sch_scalaires.valeur().nb_valeurs_temporelles());
 }
 
 

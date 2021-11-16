@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -117,8 +117,8 @@ Entree& Porosites::interpreter(Entree& is)
               porosite_face(elem_faces(elem, j))=0.;
               for (iii=0; iii<dimension; iii++)
                 {
-                  porosite_face(elem_faces(elem, j))+= porosites_surf(iii)*dabs(zvf.face_normales(elem_faces(elem, j),iii))
-                                                       *dabs(zvf.face_normales(elem_faces(elem, j),iii))/norme_normale;
+                  porosite_face(elem_faces(elem, j))+= porosites_surf(iii)*fabs(zvf.face_normales(elem_faces(elem, j),iii))
+                                                       *fabs(zvf.face_normales(elem_faces(elem, j),iii))/norme_normale;
                 }
             }
         }

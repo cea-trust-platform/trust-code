@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -445,9 +445,9 @@ void Faces_builder::creer_faces_frontiere(const int nb_voisins_attendus,
     {
       {
         int nb_sommets_par_face_fr=sommets_faces_fr.dimension(1);
-        for (int i = 0; i < min(nb_sommets_par_face, nb_sommets_par_face_fr); i++)
+        for (int i = 0; i < std::min(nb_sommets_par_face, nb_sommets_par_face_fr); i++)
           une_face[i] = sommets_faces_fr(i_face, i);
-        for (int i = min(nb_sommets_par_face, nb_sommets_par_face_fr); i < nb_sommets_par_face; i++)
+        for (int i = std::min(nb_sommets_par_face, nb_sommets_par_face_fr); i < nb_sommets_par_face; i++)
           une_face[i] = -1;
       }
       // Quels sont les elements voisins de cette face ?
@@ -983,7 +983,7 @@ void Zone::creer_aretes()
                   s2 = elem_som(i_elem, f_e_r(i, j + 1 < f_e_r.dimension(1) && f_e_r(i, j + 1) >= 0 ? j + 1 : 0));
               std::array<double, 3> key;
               for (int l = 0; l < 3; l++) key[l] = (domaine().coord_sommets()(s1, l) + domaine().coord_sommets()(s2, l)) / 2;
-              aretes_loc[key] = {{ min(s1, s2), max(s1, s2) }};
+              aretes_loc[key] = {{ std::min(s1, s2), std::max(s1, s2) }};
             }
 
         for (auto && kv : aretes_loc)
@@ -1015,7 +1015,7 @@ void Zone::creer_aretes()
   }
   /* remplissage du tableau elem_aretes a l'aide de v_e_a */
   int nb_aretes_elem = 0;
-  for (i = 0; i < nbelem_tot; i++) nb_aretes_elem = max(nb_aretes_elem, (int) v_e_a[i].size());
+  for (i = 0; i < nbelem_tot; i++) nb_aretes_elem = std::max(nb_aretes_elem, (int) v_e_a[i].size());
   nb_aretes_elem = mp_max(nb_aretes_elem);
   Elem_Aretes.resize(0, nb_aretes_elem);
   creer_tableau_elements(Elem_Aretes, Array_base::NOCOPY_NOINIT);

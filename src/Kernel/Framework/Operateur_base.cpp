@@ -139,7 +139,7 @@ void Operateur_base::completer()
   for (int i = 0; i < les_cl.size(); i++)
     {
       const Frontiere_dis_base& la_fr = les_cl[i].frontiere_dis();
-      col_width_ = max(col_width_, la_fr.le_nom().longueur());
+      col_width_ = std::max(col_width_, la_fr.le_nom().longueur());
     }
   int w_suffix = 3; // pour ajout _Mx (moment)
 
@@ -150,7 +150,7 @@ void Operateur_base::completer()
   if (noms_compo_courts.size() > 1) for (int i = 0; i < noms_compo_courts.size(); ++i)
       {
         noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(eqn.inconnue().le_nom());
-        w_suffix = max(w_suffix, noms_compo_courts[i].longueur());
+        w_suffix = std::max(w_suffix, noms_compo_courts[i].longueur());
       }
   col_width_ += w_suffix;
 }
@@ -421,7 +421,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
   const Equation_base& eqn = equation();
   const Probleme_base& pb=eqn.probleme();
   const Schema_Temps_base& sch=pb.schema_temps();
-  const int precision = sch.precision_impr(), wcol = max(col_width_, sch.wcol()), gnuplot_header = sch.gnuplot_header();
+  const int precision = sch.precision_impr(), wcol = std::max(col_width_, sch.wcol()), gnuplot_header = sch.gnuplot_header();
   os.set_col_width(wcol);
   Nom nomfichier(out_);
   if (type!="") nomfichier+=(Nom)"_"+type;
@@ -701,7 +701,7 @@ void Operateur_base::tester_contribuer_a_avec(const DoubleTab& inco, const Matri
         DoubleVect& resu_=resu;
         Cerr<<" size "<< resu_.size()<<finl;
         for (int i=0; i<resu_.size(); i++)
-          if (dabs(resu_(i))>1e-10)
+          if (fabs(resu_(i))>1e-10)
             {
               Cerr<<i << " "<< resu_(i)<< " "<<finl;
             }

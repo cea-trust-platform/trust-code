@@ -988,7 +988,7 @@ void Op_Diff_VEF_Anisotrope_Face::verifier() const
           resu(i,comp)/=(volumes_entrelaces(i));
       for(i=0; i<nbf; i++)
         {
-          if(dabs(resu(i,0))>1.e-10)
+          if(fabs(resu(i,0))>1.e-10)
             {
               Cerr << " delta(x,0) ("<<i<<") = "
                    << resu(i,0);
@@ -1007,7 +1007,7 @@ void Op_Diff_VEF_Anisotrope_Face::verifier() const
           resu(i,comp)/=(volumes_entrelaces(i));
       for(i=0; i<nbf; i++)
         {
-          if(dabs(2-resu(i,0))>1.e-10)
+          if(fabs(2-resu(i,0))>1.e-10)
             {
               Cerr << " delta(y(1-y),0) ("<<i<<") = "
                    << resu(i,0);

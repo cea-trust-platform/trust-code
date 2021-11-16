@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -176,7 +176,7 @@ void Ch_front_Vortex::reprendre_vortex()
       fic >> tps;
       fic >> nbvortex;
 
-      if(!(dabs(temps-tps)/(dabs(tps)+1.e-24)<1.e-6))
+      if(!(fabs(temps-tps)/(fabs(tps)+1.e-24)<1.e-6))
         {
           Cerr << " time : " << tps << " in " << fichier << " does not match the time of resumed " << temps << finl;
           exit();
@@ -408,7 +408,7 @@ int Ch_front_Vortex::initialiser(double un_temps, const Champ_Inc_base& inco)
             }
           else
             {
-              d = R - dabs(y) ;  // distance a la paroi
+              d = R - fabs(y) ;  // distance a la paroi
             }
 
           if(d<=0.)
@@ -827,7 +827,7 @@ void Ch_front_Vortex::mettre_a_jour(double tps)
         {
           // paroi : On ne fait rien - on laisse le vortex a sa position
         }
-      else if( (geom=="channel") && (dabs(yter)>R) ) //paroi
+      else if( (geom=="channel") && (fabs(yter)>R) ) //paroi
         {
           // paroi : On ne fait rien - on laisse le vortex a sa position
         }

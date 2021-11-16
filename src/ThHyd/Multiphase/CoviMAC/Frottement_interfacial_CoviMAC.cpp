@@ -134,7 +134,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
       for (n = 0; n < N; n++) rho_l(n) =   rho(!cR * e, n);
       for (n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
 
-      for (k = 0; k < N; k++) for (l = 0; l < N; l++) dv(k, l) = max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
+      for (k = 0; k < N; k++) for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
       correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, dh_e(e), dv, coeff);
       for (k = 0; k < N; k++) for (l = 0; l < N; l++) coeff(k, l, 1) *= (dv(k, l) > dv_min); //pas de derivee si dv < dv_min
       for (k = 0; k < N; k++) for (l = 0; l < N; l++) for (j = 0; j < 2; j++)

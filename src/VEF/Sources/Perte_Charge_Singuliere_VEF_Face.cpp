@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -108,10 +108,10 @@ DoubleTab& Perte_Charge_Singuliere_VEF_Face::ajouter(DoubleTab& resu) const
         {
           Ud = vit(numfa,j)*porosite_surf[numfa];
           // area=zone_VEF.face_surfaces(numfa);
-          area=direction_perte_charge() < 0 ? zone_VEF.face_surfaces(numfa) : dabs(zone_VEF.face_normales(numfa,direction_perte_charge())); // Taking account of inclined plane
+          area=direction_perte_charge() < 0 ? zone_VEF.face_surfaces(numfa) : fabs(zone_VEF.face_normales(numfa,direction_perte_charge())); // Taking account of inclined plane
           coefK=K();
           // if (j!=direction_perte_charge()) coefK=0.;
-          resu(numfa,j) -= 0.5*coefK*Ud*dabs(Ud)*area*porosite_surf[numfa];
+          resu(numfa,j) -= 0.5*coefK*Ud*fabs(Ud)*area*porosite_surf[numfa];
         }
     }
   return resu;
@@ -146,10 +146,10 @@ void Perte_Charge_Singuliere_VEF_Face::contribuer_a_avec(const DoubleTab& inco, 
           double Ud2= vit(numfa,j)*porosite_surf[numfa];
           int n0=numfa*dimension+j;
           // area=zone_VEF.face_surfaces(numfa);
-          area=direction_perte_charge() < 0 ? zone_VEF.face_surfaces(numfa) : dabs(zone_VEF.face_normales(numfa,direction_perte_charge())); // Taking account of inclined plane
+          area=direction_perte_charge() < 0 ? zone_VEF.face_surfaces(numfa) : fabs(zone_VEF.face_normales(numfa,direction_perte_charge())); // Taking account of inclined plane
           coefK=K();
           // if (j!=direction_perte_charge()) coefK=0.;
-          matrice.coef(n0,n0)+= 0.5*coefK*Ud*dabs(Ud2)*area*porosite_surf[numfa];
+          matrice.coef(n0,n0)+= 0.5*coefK*Ud*fabs(Ud2)*area*porosite_surf[numfa];
         }
     }
 }

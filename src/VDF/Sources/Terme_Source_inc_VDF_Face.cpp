@@ -770,7 +770,7 @@ DoubleTab& Terme_Source_inc_VDF_Face::ajouter(DoubleTab& resu) const
 
         temp_1(elem)=Lij_1(elem,0)+Lij_2(elem,1);
         temp_2(elem)=4.*Qij_1(elem,0)+4.*Qij_2(elem,1);
-        if(dabs(temp_2(elem)) < 1.e-12)
+        if(fabs(temp_2(elem)) < 1.e-12)
           f(elem)=0.;
         else
           f(elem)=temp_1(elem)/temp_2(elem);
@@ -783,7 +783,7 @@ DoubleTab& Terme_Source_inc_VDF_Face::ajouter(DoubleTab& resu) const
 
         temp_1(elem)=Lij_1(elem,0)+Lij_2(elem,1)+Lij_3(elem,2);
         temp_2(elem)=4.*Qij_1(elem,0)+4.*Qij_2(elem,1)+4.*Qij_3(elem,2);
-        if(dabs(temp_2(elem)) < 1.e-12)
+        if(fabs(temp_2(elem)) < 1.e-12)
           f(elem)=0.;
         else
           f(elem)=temp_1(elem)/temp_2(elem);

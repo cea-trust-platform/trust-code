@@ -31,7 +31,7 @@ double Eval_Conv_VDF_tools::conv_quick_sharp_plus_impl(const double& psc,const d
   curv = (delta/dx - delta_0/dxam)/dm ;
   // Calcul de cf:
   delta_delta = delta_0+delta;
-  dd1 = dabs(delta_delta);
+  dd1 = std::fabs(delta_delta);
   if (dd1 < 1.e-5) cf = 0.125;
   else
     {
@@ -50,7 +50,7 @@ double Eval_Conv_VDF_tools::conv_quick_sharp_moins_impl(const double& psc,const 
   curv = ( delta_1/dxam - delta/dx )/dm ;
   // Calcul de cf:
   delta_delta = delta_1+delta;
-  dd1 = dabs(delta_delta);
+  dd1 = std::fabs(delta_delta);
   if (dd1 < 1.e-5) cf = 0.125;
   else
     {

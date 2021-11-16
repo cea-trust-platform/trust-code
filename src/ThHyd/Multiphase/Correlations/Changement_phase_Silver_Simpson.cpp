@@ -46,7 +46,7 @@ double Changement_phase_Silver_Simpson::calculer(int k, int l, const double& dh,
                                                  DoubleTab& dT_G, DoubleTab& da_G, double& dp_G) const
 {
   double T0 = 273.15,
-         var_ak = max(alpha[k], alpha_min), var_al = std::pow(max(alpha[l], alpha_min), 1.5), var_a = var_ak * var_al, //partie variable en alpha
+         var_ak = std::max(alpha[k], alpha_min), var_al = std::pow(std::max(alpha[l], alpha_min), 1.5), var_a = var_ak * var_al, //partie variable en alpha
          var_T = sat.Psat(T[k]) / sqrt(T[k] + T0) - p / sqrt(T[l] + T0), //partie variable en (T, p)
          fac = lambda_ec[var_T < 0] * 4 / dh * sqrt(M / (2 * M_PI * 8.314)); //partie constante -> G = fac * var
   dT_G = 0, da_G = 0;

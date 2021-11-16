@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,7 +58,7 @@ projette(ArrOfDouble& gradi, int face, const DoubleTab& normales)
       norm+=normales(face,comp)*normales(face,comp);
     }
   // psc/=norm; // Fixed bug: Arithmetic exception
-  if (dabs(norm)>=DMINFLOAT) psc/=norm;
+  if (fabs(norm)>=DMINFLOAT) psc/=norm;
   for(comp=0; comp<dimension; comp++)
     {
       gradi(comp)-=psc*normales(face,comp);

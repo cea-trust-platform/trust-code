@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,7 @@ double Chimie::calculer_pas_de_temps() const
       if(i==0) Cout<<"Pour le(s) reaction(s), dt_max = ";
       Cout<<dt_reaction<<" ";
       if (i==(reactions_.size()-1)) Cout<<finl;
-      dt=min(dt,dt_reaction);
+      dt=std::min(dt,dt_reaction);
     }
   // double dt_n=pb_->schema_temps().pas_de_temps();
   // filtre Butterworth :

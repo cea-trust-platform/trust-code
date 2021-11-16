@@ -158,7 +158,7 @@ void Partitionneur_Tranche::chercher_direction_perio(const Zone& zone,
       int count = 0;
       for (int j = 0; j < dim; j++)
         {
-          if (dabs(delta[j]) > epsilon)
+          if (fabs(delta[j]) > epsilon)
             {
               directions_perio[j]++;
               Cerr << " Boundary : " << nom_bord << " periodic direction : " << j << finl;

@@ -269,7 +269,7 @@ void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
                 for (int comp=0; comp<nb_comp; comp++)
                   {
                     normale[comp]=face_normales(face,comp);
-                    if (dabs(normale[comp])>dabs(max_coef))
+                    if (fabs(normale[comp])>fabs(max_coef))
                       {
                         max_coef=normale[comp];
                         ind_max=comp;

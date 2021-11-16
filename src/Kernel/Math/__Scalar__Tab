@@ -959,7 +959,7 @@ void local_max_abs_tab(const __Scalar__Tab & tableau, ArrOf__Scalar__ & max_colo
     for (int i = begin_bloc; i < end_bloc; i++) {
       int k = i * lsize;
       for (int j = 0; j < lsize; j++) {
-        const __scalar__ x = dabs(vect[k++]);
+        const __scalar__ x = fabs(vect[k++]);
         max_colonne[j] = (x > max_colonne[j]) ? x : max_colonne[j];
       }
     }

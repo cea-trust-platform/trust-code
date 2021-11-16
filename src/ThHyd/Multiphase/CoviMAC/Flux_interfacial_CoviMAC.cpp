@@ -132,7 +132,7 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
       // PL ToDo: Uniformiser diametre_hydraulique_elem (vecteur) pour C3D et F5
       double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
       for (nv = 0, d = 0; d < D; d++) for (n = 0; n < N; n++) nv(n) += std::pow(pvit(nf_tot + D * e + d, n), 2);
-      for (n = 0; n < N; n++) nv(n) = max(sqrt(nv(n)), dv_min);
+      for (n = 0; n < N; n++) nv(n) = std::max(sqrt(nv(n)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
       correlation_fi.coeffs(dh, &alpha(e, 0), &temp(e, 0), press(e, 0), &nv(0),
                             &lambda(!cL * e, 0), &mu(!cM * e, 0), &rho(!cR * e, 0), &Cp(!cCp * e, 0), hi, dT_hi, da_hi, dP_hi);
@@ -146,13 +146,13 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
               /* limite thermique */
               double Tk = temp(e, k), Tl = temp(e, l), p = press(e, 0), Ts = sat.Tsat(p), dP_Ts = sat.dP_Tsat(p), //temperature de chaque cote + Tsat + derivees
                      phi = hi(k, l) * (Tk - Ts) + hi(l, k) * (Tl - Ts), L = (phi < 0 ? h(e, l) : sat.Hvs(p)) - (phi > 0 ? h(e, k) : sat.Hls(p));
-              if ((is_therm = !correlation_G || dabs(G) > dabs(phi / L))) G = phi / L;
+              if ((is_therm = !correlation_G || fabs(G) > fabs(phi / L))) G = phi / L;
               /* enthalpies des phases (dans le sens correspondant au mode choisi pour G) */
 
               /* G est-il limite par l'evanescence cote k ou l ? */
               int n_lim = G > 0 ? k : l, sgn = G > 0 ? 1 : -1; //phase sortante
               double Glim = sec_m(e, n_lim) / vol + p_ar(e, n_lim) / dt; //changement de phase max acceptable par cette phase
-              if (dabs(G) < Glim) n_lim = -1;       //G ne rend pas la phase evanescente -> pas de limitation (n_lim = -2)
+              if (fabs(G) < Glim) n_lim = -1;       //G ne rend pas la phase evanescente -> pas de limitation (n_lim = -2)
               else G = (G > 0 ? 1 : -1) * Glim;//la phase serait evanescente a cause de G -> on le bloque a G_lim (n_lim = k / l)
 
               double hk = G > 0 ? h(e, k) : sat.Hls(p), dTk_hk = G > 0 && dT_h ? (*dT_h)(e, k) : 0, dP_hk = G > 0 ? (dP_h ? (*dP_h)(e, k) : 0) : sat.dP_Hls(p),

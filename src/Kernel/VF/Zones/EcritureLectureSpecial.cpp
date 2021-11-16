@@ -373,7 +373,7 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
       if (bufptr == buflines_max)
         {
           bufptr = 0;
-          int n = min(buflines_max, ntot - i) * (dim + nb_comp);
+          int n = std::min(buflines_max, ntot - i) * (dim + nb_comp);
           assert(n <= buffer.size_array());
           fich.get(buffer.addr(), n);
         }

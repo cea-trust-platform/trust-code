@@ -195,7 +195,7 @@ int Champ_P0_VDF::imprime(Sortie& os, int ncomp) const
               while (n2<ni-1)
                 {
                   n1=n2;
-                  n2=::min(ni-1,n2+cmax);
+                  n2=std::min(ni-1,n2+cmax);
                   os << finl;
                   os << "I=     ";
                   for(int i=n1; i<n2; i++)
@@ -231,7 +231,7 @@ int Champ_P0_VDF::imprime(Sortie& os, int ncomp) const
           while (n2<ni-1)
             {
               n1=n2;
-              n2=::min(ni-1,n2+cmax);
+              n2=std::min(ni-1,n2+cmax);
               os << finl;
               os << "I=     ";
               for(int i=n1; i<n2; i++)

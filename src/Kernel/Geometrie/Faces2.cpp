@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ int ppsf(const Faces& faces, int face, int nb_som)
 {
   int sommet=faces.sommet(face,0);
   for(int imin=1; imin < nb_som; imin++)
-    sommet=min(sommet,faces.sommet(face,imin));
+    sommet=std::min(sommet,faces.sommet(face,imin));
   return sommet;
 }
 

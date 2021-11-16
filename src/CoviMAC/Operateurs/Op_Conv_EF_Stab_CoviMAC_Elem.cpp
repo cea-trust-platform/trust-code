@@ -136,9 +136,9 @@ double Op_Conv_EF_Stab_CoviMAC_Elem::calculer_dt_stab() const
   for (e = 0; e < zone.nb_elem(); e++)
     {
       for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
-          flux(n) += pf(f) * fs(f) * max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
+          flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
 
-      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = min(dt, pe(e) * ve(e) / flux(n));
+      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = std::min(dt, pe(e) * ve(e) / flux(n));
     }
 
   return Process::mp_min(dt);
@@ -256,7 +256,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::mettre_a_jour(double temps)
       for (cc_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (M > 1))
           cc_f(n) +=  (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
 
-      const int mm = ( m == 0 ) ? m : m-1; // E Saikali : m-1 car si M > 1, on obtient m = M à la fin de la boucle...
+      const int mm = ( m == 0 ) ? m : m-1; // E Saikali : m-1 car si M > 1, on obtient m = M a la fin de la boucle...
       for (n = 0; n < N; n++) flux_bords_(f, n) = pf(f) * fs(f) * vit(f, mm) * cc_f(n);
     }
 

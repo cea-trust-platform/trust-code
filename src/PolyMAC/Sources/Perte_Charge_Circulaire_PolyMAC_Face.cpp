@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -215,9 +215,9 @@ void  Perte_Charge_Circulaire_PolyMAC_Face::coeffs_perte_charge(const DoubleVect
   // Calcul du reynolds
   /* PL: To avoid a possible division by zero, we replace:
      double nu=norme_u*dh/reynolds;
-     double Re_l=dabs(u_l)*dh/nu; */
+     double Re_l=fabs(u_l)*dh/nu; */
   // By:
-  double Re_l=dh*dabs(u_l)/nu;
+  double Re_l=dh*fabs(u_l)/nu;
   if(Re_l<1e-10) Re_l=1e-10;
   // PL: To avoid a possible division by zero, we replace:
   /* double Re_ortho=u_ortho*dh_ortho/nu; */
@@ -246,7 +246,7 @@ void  Perte_Charge_Circulaire_PolyMAC_Face::coeffs_perte_charge(const DoubleVect
   double l_ortho=lambda_ortho.eval(); // Pour ne pas evaluer 2 fois le parser
   double l_long=lambda.eval();
   coeff_ortho=l_ortho*u_ortho/2./dh_ortho;
-  coeff_long=l_long *dabs(u_l)    /2./dh    ;
+  coeff_long=l_long *fabs(u_l)    /2./dh    ;
 }
 /*
   void Perte_Charge_Circulaire_PolyMAC_Face::perte_charge(const DoubleVect& u, const DoubleVect& pos,

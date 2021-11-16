@@ -82,7 +82,7 @@ static void Implicite_Multi_TimeStep_calcul_fac_sec(double& residu_,double& resi
     {
       facsec_*=sqrt(rap);
       residu_old=residu_;
-      facsec_=min(facsec_,facsec_max_);
+      facsec_=std::min(facsec_,facsec_max_);
       nb_ite_sans_accel_=0;
     }
 
@@ -389,7 +389,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_pb_couple(Proble
     {
       residu_1=residu_;
       test_stationnaire(ref_cast(Probleme_base,pbc.probleme(i)));
-      residu_=max(residu_,residu_1);
+      residu_=std::max(residu_,residu_1);
     }
 
   return 1;

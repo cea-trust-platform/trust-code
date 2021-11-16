@@ -123,7 +123,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
             else for (a_m = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) a_m += mu_f(f, n, i) * alpha(e, n);
             if (n != k && a_m < a_eps)
               {
-                coeff(f, n, 1) = mat_diag(N * f + k, N * f + k) * (coeff(f, n, 0) = min(max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
+                coeff(f, n, 1) = mat_diag(N * f + k, N * f + k) * (coeff(f, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
                 double flux = coeff(f, n, 0) * secmem(f, n) + coeff(f, n, 1) * (inco(f, n) - inco(f, k));
                 secmem(f, k) += flux, secmem(f, n) -= flux;
               }
@@ -141,7 +141,7 @@ void Op_Evanescence_Homogene_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
       /* coeff d'evanescence */
       for (i = nf_tot + D * e, d = 0; d < D; d++, i++) for (n = 0; n < N; n++) if (n != k && (a_m = alpha(e, n)) < a_eps)
             {
-              coeff(i, n, 1) = mat_diag(N * i + k, N * i + k) * (coeff(i, n, 0) = min(max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
+              coeff(i, n, 1) = mat_diag(N * i + k, N * i + k) * (coeff(i, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
               double flux = coeff(i, n, 0) * secmem(i, n) + coeff(i, n, 1) * (inco(i, n) - inco(i, k));
               secmem(i, k) += flux, secmem(i, n) -= flux;
             }

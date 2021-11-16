@@ -84,7 +84,7 @@ void calcul_fac_sec(double& residu_,double& residu_old,double& facsec_,const dou
     {
       facsec_*=sqrt(rap);
       residu_old=residu_;
-      facsec_=min(facsec_,facsec_max_);
+      facsec_=std::min(facsec_,facsec_max_);
       nb_ite_sans_accel_=0;
     }
   nb_ite_sans_accel_++;
@@ -93,7 +93,7 @@ void calcul_fac_sec(double& residu_,double& residu_old,double& facsec_,const dou
     {
     facsec_/=sqrt(rap);
     residu_old=residu_;
-    facsec_=min(facsec_,facsec_max_);
+    facsec_=std::min(facsec_,facsec_max_);
     }
   */
   // Process::Journal()<<" residu" <<residu_<<" "<<residu_old<<" "<<facsec_<<finl;
@@ -466,7 +466,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
     {
       residu_1=residu_;
       test_stationnaire(ref_cast(Probleme_base,pbc.probleme(i)));
-      residu_=max(residu_,residu_1);
+      residu_=std::max(residu_,residu_1);
     }
 
   return 1;

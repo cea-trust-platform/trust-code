@@ -202,7 +202,7 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
                 parser.setVar("z",xg1(2));
               double res=parser.eval();
               int face_min=(int)(res+0.5);
-              nb=max(nb,face_min);
+              nb=std::max(nb,face_min);
               //faces_associees.dimensionner_force(nb+1);
               faces_associees[face_min].set_smart_resize(1);
               faces_associees[face_min].append_array(face1);
@@ -250,7 +250,7 @@ void create_listb_naif(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
       if (inc!=-1)
         {
           int nb=nbdec[inc];
-          nb=min(nb,nbfaces);
+          nb=std::min(nb,nbfaces);
           if (nbfaces!=0)
             {
               int nc=nbfaces/nb;
@@ -337,8 +337,8 @@ void create_listb_geom(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
                   for (int i=0; i<nb_som_face; i++)
                     for (int j=0; j<3; j++)
                       {
-                        coord_min(j) = dmin(coord_min(j),xs(sommets_face(face,i),j));
-                        coord_max(j) = dmax(coord_max(j),xs(sommets_face(face,i),j));
+                        coord_min(j) = std::min(coord_min(j),xs(sommets_face(face,i),j));
+                        coord_max(j) = std::max(coord_max(j),xs(sommets_face(face,i),j));
                       }
                 }
 

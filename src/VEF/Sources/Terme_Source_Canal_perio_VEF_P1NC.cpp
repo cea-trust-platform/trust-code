@@ -165,7 +165,7 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
                   if (axe>=0)
                     for (int num_face=ndeb; num_face<nfin; num_face++)
                       {
-                        double debit_face = porosite_face(num_face)*vitesse(num_face,axe) * dabs(zone_VF.face_normales(num_face,axe));
+                        double debit_face = porosite_face(num_face)*vitesse(num_face,axe) * fabs(zone_VF.face_normales(num_face,axe));
                         debit_e += tab_rho_face[num_face] * debit_face;
                       }
                   else
@@ -182,7 +182,7 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
                   if (axe>=0)
                     for (int num_face=ndeb; num_face<nfin; num_face++)
                       {
-                        double debit_face = porosite_face(num_face)*vitesse(num_face,axe) * dabs(zone_VF.face_normales(num_face,axe));
+                        double debit_face = porosite_face(num_face)*vitesse(num_face,axe) * fabs(zone_VF.face_normales(num_face,axe));
                         debit_e += debit_face;
                       }
                   else

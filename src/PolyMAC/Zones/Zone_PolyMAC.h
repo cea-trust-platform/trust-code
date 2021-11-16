@@ -375,7 +375,7 @@ static inline DoubleTab transp(DoubleTab a)
 /* minimise ||M.x - b||_2, met le noyau de M dans P et retourne le residu */
 static inline double kersol(const DoubleTab& M, DoubleTab& b, double eps, DoubleTab *P, DoubleTab& x, DoubleTab& S)
 {
-  int i, j, nk, m = M.dimension(0), n = M.dimension(1), k = min(m, n), l = max(m, n), w = 5 * l, info, iP, jP;
+  int i, j, nk, m = M.dimension(0), n = M.dimension(1), k = std::min(m, n), l = std::max(m, n), w = 5 * l, info, iP, jP;
   double res2 = 0;
   char a = 'A';
   //lapack en mode Fortran -> on decompose en fait Mt!!
@@ -396,22 +396,22 @@ static inline double kersol(const DoubleTab& M, DoubleTab& b, double eps, Double
 inline double Zone_PolyMAC::dist_norm_bord(int f) const
 {
   assert(face_voisins(f, 1) == -1);
-  return dabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+  return fabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
 }
 
 inline double Zone_PolyMAC::dist_norm(int f) const
 {
-  return dabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xp_(face_voisins(f, 1), 0))) / face_surfaces(f);
+  return fabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xp_(face_voisins(f, 1), 0))) / face_surfaces(f);
 }
 
 inline double Zone_PolyMAC::dist_face_elem0(int f,int e) const
 {
-  return dabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+  return fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
 }
 
 inline double Zone_PolyMAC::dist_face_elem1(int f,int e) const
 {
-  return dabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+  return fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
 }
 
 inline double Zone_PolyMAC::dist_face_elem0_period(int num_face,int n0,double l) const

@@ -1080,8 +1080,8 @@ void Navier_Stokes_std::projeter()
       divergence.calculer(tab_vitesse, secmem);
       // Desormais on calcule le pas de temps avant la projection
       // Avant, on avait dt=dt_min au debut du calcul
-      double dt = max(le_schema_en_temps->pas_temps_min(),calculer_pas_de_temps());
-      dt = min(dt, le_schema_en_temps->pas_temps_max());
+      double dt = std::max(le_schema_en_temps->pas_temps_min(),calculer_pas_de_temps());
+      dt = std::min(dt, le_schema_en_temps->pas_temps_max());
 
       secmem*=(-1./dt);
       secmem.echange_espace_virtuel();
@@ -1308,8 +1308,8 @@ int Navier_Stokes_std::preparer_calcul()
             int mod=0;
             if (le_schema_en_temps->pas_de_temps()==0)
               {
-                double dt = max(le_schema_en_temps->pas_temps_min(),calculer_pas_de_temps());
-                dt = min(dt, le_schema_en_temps->pas_temps_max());
+                double dt = std::max(le_schema_en_temps->pas_temps_min(),calculer_pas_de_temps());
+                dt = std::min(dt, le_schema_en_temps->pas_temps_max());
                 le_schema_en_temps->set_dt()=(dt);
                 mod=1;
               }
@@ -1458,7 +1458,7 @@ void Navier_Stokes_std::mettre_a_jour(double temps)
       else
         seuil_dyn/=raison_seuil_divU;
       double seuil_dyn_max = 1.e-10;
-      seuil_dyn=max(seuil_dyn,seuil_dyn_max);
+      seuil_dyn=std::max(seuil_dyn,seuil_dyn_max);
       solv_iter.set_seuil(seuil_dyn);
     }
   // fin procedure de determination du seuil dynamique de convergence en pression
@@ -2224,7 +2224,7 @@ void Navier_Stokes_std::uzawa(const DoubleTab& secmem,
   int niter=0;
   int nmax=Cp.size();
   Cerr << "Uzawa, initial residue : " << dnew << finl;
-  //     seuil=dmax(seuil, dnew*1.e-12);
+  //     seuil=std::max(seuil, dnew*1.e-12);
   while ( ( dnew > seuil ) && (niter++ < nmax) )
     {
       gradient->multvect(Cp, grad);

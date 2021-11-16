@@ -164,7 +164,7 @@ public:
   {
     const DoubleTab& alpha = diffusivite_pour_pas_de_temps().valeurs();
     double alpha_lam = alpha(i,0);
-    for (int k = 1; k < alpha.line_size(); k++) alpha_lam = max(alpha_lam, alpha(i,k));
+    for (int k = 1; k < alpha.line_size(); k++) alpha_lam = std::max(alpha_lam, alpha(i,k));
     return alpha_lam;
   }
   inline void completer() { completer_impl<Type_Operateur::Op_DIFT_ELEM,Eval_Dift_VDF_Multi_inco_var_Elem>(); }
@@ -187,7 +187,7 @@ public:
   {
     const DoubleTab& alpha = diffusivite().valeurs();
     double alpha_lam = alpha(i,0);
-    for (int k = 1; k < alpha.line_size(); k++) alpha_lam = max(alpha_lam, alpha(i,k));
+    for (int k = 1; k < alpha.line_size(); k++) alpha_lam = std::max(alpha_lam, alpha(i,k));
     return alpha_lam;
   }
 

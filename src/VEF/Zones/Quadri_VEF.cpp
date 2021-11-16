@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -345,9 +345,9 @@ void Quadri_VEF::modif_volumes_entrelaces(int j,int elem,
   //       for(int i=0;i<3;i++)
   //         for(int k=0;k<2;k++)
   //           coord(i,k)=la_zone_VEF.zone().domaine().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
-  //       volumes_entrelaces_Cl[elem_faces(elem,0)]  = dabs((coord(0,0)-coord(2,0))*((coord(2,1)+coord(3,1))/2-coord(2,2)) - ((coord(2,0)+coord(3,0))/2-coord(2,0))*(coord(0,1)-coord(2,2)))/2;
-  //       volumes_entrelaces_Cl[elem_faces(elem,2)]  = dabs((coord(1,0)-coord(3,0))*((coord(2,1)+coord(3,1))/2-coord(3,2)) - ((coord(2,0)+coord(3,0))/2-coord(3,0))*(coord(1,1)-coord(3,2)))/2;
-  //       volumes_entrelaces_Cl[elem_faces(elem,1)]  = dabs((coord(1,0)-coord(0,0))*((coord(2,1)+coord(3,1))/2-coord(0,2)) - ((coord(2,0)+coord(3,0))/2-coord(0,0))*(coord(1,1)-coord(0,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,0)]  = fabs((coord(0,0)-coord(2,0))*((coord(2,1)+coord(3,1))/2-coord(2,2)) - ((coord(2,0)+coord(3,0))/2-coord(2,0))*(coord(0,1)-coord(2,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,2)]  = fabs((coord(1,0)-coord(3,0))*((coord(2,1)+coord(3,1))/2-coord(3,2)) - ((coord(2,0)+coord(3,0))/2-coord(3,0))*(coord(1,1)-coord(3,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,1)]  = fabs((coord(1,0)-coord(0,0))*((coord(2,1)+coord(3,1))/2-coord(0,2)) - ((coord(2,0)+coord(3,0))/2-coord(0,0))*(coord(1,1)-coord(0,2)))/2;
   //       break;
   //     }
 
@@ -357,9 +357,9 @@ void Quadri_VEF::modif_volumes_entrelaces(int j,int elem,
   //       for(int i=0;i<3;i++)
   //         for(int k=0;k<2;k++)
   //           coord(i,k)=la_zone_VEF.zone().domaine().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
-  //       volumes_entrelaces_Cl[elem_faces(elem,1)]  = dabs((coord(2,0)-coord(3,0))*((coord(1,1)+coord(3,1))/2-coord(3,2)) - ((coord(1,0)+coord(3,0))/2-coord(3,0))*(coord(2,1)-coord(3,2)))/2;
-  //       volumes_entrelaces_Cl[elem_faces(elem,3)]  = dabs((coord(0,0)-coord(1,0))*((coord(1,1)+coord(3,1))/2-coord(1,2)) - ((coord(1,0)+coord(3,0))/2-coord(1,0))*(coord(0,1)-coord(1,2)))/2;
-  //       volumes_entrelaces_Cl[elem_faces(elem,0)]  = dabs((coord(0,0)-coord(2,0))*((coord(1,1)+coord(3,1))/2-coord(2,2)) - ((coord(1,0)+coord(3,0))/2-coord(2,0))*(coord(0,1)-coord(2,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,1)]  = fabs((coord(2,0)-coord(3,0))*((coord(1,1)+coord(3,1))/2-coord(3,2)) - ((coord(1,0)+coord(3,0))/2-coord(3,0))*(coord(2,1)-coord(3,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,3)]  = fabs((coord(0,0)-coord(1,0))*((coord(1,1)+coord(3,1))/2-coord(1,2)) - ((coord(1,0)+coord(3,0))/2-coord(1,0))*(coord(0,1)-coord(1,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,0)]  = fabs((coord(0,0)-coord(2,0))*((coord(1,1)+coord(3,1))/2-coord(2,2)) - ((coord(1,0)+coord(3,0))/2-coord(2,0))*(coord(0,1)-coord(2,2)))/2;
   //       break;
   //     }
 
@@ -369,9 +369,9 @@ void Quadri_VEF::modif_volumes_entrelaces(int j,int elem,
   //       for(int i=0;i<3;i++)
   //         for(int k=0;k<2;k++)
   //           coord(i,k)=la_zone_VEF.zone().domaine().coord(la_zone_VEF.zone().sommet_elem(elem,i),k);
-  //       volumes_entrelaces_Cl[elem_faces(elem,0)]  = dabs((coord(2,0)-coord(0,0))*((coord(0,1)+coord(1,1))/2-coord(0,2)) - ((coord(0,0)+coord(1,0))/2-coord(0,0))*(coord(2,1)-coord(0,2)))/2;
-  //       volumes_entrelaces_Cl[elem_faces(elem,2)]  = dabs((coord(3,0)-coord(1,0))*((coord(0,1)+coord(1,1))/2-coord(1,2)) - ((coord(0,0)+coord(1,0))/2-coord(1,0))*(coord(3,1)-coord(1,2)))/2;
-  //       volumes_entrelaces_Cl[elem_faces(elem,3)]  = dabs((coord(3,0)-coord(2,0))*((coord(0,1)+coord(1,1))/2-coord(2,2)) - ((coord(0,0)+coord(1,0))/2-coord(2,0))*(coord(3,1)-coord(2,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,0)]  = fabs((coord(2,0)-coord(0,0))*((coord(0,1)+coord(1,1))/2-coord(0,2)) - ((coord(0,0)+coord(1,0))/2-coord(0,0))*(coord(2,1)-coord(0,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,2)]  = fabs((coord(3,0)-coord(1,0))*((coord(0,1)+coord(1,1))/2-coord(1,2)) - ((coord(0,0)+coord(1,0))/2-coord(1,0))*(coord(3,1)-coord(1,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,3)]  = fabs((coord(3,0)-coord(2,0))*((coord(0,1)+coord(1,1))/2-coord(2,2)) - ((coord(0,0)+coord(1,0))/2-coord(2,0))*(coord(3,1)-coord(2,2)))/2;
   //       break;
   //     }
 
@@ -394,9 +394,9 @@ void Quadri_VEF::modif_volumes_entrelaces(int j,int elem,
   //       Cerr << " coord(1,0) " << coord(1,0) << " coord(1,1) " << coord(1,1)  << finl;
   //       Cerr << " coord(2,0) " << coord(2,0) << " coord(2,1) " << coord(2,1)  << finl;
 
-  //       volumes_entrelaces_Cl[elem_faces(elem,1)]  = dabs((coord(3,0)-coord(2,0))*((coord(0,1)+coord(2,1))/2-coord(2,2)) - ((coord(0,0)+coord(2,0))/2-coord(2,0))*(coord(3,1)-coord(2,2)))/2;
-  //       volumes_entrelaces_Cl[elem_faces(elem,3)]  = dabs((coord(1,0)-coord(0,0))*((coord(0,1)+coord(2,1))/2-coord(0,2)) - ((coord(0,0)+coord(2,0))/2-coord(0,0))*(coord(1,1)-coord(0,2)))/2;
-  //       volumes_entrelaces_Cl[elem_faces(elem,2)]  = dabs((coord(3,0)-coord(1,0))*((coord(0,1)+coord(2,1))/2-coord(1,2)) - ((coord(0,0)+coord(2,0))/2-coord(1,0))*(coord(3,1)-coord(1,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,1)]  = fabs((coord(3,0)-coord(2,0))*((coord(0,1)+coord(2,1))/2-coord(2,2)) - ((coord(0,0)+coord(2,0))/2-coord(2,0))*(coord(3,1)-coord(2,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,3)]  = fabs((coord(1,0)-coord(0,0))*((coord(0,1)+coord(2,1))/2-coord(0,2)) - ((coord(0,0)+coord(2,0))/2-coord(0,0))*(coord(1,1)-coord(0,2)))/2;
+  //       volumes_entrelaces_Cl[elem_faces(elem,2)]  = fabs((coord(3,0)-coord(1,0))*((coord(0,1)+coord(2,1))/2-coord(1,2)) - ((coord(0,0)+coord(2,0))/2-coord(1,0))*(coord(3,1)-coord(1,2)))/2;
 
   //       break;
   //     }

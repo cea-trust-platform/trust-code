@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -462,7 +462,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
 
   for ( int i=0; i<nb_faces; i++ )
     {
-      if (dabs (P[i]) > 1.e-9 )richard_loc [i] = -G[i]/P[i] ;
+      if (fabs (P[i]) > 1.e-9 )richard_loc [i] = -G[i]/P[i] ;
       else richard_loc [i] = 0. ;
     }
 

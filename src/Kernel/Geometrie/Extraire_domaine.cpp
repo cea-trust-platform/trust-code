@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -115,7 +115,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
           if (dimension==3)
             condition_elements.setVar("z",xp(elem,2));
           double res=condition_elements.eval();
-          if (dabs(res)>1e-5)
+          if (fabs(res)>1e-5)
             {
               marq_elem(elem)=1;
               nb_elem_m++;

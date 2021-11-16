@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -255,7 +255,7 @@ static int contient_Tetra(const Zone& zone,const Domaine& dom,const ArrOfDouble&
           Cerr<<"      prod1="<<prod1<<" prod2="<<prod2<<finl;
         }
 
-      if (dabs(prod1)<Objet_U::precision_geom)
+      if (fabs(prod1)<Objet_U::precision_geom)
         {
           double norm_v0=0,norm_v1=0,norm_v2=0;
           for (int ii=0; ii<3; ii++)
@@ -264,7 +264,7 @@ static int contient_Tetra(const Zone& zone,const Domaine& dom,const ArrOfDouble&
               norm_v1+=vec1[ii]*vec1[ii];
               norm_v2+=vec2[ii]*vec2[ii];
             }
-          if (dabs(prod1)<Objet_U::precision_geom*sqrt(norm_v0*norm_v1*norm_v2))
+          if (fabs(prod1)<Objet_U::precision_geom*sqrt(norm_v0*norm_v1*norm_v2))
             {
               Cerr<<"Test contient_Tetra ERROR : coplanar nodes"<<finl;
               Cerr<<"  node0="<<som0<<" : "<<dom.coord(som0,0)<<"  "<<dom.coord(som0,1)<<"  "<<dom.coord(som0,2)<<finl;
@@ -276,7 +276,7 @@ static int contient_Tetra(const Zone& zone,const Domaine& dom,const ArrOfDouble&
             }
         }
 
-      if (prod1*prod2<0 && dabs(prod2)>dabs(prod1)*Objet_U::precision_geom)
+      if (prod1*prod2<0 && fabs(prod2)>fabs(prod1)*Objet_U::precision_geom)
         {
           if (aff)
             {
@@ -529,11 +529,11 @@ void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
           y3 = dom.coord(s4,1);
           z3 = dom.coord(s4,2);
 
-          //volume_tetra1 =  dabs((x1-x0)*((y2-y0)*(z3-z0)-(y3-y0)*(z2-z0))-
+          //volume_tetra1 =  fabs((x1-x0)*((y2-y0)*(z3-z0)-(y3-y0)*(z2-z0))-
           //                   (x2-x0)*((y1-y0)*(z3-z0)-(y3-y0)*(z1-z0))+
           //                    (x3-x0)*((y1-y0)*(z2-z0)-(y2-y0)*(z1-z0)))/6;
 
-          volume += dabs((x1-x0)*((y2-y0)*(z3-z0)-(y3-y0)*(z2-z0))-
+          volume += fabs((x1-x0)*((y2-y0)*(z3-z0)-(y3-y0)*(z2-z0))-
                          (x2-x0)*((y1-y0)*(z3-z0)-(y3-y0)*(z1-z0))+
                          (x3-x0)*((y1-y0)*(z2-z0)-(y2-y0)*(z1-z0)))/6;
 
@@ -549,11 +549,11 @@ void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
           y3 = dom.coord(s3,1);
           z3 = dom.coord(s3,2);
 
-          // volume_tetra2 = dabs((x1-x0)*((y2-y0)*(z3-z0)-(y3-y0)*(z2-z0))-
+          // volume_tetra2 = fabs((x1-x0)*((y2-y0)*(z3-z0)-(y3-y0)*(z2-z0))-
           //                   (x2-x0)*((y1-y0)*(z3-z0)-(y3-y0)*(z1-z0))+
           //                   (x3-x0)*((y1-y0)*(z2-z0)-(y2-y0)*(z1-z0)))/6;
 
-          volume += dabs((x1-x0)*((y2-y0)*(z3-z0)-(y3-y0)*(z2-z0))-
+          volume += fabs((x1-x0)*((y2-y0)*(z3-z0)-(y3-y0)*(z2-z0))-
                          (x2-x0)*((y1-y0)*(z3-z0)-(y3-y0)*(z1-z0))+
                          (x3-x0)*((y1-y0)*(z2-z0)-(y2-y0)*(z1-z0)))/6;
         }
@@ -617,10 +617,10 @@ inline int reordonne(int i0,int i1,int i2,int i3,DoubleTab& coord,IntTab& elem,i
     for (int j=0; j<8; j++)
       {
         if ((j!=i0)&&(j!=i1)&&(j!=i2))
-          if (dabs(dist(j))<min_dist)
+          if (fabs(dist(j))<min_dist)
             {
               s_plan=j;
-              min_dist=dabs(dist(j));
+              min_dist=fabs(dist(j));
             }
       }
     if (s_plan!=i3)

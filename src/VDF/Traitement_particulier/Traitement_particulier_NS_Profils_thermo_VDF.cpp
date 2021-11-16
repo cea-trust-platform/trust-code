@@ -197,7 +197,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::post_traitement_particulier()
       calculer_moyennes_spatiales_thermo(Tmoy_p,Trms_p,upTp_p,vpTp_p,wpTp_p,corresp_uv_p,compt_uv_p,Nuv,xUVp);
 
       static double temps_dern_post_inst = -100.;
-      if (dabs(tps-temps_dern_post_inst)>=dt_post_inst)
+      if (fabs(tps-temps_dern_post_inst)>=dt_post_inst)
         {
           ecriture_fichier_moy_spat_thermo(Tmoy_m,Trms_m,upTp_m,vpTp_m,wpTp_m,Tmoy_p,Trms_p,upTp_p,vpTp_p,wpTp_p,Yuv_m,Nuv,delta_UVm, delta_UVp);
 
@@ -229,7 +229,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::post_traitement_particulier()
           calculer_integrales_temporelles(wpTp_temp,wpTp_m,wpTp_p,delta_UVm,delta_UVp);
 
           static double temps_dern_post_stat = -100.;
-          if (dabs(tpsbis-temps_dern_post_stat)>=dt_post_stat)
+          if (fabs(tpsbis-temps_dern_post_stat)>=dt_post_stat)
             {
               double dt = tpsbis-temps_deb;
               ecriture_fichier_moy_temp_thermo(Tmoy_temp,Trms_temp,upTp_temp,vpTp_temp,wpTp_temp,Yuv_m,dt,Nuv);
@@ -567,7 +567,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::ecriture_fichier_moy_spat_the
             }
 
           for (j=0; j<NN(i); j++)
-            fic << Y(i,j) << " " << Tmoy(i,j) << " " << sqrt(dmax(Trms(i,j),0)) << " " << upTp(i,j) << " " << -vpTp(i,j) << " " << -wpTp(i,j) << finl;
+            fic << Y(i,j) << " " << Tmoy(i,j) << " " << sqrt(std::max(Trms(i,j),0.0)) << " " << upTp(i,j) << " " << -vpTp(i,j) << " " << -wpTp(i,j) << finl;
           fic.flush();
           fic.close();
         } //Fin du si je suis maitre
@@ -624,7 +624,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::ecriture_fichier_moy_temp_the
 
 
           for (j=0; j<NN(i)  ; j++)
-            fic << Y(i,j) << " " << Tmoy(i,j)/dt << " " << sqrt(dmax(Trms(i,j)/dt,0)) << " " << upTp(i,j)/dt << " " << -vpTp(i,j)/dt << " " << -wpTp(i,j)/dt << finl;
+            fic << Y(i,j) << " " << Tmoy(i,j)/dt << " " << sqrt(std::max(Trms(i,j)/dt,0.0)) << " " << upTp(i,j)/dt << " " << -vpTp(i,j)/dt << " " << -wpTp(i,j)/dt << finl;
           fic.flush();
           fic.close();
         }

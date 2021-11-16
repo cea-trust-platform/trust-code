@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -524,11 +524,11 @@ void Faces::typer(const Type_Face& typ)
      Cerr << "Add Bidim_axi or Axi in your data file." << finl;
      exit();
      } */
-  if (dimension<min(3,nb_som_face))
+  if (dimension<std::min(3,nb_som_face))
     {
       Cerr << "You are in dimension " << dimension << finl;
       Cerr << "and the mesh contains faces with " << nb_som_face << " nodes." << finl;
-      Cerr << "and this seems to be a mesh of dimension " << min(3,nb_som_face) << " ..." << finl;
+      Cerr << "and this seems to be a mesh of dimension " << std::min(3,nb_som_face) << " ..." << finl;
       exit();
     }
 }
@@ -640,12 +640,12 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
           {
             r0 = dom.coord(sommet(face ,0), 0);
             r1 = dom.coord(sommet(face ,1), 0);
-            delta_r=dabs(r1-r0);
+            delta_r=fabs(r1-r0);
             if ( est_egal(delta_r,0) ) //  faces de direction r
               {
                 z0 = dom.coord(sommet(face ,0), 1);
                 z1 = dom.coord(sommet(face ,1), 1);
-                delta_z=dabs(z1-z0);
+                delta_z=fabs(z1-z0);
                 surfaces(face) = 2*M_PI*r0*delta_z;
               }
             else //face de direction z
@@ -668,12 +668,12 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
               {
                 teta0 = dom.coord(sommet(face ,0), 1);
                 teta1 = dom.coord(sommet(face ,1), 1);
-                d_teta = dabs(teta1-teta0);
+                d_teta = fabs(teta1-teta0);
                 if(d_teta > M_PI) d_teta=2.*M_PI-d_teta;
                 surfaces(face)=r0*d_teta;
               }
             else //  surface = r1-r2
-              surfaces(face)=dabs(r1-r0);
+              surfaces(face)=fabs(r1-r0);
           }
         break;
       }
@@ -759,16 +759,16 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
           {
             r0 = dom.coord(sommet(face ,0), 0);
             r1 = dom.coord(sommet(face ,1), 0);
-            delta_r = dabs(r1 - r0);
+            delta_r = fabs(r1 - r0);
             if ( est_egal(r0,r1) )
               {
                 teta0 = dom.coord(sommet(face ,0), 1);
                 teta1 = dom.coord(sommet(face ,1), 1);
                 z0 = dom.coord(sommet(face ,0), 2);
                 z2 = dom.coord(sommet(face ,2), 2);
-                d_teta = dabs(teta1-teta0);
+                d_teta = fabs(teta1-teta0);
                 if(d_teta > M_PI) d_teta=2.*M_PI-d_teta;
-                surfaces(face)=r0*d_teta*dabs(z2-z0);
+                surfaces(face)=r0*d_teta*fabs(z2-z0);
               }
             else
               {
@@ -778,11 +778,11 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
                   {
                     z0 = dom.coord(sommet(face ,0), 2);
                     z2 = dom.coord(sommet(face ,2), 2);
-                    surfaces(face) = delta_r*dabs(z2-z0);
+                    surfaces(face) = delta_r*fabs(z2-z0);
                   }
                 else
                   {
-                    d_teta=dabs(teta2-teta0);
+                    d_teta=fabs(teta2-teta0);
                     if(d_teta > M_PI) d_teta=2.*M_PI-d_teta;
                     surfaces(face) = 0.5*(r0+r1)*d_teta*delta_r;
                   }
@@ -899,8 +899,8 @@ void calculer_centres_gravite(DoubleTab& xv,
                       xv(face, 0)+=coord(sommet(face ,som), 0);
                     double teta_0=coord(sommet(face ,0), 1);
                     double teta_1=coord(sommet(face ,1), 1);
-                    double teta_min=dmin(teta_1, teta_0);
-                    double teta_max=dmax(teta_1, teta_0);
+                    double teta_min=std::min(teta_1, teta_0);
+                    double teta_max=std::max(teta_1, teta_0);
                     double d_teta=teta_max-teta_min;
                     if( (teta_min==0.) && (d_teta>M_PI) )
                       {
@@ -924,12 +924,12 @@ void calculer_centres_gravite(DoubleTab& xv,
                     double teta_1=coord(sommet(face ,1), 1);
                     double teta_2=coord(sommet(face ,2), 1);
                     double teta_3=coord(sommet(face ,3), 1);
-                    double teta_min=dmin(teta_1, teta_0);
-                    teta_min=dmin(teta_min, teta_2);
-                    teta_min=dmin(teta_min, teta_3);
-                    double teta_max=dmax(teta_1, teta_0);
-                    teta_max=dmax(teta_min, teta_2);
-                    teta_max=dmax(teta_min, teta_3);
+                    double teta_min=std::min(teta_1, teta_0);
+                    teta_min=std::min(teta_min, teta_2);
+                    teta_min=std::min(teta_min, teta_3);
+                    double teta_max=std::max(teta_1, teta_0);
+                    teta_max=std::max(teta_min, teta_2);
+                    teta_max=std::max(teta_min, teta_3);
                     double d_teta=teta_max-teta_min;
                     if( (teta_min==0.) && (d_teta>M_PI) )
                       {
@@ -1112,18 +1112,18 @@ void Faces::reordonner()
             else
               {
 
-                xmin=min(dom.coord(S(0), 0), dom.coord(S(1), 0));
-                xmin=min(xmin, dom.coord(S(2), 0));
-                xmax=max(dom.coord(S(0), 0), dom.coord(S(1), 0));
-                xmax=max(xmax, dom.coord(S(2), 0));
-                ymin=min(dom.coord(S(0), 1), dom.coord(S(1), 1));
-                ymin=min(ymin, dom.coord(S(2), 1));
-                ymax=max(dom.coord(S(0), 1), dom.coord(S(1), 1));
-                ymax=max(ymax, dom.coord(S(2), 1));
-                zmin=min(dom.coord(S(0), 2), dom.coord(S(1), 2));
-                zmin=min(zmin, dom.coord(S(2), 2));
-                zmax=max(dom.coord(S(0), 2), dom.coord(S(1), 2));
-                zmax=max(zmax, dom.coord(S(2), 2));
+                xmin=std::min(dom.coord(S(0), 0), dom.coord(S(1), 0));
+                xmin=std::min(xmin, dom.coord(S(2), 0));
+                xmax=std::max(dom.coord(S(0), 0), dom.coord(S(1), 0));
+                xmax=std::max(xmax, dom.coord(S(2), 0));
+                ymin=std::min(dom.coord(S(0), 1), dom.coord(S(1), 1));
+                ymin=std::min(ymin, dom.coord(S(2), 1));
+                ymax=std::max(dom.coord(S(0), 1), dom.coord(S(1), 1));
+                ymax=std::max(ymax, dom.coord(S(2), 1));
+                zmin=std::min(dom.coord(S(0), 2), dom.coord(S(1), 2));
+                zmin=std::min(zmin, dom.coord(S(2), 2));
+                zmax=std::max(dom.coord(S(0), 2), dom.coord(S(1), 2));
+                zmax=std::max(zmax, dom.coord(S(2), 2));
 
                 if(est_egal(zmin, zmax))
                   {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -276,8 +276,8 @@ void Loi_horaire::verifier_derivee(const double& t)
       int n=err_t.size_array();
       for (int i=0; i<n; i++)
         {
-          double seuil=dabs(seuil_t(i));
-          if (!est_egal(seuil,0) && dabs(err_t(i))>seuil)
+          double seuil=fabs(seuil_t(i));
+          if (!est_egal(seuil,0) && fabs(err_t(i))>seuil)
             {
               if (Process::je_suis_maitre())
                 {
@@ -310,8 +310,8 @@ void Loi_horaire::verifier_derivee(const double& t)
       for (int i=0; i<ni; i++)
         for (int j=0; j<nj; j++)
           {
-            double seuil=dabs(seuil_r(i,j));
-            if (!est_egal(seuil,0) && dabs(err_r(i,j))>seuil)
+            double seuil=fabs(seuil_r(i,j));
+            if (!est_egal(seuil,0) && fabs(err_r(i,j))>seuil)
               {
                 if (Process::je_suis_maitre())
                   {

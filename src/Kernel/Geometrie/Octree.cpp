@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -731,10 +731,10 @@ void Octree::ranger_elem_2D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
 // GF dans le cas dde polyedre le tableau elem est surdimensionne et peut contenir des -1
       if (sommet>=0)
         {
-          xmin=min(xmin, coord(sommet,0));
-          xmax=max(xmax, coord(sommet,0));
-          ymin=min(ymin, coord(sommet,1));
-          ymax=max(ymax, coord(sommet,1));
+          xmin=std::min(xmin, coord(sommet,0));
+          xmax=std::max(xmax, coord(sommet,0));
+          ymin=std::min(ymin, coord(sommet,1));
+          ymax=std::max(ymax, coord(sommet,1));
         }
     }
   range2D(xmin, ymin, xmil, ymil, ok, SousTab, compteur, i);
@@ -758,12 +758,12 @@ void Octree::ranger_elem_3D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
 // GF dans le cas dde polyedre le tableau elem est surdimensionne et peut contenir des -1
       if (sommet>=0)
         {
-          xmin=min(xmin, coord(sommet,0))-epsilon;
-          xmax=max(xmax, coord(sommet,0))+epsilon;
-          ymin=min(ymin, coord(sommet,1))-epsilon;
-          ymax=max(ymax, coord(sommet,1))+epsilon;
-          zmin=min(zmin, coord(sommet,2))-epsilon;
-          zmax=max(zmax, coord(sommet,2))+epsilon;
+          xmin=std::min(xmin, coord(sommet,0))-epsilon;
+          xmax=std::max(xmax, coord(sommet,0))+epsilon;
+          ymin=std::min(ymin, coord(sommet,1))-epsilon;
+          ymax=std::max(ymax, coord(sommet,1))+epsilon;
+          zmin=std::min(zmin, coord(sommet,2))-epsilon;
+          zmax=std::max(zmax, coord(sommet,2))+epsilon;
         }
     }
   range3D(xmin, ymin, zmin, xmil, ymil, zmil, ok, SousTab, compteur, i);
@@ -1137,18 +1137,18 @@ int OctreeRoot::rang_sommet(double x, double y, double z) const
             {
               //switch
             case 1:
-              if(dabs(dom.coord(sommet,0)-x)<epsilon)
+              if(fabs(dom.coord(sommet,0)-x)<epsilon)
                 return sommet;
               break;
             case 2:
-              if((dabs(dom.coord(sommet,0)-x)<epsilon) &&
-                  (dabs(dom.coord(sommet,1)-y)<epsilon))
+              if((fabs(dom.coord(sommet,0)-x)<epsilon) &&
+                  (fabs(dom.coord(sommet,1)-y)<epsilon))
                 return sommet;
               break;
             case 3:
-              if((dabs(dom.coord(sommet,0)-x)<epsilon) &&
-                  (dabs(dom.coord(sommet,1)-y)<epsilon) &&
-                  (dabs(dom.coord(sommet,2)-z)<epsilon))
+              if((fabs(dom.coord(sommet,0)-x)<epsilon) &&
+                  (fabs(dom.coord(sommet,1)-y)<epsilon) &&
+                  (fabs(dom.coord(sommet,2)-z)<epsilon))
                 return sommet;
               break;
             default:
@@ -1212,9 +1212,9 @@ int OctreeRoot::rang_arete(double x, double y, double z) const
           switch(Objet_U::dimension)
             {
             case 3:
-              if((dabs(0.5*(coord(s0,0)+coord(s1,0))-x)<epsilon) &&
-                  (dabs(0.5*(coord(s0,1)+coord(s1,1))-y)<epsilon) &&
-                  (dabs(0.5*(coord(s0,2)+coord(s1,2))-z)<epsilon))
+              if((fabs(0.5*(coord(s0,0)+coord(s1,0))-x)<epsilon) &&
+                  (fabs(0.5*(coord(s0,1)+coord(s1,1))-y)<epsilon) &&
+                  (fabs(0.5*(coord(s0,2)+coord(s1,2))-z)<epsilon))
                 return arete;
               break;
             default:

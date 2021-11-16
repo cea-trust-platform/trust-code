@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -584,7 +584,7 @@ void Matrice_Morse::compacte(int elim_coeff_nul)
       for(int i=0; i<n; i++)
         for (int k=tab1_(i)-1; k<tab1_(i+1)-1; k++)
           {
-            if (dabs(coeff_(k))>coeff_max(i)) coeff_max(i)=dabs(coeff_(k));
+            if (fabs(coeff_(k))>coeff_max(i)) coeff_max(i)=fabs(coeff_(k));
             if (coeff_(k)==0)
               {
                 coeff_nuls++;
@@ -600,7 +600,7 @@ void Matrice_Morse::compacte(int elim_coeff_nul)
                 && coeff_max(i)<1e10)          // On ne supprime pas un coefficient quasi-nul d'une ligne ou la diagonale peut etre mise a 1e12
               for (int k=tab1_(i)-1; k<tab1_(i+1)-1; k++)
                 if (coeff_(k)!=0                 // Les coefficients nuls ont deja ete trouves
-                    && est_egal(dabs(coeff_(k))/coeff_max(i),0))
+                    && est_egal(fabs(coeff_(k))/coeff_max(i),0))
                   {
                     coeff_quasi_nuls++;
                     elim_coeff(k)=1;
@@ -1198,9 +1198,9 @@ int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
 
   DoubleVect toto(secmem);
   int prems=1;                        // On ne calcul L et U que si prems =1
-  int lf = min(10,ordre()/2);        // nombre de termes ajouter dans L et U
+  int lf = std::min(10,ordre()/2);        // nombre de termes ajouter dans L et U
   int nn = ordre();                // ordre de la matrice
-  int ima = min(10,ordre()/2);        // degre de l'espace de Krilov
+  int ima = std::min(10,ordre()/2);        // degre de l'espace de Krilov
   IntVect ju;                        // tableau pour L et U
   DoubleVect alu;                // tableau pour L et U
   IntVect jlu;                        // tableau pour L et U
@@ -1329,7 +1329,7 @@ precond :
     else
       coeff_seuilr=coeff_seuil/r;
     Resini=toto;
-    int maxits = max(10, nn);
+    int maxits = std::max(10, nn);
     int io = 0;                                // fichier de sortie
 #ifndef CRAY
     F77NAME(PGMRES)(&nn, &ima, toto.addr(), solution.addr(), vv.addr(), &coeff_seuilr,
@@ -1396,10 +1396,10 @@ int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
 
   DoubleVect toto(secmem);
   int prems=1;                        // On ne calcul L et U que si prems =1
-  int lf = min(10,ordre()/2);        // nombre de termes ajouter dans L et U
+  int lf = std::min(10,ordre()/2);        // nombre de termes ajouter dans L et U
   int nn = ordre();                // ordre de la matrice
 
-  int ima = min(10,ordre()/2);        // degre de l'espace de Krilov
+  int ima = std::min(10,ordre()/2);        // degre de l'espace de Krilov
   IntVect ju;                        // tableau pour L et U
   DoubleVect alu;                // tableau pour L et U
   IntVect jlu;                        // tableau pour L et U
@@ -1513,7 +1513,7 @@ int Matrice_Morse::inverse(const DoubleVect& secmem, DoubleVect& solution,
     Cout << " Initial residu : " << r << finl;
     coeff_seuilr=coeff_seuil/r;
     Resini=toto;
-    int maxits = max(10, max_iter);
+    int maxits = std::max(10, max_iter);
     int io = 0;                                // fichier de sortie
 #ifndef CRAY
     F77NAME(PGMRES)(&nn, &ima, toto.addr(), solution.addr(), vv.addr(), &coeff_seuilr,

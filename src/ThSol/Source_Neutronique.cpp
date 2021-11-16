@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -347,8 +347,8 @@ void Source_Neutronique::aller_au_temps(double temps)
 {
   while (temps_courant<temps)
     {
-      const double dt_stab = 0.8*Tvie/beta_som*max(fabs(rho(temps_courant,Tmoy)-1),1.);
-      dt = min(dt_stab, temps-temps_courant);
+      const double dt_stab = 0.8*Tvie/beta_som*std::max(fabs(rho(temps_courant,Tmoy)-1),1.);
+      dt = std::min(dt_stab, temps-temps_courant);
       (this->*faire_un_pas_de_temps)();
       Un = Unp1;
       temps_courant += dt;

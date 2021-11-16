@@ -536,7 +536,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& d
 //                 int face_associee=num1+la_cl_perio.face_associee(face-num1);
 //                 for (int comp=0; comp<Objet_U::dimension; comp++)
 //                   {
-//                     if(dabs(vit(face,comp)-vit(face_associee,comp))>1.e-20)
+//                     if(fabs(vit(face,comp)-vit(face_associee,comp))>1.e-20)
 //                       Cout << "ERREUR PERIO" << finl;
 //                   }
 //               }
@@ -560,7 +560,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& d
 //                 }
 //               //flux_b(face,0) = flux;
 //               flux /= surf;
-//               if(dabs(flux)>1.e-12)
+//               if(fabs(flux)>1.e-12)
 //                 Cout << "Erreur Symetrie!! " << flux << finl;
 //               for (int comp=0; comp<Objet_U::dimension; comp++)
 //                 inco(face,comp) -= flux * face_normales(face,comp);

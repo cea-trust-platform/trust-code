@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -290,9 +290,9 @@ int Tetraedriser_homogene_fin::creer_sommet (
       do
         {
 
-          if ((dabs(coord_sommets(new_soms_old_elems(trouve, j), 0)-x)<epsilon) &&
-              (dabs(coord_sommets(new_soms_old_elems(trouve, j), 1)-y)<epsilon)&&
-              (dabs(coord_sommets(new_soms_old_elems(trouve, j), 2)-z)<epsilon))
+          if ((fabs(coord_sommets(new_soms_old_elems(trouve, j), 0)-x)<epsilon) &&
+              (fabs(coord_sommets(new_soms_old_elems(trouve, j), 1)-y)<epsilon)&&
+              (fabs(coord_sommets(new_soms_old_elems(trouve, j), 2)-z)<epsilon))
 
             {
               _out = new_soms_old_elems(trouve, j);

@@ -294,7 +294,7 @@ DoubleTab Source_PDF_EF::compute_coeff_elem() const
 
   const double dt_ref = equation().probleme().schema_temps().pas_de_temps();
   const double dt_min = equation().probleme().schema_temps().pas_temps_min();
-  double dt = max(dt_ref,dt_min);
+  double dt = std::max(dt_ref,dt_min);
   const DoubleTab& rho_m=champ_rho_.valeurs();
   if (equation().probleme().schema_temps().temps_courant()==0)
     {
@@ -349,7 +349,7 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
 
   const double dt_ref = equation().probleme().schema_temps().pas_de_temps();
   const double dt_min = equation().probleme().schema_temps().pas_temps_min();
-  double dt = max(dt_ref,dt_min);
+  double dt = std::max(dt_ref,dt_min);
   const DoubleTab& rho_m=champ_rho_.valeurs();
   if (equation().probleme().schema_temps().temps_courant()==0)
     {
@@ -427,7 +427,7 @@ DoubleTab Source_PDF_EF::compute_pond(const DoubleTab& rho_m, const DoubleTab& a
 
   const double dt_ref = equation().probleme().schema_temps().pas_de_temps();
   const double dt_min = equation().probleme().schema_temps().pas_temps_min();
-  double dt = max(dt_ref,dt_min);
+  double dt = std::max(dt_ref,dt_min);
   if (equation().probleme().schema_temps().temps_courant()==0)
     {
       dt = 1.0;
@@ -1086,7 +1086,7 @@ int Source_PDF_EF::impr(Sortie& os) const
               source_term[i] = 0.;
               for (int j=0; j<nb_som_tot; j++)
                 {
-                  int filter = (dabs(resu(j,i)) > 1.e-6?1:0);
+                  int filter = (fabs(resu(j,i)) > 1.e-6?1:0);
                   source_term[i](j) = resu(j,i) - sec_mem_pdf(j,i) + secmem_conv(j,i)*filter;
                 }
               bilan_(i) = mp_somme_vect(source_term[i]);

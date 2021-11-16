@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -484,7 +484,7 @@ void Debog_Pb::verifier(const char* const msg, double x, double *ref_value)
       goto_msg(msg);
       double y;
       debog_data_file_ >> y;
-      const double adim = max(fabs(x), fabs(y));
+      const double adim = std::max(fabs(x), fabs(y));
       const double delta = fabs(x-y);
       double err = 0;
       if (delta >= seuil_absolu_ && delta / adim >= seuil_relatif_)
@@ -715,7 +715,7 @@ void Debog_Pb::verifier_partie_std(const DoubleVect& reference,
   // Le tableau arr est parallele. On calcule la reference en utilisant uniquement
   //  la partie reele (eventuellement la partie virtuelle a le droit de ne pas etre a jour)
   const double adim2 = mp_max_abs_vect(arr, VECT_REAL_ITEMS);
-  const double adim = max(adim1, adim2);
+  const double adim = std::max(adim1, adim2);
   if (seuil_absolu_ <= 0.)
     {
       Cerr << "Error in Debog.cpp verifier_partie_std: seuil_absolu <= 0" << finl;
@@ -766,7 +766,7 @@ void Debog_Pb::verifier_partie_std(const DoubleVect& reference,
               const double y = reference[i2+j];
               // Comparaison de x et y
               const double delta = fabs(x-y) / adim;
-              max_err = max(max_err, delta);
+              max_err = std::max(max_err, delta);
               // pour les items reels, indiquer si on est hors bornes:
               if (step==0 && !(x>=-DMAXFLOAT && x<=DMAXFLOAT))
                 outbounds = 1;

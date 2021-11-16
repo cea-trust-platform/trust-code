@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -175,7 +175,7 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,Doubl
         {
           numfa = num_faces[i];
           U = inco[numfa];
-          U_abs = dabs(vit[numfa]);
+          U_abs = fabs(vit[numfa]);
 
           if (!l_visco_unif)
             {
@@ -239,7 +239,7 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,Doubl
               CK = -0.5*Cf/D();
               if (U != 0)
                 {
-                  corr_sign = U/dabs(U);
+                  corr_sign = U/fabs(U);
                 }
               resu[numfa] += CK*U_res*U_res*volumes_entrelaces[numfa]*porosite_surf[numfa]*corr_front_ss[i]*corr_sign;
             }

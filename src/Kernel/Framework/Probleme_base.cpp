@@ -1893,7 +1893,7 @@ double Probleme_base::calculer_pas_de_temps() const
   Debog::set_nom_pb_actuel(le_nom());
   double dt=schema_temps().pas_temps_max();
   for(int i=0; i<nombre_d_equations(); i++)
-    dt=min(dt,equation(i).calculer_pas_de_temps());
+    dt=std::min(dt,equation(i).calculer_pas_de_temps());
   return dt;
 }
 

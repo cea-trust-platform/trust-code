@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -313,9 +313,9 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
           x1=coord_sommets3D(les_faces3D(0,0),test);
           x2=coord_sommets3D(les_faces3D(0,1),test);
           x3=coord_sommets3D(les_faces3D(0,2),test);
-          double tmp=dabs(x1-x2);
+          double tmp=fabs(x1-x2);
           precision=(tmp<precision && tmp>0?tmp:precision);
-          tmp=dabs(x3-x2);
+          tmp=fabs(x3-x2);
           precision=(tmp<precision && tmp>0?tmp:precision);
           if (est_egal(x1,x2)&&est_egal(x2,x3)) break;
         }

@@ -3505,7 +3505,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
             {
               test1=false;
               for (j=0; j<size1; j++)
-                test1|=(dabs(resuV[i*size1+j])>1.e-14);
+                test1|=(fabs(resuV[i*size1+j])>1.e-14);
 
               if (test1)
                 {
@@ -3727,7 +3727,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
                     {
                       test1=false;
                       for (j=0; j<size1; j++)
-                        test1|=(dabs(resuV[i*size1+j])>1.e-14);
+                        test1|=(fabs(resuV[i*size1+j])>1.e-14);
 
                       if (test1)
                         {
@@ -3831,7 +3831,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
               {
                 test1=false;
                 for (j=0; j<size1; j++)
-                  test1|=(dabs(resuV[i*size1+j])>max);
+                  test1|=(fabs(resuV[i*size1+j])>max);
 
                 if (test1)
                   {
@@ -3882,7 +3882,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
                   {
                     test1=false;
                     for (j=0; j<size1; j++)
-                      test1|=(dabs(resuV[i*size1+j])>1.e-14);
+                      test1|=(fabs(resuV[i*size1+j])>1.e-14);
 
                     if (test1)
                       {

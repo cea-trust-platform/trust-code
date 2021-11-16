@@ -139,7 +139,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
         psc=0.;
         for (int i=0; i<dimension; i++)
           psc+=vitesse_face_absolue(num_face,i)*face_normales(num_face,i);
-        fluent_(num_face)=dabs(psc);
+        fluent_(num_face)=fabs(psc);
       }
   }
   int marq=phi_u_transportant(equation());

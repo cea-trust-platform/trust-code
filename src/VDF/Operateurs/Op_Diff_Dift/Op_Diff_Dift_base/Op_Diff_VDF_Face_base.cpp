@@ -64,7 +64,7 @@ double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
       const int k = Cdiffu ? 0 : elem;
       double alpha = diffu(k, 0);
       for (int ncomp = 1; ncomp < diffu.dimension(1); ncomp++)
-        alpha = max(alpha, diffu(k, ncomp));
+        alpha = std::max(alpha, diffu(k, ncomp));
 
       diflo *= alpha;
       if (has_champ_masse_volumique())
@@ -72,7 +72,7 @@ double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
           const DoubleTab& rho = get_champ_masse_volumique().valeurs();
           diflo/= rho(elem);
         }
-      coef = max(coef,diflo);
+      coef = std::max(coef,diflo);
     }
 
   double dt_stab = (coef==0 ? DMAXFLOAT : 0.5/coef);

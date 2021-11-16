@@ -874,7 +874,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
               matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*zone_VEF.face_surfaces(face);
             }
         }
-      // [ABN]: à finir il faut encore corriger le dimensionnement de la matrice ...
+      // [ABN]: a finir il faut encore corriger le dimensionnement de la matrice ...
 //      else if (sub_type(Echange_interne_global_impose,la_cl.valeur()))
 //        {
 //          const Echange_interne_global_impose& la_cl_paroi = ref_cast(Echange_interne_global_impose, la_cl.valeur());
@@ -1165,7 +1165,7 @@ void Op_Diff_VEF_Face::verifier() const
           resu(i,comp)/=(volumes_entrelaces(i));
       for(i=0; i<nbf; i++)
         {
-          if(dabs(resu(i,0))>1.e-10)
+          if(fabs(resu(i,0))>1.e-10)
             {
               Cerr << " delta(x,0) ("<<i<<") = "
                    << resu(i,0);
@@ -1184,7 +1184,7 @@ void Op_Diff_VEF_Face::verifier() const
           resu(i,comp)/=(volumes_entrelaces(i));
       for(i=0; i<nbf; i++)
         {
-          if(dabs(2-resu(i,0))>1.e-10)
+          if(fabs(2-resu(i,0))>1.e-10)
             {
               Cerr << " delta(y(1-y),0) ("<<i<<") = "
                    << resu(i,0);

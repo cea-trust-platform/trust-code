@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -415,7 +415,7 @@ corriger_div_pour_Cl(DoubleTab& div ) const
                       norme += face_normales(face,comp)*face_normales(face,comp);
 
                     // psc/=norme; // Fixed bug: Arithmetic exception
-                    if (dabs(norme)>=DMINFLOAT) psc/=norme;
+                    if (fabs(norme)>=DMINFLOAT) psc/=norme;
                     for (comp=0; comp<dimension; comp++)
                       div(face,comp)-=psc*face_normales(face,comp);
                   }

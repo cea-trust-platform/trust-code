@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,7 @@ inline double aire_triangle(const DoubleTab& pos)
   double y2 = pos(2,1);
   double dz = (x1-x0)*(y2-y0) - (x2-x0)*(y1-y0);
   if (Objet_U::dimension==2)
-    return 0.5 * dabs(dz);
+    return 0.5 * fabs(dz);
   else
     {
       double z0 = pos(0,2);

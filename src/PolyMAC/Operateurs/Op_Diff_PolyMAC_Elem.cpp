@@ -135,17 +135,17 @@ void Op_Diff_PolyMAC_Elem::update_delta_int() const
               {
                 fac_n = fac * nu_ef(l, n) * (inco(ne_tot + fb, n) - inco(e, n));
                 de_num(n) += fac_n, delta_f_int(f, n, 0) += fac_n;
-                delta_f_int(f, n, 1) += dabs(inco(ne_tot + fb, n) - inco(ne_tot + f, n));
+                delta_f_int(f, n, 1) += fabs(inco(ne_tot + fb, n) - inco(ne_tot + f, n));
               }
           //partie 'face-element'
           for (n = 0; n < N; n++)
             {
-              fac = dabs(inco(e, n) - inco(ne_tot + f, n));
+              fac = fabs(inco(e, n) - inco(ne_tot + f, n));
               de_den(n) += fac, delta_f_int(f, n, 1) += fac;
             }
         }
       //on peut calculer delta_e des maintenant
-      for (n = 0; n < N; n++) delta_e(e, n) = de_den(n) > 1e-8 ? dabs(de_num(n)) / de_den(n) : 0;
+      for (n = 0; n < N; n++) delta_e(e, n) = de_den(n) > 1e-8 ? fabs(de_num(n)) / de_den(n) : 0;
     }
   delta_e.echange_espace_virtuel(), delta_f_int.echange_espace_virtuel();
   delta_int_a_jour_ = 1;
@@ -169,7 +169,7 @@ void Op_Diff_PolyMAC_Elem::update_delta() const
         double n_d[2] = { delta_f_int(f, n, 0), delta_f_int(f, n, 1) };
         //contribution de l'autre probleme par des CL de type Echange_contact
         for (i = 0; ch.icl(f, 0) == 3 && i < 2; i++) n_d[i] += ref_cast(Echange_contact_PolyMAC, cls[ch.icl(f, 1)].valeur()).delta_int(ch.icl(f, 2), n, i);
-        delta_f(f, n) = n_d[1] > 1e-8 ? dabs(n_d[0]) / n_d[1] : 0;
+        delta_f(f, n) = n_d[1] > 1e-8 ? fabs(n_d[0]) / n_d[1] : 0;
       }
   delta_f.echange_espace_virtuel();
   delta_a_jour_ = 1;
@@ -260,7 +260,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_termes_croises(const DoubleTab& inco, const P
                   //operateur
                   resu(ne_tot + f, n) -= cl.coeff(j, k + 1, n) * autre_inco(l, n);
                   //correction non lineaire
-                  if (stab_) resu(ne_tot + f, n) -= max(delta_f(f, n), cl.delta(j, k, n)) * (inco(ne_tot + f, n) - autre_inco(l, n));
+                  if (stab_) resu(ne_tot + f, n) -= std::max(delta_f(f, n), cl.delta(j, k, n)) * (inco(ne_tot + f, n) - autre_inco(l, n));
                 }
           }
       }
@@ -285,7 +285,7 @@ void Op_Diff_PolyMAC_Elem::contribuer_termes_croises(const DoubleTab& inco, cons
         const Front_VF& fvf = ref_cast(Front_VF, cl.frontiere_dis());
         for (j = 0; j < fvf.nb_faces(); j++) //on peut remplir tous les coeffs, sauf celui de la face elle-meme (rempli par contribuer_a_avec)
           for (k = 0, f = fvf.num_face(j); k < cl.item.dimension(1) && (l = cl.item(j, k)) >= 0; k++) for (n = 0; n < N; n++)
-              matrice(N * (ne_tot + f) + n, N * l + n) += cl.coeff(j, k + 1, n) - (stab_ ? max(delta_f(f, n), cl.delta(j, k, n)) : 0); //operateur + correction non lineaire
+              matrice(N * (ne_tot + f) + n, N * l + n) += cl.coeff(j, k + 1, n) - (stab_ ? std::max(delta_f(f, n), cl.delta(j, k, n)) : 0); //operateur + correction non lineaire
       }
 }
 
@@ -329,7 +329,7 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
 
               //correction non lineaire : partie "faces/faces"
               for (n = 0; stab_ && ch.icl(f, 0) < 4 && n < N; n++)
-                resu(ne_tot + f, n) -= max(delta_f(f, n), delta_f(fb, n)) * (inco(ne_tot + f, n) - inco(ne_tot + fb, n));
+                resu(ne_tot + f, n) -= std::max(delta_f(f, n), delta_f(fb, n)) * (inco(ne_tot + f, n) - inco(ne_tot + fb, n));
             }
           for (n = 0; ch.icl(f, 0) < 6 && n < N; n++) resu(ne_tot + f, n) += mfe(n) * inco(e, n);
           for (n = 0; f < zone.premiere_face_int() && n < N; n++) flux_bords_(f, n) += mfe(n) * inco(e, n);
@@ -342,7 +342,7 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
           //correction non lineaire : parties "elements/faces" et "faces/elements"
           for (n = 0; stab_ && ch.icl(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
             {
-              double corr = max(delta_e(e, n), delta_f(f, n)) * (inco(e, n) - inco(ne_tot + f, n));
+              double corr = std::max(delta_e(e, n), delta_f(f, n)) * (inco(e, n) - inco(ne_tot + f, n));
               resu(e, n) -= corr, resu(ne_tot + f, n) += corr;
             }
         }
@@ -383,7 +383,7 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
               for (n = 0; e < zone.nb_elem() && ch.icl(fb, 0) < 6 && n < N; n++) matrice(N * e + n, N * (ne_tot + fb) + n) -= mff(n);
 
               //correction non lineaire : partie "faces/faces"
-              for (n = 0; stab_ && ch.icl(f, 0) < 4 && f < zone.nb_faces() && n < N; n++) for (k = 0, fac = max(delta_f(f, n), delta_f(fb, n)); k < 2; k++)
+              for (n = 0; stab_ && ch.icl(f, 0) < 4 && f < zone.nb_faces() && n < N; n++) for (k = 0, fac = std::max(delta_f(f, n), delta_f(fb, n)); k < 2; k++)
                   matrice(N * (ne_tot + f) + n, N * (ne_tot + (k ? fb : f)) + n) += (k ? -1 : 1) * fac;
             }
           for (n = 0; f < zone.nb_faces() && ch.icl(f, 0) < 6 && n < N; n++) matrice(N * (ne_tot + f) + n, N * e + n) -= mfe(n);
@@ -396,13 +396,13 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
               const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[ch.icl(f, 1)].valeur());
               for (j = ch.icl(f, 2), n = 0; n < N; n++) matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += cl.coeff(j, 0, n); //coeff de la face elle-meme
               for (k = 0; stab_ && k < cl.item.dimension(1) && cl.item(j, k) >= 0; k++) for (n = 0; n < N; n++) //correction non lineaire
-                  matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += max(delta_f(f, n), cl.delta(j, k, n));
+                  matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += std::max(delta_f(f, n), cl.delta(j, k, n));
             }
 
           //correction non lineaire : parties "elements/faces" et "faces/elements"
           for (n = 0; stab_ && ch.icl(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
             {
-              double corr = max(delta_e(e, n), delta_f(f, n));
+              double corr = std::max(delta_e(e, n), delta_f(f, n));
               for (k = 0; k < 2; k++) for (l = 0; (k ? (f < zone.nb_faces()) : (e < zone.nb_elem())) && l < 2; l++)
                   matrice(N * (k ? ne_tot + f : e) + n, N * (l ? ne_tot + f : e) + n) += (k == l ? 1 : -1) * corr;
             }

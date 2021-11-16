@@ -58,6 +58,6 @@ void Multiplicateur_diphasique_Lottes_Flinn::coefficient(const double *alpha, co
          a_m = alpha_min_, b_m = 1 - a_m, a_M = alpha_max_, b_M = 1 - a_M;
 
   coeff = 0;
-  coeff(n_l, 0) = a_l < b_m ? max(a_l - b_M, 0.) / (b_m * b_m) : 1. / (a_l * a_l);
-  if (n_g >= 0) coeff(n_g, 0) = min(max((a_g - a_m) / (a_M - a_m), 0.), 1.);
+  coeff(n_l, 0) = a_l < b_m ? std::max(a_l - b_M, 0.) / (b_m * b_m) : 1. / (a_l * a_l);
+  if (n_g >= 0) coeff(n_g, 0) = std::min(std::max((a_g - a_m) / (a_M - a_m), 0.), 1.);
 }

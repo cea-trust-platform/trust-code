@@ -108,7 +108,7 @@ void Op_Evanescence_Homogene_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, Do
       for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (n != k && (a_m = alpha(e, n)) < a_eps)
           {
             double val = is_m ? 0 : milc.has_saturation(n, k) ? milc.get_saturation(n, k).Tsat(p(e, m)) : inco(e, k); //valeur a laquelle on veut ramener inco(e, n)
-            coeff(e, n, 0) = (a_eps == a_eps_min ? (a_m < a_eps) : min(max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
+            coeff(e, n, 0) = (a_eps == a_eps_min ? (a_m < a_eps) : std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
             coeff(e, n, 1) = mat_diag(N * e + k, N * e + k) * coeff(e, n, 0);
             double flux = coeff(e, n, 0) * secmem(e, n) + coeff(e, n, 1) * (inco(e, n) - val);
             secmem(e, k) += (p_degen ? rho(!cR * e, k) : 1) * flux, secmem(e, n) -= (p_degen ? rho(!cR * e, n) : 1) * flux;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -121,7 +121,7 @@ void Perte_Charge_Singuliere_VDF_Face::contribuer_a_avec(const DoubleTab&, Matri
           else
           Ck = -0.5*K()/la_zone_VDF->dist_norm_axi(numfa);
 
-          //resu[numfa] += Ck*U*dabs(U)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+          //resu[numfa] += Ck*U*fabs(U)*volumes_entrelaces[numfa]*porosite_surf[numfa];
           */
       }
   else
@@ -137,8 +137,8 @@ void Perte_Charge_Singuliere_VDF_Face::contribuer_a_avec(const DoubleTab&, Matri
         else
           Ck = -0.5*K()/la_zone_VDF->dist_norm(numfa);
 
-        //resu[numfa] += Ck*Ud*dabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
-        matrice(numfa,numfa)-=Ck*porosite_surf[numfa]*dabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+        //resu[numfa] += Ck*Ud*fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+        matrice(numfa,numfa)-=Ck*porosite_surf[numfa]*fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
 
       }
 
@@ -168,7 +168,7 @@ DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter_(const DoubleTab& inco,Doub
         else
           Ck = -0.5*K()/la_zone_VDF->dist_norm_axi(numfa);
 
-        resu[numfa] += Ck*U*dabs(U)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+        resu[numfa] += Ck*U*fabs(U)*volumes_entrelaces[numfa]*porosite_surf[numfa];
       }
   else
     for (int i=0; i<nb_faces; i++)
@@ -183,7 +183,7 @@ DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter_(const DoubleTab& inco,Doub
         else
           Ck = -0.5*K()/la_zone_VDF->dist_norm(numfa);
 
-        resu[numfa] += Ck*U*dabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+        resu[numfa] += Ck*U*fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
 
       }
   return resu;

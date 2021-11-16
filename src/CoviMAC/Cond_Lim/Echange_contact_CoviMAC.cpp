@@ -118,7 +118,7 @@ void Echange_contact_CoviMAC::harmonic_points(DoubleTab& xh, DoubleTab& wh, Doub
 {
   int i, f, o_f, fb, o_fb, e, o_e, nf_tot = fvf->nb_faces_tot(), d, D = dimension, i_mono, n, m,
                                    N = diff->equation().inconnue().valeurs().line_size(),
-                                   oN = o_diff->equation().inconnue().valeurs().line_size(), M = max(N, oN);
+                                   oN = o_diff->equation().inconnue().valeurs().line_size(), M = std::max(N, oN);
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, fvf->zone_dis()), &o_zone = ref_cast(Zone_CoviMAC, o_fvf->zone_dis());
   const IntTab& f_e = zone.face_voisins(), &pe_ext = diff->pe_ext, &fe_d = fe_dist();
   const DoubleTab& xv = zone.xv(), &o_xv = o_zone.xv(), &xp = zone.xp(), &o_xp = o_zone.xp(), &nf = zone.face_normales(),
@@ -177,7 +177,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
   o_zone.init_stencils();
   int i_f, i, il, ic, j, k, l, f, o_f, fb, o_fb, e, o_e, e_s, f_s, f_sb, m, m_s, n, n_max, on_max, nw, infoo = 0;
   int d, D = dimension, ne_tot = zone.nb_elem_tot(), o_ne_tot = o_zone.nb_elem_tot();
-  int N = phif_w.dimension(1), oN = o_diff->equation().inconnue().valeurs().line_size(), M = max(N, oN);
+  int N = phif_w.dimension(1), oN = o_diff->equation().inconnue().valeurs().line_size(), M = std::max(N, oN);
   const IntTab& f_e = zone.face_voisins(), &o_f_e = o_zone.face_voisins(), &fe_d = fe_dist(), &pe_ext = diff->pe_ext, &o_pe_ext = o_diff->pe_ext;
   const DoubleTab& xv = zone.xv(), &xp = zone.xp(), &o_xp = o_zone.xp(), &nf = zone.face_normales(), &o_nf = o_zone.face_normales(),
                    &nu = diff->nu(), &invh = diff->invh(), &o_nu = o_diff->nu(), &o_invh = o_diff->invh(), &xh = diff->xh(), &o_xh = o_diff->xh(),
@@ -264,7 +264,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
 
               /* correction de interp (avec ecretage) */
               for (i = 0, j = 0; i < 2; i++) for (n = 0; n < (i ? oN : N); n++, j++) for (k = 0, il = 0; k < n_tf; k++)
-                    for (m = 0; m < (k > n_f ? oN : N); m++, il++) interp(i, n, k, m) += dabs(B(j, il)) > 1e-8 ? B(j, il) : 0;
+                    for (m = 0; m < (k > n_f ? oN : N); m++, il++) interp(i, n, k, m) += fabs(B(j, il)) > 1e-8 ? B(j, il) : 0;
             }
         }
       else for (n = 0; n < N; n++) /* sinon -> composante par composante */
@@ -294,7 +294,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
                 nw = -1, F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
                 W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
                 /* correction de interp (avec ecretage) */
-                for (i = 0; i < 2; i++) for (j = 0; j < nc; j++) interp(i, n, j, n) += dabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
+                for (i = 0; i < 2; i++) for (j = 0; j < nc; j++) interp(i, n, j, n) += fabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
               }
 
           }

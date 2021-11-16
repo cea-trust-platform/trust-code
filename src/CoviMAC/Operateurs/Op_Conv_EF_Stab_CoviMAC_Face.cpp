@@ -113,10 +113,10 @@ double Op_Conv_EF_Stab_CoviMAC_Face::calculer_dt_stab() const
     {
       for (vol = pe(e) * ve(e), flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
           {
-            flux(n) += pf(f) * fs(f) * max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
-            if (0 && fcl(f, 0) < 2) vol(n) = min(vol(n), pf(f) * vf(f) / mu_f(f, n, e != f_e(f, 0))); //prise en compte de la contribution aux faces
+            flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
+            if (0 && fcl(f, 0) < 2) vol(n) = std::min(vol(n), pf(f) * vf(f) / mu_f(f, n, e != f_e(f, 0))); //prise en compte de la contribution aux faces
           }
-      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = min(dt, vol(n) / flux(n));
+      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = std::min(dt, vol(n) / flux(n));
     }
 
   return Process::mp_min(dt);
@@ -150,7 +150,7 @@ void Op_Conv_EF_Stab_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const
                   if ((fc = zone.equiv(f, i, k)) >= 0) //equivalence : face -> face
                     for (n = 0; fcl(fc, 0) < 2 && n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * fc + m);
                   else if (f_e(f, 1) >= 0) for (d = 0; d < D; d++) //pas d'equivalence : elem -> face
-                      if(dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+                      if(fabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
                             stencil.append_line(N * fb + n, N * (nf_tot + D * eb + d) + m); //elem -> face
                 }
             for (d = 0; d < D; d++) for (n = 0; n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)  //elem->elem
@@ -218,7 +218,7 @@ void Op_Conv_EF_Stab_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                                 if (comp) (*mat)(N * fb + n, N * fb + m) -= fac;
                               }
                       }
-                  else for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) if (dabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) for (m = 0; m < N; m++) if (dfac(j, n, m))
+                  else for (j = 0; j < 2; j++) for (eb = f_e(f, j), d = 0; d < D; d++) if (fabs(nf(fb, d)) > 1e-6 * fs(fb)) for (n = 0; n < N; n++) for (m = 0; m < N; m++) if (dfac(j, n, m))
                                 {
                                   //pas d'equivalence : mu_f * n_f * operateur aux elements
                                   double fac = (i ? -1 : 1) * mu_f(fb, n, e != f_e(fb, 0)) * vf(fb) * dfac(j, n, m) / ve(e) * nf(fb, d) / fs(fb);

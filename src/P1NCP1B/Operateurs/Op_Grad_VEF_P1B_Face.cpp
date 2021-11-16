@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -265,7 +265,7 @@ modifier_grad_pour_Cl(DoubleTab& grad ) const
                         norm += face_normales(face,comp)*face_normales(face,comp);
                       }
                     // psc/=norm; // Fixed bug: Arithmetic exception
-                    if (dabs(norm)>=DMINFLOAT) psc/=norm;
+                    if (fabs(norm)>=DMINFLOAT) psc/=norm;
                     for (comp=0; comp<dimension; comp++)
                       grad(face,comp)-=psc*face_normales(face,comp);
                   }

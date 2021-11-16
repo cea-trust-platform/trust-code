@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -563,7 +563,7 @@ inline double Zone_VDF::dim_elem(int n1, int k) const
 // Description:
 inline double Zone_VDF::dim_face(int n1, int k) const
 {
-  int elem = max(face_voisins_(n1,0), face_voisins_(n1,1));
+  int elem = std::max(face_voisins_(n1,0), face_voisins_(n1,1));
   return dim_elem(elem, k);
 }
 
@@ -760,8 +760,8 @@ inline double Zone_VDF::dist_face_period(int fac1 , int fac2, int k) const
 {
   const Domaine& le_domaine = zone().domaine();
   const DoubleTab& coord_sommets = le_domaine.coord_sommets();
-  double dist= dabs(coord_sommets(face_sommets(fac1,1),k)-xv_(fac1,k));
-  dist += dabs(xv_(fac2,k) - coord_sommets(face_sommets(fac2,0),k));
+  double dist= fabs(coord_sommets(face_sommets(fac1,1),k)-xv_(fac1,k));
+  dist += fabs(xv_(fac2,k) - coord_sommets(face_sommets(fac2,0),k));
   return dist;
 
 }

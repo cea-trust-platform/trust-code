@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -427,7 +427,7 @@ void Sonde_Int::ouvrir_fichier()
             }
           zn=(p(1,1)-p(0,1))*(p(nbre_points1,0)-p(0,0))
              -(p(1,0)-p(0,0))*(p(nbre_points1,1)-p(0,1));
-          norme=dabs(xn)+dabs(yn)+dabs(zn);
+          norme=fabs(xn)+fabs(yn)+fabs(zn);
           xn/=norme;
           yn/=norme;
           zn/=norme;
@@ -584,11 +584,11 @@ void Sonde_Int::postraiter(double un_temps)
                 for(k=0; k<n2; k++)
                   {
 #ifdef INT_is_64_
-                    val_max = max(labs(valeurs(i,k)),labs(valeurs_pe(i,k)));
+                    val_max = std::max(labs(valeurs(i,k)),labs(valeurs_pe(i,k)));
                     if(val_max==(labs(valeurs_pe(i,k))))
                       valeurs(i,k)=valeurs_pe(i,k);
 #else
-                    val_max = max(abs(valeurs(i,k)),abs(valeurs_pe(i,k)));
+                    val_max = std::max(abs(valeurs(i,k)),abs(valeurs_pe(i,k)));
                     if(val_max==(abs(valeurs_pe(i,k))))
                       valeurs(i,k)=valeurs_pe(i,k);
 #endif
@@ -672,11 +672,11 @@ void Sonde_Int::postraiter(double un_temps)
               for(int i=0; i<valeurs.dimension(0); i++)
                 {
 #ifdef INT_is_64_
-                  val_max = max(labs(valeurs(i)),labs(valeurs_pe(i)));
+                  val_max = std::max(labs(valeurs(i)),labs(valeurs_pe(i)));
                   if(val_max==(labs(valeurs_pe(i))))
                     valeurs(i)=valeurs_pe(i);
 #else
-                  val_max = max(abs(valeurs(i)),abs(valeurs_pe(i)));
+                  val_max = std::max(abs(valeurs(i)),abs(valeurs_pe(i)));
                   if(val_max==(abs(valeurs_pe(i))))
                     valeurs(i)=valeurs_pe(i);
 #endif

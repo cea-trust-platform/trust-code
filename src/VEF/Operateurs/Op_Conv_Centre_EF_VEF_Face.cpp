@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -495,12 +495,12 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
                     if (f_int>=0.)
                       {
                         //fluent_[num2] += f_int ;
-                        fluent_[num20] = ( fluent_[num20] > dabs(f_int))? fluent_[num20] : dabs(f_int);
+                        fluent_[num20] = ( fluent_[num20] > fabs(f_int))? fluent_[num20] : fabs(f_int);
                       }
                     else
                       {
                         //fluent_[num1] -= f_int ;
-                        fluent_[num10] = ( fluent_[num10] > dabs(f_int))? fluent_[num10] : dabs(f_int);
+                        fluent_[num10] = ( fluent_[num10] > fabs(f_int))? fluent_[num10] : fabs(f_int);
                       }
 
 
@@ -547,7 +547,7 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
                             resu(num20, comp0) += flux;
                             // Pour la calcul du pas de temps de stabilite
                             // SIGNE????????????
-                            //                                  f_int = dabs(flux/transporte(num1,comp));
+                            //                                  f_int = fabs(flux/transporte(num1,comp));
                             f_int = 3.*(psc[nu1]+psc[nu2]);
                             f_int -= (psc[autre_num_face_loc(0)]+psc[autre_num_face_loc(1)]);
                             f_int /= 4.;

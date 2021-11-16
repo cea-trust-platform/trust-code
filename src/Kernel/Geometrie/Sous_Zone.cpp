@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -512,12 +512,12 @@ Entree& Sous_Zone::readOn(Entree& is)
               zmax=zmin;
               for(le_som=1; le_som<nbsom && ((s = lazone.sommet_elem(le_poly,le_som)) >= 0); le_som++)
                 {
-                  xmin=min(xmin,dom.coord(s, 0));
-                  ymin=min(ymin,dom.coord(s, 1));
-                  zmin=min(zmin,dom.coord(s, 2));
-                  xmax=max(xmax,dom.coord(s, 0));
-                  ymax=max(ymax,dom.coord(s, 1));
-                  zmax=max(zmax,dom.coord(s, 2));
+                  xmin=std::min(xmin,dom.coord(s, 0));
+                  ymin=std::min(ymin,dom.coord(s, 1));
+                  zmin=std::min(zmin,dom.coord(s, 2));
+                  xmax=std::max(xmax,dom.coord(s, 0));
+                  ymax=std::max(ymax,dom.coord(s, 1));
+                  zmax=std::max(zmax,dom.coord(s, 2));
                 }
               x/=((double)(nb_som_poly));
               y/=((double)(nb_som_poly));
@@ -601,10 +601,10 @@ Entree& Sous_Zone::readOn(Entree& is)
               ymax=ymin;//zmax=zmin;
               for(le_som=1; le_som<nbsom; le_som++)
                 {
-                  xmin=min(xmin,dom.coord(lazone.sommet_elem(le_poly,le_som),0));
-                  ymin=min(ymin,dom.coord(lazone.sommet_elem(le_poly,le_som),1));
-                  xmax=max(xmax,dom.coord(lazone.sommet_elem(le_poly,le_som),0));
-                  ymax=max(ymax,dom.coord(lazone.sommet_elem(le_poly,le_som),1));
+                  xmin=std::min(xmin,dom.coord(lazone.sommet_elem(le_poly,le_som),0));
+                  ymin=std::min(ymin,dom.coord(lazone.sommet_elem(le_poly,le_som),1));
+                  xmax=std::max(xmax,dom.coord(lazone.sommet_elem(le_poly,le_som),0));
+                  ymax=std::max(ymax,dom.coord(lazone.sommet_elem(le_poly,le_som),1));
                 }
               x/=((double)(nbsom));
               y/=((double)(nbsom));

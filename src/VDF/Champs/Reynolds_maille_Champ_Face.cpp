@@ -77,7 +77,7 @@ void Reynolds_maille_Champ_Face::mettre_a_jour(double tps)
       // Calcul de la taille de maille entourant la face
       double taille_maille = zone_vdf().volumes_entrelaces()(face) / zone_vdf().face_surfaces(face);
       // Calcul du Reynolds de maille
-      re(face) = dabs(vitesse_->valeurs()(face)) * taille_maille / nu_face; // Reynolds_maille = |Uface| * taille_maille / nu_face
+      re(face) = fabs(vitesse_->valeurs()(face)) * taille_maille / nu_face; // Reynolds_maille = |Uface| * taille_maille / nu_face
     }
 
   changer_temps(tps);

@@ -67,7 +67,7 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem() const
           moy += 1. / (hd * hd);
         }
       const double alpha_local = (alpha_(elem) + alpha_t(elem)) / rcp * moy;
-      coef = max(coef, alpha_local);
+      coef = std::max(coef, alpha_local);
     }
 
   coef = Process::mp_max(coef);
@@ -101,7 +101,7 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_axi() const
           h_x = zone_VDF.dist_face_axi(numfa[0],numfa[2],0);
           h_y = zone_VDF.dist_face_axi(numfa[1],numfa[3],1);
           alpha_local = (alpha_(elem)+alpha_t(elem)) *(1/(h_x*h_x) + 1/(h_y*h_y));
-          coef = max(coef,alpha_local);
+          coef = std::max(coef,alpha_local);
         }
     }
   else if (dimension == 3)
@@ -114,7 +114,7 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_axi() const
           h_y = zone_VDF.dist_face_axi(numfa[1],numfa[4],1);
           h_z = zone_VDF.dist_face_axi(numfa[2],numfa[5],2);
           alpha_local = (alpha_(elem)+alpha_t(elem)) *(1/(h_x*h_x) + 1/(h_y*h_y) + 1/(h_z*h_z));
-          coef = max(coef,alpha_local);
+          coef = std::max(coef,alpha_local);
         }
     }
 
@@ -139,7 +139,7 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_var_axi() const
       double invh = 0.;
       for (int d = 0; d < D; d++) invh += 1. / (h(d) * h(d));
       const double alpha_local = (alpha_(e) + alpha_t(e)) * invh;
-      coef = max(coef, alpha_local);
+      coef = std::max(coef, alpha_local);
     }
 
   dt_stab = 1. / (2. * (coef + DMINFLOAT));

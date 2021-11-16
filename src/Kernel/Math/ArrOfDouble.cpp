@@ -827,7 +827,7 @@ double max_array(const ArrOfDouble& dx)
 
 static inline double scalar_abs(double x)
 {
-  return dabs(x);
+  return fabs(x);
 }
 
 // Description:

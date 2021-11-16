@@ -81,7 +81,7 @@ void Op_Diff_CoviMAC_base::completer()
 {
   Operateur_base::completer();
   const Equation_base& eq = equation();
-  int N = eq.inconnue().valeurs().line_size(), D = dimension, N_nu = max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
+  int N = eq.inconnue().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
   if (N_nu == N) nu_.resize(0, N); //isotrope
   else if (N_nu == N * D) nu_.resize(0, N, D); //diagonal
   else if (N_nu == N * D * D) nu_.resize(0, N, D, D); //complet
@@ -111,7 +111,7 @@ void Op_Diff_CoviMAC_base::init_op_ext() const
         const Echange_contact_CoviMAC& cl = ref_cast(Echange_contact_CoviMAC, cls[i].valeur());
         const Op_Diff_CoviMAC_base *o_diff = &cl.o_diff.valeur();
         if (std::find(op_ext.begin(), op_ext.end(), o_diff) == op_ext.end()) op_ext.push_back(o_diff);
-        M = max(M, o_diff->equation().inconnue().valeurs().line_size()); //M -> nb de composantes maximal
+        M = std::max(M, o_diff->equation().inconnue().valeurs().line_size()); //M -> nb de composantes maximal
         const Front_VF& fvf = ref_cast(Front_VF, cls[i].frontiere_dis());
         const IntTab& fe_dist = cl.fe_dist();
         for (j = 0, idx = std::find(op_ext.begin(), op_ext.end(), o_diff) - op_ext.begin(); j < fvf.nb_faces_tot(); j++, n_mono++)
@@ -313,7 +313,7 @@ void Op_Diff_CoviMAC_base::update_nu_invh() const
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
   const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0, i = 0; n < N; n++) for (m = 0; m < mult; m++, i++)
-        nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? max((*alp)(e, n), 1e-8) : 1);
+        nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? std::max((*alp)(e, n), 1e-8) : 1);
 
   /* modification par une classe fille */
   modifier_nu(nu_);
@@ -346,7 +346,7 @@ void Op_Diff_CoviMAC_base::update_nu_invh() const
               flux.flux_chaleur(N, zone.dist_norm_bord(f), zone.dist_norm_bord(f), &alpha(e, 0), &temp(e, 0), press(e, 0), nv.addr(), 0,
                                 &lambda(!c_lambda * e, 0), &mu(!c_mu * e, 0), &rho(!c_rho * e, 0), &Cp(!c_Cp * e, 0),
                                 NULL, NULL, NULL, NULL, NULL, &invh_(fb, 0)); //stocke le coefficient d'echange dans invh_
-              for (n = 0; n < N; n++) invh_(fb, n) = 1. / max(invh_(fb, n), 1e-10); //pour eviter invh_ = +inf
+              for (n = 0; n < N; n++) invh_(fb, n) = 1. / std::max(invh_(fb, n), 1e-10); //pour eviter invh_ = +inf
             }
         }
     }

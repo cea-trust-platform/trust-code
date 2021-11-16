@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -262,7 +262,7 @@ int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
           n0 = face_surfaces(face)*porosite_surf(face);
           for (int r = 0; r < dimension; r++)
             {
-              flux_bords_(face,r) = dabs(zpolymac.face_normales(face, r) / face_surfaces(face)) * (pression_P0(elem0))*n0;
+              flux_bords_(face,r) = fabs(zpolymac.face_normales(face, r) / face_surfaces(face)) * (pression_P0(elem0))*n0;
               tab_flux_bords(0, n_bord, r) += flux_bords_(face,r);
             }
 
@@ -316,7 +316,7 @@ int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
               Flux_grad.add_col(tab_flux_bords(0, n_bord, r));
               if (impr_sum) Flux_grad_sum.add_col(tab_flux_bords(1, n_bord, r));
             }
-          if (impr_mom) for (int r = (dimension < 3 ? 2 : 0); r < max(dimension, 3); r++)
+          if (impr_mom) for (int r = (dimension < 3 ? 2 : 0); r < std::max(dimension, 3); r++)
               Flux_grad_moment.add_col(tab_flux_bords(2, n_bord, r));
         }
       Flux_grad << finl;

@@ -323,7 +323,7 @@ void DoubleVect::lit(Entree& is, int resize_and_read)
       // Double tmp;
       //for (int i=0;i<sz;i++) is >> tmp;
       // So we bufferize:
-      int buffer_size = min(sz,128000);
+      int buffer_size = std::min(sz,128000);
       ArrOfDouble tmp(buffer_size);
       while(sz>buffer_size)
         {

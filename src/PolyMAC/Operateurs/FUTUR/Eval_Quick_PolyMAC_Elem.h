@@ -615,14 +615,14 @@ inline double Fram(const double& s1,const double& s2,
                    const double& s3,const double& s4)
 {
   double smin0 = dmin(s4,s2);
-  double smax0 = dmax(s4,s2);
+  double smax0 = std::max(s4,s2);
   double smin1 = dmin(s3,s1);
-  double smax1 = dmax(s3,s1);
+  double smax1 = std::max(s3,s1);
   /* double sr0 = (smax0-smin0==0 ? 0 : (s3-smin0)/(smax0-smin0)); */
   /* double sr1 = (smax1-smin1==0 ? 0 : (s2-smin1)/(smax1-smin1)); */
-  double sr0 = (dabs(smax0-smin0)<DMINFLOAT ? 0. : (s3-smin0)/(smax0-smin0));
-  double sr1 = (dabs(smax1-smin1)<DMINFLOAT ? 0. : (s2-smin1)/(smax1-smin1));
-  double fr = 2.*dmax(dabs(sr0-0.5),dabs(sr1-0.5));
+  double sr0 = (fabs(smax0-smin0)<DMINFLOAT ? 0. : (s3-smin0)/(smax0-smin0));
+  double sr1 = (fabs(smax1-smin1)<DMINFLOAT ? 0. : (s2-smin1)/(smax1-smin1));
+  double fr = 2.*std::max(fabs(sr0-0.5),fabs(sr1-0.5));
   fr *= fr;
   fr *= fr;
   return dmin(fr,1.0);

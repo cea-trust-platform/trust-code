@@ -1219,8 +1219,8 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_vitesse_rho_mu(const
 
       fic << Y_tot(i) << "    "  ;
       fic << u << "    " << v << "    " << wl << "    " ;
-      // Pour eviter NAN, on prend le dmax(,0):
-      fic << sqrt(dmax(0,u2)) << "    " << sqrt(dmax(v2,0)) << "    " << sqrt(dmax(w2,0)) << "    "  ;
+      // Pour eviter NAN, on prend le std::max(,0):
+      fic << sqrt(std::max(0.,u2)) << "    " << sqrt(std::max(v2,0.)) << "    " << sqrt(std::max(w2,0.)) << "    "  ;
       fic << -uv << "    " << -uw << "    " << -vw  << "    " ;
       fic << rho << "    " << mu << "    " ;
       fic << finl;
@@ -1286,8 +1286,8 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_Temp(const DoubleTab
 
 
       fic << Y_tot(i) << "    "  ;
-      // Pour eviter NAN, on prend le dmax(,0):
-      fic << T << "    "  <<sqrt(dmax(T2,0))<<" ";
+      // Pour eviter NAN, on prend le std::max(,0):
+      fic << T << "    "  <<sqrt(std::max(T2,0.))<<" ";
       fic << -uT << "    " << -vT  << "    " << -wT  << "    ";
       fic << finl;
     }
@@ -1342,8 +1342,8 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_vitesse_rho_mu_old(c
 
       fic << Y_tot(i) << "    "  ;
       fic << u << "    " << v << "    " << wl << "    " ;
-      // Pour eviter NAN, on prend le dmax(,0):
-      fic << sqrt(dmax(0,u2-u*u)) << "    " << sqrt(dmax(v2-v*v,0)) << "    " << sqrt(dmax(w2-wl*wl,0)) << "    "  ;
+      // Pour eviter NAN, on prend le std::max(,0):
+      fic << sqrt(std::max(0.,u2-u*u)) << "    " << sqrt(std::max(v2-v*v,0.)) << "    " << sqrt(std::max(w2-wl*wl,0.)) << "    "  ;
       fic << u*v-uv << "    " << u*wl-uw << "    " << v*wl-vw  << "    " ;
 
 
@@ -1390,8 +1390,8 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_Temp_old(const Doubl
 
 
       fic << Y_tot(i) << "    "  ;
-      // Pour eviter NAN, on prend le dmax(,0):
-      fic << T << "    " << sqrt(dmax(T2-T*T,0)) << "    "  ;
+      // Pour eviter NAN, on prend le std::max(,0):
+      fic << T << "    " << sqrt(std::max(T2-T*T,0.)) << "    "  ;
       fic << u*T-uT << "    " << v*T-vT << "    " << wl*T-wT << "    ";
 
       fic << finl;

@@ -2307,7 +2307,7 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
           for (int i = 0; i < mdc.nb_parts(); i++)
             {
               const MD_Vector_base& mdb = mdc.get_desc_part(i).valeur();
-              int mult2 = mult * max(mdc.get_shape(i), 1), nb_seq = mdb.nb_items_seq_local() * mult2;
+              int mult2 = mult * std::max(mdc.get_shape(i), 1), nb_seq = mdb.nb_items_seq_local() * mult2;
               if (sub_type(MD_Vector_composite, mdb)) //un autre MD_Vector_Composite! on le met dans la liste
                 mdc_list.push_back(std::make_tuple(&ref_cast(MD_Vector_composite, mdb), idx, mult2,
                                                    prefix + std::to_string((long long) i)));

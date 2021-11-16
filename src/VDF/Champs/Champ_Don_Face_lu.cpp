@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ int meme_point(const ArrOfInt& x, const DoubleTab& tab, int rang_tab)
   assert(tab.dimension(1) == dime);
   int k;
   for (k=0; k<dime; k++)
-    if (dabs(x(k)-tab(rang_tab,k)) >= 1.e-12)
+    if (fabs(x(k)-tab(rang_tab,k)) >= 1.e-12)
       break;
   return (k == dime);
 }

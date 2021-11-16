@@ -80,25 +80,25 @@ private:
 // TODO : FIXME : should use std::min ... :-)
 inline double Fram4(const double& s1,const double& s2, const double& s3,const double& s4)
 {
-  double smin0 = dmin(s4,s2), smax0 = dmax(s4,s2), smin1 = dmin(s3,s1), smax1 = dmax(s3,s1);
+  double smin0 = std::min(s4,s2), smax0 = std::max(s4,s2), smin1 = std::min(s3,s1), smax1 = std::max(s3,s1);
   double sr0 = (s3-smin0)/(smax0-smin0+DMINFLOAT), sr1 = (s2-smin1)/(smax1-smin1+DMINFLOAT);
-  double fr = 2.*dmax(dabs(sr0-0.5),dabs(sr1-0.5));
+  double fr = 2.*std::max(std::fabs(sr0-0.5),std::fabs(sr1-0.5));
   fr *= fr;
   fr *= fr;
-  return dmin(fr,1.0);
+  return std::min(fr,1.0);
 }
 
 // Fram pour QUICK
 // TODO : FIXME : should use std::min ... :-)
 inline double Fram(const double& s1,const double& s2, const double& s3,const double& s4)
 {
-  double smin0 = dmin(s4,s2), smax0 = dmax(s4,s2), smin1 = dmin(s3,s1), smax1 = dmax(s3,s1);
-  double sr0 = (dabs(smax0-smin0)<DMINFLOAT ? 0. : (s3-smin0)/(smax0-smin0));
-  double sr1 = (dabs(smax1-smin1)<DMINFLOAT ? 0. : (s2-smin1)/(smax1-smin1));
-  double fr = 2.*dmax(dabs(sr0-0.5),dabs(sr1-0.5));
+  double smin0 = std::min(s4,s2), smax0 = std::max(s4,s2), smin1 = std::min(s3,s1), smax1 = std::max(s3,s1);
+  double sr0 = (std::fabs(smax0-smin0)<DMINFLOAT ? 0. : (s3-smin0)/(smax0-smin0));
+  double sr1 = (std::fabs(smax1-smin1)<DMINFLOAT ? 0. : (s2-smin1)/(smax1-smin1));
+  double fr = 2.*std::max(std::fabs(sr0-0.5),std::fabs(sr1-0.5));
   fr *= fr;
   fr *= fr;
-  return dmin(fr,1.0);
+  return std::min(fr,1.0);
 }
 
 // Fonction de calcul de cf(limiteur de pente) dans le schema Quick-sharp

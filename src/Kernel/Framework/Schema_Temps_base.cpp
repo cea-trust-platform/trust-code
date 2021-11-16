@@ -110,9 +110,9 @@ double Schema_Temps_base::computeTimeStep(bool& is_stop) const
   double dt = dt_stab_;
   if (!corriger_dt_calcule(dt)) // Change le contenu de dt
     is_stop=true;
-  dt = min(dt, dt_failed_ / sqrt(2)); //pour provoquer une baisse de dt en cas d'echec a la resolution precedente
+  dt = std::min(dt, dt_failed_ / sqrt(2)); //pour provoquer une baisse de dt en cas d'echec a la resolution precedente
   if (temps_courant_ > temps_precedent_)
-    dt = min(dt, (temps_courant_ - temps_precedent_) * dt_gf_); //pour ne pas remonter dt trop vite (comme facsec)
+    dt = std::min(dt, (temps_courant_ - temps_precedent_) * dt_gf_); //pour ne pas remonter dt trop vite (comme facsec)
 
   // Mise a jour immediate de l'attribut dt_ afin que pas_de_temps()
   // soit a jour tout le temps (en particulier au moment du postraitement)
@@ -241,7 +241,7 @@ void Schema_Temps_base::validateTimeStep()
           //double cpu_per_timestep           = statistiques().last_time(temps_total_execution_counter_) / nb_pas_dt();
           double nb_pas_selon_tmax          = (temps_max()-temps_courant()) / pas_de_temps();
           double nb_pas_selon_nb_pas_dt_max = nb_pas_dt_max() - nb_pas_dt();
-          double nb_pas_avant_fin= dmin(nb_pas_selon_tmax,nb_pas_selon_nb_pas_dt_max);
+          double nb_pas_avant_fin= std::min(nb_pas_selon_tmax,nb_pas_selon_nb_pas_dt_max);
           //double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
           double dpercent=(1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()));    // marche meme si c'est ltemps max qui limite
           // si la pente est >0 on diverge ....
@@ -251,7 +251,7 @@ void Schema_Temps_base::validateTimeStep()
 
               //Cerr<<distance<<" DDDDDD"<<finl;
               double dpercent2=temps_courant()/(temps_courant()+distance);
-              dpercent=dmax(dpercent,dpercent2);
+              dpercent=std::max(dpercent,dpercent2);
             }
           int percent=int(dpercent*100);
 
@@ -938,7 +938,7 @@ bool Schema_Temps_base::corriger_dt_calcule(double& dt_calc) const
       imprimer_ram_totale();
     }
   // Compute the time step dt as the minimal value between dt_max_ and stability time step (dt_stab) * security factor (facsec)
-  double dt = min (dt_max_, dt_stab_ * facsec_);
+  double dt = std::min (dt_max_, dt_stab_ * facsec_);
   if ((dt - dt_min_)/(dt+DMINFLOAT) < -1.e-6)
     {
       // Calculation stops if time step dt is less than dt_min
@@ -1109,7 +1109,7 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
           for (int i=0; i<size; i++)
             residu_initial_equation(i) = residu_equation(i);
           // On ne prend plus le max car celui ci est parfois grand au premier pas de temps:
-          // residu_initial_equation(i) = max(residu_initial_equation(i), residu_equation(i));
+          // residu_initial_equation(i) = std::max(residu_initial_equation(i), residu_equation(i));
         }
       // On normalise residu_equation par residu_initial_equation
       for (int i=0; i<size; i++)
@@ -1118,7 +1118,7 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
     }
   //double equation_residual = mp_max_abs_vect(residu_equation);
   double equation_residual = local_max_abs_vect(residu_equation);
-  residu_ = max(residu_,equation_residual);
+  residu_ = std::max(residu_,equation_residual);
   set_stationnaire_atteint() *= ( equation_residual < seuil_statio_ );
 }
 
@@ -1129,9 +1129,9 @@ void Schema_Temps_base::imprimer_temps_courant(SFichier& os) const
   int precision_actuelle=os.get_precision();
   int precision_temps;
   if (!est_egal(temps_courant(),0.))
-    precision_temps=max( precision_actuelle, (int)(2+log10(1/dabs(pas_de_temps()))+(int)(log10(dabs(temps_courant())))) );
+    precision_temps=std::max( precision_actuelle, (int)(2+log10(1/fabs(pas_de_temps()))+(int)(log10(fabs(temps_courant())))) );
   else
-    precision_temps=max( precision_actuelle, (int)(2+log10(1/dabs(pas_de_temps()))) );
+    precision_temps=std::max( precision_actuelle, (int)(2+log10(1/fabs(pas_de_temps()))) );
   os.precision(precision_temps);
   os << temps_courant();
   os.precision(precision_actuelle);

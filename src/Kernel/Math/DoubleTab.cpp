@@ -651,7 +651,7 @@ void local_max_abs_tab(const DoubleTab& tableau, ArrOfDouble& max_colonne)
           int k = i * lsize;
           for (int j = 0; j < lsize; j++)
             {
-              const double x = dabs(vect[k++]);
+              const double x = fabs(vect[k++]);
               max_colonne[j] = (x > max_colonne[j]) ? x : max_colonne[j];
             }
         }

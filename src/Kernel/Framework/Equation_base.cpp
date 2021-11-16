@@ -1635,7 +1635,7 @@ double Equation_base::calculer_pas_de_temps() const
   // On fait le test apres les 10 premiers pas de temps en cas de demarrage avec vitesse nulle
   int nw=100;
   if (le_schema_en_temps->nb_pas_dt()>10 && le_schema_en_temps->nb_pas_dt()<nw && le_schema_en_temps->limpr())
-    if (nb_op>1 && dt_op_bak[0]<0.01*min(le_schema_en_temps->pas_temps_max(),dt_op_bak[1]) && sub_type(Schema_Euler_explicite,le_schema_en_temps.valeur()) && !le_schema_en_temps->diffusion_implicite())
+    if (nb_op>1 && dt_op_bak[0]<0.01*std::min(le_schema_en_temps->pas_temps_max(),dt_op_bak[1]) && sub_type(Schema_Euler_explicite,le_schema_en_temps.valeur()) && !le_schema_en_temps->diffusion_implicite())
       {
         Cerr << finl << "**** Advice (printed only on the first " << nw << " time steps) ****" << finl;
         Cerr << "You could use diffusion_implicite option into the Euler scheme to increase the stability time step of the " << this->que_suis_je() << " equation by impliciting the diffusive operator." << finl;

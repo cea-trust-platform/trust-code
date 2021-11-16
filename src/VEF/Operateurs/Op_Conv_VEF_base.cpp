@@ -342,7 +342,7 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
               int face_associee = le_bord.num_face(ind_face_associee);
               if (!est_egal(dt_face(face),dt_face(face_associee),1.e-8))
                 {
-                  dt_face(face) = min(dt_face(face),dt_face(face_associee));
+                  dt_face(face) = std::min(dt_face(face),dt_face(face_associee));
                 }
             }
         }

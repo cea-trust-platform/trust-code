@@ -234,11 +234,11 @@ int gmres_local( const Matrice_Morse& A, const DoubleVect& b,DoubleVect& x1,doub
 
   // A present dans le jdd
   double epsGMRES=1.e-10*0;
-  int nkr=max(10,nb_ligne_tot/2);                         // dimension de l'espace de Krylov
+  int nkr=std::max(10,nb_ligne_tot/2);                         // dimension de l'espace de Krylov
   //nkr=10;
   nkr=dim_espace_Krilov;
-  int nit1=max(20,nb_ligne_tot);
-  int nit=min(nb_it_max,nit1);
+  int nit1=std::max(20,nb_ligne_tot);
+  int nit=std::min(nb_it_max,nit1);
   double rec_min = seuil;
   double rec_max = 0.1  ;
   double res2_old=-1;

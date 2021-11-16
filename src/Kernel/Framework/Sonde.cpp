@@ -1183,7 +1183,7 @@ void Sonde::ouvrir_fichier()
                 }
               zn=(p(p1,1)-p(0,1))*(p(p_nbre_points2,0)-p(0,0))
                  -(p(p1,0)-p(0,0))*(p(p_nbre_points2,1)-p(0,1));
-              norme=dabs(xn)+dabs(yn)+dabs(zn);
+              norme=fabs(xn)+fabs(yn)+fabs(zn);
               xn/=norme;
               yn/=norme;
               zn/=norme;
@@ -1379,8 +1379,8 @@ void Sonde::postraiter()
                 for(int n = 0; n < N; n++)
                   {
                     valeurs(participant[p][i], n)=valeurs_pe(i, n);
-                    //  val_max = max(dabs(valeurs(i,k)),dabs(valeurs_pe(i,k)));
-                    //                     if(val_max==(dabs(valeurs_pe(i,k))))
+                    //  val_max = std::max(fabs(valeurs(i,k)),fabs(valeurs_pe(i,k)));
+                    //                     if(val_max==(fabs(valeurs_pe(i,k))))
                     //                       valeurs(i,k)=valeurs_pe(i,k);
                   }
             }

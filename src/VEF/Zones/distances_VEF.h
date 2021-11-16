@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,13 +56,13 @@ double som_pscal(const int , const int , const int , const int , const Zone_VEF&
 // Fonctions inlinees pour optimisation
 inline double vitesse_tangentielle(const double& v0,const double& v1,const double& r0,const double& r1)
 {
-  // On prend dabs car mathematiquement la valeur est >=0
-  return sqrt(dabs(carre(v0)+carre(v1)-carre(v0*r0+v1*r1)));
+  // On prend fabs car mathematiquement la valeur est >=0
+  return sqrt(fabs(carre(v0)+carre(v1)-carre(v0*r0+v1*r1)));
 }
 inline double vitesse_tangentielle(const double& v0,const double& v1,const double& v2,const double& r0,const double& r1,const double& r2)
 {
-  // On prend dabs car mathematiquement la valeur est >=0
-  return sqrt(dabs(carre(v0)+carre(v1)+carre(v2)-carre(v0*r0+v1*r1+v2*r2)));
+  // On prend fabs car mathematiquement la valeur est >=0
+  return sqrt(fabs(carre(v0)+carre(v1)+carre(v2)-carre(v0*r0+v1*r1+v2*r2)));
 }
 
 inline void calcule_r0r1(const DoubleTab& face_normale, int& fac, double& r0, double& r1)
@@ -101,12 +101,12 @@ inline double distance_face(int fac,int fac1,const Zone_VEF& zone)
       double z0=xv(fac,2);
       double z1=xv(fac1,2);
       calcule_r0r1r2(face_normale,fac,r0,r1,r2);
-      return dabs(r0*(x1-x0)+r1*(y1-y0)+r2*(z1-z0));
+      return fabs(r0*(x1-x0)+r1*(y1-y0)+r2*(z1-z0));
     }
   else
     {
       calcule_r0r1(face_normale,fac,r0,r1);
-      return dabs(r0*(x1-x0)+r1*(y1-y0));
+      return fabs(r0*(x1-x0)+r1*(y1-y0));
     }
 }
 #endif

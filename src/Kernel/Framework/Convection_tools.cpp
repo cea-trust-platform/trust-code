@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@
 double minmod(double grad1, double grad2)
 {
   double gradlim=0.;
-  if(grad1*grad2>0.) (dabs(grad1)<dabs(grad2)) ? gradlim=grad1 : gradlim=grad2 ;
+  if(grad1*grad2>0.) (fabs(grad1)<fabs(grad2)) ? gradlim=grad1 : gradlim=grad2 ;
   return gradlim;
 }
 
@@ -60,8 +60,8 @@ double chakravarthy(double grad1, double grad2)
   double gradlim=0.;
   if ((grad1*grad2)>0)
     {
-      gradlim=dmin(grad1/grad2,1.8); // 1<<beta<<2
-      gradlim=dmax(gradlim,0.);
+      gradlim=std::min(grad1/grad2,1.8); // 1<<beta<<2
+      gradlim=std::max(gradlim,0.);
       gradlim*=grad2;
     }
   return gradlim;
@@ -78,10 +78,10 @@ double superbee(double grad1, double grad2)
   if ((grad1*grad2)>0)
     {
       double gradlim1,gradlim2;
-      gradlim1=dmin(2*(grad1/grad2),1);
-      gradlim2=dmin(grad1/grad2,2);
-      gradlim=dmax(gradlim1,gradlim2);
-      gradlim=dmax(gradlim,0.);
+      gradlim1=std::min(2*(grad1/grad2),1.);
+      gradlim2=std::min(grad1/grad2,2.);
+      gradlim=std::max(gradlim1,gradlim2);
+      gradlim=std::max(gradlim,0.);
       gradlim*=grad2;
     }
   return gradlim;

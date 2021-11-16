@@ -50,7 +50,7 @@ int Terme_Source_Constituant::completer(const Champ_Inc_base& inco)
 {
   colw_ = -1;
   for (int i = 0; i < inco.nb_comp(); ++i)
-    colw_ = max(colw_, inco.noms_compo()[i].longueur());
+    colw_ = std::max(colw_, inco.noms_compo()[i].longueur());
   return colw_;
 }
 
@@ -68,7 +68,7 @@ void Terme_Source_Constituant::ouvrir_fichier(const Equation_base& eq, const Nom
   nomfichier+=".out";
 
   // On cree le fichier a la premiere impression avec l'en tete
-  const int wcol = max(colw_, sch.wcol());
+  const int wcol = std::max(colw_, sch.wcol());
   os.set_col_width(wcol);
   if (sch.nb_impr()==1 && !pb.reprise_effectuee())
     {

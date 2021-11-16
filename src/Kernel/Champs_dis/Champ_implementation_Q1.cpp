@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -160,7 +160,7 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
               calcul_plan_hexa(coeff_plan, d, 0, cell3D, nodes, 0);
               double A = d;
               for (int i = 0; i < Objet_U::dimension; i++) A += coeff_plan[i] * position(i);
-              if (dabs(A) > dabs(d) * 1e-5)
+              if (fabs(A) > fabs(d) * 1e-5)
                 {
                   Cerr << "Error point not in the plane " << finl;
                   Process::exit();

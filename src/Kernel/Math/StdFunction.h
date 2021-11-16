@@ -240,7 +240,7 @@ class Abs : public StdFunction
 public:
   double eval(double x)
   {
-    return dabs(x);
+    return fabs(x);
   }
 };
 

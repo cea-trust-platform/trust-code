@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,7 +73,7 @@ void Sch_CN_EX_iteratif::mettre_a_jour_dt_stab()
       const Equation_base& eqn=prob.equation(i);
       if (sub_type(Navier_Stokes_std,eqn))
         {
-          dt_stab_=min(dt_stab_,eqn.calculer_pas_de_temps());
+          dt_stab_=std::min(dt_stab_,eqn.calculer_pas_de_temps());
           break; // Max une equation de Navier Stokes par probleme
         }
     }
@@ -301,5 +301,5 @@ void Sch_CN_EX_iteratif::ajuster_facsec(type_convergence cv)
     default:
       break;
     }
-  facsec_=min(facsec_,facsec_max);
+  facsec_=std::min(facsec_,facsec_max);
 }

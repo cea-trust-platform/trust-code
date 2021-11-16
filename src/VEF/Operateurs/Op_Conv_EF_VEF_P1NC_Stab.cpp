@@ -543,7 +543,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent(DoubleVect& fluent_) const
       psc=0.;
       for (int i=0; i<dimension; i++)
         psc+=tab_vitesse(num_face,i)*face_normales(num_face,i);
-      fluent_(num_face)=dabs(psc);
+      fluent_(num_face)=fabs(psc);
     }
 }
 
@@ -910,8 +910,8 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& Kij, const Doub
                       // if (delta>=0.) R = (P_plus(dim)==0.) ? 0. : Q_plus(dim)/(P_plus(dim)+DMINFLOAT);
                       // else R = (P_moins(dim)==0.) ? 0. : Q_moins(dim)/(P_moins(dim)+DMINFLOAT);
 
-                      if (delta>=0.) R = (dabs(P_plus(dim))<DMINFLOAT) ? 0. : Q_plus(dim)/P_plus(dim);
-                      else R = (dabs(P_moins(dim))<DMINFLOAT) ? 0. : Q_moins(dim)/P_moins(dim);
+                      if (delta>=0.) R = (fabs(P_plus(dim))<DMINFLOAT) ? 0. : Q_plus(dim)/P_plus(dim);
+                      else R = (fabs(P_moins(dim))<DMINFLOAT) ? 0. : Q_moins(dim)/P_moins(dim);
 
 
                       limit=limiteur(R);
@@ -2021,13 +2021,13 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
     if(nb_comp==1)
     {
     Cout << "min = " << min(transporte);
-    Cout << " max = " << max(transporte) << finl;
+    Cout << " max = " << std::max(transporte) << finl;
     }
     //  else
     //    for (int comp=0; comp<nb_comp; comp++)
     //    {
     //      Cout << "min("<<comp<<") = " << transporte.min(comp);
-    //      Cout << " max("<<comp<<") = " << transporte.max(comp) << finl;
+    //      Cout << " std::max("<<comp<<") = " << transporte.max(comp) << finl;
     //    }
     Cout << " Ratio Antidiffusion/Diffusion = " << sigma_fija/sigma_fijd << finl;
   */
@@ -2675,8 +2675,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
                       // if (delta>=0.) R=(P_plus(dim)==0.) ? 0. : Q_plus(dim)/(P_plus(dim)+DMINFLOAT);
                       // else  R=(P_moins(dim)==0.) ? 0. : Q_moins(dim)/(P_moins(dim)+DMINFLOAT);
 
-                      if (delta>=0.) R=(dabs(P_plus(dim))<DMINFLOAT) ? 0. : Q_plus(dim)/P_plus(dim);
-                      else  R=(dabs(P_moins(dim))<DMINFLOAT) ? 0. : Q_moins(dim)/P_moins(dim);
+                      if (delta>=0.) R=(fabs(P_plus(dim))<DMINFLOAT) ? 0. : Q_plus(dim)/P_plus(dim);
+                      else  R=(fabs(P_moins(dim))<DMINFLOAT) ? 0. : Q_moins(dim)/P_moins(dim);
 
 
                       daij=minimum(limiteur(R)*dij,lji);
@@ -2780,8 +2780,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
                                   // if (delta>=0.) R=(P_plus(dim)==0.) ? 0. : Q_plus(dim)/(P_plus(dim)+DMINFLOAT);
                                   // else  R=(P_moins(dim)==0.) ? 0. : Q_moins(dim)/(P_moins(dim)+DMINFLOAT);
 
-                                  if (delta>=0.) R=(dabs(P_plus(dim))<DMINFLOAT) ? 0. : Q_plus(dim)/P_plus(dim);
-                                  else  R=(dabs(P_moins(dim))<DMINFLOAT) ? 0. : Q_moins(dim)/P_moins(dim);
+                                  if (delta>=0.) R=(fabs(P_plus(dim))<DMINFLOAT) ? 0. : Q_plus(dim)/P_plus(dim);
+                                  else  R=(fabs(P_moins(dim))<DMINFLOAT) ? 0. : Q_moins(dim)/P_moins(dim);
 
                                   daij=minimum(limiteur(R)*dij,lji);
                                   assert(daij>=0);
@@ -2815,8 +2815,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
                                   // if (delta>=0.) R=(Pj_plus(dim)==0.) ? 0. : Qj_plus(dim)/(Pj_plus(dim)+DMINFLOAT);
                                   // else  R=(Pj_moins(dim)==0.) ? 0. : Qj_moins(dim)/(Pj_moins(dim)+DMINFLOAT);
 
-                                  if (delta>=0.) R=(dabs(Pj_plus(dim))<DMINFLOAT) ? 0. : Qj_plus(dim)/Pj_plus(dim);
-                                  else  R=(dabs(Pj_moins(dim))<DMINFLOAT) ? 0. : Qj_moins(dim)/Pj_moins(dim);
+                                  if (delta>=0.) R=(fabs(Pj_plus(dim))<DMINFLOAT) ? 0. : Qj_plus(dim)/Pj_plus(dim);
+                                  else  R=(fabs(Pj_moins(dim))<DMINFLOAT) ? 0. : Qj_moins(dim)/Pj_moins(dim);
 
                                   daij=minimum(limiteur(R)*dij,lij);
                                   assert(daij>=0);

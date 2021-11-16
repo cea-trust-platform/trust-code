@@ -73,7 +73,7 @@ void Traitement_particulier_Solide_canal_VDF::post_traitement_particulier()
   calculer_moyennes_spatiales_thermo(Tmoy,Trms,Y,corresp,compt);
 
   static double temps_dern_post_inst = -100.;
-  if (dabs(tps-temps_dern_post_inst)>=dt_post_inst)
+  if (fabs(tps-temps_dern_post_inst)>=dt_post_inst)
     {
       ecriture_fichier_moy_spat_thermo(Tmoy,Trms,Y);
       temps_dern_post_inst = tps;
@@ -95,7 +95,7 @@ void Traitement_particulier_Solide_canal_VDF::post_traitement_particulier()
       calculer_integrales_temporelles(T2_moy_temp,Trms);
 
       static double temps_dern_post_stat = -100.;
-      if (dabs(tps-temps_dern_post_stat)>=dt_post_stat)
+      if (fabs(tps-temps_dern_post_stat)>=dt_post_stat)
         {
           double dt = tps-temps_deb;
           ecriture_fichier_moy_temp_thermo(Tmoy_temp,T2_moy_temp,Y,dt);

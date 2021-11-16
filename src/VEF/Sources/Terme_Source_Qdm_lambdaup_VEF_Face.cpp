@@ -184,8 +184,8 @@ DoubleTab& Terme_Source_Qdm_lambdaup_VEF_Face::ajouter(DoubleTab& resu) const
   if( (rapport < cible) && (rapport<rapport_old) ) l*=2.;
   if( (rapport < cible) && (rapport>rapport_old) ) l*=1.1;
   if( (rapport>cible) && (rapport>rapport_old)  )  l*=0.95;
-  l=dmin(lambda, lambda_max);
-  l=dmax(lambda_min, lambda);
+  l=std::min(lambda, lambda_max);
+  l=std::max(lambda_min, lambda);
   if (Process::je_suis_maitre())
     {
       Cerr << "|ubar| = " << normbar << finl;
