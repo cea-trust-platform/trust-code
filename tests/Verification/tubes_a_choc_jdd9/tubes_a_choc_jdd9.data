@@ -1,9 +1,8 @@
-# PARALLEL NOT #
+# PARALLEL OK 8 #
 dimension 2
 Domaine dom
 
 # BEGIN MESH #
-# Lire_med family_names_from_group_names dom mesh mesh.med #
 mailler dom
 {
     pave carre
@@ -20,6 +19,21 @@ mailler dom
     }
 }
 # END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
 
 CoviMAC  dis
 option_covimac {  }
