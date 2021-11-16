@@ -121,6 +121,8 @@ cd \${projet}
   chmod +x $pp.sh
 done
 # echo "pwd;ls" >> configure.sh
+# droits apres la compilation
+titan=0 && [ "`id | grep dm2s-projet-trust_trio-rw`" != "" ] && [ -L ~/scripts_ACL ] && [ -e ~/scripts_ACL ] && titan=1 && echo "sh ~/scripts_ACL/Update_ACL.sh `pwd` " >> configure.sh  
 echo "./configure" >> configure.sh
 
 
@@ -128,7 +130,19 @@ echo "./configure" >> configure.sh
 echo "make $MODE" >> make.sh
 
 # droits apres la compilation
-if [ "$project" = triocfd ]
+if [ "$titan" = "1" ]
+then
+   if [ "$project" = triocfd ]
+   then
+      echo "chmod ugo+x TrioCFD*" >> make.sh
+   elif [ "$project" = flica5 ] && [ "`id | grep dm2s-projet-trust_trio-r`" != "" ] 
+   then
+      echo "chmod ugo+x FLICA5*" >> make.sh
+   elif [ "$project" = genepi3 ] && [ "`id | grep dm2s-projet-trust_trio-r`" != "" ] 
+   then
+      echo "chmod ugo+x genepi*" >> make.sh
+   fi
+elif [ "$project" = triocfd ]
 then
   echo "cd ../../" >> make.sh
   echo "chmod -R u+w,gou+r triocfd 1>/dev/null 2>&1" >> make.sh
@@ -207,8 +221,10 @@ echo "we remove $project.tar and $project.tar.gz"
 rm $projet.tar $projet.tar.gz
 
 
-
-if [ "$project" = flica5 ] && [ "`id | grep dm2s-projet-trust_trio-r`" != "" ] 
+if [ "$titan" = "1" ]
+then
+   echo "we do nothing"
+elif [ "$project" = flica5 ] && [ "`id | grep dm2s-projet-trust_trio-r`" != "" ] 
 then
    # droits au moment de la creation du dossier
    cd ..

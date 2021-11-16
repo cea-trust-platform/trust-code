@@ -1,4 +1,6 @@
 Version	Qui				Tache
+1.8.4   trust@cea.fr            Update trust -index memo script
+1.8.4   trust@cea.fr            Ajout option configure pour desactiver mpi4py
 1.8.4   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC
 1.8.4   adrien.bruneton@cea.fr  Revoir ctest valgrind. cf mail 22/07/2021 17h21
 1.8.4   adrien.bruneton@cea.fr  Ajout d'echange_espace_virtuel dans Champ_front_xyz_debit.cpp. cf commit 76e425581
@@ -24,6 +26,7 @@ Version	Qui				Tache
 1.8.4   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we) (MR je ne sais plus ce que cela veut dire...)
 1.8.4   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commente a la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
 1.8.4   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'annee)
+1.8.4   trust@cea.fr            LDC: Retirer la methode d'install de la branche next de README.md
 1.8.4   trust@cea.fr            LDC: verifier le dossier extra de 1.8.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
 1.8.4   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK (triocfd?) car non lance via AGL (avec la premiere version RC)
 1.8.4   pierre.ledac@cea.fr     LDC: recuperer aupres du RPL l archive de couverture de code et la mettre sous doc/Coverage
@@ -55,6 +58,7 @@ Version	Qui				Tache
 1.8.x   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ?
 1.8.x   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we) (MR je ne sais plus ce que cela veut dire...)
 1.8.x   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commente a la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
+1.8.4   trust@cea.fr            LDC: Retirer la methode d'install de la branche next de README.md
 1.8.x   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'annee)
 1.8.x   trust@cea.fr            LDC: verifier le dossier extra de 1.8.x sur sourceforge (cf bin/gestion_externalpackages/liste_dep.csv)
 1.8.x   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)

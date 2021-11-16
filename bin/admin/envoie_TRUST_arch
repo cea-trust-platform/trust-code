@@ -195,7 +195,7 @@ do
 	 
 	 # no updated with TRUST
 
-	    # Creation eventuelle du repertoire:
+	 # Creation eventuelle du repertoire:
 	 ssh_command '[ ! -d '$WORKDIR/$version' ] && mkdir -p '$WORKDIR/$version
          echo "Update git repo (TRUST and externalpackages) on irene-ccrt with triou/TMA"
          echo "git push origin_irene-ccrt Livraison:triou/TMA"
@@ -307,9 +307,6 @@ git pull" > $TRUST_TMP/ssh_com
 	       echo " "
 	    fi
             
-	    # Creation eventuelle du repertoire:
-	    ssh_command '[ ! -d '$WORKDIR/$version'/TRUST ] && mkdir -p '$WORKDIR/$version'/TRUST'
-	    
 	    # Cas ou l'on efface la version
 	    if [ "$delete_version_machine_cible" = 1 ]
 	    then
@@ -320,6 +317,11 @@ git pull" > $TRUST_TMP/ssh_com
 	       ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n 'cd '$WORKDIR/$version';mv -f Composants trashC;mkdir -p Composants'
 	       ssh -o "StrictHostKeyChecking no" -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n 'rm -r -f '$WORKDIR/$version'/trashC 1>/dev/null 2>&1' & 
             fi
+
+            # Creation eventuelle du repertoire avec les bonnes ACL :
+	    ssh_command '[ ! -d '$WORKDIR/$version' ] && [ -L ~/scripts_ACL ] && [ -e ~/scripts_ACL ] && sh ~/scripts_ACL/Create_version.sh '$WORKDIR/$version
+	    # Pour les autres machines, dossier inexistant
+	    ssh_command '[ ! -d '$WORKDIR/$version' ] && [ ! -L ~/scripts_ACL ] && mkdir -p '$WORKDIR/$version
 	    
 	    echo "rsync of sources on $log@$adr:$WORKDIR/$version at "`date '+%H:%M:%S'`
 	    cd $TRUST_ROOT/.. #sinon rsync plante...

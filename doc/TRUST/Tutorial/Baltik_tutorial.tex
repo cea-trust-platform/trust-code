@@ -939,11 +939,7 @@ return is;\\
 \end{minipage}}
 \end{center}
 
-\item Add into the "interpreter\_(Entree\&)" method the read of these parameters into braces using the \textbf{Param} object.
-\begin{itemize}
-
-\item Do not forget to add "\#include <Param.h>" into the cpp file.
-\item If help needed, have a look at the "Interprete\_geometrique\_base" sub-class "Extruder". The data file syntax is :
+\item Have a look at the "Interprete\_geometrique\_base" sub-class "Extruder" which is very similar to what we want. The data file syntax is:
 \begin{center}
 \fbox{ \begin{minipage}[c]{0.9\textwidth}
 \begin{alltt}
@@ -951,7 +947,9 @@ return is;\\
 \end{alltt}
 \end{minipage}}
 \end{center}
-\end{itemize}
+\item Add into the "my\_first\_class::interpreter\_(Entree\&)" method the read of these parameters into braces using the Param object.
+\item Do not forget to add "\#include <Param.h>" into the my\_first\_class.cpp file, cause you are using now Param object.
+
 \end{itemize}
 
 \end{block}
@@ -1057,7 +1055,7 @@ Print these information with something like:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Modify your cpp class}
-\begin{block}{Part 2: compute the sum of the domain's VEF control volumes}
+\begin{block}{Part 2: Compute the sum of the control volumes of a domain discretized in VEF}
 \begin{itemize}
 \item Information about control volumes is in the "Zone\_VF" class (a "Zone\_dis" discretized zone) which can't be accessed 
 from the domain, but only from the problem. 
