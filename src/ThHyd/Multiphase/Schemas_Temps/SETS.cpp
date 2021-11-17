@@ -306,6 +306,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       /* mises a jour : inconnues -> milieu -> champs/conserves -> sources */
       for (auto && n_i : inco) n_i.second->valeurs() += incr[n_i.first];
+      if (p_degen) inco["pression"]->valeurs() -= mp_min_vect(inco["pression"]->valeurs()); // On prend la pression minimale comme pression de reference afin d'avoir la meme pression de reference en sequentiel et parallele
       if (!(ok = eq_qdm.milieu().check_unknown_range())) break; //si on a depasse les bornes du milieu sur (p, T), on doit sortir
       eq_qdm.pression_pa().valeurs() = inco["pression"]->valeurs(); //en multiphase, la pression est deja en Pa
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
