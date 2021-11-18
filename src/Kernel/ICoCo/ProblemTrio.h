@@ -111,6 +111,8 @@ public :
   virtual int getMEDCouplingMajorVersion() const;
   virtual bool isMEDCoupling64Bits() const;
 
+  virtual double getOutputDoubleValue(const std::string& name) const;
+  virtual void setInputDoubleValue(const std::string& name, const double& val);
 protected :
 
   Init_Params* my_params;

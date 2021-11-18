@@ -562,6 +562,33 @@ void ProblemTrio::setInputField(const std::string& name, const TrioField& afield
   pb->setInputField(nom,afield);
 }
 
+void ProblemTrio::setInputDoubleValue(const std::string& name, const double& val)
+{
+  Nom mot(name.c_str());
+  pb->setInputDoubleValue(mot,val);
+}
+
+double ProblemTrio::getOutputDoubleValue(const std::string& name) const
+{
+  TrioField f;
+  try
+    {
+      getOutputField(name,f);
+    }
+  catch (WrongArgument& err)
+    {
+      vector<string> fld = getInputFieldsNames();
+      if (std::find(fld.begin(), fld.end(), name) == fld.end())
+        throw err;
+
+      Cerr << "WARNING: trying to call getOutputDoubleValue() of an input field...!!" << finl;
+      return -1e+38;
+    }
+  if (f.nb_values()!=1)
+    throw WrongArgument((*my_params).problem_name,"getOutputDoubleValue",name,"invalid field size (should be 1)!!");
+
+  return f._field[0];
+}
 
 vector<string> ProblemTrio::getOutputFieldsNames() const
 {

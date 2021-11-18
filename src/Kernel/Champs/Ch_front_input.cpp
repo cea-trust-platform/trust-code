@@ -149,6 +149,7 @@ void Ch_front_input::setValue(const TrioField& afield)
     Champ_Input_Proto::setValueOnTab(afield,les_valeurs[i].valeurs());
   Gpoint(afield._time1,afield._time2);
 }
+
 int  Ch_front_input::initialiser(double temps, const Champ_Inc_base& inco)
 {
   if (!Ch_front_var_instationnaire_dep::initialiser(temps,inco))
@@ -163,5 +164,13 @@ int  Ch_front_input::initialiser(double temps, const Champ_Inc_base& inco)
   buildSommetsFaces();
 
   return 1;
+}
+
+// setDoubleValue: actually set a field value, provided it has size 1.
+void Ch_front_input::setDoubleValue(const double& val)
+{
+  assert(les_valeurs[0].valeurs().size() == 1);
+  for (int i=1; i<les_valeurs->nb_cases(); i++)
+    les_valeurs[i].valeurs()(0,0) = val;
 }
 

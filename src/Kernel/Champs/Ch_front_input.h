@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,6 +53,7 @@ public:
   }
   virtual void getTemplate(TrioField& afield) const;
   virtual void setValue(const TrioField& afield);
+  virtual void setDoubleValue(const double& val);
 
   virtual int initialiser(double temps, const Champ_Inc_base& inco);
   void buildSommetsFaces() const ; // const because used in Ch_Front_input_ALE::getTemplate() which is const - actually updates the 2 members below due to ALE mesh movement:

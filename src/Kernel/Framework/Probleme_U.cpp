@@ -762,3 +762,19 @@ void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
   build_triofield(ch, afield);
   afield.setName(name.getString());
 }
+
+// For now: set a field value provided the field has only one item.
+void Probleme_U::setInputDoubleValue(const Nom& name, const double& val)
+{
+  REF(Field_base) ch = findInputField(name);
+  if (!ch.non_nul())
+    throw WrongArgument(le_nom().getChar(),"setInputDoubleValue",name.getString(),"no input field of that name");
+  if (ch->nb_comp() != 1)
+    throw WrongArgument(le_nom().getChar(),"getOutputDoubleValue",name.getString(),"invalid field size!!");
+
+  // Wa can not do a REF on Champ_Input_Proto which is not an Objet_U...
+  Champ_Input_Proto * chip = dynamic_cast<Champ_Input_Proto *>(ch.operator ->());
+  if (!chip)
+    throw WrongArgument(le_nom().getChar(),"setInputField",name.getString(),"field of this name is not an input field");
+  chip->setDoubleValue(val);
+}

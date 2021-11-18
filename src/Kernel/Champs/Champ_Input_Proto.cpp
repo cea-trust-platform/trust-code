@@ -152,8 +152,14 @@ void Champ_Input_Proto::setValueOnTab(const TrioField& afield, DoubleTab& tab)
   memcpy(tab.addr(),afield._field,tab.size()*sizeof(double));
   tab.echange_espace_virtuel();
 }
+
 void Champ_Input_Proto::setInitialValue(const ArrOfDouble& vo)
 {
   initial_value_=vo;
 }
 
+void Champ_Input_Proto::setDoubleValue(const double& val)
+{
+  Cerr<< "You need to override setDoubleValue() in derived class of Champ_Input_Proto"<< finl;
+  throw;
+}
