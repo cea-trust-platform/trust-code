@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@
 #include <stat_counters.h>
 #include <info_atelier.h>
 #include <unistd.h> // chdir pour PGI et AIX
+#include <catch_and_trace.h>
 #include <Debog.h>
 
 // Initialisation des compteurs, dans stat_counters.cpp
@@ -41,24 +42,27 @@ extern void end_stat_counters();
 extern Stat_Counter_Id temps_total_execution_counter_;
 extern Stat_Counter_Id initialisation_calcul_counter_;
 
-mon_main::mon_main(int verbose_level, int journal_master, bool apply_verification)
+mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, bool apply_verification, int disable_stop)
 {
   verbose_level_ = verbose_level;
   journal_master_ = journal_master;
+  journal_shared_ = journal_shared;
   apply_verification_ = apply_verification;
   // Creation d'un journal temporaire qui ecrit dans Cerr
-  init_journal_file(verbose_level, 0 /* filename = 0 => Cerr */, 0 /* append */);
+  init_journal_file(verbose_level, 0, 0 /* filename = 0 => Cerr */, 0 /* append */);
   trio_began_mpi_=0;
+  disable_stop_=disable_stop;
+  change_disable_stop(disable_stop);
 }
 
 static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_mpi_)
 {
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   static char help[] = "TRUST may solve linear systems with Petsc library.\n\n" ;
   Nom pwd(::pwd());
   // On initialise Petsc
 #ifdef MPI_INIT_NEEDS_MPIRUN
-  int flag;
+  True_int flag;
   MPI_Initialized(&flag);
   // si MPI initialise ou si argc>2
   if ((argc>2)||(flag))
@@ -85,6 +89,18 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
   // Desactive le signal handler en optimise pour eviter d'etre trop bavard
   // et de "masquer" les messages d'erreur TRUST:
   PetscPopSignalHandler();
+
+  bool error_handlers = false;
+  char* theValue = getenv("TRUST_ENABLE_ERROR_HANDLERS");
+  if (theValue != NULL) error_handlers = true;
+#ifndef NDEBUG
+  error_handlers = true;
+#endif
+  if (error_handlers)
+    {
+      Cerr << "Enabling error handlers catching SIGFPE and SIGABORT and giving a trace of where the fault happened." << finl;
+      install_handlers();
+    }
 #else
   // MPI_Init pour les machines ou Petsc n'est pas
   // installe: ex AIX avec MPICH: il faut que argc et argv soit passes
@@ -117,6 +133,38 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 #endif
 }
 
+#ifdef PETSC_HAVE_CUDA
+#include <cuda.h>
+#include <cuda_runtime.h>
+void init_cuda()
+{
+  char* local_rank_env;
+  int local_rank;
+  cudaError_t cudaRet;
+
+  /* Recuperation du rang local du processus via la variable d'environnement
+     positionnee par Slurm, l'utilisation de MPI_Comm_rank n'etant pas encore
+     possible puisque cette routine est utilisee AVANT l'initialisation de MPI */
+  local_rank_env = getenv("SLURM_LOCALID");
+
+  if (local_rank_env)
+    {
+      local_rank = atoi(local_rank_env);
+      /* Definition du GPU a utiliser pour chaque processus MPI */
+      cudaRet = cudaSetDevice(local_rank);
+      if(cudaRet != cudaSuccess)
+        {
+          printf("Error: cudaSetDevice failed\n");
+          Process::exit();
+        }
+    }
+  else
+    {
+      printf("Error : can't guess the local rank of the task\n");
+      Process::exit();
+    }
+}
+#endif
 ///////////////////////////////////////////////////////////
 // Desormais Petsc/MPI_Initialize et Petsc/MPI_Finalize
 // sont dans un seul fichier: mon_main
@@ -124,6 +172,11 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 //////////////////////////////////////////////////////////
 void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
 {
+#ifdef PETSC_HAVE_CUDA
+  // Necessaire sur JeanZay pour utiliser GPU Direct (http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-mpi-cuda-aware-gpudirect.html)
+  // mais performances moins bonnes (trust PAR_gpu_3D 2) donc desactive en attendant d'autres tests:
+  // init_cuda();
+#endif
   Nom arguments_info="";
   int must_mpi_initialize = 1;
   if (with_petsc != 0)
@@ -183,7 +236,7 @@ void mon_main::finalize()
   if (sub_type(Comm_Group_MPI,groupe_trio_.valeur()))
     ref_cast(Comm_Group_MPI,groupe_trio_.valeur()).free();
 #endif
-#ifdef __PETSCKSP_H
+#ifdef PETSCKSP_H
   // On PetscFinalize que si c'est necessaire
   PetscBool isInitialized;
   PetscInitialized(&isInitialized);
@@ -240,7 +293,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   //  du processeur et le nom du cas)
   {
     Nom filename(nom_du_cas);
-    if (Process::nproc() > 1)
+    if (Process::nproc() > 1 && !journal_shared_)
       {
         filename += "_";
         char s[20];
@@ -248,20 +301,26 @@ void mon_main::dowork(const Nom& nom_du_cas)
         filename += s;
       }
     filename += ".log";
+    // Si journal_master_, seul le process maitre ecrit dans le journal:
     if (journal_master_ && !Process::je_suis_maitre())
-      {
-        verbose_level_ = 0;
-      }
-    init_journal_file(verbose_level_, filename, 0 /* append=0 */);
+      verbose_level_ = 0;
+
+    // Si un journal unique n'est pas active, alors desactive les journaux logs au dela d'un certain nombre de rangs MPI:
+    if (!journal_shared_ && !journal_master_ && Process::force_single_file(Process::nproc(), nom_du_cas+".log"))
+      verbose_level_ = 0;
+
+    init_journal_file(verbose_level_, journal_shared_,filename, 0 /* append=0 */);
+    if(journal_shared_) Process::Journal() << "\n[Proc " << Process::me() << "] : ";
     Process::Journal() << "Journal logging started" << finl;
   }
 
   Nom nomfic( nom_du_cas );
   nomfic += ".stop";
-  {
-    SFichier ficstop( nomfic );
-    ficstop << "Running..."<<finl;
-  }
+  if (!get_disable_stop() && Process::je_suis_maitre())
+    {
+      SFichier ficstop( nomfic );
+      ficstop << "Running..."<<finl;
+    }
 
   //---------------------------------------------//
   // Chargement des modules : //
@@ -273,14 +332,24 @@ void mon_main::dowork(const Nom& nom_du_cas)
       Cerr<<"Fin chargement des modules "<<finl;
     }
 
-  Cout<<"-------------------------------------------------------------------" << finl;
-  Cout<<" " << finl;
-  Cout<<"                          TRUST" << finl;
-  Cout<<"                      version : 1.8.4_beta "  << finl;
-  Cout<<"                          CEA - DEN" << finl;
-  Cout<<" " << finl;
+  Cout<< " " << finl;
+  Cout<< " * * * * * * * * * * * * * * * * * * * * * * * * * * * *     " << finl;
+  Cout<< " *  _________  _______             _______  _________  *     " << finl;
+  Cout<< " *  \\__   __/ (  ____ ) |\\     /| (  ____ \\ \\__   __/  * " << finl;
+  Cout<< " *     ) (    | (    )| | )   ( | | (    \\/    ) (     *    " << finl;
+  Cout<< " *     | |    | (____)| | |   | | | (_____     | |     *     " << finl;
+  Cout<< " *     | |    |     __) | |   | | (_____  )    | |     *     " << finl;
+  Cout<< " *     | |    | (\\ (    | |   | |       ) |    | |     *    " << finl;
+  Cout<< " *     | |    | ) \\ \\__ | (___) | /\\____) |    | |     *  " << finl;
+  Cout<< " *     )_(    |/   \\__/ (_______) \\_______)    )_(     *   " << finl;
+  Cout<< " *                                                     *     " << finl;
+  Cout<< " *                  version : 1.8.4_beta               *     "  << finl;
+  Cout<< " *                       CEA - DES                     *     " << finl;
+  Cout<< " *                                                     *     " << finl;
+  Cout<< " * * * * * * * * * * * * * * * * * * * * * * * * * * * * " << finl;
+  Cout<< " " << finl;
+
   info_atelier(Cout);
-  Cout<<" ------------------------------------------------------------------" << finl;
   Cout<<" " << finl;
   Cout<<"  Vous traitez le cas " << Objet_U::nom_du_cas() << "\n";
   Cout<<" " << finl;
@@ -318,6 +387,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
                                              0 /* interprete pour de vrai */);
     }
   }
+
   Cerr << "MAIN: End of data file" << finl;
   Process::imprimer_ram_totale(1);
 
@@ -331,28 +401,36 @@ void mon_main::dowork(const Nom& nom_du_cas)
 
   // pour les cas ou on ne fait pas de resolution
   int mode_append=1;
-  statistiques().dump("Statistiques de post resolution", mode_append);
-  print_statistics_analyse("Statistiques de post resolution", 1);
+  if (!Objet_U::disable_TU)
+    {
+      if(GET_COMM_DETAILS)
+        statistiques().print_communciation_tracking_details("Statistiques de post resolution", 1);               // Into _comm.TU file
+
+      statistiques().dump("Statistiques de post resolution", mode_append);
+      print_statistics_analyse("Statistiques de post resolution", 1);
+    }
 
   double temps = statistiques().get_total_time();
   Cout << finl;
   Cout << "--------------------------------------------" << finl;
   Cout << "clock: Total execution: " << temps << " s" << finl;
-  {
-    SFichier ficstop ( nomfic);
-    ficstop  << "Finished correctly"<<finl;
-  }
+  if (!get_disable_stop() && Process::je_suis_maitre())
+    {
+      SFichier ficstop ( nomfic);
+      ficstop  << "Finished correctly"<<finl;
+    }
   //  end_stat_counters();
 }
 
 mon_main::~mon_main()
 {
+  // On peut arreter le journal apres les communications:
+  // EDIT 12/02/2020: journal needs communication to be turned on if it's written in HDF5 format
+  Process::Journal() << "End of Journal logging" << finl;
+  end_journal(verbose_level_);
   end_stat_counters();
   // Destruction de l'interprete principal avant d'arreter le parallele
   interprete_principal_.vide();
-  // On peut arreter le journal apres les communications:
-  Process::Journal() << "End of Journal logging" << finl;
-  end_journal(verbose_level_);
   // PetscFinalize/MPI_Finalize
   finalize();
   // on peut arreter maintenant que l'on a arrete les journaux

@@ -768,7 +768,7 @@ fi
 #then
    echo " "
    echo "Mark new version in following files:"
-   for MAIN in $TRUST_ROOT/src/MAIN/MAIN.cpp $TRUST_ROOT/doc/TRUST/exercices/my_first_class/mon_main.cpp
+   for MAIN in $TRUST_ROOT/src/MAIN/MAIN.cpp
    do
       CHECKOUT $MAIN 1>/dev/null 2>&1
       version=`$TRUST_Awk '/version :/ {print $4}' $MAIN`
@@ -776,7 +776,7 @@ fi
       echo $ECHO_OPTS "1,$ s?version : $version?version : $new?g\nw" | ed $MAIN 1>/dev/null 2>&1
       CHECKIN $MAIN 1>/dev/null 2>&1
    done
-   for MAIN in $TRUST_ROOT/src/MAIN/mon_main.cpp
+   for MAIN in $TRUST_ROOT/src/MAIN/mon_main.cpp $TRUST_ROOT/doc/TRUST/exercices/my_first_class/mon_main.cpp
    do
       CHECKOUT $MAIN 1>/dev/null 2>&1
       version=`$TRUST_Awk '/version :/ {print $6}' $MAIN`
@@ -1602,29 +1602,29 @@ echo " "
 echo "#####################################"
 echo "# Use and execute cpplint.py script #"
 echo "#####################################"
-echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-# le week-end uniquement
-if [ "`date '+%u'`" -gt 5 ]
-then
-   cd $TRUST_ROOT
-   echo "Call to $TRUST_ROOT/bin/KSH/cpplint.py"
-   echo "from `pwd`"
-   cpplint_log=$REP_NUIT"/cpplint_$HOST.log"
-   echo "  See $cpplint_log"
-   echo "TRUST script on $HOST the `date` ...">$cpplint_log
-   filter="--filter=-whitespace,-legal/copyright,-build/header_guard,-runtime/references,-readability/casting,\
--build/include_what_you_use,-runtime/sizeof,-runtime/explicit,-runtime/printf,-runtime/int,\
--readability/function,-readability/braces,-readability/streams,-readability/multiline_comment"   
-   echo "====================================
-Running cpplint by filtering with --filter=$filter
-====================================" >> $cpplint_log
-   python $TRUST_ROOT/bin/KSH/cpplint.py $filter src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp src/*/*/*/*/*.cpp include/*.h 2>&1 | grep -v "Done processing" >> $cpplint_log
-   tail -n1 $cpplint_log
-   cat $cpplint_log | mail_ -s\"[lance_test_nuit] Google rules with cpplint on TRUST $new\" $TRUST_MAIL
-else
-   echo "NOT executed"
-fi
-echo "<--- End at "`date '+%H:%M:%S %d/%m'`
+#echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
+## le week-end uniquement
+#if [ "`date '+%u'`" -gt 5 ]
+#then
+#   cd $TRUST_ROOT
+#   echo "Call to $TRUST_ROOT/bin/KSH/cpplint.py"
+#   echo "from `pwd`"
+#   cpplint_log=$REP_NUIT"/cpplint_$HOST.log"
+#   echo "  See $cpplint_log"
+#   echo "TRUST script on $HOST the `date` ...">$cpplint_log
+#   filter="--filter=-whitespace,-legal/copyright,-build/header_guard,-runtime/references,-readability/casting,\
+#-build/include_what_you_use,-runtime/sizeof,-runtime/explicit,-runtime/printf,-runtime/int,\
+#-readability/function,-readability/braces,-readability/streams,-readability/multiline_comment"   
+#   echo "====================================
+#Running cpplint by filtering with --filter=$filter
+#====================================" >> $cpplint_log
+#   python $TRUST_ROOT/bin/KSH/cpplint.py $filter src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp src/*/*/*/*/*.cpp include/*.h 2>&1 | grep -v "Done processing" >> $cpplint_log
+#   tail -n1 $cpplint_log
+#   cat $cpplint_log | mail_ -s\"[lance_test_nuit] Google rules with cpplint on TRUST $new\" $TRUST_MAIL
+#else
+   echo "NOT executed since upgrade to python3"
+#fi
+#echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 echo " "
 echo "######################"

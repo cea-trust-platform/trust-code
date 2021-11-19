@@ -118,11 +118,15 @@ Entree& my_first_class::interpreter_(Entree& is)
   filename+="_result.txt";
   Cerr<<"- Name of the file = "<< filename << "." << finl;
 
-  SFichier file(filename);
-  file << "Control volumes sum: " << sum << finl;
-  file << "Control volumes sum with mp_sum: " << sum2 << finl;
-  file << "Control volume sum with mp_somme_vect = " << sum3 << finl;
-  file.close();
+  // Uniquement le process maitre qui ecrit
+  if (Process::je_suis_maitre())
+    {
+      SFichier file(filename);
+      file << "Control volumes sum: " << sum << finl;
+      file << "Control volumes sum with mp_sum: " << sum2 << finl;
+      file << "Control volume sum with mp_somme_vect = " << sum3 << finl;
+      file.close();
+    }
 
   return is;
 }
