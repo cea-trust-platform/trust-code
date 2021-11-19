@@ -619,11 +619,8 @@ inline void Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete_paroi(int fac1, int fac2
 
       aii1_2 = ajj1_2 = 0;
 
-      if (DERIVED_T::IS_TURB && !DERIVED_T::IS_VAR)
-        aii3_4 = 0;
-      else
-        aii3_4 = DERIVED_T::IS_TURB ? signe*surf*(visc_lam+visc_turb)/dist :
-                 signe*surf*visc_lam/dist;
+      aii3_4 = (DERIVED_T::IS_TURB && DERIVED_T::IS_VAR) ? signe*surf*(visc_lam+visc_turb)/dist :
+               signe*surf*visc_lam/dist;
     }
   else
     aii3_4 = aii1_2 = ajj1_2 = 0;
