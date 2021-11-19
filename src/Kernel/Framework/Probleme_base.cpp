@@ -369,7 +369,7 @@ Probleme_base::Probleme_base() :
   //ficsauv(0),
   osauv_hdf_(0),
   reprise_effectuee_(0),
-  reprise_version_(0),
+  reprise_version_(155),
   restart_file(0),
   initialized(false),
   terminated(false),
