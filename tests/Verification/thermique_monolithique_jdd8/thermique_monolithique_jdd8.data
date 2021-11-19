@@ -95,7 +95,7 @@ Read sch
     dt_impr 1e-30
     facsec 1e8
     seuil_statio 1.e-20
-    thermique_monolithique 0
+     
     solveur implicite { solveur petsc cholesky { } seuil_convergence_implicite 1e30 }
 }
 
