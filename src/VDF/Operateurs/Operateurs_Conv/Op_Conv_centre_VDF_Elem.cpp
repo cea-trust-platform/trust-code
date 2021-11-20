@@ -23,18 +23,14 @@
 #include <Op_Conv_centre_VDF_Elem.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_centre_VDF_Elem,"Op_Conv_Centre_VDF_P0_VDF",Op_Conv_VDF_base);
-
-implemente_It_VDF_Elem(Eval_centre_VDF_Elem2)
+implemente_It_VDF_Elem(Eval_centre_VDF_Elem)
 
 Sortie& Op_Conv_centre_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_centre_VDF_Elem::readOn(Entree& s ) { return s ; }
 
-
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Conv_centre_VDF_Elem::associer(const Zone_dis& zone_dis,
-                                       const Zone_Cl_dis& zone_cl_dis,
-                                       const Champ_Inc& ch_transporte)
+void Op_Conv_centre_VDF_Elem::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_transporte)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
@@ -42,7 +38,7 @@ void Op_Conv_centre_VDF_Elem::associer(const Zone_dis& zone_dis,
 
   iter.associer(zvdf, zclvdf, *this);
 
-  Eval_centre_VDF_Elem2& eval_conv = dynamic_cast<Eval_centre_VDF_Elem2&> (iter.evaluateur());
+  Eval_centre_VDF_Elem& eval_conv = dynamic_cast<Eval_centre_VDF_Elem&> (iter.evaluateur());
   eval_conv.associer_zones(zvdf, zclvdf );          // Evaluateur_VDF::associer_zones
   eval_conv.associer_inconnue(inco );        // Eval_VDF_Elem::associer_inconnue
 
@@ -50,13 +46,13 @@ void Op_Conv_centre_VDF_Elem::associer(const Zone_dis& zone_dis,
 
 const Champ_Inc_base& Op_Conv_centre_VDF_Elem::vitesse() const
 {
-  const Eval_centre_VDF_Elem2& eval_conv = dynamic_cast<const Eval_centre_VDF_Elem2&> (iter.evaluateur());
+  const Eval_centre_VDF_Elem& eval_conv = dynamic_cast<const Eval_centre_VDF_Elem&> (iter.evaluateur());
   return eval_conv.vitesse();
 }
 
 Champ_Inc_base& Op_Conv_centre_VDF_Elem::vitesse()
 {
-  Eval_centre_VDF_Elem2& eval_conv = dynamic_cast<Eval_centre_VDF_Elem2&> (iter.evaluateur());
+  Eval_centre_VDF_Elem& eval_conv = dynamic_cast<Eval_centre_VDF_Elem&> (iter.evaluateur());
   return eval_conv.vitesse();
 }
 
@@ -65,7 +61,4 @@ Champ_Inc_base& Op_Conv_centre_VDF_Elem::vitesse()
 //
 // Description:
 // constructeur
-Op_Conv_centre_VDF_Elem::Op_Conv_centre_VDF_Elem() :
-  Op_Conv_VDF_base(It_VDF_Elem(Eval_centre_VDF_Elem2)())
-{
-}
+Op_Conv_centre_VDF_Elem::Op_Conv_centre_VDF_Elem() : Op_Conv_VDF_base(It_VDF_Elem(Eval_centre_VDF_Elem)()) { }

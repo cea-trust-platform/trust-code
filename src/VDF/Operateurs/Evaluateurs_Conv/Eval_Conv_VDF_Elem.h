@@ -24,16 +24,17 @@
 #define Eval_Conv_VDF_Elem_included
 
 #include <Eval_VDF_Elem2.h>
-#include <Periodique.h>
-#include <Dirichlet_paroi_fixe.h>
+// Les Cls
 #include <Dirichlet_paroi_defilante.h>
-#include <Dirichlet_entree_fluide.h>
-#include <Neumann_paroi.h>
 #include <Neumann_paroi_adiabatique.h>
-#include <Symetrie.h>
-#include <Echange_global_impose.h>
+#include <Dirichlet_entree_fluide.h>
 #include <Echange_externe_impose.h>
+#include <Echange_global_impose.h>
+#include <Dirichlet_paroi_fixe.h>
 #include <Neumann_sortie_libre.h>
+#include <Neumann_paroi.h>
+#include <Periodique.h>
+#include <Symetrie.h>
 #include <NSCBC.h>
 
 template <typename DERIVED_T>
@@ -162,6 +163,7 @@ public:
 //************************
 // CRTP pattern
 //************************
+
 template <typename DERIVED_T>
 inline int Eval_Conv_VDF_Elem<DERIVED_T>::elem_(int i, int j) const
 {
@@ -202,20 +204,17 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::quick_fram_(const double& psc, const 
 
 template <typename DERIVED_T>
 inline double Eval_Conv_VDF_Elem<DERIVED_T>::qcentre_(const double& psc, const int num0, const int num1,
-                                                      const int num0_0, const int num1_1, const int face,
-                                                      const DoubleTab& transporte) const
+                                                      const int num0_0, const int num1_1, const int face, const DoubleTab& transporte) const
 {
   return static_cast<const DERIVED_T *>(this)->qcentre(psc,num0,num1,num0_0,num1_1,face,transporte);
 }
 
 template <typename DERIVED_T>
 inline void Eval_Conv_VDF_Elem<DERIVED_T>::qcentre_(const double& psc, const int num0, const int num1,
-                                                    const int num0_0, const int num1_1, const int face,
-                                                    const DoubleTab& transporte,ArrOfDouble& flux) const
+                                                    const int num0_0, const int num1_1, const int face, const DoubleTab& transporte,ArrOfDouble& flux) const
 {
   static_cast<const DERIVED_T *>(this)->qcentre(psc,num0,num1,num0_0,num1_1,face,transporte,flux);
 }
-
 
 //************************
 // CAS SCALAIRE

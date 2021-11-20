@@ -20,35 +20,23 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Conv_Quick_VDF_Elem_included
 #define Op_Conv_Quick_VDF_Elem_included
 
-#include <ItVDFEl.h>
-#include <Eval_Quick_VDF_Elem2.h>
+#include <Eval_Conv_VDF_leaves.h>
 #include <Op_VDF_Elem.h>
-//
+#include <ItVDFEl.h>
+
 // .DESCRIPTION class Op_Conv_Quick_VDF_Elem
-//
 //  Cette classe represente l'operateur de convection associe a une equation de
 //  transport d'un scalaire.
 //  La discretisation est VDF
 //  Le champ convecte est scalaire
 //  Le schema de convection est du type Quick
 //  L'iterateur associe est de type Iterateur_VDF_Elem
-//  L'evaluateur associe est de type Eval_Quick_VDF_Elem2
+//  L'evaluateur associe est de type Eval_Quick_VDF_Elem
 
-//
-// .SECTION voir aussi
-//
-//
-declare_It_VDF_Elem(Eval_Quick_VDF_Elem2)
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Conv_Quick_VDF_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
+declare_It_VDF_Elem(Eval_Quick_VDF_Elem)
 
 class Op_Conv_Quick_VDF_Elem : public Op_Conv_VDF_base, Op_VDF_Elem
 {
@@ -69,10 +57,7 @@ protected:
 };
 
 // Ce constructeur permet de creer des classes filles (exemple : front_tracking)
-inline Op_Conv_Quick_VDF_Elem::Op_Conv_Quick_VDF_Elem(const Iterateur_VDF_base& it)
-  : Op_Conv_VDF_base(it)
-{
-}
+inline Op_Conv_Quick_VDF_Elem::Op_Conv_Quick_VDF_Elem(const Iterateur_VDF_base& it) : Op_Conv_VDF_base(it) { }
 
 // Description:
 // associe le champ de vitesse a l'evaluateur
@@ -80,7 +65,7 @@ inline void Op_Conv_Quick_VDF_Elem::associer_vitesse(const Champ_base& ch_vit)
 {
   const Champ_Face& vit = (Champ_Face&) ch_vit;
 
-  Eval_Quick_VDF_Elem2& eval_conv = dynamic_cast<Eval_Quick_VDF_Elem2&>(iter.evaluateur());
+  Eval_Quick_VDF_Elem& eval_conv = dynamic_cast<Eval_Quick_VDF_Elem&>(iter.evaluateur());
   eval_conv.associer(vit );                // Eval_Conv_VDF::associer
 }
 
@@ -94,5 +79,4 @@ inline void Op_Conv_Quick_VDF_Elem::modifier_pour_Cl(Matrice_Morse& matrice, Dou
   Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
 }
 
-#endif
-
+#endif /* Op_Conv_Quick_VDF_Elem_included */

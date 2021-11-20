@@ -20,25 +20,22 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Conv_centre4_VDF_Elem_included
 #define Op_Conv_centre4_VDF_Elem_included
 
+#include <Eval_Conv_VDF_leaves.h>
 #include <ItVDFEl.h>
-#include <Eval_centre4_VDF_Elem2.h>
 
-//
 // .DESCRIPTION class Op_Conv_centre4_VDF_Elem
-//
 //  Cette classe represente l'operateur de convection associe a une equation de
 //  transport d'un scalaire.
 //  La discretisation est VDF
 //  Le champ convecte est scalaire
 //  Le schema de convection est du type Centre (sur 4 points)
 //  L'iterateur associe est de type Iterateur_VDF_Elem
-//  L'evaluateur associe est de type Eval_centre4_VDF_Elem2
+//  L'evaluateur associe est de type Eval_centre4_VDF_Elem
 
-declare_It_VDF_Elem(Eval_centre4_VDF_Elem2)
+declare_It_VDF_Elem(Eval_centre4_VDF_Elem)
 
 class Op_Conv_centre4_VDF_Elem : public Op_Conv_VDF_base
 {
@@ -59,8 +56,8 @@ inline void Op_Conv_centre4_VDF_Elem::associer_vitesse(const Champ_base& ch_vit)
 {
   const Champ_Face& vit = (Champ_Face&) ch_vit;
 
-  Eval_centre4_VDF_Elem2& eval_conv = dynamic_cast<Eval_centre4_VDF_Elem2&> (iter.evaluateur());
+  Eval_centre4_VDF_Elem& eval_conv = dynamic_cast<Eval_centre4_VDF_Elem&> (iter.evaluateur());
   eval_conv.associer(vit );                // Eval_Conv_VDF::associer
 }
 
-#endif
+#endif /* Op_Conv_centre4_VDF_Elem_included */
