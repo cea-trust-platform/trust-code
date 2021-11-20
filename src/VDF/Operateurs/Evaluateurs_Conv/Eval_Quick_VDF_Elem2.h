@@ -47,8 +47,7 @@ public:
   inline void quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
 };
 
-inline double Fram(const double& s1,const double& s2,
-                   const double& s3,const double& s4)
+inline double Fram(const double& s1,const double& s2, const double& s3,const double& s4)
 {
   double smin0 = dmin(s4,s2), smax0 = dmax(s4,s2), smin1 = dmin(s3,s1), smax1 = dmax(s3,s1);
   double sr0 = (dabs(smax0-smin0)<DMINFLOAT ? 0. : (s3-smin0)/(smax0-smin0));

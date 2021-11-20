@@ -14,58 +14,81 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Conv_centre_VDF_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// File:        Op_Conv_Amont_VDF_Elem.cpp
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Conv
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Conv_centre_VDF_Elem.h>
+#include <Op_Conv_Amont_VDF_Elem.h>
+#include <Champ_P0_VDF.h>
 
-Implemente_instanciable_sans_constructeur(Op_Conv_centre_VDF_Elem,"Op_Conv_Centre_VDF_P0_VDF",Op_Conv_VDF_base);
+Implemente_instanciable_sans_constructeur(Op_Conv_Amont_VDF_Elem,"Op_Conv_Amont_VDF_P0_VDF",Op_Conv_VDF_base);
 
-implemente_It_VDF_Elem(Eval_centre_VDF_Elem2)
+implemente_It_VDF_Elem(Eval_Amont_VDF_Elem2)
 
-Sortie& Op_Conv_centre_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Conv_centre_VDF_Elem::readOn(Entree& s ) { return s ; }
+//// printOn
+//
+
+Sortie& Op_Conv_Amont_VDF_Elem::printOn(Sortie& s ) const
+{
+  return s << que_suis_je() ;
+}
+
+//// readOn
+//
+
+Entree& Op_Conv_Amont_VDF_Elem::readOn(Entree& s )
+{
+  return s ;
+}
 
 
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Conv_centre_VDF_Elem::associer(const Zone_dis& zone_dis,
-                                       const Zone_Cl_dis& zone_cl_dis,
-                                       const Champ_Inc& ch_transporte)
+void Op_Conv_Amont_VDF_Elem::associer(const Zone_dis& zone_dis,
+                                      const Zone_Cl_dis& zone_cl_dis,
+                                      const Champ_Inc& ch_transporte)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
   const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_transporte.valeur());
 
-  iter.associer(zvdf, zclvdf, *this);
+  iter->associer(zvdf, zclvdf, *this);
 
-  Eval_centre_VDF_Elem2& eval_conv = dynamic_cast<Eval_centre_VDF_Elem2&> (iter.evaluateur());
-  eval_conv.associer_zones(zvdf, zclvdf );          // Evaluateur_VDF::associer_zones
+  Eval_Amont_VDF_Elem2& eval_conv = dynamic_cast<Eval_Amont_VDF_Elem2&>(iter.evaluateur());
+  eval_conv.associer_zones(zvdf, zclvdf );          // Evaluateur_VDF::associer
   eval_conv.associer_inconnue(inco );        // Eval_VDF_Elem::associer_inconnue
-
 }
 
-const Champ_Inc_base& Op_Conv_centre_VDF_Elem::vitesse() const
+// Description:
+// associe le champ de vitesse a l'evaluateur
+void Op_Conv_Amont_VDF_Elem::associer_vitesse(const Champ_base& ch_vit)
 {
-  const Eval_centre_VDF_Elem2& eval_conv = dynamic_cast<const Eval_centre_VDF_Elem2&> (iter.evaluateur());
+  const Champ_Face& vit = ref_cast(Champ_Face, ch_vit);
+
+  Eval_Amont_VDF_Elem2& eval_conv = dynamic_cast<Eval_Amont_VDF_Elem2&>(iter.evaluateur());
+  eval_conv.associer(vit);                // Eval_Conv_VDF::associer
+}
+
+const Champ_base& Op_Conv_Amont_VDF_Elem::vitesse() const
+{
+  const Eval_Amont_VDF_Elem2& eval_conv = dynamic_cast<const Eval_Amont_VDF_Elem2&>(iter.evaluateur());
   return eval_conv.vitesse();
 }
 
-Champ_Inc_base& Op_Conv_centre_VDF_Elem::vitesse()
+Champ_base& Op_Conv_Amont_VDF_Elem::vitesse()
 {
-  Eval_centre_VDF_Elem2& eval_conv = dynamic_cast<Eval_centre_VDF_Elem2&> (iter.evaluateur());
+  Eval_Amont_VDF_Elem2& eval_conv = dynamic_cast<Eval_Amont_VDF_Elem2&>(iter.evaluateur());
   return eval_conv.vitesse();
 }
 
 //
-// Fonctions inline de la classe Op_Conv_centre_VDF_Elem
+// Fonctions inline de la classe Op_Conv_Amont_VDF_Elem
 //
 // Description:
 // constructeur
-Op_Conv_centre_VDF_Elem::Op_Conv_centre_VDF_Elem() :
-  Op_Conv_VDF_base(It_VDF_Elem(Eval_centre_VDF_Elem2)())
+Op_Conv_Amont_VDF_Elem::Op_Conv_Amont_VDF_Elem() :
+  Op_Conv_VDF_base(It_VDF_Elem(Eval_Amont_VDF_Elem2)())
 {
 }

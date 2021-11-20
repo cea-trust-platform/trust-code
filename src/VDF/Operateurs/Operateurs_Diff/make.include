@@ -53,4 +53,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VDF/Zones\
 
 
-Lib = $(TRUST_LIB)/libopvdf_new
+Lib = $(TRUST_LIB)/libopvdf_diff_new

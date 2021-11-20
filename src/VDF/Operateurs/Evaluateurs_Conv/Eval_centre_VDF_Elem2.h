@@ -26,12 +26,10 @@
 #include <Eval_Conv_VDF_Elem.h>
 #include <Eval_Conv_VDF.h>
 
-//
 // .DESCRIPTION class Eval_centre_VDF_Elem2
 //
-// Evaluateur VDF pour la convection
-// Le champ convecte est scalaire (Champ_P0_VDF)
-// Schema de convection Centre
+// Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
+// Schema de convection Centre ordre 2
 // Rq:Les evaluateurs de flux convectifs calculent en fait le terme
 // convectif qui figure au second membre de l'equation d'evolution
 // c.a.d l'oppose du flux convectif

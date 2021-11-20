@@ -14,85 +14,53 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Conv_Quick_VDF_Elem.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
-// Version:     /main/11
+// File:        Op_Conv_centre4_VDF_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Conv
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Op_Conv_Quick_VDF_Elem_included
-#define Op_Conv_Quick_VDF_Elem_included
+#ifndef Op_Conv_centre4_VDF_Elem_included
+#define Op_Conv_centre4_VDF_Elem_included
 
 #include <ItVDFEl.h>
-#include <Eval_Quick_VDF_Elem2.h>
-#include <Op_VDF_Elem.h>
+#include <Eval_centre4_VDF_Elem2.h>
+
 //
-// .DESCRIPTION class Op_Conv_Quick_VDF_Elem
+// .DESCRIPTION class Op_Conv_centre4_VDF_Elem
 //
 //  Cette classe represente l'operateur de convection associe a une equation de
 //  transport d'un scalaire.
 //  La discretisation est VDF
 //  Le champ convecte est scalaire
-//  Le schema de convection est du type Quick
+//  Le schema de convection est du type Centre (sur 4 points)
 //  L'iterateur associe est de type Iterateur_VDF_Elem
-//  L'evaluateur associe est de type Eval_Quick_VDF_Elem2
+//  L'evaluateur associe est de type Eval_centre4_VDF_Elem2
 
-//
-// .SECTION voir aussi
-//
-//
-declare_It_VDF_Elem(Eval_Quick_VDF_Elem2)
+declare_It_VDF_Elem(Eval_centre4_VDF_Elem2)
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Conv_Quick_VDF_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Op_Conv_Quick_VDF_Elem : public Op_Conv_VDF_base, Op_VDF_Elem
+class Op_Conv_centre4_VDF_Elem : public Op_Conv_VDF_base
 {
-  Declare_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Elem);
+  Declare_instanciable_sans_constructeur(Op_Conv_centre4_VDF_Elem);
 
 public:
 
-  Op_Conv_Quick_VDF_Elem();
+  Op_Conv_centre4_VDF_Elem();
   void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc&  );
   inline void associer_vitesse(const Champ_base& );
   const Champ_Inc_base& vitesse() const;
   Champ_Inc_base& vitesse();
-  inline void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-
-protected:
-  inline Op_Conv_Quick_VDF_Elem(const Iterateur_VDF_base&);
 };
-
-// Ce constructeur permet de creer des classes filles (exemple : front_tracking)
-inline Op_Conv_Quick_VDF_Elem::Op_Conv_Quick_VDF_Elem(const Iterateur_VDF_base& it)
-  : Op_Conv_VDF_base(it)
-{
-}
 
 // Description:
 // associe le champ de vitesse a l'evaluateur
-inline void Op_Conv_Quick_VDF_Elem::associer_vitesse(const Champ_base& ch_vit)
+inline void Op_Conv_centre4_VDF_Elem::associer_vitesse(const Champ_base& ch_vit)
 {
   const Champ_Face& vit = (Champ_Face&) ch_vit;
 
-  Eval_Quick_VDF_Elem2& eval_conv = dynamic_cast<Eval_Quick_VDF_Elem2&>(iter.evaluateur());
+  Eval_centre4_VDF_Elem2& eval_conv = dynamic_cast<Eval_centre4_VDF_Elem2&> (iter.evaluateur());
   eval_conv.associer(vit );                // Eval_Conv_VDF::associer
 }
 
-inline void Op_Conv_Quick_VDF_Elem::dimensionner(Matrice_Morse& matrice) const
-{
-  Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
-}
-
-inline void Op_Conv_Quick_VDF_Elem::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
-{
-  Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
-}
-
 #endif
-
