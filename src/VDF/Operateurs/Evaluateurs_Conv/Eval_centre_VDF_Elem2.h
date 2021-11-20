@@ -38,38 +38,20 @@ class Eval_centre_VDF_Elem2 : public Eval_Conv_VDF_Elem<Eval_centre_VDF_Elem2>, 
 {
 public:
   static constexpr bool IS_CENTRE = true;
-  // Methodes particuliers CENTRE
   inline int amont_amont(int face, int i) const { return la_zone->amont_amont(face, i); }
   inline double dim_elem(int n1, int k) const { return la_zone->dim_elem(n1,k); }
   inline double dist_elem(int n1, int n2, int k) const { return la_zone->dist_elem(n1,n2,k); }
   inline double dist_face_elem1(int num_face,int n1) const { return la_zone->dist_face_elem1(num_face, n1); }
-  inline double qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
-  inline void qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
+
+  inline double qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face,const DoubleTab& transporte) const
+  {
+    return qcentre2_impl(psc,num0,num1,num0_0,num1_1,face,transporte);
+  }
+
+  inline void qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1,const int face,const DoubleTab& transporte,ArrOfDouble& flux) const
+  {
+    qcentre2_impl(psc,num0,num1,num0_0,num1_1,face,transporte,flux);
+  }
 };
-
-// qcentre pour un champ transporte scalaire
-inline double Eval_centre_VDF_Elem2::qcentre(const double& psc, const int num0, const int num1,
-                                             const int num0_0, const int num1_1, const int face,
-                                             const DoubleTab& transporte) const
-{
-  double flux, T0 = transporte(num0), T1 = transporte(num1);
-  flux =  0.5*(T0+T1);
-  return flux*psc;
-}
-
-// qcentre pour un champ transporte vectoriel
-inline void Eval_centre_VDF_Elem2::qcentre(const double& psc, const int num0, const int num1,
-                                           const int num0_0, const int num1_1, const int face,
-                                           const DoubleTab& transporte,ArrOfDouble& flux) const
-{
-  int k, ncomp = flux.size_array();
-  ArrOfDouble T0(ncomp), T1(ncomp);
-  for (k=0; k<ncomp; k++)
-    {
-      T0(k) = transporte(num0,k);
-      T1(k) = transporte(num1,k);
-    }
-  for (k=0; k<ncomp; k++) flux(k) =0.5 * (T0(k) + T1(k)) * psc ;
-}
 
 #endif /* Eval_centre_VDF_Elem2_included */

@@ -23,16 +23,65 @@
 #ifndef Eval_Conv_VDF_tools_included
 #define Eval_Conv_VDF_tools_included
 
+#include <Double.h>
+class DoubleTab;
+class ArrOfDouble;
+
 class Eval_Conv_VDF_tools
 {
 public:
   virtual ~Eval_Conv_VDF_tools() {}
   // DANGER !!!! FAUT JAMAIS ENTRER
-  virtual int amont_amont(int face, int i) const { throw; }
-  virtual double quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { throw; }
-  virtual void quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { throw; }
-  virtual double qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { throw; }
-  virtual void qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { throw; }
+  virtual int amont_amont(int face, int i) const { return dont_call<int>(__func__); }
+  virtual double quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { return dont_call<double>(__func__); }
+  virtual void quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { return dont_call<void>(__func__); }
+  virtual double qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { return dont_call<double>(__func__); }
+  virtual void qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { return dont_call<void>(__func__); }
+
+protected:
+  double qcentre2_impl(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
+  double qcentre4_impl(const int ,const double , const double , const double ,
+                       const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
+  double quick_fram_impl(const int ,const double , const double , const double ,const double, const double,
+                         const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
+  void qcentre2_impl(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
+  void qcentre4_impl(const int ,const double , const double , const double ,
+                     const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
+  void quick_fram_impl(const int ,const double , const double , const double ,const double, const double,
+                       const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
+
+private:
+  template <typename type>
+  type dont_call (const char * nom_fct) const
+  {
+    Cerr << "What ??? You should not call the function " << nom_fct << finl;
+    throw;
+  }
 };
+
+// Fram4 pour centre 4 (inutile je pense mais bon)
+// TODO : FIXME : should use std::min ... :-)
+inline double Fram4(const double& s1,const double& s2, const double& s3,const double& s4)
+{
+  double smin0 = dmin(s4,s2), smax0 = dmax(s4,s2), smin1 = dmin(s3,s1), smax1 = dmax(s3,s1);
+  double sr0 = (s3-smin0)/(smax0-smin0+DMINFLOAT), sr1 = (s2-smin1)/(smax1-smin1+DMINFLOAT);
+  double fr = 2.*dmax(dabs(sr0-0.5),dabs(sr1-0.5));
+  fr *= fr;
+  fr *= fr;
+  return dmin(fr,1.0);
+}
+
+// Fram pour QUICK
+// TODO : FIXME : should use std::min ... :-)
+inline double Fram(const double& s1,const double& s2, const double& s3,const double& s4)
+{
+  double smin0 = dmin(s4,s2), smax0 = dmax(s4,s2), smin1 = dmin(s3,s1), smax1 = dmax(s3,s1);
+  double sr0 = (dabs(smax0-smin0)<DMINFLOAT ? 0. : (s3-smin0)/(smax0-smin0));
+  double sr1 = (dabs(smax1-smin1)<DMINFLOAT ? 0. : (s2-smin1)/(smax1-smin1));
+  double fr = 2.*dmax(dabs(sr0-0.5),dabs(sr1-0.5));
+  fr *= fr;
+  fr *= fr;
+  return dmin(fr,1.0);
+}
 
 #endif /* Eval_Conv_VDF_tools_included */
