@@ -14,54 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Conv_VDF.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs
-// Version:     /main/6
+// File:        Eval_Amont_VDF_Face2.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Conv
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Eval_Conv_VDF_included
-#define Eval_Conv_VDF_included
+#ifndef Eval_Amont_VDF_Face2_included
+#define Eval_Amont_VDF_Face2_included
 
-#include <Eval_Conv_VDF_tools.h>
-#include <Evaluateur_VDF.h>
-#include <Ref_Champ_Face.h>
+#include <Eval_Conv_VDF_Face.h>
+#include <Eval_Conv_VDF.h>
 
-class Champ_Inc_base;
+// .DESCRIPTION class Eval_Amont_VDF_Face2
+// Evaluateur VDF pour la convection
+// Le champ convecte est un Champ_Face
+// Schema de convection Amont
+// Rq:Les evaluateurs de flux convectifs calculent en fait le terme
+// convectif qui figure au second membre de l'equation d'evolution
+// c.a.d l'oppose du flux convectif pour l'EXPLICITE.
+//
+// Dans le cas de la methode IMPLICITE les evaluateurs calculent la quantite qui figure
+// dans le premier membre de l'equation, nous ne prenons pas par consequent l'oppose en
+// ce qui concerne les termes pour la matrice, par contre pour le second membre nous
+// procedons comme en explicite mais en ne fesant intervenir que les valeurs fournies
+// par les conditions limites.
+//
 
-// .DESCRIPTION class Eval_Conv_VDF
-// classe de base des evaluateurs de convection VDF
-
-class Eval_Conv_VDF : public Evaluateur_VDF, public Eval_Conv_VDF_tools
+class Eval_Amont_VDF_Face2 : public Eval_Conv_VDF_Face<Eval_Amont_VDF_Face2>, public Eval_Conv_VDF
 {
-
 public:
-  inline Eval_Conv_VDF() {}
-  inline Eval_Conv_VDF(const Eval_Conv_VDF& eval);
-  void associer(const Champ_Face& );
-  void mettre_a_jour( );
-  const Champ_Inc_base& vitesse() const;
-  Champ_Inc_base& vitesse();
-
-  // pour CRTP
-  inline int get_elem(int i, int j) const { return elem_(i,j); }
-  inline int get_orientation(int i ) const { return orientation(i); }
-  inline int get_premiere_face_bord() const { return premiere_face_bord; }
-  inline double get_dt_vitesse(int face) const { return dt_vitesse(face); }
-  inline double get_surface_porosite(int face) const { return surface(face)*porosite(face); }
-  inline double get_surface(int face) const { return surface(face); }
-  inline double get_porosite(int face) const { return porosite(face); }
-  inline const Zone_Cl_VDF& get_la_zcl() const { return la_zcl.valeur(); }
-
-protected:
-  REF(Champ_Face) vitesse_;
-  DoubleTab dt_vitesse;
+  static constexpr bool IS_AMONT = true;
 };
 
-inline Eval_Conv_VDF::Eval_Conv_VDF(const Eval_Conv_VDF& eval)
-  :Evaluateur_VDF(eval), vitesse_(eval.vitesse_)
-{
-  dt_vitesse.ref(eval.dt_vitesse);
-}
-
-#endif /* Eval_Conv_VDF_included */
+#endif /* Eval_Amont_VDF_Face2_included */
