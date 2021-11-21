@@ -33,10 +33,22 @@ public:
   virtual ~Eval_Conv_VDF_tools() {}
   // DANGER !!!! FAUT JAMAIS ENTRER
   virtual int amont_amont(int face, int i) const { return dont_call<int>(__func__); }
-  virtual double quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { return dont_call<double>(__func__); }
-  virtual void quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { return dont_call<void>(__func__); }
   virtual double qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { return dont_call<double>(__func__); }
+  virtual double quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { return dont_call<double>(__func__); }
   virtual void qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { return dont_call<void>(__func__); }
+  virtual void quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { return dont_call<void>(__func__); }
+
+  virtual int face_amont_conj(int ,int ,int ) const { return dont_call<int>(__func__); }
+  virtual int face_amont_princ(int ,int ) const { return dont_call<int>(__func__); }
+  virtual double dim_elem(int ,int ) const { return dont_call<double>(__func__); }
+  virtual double dim_face(int ,int ) const { return dont_call<double>(__func__); }
+//  virtual double dist_face(int ,int ,int ) const { return dont_call<double>(__func__); }
+  virtual double dist_elem(int ,int ,int ) const { return dont_call<double>(__func__); }
+  virtual double dist_elem_period(int , int , int ) const { return dont_call<double>(__func__); }
+//  virtual double dist_face_period(int ,int ,int ) const { return dont_call<double>(__func__); }
+  virtual double conv_quick_sharp_plus(const double& ,const double& , const double& , const double& , const double& , const double& , const double& ) const { return dont_call<double>(__func__); }
+  virtual double conv_quick_sharp_moins(const double& ,const double& ,const double& , const double& ,const double& , const double& ,const double& ) const { return dont_call<double>(__func__); }
+
 
 protected:
   double qcentre2_impl(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
@@ -82,6 +94,18 @@ inline double Fram(const double& s1,const double& s2, const double& s3,const dou
   fr *= fr;
   fr *= fr;
   return dmin(fr,1.0);
+}
+
+// Fonction de calcul de cf(limiteur de pente) dans le schema Quick-sharp
+inline double sharp2(const double& utc)
+{
+  double cf;
+  if ( (utc <= -1) || (utc >= 1.5) ) cf = 0.125;
+  else if ((utc > -1) && (utc <= 0) ) cf = 0.5 + 0.375*utc;
+  else if ((utc <= 0.25) && (utc > 0) ) cf = 0.5 - 0.625*sqrt(utc);
+  else if ((utc > 0.25) && (utc <= 1.) ) cf = 0.25*(1.-utc);
+  else cf = 0.25*(utc-1.);
+  return cf;
 }
 
 #endif /* Eval_Conv_VDF_tools_included */

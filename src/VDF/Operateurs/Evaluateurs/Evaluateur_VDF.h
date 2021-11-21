@@ -20,7 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Evaluateur_VDF_included
 #define Evaluateur_VDF_included
 
@@ -29,9 +28,8 @@
 #include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Zone_VDF.h>
-//
+
 // .DESCRIPTION class Evaluateur_VDF
-//
 // Classe de base des evaluateurs VDF. Cette classe n'appartient pas a la
 // hierarchie des Objet_U.
 // Cette classe porte une reference a un objet de type Zone_VDF et une
@@ -39,57 +37,33 @@
 // qui sont en fait des references aux tableaux de l'objet de type Zone_VDF
 // (ces tableaux locaux n'existent pas en memoire).
 
-//
-// .SECTION voir aussi
-//
-//
-
-
 class Evaluateur_VDF
 {
-
 public:
-
-  inline Evaluateur_VDF();
+  inline Evaluateur_VDF() {}
   inline virtual ~Evaluateur_VDF() {}
-
   Evaluateur_VDF(const Evaluateur_VDF& );
   virtual void associer_zones(const Zone_VDF& , const Zone_Cl_VDF& );
   virtual void associer_porosite(const DoubleVect&);
 
-protected:
-
-  REF(Zone_VDF) la_zone;
-  REF(Zone_Cl_VDF) la_zcl;
-  int dimension;
-  int premiere_face_bord;
-  IntTab elem_;                       // les 2 elements voisins d'une face
-  DoubleVect surface;          // surfaces des faces
-  IntVect orientation;         // orientations des faces
-  DoubleVect porosite;               // porosites surfaciques
-  DoubleVect volume_entrelaces;//
-  DoubleTab xv;                // coord des centres des faces
-
-  double dist_norm_bord(int) const;
-
+  inline double dist_face_period(int fac1, int fac2, int k) const { return la_zone->dist_face_period(fac1,fac2,k); }
   inline double dist_face(int fac1, int fac2, int k) const
   {
     return xv(fac2,k) - xv(fac1,k);
     //return la_zone->dist_face(fac1, fac2, k);
   }
 
-  inline double dist_face_period(int fac1, int fac2, int k) const
-  {
-    return la_zone->dist_face_period(fac1,fac2,k);
-  }
+protected:
+  REF(Zone_VDF) la_zone;
+  REF(Zone_Cl_VDF) la_zcl;
+  int dimension, premiere_face_bord;
+  IntTab elem_;                       // les 2 elements voisins d'une face
+  DoubleVect surface;          // surfaces des faces
+  IntVect orientation;         // orientations des faces
+  DoubleVect porosite;               // porosites surfaciques
+  DoubleVect volume_entrelaces;//
+  DoubleTab xv;                // coord des centres des faces
+  double dist_norm_bord(int) const;
 };
 
-//
-//   Fonctions inline de Evaluateur_VDF
-//
-
-inline Evaluateur_VDF::Evaluateur_VDF()
-{}
-
-
-#endif
+#endif /* Evaluateur_VDF_included */

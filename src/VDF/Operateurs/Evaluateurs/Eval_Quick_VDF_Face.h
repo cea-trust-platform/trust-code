@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -358,6 +358,7 @@ inline void Eval_Quick_VDF_Face::flux_arete_fluide(const DoubleTab& inco,
 
 //// flux_arete_interne
 //
+////////////////////////*
 
 inline double Eval_Quick_VDF_Face::flux_arete_interne(const DoubleTab& inco, int fac1,
                                                       int fac2, int fac3, int fac4) const
@@ -471,6 +472,7 @@ inline void Eval_Quick_VDF_Face::flux_arete_paroi_fluide(const DoubleTab& inco,
 
 //// flux_arete_periodicite
 //
+
 
 void Eval_Quick_VDF_Face::flux_arete_periodicite(const DoubleTab& inco,
                                                  int fac1, int fac2,
