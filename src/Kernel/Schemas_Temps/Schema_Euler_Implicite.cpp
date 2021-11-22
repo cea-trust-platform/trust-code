@@ -296,7 +296,7 @@ bool Schema_Euler_Implicite::iterateTimeStep(bool& converged)
       compteur=0;
       Cout<<" "<<finl;
       //Cout<<"Schema_Euler_Implicite : solving of problem "<<prob.que_suis_je()<<finl;
-      while ((!converged)&&(compteur<nb_ite_max))
+      while (ok && !converged && compteur < nb_ite_max)
         {
           compteur++;
           prob.updateGivenFields();
