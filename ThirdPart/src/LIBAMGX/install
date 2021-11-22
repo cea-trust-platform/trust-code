@@ -18,9 +18,10 @@ then
    then
       # Latest:
       git clone https://github.com/NVIDIA/AMGX.git $LIB
-      cd $LIB && git checkout origin/v2.1.x && commit=`git rev-parse HEAD` && cd -
-      tar cfz $TRUST_ROOT/$LIB"_"$commit.tar.gz --exclude .git . && echo "Creation du package \$TRUST_ROOT/$LIB"_"$commit.tar.gz"
+      cd $LIB && git checkout main && commit=`git rev-parse HEAD` && cd -
+      tar cfz $TRUST_ROOT/externalpackages/AmgX/$LIB"_"$commit.tar.gz --exclude .git $LIB && echo "Creation du package $LIB"_"$commit.tar.gz"
    else
+      #tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_9304db908c5ec23ee011edc5418541c69c3fdc02.tar.gz # Regle un pb valgrind mais non convergence suspecte sur fiche validation
       tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_6dba8067ca.tar.gz
    fi
    cd $LIB && mkdir -p build && cd build

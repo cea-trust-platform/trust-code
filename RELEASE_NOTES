@@ -142,7 +142,7 @@ Release notes version 1.8.1 : Enhancements, modifications and corrected bugs sin
 03/06/20 (TRUST)  Output      : Add more profiled methods in the performance .TU file
 19/05/20 (TRUST)  Portability : Latest OpenMPI version downloaded by "./configure -force_latest_openmpi" bumped from 2.13 to 4.0.3
 19/05/20 (TRUST)  Bug fixed   : Allow different beginning/ending times for statistics and fix bug in case of resumption whith statistics
-12/05/20 (TRUST)  Portability : Ubuntu version 19-20 OS are now supported
+12/05/20 (TRUST)  Portability : Ubuntu version 19-20 OS are now supported (after possibly doing: sudo apt-get install gfortran libx11-dev texlive texlive-latex-extra)
 05/05/20 (TRUST)  Tools       : ICoCo tutorial updated ($TRUST_ROOT/doc/TRUST/ICoCo_tutorial.pdf)
 05/05/20 (TRUST)  Keyword     : Simplify Source_generique keyword syntax when giving an analytical expression without field (source refChamp useless) 
 04/05/20 (TRUST)  Portability : Centos 6.4, Fedora 20 and GNU version compiler older than 4.8.5 are not supported anymore
