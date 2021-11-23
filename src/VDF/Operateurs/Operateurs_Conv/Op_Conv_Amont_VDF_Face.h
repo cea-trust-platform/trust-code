@@ -23,7 +23,7 @@
 #ifndef Op_Conv_Amont_VDF_Face_included
 #define Op_Conv_Amont_VDF_Face_included
 
-#include <Eval_Amont_VDF_Face2.h>
+#include <Eval_Conv_VDF_Face_leaves.h>
 #include <Op_Conv_VDF_base.h>
 #include <Op_VDF_Face.h>
 #include <ItVDFFa.h>

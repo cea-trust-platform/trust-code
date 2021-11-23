@@ -22,6 +22,7 @@
 
 #include <Eval_Conv_VDF_tools.h>
 #include <DoubleTab.h>
+#include <IntTab.h>
 
 // qcentre2 pour un champ transporte scalaire
 double Eval_Conv_VDF_tools::qcentre2_impl(const double& psc, const int num0, const int num1,
@@ -146,4 +147,98 @@ void Eval_Conv_VDF_tools::quick_fram_impl(const int ori,const double dx, const d
       fr = ( num0_0 != -1 && num1_1 != -1 ) ? Fram(T0_0,T0,T1,T1_1) : 1.;
       flux(k) = ((1.-fr)*flux(k) + fr*trans_amont)*psc;
     }
+}
+
+// quick pour un champ face
+double Eval_Conv_VDF_tools::conv_quick_sharp_plus_impl(const double& psc,const double& vit_0, const double& vit_1,
+                                                       const double& vit_0_0, const double& dx,
+                                                       const double& dm, const double& dxam) const
+{
+  double cf, curv, delta_0 = vit_0 - vit_0_0, delta = vit_1 - vit_0, dd1,utc, delta_delta;
+  curv = (delta/dx - delta_0/dxam)/dm ;
+  // Calcul de cf:
+  delta_delta = delta_0+delta;
+  dd1 = dabs(delta_delta);
+  if (dd1 < 1.e-5) cf = 0.125;
+  else
+    {
+      utc = delta_0/delta_delta;
+      cf = sharp2(utc);
+    }
+  return (0.5*(vit_0 + vit_1) - cf*(dx*dx)*curv)*psc;
+}
+
+// quick pour un champ face
+double Eval_Conv_VDF_tools::conv_quick_sharp_moins_impl(const double& psc,const double& vit_0,const double& vit_1,
+                                                        const double& vit_1_1,const double& dx,
+                                                        const double& dm,const double& dxam) const
+{
+  double cf, curv, delta_1 = vit_1_1 - vit_1, delta = vit_1 - vit_0, dd1,utc, delta_delta;
+  curv = ( delta_1/dxam - delta/dx )/dm ;
+  // Calcul de cf:
+  delta_delta = delta_1+delta;
+  dd1 = dabs(delta_delta);
+  if (dd1 < 1.e-5) cf = 0.125;
+  else
+    {
+      utc = delta_1/delta_delta;
+      cf = sharp2(utc);
+    }
+  return (0.5*(vit_0 + vit_1) - cf*(dx*dx)*curv)*psc;
+}
+
+int Eval_Conv_VDF_tools::face_amont_conj_axi_impl(int num_face, int k, int i, int dimension,
+                                                  const IntTab& face_voisins, const IntTab& elem_faces,
+                                                  const IntVect& orientation) const
+{
+  int ori = orientation(num_face), elem1 = face_voisins(num_face,1);
+  int face,elem_bis = -2, face_conj = -1 ;
+
+  if(elem1 != -1)
+    {
+      face = elem_faces(elem1, k+i*dimension);
+      elem_bis = face_voisins(face,i);
+      if (elem_bis != -1) face_conj = elem_faces(elem_bis, ori);
+      else face_conj = -1;
+    }
+  if ((elem1==-1) || (elem_bis==-1))
+    {
+      elem1 = face_voisins(num_face,0);
+      if(elem1 != -1)
+        {
+          face = elem_faces(elem1, k+i*dimension);
+          elem_bis = face_voisins(face,i);
+          assert(elem_bis!=-2);
+          if (elem_bis != -1) face_conj = elem_faces(elem_bis, ori);
+          else face_conj = -1;
+        }
+    }
+  return face_conj;
+}
+
+double Eval_Conv_VDF_tools::dist_face_axi_impl(int n1, int n2, int k, const DoubleTab& xv) const
+{
+  double d_teta , dist ;
+  if (k != 1) dist =  xv(n2,k) - xv(n1,k);
+  else
+    {
+      d_teta = xv(n2,1) - xv(n1,1);
+      if (d_teta < 0) d_teta += 2.0*M_PI;
+      if (d_teta > M_PI) d_teta -= M_PI ;
+      dist = d_teta*xv(n1,0);
+    }
+  return dist ;
+}
+
+double Eval_Conv_VDF_tools::dist_elem_axi_impl(int n1, int n2, int k, const DoubleTab& xp) const
+{
+  double d_teta, dist ;
+  if (k != 1) dist = xp(n2,k)-xp(n1,k) ;
+  else
+    {
+      d_teta = xp(n2,1) - xp(n1,1);
+      if (d_teta < 0) d_teta += 2.0*M_PI;
+      dist = d_teta * xp(n1,0);
+    }
+  return dist ;
 }

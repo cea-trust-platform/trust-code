@@ -26,6 +26,8 @@
 #include <Double.h>
 class DoubleTab;
 class ArrOfDouble;
+class IntTab;
+class IntVect;
 
 class Eval_Conv_VDF_tools
 {
@@ -51,7 +53,12 @@ public:
 
 
 protected:
+  int face_amont_conj_axi_impl(int ,int ,int ,int , const IntTab& , const IntTab& , const IntVect& ) const;
+  double dist_face_axi_impl(int ,int ,int ,const DoubleTab&) const;
+  double dist_elem_axi_impl(int ,int ,int ,const DoubleTab&) const;
   double qcentre2_impl(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
+  double conv_quick_sharp_plus_impl(const double& ,const double& , const double& , const double& , const double& , const double& , const double& ) const ;
+  double conv_quick_sharp_moins_impl(const double& ,const double& ,const double& , const double& ,const double& , const double& ,const double& ) const;
   double qcentre4_impl(const int ,const double , const double , const double ,
                        const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
   double quick_fram_impl(const int ,const double , const double , const double ,const double, const double,

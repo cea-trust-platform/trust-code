@@ -31,7 +31,7 @@
 
 #include <Op_Conv_VDF_base.h>
 #include <ItVDFFa.h>
-#include <Eval_Quick_VDF_Face_Axi2.h>
+#include <Eval_Conv_VDF_Face_leaves.h>
 
 // .DESCRIPTION class Op_Conv_Quick_VDF_Face
 //  Cette classe represente l'operateur de convection associe a une equation de
