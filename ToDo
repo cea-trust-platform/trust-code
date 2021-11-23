@@ -9,6 +9,7 @@ Version	Qui				Tache
 1.8.4   adrien.bruneton@cea.fr  ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
 1.8.4   adrien.bruneton@cea.fr  Nettoyer le vieux code med fichier
 1.8.4   adrien.bruneton@cea.fr  Revoir LireMED pour ne pas utiliser les familles mais que les groupes
+1.8.5	pierre.ledac@cea.ce	Fedora 36 et GNU 11.?
 1.8.4   pierre.ledac@cea.fr     Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
 1.8.4   pierre.ledac@cea.fr     Doxygen update + remove #ifdef DOXYGEN_SHOULD_SKIP_THIS from Eval_DiffF22_VDF_const_Elem.h
 1.8.4   pierre.ledac@cea.fr     Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
