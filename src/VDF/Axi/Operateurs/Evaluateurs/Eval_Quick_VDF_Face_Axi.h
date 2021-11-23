@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -552,7 +552,21 @@ inline double Eval_Quick_VDF_Face_Axi::flux_arete_symetrie(const DoubleTab&, int
 
 //// flux_fa7_elem
 //
-
+/*
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 inline double Eval_Quick_VDF_Face_Axi::flux_fa7_elem(const DoubleTab& inco, int num_elem,
                                                      int fac1, int fac2) const
 {

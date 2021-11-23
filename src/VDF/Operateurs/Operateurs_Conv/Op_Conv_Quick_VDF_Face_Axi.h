@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Conv_Quick_VDF_Face_Axi.h
-// Directory:   $TRUST_ROOT/src/VDF/Axi/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Conv
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -31,11 +31,9 @@
 
 #include <Op_Conv_VDF_base.h>
 #include <ItVDFFa.h>
-#include <Eval_Quick_VDF_Face_Axi.h>
+#include <Eval_Quick_VDF_Face_Axi2.h>
 
-//
 // .DESCRIPTION class Op_Conv_Quick_VDF_Face
-//
 //  Cette classe represente l'operateur de convection associe a une equation de
 //  la quantite de mouvement.
 //  La discretisation est VDF
@@ -43,27 +41,14 @@
 //  Le schema de convection est du type Quick
 //  L'iterateur associe est de type Iterateur_VDF_Face
 //  L'evaluateur associe est de type Eval_Quick_VDF_Face
-//
-// .SECTION voir aussi
-//
-//
 
-declare_It_VDF_Face(Eval_Quick_VDF_Face_Axi)
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Conv_Quick_VDF_Face_Axi
-//
-//////////////////////////////////////////////////////////////////////////////
-
+declare_It_VDF_Face(Eval_Quick_VDF_Face_Axi2)
 
 class Op_Conv_Quick_VDF_Face_Axi : public Op_Conv_VDF_base
 {
-
   Declare_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Face_Axi);
 
 public:
-
   Op_Conv_Quick_VDF_Face_Axi();
   void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
   inline void associer_vitesse(const Champ_base&) ;
@@ -71,19 +56,13 @@ public:
   Champ_Inc_base& vitesse();
 };
 
-
-//
-// Fonctions inline de la classe Op_Conv_Quick_VDF_Face
-//
-
 // Description:
 // associe le champ de vitesse a l'evaluateur
-
 inline void Op_Conv_Quick_VDF_Face_Axi::associer_vitesse(const Champ_base& ch_vit)
 {
   const Champ_Face& vit = (Champ_Face&) ch_vit;
 
-  Eval_Quick_VDF_Face_Axi& eval_conv = (Eval_Quick_VDF_Face_Axi&) iter.evaluateur();
+  Eval_Quick_VDF_Face_Axi2& eval_conv = dynamic_cast<Eval_Quick_VDF_Face_Axi2&> (iter.evaluateur());
   eval_conv.associer(vit );                // Eval_Conv_VDF::associer
 }
 

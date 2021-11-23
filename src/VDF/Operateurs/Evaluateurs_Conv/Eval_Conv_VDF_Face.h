@@ -34,6 +34,7 @@ public:
   static constexpr bool IS_CENTRE = false;
   static constexpr bool IS_CENTRE4 = false;
   static constexpr bool IS_QUICK = false;
+  static constexpr bool IS_AXI = false;
 
   // CRTP pattern to static_cast the appropriate class and get the implementation
   // This is magic !
@@ -60,14 +61,14 @@ public:
   inline int calculer_arete_fluide() const { return 1; }
   inline int calculer_arete_paroi() const { return 0; }
   inline int calculer_arete_paroi_fluide() const { return 1; }
-  inline int calculer_arete_coin_fluide() const { return 1; }
+  inline int calculer_arete_coin_fluide() const { return DERIVED_T::IS_AXI ? throw : 1; }
   inline int calculer_arete_symetrie() const { return 0; }
   inline int calculer_arete_interne() const { return 1; }
   inline int calculer_arete_mixte() const { return 1; }
   inline int calculer_fa7_sortie_libre() const { return 1; }
-  inline int calculer_arete_periodicite() const { return 1; }
+  inline int calculer_arete_periodicite() const { return DERIVED_T::IS_AXI ? 0 : 1; }
   inline int calculer_arete_symetrie_paroi() const { return 0; }
-  inline int calculer_arete_symetrie_fluide() const { return 1; }
+  inline int calculer_arete_symetrie_fluide() const { return DERIVED_T::IS_AXI ? 0 : 1; }
 
   //************************
   // CAS SCALAIRE
@@ -545,6 +546,7 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTa
 {
   if (DERIVED_T::IS_QUICK) // XXX : LOL
     {
+      if (DERIVED_T::IS_AXI) return;
       flux3_4 = flux_arete_interne(inco,fac1, fac2,fac3, fac4) ;
       flux1_2 = flux_arete_interne(inco,fac3, fac4,fac1, fac2) ;
       return;
@@ -679,6 +681,8 @@ inline double Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7_sortie_libre(int face, c
 template <typename DERIVED_T>
 inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const DoubleTab& inco, int fac1, int fac2, int fac3, int signe, double& flux3, double& flux1_2) const
 {
+  if (DERIVED_T::IS_AXI) return;
+
   double flux,psc;
   // Calcul de flux3:
   psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
@@ -962,6 +966,8 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_paroi_fluide(int fac1, i
 template <typename DERIVED_T>
 inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTab& inco, int fac1, int fac2 , int fac3, int fac4, DoubleVect& flux3_4, DoubleVect& flux1_2) const
 {
+  if (DERIVED_T::IS_AXI) return;
+
   double psc;
   // On calcule le flux convectif entre les volumes de controle associes a fac3 et fac4:
   psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
@@ -1137,6 +1143,8 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7_sortie_libre(int face, con
 template <typename DERIVED_T>
 inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
+  if (DERIVED_T::IS_AXI) return;
+
   double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
   if ((psc*signe)>0)
     for (int k=0; k<flux3.size(); k++) flux3(k) = -inco(fac3,k)*psc ;

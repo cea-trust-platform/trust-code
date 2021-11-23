@@ -86,7 +86,6 @@ instancie_src_ThHyd_Schemas_Temps();
 instancie_src_ThHyd_Turbulence();
 instancie_src_ThSol();
 instancie_src_VDF();
-instancie_src_VDF_Axi_Operateurs();
 instancie_src_VDF_Axi_Sources();
 instancie_src_VDF_Champs();
 instancie_src_VDF_Cond_Lim();
