@@ -362,7 +362,8 @@ ArrOfInt& Zone::chercher_elements(const DoubleTab& positions,
                                   int reel) const
 {
   bool set_cache = false;
-  if (!domaine().deformable())
+  // PL: On devrait faire un appel a chercher_elements(x,y,z,elem) si positions.dimension(0)=1 ...
+  if (!domaine().deformable() && positions.dimension(0)>1)
     {
       set_cache = true;
       if (!deriv_octree_.non_nul() || !deriv_octree_.valeur().construit())
