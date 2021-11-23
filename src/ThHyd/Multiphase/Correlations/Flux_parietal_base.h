@@ -51,26 +51,24 @@
 //        dv_qpk[N * n + m] -> derivee par rapport a v[m]
 //       dTf_qpk[N * n + m] -> derivee par rapport a T[m]
 //       dTp_qpk[n]         -> derivee par rapport a Tp
-//           qpi[N * k + l]           -> flux de masse de la phase k vers la phase l (a remplir pour k < l)
+//           qpi[N * k + l]           -> flux de chaleur fourni au changement de la phase k vers la phase l (a remplir pour k < l)
 //        da_qpi[N * (N * k + l) + m] -> derivee par rapport a alpha_m
 //        dp_qpi[N * k + l]           -> derivee par rapport a p
 //        dv_qpi[N * k + l]           -> derivee par rapport a v[m]
 //       dTf_qpi[N * (N * k + l) + m] -> derivee par rapport a T[m]
 //       dTp_qpi[N * k + l]           -> derivee par rapport a Tp
+//      nonlinear                     -> regler a 1 si q_pk / q_pi est non-lineaire en Tp / Tf; ne pas toucher sinon
 //////////////////////////////////////////////////////////////////////////////
 
 class Flux_parietal_base : public Correlation_base
 {
   Declare_base(Flux_parietal_base);
 public:
-  virtual void q_pk(int N, double D_h, double D_ch,
-                    const double *alpha, const double *T, const double p, const double *v, const double Tp,
-                    const double *lambda, const double *mu, const double *rho, const double *Cp,
-                    double *qpk, double *da_qpk, double *dp_qpk, double *dv_qpk, double *dTf_qpk, double *dTp_qpk) const = 0;
-  virtual void q_pi(int N, double D_h, double D_ch,
-                    const double *alpha, const double *T, const double p, const double *v, const double Tp,
-                    const double *lambda, const double *mu, const double *rho, const double *Cp,
-                    double *qpi, double *da_qpi, double *dp_qpi, double *dv_qpi, double *dTf_qpi, double *dTp_qpi) const = 0;
+  virtual void qp(int N, double D_h, double D_ch,
+                  const double *alpha, const double *T, const double p, const double *v, const double Tp,
+                  const double *lambda, const double *mu, const double *rho, const double *Cp,
+                  double *qpk, double *da_qpk, double *dp_qpk, double *dv_qpk, double *dTf_qpk, double *dTp_qpk,
+                  double *qpi, double *da_qpi, double *dp_qpi, double *dv_qpi, double *dTf_qpi, double *dTp_qpi, int& nonlinear) const = 0;
 };
 
 #endif

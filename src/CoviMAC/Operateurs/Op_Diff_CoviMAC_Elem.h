@@ -50,6 +50,11 @@ public :
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
   void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override { };
+  void mettre_a_jour(double t);
+
+  /* flux paroi_interface : q_pi(e, k, l) : flux de chaleur contribuant au changement de phase k->l dans l'element e */
+  const DoubleTab& q_pi() const;
+
 
 private:
   /* sommets connectes a un autre probleme par un Echange_contact */
@@ -62,6 +67,10 @@ private:
   mutable IntTab som_mix, som_ext_d, som_ext_pe, som_ext_pf; //sommet s = som_ext(i) : melange-t-il les composantes, couple (probleme, elem) dans som_ext_e([som_ext_d(i, 0), som_ext_d(i + 1, 0)[, 0/1)
   //faces Echange_contact (pb1, face1, pb2, face2) dans som_ext_f([som_ext_d(i, 1), som_ext_d(i + 1, 1)[, 0/1/2/3)
   mutable int som_ext_init_ = 0;
+
+  /* tableau renvoye par q_pi(), rempli lors de ajouter_blocs() */
+  mutable DoubleTab q_pi_;
+  mutable int q_pi_a_jour_ = 0; //q_pi() est utilisable ("a jour") entre le moment ou on a appelle ajouter_blocs() et le mettre_a_jour() suivant
 };
 
 /* comme des synonymes, mais avec l'info de ce qu'on est dans que_suis_je() */

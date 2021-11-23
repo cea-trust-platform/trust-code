@@ -29,6 +29,7 @@
 #include <Flux_interfacial_base.h>
 #include <Changement_phase_base.h>
 #include <Milieu_composite.h>
+#include <Op_Diff_CoviMAC_Elem.h>
 
 Implemente_instanciable(Flux_interfacial_CoviMAC,"Flux_interfacial_P0_CoviMAC", Source_base);
 
@@ -91,7 +92,8 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &pvit = ch_vit.passe(),
                    &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL,
                     &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
-                     &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs();
+                     &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs(),
+                      *q_pi = sub_type(Op_Diff_CoviMAC_Elem, pbm.eq_energie.operateur(0).l_op_base()) ? &ref_cast(Op_Diff_CoviMAC_Elem, pbm.eq_energie.operateur(0).l_op_base()).q_pi() : NULL;
   Matrice_Morse *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
                  *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL,
                   *Ma = matrices.count("alpha") ? matrices.at("alpha") : NULL;
@@ -145,7 +147,7 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                                             sat, dT_G, da_G, dP_G);
               /* limite thermique */
               double Tk = temp(e, k), Tl = temp(e, l), p = press(e, 0), Ts = sat.Tsat(p), dP_Ts = sat.dP_Tsat(p), //temperature de chaque cote + Tsat + derivees
-                     phi = hi(k, l) * (Tk - Ts) + hi(l, k) * (Tl - Ts), L = (phi < 0 ? h(e, l) : sat.Hvs(p)) - (phi > 0 ? h(e, k) : sat.Hls(p));
+                     phi = hi(k, l) * (Tk - Ts) + hi(l, k) * (Tl - Ts) + (q_pi ? (*q_pi)(e, k, l) : 0), L = (phi < 0 ? h(e, l) : sat.Hvs(p)) - (phi > 0 ? h(e, k) : sat.Hls(p));
               if ((is_therm = !correlation_G || std::fabs(G) > std::fabs(phi / L))) G = phi / L;
               /* enthalpies des phases (dans le sens correspondant au mode choisi pour G) */
 
@@ -188,7 +190,7 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                   //on suppose que la limite thermique s'applique d'un cote : c (=0,1) / n_c (=k,l) / signe du flux sortant de la phase k : s_c (=1,-1)
                   int c = (a_r(e, k) > a_r(e, l)), n_c = c ? l : k, n_d = c ? k : l, s_c = c ? -1 : 1;
                   double Tc = c ? Tl : Tk, hc = c ? hl : hk, dT_hc = c ? dTl_hl : dTk_hk, dP_hc = c ? dP_hl : dP_hk;
-                  for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * (s_c * hi(n_c, n_d) * (Tc - Ts) + G * hc);
+                  for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * (s_c * hi(n_c, n_d) * (Tc - Ts) + (c || !q_pi ? 0 : (*q_pi)(e, k, l)) + G * hc);
                   /* derivees (y compris celles en G, sauf dans le cas limite)*/
                   if (Ma) for (i = 0; i < 2; i++) for (n = 0; n < N; n++) //derivees en alpha
                         (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * da_hi(n_c, n_d, n) * (Tc - Ts) + (n_lim < 0) * da_G(n) * hc);

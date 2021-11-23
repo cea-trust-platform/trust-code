@@ -89,6 +89,10 @@ void Op_Diff_CoviMAC_Elem::completer()
       const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
       associer_diffusivite_turbulente(lambda_t);
     }
+
+  /* tableau q_pi */
+  if (sub_type(Energie_Multiphase, eq))
+    q_pi_.resize(0, ch.valeurs().line_size(), ch.valeurs().line_size()), zone.zone().creer_tableau_elements(q_pi_);
 }
 
 /* construction de s_dist : sommets du porbleme coincidant avec des sommets de problemes distants */
@@ -254,7 +258,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 {
   init_som_ext(), update_phif();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  int i, i_eq, i_s, il, j, k, k1, k2, kb, l, e, eb, f, fb, s, sb, sp, m, n, M, n_ext = op_ext.size(), p, pb, n_e, n_ef, nc, nl, n_m, d, db, D = dimension, sgn, sgn_l, nw, un = 1, rk, infoo, it, cv;
+  int i, i_eq, i_s, il, j, k, k1, k2, kb, l, e, eb, f, fb, s, sb, sp, m, n, M, n_ext = op_ext.size(), p, pb, n_e, n_ef, nc, nl, n_m, d, db, D = dimension, sgn, sgn_l, nw, un = 1, rk, infoo, it, cv, nonlinear;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N; //composantes
   std::vector<std::reference_wrapper<const Zone_CoviMAC>> zone; //zones
@@ -277,6 +281,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       N.push_back(inco[i].get().line_size()), fcl.push_back(std::ref(ch.fcl()));
     }
   const Zone_CoviMAC& zone0 = zone[0];
+  q_pi_ = 0; //remise a zero du flux paroi-interface
 
   /* avec phif : flux hors Echange_contact -> mat[0] seulement */
   DoubleTrav flux(N[0]);
@@ -290,11 +295,11 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                   (*mat[0])(N[0] * e + n, N[0] * eb + n) += (j ? 1 : -1) * phif_c(i, n) * fs[0](f);
           }
         else if (fcl[0](fb, 0) == 1 || fcl[0](fb, 0) == 2) for (n = 0; n < N[0]; n++) //Echange_impose_base
-            flux(n) += phif_c(i, n) * fs[0](f) * ref_cast(Echange_impose_base, cls[0].get()[fcl[0](fb, 1)].valeur()).T_ext(fcl[0](fb, 2), n);
+            flux(n) += (phif_c(i, n) ? phif_c(i, n) * fs[0](f) * ref_cast(Echange_impose_base, cls[0].get()[fcl[0](fb, 1)].valeur()).T_ext(fcl[0](fb, 2), n) : 0);
         else if (fcl[0](fb, 0) == 4) for (n = 0; n < N[0]; n++) //Neumann non homogene
-            flux(n) += phif_c(i, n) * fs[0](f) * ref_cast(Neumann_paroi, cls[0].get()[fcl[0](fb, 1)].valeur()).flux_impose(fcl[0](fb, 2), n);
+            flux(n) += (phif_c(i, n) ? phif_c(i, n) * fs[0](f) * ref_cast(Neumann_paroi, cls[0].get()[fcl[0](fb, 1)].valeur()).flux_impose(fcl[0](fb, 2), n) : 0);
         else if (fcl[0](fb, 0) == 6) for (n = 0; n < N[0]; n++) //Dirichlet
-            flux(n) += phif_c(i, n) * fs[0](f) * ref_cast(Dirichlet, cls[0].get()[fcl[0](fb, 1)].valeur()).val_imp(fcl[0](fb, 2), n);
+            flux(n) += (phif_c(i, n) ? phif_c(i, n) * fs[0](f) * ref_cast(Dirichlet, cls[0].get()[fcl[0](fb, 1)].valeur()).val_imp(fcl[0](fb, 2), n) : 0);
 
       for (j = 0; j < 2 && (e = f_e[0](f, j)) >= 0; j++) for (n = 0; n < N[0]; n++) //second membre -> amont/aval
           secmem(e, n) += (j ? -1 : 1) * flux(n);
@@ -312,11 +317,11 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   IntTrav i_efs, i_e, i_eq_flux, i_eq_cont, i_eq_pbm, piv(1); //indices dans les matrices : i_efs(i, j, n) -> composante n de la face j de l'elem i dans s_pe, i_e(i, n) -> indice de la phase n de l'elem i de s_pe
   //i_eq_{flux,cont}(i, n) -> n-ieme equation de flux/de continuite a la face i de s_pf
   //i_eq_pbm(i_efs(i, j, n)) -> n-ieme equation "flux = correlation" a la face j de l'elem i de s_pe (seulement si Pb_Multiphase)
-  DoubleTrav A, B, mA, mB, Ff, Fec, Tefs, C, X, Y, W(1), S, x_fs;
+  DoubleTrav A, B, mA, mB, Ff, Fec, Qf, Qec, Tefs, C, X, Y, W(1), S, x_fs;
   i_efs.set_smart_resize(1), i_e.set_smart_resize(1), i_eq_flux.set_smart_resize(1), i_eq_cont.set_smart_resize(1), i_eq_pbm.set_smart_resize(1);
   A.set_smart_resize(1), B.set_smart_resize(1), Ff.set_smart_resize(1), Fec.set_smart_resize(1), C.set_smart_resize(1), X.set_smart_resize(1);
   Y.set_smart_resize(1), piv.set_smart_resize(1), W.set_smart_resize(1), x_fs.set_smart_resize(1), Tefs.set_smart_resize(1), S.set_smart_resize(1);
-  mA.set_smart_resize(1), mB.set_smart_resize(1);
+  mA.set_smart_resize(1), mB.set_smart_resize(1), Qf.set_smart_resize(1), Qec.set_smart_resize(1);
 
   for (i_s = 0; i_s < som_ext.dimension(0); i_s++) if ((s = som_ext(i_s)) < zone0.nb_som())
       {
@@ -365,31 +370,32 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
         /* inconnues en paroi (i_efs), aux elements (i_e). On alloues toutes les composantes si som_mix = 1, une seule sinon */
         int mix = som_mix(i_s), Nm = mix ? 1 : N[s_pe[0][0]], t_eq, t_e, t_ec; //nombre total d'equations/variables aux faces, nombre total de variables aux elements, t_ec = t_e + 1, nombres divises par Nl
         for (n_ef = 0, i = 0; i < n_e; i++) n_ef = max(n_ef, se_f[i].size());//nombre max de faces par elem
-        for (i_efs.resize(n_e, n_ef, 1 + M * mix), i_efs = -1, i = 0, t_eq = 0; i < n_e; i++) for (p = s_pe[i][0], j = 0; j < (int) se_f[i].size(); j++)
+        for (i_efs.resize(n_e, n_ef, 1 + M * mix), i_efs = -1, i = 0, t_eq = 0; i < n_e; i++) for (p = s_pe[i][0], e = s_pe[i][1], j = 0; j < (int) se_f[i].size(); j++)
             {
               for (k = se_f[i][j], n = 0; n < (mix ? N[p] : 1); n++, t_eq++) i_efs(i, j, n) = t_eq; //une temperature de paroi par phase
-              if (sub_type(Energie_Multiphase, op_ext[p]->equation()) && fcl[s_pf[k][0]](s_pf[k][1], 0))
-                i_efs(i, j, M) = t_eq++; //si face de bord d'un Pb_Multiphase, une inconnue supplementaire : la Tparoi (dans ce cas, mix = 1)
+              //si face de bord d'un Pb_Multiphase (hors frontiere ouverte), une inconnue supplementaire : la Tparoi (dans ce cas, mix = 1)
+              f = s_pf[k][0] == p && (e == f_e[p](s_pf[k][1], 0) || e == f_e[p](s_pf[k][1], 1)) ? s_pf[k][1] : m_pf.at(s_pf[k])[1]; //numero de face cote e
+              if (sub_type(Energie_Multiphase, op_ext[p]->equation()) && fcl[p](f, 0) && fcl[p](f, 0) != 5) i_efs(i, j, M) = t_eq++;
             }
         for (i_e.resize(n_e, mix ? M : 1), i_e = -1, i = 0, t_e = 0, t_ec = 1; i < n_e; i++) for (p = s_pe[i][0], n = 0; n < (mix ? N[p] : 1); n++, t_e++, t_ec++) i_e(i, n) = t_e;
 
         /* equations */
         for (type_f.resize(n_f), i_eq_flux.resize(n_f, mix ? M : 1), i_eq_flux = -1, i_eq_cont.resize(n_f, mix ? M : 1), i_eq_cont = -1, i = 0, k = 0; i < n_f; i++)
           {
-            int p1 = s_pf[i][0], p2 = m_pf.count(s_pf[i]) ? m_pf[s_pf[i]][0] : p1, //nombres de composantes de chaque cote
-                n1 = sub_type(Energie_Multiphase, op_ext[p1]->equation()) && ref_cast(Pb_Multiphase, op_ext[p1]->equation().probleme()).has_correlation("flux_parietal") ? 1 : inco[p1].get().line_size(),
-                n2 = sub_type(Energie_Multiphase, op_ext[p2]->equation()) && ref_cast(Pb_Multiphase, op_ext[p2]->equation().probleme()).has_correlation("flux_parietal") ? 1 : inco[p2].get().line_size();
-            if (n1 != n2) Cerr << "Op_Diff_CoviMAC_Elem : incompatibility between " << op_ext[p1]->equation().probleme().le_nom()
-                                 << " and " << op_ext[p2]->equation().probleme().le_nom() << " ( " << n1 << " vs " << n2 << " components)!" << finl, Process::exit();
+            int p1 = s_pf[i][0], p2 = m_pf.count(s_pf[i]) ? m_pf[s_pf[i]][0] : p1, p12[2] = { p1, p2}, n12[2] = { N[p1], N[p2] }; //nombres de composantes de chaque cote
             f = s_pf[i][1], type_f[i] = fcl[p1](f, 0); //type de face
+            if (type_f[i] && type_f[i] != 5) for (j = 0; j < 2; j++) if (sub_type(Energie_Multiphase, op_ext[p12[j]]->equation()) //si flux parietal et CL non Neumann, il n'y a qu'une valeur en paroi
+                                                                             && ref_cast(Pb_Multiphase, op_ext[p12[j]]->equation().probleme()).has_correlation("flux_parietal")) n12[j] = 1;
+            if (n12[0] != n12[1]) Cerr << "Op_Diff_CoviMAC_Elem : incompatibility between " << op_ext[p1]->equation().probleme().le_nom()
+                                         << " and " << op_ext[p2]->equation().probleme().le_nom() << " ( " << n12[0] << " vs " << n12[1] << " components)!" << finl, Process::exit();
             //equations de flux : tous types sauf Dirichlet et Echange_impose_base
-            if (type_f[i] != 6 && type_f[i] != 7 && type_f[i] != 1 && type_f[i] != 2) for (n = 0; n < (mix ? n1 : 1); n++) i_eq_flux(i, n) = k, k++;
+            if (type_f[i] != 6 && type_f[i] != 7 && type_f[i] != 1 && type_f[i] != 2) for (n = 0; n < (mix ? n12[0] : 1); n++) i_eq_flux(i, n) = k, k++;
             //equations de continuite : tous types sauf Neumann
-            if (type_f[i] != 4 && type_f[i] != 5) for (n = 0; n < (mix ? n1 : 1); n++) i_eq_cont(i, n) = k, k++;
+            if (type_f[i] != 4 && type_f[i] != 5) for (n = 0; n < (mix ? n12[0] : 1); n++) i_eq_cont(i, n) = k, k++;
           }
-        //si Pb_Multiphase : equations dues aux correlations de flux (dans ce cas mix = 1)
-        if (mix) for (i_eq_pbm.resize(t_eq), i_eq_pbm = -1, i = 0; i < n_e; i++) if (sub_type(Energie_Multiphase, op_ext[p = s_pe[i][0]]->equation()))
-              for (j = 0; j < (int) se_f[i].size(); j++) if (type_f[se_f[i][j]]) for (n = 0; n < N[p]; n++) i_eq_pbm(i_efs(i, j, n)) = k, k++;
+        //si inconnues de paroi de Pb_Multiphase : equations dues aux correlations de flux (dans ce cas mix = 1)
+        if (mix) for (i_eq_pbm.resize(t_eq), i_eq_pbm = -1, i = 0; i < n_e; i++) for (j = 0; j < (int) se_f[i].size(); j++)
+              if (i_efs(i, j, M) >= 0) for (n = 0; n < N[p]; n++) i_eq_pbm(i_efs(i, j, n)) = k, k++;
         assert(k == t_eq); //a-ton bien autant d'equations que d'inconnues?
 
         for (int essai = 0; essai < 3; essai++) /* essai 0 : MPFA O -> essai 1 : MPFA O avec x_fs mobiles -> essai 2 : MPFA symetrique (corecive, mais pas tres consistante) */
@@ -415,12 +421,16 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
               }
 
             A.resize(Nm, t_eq, t_eq), B.resize(Nm, t_ec = t_e + 1, t_eq), Ff.resize(Nm, t_eq, t_eq), Fec.resize(Nm, t_eq, t_ec); //systeme A.dT_efs = B.{dT_eb, 1}, flux sortant a chaque face
+            if (q_pi_.dimension(0)) Qf.resize(n_e, t_eq, M, M), Qec.resize(n_e, t_ec, M, M); //si Pb_Multiphase : flux paroi-interface
             /* debut du Newton sur les T_efs : initialisation aux temperatures de mailles */
-            for (Tefs.resize(Nm, t_eq), i = 0; i < n_e; i++) for (p = s_pe[i][0], e = s_pe[i][1], j = 0; j < (int) se_f[i].size(); j++) for (n = 0; n < N[p]; n++)
-                  Tefs(!mix * n, i_efs(i, j, mix * n)) = inco[p](e, n);
-            for (it = 0, cv = 0; !cv && it < 10; it++) //Newton sur les Tefs. Si mix = 0 (pas de Pb_Multi), une seule iteration suffit
+            for (Tefs.resize(Nm, t_eq), i = 0; i < n_e; i++) for (p = s_pe[i][0], e = s_pe[i][1], j = 0; j < (int) se_f[i].size(); j++)
+                {
+                  for (n = 0; n < N[p]; n++) Tefs(!mix * n, i_efs(i, j, mix * n)) = inco[p](e, n); //Tefs de chaque phase
+                  if (mix && i_efs(i, j, M) >= 0) Tefs(0, i_efs(i, j, M)) = inco[p](e, 0); //Tparoi : on prend la temperature de la phase 0 faute de mieux
+                }
+            for (it = 0, nonlinear = 0, cv = 0; !cv && it < 10; it++) //Newton sur les Tefs. Si mix = 0 (pas de Pb_Multi), une seule iteration suffit
               {
-                for (A = 0, B = 0, Ff = 0, Fec = 0, i = 0; i < n_e; i++)
+                for (A = 0, B = 0, Ff = 0, Fec = 0, Qf = 0, Qec = 0, i = 0; i < n_e; i++)
                   {
                     p = s_pe[i][0], e = s_pe[i][1];
                     /* gradient dans e */
@@ -474,7 +484,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                         if (mix && i_efs(i, j, M) >= 0) /* inconnue de Tparoi -> Pb_Multiphase */
                           {
                             //equation de continuite : avec la Tparoi
-                            if ((i_eq = i_eq_cont(k, 0)) >= 0) B(t_e, i_eq) += sgn * Tefs(i_efs(i, j, M)), A(i_efs(i, j, M), i_eq) -= sgn;
+                            if ((i_eq = i_eq_cont(k, 0)) >= 0) B(0, t_e, i_eq) += sgn * Tefs(0, i_efs(i, j, M)), A(0, i_efs(i, j, M), i_eq) -= sgn;
                             //equations sur les correlations
                             const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[p]->equation().probleme());
                             const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbm.get_correlation("Flux_parietal").valeur());
@@ -484,18 +494,23 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                             DoubleTrav qpk(N[p]), dTf_qpk(N[p], N[p]), dTp_qpk(N[p]), qpi(N[p], N[p]), dTf_qpi(N[p], N[p], N[p]), dTp_qpi(N[p], N[p]), nv(N[p]);
                             for (d = 0; d < D; d++) for (n = 0; n < N[p]; n++) nv(n) += std::pow(vit(zone[p].get().nb_faces_tot() + D * e + d, n), 2);
                             for (n = 0; n < N[p]; n++) nv(n) = sqrt(nv(n));
-                            corr.q_pk(N[p], dh(e), dh(e), &alpha(e, 0), &Tefs(i_efs(i, j, 0)), press(e), nv.addr(), Tefs(i_efs(i, j, M)), &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
-                                      qpk.addr(), NULL, NULL, NULL, dTf_qpk.addr(), dTp_qpk.addr());
-                            corr.q_pi(N[p], dh(e), dh(e), &alpha(e, 0), &Tefs(i_efs(i, j, 0)), press(e), nv.addr(), Tefs(i_efs(i, j, M)), &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
-                                      qpi.addr(), NULL, NULL, NULL, dTf_qpi.addr(), dTp_qpi.addr());
+                            //appel : on n'est implicite qu'en les temperatures
+                            corr.qp(N[p], dh(e), dh(e), &alpha(e, 0), &Tefs(0, i_efs(i, j, 0)), press(e), nv.addr(), Tefs(0, i_efs(i, j, M)), &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
+                                    qpk.addr(), NULL, NULL, NULL, dTf_qpk.addr(), dTp_qpk.addr(), qpi.addr(), NULL, NULL, NULL, dTf_qpi.addr(), dTp_qpi.addr(), nonlinear);
                             /* on ajoute qpi(k, l) a la qpk(k) (sera ensuite retire par Flux_interfacial_CoviMAC) */
                             for (k1 = 0; k1 < N[p]; k1++) for (k2 = k1 + 1; k2 < N[p]; k2++)
                                 for (qpk(k1) += qpi(k1, k2), dTp_qpk(k1) += dTp_qpi(k1, k2), n = 0; n < N[p]; n++) dTf_qpk(k1, n) += dTf_qpi(k1, k2, n);
 
                             for (n = 0; n < N[p]; n++) //partie constante, derivees en Tp
-                              i_eq = i_eq_pbm(i_efs(i, j, n)), B(t_e, i_eq) += qpk(n), A(i_efs(i, j, M), i_eq) -= dTp_qpk(n);
+                              i_eq = i_eq_pbm(i_efs(i, j, n)), B(0, t_e, i_eq) -= qpk(n), A(0, i_efs(i, j, M), i_eq) += dTp_qpk(n);
                             for (n = 0; n < N[p]; n++) for (i_eq = i_eq_pbm(i_efs(i, j, n)), m = 0; m < N[p]; m++) //derivees en Tf
-                                A(i_efs(i, j, m), i_eq_pbm(i_efs(i, j, n))) -= dTf_qpk(n, m);
+                                A(0, i_efs(i, j, m), i_eq_pbm(i_efs(i, j, n))) += dTf_qpk(n, m);
+
+                            /* contributions de q_pi au tableau de flux paroi-interface */
+                            for (k1 = 0; k1 < N[p]; k1++) for (k2 = k1 + 1; k2 < N[p]; k2++) //partie constante, derivee en Tp
+                                Qec(i, t_e, k1, k2) += surf_fs[k] * qpi(k1, k2), Qf(i, i_efs(i, j, M), k1, k2) += surf_fs[k] * dTp_qpi(k1, k2);
+                            for (m = 0; m < N[p]; m++) for (k1 = 0; k1 < N[p]; k1++) for (k2 = k1 + 1; k2 < N[p]; k2++)
+                                  Qf(i, i_efs(i, j, m), k1, k2) += surf_fs[k] * dTf_qpi(k1, k2, m); //derivees en Tf
                           }
                         else for (n = 0; n < N[p]; n++) if ((i_eq = i_eq_cont(k, mix * n)) >= 0) /* pas d'inconnue de Tparoi -> continuite composante par composante */
                               B(!mix * n, t_e, i_eq) += sgn * Tefs(!mix * n, i_efs(i, j, mix * n)), A(!mix * n, i_efs(i, j, mix * n), i_eq) -= sgn;
@@ -505,7 +520,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                               B(!mix * n, t_e, i_eq) -= ref_cast(Echange_impose_base, cls[p].get()[fcl[p](f, 1)].valeur()).T_ext(fcl[p](f, 2), n);
                         if (type_f[k] == 6) for (n = 0; n < N[p]; n++) if ((i_eq = i_eq_cont(k, mix * n)) >= 0) //Dirichlet (non homogene)
                               B(!mix * n, t_e, i_eq) -= ref_cast(Dirichlet, cls[p].get()[fcl[p](f, 1)].valeur()).val_imp(fcl[p](f, 2), n);
-                        if (type_f[k] == 4 || type_f[k] == 5) for (n = 0; n < N[p]; n++) if ((i_eq = i_eq_flux(k, mix * n)) >= 0) //Neumann
+                        if (type_f[k] == 4) for (n = 0; n < N[p]; n++) if ((i_eq = i_eq_flux(k, mix * n)) >= 0) //Neumann
                               B(!mix * n, t_e, i_eq) -= ref_cast(Neumann, cls[p].get()[fcl[p](f, 1)].valeur()).flux_impose(fcl[p](f, 2), n);
                       }
                   }
@@ -514,15 +529,17 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                 for (piv.resize(t_eq), W.resize(nw = W(0)), n = 0; n < Nm; n++)
                   piv = 0, F77NAME(dgelsy)(&t_eq, &t_eq, &t_ec, &A(n, 0, 0), &t_eq, &B(n, 0, 0), &t_eq, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
 
-                /* mise a jour des Tefs et convergence. Si mix = 0 (pas de flux parietal), alors pas besoin d'autre iteration */
-                for (n = 0; n < Nm; n++) for (i = 0, cv = 1; i < t_eq; i++) Tefs(n, i) += B(n, t_e, i), cv &= !mix || dabs(B(n, t_e, i)) < 1e-3;
+                /* mise a jour des Tefs et convergence. Si nonlinear = 0, tout est lineaire -> pas besoin d'autres iterations */
+                for (n = 0; n < Nm; n++) for (i = 0, cv = 1; i < t_eq; i++) Tefs(n, i) += B(n, t_e, i), cv &= !nonlinear || dabs(B(n, t_e, i)) < 1e-3;
               }
             if (!cv && essai < 2) continue; //T_efs pas converge avec flux non coercif -> on essaie de stabiliser
             else if (!cv) Cerr << "non-convergence des T_efs!" << finl, Process::exit();
 
-            /* subbstitution dans des u_efs^n dans Fec */
+            /* subbstitution dans des u_efs^n dans Fec et Qec */
             for (n = 0; n < Nm; n++) for (i = 0; i < t_eq; i++) for (j = 0; j < t_ec; j++) for (k = 0; k < t_eq; k++)
                     Fec(n, i, j) += Ff(n, i, k) * B(n, j, k);
+            if (q_pi_.dimension(0))  for (i = 0; i < n_e; i++) for (j = 0; j < t_ec; j++) for (k = 0; k < t_eq; k++)
+                    for (k1 = 0; k1 < M; k1++) for (k2 = k1 + 1; k2 < M; k2++) Qec(i, j, k1, k2) += Qf(i, k, k1, k2) * B(0, j, k);
 
             /* A : forme(s) bilineaire */
             if (essai == 2) break;//pas la peine pour VFSYM
@@ -546,5 +563,22 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                   for (k = 0; k < n_e; k++) if (mat[p = s_pe[k][0]]) for (eb = s_pe[k][1], m = (mix ? 0 : n); m < (mix ? N[p] : n + 1); m++) //derivees : si on a la matrice
                         (*mat[p])(N[0] * e + n, N[p] * eb + m) -= Fec(!mix * n, i_efs(i, j, mix * n), i_e(k, mix * m));
                 }
+        /* contributions a q_pi : partie constante seulement pour le moment */
+        if (q_pi_.dimension(0)) for (i = 0; i < n_e; i++) if (s_pe[i][0] == 0) for (e = s_pe[i][1], k1 = 0; k1 < N[0]; k1++) for (k2 = k1 + 1; k2 < N[0]; k2++)
+                  q_pi_(e, k1, k2) += Qec(i, t_e, k1, k2);
       }
+  q_pi_a_jour_ = 1; //on peut maintenant demander q_pi
+}
+
+const DoubleTab& Op_Diff_CoviMAC_Elem::q_pi() const
+{
+  if (!q_pi_a_jour_) Cerr << "Op_Diff_CoviMAC_Elem : attempt to access q_pi (nucleate heat flux) before ajouter_blocs() has been called!" << finl
+                            << "Please call assembler_blocs() on Energie_Multiphase before calling it on Masse_Multiphase." << finl, Process::exit();
+  return q_pi_;
+}
+
+void Op_Diff_CoviMAC_Elem::mettre_a_jour(double t)
+{
+  Op_Diff_CoviMAC_base::mettre_a_jour(t);
+  q_pi_a_jour_ = 0; //q_pi devient inaccessible
 }

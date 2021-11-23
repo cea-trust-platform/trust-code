@@ -256,7 +256,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   for (it = 0, cv = 0; it < iter_min_ || (!cv && it < iter_max_); it++)
     {
       /* remplissage par assembler_blocs */
-      for (auto &&n_eq : eqs) n_eq.second->assembler_blocs_avec_inertie(mats[n_eq.first], sec[n_eq.first], semi_impl);
+      //ordre : equation d'energie avant l'equation de masse pour calculer q_pi avant de l'utiliser dans flux_interfacial
+      for (auto &&inc : { "vitesse", "temperature", "alpha"}) eqs[inc]->assembler_blocs_avec_inertie(mats[inc], sec[inc], semi_impl);
 
       /* expression des autres inconnues (x) en fonction de p : vitesse, puis temperature / pression */
       tabs_t b_p;
