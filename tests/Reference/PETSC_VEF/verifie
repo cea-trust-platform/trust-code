@@ -9,12 +9,12 @@ then
    then
 #      ./check_ranking `ls -rt ranking.* | tail -1` 1657 2.e-7 34 0.30
 #      ./check_ranking `ls -rt ranking.* | tail -1` 1920 2.e-7 34 0.30
-      ./check_ranking `ls -rt ranking.* | tail -1` 1986 2.e-7 34 0.30
+      ./check_ranking `ls -rt ranking.* | tail -1` 2007 2.e-7 34 0.30
       err=$?
    else
 #      ./check_ranking `ls -rt ranking.* | tail -1` 1796 2.e-7 70 0.35
 #      ./check_ranking `ls -rt ranking.* | tail -1` 2083 2.e-7 70 0.35
-      ./check_ranking `ls -rt ranking.* | tail -1` 2155 2.e-7 70 0.35
+      ./check_ranking `ls -rt ranking.* | tail -1` 2214 2.e-7 70 0.35
       err=$?
    fi
 fi

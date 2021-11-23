@@ -69,7 +69,7 @@ Entree& Sondes::readOn(Entree& s )
 
   if (motlu == "FICHIER")
     {
-      Cerr<<"Warning: Sondes { FICHIER .... } no more allowed, use Sondes_fichier { FICHIER .... } " <<finl;
+      Cerr<<"Warning: Sondes { " << motlu << " .... } no more allowed, use Sondes_fichier { " << motlu << " .... }" <<finl;
       exit();
       depuisFichier = true;
       s >> nom_fichier;
