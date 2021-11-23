@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -77,6 +77,6 @@ void Echange_externe_impose::verifie_ch_init_nb_comp()
     {
       const Equation_base& eq = zone_Cl_dis().equation();
       const int nb_comp = le_champ_front.valeur().nb_comp();
-      eq.verifie_ch_init_nb_comp(eq.inconnue(),nb_comp);
+      eq.verifie_ch_init_nb_comp(eq.inconnue(),nb_comp, this);
     }
 }

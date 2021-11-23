@@ -39,6 +39,9 @@
 #include <Schema_Implicite_base.h>
 #include <SETS.h>
 #include <EChaine.h>
+#include <Neumann_paroi.h>
+#include <Scalaire_impose_paroi.h>
+#include <Echange_global_impose.h>
 
 #define old_forme
 
@@ -287,6 +290,33 @@ int Energie_Multiphase::impr(Sortie& os) const
 {
   return Equation_base::impr(os);
 }
+
+// Description:
+// Verification du nombre de composantes lues pour la specification d un champ.
+// Dans Energie_Multiphase, les conditions aux limites de type "paroi" ne prennent
+// qu'une compposante lorsqu'une correlation "flux_parietal" est definie au niveau du probleme.
+// Precondition:
+// Parametre:  ch_ref  : un champ inconnu de l equation consideree
+//             nb_comp : nombre de composantes du champ lu
+//             cl      : si verification d'une condition aux limites, pointeur vers celle-ci
+//                       (pour demander un nombre de composantes different selon la CL)
+// Exception:
+// Effets de bord:
+// Postcondition:
+void Energie_Multiphase::verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int& nb_comp, const Cond_lim_base *cl) const
+{
+  //si on verifie une CL de type
+  if (cl && ref_cast(Pb_Multiphase, probleme()).has_correlation("flux_parietal")
+      && (sub_type(Neumann_paroi, *cl) || sub_type(Scalaire_impose_paroi, *cl) || sub_type(Echange_global_impose, *cl)))
+    {
+      if (nb_comp == 1) return; //OK
+      Cerr << "Energie_Multiphase : when using a Flux_parietal correlation, only one wall temperature/heat flux "
+           << "can be specified at the boundary " << cl->le_nom() << " . Please provide 1 component instead of " << nb_comp << "!" << finl;
+      Process::exit();
+    }
+  else Convection_Diffusion_std::verifie_ch_init_nb_comp(ch_ref, nb_comp, cl); //traitement normal
+}
+
 
 
 // Description:

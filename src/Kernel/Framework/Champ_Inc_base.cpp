@@ -30,6 +30,7 @@
 #include <Zone_VF.h>
 #include <Dirichlet.h>
 #include <Neumann_val_ext.h>
+#include <Scalaire_impose_paroi.h>
 #include <DoubleTrav.h>
 #include <Champ_Inc_P0_base.h>
 
@@ -1161,7 +1162,8 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
   for (i = 0; i < cls.size(); i++)
     {
       const Front_VF& fr = ref_cast(Front_VF, cls[i].valeur().frontiere_dis());
-      if (is_p ? sub_type(Neumann, cls[i].valeur()) : sub_type(Dirichlet, cls[i].valeur())) //valeur au bord imposee
+      //valeur au bord imposee, sauf si c'est une paroi (dans ce cas, la CL peut avoir moins de composantes que le champ -> Energie_Multiphase)
+      if (is_p ? sub_type(Neumann, cls[i].valeur()) : (sub_type(Dirichlet, cls[i].valeur()) && !sub_type(Scalaire_impose_paroi, cls[i].valeur())))
         for (j = 0; j < fr.nb_faces_tot(); j++) for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
             result(fb, n) = is_p ? ref_cast(Neumann, cls[i].valeur()).flux_impose(j, n) : ref_cast(Dirichlet, cls[i].valeur()).val_imp(j, n);
       else if (sub_type(Neumann_val_ext, cls[i].valeur())) //valeur externe imposee

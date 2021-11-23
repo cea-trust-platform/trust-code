@@ -1721,11 +1721,13 @@ const Motcle& Equation_base::domaine_application() const
 // Actuellement utilise pour la lecture d un condition initiale ou limite.
 // Precondition:
 // Parametre:  ch_ref  : un champ inconnu de l equation consideree
-//               nb_comp : nombre de composantes du champ lu
+//             nb_comp : nombre de composantes du champ lu
+//             cl      : si verification d'une condition aux limites, pointeur vers celle-ci
+//                       (pour demander un nombre de composantes different selon la CL)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Equation_base::verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int& nb_comp) const
+void Equation_base::verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int& nb_comp, const Cond_lim_base *cl) const
 {
   const Nature_du_champ nature = ch_ref.nature_du_champ();
   const int nb_composantes = ch_ref.nb_comp();

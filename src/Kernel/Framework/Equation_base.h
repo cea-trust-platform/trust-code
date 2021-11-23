@@ -239,7 +239,7 @@ public :
   /////////////////////////////////////////////////////
 
   virtual const Motcle& domaine_application() const;
-  void verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int& nb_comp) const;
+  virtual void verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int& nb_comp, const Cond_lim_base *cl = NULL) const;
   DoubleTab& derivee_en_temps_conv(DoubleTab& , const DoubleTab& );
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution)
   {

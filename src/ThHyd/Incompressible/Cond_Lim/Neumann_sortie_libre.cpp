@@ -110,11 +110,11 @@ void Neumann_sortie_libre::verifie_ch_init_nb_comp()
 
       if ((que_suis_je()=="Frontiere_ouverte") || (que_suis_je()=="Frontiere_ouverte_rayo_semi_transp")
           || (que_suis_je()=="Frontiere_Ouverte_Rayo_transp") || (que_suis_je()=="Sortie_libre_temperature_imposee_H"))
-        eq.verifie_ch_init_nb_comp(eq.inconnue(),nb_comp);
+        eq.verifie_ch_init_nb_comp(eq.inconnue(),nb_comp, this);
       else
         {
           const Navier_Stokes_std& eq_ns = ref_cast(Navier_Stokes_std,eq);
-          eq.verifie_ch_init_nb_comp(eq_ns.pression(),nb_comp);
+          eq.verifie_ch_init_nb_comp(eq_ns.pression(),nb_comp, this);
 
         }
     }

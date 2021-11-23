@@ -81,7 +81,7 @@ void Neumann_paroi::verifie_ch_init_nb_comp()
     {
       const Equation_base& eq = zone_Cl_dis().equation();
       const int nb_comp = le_champ_front.valeur().nb_comp();
-      eq.verifie_ch_init_nb_comp(eq.inconnue(),nb_comp);
+      eq.verifie_ch_init_nb_comp(eq.inconnue(),nb_comp, this);
     }
 }
 
