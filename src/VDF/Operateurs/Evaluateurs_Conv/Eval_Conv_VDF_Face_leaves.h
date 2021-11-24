@@ -58,6 +58,38 @@ public:
   static constexpr bool IS_AMONT = true;
 };
 
+
+
+// .DESCRIPTION  class Eval_Centre_VDF_Face2
+// Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
+// Schema de convection Centre
+class Eval_Centre_VDF_Face2 : public Eval_Conv_VDF_Face<Eval_Centre_VDF_Face2>, public Eval_Conv_VDF
+{
+public:
+  static constexpr bool IS_CENTRE = true;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // .DESCRIPTION class Eval_Quick_VDF_Face2
 // Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
 // Schema de convection Quick
