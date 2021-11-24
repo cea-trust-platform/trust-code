@@ -24,7 +24,7 @@ add_dependencies() {
 	dependency_dirname_path=`pwd`
 	if [ ! -f  `basename ${dependency_path}`/project.cfg ]
 	    then
-	    echo no directory `basename  ${dependency_tmp_path}` in  ${dependency_dirname_path}
+	    echo no project.cfg in directory `basename  ${dependency_tmp_path}` in  ${dependency_dirname_path}
 	    tar=$project_directory/archives_dependencies/${dependency_name}.tar.gz
 	    if [ ! -f $tar ]
 		then
