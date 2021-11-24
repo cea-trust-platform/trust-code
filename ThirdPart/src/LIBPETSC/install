@@ -1,5 +1,3 @@
-
-
 #!/bin/bash
 # Script d'installation de PETSC
 package=$1
@@ -462,7 +460,7 @@ then
    [ "$minimal_mumps" = 0 ] && [ "$TRUST_USE_CUDA" = 1 ] && [ "$PETSC_HAVE_OPENMP" = 1 ] && add_package superlu_dist
 
    # New (SuiteSparse/Cholmod):
-   [ $minimal_mumps = 0 ] && add_package SuiteSparse && [ $TRUST_USE_CUDA = 1 ] && with_packages=$with_packages" --download-suitesparse-disablegpu=0" # Add --with-64-bit-indices ?
+   [ "$minimal_mumps" = 0 ] && add_package SuiteSparse && [ "$TRUST_USE_CUDA" = 1 ] && with_packages=$with_packages" --download-suitesparse-disablegpu=0" # Add --with-64-bit-indices ?
 
    # New (Pastix) pb sous cygwin
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
