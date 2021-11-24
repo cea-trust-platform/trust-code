@@ -269,6 +269,8 @@ void Solv_Petsc::create_solver(Entree& entree)
     case 1:
       {
         KSPSetType(SolveurPetsc_, KSPCG);
+        // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
+        KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
         // Merge the two inner products needed in CG into a single MPI_Allreduce() call:
         // Gain interessant a partir de 4000 coeurs
         if (Process::nproc()>=4000)
@@ -286,16 +288,26 @@ void Solv_Petsc::create_solver(Entree& entree)
     case 10:
       {
         KSPSetType(SolveurPetsc_, KSPPIPECG);
+        // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
+        KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
         break;
       }
     case 18:
       {
         KSPSetType(SolveurPetsc_, KSPPIPECG2);
+        // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
+        KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
         break;
       }
     case 2:
       {
         KSPSetType(SolveurPetsc_, KSPGMRES);
+        // Le preconditionnement a droite permet que le residu utilise pour la convergence
+        // soit le residu reel ||Ax-b|| et non le residu preconditionne pour certains solveurs
+        // avec un preconditionnement a gauche (ex: GMRES). Ainsi, on peut comparer strictement
+        // les performances des solveurs (TRUST ou PETSC) entre eux
+        KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
+        KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
         if (amgx_)
@@ -308,6 +320,8 @@ void Solv_Petsc::create_solver(Entree& entree)
     case 19:
       {
         KSPSetType(SolveurPetsc_, KSPFGMRES);
+        KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
+        KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
         if (amgx_) amgx_option+="solver(s)=FGMRES\n"; // FGMRES
@@ -316,6 +330,11 @@ void Solv_Petsc::create_solver(Entree& entree)
     case 8:
       {
         KSPSetType(SolveurPetsc_, KSPPGMRES);
+        // PGMRES ne peut etre que preconditionne a gauche (CAx=Cb)
+        // et on ne peut avoir que le residu preconditionne (||CAx-Cb||)
+        // -> on ne peut comparer la convergence avec le GMRES...
+        KSPSetPCSide(SolveurPetsc_, PC_LEFT);
+        // KSPSetNormType(SolveurPetsc, KSP_NORM_UNPRECONDITIONED);
         solver_supported_on_gpu_by_petsc=1;
         break;
       }
@@ -2216,39 +2235,6 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
   std::clock_t start = std::clock();
   KSPSetUp(SolveurPetsc_);
   if (verbose) Cout << "[Petsc] Time to setup solver: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Calcul du residu de la meme maniere que le GCP de TRUST : ||Ax-B|| pour pouvoir comparer les performances//
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  if (type_ksp_ == KSPCG || type_ksp_ == KSPPIPECG || type_ksp_ == KSPPIPECG2 || type_ksp_ == KSPGROPPCG ||
-      type_ksp_ == KSPRICHARDSON)
-    {
-      // Residu=||Ax-b|| comme dans TRUST pour GCP sinon on ne peut comparer les convergences
-      KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
-    }
-  else if (type_ksp_ == KSPPGMRES)
-    {
-      // PGMRES ne peut etre que preconditionne a gauche (CAx=Cb)
-      // et on ne peut avoir que le residu preconditionne (||CAx-Cb||)
-      // -> on ne peut comparer la convergence avec le GMRES...
-      KSPSetPCSide(SolveurPetsc_, PC_LEFT);
-      // KSPSetNormType(SolveurPetsc, KSP_NORM_UNPRECONDITIONED);
-    }
-  else if (type_ksp_ == KSPGMRES || type_ksp_ == KSPFGMRES)
-    {
-      // Le preconditionnement a droite permet que le residu utilise pour la convergence
-      // soit le residu reel ||Ax-b|| et non le residu preconditionne pour certains solveurs
-      // avec un preconditionnement a gauche (ex: GMRES). Ainsi, on peut comparer strictement
-      // les performances des solveurs (TRUST ou PETSC) entre eux
-      KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
-      KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
-    }
-  /* On verra en temps utile:
-  else if (type_ksp_ == KSPBCGS || type_ksp_ == KSPIBCGS)
-    {
-      KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
-      KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
-    } */
 }
 
 void Solv_Petsc::Create_vectors(const DoubleVect& b)
