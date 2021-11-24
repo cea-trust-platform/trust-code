@@ -170,6 +170,7 @@
 <TR><TD><SMALL><A HREF="#Gaz_pemfc">Gaz_pemfc</A></TD><TD><SMALL># Pb_Hydraulique_Melange_Binaire_WC 3D GAZ PEMFC #</TD></TR>
 <TR><TD><SMALL><A HREF="#Himp_var">Himp_var</A></TD><TD><SMALL># Thermohydraulique 2D : Conditions limites instationnaires #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_2D_PolyMAC">Hyd_2D_PolyMAC</A></TD><TD><SMALL># Hydraulique 2D laminaire avec "trou" dans le maillage #</TD></TR>
+<TR><TD><SMALL><A HREF="#Hyd_3D_PolyMAC">Hyd_3D_PolyMAC</A></TD><TD><SMALL># Lecture maillage 3D Hexa+Tetra+Pyramide cree dans Salome avec: #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_Axi">Hyd_Axi</A></TD><TD><SMALL># Hydraulique 2D Axi #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_Axi_RZ">Hyd_Axi_RZ</A></TD><TD><SMALL># Hydraulique 2D axisymetrique R,Z laminaire schema amont #</TD></TR>
 <TR><TD><SMALL><A HREF="#Hyd_Axi_RZ_non_reg">Hyd_Axi_RZ_non_reg</A></TD><TD><SMALL># Hydraulique 2D axisymetrique R,Z laminaire schema amont #</TD></TR>
@@ -365,8 +366,11 @@
 <TR><TD><SMALL><A HREF="#Reprise_xyz_VDF">Reprise_xyz_VDF</A></TD><TD><SMALL># Teste la reprise xyz en VDF #</TD></TR>
 <TR><TD><SMALL><A HREF="#Reprise_xyz_VEF">Reprise_xyz_VEF</A></TD><TD><SMALL># Cas test pour verifier les reprises au format xyz en P1Bulle #</TD></TR>
 <TR><TD><SMALL><A HREF="#Reprise_xyz_ancien_format">Reprise_xyz_ancien_format</A></TD><TD><SMALL># Cas test pour verifier la reprise d'un fichier xyz anterieur a la 1.5.5 #</TD></TR>
+<TR><TD><SMALL><A HREF="#Reprise_xyz_int32">Reprise_xyz_int32</A></TD><TD><SMALL># Check restart a int32 calculation (Zones+xyz) with a int64 binary in parallel #</TD></TR>
+<TR><TD><SMALL><A HREF="#Reprise_xyz_int64">Reprise_xyz_int64</A></TD><TD><SMALL># Check restart a int64 calculation (Zones+xyz) with a int32 binary in parallel #</TD></TR>
 <TR><TD><SMALL><A HREF="#Sans_postraitement">Sans_postraitement</A></TD><TD><SMALL># Thermohydraulique 2D : Couplage Boussinesq et schema quick #</TD></TR>
 <TR><TD><SMALL><A HREF="#Save_Last_TS_ICoCo">Save_Last_TS_ICoCo</A></TD><TD><SMALL># Test of last time step backup (sauvegarde_simple) #</TD></TR>
+<TR><TD><SMALL><A HREF="#Save_Matrice_AMGX">Save_Matrice_AMGX</A></TD><TD><SMALL># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</TD></TR>
 <TR><TD><SMALL><A HREF="#Scalaires_passifs">Scalaires_passifs</A></TD><TD><SMALL># Hydraulique 2D avec transport scalaire passif #</TD></TR>
 <TR><TD><SMALL><A HREF="#Scalaires_passifs_VEF">Scalaires_passifs_VEF</A></TD><TD><SMALL># Hydraulique 2D avec transport scalaire passif #</TD></TR>
 <TR><TD><SMALL><A HREF="#Schema_Adams_Bashforth_order_3">Schema_Adams_Bashforth_order_3</A></TD><TD><SMALL># Convergence study #</TD></TR>
@@ -452,6 +456,7 @@
 <TR><TD><SMALL><A HREF="#cond_couple_vdf_impl">cond_couple_vdf_impl</A></TD><TD><SMALL># Thermohydraulique 3D VDF couplee a conduction 2D avec rayonnement de paroi #</TD></TR>
 <TR><TD><SMALL><A HREF="#cond_couple_vef_impl">cond_couple_vef_impl</A></TD><TD><SMALL># Thermohydraulique 3D VDF couplee a conduction 2D #</TD></TR>
 <TR><TD><SMALL><A HREF="#cond_vef_impl">cond_vef_impl</A></TD><TD><SMALL># Thermohydraulique 3D VDF couplee a conduction 2D avec rayonnement de paroi #</TD></TR>
+<TR><TD><SMALL><A HREF="#conditions_initiales_vitesse_pression">conditions_initiales_vitesse_pression</A></TD><TD><SMALL>dimension  2</TD></TR>
 <TR><TD><SMALL><A HREF="#conduc">conduc</A></TD><TD><SMALL># Conduction 2D : Diverses conditions limites thermiques #</TD></TR>
 <TR><TD><SMALL><A HREF="#conduc_VEF">conduc_VEF</A></TD><TD><SMALL># Conduction 2D VEF : Diverses conditions limites #</TD></TR>
 <TR><TD><SMALL><A HREF="#conduc_var">conduc_var</A></TD><TD><SMALL># Conduction 2D : Diverses conditions limites thermiques #</TD></TR>
@@ -489,6 +494,8 @@
 <TR><TD><SMALL><A HREF="#puissance_tot_VEF">puissance_tot_VEF</A></TD><TD><SMALL># Conduction 2D : Sources de puissance totale #</TD></TR>
 <TR><TD><SMALL><A HREF="#quick_VEF">quick_VEF</A></TD><TD><SMALL># Thermohydraulique 2D VEF schema kquick #</TD></TR>
 <TR><TD><SMALL><A HREF="#reprise_QC">reprise_QC</A></TD><TD><SMALL># Thermohydraulique 2D couplee a conduction 2D avec modele QC #</TD></TR>
+<TR><TD><SMALL><A HREF="#reprise_int32">reprise_int32</A></TD><TD><SMALL># Resume int32 files # </TD></TR>
+<TR><TD><SMALL><A HREF="#reprise_int64">reprise_int64</A></TD><TD><SMALL># Resume int64 files # </TD></TR>
 <TR><TD><SMALL><A HREF="#reprise_stat">reprise_stat</A></TD><TD><SMALL># Thermalhydraulic 2D : Boussinesq approximation #</TD></TR>
 <TR><TD><SMALL><A HREF="#resume_last_time">resume_last_time</A></TD><TD><SMALL># Thermohydraulique 2D : reprise calcul #</TD></TR>
 <TR><TD><SMALL><A HREF="#resume_last_time_xyz">resume_last_time_xyz</A></TD><TD><SMALL># Thermohydraulique 2D : reprise calcul #</TD></TR>
@@ -1180,6 +1187,10 @@
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Hyd_2D_PolyMAC/Hyd_2D_PolyMAC.data>Edit</a> Hyd_2D_PolyMAC.data </CENTER>
 <CENTER><a href=../tests/Reference/Hyd_2D_PolyMAC/upwind.geo>Edit</a> upwind.geo </CENTER>
+<HR><CENTER><B><A NAME=Hyd_3D_PolyMAC>Hyd_3D_PolyMAC</A></B></CENTER>
+<CENTER># Lecture maillage 3D Hexa+Tetra+Pyramide cree dans Salome avec: #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Hyd_3D_PolyMAC/Hyd_3D_PolyMAC.data>Edit</a> Hyd_3D_PolyMAC.data </CENTER>
 <HR><CENTER><B><A NAME=Hyd_Axi>Hyd_Axi</A></B></CENTER>
 <CENTER># Hydraulique 2D Axi #</CENTER>
 <CENTER><a href=../tests/Reference/Hyd_Axi/Hyd_Axi.lml.gif><img src=../tests/Reference/Hyd_Axi/Hyd_Axi.lml.gif.fin></a></CENTER>
@@ -2021,6 +2032,14 @@
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Reprise_xyz_ancien_format/MacCormack_3D.geom>Edit</a> MacCormack_3D.geom </CENTER>
 <CENTER><a href=../tests/Reference/Reprise_xyz_ancien_format/Reprise_xyz_ancien_format.data>Edit</a> Reprise_xyz_ancien_format.data </CENTER>
+<HR><CENTER><B><A NAME=Reprise_xyz_int32>Reprise_xyz_int32</A></B></CENTER>
+<CENTER># Check restart a int32 calculation (Zones+xyz) with a int64 binary in parallel #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Reprise_xyz_int32/Reprise_xyz_int32.data>Edit</a> Reprise_xyz_int32.data </CENTER>
+<HR><CENTER><B><A NAME=Reprise_xyz_int64>Reprise_xyz_int64</A></B></CENTER>
+<CENTER># Check restart a int64 calculation (Zones+xyz) with a int32 binary in parallel #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Reprise_xyz_int64/Reprise_xyz_int64.data>Edit</a> Reprise_xyz_int64.data </CENTER>
 <HR><CENTER><B><A NAME=Sans_postraitement>Sans_postraitement</A></B></CENTER>
 <CENTER># Thermohydraulique 2D : Couplage Boussinesq et schema quick #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -2029,6 +2048,10 @@
 <CENTER># Test of last time step backup (sauvegarde_simple) #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/Save_Last_TS_ICoCo/Save_Last_TS_ICoCo.data>Edit</a> Save_Last_TS_ICoCo.data </CENTER>
+<HR><CENTER><B><A NAME=Save_Matrice_AMGX>Save_Matrice_AMGX</A></B></CENTER>
+<CENTER># Hydraulique 3D Force de pression: D=1m U=1 m/s Re=50 #</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/Save_Matrice_AMGX/Save_Matrice_AMGX.data>Edit</a> Save_Matrice_AMGX.data </CENTER>
 <HR><CENTER><B><A NAME=Scalaires_passifs>Scalaires_passifs</A></B></CENTER>
 <CENTER># Hydraulique 2D avec transport scalaire passif #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
@@ -2382,6 +2405,10 @@
 <CENTER># Thermohydraulique 3D VDF couplee a conduction 2D avec rayonnement de paroi #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/cond_vef_impl/cond_vef_impl.data>Edit</a> cond_vef_impl.data </CENTER>
+<HR><CENTER><B><A NAME=conditions_initiales_vitesse_pression>conditions_initiales_vitesse_pression</A></B></CENTER>
+<CENTER>dimension  2</CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/conditions_initiales_vitesse_pression/conditions_initiales_vitesse_pression.data>Edit</a> conditions_initiales_vitesse_pression.data </CENTER>
 <HR><CENTER><B><A NAME=conduc>conduc</A></B></CENTER>
 <CENTER># Conduction 2D : Diverses conditions limites thermiques #</CENTER>
 <CENTER><a href=../tests/Reference/conduc/conduc.lml.gif><img src=../tests/Reference/conduc/conduc.lml.gif.fin></a></CENTER>
@@ -2539,6 +2566,14 @@
 <CENTER># Thermohydraulique 2D couplee a conduction 2D avec modele QC #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
 <CENTER><a href=../tests/Reference/reprise_QC/reprise_QC.data>Edit</a> reprise_QC.data </CENTER>
+<HR><CENTER><B><A NAME=reprise_int32>reprise_int32</A></B></CENTER>
+<CENTER># Resume int32 files # </CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/reprise_int32/reprise_int32.data>Edit</a> reprise_int32.data </CENTER>
+<HR><CENTER><B><A NAME=reprise_int64>reprise_int64</A></B></CENTER>
+<CENTER># Resume int64 files # </CENTER>
+<CENTER><img src=rien.gif></CENTER>
+<CENTER><a href=../tests/Reference/reprise_int64/reprise_int64.data>Edit</a> reprise_int64.data </CENTER>
 <HR><CENTER><B><A NAME=reprise_stat>reprise_stat</A></B></CENTER>
 <CENTER># Thermalhydraulic 2D : Boussinesq approximation #</CENTER>
 <CENTER><img src=rien.gif></CENTER>
