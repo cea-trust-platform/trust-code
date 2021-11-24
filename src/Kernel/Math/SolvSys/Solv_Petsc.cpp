@@ -217,11 +217,11 @@ void Solv_Petsc::create_solver(Entree& entree)
                     if (Process::je_suis_maitre())
                       {
                         Cerr << "Reading AmgX config file " << motlu << " :" << finl;
-                        EFichier config(motlu);
+                        EFichier config_amgx(motlu);
                         std::string line;
-                        while (!config.eof())
+                        while (!config_amgx.eof())
                           {
-                            std::getline(config.get_ifstream(), line);
+                            std::getline(config_amgx.get_ifstream(), line);
                             if (line.find("#") && line.find("config_version"))
                               {
                                 Cerr << line.c_str() << finl;
