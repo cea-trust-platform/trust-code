@@ -58,8 +58,6 @@ public:
   static constexpr bool IS_AMONT = true;
 };
 
-
-
 // .DESCRIPTION  class Eval_Centre_VDF_Face2
 // Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
 // Schema de convection Centre
@@ -69,26 +67,26 @@ public:
   static constexpr bool IS_CENTRE = true;
 };
 
+// .DESCRIPTION  class Eval_centre4_VDF_Face2
+// Evaluateur VDF pour la convection Le champ convecte est un Champ_Face
+// Schema de convection Centre4 (sur 4 points)
+class Eval_centre4_VDF_Face2 : public Eval_Conv_VDF_Face<Eval_centre4_VDF_Face2>, public Eval_Conv_VDF
+{
+public:
+  static constexpr bool IS_CENTRE4 = true;
 
+  inline int face_amont_conj(int num_face,int i,int k) const { return la_zone->face_amont_conj(num_face, i, k); }
+  inline int face_amont_princ(int num_face,int i) const { return la_zone->face_amont_princ(num_face, i); }
+  inline double dist_face(int n1,int n2,int k) const { return la_zone->dist_face(n1,n2,k); }
+  inline double dist_face_period(int n1,int n2,int k) const { return la_zone->dist_face_period(n1,n2,k); }
+  inline double dist_elem_period(int n1,int n2,int k) const { return la_zone->dist_elem_period(n1,n2,k); }
+  inline double dim_elem(int n1,int k) const { return la_zone->dim_elem(n1,k); }
+  inline double conv_centre(const double& psc,const double& vit_0_0, const double& vit_0, const double& vit_1,const double& vit1_1,double g1, double g2, double g3,double g4) const
+  { return (g1*vit_0_0 + g2*vit_0 + g3*vit_1 + g4*vit1_1) * psc; }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  inline void calcul_g(const double& dxam, const double& dx, const double& dxav, double& g1, double& g2, double& g3, double& g4) const
+  {return calcul_g_impl(dxam,dx,dxav,g1,g2,g3,g4); }
+};
 
 // .DESCRIPTION class Eval_Quick_VDF_Face2
 // Evaluateur VDF pour la convection Le champ convecte est un Champ_Face

@@ -242,3 +242,12 @@ double Eval_Conv_VDF_tools::dist_elem_axi_impl(int n1, int n2, int k, const Doub
     }
   return dist ;
 }
+
+// Calcul des coefficients g1,g2,g3,g4 a partir de dxam,dx,dxav
+void Eval_Conv_VDF_tools::calcul_g_impl(const double& dxam, const double& dx, const double& dxav, double& g1, double& g2, double& g3, double& g4) const
+{
+  g1 = -dx*dx*(dx/2+dxav)/(4*(dx+dxam+dxav)*(dx+dxam)*dxam);
+  g2 =  (dx+2*dxam)*(dx+2*dxav)/(8*dxam*(dx+dxav));
+  g3 =  (dx+2*dxam)*(dx+2*dxav)/(8*dxav*(dx+dxam));
+  g4 = -dx*dx*(dx/2+dxam)/(4*(dx+dxam+dxav)*dxav*(dx+dxav));
+}

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,50 +15,33 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Conv_centre4_VDF_Face.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Conv
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Op_Conv_centre4_VDF_Face_included
 #define Op_Conv_centre4_VDF_Face_included
 
 #include <Op_Conv_VDF_base.h>
 #include <ItVDFFa.h>
-#include <Eval_centre4_VDF_Face.h>
+#include <Eval_Conv_VDF_Face_leaves.h>
 
-//
 // .DESCRIPTION class Op_Conv_centre4_VDF_Face
-//
 //  Cette classe represente l'operateur de convection associe a une equation de
 //  la quantite de mouvement.
 //  La discretisation est VDF
 //  Le champ convecte est de type Champ_Face
 //  Le schema de convection est du type centre4 (centre sur 4 points)
 //  L'iterateur associe est de type Iterateur_VDF_Face
-//  L'evaluateur associe est de type Eval_centre4_VDF_Face
-
-//
-// .SECTION voir aussi
-//
-//
-declare_It_VDF_Face(Eval_centre4_VDF_Face)
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Conv_centre4_VDF_Face
-//
-//////////////////////////////////////////////////////////////////////////////
-
+//  L'evaluateur associe est de type Eval_centre4_VDF_Face2
+declare_It_VDF_Face(Eval_centre4_VDF_Face2)
 
 class Op_Conv_centre4_VDF_Face : public Op_Conv_VDF_base
 {
-
   Declare_instanciable_sans_constructeur(Op_Conv_centre4_VDF_Face);
 
 public:
-
   Op_Conv_centre4_VDF_Face();
   void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
   inline void associer_vitesse(const Champ_base&) ;
@@ -72,9 +55,8 @@ public:
 inline void Op_Conv_centre4_VDF_Face::associer_vitesse(const Champ_base& ch_vit)
 {
   const Champ_Face& vit = (Champ_Face&) ch_vit;
-
-  Eval_centre4_VDF_Face& eval_conv = (Eval_centre4_VDF_Face&) iter.evaluateur();
+  Eval_centre4_VDF_Face2& eval_conv = dynamic_cast<Eval_centre4_VDF_Face2&> (iter.evaluateur());
   eval_conv.associer(vit );                // Eval_Conv_VDF::associer
 }
 
-#endif
+#endif /* Op_Conv_centre4_VDF_Face_included */

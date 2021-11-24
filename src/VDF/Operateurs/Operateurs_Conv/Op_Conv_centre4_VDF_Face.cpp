@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Conv_centre4_VDF_Face.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Conv
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -24,39 +24,20 @@
 #include <SFichier.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_centre4_VDF_Face,"Op_Conv_centre4_VDF_Face",Op_Conv_VDF_base);
+implemente_It_VDF_Face(Eval_centre4_VDF_Face2)
 
-implemente_It_VDF_Face(Eval_centre4_VDF_Face)
-
-//// printOn
-//
-
-Sortie& Op_Conv_centre4_VDF_Face::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-//// readOn
-//
-
-Entree& Op_Conv_centre4_VDF_Face::readOn(Entree& s )
-{
-  return s ;
-}
+Sortie& Op_Conv_centre4_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Conv_centre4_VDF_Face::readOn(Entree& s ) { return s ; }
 
 // Description:
 // complete l'iterateur et l'evaluateur
-
-void Op_Conv_centre4_VDF_Face::associer(const Zone_dis& zone_dis,
-                                        const Zone_Cl_dis& zone_cl_dis,
-                                        const Champ_Inc& ch_vit)
+void Op_Conv_centre4_VDF_Face::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_vit)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
   const Champ_Face& vit = ref_cast(Champ_Face,ch_vit.valeur());
-
   iter.associer(zvdf, zclvdf, *this);
-
-  Eval_centre4_VDF_Face& eval_conv = (Eval_centre4_VDF_Face&) iter.evaluateur();
+  Eval_centre4_VDF_Face2& eval_conv = dynamic_cast<Eval_centre4_VDF_Face2&> (iter.evaluateur());
   eval_conv.associer_zones(zvdf, zclvdf );          // Evaluateur_VDF::associer_zones
   eval_conv.associer_inconnue(vit);        // Eval_VDF_Face::associer_inconnue
   if (Process::nproc()>1 && zvdf.zone().nb_joints() && zvdf.zone().joint(0).epaisseur()<2)
@@ -70,22 +51,17 @@ void Op_Conv_centre4_VDF_Face::associer(const Zone_dis& zone_dis,
 
 const Champ_Inc_base& Op_Conv_centre4_VDF_Face::vitesse() const
 {
-  Eval_centre4_VDF_Face& eval_conv = (Eval_centre4_VDF_Face&) iter.evaluateur();
+  const Eval_centre4_VDF_Face2& eval_conv = dynamic_cast<const Eval_centre4_VDF_Face2&> (iter.evaluateur());
   return eval_conv.vitesse();
 }
 
 Champ_Inc_base& Op_Conv_centre4_VDF_Face::vitesse()
 {
-  Eval_centre4_VDF_Face& eval_conv = (Eval_centre4_VDF_Face&) iter.evaluateur();
+  Eval_centre4_VDF_Face2& eval_conv = dynamic_cast<Eval_centre4_VDF_Face2&> (iter.evaluateur());
   return eval_conv.vitesse();
 }
 
-//
 // Fonctions inline de la classe Op_Conv_centre4_VDF_Face
-//
 // Description:
 // constructeur
-Op_Conv_centre4_VDF_Face::Op_Conv_centre4_VDF_Face() :
-  Op_Conv_VDF_base(It_VDF_Face(Eval_centre4_VDF_Face)())
-{
-}
+Op_Conv_centre4_VDF_Face::Op_Conv_centre4_VDF_Face() : Op_Conv_VDF_base(It_VDF_Face(Eval_centre4_VDF_Face2)()) { }

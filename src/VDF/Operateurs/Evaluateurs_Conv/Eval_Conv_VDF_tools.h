@@ -35,39 +35,34 @@ public:
   virtual ~Eval_Conv_VDF_tools() {}
   // DANGER !!!! FAUT JAMAIS ENTRER
   virtual int amont_amont(int face, int i) const { return dont_call<int>(__func__); }
-  virtual double qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { return dont_call<double>(__func__); }
-  virtual double quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { return dont_call<double>(__func__); }
-  virtual void qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { return dont_call<void>(__func__); }
-  virtual void quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { return dont_call<void>(__func__); }
-
   virtual int face_amont_conj(int ,int ,int ) const { return dont_call<int>(__func__); }
   virtual int face_amont_princ(int ,int ) const { return dont_call<int>(__func__); }
   virtual double dim_elem(int ,int ) const { return dont_call<double>(__func__); }
   virtual double dim_face(int ,int ) const { return dont_call<double>(__func__); }
-//  virtual double dist_face(int ,int ,int ) const { return dont_call<double>(__func__); }
   virtual double dist_elem(int ,int ,int ) const { return dont_call<double>(__func__); }
   virtual double dist_elem_period(int , int , int ) const { return dont_call<double>(__func__); }
-//  virtual double dist_face_period(int ,int ,int ) const { return dont_call<double>(__func__); }
-  virtual double conv_quick_sharp_plus(const double& ,const double& , const double& , const double& , const double& , const double& , const double& ) const { return dont_call<double>(__func__); }
-  virtual double conv_quick_sharp_moins(const double& ,const double& ,const double& , const double& ,const double& , const double& ,const double& ) const { return dont_call<double>(__func__); }
-
+  virtual double qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { return dont_call<double>(__func__); }
+  virtual double quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const { return dont_call<double>(__func__); }
+  virtual double conv_centre(const double&,const double&,const double&,const double&,const double&,double,double,double,double) const { return dont_call<double>(__func__); }
+  virtual double conv_quick_sharp_plus(const double&,const double&,const double&,const double&,const double&,const double&,const double&) const { return dont_call<double>(__func__); }
+  virtual double conv_quick_sharp_moins(const double&,const double&,const double&,const double&,const double&,const double&,const double&) const { return dont_call<double>(__func__); }
+  virtual void calcul_g(const double&,const double&,const double&,double&,double&,double&,double&) const { return dont_call<void>(__func__); }
+  virtual void qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { return dont_call<void>(__func__); }
+  virtual void quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const { return dont_call<void>(__func__); }
 
 protected:
-  int face_amont_conj_axi_impl(int ,int ,int ,int , const IntTab& , const IntTab& , const IntVect& ) const;
+  int face_amont_conj_axi_impl(int ,int ,int ,int , const IntTab& , const IntTab& , const IntVect&) const;
   double dist_face_axi_impl(int ,int ,int ,const DoubleTab&) const;
   double dist_elem_axi_impl(int ,int ,int ,const DoubleTab&) const;
-  double qcentre2_impl(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
-  double conv_quick_sharp_plus_impl(const double& ,const double& , const double& , const double& , const double& , const double& , const double& ) const ;
-  double conv_quick_sharp_moins_impl(const double& ,const double& ,const double& , const double& ,const double& , const double& ,const double& ) const;
-  double qcentre4_impl(const int ,const double , const double , const double ,
-                       const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
-  double quick_fram_impl(const int ,const double , const double , const double ,const double, const double,
-                         const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
-  void qcentre2_impl(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
-  void qcentre4_impl(const int ,const double , const double , const double ,
-                     const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
-  void quick_fram_impl(const int ,const double , const double , const double ,const double, const double,
-                       const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
+  double qcentre2_impl(const double&,const int,const int,const int,const int,const int,const DoubleTab&) const;
+  double conv_quick_sharp_plus_impl(const double&,const double&,const double&,const double&,const double&,const double&,const double&) const ;
+  double conv_quick_sharp_moins_impl(const double&,const double&,const double&,const double&,const double&,const double&,const double&) const;
+  double qcentre4_impl(const int,const double,const double,const double,const double&,const int,const int,const int,const int,const int,const DoubleTab&) const;
+  double quick_fram_impl(const int,const double,const double ,const double,const double,const double,const double&,const int,const int,const int,const int,const int,const DoubleTab&) const;
+  void calcul_g_impl(const double&,const double&,const double&,double&,double&,double&,double& ) const ;
+  void qcentre2_impl(const double&,const int,const int,const int,const int,const int,const DoubleTab&,ArrOfDouble&) const;
+  void qcentre4_impl(const int,const double,const double,const double,const double&,const int,const int,const int,const int,const int,const DoubleTab&,ArrOfDouble&) const;
+  void quick_fram_impl(const int,const double,const double,const double,const double,const double,const double&,const int,const int,const int,const int,const int,const DoubleTab&,ArrOfDouble&) const;
 
 private:
   template <typename type>
