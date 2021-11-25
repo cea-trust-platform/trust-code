@@ -91,5 +91,5 @@ double Saturation_base::dP_Hvs(const double P) const
 }
 double  Saturation_base::sigma(const double T, const double P) const
 {
-  return sigma__ > 0 ? sigma__ : sigma_(T,P);
+  return sigma__ >= 0 ? sigma__ : sigma_(T,P);
 }

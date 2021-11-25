@@ -102,5 +102,6 @@ double Saturation_constant::dP_Hvs_(const double P) const
 
 double Saturation_constant::sigma_(const double T, const double P) const
 {
+  if (sigma__ <= 0) Process::exit(que_suis_je() + ": expected positive value of the surface tension");
   return sigma__;
 }
