@@ -516,6 +516,7 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    echo "<A HREF="nuit_scorpio.html">SCORPIO</A> : SCORPIO baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_sympy_to_TRUST.html">STT</A> : sympy_to_TRUST baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_pemfc.html">PEMFC</A> : PEMFC baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_TRUST-NK.html">TRUST-NK</A> : TRUST-NK baltik compilation portability<BR>" >> $NUIT2
    #echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
    echo "$port_cible_all : Total number portability ( $nb_machine_cible = $nb_machine_total_cible )<BR>" >> $NUIT2
    echo "$port_trust : $MODULE portability ( $portabilite/$nb_machine_cible > $limite ) $mes<BR>" >> $NUIT2

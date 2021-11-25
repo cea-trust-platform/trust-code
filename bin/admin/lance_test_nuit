@@ -243,6 +243,9 @@ check_components()
 	       elif [ "$Composant" = mathys ]
 	       then
 	          machines=`liste_machines "\-MATHYS"`
+               elif [ "$Composant" = TRUST-NK ]
+               then
+                  machines=`liste_machines "\-TRUST-NK"`
                elif [ "$Composant" = sides ]
                then
                   machines=`liste_machines "\-SIDES"`
@@ -377,19 +380,19 @@ check_components()
                            WORKBETA=""
                            if  [ "${machine:0:14}" = "callisto-intel" ]
                            then
-		              [ $TRUST_VERSION = 1.8.1 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /panfs/ixion/home/triou/TRUST/TRUST-intel-1.8.1/env_TRUST.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /panfs/ixion/home/triou/TRUST/TRUST-intel-1.8.3/env_TRUST.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "irene-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
                            elif [ "${machine:0:10}" = "irene-ccrt" ] || [ "${machine:0:6}" = "cobalt" ]
                            then
-		              [ $TRUST_VERSION = 1.8.1 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.8.1.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
                            then
-		              [ $TRUST_VERSION = 1.8.1 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.8.1.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:2}" = "is" ] || [ "${machine:0:8}" = "callisto" ]
                            then
-		              [ $TRUST_VERSION = 1.8.1 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.8.1.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            fi
                            if [ "$WORKBETA" != "" ]
                            then
@@ -446,7 +449,6 @@ git_push()
    for repo in $repos
    do
       remote_branch="triou/TMA" 
-      [ "$repo" = "sf_write" ] && remote_branch="dev"
       [ "$repo" = "github_write" ] && remote_branch="next"
       repo_log=$REP_NUIT"/git_"$repo"_"$git_branch"_"$HOST".log"
       echo "TRUST git push on $HOST the `date` ...">$repo_log
@@ -543,7 +545,7 @@ VOBS="TRUST Composants"
 #ComposantsLns="Test_Baltik basic equation_convection_diffusion ICoCo"
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 #ComposantsGit="triocfd ijk polymac triomc mathys mpcube genepi3 pxp flica5"
-ComposantsOfficial="triocfd ijk mpcube genepi3 flica5"
+ComposantsOfficial="triocfd ijk mpcube genepi3 flica5 TRUST-NK"
 # 14/10/2020 : je retire mathys et triomc sur decision RPL
 #export ComposantsBeta="triomc mathys sides scorpio pemfc"
 export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc"
@@ -888,7 +890,7 @@ fi
    repos=`git remote`
    for repo in $repos
    do
-     remote_branch="triou/TMA" && tags_="--tags" && [ "$repo" = "sf_write" ] && remote_branch="dev" && tags_=""
+     remote_branch="triou/TMA" && tags_="--tags"
      echo " git push $repo TMA in `pwd`"
      git push $tags_ $repo Livraison:$remote_branch 1>tmp.log 2>&1
      cat tmp.log
@@ -904,7 +906,7 @@ fi
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
+      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "TRUST-NK" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
       then
          #if [[ "$Composant" == "triocfd" ]]
          #then
@@ -931,15 +933,11 @@ fi
          cat tmp.log
          [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin_irene-ccrt TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
-         git push sf_write Livraison:dev 1>tmp.log 2>&1
-         cat tmp.log
-         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push sf_write TMA\" $TRUST_MAIL 
-         rm tmp.log 1>/dev/null 2>&1
          git push github_write Livraison:next 1>tmp.log 2>&1
          cat tmp.log
          [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push github TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
-      elif [[ "$Composant" == "sympy_to_TRUST" || "$Composant" == "pemfc" ]]
+      elif [[ "$Composant" == "sympy_to_TRUST" || "$Composant" == "pemfc"  || "$Composant" == "TRUST-NK" ]]
       then
          git remote update
          git checkout .
@@ -3029,7 +3027,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=81.33 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=81.39 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0

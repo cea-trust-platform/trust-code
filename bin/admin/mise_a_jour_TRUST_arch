@@ -52,7 +52,7 @@ change_droits()
      find . -type d | xargs chmod +x  1>/dev/null 2>&1
      # changer les droits sur les dossiers car c'est la qu'il y a probleme
      #find . -type d -exec chmod 755 {} \;
-     find . -type d -not -path "./*/genepi3*" -not -path "./*/flica5*" -not -path "./*/ijk*" -not -path "./*/mpcube*" -not -path "./*/mathys*" -not -path "./*/triomc*"  -not -path "./*/pemfc*" -not -path "./*/sympy_to_TRUST*" -not -path "./*/scorpio*" -not -path "./*/sides*" -exec chmod 755 {} \;
+     find . -type d -not -path "./*/genepi3*" -not -path "./*/flica5*" -not -path "./*/ijk*" -not -path "./*/mpcube*" -not -path "./*/mathys*" -not -path "./*/triomc*"  -not -path "./*/pemfc*" -not -path "./*/sympy_to_TRUST*" -not -path "./*/scorpio*" -not -path "./*/sides*" -not -path "./*/TRUST-NK*" -exec chmod 755 {} \;
   fi
 }
 
