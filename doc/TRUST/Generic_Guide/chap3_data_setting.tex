@@ -137,7 +137,7 @@ This is necessary for parallel calculation (see section \ref{parallel}).
 \end{figure}
 \end{itemize}
 
-\textbf{Be carefull} non standard and hybrid meshing are not supported! (cf Figure \ref{hybr})
+Non standard and hybrid meshing are partially supported thanks to PolyMAC discretization! (cf Figure \ref{hybr})
 
 \begin{figure}[h!]
 \begin{center}
@@ -160,7 +160,6 @@ This is necessary for parallel calculation (see section \ref{parallel}).
 \draw (B1) -- (B5);
 \draw (B4) -- (C4);
 \draw (B2) -- (C2);
-\draw [ultra thick,red] (-0.25,2.25) -- (3.25,-0.25) ;
 
 \coordinate (D1) at (4   ,0) ;
 \coordinate (D2) at (5.5 ,0) ;
@@ -168,7 +167,6 @@ This is necessary for parallel calculation (see section \ref{parallel}).
 \coordinate (D4) at (4   ,1.25) ;
 \coordinate (D5) at (4.75,2.25) ;
 \draw (D4) -- (D1) -- (D2) -- (D3) -- (D4) -- (D5) -- (D3);
-\draw [ultra thick,red] (3.75,2) -- (6,-0.25) ;
 
 \coordinate (E1) at (6.5 ,0   ,0) ;
 \coordinate (E2) at (8   ,0   ,0) ;
@@ -181,10 +179,9 @@ This is necessary for parallel calculation (see section \ref{parallel}).
 \draw (E4) -- (E1) -- (E2) -- (E3) -- (E4) -- (E5) -- (E3);
 \draw (E2) -- (E6) -- (E7) -- (E8) -- (E4);
 \draw (E8) -- (E5) -- (E7) -- (E3) -- (E8);
-\draw [ultra thick,red] (6.5,2) -- (8.5,-0.25) ;
 
 \end{tikzpicture}
-\caption{Prohibited meshes}
+\caption{Partially supported meshes}
 \label{hybr}
 \end{center}
 \end{figure}
