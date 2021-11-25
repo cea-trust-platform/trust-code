@@ -33,6 +33,7 @@ Entree& Saturation_base::readOn(Entree& is)
   Param param(que_suis_je());
   param.ajouter("P_ref", &P_ref_);
   param.ajouter("T_ref", &T_ref_);
+  param.ajouter("tension_superficielle", &sigma__);
   param.lire_avec_accolades_depuis(is);
   return is;
 }
@@ -87,4 +88,8 @@ double Saturation_base::Hvs(const double Pi) const
 double Saturation_base::dP_Hvs(const double P) const
 {
   return P_ref_ > 0 ? 0 : dP_Hvs_(P);
+}
+double  Saturation_base::sigma(const double T, const double P) const
+{
+  return sigma__ > 0 ? sigma__ : sigma_(T,P);
 }

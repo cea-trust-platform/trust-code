@@ -78,3 +78,7 @@ double Saturation_sodium::dP_Hvs_(const double P) const
 {
   return DHsat(P) + DLvap_Na(P);
 }
+double Saturation_sodium::sigma_(const double T, const double P) const
+{
+  return SigmaL(T);
+}

@@ -52,7 +52,7 @@ Entree& Frottement_interfacial_Sonnenburg::readOn(Entree& is)
 }
 
 void Frottement_interfacial_Sonnenburg::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                                                    const DoubleTab& rho, const DoubleTab& mu, double Dh,
+                                                    const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
                                                     const DoubleTab& ndv, DoubleTab& coeff) const
 {
   coeff = 0;

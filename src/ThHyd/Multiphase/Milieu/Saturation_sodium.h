@@ -29,7 +29,6 @@ class Saturation_sodium : public Saturation_base
 {
   Declare_instanciable(Saturation_sodium);
 public:
-
   double    Tsat_(const double P) const override;
   double dP_Tsat_(const double P) const override;
   double    Psat_(const double T) const override;
@@ -40,7 +39,7 @@ public:
   double  dP_Hls_(const double P) const override;
   double     Hvs_(const double P) const override;
   double  dP_Hvs_(const double P) const override;
-
+  double   sigma_(const double T, const double P) const override;
 };
 
 #endif

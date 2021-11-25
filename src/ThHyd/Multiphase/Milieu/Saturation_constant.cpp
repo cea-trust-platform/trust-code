@@ -43,6 +43,7 @@ Entree& Saturation_constant::readOn(Entree& is)
   param.ajouter("Lvap", &lvap_);
   param.ajouter("Hlsat", &hls_);
   param.ajouter("Hvsat", &hvs_);
+  param.ajouter("tension_superficielle", &sigma__);
   param.lire_avec_accolades_depuis(is);
   // verifications hlsat/hvsat/lvap
   const int i = (lvap_ > 0) + (hls_ > 0) + (hvs_ > 0);
@@ -97,4 +98,9 @@ double Saturation_constant::Hvs_(const double P) const
 double Saturation_constant::dP_Hvs_(const double P) const
 {
   return 0;
+}
+
+double Saturation_constant::sigma_(const double T, const double P) const
+{
+  return sigma__;
 }

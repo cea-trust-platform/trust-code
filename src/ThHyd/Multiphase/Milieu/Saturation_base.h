@@ -40,6 +40,7 @@ public:
   double  dP_Hls(const double P) const;
   double     Hvs(const double P) const;
   double  dP_Hvs(const double P) const;
+  double   sigma(const double T, const double P) const;
 
   virtual double    Tsat_(const double P) const = 0;
   virtual double dP_Tsat_(const double P) const = 0;
@@ -51,11 +52,12 @@ public:
   virtual double  dP_Hls_(const double P) const = 0;
   virtual double     Hvs_(const double P) const = 0;
   virtual double  dP_Hvs_(const double P) const = 0;
-
+  virtual double   sigma_(const double T, const double P) const = 0;
   double get_Pref() const;
 
 protected:
   double P_ref_ = -1, T_ref_ = -1;
+  double sigma__ = -1;
   REF(Pb_Multiphase) pb_multi;
 };
 

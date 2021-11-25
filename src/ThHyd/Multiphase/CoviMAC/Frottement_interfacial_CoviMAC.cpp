@@ -30,6 +30,8 @@
 #include <Pb_Multiphase.h>
 #include <Champ_Uniforme.h>
 #include <Frottement_interfacial_base.h>
+#include <Milieu_composite.h>
+#include <Saturation_base.h>
 
 Implemente_instanciable(Frottement_interfacial_CoviMAC,"Frottement_interfacial_Face_CoviMAC", Source_base);
 
@@ -86,23 +88,30 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                      &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
+  const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
   int e, f, c, i, j, k, l, n, N = inco.line_size(), Np = press.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot(),
                               cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), exp_res = 2;
-  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), dv(N, N), ddv(N, N, 4), ddv_c(4), coeff(N, N, 2); //arguments pour coeff
+  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), dv(N, N), ddv(N, N, 4), ddv_c(4), coeff(N, N, 2); //arguments pour coeff
   double dv_min = 0.1, dh, a_res = 1e-2;
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
   /* faces */
   for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2)
       {
-        for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, dv = dv_min, ddv = 0, c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
+        for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, sigma_l = 0, dv = dv_min, ddv = 0, c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
           {
             for (n = 0; n < N; n++) a_l(n)   += mu_f(f, n, c) * alpha(e, n);
             for (n = 0; n < N; n++) p_l(n)   += mu_f(f, n, c) * press(e, n * (Np > 1));
             for (n = 0; n < N; n++) T_l(n)   += mu_f(f, n, c) * temp(e, n);
             for (n = 0; n < N; n++) rho_l(n) += mu_f(f, n, c) * rho(!cR * e, n);
             for (n = 0; n < N; n++) mu_l(n)  += mu_f(f, n, c) * mu(!cM * e, n);
+            for (n = 0; n < N; n++) for (k = 0; k < N; k++) if (milc.has_saturation(n,k))
+                  {
+                    Saturation_base& sat = milc.get_saturation(n, k);
+                    sigma_l(n,k) += mu_f(f, n, c) * sat.sigma_(temp(e,n),press(e,n * (Np > 1)));
+                  }
+
             for (n = 0; n < N; n++) dh += mu_f(f, n, c) * alpha(e, n) * dh_e(e);
             for (k = 0; k < N; k++) for (l = 0; l < N; l++)
                 {
@@ -110,7 +119,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                   if (dv_c > dv(k, l)) for (dv(k, l) = dv_c, i = 0; i < 4; i++) ddv(k, l, i) = ddv_c(i);
                 }
           }
-        correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, dh, dv, coeff);
+        correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh, dv, coeff);
         for (k = 0; k < N; k++) for (l = 0; l < N; l++) for (j = 0; j < 2; j++)
               coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res, -exp_res) : 0);
 
@@ -133,9 +142,17 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
       for (n = 0; n < N; n++) T_l(n)   =  temp(e, n);
       for (n = 0; n < N; n++) rho_l(n) =   rho(!cR * e, n);
       for (n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
+      for (n = 0; n < N; n++)
+        {
+          for (k = 0; k < N; k++) if(milc.has_saturation(n, k))
+              {
+                Saturation_base& sat = milc.get_saturation(n, k);
+                sigma_l(n,k) = sat.sigma_(temp(e,n), press(e,n * (Np > 1)));
+              }
+        }
 
       for (k = 0; k < N; k++) for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
-      correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, dh_e(e), dv, coeff);
+      correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh_e(e), dv, coeff);
       for (k = 0; k < N; k++) for (l = 0; l < N; l++) coeff(k, l, 1) *= (dv(k, l) > dv_min); //pas de derivee si dv < dv_min
       for (k = 0; k < N; k++) for (l = 0; l < N; l++) for (j = 0; j < 2; j++)
             coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res, -exp_res) : 0);
