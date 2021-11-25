@@ -265,7 +265,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   std::vector<std::reference_wrapper<const Conds_lim>> cls; //conditions aux limites
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_e, f_s; //tableaux "fcl", "elem_faces", "faces_voisins"
   std::vector<std::reference_wrapper<const DoubleVect>> fs; //surfaces
-  std::vector<std::reference_wrapper<const DoubleTab>> inco, nf, xp, xs, xv, nu; //inconnues, normales aux faces, positions elems / faces / sommets
+  std::vector<std::reference_wrapper<const DoubleTab>> inco, nf, xp, xs, xv, diffu; //inconnues, normales aux faces, positions elems / faces / sommets
   for (i = 0, M = 0; i < n_ext; M = max(M, N[i]), i++)
     {
       std::string nom_mat = i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
@@ -275,7 +275,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       fs.push_back(std::ref(zone[i].get().face_surfaces())), nf.push_back(std::ref(zone[i].get().face_normales()));
       xp.push_back(std::ref(zone[i].get().xp())), xv.push_back(std::ref(zone[i].get().xv())), xs.push_back(std::ref(zone[i].get().zone().domaine().coord_sommets()));
       cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
-      nu.push_back(ref_cast(Op_Diff_CoviMAC_Elem, *op_ext[i]).nu());
+      diffu.push_back(ref_cast(Op_Diff_CoviMAC_Elem, *op_ext[i]).nu());
       const Champ_P0_CoviMAC& ch = ref_cast(Champ_P0_CoviMAC, op_ext[i]->equation().inconnue().valeur());
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs()));
       N.push_back(inco[i].get().line_size()), fcl.push_back(std::ref(ch.fcl()));
@@ -407,7 +407,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                   for (p = s_pe[i][0], e = s_pe[i][1], d = 0; d < D; d++) for (db = 0; db < d; db++, il += !mix) for (n = 0; n < N[p]; n++, il += mix) for (j = 0; j < (int) se_f[i].size(); j++)
                           {
                             k = se_f[i][j], f = s_pf[k][0] == p ? s_pf[k][1] : m_pf[s_pf[k]][1], sgn = e == f_e[p](f, 0) ? 1 : -1; //indice de face, num dans le probleme courant, amont/aval
-                            for (l = 0; l < D; l++) fac[l] = sgn * zone0.nu_dot(&nu[p].get(), e, n, &nf[p](f, 0), i3[l]) * surf_fs[k] / fs[p](f) / vol_es[i]; //vecteur lambda_e nf sortant * facteur commun
+                            for (l = 0; l < D; l++) fac[l] = sgn * zone0.nu_dot(&diffu[p].get(), e, n, &nf[p](f, 0), i3[l]) * surf_fs[k] / fs[p](f) / vol_es[i]; //vecteur lambda_e nf sortant * facteur commun
                             Y(!mix * n, il) += fac[d] * (xv[p](f, db) - xp[p](e, db)) - fac[db] * (xv[p](f, d) - xp[p](e, d)); //second membre
                             for (l = 0; l < D - 1; l++) C(!mix * n, (D - 1) * k + l, il) += fac[db] * vec_fs[k][l][d] - fac[d] * vec_fs[k][l][db]; //matrice
                           }
@@ -457,7 +457,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                         /* flux : remplit Ff / Fec (format standard) dans tous les cas, et les equations de A/B donnees par i_eq_flux / i_eq_cont (format LAPACK) */
                         for (l = 0; l < n_ef; l++) for (kb = se_f[i][l], fb = s_pf[kb][0] == p ? s_pf[kb][1] : m_pf[s_pf[kb]][1], n = 0; n < N[p]; n++)
                             {
-                              double x = sgn_l * zone0.nu_dot(&nu[p].get(), e, n, &nf[p](f, 0), &X(!mix * n, l, 0)) / fs[p](f), y = x * surf_fs[k];
+                              double x = sgn_l * zone0.nu_dot(&diffu[p].get(), e, n, &nf[p](f, 0), &X(!mix * n, l, 0)) / fs[p](f), y = x * surf_fs[k];
                               /* stockage du flux sortant dans Ff / Fec */
                               Fec(!mix * n, i_efs(i, j, mix * n), t_e) += y * (Tefs(!mix * n, i_efs(i, l, mix * n)) - inco[p](e, n));
                               Ff(!mix * n, i_efs(i, j, mix * n), i_efs(i, l, mix * n)) += y, Fec(!mix * n, i_efs(i, j, mix * n), i_e(i, mix * n)) -= y;
