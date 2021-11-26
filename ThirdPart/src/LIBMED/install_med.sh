@@ -44,8 +44,6 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   echo "Patching header file to avoid compilation error"
   sed -i "s/extern MEDC_EXPORT const char \* const  MEDget/extern MEDC_EXPORT const char *  MEDget/g"  $(find . -name med.h.in)
   sed -i "s/const char \* const  MEDget/const char * MEDget/g"  $(find . -name MEDiterators.c)
-  # patching med to avoid duplicated #include "_MEDfieldValueUpdateEntityList41.c"
-  sed -i '30d' $(find . -name MAJ_400_410_champs.c)
 
   echo "Configuring with autotools  ..."  # [ABN] CMake is there too in MED, but for how long?? Eric prefers autotools ...
   # fPIC is not there by default in MED autotools ...
