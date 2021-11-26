@@ -26,7 +26,6 @@ def write_file(FILE_NAME, data):
 def clean(FILE_NAME, NEW_FILE_NAME):
 
     raw_data = open_file(FILE_NAME)
-
     # first stage of cleaning :
     # joining all the tiny strings to recreate the original text
     tmp_str = " ".join(raw_data)
@@ -80,7 +79,7 @@ if __name__ == "__main__":
     for p in range(nb_proc):
         datasets_name += "-d /log_%d " % p
 
-    cmd = "h5dump %s -o %s -y -w 1000 %s" % (datasets_name, tmp_file, file_name)
+    cmd = "h5dump %s -o %s -y -w 0 %s" % (datasets_name, tmp_file, file_name)
     os.system(cmd)
 
     basename = file_name.split(".")[0]
