@@ -10,28 +10,28 @@ Parameters
   TestCase PAR_8_C1 PAR_Cas.data 8
   TestCase PAR_16_C1 PAR_Cas.data 16
   TestCase PAR_32_C1 PAR_Cas.data 32
-  TestCase PAR_64_C1 PAR_Cas.data 64
+#  TestCase PAR_64_C1 PAR_Cas.data 64
   TestCase SEQ_C2 Cas2.data
   TestCase PAR_2_C2 PAR_Cas2.data 2
   TestCase PAR_4_C2 PAR_Cas2.data 4
   TestCase PAR_8_C2 PAR_Cas2.data 8
   TestCase PAR_16_C2 PAR_Cas2.data 16
   TestCase PAR_32_C2 PAR_Cas2.data 32
-  TestCase PAR_64_C2 PAR_Cas2.data 64
+# TestCase PAR_64_C2 PAR_Cas2.data 64
   TestCase SEQ_C3 Cas.data
   TestCase PAR_2_C3 PAR_Cas.data 2
   TestCase PAR_4_C3 PAR_Cas.data 4
   TestCase PAR_8_C3 PAR_Cas.data 8
   TestCase PAR_16_C3 PAR_Cas.data 16
   TestCase PAR_32_C3 PAR_Cas.data 32
-  TestCase PAR_64_C3 PAR_Cas.data 64
+#  TestCase PAR_64_C3 PAR_Cas.data 64
   TestCase SEQ_C4 Cas2.data
   TestCase PAR_2_C4 PAR_Cas2.data 2
   TestCase PAR_4_C4 PAR_Cas2.data 4
   TestCase PAR_8_C4 PAR_Cas2.data 8
   TestCase PAR_16_C4 PAR_Cas2.data 16
   TestCase PAR_32_C4 PAR_Cas2.data 32
-  TestCase PAR_64_C4 PAR_Cas2.data 64
+#  TestCase PAR_64_C4 PAR_Cas2.data 64
 }
 Chapter
 {
@@ -46,7 +46,7 @@ Chapter
         	Include_Description_Curves 0
 		Curve {
 		legend "perf" 
-                file PAR_64_C1/Cas_all.perf.txt
+                file PAR_32_C1/Cas_all.perf.txt
                 columns ($1) ($2)
                 Linewidth 2
                 Style linespoints
@@ -64,7 +64,7 @@ Chapter
         	Include_Description_Curves 0
 		Curve {
 		legend "perf" 
-                file PAR_64_C2/Cas_all2.perf.txt
+                file PAR_32_C2/Cas_all2.perf.txt
                 columns ($1) ($2)
                 Linewidth 2
                 Style linespoints
@@ -81,7 +81,7 @@ Chapter
         	Include_Description_Curves 0
 		Curve {
 		legend "perf" 
-                file PAR_64_C3/Cas_all.perf.txt
+                file PAR_32_C3/Cas_all.perf.txt
                 columns ($1) ($2)
                 Linewidth 2
                 Style linespoints
@@ -99,7 +99,7 @@ Chapter
         	Include_Description_Curves 0
 		Curve {
 		legend "perf" 
-                file PAR_64_C4/Cas_all2.perf.txt
+                file PAR_32_C4/Cas_all2.perf.txt
                 columns ($1) ($2)
                 Linewidth 2
                 Style linespoints
