@@ -9,8 +9,8 @@ cd  $DEST
 # Unarchive
 [ ! -d CURVEPLOT ] && tar zxf $TRUST_ROOT/externalpackages/SALOME/CurvePlot-9.4.0.tar.gz
 mv CurvePlot CURVEPLOT
-[ ! -d CONFIGURATION ] && tar zxf $TRUST_ROOT/externalpackages/SALOME/configuration-9.7.0.tar.gz
-mv configuration-9.7.0 CONFIGURATION
+[ ! -d CONFIGURATION ] && tar zxf $TRUST_ROOT/externalpackages/SALOME/configuration-9.8.0.tar.gz
+mv configuration-9.8.0 CONFIGURATION
 
 # Patching
 file=CURVEPLOT/src/python/controller/utils.py.in

@@ -19,10 +19,10 @@ else
       mkdir -p XDATA
       cd XDATA
       tar zxvf $TRUST_ROOT/externalpackages/SALOME/xdata-9.6.0.tar.gz
-      tar zxvf $TRUST_ROOT/externalpackages/SALOME/configuration-9.7.0.tar.gz
+      tar zxvf $TRUST_ROOT/externalpackages/SALOME/configuration-9.8.0.tar.gz
 
       mv xdata-9.6.0  XDATA_SRC
-      mv configuration-9.7.0  CONFIGURATION_SRC
+      mv configuration-9.8.0  CONFIGURATION_SRC
       cd XDATA_SRC
       ## Patching
       #echo Patching XDATA ...
