@@ -58,10 +58,10 @@ public:
   static constexpr bool IS_AMONT = true;
 };
 
-// .DESCRIPTION class Eval_centre_VDF_Elem
+// .DESCRIPTION class Eval_Centre_VDF_Elem
 // Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
 // Schema de convection Centre ordre 2
-class Eval_centre_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_centre_VDF_Elem>, public Eval_Conv_VDF
+class Eval_Centre_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_Centre_VDF_Elem>, public Eval_Conv_VDF
 {
 public:
   static constexpr bool IS_CENTRE = true;
@@ -76,10 +76,10 @@ public:
   { qcentre2_impl(psc,num0,num1,num0_0,num1_1,face,transporte,flux); }
 };
 
-// .DESCRIPTION class Eval_centre4_VDF_Elem
+// .DESCRIPTION class Eval_Centre4_VDF_Elem
 // Evaluateur VDF pour la convection Le champ convecte est scalaire (Champ_P0_VDF)
 // Schema de convection Centre ordre 4
-class Eval_centre4_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_centre4_VDF_Elem>, public Eval_Conv_VDF
+class Eval_Centre4_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_Centre4_VDF_Elem>, public Eval_Conv_VDF
 {
 
 public:
@@ -90,14 +90,14 @@ public:
   inline void qcentre(const double& ,const int ,const int ,const int ,const int ,const int , const DoubleTab& ,ArrOfDouble& ) const;
 };
 
-inline double Eval_centre4_VDF_Elem::qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face,const DoubleTab& transporte) const
+inline double Eval_Centre4_VDF_Elem::qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face,const DoubleTab& transporte) const
 {
   const int ori = orientation(face);
   const double dx = dist_elem(num0, num1, ori), dxam = dist_elem(num0_0, num0, ori), dxav = dist_elem(num1, num1_1, ori);
   return qcentre4_impl(ori,dx,dxam,dxav,psc,num0,num1,num0_0,num1_1,face,transporte);
 }
 
-inline void Eval_centre4_VDF_Elem::qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte,ArrOfDouble& flux) const
+inline void Eval_Centre4_VDF_Elem::qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte,ArrOfDouble& flux) const
 {
   const int ori = orientation(face);
   const double dx = dist_elem(num0, num1, ori), dxam = dist_elem(num0_0, num0, ori), dxav = dist_elem(num1, num1_1, ori);

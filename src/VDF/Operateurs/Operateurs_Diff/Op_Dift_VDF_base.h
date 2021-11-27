@@ -23,14 +23,8 @@
 #ifndef Op_Dift_VDF_base_included
 #define Op_Dift_VDF_base_included
 
-#include <Op_Diff_VDF_base.h>
 #include <Op_Diff_Turbulent_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class  Op_Dift_VDF_base
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <Op_Diff_VDF_base.h>
 
 class Op_Dift_VDF_base : public Op_Diff_VDF_base, public Op_Diff_Turbulent_base
 {
@@ -39,14 +33,12 @@ class Op_Dift_VDF_base : public Op_Diff_VDF_base, public Op_Diff_Turbulent_base
 
 public:
 
-  inline Op_Dift_VDF_base(const Iterateur_VDF_base& );
+  inline Op_Dift_VDF_base(const Iterateur_VDF_base& iter_base);// : Op_Diff_VDF_base(iter_base) { }
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   void contribuer_au_second_membre(DoubleTab& ) const;
 };
 
-inline Op_Dift_VDF_base::Op_Dift_VDF_base(const Iterateur_VDF_base& iter_base)
-  : Op_Diff_VDF_base(iter_base)
-{}
+inline Op_Dift_VDF_base::Op_Dift_VDF_base(const Iterateur_VDF_base& iter_base): Op_Diff_VDF_base(iter_base) { }
 
 #endif /* Op_Dift_VDF_base_included */

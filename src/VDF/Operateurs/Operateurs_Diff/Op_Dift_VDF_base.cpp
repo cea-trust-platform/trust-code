@@ -20,26 +20,18 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Dift_VDF_base.h>
 #include <Eval_Dift_VDF_const.h>
-#include <Eval_Dift_VDF_var.h>
-#include <Champ_Fonc.h>
-#include <Motcle.h>
-#include <DoubleTrav.h>
 #include <Mod_turb_hyd_base.h>
+#include <Eval_Dift_VDF_var.h>
+#include <Op_Dift_VDF_base.h>
+#include <Champ_Fonc.h>
+#include <DoubleTrav.h>
+#include <Motcle.h>
 
 Implemente_base(Op_Dift_VDF_base,"Op_Dift_VDF_base",Op_Diff_VDF_base);
 
-Sortie& Op_Dift_VDF_base::printOn(Sortie& is) const
-{
-  return Op_Diff_VDF_base::printOn(is);
-}
-
-Entree& Op_Dift_VDF_base::readOn(Entree& is)
-{
-  Op_Diff_VDF_base::readOn(is);
-  return is;
-}
+Sortie& Op_Dift_VDF_base::printOn(Sortie& is) const { return Op_Diff_VDF_base::printOn(is); }
+Entree& Op_Dift_VDF_base::readOn(Entree& is) { return Op_Diff_VDF_base::readOn(is); }
 
 //On utilise plus cette methode mais on la conserve en commentaire
 //pour en garder une trace (elle sera aussi tracee dans RoundUp demande DE243)
@@ -273,8 +265,7 @@ void Op_Dift_VDF_base::contribuer_au_second_membre(DoubleTab& resu) const
                         {
                           int elem1=face_voisins(num_face,0);
                           int elem2=face_voisins(num_face,1);
-                          if(elem1==-1)
-                            db_diffusivite=diffu_tot(elem2);
+                          if(elem1==-1) db_diffusivite = diffu_tot(elem2);
                           else
                             {
                               assert (elem2==-1);

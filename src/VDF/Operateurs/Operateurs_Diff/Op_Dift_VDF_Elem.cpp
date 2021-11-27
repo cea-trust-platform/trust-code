@@ -20,35 +20,20 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Dift_VDF_Elem.h>
 #include <Modele_turbulence_scal_base.h>
 #include <Mod_turb_hyd_base.h>
+#include <Op_Dift_VDF_Elem.h>
 #include <Champ_P0_VDF.h>
 
 Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Elem,"Op_Dift_VDF_P0_VDF",Op_Dift_VDF_base);
 implemente_It_VDF_Elem(Eval_Dift_VDF_const_Elem)
 
-Sortie& Op_Dift_VDF_Elem::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Op_Dift_VDF_Elem::readOn(Entree& s )
-{
-  return s ;
-}
-
-///////////////////////////////////////////////////////
-//
-//  Fonctions de la classe Op_Dift_VDF_Elem
-//
-///////////////////////////////////////////////////////
+Sortie& Op_Dift_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_Elem::readOn(Entree& s ) { return s ; }
 
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Dift_VDF_Elem::associer(const Zone_dis& zone_dis,
-                                const Zone_Cl_dis& zone_cl_dis,
-                                const Champ_Inc& ch_diffuse)
+void Op_Dift_VDF_Elem::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_diffuse)
 {
   const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
@@ -69,8 +54,7 @@ void Op_Dift_VDF_Elem::associer_diffusivite(const Champ_base& ch_diff)
 
 const Champ_base& Op_Dift_VDF_Elem::diffusivite() const
 {
-  const Eval_Dift_VDF_const_Elem& eval_diff_turb =
-    dynamic_cast<const Eval_Dift_VDF_const_Elem&> (iter.evaluateur());
+  const Eval_Dift_VDF_const_Elem& eval_diff_turb = dynamic_cast<const Eval_Dift_VDF_const_Elem&> (iter.evaluateur());
   return eval_diff_turb.get_diffusivite();
 }
 
@@ -101,7 +85,6 @@ void Op_Dift_VDF_Elem::completer()
       const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
       const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
       associer_diffusivite_turbulente(lambda_t);
-
 
       const Turbulence_paroi_scal& loipar = mod_turb.loi_paroi();
       if (loipar.non_nul())
@@ -173,12 +156,4 @@ double Op_Dift_VDF_Elem::calculer_dt_stab() const
   return dt_stab;
 }
 
-//
-// Fonctions inline de la classe Op_Dift_VDF_Elem
-//
-//// Op_Dift_VDF_Elem
-//
-Op_Dift_VDF_Elem::Op_Dift_VDF_Elem() :
-  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_const_Elem)())
-{
-}
+Op_Dift_VDF_Elem::Op_Dift_VDF_Elem() : Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_const_Elem)()) { }

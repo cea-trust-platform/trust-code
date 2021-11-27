@@ -43,12 +43,11 @@ class Op_Conv_Quick_VDF_Elem : public Op_Conv_VDF_base, Op_VDF_Elem
   Declare_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Elem);
 
 public:
-
   Op_Conv_Quick_VDF_Elem();
   void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc&  );
-  inline void associer_vitesse(const Champ_base& );
-  const Champ_Inc_base& vitesse() const;
   Champ_Inc_base& vitesse();
+  const Champ_Inc_base& vitesse() const;
+  inline void associer_vitesse(const Champ_base& );
   inline void dimensionner(Matrice_Morse& ) const;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
 

@@ -21,26 +21,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_VDF_Face_Axi.h>
-#include <math.h>
 #include <Champ_base.h>
 #include <Champ_Inc.h>
 #include <SFichier.h>
+#include <math.h>
 
 Implemente_instanciable(Op_Diff_VDF_Face_Axi,"Op_Diff_VDF_const_Face_Axi",Op_Diff_VDF_Face_base);
 
-Sortie& Op_Diff_VDF_Face_Axi::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Op_Diff_VDF_Face_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_Face_Axi::readOn(Entree& s ) { return s ; }
 
-Entree& Op_Diff_VDF_Face_Axi::readOn(Entree& s )
-{
-  return s ;
-}
-
-void Op_Diff_VDF_Face_Axi::associer(const Zone_dis& zone_dis,
-                                    const Zone_Cl_dis& zone_cl_dis,
-                                    const Champ_Inc& ch_transporte)
+void Op_Diff_VDF_Face_Axi::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_transporte)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
@@ -59,7 +50,6 @@ void Op_Diff_VDF_Face_Axi::associer(const Zone_dis& zone_dis,
   face_voisins.ref(zvdf.face_voisins());
   elem_faces.ref(zvdf.elem_faces());
   type_arete_bord.ref(zclvdf.type_arete_bord());
-
 }
 
 // Description:
@@ -76,7 +66,6 @@ const Champ_base& Op_Diff_VDF_Face_Axi::diffusivite() const
 
 DoubleTab& Op_Diff_VDF_Face_Axi::ajouter(const DoubleTab& inco,  DoubleTab& resu) const
 {
-
   if (inco.line_size() > 1)
     {
       Cerr << "Erreur dans Op_Diff_VDF_Face_Axi::ajouter" << finl;
@@ -276,21 +265,16 @@ DoubleTab& Op_Diff_VDF_Face_Axi::ajouter(const DoubleTab& inco,  DoubleTab& resu
   return resu;
 }
 
-
-
 double Op_Diff_VDF_Face_Axi::calculer_dt_stab() const
 {
   return Op_Diff_VDF_Face_base::calculer_dt_stab(la_zone_vdf.valeur()) ;
 }
-
-
 
 DoubleTab& Op_Diff_VDF_Face_Axi::calculer(const DoubleTab& inco, DoubleTab& resu) const
 {
   resu=0;
   return ajouter(inco,resu);
 }
-
 
 void Op_Diff_VDF_Face_Axi::ajouter_bord(const DoubleTab& inco, DoubleTab& resu) const
 {
@@ -1126,11 +1110,9 @@ void Op_Diff_VDF_Face_Axi::contribue_au_second_membre(DoubleTab& resu ) const
             Cerr << "On a rencontre un type d'arete non prevu\n";
             Cerr << "num arete : " << n_arete;
             Cerr << " type : " << n_type;
-            exit();
+            Process::exit();
             break;
           }
         }
     }
-
 }
-

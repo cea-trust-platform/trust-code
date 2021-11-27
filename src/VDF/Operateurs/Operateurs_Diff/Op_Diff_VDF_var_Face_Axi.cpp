@@ -21,26 +21,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_VDF_var_Face_Axi.h>
-#include <math.h>
 #include <Champ_base.h>
 #include <Champ_Inc.h>
 #include <SFichier.h>
+#include <math.h>
 
 Implemente_instanciable(Op_Diff_VDF_var_Face_Axi,"Op_Diff_VDF_var_Face_Axi",Op_Diff_VDF_Face_base);
 
-Sortie& Op_Diff_VDF_var_Face_Axi::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Op_Diff_VDF_var_Face_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_var_Face_Axi::readOn(Entree& s ) { return s ; }
 
-Entree& Op_Diff_VDF_var_Face_Axi::readOn(Entree& s )
-{
-  return s ;
-}
-
-void Op_Diff_VDF_var_Face_Axi::associer(const Zone_dis& zone_dis,
-                                        const Zone_Cl_dis& zone_cl_dis,
-                                        const Champ_Inc& ch_transporte)
+void Op_Diff_VDF_var_Face_Axi::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_transporte)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
@@ -59,7 +50,6 @@ void Op_Diff_VDF_var_Face_Axi::associer(const Zone_dis& zone_dis,
   face_voisins.ref(zvdf.face_voisins());
   elem_faces.ref(zvdf.elem_faces());
   type_arete_bord.ref(zclvdf.type_arete_bord());
-
 }
 
 void Op_Diff_VDF_var_Face_Axi::associer_diffusivite(const Champ_base& diffu)
@@ -74,30 +64,19 @@ const Champ_base& Op_Diff_VDF_var_Face_Axi::diffusivite() const
 
 DoubleTab& Op_Diff_VDF_var_Face_Axi::ajouter(const DoubleTab& inco,  DoubleTab& resu) const
 {
-
-
   if (inco.nb_dim() > 1)
     {
       Cerr << "Erreur dans Op_Diff_VDF_var_Face_Axi::ajouter" << finl;
       Cerr << "On ne sait pas traiter la diffusion d'un Champ_Face a plusieurs inconnues" << finl;
       exit();
     }
-
   const Zone_VDF& zvdf = la_zone_vdf.valeur();
   const DoubleVect& tab_diffusivite = diffusivite_->valeurs();
-  double db_diffusivite;
-  double d_teta;
-  double tau11, tau22, tau12, tau21, R;
-  double tau13, tau31, tau23, tau32, tau33;
-  int fac1,fac2,fac3,fac4,signe;
-  int n_type;
-  double coef_laplacien_axi;
-  //  int nb_faces_elem = zvdf.zone().nb_faces_elem();
-
-  double deux_pi = M_PI*2.0;
+  double db_diffusivite, d_teta, tau11, tau22, tau12, tau21, R, tau13, tau31, tau23, tau32, tau33;
+  int fac1,fac2,fac3,fac4,signe,n_type;
+  double coef_laplacien_axi, deux_pi = M_PI*2.0;
 
   // Boucle sur les elements
-
   int fx0,fx1,fy0,fy1;
   double flux_X,flux_Y;
 
@@ -157,13 +136,9 @@ DoubleTab& Op_Diff_VDF_var_Face_Axi::ajouter(const DoubleTab& inco,  DoubleTab& 
         }
     }
 
-
   // Boucle sur les aretes bord
-
   int n_arete;
-  int ndeb = zvdf.premiere_arete_bord();
-  int nfin = ndeb + zvdf.nb_aretes_bord();
-
+  int ndeb = zvdf.premiere_arete_bord(), nfin = ndeb + zvdf.nb_aretes_bord();
   double dist3;
 
   for (n_arete=ndeb; n_arete<nfin; n_arete++)
@@ -1154,6 +1129,4 @@ void Op_Diff_VDF_var_Face_Axi::contribue_au_second_membre(DoubleTab& resu ) cons
           }
         }
     }
-
 }
-

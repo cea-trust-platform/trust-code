@@ -29,9 +29,9 @@
 #ifndef Op_Conv_Quick_VDF_Face_Axi_included
 #define Op_Conv_Quick_VDF_Face_Axi_included
 
+#include <Eval_Conv_VDF_Face_leaves.h>
 #include <Op_Conv_VDF_base.h>
 #include <ItVDFFa.h>
-#include <Eval_Conv_VDF_Face_leaves.h>
 
 // .DESCRIPTION class Op_Conv_Quick_VDF_Face
 //  Cette classe represente l'operateur de convection associe a une equation de
@@ -42,7 +42,7 @@
 //  L'iterateur associe est de type Iterateur_VDF_Face
 //  L'evaluateur associe est de type Eval_Quick_VDF_Face
 
-declare_It_VDF_Face(Eval_Quick_VDF_Face_Axi2)
+declare_It_VDF_Face(Eval_Quick_VDF_Face_Axi)
 
 class Op_Conv_Quick_VDF_Face_Axi : public Op_Conv_VDF_base
 {
@@ -51,9 +51,9 @@ class Op_Conv_Quick_VDF_Face_Axi : public Op_Conv_VDF_base
 public:
   Op_Conv_Quick_VDF_Face_Axi();
   void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
-  inline void associer_vitesse(const Champ_base&) ;
-  const Champ_Inc_base& vitesse() const;
   Champ_Inc_base& vitesse();
+  const Champ_Inc_base& vitesse() const;
+  inline void associer_vitesse(const Champ_base&) ;
 };
 
 // Description:
@@ -62,8 +62,8 @@ inline void Op_Conv_Quick_VDF_Face_Axi::associer_vitesse(const Champ_base& ch_vi
 {
   const Champ_Face& vit = (Champ_Face&) ch_vit;
 
-  Eval_Quick_VDF_Face_Axi2& eval_conv = dynamic_cast<Eval_Quick_VDF_Face_Axi2&> (iter.evaluateur());
+  Eval_Quick_VDF_Face_Axi& eval_conv = dynamic_cast<Eval_Quick_VDF_Face_Axi&> (iter.evaluateur());
   eval_conv.associer(vit );                // Eval_Conv_VDF::associer
 }
 
-#endif
+#endif /* Op_Conv_Quick_VDF_Face_Axi_included */

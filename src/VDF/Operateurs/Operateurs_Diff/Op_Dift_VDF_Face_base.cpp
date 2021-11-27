@@ -27,21 +27,12 @@
 
 Implemente_base(Op_Dift_VDF_Face_base,"Op_Dift_VDF_Face_base",Op_Dift_VDF_base);
 
-Sortie& Op_Dift_VDF_Face_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Op_Dift_VDF_Face_base::readOn(Entree& s )
-{
-  return s ;
-}
+Sortie& Op_Dift_VDF_Face_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_Face_base::readOn(Entree& s ) { return s ; }
 
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Dift_VDF_Face_base::associer(const Zone_dis& zone_dis,
-                                     const Zone_Cl_dis& zone_cl_dis,
-                                     const Champ_Inc& ch_diffuse)
+void Op_Dift_VDF_Face_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_diffuse)
 {
   const Champ_Face& inco = ref_cast(Champ_Face,ch_diffuse.valeur());
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
@@ -65,8 +56,7 @@ void Op_Dift_VDF_Face_base::associer_diffusivite(const Champ_base& ch_diff)
 
 const Champ_base& Op_Dift_VDF_Face_base::diffusivite() const
 {
-  const Eval_Diff_VDF& eval_diff_turb =
-    dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
+  const Eval_Diff_VDF& eval_diff_turb = dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
   return eval_diff_turb.get_diffusivite();
 }
 

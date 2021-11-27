@@ -24,13 +24,12 @@
 #define Op_Diff_VDF_Face_base_included
 
 #include <Op_Diff_VDF_base.h>
-#include <ItVDFFa.h>
 #include <Op_VDF_Face.h>
-class Champ_Inc;
+#include <ItVDFFa.h>
 class Eval_VDF_Face2;
+class Champ_Inc;
 
 // .DESCRIPTION class Op_Diff_VDF_Face_base
-//
 //  Cette classe represente l'operateur de diffusion associe a une equation de
 //  la quantite de mouvement.
 //  La discretisation est VDF
@@ -39,37 +38,22 @@ class Eval_VDF_Face2;
 //  L'iterateur associe est de type Iterateur_VDF_Face
 //  L'evaluateur associe est de type Eval_Diff_VDF_const_Face
 
-//
-// .SECTION voir aussi
-//
-//
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_VDF_Face_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Op_Diff_VDF_Face_base : public Op_Diff_VDF_base, public Op_VDF_Face
 {
   Declare_base(Op_Diff_VDF_Face_base);
-
 public:
   inline Op_Diff_VDF_Face_base(const Iterateur_VDF_base& iterateur);
+  double calculer_dt_stab() const;
+  double calculer_dt_stab(const Zone_VDF&) const;
   void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
   void associer_diffusivite(const Champ_base& );
   const Champ_base& diffusivite() const;
-  inline  void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  double calculer_dt_stab() const;
-  double calculer_dt_stab(const Zone_VDF&) const;
   virtual void mettre_a_jour(double temps);
+
+  inline void dimensionner(Matrice_Morse& ) const;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
   inline virtual Eval_VDF_Face2& get_eval_face();
 };
-
-//
-// Fonctions inline de la classe Op_Diff_VDF_Face_base
-//
 
 // Description:
 // constructeur

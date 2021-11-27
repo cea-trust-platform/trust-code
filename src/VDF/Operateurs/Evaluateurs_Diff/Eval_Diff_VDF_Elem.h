@@ -24,6 +24,7 @@
 #ifndef Eval_Diff_VDF_Elem_included
 #define Eval_Diff_VDF_Elem_included
 
+#include <CL_Types_include.h>
 #include <Evaluateur_VDF.h>
 #include <Eval_VDF_Elem2.h>
 

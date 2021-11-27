@@ -24,7 +24,7 @@
 #include <SFichier.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Face,"Op_Conv_Quick_VDF_Face",Op_Conv_VDF_base);
-implemente_It_VDF_Face(Eval_Quick_VDF_Face2)
+implemente_It_VDF_Face(Eval_Quick_VDF_Face)
 
 Sortie& Op_Conv_Quick_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_Quick_VDF_Face::readOn(Entree& s ) { return s ; }
@@ -39,7 +39,7 @@ void Op_Conv_Quick_VDF_Face::associer(const Zone_dis& zone_dis, const Zone_Cl_di
 
   iter.associer(zvdf, zclvdf, *this);
 
-  Eval_Quick_VDF_Face2& eval_conv = dynamic_cast<Eval_Quick_VDF_Face2&> (iter.evaluateur());
+  Eval_Quick_VDF_Face& eval_conv = dynamic_cast<Eval_Quick_VDF_Face&> (iter.evaluateur());
   eval_conv.associer_zones(zvdf, zclvdf );          // Evaluateur_VDF::associer_zones
   eval_conv.associer_inconnue(vit);        // Eval_VDF_Face::associer_inconnue
   if (Process::nproc()>1 && zvdf.zone().nb_joints() && zvdf.zone().joint(0).epaisseur()<2)
@@ -53,13 +53,13 @@ void Op_Conv_Quick_VDF_Face::associer(const Zone_dis& zone_dis, const Zone_Cl_di
 
 const Champ_Inc_base& Op_Conv_Quick_VDF_Face::vitesse() const
 {
-  const Eval_Quick_VDF_Face2& eval_conv = dynamic_cast<const Eval_Quick_VDF_Face2&> (iter.evaluateur());
+  const Eval_Quick_VDF_Face& eval_conv = dynamic_cast<const Eval_Quick_VDF_Face&> (iter.evaluateur());
   return eval_conv.vitesse();
 }
 
 Champ_Inc_base& Op_Conv_Quick_VDF_Face::vitesse()
 {
-  Eval_Quick_VDF_Face2& eval_conv = dynamic_cast<Eval_Quick_VDF_Face2&> (iter.evaluateur());
+  Eval_Quick_VDF_Face& eval_conv = dynamic_cast<Eval_Quick_VDF_Face&> (iter.evaluateur());
   return eval_conv.vitesse();
 }
 
@@ -68,5 +68,4 @@ Champ_Inc_base& Op_Conv_Quick_VDF_Face::vitesse()
 //
 // Description:
 // constructeur
-Op_Conv_Quick_VDF_Face::Op_Conv_Quick_VDF_Face() :
-  Op_Conv_VDF_base(It_VDF_Face(Eval_Quick_VDF_Face2)()) { }
+Op_Conv_Quick_VDF_Face::Op_Conv_Quick_VDF_Face() : Op_Conv_VDF_base(It_VDF_Face(Eval_Quick_VDF_Face)()) { }

@@ -20,57 +20,40 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Check_espace_virtuel.h>
 #include <Op_Diff_VDF_base.h>
 #include <Eval_Diff_VDF.h>
-#include <Motcle.h>
-#include <Champ_Don.h>
 #include <DoubleTrav.h>
-#include <Check_espace_virtuel.h>
+#include <Champ_Don.h>
+#include <Motcle.h>
 
 Implemente_base(Op_Diff_VDF_base,"Op_Diff_VDF_base",Operateur_Diff_base);
 
-//// printOn
-//
-
-Sortie& Op_Diff_VDF_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-
-//// readOn
-//
-
-Entree& Op_Diff_VDF_base::readOn(Entree& s )
-{
-  return s ;
-}
+Sortie& Op_Diff_VDF_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_base::readOn(Entree& s ) { return s ; }
 
 void Op_Diff_VDF_base::completer()
 {
   Operateur_base::completer();
   // Certains operateurs (Axi) n'ont pas d'iterateurs en VDF...
   // Encore une anomalie dans la conception a corriger un jour !
-  if (iter.non_nul())
-    iter.completer_();
+  if (iter.non_nul()) iter.completer_();
 }
 
 int Op_Diff_VDF_base::impr(Sortie& os) const
 {
   // Certains operateurs (Axi) n'ont pas d'iterateurs en VDF...
   // Encore une anomalie dans la conception a corriger un jour !
-  if (iter.non_nul())
-    return iter.impr(os);
-  else
-    return 0;
+  return (iter.non_nul()) ? iter.impr(os) : 0;
 }
+
 void Op_Diff_VDF_base::calculer_flux_bord(const DoubleTab& inco) const
 {
   iter.valeur().calculer_flux_bord(inco);
 }
+
 // Description:
 // ajoute la contribution de la diffusion au second membre resu
-// renvoie resu
 DoubleTab& Op_Diff_VDF_base::ajouter(const DoubleTab& inco,  DoubleTab& resu) const
 {
   // on fait += sur les espaces virtuels, pas grave s'ils contiennent n'importe quoi
@@ -138,7 +121,6 @@ DoubleTab& Op_Diff_VDF_base::ajouter(const DoubleTab& inco,  DoubleTab& resu) co
 
 //Description:
 //on assemble la matrice.
-
 void Op_Diff_VDF_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   iter.ajouter_contribution(inco, matrice);
@@ -273,7 +255,6 @@ void Op_Diff_VDF_base::contribuer_au_second_membre(DoubleTab& resu) const
 
 // Description:
 // calcule la contribution de la diffusion, la range dans resu
-// renvoie resu
 DoubleTab& Op_Diff_VDF_base::calculer(const DoubleTab& inco,  DoubleTab& resu) const
 {
   resu =0;

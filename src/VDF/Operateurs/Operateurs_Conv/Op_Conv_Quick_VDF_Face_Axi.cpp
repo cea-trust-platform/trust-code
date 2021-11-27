@@ -24,11 +24,10 @@
 #include <SFichier.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Face_Axi,"Op_Conv_Quick_VDF_Face_Axi",Op_Conv_VDF_base);
-implemente_It_VDF_Face(Eval_Quick_VDF_Face_Axi2)
+implemente_It_VDF_Face(Eval_Quick_VDF_Face_Axi)
 
 Sortie& Op_Conv_Quick_VDF_Face_Axi::printOn(Sortie& s ) const { return s; }
 Entree& Op_Conv_Quick_VDF_Face_Axi::readOn(Entree& is ) { return is; }
-
 
 // Description:
 // complete l'iterateur et l'evaluateur
@@ -40,22 +39,22 @@ void Op_Conv_Quick_VDF_Face_Axi::associer(const Zone_dis& zone_dis, const Zone_C
 
   iter.associer(zvdf, zclvdf, *this);
 
-  Eval_Quick_VDF_Face_Axi2& eval_conv = dynamic_cast<Eval_Quick_VDF_Face_Axi2&> (iter.evaluateur());
+  Eval_Quick_VDF_Face_Axi& eval_conv = dynamic_cast<Eval_Quick_VDF_Face_Axi&> (iter.evaluateur());
   eval_conv.associer_zones(zvdf, zclvdf );          // Evaluateur_VDF::associer_zones
   eval_conv.associer_inconnue(vit);             // Eval_VDF_Face::associer_inconnue
 }
 
 const Champ_Inc_base& Op_Conv_Quick_VDF_Face_Axi::vitesse() const
 {
-  const Eval_Quick_VDF_Face_Axi2& eval_conv = dynamic_cast<const Eval_Quick_VDF_Face_Axi2&> (iter.evaluateur());
+  const Eval_Quick_VDF_Face_Axi& eval_conv = dynamic_cast<const Eval_Quick_VDF_Face_Axi&> (iter.evaluateur());
   return eval_conv.vitesse();
 }
 
 Champ_Inc_base& Op_Conv_Quick_VDF_Face_Axi::vitesse()
 {
-  Eval_Quick_VDF_Face_Axi2& eval_conv = dynamic_cast<Eval_Quick_VDF_Face_Axi2&> (iter.evaluateur());
+  Eval_Quick_VDF_Face_Axi& eval_conv = dynamic_cast<Eval_Quick_VDF_Face_Axi&> (iter.evaluateur());
   return eval_conv.vitesse();
 }
 
-Op_Conv_Quick_VDF_Face_Axi::Op_Conv_Quick_VDF_Face_Axi() :Op_Conv_VDF_base(It_VDF_Face(Eval_Quick_VDF_Face_Axi2)()) { }
+Op_Conv_Quick_VDF_Face_Axi::Op_Conv_Quick_VDF_Face_Axi() :Op_Conv_VDF_base(It_VDF_Face(Eval_Quick_VDF_Face_Axi)()) { }
 

@@ -22,22 +22,15 @@
 
 #include <Op_Diff_VDF_Face_base.h>
 #include <Fluide_Incompressible.h>
-#include <Champ_Inc.h>
-#include <Eval_Diff_VDF.h>
 #include <Eval_VDF_Face2.h>
+#include <Eval_Diff_VDF.h>
+#include <Champ_Inc.h>
 #include <SFichier.h>
 
 Implemente_base(Op_Diff_VDF_Face_base,"Op_Diff_VDF_Face_base",Op_Diff_VDF_base);
 
-Sortie& Op_Diff_VDF_Face_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Op_Diff_VDF_Face_base::readOn(Entree& s )
-{
-  return s ;
-}
+Sortie& Op_Diff_VDF_Face_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_Face_base::readOn(Entree& s ) { return s ; }
 
 double Op_Diff_VDF_Face_base::calculer_dt_stab() const
 {
@@ -96,9 +89,7 @@ double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
 
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Diff_VDF_Face_base::associer(const Zone_dis& zone_dis,
-                                     const Zone_Cl_dis& zone_cl_dis,
-                                     const Champ_Inc& ch_transporte)
+void Op_Diff_VDF_Face_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_transporte)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
@@ -122,8 +113,7 @@ void Op_Diff_VDF_Face_base::associer_diffusivite(const Champ_base& ch_diff)
 
 const Champ_base& Op_Diff_VDF_Face_base::diffusivite() const
 {
-  const Eval_Diff_VDF& eval_diff =
-    dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
+  const Eval_Diff_VDF& eval_diff = dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
   return eval_diff.get_diffusivite();
 }
 

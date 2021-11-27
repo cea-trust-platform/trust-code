@@ -20,34 +20,19 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Modele_turbulence_scal_base.h>
 #include <Op_Dift_VDF_var_Elem.h>
 #include <Champ_P0_VDF.h>
-#include <Modele_turbulence_scal_base.h>
 
 Implemente_instanciable_sans_constructeur(Op_Dift_VDF_var_Elem,"Op_Dift_VDF_var_P0_VDF",Op_Dift_VDF_base);
 implemente_It_VDF_Elem(Eval_Dift_VDF_var_Elem)
 
-Sortie& Op_Dift_VDF_var_Elem::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Op_Dift_VDF_var_Elem::readOn(Entree& s )
-{
-  return s ;
-}
-
-/////////////////////////////////////////////////////
-//
-//  Fonctions  de la classe Op_Dift_VDF_var_Elem
-//
-/////////////////////////////////////////////////////
+Sortie& Op_Dift_VDF_var_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_var_Elem::readOn(Entree& s ) { return s ; }
 
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Dift_VDF_var_Elem::associer(const Zone_dis& zone_dis,
-                                    const Zone_Cl_dis& zone_cl_dis,
-                                    const Champ_Inc& ch_diffuse)
+void Op_Dift_VDF_var_Elem::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_diffuse)
 {
   const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
@@ -70,8 +55,7 @@ void Op_Dift_VDF_var_Elem::associer_diffusivite(const Champ_base& ch_diff)
 
 const Champ_base& Op_Dift_VDF_var_Elem::diffusivite() const
 {
-  const Eval_Dift_VDF_var_Elem& eval_diff_turb =
-    dynamic_cast<const Eval_Dift_VDF_var_Elem&> (iter.evaluateur());
+  const Eval_Dift_VDF_var_Elem& eval_diff_turb = dynamic_cast<const Eval_Dift_VDF_var_Elem&> (iter.evaluateur());
   return eval_diff_turb.get_diffusivite();
 }
 
@@ -160,12 +144,4 @@ double Op_Dift_VDF_var_Elem::calculer_dt_stab() const
   return dt_stab;
 }
 
-//
-// Fonctions inline de la classe Op_Dift_VDF_var_Elem
-//
-//// Op_Dift_VDF_Elem
-//
-Op_Dift_VDF_var_Elem::Op_Dift_VDF_var_Elem() :
-  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_var_Elem)())
-{
-}
+Op_Dift_VDF_var_Elem::Op_Dift_VDF_var_Elem() : Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_var_Elem)()) { }

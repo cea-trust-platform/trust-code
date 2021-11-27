@@ -35,9 +35,9 @@
 //  Le champ convecte est de type Champ_Face
 //  Le schema de convection est du type Amont
 //  L'iterateur associe est de type Iterateur_VDF_Face
-//  L'evaluateur associe est de type Eval_Amont_VDF_Face2
+//  L'evaluateur associe est de type Eval_Amont_VDF_Face
 
-declare_It_VDF_Face(Eval_Amont_VDF_Face2)
+declare_It_VDF_Face(Eval_Amont_VDF_Face)
 
 class Op_Conv_Amont_VDF_Face : public Op_Conv_VDF_base, public Op_VDF_Face
 {
@@ -45,10 +45,10 @@ class Op_Conv_Amont_VDF_Face : public Op_Conv_VDF_base, public Op_VDF_Face
 public:
   Op_Conv_Amont_VDF_Face();
   void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
-  inline void associer_vitesse(const Champ_base& );
-  const Champ_Inc_base& vitesse() const;
   Champ_Inc_base& vitesse();
-  inline  void dimensionner(Matrice_Morse& ) const;
+  const Champ_Inc_base& vitesse() const;
+  inline void associer_vitesse(const Champ_base& );
+  inline void dimensionner(Matrice_Morse& ) const;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
 };
 
@@ -58,7 +58,7 @@ inline void Op_Conv_Amont_VDF_Face::associer_vitesse(const Champ_base& ch_vit)
 {
   const Champ_Face& vit = (Champ_Face&) ch_vit;
 
-  Eval_Amont_VDF_Face2& eval_conv = dynamic_cast<Eval_Amont_VDF_Face2&> (iter.evaluateur());
+  Eval_Amont_VDF_Face& eval_conv = dynamic_cast<Eval_Amont_VDF_Face&> (iter.evaluateur());
   eval_conv.associer(vit );                // Eval_Conv_VDF::associer
 }
 

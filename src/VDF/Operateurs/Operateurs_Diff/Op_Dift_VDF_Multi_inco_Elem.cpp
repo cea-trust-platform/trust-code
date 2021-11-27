@@ -21,42 +21,25 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Dift_VDF_Multi_inco_Elem.h>
-#include <Champ_P0_VDF.h>
 #include <Modele_turbulence_scal_base.h>
+#include <Champ_P0_VDF.h>
 
 Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Multi_inco_Elem,"Op_Dift_VDF_Multi_inco_P0_VDF",Op_Dift_VDF_base);
 implemente_It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem)
 
-Sortie& Op_Dift_VDF_Multi_inco_Elem::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Op_Dift_VDF_Multi_inco_Elem::readOn(Entree& s )
-{
-  return s ;
-}
-
-
-////////////////////////////////////////////////////////////////
-//
-//   Fonctions de la classe Op_Dift_VDF_Multi_inco_Elem
-//
-////////////////////////////////////////////////////////////////
+Sortie& Op_Dift_VDF_Multi_inco_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_Multi_inco_Elem::readOn(Entree& s ) { return s ; }
 
 // Description:
 // complete l'iterateur et l'evaluateur
-void Op_Dift_VDF_Multi_inco_Elem::associer(const Zone_dis& zone_dis,
-                                           const Zone_Cl_dis& zone_cl_dis,
-                                           const Champ_Inc& ch_diffuse)
+void Op_Dift_VDF_Multi_inco_Elem::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_diffuse)
 {
   const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
   iter.associer(zvdf, zclvdf, *this);
 
-  Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb =
-    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (iter.evaluateur());
+  Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb = dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (iter.evaluateur());
   eval_diff_turb.associer_zones(zvdf, zclvdf );
   eval_diff_turb.associer_inconnue(inco );
 }
@@ -66,15 +49,13 @@ void Op_Dift_VDF_Multi_inco_Elem::associer(const Zone_dis& zone_dis,
 // associe le champ de diffusivite a l'evaluateur
 void Op_Dift_VDF_Multi_inco_Elem::associer_diffusivite(const Champ_base& ch_diff)
 {
-  Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb =
-    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (iter.evaluateur());
+  Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb = dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (iter.evaluateur());
   eval_diff_turb.associer(ch_diff);
 }
 
 const Champ_base& Op_Dift_VDF_Multi_inco_Elem::diffusivite() const
 {
-  const Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb =
-    dynamic_cast<const Eval_Dift_VDF_Multi_inco_const_Elem&> (iter.evaluateur());
+  const Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb = dynamic_cast<const Eval_Dift_VDF_Multi_inco_const_Elem&> (iter.evaluateur());
   return eval_diff_turb.get_diffusivite();
 }
 
@@ -82,8 +63,7 @@ void Op_Dift_VDF_Multi_inco_Elem::associer_diffusivite_turbulente(const Champ_Fo
 {
   Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb);
   Evaluateur_VDF& eval = iter.evaluateur();
-  Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb =
-    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (eval);
+  Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb = dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (eval);
   eval_diff_turb.associer_diff_turb(diff_turb);
 }
 
@@ -92,8 +72,7 @@ void Op_Dift_VDF_Multi_inco_Elem::associer_loipar(const Turbulence_paroi_scal& l
 {
   //loipar = loi_paroi;
   Evaluateur_VDF& eval = iter.evaluateur();
-  Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb =
-    dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (eval);
+  Eval_Dift_VDF_Multi_inco_const_Elem& eval_diff_turb = dynamic_cast<Eval_Dift_VDF_Multi_inco_const_Elem&> (eval);
   eval_diff_turb.associer_loipar(loi_paroi);
 }
 
@@ -120,7 +99,7 @@ double Op_Dift_VDF_Multi_inco_Elem::calculer_dt_stab() const
   if (!sub_type(Champ_Uniforme, diffusivite()))
     {
       Cerr << "Error in Op_Dift_VDF_Multi_inco_Elem::calculer_dt_stab(): diffusivity must be of type Champ_Uniforme" << finl;
-      exit();
+      Process::exit();
     }
 
   // Calcul du pas de temps de stabilite :
@@ -164,12 +143,5 @@ double Op_Dift_VDF_Multi_inco_Elem::calculer_dt_stab() const
   return dt_stab;
 }
 
-//
-// Fonctions inline de la classe Op_Dift_VDF_Multi_inco_Elem
-//
-//// Op_Dift_VDF_Multi_inco_Elem
-//
 Op_Dift_VDF_Multi_inco_Elem::Op_Dift_VDF_Multi_inco_Elem() :
-  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem)())
-{
-}
+  Op_Dift_VDF_base(It_VDF_Elem(Eval_Dift_VDF_Multi_inco_const_Elem)()) { }

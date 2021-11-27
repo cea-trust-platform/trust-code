@@ -20,69 +20,32 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-
 #ifndef Op_Diff_VDF_base_included
 #define Op_Diff_VDF_base_included
 
 #include <Operateur_Diff_base.h>
 #include <Iterateur_VDF_base.h>
-
 class Champ_Fonc;
 
-
-//
 // .DESCRIPTION class Op_Diff_VDF_base
-//
 // Classe de base des operateurs de diffusion VDF
-
-//
-// .SECTION voir aussi
-//
-//
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_VDF_base
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Diff_VDF_base : public Operateur_Diff_base
 {
-
-
   Declare_base(Op_Diff_VDF_base);
 
 public:
-
-  inline Op_Diff_VDF_base(const Iterateur_VDF_base&);
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  virtual void calculer_flux_bord(const DoubleTab& inco) const;
+  inline Op_Diff_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
+  void completer();
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   void contribuer_au_second_membre(DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  void completer();
   virtual int impr(Sortie& os) const;
+  virtual void calculer_flux_bord(const DoubleTab& inco) const;
 
 protected:
-
   Iterateur_VDF iter;
-
-private:
-
 };
 
-
-
-//
-// Fonctions inline de la classe Op_Diff_VDF_base
-//
-
-// Description:
-// constructeur
-inline Op_Diff_VDF_base::Op_Diff_VDF_base(const Iterateur_VDF_base& iter_base) :
-  iter(iter_base)
-{}
-
-#endif
+#endif /* Op_Diff_VDF_base_included */

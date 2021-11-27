@@ -23,19 +23,13 @@
 #ifndef Op_Dift_VDF_var_Face_included
 #define Op_Dift_VDF_var_Face_included
 
-#include <Op_Dift_VDF_Face_base.h>
 #include <Eval_Dift_VDF_var_Face.h>
+#include <Op_Dift_VDF_Face_base.h>
 
 declare_It_VDF_Face(Eval_Dift_VDF_var_Face)
 
 class Champ_Fonc;
 class Mod_turb_hyd_base;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Dift_VDF_var_Face
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Dift_VDF_var_Face : public Op_Dift_VDF_Face_base
 {
@@ -48,8 +42,6 @@ public:
   inline Eval_VDF_Face2& get_eval_face();
 };
 
-//// Op_Dift_VDF_var_Face
-//
 inline Eval_VDF_Face2& Op_Dift_VDF_var_Face::get_eval_face()
 {
   Eval_Dift_VDF_var_Face& eval_diff = dynamic_cast<Eval_Dift_VDF_var_Face&> (iter.evaluateur());

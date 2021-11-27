@@ -52,8 +52,8 @@ public:
   Op_Conv_Amont_VDF_Elem();
   void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
   void associer_vitesse(const Champ_base& );
-  const Champ_base& vitesse() const;
   Champ_base& vitesse();
+  const Champ_base& vitesse() const;
   inline void dimensionner(Matrice_Morse& ) const;
   inline void dimensionner_bloc_vitesse(Matrice_Morse& ) const;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;

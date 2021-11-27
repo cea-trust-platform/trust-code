@@ -20,17 +20,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Diff_VDF_Elem_base_included
 #define Op_Diff_VDF_Elem_base_included
 
 #include <Op_Diff_VDF_base.h>
-#include <ItVDFEl.h>
 #include <Op_VDF_Elem.h>
+#include <ItVDFEl.h>
 class Eval_VDF_Elem2;
-//
+
 // .DESCRIPTION class Op_Diff_VDF_Elem_base
-//
 //  Cette classe represente l'operateur de diffusion associe a une equation de
 //  transport.
 //  La discretisation est VDF
@@ -39,45 +37,25 @@ class Eval_VDF_Elem2;
 //  L'iterateur associe est de type Iterateur_VDF_Elem
 //  L'evaluateur associe est de type Eval_Diff_VDF_const_Elem
 
-//
-// .SECTION voir aussi
-//
-//
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_VDF_Elem_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Op_Diff_VDF_Elem_base : public Op_Diff_VDF_base, public Op_VDF_Elem
 {
-
   Declare_base_sans_constructeur(Op_Diff_VDF_Elem_base);
-
 public:
   inline Op_Diff_VDF_Elem_base(const Iterateur_VDF_base& iterateur);
 
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& );
-  void associer_diffusivite(const Champ_base& );
-
-  const Champ_base& diffusivite() const;
-  inline  void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
   double calculer_dt_stab() const;
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
+  void associer_diffusivite(const Champ_base& );
+  const Champ_base& diffusivite() const;
   virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const;
   virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco,  Matrice_Morse& matrice) const;
+
+  inline void dimensionner(Matrice_Morse& ) const;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
 
 protected:
   virtual Eval_VDF_Elem2& get_eval_elem()=0;
 };
-
-
-//
-// Fonctions inline de la classe Op_Diff_VDF_Elem_base
-//
-
 
 // Ce constructeur permet de creer des classes filles des evalateurs
 // (utilise dans le constructeur de Op_Diff_VDF_var_Elem_temp_FTBM)
@@ -86,6 +64,7 @@ inline Op_Diff_VDF_Elem_base::Op_Diff_VDF_Elem_base(const Iterateur_VDF_base& it
 {
   declare_support_masse_volumique(1);
 }
+
 // Description:
 // on dimensionne notre matrice.
 inline  void Op_Diff_VDF_Elem_base::dimensionner(Matrice_Morse& matrice) const

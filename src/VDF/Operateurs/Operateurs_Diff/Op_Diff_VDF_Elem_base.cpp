@@ -21,26 +21,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_VDF_Elem_base.h>
-#include <Champ_P0_VDF.h>
-
-#include <Eval_Diff_VDF.h>
-#include <Eval_VDF_Elem2.h>
 #include <Echange_contact_VDF.h>
-#include <Array_tools.h>
+#include <Eval_VDF_Elem2.h>
+#include <Eval_Diff_VDF.h>
+#include <Champ_P0_VDF.h>
 #include <Matrix_tools.h>
+#include <Array_tools.h>
 
 Implemente_base_sans_constructeur(Op_Diff_VDF_Elem_base,"Op_Diff_VDF_Elem_base",Op_Diff_VDF_base);
 
-
-Sortie& Op_Diff_VDF_Elem_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Op_Diff_VDF_Elem_base::readOn(Entree& s )
-{
-  return s ;
-}
+Sortie& Op_Diff_VDF_Elem_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_Elem_base::readOn(Entree& s ) { return s ; }
 
 double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
 {

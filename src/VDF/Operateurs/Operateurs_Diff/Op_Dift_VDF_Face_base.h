@@ -24,41 +24,35 @@
 #define Op_Dift_VDF_Face_base_included
 
 #include <Op_Dift_VDF_base.h>
-#include <ItVDFFa.h>
 #include <Op_VDF_Face.h>
+#include <ItVDFFa.h>
 
+class Mod_turb_hyd_base;
 class Eval_VDF_Face2;
 class Champ_Fonc;
-class Mod_turb_hyd_base;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Dift_VDF_Face_base
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Dift_VDF_Face_base : public Op_Dift_VDF_base, public Op_VDF_Face
 {
   Declare_base(Op_Dift_VDF_Face_base);
-
 public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
-  void associer_diffusivite(const Champ_base& );
-  void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  void associer_loipar(const Turbulence_paroi& );
-  const Champ_base& diffusivite() const;
+  inline Op_Dift_VDF_Face_base(const Iterateur_VDF_base& iter_base ) : Op_Dift_VDF_base(iter_base) {}
   double calculer_dt_stab() const;
   double calculer_dt_stab(const Zone_VDF&) const;
   void calculer_borne_locale(DoubleVect& ,double , double ) const;
-  inline Op_Dift_VDF_Face_base(const Iterateur_VDF_base& );
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
+  void associer_diffusivite(const Champ_base& );
+  void dimensionner(Matrice_Morse& ) const;
+  void associer_loipar(const Turbulence_paroi& );
+  const Champ_base& diffusivite() const;
+
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
   inline virtual Eval_VDF_Face2& get_eval_face();
 };
 
 inline Eval_VDF_Face2& Op_Dift_VDF_Face_base::get_eval_face()
 {
   Cerr<<"get_eval_face doit etre surcharge par "<<que_suis_je();
-  exit();
+  Process::exit();
   return (Eval_VDF_Face2&) iter.evaluateur();
 }
 
@@ -66,9 +60,5 @@ inline void Op_Dift_VDF_Face_base::modifier_pour_Cl(Matrice_Morse& matrice, Doub
 {
   Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
 }
-
-inline Op_Dift_VDF_Face_base::Op_Dift_VDF_Face_base(const Iterateur_VDF_base& iter_base)
-  : Op_Dift_VDF_base(iter_base)
-{}
 
 #endif /* Op_Dift_VDF_Face_base_included */

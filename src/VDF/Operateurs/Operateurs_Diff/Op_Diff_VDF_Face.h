@@ -20,16 +20,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Diff_VDF_Face_included
 #define Op_Diff_VDF_Face_included
 
-#include <Op_Diff_VDF_Face_base.h>
 #include <Eval_Diff_VDF_const_Face.h>
+#include <Op_Diff_VDF_Face_base.h>
 class Champ_Inc;
-//
+
 // .DESCRIPTION class Op_Diff_VDF_Face
-//
 //  Cette classe represente l'operateur de diffusion associe a une equation de
 //  la quantite de mouvement.
 //  La discretisation est VDF
@@ -38,37 +36,20 @@ class Champ_Inc;
 //  L'iterateur associe est de type Iterateur_VDF_Face
 //  L'evaluateur associe est de type Eval_Diff_VDF_const_Face
 
-//
-// .SECTION voir aussi
-//
-//
 declare_It_VDF_Face(Eval_Diff_VDF_const_Face)
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_VDF_Face
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base
 {
-
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Face);
-
 public:
   inline Eval_VDF_Face2& get_eval_face();
   Op_Diff_VDF_Face();
 };
 
-//
-// Fonctions inline de la classe Op_Diff_VDF_Face
-//
-
 // Description renvoit l'evaluateur caste en Ecal_VDF_Face corretement
 inline Eval_VDF_Face2& Op_Diff_VDF_Face::get_eval_face()
 {
-  Eval_Diff_VDF_const_Face& eval_diff =
-    dynamic_cast<Eval_Diff_VDF_const_Face&> (iter.evaluateur());
+  Eval_Diff_VDF_const_Face& eval_diff = dynamic_cast<Eval_Diff_VDF_const_Face&> (iter.evaluateur());
   return  eval_diff;
 }
 

@@ -23,24 +23,17 @@
 #ifndef Op_Dift_VDF_Face_included
 #define Op_Dift_VDF_Face_included
 
-#include <Op_Dift_VDF_Face_base.h>
 #include <Eval_Dift_VDF_const_Face.h>
+#include <Op_Dift_VDF_Face_base.h>
 
 declare_It_VDF_Face(Eval_Dift_VDF_const_Face)
 
 class Champ_Fonc;
 class Mod_turb_hyd_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Dift_VDF_Face
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Op_Dift_VDF_Face : public Op_Dift_VDF_Face_base
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_Face);
-
 public:
   Op_Dift_VDF_Face();
   void associer_diffusivite_turbulente(const Champ_Fonc& );

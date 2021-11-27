@@ -23,19 +23,8 @@
 #ifndef Eval_Conv_VDF_Elem_included
 #define Eval_Conv_VDF_Elem_included
 
+#include <CL_Types_include.h>
 #include <Eval_VDF_Elem2.h>
-// Les Cls
-#include <Dirichlet_paroi_defilante.h>
-#include <Neumann_paroi_adiabatique.h>
-#include <Dirichlet_entree_fluide.h>
-#include <Echange_externe_impose.h>
-#include <Echange_global_impose.h>
-#include <Dirichlet_paroi_fixe.h>
-#include <Neumann_sortie_libre.h>
-#include <Neumann_paroi.h>
-#include <Periodique.h>
-#include <Symetrie.h>
-#include <NSCBC.h>
 
 template <typename DERIVED_T>
 class Eval_Conv_VDF_Elem : public Eval_VDF_Elem2

@@ -21,26 +21,18 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Dift_VDF_Face_Axi.h>
+#include <Mod_turb_hyd_base.h>
 #include <Schema_Temps.h>
 #include <Champ_base.h>
 #include <SFichier.h>
-#include <Mod_turb_hyd_base.h>
 
 Implemente_instanciable(Op_Dift_VDF_Face_Axi,"Op_Dift_VDF_Face_Axi",Op_Dift_VDF_Face_base);
 
-Sortie& Op_Dift_VDF_Face_Axi::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Op_Dift_VDF_Face_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
-Entree& Op_Dift_VDF_Face_Axi::readOn(Entree& s )
-{
-  return s ;
-}
+Entree& Op_Dift_VDF_Face_Axi::readOn(Entree& s ) { return s ; }
 
-void Op_Dift_VDF_Face_Axi::associer(const Zone_dis& zone_dis,
-                                    const Zone_Cl_dis& zone_cl_dis,
-                                    const Champ_Inc& ch_transporte)
+void Op_Dift_VDF_Face_Axi::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_transporte)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
@@ -101,9 +93,6 @@ void Op_Dift_VDF_Face_Axi::associer_modele_turbulence(const Mod_turb_hyd_base& m
   associer_loipar(le_modele_turbulence->loi_paroi());
 }
 
-//// mettre_a_jour
-//
-
 void Op_Dift_VDF_Face_Axi::mettre_a_jour(double )
 {
   tau_tan.ref(le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi());
@@ -111,21 +100,15 @@ void Op_Dift_VDF_Face_Axi::mettre_a_jour(double )
 
 DoubleTab& Op_Dift_VDF_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
-
   if (inco.line_size() > 1)
     {
       Cerr << "Erreur dans Op_Dift_VDF_Face_Axi::ajouter" << finl;
       Cerr << "On ne sait pas traiter la diffusion d'un Champ_Face a plusieurs inconnues" << finl;
-      exit();
+      Process::exit();
     }
 
-// double temps=equation().schema_temps().temps_courant();
-  //ref_cast_non_const(Op_Dift_VDF_Face_Axi, (*this)).mettre_a_jour(temps);
   const Zone_VDF& zvdf = la_zone_vdf.valeur();
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
-  //  int nb_elem = zvdf.nb_elem();
-  //  int nb_aretes = zvdf.nb_aretes();
-
   const Champ_Uniforme& viscosite_lam = diffusivite_;
   double visco_lam = viscosite_lam(0,0);
   const DoubleVect& visco_turb = diffusivite_turbulente()->valeurs();
@@ -138,10 +121,8 @@ DoubleTab& Op_Dift_VDF_Face_Axi::ajouter(const DoubleTab& inco, DoubleTab& resu)
 
   // Boucle sur les elements pour traiter les facettes situees
   // a l'interieur des elements
-
   int fx0,fx1,fy0,fy1;
-  double flux_X,flux_Y;
-  double coef_laplacien_axi;
+  double flux_X,flux_Y, coef_laplacien_axi;
 
   for (int num_elem=0; num_elem<zvdf.nb_elem(); num_elem++)
     {
@@ -1242,12 +1223,7 @@ void Op_Dift_VDF_Face_Axi::contribue_au_second_membre(DoubleTab& resu ) const
             double tau2 = tau_tan(rang2,ori3)*0.5*surface(fac2);
             double coef = tau1+tau2;
 
-            int signe_terme;
-
-            if ( vit < vit_imp )
-              signe_terme = -1;
-            else
-              signe_terme = 1;
+            int signe_terme = ( vit < vit_imp ) ? -1 : 1;
 
             //YB : 30/01/2004 :
             //Elimination de la determination du signe du flux parietal par l'evaluateur de l'operateur de diffusion,

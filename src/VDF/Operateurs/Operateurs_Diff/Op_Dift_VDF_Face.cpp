@@ -20,22 +20,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Dift_VDF_Face.h>
 #include <Mod_turb_hyd_base.h>
+#include <Op_Dift_VDF_Face.h>
 #include <SFichier.h>
 
 Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Face,"Op_Dift_VDF_Face",Op_Dift_VDF_Face_base);
 implemente_It_VDF_Face(Eval_Dift_VDF_const_Face)
 
-Sortie& Op_Dift_VDF_Face::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Op_Dift_VDF_Face::readOn(Entree& s )
-{
-  return s ;
-}
+Sortie& Op_Dift_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_Face::readOn(Entree& s ) { return s ; }
 
 void Op_Dift_VDF_Face::associer_diffusivite_turbulente(const Champ_Fonc& visc_turb)
 {
@@ -58,12 +51,5 @@ void Op_Dift_VDF_Face::completer()
   eval_diff_turb.associer_modele_turbulence(mod_turb);
 }
 
-//
-// Fonctions inline de la classe Op_Dift_VDF_Face
-//
-//// Op_Dift_VDF_Face
-//
 Op_Dift_VDF_Face::Op_Dift_VDF_Face() :
-  Op_Dift_VDF_Face_base(It_VDF_Face(Eval_Dift_VDF_const_Face)())
-{
-}
+  Op_Dift_VDF_Face_base(It_VDF_Face(Eval_Dift_VDF_const_Face)()) { }

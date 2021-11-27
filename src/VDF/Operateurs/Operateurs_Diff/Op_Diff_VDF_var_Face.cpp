@@ -27,23 +27,10 @@
 Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Face,"Op_Diff_VDF_var_Face",Op_Diff_VDF_Face_base);
 implemente_It_VDF_Face(Eval_Diff_VDF_var_Face)
 
-Sortie& Op_Diff_VDF_var_Face::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Op_Diff_VDF_var_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_var_Face::readOn(Entree& s ) { return s ; }
 
-Entree& Op_Diff_VDF_var_Face::readOn(Entree& s )
-{
-  return s ;
-}
-
-//
-// Fonctions inline de la classe Op_Diff_VDF_var_Face
-//
-//// Op_Diff_VDF_var_Face
-//
-Op_Diff_VDF_var_Face::Op_Diff_VDF_var_Face() :
-  Op_Diff_VDF_Face_base(It_VDF_Face(Eval_Diff_VDF_var_Face)())
+Op_Diff_VDF_var_Face::Op_Diff_VDF_var_Face() : Op_Diff_VDF_Face_base(It_VDF_Face(Eval_Diff_VDF_var_Face)())
 {
   declare_support_masse_volumique(1);
 }

@@ -20,18 +20,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Diff_VDF_Elem_included
 #define Op_Diff_VDF_Elem_included
 
 #include <Op_Diff_VDF_Elem_base.h>
-#include <ItVDFEl.h>
-#include <Op_VDF_Elem.h>
 #include <Eval_Diff_VDF_leaves.h>
+#include <Op_VDF_Elem.h>
+#include <ItVDFEl.h>
 
-//
 // .DESCRIPTION class Op_Diff_VDF_Elem
-//
 //  Cette classe represente l'operateur de diffusion associe a une equation de
 //  transport.
 //  La discretisation est VDF
@@ -40,38 +37,21 @@
 //  L'iterateur associe est de type Iterateur_VDF_Elem
 //  L'evaluateur associe est de type Eval_Diff_VDF_var_Elem
 
-//
-// .SECTION voir aussi
-//
-//
-
 declare_It_VDF_Elem(Eval_Diff_VDF_const_Elem)
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_VDF_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Diff_VDF_Elem : public Op_Diff_VDF_Elem_base
 {
-
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Elem);
-
 public:
-
   Op_Diff_VDF_Elem();
-  inline Op_Diff_VDF_Elem(const Iterateur_VDF_base&);
+  // Ce constructeur permet de creer des classes filles des evalateurs
+  // (utilise dans le constructeur de Op_Diff_VDF_Elem_temp_FTBM)
+  inline Op_Diff_VDF_Elem(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_Elem_base(iterateur) { }
+
 protected:
   inline Eval_VDF_Elem2& get_eval_elem();
 };
 
-// Ce constructeur permet de creer des classes filles des evalateurs
-// (utilise dans le constructeur de Op_Diff_VDF_Elem_temp_FTBM)
-inline Op_Diff_VDF_Elem::Op_Diff_VDF_Elem(const Iterateur_VDF_base& iterateur)
-  : Op_Diff_VDF_Elem_base(iterateur)
-{
-}
 // Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
 inline Eval_VDF_Elem2& Op_Diff_VDF_Elem::get_eval_elem()
 {
