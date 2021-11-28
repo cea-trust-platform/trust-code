@@ -49,17 +49,11 @@ class Eval_Diff_VDF_leaves: public Eval_Diff_VDF_Elem<Eval_Diff_VDF_leaves>,
  * ******************************
  */
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_const_Elem_Axi
-//
 // Evaluateur VDF pour la diffusion en coordonnees cylindriques
 // Le champ diffuse est scalaire (Champ_P0_VDF)
 // Le champ de diffusivite est constant.
-
-//
 // .SECTION voir aussi Eval_Diff_VDF_const
-
-
 class Eval_Diff_VDF_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_Elem_Axi>,
   public Eval_Diff_VDF_const
 {
@@ -67,31 +61,20 @@ public:
   static constexpr bool IS_AXI = true;
 };
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_const_Elem
-//
 // Evaluateur VDF pour la diffusion
 // Le champ diffuse est scalaire (Champ_P0_VDF)
 // Le champ de diffusivite est constant.
-
-//
 // .SECTION voir aussi Eval_Diff_VDF_const
-
-
 class Eval_Diff_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_const_Elem>,
   public Eval_Diff_VDF_const {};
 
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_var_Elem_Axi
-//
 // Evaluateur VDF pour la diffusion en coordonnees cylindriques
 // Le champ diffuse est scalaire (Champ_P0_VDF)
 // Le champ de diffusivite n'est pas constant.
-
-//
 // .SECTION voir aussi Eval_Diff_VDF_var
-
 class Eval_Diff_VDF_var_Elem_Axi :public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_Axi>,
   public Eval_Diff_VDF_var
 {
@@ -99,30 +82,19 @@ public:
   static constexpr bool IS_AXI = true;
 };
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_var_Elem
-//
 // Evaluateur VDF pour la diffusion
 // Le champ diffuse est scalaire (Champ_P0_VDF)
 // Le champ de diffusivite n'est pas constant.
-
-//
 // .SECTION voir aussi Eval_Diff_VDF_var
-
 class Eval_Diff_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem>,
   public Eval_Diff_VDF_var {};
 
-
-//
 // .DESCRIPTION class Eval_Diff_VDF_var_Elem_aniso
-//
 // Evaluateur VDF pour la diffusion
 // Le champ diffuse est scalaire (Champ_P0_VDF)
 // Le champ de diffusivite n'est pas constant.
-
-//
 // .SECTION voir aussi Eval_Diff_VDF_var_aniso
-
 class Eval_Diff_VDF_var_Elem_aniso : public Eval_Diff_VDF_Elem<Eval_Diff_VDF_var_Elem_aniso>,
   public Eval_Diff_VDF_var_aniso
 {
@@ -130,21 +102,17 @@ public:
   static constexpr bool IS_ANISO= true;
 };
 
-
 /*
  * ******************************
  * CAS VECTORIEL - const/var
  * ******************************
  */
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_Multi_inco_const_Elem_Axi
-//
 // Evaluateur VDF pour la diffusion en coordonnees cylindriques
 // Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
 // Il y a une diffusivite par inconnue
 // Le champ de diffusivite associe a chaque inconnue est constant.
-
 // .SECTION voir aussi Eval_Diff_VDF_Multi_inco_const
 class Eval_Diff_VDF_Multi_inco_const_Elem_Axi :
   public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_const_Elem_Axi>,
@@ -155,14 +123,11 @@ public:
   static constexpr bool IS_AXI = true;
 };
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_Multi_inco_const_Elem
-//
 // Evaluateur VDF pour la diffusion
 // Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
 // Il y a une diffusivite par inconnue
 // Le champ de diffusivite associe a chaque inconnue est constant.
-
 // .SECTION voir aussi Eval_Diff_VDF_Multi_inco_const
 class Eval_Diff_VDF_Multi_inco_const_Elem :
   public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_const_Elem>,
@@ -172,14 +137,11 @@ public:
   static constexpr bool IS_MULTD = false;
 };
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_Multi_inco_var_Elem_Axi
-//
 // Evaluateur VDF pour la diffusion en coordonnees cylindriques
 // Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
 // Il y a une diffusivite par inconnue
 // Le champ de diffusivite associe a chaque inconnue n'est pas constant.
-
 //.SECTION voir aussi Eval_Diff_VDF_Multi_inco_var
 class Eval_Diff_VDF_Multi_inco_var_Elem_Axi :
   public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem_Axi>,
@@ -190,14 +152,11 @@ public:
   static constexpr bool IS_AXI = true;
 };
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_Multi_inco_var_Elem
-//
 // Evaluateur VDF pour la diffusion
 // Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
 // Il y a une diffusivite par inconnue
 // Le champ de diffusivite associe a chaque inconnue n'est pas constant.
-
 //.SECTION voir aussi Eval_Diff_VDF_Multi_inco_var
 class Eval_Diff_VDF_Multi_inco_var_Elem :
   public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Multi_inco_var_Elem>,

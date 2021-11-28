@@ -23,45 +23,25 @@
 #ifndef Eval_Diff_VDF_const_included
 #define Eval_Diff_VDF_const_included
 
+#include <Ref_Champ_Uniforme.h>
+#include <Champ_Uniforme.h>
 #include <Eval_Diff_VDF.h>
 #include <Champ_Face.h>
 #include <Champ_base.h>
-#include <Ref_Champ_Uniforme.h>
-#include <Champ_Uniforme.h>
 #include <Zone_VDF.h>
 class Champ_base;
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_const
-//
 // Cette classe represente un evaluateur de flux diffusif
-// avec un coefficient de diffusivite qui est isotrope
-// et constant en espace.
-
-//.SECTION voir aussi Evaluateur_VDF
-
-
+// avec un coefficient de diffusivite qui est isotrope et constant en espace.
 class Eval_Diff_VDF_const : public Eval_Diff_VDF
 
 {
 public:
   inline Eval_Diff_VDF_const() :db_diffusivite(-1.0e+300) {}
-  inline void associer(const Champ_base& diffu)
-  {
-    diffusivite_ = ref_cast(Champ_Uniforme, diffu);
-    db_diffusivite = diffusivite_.valeur()(0,0);
-  }
-
-  inline void mettre_a_jour()
-  {
-    db_diffusivite = diffusivite_.valeur()(0,0);
-  }
-
-  inline const Champ_base& get_diffusivite() const
-  {
-    assert(diffusivite_.non_nul());
-    return diffusivite_.valeur();
-  }
+  inline void associer(const Champ_base&);
+  inline void mettre_a_jour() { db_diffusivite = diffusivite_.valeur()(0,0); }
+  inline const Champ_base& get_diffusivite() const;
 
   // Methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const { return db_diffusivite; }
@@ -81,5 +61,17 @@ protected:
   REF(Champ_Uniforme) diffusivite_;
   double db_diffusivite;
 };
+
+inline void Eval_Diff_VDF_const::associer(const Champ_base& diffu)
+{
+  diffusivite_ = ref_cast(Champ_Uniforme, diffu);
+  db_diffusivite = diffusivite_.valeur()(0,0);
+}
+
+inline const Champ_base& Eval_Diff_VDF_const::get_diffusivite() const
+{
+  assert(diffusivite_.non_nul());
+  return diffusivite_.valeur();
+}
 
 #endif /* Eval_Diff_VDF_const_included */

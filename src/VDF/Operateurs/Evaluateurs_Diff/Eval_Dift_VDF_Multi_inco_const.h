@@ -29,34 +29,18 @@
 #include <Ref_Champ_Fonc.h>
 #include <Champ_Fonc.h>
 
-//
 // .DESCRIPTION class Eval_Dift_VDF_Multi_inco_const
-//
 // Cette classe represente un evaluateur de flux diffusif total
 // (laminaire et  turbulent) pour un vecteur d'inconnues
 // avec une diffusivite par inconnue.
-// Le champ de diffusivite associe a chaque inconnue
-// est constant.
-
-//
+// Le champ de diffusivite associe a chaque inconnue est constant.
 // .SECTION voir aussi Eval_Diff_VDF_Multi_inco_const
-//
-
-
 class Eval_Dift_VDF_Multi_inco_const : public Eval_Diff_VDF_Multi_inco_const, public Eval_Turbulence
 {
 public:
-
-  void associer_diff_turb(const Champ_Fonc& diff_turb)
-  {
-    diffusivite_turbulente_=diff_turb;
-    dv_diffusivite_turbulente.ref(diff_turb.valeurs());
-  }
-
-  inline const Champ_Fonc& diffusivite_turbulente() const
-  {
-    return diffusivite_turbulente_.valeur();
-  }
+  inline void mettre_a_jour();
+  inline void associer_diff_turb(const Champ_Fonc& );
+  inline const Champ_Fonc& diffusivite_turbulente() const { return diffusivite_turbulente_.valeur(); }
 
   // Overloaded methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const
@@ -83,16 +67,21 @@ public:
     return equivalent_distance[boundary_index](local_face);
   }
 
-  inline void mettre_a_jour()
-  {
-    Eval_Diff_VDF_Multi_inco_const::mettre_a_jour();
-    update_equivalent_distance();  // from Eval_Turbulence
-  }
-
 protected:
   REF(Champ_Fonc) diffusivite_turbulente_;
   DoubleVect dv_diffusivite_turbulente;
-
 };
+
+inline void Eval_Dift_VDF_Multi_inco_const::mettre_a_jour()
+{
+  Eval_Diff_VDF_Multi_inco_const::mettre_a_jour();
+  update_equivalent_distance();  // from Eval_Turbulence
+}
+
+inline void Eval_Dift_VDF_Multi_inco_const::associer_diff_turb(const Champ_Fonc& diff_turb)
+{
+  diffusivite_turbulente_=diff_turb;
+  dv_diffusivite_turbulente.ref(diff_turb.valeurs());
+}
 
 #endif /* Eval_Dift_VDF_Multi_inco_const_included */

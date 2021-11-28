@@ -23,35 +23,22 @@
 #ifndef Eval_Diff_VDF_var_aniso_included
 #define Eval_Diff_VDF_var_aniso_included
 
-#include <Eval_Diff_VDF.h>
-#include <Ref_Champ_base.h>
-#include <Champ_base.h>
 #include <Champ_Uniforme.h>
+#include <Ref_Champ_base.h>
+#include <Eval_Diff_VDF.h>
+#include <Champ_base.h>
 #include <Zone_VDF.h>
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_var_aniso
-//
 // Cette classe represente un evaluateur de flux diffusif
 // avec un coefficient de diffusivite qui n'est pas constant en espace.
-
 //.SECTION voir aussi Evaluateur_VDF
-
 class Eval_Diff_VDF_var_aniso : public Eval_Diff_VDF
 {
 public:
   inline void associer(const Champ_base& );
-  inline void mettre_a_jour( )
-  {
-    (diffusivite_->valeurs().echange_espace_virtuel());
-    dt_diffusivite.ref(diffusivite_->valeurs());
-  }
-
-  inline const Champ_base& get_diffusivite() const
-  {
-    assert(diffusivite_.non_nul());
-    return diffusivite_.valeur();
-  }
+  inline void mettre_a_jour();
+  inline const Champ_base& get_diffusivite() const;
 
   // Methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const { return dt_diffusivite(i,compo); }
@@ -78,9 +65,17 @@ protected:
   DoubleTab dt_diffusivite;
 };
 
-//
-//  Fonctions inline de la classe Eval_Diff_VDF_var_aniso
-//
+inline void Eval_Diff_VDF_var_aniso::mettre_a_jour()
+{
+  diffusivite_->valeurs().echange_espace_virtuel();
+  dt_diffusivite.ref(diffusivite_->valeurs());
+}
+
+inline const Champ_base& Eval_Diff_VDF_var_aniso::get_diffusivite() const
+{
+  assert(diffusivite_.non_nul());
+  return diffusivite_.valeur();
+}
 
 // Description:
 // associe le champ de diffusivite

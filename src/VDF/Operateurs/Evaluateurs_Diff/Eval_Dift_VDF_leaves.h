@@ -23,14 +23,14 @@
 #ifndef Eval_Dift_VDF_leaves_included
 #define Eval_Dift_VDF_leaves_included
 
-#include <Eval_Diff_VDF_Elem.h>
-#include <Eval_Dift_VDF_const.h>
-#include <Eval_Dift_VDF_var.h>
+#include <Ref_Modele_turbulence_scal_base.h>
 #include <Eval_Dift_VDF_Multi_inco_const.h>
 #include <Eval_Dift_VDF_Multi_inco_var.h>
-#include <Ref_Modele_turbulence_scal_base.h>
-#include <Turbulence_paroi_scal.h>
 #include <Ref_Turbulence_paroi_scal.h>
+#include <Turbulence_paroi_scal.h>
+#include <Eval_Dift_VDF_const.h>
+#include <Eval_Diff_VDF_Elem.h>
+#include <Eval_Dift_VDF_var.h>
 #include <DoubleVects.h>
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
@@ -52,17 +52,12 @@ class Eval_Dift_VDF_leaves : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_leaves>,
  * ******************************
  */
 
-//
 // .DESCRIPTION class Eval_Dift_VDF_const_Elem_Axi
 // Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
 // en coordonnees cylindriques
 // Le champ diffuse est scalaire (Champ_P0_VDF)
 // Le champ de diffusivite est constant en espace.
-//
-
-// .SECTION
-// voir aussi Eval_Dift_VDF_const
-
+// .SECTION voir aussi Eval_Dift_VDF_const
 class Eval_Dift_VDF_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_const_Elem_Axi>,
   public Eval_Dift_VDF_const
 {
@@ -71,16 +66,11 @@ public:
   static constexpr bool IS_AXI = true;
 };
 
-//
 // .DESCRIPTION class Eval_Dift_VDF_const_Elem
 // Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
 // Le champ diffuse est scalaire (Champ_P0_VDF)
 // Le champ de diffusivite est constant.
-//
-
-// .SECTION
-// voir aussi Eval_Dift_VDF_const
-
+// .SECTION voir aussi Eval_Dift_VDF_const
 class Eval_Dift_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_const_Elem>,
   public Eval_Dift_VDF_const
 {
@@ -88,10 +78,7 @@ public :
   inline Eval_Dift_VDF_const_Elem() : ind_Fluctu_Term(1) {}
   static constexpr bool IS_MODIF_DEQ = true;
 
-  inline int get_ind_Fluctu_Term() const
-  {
-    return ind_Fluctu_Term;
-  }
+  inline int get_ind_Fluctu_Term() const { return ind_Fluctu_Term; }
 
   inline void associer_loipar(const Turbulence_paroi_scal& loi_paroi)
   {
@@ -104,8 +91,7 @@ public :
     // On remplit la reference au modele de turbulence et le tableau k:
     le_modele_turbulence = mod;
     ind_Fluctu_Term = 0;
-    if (!loipar.non_nul())
-      ind_Fluctu_Term = 1;
+    if (!loipar.non_nul()) ind_Fluctu_Term = 1;
   }
 
 private:
@@ -113,17 +99,12 @@ private:
   int ind_Fluctu_Term;
 };
 
-//
 // .DESCRIPTION class Eval_Dift_VDF_var_Elem_Axi
 // Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
 // en coordonnees cylindriques
 // Le champ diffuse est scalaire (Champ_P0_VDF)
 // Le champ de diffusivite n'est pas constant en espace.
-//
-
-// .SECTION
-// voir aussi Eval_Dift_VDF_var
-
+// .SECTION voir aussi Eval_Dift_VDF_var
 class Eval_Dift_VDF_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem_Axi>,
   public Eval_Dift_VDF_var
 {
@@ -132,15 +113,11 @@ public:
   static constexpr bool IS_AXI = true;
 };
 
-//
 // .DESCRIPTION class Eval_Dift_VDF_var_Elem
 // Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
 // Le champ diffuse est scalaire (Champ_P0_VDF)
 // Le champ de diffusivite n'est pas constant.
-
-// .SECTION
-// voir aussi Eval_Dift_VDF_var
-
+// .SECTION voir aussi Eval_Dift_VDF_var
 class Eval_Dift_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem>,
   public Eval_Dift_VDF_var
 {
@@ -149,10 +126,7 @@ public:
   inline Eval_Dift_VDF_var_Elem( ): ind_Fluctu_Term(1) {}
   static constexpr bool IS_MODIF_DEQ = true;
 
-  inline int get_ind_Fluctu_Term() const
-  {
-    return ind_Fluctu_Term;
-  }
+  inline int get_ind_Fluctu_Term() const { return ind_Fluctu_Term; }
 
   inline void associer_modele_turbulence(const Modele_turbulence_scal_base& mod)
   {
@@ -180,14 +154,11 @@ private:
  * ******************************
  */
 
-//
 // .DESCRIPTION class Eval_Dift_VDF_Multi_inco_const_Elem_Axi
-//
 // Evaluateur VDF pour la diffusion totale en coordonnees cylindriques (laminaire et turbulente)
 // Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
 // Il y a une diffusivite par inconnue
 // Le champ de diffusivite associe a chaque inconnue est constant.
-
 // .SECTION voir aussi Eval_Dift_VDF_Multi_inco_const_Elem
 class Eval_Dift_VDF_Multi_inco_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_const_Elem_Axi>,
   public Eval_Dift_VDF_Multi_inco_const
@@ -198,17 +169,12 @@ public:
   static constexpr bool IS_AXI = true;
 };
 
-//
 // .DESCRIPTION class Eval_Dift_VDF_Multi_inco_const_Elem
-//
 // Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
 // Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
 // Il y a une diffusivite par inconnue
 // Le champ de diffusivite laminaire associe a chaque inconnue est constant.
-
-//
 // .SECTION voir aussi Eval_Dift_VDF_Multi_inco_const
-
 class Eval_Dift_VDF_Multi_inco_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_const_Elem>,
   public Eval_Dift_VDF_Multi_inco_const
 {
@@ -226,16 +192,12 @@ public:
   static constexpr bool IS_AXI = true;
 };
 
-//
 // .DESCRIPTION class Eval_Dift_VDF_Multi_inco_var_Elem
-//
 // Evaluateur VDF pour la diffusion totale (laminaire et turbulente)
 // Le champ diffuse est scalaire (Champ_P0_VDF) avec plusieurs inconnues
 // Il y a une diffusivite par inconnue
 // Le champ de diffusivite associe a chaque inconnue n'est pas constant.
-
 //.SECTION voir aussi Eval_Dift_VDF_Multi_inco_var
-
 class Eval_Dift_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem>,
   public Eval_Dift_VDF_Multi_inco_var
 {

@@ -23,7 +23,7 @@
 #ifndef Op_Diff_VDF_var_Face_included
 #define Op_Diff_VDF_var_Face_included
 
-#include <Eval_Diff_VDF_var_Face.h>
+#include <Eval_Diff_VDF_Face_leaves.h>
 #include <Op_Diff_VDF_Face_base.h>
 
 // .DESCRIPTION class Op_Diff_VDF_var_Face

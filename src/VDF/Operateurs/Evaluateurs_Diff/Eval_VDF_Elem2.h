@@ -27,22 +27,15 @@
 #include <Ref_Champ_base.h>
 #include <Champ_P0_VDF.h>
 class Echange_externe_impose;
-//
+
 // .DESCRIPTION class Eval_VDF_Elem
-//
 // Cette classe represente le prototype fonctionnel
 // des evaluateurs de flux associes aux equations de
 // conservation integrees sur les elements
-
-
 class Eval_VDF_Elem2
 {
 public:
-  inline void associer_inconnue(const Champ_base& inco)
-  {
-    assert(sub_type(Champ_P0_VDF,inco));
-    inconnue=inco;
-  }
+  inline void associer_inconnue(const Champ_base& );
 
   // contribution de la derivee en vitesse d'une equation scalaire
   template <typename BC_TYPE>
@@ -54,5 +47,11 @@ public:
 protected:
   REF(Champ_base) inconnue;
 };
+
+inline void Eval_VDF_Elem2::associer_inconnue(const Champ_base& inco)
+{
+  assert(sub_type(Champ_P0_VDF,inco));
+  inconnue=inco;
+}
 
 #endif /* Eval_VDF_Elem2_included */

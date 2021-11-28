@@ -23,28 +23,19 @@
 #ifndef Eval_Turbulence_included
 #define Eval_Turbulence_included
 
-#include <DoubleVects.h>
-#include <Turbulence_paroi_scal.h>
 #include <Ref_Turbulence_paroi_scal.h>
+#include <Turbulence_paroi_scal.h>
+#include <DoubleVects.h>
 
-
-//
 // .DESCRIPTION class Eval_Turbulence
-//
 // Implements all stuff related to turbulence for VDF evaluators.
-
 class Eval_Turbulence
 {
 
 public:
   virtual ~Eval_Turbulence() {}
-
-  inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi)
-  {
-    loipar = loi_paroi;
-  }
-
-  inline void update_equivalent_distance( ) ;
+  inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi) { loipar = loi_paroi; }
+  inline void update_equivalent_distance() ;
 
 protected:
   REF(Turbulence_paroi_scal) loipar;
@@ -57,11 +48,8 @@ inline void Eval_Turbulence::update_equivalent_distance( )
     {
       int s=loipar->tab_equivalent_distance_size();
       equivalent_distance.dimensionner(s);
-      for(int i=0; i<s; i++)
-        {
-          equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
-        }
+      for(int i=0; i<s; i++) equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
     }
 }
 
-#endif
+#endif /* Eval_Turbulence_included */

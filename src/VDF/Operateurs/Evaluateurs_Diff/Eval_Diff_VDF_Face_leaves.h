@@ -14,22 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Diff_VDF_var_Face.h
+// File:        Eval_Diff_VDF_Face_leaves.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Diff
-// Version:     /main/18
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Eval_Diff_VDF_Face_leaves_included
+#define Eval_Diff_VDF_Face_leaves_included
 
-#ifndef Eval_Diff_VDF_var_Face_included
-#define Eval_Diff_VDF_var_Face_included
-
-#include <Eval_Diff_VDF_var.h>
+#include <Eval_Diff_VDF_const.h>
 #include <Eval_Diff_VDF_Face.h>
+#include <Eval_Diff_VDF_var.h>
 
-//
+#ifdef DOXYGEN_SHOULD_SKIP_THIS
+/*
+ * xxx xxx
+ * THIS IS ONLY SPECIFIC TO TRUST CHECK_SOURCE :
+ * WE ARE OBLIGED TO HAVE THE 1ST CLASS WITH THE SAME NAME AS THE FILE
+ * OTHERWISE DO NOT COMPILE
+ *
+ * We use DOXYGEN_SHOULD_SKIP_THIS macro to skip this class in the doxygen documentation
+ */
+class Eval_Diff_VDF_Face_leaves: public Eval_Diff_VDF_Face<Eval_Diff_VDF_Face_leaves>,
+  public Eval_Diff_VDF_const {};
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+// .DESCRIPTION class Eval_Diff_VDF_const_Face
+// Evaluateur VDF pour la diffusion
+// Le champ diffuse est un Champ_Face
+// Le champ de diffusivite est constant.
+class Eval_Diff_VDF_const_Face : public Eval_Diff_VDF_Face<Eval_Diff_VDF_const_Face>,
+  public Eval_Diff_VDF_const { };
+
 // .DESCRIPTION class Eval_Diff_VDF_var_Face
-//
 // Evaluateur VDF pour la diffusion
 // Le champ diffuse est un Champ_Face
 // Le champ de diffusivite n"est pas constant.
@@ -38,10 +56,6 @@
 // ce qui concerne les termes pour la matrice, par contre pour le second membre nous
 // procedons comme en explicite mais en ne fesant intervenir que les valeurs fournies
 // par les conditions limites.
-//
-//
-// .SECTION voir aussi Eval_Diff_VDF_var
-
 class Eval_Diff_VDF_var_Face : public Eval_Diff_VDF_Face<Eval_Diff_VDF_var_Face>,
   public Eval_Diff_VDF_var
 {
@@ -49,4 +63,4 @@ public:
   static constexpr bool IS_VAR = true;
 };
 
-#endif /* Eval_Diff_VDF_var_Face_included */
+#endif /* Eval_Diff_VDF_Face_leaves_included */

@@ -24,48 +24,39 @@
 #ifndef Eval_Diff_VDF_Multi_inco_const_included
 #define Eval_Diff_VDF_Multi_inco_const_included
 
+#include <Ref_Champ_Uniforme.h>
+#include <Champ_Uniforme.h>
 #include <Eval_Diff_VDF.h>
 #include <Champ_Face.h>
-#include <Champ_Uniforme.h>
-#include <Ref_Champ_Uniforme.h>
-
 class Champ_base;
 
-//
 // .DESCRIPTION class Eval_Diff_VDF_Multi_inco_const
-//
 // Cette classe represente un evaluateur de flux diffusif
 // pour un vecteur d'inconnues avec une diffusivite par
-// inconnue. Le champ de diffusivite associe a chaque inconnue
-// est constant.
-
-//
+// inconnue. Le champ de diffusivite associe a chaque inconnue est constant.
 // .SECTION voir aussi Evaluateur_VDF
-//
 
 class Eval_Diff_VDF_Multi_inco_const : public Eval_Diff_VDF
 {
 public:
   virtual inline void mettre_a_jour() {}
+  inline void associer(const Champ_base& );
   inline const Champ_base& get_diffusivite() const { return diffusivite_; }
-
-  inline void associer(const Champ_base& diffu)
-  {
-    diffusivite_ = ref_cast(Champ_Uniforme, diffu);
-    dv_diffusivite.ref(diffu.valeurs());
-  }
 
   // Methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const { return dv_diffusivite(compo); }
   inline double nu_2_impl(int i, int compo) const { return dv_diffusivite(compo); }
-  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
-  {
-    return dv_diffusivite(compo)/(d0+d1);
-  }
+  inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const { return dv_diffusivite(compo)/(d0+d1); }
 
 protected:
   REF(Champ_Uniforme) diffusivite_;
   DoubleVect dv_diffusivite;  // nb of components = nb of multi-inco
 };
+
+inline void Eval_Diff_VDF_Multi_inco_const::associer(const Champ_base& diffu)
+{
+  diffusivite_ = ref_cast(Champ_Uniforme, diffu);
+  dv_diffusivite.ref(diffu.valeurs());
+}
 
 #endif /* Eval_Diff_VDF_Multi_inco_const_included */

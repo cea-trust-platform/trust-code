@@ -24,16 +24,13 @@
 #ifndef Eval_VDF_Face2_included
 #define Eval_VDF_Face2_included
 
-#include <Champ_Face.h>
 #include <Ref_Champ_base.h>
+#include <Champ_Face.h>
 
-//
 // .DESCRIPTION class Eval_VDF_Face2
-//
 // Cette classe represente le prototype fonctionnel des evaluateurs
 // de flux associes aux equations de conservation integrees
 // sur les volumes entrelaces
-
 class Eval_VDF_Face2
 {
 public:
@@ -41,14 +38,16 @@ public:
   inline virtual ~Eval_VDF_Face2() {}
   virtual int calculer_arete_bord() const { return 1; }
 
-  inline void associer_inconnue(const Champ_base& inco)
-  {
-    assert(sub_type(Champ_Face,inco));
-    inconnue=ref_cast(Champ_Face,inco);
-  }
+  inline void associer_inconnue(const Champ_base& );
 
 protected:
   REF(Champ_base) inconnue;
 };
+
+inline void Eval_VDF_Face2::associer_inconnue(const Champ_base& inco)
+{
+  assert(sub_type(Champ_Face,inco));
+  inconnue=ref_cast(Champ_Face,inco);
+}
 
 #endif /* Eval_VDF_Face2_included */

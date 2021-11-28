@@ -23,7 +23,7 @@
 #ifndef Op_Dift_VDF_Face_included
 #define Op_Dift_VDF_Face_included
 
-#include <Eval_Dift_VDF_const_Face.h>
+#include <Eval_Dift_VDF_Face_leaves.h>
 #include <Op_Dift_VDF_Face_base.h>
 
 declare_It_VDF_Face(Eval_Dift_VDF_const_Face)

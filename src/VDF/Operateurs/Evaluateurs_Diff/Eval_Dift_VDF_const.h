@@ -40,16 +40,9 @@
 class Eval_Dift_VDF_const : public Eval_Diff_VDF_const, public Eval_Turbulence
 {
 public:
-  inline void associer_diff_turb(const Champ_Fonc& diff_turb)
-  {
-    diffusivite_turbulente_ = diff_turb;
-    dv_diffusivite_turbulente.ref(diff_turb.valeurs());
-  }
-
-  inline const Champ_Fonc& diffusivite_turbulente() const
-  {
-    return diffusivite_turbulente_.valeur();
-  }
+  inline void mettre_a_jour();
+  inline void associer_diff_turb(const Champ_Fonc&);
+  inline const Champ_Fonc& diffusivite_turbulente() const { return diffusivite_turbulente_.valeur(); }
 
   // Overloaded methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const
@@ -59,10 +52,8 @@ public:
     return nu_lam+nu_turb;
   }
 
-  inline double nu_2_impl(int i, int compo) const
-  {
-    return Eval_Diff_VDF_const::nu_2_impl(i,compo);
-  }
+  inline double nu_2_impl(int i, int compo) const { return Eval_Diff_VDF_const::nu_2_impl(i,compo); }
+  inline double nu_t_impl(int i, int compo) const { return dv_diffusivite_turbulente(i);  }
 
   inline double nu_1_impl_face(int i, int j, int compo) const
   {
@@ -85,11 +76,6 @@ public:
     return Eval_Diff_VDF_const::nu_1_impl_face(i,j,compo);
   }
 
-  inline double nu_t_impl(int i, int compo) const
-  {
-    return dv_diffusivite_turbulente(i);
-  }
-
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
     const double heq_lam = Eval_Diff_VDF_const::compute_heq_impl(d0, i, d1, j, compo);
@@ -102,15 +88,21 @@ public:
     return equivalent_distance[boundary_index](local_face);
   }
 
-  inline void mettre_a_jour()
-  {
-    Eval_Diff_VDF_const::mettre_a_jour();
-    update_equivalent_distance();  // from Eval_Turbulence
-  }
-
 protected:
   REF(Champ_Fonc) diffusivite_turbulente_;
   DoubleVect dv_diffusivite_turbulente;
 };
+
+inline void Eval_Dift_VDF_const::mettre_a_jour()
+{
+  Eval_Diff_VDF_const::mettre_a_jour();
+  update_equivalent_distance();  // from Eval_Turbulence
+}
+
+inline void Eval_Dift_VDF_const::associer_diff_turb(const Champ_Fonc& diff_turb)
+{
+  diffusivite_turbulente_ = diff_turb;
+  dv_diffusivite_turbulente.ref(diff_turb.valeurs());
+}
 
 #endif /* Eval_Dift_VDF_const_included */
