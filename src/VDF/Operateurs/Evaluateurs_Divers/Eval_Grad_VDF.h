@@ -20,36 +20,17 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Eval_Grad_VDF_included
 #define Eval_Grad_VDF_included
 
 #include <Evaluateur_VDF.h>
 
-//
 // .DESCRIPTION class Eval_Grad_VDF
-//
 // classe de base des evaluateurs de gradient VDF
-
-//
-// .SECTION voir aussi Evaluateur_VDF
-//
-
-
-
 class Eval_Grad_VDF : public Evaluateur_VDF
 {
 public:
-
-  inline Eval_Grad_VDF();
-
+  inline Eval_Grad_VDF() {}
 };
 
-
-//
-//  Fonctions inline de la classe Eval_Grad_VDF
-//
-
-inline Eval_Grad_VDF::Eval_Grad_VDF() {}
-
-#endif
+#endif /* Eval_Grad_VDF_included */
