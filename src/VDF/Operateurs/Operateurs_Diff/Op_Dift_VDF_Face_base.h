@@ -28,7 +28,7 @@
 #include <ItVDFFa.h>
 
 class Mod_turb_hyd_base;
-class Eval_VDF_Face2;
+class Eval_VDF_Face;
 class Champ_Fonc;
 
 class Op_Dift_VDF_Face_base : public Op_Dift_VDF_base, public Op_VDF_Face
@@ -46,14 +46,14 @@ public:
   const Champ_base& diffusivite() const;
 
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  inline virtual Eval_VDF_Face2& get_eval_face();
+  inline virtual Eval_VDF_Face& get_eval_face();
 };
 
-inline Eval_VDF_Face2& Op_Dift_VDF_Face_base::get_eval_face()
+inline Eval_VDF_Face& Op_Dift_VDF_Face_base::get_eval_face()
 {
   Cerr<<"get_eval_face doit etre surcharge par "<<que_suis_je();
   Process::exit();
-  return (Eval_VDF_Face2&) iter.evaluateur();
+  return (Eval_VDF_Face&) iter.evaluateur();
 }
 
 inline void Op_Dift_VDF_Face_base::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const

@@ -25,15 +25,15 @@
 
 #include <Neumann_sortie_libre.h>
 #include <Evaluateur_VDF.h>
-#include <Eval_VDF_Face2.h>
+#include <Eval_VDF_Face.h>
 #include <Zone_VDF.h>
 
 // .DESCRIPTION class Eval_Diff_VDF_Face
 // Evaluateur VDF pour la diffusion
 // Le champ diffuse est un Champ_Face
-// .SECTION voir aussi Eval_VDF_Face2, Evaluateur_VDF
+// .SECTION voir aussi Eval_VDF_Face, Evaluateur_VDF
 template <typename DERIVED_T>
-class Eval_Diff_VDF_Face : public Eval_VDF_Face2, public Evaluateur_VDF
+class Eval_Diff_VDF_Face : public Eval_VDF_Face, public Evaluateur_VDF
 {
 
 public:

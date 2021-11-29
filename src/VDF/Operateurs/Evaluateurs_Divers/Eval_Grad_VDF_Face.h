@@ -24,13 +24,13 @@
 #define Eval_Grad_VDF_Face_included
 
 #include <Neumann_sortie_libre.h>
-#include <Eval_VDF_Face2.h>
+#include <Eval_VDF_Face.h>
 #include <Eval_Grad_VDF.h>
 
 // .DESCRIPTION class Eval_Grad_VDF_Face
 // Evaluateur VDF pour le gradient
 // .SECTION voir aussi Eval_Grad_VDF
-class Eval_Grad_VDF_Face : public Eval_Grad_VDF, public Eval_VDF_Face2
+class Eval_Grad_VDF_Face : public Eval_Grad_VDF, public Eval_VDF_Face
 {
 public:
   inline int calculer_arete_bord() const { return 0; }

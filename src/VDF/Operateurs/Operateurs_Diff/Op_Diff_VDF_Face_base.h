@@ -26,7 +26,7 @@
 #include <Op_Diff_VDF_base.h>
 #include <Op_VDF_Face.h>
 #include <ItVDFFa.h>
-class Eval_VDF_Face2;
+class Eval_VDF_Face;
 class Champ_Inc;
 
 // .DESCRIPTION class Op_Diff_VDF_Face_base
@@ -52,7 +52,7 @@ public:
 
   inline void dimensionner(Matrice_Morse& ) const;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  inline virtual Eval_VDF_Face2& get_eval_face();
+  inline virtual Eval_VDF_Face& get_eval_face();
 };
 
 // Description:
@@ -74,11 +74,12 @@ inline void Op_Diff_VDF_Face_base::modifier_pour_Cl(Matrice_Morse& matrice, Doub
 {
   Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
 }
-inline Eval_VDF_Face2& Op_Diff_VDF_Face_base::get_eval_face()
+
+inline Eval_VDF_Face& Op_Diff_VDF_Face_base::get_eval_face()
 {
   Cerr<<"get_eval_face doit etre surcharge par "<<que_suis_je();
   Process::exit();
-  return (Eval_VDF_Face2&) iter.evaluateur();
+  return (Eval_VDF_Face&) iter.evaluateur();
 }
 
 #endif /* Op_Diff_VDF_Face_base_included */

@@ -26,14 +26,14 @@
 
 #include <CL_Types_include.h>
 #include <Evaluateur_VDF.h>
-#include <Eval_VDF_Elem2.h>
+#include <Eval_VDF_Elem.h>
 
 // .DESCRIPTION class Eval_Diff_VDF_Elem
 // Evaluateur VDF pour la diffusion
 // Le champ diffuse est un Champ_P0_VDF
-// .SECTION voir aussi Eval_VDF_Elem2, Evaluateur_VDF
+// .SECTION voir aussi Eval_VDF_Elem, Evaluateur_VDF
 template <typename DERIVED_T>
-class Eval_Diff_VDF_Elem : public Eval_VDF_Elem2, public Evaluateur_VDF
+class Eval_Diff_VDF_Elem : public Eval_VDF_Elem, public Evaluateur_VDF
 {
 public:
 

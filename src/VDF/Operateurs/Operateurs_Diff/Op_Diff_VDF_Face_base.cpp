@@ -22,7 +22,7 @@
 
 #include <Op_Diff_VDF_Face_base.h>
 #include <Fluide_Incompressible.h>
-#include <Eval_VDF_Face2.h>
+#include <Eval_VDF_Face.h>
 #include <Eval_Diff_VDF.h>
 #include <Champ_Inc.h>
 #include <SFichier.h>
@@ -99,7 +99,7 @@ void Op_Diff_VDF_Face_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis
 
   Evaluateur_VDF& eval_diff =  iter.evaluateur();
   eval_diff.associer_zones(zvdf, zclvdf );          // Evaluateur_VDF::associer_zones
-  //  (dynamic_cast<Eval_VDF_Face2&>(eval_diff)).associer_inconnue(inco );        // Eval_VDF_Face2::associer_inconnue
+  //  (dynamic_cast<Eval_VDF_Face&>(eval_diff)).associer_inconnue(inco );        // Eval_VDF_Face::associer_inconnue
   get_eval_face().associer_inconnue(inco );
 }
 

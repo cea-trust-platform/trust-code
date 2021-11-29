@@ -48,11 +48,11 @@ public:
   // (utilise dans le constructeur de Op_Diff_VDF_Multi_inco_var_Elem_temp_FTBM)
   inline Op_Diff_VDF_Multi_inco_var_Elem(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_Elem_base(iterateur) { }
 protected:
-  inline Eval_VDF_Elem2& get_eval_elem();
+  inline Eval_VDF_Elem& get_eval_elem();
 };
 
 // Description renvoit l'evaluateur caste en Ecal_VDF_Elem corretement
-inline Eval_VDF_Elem2& Op_Diff_VDF_Multi_inco_var_Elem::get_eval_elem()
+inline Eval_VDF_Elem& Op_Diff_VDF_Multi_inco_var_Elem::get_eval_elem()
 {
   Eval_Diff_VDF_Multi_inco_var_Elem& eval_diff = dynamic_cast<Eval_Diff_VDF_Multi_inco_var_Elem&> (iter.evaluateur());
   return eval_diff;

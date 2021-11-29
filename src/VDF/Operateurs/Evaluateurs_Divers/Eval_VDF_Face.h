@@ -14,44 +14,38 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_VDF_Elem2.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Diff
-// Version:     1
+// File:        Eval_VDF_Face.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Divers
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-#ifndef Eval_VDF_Elem2_included
-#define Eval_VDF_Elem2_included
+#ifndef Eval_VDF_Face_included
+#define Eval_VDF_Face_included
 
 #include <Ref_Champ_base.h>
-#include <Champ_P0_VDF.h>
-class Echange_externe_impose;
+#include <Champ_Face.h>
 
-// .DESCRIPTION class Eval_VDF_Elem
-// Cette classe represente le prototype fonctionnel
-// des evaluateurs de flux associes aux equations de
-// conservation integrees sur les elements
-class Eval_VDF_Elem2
+// .DESCRIPTION class Eval_VDF_Face
+// Cette classe represente le prototype fonctionnel des evaluateurs
+// de flux associes aux equations de conservation integrees
+// sur les volumes entrelaces
+class Eval_VDF_Face
 {
 public:
+  inline Eval_VDF_Face() {}
+  inline virtual ~Eval_VDF_Face() {}
   inline void associer_inconnue(const Champ_base& );
-
-  // contribution de la derivee en vitesse d'une equation scalaire
-  template <typename BC_TYPE>
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int ) const { return 0.; }
-
-  double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const { return 0.; }
-  double coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int ) const { return 0.; }
+  inline virtual int calculer_arete_bord() const { return 1; }
 
 protected:
   REF(Champ_base) inconnue;
 };
 
-inline void Eval_VDF_Elem2::associer_inconnue(const Champ_base& inco)
+inline void Eval_VDF_Face::associer_inconnue(const Champ_base& inco)
 {
-  assert(sub_type(Champ_P0_VDF,inco));
-  inconnue=inco;
+  assert(sub_type(Champ_Face,inco));
+  inconnue=ref_cast(Champ_Face,inco);
 }
 
-#endif /* Eval_VDF_Elem2_included */
+#endif /* Eval_VDF_Face_included */

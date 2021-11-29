@@ -24,10 +24,10 @@
 #define Eval_Conv_VDF_Face_included
 
 #include <Neumann_sortie_libre.h>
-#include <Eval_VDF_Face2.h>
+#include <Eval_VDF_Face.h>
 
 template <typename DERIVED_T>
-class Eval_Conv_VDF_Face : public Eval_VDF_Face2
+class Eval_Conv_VDF_Face : public Eval_VDF_Face
 {
 public:
   static constexpr bool IS_AMONT = false;

@@ -22,7 +22,7 @@
 
 #include <Op_Diff_VDF_Elem_base.h>
 #include <Echange_contact_VDF.h>
-#include <Eval_VDF_Elem2.h>
+#include <Eval_VDF_Elem.h>
 #include <Eval_Diff_VDF.h>
 #include <Champ_P0_VDF.h>
 #include <Matrix_tools.h>
@@ -114,7 +114,7 @@ void Op_Diff_VDF_Elem_base::associer(const Zone_dis& zone_dis,
   iter_vdf.associer_zones(zvdf, zclvdf );
   // GF sans dynamic_cast il FAUT rajouter une methode associer_inconnue
   // la ligne du dessu fait core_dump (j'ai eu le meme pb avec ocnd_lim_rayo)
-  //(dynamic_cast<Eval_VDF_Elem2&> (iter_vdf)).associer_inconnue(inco );
+  //(dynamic_cast<Eval_VDF_Elem&> (iter_vdf)).associer_inconnue(inco );
   get_eval_elem().associer_inconnue(inco );
 }
 

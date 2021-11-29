@@ -24,10 +24,10 @@
 #define Eval_Conv_VDF_Elem_included
 
 #include <CL_Types_include.h>
-#include <Eval_VDF_Elem2.h>
+#include <Eval_VDF_Elem.h>
 
 template <typename DERIVED_T>
-class Eval_Conv_VDF_Elem : public Eval_VDF_Elem2
+class Eval_Conv_VDF_Elem : public Eval_VDF_Elem
 {
 public:
   static constexpr bool IS_AMONT = false;

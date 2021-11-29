@@ -26,7 +26,7 @@
 #include <Op_Diff_VDF_base.h>
 #include <Op_VDF_Elem.h>
 #include <ItVDFEl.h>
-class Eval_VDF_Elem2;
+class Eval_VDF_Elem;
 
 // .DESCRIPTION class Op_Diff_VDF_Elem_base
 //  Cette classe represente l'operateur de diffusion associe a une equation de
@@ -54,7 +54,7 @@ public:
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
 
 protected:
-  virtual Eval_VDF_Elem2& get_eval_elem()=0;
+  virtual Eval_VDF_Elem& get_eval_elem()=0;
 };
 
 // Ce constructeur permet de creer des classes filles des evalateurs

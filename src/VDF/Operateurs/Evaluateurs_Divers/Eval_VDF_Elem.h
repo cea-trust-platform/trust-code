@@ -14,40 +14,41 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_VDF_Face2.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Diff
-// Version:     /main/11
+// File:        Eval_VDF_Elem.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Divers
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-#ifndef Eval_VDF_Face2_included
-#define Eval_VDF_Face2_included
+#ifndef Eval_VDF_Elem_included
+#define Eval_VDF_Elem_included
 
 #include <Ref_Champ_base.h>
-#include <Champ_Face.h>
+#include <Champ_P0_VDF.h>
+class Echange_externe_impose;
 
-// .DESCRIPTION class Eval_VDF_Face2
-// Cette classe represente le prototype fonctionnel des evaluateurs
-// de flux associes aux equations de conservation integrees
-// sur les volumes entrelaces
-class Eval_VDF_Face2
+// .DESCRIPTION class Eval_VDF_Elem
+// Cette classe represente le prototype fonctionnel
+// des evaluateurs de flux associes aux equations de
+// conservation integrees sur les elements
+class Eval_VDF_Elem
 {
 public:
-  inline Eval_VDF_Face2() {}
-  inline virtual ~Eval_VDF_Face2() {}
-  virtual int calculer_arete_bord() const { return 1; }
+  template <typename BC_TYPE>
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int ) const { return 0.; }
 
+  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const { return 0.; }
+  inline double coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int ) const { return 0.; }
   inline void associer_inconnue(const Champ_base& );
 
 protected:
   REF(Champ_base) inconnue;
 };
 
-inline void Eval_VDF_Face2::associer_inconnue(const Champ_base& inco)
+inline void Eval_VDF_Elem::associer_inconnue(const Champ_base& inco)
 {
-  assert(sub_type(Champ_Face,inco));
-  inconnue=ref_cast(Champ_Face,inco);
+  assert(sub_type(Champ_P0_VDF,inco));
+  inconnue=inco;
 }
 
-#endif /* Eval_VDF_Face2_included */
+#endif /* Eval_VDF_Elem_included */

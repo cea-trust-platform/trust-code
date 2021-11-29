@@ -24,12 +24,12 @@
 #define Eval_Div_VDF_Elem_included
 
 #include <CL_Types_include.h>
-#include <Eval_VDF_Elem2.h>
+#include <Eval_VDF_Elem.h>
 #include <Eval_Div_VDF.h>
 
 // .DESCRIPTION class Eval_Div_VDF_Elem
 // Evaluateur VDF pour la divergence
-class Eval_Div_VDF_Elem : public Eval_Div_VDF, public Eval_VDF_Elem2
+class Eval_Div_VDF_Elem : public Eval_Div_VDF, public Eval_VDF_Elem
 {
 public:
   inline int calculer_flux_faces_echange_externe_impose() const { return 1; }

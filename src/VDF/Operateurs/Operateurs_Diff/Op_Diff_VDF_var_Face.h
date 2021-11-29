@@ -43,12 +43,12 @@ class Op_Diff_VDF_var_Face : public Op_Diff_VDF_Face_base
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Face);
 
 public:
-  inline Eval_VDF_Face2& get_eval_face();
+  inline Eval_VDF_Face& get_eval_face();
   Op_Diff_VDF_var_Face();
 };
 
 // Description renvoit l'evaluateur caste en Ecal_VDF_Face corretement
-inline Eval_VDF_Face2& Op_Diff_VDF_var_Face::get_eval_face()
+inline Eval_VDF_Face& Op_Diff_VDF_var_Face::get_eval_face()
 {
   Eval_Diff_VDF_var_Face& eval_diff = dynamic_cast<Eval_Diff_VDF_var_Face&> (iter.evaluateur());
   return eval_diff;

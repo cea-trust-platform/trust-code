@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Dift_VDF_Face_base.h>
-#include <Eval_VDF_Face2.h>
+#include <Eval_VDF_Face.h>
 #include <Eval_Diff_VDF.h>
 #include <SFichier.h>
 

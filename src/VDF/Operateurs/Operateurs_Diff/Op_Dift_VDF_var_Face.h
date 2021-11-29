@@ -39,10 +39,10 @@ public:
   Op_Dift_VDF_var_Face();
   void associer_diffusivite_turbulente(const Champ_Fonc& );
   virtual void completer();
-  inline Eval_VDF_Face2& get_eval_face();
+  inline Eval_VDF_Face& get_eval_face();
 };
 
-inline Eval_VDF_Face2& Op_Dift_VDF_var_Face::get_eval_face()
+inline Eval_VDF_Face& Op_Dift_VDF_var_Face::get_eval_face()
 {
   Eval_Dift_VDF_var_Face& eval_diff = dynamic_cast<Eval_Dift_VDF_var_Face&> (iter.evaluateur());
   return eval_diff;
