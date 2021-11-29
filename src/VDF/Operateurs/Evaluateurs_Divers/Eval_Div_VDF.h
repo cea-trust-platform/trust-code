@@ -20,33 +20,18 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Eval_Div_VDF_included
 #define Eval_Div_VDF_included
 
 #include <Evaluateur_VDF.h>
-//
+
 // .DESCRIPTION class Eval_Div_VDF
-//
 // classe de base des evaluateurs de divergence VDF
-
-
-//
-// .SECTION voir aussi
-//
-
-
 class Eval_Div_VDF : public Evaluateur_VDF
 {
-
 public:
-  inline Eval_Div_VDF();
-  void mettre_a_jour();
+  inline Eval_Div_VDF() {}
+  inline void mettre_a_jour() {}
 };
 
-
-inline Eval_Div_VDF::Eval_Div_VDF()
-{}
-
-
-#endif
+#endif /* Eval_Div_VDF_included */
