@@ -94,7 +94,7 @@ void Echange_contact_CoviMAC::init_fs_dist() const
   std::vector<int> som(s_som.begin(), s_som.end()), o_som(s_o_som.begin(), s_o_som.end()); //en vecteur
   int ns_tot = som.size(), o_ns_tot = o_som.size();
 
-  DoubleTrav xvf(nf_tot, D), o_xvf(o_nf_tot, D), xsf(ns_tot, D), o_xsf(ns_tot, D); //positions locales/distantes -> pour calcul de correspondance
+  DoubleTrav xvf(nf_tot, D), o_xvf(o_nf_tot, D), xsf(ns_tot, D), o_xsf(o_ns_tot, D); //positions locales/distantes -> pour calcul de correspondance
   for (i = 0; i <   nf_tot; i++) for (d = 0; d < D; d++)   xvf(i, d) =   xv(  fvf->num_face(i), d);
   for (i = 0; i < o_nf_tot; i++) for (d = 0; d < D; d++) o_xvf(i, d) = o_xv(o_fvf->num_face(i), d);
   for (i = 0; i <   ns_tot; i++) for (d = 0; d < D; d++)   xsf(i, d) =   xs(  som[i], d);

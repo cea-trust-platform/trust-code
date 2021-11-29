@@ -196,7 +196,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl(f, 0) > 1)  //Dirichlet/Symetrie : pression du voisin + correction en regardant l'eq de NS dans celui-ci
       for (e = f_e(f, 0), n = 0, m = 0; n < N; n++, m += (M > 1))
         {
-          double fac = 1. / (fs(f) * ve(e));
+          double fac = -1. / (fs(f) * ve(e));
           std::map<int, double> *dv = mat_v ? &dgb_v[M * f + m] : NULL; //dv[indice dans mat_NS] = coeff
           for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (std::fabs(nf(f, d)) > 1e-6 * fs(f)) //boucle sur la direction : i est l'indice dans mat_v
               {

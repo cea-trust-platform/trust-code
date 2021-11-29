@@ -232,13 +232,13 @@ void Op_Diff_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t&
 
   Cerr << "Op_Diff_CoviMAC_Elem::dimensionner() : ";
   //avec fgrad : parties hors Echange_contact (ne melange ni les problemes, ni les composantes)
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2; i++) if ((e = f_e(f, i)) >= 0 && e < zone.nb_elem()) //stencil a l'element e
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) //stencil a l'element e
         for (j = phif_d(f); j < phif_d(f + 1); j++) if ((e_s = phif_e(j)) < zone.nb_elem_tot()) for (n = 0; n < N[0]; n++)
               stencil[0].append_line(N[0] * e + n, N[0] * e_s + n), tpfa(f, n) &= e_s == f_e(f, 0) || e_s == f_e(f, 1) || phif_c(j, n) == 0;
 
   //avec som_ext : partie Echange_contact -> melange toutes les composantes si som_mix = 1
-  for (i = 0; i < som_ext.dimension(0); i++) for (j = som_ext_d(i, 0); j < som_ext_d(i + 1, 0); j++) if (!som_ext_pe(j, 0))
-        for (e = som_ext_pe(j, 1), k = som_ext_d(i, 0); k < som_ext_d(i + 1, 0); k++) for (p_s = som_ext_pe(k, 0), e_s = som_ext_pe(k, 1), n = 0; n < N[0]; n++)
+  for (i = 0; i < som_ext.dimension(0); i++) for (j = som_ext_d(i, 0); j < som_ext_d(i + 1, 0); j++) if (!som_ext_pe(j, 0) && (e = som_ext_pe(j, 1)) < zone.nb_elem())
+        for (k = som_ext_d(i, 0); k < som_ext_d(i + 1, 0); k++) for (p_s = som_ext_pe(k, 0), e_s = som_ext_pe(k, 1), n = 0; n < N[0]; n++)
             for (m = (som_mix(i) ? 0 : n); m < (som_mix(i) ? N[p_s] : n + 1); m++) stencil[p_s].append_line(N[0] * e + n, N[p_s] * e_s + m);
 
   for (i = 0; i < (int) op_ext.size(); i++) if (mat[i])
@@ -291,8 +291,8 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
         if ((fb = (eb = phif_e(i)) - zone0.nb_elem_tot()) < 0) //element
           {
             for (n = 0; n < N[0]; n++) flux(n) += phif_c(i, n) * fs[0](f) * inco[0](eb, n);
-            if (mat[0]) for (j = 0; j < 2 && (e = f_e[0](f, j)) >= 0; j++) for (n = 0; n < N[0]; n++) //derivees
-                  (*mat[0])(N[0] * e + n, N[0] * eb + n) += (j ? 1 : -1) * phif_c(i, n) * fs[0](f);
+            if (mat[0]) for (j = 0; j < 2 && (e = f_e[0](f, j)) >= 0; j++) if (e < zone[0].get().nb_elem()) for (n = 0; n < N[0]; n++) //derivees
+                    (*mat[0])(N[0] * e + n, N[0] * eb + n) += (j ? 1 : -1) * phif_c(i, n) * fs[0](f);
           }
         else if (fcl[0](fb, 0) == 1 || fcl[0](fb, 0) == 2) for (n = 0; n < N[0]; n++) //Echange_impose_base
             flux(n) += (phif_c(i, n) ? phif_c(i, n) * fs[0](f) * ref_cast(Echange_impose_base, cls[0].get()[fcl[0](fb, 1)].valeur()).T_ext(fcl[0](fb, 2), n) : 0);
@@ -301,8 +301,8 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
         else if (fcl[0](fb, 0) == 6) for (n = 0; n < N[0]; n++) //Dirichlet
             flux(n) += (phif_c(i, n) ? phif_c(i, n) * fs[0](f) * ref_cast(Dirichlet, cls[0].get()[fcl[0](fb, 1)].valeur()).val_imp(fcl[0](fb, 2), n) : 0);
 
-      for (j = 0; j < 2 && (e = f_e[0](f, j)) >= 0; j++) for (n = 0; n < N[0]; n++) //second membre -> amont/aval
-          secmem(e, n) += (j ? -1 : 1) * flux(n);
+      for (j = 0; j < 2 && (e = f_e[0](f, j)) >= 0; j++) if (e < zone[0].get().nb_elem()) for (n = 0; n < N[0]; n++) //second membre -> amont/aval
+            secmem(e, n) += (j ? -1 : 1) * flux(n);
       if (f < zone0.premiere_face_int()) for (n = 0; n < N[0]; n++) flux_bords_(f, n) = flux(n); //flux aux bords
     }
 
@@ -555,7 +555,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
           }
 
         /* contributions aux flux et aux matrices */
-        for (i = 0; i < n_e; i++) if (s_pe[i][0] == 0) for (e = s_pe[i][1], j = 0; j < (int) se_f[i].size(); j++)
+        for (i = 0; i < n_e; i++) if (s_pe[i][0] == 0 && (e = s_pe[i][1]) < zone[0].get().nb_elem()) for (j = 0; j < (int) se_f[i].size(); j++)
               for (k = se_f[i][j], f = s_pf[k][0] ? m_pf[s_pf[k]][1] : s_pf[k][1], n = 0; n < N[0]; n++) //seulement celles du probleme courant
                 {
                   secmem(e, n) += Fec(!mix * n, i_efs(i, j, mix * n), t_e); //partie constante
