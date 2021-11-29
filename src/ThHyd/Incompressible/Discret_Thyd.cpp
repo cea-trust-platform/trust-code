@@ -238,7 +238,10 @@ void Discret_Thyd::porosite_volumique(const Zone_dis& z, const Schema_Temps_base
   const Zone_VF& zone_VF=ref_cast(Zone_VF, z.valeur());
   discretiser_champ("champ_elem",zone_VF,"porosite_volumique",".",1,sch.temps_courant(),ch);
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,ch.valeur());
-  ch_fonc.valeurs().ref(zone_VF.porosite_elem());
+  DoubleVect& tab=ch_fonc.valeurs();
+  tab = zone_VF.porosite_elem();
+  // PL: Pour faire une ref comme ci-dessous, il faudrait passer les tableau porosite_elem de Zone_VF en DoubleTab
+  //tab.ref(zone_VF.porosite_elem());
 }
 
 void Discret_Thyd::diametre_hydraulique(const Zone_dis& z, const Schema_Temps_base& sch , Champ_Fonc& ch ) const
@@ -247,7 +250,10 @@ void Discret_Thyd::diametre_hydraulique(const Zone_dis& z, const Schema_Temps_ba
   const Zone_VF& zone_VF=ref_cast(Zone_VF, z.valeur());
   discretiser_champ("champ_face",zone_VF,"diametre_hydraulique","m",dimension,sch.temps_courant(),ch);
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,ch.valeur());
-  ch_fonc.valeurs().ref(zone_VF.diametre_hydraulique_face());
+  DoubleVect& tab = ch_fonc.valeurs();
+  tab = zone_VF.diametre_hydraulique_face();
+  // PL: Pour faire une ref comme ci-dessous, il faudrait passer les tableau diametre_hydraulique de Zone_VF en DoubleTab
+  //tab.ref(zone_VF.diametre_hydraulique_face());
 }
 
 void Discret_Thyd::section_passage(const Zone_dis& z, const Schema_Temps_base& sch , Champ_Fonc& ch ) const
