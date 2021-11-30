@@ -2214,6 +2214,7 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
       matrice.get_set_tab2().ref_array(matrice_stockee.get_set_tab2());
       matrice.get_set_coeff().ref_array(matrice_stockee.get_set_coeff());
       matrice.set_nb_columns(matrice_stockee.nb_colonnes());
+      matrice.sorted_ = matrice_stockee.sorted_;
       return;
     }
 
@@ -2223,10 +2224,12 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
 
   if (probleme().discretisation().que_suis_je().finit_par("MAC") || probleme().discretisation().que_suis_je() == "DDFV")
     {
+      matrice.sort_stencil();
       matrice_stockee.get_set_tab1().ref_array(matrice.get_set_tab1());
       matrice_stockee.get_set_tab2().ref_array(matrice.get_set_tab2());
       matrice_stockee.get_set_coeff().ref_array(matrice.get_set_coeff());
       matrice_stockee.set_nb_columns(matrice.nb_colonnes());
+      matrice_stockee.sorted_ = 1;
       matrice_init = 1;
     }
 }

@@ -224,8 +224,10 @@ public :
   bool check_sorted_morse_matrix_structure( void ) const;
   void assert_check_morse_matrix_structure( void ) const;
   void assert_check_sorted_morse_matrix_structure( void ) const;
+  void sort_stencil();
 
   mutable int morse_matrix_structure_has_changed_; // Flag if matrix structure changes
+  mutable int sorted_; //1 si le stencil est classe : obtenu en appellant sort_stencil()
 
 protected :
   IntVect tab1_;
@@ -234,7 +236,6 @@ protected :
 
   int m_;          // Number of columns
   int symetrique_; // Pour inliner operator()(i,j) afin d'optimiser
-
 
 private :
   double zero_;
@@ -249,9 +250,11 @@ inline double Matrice_Morse::operator()(int i, int j) const
           || (symetrique_==2 && que_suis_je()=="Matrice_Morse_Diag") );
   if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
   int k1=tab1_[i]-1;
-  int k2=tab1_[i+1]-1;
-  for (int k=k1; k<k2; k++)
-    if (tab2_[k]-1 == j) return(coeff_[k]);
+  int k2=tab1_[i+1]-1, k;
+  if (sorted_ && (k = std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr()) < k2 && tab2_[k] == j + 1)
+    return coeff_[k];
+  else if (!sorted_) for (k=k1; k<k2; k++)
+      if (tab2_[k]-1 == j) return(coeff_[k]);
   // Si coefficient non trouve c'est qu'il est nul:
   return(0);
 }
@@ -264,9 +267,11 @@ inline double& Matrice_Morse::operator()(int i, int j)
   //if (symetrique_==1 && j<i) std::swap(i,j); // Do not use, possible error during compile: "signed overflow does not occur when assuming that (X + c) < X is always false"
   if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
   int k1=tab1_[i]-1;
-  int k2=tab1_[i+1]-1;
-  for (int k=k1; k<k2; k++)
-    if (tab2_[k]-1 == j) return(coeff_[k]);
+  int k2=tab1_[i+1]-1, k;
+  if (sorted_ && (k = std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr()) < k2 && tab2_[k] == j + 1)
+    return coeff_[k];
+  else if (!sorted_) for (k=k1; k<k2; k++)
+      if (tab2_[k]-1 == j) return(coeff_[k]);
   if (symetrique_==2) return zero_; // Pour Matrice_Morse_Diag, on ne verifie pas si la case est definie et l'on renvoie 0
 #ifndef NDEBUG
   // Uniquement en debug afin de permettre l'inline en optimise

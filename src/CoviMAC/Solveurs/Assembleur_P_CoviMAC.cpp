@@ -96,6 +96,7 @@ int  Assembleur_P_CoviMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
       tableau_trier_retirer_doublons(stencil);
       Matrix_tools::allocate_morse_matrix(ne_tot, ne_tot, stencil, mat);
+      mat.sort_stencil();
       tab1.ref_array(mat.get_set_tab1()), tab2.ref_array(mat.get_set_tab2());
       stencil_done = 1;
     }

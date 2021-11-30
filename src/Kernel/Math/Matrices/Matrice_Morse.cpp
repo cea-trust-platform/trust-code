@@ -80,7 +80,7 @@ Entree& Matrice_Morse::readOn(Entree& s)
   s >> tab2_;
   s >> coeff_;
   s >> m_;
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
   return s;
 }
 
@@ -244,7 +244,7 @@ Matrice_Morse::Matrice_Morse(const Matrice_Morse& acopier) :Matrice_Base(),
   symetrique_(0),
   zero_(0)
 {
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
   is_stencil_up_to_date_ = acopier.is_stencil_up_to_date_ ;
 }
 // Description:
@@ -273,7 +273,7 @@ Matrice_Morse::Matrice_Morse(const Matrice_Morse& acopier) :Matrice_Base(),
 Matrice_Morse::Matrice_Morse(int n, int nnz) :
   morse_matrix_structure_has_changed_(1), symetrique_(0), zero_(0)
 {
-  dimensionner(n,nnz);
+  dimensionner(n,nnz), sorted_ = 0;
   is_stencil_up_to_date_ = false ;
 }
 
@@ -282,6 +282,7 @@ Matrice_Morse::Matrice_Morse()
   dimensionner(0,0);
   morse_matrix_structure_has_changed_=1;
   symetrique_ = 0;
+  sorted_ = 0;
   zero_ = 0;
   is_stencil_up_to_date_ = false ;
 }
@@ -317,7 +318,7 @@ Matrice_Morse::Matrice_Morse(int n, int m, int nnz):
   morse_matrix_structure_has_changed_(1), symetrique_(0), zero_(0)
 {
   dimensionner(n,m,nnz);
-  is_stencil_up_to_date_ = false ;
+  is_stencil_up_to_date_ = false, sorted_ = 0 ;
 }
 
 
@@ -328,7 +329,7 @@ Matrice_Morse::Matrice_Morse(int n, int nnz, const IntLists& voisins,
 {
   dimensionner(n,n,nnz);
   remplir(voisins, valeurs, terme_diag);
-  is_stencil_up_to_date_ = false;
+  is_stencil_up_to_date_ = false, sorted_ = 0;
 }
 
 void Matrice_Morse::set_nb_columns( const int nb_col )
@@ -506,7 +507,7 @@ void Matrice_Morse::dimensionner(const IntTab& Ind)
           }
       }
   }
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
 }
 
 // Description:
@@ -526,7 +527,7 @@ void Matrice_Morse::dimensionner(int n, int m, int nnz)
   tab1_.resize(n+1);
   tab1_[n]=nnz+1;
 
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
 }
 
 // Description
@@ -679,7 +680,7 @@ void Matrice_Morse::compacte(int elim_coeff_nul)
   tab2_.resize(nnz);
   coeff_.resize(nnz);
 
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
   assert_check_morse_matrix_structure( );
 }
 
@@ -704,7 +705,7 @@ Matrice_Morse& Matrice_Morse::operator=(const Matrice_Morse& a )
   tab2_.reset(), tab2_.copy(a.get_tab2());
   coeff_.reset(), coeff_.copy(a.get_coeff());
   m_=a.nb_colonnes();
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
   is_stencil_up_to_date_=a.is_stencil_up_to_date();
   return(*this);
 }
@@ -853,7 +854,7 @@ Matrice_Morse& Matrice_Morse::transpose(const Matrice_Morse& a)
     //      end
     //c-----------------------------------------------------------------------
   }
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
   return(*this);
 }
 
@@ -926,7 +927,7 @@ Matrice_Morse& Matrice_Morse::partie_sup(const Matrice_Morse& a)
   tab1_[n] = (nnz) + 1 ;
   tab2_.resize( nnz );
   coeff_.resize( nnz );
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
   return(*this);
 }
 
@@ -1136,7 +1137,7 @@ Matrice_Morse operator+(const Matrice_Morse& A , const Matrice_Morse& B )
   const int nnz = C.tab1_[nrow] - 1;
   C.get_set_tab2().resize( nnz );
   C.get_set_coeff().resize( nnz );
-  C.morse_matrix_structure_has_changed_=1;
+  C.morse_matrix_structure_has_changed_=1, C.sorted_ = 0;
   return(C);
 }
 
@@ -1803,7 +1804,7 @@ Matrice_Morse& Matrice_Morse::affecte_prod(const Matrice_Morse& a, const Matrice
 
   coeff_.resize(tab1_[nrow]-1);
   tab2_.resize(tab1_[nrow]-1);
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
   return *this;
 
 }
@@ -1888,7 +1889,7 @@ Matrice_Morse& Matrice_Morse::operator +=(const Matrice_Morse& A)
   else
     {
       *this = *this + A;
-      morse_matrix_structure_has_changed_ = 1;
+      morse_matrix_structure_has_changed_ = 1, sorted_ = 0;
     }
   return *this;
 }
@@ -2109,7 +2110,7 @@ void Matrice_Morse::remplir(const IntLists& voisins,
     }
   tab1_(num_elem)=rang;
   formeF();
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
   is_stencil_up_to_date_=false;
 }
 
@@ -2149,7 +2150,7 @@ void Matrice_Morse::remplir(const IntLists& voisins,
     }
   tab1_(num_elem)=rang;
   formeF();
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
   is_stencil_up_to_date_=false;
 }
 
@@ -2199,7 +2200,7 @@ void Matrice_Morse::remplir(const int ideb, const int jdeb, const int n, const i
   for (int i=0; i<nnz; i++)
     coeff_(i)=matrice_locale.coeff_(i);
 
-  morse_matrix_structure_has_changed_=1;
+  morse_matrix_structure_has_changed_=1, sorted_ = 0;
   is_stencil_up_to_date_=false;
 }
 
@@ -2497,3 +2498,10 @@ void Matrice_Morse::construire_sous_bloc(int nl0, int nc0, int nl1, int nc1, Mat
     }
 }
 
+void Matrice_Morse::sort_stencil()
+{
+  if (sorted_) return; //deja fait
+  for (int i = 0; i + 1 < tab1_.size(); i++) //indice de ligne
+    std::sort(tab2_.addr() + tab1_(i) - 1, tab2_.addr() + tab1_(i + 1) - 1);
+  morse_matrix_structure_has_changed_ = sorted_ = 1;
+}
