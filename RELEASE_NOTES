@@ -8,7 +8,7 @@ Release notes version 1.8.4_beta : Enhancements, modifications and corrected bug
 23/11/21 (TRUST)  Fix         : Several AmgX GPU solvers (BiCGstab, FGMRES) may be used for Euler implicit scheme + memory leak fixes. See Solveurs/GPU/Implicite verification sheet
 23/11/21 (TRUST)  Fix         : Champ_front_MED may now be combined with Champ_Fonc_MED_Tabule to enable time & space dependent boundary conditions read from MED file
 23/11/21 (TRUST)  Output      : Suppress probe duplicated points into .son files
-23/11/21 (TRUST)  Convergence : Use the true residual (instead of preconditioned one) for convergence test with PETSc GMRES solver (may be necessary to lower seuil option to have same results than 1.8.3)
+23/11/21 (TRUST)  Convergence : Use the true residual (instead of preconditioned one) for convergence test with PETSc solvers used on non-symmetric linear system (may be necessary to lower seuil option to have same results than 1.8.3)
 23/11/21 (TRUST)  Keyword     : Add pression option to Navier Stokes initial conditions to initialize velocity and pressure field
 15/11/21 (TRUST)  Fix         : Several problems solving different physics on a same domain produced corrupted lml/lata/med files (mesh repeated) during post-processing
 29/10/21 (TRUST)  Keyword     : Syntax change for Champ_Fonc_tabule. The new syntax is Champ_fonc_tabule { pb field } nbcomp { table } (the old syntax was Champ_fonc_tabule field nbcomp { table } )
