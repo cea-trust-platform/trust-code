@@ -6,8 +6,6 @@
 # d) Essayer d'expurger (ex doc/demos/examples dans QT) pour des questions de place
 
 name=visit
-version=2_12_1
-new_version=3_1_1
 install=$(TRUST_ROOT)/exec/VisIt
 cible=$(install)/bin/$(name)
 #cible=bin/$(name)
@@ -17,16 +15,16 @@ sonde=$(TRUST_ROOT)/exec/VisIt/current/linux-x86_64/plugins/databases/libEsondeD
 all: $(cible) $(sonde)
 
 $(sonde): ./plugins/Sondes/build_plugin ./plugins/lata/build_plugin plugins/triofield/build_plugin
-	./install $(version) plugins $(new_version)
+	./install plugins
 	make $(check)
 
 $(cible): ./makefile ./install ./src/build.sh ./src/build_new.sh $(MPI_INCLUDE)/mpi.h
 	make clean
-	./install $(version) visit $(new_version)
+	./install visit
 
 $(check): *.xml install customlauncher $(TRUST_ROOT)/RELEASE_NOTES
 	# On ajoute la mise a jour des host profiles et on test
-	./install $(version) check $(new_version)
+	./install check
 
 clean:
 	rm -r -f $(install) $(TRUST_ROOT)/build/Outils/VisIt src/*.help 

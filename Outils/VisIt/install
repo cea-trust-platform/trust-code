@@ -39,13 +39,9 @@ then
    exit -1
 fi
 
-echo "Usage: ./`basename $0` version [visit | plugins | check]"
-if [ "$1" = "" ] || [ "$2" = "" ]
-then
-   exit -1
-fi
-version=$1
-what=$2
+echo "Usage: ./`basename $0` [visit | plugins | check]"
+[ "$1" = "" ] && exit -1
+what=$1
 parallel=""
 new=1
 # PL: Migration progressive avec les nouvelles machines vers une procedure plus propre a partir de VisIt 3.1.1
@@ -62,26 +58,30 @@ if [ "$new" = 1 ]
 then
    # Nouvelle procedure
    build=build_new.sh
-   version=$3
+   version=3_1_1
    export HTTPS="https://github.com/visit-dav/visit/releases/download"
-   version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
    [ "$MPI_ROOT" != "" ] && parallel="parallel"
-   # See https://wci.llnl.gov/simulation/computer-codes/visit/executables
-   [ "`grep 'Ubuntu 16.04' /etc/issue 2>/dev/null`" != "" ] 				    && os=ubuntu16
-   [ "`grep 'Ubuntu 18.04' /etc/issue 2>/dev/null`" != "" ] 				    && os=ubuntu18
-   [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ] 				    && os=ubuntu19
-   [ "`grep 'Ubuntu 20'    /etc/issue 2>/dev/null`" != "" ] 				    && os=ubuntu20 && version=3_1_2 && version_visit=v3.1.2
-   [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian9
-   [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]			&& os=debian10 && version=3_1_2 && version_visit=v3.1.2
+   # See https://visit-dav.github.io/visit-website/releases-as-tables/#latest
+   [ "`grep 'Ubuntu 16.04' /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu16
+   [ "`grep 'Ubuntu 18.04' /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu18
+   [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu19
+   [ "`grep 'Ubuntu 20'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu20 && version=3_1_2
+   [ "`grep 'Ubuntu 21'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu21 && version=3_2_1
+   [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]          && os=debian9
+   [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian10 && version=3_1_2
+   [ "`grep 'Debian GNU/Linux 11' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian11 && version=3_2_1
    [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8
    [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27
    [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27
-   [ "`grep 'release [7]' /etc/redhat-release 2>/dev/null`" != "" ]				&& os=rhel7      # NB: Le binaire rhel7 ne marche pas sur Redhat 8 (xml2cmake error)
+   [ "`grep 'release [7]' /etc/redhat-release 2>/dev/null`" != "" ]             && os=rhel7      # NB: Le binaire rhel7 ne marche pas sur Redhat 8 (xml2cmake error)
+
+   version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
    # A partir de 1.8.4, on essaie de prendre sur PC+MPICH le binaire precompile avec MPICH:   
    [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "$os" != "" ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
 else
    # Ancienne procedure, peu a peu obsolete
    build=build.sh
+   version=2_12_1
    # suppression de python/conda du path :
    OLDPATH_=$PATH
    NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
@@ -313,16 +313,19 @@ then
    ########################################################################
    # Customize customlauncher for several tasks (called by internalauncher)
    ########################################################################
-   # eg: Useful to load TRUST environment automatically for client/server mode -> users don't need anymore loading it
-   echo $ECHO_OPTS "1,$ s?TRUST_ROOT?$TRUST_ROOT?g\nw customlauncher.tmp" | ed customlauncher 1>/dev/null 2>&1
-   echo $ECHO_OPTS "1,$ s?MPI_ROOT?$MPI_ROOT?g\nw" | ed customlauncher.tmp 1>/dev/null 2>&1
-   if [ "`diff customlauncher customlauncher.tmp`" != "" ]
+   if [ "$version" != 3_2_1 ]
    then
-      echo "current/bin/customlauncher updated."
-      mv -f customlauncher.tmp $TRUST_ROOT/exec/VisIt/current/bin/customlauncher
-      chmod +x $TRUST_ROOT/exec/VisIt/current/bin/customlauncher
-   else
-      rm -f customlauncher.tmp
+      # eg: Useful to load TRUST environment automatically for client/server mode -> users don't need anymore loading it
+      echo $ECHO_OPTS "1,$ s?TRUST_ROOT?$TRUST_ROOT?g\nw customlauncher.tmp" | ed customlauncher 1>/dev/null 2>&1
+      echo $ECHO_OPTS "1,$ s?MPI_ROOT?$MPI_ROOT?g\nw" | ed customlauncher.tmp 1>/dev/null 2>&1
+      if [ "`diff customlauncher customlauncher.tmp`" != "" ]
+      then
+         echo "current/bin/customlauncher updated."
+         mv -f customlauncher.tmp $TRUST_ROOT/exec/VisIt/current/bin/customlauncher
+         chmod +x $TRUST_ROOT/exec/VisIt/current/bin/customlauncher
+      else
+         rm -f customlauncher.tmp
+      fi
    fi
    #############
    # Run tests #
