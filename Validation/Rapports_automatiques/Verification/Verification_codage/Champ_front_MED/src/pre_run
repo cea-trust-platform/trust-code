@@ -3,7 +3,8 @@
 trust mesh 1>mesh.out_err 2>&1 || exit -1
 
 # Creation de champs variables en temps dans le fichier fields.med:
-source $TRUST_ROOT/env_for_python.sh
+#source $TRUST_ROOT/env_for_python.sh # si pas de MPI, impossible de charger env_for_python.sh
+source $TRUST_MEDCOUPLING_ROOT/env.sh
 python ./prepare.py || exit -1
 
 # Dump du field.med cree:
