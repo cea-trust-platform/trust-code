@@ -116,21 +116,31 @@ Sortie& Champ_Fonc_Tabule::printOn(Sortie& os) const
 // Postcondition:
 Entree& Champ_Fonc_Tabule::readOn(Entree& is)
 {
+  int old_table_syntax_ = 0;
+
   Nom motlu;
   const Motcle accolade_ouverte("{"), accolade_fermee("}");
   int nbcomp;
   is >> motlu;
-  if (motlu != accolade_ouverte) Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Tabule","rien","rien");
-
-  while (true)
+  if (motlu != accolade_ouverte)  // Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Tabule","rien","rien");
     {
-      is >> motlu;
-      if (motlu == "}") break;
-      noms_pbs_.add(motlu);
-      is >> motlu;
       noms_champs_parametre_.add(motlu);
+      old_table_syntax_ = 1;
+    }
+  else
+    {
+      assert (old_table_syntax_ == 0);
+      while (true)
+        {
+          is >> motlu;
+          if (motlu == "}") break;
+          noms_pbs_.add(motlu);
+          is >> motlu;
+          noms_champs_parametre_.add(motlu);
+        }
     }
   const int nb_param = noms_champs_parametre_.size();
+  if (old_table_syntax_ && noms_pbs_.size() != 0 && nb_param != 1) throw;
   is >> nbcomp;
 
   fixer_nb_comp(nbcomp);
