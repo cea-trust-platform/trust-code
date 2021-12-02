@@ -373,7 +373,7 @@ void Discretisation_base::nommer_completer_champ_physique(const Zone_dis_base& z
       for (int i = 0; i < noms_variables.size(); i++)
         {
           REF(Champ_base) champ;
-          Probleme_base& pb_ch = ref_cast(Probleme_base, Interprete::objet(noms_pbs[i]));
+          const Probleme_base& pb_ch = noms_pbs.size() == 0 ? pb : ref_cast(Probleme_base, Interprete::objet(noms_pbs[i]));
           champ = pb_ch.get_champ(Motcle(noms_variables[i]));
           les_ch_eq.add(champ);
         }
