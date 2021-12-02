@@ -465,7 +465,8 @@ then
 	 then
 	    echo ""
 	    echo "Tip: you can load TRUST environment by:"
-	    echo "TRUST_DISABLE_CHECK_OS=1 source $TRUST_ROOT/env_TRUST.sh"
+	    echo "   export TRUST_DISABLE_CHECK_OS=1"
+	    echo "   source $TRUST_ROOT/env_TRUST.sh"
 	    echo "Contact TRUST support team at: $TRUST_MAIL"
 	 fi
 	 echo "**********************************************************************"
@@ -1288,7 +1289,7 @@ fi
 # Intallation des packages supplementaires avec pip de conda #
 ##############################################################
 pkgs="" # now, we install only mpi4py with pip if mpi enabled, so umpty list
-if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "`basename $TRUST_CC_BASE`" != nvc++ ]
+if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "`basename $TRUST_CC_BASE`" != nvc++ ] && [ "$TRUST_DISABLE_MPI4PY" != 1 ]
 then
    pkgs="mpi4py "$pkgs
 fi
