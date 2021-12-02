@@ -626,9 +626,9 @@ case $arch in
 	TRUST_EDITOR="nedit kedit xemacs xedit emacs gedit"
 	# On met Intel en 1er/GNU car plus rapide que GNU
 	cuda="" && [ "$TRUST_USE_CUDA" = 1 ] && cuda="cuda-" # Uniquement si on demande Cuda, recherche en priorite des wrappers pour les compilateurs GNU
-	TRUST_CC_BASE=" nvc++     FCC icpc  armclang++ "$cuda"g++      g++"
-	TRUST_F77_BASE="nvfortran frt ifort armflang   "$cuda"gfortran gfortran"
-	TRUST_cc_BASE=" nvc       fc  icc   armclang   "$cuda"gcc      gcc"
+	TRUST_CC_BASE=" crayCC  nvc++     FCC icpc  armclang++ "$cuda"g++      g++"
+	TRUST_F77_BASE="crayftn nvfortran frt ifort armflang   "$cuda"gfortran gfortran"
+	TRUST_cc_BASE=" craycc  nvc       fc  icc   armclang   "$cuda"gcc      gcc"
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
@@ -1586,6 +1586,14 @@ case $TRUST_ARCH_CC in
 	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags $AoccFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
+	;;
+   linux_crayCC) TRUST_SUPPORTED=1
+   	Defines="-D_COMPILE_AVEC_CLANG"
+	CppFlags="-O3 -fPIC -std=c++11 -Wno-inconsistent-missing-override"
+	SYSLIBS="-lrt "
+	F77Flags="-O3 -fPIC"
+	ccFLAGS="-O3 -fPIC"
+	ShLibFlag="\$(TRUST_CC) -shared"
 	;;
    linux_FCC) TRUST_SUPPORTED=1
         Defines="-D_COMPILE_AVEC_FCC" # Kfast: induces the standard options to exploit the full performance of the A64FX such as SIMDization, software pipelining
