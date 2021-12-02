@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2017, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,6 +51,7 @@ void Source_Scalaire_EF::associer_pb(const Probleme_base& pb ) { }
 Entree& Source_Scalaire_EF::readOn(Entree& s )
 {
   s >> la_source_lu_;
+  const  Probleme_base& pb =equation().probleme();
 
   if (sub_type(Champ_Uniforme,la_source_lu_.valeur()))
     {
@@ -69,7 +70,7 @@ Entree& Source_Scalaire_EF::readOn(Entree& s )
       la_source_lu_.detach();
     }
   //  const Equation_base& eqn = pb.equation(0);
-  equation().discretisation().nommer_completer_champ_physique(equation().zone_dis(),"Puissance_volumique","W/m3",la_source_);
+  equation().discretisation().nommer_completer_champ_physique(equation().zone_dis(),"Puissance_volumique","W/m3",la_source_,pb);
   champs_compris_.ajoute_champ(la_source_);
   if (la_source_->nb_comp() != equation().inconnue().valeur().nb_comp())
     {

@@ -359,7 +359,8 @@ void Discretisation_base::modifier_champ_tabule(const Zone_dis_base& zone_dis,Ch
 
 }
 
-void Discretisation_base::nommer_completer_champ_physique(const Zone_dis_base& zone_dis, const Nom& nom_champ, const Nom& unite, Champ_base& le_champ) const
+void Discretisation_base::nommer_completer_champ_physique(const Zone_dis_base& zone_dis, const Nom& nom_champ, const Nom& unite, Champ_base& le_champ,
+                                                          const Probleme_base& pb) const
 {
   // on nomme le champ et l'unite
   le_champ.nommer(nom_champ);

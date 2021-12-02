@@ -144,7 +144,7 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
   if (mu.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"viscosite_dynamique","kg/m/s",mu.valeur());
+      dis.nommer_completer_champ_physique(zone_dis,"viscosite_dynamique","kg/m/s",mu.valeur(),pb);
       champs_compris_.ajoute_champ(mu.valeur());
     }
   if (sub_type(Champ_Fonc_Tabule,mu.valeur()))
@@ -156,12 +156,12 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
 
   if (nu.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"viscosite_cinematique","m2/s",nu.valeur());
+      dis.nommer_completer_champ_physique(zone_dis,"viscosite_cinematique","m2/s",nu.valeur(),pb);
       champs_compris_.ajoute_champ(nu.valeur());
     }
   if (beta_co.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"dilatabilite_solutale",".",beta_co.valeur());
+      dis.nommer_completer_champ_physique(zone_dis,"dilatabilite_solutale",".",beta_co.valeur(),pb);
       champs_compris_.ajoute_champ(beta_co.valeur());
     }
 

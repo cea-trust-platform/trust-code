@@ -73,7 +73,7 @@ void  Fluide_Ostwald::discretiser(const Probleme_base& pb, const  Discretisation
   Champ_Don& K = consistance();
   if (K.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"consistance","kg/m/s",K.valeur());
+      dis.nommer_completer_champ_physique(zone_dis,"consistance","kg/m/s",K.valeur(),pb);
       champs_compris_.ajoute_champ(K.valeur());
     }
 
