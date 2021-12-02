@@ -52,14 +52,23 @@ Sortie& Champ_Fonc_Fonction::printOn(Sortie& os) const { return os; }
 // Postcondition:
 Entree& Champ_Fonc_Fonction::readOn(Entree& is)
 {
-  int nbcomp;
+  int nbcomp, nbcomp_tmp_ = -1, old_table_syntax_ = 0;
   Nom val1, val2;
   is >> val1;
-  noms_pbs_.add(val1);
   is >> val2;
-  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Fonction", val1, val2);
-  noms_champs_parametre_.add(val2);
-  is >> nbcomp;
+  // fix if user uses the old syntax ..
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Fonction", val2, nbcomp_tmp_, old_table_syntax_);
+  if (old_table_syntax_)
+    {
+      noms_champs_parametre_.add(val1);
+      nbcomp = nbcomp_tmp_;
+    }
+  else
+    {
+      noms_pbs_.add(val1);
+      noms_champs_parametre_.add(val2);
+      is >> nbcomp;
+    }
   fixer_nb_comp(nbcomp);
   Cerr<<"We read the analytic function "<<finl;
   la_table.lire_f(is, nbcomp);

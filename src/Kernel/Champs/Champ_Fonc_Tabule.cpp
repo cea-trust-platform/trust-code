@@ -22,15 +22,14 @@
 
 #include <Champ_Fonc_Tabule.h>
 #include <Champ_Uniforme.h>
+#include <algorithm>
+#include <string>
 
 Implemente_instanciable(Champ_Fonc_Tabule,"Champ_Fonc_Tabule",Champ_Fonc_base);
 // XD champ_fonc_tabule champ_don_base champ_fonc_tabule 0 Field that is tabulated as a function of another field.
 // XD  attr inco chaine inco 0 Name of the field (for example: temperature).
 // XD  attr dim int dim 0 Number of field components.
 // XD  attr bloc bloc_lecture bloc 0 Values (the table (the value of the field at any time is calculated by linear interpolation from this table) or the analytical expression (with keyword expression to use an analytical expression)).
-
-#include <string>
-#include <algorithm>
 
 void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param)
 {
@@ -52,29 +51,16 @@ void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax(const char * nom_class, const N
     }
 }
 
-void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184(const char * nom_class, const Nom& prob, const Nom& field)
+void Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184(const char * nom_class, const Nom& val,int& dim, int& old_synt)
 {
-  if ((std::string)nom_class == "Champ_Fonc_Tabule")
+  const bool isNum = Check_if_int(val);
+  if (isNum) // old syntax
     {
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "Error in call to " << nom_class << ":" << finl;
-      Cerr << "The syntax has changed in version 1.8.4. It should be now defined as follows : " << finl;
-      Cerr << finl << " " << nom_class << " {  problem_name field_name [ problem2_name field2_name ] } dimension { ... your_table ... }" << finl;
-      Cerr << finl << "Please update your dataset or contact TRUST support team." << finl;
-      Process::exit();
-    }
-  else
-    {
-      const bool isNum = Check_if_int(prob), isNum2 = Check_if_int(field);
-      if (isNum || isNum2)
-        {
-          Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-          Cerr << "Error in call to " << nom_class << ":" << finl;
-          Cerr << "The syntax has changed in version 1.8.4. It should be now defined as follows : " << finl;
-          Cerr << finl << "  " << nom_class << "   problem_name   field_name   dimension   { ... your_expression ... }" << finl;
-          Cerr << finl << "Please update your dataset or contact TRUST support team." << finl;
-          Process::exit();
-        }
+      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
+      Cerr << "Attention : you are using an old syntax for the class " << nom_class << " :" << finl;
+      Cerr << "We are trying to fix this ..." << finl;
+      dim = atoi(val);
+      old_synt = 1;
     }
 }
 
@@ -116,13 +102,11 @@ Sortie& Champ_Fonc_Tabule::printOn(Sortie& os) const
 // Postcondition:
 Entree& Champ_Fonc_Tabule::readOn(Entree& is)
 {
-  int old_table_syntax_ = 0;
-
+  int nbcomp, old_table_syntax_ = 0;
   Nom motlu;
   const Motcle accolade_ouverte("{"), accolade_fermee("}");
-  int nbcomp;
   is >> motlu;
-  if (motlu != accolade_ouverte)  // Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Tabule","rien","rien");
+  if (motlu != accolade_ouverte)
     {
       noms_champs_parametre_.add(motlu);
       old_table_syntax_ = 1;
@@ -140,9 +124,14 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
         }
     }
   const int nb_param = noms_champs_parametre_.size();
-  if (old_table_syntax_ && noms_pbs_.size() != 0 && nb_param != 1) throw;
-  is >> nbcomp;
 
+  if (old_table_syntax_ && noms_pbs_.size() != 0 && nb_param != 1)
+    {
+      Cerr << "What ??? Big problem in Champ_Fonc_Tabule::readOn !!!" << finl;
+      throw;
+    }
+
+  is >> nbcomp;
   fixer_nb_comp(nbcomp);
   is >> motlu;
   if (motlu == accolade_ouverte)

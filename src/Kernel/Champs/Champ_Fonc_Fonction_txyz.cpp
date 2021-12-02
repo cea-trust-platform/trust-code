@@ -31,14 +31,24 @@ Sortie& Champ_Fonc_Fonction_txyz::printOn(Sortie& os) const { return os; }
 // Lecture du Champ a partir d'un flot d'entree (On ne sait traiter que les champs scalaires.)
 Entree& Champ_Fonc_Fonction_txyz::readOn(Entree& is)
 {
-  int nbcomp;
+  int nbcomp, nbcomp_tmp_ = -1, old_table_syntax_ = 0;
   Nom val1, val2;
   is >> val1;
-  noms_pbs_.add(val1);
   is >> val2;
-  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Fonction_txyz", val1, val2);
-  noms_champs_parametre_.add(val2);
-  is >> nbcomp;
+  // fix if user uses the old syntax ..
+  Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax_V_184("Champ_Fonc_Fonction_txyz", val2, nbcomp_tmp_, old_table_syntax_);
+  if (old_table_syntax_)
+    {
+      noms_champs_parametre_.add(val1);
+      nbcomp = nbcomp_tmp_;
+    }
+  else
+    {
+      noms_pbs_.add(val1);
+      noms_champs_parametre_.add(val2);
+      is >> nbcomp;
+    }
+
   if(nbcomp==1)
     {
       fixer_nb_comp(nbcomp);

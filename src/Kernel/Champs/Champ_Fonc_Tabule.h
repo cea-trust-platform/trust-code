@@ -20,7 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Champ_Fonc_Tabule_included
 #define Champ_Fonc_Tabule_included
 
@@ -40,6 +39,7 @@ class Zone_dis_base;
 // .SECTION voir aussi
 //     Champ_Fonc_base
 //////////////////////////////////////////////////////////////////////////////
+
 class Champ_Fonc_Tabule : public Champ_Fonc_base
 {
   Declare_instanciable(Champ_Fonc_Tabule);
@@ -69,7 +69,7 @@ public:
 
   // Methodes utiles pour notifier l'utilisateur suite au changement du syntaxe
   static void Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param);
-  static void Warn_old_chp_fonc_syntax_V_184(const char * nom_class, const Nom& pb, const Nom& field);
+  static void Warn_old_chp_fonc_syntax_V_184(const char * nom_class, const Nom& val, int& dim, int& old_synt);
   static bool Check_if_int(const Nom& val);
 
 protected:
