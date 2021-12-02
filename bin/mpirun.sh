@@ -19,6 +19,7 @@ then
 fi
 # Passer progressivement tous les cas dans le script trust...
 case $Mpirun in
+        /usr/bin/srun) $Mpirun -n $2 $3 $4 $5;;
 	/usr/bin/prun) 	$Mpirun -vts -n $2 $3 $4 $5;;
 	/opt/hpmpi/bin/mpijob) $Mpirun $3 $4 $5;;
 	/opt/hpmpi/bin/mpirun) $Mpirun -srun -n $2 $3 $4 $5;;
