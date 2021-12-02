@@ -956,6 +956,11 @@ then
    # MKL: Math Kernel Library d'INTEL detecte (seems to work with Intel or Gnu compilers)
    TRUST_BLAS_LAPACK=`ls $MKLROOT/lib/*64*/libmkl_core.a $MKL_BASE/lib/*64*/libmkl_core.a 2>/dev/null | head -1`
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
+elif [ "$CRAY_LIBSCI_PREFIX" != "" ]
+then
+   # CRAY blas
+   TRUST_BLAS_LAPACK=`ls $CRAY_LIBSCI_PREFIX/lib/libsci_cray.a 2>/dev/null | head -1`
+   [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
 fi
 m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && export TRUST_BLAS_LAPACK";ecrit $m"|"$e"|"$env
 

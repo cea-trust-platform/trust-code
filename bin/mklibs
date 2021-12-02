@@ -105,6 +105,9 @@ else
     then
        # Prefer openblas if founded:
        LAPACK="-L\$(TRUST_BLAS_LAPACK) -lopenblas"
+    elif [ -f $TRUST_BLAS_LAPACK/libsci_cray.a ]
+    then
+       LAPACK="-L\$(TRUST_BLAS_LAPACK) -lsci_cray"
     else
        LAPACK="-L\$(TRUST_BLAS_LAPACK) -llapack -lblas"
     fi
