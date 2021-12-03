@@ -49,6 +49,7 @@
 #include <EntreeSortie.h>
 
 // This structure mirrors the one found in /usr/include/asm/ucontext.h
+#ifndef __APPLE__
 typedef struct _sig_ucontext
 {
   unsigned long     uc_flags;
@@ -57,6 +58,7 @@ typedef struct _sig_ucontext
   struct sigcontext uc_mcontext;
   sigset_t          uc_sigmask;
 } sig_ucontext_t;
+#endif
 
 /*
  * Execute a system command and get output.

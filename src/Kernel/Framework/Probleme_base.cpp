@@ -1998,6 +1998,7 @@ void Probleme_base::allocation() const
 int Probleme_base::allocate_file_size(long int& size) const
 {
 #ifndef MICROSOFT
+#ifndef __APPLE__
 #ifndef RS6000
 #ifdef CHECK_ALLOCATE
   Nom Fichier_File_size(Objet_U::nom_du_cas());
@@ -2031,6 +2032,7 @@ int Probleme_base::allocate_file_size(long int& size) const
     }
   close(fichier);                                        // fermeture du fichier
   remove(file);                                                // Destruction du fichier File_size
+#endif
 #endif
 #endif
 #endif

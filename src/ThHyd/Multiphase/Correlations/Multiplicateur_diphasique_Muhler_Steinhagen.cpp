@@ -22,6 +22,7 @@
 
 #include <Multiplicateur_diphasique_Muhler_Steinhagen.h>
 #include <Pb_Multiphase.h>
+#include <cmath>
 
 Implemente_instanciable(Multiplicateur_diphasique_Muhler_Steinhagen, "Multiplicateur_diphasique_Muhler_Steinhagen", Multiplicateur_diphasique_base);
 

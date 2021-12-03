@@ -29,6 +29,7 @@
 #include <Zone_VF.h>
 #include <Pb_Multiphase.h>
 #include <cfloat>
+#include <cmath>
 
 Implemente_base(Fluide_reel_base, "Fluide_reel_base", Fluide_base);
 // XD fluide_reel_base fluide_base fluide_reel_base -1 Class for real fluids.

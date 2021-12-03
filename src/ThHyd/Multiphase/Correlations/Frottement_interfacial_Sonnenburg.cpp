@@ -22,6 +22,7 @@
 
 #include <Frottement_interfacial_Sonnenburg.h>
 #include <Pb_Multiphase.h>
+#include <cmath>
 
 Implemente_instanciable(Frottement_interfacial_Sonnenburg, "Frottement_interfacial_Sonnenburg", Frottement_interfacial_base);
 

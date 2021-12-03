@@ -22,6 +22,7 @@
 
 #include <Multiplicateur_diphasique_Friedel.h>
 #include <Pb_Multiphase.h>
+#include <cmath>
 
 Implemente_instanciable(Multiplicateur_diphasique_Friedel, "Multiplicateur_diphasique_Friedel", Multiplicateur_diphasique_base);
 

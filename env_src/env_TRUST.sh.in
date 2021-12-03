@@ -26,7 +26,7 @@ else
    # GF on revient a TRUST_ROOT en dur sinon pb avec chemin relatif 
    #TRUST_ROOT=path_to_trio
    # ND on detecte TRUST_ROOT de maniere interactive
-   DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+   DIR=$(cd "$( dirname "${BASH_SOURCE[0]:-${(%):-%x}}" )" && pwd)
    [ -L $DIR/env_TRUST.sh ] && TRUST_ROOT=$DIR || TRUST_ROOT=$(cd $DIR/..; pwd)
    export TRUST_ROOT
 

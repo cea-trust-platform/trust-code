@@ -53,8 +53,8 @@ export CXXFLAGS="-fPIC -fno-strict-aliasing"
 export CFLAGS="-fPIC -fno-strict-aliasing"
 export FFLAGS="-fPIC -fno-strict-aliasing"
 export FCFLAGS="-fPIC -fno-strict-aliasing"
-export LDFLAGS="-Wl,--no-as-needed"
-export LIBS="-ldl"
+[ `uname -s` != "Darwin" ] && export LDFLAGS="-Wl,--no-as-needed"
+[ `uname -s` != "Darwin" ] && export LIBS="-ldl"
 # Configuration:
 ./configure --help 2>&1 > ../configure.help
 if [ "`grep f77 ../configure.help`" != "" ]

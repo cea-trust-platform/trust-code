@@ -22,6 +22,7 @@
 
 #include <Changement_phase_Silver_Simpson.h>
 #include <Pb_Multiphase.h>
+#include <cmath>
 
 Implemente_instanciable(Changement_phase_Silver_Simpson, "Changement_phase_Silver_Simpson", Changement_phase_base);
 

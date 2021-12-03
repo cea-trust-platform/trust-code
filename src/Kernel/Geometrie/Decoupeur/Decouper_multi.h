@@ -25,6 +25,8 @@
 #include <Decouper.h>
 #include <Raccord_base.h>
 #include <Interprete.h>
+#include <vector>
+#include <array>
 
 // .DESCRIPTION
 //  Interprete Decouper_multi. Decoupage simultane de plusieurs domaine
