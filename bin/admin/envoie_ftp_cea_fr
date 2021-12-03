@@ -167,6 +167,8 @@ then
    cd $REP_NUIT
    rmdir_ftp $SECRET/NUIT
    mkdir_ftp $SECRET/NUIT
+   rmdir_ftp $SECRET/NUIT/Maintenance
+   mkdir_ftp $SECRET/NUIT/Maintenance
    cp_ftp NUIT.html $SECRET/NUIT/.
    cp_ftp CR_* $SECRET/NUIT/.
    cp_ftp PERF_* $SECRET/NUIT/.
@@ -181,6 +183,13 @@ then
       cd $TRUST_ROOT/../Composants/$Composant/build/portability
       cp_ftp nuit_*.html $SECRET/NUIT/.
       cp_ftp *_%_*.log $SECRET/NUIT/.
+      if [ -d $WORKDIR/tuleap/Maintenance/Composants/$Composant ]
+      then
+         cd $WORKDIR/tuleap/Maintenance/Composants/$Composant/build/portability/Maintenance
+         cp_ftp nuit_*.html $SECRET/NUIT/Maintenance/.
+         cp_ftp *_%_*.log $SECRET/NUIT/Maintenance/.
+         cd -
+      fi
    done
 fi
 cd $TRUST_ROOT

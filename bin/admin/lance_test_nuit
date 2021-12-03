@@ -210,6 +210,8 @@ check_components()
 	       all_machines=`liste_machines`
 	       # Machines en test build64
 	       build64_machines=`liste_machines "\-build64"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
+	       # Machines titania
+	       titania_machines=`liste_machines titania`
 	       # Machines sur lesquelles on ne garde pas la compilation des baltiks
 	       non_machines=`liste_machines non` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Liste des machines a tester selon le baltik en question
@@ -384,7 +386,7 @@ check_components()
                            elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "irene-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
-                           elif [ "${machine:0:10}" = "irene-ccrt" ] || [ "${machine:0:6}" = "cobalt" ]
+                           elif [ "${machine:0:10}" = "irene-ccrt" ] || [ "${machine:0:6}" = "topaze" ]
                            then
 		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
@@ -393,6 +395,7 @@ check_components()
                            elif  [ "${machine:0:2}" = "is" ] || [ "${machine:0:8}" = "callisto" ]
                            then
 		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [[ "$titania_machines" = *"$machine"* ]] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            fi
                            if [ "$WORKBETA" != "" ]
                            then
@@ -548,8 +551,9 @@ ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 ComposantsOfficial="triocfd ijk mpcube genepi3 flica5 TRUST-NK"
 # 14/10/2020 : je retire mathys et triomc sur decision RPL
 #export ComposantsBeta="triomc mathys sides scorpio pemfc"
-export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc"
+export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
+ComposantsGit=`echo $ComposantsGit | xargs -n1 | sort -u | xargs`
 export Composants=$ComposantsLns" "$ComposantsGit
 
 # Initialize environment TRUST:
@@ -1422,10 +1426,10 @@ fi
 if [ $etude_activation = 1 ]  && [ ! -f run_Etudes.log ] && [ $etude_test = 1 ]
 then
    touch $ETUDES/run_Etudes.log
-   echo "  See $REP_NUIT/run_EOLE_120_cobalt.log"
-   echo "TRUST script on cobalt the `date` ...">run_EOLE_120_cobalt.log
-   echo>>run_EOLE_120_cobalt.log
-   (./run Studies/EOLE_120 -adr cobalt.ccc.cea.fr 1>>run_EOLE_120_cobalt.log 2>&1;mv -f run_EOLE_120_cobalt.log $REP_NUIT/.) &
+   echo "  See $REP_NUIT/run_EOLE_120_irene-amd.log"
+   echo "TRUST script on irene-amd the `date` ...">run_EOLE_120_irene-amd.log
+   echo>>run_EOLE_120_irene-amd.log
+   (./run Studies/EOLE_120 -adr irene-amd-ccrt.ccc.cea.fr 1>>run_EOLE_120_irene-amd.log 2>&1;mv -f run_EOLE_120_irene-amd.log $REP_NUIT/.) &
    mv -f run_Etudes.log $REP_NUIT/.
 fi
 if [ $etude_activation = 1 ]  && [ ! -f run_Etudes.log ] && [ $etude_test = 0 ]
@@ -1680,10 +1684,10 @@ Composant="triocfd"
 #done
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST/TrioCFD WEB site:    http://triocfd.cea.fr" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST's new distribution site:   https://github.com/cea-trust-platform/trust-code" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST's old distribution site:   http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TrioCFD's new distribution site: https://github.com/cea-trust-platform/TrioCFD-code" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TrioCFD's old distribution site: http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST's distribution site:   https://github.com/cea-trust-platform/trust-code" >> $MESSAGES_NUIT
+#echo $ECHO_OPTS "TRUST<=1.8.3 distribution site:   http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TrioCFD's distribution site: https://github.com/cea-trust-platform/TrioCFD-code" >> $MESSAGES_NUIT
+#echo $ECHO_OPTS "TrioCFD<=1.8.3 distribution site: http://sourceforge.net/projects/triocfd" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST environment at Saclay:   source /home/triou/env_TRUST_$old.sh" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST environment at Saclay:   source /home/trust_trio-public/env_TRUST-$old.sh" >> $MESSAGES_NUIT
@@ -3027,7 +3031,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=81.39 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=81.40 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
@@ -4040,6 +4044,14 @@ do
       mv $Composant*.log build/portability/.
       mv Run.liste debut nuit_$Composant.html build/portability/.
    fi
+   if [ -d $WORKDIR/tuleap/Maintenance/Composants/$Composant ]
+   then
+     cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
+     mkdir -p build/portability/Maintenance
+     mv $Composant*.log build/portability/Maintenance/.
+     mv Run.liste debut nuit_$Composant.html build/portability/Maintenance/.
+     cd -
+   fi
 done
 cd $TRUST_ROOT
 envoie_ftp_log=$REP_NUIT/envoie_ftp_cea_fr_$HOST.log
@@ -4134,7 +4146,6 @@ This software is OpenSource (BSD license).
 New TRUST version released v$new is now available
 -------------------------------------------------
 on GitHub: https://github.com/cea-trust-platform/trust-code
-and on SourceForge: http://sourceforge.net/projects/trust-platform/
 
 -----------------
 Table of contents
@@ -4208,7 +4219,7 @@ source /home/trust_trio-public/env_TRUST-$new.sh
 # for CEA Saclay (PC Thalie file system) (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
 source /home/triou/env_TRUST_$new.sh
 
-# for COBALT supercomputer:
+# for TOPAZE supercomputer:
 source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
 
 # for IRENE (Skylake & AMD Rome) supercomputer (int64 version only)
@@ -4262,7 +4273,6 @@ This software is OpenSource (BSD license).
 New TrioCFD version released v$new
 -----------------------------------
 is now available on Github: https://github.com/cea-trust-platform/TrioCFD-code
-and on sourceforge: http://sourceforge.net/projects/triocfd/
 
 -----------------
 Table of contents
@@ -4307,7 +4317,7 @@ source /home/trust_trio-public/env_TrioCFD-$new.sh
 # for CEA Saclay (PC Thalie file system) (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
 source /home/triou/env_TrioCFD_$new.sh
 
-# for CCRT-TGCC supercomputer (cobalt):
+# for CCRT-TGCC supercomputer (topaze):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh
 
 # for IRENE (Skylake & AMD Rome) supercomputer (int64 version only)
