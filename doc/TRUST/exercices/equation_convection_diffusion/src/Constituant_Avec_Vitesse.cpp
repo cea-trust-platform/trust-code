@@ -28,8 +28,8 @@ void Constituant_Avec_Vitesse::discretiser(const Probleme_base& pb,
                                       const Discretisation_base& dis)
 {
   const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
-  dis.nommer_completer_champ_physique(zone_dis,"coefficient_diffusion","m2/s",D.valeur());
-  dis.nommer_completer_champ_physique(zone_dis,"vitesse_convection_lu","m/s",C.valeur());
+  dis.nommer_completer_champ_physique(zone_dis,"coefficient_diffusion","m2/s",D.valeur(),pb);
+  dis.nommer_completer_champ_physique(zone_dis,"vitesse_convection_lu","m/s",C.valeur(),pb);
   champs_compris_.ajoute_champ(D.valeur());
   champs_compris_.ajoute_champ(C.valeur());
   const Schema_Temps_base& sch=pb.schema_temps();
