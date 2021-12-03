@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class Eval_Puiss_Neutr_VDF_Elem: public Evaluateur_Source_VDF_Elem
 public:
 
   inline Eval_Puiss_Neutr_VDF_Elem();
-  void associer_champs(const Champ_base& ,const Champ_Don& , const Champ_Don& );
+  void associer_champs(const Champ_Don& );
   void associer_repartition(const Nom& fxyz, const Nom& nom_ssz);
   void mettre_a_jour( );
   inline double calculer_terme_source(int ) const;
@@ -50,10 +50,6 @@ public:
 
 protected:
 
-  REF(Champ_base) rho_ref;
-  double rho_ref_;
-  REF(Champ_Don) Cp;
-  double Cp_;
   REF(Champ_Uniforme) la_puissance;
   double puissance;
   //double volume_tot;
@@ -66,13 +62,11 @@ protected:
 //   Fonctions inline de la classe Eval_Puiss_Neutr_VDF_Elem
 //
 
-inline Eval_Puiss_Neutr_VDF_Elem::Eval_Puiss_Neutr_VDF_Elem():rho_ref_(-123.),Cp_(-123.) {}
+inline Eval_Puiss_Neutr_VDF_Elem::Eval_Puiss_Neutr_VDF_Elem() {}
 
 inline double Eval_Puiss_Neutr_VDF_Elem::calculer_terme_source(int num_elem) const
 {
-  assert(!est_egal(Cp_,-123.));
-  assert(!est_egal(rho_ref_,-123.));
-  return rep(num_elem)*puissance*volumes(num_elem)*porosite_vol(num_elem)/(Cp_*rho_ref_);
+  return rep(num_elem)*puissance*volumes(num_elem)*porosite_vol(num_elem);
 }
 
 inline void Eval_Puiss_Neutr_VDF_Elem::calculer_terme_source(int , DoubleVect& ) const

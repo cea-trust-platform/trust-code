@@ -97,22 +97,6 @@ void Terme_Puissance_Thermique::mettre_a_jour(double temps)
   la_puissance.valeur().affecter(la_puissance_lu.valeur());
 }
 
-void Terme_Puissance_Thermique::preparer_source(const Probleme_base& pb)
-{
-  if (!pb.is_dilatable())
-    {
-      if (!pb.milieu().capacite_calorifique().non_nul())
-        {
-          Cerr << "La capacite calorifique Cp n'est pas definie..." << finl;
-          Cerr << "Elle est necessaire pour la definition du terme source puissance thermique." << finl;
-          Process::exit();
-        }
-      const Champ_Don& le_Cp = pb.milieu().capacite_calorifique();
-      const Champ_base& rho = pb.milieu().masse_volumique();
-      associer_champs(rho, le_Cp);
-    }
-}
-
 void Terme_Puissance_Thermique::modify_name_file(Nom& fichier) const
 {
   if (la_puissance.le_nom()!="Puissance_volumique")

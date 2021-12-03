@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,9 +72,8 @@ void Source_Neutronique_VDF::associer_zones(const Zone_dis& zone_dis,
 
 void Source_Neutronique_VDF::associer_pb(const Probleme_base& pb)
 {
-  preparer_source(pb);
   Eval_Puiss_Neutr_VDF_Elem& eval_puis = (Eval_Puiss_Neutr_VDF_Elem&) iter.evaluateur();
-  eval_puis.associer_champs(rho_ref.valeur(),Cp.valeur(),la_puissance);
+  eval_puis.associer_champs(la_puissance);
   eval_puis.associer_repartition(repartition(),nom_ssz());
 }
 

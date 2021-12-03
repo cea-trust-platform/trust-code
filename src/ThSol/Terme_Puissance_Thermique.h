@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,8 +51,6 @@ class Terme_Puissance_Thermique
 
 public :
 
-  void preparer_source(const Probleme_base& pb);
-  inline void associer_champs(const Champ_base& , const Champ_Don&);
   void lire_donnees(Entree&,const Equation_base& eqn);
   void mettre_a_jour(double temps);
   void modify_name_file(Nom& ) const;
@@ -63,40 +61,7 @@ public :
   void initialiser_champ_puissance(const Equation_base& eqn);
 
 protected:
-
-  REF(Champ_base) rho_ref;
-  REF(Champ_Don) Cp;
   Champ_Don la_puissance_lu, la_puissance;
 
 };
-
-
-// Description:
-//    Associe les champs donnes rho (masse volumique)
-//    et Cp (chaleur specifique) a l'objet.
-// Precondition:
-// Parametre: Champ_Don& rho
-//    Signification: champ donne representant la masse volumique
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: Champ_Don& cp
-//    Signification: champ donne representant la chaleur specifique
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: le terme de puissance thermique a une masse volumique
-//                et une chaleur specifique associee
-inline void Terme_Puissance_Thermique::associer_champs(const Champ_base& rho,
-                                                       const Champ_Don& cp)
-{
-  rho_ref=rho;
-  Cp=cp;
-}
-
 #endif
