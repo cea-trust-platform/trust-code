@@ -183,16 +183,16 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     }
   if  (rho.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho,pb);
+      dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho.valeur(),pb);
 
-      if (sub_type(Champ_Tabule_Morceaux,rho))
+      if (sub_type(Champ_Tabule_Morceaux,rho.valeur()))
         {
-          Champ_Tabule_Morceaux& rho_tabule = ref_cast(Champ_Tabule_Morceaux,rho);
+          Champ_Tabule_Morceaux& rho_tabule = ref_cast(Champ_Tabule_Morceaux,rho.valeur());
 
           for (int i=0 ; i<rho_tabule.nb_champs_tabules(); i++)
             dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","J/kg/K",rho_tabule.champ_tabule(i),pb);
         }
-      champs_compris_.ajoute_champ(rho);
+      champs_compris_.ajoute_champ(rho.valeur());
     }
   if (rho.non_nul() && Cp.non_nul())
     {
