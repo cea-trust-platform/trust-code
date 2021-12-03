@@ -119,8 +119,7 @@ class Eval_Diff_VDF_Multi_inco_const_Elem_Axi :
   public Eval_Diff_VDF_Multi_inco_const
 {
 public:
-  static constexpr bool IS_MULTD = false;
-  static constexpr bool IS_AXI = true;
+  static constexpr bool IS_MULTD = false, IS_AXI = true;
 };
 
 // .DESCRIPTION class Eval_Diff_VDF_Multi_inco_const_Elem
@@ -148,8 +147,7 @@ class Eval_Diff_VDF_Multi_inco_var_Elem_Axi :
   public Eval_Diff_VDF_Multi_inco_var
 {
 public:
-  static constexpr bool IS_MULTD = false;
-  static constexpr bool IS_AXI = true;
+  static constexpr bool IS_MULTD = false, IS_AXI = true;
 };
 
 // .DESCRIPTION class Eval_Diff_VDF_Multi_inco_var_Elem

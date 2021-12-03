@@ -30,10 +30,10 @@ template <typename DERIVED_T>
 class Eval_Conv_VDF_Elem : public Eval_VDF_Elem
 {
 public:
-  static constexpr bool IS_AMONT = false;
-  static constexpr bool IS_CENTRE = false;
-  static constexpr bool IS_CENTRE4 = false;
-  static constexpr bool IS_QUICK = false;
+  static constexpr bool IS_AMONT = false, IS_CENTRE = false, IS_CENTRE4 = false, IS_QUICK = false;
+  // Overload Eval_VDF_Elem
+  static constexpr bool CALC_FLUX_FACES_ECH_EXT_IMP = false, CALC_FLUX_FACES_ECH_GLOB_IMP = false, CALC_FLUX_FACES_PAR = false,
+                        CALC_FLUX_FACES_PAR_FIXE = false, CALC_FLUX_FACES_SORTIE_LIB = true, CALC_FLUX_FACES_NSCBC = true;
 
   // CRTP pattern to static_cast the appropriate class and get the implementation
   // This is magic !
@@ -45,21 +45,6 @@ public:
   inline void quick_fram_(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
   inline double qcentre_(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
   inline void qcentre_(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
-
-
-  // TODO : all these should have the same name with different attributes
-  // so that they become a function template
-  inline int calculer_flux_faces_echange_externe_impose() const { return 0; }
-  inline int calculer_flux_faces_echange_global_impose() const { return 0; }
-  inline int calculer_flux_faces_entree_fluide() const { return 1; }
-  inline int calculer_flux_faces_paroi() const { return 0; }
-  inline int calculer_flux_faces_paroi_adiabatique() const { return 0; }
-  inline int calculer_flux_faces_paroi_defilante() const { return 0; }
-  inline int calculer_flux_faces_paroi_fixe() const { return 0; }
-  inline int calculer_flux_faces_sortie_libre() const { return 1; }
-  inline int calculer_flux_faces_symetrie() const { return 0; }
-  inline int calculer_flux_faces_periodique() const { return 1; }
-  inline int calculer_flux_faces_NSCBC() const { return DERIVED_T::IS_CENTRE ? 0 : 1; }
 
   //************************
   // CAS SCALAIRE

@@ -37,8 +37,7 @@ class Eval_Diff_VDF_Face : public Eval_VDF_Face, public Evaluateur_VDF
 {
 
 public:
-  static constexpr bool IS_VAR = false;
-  static constexpr bool IS_TURB = false;
+  static constexpr bool IS_VAR = false, IS_TURB = false;
 
   inline double surface_(int i,int j) const;
   inline double porosity_(int i,int j) const;

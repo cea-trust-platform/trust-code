@@ -66,12 +66,7 @@ public:
    * See their generic declaration later & override them in the derived class if needed to stay coherent with the previous macros
    */
 
-  static constexpr bool IS_MULTD = true;
-  static constexpr bool IS_AXI = false;
-  static constexpr bool IS_DEQUIV = false;
-  static constexpr bool IS_MODIF_DEQ = false;
-  static constexpr bool IS_QUASI = false;
-  static constexpr bool IS_ANISO= false;
+  static constexpr bool IS_MULTD = true, IS_AXI = false, IS_DEQUIV = false, IS_MODIF_DEQ = false, IS_QUASI = false, IS_ANISO = false;
 
   inline double Dist_norm_bord (int face) const;
   inline double Dist_face_elem0(int face, int n0) const;
@@ -86,19 +81,6 @@ public:
   inline double compute_heq(double, int, double, int, int compo=0) const;
   inline int ind_Fluctu_Term() const;
   inline double equivalent_distance (int boundary_index, int local_face) const;
-
-  // TODO : all these should have the same name with different attributes so that they become a function template
-  inline int calculer_flux_faces_echange_externe_impose() const { return 1; }
-  inline int calculer_flux_faces_echange_global_impose() const { return 1; }
-  inline int calculer_flux_faces_entree_fluide() const { return 1; }
-  inline int calculer_flux_faces_paroi() const { return 1; }
-  inline int calculer_flux_faces_paroi_adiabatique() const { return 0; }
-  inline int calculer_flux_faces_paroi_defilante() const { return 0; }
-  inline int calculer_flux_faces_paroi_fixe() const { return 1; }
-  inline int calculer_flux_faces_sortie_libre() const { return 0; }
-  inline int calculer_flux_faces_symetrie() const { return 0; }
-  inline int calculer_flux_faces_periodique() const { return 1; }
-  inline int calculer_flux_faces_NSCBC() const { return 0; }
 
   //************************
   // CAS SCALAIRE

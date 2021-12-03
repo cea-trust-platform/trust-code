@@ -62,8 +62,7 @@ class Eval_Dift_VDF_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_con
   public Eval_Dift_VDF_const
 {
 public:
-  static constexpr bool IS_DEQUIV = true;
-  static constexpr bool IS_AXI = true;
+  static constexpr bool IS_DEQUIV = true, IS_AXI = true;
 };
 
 // .DESCRIPTION class Eval_Dift_VDF_const_Elem
@@ -109,8 +108,7 @@ class Eval_Dift_VDF_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_E
   public Eval_Dift_VDF_var
 {
 public:
-  static constexpr bool IS_DEQUIV = true;
-  static constexpr bool IS_AXI = true;
+  static constexpr bool IS_DEQUIV = true, IS_AXI = true;
 };
 
 // .DESCRIPTION class Eval_Dift_VDF_var_Elem
@@ -133,8 +131,7 @@ public:
     // On remplit la reference au modele de turbulence et le tableau k:
     le_modele_turbulence = mod;
     ind_Fluctu_Term = 0;
-    if (!loipar.non_nul())
-      ind_Fluctu_Term = 1;
+    if (!loipar.non_nul()) ind_Fluctu_Term = 1;
   }
 
   inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi)
@@ -164,9 +161,7 @@ class Eval_Dift_VDF_Multi_inco_const_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_D
   public Eval_Dift_VDF_Multi_inco_const
 {
 public:
-  static constexpr bool IS_MULTD = false;
-  static constexpr bool IS_DEQUIV = true;
-  static constexpr bool IS_AXI = true;
+  static constexpr bool IS_MULTD = false, IS_DEQUIV = true, IS_AXI = true;
 };
 
 // .DESCRIPTION class Eval_Dift_VDF_Multi_inco_const_Elem
@@ -179,17 +174,14 @@ class Eval_Dift_VDF_Multi_inco_const_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_
   public Eval_Dift_VDF_Multi_inco_const
 {
 public:
-  static constexpr bool IS_MULTD = false;
-  static constexpr bool IS_DEQUIV = true;
+  static constexpr bool IS_MULTD = false, IS_DEQUIV = true;
 };
 
 class Eval_Dift_VDF_Multi_inco_var_Elem_Axi : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem_Axi>,
   public Eval_Dift_VDF_Multi_inco_var
 {
 public:
-  static constexpr bool IS_MULTD = false;
-  static constexpr bool IS_DEQUIV = true;
-  static constexpr bool IS_AXI = true;
+  static constexpr bool IS_MULTD = false, IS_DEQUIV = true, IS_AXI = true;
 };
 
 // .DESCRIPTION class Eval_Dift_VDF_Multi_inco_var_Elem
@@ -201,10 +193,8 @@ public:
 class Eval_Dift_VDF_Multi_inco_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Multi_inco_var_Elem>,
   public Eval_Dift_VDF_Multi_inco_var
 {
-
 public:
-  static constexpr bool IS_MULTD = false;
-  static constexpr bool IS_DEQUIV = true;
+  static constexpr bool IS_MULTD = false, IS_DEQUIV = true;
 };
 
 #endif /* Eval_Dift_VDF_leaves_included */

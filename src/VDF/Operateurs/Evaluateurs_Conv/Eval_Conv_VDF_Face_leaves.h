@@ -65,6 +65,7 @@ class Eval_Centre_VDF_Face : public Eval_Conv_VDF_Face<Eval_Centre_VDF_Face>, pu
 {
 public:
   static constexpr bool IS_CENTRE = true;
+  static constexpr bool CALC_FLUX_FACES_NSCBC = false;
 };
 
 // .DESCRIPTION  class Eval_Centre4_VDF_Face
@@ -119,8 +120,7 @@ public:
 class Eval_Quick_VDF_Face_Axi : public Eval_Conv_VDF_Face<Eval_Quick_VDF_Face_Axi>, public Eval_Conv_VDF
 {
 public:
-  static constexpr bool IS_AXI = true;
-  static constexpr bool IS_QUICK = true;
+  static constexpr bool IS_AXI = true, IS_QUICK = true;
 
   inline int face_amont_princ(int num_face,int i) const { return la_zone->face_amont_princ(num_face, i); }
   inline int face_amont_conj(int ,int ,int ) const;

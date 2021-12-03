@@ -30,11 +30,7 @@ template <typename DERIVED_T>
 class Eval_Conv_VDF_Face : public Eval_VDF_Face
 {
 public:
-  static constexpr bool IS_AMONT = false;
-  static constexpr bool IS_CENTRE = false;
-  static constexpr bool IS_CENTRE4 = false;
-  static constexpr bool IS_QUICK = false;
-  static constexpr bool IS_AXI = false;
+  static constexpr bool IS_AMONT = false, IS_CENTRE = false, IS_CENTRE4 = false, IS_QUICK = false, IS_AXI = false;
 
   // CRTP pattern to static_cast the appropriate class and get the implementation
   // This is magic !

@@ -32,17 +32,8 @@
 class Eval_Div_VDF_Elem : public Eval_Div_VDF, public Eval_VDF_Elem
 {
 public:
-  inline int calculer_flux_faces_echange_externe_impose() const { return 1; }
-  inline int calculer_flux_faces_echange_global_impose() const { return 1; }
-  inline int calculer_flux_faces_entree_fluide() const { return 1; }
-  inline int calculer_flux_faces_paroi() const { return 0; }
-  inline int calculer_flux_faces_paroi_adiabatique() const { return 0; }
-  inline int calculer_flux_faces_paroi_defilante() const { return 0; }
-  inline int calculer_flux_faces_paroi_fixe() const { return 0; }
-  inline int calculer_flux_faces_sortie_libre() const { return 1; }
-  inline int calculer_flux_faces_symetrie() const { return 0; }
-  inline int calculer_flux_faces_periodique() const { return 1; }
-  inline int calculer_flux_faces_NSCBC() const { return 1; }
+  // Overload Eval_VDF_Elem
+  static constexpr bool CALC_FLUX_FACES_PAR = false, CALC_FLUX_FACES_PAR_FIXE = false, CALC_FLUX_FACES_SORTIE_LIB = true, CALC_FLUX_FACES_NSCBC = true;
 
   //************************
   // CAS SCALAIRE

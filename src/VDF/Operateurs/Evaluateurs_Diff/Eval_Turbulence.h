@@ -35,21 +35,11 @@ class Eval_Turbulence
 public:
   virtual ~Eval_Turbulence() {}
   inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi) { loipar = loi_paroi; }
-  inline void update_equivalent_distance() ;
+  void update_equivalent_distance() ;
 
 protected:
   REF(Turbulence_paroi_scal) loipar;
   VECT(DoubleVect) equivalent_distance;
 };
-
-inline void Eval_Turbulence::update_equivalent_distance( )
-{
-  if (loipar.non_nul())
-    {
-      int s=loipar->tab_equivalent_distance_size();
-      equivalent_distance.dimensionner(s);
-      for(int i=0; i<s; i++) equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
-    }
-}
 
 #endif /* Eval_Turbulence_included */

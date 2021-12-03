@@ -183,7 +183,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
       switch(type_cl(la_cl))
         {
         case symetrie :
-          if (flux_evaluateur.calculer_flux_faces_symetrie())
+          if (_TYPE_::CALC_FLUX_FACES_SYMM)
             {
               const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -205,7 +205,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             }
           break;
         case sortie_libre :
-          if (flux_evaluateur.calculer_flux_faces_sortie_libre())
+          if (_TYPE_::CALC_FLUX_FACES_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -227,7 +227,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             }
           break;
         case entree_fluide :
-          if (flux_evaluateur.calculer_flux_faces_entree_fluide())
+          if (_TYPE_::CALC_FLUX_FACES_ENTREE_FL)
             {
               const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -249,7 +249,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             }
           break;
         case paroi_fixe :
-          if (flux_evaluateur.calculer_flux_faces_paroi_fixe())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_FIXE)
             {
               const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -271,7 +271,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             }
           break;
         case paroi_defilante :
-          if (flux_evaluateur.calculer_flux_faces_paroi_defilante())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_DEFIL)
             {
               const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -293,7 +293,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             }
           break;
         case paroi_adiabatique :
-          if (flux_evaluateur.calculer_flux_faces_paroi_adiabatique())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
             {
               const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -320,7 +320,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             }
           break;
         case paroi :
-          if (flux_evaluateur.calculer_flux_faces_paroi())
+          if (_TYPE_::CALC_FLUX_FACES_PAR)
             {
               const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -342,7 +342,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             }
           break;
         case echange_externe_impose :
-          if (flux_evaluateur.calculer_flux_faces_echange_externe_impose())
+          if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
             {
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
@@ -370,7 +370,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             }
           break;
         case echange_global_impose :
-          if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
+          if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
             {
               const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -392,7 +392,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             }
           break;
         case nscbc :
-          if (flux_evaluateur.calculer_flux_faces_NSCBC())
+          if (_TYPE_::CALC_FLUX_FACES_NSCBC)
             {
               const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -416,7 +416,7 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
             }
           break;
         case periodique :
-          if (flux_evaluateur.calculer_flux_faces_periodique())
+          if (_TYPE_::CALC_FLUX_FACES_PERIO)
             {
               const Periodique& cl =(const Periodique&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -439,22 +439,6 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
                 }
             }
           break;
-          /*
-                                                                            case nouvelle_Cl_VDF :
-                                                                            if (flux_evaluateur.calculer_flux_faces_echange_global_impose()){
-                                                                            const Nouvelle_Cl_VDF& cl =(const Nouvelle_Cl_VDF&) (la_cl.valeur());
-                                                                            for (face=ndeb; face<nfin; face++) {
-                                                                            flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                                                                            if ( (elem1=elem(face,0)) > -1)
-                                                                            for (k=0; k<ncomp; k++)
-                                                                            resu(elem1,k) +=flux(k);
-                                                                            if ( (elem2=elem(face,1)) > -1)
-                                                                            for (k=0; k<ncomp; k++)
-                                                                            resu(elem2,k) -=flux(k);
-                                                                            }
-                                                                            }
-                                                                            break;
-          */
         default :
           Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();
           exit();
@@ -504,7 +488,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
       switch(type_cl(la_cl))
         {
         case symetrie :
-          if (flux_evaluateur.calculer_flux_faces_symetrie())
+          if (_TYPE_::CALC_FLUX_FACES_SYMM)
             {
               const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -522,7 +506,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             }
           break;
         case sortie_libre :
-          if (flux_evaluateur.calculer_flux_faces_sortie_libre())
+          if (_TYPE_::CALC_FLUX_FACES_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -540,7 +524,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             }
           break;
         case entree_fluide :
-          if (flux_evaluateur.calculer_flux_faces_entree_fluide())
+          if (_TYPE_::CALC_FLUX_FACES_ENTREE_FL)
             {
               const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -558,7 +542,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             }
           break;
         case paroi_fixe :
-          if (flux_evaluateur.calculer_flux_faces_paroi_fixe())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_FIXE)
             {
               const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -576,7 +560,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             }
           break;
         case paroi_defilante :
-          if (flux_evaluateur.calculer_flux_faces_paroi_defilante())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_DEFIL)
             {
               const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -594,7 +578,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             }
           break;
         case paroi_adiabatique :
-          if (flux_evaluateur.calculer_flux_faces_paroi_adiabatique())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
             {
               const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -608,7 +592,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             }
           break;
         case paroi :
-          if (flux_evaluateur.calculer_flux_faces_paroi())
+          if (_TYPE_::CALC_FLUX_FACES_PAR)
             {
               const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -626,7 +610,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             }
           break;
         case echange_externe_impose :
-          if (flux_evaluateur.calculer_flux_faces_echange_externe_impose())
+          if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
             {
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
@@ -650,7 +634,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             }
           break;
         case echange_global_impose :
-          if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
+          if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
             {
               const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -668,7 +652,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             }
           break;
         case nscbc :
-          if (flux_evaluateur.calculer_flux_faces_NSCBC())
+          if (_TYPE_::CALC_FLUX_FACES_NSCBC)
             {
               const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -686,7 +670,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
             }
           break;
         case periodique :
-          if (flux_evaluateur.calculer_flux_faces_periodique())
+          if (_TYPE_::CALC_FLUX_FACES_PERIO)
             {
               const Periodique& cl =(const Periodique&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -705,19 +689,6 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
                 }
             }
           break;
-          /*
-                                                                            case nouvelle_Cl_VDF :
-                                                                            if (flux_evaluateur.calculer_flux_faces_echange_global_impose()){
-                                                                            const Nouvelle_Cl_VDF& cl =(const Nouvelle_Cl_VDF&) (la_cl.valeur());
-                                                                            for (face=ndeb; face<nfin; face++) {
-                                                                            if ( (int elem1=elem(face,0)) > -1)
-                                                                            resu[elem1]+=flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                                                                            if ( (int elem2=elem(face,1)) > -1)
-                                                                            resu[elem2]-=flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                                                                            }
-                                                                            }
-                                                                            break;
-          */
         default :
           Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();
           Cerr << "Dans T_It_VDF_Elem<_TYPE_>::ajouter_bords"<<finl;
@@ -926,7 +897,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
       switch(type_cl(la_cl))
         {
         case symetrie :
-          if (flux_evaluateur.calculer_flux_faces_symetrie())
+          if (_TYPE_::CALC_FLUX_FACES_SYMM)
             {
               const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -948,7 +919,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
             }
           break;
         case sortie_libre :
-          if (flux_evaluateur.calculer_flux_faces_sortie_libre())
+          if (_TYPE_::CALC_FLUX_FACES_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -970,7 +941,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
             }
           break;
         case entree_fluide :
-          if (flux_evaluateur.calculer_flux_faces_entree_fluide())
+          if (_TYPE_::CALC_FLUX_FACES_ENTREE_FL)
             {
               const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -992,7 +963,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
             }
           break;
         case paroi_fixe :
-          if (flux_evaluateur.calculer_flux_faces_paroi_fixe())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_FIXE)
             {
               const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1014,7 +985,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
             }
           break;
         case paroi_defilante :
-          if (flux_evaluateur.calculer_flux_faces_paroi_defilante())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_DEFIL)
             {
               const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1036,7 +1007,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
             }
           break;
         case paroi_adiabatique :
-          if (flux_evaluateur.calculer_flux_faces_paroi_adiabatique())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
             {
               const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1058,7 +1029,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
             }
           break;
         case paroi :
-          if (flux_evaluateur.calculer_flux_faces_paroi())
+          if (_TYPE_::CALC_FLUX_FACES_PAR)
             {
               const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1080,7 +1051,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
             }
           break;
         case echange_externe_impose :
-          if (flux_evaluateur.calculer_flux_faces_echange_externe_impose())
+          if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
             {
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
@@ -1108,7 +1079,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
             }
           break;
         case echange_global_impose :
-          if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
+          if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
             {
               const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1130,7 +1101,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
             }
           break;
         case nscbc :
-          if (flux_evaluateur.calculer_flux_faces_NSCBC())
+          if (_TYPE_::CALC_FLUX_FACES_NSCBC)
             {
               const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1154,7 +1125,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
             }
           break;
         case periodique :
-          if (flux_evaluateur.calculer_flux_faces_periodique())
+          if (_TYPE_::CALC_FLUX_FACES_PERIO)
             {
               const Periodique& cl =(const Periodique&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1175,22 +1146,6 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
                 }
             }
           break;
-          /*
-                                                                            case nouvelle_Cl_VDF :
-                                                                            if (flux_evaluateur.calculer_flux_faces_echange_global_impose()){
-                                                                            const Nouvelle_Cl_VDF& cl =(const Nouvelle_Cl_VDF&) (la_cl.valeur());
-                                                                            for (face=ndeb; face<nfin; face++) {
-                                                                            flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                                                                            if ( (elem1=elem(face,0)) > -1)
-                                                                            for (k=0; k<ncomp; k++)
-                                                                            resu(elem1,k) +=flux(k);
-                                                                            if ( (elem2=elem(face,1)) > -1)
-                                                                            for (k=0; k<ncomp; k++)
-                                                                            resu(elem2,k) -=flux(k);
-                                                                            }
-                                                                            }
-                                                                            break;
-          */
         default :
           Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();
           exit();
@@ -1279,7 +1234,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
       switch(type_cl(la_cl))
         {
         case symetrie :
-          if (flux_evaluateur.calculer_flux_faces_symetrie())
+          if (_TYPE_::CALC_FLUX_FACES_SYMM)
             {
               const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1295,7 +1250,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
             }
           break;
         case sortie_libre :
-          if (flux_evaluateur.calculer_flux_faces_sortie_libre())
+          if (_TYPE_::CALC_FLUX_FACES_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1311,7 +1266,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
             }
           break;
         case entree_fluide :
-          if (flux_evaluateur.calculer_flux_faces_entree_fluide())
+          if (_TYPE_::CALC_FLUX_FACES_ENTREE_FL)
             {
               const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1327,7 +1282,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
             }
           break;
         case paroi_fixe :
-          if (flux_evaluateur.calculer_flux_faces_paroi_fixe())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_FIXE)
             {
               const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1343,7 +1298,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
             }
           break;
         case paroi_defilante :
-          if (flux_evaluateur.calculer_flux_faces_paroi_defilante())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_DEFIL)
             {
               const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1359,7 +1314,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
             }
           break;
         case paroi_adiabatique :
-          if (flux_evaluateur.calculer_flux_faces_paroi_adiabatique())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
             {
               const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1375,7 +1330,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
             }
           break;
         case paroi :
-          if (flux_evaluateur.calculer_flux_faces_paroi())
+          if (_TYPE_::CALC_FLUX_FACES_PAR)
             {
               const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1391,7 +1346,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
             }
           break;
         case echange_externe_impose :
-          if (flux_evaluateur.calculer_flux_faces_echange_externe_impose())
+          if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
             {
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
 
@@ -1413,7 +1368,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
             }
           break;
         case echange_global_impose :
-          if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
+          if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
             {
               const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1429,7 +1384,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
             }
           break;
         case nscbc :
-          if (flux_evaluateur.calculer_flux_faces_NSCBC())
+          if (_TYPE_::CALC_FLUX_FACES_NSCBC)
             {
               const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1449,7 +1404,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
             }
           break;
         case periodique :
-          if (flux_evaluateur.calculer_flux_faces_periodique())
+          if (_TYPE_::CALC_FLUX_FACES_PERIO)
             {
               const Periodique& cl =(const Periodique&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1534,7 +1489,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
       switch(type_cl(la_cl))
         {
         case symetrie :
-          if (flux_evaluateur.calculer_flux_faces_symetrie())
+          if (_TYPE_::CALC_FLUX_FACES_SYMM)
             {
               const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
@@ -1546,7 +1501,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
             }
           break;
         case sortie_libre :
-          if (flux_evaluateur.calculer_flux_faces_sortie_libre())
+          if (_TYPE_::CALC_FLUX_FACES_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
@@ -1558,7 +1513,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
             }
           break;
         case entree_fluide :
-          if (flux_evaluateur.calculer_flux_faces_entree_fluide())
+          if (_TYPE_::CALC_FLUX_FACES_ENTREE_FL)
             {
               const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
@@ -1570,7 +1525,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
             }
           break;
         case paroi_fixe :
-          if (flux_evaluateur.calculer_flux_faces_paroi_fixe())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_FIXE)
             {
               const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
@@ -1582,7 +1537,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
             }
           break;
         case paroi_defilante :
-          if (flux_evaluateur.calculer_flux_faces_paroi_defilante())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_DEFIL)
             {
               const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
@@ -1594,7 +1549,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
             }
           break;
         case paroi_adiabatique :
-          if (flux_evaluateur.calculer_flux_faces_paroi_adiabatique())
+          if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
             {
               const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
@@ -1606,7 +1561,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
             }
           break;
         case paroi :
-          if (flux_evaluateur.calculer_flux_faces_paroi())
+          if (_TYPE_::CALC_FLUX_FACES_PAR)
             {
               const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
@@ -1618,7 +1573,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
             }
           break;
         case echange_externe_impose :
-          if (flux_evaluateur.calculer_flux_faces_echange_externe_impose())
+          if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
             {
               const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
               int boundary_index=-1;
@@ -1635,7 +1590,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
             }
           break;
         case echange_global_impose :
-          if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
+          if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
             {
               const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
@@ -1647,7 +1602,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
             }
           break;
         case nscbc :
-          if (flux_evaluateur.calculer_flux_faces_NSCBC())
+          if (_TYPE_::CALC_FLUX_FACES_NSCBC)
             {
               const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
@@ -1659,7 +1614,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
             }
           break;
         case periodique :
-          if (flux_evaluateur.calculer_flux_faces_periodique())
+          if (_TYPE_::CALC_FLUX_FACES_PERIO)
             {
               const Periodique& cl =(const Periodique&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
@@ -1694,7 +1649,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_
   const int ndeb = frontiere_dis.num_premiere_face();
   const int nfin = ndeb + frontiere_dis.nb_faces();
   // assert(cl est bien paroi contact)
-  if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
+  if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
     {
       const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
       for (int f = ndeb; f < nfin; f++)

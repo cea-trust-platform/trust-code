@@ -19,10 +19,19 @@
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <Eval_Turbulence.h>
 
-// TODO : XXX
-// Remove this file later
 // We are obliged to have at least one cpp file in the folder Evaluateurs_Diff
 // This is because of TRUST check_source and make include.
 // If CMakeLists and make include are removed, TRUST compile ... but not its baltiks that include Eval* headears ...
+
+void Eval_Turbulence::update_equivalent_distance()
+{
+  if (loipar.non_nul())
+    {
+      int s=loipar->tab_equivalent_distance_size();
+      equivalent_distance.dimensionner(s);
+      for(int i=0; i<s; i++) equivalent_distance[i].ref(loipar->tab_equivalent_distance(i));
+    }
+}
