@@ -20,32 +20,23 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-
 #ifndef T_It_VDF_Elem_included
 #define T_It_VDF_Elem_included
 
-#include <Equation_base.h>
-#include <Milieu_base.h>
-#include <Champ_Uniforme.h>
-#include <Debog.h>
-#include <Probleme_base.h>
-#include <Schema_Temps_base.h>
-#include <Operateur_base.h>
 #include <Operateur_Diff_base.h>
+#include <Schema_Temps_base.h>
 #include <Op_Conv_VDF_base.h>
-#include <EcrFicPartage.h>
+#include <Champ_Uniforme.h>
+#include <Operateur_base.h>
 #include <communications.h>
+#include <Equation_base.h>
+#include <Probleme_base.h>
+#include <EcrFicPartage.h>
+#include <Milieu_base.h>
 #include <DoubleTrav.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS Iterateur_VDF_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <Debog.h>
 
 template <class _TYPE_>
-
 class T_It_VDF_Elem : public Iterateur_VDF_base
 {
   //Declare_instanciable(T_It_VDF_Elem(_TYPE_));
@@ -59,28 +50,30 @@ class T_It_VDF_Elem : public Iterateur_VDF_base
       }
     return xxx->numero();
   };
-  inline unsigned taille_memoire() const
-  {
-    throw;
-  };
+  inline unsigned taille_memoire() const { throw; }
+
 public:
-  inline T_It_VDF_Elem() { } ;
+  inline T_It_VDF_Elem() { }
   inline T_It_VDF_Elem(const T_It_VDF_Elem<_TYPE_>& );
-  inline Evaluateur_VDF& evaluateur();
-  inline const Evaluateur_VDF& evaluateur() const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
+
+  int impr(Sortie& os) const;
+  void modifier_flux() const;
   void calculer_flux_bord(const DoubleTab&) const;
   void contribuer_au_second_membre(DoubleTab& ) const;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
   void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const;
-  inline void completer_();
-  int impr(Sortie& os) const;
-  void modifier_flux() const;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
+
+  inline Evaluateur_VDF& evaluateur();
+  inline const Evaluateur_VDF& evaluateur() const;
+  inline void completer_() { elem.ref(la_zone->face_voisins()); }
+
 protected:
   _TYPE_ flux_evaluateur;
-  DoubleTab& ajouter_bords(const DoubleTab& , DoubleTab& ) const;
-  DoubleTab& ajouter_interne(const DoubleTab& , DoubleTab& ) const;
+  IntTab elem;
+  mutable SFichier Flux, Flux_moment, Flux_sum;
+
   void contribuer_au_second_membre_bords(DoubleTab& ) const;
   void contribuer_au_second_membre_interne(DoubleTab& ) const;
   void ajouter_contribution_bords(const DoubleTab&, Matrice_Morse& ) const;
@@ -88,52 +81,78 @@ protected:
   void ajouter_contribution_interne_vitesse(const DoubleTab&, Matrice_Morse& ) const;
   void ajouter_contribution_bords_vitesse(const DoubleTab&, Matrice_Morse& ) const;
   void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const;
-  const Milieu_base& milieu() const;
-  IntTab elem;
-  mutable SFichier Flux, Flux_moment, Flux_sum;
+  DoubleTab& ajouter_bords(const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& ajouter_interne(const DoubleTab& , DoubleTab& ) const;
+  inline const Milieu_base& milieu() const { return (la_zcl->equation()).milieu(); }
+
+private:
+  /* Private methods called from ajouter_bords */
+  template <bool should_calc_flux, typename BC>
+  void ajouter_bords_(const BC& , int ,int ,const DoubleTab& ,DoubleTab& , DoubleTab& ) const;
+
+  void ajouter_bords_(const NSCBC& , int ,int ,const DoubleTab& ,DoubleTab& , DoubleTab& ) const;
+  void ajouter_bords_(const Neumann_paroi_adiabatique& , int ,int ,const DoubleTab& ,DoubleTab& , DoubleTab& ) const;
+  void ajouter_bords_(const Periodique& , int ,int ,const DoubleTab&,const Front_VF& ,DoubleTab& , DoubleTab& ) const;
+  void ajouter_bords_(const Echange_externe_impose& , int ,int ,int, const DoubleTab&,const Front_VF& ,DoubleTab& , DoubleTab& ) const;
+
+  /* Private methods called from calculer_flux_bord */
+  template <bool should_calc_flux, typename BC>
+  void calculer_flux_bord_(const BC& , int ,int ,const DoubleTab& ,DoubleTab& ) const;
+
+  void calculer_flux_bord_(const Neumann_paroi_adiabatique& , int ,int ,const DoubleTab& ,DoubleTab& ) const;
+  void calculer_flux_bord_(const Periodique& , int ,int ,const DoubleTab& ,const Front_VF& , DoubleTab& ) const;
+  void calculer_flux_bord_(const Echange_externe_impose& , int ,int ,int, const DoubleTab&,const Front_VF& ,DoubleTab& ) const;
+
+  /* Private methods called from contribuer_au_second_membre_bords */
+  template <bool should_calc_flux, typename BC>
+  void contribuer_au_second_membre_bords_(const BC& , int ,int ,DoubleTab& , DoubleTab& ) const;
+
+  void contribuer_au_second_membre_bords_(const NSCBC& , int ,int ,DoubleTab& , DoubleTab& ) const;
+  void contribuer_au_second_membre_bords_(const Periodique& , int ,int ,DoubleTab& , DoubleTab& ) const;
+  void contribuer_au_second_membre_bords_(const Echange_externe_impose& , int ,int , int,const Front_VF& ,DoubleTab& , DoubleTab& ) const;
+
+  /* Private methods called from ajouter_contribution_bords */
+  template <bool should_calc_flux, typename BC>
+  void ajouter_contribution_bords_(const BC& , int ,int ,const DoubleTab& , Matrice_Morse& ) const;
+
+  void ajouter_contribution_bords_(const NSCBC& , int ,int ,const DoubleTab& , Matrice_Morse& ) const;
+  void ajouter_contribution_bords_(const Periodique& , int ,int ,const DoubleTab& , Matrice_Morse& ) const;
+  void ajouter_contribution_bords_(const Echange_externe_impose& , int ,int ,int,const DoubleTab& ,const Front_VF&, Matrice_Morse& ) const;
+
+  /* Private methods called from ajouter_contribution_bords */
+  template <bool should_calc_flux, typename BC>
+  void ajouter_contribution_bords_vitesse_(const BC& , int ,int ,const DoubleTab& , Matrice_Morse& ) const;
+
+  void ajouter_contribution_bords_vitesse_(const Periodique& , int ,int ,const DoubleTab& ,const Front_VF&, Matrice_Morse& ) const;
+  void ajouter_contribution_bords_vitesse_(const Echange_externe_impose& , int ,int ,int ,const DoubleTab& ,const Front_VF&, Matrice_Morse& ) const;
 };
-template <class _TYPE_> inline T_It_VDF_Elem<_TYPE_>::T_It_VDF_Elem(const T_It_VDF_Elem<_TYPE_>& iter)
-  :Iterateur_VDF_base(iter),
-   flux_evaluateur(iter.flux_evaluateur)
+
+template <class _TYPE_>
+inline T_It_VDF_Elem<_TYPE_>::T_It_VDF_Elem(const T_It_VDF_Elem<_TYPE_>& iter)
+  :Iterateur_VDF_base(iter), flux_evaluateur(iter.flux_evaluateur)
 {
   elem.ref(iter.elem);
 }
-template <class _TYPE_> inline Evaluateur_VDF& T_It_VDF_Elem<_TYPE_>::evaluateur()
-{
-  Evaluateur_VDF& eval = (Evaluateur_VDF&) flux_evaluateur;
-  return eval;
-}
-template <class _TYPE_> inline const Evaluateur_VDF& T_It_VDF_Elem<_TYPE_>::evaluateur() const
+
+template <class _TYPE_>
+inline Evaluateur_VDF& T_It_VDF_Elem<_TYPE_>::evaluateur()
 {
   Evaluateur_VDF& eval = (Evaluateur_VDF&) flux_evaluateur;
   return eval;
 }
 
-//  Implemente_instanciable(T_It_VDF_Elem<_TYPE_>,"Iterateur_VDF_Elem",Iterateur_VDF_base);
-/*Sortie& T_It_VDF_Elem<_TYPE_>::printOn(Sortie& s ) const {
-    return s << que_suis_je() ;
-  }
-  Entree& T_It_VDF_Elem<_TYPE_>::readOn(Entree& s ) {
-    return s ;
-  }
-*/
-template <class _TYPE_> inline void T_It_VDF_Elem<_TYPE_>::completer_()
-{
-  elem.ref(la_zone->face_voisins());
-}
 template <class _TYPE_>
-const Milieu_base& T_It_VDF_Elem<_TYPE_>::milieu() const
+inline const Evaluateur_VDF& T_It_VDF_Elem<_TYPE_>::evaluateur() const
 {
-  return (la_zcl->equation()).milieu();
+  Evaluateur_VDF& eval = (Evaluateur_VDF&) flux_evaluateur;
+  return eval;
 }
+
 template <class _TYPE_>
-DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter(const DoubleTab& donne,
-                                          DoubleTab& resu) const
+DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter(const DoubleTab& donne, DoubleTab& resu) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
-  assert(donne.nb_dim() < 3);
-  assert(la_zcl.non_nul());
-  assert(la_zone.non_nul());
+  assert(donne.nb_dim() < 3 && la_zcl.non_nul() && la_zone.non_nul());
   const int ncomp = donne.line_size();
   DoubleTab& flux_bords=op_base->flux_bords();
   flux_bords.resize(la_zone->nb_faces_bord(),ncomp);
@@ -143,8 +162,7 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter(const DoubleTab& donne,
   {
     int n = resu.size_array() - resu.size();
     double *data = resu.addr() + resu.size();
-    for (; n; n--, data++)
-      *data = 0.;
+    for (; n; n--, data++) *data = 0.;
   }
   ajouter_bords(donne, resu) ;
   ajouter_interne(donne, resu) ;
@@ -152,16 +170,10 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter(const DoubleTab& donne,
   return resu;
 }
 
-template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const DoubleTab& donnee,
-                                                                         DoubleTab& resu) const
+template <class _TYPE_>
+DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const DoubleTab& donnee, DoubleTab& resu) const
 {
-  const int ncomp = resu.line_size();
-  int elem1, elem2;
-  int ndeb, nfin;
-  int face,k;
-  DoubleVect flux(ncomp);
-  int num_cl=0;
-  int nb_front_Cl=la_zone->nb_front_Cl();
+  int ndeb, nfin, num_cl=0, nb_front_Cl=la_zone->nb_front_Cl();
   DoubleTab& flux_bords=op_base->flux_bords();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
@@ -177,296 +189,66 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const D
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
               Cerr << "So you must specify symmetry boundary condition (symetrie keyword) for the boundary " << frontiere_dis.le_nom() << finl;
-              exit();
+              Process::exit();
             }
         }
       switch(type_cl(la_cl))
         {
         case symetrie :
-          if (_TYPE_::CALC_FLUX_FACES_SYMM)
-            {
-              const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(), ndeb, nfin,donnee,flux_bords,resu);
           break;
         case sortie_libre :
-          if (_TYPE_::CALC_FLUX_FACES_SORTIE_LIB)
-            {
-              const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(), ndeb, nfin,donnee,flux_bords,resu);
           break;
         case entree_fluide :
-          if (_TYPE_::CALC_FLUX_FACES_ENTREE_FL)
-            {
-              const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(), ndeb, nfin,donnee,flux_bords,resu);
           break;
         case paroi_fixe :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_FIXE)
-            {
-              const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(), ndeb, nfin,donnee,flux_bords,resu);
           break;
         case paroi_defilante :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_DEFIL)
-            {
-              const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
-          break;
-        case paroi_adiabatique :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
-            {
-              const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  /* on initialise elem1 elem2 et on fait planter */
-                  elem1=-1;
-                  elem2=-1;
-                  assert(0);
-                  exit();
-                  flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(), ndeb, nfin,donnee,flux_bords,resu);
           break;
         case paroi :
-          if (_TYPE_::CALC_FLUX_FACES_PAR)
-            {
-              const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1, k)+=flux(k);
-                        flux_bords(face, k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2, k)-=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
-          break;
-        case echange_externe_impose :
-          if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
-            {
-              const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
-
-              int boundary_index=-1;
-              if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
-                boundary_index=num_cl;
-
-              for (face=ndeb; face<nfin; face++)
-                {
-                  int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(face);
-                  flux_evaluateur.flux_face(donnee, boundary_index, face, local_face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(), ndeb, nfin,donnee,flux_bords,resu);
           break;
         case echange_global_impose :
-          if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
-            {
-              const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(), ndeb, nfin,donnee,flux_bords,resu);
+          break;
+        case paroi_adiabatique :
+          ajouter_bords_((const Neumann_paroi_adiabatique&) la_cl.valeur(), ndeb, nfin,donnee,flux_bords,resu);
+          break;
+        case echange_externe_impose :
+          ajouter_bords_((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,donnee,frontiere_dis,flux_bords,resu);
           break;
         case nscbc :
-          if (_TYPE_::CALC_FLUX_FACES_NSCBC)
-            {
-              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  assert(ncomp == 1); // codage avec flux en DoubleVect auquel on assigne la valeur de la fonction scalaire (pas de codage vectoriel de nscbc)
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  // flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          ajouter_bords_((const NSCBC&) la_cl.valeur(), ndeb, nfin, donnee, flux_bords, resu);
           break;
         case periodique :
-          if (_TYPE_::CALC_FLUX_FACES_PERIO)
-            {
-              const Periodique& cl =(const Periodique&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=0.5*flux(k);
-                        if ( face < (ndeb+frontiere_dis.nb_faces()/2) )
-                          flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=0.5*flux(k);
-                        if ( (ndeb+frontiere_dis.nb_faces()/2) <= face )
-                          flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          ajouter_bords_((const Periodique&) la_cl.valeur(), ndeb, nfin, donnee, frontiere_dis, flux_bords, resu);
           break;
         default :
-          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();
-          exit();
+          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::ajouter_bords" << finl;
+          Process::exit();
           break;
         }
     }
   return resu;
 }
 
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const DoubleTab& donnee) const
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const DoubleTab& donnee) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
-  assert(donnee.nb_dim() < 3);
-  assert(la_zcl.non_nul());
-  assert(la_zone.non_nul());
+  assert(donnee.nb_dim() < 3 && la_zcl.non_nul() && la_zone.non_nul());
   const int ncomp = donnee.line_size();
   DoubleTab& flux_bords=op_base->flux_bords();
   flux_bords.resize(la_zone->nb_faces_bord(),ncomp);
   flux_bords=0;
 
-  if( ncomp != 1) Process ::exit();/* cas scalaire */
+  if( ncomp != 1) Process::exit(); /* cas scalaire */
 
-
-  int ndeb, nfin;
-  int face;
-  int num_cl=0;
-  double flux;
-  int nb_front_Cl=la_zone->nb_front_Cl();
+  int ndeb, nfin, num_cl=0, nb_front_Cl=la_zone->nb_front_Cl();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
       /* pour chaque Condition Limite on regarde son type */
@@ -482,233 +264,61 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const Do
               Cerr << "Error in the definition of the boundary conditions." << finl;
               Cerr << "The axis of revolution for this 2D calculation is along Y." << finl;
               Cerr << "So you must specify symmetry boundary condition (symetrie keyword) for the boundary " << frontiere_dis.le_nom() << finl;
-              exit();
+              Process::exit();
             }
         }
       switch(type_cl(la_cl))
         {
         case symetrie :
-          if (_TYPE_::CALC_FLUX_FACES_SYMM)
-            {
-              const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_SYMM> ((const Symetrie&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
           break;
         case sortie_libre :
-          if (_TYPE_::CALC_FLUX_FACES_SORTIE_LIB)
-            {
-              const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB> ((const Neumann_sortie_libre&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
           break;
         case entree_fluide :
-          if (_TYPE_::CALC_FLUX_FACES_ENTREE_FL)
-            {
-              const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL> ((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
           break;
         case paroi_fixe :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_FIXE)
-            {
-              const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE> ((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
           break;
         case paroi_defilante :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_DEFIL)
-            {
-              const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
-          break;
-        case paroi_adiabatique :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
-            {
-              const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  assert(0);
-                  exit();
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  flux_bords(face,0)+=flux;
-                  flux_bords(face,0)-=flux;
-                }
-            }
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL> ((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
           break;
         case paroi :
-          if (_TYPE_::CALC_FLUX_FACES_PAR)
-            {
-              const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
-          break;
-        case echange_externe_impose :
-          if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
-            {
-              const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
-
-              int boundary_index=-1;
-              if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
-                boundary_index=num_cl;
-
-              for (face=ndeb; face<nfin; face++)
-                {
-                  int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(face);
-                  flux = flux_evaluateur.flux_face(donnee, boundary_index,face,local_face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR> ((const Neumann_paroi&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
           break;
         case echange_global_impose :
-          if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
-            {
-              const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP> ((const Echange_global_impose&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
           break;
         case nscbc :
-          if (_TYPE_::CALC_FLUX_FACES_NSCBC)
-            {
-              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_NSCBC> ((const NSCBC&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
+          break;
+        case paroi_adiabatique :
+          calculer_flux_bord_((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
           break;
         case periodique :
-          if (_TYPE_::CALC_FLUX_FACES_PERIO)
-            {
-              const Periodique& cl =(const Periodique&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      if ( face < (ndeb+frontiere_dis.nb_faces()/2) )
-                        flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      if ( (ndeb+frontiere_dis.nb_faces()/2) <= face )
-                        flux_bords(face,0)-=flux;
-                    }
-                }
-            }
+          calculer_flux_bord_((const Periodique&) la_cl.valeur(),ndeb, nfin,donnee,frontiere_dis,flux_bords);
+          break;
+        case echange_externe_impose :
+          calculer_flux_bord_((const Echange_externe_impose&) la_cl.valeur(),ndeb, nfin,num_cl,donnee,frontiere_dis,flux_bords);
           break;
         default :
-          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();
-          Cerr << "Dans T_It_VDF_Elem<_TYPE_>::ajouter_bords"<<finl;
-          exit();
+          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::calculer_flux_bord" << finl;
+          Process::exit();
           break;
         }
     }
   modifier_flux() ;
 }
 
-template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_interne(const DoubleTab& donnee,
-                                                                           DoubleTab& resu) const
+template <class _TYPE_>
+DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_interne(const DoubleTab& donnee, DoubleTab& resu) const
 {
   const int ncomp = resu.line_size();
   const Zone_VDF& zone_VDF = la_zone.valeur();
   DoubleVect flux(ncomp);
-  int face,k;
-  int elem0,elem1;
-  int ndeb = zone_VDF.premiere_face_int();
-  int nfin = zone_VDF.nb_faces();
+  int face,k,elem0,elem1;
+  const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (face=ndeb; face<nfin; face++)
     {
       flux_evaluateur.flux_faces_interne(donnee, face, flux);
@@ -722,12 +332,16 @@ template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_interne(const
     }
   return resu;
 }
-template <class _TYPE_>  DoubleTab& T_It_VDF_Elem<_TYPE_>::calculer(const DoubleTab& inco, DoubleTab& resu) const
+
+template <class _TYPE_>
+DoubleTab& T_It_VDF_Elem<_TYPE_>::calculer(const DoubleTab& inco, DoubleTab& resu) const
 {
   operator_egal(resu, 0., VECT_REAL_ITEMS);
   return ajouter(inco,resu);
 }
-template <class _TYPE_>  void  T_It_VDF_Elem<_TYPE_>::modifier_flux() const
+
+template <class _TYPE_>
+void  T_It_VDF_Elem<_TYPE_>::modifier_flux() const
 {
   if (op_base->equation().inconnue().le_nom().debute_par("temperature")
       && !( sub_type(Operateur_Diff_base,op_base.valeur()) && ref_cast(Operateur_Diff_base,op_base.valeur()).diffusivite().le_nom() == "conductivite" ) )
@@ -737,16 +351,14 @@ template <class _TYPE_>  void  T_It_VDF_Elem<_TYPE_>::modifier_flux() const
       const Champ_base& rho = (op_base->equation()).milieu().masse_volumique();
       const Champ_Don& Cp = (op_base->equation()).milieu().capacite_calorifique();
       const IntTab& face_voisins=la_zone_vdf.face_voisins();
-      int rho_uniforme=(sub_type(Champ_Uniforme,rho) ? 1:0);
-      int cp_uniforme=(sub_type(Champ_Uniforme,Cp.valeur()) ? 1:0);
+      int rho_uniforme = sub_type(Champ_Uniforme,rho) ? 1 : 0, cp_uniforme = sub_type(Champ_Uniforme,Cp.valeur()) ? 1 : 0;
       int is_rho_u=op_base->equation().probleme().is_dilatable();
       if (is_rho_u)
         {
           const Operateur_base& op=op_base.valeur();
           is_rho_u=0;
           if (sub_type(Op_Conv_VDF_base,op))
-            if (ref_cast(Op_Conv_VDF_base,op).vitesse().le_nom()=="rho_u")
-              is_rho_u=1;
+            if (ref_cast(Op_Conv_VDF_base,op).vitesse().le_nom()=="rho_u") is_rho_u=1;
         }
       double Cp_=0,rho_=0;
       const int& nb_faces_bords=la_zone_vdf.nb_faces_bord();
@@ -768,7 +380,8 @@ template <class _TYPE_>  void  T_It_VDF_Elem<_TYPE_>::modifier_flux() const
     }
 }
 
-template <class _TYPE_>  int T_It_VDF_Elem<_TYPE_>::impr(Sortie& os) const
+template <class _TYPE_>
+int T_It_VDF_Elem<_TYPE_>::impr(Sortie& os) const
 {
   const Zone_VDF& la_zone_vdf=ref_cast(Zone_VDF,op_base.valeur().equation().zone_dis().valeur());
   const Zone& mazone=la_zone->zone();
@@ -868,25 +481,20 @@ template <class _TYPE_>  int T_It_VDF_Elem<_TYPE_>::impr(Sortie& os) const
   return 1;
 }
 
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) const
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
-  assert(resu.nb_dim() < 3);
-  assert(la_zcl.non_nul());
-  assert(la_zone.non_nul());
+  assert(resu.nb_dim() < 3 && la_zcl.non_nul() && la_zone.non_nul());
   assert(op_base->flux_bords().dimension(0)==la_zone->nb_faces_bord()); /* resize deja fait */
   contribuer_au_second_membre_bords(resu) ;
   contribuer_au_second_membre_interne(resu) ;
 }
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(DoubleTab& resu) const
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(DoubleTab& resu) const
 {
-  const int ncomp = resu.line_size();
-  int elem1, elem2;
-  int ndeb, nfin;
-  int face,k;
-  DoubleVect flux(ncomp);
-  int num_cl=0;
-  int nb_front_Cl=la_zone->nb_front_Cl();
+  int ndeb, nfin, num_cl=0, nb_front_Cl=la_zone->nb_front_Cl();
   DoubleTab& flux_bords=op_base->flux_bords();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
@@ -897,272 +505,54 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
       switch(type_cl(la_cl))
         {
         case symetrie :
-          if (_TYPE_::CALC_FLUX_FACES_SYMM)
-            {
-              const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
           break;
         case sortie_libre :
-          if (_TYPE_::CALC_FLUX_FACES_SORTIE_LIB)
-            {
-              const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
           break;
         case entree_fluide :
-          if (_TYPE_::CALC_FLUX_FACES_ENTREE_FL)
-            {
-              const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
           break;
         case paroi_fixe :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_FIXE)
-            {
-              const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
           break;
         case paroi_defilante :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_DEFIL)
-            {
-              const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
           break;
         case paroi_adiabatique :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
-            {
-              const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
           break;
         case paroi :
-          if (_TYPE_::CALC_FLUX_FACES_PAR)
-            {
-              const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
-          break;
-        case echange_externe_impose :
-          if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
-            {
-              const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
-
-              int boundary_index=-1;
-              if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
-                boundary_index=num_cl;
-
-              for (face=ndeb; face<nfin; face++)
-                {
-                  int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(face);
-                  flux_evaluateur.secmem_face(boundary_index,face,local_face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
           break;
         case echange_global_impose :
-          if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
-            {
-              const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
+          break;
+        case echange_externe_impose :
+          contribuer_au_second_membre_bords_((const Echange_externe_impose&)la_cl.valeur(), ndeb,nfin, num_cl,frontiere_dis,flux_bords,resu);
           break;
         case nscbc :
-          if (_TYPE_::CALC_FLUX_FACES_NSCBC)
-            {
-              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  assert(ncomp == 1); // codage avec flux en DoubleVect auquel on assigne la valeur de la fonction scalaire (pas de codage vectoriel de nscbc)
-                  flux = flux_evaluateur.secmem_face(face, cl, ndeb);
-                  // flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=flux(k);
-                        flux_bords(face,k)+=flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=flux(k);
-                        flux_bords(face,k)-=flux(k);
-                      }
-                }
-            }
+          contribuer_au_second_membre_bords_((const NSCBC&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
           break;
         case periodique :
-          if (_TYPE_::CALC_FLUX_FACES_PERIO)
-            {
-              const Periodique& cl =(const Periodique&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.secmem_face(face, cl, ndeb, flux);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem1,k) +=0.5*flux(k);
-                        flux_bords(face,k)+=0.5*flux(k);
-                      }
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (k=0; k<ncomp; k++)
-                      {
-                        resu(elem2,k) -=0.5*flux(k);
-                        flux_bords(face,k)-=0.5*flux(k);
-                      }
-                }
-            }
+          contribuer_au_second_membre_bords_((const Periodique&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
           break;
         default :
-          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();
-          exit();
+          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords" << finl;
+          Process::exit();
           break;
         }
     }
 }
 
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_interne( DoubleTab& resu) const
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_interne( DoubleTab& resu) const
 {
   const int ncomp = resu.line_size();
   const Zone_VDF& zone_VDF = la_zone.valeur();
   DoubleVect flux(ncomp);
-  int face,k;
-  int elem0,elem1;
-  int ndeb=zone_VDF.premiere_face_int();
-  int nfin=zone_VDF.nb_faces();
+  int face,k,elem0,elem1;
+  const int ndeb=zone_VDF.premiere_face_int(), nfin=zone_VDF.nb_faces();
   for (face=ndeb; face<nfin; face++)
     {
       flux_evaluateur.secmem_faces_interne(face, flux);
@@ -1176,55 +566,37 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre
     }
 }
 
-
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice) const
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
-  assert(inco.nb_dim() < 3);
-  assert(la_zcl.non_nul());
-  assert(la_zone.non_nul());
+  assert(inco.nb_dim() < 3 && la_zcl.non_nul() && la_zone.non_nul());
   const int ncomp = inco.line_size();
-  DoubleTab& flux_bords=op_base->flux_bords();
+  DoubleTab& flux_bords = op_base->flux_bords();
   flux_bords.resize(la_zone->nb_faces_bord(),ncomp);
   flux_bords=0;
   ajouter_contribution_bords(inco, matrice) ;
   ajouter_contribution_interne(inco, matrice) ;
 }
 
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
-  assert(inco.nb_dim() < 3);
-  assert(la_zcl.non_nul());
-  assert(la_zone.non_nul());
-  int ncomp=1;
-  if (inco.nb_dim() == 2)
-    ncomp=inco.dimension(1);
-  // DoubleTab& flux_bords=op_base->flux_bords();
-  // flux_bords.resize(la_zone->nb_faces_bord(),ncomp);
-  // flux_bords=0;
+  assert(inco.nb_dim() < 3 && la_zcl.non_nul() && la_zone.non_nul());
+  const int ncomp = inco.line_size();
   if( ncomp == 1) /* cas scalaire */
     {
       ajouter_contribution_bords_vitesse(inco, matrice);
       ajouter_contribution_interne_vitesse(inco, matrice);
     }
-  else /* cas vectoriel */
-    {
-      abort();
-      // ajouter_contribution_bords(inco, matrice, ncomp) ;
-      // ajouter_contribution_interne(inco, matrice, ncomp) ;
-    }
+  else abort(); /* cas vectoriel */
 }
 
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(const DoubleTab& inco, Matrice_Morse& matrice ) const
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(const DoubleTab& inco, Matrice_Morse& matrice ) const
 {
-  const int ncomp = inco.line_size();
-  int elem1, elem2;
-  DoubleVect aii(ncomp), ajj(ncomp);
-  int ndeb, nfin;
-  int face;
-  int num_cl=0;
-  int nb_front_Cl=la_zone->nb_front_Cl();
+  int ndeb, nfin, num_cl=0, nb_front_Cl=la_zone->nb_front_Cl();
   for (; num_cl<nb_front_Cl; num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
@@ -1234,213 +606,54 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(
       switch(type_cl(la_cl))
         {
         case symetrie :
-          if (_TYPE_::CALC_FLUX_FACES_SYMM)
-            {
-              const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem2*ncomp+i,elem2*ncomp+i)+=ajj(i);
-                }
-            }
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(),ndeb,nfin, inco, matrice);
           break;
         case sortie_libre :
-          if (_TYPE_::CALC_FLUX_FACES_SORTIE_LIB)
-            {
-              const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem2*ncomp+i,elem2*ncomp+i)+=ajj(i);
-                }
-            }
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin, inco, matrice);
           break;
         case entree_fluide :
-          if (_TYPE_::CALC_FLUX_FACES_ENTREE_FL)
-            {
-              const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem2*ncomp+i,elem2*ncomp+i)+=ajj(i);
-                }
-            }
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin, inco, matrice);
           break;
         case paroi_fixe :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_FIXE)
-            {
-              const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem2*ncomp+i,elem2*ncomp+i)+=ajj(i);
-                }
-            }
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin, inco, matrice);
           break;
         case paroi_defilante :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_DEFIL)
-            {
-              const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem2*ncomp+i,elem2*ncomp+i)+=ajj(i);
-                }
-            }
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin, inco, matrice);
           break;
         case paroi_adiabatique :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
-            {
-              const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem2*ncomp+i,elem2*ncomp+i)+=ajj(i);
-                }
-            }
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin, inco, matrice);
           break;
         case paroi :
-          if (_TYPE_::CALC_FLUX_FACES_PAR)
-            {
-              const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem2*ncomp+i,elem2*ncomp+i)+=ajj(i);
-                }
-            }
-          break;
-        case echange_externe_impose :
-          if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
-            {
-              const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
-
-              int boundary_index=-1;
-              if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
-                boundary_index=num_cl;
-
-              for (face=ndeb; face<nfin; face++)
-                {
-                  int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(face);
-                  flux_evaluateur.coeffs_face(boundary_index,face,local_face,ndeb, cl, aii, ajj);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem2*ncomp+i,elem2*ncomp+i)+=ajj(i);
-                }
-            }
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin, inco, matrice);
           break;
         case echange_global_impose :
-          if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
-            {
-              const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem2*ncomp+i,elem2*ncomp+i)+=ajj(i);
-                }
-            }
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin, inco, matrice);
+          break;
+        case echange_externe_impose :
+          ajouter_contribution_bords_((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin, num_cl, inco, frontiere_dis, matrice);
           break;
         case nscbc :
-          if (_TYPE_::CALC_FLUX_FACES_NSCBC)
-            {
-              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  //codage scalaire applique aux DoubleVect
-                  assert(ncomp == 1);
-                  double aii_ = 0., ajj_ = 0.;
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii_, ajj_);
-                  aii = aii_, ajj = ajj_;
-                  if ( (elem1=elem(face,0)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem1*ncomp+i,elem1*ncomp+i)+=aii(i);
-                  if ( (elem2=elem(face,1)) > -1)
-                    for (int i = 0; i < ncomp; i++)
-                      matrice(elem2*ncomp+i,elem2*ncomp+i)+=ajj(i);
-                }
-            }
+          ajouter_contribution_bords_((const NSCBC&) la_cl.valeur(), ndeb, nfin, inco, matrice);
           break;
         case periodique :
-          if (_TYPE_::CALC_FLUX_FACES_PERIO)
-            {
-              const Periodique& cl =(const Periodique&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
-                  elem1 = elem(face,0);
-                  elem2 = elem(face,1);
-                  for (int i = 0; i < ncomp; i++)
-                    {
-                      int n1=elem1*ncomp+i;
-                      int n2=elem2*ncomp+i;
-                      matrice(n1,n1)+=0.5*aii(i);
-                      matrice(n1,n2)-=0.5*ajj(i);
-                      matrice(n2,n2)+=0.5*ajj(i);
-                      matrice(n2,n1)-=0.5*aii(i);
-                    }
-                }
-            }
+          ajouter_contribution_bords_((const Periodique&) la_cl.valeur(), ndeb, nfin, inco, matrice);
           break;
         default :
-          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();
-          exit();
+          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords" << finl;
+          Process::exit();
           break;
         }
     }
 }
 
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne(const DoubleTab& inco, Matrice_Morse& matrice ) const
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne(const DoubleTab& inco, Matrice_Morse& matrice ) const
 {
   const int ncomp = inco.line_size();
   const Zone_VDF& zone_VDF = la_zone.valeur();
-  int face,i;
   DoubleVect aii(ncomp), ajj(ncomp);
-  int elem1,elem2;
-  int ndeb=zone_VDF.premiere_face_int();
-  int nfin=zone_VDF.nb_faces();
+  int face,i, elem1,elem2;
+  const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (face=ndeb; face<nfin; face++)
     {
       elem1 = elem(face,0);
@@ -1448,7 +661,7 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_intern
       flux_evaluateur.coeffs_faces_interne(face, aii, ajj);
       for (i=0; i<ncomp; i++)
         {
-          int i0=elem1*ncomp+i,j0=elem2*ncomp+i;
+          int i0 = elem1*ncomp+i, j0 = elem2*ncomp+i;
           matrice(i0,i0)+=aii(i) ;
           matrice(i0,j0)-=ajj(i) ;
           matrice(j0,j0)+=ajj(i) ;
@@ -1457,28 +670,25 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_intern
     }
 }
 
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Zone_VDF& zone_VDF = la_zone.valeur();
   double aef = 0;
-  const int ndeb = zone_VDF.premiere_face_int();
-  const int nfin = zone_VDF.nb_faces();
+  const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int f = ndeb; f < nfin; f++)
     {
-      const int e1 = elem(f, 0);
-      const int e2 = elem(f, 1);
+      const int e1 = elem(f, 0), e2 = elem(f, 1);
       aef = flux_evaluateur.coeffs_faces_interne_bloc_vitesse(inco, f);
       matrice(e1, f) += aef;
       matrice(e2, f) -= aef;
     }
 }
 
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const DoubleTab& inco, Matrice_Morse& matrice ) const
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const DoubleTab& inco, Matrice_Morse& matrice ) const
 {
-  int e1, e2;
-  double aef=0;
-  int ndeb, nfin;
-  int nb_front_Cl=la_zone->nb_front_Cl();
+  int ndeb, nfin, nb_front_Cl=la_zone->nb_front_Cl();
   for (int num_cl = 0; num_cl<nb_front_Cl; num_cl++)
     {
       /* pour chaque Condition Limite on regarde son type */
@@ -1489,166 +699,52 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_
       switch(type_cl(la_cl))
         {
         case symetrie :
-          if (_TYPE_::CALC_FLUX_FACES_SYMM)
-            {
-              const Symetrie& cl =(const Symetrie&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
-                }
-            }
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(), ndeb,nfin,inco,matrice);
           break;
         case sortie_libre :
-          if (_TYPE_::CALC_FLUX_FACES_SORTIE_LIB)
-            {
-              const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
-                }
-            }
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(), ndeb,nfin,inco,matrice);
           break;
         case entree_fluide :
-          if (_TYPE_::CALC_FLUX_FACES_ENTREE_FL)
-            {
-              const Dirichlet_entree_fluide& cl =(const Dirichlet_entree_fluide&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
-                }
-            }
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(), ndeb,nfin,inco,matrice);
           break;
         case paroi_fixe :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_FIXE)
-            {
-              const Dirichlet_paroi_fixe& cl =(const Dirichlet_paroi_fixe&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
-                }
-            }
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(), ndeb,nfin,inco,matrice);
           break;
         case paroi_defilante :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_DEFIL)
-            {
-              const Dirichlet_paroi_defilante& cl =(const Dirichlet_paroi_defilante&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
-                }
-            }
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(), ndeb,nfin,inco,matrice);
           break;
         case paroi_adiabatique :
-          if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
-            {
-              const Neumann_paroi_adiabatique& cl =(const Neumann_paroi_adiabatique&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
-                }
-            }
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(), ndeb,nfin,inco,matrice);
           break;
         case paroi :
-          if (_TYPE_::CALC_FLUX_FACES_PAR)
-            {
-              const Neumann_paroi& cl =(const Neumann_paroi&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
-                }
-            }
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(), ndeb,nfin,inco,matrice);
           break;
         case echange_externe_impose :
-          if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
-            {
-              const Echange_externe_impose& cl =(const Echange_externe_impose&) (la_cl.valeur());
-              int boundary_index=-1;
-              if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
-                boundary_index=num_cl;
-
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(f);
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, boundary_index, f, local_face, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e1, f) -= aef;
-                }
-            }
+          ajouter_contribution_bords_vitesse_((const Echange_externe_impose&) la_cl.valeur(), ndeb,nfin,num_cl,inco,frontiere_dis,matrice);
           break;
         case echange_global_impose :
-          if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
-            {
-              const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
-                }
-            }
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(), ndeb,nfin,inco,matrice);
           break;
         case nscbc :
-          if (_TYPE_::CALC_FLUX_FACES_NSCBC)
-            {
-              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
-                }
-            }
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_NSCBC>((const NSCBC&) la_cl.valeur(), ndeb,nfin,inco,matrice);
           break;
         case periodique :
-          if (_TYPE_::CALC_FLUX_FACES_PERIO)
-            {
-              const Periodique& cl =(const Periodique&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1)
-                    {
-                      if ( f < (ndeb+frontiere_dis.nb_faces()/2) )
-                        matrice(e1, f) += aef;
-                    }
-                  if ( (e2 = elem(f, 1)) > -1)
-                    {
-                      if ( (ndeb+frontiere_dis.nb_faces()/2) <= f )
-                        matrice(e2, f) -= aef;
-                    }
-                }
-            }
+          ajouter_contribution_bords_vitesse_((const Periodique&) la_cl.valeur(), ndeb,nfin,inco,frontiere_dis,matrice);
           break;
         default :
-          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur();
-          exit();
+          Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse" << finl;
+          Process::exit();
           break;
         }
-
     }
 }
 
-template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
 {
   double aii=0, ajj=0;
   const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
-  const int ndeb = frontiere_dis.num_premiere_face();
-  const int nfin = ndeb + frontiere_dis.nb_faces();
-  // assert(cl est bien paroi contact)
+  const int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
   if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
     {
       const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
@@ -1660,4 +756,455 @@ template <class _TYPE_>  void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_
         }
     }
 }
-#endif
+
+/* ************************ *
+ * Internal private methods *
+ * ************************ */
+template <class _TYPE_> template <bool should_calc_flux, typename BC>
+void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const BC& cl, int ndeb,int nfin,const DoubleTab& donnee,DoubleTab& flux_bords, DoubleTab& resu) const
+{
+  const int ncomp = resu.line_size();
+  int face, elem1, elem2;
+  DoubleVect flux(ncomp);
+  if (should_calc_flux)
+    {
+      for (face=ndeb; face<nfin; face++)
+        {
+          flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
+          if ( (elem1 = elem(face,0)) > -1 )
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem1,k) += flux(k);
+                flux_bords(face,k) += flux(k);
+              }
+          if ( (elem2 = elem(face,1)) > -1 )
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem2,k) -= flux(k);
+                flux_bords(face,k) -= flux(k);
+              }
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const NSCBC& cl, int ndeb,int nfin,const DoubleTab& donnee,DoubleTab& flux_bords, DoubleTab& resu) const
+{
+  const int ncomp = resu.line_size();
+  int face, elem1, elem2;
+  DoubleVect flux(ncomp);
+  if (_TYPE_::CALC_FLUX_FACES_NSCBC)
+    {
+      for (face=ndeb; face<nfin; face++)
+        {
+          assert(ncomp == 1); // codage avec flux en DoubleVect auquel on assigne la valeur de la fonction scalaire (pas de codage vectoriel de nscbc)
+          flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
+          if ( (elem1=elem(face,0)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem1,k) +=flux(k);
+                flux_bords(face,k)+=flux(k);
+              }
+          if ( (elem2=elem(face,1)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem2,k) -=flux(k);
+                flux_bords(face,k)-=flux(k);
+              }
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const Neumann_paroi_adiabatique& cl, int ndeb,int nfin,const DoubleTab& donnee,DoubleTab& flux_bords, DoubleTab& resu) const
+{
+  calculer_flux_bord_(cl,ndeb,nfin,donnee,resu); // On bloque ici :-)
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const Periodique& cl, int ndeb,int nfin,const DoubleTab& donnee,const Front_VF& frontiere_dis,DoubleTab& flux_bords, DoubleTab& resu) const
+{
+  const int ncomp = resu.line_size();
+  int face, elem1, elem2;
+  DoubleVect flux(ncomp);
+  if (_TYPE_::CALC_FLUX_FACES_PERIO)
+    {
+      for (face=ndeb; face<nfin; face++)
+        {
+          flux_evaluateur.flux_face(donnee, face, cl, ndeb, flux);
+          if ( (elem1=elem(face,0)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem1,k) += 0.5*flux(k);
+                if ( face < (ndeb+frontiere_dis.nb_faces()/2) ) flux_bords(face,k)+=flux(k);
+              }
+          if ( (elem2=elem(face,1)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem2,k) -= 0.5*flux(k);
+                if ( (ndeb+frontiere_dis.nb_faces()/2) <= face ) flux_bords(face,k)-=flux(k);
+              }
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const Echange_externe_impose& cl, int ndeb,int nfin,int num_cl, const DoubleTab& donnee,const Front_VF& frontiere_dis,DoubleTab& flux_bords, DoubleTab& resu) const
+{
+  const int ncomp = resu.line_size();
+  int face, elem1, elem2;
+  DoubleVect flux(ncomp);
+  if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
+    {
+      int boundary_index = -1;
+      if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index=num_cl;
+
+      for (face=ndeb; face<nfin; face++)
+        {
+          int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face);
+          flux_evaluateur.flux_face(donnee, boundary_index, face, local_face, cl, ndeb, flux);
+          if ( (elem1=elem(face,0)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem1,k) += flux(k);
+                flux_bords(face,k) += flux(k);
+              }
+          if ( (elem2=elem(face,1)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem2,k) -= flux(k);
+                flux_bords(face,k) -= flux(k);
+              }
+        }
+    }
+}
+
+template <class _TYPE_> template <bool should_calc_flux, typename BC>
+void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const BC& cl, int ndeb,int nfin,const DoubleTab& donnee,DoubleTab& flux_bords) const
+{
+  int face;
+  double flux;
+  if (should_calc_flux)
+    {
+      for (face=ndeb; face<nfin; face++)
+        {
+          flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
+          if ( (elem(face,0)) > -1) flux_bords(face,0) += flux;
+          if ( (elem(face,1)) > -1) flux_bords(face,0) -= flux;
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Neumann_paroi_adiabatique& , int ndeb,int nfin,const DoubleTab& ,DoubleTab& ) const
+{
+  if (_TYPE_::CALC_FLUX_FACES_PAR_ADIAB)
+    {
+      for (int face=ndeb; face<nfin; face++)
+        {
+          assert(0);
+          Process::exit(); // On bloque ici :-)
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Periodique& cl, int ndeb,int nfin,const DoubleTab& donnee,const Front_VF& frontiere_dis, DoubleTab& flux_bords) const
+{
+  int face;
+  double flux;
+  if (_TYPE_::CALC_FLUX_FACES_PERIO)
+    {
+      for (face=ndeb; face<nfin; face++)
+        {
+          flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
+          if ( (elem(face,0)) > -1 )
+            {
+              if ( face < (ndeb+frontiere_dis.nb_faces()/2) ) flux_bords(face,0) += flux;
+            }
+          if ( (elem(face,1)) > -1 )
+            {
+              if ( (ndeb+frontiere_dis.nb_faces()/2) <= face ) flux_bords(face,0) -= flux;
+            }
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl, int ndeb,int nfin,int num_cl,const DoubleTab& donnee,const Front_VF& frontiere_dis,DoubleTab& flux_bords) const
+{
+  int face;
+  double flux;
+  if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
+    {
+      int boundary_index = -1;
+      if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
+      for (face=ndeb; face<nfin; face++)
+        {
+          int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(face);
+          flux = flux_evaluateur.flux_face(donnee, boundary_index,face,local_face, cl, ndeb);
+          if ( (elem(face,0)) > -1) flux_bords(face,0) += flux;
+          if ( (elem(face,1)) > -1) flux_bords(face,0) -= flux;
+        }
+    }
+}
+
+template <class _TYPE_> template <bool should_calc_flux, typename BC>
+void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const BC& cl, int ndeb,int nfin,DoubleTab& flux_bords, DoubleTab& resu) const
+{
+  const int ncomp = resu.line_size();
+  int face, elem1, elem2;
+  DoubleVect flux(ncomp);
+  if (should_calc_flux)
+    {
+      for (face=ndeb; face<nfin; face++)
+        {
+          flux_evaluateur.secmem_face(face, cl, ndeb, flux);
+          if ( (elem1=elem(face,0)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem1,k) += flux(k);
+                flux_bords(face,k) += flux(k);
+              }
+          if ( (elem2=elem(face,1)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem2,k) -= flux(k);
+                flux_bords(face,k) -= flux(k);
+              }
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const NSCBC& cl, int ndeb,int nfin,DoubleTab& flux_bords, DoubleTab& resu) const
+{
+  const int ncomp = resu.line_size();
+  int face, elem1, elem2;
+  DoubleVect flux(ncomp);
+  if (_TYPE_::CALC_FLUX_FACES_NSCBC)
+    {
+      for (face=ndeb; face<nfin; face++)
+        {
+          assert(ncomp == 1); // codage avec flux en DoubleVect auquel on assigne la valeur de la fonction scalaire (pas de codage vectoriel de nscbc)
+          flux = flux_evaluateur.secmem_face(face, cl, ndeb);
+          if ( (elem1=elem(face,0)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem1,k) +=flux(k);
+                flux_bords(face,k)+=flux(k);
+              }
+          if ( (elem2=elem(face,1)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem2,k) -=flux(k);
+                flux_bords(face,k)-=flux(k);
+              }
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const Periodique& cl, int ndeb,int nfin,DoubleTab& flux_bords, DoubleTab& resu) const
+{
+  const int ncomp = resu.line_size();
+  int face, elem1, elem2;
+  DoubleVect flux(ncomp);
+  if (_TYPE_::CALC_FLUX_FACES_PERIO)
+    {
+      for (face=ndeb; face<nfin; face++)
+        {
+          flux_evaluateur.secmem_face(face, cl, ndeb, flux);
+          if ( (elem1=elem(face,0)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem1,k) += 0.5*flux(k);
+                flux_bords(face,k) += 0.5*flux(k);
+              }
+          if ( (elem2=elem(face,1)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem2,k) -= 0.5*flux(k);
+                flux_bords(face,k) -= 0.5*flux(k);
+              }
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const Echange_externe_impose& cl, int ndeb,int nfin, int num_cl,const Front_VF& frontiere_dis,DoubleTab& flux_bords, DoubleTab& resu) const
+{
+  const int ncomp = resu.line_size();
+  int face, elem1, elem2;
+  DoubleVect flux(ncomp);
+  if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
+    {
+      int boundary_index=-1;
+      if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
+      for (face=ndeb; face<nfin; face++)
+        {
+          int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(face);
+          flux_evaluateur.secmem_face(boundary_index,face,local_face, cl, ndeb, flux);
+          if ( (elem1=elem(face,0)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem1,k) += flux(k);
+                flux_bords(face,k) += flux(k);
+              }
+          if ( (elem2=elem(face,1)) > -1)
+            for (int k=0; k<ncomp; k++)
+              {
+                resu(elem2,k) -= flux(k);
+                flux_bords(face,k) -= flux(k);
+              }
+        }
+    }
+}
+
+template <class _TYPE_> template <bool should_calc_flux, typename BC>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const BC& cl, int ndeb,int nfin,const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  const int ncomp = inco.line_size();
+  int face,elem1, elem2;
+  DoubleVect aii(ncomp), ajj(ncomp);
+  if (should_calc_flux)
+    {
+      for (face=ndeb; face<nfin; face++)
+        {
+          flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
+          if ( (elem1 = elem(face,0)) > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,elem1*ncomp+i) += aii(i);
+          if ( (elem2 = elem(face,1)) > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,elem2*ncomp+i) += ajj(i);
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const NSCBC& cl, int ndeb,int nfin,const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  const int ncomp = inco.line_size();
+  int face,elem1, elem2;
+  DoubleVect aii(ncomp), ajj(ncomp);
+  if (_TYPE_::CALC_FLUX_FACES_NSCBC)
+    {
+      for (face=ndeb; face<nfin; face++) //codage scalaire applique aux DoubleVect
+        {
+          assert(ncomp == 1);
+          double aii_ = 0., ajj_ = 0.;
+          flux_evaluateur.coeffs_face(face,ndeb, cl, aii_, ajj_);
+          aii = aii_, ajj = ajj_;
+          if ( (elem1=elem(face,0)) > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,elem1*ncomp+i) += aii(i);
+          if ( (elem2=elem(face,1)) > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,elem2*ncomp+i) += ajj(i);
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Periodique& cl, int ndeb,int nfin,const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  const int ncomp = inco.line_size();
+  int face,elem1, elem2;
+  DoubleVect aii(ncomp), ajj(ncomp);
+  if (_TYPE_::CALC_FLUX_FACES_PERIO)
+    {
+      for (face=ndeb; face<nfin; face++)
+        {
+          flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
+          elem1 = elem(face,0);
+          elem2 = elem(face,1);
+          for (int i = 0; i < ncomp; i++)
+            {
+              int n1 = elem1*ncomp+i, n2 = elem2*ncomp+i;
+              matrice(n1,n1) += 0.5*aii(i);
+              matrice(n1,n2) -= 0.5*ajj(i);
+              matrice(n2,n2) += 0.5*ajj(i);
+              matrice(n2,n1) -= 0.5*aii(i);
+            }
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Echange_externe_impose& cl, int ndeb,int nfin,int num_cl,const DoubleTab& inco,const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
+{
+  const int ncomp = inco.line_size();
+  int face,elem1, elem2;
+  DoubleVect aii(ncomp), ajj(ncomp);
+  if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
+    {
+      int boundary_index=-1;
+      if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
+
+      for (face=ndeb; face<nfin; face++)
+        {
+          int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(face);
+          flux_evaluateur.coeffs_face(boundary_index,face,local_face,ndeb, cl, aii, ajj);
+          if ( (elem1=elem(face,0)) > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,elem1*ncomp+i) += aii(i);
+          if ( (elem2=elem(face,1)) > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,elem2*ncomp+i) += ajj(i);
+        }
+    }
+}
+
+template <class _TYPE_> template <bool should_calc_flux, typename BC>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const BC& cl, int ndeb,int nfin,const DoubleTab& inco, Matrice_Morse& matrice) const
+{
+  int e1, e2;
+  double aef=0;
+  if (should_calc_flux)
+    {
+      for (int f = ndeb; f < nfin; f++)
+        {
+          aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+          if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+          if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Periodique& cl, int ndeb,int nfin,const DoubleTab& inco,const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
+{
+  int e1, e2;
+  double aef=0;
+  if (_TYPE_::CALC_FLUX_FACES_PERIO)
+    {
+      for (int f = ndeb; f < nfin; f++)
+        {
+          aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
+          if ( (e1 = elem(f, 0)) > -1)
+            {
+              if ( f < (ndeb+frontiere_dis.nb_faces()/2) ) matrice(e1, f) += aef;
+            }
+          if ( (e2 = elem(f, 1)) > -1)
+            {
+              if ( (ndeb+frontiere_dis.nb_faces()/2) <= f ) matrice(e2, f) -= aef;
+            }
+        }
+    }
+}
+
+template <class _TYPE_>
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_externe_impose& cl, int ndeb,int nfin,int num_cl,const DoubleTab& inco,const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
+{
+  int e1, e2;
+  double aef=0;
+  if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
+    {
+      int boundary_index=-1;
+      if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
+      for (int f = ndeb; f < nfin; f++)
+        {
+          int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(f);
+          aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, boundary_index, f, local_face, cl, ndeb);
+          if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
+          if ( (e2 = elem(f, 1)) > -1) matrice(e1, f) -= aef;
+        }
+    }
+}
+
+#endif /* T_It_VDF_Elem_included */
