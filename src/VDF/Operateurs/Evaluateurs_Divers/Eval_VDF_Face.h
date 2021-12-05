@@ -33,10 +33,12 @@
 class Eval_VDF_Face
 {
 public:
-  inline Eval_VDF_Face() {}
-  inline virtual ~Eval_VDF_Face() {}
+
+  static constexpr bool CALC_FA7_SORTIE_LIB = false, CALC_ARR_FL = true, CALC_ARR_BORD = true, CALC_ARR_COIN_FL = false,
+                        CALC_ARR_INT = true, CALC_ARR_MIXTE = true, CALC_ARR_PERIO = true, CALC_ARR_PAR_FL = true, CALC_ARR_PAR = true,
+                        CALC_ARR_SYMM_PAR = true, CALC_ARR_SYMM_FL = true, CALC_ARR_SYMM = false;
+
   inline void associer_inconnue(const Champ_base& );
-  inline virtual int calculer_arete_bord() const { return 1; }
 
 protected:
   REF(Champ_base) inconnue;

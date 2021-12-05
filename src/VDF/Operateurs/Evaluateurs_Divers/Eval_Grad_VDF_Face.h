@@ -33,18 +33,8 @@
 class Eval_Grad_VDF_Face : public Eval_Grad_VDF, public Eval_VDF_Face
 {
 public:
-  inline int calculer_arete_bord() const { return 0; }
-  inline int calculer_arete_fluide() const { return 0; }
-  inline int calculer_arete_paroi() const { return 0; }
-  inline int calculer_arete_paroi_fluide() const { return 0; }
-  inline int calculer_arete_symetrie() const { return 0; }
-  inline int calculer_arete_interne() const { return 0; }
-  inline int calculer_arete_mixte() const { return 0; }
-  inline int calculer_fa7_sortie_libre() const { return 1; }
-  inline int calculer_arete_periodicite() const { return 0; }
-  inline int calculer_arete_symetrie_paroi() const { return 0; }
-  inline int calculer_arete_symetrie_fluide() const { return 0; }
-  inline int calculer_arete_coin_fluide() const { return 0; }
+  static constexpr bool CALC_FA7_SORTIE_LIB = true, CALC_ARR_FL = false, CALC_ARR_BORD = false, CALC_ARR_INT = false, CALC_ARR_MIXTE = false,
+                        CALC_ARR_PERIO = false, CALC_ARR_PAR_FL = false, CALC_ARR_PAR = false, CALC_ARR_SYMM_PAR = false, CALC_ARR_SYMM_FL = false;
 
   //************************
   // CAS SCALAIRE

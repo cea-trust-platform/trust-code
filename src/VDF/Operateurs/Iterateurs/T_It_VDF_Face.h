@@ -70,20 +70,15 @@ protected:
   DoubleTab& corriger_flux_fa7_elem_periodicite(const DoubleTab&, DoubleTab& ) const;
   DoubleTab& corriger_flux_fa7_elem_periodicite(const DoubleTab&, DoubleTab& , int ) const;
   DoubleTab& ajouter_fa7_sortie_libre(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& ajouter_fa7_sortie_libre(const DoubleTab&,
-                                      DoubleTab& , int ) const;
+  DoubleTab& ajouter_fa7_sortie_libre(const DoubleTab&, DoubleTab& , int ) const;
   DoubleTab& ajouter_aretes_internes(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& ajouter_aretes_internes(const DoubleTab&,
-                                     DoubleTab& , int ) const;
+  DoubleTab& ajouter_aretes_internes(const DoubleTab&, DoubleTab& , int ) const;
   DoubleTab& ajouter_aretes_mixtes(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& ajouter_aretes_mixtes(const DoubleTab&,
-                                   DoubleTab& , int ) const;
+  DoubleTab& ajouter_aretes_mixtes(const DoubleTab&, DoubleTab& , int ) const;
   DoubleTab& ajouter_aretes_bords(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& ajouter_aretes_bords(const DoubleTab&,
-                                  DoubleTab& , int ) const;
+  DoubleTab& ajouter_aretes_bords(const DoubleTab&, DoubleTab& , int ) const;
   DoubleTab& ajouter_aretes_coins(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& ajouter_aretes_coins(const DoubleTab&,
-                                  DoubleTab& , int ) const;
+  DoubleTab& ajouter_aretes_coins(const DoubleTab&, DoubleTab& , int ) const;
   void contribuer_au_second_membre_fa7_elem(DoubleTab& ) const;
   void contribuer_au_second_membre_fa7_elem(DoubleTab& , int ) const;
   void corriger_secmem_fa7_elem_periodicite(DoubleTab& ) const;
@@ -112,21 +107,11 @@ protected:
   void ajouter_contribution_aretes_bords(const DoubleTab&, Matrice_Morse& , int ) const;
   void  ajouter_contribution_aretes_coins(const DoubleTab&, Matrice_Morse& ) const ;
   void  ajouter_contribution_aretes_coins(const DoubleTab&, Matrice_Morse& , int) const ;
-  int nb_elem;
-  IntVect orientation;
-  IntTab Qdm;
-  IntTab elem;
-  IntTab elem_faces;
-  IntVect type_arete_bord;
-  IntVect type_arete_coin;
-  int premiere_arete_interne;
-  int derniere_arete_interne;
-  int premiere_arete_mixte;
-  int derniere_arete_mixte;
-  int premiere_arete_bord;
-  int derniere_arete_bord;
-  int premiere_arete_coin;
-  int derniere_arete_coin;
+
+  IntTab Qdm, elem, elem_faces;
+  IntVect orientation, type_arete_bord, type_arete_coin;
+  int nb_elem, premiere_arete_interne, derniere_arete_interne, premiere_arete_mixte, derniere_arete_mixte;
+  int premiere_arete_bord, derniere_arete_bord, premiere_arete_coin, derniere_arete_coin;
   mutable SFichier Flux, Flux_moment, Flux_sum;
 };
 
@@ -228,7 +213,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter(const DoubleTab& inco, DoubleTab& resu
 template <class _TYPE_>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, DoubleTab& resu) const
 {
-  if (!flux_evaluateur.calculer_arete_bord())
+  if (!_TYPE_::CALC_ARR_BORD)
     return resu;
   int n_arete;
   int signe;
@@ -243,7 +228,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
       switch(n_type)
         {
         case TypeAreteBordVDF::PAROI_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -258,7 +243,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
             }
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
-          if (flux_evaluateur.calculer_arete_fluide())
+          if (_TYPE_::CALC_ARR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -275,7 +260,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
             }
           break;
         case TypeAreteBordVDF::PAROI_FLUIDE:
-          if (flux_evaluateur.calculer_arete_paroi_fluide())
+          if (_TYPE_::CALC_ARR_PAR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -292,7 +277,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
             }
           break;
         case TypeAreteBordVDF::SYM_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie())
+          if (_TYPE_::CALC_ARR_SYMM)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -303,7 +288,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
             }
           break;
         case TypeAreteBordVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -317,7 +302,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
             }
           break;
         case TypeAreteBordVDF::PAROI_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_paroi())
+          if (_TYPE_::CALC_ARR_SYMM_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -328,7 +313,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
             }
           break;
         case TypeAreteBordVDF::FLUIDE_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_fluide())
+          if (_TYPE_::CALC_ARR_SYMM_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -355,7 +340,7 @@ template <class _TYPE_>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
                                                        DoubleTab& resu,int ncomp) const
 {
-  if (!flux_evaluateur.calculer_arete_bord())
+  if (!_TYPE_::CALC_ARR_BORD)
     return resu;
   int n_arete;
   int signe;
@@ -371,7 +356,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
       switch(n_type)
         {
         case TypeAreteBordVDF::PAROI_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -389,7 +374,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
             }
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
-          if (flux_evaluateur.calculer_arete_fluide())
+          if (_TYPE_::CALC_ARR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -409,7 +394,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
             }
           break;
         case TypeAreteBordVDF::PAROI_FLUIDE:
-          if (flux_evaluateur.calculer_arete_paroi_fluide())
+          if (_TYPE_::CALC_ARR_PAR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -429,7 +414,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
             }
           break;
         case TypeAreteBordVDF::SYM_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie())
+          if (_TYPE_::CALC_ARR_SYMM)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -441,7 +426,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
             }
           break;
         case TypeAreteBordVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -458,7 +443,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
             }
           break;
         case TypeAreteBordVDF::PAROI_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_paroi())
+          if (_TYPE_::CALC_ARR_SYMM_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -470,7 +455,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
             }
           break;
         case TypeAreteBordVDF::FLUIDE_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_fluide())
+          if (_TYPE_::CALC_ARR_SYMM_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -511,7 +496,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
       switch(n_type)
         {
         case TypeAreteCoinVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -525,7 +510,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
             }
           break;
         case TypeAreteCoinVDF::PERIO_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -541,7 +526,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
             }
           break;
         case TypeAreteCoinVDF::PAROI_FLUIDE:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               /*               int i=0;  while ( Qdm(n_arete,i)==-1) i++;
                                fac1=Qdm(n_arete,i);i++;
@@ -561,7 +546,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
             }
           break;
         case TypeAreteCoinVDF::FLUIDE_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               /*int i=0;  while ( Qdm(n_arete,i)==-1) i++;
                 fac3=Qdm(n_arete,i);i++;
@@ -580,7 +565,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
             }
           break;
         case TypeAreteCoinVDF::FLUIDE_FLUIDE:
-          if (flux_evaluateur.calculer_arete_coin_fluide())
+          if (_TYPE_::CALC_ARR_COIN_FL)
             {
               double flux3=0;
               int n=la_zone->nb_faces_bord();
@@ -623,7 +608,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco,
       switch(n_type)
         {
         case TypeAreteCoinVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -640,7 +625,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco,
             }
           break;
         case TypeAreteCoinVDF::PERIO_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -668,7 +653,7 @@ template <class _TYPE_>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_internes(const DoubleTab& inco,
                                                           DoubleTab& resu) const
 {
-  if(!flux_evaluateur.calculer_arete_interne())
+  if(!_TYPE_::CALC_ARR_INT)
     return resu;
   double flux;
   int fac1, fac2, fac3, fac4;
@@ -692,7 +677,7 @@ template <class _TYPE_>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_internes(const DoubleTab& inco,
                                                           DoubleTab& resu,int ncomp) const
 {
-  if(!flux_evaluateur.calculer_arete_interne())
+  if(!_TYPE_::CALC_ARR_INT)
     return resu;
   DoubleVect flux(ncomp);
   int fac1, fac2, fac3, fac4;
@@ -722,7 +707,7 @@ template <class _TYPE_>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes(const DoubleTab& inco,
                                                         DoubleTab& resu) const
 {
-  if(!flux_evaluateur.calculer_arete_mixte())
+  if(!_TYPE_::CALC_ARR_MIXTE)
     return resu;
   double flux;
   int fac1, fac2, fac3, fac4;
@@ -776,7 +761,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes(const DoubleTab& inco,
 template <class _TYPE_>                                                             DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes(const DoubleTab& inco,
     DoubleTab& resu,int ncomp) const
 {
-  if(!flux_evaluateur.calculer_arete_mixte())
+  if(!_TYPE_::CALC_ARR_MIXTE)
     return resu;
   DoubleVect flux(ncomp);
   int fac1, fac2, fac3, fac4;
@@ -818,7 +803,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre(const DoubleTab& inco
       switch(type_cl(la_cl))
         {
         case sortie_libre :
-          if (flux_evaluateur.calculer_fa7_sortie_libre())
+          if (_TYPE_::CALC_FA7_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -876,7 +861,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre(const DoubleTab& inco
       switch(type_cl(la_cl))
         {
         case sortie_libre :
-          if (flux_evaluateur.calculer_fa7_sortie_libre())
+          if (_TYPE_::CALC_FA7_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1267,7 +1252,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
       switch(n_type)
         {
         case TypeAreteBordVDF::PAROI_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1278,7 +1263,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
-          if (flux_evaluateur.calculer_arete_fluide())
+          if (_TYPE_::CALC_ARR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1291,7 +1276,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::PAROI_FLUIDE:
-          if (flux_evaluateur.calculer_arete_paroi_fluide())
+          if (_TYPE_::CALC_ARR_PAR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1304,7 +1289,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::SYM_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie())
+          if (_TYPE_::CALC_ARR_SYMM)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1315,7 +1300,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1329,7 +1314,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::PAROI_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_paroi())
+          if (_TYPE_::CALC_ARR_SYMM_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1340,7 +1325,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::FLUIDE_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_fluide())
+          if (_TYPE_::CALC_ARR_SYMM_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1377,7 +1362,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
       switch(n_type)
         {
         case TypeAreteBordVDF::PAROI_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1389,7 +1374,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
-          if (flux_evaluateur.calculer_arete_fluide())
+          if (_TYPE_::CALC_ARR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1405,7 +1390,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::PAROI_FLUIDE:
-          if (flux_evaluateur.calculer_arete_paroi_fluide())
+          if (_TYPE_::CALC_ARR_PAR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1421,7 +1406,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::SYM_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie())
+          if (_TYPE_::CALC_ARR_SYMM)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1433,7 +1418,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1450,7 +1435,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::PAROI_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_paroi())
+          if (_TYPE_::CALC_ARR_SYMM_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1462,7 +1447,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
             }
           break;
         case TypeAreteBordVDF::FLUIDE_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_fluide())
+          if (_TYPE_::CALC_ARR_SYMM_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1501,7 +1486,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
       switch(n_type)
         {
         case TypeAreteCoinVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1515,7 +1500,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
             }
           break;
         case TypeAreteCoinVDF::PERIO_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1526,7 +1511,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
             }
           break;
         case TypeAreteCoinVDF::PAROI_FLUIDE:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               /*               int i=0;  while ( Qdm(n_arete,i)==-1) i++;
                                fac1=Qdm(n_arete,i);i++;
@@ -1545,7 +1530,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
             }
           break;
         case TypeAreteCoinVDF::FLUIDE_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               /*int i=0;  while ( Qdm(n_arete,i)==-1) i++;
                 fac3=Qdm(n_arete,i);i++;
@@ -1563,7 +1548,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
             }
           break;
         case TypeAreteCoinVDF::FLUIDE_FLUIDE:
-          if (flux_evaluateur.calculer_arete_coin_fluide())
+          if (_TYPE_::CALC_ARR_COIN_FL)
             {
               double flux3=0;
               fac1 = Qdm(n_arete,0);
@@ -1599,7 +1584,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(
       switch(n_type)
         {
         case TypeAreteCoinVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1616,7 +1601,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(
             }
           break;
         case TypeAreteCoinVDF::PERIO_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -1746,7 +1731,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre(DoubleT
       switch(type_cl(la_cl))
         {
         case sortie_libre :
-          if (flux_evaluateur.calculer_fa7_sortie_libre())
+          if (_TYPE_::CALC_FA7_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -1802,7 +1787,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre(DoubleT
       switch(type_cl(la_cl))
         {
         case sortie_libre :
-          if (flux_evaluateur.calculer_fa7_sortie_libre())
+          if (_TYPE_::CALC_FA7_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -2019,7 +2004,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
       switch(n_type)
         {
         case TypeAreteBordVDF::PAROI_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2030,7 +2015,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
-          if (flux_evaluateur.calculer_arete_fluide())
+          if (_TYPE_::CALC_ARR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2045,7 +2030,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::PAROI_FLUIDE:
-          if (flux_evaluateur.calculer_arete_paroi_fluide())
+          if (_TYPE_::CALC_ARR_PAR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2060,7 +2045,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::SYM_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie())
+          if (_TYPE_::CALC_ARR_SYMM)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2071,7 +2056,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2104,7 +2089,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::PAROI_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_paroi())
+          if (_TYPE_::CALC_ARR_SYMM_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2115,7 +2100,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::FLUIDE_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_fluide())
+          if (_TYPE_::CALC_ARR_SYMM_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2156,7 +2141,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
       switch(n_type)
         {
         case TypeAreteBordVDF::PAROI_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2176,7 +2161,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
-          if (flux_evaluateur.calculer_arete_fluide())
+          if (_TYPE_::CALC_ARR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2221,7 +2206,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::PAROI_FLUIDE:
-          if (flux_evaluateur.calculer_arete_paroi_fluide())
+          if (_TYPE_::CALC_ARR_PAR_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2263,7 +2248,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::SYM_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie())
+          if (_TYPE_::CALC_ARR_SYMM)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2283,7 +2268,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2344,7 +2329,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::PAROI_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_paroi())
+          if (_TYPE_::CALC_ARR_SYMM_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2364,7 +2349,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
             }
           break;
         case TypeAreteBordVDF::FLUIDE_SYM:
-          if (flux_evaluateur.calculer_arete_symetrie_fluide())
+          if (_TYPE_::CALC_ARR_SYMM_FL)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2433,7 +2418,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
       switch(n_type)
         {
         case TypeAreteCoinVDF::PERIO_PERIO:
-          if (flux_evaluateur.calculer_arete_periodicite())
+          if (_TYPE_::CALC_ARR_PERIO)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2452,7 +2437,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
             }
           break;
         case TypeAreteCoinVDF::PERIO_PAROI:
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2464,7 +2449,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
           break;
         case TypeAreteCoinVDF::PAROI_FLUIDE:
           exit(); /* pas fini */
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2476,7 +2461,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
           break;
         case TypeAreteCoinVDF::FLUIDE_PAROI:
           exit(); /* pas fini */
-          if (flux_evaluateur.calculer_arete_paroi())
+          if (_TYPE_::CALC_ARR_PAR)
             {
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
@@ -2513,7 +2498,7 @@ template <class _TYPE_>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes(const DoubleTab& inco,
                                                                  Matrice_Morse& matrice) const
 {
-  if(!flux_evaluateur.calculer_arete_interne())
+  if(!_TYPE_::CALC_ARR_INT)
     return;
   int fac1, fac2, fac3, fac4;
   int n_arete;
@@ -2610,7 +2595,7 @@ template <class _TYPE_>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes(const DoubleTab& inco,
                                                                Matrice_Morse& matrice) const
 {
-  if(!flux_evaluateur.calculer_arete_mixte())
+  if(!_TYPE_::CALC_ARR_MIXTE)
     return ;
   int fac1, fac2, fac3, fac4;
   double aii=0, ajj=0;
@@ -2723,7 +2708,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const DoubleTa
       switch(type_cl(la_cl))
         {
         case sortie_libre :
-          if (flux_evaluateur.calculer_fa7_sortie_libre())
+          if (_TYPE_::CALC_FA7_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
@@ -2793,7 +2778,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const DoubleTa
       switch(type_cl(la_cl))
         {
         case sortie_libre :
-          if (flux_evaluateur.calculer_fa7_sortie_libre())
+          if (_TYPE_::CALC_FA7_SORTIE_LIB)
             {
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)

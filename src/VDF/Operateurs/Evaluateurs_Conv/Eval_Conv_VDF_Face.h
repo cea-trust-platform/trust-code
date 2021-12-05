@@ -31,6 +31,8 @@ class Eval_Conv_VDF_Face : public Eval_VDF_Face
 {
 public:
   static constexpr bool IS_AMONT = false, IS_CENTRE = false, IS_CENTRE4 = false, IS_QUICK = false, IS_AXI = false;
+  static constexpr bool CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR = false, CALC_ARR_SYMM_PAR = false, CALC_ARR_PERIO = DERIVED_T::IS_AXI ? false : true,
+                        CALC_ARR_SYMM_FL = DERIVED_T::IS_AXI ? false : true, CALC_ARR_COIN_FL = DERIVED_T::IS_AMONT ? true : false;  // pas code pour les autres
 
   // CRTP pattern to static_cast the appropriate class and get the implementation
   // This is magic !
@@ -53,18 +55,6 @@ public:
   inline double conv_centre_(const double&,const double&,const double&,const double&,const double&,double,double,double,double) const;
   inline void calcul_g_(const double&,const double&,const double&,double&,double&,double&,double&) const;
   inline const Zone_Cl_VDF& la_zcl() const;
-
-  inline int calculer_arete_fluide() const { return 1; }
-  inline int calculer_arete_paroi() const { return 0; }
-  inline int calculer_arete_paroi_fluide() const { return 1; }
-  inline int calculer_arete_coin_fluide() const { return DERIVED_T::IS_AMONT ? 1 : 0; } // pas code pour les autres
-  inline int calculer_arete_symetrie() const { return 0; }
-  inline int calculer_arete_interne() const { return 1; }
-  inline int calculer_arete_mixte() const { return 1; }
-  inline int calculer_fa7_sortie_libre() const { return 1; }
-  inline int calculer_arete_periodicite() const { return DERIVED_T::IS_AXI ? 0 : 1; }
-  inline int calculer_arete_symetrie_paroi() const { return 0; }
-  inline int calculer_arete_symetrie_fluide() const { return DERIVED_T::IS_AXI ? 0 : 1; }
 
   //************************
   // CAS SCALAIRE

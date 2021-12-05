@@ -38,6 +38,7 @@ class Eval_Diff_VDF_Face : public Eval_VDF_Face, public Evaluateur_VDF
 
 public:
   static constexpr bool IS_VAR = false, IS_TURB = false;
+  static constexpr bool CALC_FA7_SORTIE_LIB = DERIVED_T::IS_TURB ? true : false, CALC_ARR_PAR_FL = DERIVED_T::IS_TURB ? false : true;
 
   inline double surface_(int i,int j) const;
   inline double porosity_(int i,int j) const;
@@ -55,24 +56,6 @@ public:
   inline bool uses_mod_turb() const;
   inline DoubleTab k_elem() const;
 
-  inline int calculer_fa7_sortie_libre() const { return DERIVED_T::IS_TURB ? 1 : 0; }
-  inline int calculer_arete_fluide() const { return 1; }
-  inline int calculer_arete_paroi() const { return 1; }
-  inline int calculer_arete_paroi_fluide() const { return DERIVED_T::IS_TURB ? 0 : 1; }
-  inline int calculer_arete_symetrie() const { return 0; }
-  inline int calculer_arete_interne() const { return 1; }
-  inline int calculer_arete_mixte() const { return 1; }
-  inline int calculer_arete_periodicite() const { return 1; }
-  inline int calculer_arete_symetrie_paroi() const { return 1; }
-  inline int calculer_arete_symetrie_fluide() const { return 1; }
-  inline int calculer_arete_coin_fluide() const
-  {
-    Cerr << "arete_coin_fluide not coded for this scheme." << finl;
-    Cerr << "For TRUST support: code like Eval_Amont_VDF_Face::flux_arete_coin_fluide()" << finl;
-    Process::exit();
-    return 1;
-  }
-
   //************************
   // CAS SCALAIRE
   //************************
@@ -84,11 +67,11 @@ public:
   inline double flux_arete_paroi(const DoubleTab&, int, int, int, int) const ;
   inline double flux_arete_interne(const DoubleTab&, int, int, int, int) const ;
   inline double flux_arete_mixte(const DoubleTab&, int, int, int, int) const ;
+  inline double flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int) const ;
   inline void flux_arete_fluide(const DoubleTab&, int, int, int, int, double&, double&) const;
   inline void flux_arete_paroi_fluide(const DoubleTab&, int, int, int, int, double&, double&) const;
   inline void flux_arete_periodicite(const DoubleTab&, int, int, int, int, double&, double&) const ;
   inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
-  inline double flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int) const ;
   inline void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int, double&, double&) const
   {
     Cerr << "arete_coin_fluide not coded for this scheme." << finl;
@@ -117,11 +100,11 @@ public:
   inline double secmem_arete_mixte(int, int, int, int) const { return 0; }
   inline double secmem_arete_symetrie(int, int, int, int) const { return 0; }
   inline double secmem_arete_paroi(int, int, int, int ) const;
+  inline double secmem_arete_symetrie_paroi(int, int, int, int ) const;
   inline void secmem_arete_periodicite(int, int, int, int, double&, double&) const { /* Do nothing */ }
   inline void secmem_arete_fluide(int, int, int, int, double&, double&) const;
   inline void secmem_arete_paroi_fluide(int, int, int, int, double&, double&) const;
   inline void secmem_arete_symetrie_fluide(int, int, int, int, double&, double&) const;
-  inline double secmem_arete_symetrie_paroi(int, int, int, int ) const;
   inline void secmem_arete_coin_fluide(int, int, int, int, double&, double&) const { /* Do nothing */ }
 
   //************************
