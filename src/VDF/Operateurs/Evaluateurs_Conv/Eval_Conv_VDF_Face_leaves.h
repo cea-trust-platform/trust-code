@@ -65,7 +65,6 @@ class Eval_Centre_VDF_Face : public Eval_Conv_VDF_Face<Eval_Centre_VDF_Face>, pu
 {
 public:
   static constexpr bool IS_CENTRE = true;
-  static constexpr bool CALC_FLUX_FACES_NSCBC = false;
 };
 
 // .DESCRIPTION  class Eval_Centre4_VDF_Face

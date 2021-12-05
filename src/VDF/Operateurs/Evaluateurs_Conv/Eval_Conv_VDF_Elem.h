@@ -33,7 +33,7 @@ public:
   static constexpr bool IS_AMONT = false, IS_CENTRE = false, IS_CENTRE4 = false, IS_QUICK = false;
   // Overload Eval_VDF_Elem
   static constexpr bool CALC_FLUX_FACES_ECH_EXT_IMP = false, CALC_FLUX_FACES_ECH_GLOB_IMP = false, CALC_FLUX_FACES_PAR = false,
-                        CALC_FLUX_FACES_PAR_FIXE = false, CALC_FLUX_FACES_SORTIE_LIB = true, CALC_FLUX_FACES_NSCBC = true;
+                        CALC_FLUX_FACES_PAR_FIXE = false, CALC_FLUX_FACES_SORTIE_LIB = true, CALC_FLUX_FACES_NSCBC = DERIVED_T::IS_CENTRE ? false : true;
 
   // CRTP pattern to static_cast the appropriate class and get the implementation
   // This is magic !
