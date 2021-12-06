@@ -32,6 +32,8 @@
 #include <EcrFicPartage.h>
 #include <communications.h>
 #include <DoubleTrav.h>
+#include <CL_Types_Aretes_enum.h>
+#include <type_traits>
 
 template <class _TYPE_>
 class T_It_VDF_Face : public Iterateur_VDF_base
@@ -149,17 +151,6 @@ inline const Evaluateur_VDF& T_It_VDF_Face<_TYPE_>::evaluateur() const
   return eval;
 }
 
-// Implemente_instanciable(T_It_VDF_Face(_TYPE_),"Iterateur_VDF_Face",Iterateur_VDF_base);
-/*
-template <class _TYPE_>
-Sortie& T_It_VDF_Face<_TYPE_>::printOn(Sortie& s ) const {
-    return s << que_suis_je() ;
-  }
-template <class _TYPE_>
-  Entree& T_It_VDF_Face<_TYPE_>::readOn(Entree& s ) {
-    return s ;
-  }
-*/
 template <class _TYPE_>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
@@ -234,7 +225,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
               if (fac1<n)
                 tab_flux_bords(fac1,orientation(fac3))-=0.5*signe*flux;
@@ -249,7 +240,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_fluide(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::FLUIDE>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
               resu[fac3]+=signe*flux3;
               resu[fac1]+=flux1_2;
               resu[fac2]-=flux1_2;
@@ -266,7 +257,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_paroi_fluide(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI_FLUIDE>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
               resu[fac3]+=signe*flux3;
               resu[fac1]+=flux1_2;
               resu[fac2]-=flux1_2;
@@ -283,7 +274,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.flux_arete_symetrie(inco, fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::SYMETRIE>(inco, fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
             }
           break;
@@ -294,7 +285,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_periodicite(inco, fac1, fac2, fac3, fac4, flux3_4, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::PERIODICITE>(inco, fac1, fac2, fac3, fac4, flux3_4, flux1_2);
               resu[fac3]+=0.5*flux3_4;
               resu[fac4]-=0.5*flux3_4;
               resu[fac1]+=flux1_2;
@@ -308,7 +299,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.flux_arete_symetrie_paroi(inco, fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::SYMETRIE_PAROI>(inco, fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
             }
           break;
@@ -319,7 +310,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco, Do
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_symetrie_fluide(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::SYMETRIE_FLUIDE>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
               resu[fac3]+=signe*flux3;
               resu[fac1]+=flux1_2;
               resu[fac2]-=flux1_2;
@@ -362,7 +353,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe, flux);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac2, fac3, signe, flux);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=signe*flux(k);
@@ -380,7 +371,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_fluide(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::FLUIDE>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=signe*flux3(k);
@@ -400,7 +391,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_paroi_fluide(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI_FLUIDE>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=signe*flux3(k);
@@ -420,7 +411,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_symetrie(inco, fac1, fac2, fac3, signe, flux);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::SYMETRIE>(inco, fac1, fac2, fac3, signe, flux);
               for (k=0; k<ncomp; k++)
                 resu(fac3,k)+=signe*flux(k);
             }
@@ -432,7 +423,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_periodicite(inco, fac1, fac2, fac3, fac4, flux3_4, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::PERIODICITE>(inco, fac1, fac2, fac3, fac4, flux3_4, flux1_2);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=0.5*flux3_4(k);
@@ -449,7 +440,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_symetrie_paroi(inco, fac1, fac2, fac3, signe, flux);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::SYMETRIE_PAROI>(inco, fac1, fac2, fac3, signe, flux);
               for (k=0; k<ncomp; k++)
                 resu(fac3,k)+=signe*flux(k);
             }
@@ -461,7 +452,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const DoubleTab& inco,
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_symetrie_fluide(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::SYMETRIE_FLUIDE>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=signe*flux3(k);
@@ -502,7 +493,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_periodicite(inco, fac1, fac2, fac3, fac4, flux3_4, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::PERIODICITE>(inco, fac1, fac2, fac3, fac4, flux3_4, flux1_2);
               resu[fac3]+=0.5*flux3_4;
               resu[fac4]-=0.5*flux3_4;
               resu[fac1]+=0.5*flux1_2;
@@ -516,7 +507,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
               /* on ajoute la contribution du coin paroi-perio au flux_bord */
               /* classiquement -0.5*signe*flux */
@@ -533,13 +524,13 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
                                while ( Qdm(n_arete,i)==-1) i++;
                                fac3 = Qdm(n_arete,i);
                                signe = 1;
-                               flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac1,fac3, signe);*/ \
+                               flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac1,fac3, signe);*/ \
               /*Cerr<<"coin "<<fac1<<" "<<fac3<<" "<<signe<<finl;*/
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
               /*Cerr<<"coin "<<fac1<<" "<<fac2<<" "<<fac3<<" "<<signe << " " << flux<<finl;*/
               ((DoubleTab&)(tab_flux_bords))(fac1,orientation(fac3))-=0.5*signe*flux;
@@ -553,13 +544,13 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
                 while ( Qdm(n_arete,i)==-1) i++;
                 fac1 = Qdm(n_arete,i);
                 signe = 1;
-                flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac1,fac3, signe);*/
+                flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac1,fac3, signe);*/
               /*Cerr<<"coin2 "<<fac1<<" "<<fac3<<" "<<signe<<finl;*/
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
               ((DoubleTab&)(tab_flux_bords))(fac1,orientation(fac3))-=0.5*signe*flux;
             }
@@ -573,7 +564,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco, Do
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_coin_fluide(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::COIN_FLUIDE>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
               resu[fac3]+=signe*flux3;
               resu[fac1]+=flux1_2;
               //resu[fac2]-=flux1_2;
@@ -614,7 +605,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco,
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_periodicite(inco, fac1, fac2, fac3, fac4, flux3_4, flux1_2);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::PERIODICITE>(inco, fac1, fac2, fac3, fac4, flux3_4, flux1_2);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=0.5*flux3_4(k);
@@ -631,7 +622,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const DoubleTab& inco,
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe, flux);
+              flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac2, fac3, signe, flux);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=signe*flux(k);
@@ -664,10 +655,10 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_internes(const DoubleTab& inco,
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux=flux_evaluateur.flux_arete_interne(inco, fac1, fac2, fac3, fac4);
+      flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::INTERNE>(inco, fac1, fac2, fac3, fac4);
       resu[fac3] += flux;
       resu[fac4] -= flux;
-      flux=flux_evaluateur.flux_arete_interne(inco, fac3, fac4, fac1, fac2);
+      flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::INTERNE>(inco, fac3, fac4, fac1, fac2);
       resu[fac1] += flux;
       resu[fac2] -= flux;
     }
@@ -688,13 +679,13 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_internes(const DoubleTab& inco,
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux_evaluateur.flux_arete_interne(inco, fac1, fac2, fac3, fac4,flux);
+      flux_evaluateur.template flux_arete<Type_Flux_Arete::INTERNE>(inco, fac1, fac2, fac3, fac4,flux);
       for (k=0; k<ncomp; k++)
         {
           resu(fac3,k) += flux(k);
           resu(fac4,k) -= flux(k);
         }
-      flux_evaluateur.flux_arete_interne(inco, fac3, fac4, fac1, fac2, flux);
+      flux_evaluateur.template flux_arete<Type_Flux_Arete::INTERNE>(inco, fac3, fac4, fac1, fac2, flux);
       for (k=0; k<ncomp; k++)
         {
           resu(fac1,k) += flux(k);
@@ -721,7 +712,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes(const DoubleTab& inco,
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux=flux_evaluateur.flux_arete_mixte(inco, fac1, fac2, fac3, fac4);
+      flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::MIXTE>(inco, fac1, fac2, fac3, fac4);
       resu[fac3] += flux;
       resu[fac4] -= flux;
       if (fac4<n2)
@@ -738,7 +729,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes(const DoubleTab& inco,
           if (fac2<n)
             tab_flux_bords(fac2,orientation(fac4))+=flux;
         }
-      flux=flux_evaluateur.flux_arete_mixte(inco, fac3, fac4, fac1, fac2);
+      flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::MIXTE>(inco, fac3, fac4, fac1, fac2);
       resu[fac1] += flux;
       resu[fac2] -= flux;
       if (fac2<n2)
@@ -772,13 +763,13 @@ template <class _TYPE_>                                                         
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux_evaluateur.flux_arete_mixte(inco, fac1, fac2, fac3, fac4, flux);
+      flux_evaluateur.template flux_arete<Type_Flux_Arete::MIXTE>(inco, fac1, fac2, fac3, fac4, flux);
       for (k=0; k<ncomp; k++)
         {
           resu(fac3,k) += flux(k);
           resu(fac4,k) -= flux(k);
         }
-      flux_evaluateur.flux_arete_mixte(inco, fac3, fac4, fac1, fac2, flux);
+      flux_evaluateur.template flux_arete<Type_Flux_Arete::MIXTE>(inco, fac3, fac4, fac1, fac2, flux);
       for (k=0; k<ncomp; k++)
         {
           resu(fac1,k) += flux(k);
@@ -808,7 +799,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre(const DoubleTab& inco
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
                 {
-                  double flux=flux_evaluateur.flux_fa7_sortie_libre(inco, face, cl, ndeb);
+                  double flux=flux_evaluateur.template flux_fa7<Type_Flux_Fa7::SORTIE_LIBRE>(inco, face, cl, ndeb);
                   if ( (elem(face,0)) > -1)
                     resu[face]+=flux;
                   if ( (elem(face,1)) > -1)
@@ -866,7 +857,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre(const DoubleTab& inco
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
                 {
-                  flux_evaluateur.flux_fa7_sortie_libre(inco, face, cl, ndeb, flux);
+                  flux_evaluateur.template flux_fa7<Type_Flux_Fa7::SORTIE_LIBRE>(inco, face, cl, ndeb, flux);
                   if ( (elem(face,0)) > -1)
                     for (k=0; k<ncomp; k++)
                       resu(face,k) += flux(k);
@@ -919,7 +910,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem(const DoubleTab& inco, Double
         {
           fac1=elem_faces(num_elem,fa7);
           fac2=elem_faces(num_elem,fa7+dimension);
-          flux=flux_evaluateur.flux_fa7_elem(inco, num_elem, fac1, fac2);
+          flux=flux_evaluateur.template flux_fa7<Type_Flux_Fa7::ELEM>(inco, num_elem, fac1, fac2);
           resu[fac1] += flux;
           resu[fac2] -= flux;
           if (fac1<n)
@@ -945,7 +936,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem(const DoubleTab& inco,
         {
           fac1=elem_faces(num_elem,fa7);
           fac2=elem_faces(num_elem,fa7+dimension);
-          flux_evaluateur.flux_fa7_elem(inco, num_elem, fac1, fac2, flux);
+          flux_evaluateur.template flux_fa7<Type_Flux_Fa7::ELEM>(inco, num_elem, fac1, fac2, flux);
           for (k=0; k<ncomp; k++)
             {
               resu(fac1,k) += flux(k);
@@ -989,7 +980,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const Doubl
                 }
               fac1 = elem_faces(num_elem,ori);
               fac2 = elem_faces(num_elem,ori+dimension);
-              flux_evaluateur.flux_fa7_elem(inco,num_elem,fac1,fac2,flux);
+              flux_evaluateur.template flux_fa7<Type_Flux_Fa7::ELEM>(inco,num_elem,fac1,fac2,flux);
               for (int k=0; k<ncomp; k++)
                 resu(face,k) += signe*flux(k);
             }
@@ -1031,7 +1022,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const Doubl
                 }
               fac1 = elem_faces(num_elem,ori);
               fac2 = elem_faces(num_elem,ori+dimension);
-              flux=flux_evaluateur.flux_fa7_elem(inco,num_elem,fac1,fac2);
+              flux=flux_evaluateur.template flux_fa7<Type_Flux_Fa7::ELEM>(inco,num_elem,fac1,fac2);
               resu(face) += signe*flux;
             }
         }
@@ -1258,7 +1249,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.secmem_arete_paroi(fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template secmem_arete<Type_Flux_Arete::PAROI>(fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
             }
           break;
@@ -1269,7 +1260,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_fluide(fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::FLUIDE>(fac1, fac2, fac3, signe, flux3, flux1_2);
               resu[fac3]+=signe*flux3;
               resu[fac1]+=flux1_2;
               resu[fac2]-=flux1_2;
@@ -1282,7 +1273,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_paroi_fluide(fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::PAROI_FLUIDE>(fac1, fac2, fac3, signe, flux3, flux1_2);
               resu[fac3]+=signe*flux3;
               resu[fac1]+=flux1_2;
               resu[fac2]-=flux1_2;
@@ -1295,7 +1286,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.secmem_arete_symetrie(fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template secmem_arete<Type_Flux_Arete::SYMETRIE>(fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
             }
           break;
@@ -1306,7 +1297,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_periodicite(fac1, fac2, fac3, fac4, flux3_4, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::PERIODICITE>(fac1, fac2, fac3, fac4, flux3_4, flux1_2);
               resu[fac3]+=0.5*flux3_4;
               resu[fac4]-=0.5*flux3_4;
               resu[fac1]+=flux1_2;
@@ -1320,7 +1311,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.secmem_arete_symetrie_paroi(fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template secmem_arete<Type_Flux_Arete::SYMETRIE_PAROI>(fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
             }
           break;
@@ -1331,7 +1322,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_symetrie_fluide(fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::SYMETRIE_FLUIDE>(fac1, fac2, fac3, signe, flux3, flux1_2);
               resu[fac3]+=signe*flux3;
               resu[fac1]+=flux1_2;
               resu[fac2]-=flux1_2;
@@ -1368,7 +1359,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_paroi(fac1, fac2, fac3, signe, flux);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::PAROI>(fac1, fac2, fac3, signe, flux);
               for (k=0; k<ncomp; k++)
                 resu(fac3,k)+=signe*flux(k);
             }
@@ -1380,7 +1371,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_fluide(fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::FLUIDE>(fac1, fac2, fac3, signe, flux3, flux1_2);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=signe*flux3(k);
@@ -1396,7 +1387,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_paroi_fluide(fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::PAROI_FLUIDE>(fac1, fac2, fac3, signe, flux3, flux1_2);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=signe*flux3(k);
@@ -1412,7 +1403,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_symetrie(fac1, fac2, fac3, signe, flux);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::SYMETRIE>(fac1, fac2, fac3, signe, flux);
               for (k=0; k<ncomp; k++)
                 resu(fac3,k)+=signe*flux(k);
             }
@@ -1424,7 +1415,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_periodicite(fac1, fac2, fac3, fac4, flux3_4, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::PERIODICITE>(fac1, fac2, fac3, fac4, flux3_4, flux1_2);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=0.5*flux3_4(k);
@@ -1441,7 +1432,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_symetrie_paroi(fac1, fac2, fac3, signe, flux);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::SYMETRIE_PAROI>(fac1, fac2, fac3, signe, flux);
               for (k=0; k<ncomp; k++)
                 resu(fac3,k)+=signe*flux(k);
             }
@@ -1453,7 +1444,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(DoubleTab& 
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_symetrie_fluide(fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::SYMETRIE_FLUIDE>(fac1, fac2, fac3, signe, flux3, flux1_2);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=signe*flux3(k);
@@ -1492,7 +1483,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_periodicite(fac1, fac2, fac3, fac4, flux3_4, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::PERIODICITE>(fac1, fac2, fac3, fac4, flux3_4, flux1_2);
               resu[fac3]+=0.5*flux3_4;
               resu[fac4]-=0.5*flux3_4;
               resu[fac1]+=0.5*flux1_2;
@@ -1506,7 +1497,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.secmem_arete_paroi( fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template secmem_arete<Type_Flux_Arete::PAROI>( fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
             }
           break;
@@ -1518,13 +1509,13 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
                                while ( Qdm(n_arete,i)==-1) i++;
                                fac3 = Qdm(n_arete,i);
                                signe = 1;
-                               flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac1,fac3, signe);*/ \
+                               flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac1,fac3, signe);*/ \
               /*Cerr<<"coin "<<fac1<<" "<<fac3<<" "<<signe<<finl;*/
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.secmem_arete_paroi( fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template secmem_arete<Type_Flux_Arete::PAROI>( fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
               /*Cerr<<"coin "<<fac1<<" "<<fac2<<" "<<fac3<<" "<<signe << " " << flux<<finl;*/
             }
@@ -1537,13 +1528,13 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
                 while ( Qdm(n_arete,i)==-1) i++;
                 fac1 = Qdm(n_arete,i);
                 signe = 1;
-                flux=flux_evaluateur.flux_arete_paroi( fac1, fac1,fac3, signe);*/
+                flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>( fac1, fac1,fac3, signe);*/
               /*Cerr<<"coin2 "<<fac1<<" "<<fac3<<" "<<signe<<finl;*/
               fac1 = Qdm(n_arete,0);
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux=flux_evaluateur.secmem_arete_paroi( fac1, fac2, fac3, signe);
+              flux=flux_evaluateur.template secmem_arete<Type_Flux_Arete::PAROI>( fac1, fac2, fac3, signe);
               resu[fac3]+=signe*flux;
             }
           break;
@@ -1555,7 +1546,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins( DoubleTab&
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_coin_fluide(fac1, fac2, fac3, signe, flux3, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::COIN_FLUIDE>(fac1, fac2, fac3, signe, flux3, flux1_2);
               resu[fac3]+=signe*flux3;
               resu[fac1]+=flux1_2;
               //resu[fac2]-=flux1_2;
@@ -1590,7 +1581,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_periodicite( fac1, fac2, fac3, fac4, flux3_4, flux1_2);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::PERIODICITE>( fac1, fac2, fac3, fac4, flux3_4, flux1_2);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=0.5*flux3_4(k);
@@ -1607,7 +1598,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.secmem_arete_paroi(fac1, fac2, fac3, signe, flux);
+              flux_evaluateur.template secmem_arete<Type_Flux_Arete::PAROI>(fac1, fac2, fac3, signe, flux);
               for (k=0; k<ncomp; k++)
                 {
                   resu(fac3,k)+=signe*flux(k);
@@ -1635,10 +1626,10 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_internes(DoubleTa
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux=flux_evaluateur.secmem_arete_interne(fac1, fac2, fac3, fac4);
+      flux=flux_evaluateur.template secmem_arete<Type_Flux_Arete::INTERNE>(fac1, fac2, fac3, fac4);
       resu[fac3] += flux;
       resu[fac4] -= flux;
-      flux=flux_evaluateur.secmem_arete_interne(fac3, fac4, fac1, fac2);
+      flux=flux_evaluateur.template secmem_arete<Type_Flux_Arete::INTERNE>(fac3, fac4, fac1, fac2);
       resu[fac1] += flux;
       resu[fac2] -= flux;
     }
@@ -1655,13 +1646,13 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_internes(DoubleTa
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux_evaluateur.secmem_arete_interne(fac1, fac2, fac3, fac4,flux);
+      flux_evaluateur.template secmem_arete<Type_Flux_Arete::INTERNE>(fac1, fac2, fac3, fac4,flux);
       for (k=0; k<ncomp; k++)
         {
           resu(fac3,k) += flux(k);
           resu(fac4,k) -= flux(k);
         }
-      flux_evaluateur.secmem_arete_interne(fac3, fac4, fac1, fac2, flux);
+      flux_evaluateur.template secmem_arete<Type_Flux_Arete::INTERNE>(fac3, fac4, fac1, fac2, flux);
       for (k=0; k<ncomp; k++)
         {
           resu(fac1,k) += flux(k);
@@ -1681,10 +1672,10 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_mixtes(DoubleTab&
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux=flux_evaluateur.secmem_arete_mixte(fac1, fac2, fac3, fac4);
+      flux=flux_evaluateur.template secmem_arete<Type_Flux_Arete::MIXTE>(fac1, fac2, fac3, fac4);
       resu[fac3] += flux;
       resu[fac4] -= flux;
-      flux=flux_evaluateur.secmem_arete_mixte(fac3, fac4, fac1, fac2);
+      flux=flux_evaluateur.template secmem_arete<Type_Flux_Arete::MIXTE>(fac3, fac4, fac1, fac2);
       resu[fac1] += flux;
       resu[fac2] -= flux;
     }
@@ -1701,13 +1692,13 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_mixtes(DoubleTab&
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux_evaluateur.secmem_arete_mixte(fac1, fac2, fac3, fac4, flux);
+      flux_evaluateur.template secmem_arete<Type_Flux_Arete::MIXTE>(fac1, fac2, fac3, fac4, flux);
       for (k=0; k<ncomp; k++)
         {
           resu(fac3,k) += flux(k);
           resu(fac4,k) -= flux(k);
         }
-      flux_evaluateur.secmem_arete_mixte(fac3, fac4, fac1, fac2, flux);
+      flux_evaluateur.template secmem_arete<Type_Flux_Arete::MIXTE>(fac3, fac4, fac1, fac2, flux);
       for (k=0; k<ncomp; k++)
         {
           resu(fac1,k) += flux(k);
@@ -1736,7 +1727,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre(DoubleT
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
                 {
-                  double flux=flux_evaluateur.secmem_fa7_sortie_libre(face, cl, ndeb);
+                  double flux=flux_evaluateur.template secmem_fa7<Type_Flux_Fa7::SORTIE_LIBRE>(face, cl, ndeb);
                   if ( (elem(face,0)) > -1)
                     resu[face]+=flux;
                   if ( (elem(face,1)) > -1)
@@ -1792,7 +1783,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre(DoubleT
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
                 {
-                  flux_evaluateur.secmem_fa7_sortie_libre(face, cl, ndeb, flux);
+                  flux_evaluateur.template secmem_fa7<Type_Flux_Fa7::SORTIE_LIBRE>(face, cl, ndeb, flux);
                   if ( (elem(face,0)) > -1)
                     for (k=0; k<ncomp; k++)
                       resu(face,k) += flux(k);
@@ -1841,7 +1832,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem(DoubleTab& resu
         {
           fac1=elem_faces(num_elem,fa7);
           fac2=elem_faces(num_elem,fa7+dimension);
-          flux=flux_evaluateur.secmem_fa7_elem(num_elem, fac1, fac2);
+          flux=flux_evaluateur.template secmem_fa7<Type_Flux_Fa7::ELEM>(num_elem, fac1, fac2);
           resu[fac1] += flux;
           resu[fac2] -= flux;
         }
@@ -1861,7 +1852,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem(DoubleTab& resu
         {
           fac1=elem_faces(num_elem,fa7);
           fac2=elem_faces(num_elem,fa7+dimension);
-          flux_evaluateur.secmem_fa7_elem(num_elem, fac1, fac2, flux);
+          flux_evaluateur.template secmem_fa7<Type_Flux_Fa7::ELEM>(num_elem, fac1, fac2, flux);
           for (k=0; k<ncomp; k++)
             {
               resu(fac1,k) += flux(k);
@@ -1904,7 +1895,7 @@ void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite(DoubleTab& resu
                 }
               fac1 = elem_faces(num_elem,ori);
               fac2 = elem_faces(num_elem,ori+dimension);
-              flux_evaluateur.secmem_fa7_elem(num_elem,fac1,fac2,flux);
+              flux_evaluateur.template secmem_fa7<Type_Flux_Fa7::ELEM>(num_elem,fac1,fac2,flux);
               for (int k=0; k<ncomp; k++)
                 resu(face,k) += signe*flux(k);
             }
@@ -1945,7 +1936,7 @@ void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite(DoubleTab& resu
                 }
               fac1 = elem_faces(num_elem,ori);
               fac2 = elem_faces(num_elem,ori+dimension);
-              flux=flux_evaluateur.secmem_fa7_elem(num_elem,fac1,fac2);
+              flux=flux_evaluateur.template secmem_fa7<Type_Flux_Fa7::ELEM>(num_elem,fac1,fac2);
               resu(face) += signe*flux;
             }
         }
@@ -2010,7 +2001,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_paroi(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PAROI>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               matrice(fac3,fac3)+=signe*aii3_4;
             }
           break;
@@ -2021,7 +2012,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_fluide(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::FLUIDE>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               matrice(fac3,fac3)+=signe*aii3_4;
               matrice(fac1,fac1)+=aii1_2;
               matrice(fac1,fac2)-=ajj1_2;
@@ -2036,7 +2027,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_paroi_fluide(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PAROI_FLUIDE>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               matrice(fac3,fac3)+=signe*aii3_4;
               matrice(fac1,fac1)+=aii1_2;
               matrice(fac1,fac2)-=ajj1_2;
@@ -2051,7 +2042,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_symetrie(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::SYMETRIE>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               matrice(fac3,fac3)+=signe*aii3_4;
             }
           break;
@@ -2062,7 +2053,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_periodicite(fac3, fac4, fac1, fac2, aii, ajj);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PERIODICITE>(fac3, fac4, fac1, fac2, aii, ajj);
               if (fac1<nb_face_reelle)
                 {
                   matrice(fac1,fac1)+=aii;
@@ -2073,7 +2064,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
                   matrice(fac2,fac1)-=aii;
                   matrice(fac2,fac2)+=ajj;
                 }
-              flux_evaluateur.coeffs_arete_periodicite(fac1, fac2, fac3, fac4, aii, ajj);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PERIODICITE>(fac1, fac2, fac3, fac4, aii, ajj);
               aii*=0.5;
               ajj*=0.5;
               if (fac3<nb_face_reelle)
@@ -2095,7 +2086,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_symetrie_paroi(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::SYMETRIE_PAROI>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               matrice(fac3,fac3)+=signe*aii3_4;
             }
           break;
@@ -2106,7 +2097,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_symetrie_fluide(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::SYMETRIE_FLUIDE>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               matrice(fac3,fac3)+=signe*aii3_4;
               matrice(fac1,fac1)+=aii1_2;
               matrice(fac1,fac2)-=ajj1_2;
@@ -2147,7 +2138,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_paroi(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PAROI>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               for (i=0; i<ncomp; i++)
                 {
                   for (k=tab1[fac3*ncomp+i]-1; k<tab1[fac3*ncomp+1+i]-1; k++)
@@ -2167,7 +2158,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_fluide(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::FLUIDE>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               for (i=0; i< ncomp; i++ )
                 {
                   for (k=tab1[fac3*ncomp+i]-1; k<tab1[fac3*ncomp+1+i]-1; k++)
@@ -2212,7 +2203,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_paroi_fluide(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PAROI_FLUIDE>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               for (i=0; i< ncomp; i++ )
                 {
                   for (k=tab1[fac3*ncomp+i]-1; k<tab1[fac3*ncomp+1+i]-1; k++)
@@ -2254,7 +2245,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_symetrie(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::SYMETRIE>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               for (i=0; i< ncomp; i++ )
                 {
                   for (k=tab1[fac3*ncomp+i]-1; k<tab1[fac3*ncomp+1+i]-1; k++)
@@ -2274,7 +2265,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_periodicite(fac3, fac4, fac1, fac2, aii, ajj);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PERIODICITE>(fac3, fac4, fac1, fac2, aii, ajj);
               for (i=0; i< ncomp; i++ )
                 {
                   for (k=tab1[fac1*ncomp+i]-1; k<tab1[fac1*ncomp+1+i]-1; k++)
@@ -2300,7 +2291,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
                         }
                     }
                 }
-              flux_evaluateur.coeffs_arete_periodicite(fac1, fac2, fac3, fac4, aii, ajj);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PERIODICITE>(fac1, fac2, fac3, fac4, aii, ajj);
               for (i=0; i< ncomp; i++ )
                 {
                   for (k=tab1[fac3*ncomp+i]-1; k<tab1[fac3*ncomp+i+1]-1; k++)
@@ -2335,7 +2326,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_symetrie_paroi(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::SYMETRIE_PAROI>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               for (i=0; i<ncomp; i++)
                 {
                   for (k=tab1[fac3*ncomp+i]-1; k<tab1[fac3*ncomp+1+i]-1; k++)
@@ -2355,7 +2346,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_symetrie_fluide(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::SYMETRIE_FLUIDE>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               for (i=0; i< ncomp; i++ )
                 {
                   for (k=tab1[fac3*ncomp+i]-1; k<tab1[fac3*ncomp+1+i]-1; k++)
@@ -2424,12 +2415,12 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               fac4 = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_periodicite(fac3, fac4, fac1, fac2, aii, ajj);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PERIODICITE>(fac3, fac4, fac1, fac2, aii, ajj);
               matrice(fac1,fac1)+=aii;
               matrice(fac1,fac2)-=ajj;
               matrice(fac2,fac1)-=aii;
               matrice(fac2,fac2)+=ajj;
-              flux_evaluateur.coeffs_arete_periodicite(fac1, fac2, fac3, fac4, aii, ajj);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PERIODICITE>(fac1, fac2, fac3, fac4, aii, ajj);
               matrice(fac3,fac3)+=aii;
               matrice(fac3,fac4)-=ajj;
               matrice(fac4,fac3)-=aii;
@@ -2443,7 +2434,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              flux_evaluateur.coeffs_arete_paroi(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+              flux_evaluateur.template coeffs_arete<Type_Flux_Arete::PAROI>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
               matrice(fac3,fac3)+=signe*aii3_4;
             }
           break;
@@ -2455,7 +2446,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              /* flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe);  */
+              /* flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac2, fac3, signe);  */
               /*               resu[fac3]+=signe*flux;        */
             }
           break;
@@ -2467,7 +2458,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
               fac2 = Qdm(n_arete,1);
               fac3 = Qdm(n_arete,2);
               signe = Qdm(n_arete,3);
-              /* flux=flux_evaluateur.flux_arete_paroi(inco, fac1, fac2, fac3, signe);
+              /* flux=flux_evaluateur.template flux_arete<Type_Flux_Arete::PAROI>(inco, fac1, fac2, fac3, signe);
                  resu[fac3]+=signe*flux; */
             }
           break;
@@ -2476,7 +2467,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const DoubleTab& i
           fac2 = Qdm(n_arete,1);
           fac3 = Qdm(n_arete,2);
           signe = Qdm(n_arete,3);
-          flux_evaluateur.coeffs_arete_coin_fluide(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
+          flux_evaluateur.template coeffs_arete<Type_Flux_Arete::COIN_FLUIDE>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
           matrice(fac3,fac3)+=signe*aii3_4;
           matrice(fac1,fac1)+=aii1_2;
           //matrice(fac1,fac2)-=ajj1_2;
@@ -2509,12 +2500,12 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes(const DoubleTab
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux_evaluateur.coeffs_arete_interne(fac3, fac4, fac1, fac2, aii, ajj);
+      flux_evaluateur.template coeffs_arete<Type_Flux_Arete::INTERNE>(fac3, fac4, fac1, fac2, aii, ajj);
       matrice(fac1,fac1)+=aii;
       matrice(fac1,fac2)-=ajj;
       matrice(fac2,fac1)-=aii;
       matrice(fac2,fac2)+=ajj;
-      flux_evaluateur.coeffs_arete_interne(fac1, fac2, fac3, fac4, aii, ajj);
+      flux_evaluateur.template coeffs_arete<Type_Flux_Arete::INTERNE>(fac1, fac2, fac3, fac4, aii, ajj);
       matrice(fac3,fac3)+=aii;
       matrice(fac3,fac4)-=ajj;
       matrice(fac4,fac3)-=aii;
@@ -2537,7 +2528,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes(const DoubleTab
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux_evaluateur.coeffs_arete_interne(fac3, fac4, fac1, fac2, aii, ajj);
+      flux_evaluateur.template coeffs_arete<Type_Flux_Arete::INTERNE>(fac3, fac4, fac1, fac2, aii, ajj);
       for (i=0; i< ncomp; i++ )
         {
           for (k=tab1[fac1*ncomp+i]-1; k<tab1[fac1*ncomp+1+i]-1; k++)
@@ -2563,7 +2554,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes(const DoubleTab
                 }
             }
         }
-      flux_evaluateur.coeffs_arete_interne(fac1, fac2, fac3, fac4, aii, ajj);
+      flux_evaluateur.template coeffs_arete<Type_Flux_Arete::INTERNE>(fac1, fac2, fac3, fac4, aii, ajj);
       for (i=0; i< ncomp; i++ )
         {
           for (k=tab1[fac3*ncomp+i]-1; k<tab1[fac3*ncomp+1+i]-1; k++)
@@ -2606,12 +2597,12 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes(const DoubleTab& 
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux_evaluateur.coeffs_arete_mixte(fac1, fac2, fac3, fac4, aii, ajj);
+      flux_evaluateur.template coeffs_arete<Type_Flux_Arete::MIXTE>(fac1, fac2, fac3, fac4, aii, ajj);
       matrice(fac3,fac3)+=aii;
       matrice(fac3,fac4)-=ajj;
       matrice(fac4,fac3)-=aii;
       matrice(fac4,fac4)+=ajj;
-      flux_evaluateur.coeffs_arete_mixte(fac3, fac4, fac1, fac2, aii, ajj);
+      flux_evaluateur.template coeffs_arete<Type_Flux_Arete::MIXTE>(fac3, fac4, fac1, fac2, aii, ajj);
       matrice(fac1,fac1)+=aii;
       matrice(fac1,fac2)-=ajj;
       matrice(fac2,fac1)-=aii;
@@ -2634,7 +2625,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes(const DoubleTab& 
       fac2=Qdm(n_arete,1);
       fac3=Qdm(n_arete,2);
       fac4=Qdm(n_arete,3);
-      flux_evaluateur.coeffs_arete_mixte(fac1, fac2, fac3, fac4, aii, ajj);
+      flux_evaluateur.template coeffs_arete<Type_Flux_Arete::MIXTE>(fac1, fac2, fac3, fac4, aii, ajj);
       for (i=0; i< ncomp; i++ )
         {
           for (k=tab1[fac1*ncomp+i]-1; k<tab1[fac1*ncomp+1+i]-1; k++)
@@ -2660,7 +2651,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes(const DoubleTab& 
                 }
             }
         }
-      flux_evaluateur.coeffs_arete_mixte(fac3, fac4, fac1, fac2, aii, ajj);
+      flux_evaluateur.template coeffs_arete<Type_Flux_Arete::MIXTE>(fac3, fac4, fac1, fac2, aii, ajj);
       for (i=0; i< ncomp; i++ )
         {
           for (k=tab1[fac3*ncomp+i]-1; k<tab1[fac3*ncomp+1+i]-1; k++)
@@ -2713,7 +2704,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const DoubleTa
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
                 {
-                  flux_evaluateur.coeffs_fa7_sortie_libre(face, cl, aii, ajj);
+                  flux_evaluateur.template coeffs_fa7<Type_Flux_Fa7::SORTIE_LIBRE>(face, cl, aii, ajj);
                   if ( (elem(face,0)) > -1)
                     {
                       for (k=tab1[face]-1; k<tab1[face+1]-1; k++)
@@ -2783,7 +2774,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const DoubleTa
               const Neumann_sortie_libre& cl =(const Neumann_sortie_libre&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
                 {
-                  flux_evaluateur.coeffs_fa7_sortie_libre(face, cl, aii, ajj);
+                  flux_evaluateur.template coeffs_fa7<Type_Flux_Fa7::SORTIE_LIBRE>(face, cl, aii, ajj);
                   if ( (elem(face,0)) > -1)
                     {
                       for (i=0; i< ncomp; i++ )
@@ -2850,7 +2841,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem(const DoubleTab& inco,
         {
           fac1=elem_faces(num_elem,fa7);
           fac2=elem_faces(num_elem,fa7+dimension);
-          flux_evaluateur.coeffs_fa7_elem(num_elem, fac1, fac2, aii, ajj);
+          flux_evaluateur.template coeffs_fa7<Type_Flux_Fa7::ELEM>(num_elem, fac1, fac2, aii, ajj);
           matrice(fac1,fac1)+=aii;
           matrice(fac1,fac2)-=ajj;
           matrice(fac2,fac1)-=aii;
@@ -2875,7 +2866,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem(const DoubleTab& inco,
         {
           fac1=elem_faces(num_elem,fa7);
           fac2=elem_faces(num_elem,fa7+dimension);
-          flux_evaluateur.coeffs_fa7_elem(num_elem, fac1, fac2, aii, ajj);
+          flux_evaluateur.template coeffs_fa7<Type_Flux_Fa7::ELEM>(num_elem, fac1, fac2, aii, ajj);
           for (i=0; i< ncomp; i++ )
             {
               for (k=tab1[fac1*ncomp+i]-1; k<tab1[fac1*ncomp+1+i]-1; k++)
@@ -2938,7 +2929,7 @@ void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite(const DoubleTab
                 }
               fac1 = elem_faces(num_elem,ori);
               fac2 = elem_faces(num_elem,ori+dimension);
-              flux_evaluateur.coeffs_fa7_elem(num_elem, fac1, fac2, aii, ajj);
+              flux_evaluateur.template coeffs_fa7<Type_Flux_Fa7::ELEM>(num_elem, fac1, fac2, aii, ajj);
               {
                 if (signe>0)
                   {
@@ -2993,7 +2984,7 @@ void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite(const DoubleTab
                 }
               fac1 = elem_faces(num_elem,ori);
               fac2 = elem_faces(num_elem,ori+dimension);
-              flux_evaluateur.coeffs_fa7_elem(num_elem, fac1, fac2, aii, ajj);
+              flux_evaluateur.template coeffs_fa7<Type_Flux_Fa7::ELEM>(num_elem, fac1, fac2, aii, ajj);
               for (i=0; i< ncomp; i++ )
                 {
                   for (k=tab1[face*ncomp+i]-1; k<tab1[face*ncomp+1+i]-1; k++)

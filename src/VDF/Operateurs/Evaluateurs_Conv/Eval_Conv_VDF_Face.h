@@ -24,7 +24,9 @@
 #define Eval_Conv_VDF_Face_included
 
 #include <Neumann_sortie_libre.h>
+#include <CL_Types_Aretes_enum.h>
 #include <Eval_VDF_Face.h>
+#include <type_traits>
 
 template <typename DERIVED_T>
 class Eval_Conv_VDF_Face : public Eval_VDF_Face
@@ -56,99 +58,333 @@ public:
   inline void calcul_g_(const double&,const double&,const double&,double&,double&,double&,double&) const;
   inline const Zone_Cl_VDF& la_zcl() const;
 
-  //************************
-  // CAS SCALAIRE
-  //************************
+  /* ****************************************************************************** *
+   * YES, we do magic ! Its all about : Substition Failure Is Not An Error (SFINAE) *
+   * ****************************************************************************** */
 
-  inline double flux_fa7_elem(const DoubleTab&, int, int, int) const ;
-  inline double flux_fa7_sortie_libre(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
-  inline double flux_arete_interne(const DoubleTab&, int, int, int, int ) const;
-  inline double flux_arete_mixte(const DoubleTab&, int, int, int, int ) const;
-  inline double flux_arete_paroi(const DoubleTab&, int, int, int, int ) const { return 0; }
-  inline double flux_arete_symetrie(const DoubleTab&, int, int, int, int ) const { return 0; }
-  inline double flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int) const { return 0; }
-  inline void flux_arete_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
-  inline void flux_arete_paroi_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
-  inline void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
-  inline void flux_arete_periodicite(const DoubleTab&, int, int, int, int, double&, double&) const ;
-  inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int, double&, double&) const ;
+  /* ******************* *
+   * CAS SCALAIRE : FLUX *
+   * ******************* */
 
-  inline void coeffs_fa7_elem(int, int, int, double& aii, double& ajj) const;
-  inline void coeffs_fa7_sortie_libre(int, const Neumann_sortie_libre&, double& aii, double& ajj) const;
-  inline void coeffs_arete_interne(int, int, int, int, double& aii, double& ajj) const;
-  inline void coeffs_arete_mixte(int, int, int, int, double& aii, double& ajj) const;
-  inline void coeffs_arete_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
-  inline void coeffs_arete_paroi_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
-  inline void coeffs_arete_coin_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
-  inline void coeffs_arete_periodicite(int, int, int, int, double& aii, double& ajj) const;
-  inline void coeffs_arete_symetrie_fluide(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const;
-  inline void coeffs_arete_paroi(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const { /* do nothing */ }
-  inline void coeffs_arete_symetrie(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const { /* do nothing */ }
-  inline void coeffs_arete_symetrie_paroi(int, int, int, int, double& aii1_2, double& aii3_4, double& ajj1_2) const { /* do nothing */ }
+  // TODO : FIXME : a faire void un jour !!!!!!
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, double>::type
+  flux_fa7(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
 
-  inline double secmem_fa7_sortie_libre(int, const Neumann_sortie_libre&, int ) const;
-  inline double secmem_fa7_elem( int, int, int) const { return 0; }
-  inline double secmem_arete_interne(int, int, int, int) const { return 0; }
-  inline double secmem_arete_mixte(int, int, int, int) const { return 0; }
-  inline double secmem_arete_symetrie(int, int, int, int) const { return 0; }
-  inline double secmem_arete_paroi(int, int, int, int ) const { return 0; }
-  inline double secmem_arete_symetrie_paroi(int, int, int, int ) const { return 0; }
-  inline void secmem_arete_fluide(int, int, int, int, double&, double&) const;
-  inline void secmem_arete_paroi_fluide(int, int, int, int, double&, double&) const;
-  inline void secmem_arete_coin_fluide(int, int, int, int, double&, double&) const;
-  inline void secmem_arete_symetrie_fluide(int, int, int, int, double&, double&) const;
-  inline void secmem_arete_periodicite(int, int, int, int, double&, double&) const { /* do nothing */ }
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::ELEM, double>::type
+  flux_fa7(const DoubleTab&, int, int, int) const ;
 
-  //************************
-  // CAS VECTORIEL
-  //************************
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, double>::type
+  flux_arete(const DoubleTab&, int, int, int, int ) const;
 
-  inline void flux_fa7_elem(const DoubleTab&, int, int, int, DoubleVect& flux) const;
-  inline void flux_fa7_sortie_libre(const DoubleTab&, int , const Neumann_sortie_libre&, int, DoubleVect& flux) const;
-  inline void flux_arete_interne(const DoubleTab&, int, int, int, int, DoubleVect& flux) const ;
-  inline void flux_arete_mixte(const DoubleTab&, int, int, int, int, DoubleVect& flux) const ;
-  inline void flux_arete_fluide(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const;
-  inline void flux_arete_paroi_fluide(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const ;
-  inline void flux_arete_periodicite(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const ;
-  inline void flux_arete_symetrie_fluide(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const;
-  inline void flux_arete_paroi(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-  inline void flux_arete_symetrie(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-  inline void flux_arete_symetrie_paroi(const DoubleTab&, int, int, int, int, DoubleVect& flux) const { /* do nothing */ }
-  inline void flux_arete_coin_fluide(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect&) const
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, double>::type
+  flux_arete(const DoubleTab&, int, int, int, int ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, double>::type
+  flux_arete(const DoubleTab&, int, int, int, int ) const { return 0; }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, double>::type
+  flux_arete(const DoubleTab&, int, int, int, int ) const { return 0; }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, double>::type
+  flux_arete(const DoubleTab&, int, int, int, int) const { return 0; }
+
+  // void
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const ;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const ;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const ;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const ;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const;
+
+  /* ********************* *
+   * CAS SCALAIRE : COEFFS *
+   * ********************* */
+
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>::type
+  coeffs_fa7(int, const Neumann_sortie_libre&, double& , double& ) const;
+
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::ELEM, void>::type
+  coeffs_fa7(int, int, int, double& , double& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, void>::type
+  coeffs_arete(int, int, int, int, double& , double& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, void>::type
+  coeffs_arete(int, int, int, int, double& , double& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, void>::type
+  coeffs_arete(int, int, int, int, double& , double& , double& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, void>::type
+  coeffs_arete(int, int, int, int, double& , double& , double& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>::type
+  coeffs_arete(int, int, int, int, double& , double& , double& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+  coeffs_arete(int, int, int, int, double& , double& , double& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+  coeffs_arete(int, int, int, int, double& , double& , double& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+  coeffs_arete(int, int, int, int, double& , double& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+  coeffs_arete(int, int, int, int, double& , double& , double& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
+  coeffs_arete(int, int, int, int, double& , double& , double& ) const;
+
+  /* ********************* *
+   * CAS SCALAIRE : SECMEM *
+   * ********************* */
+
+  // TODO : FIXME : a faire void un jour !!!!!!
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, double>::type
+  secmem_fa7(int, const Neumann_sortie_libre&, int ) const;
+
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::ELEM, double>::type
+  secmem_fa7( int, int, int) const { return 0; }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, double>::type
+  secmem_arete(int, int, int, int) const { return 0; }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, double>::type
+  secmem_arete(int, int, int, int) const { return 0; }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, double>::type
+  secmem_arete(int, int, int, int ) const { return 0; }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, double>::type
+  secmem_arete(int, int, int, int) const { return 0; }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, double>::type
+  secmem_arete(int, int, int, int ) const { return 0; }
+
+  // void
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+  secmem_arete(int, int, int, int, double&, double&) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+  secmem_arete(int, int, int, int, double&, double&) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+  secmem_arete(int, int, int, int, double&, double&) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+  secmem_arete(int, int, int, int, double&, double&) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
+  secmem_arete(int, int, int, int, double&, double&) const;
+
+  /* ******************** *
+   * CAS VECTORIEL : FLUX *
+   * ******************** */
+
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>::type
+  flux_fa7(const DoubleTab&, int , const Neumann_sortie_libre&, int, DoubleVect& flux) const;
+
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::ELEM, void>::type
+  flux_fa7(const DoubleTab&, int, int, int, DoubleVect& flux) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const ;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const ;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const ;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const ;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect&) const
   {
     Cerr << "ToDo: code like Eval_Conv_VDF_Face::flux_arete_coin_fluide for a scalar inco" << finl;
     Process::exit();
   }
 
-  inline void coeffs_fa7_elem(int, int, int, DoubleVect& aii, DoubleVect& ajj) const;
-  inline void coeffs_fa7_sortie_libre(int , const Neumann_sortie_libre&, DoubleVect& aii, DoubleVect& ajj) const;
-  inline void coeffs_arete_interne(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const;
-  inline void coeffs_arete_mixte(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const;
-  inline void coeffs_arete_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
-  inline void coeffs_arete_paroi_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
-  inline void coeffs_arete_periodicite(int, int, int, int, DoubleVect& aii, DoubleVect& ajj) const;
-  inline void coeffs_arete_symetrie_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const;
-  inline void coeffs_arete_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* do nothing */ }
-  inline void coeffs_arete_symetrie(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* do nothing */ }
-  inline void coeffs_arete_symetrie_paroi(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const { /* do nothing */ }
-  inline void coeffs_arete_coin_fluide(int, int, int, int, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+  /* ********************** *
+   * CAS VECTORIEL : COEFFS *
+   * ********************** */
+
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>::type
+  coeffs_fa7(int , const Neumann_sortie_libre&, DoubleVect& , DoubleVect& ) const;
+
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::ELEM, void>::type
+  coeffs_fa7(int, int, int, DoubleVect& , DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const
   {
     Cerr << "ToDo: code like Eval_Conv_VDF_Face::coeffs_arete_coin_fluide for a scalar inco" << finl;
     Process::exit();
   }
 
-  inline void secmem_arete_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const;
-  inline void secmem_arete_paroi_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const;
-  inline void secmem_arete_symetrie_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const;
-  inline void secmem_fa7_sortie_libre(int , const Neumann_sortie_libre&, int, DoubleVect& flux) const;
-  inline void secmem_fa7_elem(int, int, int, DoubleVect& flux) const { /* do nothing */ }
-  inline void secmem_arete_interne(int, int, int, int, DoubleVect& flux) const { /* do nothing */ }
-  inline void secmem_arete_mixte(int, int, int, int, DoubleVect& flux) const { /* do nothing */ }
-  inline void secmem_arete_symetrie(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-  inline void secmem_arete_paroi(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-  inline void secmem_arete_periodicite(int, int, int, int, DoubleVect&, DoubleVect&) const { /* do nothing */ }
-  inline void secmem_arete_symetrie_paroi(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-  inline void secmem_arete_coin_fluide(int, int, int, int, DoubleVect&, DoubleVect&) const
+  /* ********************** *
+   * CAS VECTORIEL : SECMEM *
+   * ********************** */
+
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>::type
+  secmem_fa7(int , const Neumann_sortie_libre&, int, DoubleVect& ) const;
+
+  template<Type_Flux_Fa7 Fa7_Type>
+  inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::ELEM, void>::type
+  secmem_fa7(int, int, int, DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, void>::type
+  secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, void>::type
+  secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, void>::type
+  secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, void>::type
+  secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>::type
+  secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+  secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+  secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+  secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const { /* do nothing */ }
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+  secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
+  secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const
   {
     Cerr << "ToDo: code like Eval_Conv_VDF_Face::secmem_arete_coin_fluide for a scalar inco" <<finl;
     Process::exit();
@@ -277,8 +513,9 @@ inline const Zone_Cl_VDF& Eval_Conv_VDF_Face<DERIVED_T>::la_zcl() const
 // CAS SCALAIRE
 //************************
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_fluide(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe,double& flux3, double& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe,double& flux3, double& flux1_2) const
 {
   double flux, psc;
   // Calcul de flux3:
@@ -301,7 +538,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_fluide(const DoubleTab& in
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_coin_fluide(const DoubleTab& inco, int fac1, int , int fac3, int signe, double& flux3, double& flux1_2) const
+template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int , int fac3, int signe, double& flux3, double& flux1_2) const
 {
   if (!DERIVED_T::IS_AMONT)
     {
@@ -333,8 +572,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_coin_fluide(const DoubleTa
   flux1_2 = -flux;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_fluide(int fac1, int fac2, int fac3, int signe, double& aii1_2, double& aii3_4, double& ajj1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, double& aii1_2, double& aii3_4, double& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -357,8 +597,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_fluide(int fac1, int fac
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_coin_fluide(int fac1, int, int fac3, int signe, double& aii1_2, double& aii3_4, double& ajj1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int, int fac3, int signe, double& aii1_2, double& aii3_4, double& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -381,8 +622,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_coin_fluide(int fac1, in
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_fluide(int fac1, int fac2, int fac3, int signe,  double& flux3, double& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe,  double& flux3, double& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -400,8 +642,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_fluide(int fac1, int fac
   flux1_2 = 0;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_coin_fluide(int fac1, int , int fac3, int signe, double& flux3, double& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int , int fac3, int signe, double& flux3, double& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -418,8 +661,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_coin_fluide(int fac1, in
   flux1_2 = 0;
 }
 
-template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_interne(const DoubleTab& inco , int fac1, int fac2, int fac3, int fac4) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, double>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco , int fac1, int fac2, int fac3, int fac4) const
 {
   double flux;
   double psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2));
@@ -469,8 +713,9 @@ inline double Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_interne(const DoubleTab&
   return -flux;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_interne(int fac1, int fac2, int fac3, int fac4, double& aii, double& ajj) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int fac4, double& aii, double& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -487,8 +732,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_interne(int fac1, int fa
     }
 }
 
-template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_mixte(const DoubleTab& inco , int fac1, int fac2, int fac3, int fac4) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, double>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco , int fac1, int fac2, int fac3, int fac4) const
 {
   double flux;
   double psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) + surface(fac2));
@@ -499,8 +745,9 @@ inline double Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_mixte(const DoubleTab& i
   return -flux;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_mixte(int fac1, int fac2, int fac3, int fac4, double& aii, double& ajj) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int fac4, double& aii, double& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -517,8 +764,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_mixte(int fac1, int fac2
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_paroi_fluide(const DoubleTab& inco, int fac1, int fac2, int fac3, int signe, double& flux3 , double& flux1_2) const
+template <typename DERIVED_T>template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int fac2, int fac3, int signe, double& flux3 , double& flux1_2) const
 {
   double psc,flux;
   // Calcul de flux3:
@@ -538,8 +786,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_paroi_fluide(const DoubleT
   flux1_2 = -flux;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_paroi_fluide(int fac1, int fac2, int fac3, int signe, double& aii1_2, double& aii3_4, double& ajj1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, double& aii1_2, double& aii3_4, double& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -561,8 +810,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_paroi_fluide(int fac1, i
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_paroi_fluide(int fac1, int fac2, int fac3, int signe, double& flux3 , double& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe, double& flux3 , double& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -577,14 +827,15 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_paroi_fluide(int fac1, i
   flux1_2 = 0;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTab& inco, int fac1, int fac2, int fac3, int fac4, double& flux3_4 , double& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int fac2, int fac3, int fac4, double& flux3_4 , double& flux1_2) const
 {
   if (DERIVED_T::IS_QUICK) // XXX : LOL
     {
       if (DERIVED_T::IS_AXI) return;
-      flux3_4 = flux_arete_interne(inco,fac1, fac2,fac3, fac4) ;
-      flux1_2 = flux_arete_interne(inco,fac3, fac4,fac1, fac2) ;
+      flux3_4 = flux_arete<Type_Flux_Arete::INTERNE>(inco,fac1, fac2,fac3, fac4) ;
+      flux1_2 = flux_arete<Type_Flux_Arete::INTERNE>(inco,fac3, fac4,fac1, fac2) ;
       return;
     }
 
@@ -638,8 +889,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTa
   flux1_2 = -flux;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_periodicite(int fac1, int fac2, int fac3, int fac4, double& aii , double& ajj) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int fac4, double& aii , double& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -656,8 +908,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_periodicite(int fac1, in
     }
 }
 
-template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7_elem(const DoubleTab& inco, int num_elem, int fac1, int fac2) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type>
+inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::ELEM, double>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int num_elem, int fac1, int fac2) const
 {
   double flux, psc = 0.25 * (dt_vitesse(fac1)+dt_vitesse(fac2))*(surface(fac1)+surface(fac2));
   if (DERIVED_T::IS_AMONT) flux = (psc>0) ? psc * inco(fac1)*porosite(fac1) : psc * inco(fac2)*porosite(fac2);
@@ -710,8 +963,9 @@ inline double Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7_elem(const DoubleTab& inco
   return -flux;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7_elem(int, int fac1, int fac2, double& aii, double& ajj) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type>
+inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::ELEM, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int, int fac1, int fac2, double& aii, double& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -728,8 +982,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7_elem(int, int fac1, int fa
     }
 }
 
-template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7_sortie_libre(const DoubleTab& inco, int face, const Neumann_sortie_libre& la_cl, int num1) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type>
+inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, double>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int face, const Neumann_sortie_libre& la_cl, int num1) const
 {
   const int elem1 = elem_(face,0);
   double flux, psc = dt_vitesse(face)*surface(face);
@@ -746,8 +1001,9 @@ inline double Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7_sortie_libre(const DoubleT
   return -flux;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7_sortie_libre(int face, const Neumann_sortie_libre& la_cl, double& aii, double& ajj) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type>
+inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int face, const Neumann_sortie_libre& la_cl, double& aii, double& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -764,8 +1020,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7_sortie_libre(int face, con
     }
 }
 
-template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7_sortie_libre(int face, const Neumann_sortie_libre& la_cl, int num1) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type>
+inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, double>::type
+Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7(int face, const Neumann_sortie_libre& la_cl, int num1) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return 0.;
 
@@ -778,8 +1035,9 @@ inline double Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7_sortie_libre(int face, c
   return -flux;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const DoubleTab& inco, int fac1, int fac2, int fac3, int signe, double& flux3, double& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int fac2, int fac3, int signe, double& flux3, double& flux1_2) const
 {
   if (DERIVED_T::IS_AXI) return;
 
@@ -802,8 +1060,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const Doub
   flux1_2 = -flux;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_fluide(int fac1, int fac2, int fac3, int signe, double& aii1_2, double& aii3_4,double& ajj1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, double& aii1_2, double& aii3_4,double& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -826,8 +1085,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_fluide(int fac1
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_symetrie_fluide(int fac1, int fac2, int fac3, int signe, double& flux3, double& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe, double& flux3, double& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -847,8 +1107,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_symetrie_fluide(int fac1
 // CAS VECTORIEL
 //************************
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_fluide(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   // Calcul de flux3
   double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
@@ -870,8 +1131,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_fluide(const DoubleTab& in
     for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_fluide(int fac1, int fac2, int fac3, int signe, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -895,8 +1157,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_fluide(int fac1, int fac
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_fluide(int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -914,8 +1177,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_fluide(int fac1, int fac
   for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = 0;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_interne(const DoubleTab& inco,int fac1, int fac2,int fac3, int fac4, DoubleVect& flux) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2,int fac3, int fac4, DoubleVect& flux) const
 {
   double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
   if (DERIVED_T::IS_AMONT)
@@ -993,8 +1257,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_interne(const DoubleTab& i
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_interne(int fac1, int fac2,int fac3, int fac4, DoubleVect& aii, DoubleVect& ajj ) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3, int fac4, DoubleVect& aii, DoubleVect& ajj ) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -1011,8 +1276,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_interne(int fac1, int fa
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_mixte(const DoubleTab& inco,int fac1, int fac2,int fac3, int fac4, DoubleVect& flux) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2,int fac3, int fac4, DoubleVect& flux) const
 {
   double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
   if (DERIVED_T::IS_CENTRE)
@@ -1028,8 +1294,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_mixte(const DoubleTab& inc
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_mixte(int fac1, int fac2,int fac3, int fac4, DoubleVect& aii, DoubleVect& ajj) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3, int fac4, DoubleVect& aii, DoubleVect& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -1046,8 +1313,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_mixte(int fac1, int fac2
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_paroi_fluide(const DoubleTab& inco,int fac1, int fac2,int fac3,int signe,DoubleVect& flux3,DoubleVect& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2,int fac3,int signe,DoubleVect& flux3,DoubleVect& flux1_2) const
 {
   double psc;
   // Calcul de flux3
@@ -1070,8 +1338,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_paroi_fluide(const DoubleT
     for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_paroi_fluide(int fac1, int fac2,int fac3,int signe,DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3,int signe,DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -1094,8 +1363,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_paroi_fluide(int fac1, i
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_paroi_fluide(int fac1, int fac2,int fac3,int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2,int fac3,int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -1113,8 +1383,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_paroi_fluide(int fac1, i
   for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = 0;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTab& inco, int fac1, int fac2 , int fac3, int fac4, DoubleVect& flux3_4, DoubleVect& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int fac2 , int fac3, int fac4, DoubleVect& flux3_4, DoubleVect& flux1_2) const
 {
   if (DERIVED_T::IS_AXI) return;
 
@@ -1191,8 +1462,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_periodicite(const DoubleTa
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_periodicite(int fac1, int fac2 , int fac3, int fac4, DoubleVect& aii, DoubleVect& ajj) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2 , int fac3, int fac4, DoubleVect& aii, DoubleVect& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -1209,8 +1481,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_periodicite(int fac1, in
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7_elem(const DoubleTab& inco, int num_elem, int fac1, int fac2, DoubleVect& flux) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type>
+inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::ELEM, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int num_elem, int fac1, int fac2, DoubleVect& flux) const
 {
   double psc = 0.25 * (dt_vitesse(fac1)+dt_vitesse(fac2))* (surface(fac1)+surface(fac2));
   if (DERIVED_T::IS_AMONT)
@@ -1292,8 +1565,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7_elem(const DoubleTab& inco, 
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7_elem(int, int fac1, int fac2, DoubleVect& aii, DoubleVect& ajj ) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type>
+inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::ELEM, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int, int fac1, int fac2, DoubleVect& aii, DoubleVect& ajj ) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -1310,8 +1584,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7_elem(int, int fac1, int fa
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7_sortie_libre(const DoubleTab& inco, int face, const Neumann_sortie_libre& la_cl, int num1,DoubleVect& flux) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type>
+inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int face, const Neumann_sortie_libre& la_cl, int num1,DoubleVect& flux) const
 {
   const int elem1 = elem_(face,0);
   const double psc = dt_vitesse(face)*surface(face);
@@ -1341,8 +1616,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7_sortie_libre(const DoubleTab
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7_sortie_libre(int face,const Neumann_sortie_libre& la_cl, DoubleVect& aii, DoubleVect& ajj) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type>
+inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int face,const Neumann_sortie_libre& la_cl, DoubleVect& aii, DoubleVect& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -1360,8 +1636,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7_sortie_libre(int face,cons
 }
 //// secmem_fa7_sortie_libre
 //
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7_sortie_libre(int face, const Neumann_sortie_libre& la_cl, int num1,DoubleVect& flux) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type>
+inline typename std::enable_if< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7(int face, const Neumann_sortie_libre& la_cl, int num1,DoubleVect& flux) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -1383,10 +1660,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7_sortie_libre(int face, con
     }
 }
 
-//// flux_arete_symetrie_fluide
-//
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   if (DERIVED_T::IS_AXI) return;
 
@@ -1409,8 +1685,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::flux_arete_symetrie_fluide(const Doub
     for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_fluide(int fac1, int fac2, int fac3, int signe, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
@@ -1434,8 +1711,9 @@ inline void Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete_symetrie_fluide(int fac1
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete_symetrie_fluide(int fac1, int fac2, int fac3, int signe,DoubleVect& flux3, DoubleVect& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type>
+inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>::type
+Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe,DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
