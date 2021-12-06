@@ -1,0 +1,28 @@
+diff --git a/src/MEDCoupling_Swig/MEDCouplingCommon.i b/src/MEDCoupling_Swig/MEDCouplingCommon.i
+index b8e7d08e..c97f763c 100644
+--- a/src/MEDCoupling_Swig/MEDCouplingCommon.i
++++ b/src/MEDCoupling_Swig/MEDCouplingCommon.i
+@@ -72,7 +72,7 @@ using namespace INTERP_KERNEL;
+ typedef int mcIdType;
+ typedef DataArrayInt32 DataArrayIdType;
+ %template(ivec) std::vector<int>;
+-%template(i64vec) std::vector<long>;
++%template(i64vec) std::vector<int64_t>;
+ #else
+ //typedef std::int64_t mcIdType;
+ typedef DataArrayInt64 DataArrayIdType;
+diff --git a/src/MEDLoader/MeshFormatReader.hxx b/src/MEDLoader/MeshFormatReader.hxx
+index 067073f2..47cf454e 100644
+--- a/src/MEDLoader/MeshFormatReader.hxx
++++ b/src/MEDLoader/MeshFormatReader.hxx
+@@ -36,8 +36,10 @@
+ #include <fstream>
+ 
+ #ifndef WIN32
++#ifndef __APPLE__
+ #include <features.h>
+ #endif
++#endif
+ 
+ namespace MEDCoupling
+ {

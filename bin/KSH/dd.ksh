@@ -5,7 +5,7 @@ space()
 {
    # Detection espace libre
    space=`df -k . | awk '/\// && /%/ {print int($(NF-2)/1024/1024)}'`
-   if [ "$space" != "" ] && [ "`echo $space $space_need | awk '{print $1<$2}'`" = 1 ]
+   if [ "$space" != "" ] && [ "`echo $space $space_need | awk '{print ($1<$2)}'`" = 1 ]
    then
       echo "========================================================="
       echo "You need $space_need GBytes to install and compile TRUST"

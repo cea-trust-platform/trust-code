@@ -16,20 +16,22 @@ fi
 package="`ls $TRUST_ROOT/externalpackages/astyle_*_linux.tar.gz 2>/dev/null`" && [ "$package" = "" ] && echo "Package astyle not found!" && exit -1
 if [ ! -d astyle ]
 then
-   echo "Installing $package..." 
+   echo "Installing $package..."
    tar xfz $package
    # 1er patch (erreur sur machines de Saclay)
    echo -e "1,$ s?\-g \$(USER)??g\nw" | ed astyle/build/gcc/Makefile 1>/dev/null 2>&1
    # 2eme patch (car sinon plante avec 4.1.2)
+   if [ `uname -s` != "Darwin" ]; then
    (
    cd astyle/src
    tail --bytes=+4 ASLocalizer.cpp > ASLocalizerNEW.cpp
    mv -f ASLocalizerNEW.cpp ASLocalizer.cpp
    )
+   fi
    # Build
    cd astyle/build/gcc
    $TRUST_MAKE || exit -1
-   make prefix=$prefix install || exit -1 
+   make prefix=$prefix install || exit -1
    cd ../../..
    rm -r -f astyle
 fi

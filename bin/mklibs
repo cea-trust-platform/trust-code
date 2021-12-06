@@ -5,7 +5,7 @@ cd $TRUST_ROOT
 ########
 # PETSC
 #######
-PETSC="" 
+PETSC=""
 PETSC_LIB=$PETSC_ROOT/$TRUST_ARCH$OPT/lib
 MPIFORT=""
 petscmachineinfo=""
@@ -25,12 +25,12 @@ then
       do
          [ -f lib$lib.a ] && PETSC=$PETSC" -l$lib"
       done
-      [ -f libumfpack.a ] && PETSC=$PETSC" -lumfpack -lklu -lcholmod -lbtf -lccolamd -lcolamd -lcamd -lamd -lsuitesparseconfig -lrt"
+      [ -f libumfpack.a ] && PETSC=$PETSC" -lumfpack -lklu -lcholmod -lbtf -lccolamd -lcolamd -lcamd -lamd -lsuitesparseconfig"$([ `uname -s` != Darwin ] && echo " -lrt")
       # Crash sur orcus (Caught amgx exception: Cannot allocate pinned memory) si on utilise la librairie statique AmgX avec -lamgx !
       [ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$(TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgxsh -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper_static"
       # Le fichier suivant pourrait peut etre permettre de simplifier les choses precedantes:
       # car desormais on l'utilise pour avoir le nombre des librairies BLAS optimisees et des librairies eventuelles CUDA
-      petscmachineinfo=$PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h	
+      petscmachineinfo=$PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h
       if [ -f $petscmachineinfo ]
       then
 	 # CUDA trouve et qui fonctionne sur la machine (test fait dans $PETSC_ROOT/GPU)
@@ -49,7 +49,7 @@ then
             else
 	       L=""
 	    fi
-	    rm -f test.cpp	 
+	    rm -f test.cpp
             PETSC=$PETSC" "$L"-lX11"
 	 fi
 	 # PETSc without MPI:
@@ -61,7 +61,7 @@ then
              for libfort in lmpifort lmpi_f77
              do
 	     if [ "`grep $libfort $PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h 2>/dev/null`" != "" ]
-		 then	
+		 then
 		 MPIFORT=" -L\$(MPI_ROOT)/lib -${libfort} "
 	     fi
 	     done
@@ -124,7 +124,7 @@ fi
 #####
 MEDLDFLAGS=""
 # Cela devient complique pour trouve s'il faut ajouter -lz ou pas...
-lz="" 
+lz=""
 if [ -f $TRUST_MED_ROOT/bin/h5cc ]
 then
    # Meilleur moyen: si MED est compile on regarde dans h5cc
@@ -170,7 +170,7 @@ fi
 #################################################
 cd $TRUST_ENV
 for fic in make.libsl make.libso make.liba make.libdll
-do   
+do
    suffixe=${fic#make.lib}
    if [ $suffixe = a ]
    then
@@ -218,7 +218,7 @@ do
    echo $ECHO_OPTS "${LIBS_MEDC} \\" >> $fic
    
    [ "$MEDLDFLAGS" != "" ] && echo $ECHO_OPTS "$MEDLDFLAGS \\"  	>> $fic
-   
+
    [ "$MPIFORT" != "" ] && echo $ECHO_OPTS "$MPIFORT "  		>> $fic
 
    # Verification qu'une librairie n'est pas en double

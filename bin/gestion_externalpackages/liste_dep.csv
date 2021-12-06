@@ -105,6 +105,7 @@ MinicondaLocChannNoarch,prompt-toolkit-3.0.20-pyhd3eb1b0_0.conda,,ND,BSD3,,https
 MinicondaLocChannNoarch,prompt_toolkit-3.0.20-hd3eb1b0_0.conda,,ND,BSD3,,https://repo.anaconda.com/pkgs/main/noarch/prompt_toolkit-3.0.20-hd3eb1b0_0.conda,
 MinicondaLocChannNoarch,ptyprocess-0.7.0-pyhd3eb1b0_2.conda,,ND,ISC,,https://repo.anaconda.com/pkgs/main/noarch/ptyprocess-0.7.0-pyhd3eb1b0_2.conda,
 MinicondaLocChannNoarch,pygments-2.11.2-pyhd3eb1b0_0.conda,,ND,BSD2,,https://repo.anaconda.com/pkgs/main/noarch/pygments-2.11.2-pyhd3eb1b0_0.conda,
+Miniconda,Miniconda3-py38_4.10.1-MacOSX-arm64.sh,outil,AG,BSD,,https://repo.continuum.io/miniconda/Miniconda3-py38_4.10.1-MacOSX-arm64.sh,
 MinicondaLocChannNoarch,pyparsing-2.4.7-pyhd3eb1b0_0.tar.bz2,outil,ND,MIT,,https://repo.anaconda.com/pkgs/main/noarch/pyparsing-2.4.7-pyhd3eb1b0_0.tar.bz2,
 MinicondaLocChannNoarch,python-dateutil-2.8.1-pyhd3eb1b0_0.tar.bz2,,ND,BSD,,https://repo.anaconda.com/pkgs/main/noarch/python-dateutil-2.8.1-pyhd3eb1b0_0.tar.bz2,
 MinicondaLocChannNoarch,pytz-2021.1-pyhd3eb1b0_0.conda,outil,ND,MIT,,https://repo.anaconda.com/pkgs/main/noarch/pytz-2021.1-pyhd3eb1b0_0.conda,

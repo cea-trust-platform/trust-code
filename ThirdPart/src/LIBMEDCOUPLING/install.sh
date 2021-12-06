@@ -64,10 +64,17 @@ then
    # Pour nvc++, suppression de 2 flags non supportes:
    find $build_root -name CMakeLists.txt | xargs sed -i "1,$ s?-Wsign-compare -Wconversion??g"
    USE_PYTHON=OFF # Crash sur JeanZay lors du build de l'API Python
-   OPTIONS="$OPTIONS -DCMAKE_CXX_FLAGS=-D__GCC_ATOMIC_TEST_AND_SET_TRUEVAL=1" # Sur JeanZay error sinon
+   export CXXFLAGS=-D__GCC_ATOMIC_TEST_AND_SET_TRUEVAL=1
 else
-   OPTIONS="$OPTIONS -DCMAKE_CXX_FLAGS=-Wno-narrowing" # Error->Warning pour ARM
+   export CXXFLAGS=-Wno-narrowing
 fi
+if [[ $USE_PYTHON == ON && $(uname -s) == "Darwin" ]]
+then
+	export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python3.8"
+	export LDFLAGS="$LDFLAGS -L${TRUST_ROOT}/exec/python/lib -lpython3.8 -Wl,-rpath,${TRUST_MED_ROOT}/lib"
+fi
+# Patch for MacOS
+[ `uname -s` = "Darwin" ] && (cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/medcoupling_9.8.0_mac.diff)
 # Better detection of SWIG on Ubuntu 16
 SWIG_EXECUTABLE=`type -p swig`
 # We use now python from conda so:
@@ -75,7 +82,7 @@ OPTIONS="$OPTIONS -DMEDCOUPLING_USE_MPI=$USE_MPI -DSALOME_USE_MPI=$USE_MPI -DMPI
 OPTIONS="$OPTIONS -DHDF5_ROOT_DIR=$TRUST_MED_ROOT  -DMEDFILE_ROOT_DIR=$TRUST_MED_ROOT -DMEDCOUPLING_BUILD_DOC=OFF  -DMEDCOUPLING_PARTITIONER_METIS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_PARTITIONER_SCOTCH=OFF -DMEDCOUPLING_ENABLE_RENUMBER=OFF -DMEDCOUPLING_ENABLE_PARTITIONER=OFF -DMEDCOUPLING_BUILD_TESTS=OFF "
 OPTIONS="$OPTIONS -DMEDCOUPLING_WITH_FILE_EXAMPLES=OFF -DCONFIGURATION_ROOT_DIR=../configuration-$mc_version -DSWIG_EXECUTABLE=$SWIG_EXECUTABLE"
-OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=$USE_PYTHON"
+OPTIONS="$OPTIONS -DMEDCOUPLING_MEDLOADER_USE_XDR=OFF -DMEDCOUPLING_BUILD_STATIC=ON -DMEDCOUPLING_ENABLE_PYTHON=$USE_PYTHON -DPYTHON_ROOT_DIR=${TRUST_ROOT}/exec/python"
 #INT64
 if [ "$TRUST_INT64" = "1" ]
 then

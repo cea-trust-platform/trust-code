@@ -564,6 +564,7 @@ do
    --with-debugging=$debug --with-errorchecking=1 \
    --COPTFLAGS="$COPTFLAGS" --CXXOPTFLAGS="$CXXOPTFLAGS" --FOPTFLAGS="$FOPTFLAGS" \
    --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=C++11 \
+   --LIBS="`$TRUST_Awk '/SYSLIBS =/ {gsub("SYSLIBS =","",$0);print $0}' $fic_env`"\
    --with-clean=1 \
    --with-ssl=0 \
    --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install \

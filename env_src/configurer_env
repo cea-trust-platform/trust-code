@@ -119,6 +119,8 @@ whence_()
    if [ -f $1 ]
    then
       echo $1
+   elif [ `uname -s` = Darwin ]; then
+       which "$1"
    else
       # Test de whence sinon whereis -b
       if [ "`uname -s`" = OSF1 ]
@@ -493,6 +495,8 @@ then
       then
         TRUST_NB_PROCS=1
       fi
+   elif [ `uname -s` = "Darwin" ]; then
+     TRUST_NB_PROCS=$(sysctl -n hw.ncpu)
    fi
    echo $TRUST_NB_PROCS
    exit 0
@@ -663,6 +667,15 @@ case $arch in
 	Dtterm="xterm dtterm nxterm rxvt konsole"
 	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
 	;;
+   Darwin) TRUST_ARCH=darwin
+	TRUST_EDITOR="nano"
+	# par defaut, clang/clang++ (fourni par MacOS) / gfortran (a installer par l'utilisateur)
+	TRUST_CC_BASE=$TRUST_CC_BASE" clang++"
+	TRUST_F77_BASE=$TRUST_F77_BASE" gfortran"
+	TRUST_cc_BASE=$TRUST_cc_BASE" clang"
+	Dtterm="xterm"
+	IP=`$TRUST_ROOT/bin/admin/ping_ $HOSTNAME | awk '/PING/ {print $3}'`
+	;;
    *) TRUST_ARCH=autre
 	TRUST_EDITOR="nedit xedit dtpad xemacs"
 	TRUST_CC_BASE="g++ CC"
@@ -745,6 +758,7 @@ system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
 pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter`"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
 [ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0 `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
+[ "$model" = arm64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter`" # internet OK sous Mac
 
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
@@ -806,6 +820,7 @@ then
       ./conda install $local_channel $pkg -y 1>>$TRUST_ROOT/exec/conda_python.log 2>&1
       [ $? != 0 ] && echo "Error while installing '$pkg' from Miniconda3 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
     done
+	[ `uname -s` = Darwin ] && ln -s python3-config python-config #on MacOS, we need python-config to point to the Conda install
     cd - 1>/dev/null 2>&1
     # If a package has not been correctly installed, we exit with an error
     [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
@@ -1082,7 +1097,7 @@ else
       then
          MPI_BIN=`dirname $mpiCC` # Variable temporaire utile ensuite
 	 # On a besoin de specifier le compilateur utilise par mpiCC
-	 if [ "`$mpiCC -show | grep openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ] || [ "`$mpiCC -show | grep ompi`" != "" ]
+	 if [ "`$mpiCC -show | grep openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ] || [ "`$mpiCC -show | grep ompi`" != "" ] || [ "`$mpiCC -show | grep open-mpi`" != "" ]
 	 then
             m="# Compiler for mpiCC"  && e="OMPI_CXX=\"\$TRUST_CC_BASE\"  && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
             m="# Compiler for mpicc"  && e="OMPI_CC=\"\$TRUST_cc_BASE\"   && export OMPI_CC"  && ecrit $m"|"$e"|"$env;eval $e
@@ -1265,7 +1280,7 @@ else
       MPI_ROOT="\$TRUST_ROOT/lib/src/LIBMPI/`basename $MPI_ROOT`";export MPI_ROOT
       MPI_INCLUDE="\$TRUST_ROOT/lib/src/LIBMPI/`basename $MPI_ROOT`/include";export MPI_INCLUDE
       Mpirun="\$MPI_ROOT/bin/mpirun";export Mpirun
-      mpiCC="\$MPI_ROOT/bin/mpiCC";export mpiCC
+      mpiCC="\$MPI_ROOT/bin/mpicxx";export mpiCC
       COMFLAGS="-DMPI_"
       if [ "`basename $MPI_ROOT`" = openmpi ]
       then
@@ -1274,7 +1289,7 @@ else
 	 m="# Compiler for mpiCC" && e="OMPI_CXX=\"\$TRUST_CC_BASE\" && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler for mpicc" && e="OMPI_CC=\"\$TRUST_cc_BASE\" && export OMPI_CC" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler for mpifort" && e="OMPI_FC=\"\$TRUST_F77_BASE\" && export OMPI_FC" && ecrit $m"|"$e"|"$env;eval $e
-	 m="# Compiler C++" && e="TRUST_CC=\"$MPI_ROOT/bin/mpiCC\" && export TRUST_CC" && ecrit $m"|"$e"|"$env;eval $e
+	 m="# Compiler C++" && e="TRUST_CC=\"$MPI_ROOT/bin/mpicxx\" && export TRUST_CC" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler C" && e="TRUST_cc=\"$MPI_ROOT/bin/mpicc\" && export TRUST_cc" && ecrit $m"|"$e"|"$env;eval $e
 	 m="# Compiler F77" && e="TRUST_F77=\"$MPI_ROOT/bin/mpif77\" && export TRUST_F77" && ecrit $m"|"$e"|"$env;eval $e
 	 echo "ADD_PATH $MPI_ROOT/bin" >> $env
@@ -1570,7 +1585,7 @@ case $TRUST_ARCH_CC in
 	ShLibFlag="\$(TRUST_CC) -shared"
 	cherche_include_systeme
 	;;
-    linux_clang++|linux_armclang++) TRUST_SUPPORTED=1
+    linux_clang++|linux_armclang++|darwin_clang++) TRUST_SUPPORTED=1
         [ "$TRUST_ARCH_CC" = linux_armclang++ ] && ArmFlags="-armpl -ffast-math" # To add optimized machine-specific library. -ffast-math interessant sur irene-arm (*2 sur HPCG, rien sur GNU)
         [ "`$TRUST_CC_BASE -version 2>&1 | grep aocc`" != "" ] && AoccFlags="-march=znver1 -mfma -fvectorize -mfma -mavx2 -m3dnow -floop-unswitch-aggressive -fuse-ld=lld"
    	Defines="-D_COMPILE_AVEC_CLANG"
@@ -1594,12 +1609,12 @@ case $TRUST_ARCH_CC in
 	      SYSLIBS="-L"`dirname $L`" "
 	   fi
 	   rm -f test.cpp
-	   SYSLIBS=$SYSLIBS"-lgfortran"
+	   SYSLIBS=$SYSLIBS"-lgfortran -lgcc"
 	   TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
 	fi
 	[ "$TRUST_ARCH_CC" = linux_armclang++ ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lflangADT -lflangArger"
 	F77Flags="-O3 -fPIC $ArmFlags $AoccFlags"
-	[ `echo $TRUST_GNU_VERSION | awk -F. '{print $1>=10}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
+	[ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
 	ccFLAGS="-Qunused-arguments -O3 -fPIC $ArmFlags $AoccFlags"
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme

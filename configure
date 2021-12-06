@@ -28,8 +28,9 @@ whence2_()
       a=`whence ls 2>/dev/null`
       err=$?
       [ "`uname -s`" = OSF1 ] && err=1
-
-      if [ $err = 0 ]; then
+      if [ "`uname -s`" = "Darwin" ]; then
+        which $1  
+      elif [ $err = 0 ]; then
          whence $1 > .toto
          cat .toto
       else
@@ -94,6 +95,7 @@ CYGWIN*) list_of_CC_compilers="g++ icpc icc ecc pgCC"
         ;;
 Darwin) list_of_CC_compilers="g++ gcc"
         list_of_c_compilers="gcc cc"
+        list_of_f77_compilers="gfortran"
         ;;
  cobea) list_of_CC_compilers="CC g++"
         list_of_f77_compilers="fort77 g77 f90"
@@ -141,6 +143,7 @@ fi
 ######################
 # Checking prerequis #
 ######################
+OSfile="/dev/null"
 for file in /etc/os-release /etc/system-release /etc/release /etc/issue.net /etc/issue
 do
    [ -f $file ] && OSfile=$file && break

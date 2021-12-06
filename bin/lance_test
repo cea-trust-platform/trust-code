@@ -14,7 +14,7 @@ gmon()
 {
    # Test si un rapport gmon.out est cree
    if [ ${exec%_pg} != $exec ] && [ -f gmon.out ]
-   then		    
+   then
        echo $ECHO_OPTS "Analyzing with gprof...\c"
        # --no-graph pour generer plus vite le rapport
        #gprof --no-graph $exec > ../cpu.$NOM.$type
@@ -28,7 +28,7 @@ gmon()
 	  LIMIT=100
 	  if [ "`ls $GMON_DIR/*.out | wc -l`" -gt $LIMIT ]
 	  then
-             echo "Summarizing gmon.out..." 
+             echo "Summarizing gmon.out..."
              gprof -s $exec $GMON_DIR/*.out # Cree un gmon.sum
 	     rm -r -f $GMON_DIR/*.out
 	     let s=`ls $GMON_DIR/*.sum 2>/dev/null | wc -l`
@@ -42,7 +42,7 @@ gmon()
 analyse()
 {
    if [ -f $1 ]
-   then	   
+   then
       $TRUST_Awk '/Secondes \/ pas de temps/ {print $NF;exit} ' $1
    else
       echo 1
@@ -56,7 +56,7 @@ analyse_fichier_colonne()
    if [ $type = "par" ]
    then
       let egal=0
-      list_output=`ls  $NOM2"_"*.out 2>/dev/null` 
+      list_output=`ls  $NOM2"_"*.out 2>/dev/null`
       total=`echo $list_output | wc -w | $TRUST_Awk '{print $1}'`
       seuil=1e-3
       if [ -f seuil_controle_bilan ]
@@ -69,9 +69,9 @@ analyse_fichier_colonne()
       do
          seq_output=${par_output#PAR_}
 	 compare_sonde $seq_output $par_output -max_delta -seuil_erreur $seuil 1>compare_${seq_output}.log 2>ompare_${seq_output}.err
-	 if [ $? = 0 ] 
+	 if [ $? = 0 ]
            then
-          let egal=$egal+1 
+          let egal=$egal+1
 	else
          echo error with files ${seq_output}
 	 cat compare_${seq_output}.log
@@ -79,7 +79,7 @@ analyse_fichier_colonne()
       done
       PLOT=$egal/$total
       ecarts_plots=1 && [ $egal = $total ] && ecarts_plots=0
-      [ $ecarts_plots = 1 ] && echo error with files out 
+      [ $ecarts_plots = 1 ] && echo error with files out
       case ${#PLOT} in
 	3) PLOT="...."$PLOT;;
 	4) PLOT="..."$PLOT;;
@@ -115,14 +115,14 @@ attente()
 	    fi
 	 elif [ $go = 1 ]
 	 then
-	    # Test de blocage du calcul 
+	    # Test de blocage du calcul
 	    time_now=`date +%s`
 	    secondes=`echo $time_now-$time_zero | bc`
-	    if [ $secondes -ge $timeout ] 
+	    if [ $secondes -ge $timeout ]
 	    then
 	       end=1
 	       process=`ps -efl | $TRUST_Awk -v pere=$1 '($5==pere) {print $4}'`
-	       echo $ECHO_OPTS "Sorry, TRUST calculation is hanging after $timeout seconds, so we kill it." 
+	       echo $ECHO_OPTS "Sorry, TRUST calculation is hanging after $timeout seconds, so we kill it."
 	       echo "Process $process killed:"
 	       kill -9 $process 1>/dev/null 2>&1
 	       kill_process_TRUST
@@ -141,8 +141,8 @@ kill_process_TRUST()
 {
   # On tue les processes TRUST dont le pid du pere est 1 (a ameliorer)
 #  if [ "$type" = "par" ]
-#  then	 
-     cmd="ps -efl | grep -v print | $TRUST_Awk -v user=`whoami` '/TRUST_mpi/ && (\$3==user) && (\$5==1) {print \$4}'" 
+#  then
+     cmd="ps -efl | grep -v print | $TRUST_Awk -v user=`whoami` '/TRUST_mpi/ && (\$3==user) && (\$5==1) {print \$4}'"
      # Il peut etre necessaire de boucler plusieurs fois et d'attendre un peu a chaque fois:
      pids=" "
      while [ ${#pids} != 0 ]
@@ -150,7 +150,7 @@ kill_process_TRUST()
         pids=`eval $cmd`
         for pid in $pids
         do
-           echo "Process $pid TRUST killed..."			 
+           echo "Process $pid TRUST killed..."
            kill -9 $pid
 	   sleep 2
         done
@@ -163,11 +163,11 @@ liste()
    add_test_case_from_validation || exit -1
    echo " "
    echo "Searching test cases in $ref. Please wait..."
-   testslist=`find $ref/ -follow -name *.lml.gz -print 2>/dev/null | sed 's#'"$ref/"'##' | sort`
+   testslist=`find $ref/ -follow -name *.lml.gz -print 2>/dev/null | sed 's#'"$ref/+"'##' | sort`
    # Pour eviter les problemes des .lml.gz sortis de gestion de conf
    if [ "`element_gere_en_configuration.sh $ref`" = git ]
    then
-      #liste=`\cd $ref;git ls-files */*/*.lml.gz` 
+      #liste=`\cd $ref;git ls-files */*/*.lml.gz`
       liste=`\cd $ref;git ls-files $testslist | sort`
       nbold=`echo $liste | wc -w`
       nbnew=`echo $testslist | wc -w`
@@ -197,7 +197,7 @@ liste()
 }
 
 check_size_lml()
-{  
+{
    max_size=800
    lml=`find $1 -size +$max_size"k" -name '*'.lml.gz`
    if [ "$lml" != "" ]
@@ -221,7 +221,7 @@ add_test_case_from_validation()
       for DIRECTORY in Validation Verification
       do
          # Le test sur l'existence du repertoire est important car
-         # TRUST_TESTS peut etre fixe a autre chose que $TRUST_ROOT/tests...    
+         # TRUST_TESTS peut etre fixe a autre chose que $TRUST_ROOT/tests...
 	 if [ -d $TRUST_TESTS/$DIRECTORY ]
 	 then
 	    # Verifie la coherence des fiches de validation avec le repertoire $DIRECTORY
@@ -295,10 +295,10 @@ add_test_case_from_validation()
 			     echo $ECHO_OPTS "\n-> The validation $FICHE_ROOT SHOULD be moved to ${Rapports_auto_root}/Validation/Rapports_automatiques/Validant !"
       			     NEW_DIRECTORY=$DIRECTORY
 			  else
-			     NEW_DIRECTORY=Verification     
+			     NEW_DIRECTORY=Verification
 			  fi
 			  cd - 1>/dev/null 2>&1
-		       fi 	 	 
+		       fi
                        # Pas au bon endroit ? On le deplace si respect du critere de place (.lml.gz < size)
 		       if [ "$NEW_DIRECTORY" != "$DIRECTORY" ]
 		       then
@@ -329,7 +329,7 @@ add_test_case_from_validation()
 		  nombre_cas_test_fiche1=`\ls | grep $FICHE"_jdd" 2>/dev/null | wc -l`
 		  FICHE_ROOT=`$TRUST_Awk -F/build '{print $1}' $cas_test/lien_fiche_validation`
 		  FICHE_ROOT=${FICHE_ROOT%/}
-		  # Nombre de cas tests de la fiche	  
+		  # Nombre de cas tests de la fiche
 		  if [ -d ${Rapports_auto_root}/$FICHE_ROOT ]
 		  then
              nombre_cas_test_fiche2=`(cd ${Rapports_auto_root}/$FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_nb_cas_nr . -dest $TMP_BUILD)`
@@ -342,7 +342,7 @@ add_test_case_from_validation()
 		     ok=0
 		     msg="\nNombre de cas tests modifies sur la fiche $FICHE_ROOT. Ils vont passer de $nombre_cas_test_fiche1 a $nombre_cas_test_fiche2.\n"
 		     echo $ECHO_OPTS $msg
-		  else		
+		  else
 		      # on regarde si on a bien des fiches differentes
 		      resu=`cat ${FICHE}_jdd*/lien_fiche_validation | uniq -d  2>/dev/null`
 		      if [ "$resu" != "" ]
@@ -407,15 +407,15 @@ add_test_case_from_validation()
 	       DIRECTORY=Validation
 	       #echo "Cas non prevu pour $FICHE_ROOT dans lance_test."
 	       #exit -1
-	    fi 	    
+	    fi
 	    # On fait 2 boucles pour creer tous liens/repertoires puis les .lml.gz
 	    # car sinon une fiche echoue a la construction du cas test il faut pouvoir reconstuire
 	    for boucle in creation_lien creation_lml
 	    do
 	       let n=0
 	       for jeu in $jeux
-	       do   
-		  cd $TRUST_TESTS/$DIRECTORY	 
+	       do
+		  cd $TRUST_TESTS/$DIRECTORY
 		  fiche=`basename $FICHE_ROOT`
 		  test=`echo $fiche/build/${jeu%.data} | $TRUST_Awk '{gsub("/","@",$0);print $0}'`
 		  let n=$n+1
@@ -437,9 +437,9 @@ add_test_case_from_validation()
 			[ ! -d $TRUST_TESTS/$DIRECTORY/$test ] && echo "Unable to cd $TRUST_TESTS/$DIRECTORY/$test" && exit -1
 			cd $TRUST_TESTS/$DIRECTORY/$test
 			echo ${FICHE_ROOT#$Rapports_auto_root/}/build/$jeu > lien_fiche_validation
-			MKELEM lien_fiche_validation 
-			[ $? != 0 ] && echo "Error during the creation of `pwd`/lien_fiche_validation" &&  exit -1	     
-			echo "Creation of $test/lien_fiche_validation"  
+			MKELEM lien_fiche_validation
+			[ $? != 0 ] && echo "Error during the creation of `pwd`/lien_fiche_validation" &&  exit -1
+			echo "Creation of $test/lien_fiche_validation"
 			cd $org 1>/dev/null 2>&1
 		     fi
 		  else
@@ -473,7 +473,7 @@ add_test_case_from_validation()
 			#Inutile car fait dans copie_cas_test:
 			#[ -f prepare ] && ./prepare $test.data
 			[ ! -f $test.data ] && echo "File $test.data not found under $TRUST_TESTS/$DIRECTORY/$test !" && exit -1
-			NB_CPUS=`cat $test.data | $TRUST_Awk '/# PARALLEL ONLY/ {print $4}'` 	
+			NB_CPUS=`cat $test.data | $TRUST_Awk '/# PARALLEL ONLY/ {print $4}'`
 			trust $test.data $NB_CPUS 1>$test.build 2>&1
 			if [ $? != 0 ] || [ ! -f $test.lml ]
 			then
@@ -484,12 +484,12 @@ add_test_case_from_validation()
 			   echo "Creation of the file $test.lml.gz"
 			   gzip -c $test.lml > $TRUST_TESTS/$DIRECTORY/$test/$test.lml.gz
 			   cd $TRUST_TESTS/$DIRECTORY/$test
-			   MKELEM $test.lml.gz 
-			   [ $? != 0 ] && echo "Error when creating the file `pwd`/$test.lml.gz" && exit -1	 
+			   MKELEM $test.lml.gz
+			   [ $? != 0 ] && echo "Error when creating the file `pwd`/$test.lml.gz" && exit -1
 			   cd $TRUST_TESTS
 			   rm -r -f $REP_TMP
 			fi
-		     fi	 
+		     fi
 		  fi
 	       done
 	    done
@@ -506,7 +506,7 @@ add_test_case_from_validation()
 [ ${#TRUST_ROOT} = 0 ] && echo "TRUST environment not initialized. Go to the directory of TRUST installation and run: source ./env_TRUST.sh" && exit
 
 LANG=C
-PETSC_DEBUG=0 && [ $PETSC_DEBUG = 1 ] && echo "ATTENTION PETSC_DEBUG MIS A 1 !!!" 
+PETSC_DEBUG=0 && [ $PETSC_DEBUG = 1 ] && echo "ATTENTION PETSC_DEBUG MIS A 1 !!!"
 export LANG
 echo "Usage: `basename $0` [-print] [-distant] [-nomail] [-efface] [-no_timeout] [\$exec] [\$directory] "
 # Premier parametre : executable utilise (par defaut $exec)
@@ -577,9 +577,9 @@ extension_val=""
 [ ! -f $exec ] && echo "Executable $exec non existant." && exit -1
 if [ ${#2} -ne 0 ]
 then
-   if [ ! -d $2 ] 
+   if [ ! -d $2 ]
        then
-       echo $2 is not a directory 
+       echo $2 is not a directory
        exit
    fi
    if [ $2 = $rep_dev/exec ] || [ $2 = $rep_dev/exec_opt ]
@@ -591,11 +591,11 @@ then
       fichier=`dirname $exec`${extension_val}/.tests_`basename $exec`.html
       SORTIE=$2/.tests_`basename $exec`${extension_val}
       rep_tests=$2/tests_`basename $exec`${extension_val}
-   fi 
+   fi
 else
    fichier=`dirname $exec`/.tests_`basename $exec`${extension_val}.html
    rep_tests=$TRUST_TMP/tests
-   SORTIE=$rep_tests/.tests_`basename $exec`${extension_val}   
+   SORTIE=$rep_tests/.tests_`basename $exec`${extension_val}
    mkdir $rep_tests 2>/dev/null
 fi
 CHECKOUT $SORTIE 2>/dev/null
@@ -670,7 +670,7 @@ then
     if [ $choix != 0 ]
     then
        #liste=`ls */$choix/$choix.lml.gz 2>/dev/null`
-       liste=`find ./ -follow -name $choix.lml.gz -print 2>/dev/null | sed 's#'"./"'##' | sort`
+       liste=`find ./ -follow -name $choix.lml.gz -print 2>/dev/null | sed 's#'"./+"'##' | sort`
        if [ ${#liste} != 0 ]
        then
 	  choix="M"
@@ -685,12 +685,12 @@ then
 	        cas=`basename $cas`
 		#lmlgz=`ls */$cas/$cas.lml.gz 2>/dev/null`
 		#if [ -f ${lmlgz%lml.gz}data ] || [ "`ls */$cas/lien_fiche_validation 2>/dev/null`" != "" ]
-                lmlgz=`find ./ -follow -name $cas.lml.gz -print 2>/dev/null | sed 's#'"./"'##' | sort`
+                lmlgz=`find ./ -follow -name $cas.lml.gz -print 2>/dev/null | sed 's#'"./+"'##' | sort`
 		if [ -f ${lmlgz%lml.gz}data ]   # || [ "`find ./ -follow -name lien_fiche_validation -print 2>/dev/null | sed 's#'"./"'##' | sort`" != "" ]
 		then
 		   liste=$liste" "$lmlgz
 		else
-		    echo Case $cas not exist in $TRUST_TESTS 
+		    echo Case $cas not exist in $TRUST_TESTS
 		fi
 	     done
 	  else
@@ -710,7 +710,7 @@ then
     duplist=` for i in $(echo $liste)
     do
        j=$(dirname $i)
-       
+
        echo $(basename $j)
     done | sort | uniq -d`
     nbnew=`echo $liste | wc -w`
@@ -756,7 +756,7 @@ then
     (echo $ECHO_OPTS ' -------------------------------------------------------------------------------------------' >> $fichier) 2>/dev/null
     choix_USER=$choix
     export choix_USER
-    PAR_USER=0 ; PAR_USER=$PAR 
+    PAR_USER=0 ; PAR_USER=$PAR
     export PAR_USER
     if [ $distant -eq 1 ]
     then
@@ -786,25 +786,25 @@ then
 	exit
     fi
     # On fixe quelques variables
-    coverage_gcov=0  && [ ${exec%_gcov} != $exec ]  && coverage_gcov=1 
+    coverage_gcov=0  && [ ${exec%_gcov} != $exec ]  && coverage_gcov=1
     if [ "$coverage_gcov" = "1" ]
     then
-    if  [   "$GCOV_PREFIX" = "" ] 
+    if  [   "$GCOV_PREFIX" = "" ]
        then
        # pas fixe par le user on le fixe et on vide le repertoire si choix 0
-         
+
          GCOV_PREFIX=`dirname ${SORTIE}`/GCDA/trace
          echo gcda in ${GCOV_PREFIX}
          export GCOV_PREFIX
           [ $choix = 0 ] && rm -rf ${GCOV_PREFIX}
-       fi    
+       fi
   # find $TRUST_ROOT/MonoDir$COMM"_gcov"/src/. -name '*'.gcda | xargs rm -f
     fi
     coverage_gprof=0 && [ ${exec%_pg}   != $exec ] && [ $choix = 0 ] && coverage_gprof=1
-    
+
     ##################################################
     # DEBUT DE LA BOUCLE SUR LES CAS TESTS DE LA LISTE
-    ##################################################   
+    ##################################################
     for i in $liste
     do
 	file=$ref/${i%.lml.gz}.data
@@ -822,7 +822,7 @@ then
 	    PAR=1
 	    export PAR
 	else
-	    [ $PAR_USER = 0 ] && [ -f $file ] && [ "`grep 'PARALLEL OK' $file`" != "" ] && PAR=1 && export PAR     
+	    [ $PAR_USER = 0 ] && [ -f $file ] && [ "`grep 'PARALLEL OK' $file`" != "" ] && PAR=1 && export PAR
 	    [ "${PAR_F}" != "" ] && PAR=${PAR_F} && export PAR
 	fi
 	REP=`dirname $file`
@@ -930,7 +930,7 @@ then
 	    rm -f $PAR_NOM.out $PAR_NOM.err
 	    # Probleme sur Linux RedHat5.2 :
 	    [ ${#LD_LIBRARY_PATH} = 0 ] && LD_LIBRARY_PATH=$TRUST_LIB && export LD_LIBRARY_PATH
-	    # 19/10/04 : On autorise a ce que certains cas tests ne soient pas prepares pour le // 
+	    # 19/10/04 : On autorise a ce que certains cas tests ne soient pas prepares pour le //
 	    # [ "`grep 'PARALLEL' $NOM.data`" = "" ] && echo "Cas $NOM non prepare pour le //..."
 	    #
 	    # Debut du test
@@ -943,14 +943,14 @@ then
 	       [ "`grep -i VEF $NOM.data`" = "" ] || [ "`grep -i ' ilu ' $NOM.data`" = "" ] && PETSC_OPTIONS=$PETSC_OPTIONS" -info"
 	       echo $PETSC_OPTIONS
 	    fi
-	    NB_CPUS=`cat $NOM.data | $TRUST_Awk '/# PARALLEL ONLY/ {print $4}'` 
+	    NB_CPUS=`cat $NOM.data | $TRUST_Awk '/# PARALLEL ONLY/ {print $4}'`
 	    PARALLEL_ONLY=0
 	    if [ "$NB_CPUS" = "" ]
 	    then
 	       E="echo $ECHO_OPTS 'Running sequential calculation...\c' ;trust $NOM 1>$NOM.out 2>$NOM.err;OK \$?"
 	    else
 	       # Nouveau 06/07/09
-	       # On peut avoir des cas tests qui ne sont lances qu'en parallele avec la balise # PARALLEL ONLY NB_CPUS #     
+	       # On peut avoir des cas tests qui ne sont lances qu'en parallele avec la balise # PARALLEL ONLY NB_CPUS #
                PARALLEL_ONLY=1
 	       E="echo $ECHO_OPTS 'Running parallel calculation on $NB_CPUS CPUs...\c' ;trust $NOM $NB_CPUS 1>$NOM.out 2>$NOM.err;OK \$?"
 	       # Fin Nouveau
@@ -972,7 +972,7 @@ then
 		    # Provisoire car bug ?
 		    # NB_CPUS=2
 		    NB_CPUS_SA=$NB_CPUS
-		    echo $ECHO_OPTS "Partitioning for parallel calculation...\c" 
+		    echo $ECHO_OPTS "Partitioning for parallel calculation...\c"
 		    . make_PAR.data $NOM $NB_CPUS
 		    # Solveur direct Cholesky n'est pas parallelise mais remplace par GCP pour le test de comparaison sequentiel-parallele
 		    # => le script make_PAR.data modifie les jdd SEQ_$NOM.data et PAR_$NOM.data
@@ -987,7 +987,7 @@ then
 		    # Verifie si un gmon.out est cree
 		    type=dec
 		    gmon
-		    NPDEC=$NB_CPUS		    
+		    NPDEC=$NB_CPUS
 		    EP="echo $ECHO_OPTS 'Running parallel calculation on $NB_CPUS cpus...\c' ;trust $PAR_NOM $NB_CPUS 1>$PAR_NOM.out 2>$PAR_NOM.err;OK \$?"
 		fi
 	    fi
@@ -1009,14 +1009,14 @@ then
 		    eval $EP &
 		    NB_CPUS=$NP_CPUS_SA
 		    process_pere=$!
-		fi            
+		fi
 		if [ $exterm = 0 ]
 		then
 		    $Xterm $HautDroit_geometrie -title "Lecture de "$NOM2".err" -e tail -f $NOM2.err &
 		    pcs=$!
 		fi
 		PB=0
-		attente $process_pere		
+		attente $process_pere
 		FIN=`date '+%H:%M:%S'`
 		arret=0
 		# Verifie si un gmon.out est cree
@@ -1041,11 +1041,11 @@ then
 		    if [ ${#fichier_resultat} = 0 ] && [ -s .reference.lml ]
 		    then
 			echo $ECHO_OPTS "Caution  ! No result file created !"
-			[ $PB = 0 ] && PB='255'		    
+			[ $PB = 0 ] && PB='255'
 		    # Est ce que le calcul s'est arrete ?
 		    #elif [ "`tail -1 $NOM2.err`" != "Arret des processes." ]
 		    elif [ "`grep 'Arret des processes.' $NOM2.err`" = "" ]
-		    then		       
+		    then
 		        [ $PB = 0 ] && PB='255'
 		    else
 			PB=0 && [ "`grep 'Arret ' $NOM2.err`" = "" ] && PB=255
@@ -1067,11 +1067,11 @@ then
 			#Pour tester Check_solver.sh
 			#Check_solver.sh -not_lml -solver 1:3:4 $NOM2
 			# Si le copie_cas_test a echoue (par exemple le prepare a mal tourne)
-			[ $STATUS_PREPARE != 0 ] && PB=252		    						
+			[ $STATUS_PREPARE != 0 ] && PB=252
 			# Provisoire: verifie que mallocs nul, space allocated nul en fin de calcul, et storage space unneeded nul
 			[ "$PETSC_DEBUG" = 1 ] && grep " unneeded" $NOM2.out | grep -v " 0 unneeded"
-			[ "$PETSC_DEBUG" = 1 ] && grep "mallocs " $NOM2.out | grep -v " 0"	
-			[ "$PETSC_DEBUG" = 1 ] && $TRUST_Awk '/Total space allocated/ && !/16 bytes/ {ok=1} (ok) {print $0}' $NOM2.out	 
+			[ "$PETSC_DEBUG" = 1 ] && grep "mallocs " $NOM2.out | grep -v " 0"
+			[ "$PETSC_DEBUG" = 1 ] && $TRUST_Awk '/Total space allocated/ && !/16 bytes/ {ok=1} (ok) {print $0}' $NOM2.out
 			# Si lml on fait une comparaison > trad.out trad.err
 			#if [ -f $NOM2.lata ] && [ $PB = 0 ] && [ ! -f $NOM2.lml ]
 			#then
@@ -1080,7 +1080,7 @@ then
 			#	trust trad 1> trad.out 2>trad.err
 			#	PB=$?
 			#	[ ! -f $NOM2.lml ] && PB=1000
-			#fi			
+			#fi
 			if [ -f $NOM2.lml ] && [ $PB = 0 ]
 			then
 			    # On teste la presence du FIN
@@ -1091,7 +1091,7 @@ then
 				echo "FIN n'est pas dans $NOM2.lml avec la version $exec"
 			    fi
 			    if [ "$type" = "seq" ]
-			    then 
+			    then
 			        if [ ! -s .reference.lml ]
 				then
 				   echo "Error! $reference is empty."
@@ -1109,7 +1109,7 @@ then
 			    then
 			       echo "Test $i not compared to the reference"
 	                       liste_no_ref_comparison=$liste_no_ref_comparison" $i"
-			    else		    
+			    else
 			    # lance_test_seq_par will be replaced by compare_lata
 			    tool=compare_lata	# newer faster program
 			    [ ! -f $TRUST_ROOT/exec/$tool ] && tool=lance_test_seq_par	# older program soon retired
@@ -1124,7 +1124,7 @@ then
                                $TRUST_ROOT/exec/$tool $LML1 $LML2 --max_delta
 			       PB=$?
 			    elif [ $tool = lance_test_seq_par ]
-			    then 
+			    then
 			       if [ $PB != 0 ]
 			       then
          		           $TRUST_ROOT/exec/$tool $LML1 $LML2
@@ -1148,7 +1148,7 @@ then
 				PB=254
 			    fi
 			fi
-			[ "$type" = "seq" ] && PB_SEQ=$PB			
+			[ "$type" = "seq" ] && PB_SEQ=$PB
 			if [ $PB -ne '255' ]
 			then
 			    # Nombre de mailles :
@@ -1215,7 +1215,7 @@ then
 			    case $l in
 				1) NBP=".."$NBP".";;
 				2) NBP="."$NBP".";;
-			    esac			    			    
+			    esac
 			    SPU="....."
 		            # Nouveau: compare les fichiers colonnes
 			    analyse_fichier_colonne
@@ -1241,19 +1241,19 @@ then
 				          [ ${SPU#.} != $SPU ] && SPU="0"$SPU
 				          [ $SPU = 0 ] && SPU="0.000"
 				       fi
- 				    fi		
+ 				    fi
 				fi
 				echo $ECHO_OPTS "|$DEB|$FIN|$TPS|$NBP|$SPU|$NDT|$GCP|$MAI|$MEM|$PLOT| OK    |"$NOM2" "$ATTENTION >> $SORTIE
 				(echo $ECHO_OPTS "|$DEB|$FIN|$TPS|$NBP|$SPU|$NDT|$GCP|$MAI|$MEM|$PLOT| OK    |"$NOM2" "$ATTENTION >> $fichier) 2>/dev/null
-				#echo $speed_up			    
+				#echo $speed_up
 			    elif [ $PB -eq '252' ]
 			    then
 				mes="|$DEB|$FIN|$TPS|$NBP|$SPU|$NDT|$GCP|$MAI|$MEM|$PLOT| UNINIT |"$NOM2" "$ATTENTION
-				echo $ECHO_OPTS $mes >> $SORTIE	
+				echo $ECHO_OPTS $mes >> $SORTIE
 			    elif [ $PB -eq '254' ]
 			    then
 				mes="|$DEB|$FIN|$TPS|$NBP|$SPU|$NDT|$GCP|$MAI|$MEM|$PLOT| FALSE |"$NOM2" "$ATTENTION
-				echo $ECHO_OPTS $mes >> $SORTIE			    	
+				echo $ECHO_OPTS $mes >> $SORTIE
 			    elif [ $PB -ne '255' ]
 			    then
 				mes="|$DEB|$FIN|$TPS|$NBP|$SPU|$NDT|$GCP|$MAI|$MEM|$PLOT| $PB ecarts |"$NOM2" "$ATTENTION
@@ -1267,7 +1267,7 @@ then
 			    fi
 			fi
 		    fi
-		    if [ $PB -eq '255' ]                                                 
+		    if [ $PB -eq '255' ]
 		    then
 			arret=1
 			echo $ECHO_OPTS "******************************"
@@ -1277,7 +1277,7 @@ then
 			echo $ECHO_OPTS $mes >> $SORTIE
 			path=""
 			(echo $ECHO_OPTS $mes" <a href=$path$rep_tests/$REP/$NOM2.err>Fichier $NOM2.err</a>" >> $fichier) 2>/dev/null
-		    elif [ $PB -eq '253' ]                                                 
+		    elif [ $PB -eq '253' ]
 		    then
 			arret=1
 			echo $ECHO_OPTS "*******************************"
@@ -1297,7 +1297,7 @@ then
 	    [ $PAR = 1 ] && [ $DEC = 0 ] && mes="Data file of the previous test must be prepared for parallelism." && (echo $mes >> $fichier) 2>/dev/null && echo $mes >> $SORTIE
 	    #######################
 	    # Nouveau, on fait le menage que s il n y a pas aussi d ecarts sur les plots
-	    [ $efface_force -eq 1 ] && ecarts_plots=0 
+	    [ $efface_force -eq 1 ] && ecarts_plots=0
 	    if [ $arret = 0 ] && [ $PB = 0 ] && [ $ecarts_plots = 0 ]
 	    then
 		rm -f *.lml.old *.dump
@@ -1309,8 +1309,8 @@ then
 		    # Creation d un fichier erreur.lml pour situer les ecarts :
 		    #differ .reference.lml $NOM.lml
 		    effacer=0
-		fi		
-	        [ $efface_force -eq 1 ] && effacer=1 
+		fi
+	        [ $efface_force -eq 1 ] && effacer=1
 		if [ $effacer = 1 ]
 		then
 		    if [ ! -f $ref/$REP/depend ]
@@ -1422,11 +1422,11 @@ then
       if [ "$TRUST_SCM" = 1 ]
       then
          # No restriction
-         [ "$dest" != "" ] && cat $message | mail_ -s \"[lance_test] Unsuccesful no-regression tests on $HOST \(with warning\)\" $dest 
+         [ "$dest" != "" ] && cat $message | mail_ -s \"[lance_test] Unsuccesful no-regression tests on $HOST \(with warning\)\" $dest
       elif [ "`cat $message | grep -v ' ecarts |' | grep -v executable | grep -v directory | grep -v outputfile | grep -v succes`" != "" ]
       then
          # Restriction (warning suppressed)
-         [ "$dest" != "" ] && cat $message | grep -v ' ecarts |' | mail_ -s \"[lance_test] Unsuccesful no-regression tests on $HOST \(without warning\)\" $dest 
+         [ "$dest" != "" ] && cat $message | grep -v ' ecarts |' | mail_ -s \"[lance_test] Unsuccesful no-regression tests on $HOST \(without warning\)\" $dest
       fi
    fi
    # on nettoie les repertoires vides
@@ -1474,7 +1474,7 @@ CHECKIN $SORTIE 1>/dev/null 2>&1
 echo
 echo "Complete results into the file:"
 echo $SORTIE
-echo 
+echo
 if [ "$TRUST_TESTS" = "$TRUST_ROOT/tests" ]
 then
 # Cas gprof on lance
@@ -1516,7 +1516,7 @@ then
    for ecart in $ecarts
    do
       fiche=`cd ${Rapports_auto_root}/Validation/Rapports_automatiques;find * -type d -follow| grep -e ^$ecart$ -e /$ecart$ | grep -v build`
-      # C'est un cas test de validation   
+      # C'est un cas test de validation
       if [ "$fiche" != "" ]
       then
 	 # Test de detection si la fiche doit etre executee

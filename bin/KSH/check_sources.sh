@@ -108,7 +108,8 @@ check_recent_src()
     ################################################
     #grep "[àâçéèêëïîôùûüÿ]" $file && echo "-> Error in $file: French accents are not supported anymore ! Please, consider writing comments or messages in English." && echo && erreur 1
     #[ "`file $file | grep ISO`" != ""  ]&& echo "-> Error in $file: French accents are not supported anymore ! Please, consider writing comments or messages in English." && echo && erreur 1
-    ([ "`file -i $file | grep ascii`" == "" ] && [ "`file -i $file | grep utf-8`" == "" ] && [ -s $file ])  && echo "-> Error in $file: only ASCII or UTF-8 encoding is accepted for source files! Please, consider writing comments or messages in English and/or save your file in UTF8." && echo && erreur 1
+    [ `uname -s` != "Darwin" ] && file_opt="-i"
+	([ "`file $file_opt $file | grep -i ascii`" == "" ] && [ "`file $file_opt $file | grep -i utf-8`" == "" ] && [ -s $file ])  && echo "-> Error in $file: only ASCII or UTF-8 encoding is accepted for source files! Please, consider writing comments or messages in English and/or save your file in UTF8." && echo && erreur 1
 
     ###############################################################
     # Interdiction du francais dans les messages d'erreur du Kernel

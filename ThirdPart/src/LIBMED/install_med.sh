@@ -46,11 +46,15 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   sed -i 's/GET_PROPERTY(_lib_lst TARGET hdf5 PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)/SET(_lib_lst)/' $(find . -name FindMedfileHDF5.cmake)
 
   # fPIC is not there by default in MED autotools ...
-  CFLAGS="${CFLAGS} -fPIC"
-  CPPFLAGS="${CPPFLAGS} -fPIC"
-  CXXFLAGS="${CXXFLAGS} -fPIC"
+  CFLAGS="${CFLAGS} -fPIC -Wno-error -Wno-implicit-function-declaration"
+  CPPFLAGS="${CPPFLAGS} -fPIC -Wno-error -Wno-implicit-function-declaration"
+  CXXFLAGS="${CXXFLAGS} -fPIC -Wno-error -Wno-implicit-function-declaration"
   FFLAGS="${FFLAGS} -fPIC"
-  export CFLAGS CPPFLAGS CXXFLAGS FFLAGS
+  #LDFLAGS from TRUST
+  fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ "$debug" = "0" ] && echo _opt`
+  LDFLAGS=`$TRUST_Awk '/SYSLIBS =/ {gsub("SYSLIBS =","",$0);print $0}' $fic_env`
+  export CFLAGS CPPFLAGS CXXFLAGS FFLAGS LDFLAGS
+
 
   # PL: On utilise cmake par defaut pour MED (merci Adrien). Cela evite des problemes avec libtool
   USE_CMAKE=1
@@ -84,8 +88,11 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
        MED_INT=long
     fi
     echo "Setting FFLAGS=$FFLAGS and MED_INT=$MED_INT ..."
-    env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_MED_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE=$MED_INT
+    env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF \
+        -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_MED_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE=$MED_INT \
+        -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS"
   fi
+
   $TRUST_MAKE  || exit -1
   make install || exit -1
   [ "$USE_CMAKE" = 1 ] && cd ..

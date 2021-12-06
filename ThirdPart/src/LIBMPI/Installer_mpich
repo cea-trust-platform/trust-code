@@ -79,7 +79,7 @@ export CC=$TRUST_cc_BASE
 export CXX=$TRUST_CC_BASE
 export CXXFLAGS="-fPIC"
 export CFLAGS="-fPIC"
-export FFLAGS="-fPIC"
+export FFLAGS="-fPIC -std=legacy"
 # MPICH meme recent 3.3.1 ne compile pas encore avec gfortran 10 sans allow-argument-mismatch:
 TRUST_GNU_VERSION=`[ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ] && $TRUST_CC_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
 [ `echo $TRUST_GNU_VERSION | awk -F. '{print ($1>=10)}'` = 1 ] && FFLAGS=$FFLAGS" -fallow-argument-mismatch"

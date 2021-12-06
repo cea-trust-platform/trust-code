@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 org=$1
 [ "$org" = "" ] && org="."
 mkdir -p build

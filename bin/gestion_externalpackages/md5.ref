@@ -11,6 +11,7 @@ e88f03a947c03539180b4711adfcf324  MPI/openmpi-2.0.4.tar.gz
 ec1224a216a084684bab6cd0dbf592f8  MPI/osu-micro-benchmarks-3.8.tar
 3143b1116f2d466d9325c206b7de88f7  Miniconda/Miniconda3-py37_4.9.2-Linux-x86_64.sh
 cfe1b551b169d6386f5f4b7df40cdac4  Miniconda/Miniconda3-py37_4.9.2-MacOSX-x86_64.sh
+1bb73c5cd765d135e2b874fc0f08d50c  Miniconda/Miniconda3-py38_4.10.1-MacOSX-arm64.sh
 7e88440c1848299f3bc443fc01e7a2eb  Miniconda/Miniforge3-Linux-aarch64.sh
 f7df97ce90a0ccd1f45c57539baa84bf  Miniconda/local_channel/linux-64/argon2-cffi-20.1.0-py37h27cfd23_1.conda
 14f1f20225516d0847d60f49c8371e89  Miniconda/local_channel/linux-64/async_generator-1.10-py37h28b3542_0.conda
