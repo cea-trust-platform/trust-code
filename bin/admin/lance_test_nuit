@@ -601,9 +601,11 @@ rm -f $REP_NUIT/rsync_include_from $REP_NUIT/NUIT.html
 rm -f $REP_NUIT/os $REP_NUIT/CC $REP_NUIT/CR
 rm -f $MESSAGES_NUIT $REP_NUIT/nuit_*.html
 rm -f $REP_NUIT/MESSAGES_LIVRAISON* $REP_NUIT/MESSAGES_NUIT
+rm -rf $REP_NUIT/Maintenance
 rm -f $REP_NUIT/.nfs*
 # On cree :
 [ ! -d $REP_NUIT ] && mkdir $REP_NUIT
+[ ! -d $REP_NUIT/Maintenance ] && mkdir -p $REP_NUIT/Maintenance
 [ ! -d $REP_HIST ] && mkdir $REP_HIST
 ls -a $REP_NUIT
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
@@ -719,7 +721,7 @@ echo>>$liste_log
 # med-3.2.1 sans doc (taille passe de 45M a 17M)
 # osu-micro-benchmarks-3.8 version initiale non retrouvee
 # petsc-3.10.0 : superlu_dist.py correction TMA
-nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v ml-6.2-p4 | grep -v VTK-8.1.0 | grep -v scalapack-2.1.0-p2 | grep -v med-4.1.0 | grep -v osu-micro-benchmarks-3.8 | grep -v scotch-6.0.9 | grep -v osqp-0.6.0 | grep -v configuration-9.7.0 | grep -v xdata-9.6.0 | grep -v hdf5-1.10.3 | grep -v superlu-5.2.1 | grep -v hypre-2.19.0 | grep -v Miniforge3-Linux-aarch64.sh | grep -v AmgX_6dba8067ca | grep -v nvc_get_devices | grep -v AmgXWrapper_331eba32db693528749bd2c46158073079d80972 | grep -v viennacl-dc552a8 | grep -v SPARSKIT2 | grep -v zlib-1.2.11 | wc -l`
+nb_error=`grep "FAILED" $liste_log | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v ml-6.2-p4 | grep -v VTK-8.1.0 | grep -v scalapack-2.1.0-p2 | grep -v med-4.1.1 | grep -v osu-micro-benchmarks-3.8 | grep -v scotch-6.0.9 | grep -v osqp-0.6.0 | grep -v configuration-9.8.0 | grep -v medcoupling-9.8.0 | grep -v xdata-9.6.0 | grep -v hdf5-1.10.3 | grep -v superlu-5.2.1 | grep -v hypre-2.19.0 | grep -v Miniforge3-Linux-aarch64.sh | grep -v AmgX_6dba8067ca | grep -v nvc_get_devices | grep -v AmgXWrapper_331eba32db693528749bd2c46158073079d80972 | grep -v viennacl-dc552a8 | grep -v SPARSKIT2 | grep -v zlib-1.2.11 | grep -v visit2.12.1 | grep -v setuptools-28.0.0 | grep -v seedme-python-client-v1.2.4 | grep -v requests-2.5.1 | grep -v qwt-6.1.2 | grep -v numpy-1.11.2 | grep -v Python-2.7.11 | grep -v Imaging-1.1.7 | wc -l`
 # les 3 paquets suivants sont sous http://downloads.sourceforge.net/project/trust-platform/X.Y.Z/extra/
 # medcoupling-7.8.0.tar.gz
 # hypre-2.10.0b-p2-TRUST.tar.gz
@@ -732,7 +734,7 @@ then
    # osu-micro-benchmarks-3.8 version initiale non retrouvee
    # petsc-3.10.0 : superlu_dist.py correction TMA
    #liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v med-3.2.1 | grep -v osu-micro-benchmarks-3.8 | grep -v medcoupling-7.8.0 | grep -v hypre-2.10.0b-p2-TRUST | grep -v CURVEPLOT | grep -v nvc_get_devices`
-   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v ml-6.2-p4 | grep -v VTK-8.1.0 | grep -v scalapack-2.1.0-p2 | grep -v med-4.1.0 | grep -v osu-micro-benchmarks-3.8 | grep -v scotch-6.0.9 |  grep -v osqp-0.6.0 | grep -v configuration-9.7.0 | grep -v xdata-9.6.0 | grep -v hdf5-1.10.3 | grep -v superlu-5.2.1 | grep -v hypre-2.19.0 | grep -v Miniforge3-Linux-aarch64.sh | grep -v AmgX_6dba8067ca | grep -v nvc_get_devices | grep -v AmgXWrapper_331eba32db693528749bd2c46158073079d80972 | grep -v viennacl-dc552a8 | grep -v SPARSKIT2 | grep -v zlib-1.2.11`
+   liste_failed=`grep "FAILED" $liste_log | sed "s,: FAILED,," | grep -v qt-everywhere-opensource-src-4.8.3 | grep -v ml-6.2-p4 | grep -v VTK-8.1.0 | grep -v scalapack-2.1.0-p2 | grep -v med-4.1.1 | grep -v osu-micro-benchmarks-3.8 | grep -v scotch-6.0.9 | grep -v osqp-0.6.0 | grep -v configuration-9.8.0 | grep -v medcoupling-9.8.0 | grep -v xdata-9.6.0 | grep -v hdf5-1.10.3 | grep -v superlu-5.2.1 | grep -v hypre-2.19.0 | grep -v Miniforge3-Linux-aarch64.sh | grep -v AmgX_6dba8067ca | grep -v nvc_get_devices | grep -v AmgXWrapper_331eba32db693528749bd2c46158073079d80972 | grep -v viennacl-dc552a8 | grep -v SPARSKIT2 | grep -v zlib-1.2.11 | grep -v visit2.12.1 | grep -v setuptools-28.0.0 | grep -v seedme-python-client-v1.2.4 | grep -v requests-2.5.1 | grep -v qwt-6.1.2 | grep -v numpy-1.11.2 | grep -v Python-2.7.11 | grep -v Imaging-1.1.7`
    cd $TRUST_ROOT/build/bin/gestion_externalpackages/Test
    rm -r -f old new
    for package in $liste_failed
@@ -941,7 +943,7 @@ fi
          cat tmp.log
          [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push github TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
-      elif [[ "$Composant" == "sympy_to_TRUST" || "$Composant" == "pemfc"  || "$Composant" == "TRUST-NK" ]]
+      elif [[ "$Composant" == "TRUST-NK" ]]
       then
          git remote update
          git checkout .
@@ -954,6 +956,32 @@ fi
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull master OK \" $TRUST_MAIL
          fi
          rm tmp.log 1>/dev/null 2>&1
+      elif [[ "$Composant" == "flica5" ]]
+      then
+         git remote update
+         git checkout .
+         git checkout portage
+         git pull 1>tmp.log 2>&1
+         if [ $? != 0 ]
+         then
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage KO \" $TRUST_MAIL
+         else
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage OK \" $TRUST_MAIL
+         fi
+         rm tmp.log 1>/dev/null 2>&1
+         cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
+         git remote update
+         git checkout .
+         git checkout master
+         git pull 1>tmp.log 2>&1
+         if [ $? != 0 ]
+         then
+            cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master KO \" $TRUST_MAIL
+         else
+            cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master OK \" $TRUST_MAIL
+         fi
+         rm tmp.log 1>/dev/null 2>&1
+         cd -
       else
          git remote update
          git checkout .
@@ -1402,7 +1430,7 @@ else
    etude_test=1
 fi
 # On lance toutes les etudes
-#etude_test=0
+etude_test=0
 
 disable_etudes=~/disable_etudes && [ -f $disable_etudes ] && etude_test=1 && rm -f $disable_etudes
 if [ $etude_activation = 1 ] 
@@ -4019,7 +4047,7 @@ fi
 echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo `date` >> $MESSAGES_NUIT
 echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-grep -A `echo $(($total_criteres+2))` -B 1 "Release criteria of the" $MESSAGES_NUIT > tmp_NUIT.txt
+grep -A `echo $(($total_criteres+3))` -B 1 "Release criteria of the" $MESSAGES_NUIT > tmp_NUIT.txt
 sed 's/$/ <BR>/g' tmp_NUIT.txt > tmp_NUIT.html
 cat tmp_NUIT.html >> $REP_NUIT/NUIT.html
 rm -f tmp_NUIT.txt tmp_NUIT.html

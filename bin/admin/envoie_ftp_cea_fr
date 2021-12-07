@@ -188,6 +188,7 @@ then
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant/build/portability/Maintenance
          cp_ftp nuit_*.html $SECRET/NUIT/Maintenance/.
          cp_ftp *_%_*.log $SECRET/NUIT/Maintenance/.
+         cp $WORKDIR/tuleap/Maintenance/Composants/$Composant/build/portability/Maintenance/* $REP_NUIT/Maintenance/.
          cd -
       fi
    done
