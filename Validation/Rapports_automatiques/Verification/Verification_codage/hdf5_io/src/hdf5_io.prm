@@ -6,8 +6,8 @@ Parameters {
 	TestCase Sauvegarde_simple_hdf5 hdf5_io.data
 	TestCase Logs_hdf5 hdf5_io.data
 	TestCase Zones_hdf5 hdf5_io.data 2	
-
     ExtraUsedFile Zones_hdf5/hdf5_io.lata*
+    # DISABLE_PARALLEL_RUN #
 }
 
 Chapter {

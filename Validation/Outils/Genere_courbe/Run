@@ -81,6 +81,9 @@ then
     echo "-> Error! Report template file $prm does not exist."
     exit
 fi
+# Prevent parallel_run 
+[ "$parallel" != 0 ] && [ "`grep DISABLE_PARALLEL_RUN $orig/src/$prm`" != "" ] && echo "Warning: Parallel run of test cases is disabled cause they are dependent." && parallel=0
+
 # Check that Sserver has been started:
 if [ "$parallel" = 2 ]
 then
