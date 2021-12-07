@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -110,19 +110,14 @@ int O_U_Ptr::non_nul() const
 // Renvoie l'adresse de l'objet pointe (de type Objet_U)
 Objet_U * O_U_Ptr::get_O_U_Ptr_check() const
 {
-  Objet_U * addr = 0;
-
-  if (cle_ == -1 && ptr_object_id_ == -1)
+  if (cle_ != -1 || ptr_object_id_ != -1)
     {
-      addr = 0;
-    }
-  else
-    {
-      Memoire& memoire = Memoire::Instance();
-      Objet_U& objet = memoire.objet_u(cle_);
-      addr = &objet;
+      Objet_U& objet = Memoire::Instance().objet_u(cle_);
+      Objet_U * addr = &objet;
       const int id = objet.get_object_id();
-      if (id != ptr_object_id_)
+      if (id == ptr_object_id_)
+        return addr;
+      else
         {
           Cerr << "(PE" << me() << ") ";
           Cerr << "Error in O_U_Ptr::get_O_U_Ptr_check() : id != ptr_object_id_\n";
@@ -131,15 +126,13 @@ Objet_U * O_U_Ptr::get_O_U_Ptr_check() const
           Cerr << "\n ptr_object_id_ = " << ptr_object_id_;
           Cerr << "\n id             = " << id;
           std::cerr << "\n &la_memoire().objet_u(cle_) = " << addr << std::endl;
-
           // Si ca plante a cet endroit, c'est que l'objet en reference
           // a ete detruit et que la reference est encore utilisee.
           assert(0);
           exit();
         }
     }
-
-  return addr;
+  return 0;
 }
 
 // Description:
