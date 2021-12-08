@@ -253,7 +253,7 @@ void Discret_Thyd::diametre_hydraulique_face(const Zone_dis& z, const Schema_Tem
 {
   Cerr << "Hydraulic diameter face field discretization" << finl;
   const Zone_VF& zone_VF=ref_cast(Zone_VF, z.valeur());
-  discretiser_champ("champ_face",zone_VF,"diametre_hydraulique","m",dimension,sch.temps_courant(),ch);
+  discretiser_champ("champ_face",zone_VF,"diametre_hydraulique_face","m",1,sch.temps_courant(),ch);
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,ch.valeur());
   ch_fonc.valeurs().ref(zone_VF.diametre_hydraulique_face());
 }
