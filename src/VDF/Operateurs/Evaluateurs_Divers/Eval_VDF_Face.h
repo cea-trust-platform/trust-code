@@ -23,8 +23,10 @@
 #ifndef Eval_VDF_Face_included
 #define Eval_VDF_Face_included
 
+#include <CL_Types_Aretes_enum.h> // For SFINAE later ...
 #include <Ref_Champ_base.h>
 #include <Champ_Face.h>
+#include <type_traits> // For SFINAE later ...
 
 // .DESCRIPTION class Eval_VDF_Face
 // Cette classe represente le prototype fonctionnel des evaluateurs

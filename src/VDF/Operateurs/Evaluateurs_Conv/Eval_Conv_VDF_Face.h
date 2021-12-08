@@ -24,9 +24,7 @@
 #define Eval_Conv_VDF_Face_included
 
 #include <Neumann_sortie_libre.h>
-#include <CL_Types_Aretes_enum.h>
 #include <Eval_VDF_Face.h>
-#include <type_traits>
 
 template <typename DERIVED_T>
 class Eval_Conv_VDF_Face : public Eval_VDF_Face
@@ -84,16 +82,8 @@ public:
   flux_arete(const DoubleTab&, int, int, int, int ) const;
 
   template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, double>::type
+  inline typename std::enable_if<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), double>::type
   flux_arete(const DoubleTab&, int, int, int, int ) const { return 0; }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, double>::type
-  flux_arete(const DoubleTab&, int, int, int, int ) const { return 0; }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, double>::type
-  flux_arete(const DoubleTab&, int, int, int, int) const { return 0; }
 
   // void
   template<Type_Flux_Arete Arete_Type>
@@ -137,16 +127,8 @@ public:
   coeffs_arete(int, int, int, int, double& , double& ) const;
 
   template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, void>::type
-  coeffs_arete(int, int, int, int, double& , double& , double& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, void>::type
-  coeffs_arete(int, int, int, int, double& , double& , double& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>::type
-  coeffs_arete(int, int, int, int, double& , double& , double& ) const { /* do nothing */ }
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+  coeffs_arete(int, int, int, int, double& , double& ) const;
 
   template<Type_Flux_Arete Arete_Type>
   inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
@@ -157,16 +139,16 @@ public:
   coeffs_arete(int, int, int, int, double& , double& , double& ) const;
 
   template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
-  coeffs_arete(int, int, int, int, double& , double& ) const;
-
-  template<Type_Flux_Arete Arete_Type>
   inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
   coeffs_arete(int, int, int, int, double& , double& , double& ) const;
 
   template<Type_Flux_Arete Arete_Type>
   inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
   coeffs_arete(int, int, int, int, double& , double& , double& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>::type
+  coeffs_arete(int, int, int, int, double& , double& , double& ) const { /* do nothing */ }
 
   /* ********************* *
    * CAS SCALAIRE : SECMEM *
@@ -182,24 +164,9 @@ public:
   secmem_fa7( int, int, int) const { return 0; }
 
   template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, double>::type
+  inline typename std::enable_if<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
+                                  Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), double>::type
   secmem_arete(int, int, int, int) const { return 0; }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, double>::type
-  secmem_arete(int, int, int, int) const { return 0; }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, double>::type
-  secmem_arete(int, int, int, int ) const { return 0; }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, double>::type
-  secmem_arete(int, int, int, int) const { return 0; }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, double>::type
-  secmem_arete(int, int, int, int ) const { return 0; }
 
   // void
   template<Type_Flux_Arete Arete_Type>
@@ -211,16 +178,16 @@ public:
   secmem_arete(int, int, int, int, double&, double&) const;
 
   template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
-  secmem_arete(int, int, int, int, double&, double&) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
   inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
   secmem_arete(int, int, int, int, double&, double&) const;
 
   template<Type_Flux_Arete Arete_Type>
   inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
   secmem_arete(int, int, int, int, double&, double&) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+  secmem_arete(int, int, int, int, double&, double&) const { /* do nothing */ }
 
   /* ******************** *
    * CAS VECTORIEL : FLUX *
@@ -243,15 +210,7 @@ public:
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const ;
 
   template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, void>::type
-  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, void>::type
-  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>::type
+  inline typename std::enable_if<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>::type
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
 
   template<Type_Flux_Arete Arete_Type>
@@ -299,16 +258,8 @@ public:
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const;
 
   template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, void>::type
-  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, void>::type
-  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>::type
-  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const { /* do nothing */ }
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const;
 
   template<Type_Flux_Arete Arete_Type>
   inline typename std::enable_if< Arete_Type == Type_Flux_Arete::FLUIDE, void>::type
@@ -319,12 +270,12 @@ public:
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
 
   template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
-  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const;
-
-  template<Type_Flux_Arete Arete_Type>
   inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>::type
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const { /* do nothing */ }
 
   template<Type_Flux_Arete Arete_Type>
   inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
@@ -347,23 +298,8 @@ public:
   secmem_fa7(int, int, int, DoubleVect& ) const { /* do nothing */ }
 
   template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::INTERNE, void>::type
-  secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::MIXTE, void>::type
-  secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI, void>::type
-  secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE, void>::type
-  secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>::type
+  inline typename std::enable_if<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
+                                  Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>::type
   secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
 
   template<Type_Flux_Arete Arete_Type>
@@ -375,12 +311,12 @@ public:
   secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const;
 
   template<Type_Flux_Arete Arete_Type>
-  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
-  secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
   inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>::type
   secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const;
+
+  template<Type_Flux_Arete Arete_Type>
+  inline typename std::enable_if< Arete_Type == Type_Flux_Arete::PERIODICITE, void>::type
+  secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const { /* do nothing */ }
 
   template<Type_Flux_Arete Arete_Type>
   inline typename std::enable_if< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>::type
