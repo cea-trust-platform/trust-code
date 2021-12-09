@@ -28,6 +28,9 @@
 #include <Champ_Face.h>
 #include <type_traits> // For SFINAE later ...
 
+// TODO : can be removed when we pass to C++14
+template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
+
 // .DESCRIPTION class Eval_VDF_Face
 // Cette classe represente le prototype fonctionnel des evaluateurs
 // de flux associes aux equations de conservation integrees
