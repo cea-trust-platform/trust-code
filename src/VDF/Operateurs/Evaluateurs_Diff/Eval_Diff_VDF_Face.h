@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -140,7 +140,7 @@ public:
   template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
   coeffs_arete(int, int, int, int, double& , double& , double& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< (Arete_Type == SYMETRIE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
+  template<Type_Flux_Arete Arete_Type> inline enable_if_t< (Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
   coeffs_arete(int, int, int, int, double& , double& , double& ) const { /* Do nothing */ }
 
   /* ********************* *
@@ -154,7 +154,7 @@ public:
   template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, double>
   secmem_fa7( int, int, int) const { return 0; }
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == MIXTE || Arete_Type == SYMETRIE), double>
+  template<Type_Flux_Arete Arete_Type> inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::SYMETRIE), double>
   secmem_arete(int, int, int, int) const { return 0; }
 
   template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, double>
@@ -173,7 +173,7 @@ public:
   template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
   secmem_arete(int, int, int, int, double&, double&) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t<(Arete_Type == PERIODICITE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
+  template<Type_Flux_Arete Arete_Type> inline enable_if_t<(Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
   secmem_arete(int, int, int, int, double&, double&) const { /* Do nothing */ }
 
   /* ******************** *

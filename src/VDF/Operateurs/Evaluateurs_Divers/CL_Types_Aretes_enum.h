@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,10 @@
 #ifndef CL_Types_Aretes_enum_included
 #define CL_Types_Aretes_enum_included
 
-enum Type_Flux_Arete
+// TODO : can be removed when we pass to C++14
+template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
+
+enum class Type_Flux_Arete
 {
   FLUIDE,
   BORD,
@@ -38,7 +41,7 @@ enum Type_Flux_Arete
   SYMETRIE
 };
 
-enum Type_Flux_Fa7
+enum class Type_Flux_Fa7
 {
   ELEM,
   SORTIE_LIBRE

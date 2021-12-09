@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,9 +28,6 @@
 #include <Champ_Face.h>
 #include <type_traits> // For SFINAE later ...
 
-// TODO : can be removed when we pass to C++14
-template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
-
 // .DESCRIPTION class Eval_VDF_Face
 // Cette classe represente le prototype fonctionnel des evaluateurs
 // de flux associes aux equations de conservation integrees
@@ -38,11 +35,9 @@ template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::
 class Eval_VDF_Face
 {
 public:
-
   static constexpr bool CALC_FA7_SORTIE_LIB = false, CALC_ARR_FL = true, CALC_ARR_BORD = true, CALC_ARR_COIN_FL = false,
                         CALC_ARR_INT = true, CALC_ARR_MIXTE = true, CALC_ARR_PERIO = true, CALC_ARR_PAR_FL = true, CALC_ARR_PAR = true,
                         CALC_ARR_SYMM_PAR = true, CALC_ARR_SYMM_FL = true, CALC_ARR_SYMM = false;
-
   inline void associer_inconnue(const Champ_base& );
 
 protected:
