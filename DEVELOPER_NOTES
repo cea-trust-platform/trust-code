@@ -1,5 +1,5 @@
 -------------------------------------------------------------
-Developer notes version 1.8.4_beta : Changes since version 1.8.3 :
+Developer notes version 1.8.4 : Changes since version 1.8.3 :
 -------------------------------------------------------------
 23/11/21 (TRUST)  Add option save_matrix_mtx_format to write PETSc matrix into Matrix Market format
 18/10/21 (TRUST)  "Fluide_base" or "Fluide_Dilatable_base" should now be used for casting and not "Fluide_Incompressible"

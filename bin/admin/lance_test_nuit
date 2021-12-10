@@ -2928,7 +2928,7 @@ $TRUST_ROOT/bin/KSH/tggcov_ 1>$REP_NUIT/tggcov.log 2>&1
 #tail -n2 $REP_NUIT/tggcov.log
 couverture_de_code=`tggcov_ | $TRUST_Awk '/TRUST code/ {print $1}'`
 cd - 1>/dev/null 2>&1
-couverture_minimale=69.42 #69.42 v1.8.3 (templates vdf) ; 65.88 v1.8.2 ; 57.86 v1.8.1 ; 60.03 v1.8.0 ; 66.73 v1.7.9 ; 67.49 v1.7.8 ; 69.05 v1.7.7 ; 69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
+couverture_minimale=69.24 # 69.24 v1.8.4 ; 69.42 v1.8.3 (templates vdf) ; 65.88 v1.8.2 ; 57.86 v1.8.1 ; 60.03 v1.8.0 ; 66.73 v1.7.9 ; 67.49 v1.7.8 ; 69.05 v1.7.7 ; 69.42 v1.7.6 ; 69.87 v1.7.5 ; 70.04 v1.7.4 ; 69.61 v1.7.3 ; 69.28 v1.7.2 ; 65.26 v1.7.1
 coverage=`echo $couverture_de_code | $TRUST_Awk -v m=$couverture_minimale '{if ($1>=m) print 1;else print 0}'`
 if [ $coverage = 1 ]
 then
@@ -3963,6 +3963,7 @@ then
 	       #else
 	       #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
 	       fi
+	       git checkout -- Multiphase/Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
 	    fi
             git commit --all -m"Commit for an official Release $label version."
             echo "    Call git tag $label"

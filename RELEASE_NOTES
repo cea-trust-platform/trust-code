@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------------------------
-Release notes version 1.8.4_beta : Enhancements, modifications and corrected bugs since version 1.8.3 :
+Release notes version 1.8.4 : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
 23/11/21 (TRUST)  Fix         : Turbulent flow in a VDF stretched mesh was diverging with the implicited-diffusion solver 
 23/11/21 (TRUST)  New feature : Add the possibility to read int64 binary files (.Zones, .sauv, .xyz) if possible (no overflow) with an int32 binary. The contrary was already true.

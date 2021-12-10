@@ -100,5 +100,5 @@ define_soumission_batch()
    fi
    mpirun="ccc_mprun -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
-   project=dendm2s && [ "`id | grep gch0504`" != "" ] && project=gch0504
+   #project=dendm2s && [ "`id | grep gch0504`" != "" ] && project=gch0504
 }

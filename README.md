@@ -14,14 +14,14 @@ BSD3 license
 
 ```
 
-# **How to install TRUST-1.8.3 version ?**
+# **How to install TRUST-1.8.4 version ?**
 
 ### **First method**
 
-    $> git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.8.3
-    $> cd TRUST-1.8.3
-    $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.8.3.tar
-    $> tar xf externalpackages-1.8.3.tar
+    $> git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.8.4
+    $> cd TRUST-1.8.4
+    $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.8.4.tar
+    $> tar xf externalpackages-1.8.4.tar
     $> ./configure -help # To see the possible configure options. On various OS, we configure TRUST with OPTIONS -force_provided_mpich (DO NOT use it on HPC clusters!)
     $> ./configure $OPTIONS  # At the end of configure, file env/machine.env will be created. You can then edit it and some others (env/make.linux*) to change some default values.
     $> make
@@ -34,9 +34,9 @@ Run the following command, mpicxx should be found into the bin directory of the 
 
 ### **Second method**
 
-    $> wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.8.3/TRUST-1.8.3.tar.gz
-    $> tar xzf TRUST-1.8.3.tar.gz
-    $> cd TRUST-1.8.3
+    $> wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.8.4/TRUST-1.8.4.tar.gz
+    $> tar xzf TRUST-1.8.4.tar.gz
+    $> cd TRUST-1.8.4
     $> ./configure $OPTIONS
     $> make
 
@@ -131,24 +131,24 @@ If you are a CEA worker, it is possible to use a TMA preinstalled version of TRU
 
 - for a local machine at CEA Saclay
 
-      $> source /home/triou/env_TRUST_1.8.3.sh
+      $> source /home/triou/env_TRUST_1.8.4.sh
 
       or
 
-      $> source /home/trust_trio-public/env_TRUST-1.8.3.sh
+      $> source /home/trust_trio-public/env_TRUST-1.8.4.sh
 
 - for CEA Saclay cluster (orcus):
 
-      $> source /home/trust_trio/env_TRUST-1.8.3.sh
+      $> source /home/trust_trio/env_TRUST-1.8.4.sh
 
-- for CCRT-TGCC supercomputers (cobalt & irene-ccrt):
+- for CCRT-TGCC supercomputers (topaze & irene-ccrt):
 
-      $> source /ccc/cont002/home/den/triou/env_TRUST-1.8.3.sh
+      $> source /ccc/cont002/home/den/triou/env_TRUST-1.8.4.sh
 
 - for CCRT-TGCC supercomputers (irene-amd int64):
 
-      $> source /ccc/cont002/home/den/triou/env_TRUST-1.8.3-int64.sh
+      $> source /ccc/cont002/home/den/triou/env_TRUST-1.8.4-int64.sh
 
 - for CINES supercomputer (occigen):
 
-      $> source /panfs/panasas/softs/applications/trio_u/TRUST/env_TRUST-1.8.3.sh
+      $> source /panfs/panasas/softs/applications/trio_u/TRUST/env_TRUST-1.8.4.sh
