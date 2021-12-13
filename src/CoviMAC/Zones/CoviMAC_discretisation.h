@@ -83,10 +83,9 @@ public :
   void grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const override;
   ////void h_conv(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch) const;
   void h_conv(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const override;
-  inline type_calcul_du_residu codage_du_calcul_du_residu(void) const override
-  {
-    return VIA_AJOUTER;
-  }
+  inline type_calcul_du_residu codage_du_calcul_du_residu(void) const override { return VIA_AJOUTER; }
+  void taux_cisaillement(const Zone_dis&, const Zone_Cl_dis& ,const Champ_Inc&, Champ_Fonc&) const override;
+  /*  void associer_grad_u_taux_cisaillement(Champ_Fonc& grad_u, const Champ_Fonc& taux_cis) const ;*/
 
   Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF(Champ_base)& champ_sup ) const override;
   void residu( const Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const override;
@@ -100,10 +99,6 @@ private:
     Objet_U& champ) const;
 
   void modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const override;
-
-
-
 };
-
 
 #endif

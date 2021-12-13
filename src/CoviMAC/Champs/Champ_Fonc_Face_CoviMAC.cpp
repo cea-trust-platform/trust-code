@@ -66,17 +66,32 @@ int Champ_Fonc_Face_CoviMAC::fixer_nb_valeurs_nodales(int n)
   // pour recuperer la zone discrete...
 
   const Champ_Fonc_base& self = ref_cast(Champ_Fonc_base, *this);
-  const Zone_VF& la_zone_vf = ref_cast(Zone_VF,self.zone_dis_base());
+  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,self.zone_dis_base());
 
-  assert(n == la_zone_vf.nb_faces());
+  if (n == zone.nb_faces())
+    {
+      const MD_Vector& md = zone.md_vector_faces();
+      // Probleme: nb_comp vaut 2 mais on ne veut qu'une dimension !!!
+      // HACK :
+      int old_nb_compo = nb_compo_;
+      nb_compo_ = 1;
+      creer_tableau_distribue(md);
+      nb_compo_ = old_nb_compo;
+    }
+  else
+    {
+      assert(n == zone.nb_faces() + dimension * zone.nb_elem());
 
-  const MD_Vector& md = la_zone_vf.md_vector_faces();
-  // Probleme: nb_comp vaut 2 mais on ne veut qu'une dimension !!!
-  // HACK :
-  int old_nb_compo = nb_compo_;
-  nb_compo_ = 1;
-  creer_tableau_distribue(md);
-  nb_compo_ = old_nb_compo;
+      // Probleme: nb_comp vaut dimension*dimension*nb_phases mais on ne veut que dimension*nb_phases !!!
+      // HACK :
+      int old_nb_compo = nb_compo_;
+      nb_compo_ /= dimension;
+      /* variables : valeurs normales aux faces, puis valeurs aux elements par blocs -> pour que line_size() marche */
+      creer_tableau_distribue(zone.mdv_ch_face);
+      nb_compo_ = old_nb_compo;
+    }
+
+
   return n;
 
 }
@@ -144,6 +159,15 @@ DoubleTab& Champ_Fonc_Face_CoviMAC::valeur_aux_elems(const DoubleTab& positions,
       Cerr<<"Champ_Face_implementation::valeur_aux_elems"<<finl;
       Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
       Process::exit();
+    }
+  else if (cha.valeurs().dimension_tot(0) == zone_VF.nb_faces_tot() + dimension * zone_VF.nb_elem_tot()) // Cas d'un champ aux faces qui contient les valeurs aux elements
+    {
+      int D=dimension, d_U, d_X ;
+      int N = valeurs().line_size()/D, n;
+      for (int p = 0, e; p < les_polys.size(); p++)
+        for (e = les_polys(p), d_X = 0; e < zone_VF.nb_elem() && d_X < D; d_X++)
+          for (d_U = 0 ; d_U < D ; d_U++) for (n = 0; n < N; n++)
+              val(p, d_X + D * d_U + D * D * n) = valeurs()(zone_VF.nb_faces_tot() + D * e + d_X , D * n + d_U);
     }
   else // (nb_compo != 1)
     {

@@ -91,9 +91,6 @@ public :
     return fcl_;
   }
 
-  //interpolation du tenseur (grad v)
-  void init_gve() const;
-
   //interpolations vitesse aux faces -> vitesse aux elems
   void update_ve(DoubleTab& val) const; //ordre 1
 
@@ -102,6 +99,7 @@ public :
   mutable DoubleTab ve2c, ve2bc;
   void update_ve2(DoubleTab& val, int incr = 0) const;
 
+  // Interpolation du gradient de la vitesse
   void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
 
   /* utilitaire pour le calcul des termes sources : calcule le vecteur v_e + n_f (v_f - v_e. n_f)
@@ -128,6 +126,7 @@ protected:
   void init_fcl() const;
   mutable IntTab fcl_;
   mutable int fcl_init_ = 0;
+
 };
 
 #endif /* Champ_Face_CoviMAC_included */

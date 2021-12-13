@@ -332,7 +332,7 @@ void Discret_Thyd::proprietes_physiques_fluide_Ostwald(const Zone_dis& , Fluide_
 }
 
 
-void Discret_Thyd::grad_u(const Zone_dis& ,const Zone_Cl_dis&,  const Champ_Inc&, Champ_Fonc& ) const
+void Discret_Thyd::grad_u(const Zone_dis& ,const Zone_Cl_dis&,  const Champ_Inc&, Champ_Fonc&) const
 {
   Cerr << "\nDiscret_Thyd::grad_u() does nothing" << finl;
   Cerr <<  que_suis_je() << " needs to overload it !" << finl;

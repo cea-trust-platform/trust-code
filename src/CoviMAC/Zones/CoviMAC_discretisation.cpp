@@ -25,8 +25,10 @@
 #include <Champ_Fonc_Tabule.h>
 //#include <Ch_Fonc_P1_CoviMAC.h>
 #include <Champ_Fonc_P0_CoviMAC.h>
-
+#include <Champ_Fonc_P0_CoviMAC_TC.h>
 #include <Champ_Fonc_Tabule_P0_CoviMAC.h>
+#include <grad_Champ_Face_CoviMAC.h>
+
 #include <Milieu_base.h>
 #include <Equation_base.h>
 #include <Champ_Uniforme.h>
@@ -37,7 +39,6 @@
 #include <Motcle.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Zone_Cl_dis.h>
-#include <grad_U_Champ_Face_CoviMAC.h>
 
 Implemente_instanciable(CoviMAC_discretisation,"CoviMAC",Discret_Thyd);
 
@@ -568,40 +569,59 @@ void CoviMAC_discretisation::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl,con
 
 void CoviMAC_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
 {
-  const Champ_Face_CoviMAC& vit = ref_cast(Champ_Face_CoviMAC,ch_vitesse.valeur());
-  const Zone_CoviMAC& zone_poly=ref_cast(Zone_CoviMAC, z.valeur());
-  const Zone_Cl_CoviMAC& zone_cl_poly=ref_cast(Zone_Cl_CoviMAC, zcl.valeur());
-  ch.typer("grad_U_Champ_Face_CoviMAC");
-  grad_U_Champ_Face_CoviMAC& ch_grad_u=ref_cast(grad_U_Champ_Face_CoviMAC,ch.valeur());
+  const Champ_Face_CoviMAC&          vit = ref_cast(Champ_Face_CoviMAC,ch_vitesse.valeur());
+  const Zone_CoviMAC&          zone_poly = ref_cast(Zone_CoviMAC, z.valeur());
+  const Zone_Cl_CoviMAC&    zone_cl_poly = ref_cast(Zone_Cl_CoviMAC, zcl.valeur());
+
+  ch.typer("grad_Champ_Face_CoviMAC");
+
+  grad_Champ_Face_CoviMAC&   ch_grad_u = ref_cast(grad_Champ_Face_CoviMAC,ch.valeur()); //
+
   ch_grad_u.associer_zone_dis_base(zone_poly);
   ch_grad_u.associer_zone_Cl_dis_base(zone_cl_poly);
   ch_grad_u.associer_champ(vit);
   ch_grad_u.nommer("gradient_vitesse");
-  ch_grad_u.fixer_nb_comp(dimension*dimension);
+  ch_grad_u.fixer_nb_comp(dimension * dimension * vit.valeurs().line_size());
 
-  if (dimension == 2)
+  for (int n = 0; n<ch_grad_u.valeurs().line_size(); n++)
     {
-      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
-      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
-      ch_grad_u.fixer_nom_compo(2,"dVdX"); // dv/dx
-      ch_grad_u.fixer_nom_compo(3,"dVdY"); // dv/dy
+      Nom phase   = Nom(n);
+      if (dimension == 2)
+        {
+          ch_grad_u.fixer_nom_compo(dimension*n+0,Nom("dU_")+phase); // dU
+          ch_grad_u.fixer_nom_compo(dimension*n+1,Nom("dV_")+phase); // dV
+        }
+      else
+        {
+          ch_grad_u.fixer_nom_compo(dimension*n+0,Nom("dU_")+phase); // dU
+          ch_grad_u.fixer_nom_compo(dimension*n+1,Nom("dV_")+phase); // dV
+          ch_grad_u.fixer_nom_compo(dimension*n+2,Nom("dX_")+phase); // dW
+        }
     }
-  else
-    {
-      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
-      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
-      ch_grad_u.fixer_nom_compo(2,"dUdZ"); // du/dz
-      ch_grad_u.fixer_nom_compo(3,"dVdX"); // dv/dx
-      ch_grad_u.fixer_nom_compo(4,"dVdY"); // dv/dy
-      ch_grad_u.fixer_nom_compo(5,"dVdZ"); // dv/dz
-      ch_grad_u.fixer_nom_compo(6,"dWdX"); // dw/dx
-      ch_grad_u.fixer_nom_compo(7,"dWdY"); // dw/dy
-      ch_grad_u.fixer_nom_compo(8,"dWdZ"); // dw/dz
-    }
-  ch_grad_u.fixer_nature_du_champ(vectoriel);
+  ch_grad_u.fixer_nature_du_champ(multi_scalaire); // tensoriel pour etre precis
+  ch_grad_u.fixer_nb_valeurs_nodales(zone_poly.nb_faces() + dimension * zone_poly.nb_elem());
+  ch_grad_u.fixer_unite("s-1");
+  ch_grad_u.changer_temps(-1); // so it is calculated at time 0
+}
+
+void CoviMAC_discretisation::taux_cisaillement(const Zone_dis& z, const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+{
+  const Champ_Face_CoviMAC&          vit = ref_cast(Champ_Face_CoviMAC,ch_vitesse.valeur());
+  const Zone_CoviMAC&          zone_poly = ref_cast(Zone_CoviMAC, z.valeur());
+
+  ch.typer("Champ_Fonc_P0_CoviMAC_TC");
+
+  Champ_Fonc_P0_CoviMAC_TC&   ch_grad_u = ref_cast(Champ_Fonc_P0_CoviMAC_TC,ch.valeur()); //
+
+  ch_grad_u.associer_zone_dis_base(zone_poly);
+  ch_grad_u.associer_champ(vit);
+  ch_grad_u.nommer("Taux_cisaillement");
+  ch_grad_u.fixer_nb_comp(vit.valeurs().line_size());
+
+  ch_grad_u.fixer_nature_du_champ(scalaire); // tensoriel pour etre precis
   ch_grad_u.fixer_nb_valeurs_nodales(zone_poly.nb_elem());
   ch_grad_u.fixer_unite("s-1");
-  ch_grad_u.changer_temps(ch_vitesse.temps());
+  ch_grad_u.changer_temps(-1); // so it is calculated at time 0
 }
 
 void CoviMAC_discretisation::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
