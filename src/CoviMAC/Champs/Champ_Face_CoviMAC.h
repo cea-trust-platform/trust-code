@@ -99,9 +99,6 @@ public :
   mutable DoubleTab ve2c, ve2bc;
   void update_ve2(DoubleTab& val, int incr = 0) const;
 
-  // Interpolation du gradient de la vitesse
-  void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
-
   /* utilitaire pour le calcul des termes sources : calcule le vecteur v_e + n_f (v_f - v_e. n_f)
      retour : le vecteur, sa norme et les derivees de celle-ci selon v_e et v_f
   */

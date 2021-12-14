@@ -278,12 +278,6 @@ void Champ_Face_CoviMAC::update_ve2(DoubleTab& val, int incr) const
   val.echange_espace_virtuel();
 }
 
-/* gradient d_j v_i aux elements : interp_ve -> grad -> interp_ve */
-void Champ_Face_CoviMAC::interp_gve(const DoubleTab& inco, DoubleTab& vals) const
-{
-  abort();
-}
-
 DoubleTab& Champ_Face_CoviMAC::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,zone_vf());
