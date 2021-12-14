@@ -26,25 +26,10 @@
 // TODO : can be removed when we pass to C++14
 template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
 
-enum class Type_Flux_Arete
-{
-  FLUIDE,
-  BORD,
-  COIN_FLUIDE,
-  INTERNE,
-  MIXTE,
-  PERIODICITE,
-  PAROI_FLUIDE,
-  PAROI,
-  SYMETRIE_PAROI,
-  SYMETRIE_FLUIDE,
-  SYMETRIE
-};
+enum class Type_Flux_Arete { FLUIDE, BORD, COIN_FLUIDE, INTERNE, MIXTE, PERIODICITE, PAROI_FLUIDE, PAROI, SYMETRIE_PAROI, SYMETRIE_FLUIDE, SYMETRIE };
 
-enum class Type_Flux_Fa7
-{
-  ELEM,
-  SORTIE_LIBRE
-};
+enum class Type_Flux_Fa7 { ELEM, SORTIE_LIBRE };
+
+enum class Type_Champ { SCALAIRE, VECTORIEL };
 
 #endif /* CL_Types_Aretes_enum_included */
