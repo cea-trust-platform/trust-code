@@ -179,6 +179,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
       }
   if (grad_u.non_nul()) grad_u.mettre_a_jour(temps);
   if (Taux_cisaillement.non_nul()) Taux_cisaillement.mettre_a_jour(temps);
+  if (la_vorticite.non_nul()) la_vorticite.mettre_a_jour(temps);
 }
 
 bool QDM_Multiphase::initTimeStep(double dt)
@@ -258,6 +259,7 @@ void QDM_Multiphase::creer_champ(const Motcle& motlu)
 {
   Navier_Stokes_std::creer_champ(motlu);
   if (Taux_cisaillement.non_nul()) if (!grad_u.non_nul()) creer_champ("gradient_vitesse");
+  if (la_vorticite.non_nul()) if (!grad_u.non_nul()) creer_champ("gradient_vitesse");
   int i = noms_vit_phases_.rang(motlu);
   if (i >= 0 && !(vit_phases_[i].non_nul()))
     {

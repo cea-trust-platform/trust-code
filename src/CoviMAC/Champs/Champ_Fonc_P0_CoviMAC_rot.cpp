@@ -14,13 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_P0_CoviMAC_TC.cpp
+// File:        Champ_Fonc_P0_CoviMAC_rot.cpp
 // Directory:   $TRUST_ROOT/src/CoviMAC/Champs
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_Fonc_P0_CoviMAC_TC.h>
+#include <Champ_Fonc_P0_CoviMAC_rot.h>
 #include <Champ_Fonc_P0_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
 #include <grad_Champ_Face_CoviMAC.h>
@@ -33,13 +33,13 @@
 #include <cmath>
 
 
-Implemente_instanciable(Champ_Fonc_P0_CoviMAC_TC,"Champ_Fonc_P0_CoviMAC_TC",Champ_Fonc_P0_CoviMAC);
+Implemente_instanciable(Champ_Fonc_P0_CoviMAC_rot,"Champ_Fonc_P0_CoviMAC_rot",Champ_Fonc_P0_CoviMAC);
 
 
 //     printOn()
 /////
 
-Sortie& Champ_Fonc_P0_CoviMAC_TC::printOn(Sortie& s) const
+Sortie& Champ_Fonc_P0_CoviMAC_rot::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
@@ -47,34 +47,52 @@ Sortie& Champ_Fonc_P0_CoviMAC_TC::printOn(Sortie& s) const
 //// readOn
 //
 
-Entree& Champ_Fonc_P0_CoviMAC_TC::readOn(Entree& s)
+Entree& Champ_Fonc_P0_CoviMAC_rot::readOn(Entree& s)
 {
   return s ;
 }
 
-void Champ_Fonc_P0_CoviMAC_TC::me_calculer(double tps)
+void Champ_Fonc_P0_CoviMAC_rot::me_calculer_2D(double tps)
 {
   const Champ_Face_CoviMAC& vitesse = ref_cast(Champ_Face_CoviMAC,champ_.valeur());
-  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,vitesse.zone_vf());
-  int e, d_U, d_X, n ;
+  const Zone_CoviMAC&          zone = ref_cast(Zone_CoviMAC,vitesse.zone_vf());
+  int e, n ;
   int D = dimension, N = champ_a_deriver().valeurs().line_size();
   int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
 
   const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vitesse.equation());
-  DoubleTab& tab_tc = valeurs();
+  DoubleTab&          tab_rot = valeurs();
   const grad_Champ_Face_CoviMAC& grad = ref_cast(grad_Champ_Face_CoviMAC, eq.get_champ("gradient_vitesse"));
   const DoubleTab& tab_grad = grad.valeurs();
 
-  for (e = 0; e < ne; e++) for (n = 0; n < N; n++)
+  for (n = 0 ; n<N ; n++) for (e = 0; e < ne; e++)
       {
-        tab_tc(e, n) = 0;
-        for (d_U = 0; d_U < D; d_U++) for (d_X = 0; d_X < D; d_X++)
-            {
-              tab_tc(e, n) += tab_grad(nf_tot + d_X + e * D , D * n + d_U) * tab_grad(nf_tot + d_X + e * D , D * n + d_U);
-            }
-        tab_tc(e, n) = sqrt(tab_tc(e, n));
+        tab_rot(e, n) = tab_grad(nf_tot + D * e + 0 , 1 + n * D) - tab_grad(nf_tot + D * e + 1 , 0 + n * D); // dUy/dx - dUx/dy
       }
 
-  tab_tc.echange_espace_virtuel();
+  tab_rot.echange_espace_virtuel();
+}
+
+void Champ_Fonc_P0_CoviMAC_rot::me_calculer_3D(double tps)
+{
+  const Champ_Face_CoviMAC& vitesse = ref_cast(Champ_Face_CoviMAC,champ_.valeur());
+  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,vitesse.zone_vf());
+  int e, n ;
+  int D = dimension, N = champ_a_deriver().valeurs().line_size();
+  int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
+
+  const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vitesse.equation());
+  DoubleTab&          tab_rot = valeurs();
+  const grad_Champ_Face_CoviMAC& grad = ref_cast(grad_Champ_Face_CoviMAC, eq.get_champ("gradient_vitesse"));
+  const DoubleTab& tab_grad = grad.valeurs();
+
+  for (n = 0 ; n<N ; n++) for (e = 0; e < ne; e++)
+      {
+        tab_rot(e, 0 + n * D) = tab_grad(nf_tot + D * e + 1 , 2 + n * D) - tab_grad(nf_tot + D * e + 2 , 1 + n * D); // dUz/dy - dUy/dz
+        tab_rot(e, 1 + n * D) = tab_grad(nf_tot + D * e + 2 , 0 + n * D) - tab_grad(nf_tot + D * e + 0 , 2 + n * D); // dUx/dz - dUz/dx
+        tab_rot(e, 2 + n * D) = tab_grad(nf_tot + D * e + 0 , 1 + n * D) - tab_grad(nf_tot + D * e + 1 , 0 + n * D); // dUy/dx - dUx/dy
+      }
+
+  tab_rot.echange_espace_virtuel();
 }
 

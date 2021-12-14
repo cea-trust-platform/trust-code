@@ -54,7 +54,6 @@ Entree& grad_Champ_Face_CoviMAC::readOn(Entree& s)
 
 void grad_Champ_Face_CoviMAC::me_calculer(double tps)
 {
-  Cerr << finl << "calcule le gradient de U " << finl << finl ;
   update_tab_grad(0); // calcule les coefficients de fgrad requis pour le calcul du champ aux faces
   calc_gradfve();
   update_ge(); // calcule le champ aux elements a partir du champ aux faces
@@ -82,12 +81,12 @@ void grad_Champ_Face_CoviMAC::calc_gradfve()
   int d_U ; //coordonnee de la vitesse
   int D = dimension;
   int N = champ_a_deriver().valeurs().line_size(); //nombre phases
-  int ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  int ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), nf = zone.nb_faces();
 
   const DoubleTab& tab_ch = ch.valeurs();
   DoubleTab&          val = valeurs();
 
-  for (f = 0; f < nf_tot; f++)
+  for (f = 0; f < nf; f++)
     {
       for (d_U = 0; d_U < D; d_U++) for (n = 0; n < N; n++) // Coordonnees de la vitesse et phase
           {
@@ -109,6 +108,8 @@ void grad_Champ_Face_CoviMAC::calc_gradfve()
               }
           }
     }
+
+  val.echange_espace_virtuel();
 }
 
 void grad_Champ_Face_CoviMAC::update_ge()

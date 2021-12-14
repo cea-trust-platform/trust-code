@@ -26,6 +26,7 @@
 //#include <Ch_Fonc_P1_CoviMAC.h>
 #include <Champ_Fonc_P0_CoviMAC.h>
 #include <Champ_Fonc_P0_CoviMAC_TC.h>
+#include <Champ_Fonc_P0_CoviMAC_rot.h>
 #include <Champ_Fonc_Tabule_P0_CoviMAC.h>
 #include <grad_Champ_Face_CoviMAC.h>
 
@@ -307,121 +308,50 @@ void CoviMAC_discretisation::distance_paroi(const Schema_Temps_base& sch,
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
-
-
-void CoviMAC_discretisation::vorticite(Zone_dis& z,const Champ_Inc& ch_vitesse,
-                                       Champ_Fonc& ch) const
-{
-#ifdef dependance
-  Cerr << "Discretisation de la vorticite " << finl;
-  const Zone_CoviMAC& zone_CoviMAC=ref_cast(Zone_CoviMAC, z.valeur());
-
-  if (sub_type(Tri_CoviMAC,zone_CoviMAC.type_elem().valeur()) || sub_type(Segment_CoviMAC,zone_CoviMAC.type_elem().valeur()) || sub_type(Tetra_CoviMAC,zone_CoviMAC.type_elem().valeur()))
-    {
-      ch.typer("Rotationnel_Champ_P1_CoviMAC");
-      const Champ_P1_CoviMAC& vit = ref_cast(Champ_P1_CoviMAC,ch_vitesse.valeur());
-      Rotationnel_Champ_P1_CoviMAC& ch_W=ref_cast(Rotationnel_Champ_P1_CoviMAC,ch.valeur());
-      ch_W.associer_zone_dis_base(zone_CoviMAC);
-      ch_W.associer_champ(vit);
-      ch_W.nommer("vorticite");
-      if (dimension == 2)
-        ch_W.fixer_nb_comp(1);
-      else
-        {
-          ch_W.fixer_nb_comp(dimension);
-          ch_W.fixer_nom_compo(0,"vorticitex");
-          ch_W.fixer_nom_compo(1,"vorticitey");
-          ch_W.fixer_nom_compo(2,"vorticitez");
-        }
-      ch_W.fixer_nb_valeurs_nodales(zone_CoviMAC.nb_elem());
-      ch_W.fixer_unite("s-1");
-      ch_W.changer_temps(ch_vitesse.temps());
-    }
-  else if (sub_type(Quadri_CoviMAC,zone_CoviMAC.type_elem().valeur()) || sub_type(Hexa_CoviMAC,zone_CoviMAC.type_elem().valeur()))
-    {
-      ch.typer("Rotationnel_Champ_Q1_CoviMAC");
-      const Champ_Q1_CoviMAC& vit = ref_cast(Champ_Q1_CoviMAC,ch_vitesse.valeur());
-      Rotationnel_Champ_Q1_CoviMAC& ch_W=ref_cast(Rotationnel_Champ_Q1_CoviMAC,ch.valeur());
-      ch_W.associer_zone_dis_base(zone_CoviMAC);
-      ch_W.associer_champ(vit);
-      ch_W.nommer("vorticite");
-      if (dimension == 2)
-        ch_W.fixer_nb_comp(1);
-      else
-        {
-          ch_W.fixer_nb_comp(dimension);
-          ch_W.fixer_nom_compo(0,"vorticitex");
-          ch_W.fixer_nom_compo(1,"vorticitey");
-          ch_W.fixer_nom_compo(2,"vorticitez");
-        }
-      ch_W.fixer_nb_valeurs_nodales(zone_CoviMAC.nb_elem());
-      ch_W.fixer_unite("s-1");
-      ch_W.changer_temps(ch_vitesse.temps());
-    }
-  else
-    {
-      Cerr << "Pb dans le typage des elements dans CoviMAC_discretisation::vorticite" << finl;
-      exit();
-    }
-#endif
-}
-
 void CoviMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
                                                    const Champ_Inc& ch_vitesse,
                                                    Champ_Fonc& ch) const
 {
+  const Champ_Face_CoviMAC      vit = ref_cast(Champ_Face_CoviMAC,ch_vitesse.valeur());
+  const Zone_CoviMAC&          zone = ref_cast(Zone_CoviMAC, vit.zone_dis_base());
+  const int N = vit.valeurs().line_size();
 
-#ifdef dependance
-  if (sub_type(Champ_P1_CoviMAC,ch_vitesse.valeur()))
+  ch.typer("Champ_Fonc_P0_CoviMAC_rot");
+
+  Champ_Fonc_P0_CoviMAC_rot&  ch_rot_u = ref_cast(Champ_Fonc_P0_CoviMAC_rot,ch.valeur());
+
+  ch_rot_u.associer_zone_dis_base(zone);
+  ch_rot_u.associer_champ(vit);
+  ch_rot_u.nommer("vorticite");
+
+  if (dimension == 2)
     {
-      ch.typer("Rotationnel_Champ_P1_CoviMAC");
-      const Champ_P1_CoviMAC& vit = ref_cast(Champ_P1_CoviMAC,ch_vitesse.valeur());
-      const Zone_CoviMAC& zone_CoviMAC = ref_cast(Zone_CoviMAC,vit.zone_dis_base());
-      Rotationnel_Champ_P1_CoviMAC& ch_W = ref_cast(Rotationnel_Champ_P1_CoviMAC,ch.valeur());
-      ch_W.associer_zone_dis_base(zone_CoviMAC);
-      ch_W.associer_champ(vit);
-      ch_W.nommer("vorticite");
-      if (dimension == 2)
-        ch_W.fixer_nb_comp(1);
-      else
+      ch_rot_u.fixer_nb_comp(N);
+      for (int n = 0; n<N; n++)
         {
-          ch_W.fixer_nb_comp(dimension);
-          ch_W.fixer_nom_compo(0, "vorticitex");
-          ch_W.fixer_nom_compo(1, "vorticitey");
-          ch_W.fixer_nom_compo(2, "vorticitez");
+          Nom phase   = Nom(n);
+          ch_rot_u.fixer_nom_compo(n, phase);
         }
-      ch_W.fixer_nb_valeurs_nodales(zone_CoviMAC.nb_elem());
-      ch_W.fixer_unite("s-1");
-      ch_W.changer_temps(sch.temps_courant());
+      ch_rot_u.fixer_nature_du_champ(scalaire);
+      ch_rot_u.fixer_nb_valeurs_nodales(zone.nb_elem_tot());
     }
-  else if (sub_type(Champ_Q1_CoviMAC,ch_vitesse.valeur()))
+  else if (dimension == 3)
     {
-      ch.typer("Rotationnel_Champ_Q1_CoviMAC");
-      const Champ_Q1_CoviMAC& vit = ref_cast(Champ_Q1_CoviMAC,ch_vitesse.valeur());
-      const Zone_CoviMAC& zone_CoviMAC = ref_cast(Zone_CoviMAC,vit.zone_dis_base());
-      Rotationnel_Champ_Q1_CoviMAC& ch_W = ref_cast(Rotationnel_Champ_Q1_CoviMAC,ch.valeur());
-      ch_W.associer_zone_dis_base(zone_CoviMAC);
-      ch_W.associer_champ(vit);
-      ch_W.nommer("vorticite");
-      if (dimension == 2)
-        ch_W.fixer_nb_comp(1);
-      else
+      ch_rot_u.fixer_nb_comp(dimension * N);
+      for (int n = 0; n<N; n++)
         {
-          ch_W.fixer_nb_comp(dimension);
-          ch_W.fixer_nom_compo(0, "vorticitex");
-          ch_W.fixer_nom_compo(1, "vorticitey");
-          ch_W.fixer_nom_compo(2, "vorticitez");
+          Nom phase   = Nom(n);
+          ch_rot_u.fixer_nom_compo(dimension*n+0, phase);
+          ch_rot_u.fixer_nom_compo(dimension*n+1, phase);
+          ch_rot_u.fixer_nom_compo(dimension*n+2, phase);
         }
-      ch_W.fixer_nb_valeurs_nodales(zone_CoviMAC.nb_elem());
-      ch_W.fixer_unite("s-1");
-      ch_W.changer_temps(sch.temps_courant());
+      ch_rot_u.fixer_nature_du_champ(vectoriel);
+      ch_rot_u.fixer_nb_valeurs_nodales(zone.nb_elem_tot());
     }
-  else
-    {
-      Cerr << "Pb dans le typage des elements dans CoviMAC_discretisation::creer_champ_vorticite" << finl;
-      exit();
-    }
-#endif
+  else abort();
+
+  ch_rot_u.fixer_unite("s-1");
+  ch_rot_u.changer_temps(-1); // so it is calculated at time 0
 }
 
 
@@ -599,7 +529,7 @@ void CoviMAC_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,con
         }
     }
   ch_grad_u.fixer_nature_du_champ(multi_scalaire); // tensoriel pour etre precis
-  ch_grad_u.fixer_nb_valeurs_nodales(zone_poly.nb_faces() + dimension * zone_poly.nb_elem());
+  ch_grad_u.fixer_nb_valeurs_nodales(zone_poly.nb_faces_tot() + dimension * zone_poly.nb_elem());
   ch_grad_u.fixer_unite("s-1");
   ch_grad_u.changer_temps(-1); // so it is calculated at time 0
 }
@@ -619,7 +549,7 @@ void CoviMAC_discretisation::taux_cisaillement(const Zone_dis& z, const Zone_Cl_
   ch_grad_u.fixer_nb_comp(vit.valeurs().line_size());
 
   ch_grad_u.fixer_nature_du_champ(scalaire); // tensoriel pour etre precis
-  ch_grad_u.fixer_nb_valeurs_nodales(zone_poly.nb_elem());
+  ch_grad_u.fixer_nb_valeurs_nodales(zone_poly.nb_elem_tot());
   ch_grad_u.fixer_unite("s-1");
   ch_grad_u.changer_temps(-1); // so it is calculated at time 0
 }

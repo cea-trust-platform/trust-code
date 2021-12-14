@@ -14,67 +14,75 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_P0_CoviMAC_TC.cpp
+// File:        Champ_Fonc_P0_CoviMAC_rot.h
 // Directory:   $TRUST_ROOT/src/CoviMAC/Champs
-// Version:     /main/8
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_Fonc_P0_CoviMAC_TC.h>
+#ifndef Champ_Fonc_P0_CoviMAC_rot_included
+#define Champ_Fonc_P0_CoviMAC_rot_included
+
+
+#include <Champ_Fonc_Face_CoviMAC.h>
 #include <Champ_Fonc_P0_CoviMAC.h>
-#include <Champ_Face_CoviMAC.h>
-#include <grad_Champ_Face_CoviMAC.h>
-#include <Zone_Cl_CoviMAC.h>
-#include <Zone_Cl_dis_base.h>
-#include <Zone_Cl_dis.h>
 #include <Champ_Fonc.h>
-#include <Navier_Stokes_std.h>
-//#include <array>
-#include <cmath>
+#include <Ref_Champ_Fonc_P0_CoviMAC.h>
+#include <Ref_Zone_Cl_CoviMAC.h>
+#include <Ref_Champ_Face_CoviMAC.h>
+#include <Champ_Face_CoviMAC.h>
+#include <Champ_Fonc.h>
+#include <Ref_Champ_Fonc.h>
+#include <Motcle.h>
 
-
-Implemente_instanciable(Champ_Fonc_P0_CoviMAC_TC,"Champ_Fonc_P0_CoviMAC_TC",Champ_Fonc_P0_CoviMAC);
-
-
-//     printOn()
-/////
-
-Sortie& Champ_Fonc_P0_CoviMAC_TC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
+//
+//.DESCRIPTION  classe grad_Champ_Face_CoviMAC
 //
 
-Entree& Champ_Fonc_P0_CoviMAC_TC::readOn(Entree& s)
+class Champ_Fonc_P0_CoviMAC_rot : public Champ_Fonc_P0_CoviMAC
+
 {
-  return s ;
+
+  Declare_instanciable(Champ_Fonc_P0_CoviMAC_rot);
+
+public:
+
+  inline void mettre_a_jour(double );
+  inline void associer_champ(const Champ_Face_CoviMAC& );
+  void me_calculer_2D(double );
+  void me_calculer_3D(double );
+
+  inline virtual       Champ_Face_CoviMAC& champ_a_deriver()      ;
+  inline virtual const Champ_Face_CoviMAC& champ_a_deriver() const;
+
+protected:
+
+  REF(Champ_Face_CoviMAC) champ_;
+};
+
+inline void Champ_Fonc_P0_CoviMAC_rot::mettre_a_jour(double tps)
+{
+  if (temps()!=tps)
+    {
+      if (dimension == 2) me_calculer_2D(tps);
+      if (dimension == 3) me_calculer_3D(tps);
+    }
+  Champ_Fonc_base::mettre_a_jour(tps);
 }
 
-void Champ_Fonc_P0_CoviMAC_TC::me_calculer(double tps)
+inline void Champ_Fonc_P0_CoviMAC_rot::associer_champ(const Champ_Face_CoviMAC& ch)
 {
-  const Champ_Face_CoviMAC& vitesse = ref_cast(Champ_Face_CoviMAC,champ_.valeur());
-  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,vitesse.zone_vf());
-  int e, d_U, d_X, n ;
-  int D = dimension, N = champ_a_deriver().valeurs().line_size();
-  int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
-
-  const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vitesse.equation());
-  DoubleTab& tab_tc = valeurs();
-  const grad_Champ_Face_CoviMAC& grad = ref_cast(grad_Champ_Face_CoviMAC, eq.get_champ("gradient_vitesse"));
-  const DoubleTab& tab_grad = grad.valeurs();
-
-  for (e = 0; e < ne; e++) for (n = 0; n < N; n++)
-      {
-        tab_tc(e, n) = 0;
-        for (d_U = 0; d_U < D; d_U++) for (d_X = 0; d_X < D; d_X++)
-            {
-              tab_tc(e, n) += tab_grad(nf_tot + d_X + e * D , D * n + d_U) * tab_grad(nf_tot + d_X + e * D , D * n + d_U);
-            }
-        tab_tc(e, n) = sqrt(tab_tc(e, n));
-      }
-
-  tab_tc.echange_espace_virtuel();
+  Cerr << "On associe la vorticite au champ de vitesse " << finl ;
+  champ_= ch;
 }
 
+inline Champ_Face_CoviMAC& Champ_Fonc_P0_CoviMAC_rot::champ_a_deriver()
+{
+  return champ_.valeur();
+}
+inline const Champ_Face_CoviMAC& Champ_Fonc_P0_CoviMAC_rot::champ_a_deriver() const
+{
+  return champ_.valeur();
+}
+
+#endif
