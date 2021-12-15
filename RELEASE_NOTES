@@ -1,4 +1,7 @@
 --------------------------------------------------------------------------------------------------
+Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
+--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.8.4 : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------
 23/11/21 (TRUST)  Fix         : Turbulent flow in a VDF stretched mesh was diverging with the implicited-diffusion solver 
