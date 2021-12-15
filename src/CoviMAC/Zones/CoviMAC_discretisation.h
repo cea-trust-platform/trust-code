@@ -87,6 +87,7 @@ public :
   void taux_cisaillement(const Zone_dis&, const Zone_Cl_dis& ,const Champ_Inc&, Champ_Fonc&) const override;
   /*  void associer_grad_u_taux_cisaillement(Champ_Fonc& grad_u, const Champ_Fonc& taux_cis) const ;*/
 
+
   Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF(Champ_base)& champ_sup ) const override;
   void residu( const Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const override;
 

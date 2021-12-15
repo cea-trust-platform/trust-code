@@ -52,15 +52,25 @@ Entree& Champ_Fonc_P0_CoviMAC_rot::readOn(Entree& s)
   return s ;
 }
 
-void Champ_Fonc_P0_CoviMAC_rot::me_calculer_2D(double tps)
+void Champ_Fonc_P0_CoviMAC_rot::mettre_a_jour(double tps)
 {
-  const Champ_Face_CoviMAC& vitesse = ref_cast(Champ_Face_CoviMAC,champ_.valeur());
-  const Zone_CoviMAC&          zone = ref_cast(Zone_CoviMAC,vitesse.zone_vf());
+  if (temps()!=tps)
+    {
+      if (dimension == 2) me_calculer_2D();
+      if (dimension == 3) me_calculer_3D();
+    }
+  Champ_Fonc_base::mettre_a_jour(tps);
+}
+
+void Champ_Fonc_P0_CoviMAC_rot::me_calculer_2D()
+{
+  const Champ_Face_CoviMAC& vit = ref_cast(Champ_Face_CoviMAC,champ_a_deriver());
+  const Zone_CoviMAC&          zone = ref_cast(Zone_CoviMAC,vit.zone_vf());
   int e, n ;
   int D = dimension, N = champ_a_deriver().valeurs().line_size();
   int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
 
-  const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vitesse.equation());
+  const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vit.equation());
   DoubleTab&          tab_rot = valeurs();
   const grad_Champ_Face_CoviMAC& grad = ref_cast(grad_Champ_Face_CoviMAC, eq.get_champ("gradient_vitesse"));
   const DoubleTab& tab_grad = grad.valeurs();
@@ -73,15 +83,15 @@ void Champ_Fonc_P0_CoviMAC_rot::me_calculer_2D(double tps)
   tab_rot.echange_espace_virtuel();
 }
 
-void Champ_Fonc_P0_CoviMAC_rot::me_calculer_3D(double tps)
+void Champ_Fonc_P0_CoviMAC_rot::me_calculer_3D()
 {
-  const Champ_Face_CoviMAC& vitesse = ref_cast(Champ_Face_CoviMAC,champ_.valeur());
-  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,vitesse.zone_vf());
+  const Champ_Face_CoviMAC& vit = ref_cast(Champ_Face_CoviMAC,champ_a_deriver());
+  const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,vit.zone_vf());
   int e, n ;
   int D = dimension, N = champ_a_deriver().valeurs().line_size();
   int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
 
-  const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vitesse.equation());
+  const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vit.equation());
   DoubleTab&          tab_rot = valeurs();
   const grad_Champ_Face_CoviMAC& grad = ref_cast(grad_Champ_Face_CoviMAC, eq.get_champ("gradient_vitesse"));
   const DoubleTab& tab_grad = grad.valeurs();

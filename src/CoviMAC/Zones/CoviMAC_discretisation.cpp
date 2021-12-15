@@ -308,54 +308,6 @@ void CoviMAC_discretisation::distance_paroi(const Schema_Temps_base& sch,
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
-void CoviMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
-                                                   const Champ_Inc& ch_vitesse,
-                                                   Champ_Fonc& ch) const
-{
-  const Champ_Face_CoviMAC      vit = ref_cast(Champ_Face_CoviMAC,ch_vitesse.valeur());
-  const Zone_CoviMAC&          zone = ref_cast(Zone_CoviMAC, vit.zone_dis_base());
-  const int N = vit.valeurs().line_size();
-
-  ch.typer("Champ_Fonc_P0_CoviMAC_rot");
-
-  Champ_Fonc_P0_CoviMAC_rot&  ch_rot_u = ref_cast(Champ_Fonc_P0_CoviMAC_rot,ch.valeur());
-
-  ch_rot_u.associer_zone_dis_base(zone);
-  ch_rot_u.associer_champ(vit);
-  ch_rot_u.nommer("vorticite");
-
-  if (dimension == 2)
-    {
-      ch_rot_u.fixer_nb_comp(N);
-      for (int n = 0; n<N; n++)
-        {
-          Nom phase   = Nom(n);
-          ch_rot_u.fixer_nom_compo(n, phase);
-        }
-      ch_rot_u.fixer_nature_du_champ(scalaire);
-      ch_rot_u.fixer_nb_valeurs_nodales(zone.nb_elem_tot());
-    }
-  else if (dimension == 3)
-    {
-      ch_rot_u.fixer_nb_comp(dimension * N);
-      for (int n = 0; n<N; n++)
-        {
-          Nom phase   = Nom(n);
-          ch_rot_u.fixer_nom_compo(dimension*n+0, phase);
-          ch_rot_u.fixer_nom_compo(dimension*n+1, phase);
-          ch_rot_u.fixer_nom_compo(dimension*n+2, phase);
-        }
-      ch_rot_u.fixer_nature_du_champ(vectoriel);
-      ch_rot_u.fixer_nb_valeurs_nodales(zone.nb_elem_tot());
-    }
-  else abort();
-
-  ch_rot_u.fixer_unite("s-1");
-  ch_rot_u.changer_temps(-1); // so it is calculated at time 0
-}
-
-
-
 // Description:
 //    discretise en CoviMAC le fluide incompressible, donc  K e N
 // Precondition:
@@ -537,21 +489,53 @@ void CoviMAC_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,con
 void CoviMAC_discretisation::taux_cisaillement(const Zone_dis& z, const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   const Champ_Face_CoviMAC&          vit = ref_cast(Champ_Face_CoviMAC,ch_vitesse.valeur());
-  const Zone_CoviMAC&          zone_poly = ref_cast(Zone_CoviMAC, z.valeur());
+//  const Zone_CoviMAC&          zone_poly = ref_cast(Zone_CoviMAC, z.valeur());
+  const Zone_CoviMAC&          zone = ref_cast(Zone_CoviMAC, vit.zone_dis_base());
 
   ch.typer("Champ_Fonc_P0_CoviMAC_TC");
-
   Champ_Fonc_P0_CoviMAC_TC&   ch_grad_u = ref_cast(Champ_Fonc_P0_CoviMAC_TC,ch.valeur()); //
 
-  ch_grad_u.associer_zone_dis_base(zone_poly);
+  ch_grad_u.associer_zone_dis_base(zone);
   ch_grad_u.associer_champ(vit);
   ch_grad_u.nommer("Taux_cisaillement");
   ch_grad_u.fixer_nb_comp(vit.valeurs().line_size());
 
   ch_grad_u.fixer_nature_du_champ(scalaire); // tensoriel pour etre precis
-  ch_grad_u.fixer_nb_valeurs_nodales(zone_poly.nb_elem_tot());
+  ch_grad_u.fixer_nb_valeurs_nodales(zone.nb_elem_tot());
   ch_grad_u.fixer_unite("s-1");
   ch_grad_u.changer_temps(-1); // so it is calculated at time 0
+}
+
+void CoviMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
+                                                   const Champ_Inc& ch_vitesse,
+                                                   Champ_Fonc& ch) const
+{
+  const Champ_Face_CoviMAC&     vit = ref_cast(Champ_Face_CoviMAC,ch_vitesse.valeur());
+  const Zone_CoviMAC&          zone = ref_cast(Zone_CoviMAC, vit.zone_dis_base());
+  int N = vit.valeurs().line_size();
+
+  ch.typer("Champ_Fonc_P0_CoviMAC_rot");
+  Champ_Fonc_P0_CoviMAC_rot&  ch_rot_u = ref_cast(Champ_Fonc_P0_CoviMAC_rot,ch.valeur());
+
+  ch_rot_u.associer_zone_dis_base(zone);
+  ch_rot_u.associer_champ(vit);
+  ch_rot_u.nommer("vorticite");
+
+  if (dimension == 2)
+    {
+      ch_rot_u.fixer_nb_comp(N);
+      ch_rot_u.fixer_nature_du_champ(scalaire);
+    }
+  else if (dimension == 3)
+    {
+      ch_rot_u.fixer_nb_comp(dimension * N);
+      ch_rot_u.fixer_nature_du_champ(vectoriel);
+    }
+  else abort();
+
+  ch_rot_u.fixer_nb_valeurs_nodales(zone.nb_elem_tot());
+  ch_rot_u.fixer_unite("s-1");
+  ch_rot_u.changer_temps(-1); // so it is calculated at time 0
 }
 
 void CoviMAC_discretisation::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const

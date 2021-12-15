@@ -49,7 +49,7 @@ public:
 
   inline void mettre_a_jour(double );
   inline void associer_champ(const Champ_Face_CoviMAC& );
-  void me_calculer(double );
+  void me_calculer(double tps);
 
   inline virtual       Champ_Face_CoviMAC& champ_a_deriver()      ;
   inline virtual const Champ_Face_CoviMAC& champ_a_deriver() const;

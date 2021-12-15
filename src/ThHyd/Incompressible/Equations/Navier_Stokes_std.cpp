@@ -1736,7 +1736,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
     {
       if (!la_vorticite.non_nul())
         {
-          const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
+          const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
           dis.creer_champ_vorticite(schema_temps(),la_vitesse,la_vorticite);
           champs_compris_.ajoute_champ(la_vorticite);
         }

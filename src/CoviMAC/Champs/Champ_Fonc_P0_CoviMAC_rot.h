@@ -36,7 +36,7 @@
 #include <Motcle.h>
 
 //
-//.DESCRIPTION  classe grad_Champ_Face_CoviMAC
+//.DESCRIPTION  classe
 //
 
 class Champ_Fonc_P0_CoviMAC_rot : public Champ_Fonc_P0_CoviMAC
@@ -47,10 +47,10 @@ class Champ_Fonc_P0_CoviMAC_rot : public Champ_Fonc_P0_CoviMAC
 
 public:
 
-  inline void mettre_a_jour(double );
-  inline void associer_champ(const Champ_Face_CoviMAC& );
-  void me_calculer_2D(double );
-  void me_calculer_3D(double );
+  void mettre_a_jour(double tps);
+  inline void associer_champ(const Champ_Face_CoviMAC& cha);
+  void me_calculer_2D();
+  void me_calculer_3D();
 
   inline virtual       Champ_Face_CoviMAC& champ_a_deriver()      ;
   inline virtual const Champ_Face_CoviMAC& champ_a_deriver() const;
@@ -60,20 +60,10 @@ protected:
   REF(Champ_Face_CoviMAC) champ_;
 };
 
-inline void Champ_Fonc_P0_CoviMAC_rot::mettre_a_jour(double tps)
+inline void Champ_Fonc_P0_CoviMAC_rot::associer_champ(const Champ_Face_CoviMAC& cha)
 {
-  if (temps()!=tps)
-    {
-      if (dimension == 2) me_calculer_2D(tps);
-      if (dimension == 3) me_calculer_3D(tps);
-    }
-  Champ_Fonc_base::mettre_a_jour(tps);
-}
-
-inline void Champ_Fonc_P0_CoviMAC_rot::associer_champ(const Champ_Face_CoviMAC& ch)
-{
-  Cerr << "On associe la vorticite au champ de vitesse " << finl ;
-  champ_= ch;
+  Cout << "On associe la vorticite au champ de vitesse " << finl ;
+  champ_= cha;
 }
 
 inline Champ_Face_CoviMAC& Champ_Fonc_P0_CoviMAC_rot::champ_a_deriver()

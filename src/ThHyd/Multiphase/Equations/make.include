@@ -27,7 +27,6 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Operateurs\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/ThHyd/Schemas_Temps\
-	-I$(TRUST_ROOT)/src/ThSol\
-	
+	-I$(TRUST_ROOT)/src/ThSol\	
 
 Lib = $(TRUST_LIB)/libmultiphase_equations
