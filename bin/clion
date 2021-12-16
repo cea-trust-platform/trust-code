@@ -7,15 +7,16 @@ clion=`which clion.sh`
 
 # Load Trust or Baltik environnement:
 env=`ls env_*.sh ../env_*.sh ../../env_*.sh ../../../env_*.sh 2>/dev/null`
+[ "$env" = "" ] && [ ${PWD#$TRUST_ROOT} != $PWD ] && env=$TRUST_ROOT/env_TRUST.sh
 [ "$env" = "" ] && echo "No project found. Go under Baltik or Trust and retry..." && exit 1
 
 # Load environment
 source $env
 
 # Look for CMakeLists.txt
-CMakeLists=`ls build/src/CMakeLists.txt ../build/src/CMakeLists.txt src/CMakeLists.txt ../src/CMakeLists.txt 2>/dev/null`
+CMakeLists=`ls $PWD/build/src/CMakeLists.txt $PWD/../build/src/CMakeLists.txt $PWD/src/CMakeLists.txt $PWD/../src/CMakeLists.txt 2>/dev/null`
+[ "$CMakeLists" = "" ] && [ ${PWD#$TRUST_ROOT} != $PWD ] && CMakeLists=$TRUST_ROOT/src/CMakeLists.txt
 [ "$CMakeLists" = "" ] && echo "No CMakeLists.txt found." && exit 1
-CMakeLists=`pwd`/$CMakeLists
 PROJECT_ROOT=`dirname $CMakeLists`
 # Baltik or TRUST ?
 if [ "`echo $env | grep TRUST`" = "" ]
