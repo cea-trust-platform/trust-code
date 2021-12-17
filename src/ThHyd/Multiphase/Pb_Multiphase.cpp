@@ -79,10 +79,9 @@ Entree& Pb_Multiphase::readOn(Entree& is)
   return Pb_Fluide_base::readOn(is);
 }
 
-Entree& Pb_Multiphase::lire_equations(Entree& is)
+Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
 {
   bool already_read;
-  Motcle mot;
 
   is >> mot;
   if (mot == "correlations") lire_correlations(is), already_read = false;
@@ -95,6 +94,24 @@ Entree& Pb_Multiphase::lire_equations(Entree& is)
       is >> getset_equation_by_name(mot);
     }
 
+  /* lecture d'equations optionnelles */
+  Noms noms_eq, noms_eq_maj; //noms de toutes les equations possibles!
+  Type_info::les_sous_types(Nom("Equation_base"), noms_eq);
+  for (int i = 0; i < noms_eq.size(); i++) noms_eq_maj.add(Motcle(noms_eq(i))); //ha ha ha
+  for (is >> mot; noms_eq_maj.rang(mot) >= 0; is >> mot)
+    {
+      eq_opt.add(Equation()); //une autre equation optionelle
+      eq_opt.dernier().valeur().typer(mot); //on lui donne le bon type
+      Equation_base& eq = eq_opt.dernier().valeur().valeur();
+      //memes associations que pour les autres equations : probleme, milieu, schema en temps
+      eq.associer_pb_base(*this);
+      eq.associer_milieu_base(milieu());
+      eq.associer_sch_tps_base(le_schema_en_temps);
+      eq.associer_zone_dis(domaine_dis().zone_dis(0));
+      eq.discretiser(); //a faire avant de lire l'equation
+      is >> eq; //et c'est parti!
+      eq.associer_milieu_equation(); //remontee vers le milieu
+    }
   return is;
 }
 
@@ -142,7 +159,7 @@ void Pb_Multiphase::discretiser(const Discretisation_base& disc)
 // Postcondition: la methode ne modifie pas l'objet
 int Pb_Multiphase::nombre_d_equations() const
 {
-  return 3;
+  return 3 + eq_opt.size();
 }
 
 // Description:
@@ -167,6 +184,7 @@ const Equation_base& Pb_Multiphase::equation(int i) const
   if      (i == 0) return eq_qdm;
   else if (i == 1) return eq_masse;
   else if (i == 2) return eq_energie;
+  else if (i < 3 + eq_opt.size()) return eq_opt[i - 3].valeur();
   else Cerr << "Pb_Multiphase::equation() : Wrong equation number" << i << "!" << finl, Process::exit();
   return eq_qdm; //pour renvoyer quelque chose
 }
@@ -192,6 +210,7 @@ Equation_base& Pb_Multiphase::equation(int i)
   if      (i == 0) return eq_qdm;
   else if (i == 1) return eq_masse;
   else if (i == 2) return eq_energie;
+  else if (i < 3 + eq_opt.size()) return eq_opt[i - 3].valeur();
   else Cerr << "Pb_Multiphase::equation() : Wrong equation number" << i << "!" << finl, Process::exit();
   return eq_qdm; //pour renvoyer quelque chose
 }

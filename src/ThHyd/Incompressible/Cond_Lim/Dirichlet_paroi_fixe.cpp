@@ -103,7 +103,7 @@ int Dirichlet_paroi_fixe::compatible_avec_eqn(const Equation_base& eqn) const
   Motcle indetermine  ="indetermine";
 
   if ( (dom_app==Hydraulique) || (dom_app==indetermine) ||
-       (dom_app==Thermique) || (dom_app=="Transport_Keps") || (dom_app==K_Eps_V2) || (dom_app==K_Eps_Bas_Re) || (dom_app==K_Eps_Rea) )
+       (dom_app==Thermique) || (dom_app=="Transport_Keps") || (dom_app==K_Eps_V2) || (dom_app==K_Eps_Bas_Re) || (dom_app==K_Eps_Rea) || dom_app == "Turbulence")
     return 1;
   else
     {

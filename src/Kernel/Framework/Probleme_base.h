@@ -125,7 +125,7 @@ public:
 
   Probleme_base();
   virtual void associer();
-  virtual Entree& lire_equations(Entree& is);
+  virtual Entree& lire_equations(Entree& is, Motcle& dernier_mot);
   virtual void completer();
   virtual int verifier();
   virtual int nombre_d_equations() const =0;

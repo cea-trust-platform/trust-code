@@ -92,12 +92,12 @@ void Masse_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& s
   for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
       {
         /* nombre de composantes de la variable : autant que le champ par defaut, mais peut etre different pour la pression */
-        int M = i_m.first == "pression" && sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
+        int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
 
         IntTrav stencil(0, 2);
         stencil.set_smart_resize(1);
 
-        for (e = 0; e < ne; e++) for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * e + n * (M > 1));
+        for (e = 0; e < ne; e++) for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * e + m);
         Matrice_Morse mat;
         Matrix_tools::allocate_morse_matrix(N * ne_tot, M * ne_tot, stencil, mat);
         i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
@@ -119,11 +119,11 @@ void Masse_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   /* matrices */
   for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
       {
-        int M = i_m.first == "pression" && sub_type(Navier_Stokes_std, equation().probleme().equation(0)) ? ref_cast(Navier_Stokes_std, equation().probleme().equation(0)).pression().valeurs().line_size() : N;
+        int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
         const DoubleTab& der = cc.derivees().at(i_m.first);
-        for (e = 0; e < ne; e++) for (n = 0; n < N; n++) (*i_m.second)(N * e + n, M * e + n * (M > 1)) += pe(e) * ve(e) * der(e, n) / dt;
+        for (e = 0; e < ne; e++) for (n = 0, m = 0; n < N; n++, m += (M > 1))
+            (*i_m.second)(N * e + n, M * e + m) += pe(e) * ve(e) * der(e, n) / dt;
       }
-
 }
 
 void Masse_CoviMAC_Elem::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)

@@ -609,7 +609,7 @@ int Type_info::les_sous_types(const Type_info& mere, Noms& les_sous_types)
   int i= nb_classes;
   // Modif B. Mathieu: name() ne renvoie plus un static.
   const Nom& nom_mere = mere.name();
-  Cerr << "---------" << (const char*) nom_mere << finl;
+  // Cerr << "---------" << (const char*) nom_mere << finl;
   while(i--)
     {
       if( les_types[i]->has_base(nom_mere, 0) )
@@ -618,7 +618,7 @@ int Type_info::les_sous_types(const Type_info& mere, Noms& les_sous_types)
             compteur++;
           }
     }
-  Cerr << compteur << finl ;
+  // Cerr << compteur << finl ;
   if(compteur==0) return 0;
   les_sous_types.dimensionner(compteur);
   compteur=0;

@@ -69,7 +69,7 @@ Entree& Neumann_sortie_libre::readOn(Entree& s )
 {
   //   le_champ_front.typer("Champ_front_uniforme");
   Motcle motlu;
-  Motcles les_motcles(9);
+  Motcles les_motcles(11);
   {
     les_motcles[0] = "T_ext";
     les_motcles[1] = "C_ext";
@@ -80,6 +80,8 @@ Entree& Neumann_sortie_libre::readOn(Entree& s )
     les_motcles[6] = "V2_ext";
     les_motcles[7] = "Y_ext";
     les_motcles[8] = "A_ext";
+    les_motcles[9] = "k_ext";
+    les_motcles[10] = "tau_ext";
   }
   s >> motlu;
   int rang = les_motcles.search(motlu);
@@ -233,7 +235,7 @@ int Neumann_sortie_libre::compatible_avec_eqn(const Equation_base& eqn) const
   if ( (dom_app==KEPS) || (dom_app==K_Eps_Bas_Re) || (dom_app==K_Eps_Rea) || (dom_app==indetermine) ||
        (dom_app==Thermique) || (dom_app==Concentration) ||
        (dom_app==Thermique_H) || (dom_app==V2) || (dom_app==KEPS_V2) ||
-       (dom_app==Fraction_massique) || (dom_app==Fraction_volumique) )
+       (dom_app==Fraction_massique) || (dom_app==Fraction_volumique) || dom_app == "Turbulence")
     return 1;
   else
     {

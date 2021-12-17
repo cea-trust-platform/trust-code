@@ -463,9 +463,8 @@ Entree& Probleme_base::readOn(Entree& is)
       exit();
     }
 
-  lire_equations(is);
+  lire_equations(is, motlu); //"motlu" contient le premier mot apres la lecture des equations
 
-  is >> motlu;
   // Si le postraitement comprend le mot, on en lit un autre...
   while (les_postraitements.lire_postraitements(is, motlu, *this))
     {
@@ -737,7 +736,7 @@ Entree& Probleme_base::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition: les equations ont ete lues
-Entree& Probleme_base::lire_equations(Entree& is)
+Entree& Probleme_base::lire_equations(Entree& is, Motcle& dernier_mot)
 {
   Nom un_nom;
   int nb_eq= nombre_d_equations();

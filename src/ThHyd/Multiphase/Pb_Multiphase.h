@@ -31,6 +31,7 @@
 #include <Energie_Multiphase.h>
 #include <Verif_Cl.h>
 #include <Correlation.h>
+#include <List_Equation.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -62,9 +63,7 @@ public:
   Equation_base& equation(int) override;
   void associer_milieu_base(const Milieu_base& ) override;
   void creer_milieu(const Noms);
-  int verifier() override;
-  void mettre_a_jour(double temps) override;
-  Entree& lire_equations(Entree& is) override;
+  virtual Entree& lire_equations(Entree& is, Motcle& dernier_mot) override;
   virtual Entree& lire_correlations(Entree& is);
   void preparer_calcul() override;
 
@@ -92,6 +91,7 @@ public:
   QDM_Multiphase eq_qdm;
   Energie_Multiphase eq_energie;
   Masse_Multiphase eq_masse;
+  LIST(Equation) eq_opt; //autres equations (turbulence, aire interfaciale...)
 
   const Correlation& get_correlation(std::string nom_correlation) const
   {
@@ -109,7 +109,6 @@ protected:
 
   Noms noms_phases_;
   std::map<std::string, Correlation> correlations;
-
 };
 
 

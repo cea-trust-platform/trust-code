@@ -186,10 +186,11 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   QDM_Multiphase& eq_qdm = ref_cast(QDM_Multiphase, eqn);
   double t = eqn.schema_temps().temps_courant();
 
-  Equation_base *eq_list[3] = { &pb.eq_masse, &pb.eq_energie, &eq_qdm }; //ordre des 3 equations
+  std::vector<Equation_base *> eq_list; //ordres des equations
+  for (i = 0; i < pb.nombre_d_equations(); i++) eq_list.push_back(&pb.equation(i));
   std::map<std::string, Equation_base *> eqs; //eqs[inconnue] = equation
   std::vector<std::string> noms; //ordre des inconnues : le meme que les equations, puis la pression
-  for (i = 0; i < 3; i++) noms.push_back(eq_list[i]->inconnue().le_nom().getString()), eqs[noms[i]] = eq_list[i];
+  for (i = 0; i < pb.nombre_d_equations(); i++) noms.push_back(eq_list[i]->inconnue().le_nom().getString()), eqs[noms[i]] = eq_list[i];
   noms.push_back("pression"); //pas d'equation associee a la pression!
 
   std::map<std::string, Champ_Inc_base *> inco; //tous les Champ_Inc
@@ -198,7 +199,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //initialisation du Newton avec les valeurs presentes (stockees dans passe() en implicite), dimensionnement de incr / sec
   pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
 
-  /* valeurs semi-implicites : inconnues (alpha, v, T) et champs conserves (alpha_rho, alpha_rho_e) */
+  /* valeurs semi-implicites : inconnues (alpha, v, T, ..) et champs conserves (alpha_rho, alpha_rho_e, ..) */
   tabs_t semi_impl;
   for (auto &&n_eq : eqs) if (n_eq.second != &eq_qdm)
       {
@@ -229,8 +230,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //premier passage : dimensionnement de mat_semi_impl, remplissage de p_degen_
   if (!mat_semi_impl.nb_lignes())
     {
-      mat_semi_impl.dimensionner(3, 4);
-      for (i = 0; i < 3; i++) for (j = 0; j < 4; j++)
+      mat_semi_impl.dimensionner(eq_list.size(), inco.size());
+      for (i = 0; i < (int) eq_list.size(); i++) for (j = 0; j < (int) inco.size(); j++)
           mat_semi_impl.get_bloc(i, j).typer("Matrice_Morse"), mats[noms[i]][noms[j]] = &ref_cast(Matrice_Morse, mat_semi_impl.get_bloc(i, j).valeur());
       for (auto &&n_eq : eqs) n_eq.second->dimensionner_blocs(mats[n_eq.first], semi_impl); //option semi-implicite
 
@@ -239,8 +240,6 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       for (i = 0; i < eq_qdm.zone_Cl_dis().nb_cond_lim(); i++)
         p_degen &= !sub_type(Neumann_val_ext, eq_qdm.zone_Cl_dis().les_conditions_limites(i).valeur());
     }
-
-
 
   /* Newton : assemblage de mat_semi_impl -> assemblage de la matrice en pression -> resolution -> substitution */
   tabs_t incr, sec; //increments / seconds membres associes
@@ -256,12 +255,17 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   for (it = 0, cv = 0; it < iter_min_ || (!cv && it < iter_max_); it++)
     {
       /* remplissage par assembler_blocs */
-      //ordre : equation d'energie avant l'equation de masse pour calculer q_pi avant de l'utiliser dans flux_interfacial
-      for (auto &&inc : { "vitesse", "temperature", "alpha"}) eqs[inc]->assembler_blocs_avec_inertie(mats[inc], sec[inc], semi_impl);
+      //equation d'energie en premier pour pouvoir utiliser q_pi dans d'autres equations
+      eqs["temperature"]->assembler_blocs_avec_inertie(mats["temperature"], sec["temperature"], semi_impl);
+      for (auto &n_e : eqs) if (n_e.first != "temperature") n_e.second->assembler_blocs_avec_inertie(mats[n_e.first], sec[n_e.first], semi_impl);
 
       /* expression des autres inconnues (x) en fonction de p : vitesse, puis temperature / pression */
       tabs_t b_p;
-      eliminer({{{ "vitesse", 1 }}, {{ "vitesse", 0 }}, {{ "alpha", 0 }, {"temperature", 0 }}}, "pression", mats, sec, A_p, b_p);
+      std::vector<std::set<std::pair<std::string, int>>> ordre;
+      if (eq_qdm.zone_dis().valeur().le_nom() == "CoviMAC") ordre.push_back({{ "vitesse", 1 }}); //si CoviMAC: on commence par ve
+      ordre.push_back({{ "vitesse", 0 }}), ordre.push_back({}); //puis vf, puis toutes les autres inconnues simultanément
+      for (auto &&nom : noms) if (nom != "vitesse" && nom != "pression") ordre.back().insert({{ nom, 0 }});
+      eliminer(ordre, "pression", mats, sec, A_p, b_p);
 
       /* assemblage du systeme en pression */
       DoubleTrav secmem_pression;
@@ -290,7 +294,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       /* convergence? */
       cv = (corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"]) < crit_conv["alpha"]);
-      for (auto && n_v : incr) cv &= (mp_max_abs_vect(n_v.second) < crit_conv.at(n_v.first));
+      for (auto && n_v : incr) if (crit_conv.count(n_v.first)) cv &= mp_max_abs_vect(n_v.second) < crit_conv.at(n_v.first);
 
       if (!Process::me())
 #ifndef INT_is_64_
