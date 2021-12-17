@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -381,26 +381,6 @@ template <class _TYPE_>  DoubleTab& T_It_PolyMAC_Elem<_TYPE_>::ajouter_bords(con
                 }
             }
           break;
-        case nscbc :
-          if (flux_evaluateur.calculer_flux_faces_NSCBC())
-            {
-              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem1=elem(face,0)) > -1)
-                    {
-                      resu[elem1]+=flux;
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem2=elem(face,1)) > -1)
-                    {
-                      resu[elem2]-=flux;
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
-          break;
         case periodique :
           if (flux_evaluateur.calculer_flux_faces_periodique())
             {
@@ -638,24 +618,6 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::calculer_flux_bord(cons
           if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
             {
               const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-                  if ( (elem(face,0)) > -1)
-                    {
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem(face,1)) > -1)
-                    {
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
-          break;
-        case nscbc :
-          if (flux_evaluateur.calculer_flux_faces_NSCBC())
-            {
-              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
               for (face=ndeb; face<nfin; face++)
                 {
                   flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
@@ -1408,26 +1370,6 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::contribuer_au_second_me
                 }
             }
           break;
-        case nscbc :
-          if (flux_evaluateur.calculer_flux_faces_NSCBC())
-            {
-              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux = flux_evaluateur.secmem_face(face, cl, ndeb);
-                  if ( (elem1=elem(face,0)) > -1)
-                    {
-                      resu[elem1]+=flux;
-                      flux_bords(face,0)+=flux;
-                    }
-                  if ( (elem2=elem(face,1)) > -1)
-                    {
-                      resu[elem2]-=flux;
-                      flux_bords(face,0)-=flux;
-                    }
-                }
-            }
-          break;
         case periodique :
           if (flux_evaluateur.calculer_flux_faces_periodique())
             {
@@ -1974,24 +1916,6 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
                 }
             }
           break;
-        case nscbc :
-          if (flux_evaluateur.calculer_flux_faces_NSCBC())
-            {
-              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
-              for (face=ndeb; face<nfin; face++)
-                {
-                  flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);
-                  if ( (elem1=elem(face,0)) > -1)
-                    {
-                      matrice(elem1,elem1)+=aii;
-                    }
-                  if ( (elem2=elem(face,1)) > -1)
-                    {
-                      matrice(elem2,elem2)+=ajj;
-                    }
-                }
-            }
-          break;
         case periodique :
           if (flux_evaluateur.calculer_flux_faces_periodique())
             {
@@ -2522,18 +2446,6 @@ template <class _TYPE_>  void T_It_PolyMAC_Elem<_TYPE_>::ajouter_contribution_bo
           if (flux_evaluateur.calculer_flux_faces_echange_global_impose())
             {
               const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur());
-              for (int f = ndeb; f < nfin; f++)
-                {
-                  aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);
-                  if ( (e1 = elem(f, 0)) > -1) matrice(e1, f) += aef;
-                  if ( (e2 = elem(f, 1)) > -1) matrice(e2, f) -= aef;
-                }
-            }
-          break;
-        case nscbc :
-          if (flux_evaluateur.calculer_flux_faces_NSCBC())
-            {
-              const NSCBC& cl =(const NSCBC&) (la_cl.valeur());
               for (int f = ndeb; f < nfin; f++)
                 {
                   aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, f, cl, ndeb);

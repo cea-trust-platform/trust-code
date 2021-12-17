@@ -60,7 +60,6 @@ public:
   inline int calculer_flux_faces_sortie_libre() const;
   inline int calculer_flux_faces_symetrie() const;
   inline int calculer_flux_faces_periodique() const ;
-  inline int calculer_flux_faces_NSCBC() const ;
 
   // Fonctions qui servent a calculer le flux de grandeurs scalaires
   // Elles sont de type double et renvoient le flux
@@ -75,7 +74,6 @@ public:
   inline double flux_face(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Symetrie&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Periodique&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const NSCBC&, int ) const;
   inline double flux_faces_interne(const DoubleTab&, int ) const;
 
   // Fonctions qui servent a calculer le flux de grandeurs vectorielles
@@ -121,7 +119,6 @@ public:
   inline void coeffs_face(int, int, int, int, const Echange_externe_impose&, double& aii, double& ajj ) const;
   inline void coeffs_face(int, int,const Echange_global_impose&, double& aii, double& ajj ) const;
   inline void coeffs_face(int, int,const Periodique&, double& aii, double& ajj ) const;
-  inline void coeffs_face(int, int,const NSCBC&, double& aii, double& ajj ) const;
   inline void coeffs_faces_interne(int, double& aii, double& ajj ) const;
 
   // Fonctions qui servent a calculer la contribution des conditions limites
@@ -137,7 +134,6 @@ public:
   inline double secmem_face(int,int,int, const Echange_externe_impose&, int ) const;
   inline double secmem_face(int, const Echange_global_impose&, int ) const;
   inline double secmem_face(int, const Periodique&, int ) const;
-  inline double secmem_face(int, const NSCBC&, int ) const;
   inline double secmem_faces_interne(int ) const;
 
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
@@ -283,14 +279,6 @@ inline int Eval_centre4_PolyMAC_Elem::calculer_flux_faces_symetrie() const
 //
 
 inline int Eval_centre4_PolyMAC_Elem::calculer_flux_faces_periodique() const
-{
-  return 1;
-}
-
-//// calculer_flux_faces_NSCBC
-//
-
-inline int Eval_centre4_PolyMAC_Elem::calculer_flux_faces_NSCBC() const
 {
   return 1;
 }
@@ -674,44 +662,6 @@ inline double Eval_centre4_PolyMAC_Elem::secmem_face(int, const Periodique&, int
 {
   return 0;
 }
-
-
-//// flux_face avec NSCBC
-//
-
-inline double Eval_centre4_PolyMAC_Elem::flux_face(const DoubleTab& inco, int face,
-                                                   const NSCBC& la_cl, int num1) const
-{
-  double flux=0.;
-  Cerr<<"Eval_centre4_PolyMAC_Elem::flux_face n'est pas codee"<<finl;
-  Cerr<<"pour la condition NSCBC"<<finl;
-  Process::exit();
-  return -flux;
-}
-
-//// coeffs_face avec NSCBC
-//
-
-inline void Eval_centre4_PolyMAC_Elem::coeffs_face(int face,int num1, const NSCBC& la_cl,
-                                                   double& aii, double& ajj) const
-{
-  Cerr<<"Eval_centre4_PolyMAC_Elem::coeffs_face n'est pas codee"<<finl;
-  Cerr<<"pour la condition NSCBC"<<finl;
-  Process::exit();
-}
-
-//// secmem_face avec Neumann_NSCBC
-//
-
-inline double Eval_centre4_PolyMAC_Elem::secmem_face(int face, const NSCBC& la_cl, int num1) const
-{
-  double flux=0;
-  Cerr<<"Eval_centre4_PolyMAC_Elem::secmem_face n'est pas codee"<<finl;
-  Cerr<<"pour la condition NSCBC"<<finl;
-  Process::exit();
-  return flux;
-}
-
 
 
 //// flux_faces_interne

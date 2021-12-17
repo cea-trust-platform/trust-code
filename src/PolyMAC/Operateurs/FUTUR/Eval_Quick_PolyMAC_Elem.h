@@ -61,7 +61,6 @@ public:
   inline int calculer_flux_faces_sortie_libre() const;
   inline int calculer_flux_faces_symetrie() const;
   inline int calculer_flux_faces_periodique() const ;
-  inline int calculer_flux_faces_NSCBC() const ;
 
   // Fonctions qui servent a calculer le flux de grandeurs scalaires
   // Elles sont de type double et renvoient le flux
@@ -76,7 +75,6 @@ public:
   inline double flux_face(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Symetrie&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Periodique&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const NSCBC&, int ) const;
   inline double flux_faces_interne(const DoubleTab&, int ) const;
 
   // Fonctions qui servent a calculer le flux de grandeurs vectorielles
@@ -216,15 +214,6 @@ inline int Eval_Quick_PolyMAC_Elem::calculer_flux_faces_symetrie() const
 //
 
 inline int Eval_Quick_PolyMAC_Elem::calculer_flux_faces_periodique() const
-{
-  return 1;
-}
-
-
-//// calculer_flux_faces_NSCBC
-//
-
-inline int Eval_Quick_PolyMAC_Elem::calculer_flux_faces_NSCBC() const
 {
   return 1;
 }
@@ -374,21 +363,6 @@ inline double Eval_Quick_PolyMAC_Elem::flux_face(const DoubleTab& inco, int face
   flux = quick_fram(psc,n0,n1,n0_0,n1_1,face,inco);
   return -flux;
 }
-//// flux_face avec NSCBC
-//
-
-inline double Eval_Quick_PolyMAC_Elem::flux_face(const DoubleTab& inco, int face,
-                                                 const NSCBC& la_cl, int num1) const
-{
-  double flux=0;
-  Cerr<<"Eval_Quick_PolyMAC_Elem::flux_face n'est pas codee"<<finl;
-  Cerr<<"pour la condition NSCBC"<<finl;
-  Process::exit();
-  return -flux;
-}
-
-
-
 
 //// flux_faces_interne
 //

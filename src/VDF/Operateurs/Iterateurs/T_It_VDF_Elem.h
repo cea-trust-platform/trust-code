@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -193,9 +193,6 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const DoubleTab& donnee, DoubleT
         case paroi_adiabatique :
           ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(), ndeb, nfin,donnee,flux_bords,resu);
           break;
-        case nscbc :
-          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_NSCBC>((const NSCBC&) la_cl.valeur(), ndeb, nfin, donnee, flux_bords, resu);
-          break;
         case echange_externe_impose :
           ajouter_bords_((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,donnee,frontiere_dis,flux_bords,resu);
           break;
@@ -263,9 +260,6 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const DoubleTab& donnee) const
           break;
         case echange_global_impose :
           calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP> ((const Echange_global_impose&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
-          break;
-        case nscbc :
-          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_NSCBC> ((const NSCBC&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
           break;
         case paroi_adiabatique :
           calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb, nfin,donnee,flux_bords);
@@ -498,9 +492,6 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(DoubleTab& resu) c
         case echange_global_impose :
           contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
           break;
-        case nscbc :
-          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_NSCBC>((const NSCBC&) la_cl.valeur(),ndeb,nfin,flux_bords,resu);
-          break;
         case echange_externe_impose :
           contribuer_au_second_membre_bords_((const Echange_externe_impose&)la_cl.valeur(), ndeb,nfin, num_cl,frontiere_dis,flux_bords,resu);
           break;
@@ -599,9 +590,6 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(const DoubleTab& inco, Ma
         case echange_global_impose :
           ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin, inco, matrice);
           break;
-        case nscbc :
-          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_NSCBC>((const NSCBC&) la_cl.valeur(), ndeb, nfin, inco, matrice);
-          break;
         case echange_externe_impose :
           ajouter_contribution_bords_((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin, num_cl, inco, frontiere_dis, matrice);
           break;
@@ -692,9 +680,6 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const DoubleTab& 
         case echange_global_impose :
           ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(), ndeb,nfin,inco,matrice);
           break;
-        case nscbc :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_NSCBC>((const NSCBC&) la_cl.valeur(), ndeb,nfin,inco,matrice);
-          break;
         case echange_externe_impose :
           ajouter_contribution_bords_vitesse_((const Echange_externe_impose&) la_cl.valeur(), ndeb,nfin,num_cl,inco,frontiere_dis,matrice);
           break;
@@ -752,7 +737,7 @@ inline void T_It_VDF_Elem<_TYPE_>::fill_flux_tables_(int ncomp, int face, const 
 template <class _TYPE_> template <bool should_calc_flux, typename BC>
 void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const BC& cl, int ndeb,int nfin,const DoubleTab& donnee,DoubleTab& flux_bords, DoubleTab& resu) const
 {
-  constexpr bool is_NSCBC = std::is_same<BC,NSCBC>::value, is_Neum_paroi_adiab = std::is_same<BC,Neumann_paroi_adiabatique>::value;
+  constexpr bool is_Neum_paroi_adiab = std::is_same<BC,Neumann_paroi_adiabatique>::value;
   const int ncomp = resu.line_size();
   DoubleVect flux(ncomp);
   int face;
@@ -760,12 +745,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const BC& cl, int ndeb,int nfin,const
     {
       for (face=ndeb; face<nfin; face++)
         {
-          if (is_NSCBC) // TODO : FIXME : codage avec flux en DoubleVect auquel on assigne la valeur de la fonction scalaire (pas de codage vectoriel)
-            {
-              assert(ncomp == 1);
-              flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
-            }
-          else if (is_Neum_paroi_adiab)
+          if (is_Neum_paroi_adiab)
             {
               assert(0); // On bloque ici :-)
               Process::exit();
@@ -888,21 +868,13 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl
 template <class _TYPE_> template <bool should_calc_flux, typename BC>
 void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const BC& cl, int ndeb,int nfin,DoubleTab& flux_bords, DoubleTab& resu) const
 {
-  constexpr bool is_NSCBC = std::is_same<BC,NSCBC>::value;
   const int ncomp = resu.line_size();
   DoubleVect flux(ncomp);
-  int face;
   if (should_calc_flux)
     {
-      for (face=ndeb; face<nfin; face++)
+      for (int face = ndeb; face < nfin; face++)
         {
-          if (is_NSCBC) // TODO : FIXME : codage avec flux en DoubleVect auquel on assigne la valeur de la fonction scalaire (pas de codage vectoriel)
-            {
-              assert(ncomp == 1);
-              flux = flux_evaluateur.secmem_face(face, cl, ndeb);
-            }
-          else flux_evaluateur.secmem_face(face, cl, ndeb, flux); // Generic code
-
+          flux_evaluateur.secmem_face(face, cl, ndeb, flux); // Generic code
           fill_flux_tables_(ncomp, face, flux, flux_bords, resu);
         }
     }
@@ -957,27 +929,16 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const Echange_ext
 template <class _TYPE_> template <bool should_calc_flux, typename BC>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const BC& cl, int ndeb,int nfin,const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  constexpr bool is_NSCBC = std::is_same<BC,NSCBC>::value;
   const int ncomp = inco.line_size();
-  int face,elem1, elem2;
+  int elem1, elem2;
   DoubleVect aii(ncomp), ajj(ncomp);
   if (should_calc_flux)
     {
-      for (face=ndeb; face<nfin; face++)
+      for (int face = ndeb; face < nfin; face++)
         {
-          if (is_NSCBC) // TODO : FIXME : codage avec flux en DoubleVect auquel on assigne la valeur de la fonction scalaire (pas de codage vectoriel)
-            {
-              assert(ncomp == 1);
-              double aii_ = 0., ajj_ = 0.;
-              flux_evaluateur.coeffs_face(face,ndeb, cl, aii_, ajj_);
-              aii = aii_, ajj = ajj_;
-            }
-          else flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj); // Generic code
-
-          if ( (elem1 = elem(face,0)) > -1)
-            for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,elem1*ncomp+i) += aii(i);
-          if ( (elem2 = elem(face,1)) > -1)
-            for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,elem2*ncomp+i) += ajj(i);
+          flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj); // Generic code
+          if ( (elem1 = elem(face,0)) > -1) for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,elem1*ncomp+i) += aii(i);
+          if ( (elem2 = elem(face,1)) > -1) for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,elem2*ncomp+i) += ajj(i);
         }
     }
 }

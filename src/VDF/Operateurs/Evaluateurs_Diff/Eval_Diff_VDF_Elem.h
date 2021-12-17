@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -106,7 +106,6 @@ public:
   inline double flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Neumann_paroi&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Periodique&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const NSCBC&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Echange_global_impose&, int ) const;
   inline double flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const;
   inline double flux_faces_interne(const DoubleTab&, int ) const;
@@ -121,7 +120,6 @@ public:
   inline void coeffs_face(int,int, const Dirichlet_entree_fluide&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Neumann_paroi&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Periodique&, double& aii, double& ajj ) const;
-  inline void coeffs_face(int,int, const NSCBC&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Echange_global_impose&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int,int,int, const Echange_externe_impose&, double& aii, double& ajj ) const;
   inline void coeffs_faces_interne(int, double& aii, double& ajj ) const;
@@ -555,39 +553,6 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face,int, const Perio
   double heq, d0 = la_zone->dist_face_elem0_period(face,i,la_cl.distance()), d1 = la_zone->dist_face_elem1_period(face,j,la_cl.distance());
   heq=  compute_heq(d0,i,d1,j,ori);
   aii = ajj = heq*surface(face)*porosite(face);
-}
-
-/* Function templates specialization for BC NSCBC */
-template <typename DERIVED_T>
-inline double Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco , int faceD , const NSCBC& la_cl , int ndeb ) const
-{
-  // On evalue le flux au bord a partir des premieres mailles internes
-  const Zone_VDF& zvdf = la_zone;
-  int faceC, elem3, oriD = zvdf.orientation(faceD), elem0 = zvdf.face_voisins(faceD,0);
-  if (elem0 == -1)
-    {
-      elem0 = zvdf.face_voisins(faceD,1);
-      faceC = zvdf.elem_faces(elem0,oriD+dimension);
-      elem3 = zvdf.face_voisins(faceC,1);
-    }
-  else
-    {
-      faceC = zvdf.elem_faces(elem0,oriD);
-      elem3 = zvdf.face_voisins(faceC,0);
-    }
-  assert(faceC != faceD && elem3 != elem0);
-  double heq, d0 = zvdf.xp(elem0,orientation(faceD)) - zvdf.xp(elem3,orientation(faceD));
-  const int ori = DERIVED_T::IS_ANISO ? oriD : 0;
-  heq = (nu_1(elem0,ori)/d0);
-  double flux = heq*(inco(elem0) - inco(elem3))*surface(faceD)*porosite(faceD);
-  return flux;
-}
-
-/* Function templates specialization for BC NSCBC */
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(int face, int num1,const NSCBC& la_cl, double& aii, double& ajj) const
-{
-  aii = ajj = 0.;
 }
 
 template <typename DERIVED_T>

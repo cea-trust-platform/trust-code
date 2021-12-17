@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,6 @@ enum type_arete
   PERIO_PERIO = 4,
   PAROI_SYM = 5,
   FLUIDE_SYM = 6,
-  NSCBC_NSCBC = 7
 };
 } // namespace TypeAreteBordVDF
 
@@ -66,11 +65,9 @@ enum type_arete
   VIDE = -1,
   PERIO_PERIO = 0,
   PERIO_PAROI = 1,
-  NSCBC_SYM = 2,
   PAROI_SYM = 3,
   FLUIDE_SYM = 4,
   PAROI_PAROI = 5,
-  PERIO_NSCBC = 6,
   PERIO_FLUIDE = 7,
   SYM_SYM = 8,
   PAROI_FLUIDE = 14,

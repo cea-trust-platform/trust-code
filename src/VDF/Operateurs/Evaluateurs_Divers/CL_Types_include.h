@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,5 @@
 #include <Neumann_paroi.h>
 #include <Periodique.h>
 #include <Symetrie.h>
-#include <NSCBC.h>
 
 #endif /* CL_Types_include_included */

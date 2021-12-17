@@ -33,7 +33,7 @@ public:
   static constexpr bool IS_AMONT = false, IS_CENTRE = false, IS_CENTRE4 = false, IS_QUICK = false;
   // Overload Eval_VDF_Elem
   static constexpr bool CALC_FLUX_FACES_ECH_EXT_IMP = false, CALC_FLUX_FACES_ECH_GLOB_IMP = false, CALC_FLUX_FACES_PAR = false,
-                        CALC_FLUX_FACES_PAR_FIXE = false, CALC_FLUX_FACES_SORTIE_LIB = true, CALC_FLUX_FACES_NSCBC = DERIVED_T::IS_CENTRE ? false : true;
+                        CALC_FLUX_FACES_PAR_FIXE = false, CALC_FLUX_FACES_SORTIE_LIB = true;
 
   // CRTP pattern to static_cast the appropriate class and get the implementation
   // This is magic !
@@ -58,7 +58,6 @@ public:
   inline double flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
   inline double flux_face(const DoubleTab&, int , const Periodique&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const NSCBC&, int ) const;
   inline double flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const { return 0; }
   inline double flux_faces_interne(const DoubleTab&, int ) const;
 
@@ -70,7 +69,6 @@ public:
   inline void coeffs_face(int,int, const Dirichlet_entree_fluide&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Neumann_sortie_libre&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int, const Periodique&, double& aii, double& ajj ) const;
-  inline void coeffs_face(int,int, const NSCBC&, double& aii, double& ajj ) const;
   inline void coeffs_face(int,int,int,int, const Echange_externe_impose&, double& aii, double& ajj ) const { /* Do nothing */ }
   inline void coeffs_faces_interne(int, double& aii, double& ajj ) const;
 
@@ -82,7 +80,6 @@ public:
   inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
   inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
   inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Periodique&, int ) const;
-  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const NSCBC&, int ) const;
   inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const { return 0.; }
   inline double coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int ) const;
 
@@ -93,7 +90,6 @@ public:
   // To overload
   inline double secmem_face(int, const Dirichlet_entree_fluide&, int ) const;
   inline double secmem_face(int, const Neumann_sortie_libre&, int ) const;
-  inline double secmem_face(int, const NSCBC&, int ) const;
   inline double secmem_face(int, int, int, const Echange_externe_impose&, int ) const { return 0; }
   inline double secmem_faces_interne(int ) const { return 0; };
 
@@ -433,48 +429,6 @@ inline double Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const Doub
   else flux = (dt_vitesse(face) > 0) ? psc*inco(elem_(face,0)) : psc*inco(elem_(face,1));
 
   return flux;
-}
-
-/* Function templates specialization for BC NSCBC */
-template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int face,
-                                                       const NSCBC& la_cl, int num1) const
-{
-  if (DERIVED_T::IS_CENTRE) return 0;
-  Cerr << "DERIVED_T::flux_face n'est pas encore codee pour la condition NSCBC" << finl;
-  Process::exit();
-  return -1e+30;
-}
-
-template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(int face, int,const NSCBC& la_cl,
-                                                       double& aii, double& ajj) const
-{
-  if (DERIVED_T::IS_CENTRE) { /* do nothing */ }
-  else
-    {
-      Cerr << "DERIVED_T::coeffs_face n'est pas encore codee pour la condition NSCBC" << finl;
-      Process::exit();
-    }
-}
-
-template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
-                                                                      const NSCBC& la_cl, int num1) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4) return 0.;
-  Cerr << "DERIVED_T::coeffs_face_bloc_vitesse n'est pas encore codee pour la condition NSCBC" << finl;
-  Process::exit();
-  return -1e+30;
-}
-
-template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Elem<DERIVED_T>::secmem_face(int face, const NSCBC& la_cl, int num1) const
-{
-  if (DERIVED_T::IS_CENTRE) return 0;
-  Cerr<<"Eval_Amont_VDF_Elem::secmem_face n'est pas encore codee pour la condition NSCBC"<<finl;
-  Process::exit();
-  return -1e+30;
 }
 
 /* Function templates specialization for flux_faces_interne */

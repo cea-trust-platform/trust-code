@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -789,7 +789,7 @@ void Zone_VDF::modifier_pour_Cl(const Conds_lim& conds_lim)
                           indic_f1 = k;
                         }
 
-                  if ((n_type == TypeAreteCoinVDF::PERIO_PAROI) || (n_type == TypeAreteCoinVDF::PERIO_NSCBC) || (n_type == TypeAreteCoinVDF::PERIO_FLUIDE))// arete coin perio-paroi
+                  if ((n_type == TypeAreteCoinVDF::PERIO_PAROI) || (n_type == TypeAreteCoinVDF::PERIO_FLUIDE))// arete coin perio-paroi
                     {
                       if ((f(0) >= ndeb)&&(f(0) < nfin))
                         {

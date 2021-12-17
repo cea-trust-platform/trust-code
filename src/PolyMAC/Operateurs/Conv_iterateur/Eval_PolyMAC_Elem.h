@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,6 @@
 #include <Echange_global_impose.h>
 #include <Echange_externe_impose.h>
 #include <Neumann_sortie_libre.h>
-#include <NSCBC.h>
 
 //
 // .DESCRIPTION class Eval_PolyMAC_Elem
@@ -67,7 +66,6 @@ public:
   virtual int calculer_flux_faces_echange_externe_impose() const=0;
   virtual int calculer_flux_faces_echange_global_impose() const=0;
   virtual int calculer_flux_faces_periodique() const=0;
-  virtual int calculer_flux_faces_NSCBC() const=0;
 
   //virtual int calculer_flux_faces_nouvelle_Cl_PolyMAC() const=0;
 
@@ -85,7 +83,6 @@ public:
   virtual double flux_face(const DoubleTab&, int , int , int , const Echange_externe_impose&, int ) const=0;
   virtual double flux_face(const DoubleTab&, int , const Echange_global_impose&, int ) const=0;
   virtual double flux_face(const DoubleTab&, int , const Periodique&, int ) const=0;
-  virtual double flux_face(const DoubleTab&, int , const NSCBC&, int ) const=0;
   //virtual inline double flux_face(const DoubleTab&, int , const Nouvelle_Cl_PolyMAC&, int ) const=0;
 
   virtual inline double flux_faces_interne(const DoubleTab&, int ) const=0;
@@ -167,10 +164,6 @@ public:
   {
     ;
   }
-  virtual void coeffs_face(int,int, const NSCBC&, double& aii, double& ajj ) const
-  {
-    ;
-  }
 
   // contribution de la derivee en vitesse d'une equation scalaire
   virtual double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const
@@ -210,10 +203,6 @@ public:
     return 0.;
   }
   virtual double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Periodique&, int ) const
-  {
-    return 0.;
-  }
-  virtual double coeffs_face_bloc_vitesse(const DoubleTab&, int , const NSCBC&, int ) const
   {
     return 0.;
   }
@@ -270,10 +259,6 @@ public:
     return 0;
   }
   virtual double secmem_face(int, const Periodique&, int) const
-  {
-    return 0;
-  }
-  virtual double secmem_face(int, const NSCBC&, int) const
   {
     return 0;
   }

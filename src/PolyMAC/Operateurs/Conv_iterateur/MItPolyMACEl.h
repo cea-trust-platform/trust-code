@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -334,24 +334,6 @@
           }                                                                \
         }                                                                \
         break;                                                                \
-      case nscbc :                                                        \
-        if (flux_evaluateur.calculer_flux_faces_NSCBC()){                \
-          const NSCBC& cl =(const NSCBC&) (la_cl.valeur());                \
-          for (face=ndeb; face<nfin; face++) {                                \
-            flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
-              {                                                                \
-                resu[elem1]+=flux;                                        \
-                flux_bords(face,0)+=flux;                                \
-              }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
-              {                                                                \
-                resu[elem2]-=flux;                                        \
-                flux_bords(face,0)-=flux;                                \
-              }                                                                \
-          }                                                                \
-        }                                                                \
-        break;                                                                \
       case periodique :                                                        \
         if (flux_evaluateur.calculer_flux_faces_periodique()){                \
           const Periodique& cl =(const Periodique&) (la_cl.valeur());        \
@@ -566,22 +548,6 @@
       case echange_global_impose :                                        \
         if (flux_evaluateur.calculer_flux_faces_echange_global_impose()){ \
           const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur()); \
-          for (face=ndeb; face<nfin; face++) {                                \
-            flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
-            if ( (elem(face,0)) > -1)                                \
-              {                                                                \
-                flux_bords(face,0)+=flux;                                \
-              }                                                                \
-            if ( (elem(face,1)) > -1)                                \
-              {                                                                \
-                flux_bords(face,0)-=flux;                                \
-              }                                                                \
-          }                                                                \
-        }                                                                \
-        break;                                                                \
-      case nscbc :                                                        \
-        if (flux_evaluateur.calculer_flux_faces_NSCBC()){                \
-          const NSCBC& cl =(const NSCBC&) (la_cl.valeur());                \
           for (face=ndeb; face<nfin; face++) {                                \
             flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);        \
             if ( (elem(face,0)) > -1)                                \
@@ -1279,24 +1245,6 @@ modifier_flux() ;  						\
           }                                                                \
         }                                                                \
         break;                                                                \
-      case nscbc :                                                        \
-        if (flux_evaluateur.calculer_flux_faces_NSCBC()){                \
-          const NSCBC& cl =(const NSCBC&) (la_cl.valeur());                \
-          for (face=ndeb; face<nfin; face++) {                                \
-            flux = flux_evaluateur.secmem_face(face, cl, ndeb);                \
-            if ( (elem1=elem(face,0)) > -1)                                \
-              {                                                                \
-                resu[elem1]+=flux;                                        \
-                flux_bords(face,0)+=flux;                                \
-              }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
-              {                                                                \
-                resu[elem2]-=flux;                                        \
-                flux_bords(face,0)-=flux;                                \
-              }                                                                \
-          }                                                                \
-        }                                                                \
-        break;                                                                \
       case periodique :                                                        \
         if (flux_evaluateur.calculer_flux_faces_periodique()){                \
           const Periodique& cl =(const Periodique&) (la_cl.valeur());        \
@@ -1788,22 +1736,6 @@ modifier_flux() ;  						\
       case echange_global_impose :                                        \
         if (flux_evaluateur.calculer_flux_faces_echange_global_impose()){ \
           const Echange_global_impose& cl =(const Echange_global_impose&) (la_cl.valeur()); \
-          for (face=ndeb; face<nfin; face++) {                                \
-            flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);        \
-            if ( (elem1=elem(face,0)) > -1)                                \
-              {                                                                \
-                matrice(elem1,elem1)+=aii;                                \
-              }                                                                \
-            if ( (elem2=elem(face,1)) > -1)                                \
-              {                                                                \
-                matrice(elem2,elem2)+=ajj;                                \
-              }                                                                \
-          }                                                                \
-        }                                                                \
-        break;                                                                \
-      case nscbc :                                                        \
-        if (flux_evaluateur.calculer_flux_faces_NSCBC()){                \
-          const NSCBC& cl =(const NSCBC&) (la_cl.valeur());                \
           for (face=ndeb; face<nfin; face++) {                                \
             flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj);        \
             if ( (elem1=elem(face,0)) > -1)                                \

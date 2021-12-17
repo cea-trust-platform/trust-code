@@ -14,7 +14,6 @@
 #include <Entree_fluide_temperature_imposee.h>
 #include <Entree_fluide_vitesse_imposee.h>
 #include <Entree_fluide_vitesse_imposee_libre.h>
-#include <NSCBC.h>
 #include <Neumann_paroi.h>
 #include <Neumann_paroi_adiabatique.h>
 #include <Neumann_paroi_flux_nul.h>
@@ -38,15 +37,14 @@ Entree_fluide_fraction_massique_imposee inst8;verifie_pere(inst8);
 Entree_fluide_temperature_imposee inst9;verifie_pere(inst9);
 Entree_fluide_vitesse_imposee inst10;verifie_pere(inst10);
 Entree_fluide_vitesse_imposee_libre inst11;verifie_pere(inst11);
-NSCBC inst12;verifie_pere(inst12);
-Neumann_paroi inst13;verifie_pere(inst13);
-Neumann_paroi_adiabatique inst14;verifie_pere(inst14);
-Neumann_paroi_flux_nul inst15;verifie_pere(inst15);
-Neumann_sortie_libre inst16;verifie_pere(inst16);
-Paroi_Knudsen_non_negligeable inst17;verifie_pere(inst17);
-Scalaire_impose_paroi inst18;verifie_pere(inst18);
-Sortie_libre_Text_H_ext inst19;verifie_pere(inst19);
-Sortie_libre_pression_imposee inst20;verifie_pere(inst20);
-Sortie_libre_pression_moyenne_imposee inst21;verifie_pere(inst21);
-Temperature_imposee_paroi inst22;verifie_pere(inst22);
+Neumann_paroi inst12;verifie_pere(inst12);
+Neumann_paroi_adiabatique inst13;verifie_pere(inst13);
+Neumann_paroi_flux_nul inst14;verifie_pere(inst14);
+Neumann_sortie_libre inst15;verifie_pere(inst15);
+Paroi_Knudsen_non_negligeable inst16;verifie_pere(inst16);
+Scalaire_impose_paroi inst17;verifie_pere(inst17);
+Sortie_libre_Text_H_ext inst18;verifie_pere(inst18);
+Sortie_libre_pression_imposee inst19;verifie_pere(inst19);
+Sortie_libre_pression_moyenne_imposee inst20;verifie_pere(inst20);
+Temperature_imposee_paroi inst21;verifie_pere(inst21);
 }

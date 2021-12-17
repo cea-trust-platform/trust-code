@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,6 @@
 #include <Sortie_libre_pression_imposee.h>
 #include <Symetrie.h>
 #include <Periodique.h>
-#include <NSCBC.h>
 #include <Champ_Inc.h>
 #include <Champ_P0_VDF.h>
 #include <Champ_Face.h>
@@ -86,7 +85,6 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
       //    1 pour une condition d'entree ou de sortie de fluide (face "fluide")
       //    2 pour une condition de symetrie
       //    3 pour une condition de periodicite
-      //    4 pour une condition de type NSCBC
       //    0 pour toute autre Cl.
       //  On ne considere que les conditions aux limites qui interviennent pour
       //  la quantite de mouvement
@@ -116,8 +114,6 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
             numero_cl = 2;
           else if (sub_type(Periodique,la_cl))
             numero_cl = 3;
-          else if (sub_type(NSCBC,la_cl))
-            numero_cl = 4;
 
           const Frontiere& fr = la_cl.frontiere_dis().frontiere();
           const int ndeb = fr.num_premiere_face();
@@ -224,20 +220,6 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
                   exit();
                 }
             }
-          else if (les_faces_Cl[rang1] == 4)
-            {
-              if (les_faces_Cl[rang2] == 4)
-                type_arete_bord_[num_arete_] = TypeAreteBordVDF::NSCBC_NSCBC;
-              else
-                {
-                  Cerr << "On traite une arete qui separe deux faces de meme orientation : " << finl;
-                  Cerr << "l'une de ces faces porte une condition limite de type NSCBC " << finl;
-                  Cerr << "et l'autre porte une condition d'un autre type" << finl;
-                  Cerr << "TRUST ne sait pas traiter cette situation" << finl;
-                  exit();
-                }
-            }
-
         }
 
       // MODIFS CA : 21/09/99
@@ -293,8 +275,6 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
                 type_arete_coin_[num_arete_] = TypeAreteCoinVDF::PERIO_PERIO;
               else if (les_faces_Cl[rang2] == 0) // face de paroi
                 type_arete_coin_[num_arete_] = TypeAreteCoinVDF::PERIO_PAROI;
-              else if (les_faces_Cl[rang2] == 4) // face NSCBC
-                type_arete_coin_[num_arete_] = TypeAreteCoinVDF::PERIO_NSCBC;
               else if (les_faces_Cl[rang2] == 1) // Sortie libre ou entree de fluide
                 type_arete_coin_[num_arete_] = TypeAreteCoinVDF::PERIO_FLUIDE;
               else
@@ -325,24 +305,6 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
                     } */
                     // On ne change rien. De toute facon, ce type d'arete ne necessite pas de traitement particulier
                     type_arete_coin_[num_arete_] = TypeAreteCoinVDF::VIDE;
-                }
-            }
-          else if (les_faces_Cl[rang1] == 4)  // face NSCBC
-            {
-              if (les_faces_Cl[rang2] == 2)  // face symetrie
-                type_arete_coin_[num_arete_] = TypeAreteCoinVDF::NSCBC_SYM;
-              else if (les_faces_Cl[rang2] == 0)
-                {
-                  Cerr <<"On ne traite pas ce cas pour les_faces_Cl[rang1] = 4 "<<finl;
-                  Cerr <<"les_faces_Cl[rang2] = "<<les_faces_Cl[rang2]<<finl;
-                  exit();
-                }
-              else if (les_faces_Cl[rang2] == 3)   // face de periodicite
-                type_arete_coin_[num_arete_] = TypeAreteCoinVDF::PERIO_NSCBC;
-              else
-                {
-                  Cerr <<"On ne traite pas ce cas pour les_faces_Cl[rang1] = 4 "<<finl;
-                  exit();
                 }
             }
           else if (les_faces_Cl[rang1] == 1)  // face sortie libre ou entree de fluide
@@ -380,9 +342,7 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
             }
           else if (les_faces_Cl[rang1] == 2)   // face symetrie
             {
-              if (les_faces_Cl[rang2] == 4)  // face NSCBC
-                type_arete_coin_[num_arete_] = TypeAreteCoinVDF::NSCBC_SYM;    // arete coin symetrie-NSCBC
-              else if (les_faces_Cl[rang2] == 0)  // face paroi
+              if (les_faces_Cl[rang2] == 0)  // face paroi
                 type_arete_coin_[num_arete_] = TypeAreteCoinVDF::PAROI_SYM;
               else if (les_faces_Cl[rang2] == 1)  // face sortie libre ou entree de fluide
                 type_arete_coin_[num_arete_] = TypeAreteCoinVDF::FLUIDE_SYM;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ class Eval_Div_VDF_Elem : public Eval_Div_VDF, public Eval_VDF_Elem
 {
 public:
   // Overload Eval_VDF_Elem
-  static constexpr bool CALC_FLUX_FACES_PAR = false, CALC_FLUX_FACES_PAR_FIXE = false, CALC_FLUX_FACES_SORTIE_LIB = true, CALC_FLUX_FACES_NSCBC = true;
+  static constexpr bool CALC_FLUX_FACES_PAR = false, CALC_FLUX_FACES_PAR_FIXE = false, CALC_FLUX_FACES_SORTIE_LIB = true;
 
   //************************
   // CAS SCALAIRE

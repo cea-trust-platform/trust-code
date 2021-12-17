@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,6 @@ enum Type_Cl_VDF
   ,echange_externe_impose // Echange_externe_impose
   ,echange_global_impose // Echange_global_impose
   ,periodique // periodique
-  ,nscbc // NSCBC
   ,nouvelle_Cl_VDF // Nouvelle_Cl_VDF
 };
 
@@ -94,8 +93,6 @@ inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const
   else if ( sub_type(Echange_externe_impose, la_cl.valeur()) ) retour=echange_externe_impose;
   else if ( sub_type(Echange_global_impose, la_cl.valeur()) ) retour=echange_global_impose;
   else if ( sub_type(Periodique, la_cl.valeur()) ) retour=periodique;
-  else if ( sub_type(NSCBC, la_cl.valeur()) ) retour=nscbc;
-  //else if ( sub_type(Nouvelle_Cl_VDF, la_cl.valeur()) ) retour=nouvelle_Cl_VDF;
   return retour;
 }
 

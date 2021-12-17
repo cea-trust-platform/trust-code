@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -184,16 +184,6 @@ inline void Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>::coeffs_face(int , i
 {
   Cerr << " si je suis ici, ce n'est pas bon " << finl ;
 }
-
-template<>
-inline double Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>::flux_face(const DoubleTab& , int ,const NSCBC& ,int ) const
-{
-  return 0;
-}
-
-template<>
-inline void Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>::coeffs_face(int , int,const NSCBC& ,double&, double&) const
-{ }
 
 template<>
 inline double Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>::flux_faces_interne(const DoubleTab& , int ) const

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,6 @@
 #include <Echange_global_impose.h>
 #include <Echange_externe_impose.h>
 #include <Neumann_sortie_libre.h>
-#include <NSCBC.h>
 #include <Scalaire_impose_paroi.h>
 #include <Evaluateur_PolyMAC.h>
 #include <Matrice_Morse.h>
@@ -62,7 +61,6 @@ enum Type_Cl_PolyMAC
   ,echange_externe_impose        //        Echange_externe_impose
   ,echange_global_impose        //        Echange_global_impose
   , periodique                        //        periodique
-  , nscbc                       //      NSCBC
   , scalaire_impose_paroi       //      Scalaire_impose_paroi
   , nouvelle_Cl_PolyMAC                //        Nouvelle_Cl_PolyMAC
 };
@@ -171,9 +169,7 @@ inline Type_Cl_PolyMAC Iterateur_PolyMAC_base::type_cl(const Cond_lim& la_cl) co
   else if ( sub_type(Echange_externe_impose, la_cl.valeur()) ) retour=echange_externe_impose;
   else if ( sub_type(Echange_global_impose, la_cl.valeur()) ) retour=echange_global_impose;
   else if ( sub_type(Periodique, la_cl.valeur()) ) retour=periodique;
-  else if ( sub_type(NSCBC, la_cl.valeur()) ) retour=nscbc;
   else if ( sub_type(Scalaire_impose_paroi, la_cl.valeur()) ) retour=scalaire_impose_paroi;
-  //else if ( sub_type(Nouvelle_Cl_PolyMAC, la_cl.valeur()) ) retour=nouvelle_Cl_PolyMAC;
   return retour;
 }
 

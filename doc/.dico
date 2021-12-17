@@ -579,7 +579,6 @@
  Nom Nom Nom.h
  Noms Noms Noms.h
  Not Not StdFunction.h
- NSCBC NSCBC NSCBC.h
  Objet_a_lire Objet_a_lire Objet_a_lire.h
  objet_interne_ptrPram ptrParam ptrParam.h
  OctreeRoot OctreeRoot Octree.h
