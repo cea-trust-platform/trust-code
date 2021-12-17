@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@
 #include <Octree.h>
 #include <IntList.h>
 #include <EFichier.h>
+#include <LecFicDiffuse.h>
 #include <EcrFicCollecte.h>
 #include <Champ_front_calc.h>
 #include <string> // Pour AIX
@@ -1097,16 +1098,25 @@ void Champ_front_recyclage::lire_fichier_format2(DoubleTab& moyenne,
 {
 
   int N1;
-  int num_face2,num_face2_loc;
+  int num_face1, indice_compo;
+  int num_face2, num_face2_loc;
   double x1,y1,z1;
   double x2,y2,z2;
   z2 = 0.;
-  ifstream fic_Utargtest(nom_fich);
+  DoubleVect val(nb_compo_);
+
+  // Read the file and keep in memory
+  ifstream fic_Utargtest(nom_fich); // test
   if (!fic_Utargtest)
     {
       Cerr <<"No file of name : "<<nom_fich<<" is available."<<finl;
       exit();
     }
+  LecFicDiffuse fic_Utarg(nom_fich, ios::in);
+  fic_Utarg >> N1;
+  ArrOfDouble fich_buffer(N1*(nb_compo_+dimension));
+  fic_Utarg.get(fich_buffer.addr(), fich_buffer.size_array());
+  fic_Utarg.close();
 
   const Front_VF& fr_vf2 = ref_cast(Front_VF,fr_vf);
   int num1 = fr_vf2.num_premiere_face();
@@ -1120,68 +1130,31 @@ void Champ_front_recyclage::lire_fichier_format2(DoubleTab& moyenne,
       x2 = xv2(num_face2,0);
       y2 = xv2(num_face2,1);
       if (dimension==3) z2 = xv2(num_face2,2);
-
       num_face2_loc = num_face2-num1;
-      EFichier fic_Utarg(nom_fich);
-      fic_Utarg >> N1;
-      // Je lis le reste de la ligne au cas ou...
-      std::string ligne;
-      std::getline(fic_Utarg.get_ifstream(), ligne);
-      int compteur=0;
+
       double dist = 1.E6;
       double dist_eval;
 
-      DoubleVect val(nb_compo_);
-      while (!fic_Utarg.eof())
+      for (num_face1=0; num_face1<N1; num_face1++)
         {
-          compteur++;
-          if(dimension==3)
-            {
-              fic_Utarg >> x1 >> y1 >> z1 ;
-              for (int comp=0; comp<nb_compo_; comp++)
-                fic_Utarg >> val(comp);
-              // Je lis le reste de la ligne au cas ou...
-              std::getline(fic_Utarg.get_ifstream(), ligne);
-              dist_eval = (x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)+(z2-z1)*(z2-z1);
-              if(dist_eval<dist)
-                {
-                  dist = dist_eval;
-                  if ((abs(ndir)<4) && (abs(ndir)>0))
-                    moyenne(num_face2_loc,abs(ndir)-1) = val(abs(ndir)-1);
-                  else
-                    for (int comp=0; comp<nb_compo_; comp++)
-                      moyenne(num_face2_loc,comp) = val(comp);
+          x1 = fich_buffer[num_face1*(nb_compo_+dimension)];
+          y1 = fich_buffer[num_face1*(nb_compo_+dimension)+1];
+          if(dimension==3) z1 = fich_buffer[num_face1*(nb_compo_+dimension)+2];
+          dist_eval = (x2-x1)*(x2-x1)+(y2-y1)*(y2-y1);
+          if (dimension==3) dist_eval+=(z2-z1)*(z2-z1);
 
-                }
-            }
-          else
+          if(dist_eval<dist)
             {
-              fic_Utarg >> x1 >> y1;
-              for (int comp=0; comp<nb_compo_; comp++)
-                fic_Utarg >> val(comp);
-              // Je lis le reste de la ligne au cas ou...
-              std::getline(fic_Utarg.get_ifstream(), ligne);
-              dist_eval = (x2-x1)*(x2-x1)+(y2-y1)*(y2-y1);
-              if(dist_eval<dist)
-                {
-                  dist = dist_eval;
-                  if ((abs(ndir)<4) && (abs(ndir)>0))
-                    moyenne(num_face2_loc,abs(ndir)-1) = val(abs(ndir)-1);
-                  else
-                    for (int comp=0; comp<nb_compo_; comp++)
-                      moyenne(num_face2_loc,comp) = val(comp);
-                }
+              for (indice_compo=0; indice_compo<nb_compo_; indice_compo++)
+                val(indice_compo) = fich_buffer[num_face1*(nb_compo_+dimension)+dimension+indice_compo];
+              dist = dist_eval;
+              if ((abs(ndir)<4) && (abs(ndir)>0))
+                moyenne(num_face2_loc,abs(ndir)-1) = val(abs(ndir)-1);
+              else
+                for (indice_compo=0; indice_compo<nb_compo_; indice_compo++)
+                  moyenne(num_face2_loc,indice_compo) = val(indice_compo);
             }
         }
-      if (N1!=compteur-1)
-        {
-          Cerr << finl;
-          Cerr << "Error while reading " << nom_fich << finl;
-          Cerr << "The number of lines indicated in the header : " << N1 << finl;
-          Cerr << "is not the same than the number of lines detected : " << compteur-1 << finl;
-          exit();
-        }
-      fic_Utarg.close();
     }
 }
 

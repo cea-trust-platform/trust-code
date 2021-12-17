@@ -1,6 +1,6 @@
 # Hydraulique 3D avec 2 problemes couples #
 # Test la methode de lecture pour l option connexion_approchee de Champ_front_recyclage  #
-# PARALLEL RUNS #
+# PARALLEL OK #
 
 dimension 3
 
@@ -50,14 +50,14 @@ Mailler dom_pb2
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partition_tool tranche { tranches 1 1 2 }
+	Partition_tool tranche { tranches 2 2 2 }
 	Larg_joint 2
 	zones_name DOM1
 }
 
 Partition dom_pb2
 {
-	Partition_tool tranche { tranches 1 2 1 }
+	Partition_tool tranche { tranches 2 2 2 }
 	Larg_joint 2
 	zones_name DOM2
 }
@@ -160,7 +160,7 @@ Navier_Stokes_standard
 {
     solveur_pression GCP { 
             precond ssor { omega 1.500000 } 
-            seuil 1.000000e-07 
+            seuil 1.000000e-12 
             impr 
     		}
     convection { quick }
