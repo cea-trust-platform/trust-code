@@ -173,7 +173,11 @@ Navier_Stokes_standard
 						}
      haut2    paroi_fixe                                                        
      bas2     paroi_fixe
-     lateral2 symetrie
+     lateral2 frontiere_ouverte_vitesse_imposee Champ_front_recyclage { pb_champ_evaluateur pb1 vitesse 3
+						moyenne_imposee connexion_exacte
+						fichier moyenne_imposee_exacte.dat moyenne_imposee_exacte.dat
+						direction_anisotrope 3
+						}
      sortie2  Frontiere_ouverte_Pression_imposee_Orlansky                   
     }
 }                      

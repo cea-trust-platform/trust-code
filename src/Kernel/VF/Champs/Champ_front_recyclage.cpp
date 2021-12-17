@@ -985,22 +985,33 @@ double Champ_front_recyclage::UPb(double y,Nom nom_fich)
   int nb_pts;
   DoubleVect y_Pb2;
   DoubleVect U_Pb2;
-  EFichier fich_Pb2(nom_fich);
-
-  y_Pb2.resize(1);
-  U_Pb2.resize(1);
   int l=0;
-  while (!fich_Pb2.eof())
+
+  if (Process::je_suis_maitre())
     {
-      y_Pb2.resize(l+1);
-      U_Pb2.resize(l+1);
-      fich_Pb2 >> y_Pb2(l) >> U_Pb2(l);
-      l++;
+      EFichier fich_Pb2(nom_fich);
+      while (!fich_Pb2.eof())
+        {
+          y_Pb2.resize(l+1);
+          U_Pb2.resize(l+1);
+          fich_Pb2 >> y_Pb2(l) >> U_Pb2(l);
+          l++;
+        }
+      fich_Pb2.close();
     }
+
+  envoyer_broadcast(l,0);
+  if (!(Process::je_suis_maitre()))
+    {
+      y_Pb2.resize(l);
+      U_Pb2.resize(l);
+    }
+  envoyer_broadcast(y_Pb2,0);
+  envoyer_broadcast(U_Pb2,0);
+
   nb_pts=l-1;
   y_Pb2.resize(nb_pts);
   U_Pb2.resize(nb_pts);
-  fich_Pb2.close();
 
   l=0;
   int l_deb;
@@ -1169,8 +1180,8 @@ void Champ_front_recyclage::lire_fichier_format3(DoubleTab& moyenne,
                                                  const Frontiere_dis_base& fr_vf,
                                                  const Nom& nom_fich1,const Nom& nom_fich2)
 {
-  int Nbfaces,trouve;
-  int num_face1,num_face2,num_face2_loc;
+  int Nbfaces,trouve,compteur;
+  int num_face2,num_face2_loc;
   double x1,y1,z1;
   double x2,y2,z2;
   double eps=1.e-4;
@@ -1182,7 +1193,7 @@ void Champ_front_recyclage::lire_fichier_format3(DoubleTab& moyenne,
   ifstream fic_geom_test(nom_fich2);
   if (!fic_geom_test)
     {
-      Cerr <<"No file of name : geom_face_perio_"<<nom_pb1<<" is available."<<finl;
+      Cerr <<"No file of name : "<<nom_fich2<<" is available."<<finl;
       exit();
     }
 
@@ -1201,70 +1212,68 @@ void Champ_front_recyclage::lire_fichier_format3(DoubleTab& moyenne,
       exit();
     }
 
+  if (abs(ndir)==3 && dimension==2)
+    {
+      Cerr << finl;
+      Cerr << "Error while reading the boundary condition " << fr_vf.le_nom() << finl;
+      Cerr << "You must define the keyword \"direction_anisotrope\" with a direction different than 'z' in 2D" << finl;
+      exit();
+    }
+
   const Front_VF& fr_vf2 = ref_cast(Front_VF,fr_vf);
   int num1 = fr_vf2.num_premiere_face();
   int num2 = num1 + fr_vf2.nb_faces();
   const Zone_dis_base& zone_dis2 = fr_vf2.zone_dis();
   const Zone_VF& zvf2 = ref_cast(Zone_VF,zone_dis2);
   const DoubleTab& xv2 = zvf2.xv();
-  int nb_faces_bord2 = fr_vf2.nb_faces();
 
-  DoubleTab bidon;
-  bidon.resize(nb_faces_bord2,Array_base::COPY_INIT);
+  // Reading and buffering the two input files
+  LecFicDiffuse fic_geom(nom_fich2);
+  LecFicDiffuse fic_Umoy(nom_fich1);
+  fic_geom >> Nbfaces;
+  fic_Umoy >> Nbfaces; // useless but we must read it
+  ArrOfDouble fich_geom_buffer(Nbfaces*(dimension+1));
+  ArrOfDouble fich_Umoy_buffer(Nbfaces*(dimension+1));
+  fic_geom.get(fich_geom_buffer.addr(), fich_geom_buffer.size_array());
+  fic_Umoy.get(fich_Umoy_buffer.addr(), fich_Umoy_buffer.size_array());
+  fic_geom.close();
+  fic_Umoy.close();
 
   for (num_face2=num1; num_face2<num2; num_face2++)
     {
       x2 = xv2(num_face2,0);
       y2 = xv2(num_face2,1);
       if (dimension==3) z2 = xv2(num_face2,2);
-
       num_face2_loc = num_face2-num1;
 
-      EFichier fic_geom(nom_fich2);
-      EFichier fic_Umoy(nom_fich1);
-      fic_geom  >> Nbfaces;
-      fic_Umoy >> Nbfaces;
-      // Je lis le reste de la ligne au cas ou...
-      std::string ligne;
-      std::getline(fic_geom.get_ifstream(), ligne);
-      std::getline(fic_Umoy.get_ifstream(), ligne);
-      int compteur=0;
-
       trouve = 0;
+      compteur = 0;
 
-      while (!fic_geom.eof() && !fic_Umoy.eof())
+      // Looking for (x2,y2[,z2]) into (x1,y1[,z1])
+      while (compteur<Nbfaces)
         {
-          compteur++;
-          if (trouve==0)
+          x1 = fich_geom_buffer(compteur*(dimension+1)+1);
+          y1 = fich_geom_buffer(compteur*(dimension+1)+2);
+          if (dimension==3)
             {
-              fic_geom >> num_face1 >> x1 >> y1;
-              fic_Umoy >> bidon(num_face2_loc) >> moyenne(num_face2_loc,0) >> moyenne(num_face2_loc,1);
-              if (dimension==3)
-                {
-                  fic_geom >> z1;
-                  fic_Umoy >> moyenne(num_face2_loc,2);
-                  if(abs(ndir)==1 && (est_egal(y1,y2,eps)) && (est_egal(z1,z2,eps))) trouve=1;
-                  if(abs(ndir)==2 && (est_egal(x1,x2,eps)) && (est_egal(z1,z2,eps))) trouve=1;
-                  if(abs(ndir)==3 && (est_egal(x1,x2,eps)) && (est_egal(y1,y2,eps))) trouve=1;
-                }
-              else
-                {
-                  if(abs(ndir)==1 && (est_egal(y1,y2,eps))) trouve=1;
-                  if(abs(ndir)==2 && (est_egal(x1,x2,eps))) trouve=1;
-                }
+              z1 = fich_geom_buffer(compteur*(dimension+1)+3);
+              if(abs(ndir)==1 && (est_egal(y1,y2,eps)) && (est_egal(z1,z2,eps))) trouve=1;
+              if(abs(ndir)==2 && (est_egal(x1,x2,eps)) && (est_egal(z1,z2,eps))) trouve=1;
+              if(abs(ndir)==3 && (est_egal(x1,x2,eps)) && (est_egal(y1,y2,eps))) trouve=1;
             }
-          // Je lis le reste de la ligne au cas ou...
-          std::getline(fic_geom.get_ifstream(), ligne);
-          std::getline(fic_Umoy.get_ifstream(), ligne);
-        }
-
-      if (Nbfaces!=compteur-1)
-        {
-          Cerr << finl;
-          Cerr << "Error while reading " << nom_fich1 << finl;
-          Cerr << "The number of lines indicated in the header : " << Nbfaces << finl;
-          Cerr << "is not the same than the number of lines detected : " << compteur-1 << finl;
-          exit();
+          else
+            {
+              if(abs(ndir)==1 && (est_egal(y1,y2,eps))) trouve=1;
+              if(abs(ndir)==2 && (est_egal(x1,x2,eps))) trouve=1;
+            }
+          if (trouve)
+            {
+              moyenne(num_face2_loc,0) = fich_Umoy_buffer(compteur*(dimension+1)+1);
+              moyenne(num_face2_loc,1) = fich_Umoy_buffer(compteur*(dimension+1)+2);
+              if (dimension==3) moyenne(num_face2_loc,2) = fich_Umoy_buffer(compteur*(dimension+1)+3);
+              break;
+            }
+          compteur++;
         }
 
       if (trouve==0)
@@ -1278,19 +1287,16 @@ void Champ_front_recyclage::lire_fichier_format3(DoubleTab& moyenne,
 
       if (dimension==3)
         {
-          fic <<" num_face1 " << num_face1  << " " << x1 << " " << y1 << " " << z1 << finl;
+          fic <<" num_face1 " << fich_geom_buffer(compteur*(dimension+1))  << " " << x1 << " " << y1 << " " << z1 << finl;
           fic <<" num_face2 " << num_face2  << " " << x2 << " " << y2 << " " << z2 << finl;
           fic <<" "  << finl;
         }
       else
         {
-          fic <<" num_face1 " << num_face1  << " " << x1 << " " << y1  << finl;
+          fic <<" num_face1 " << fich_geom_buffer(compteur*(dimension+1))  << " " << x1 << " " << y1  << finl;
           fic <<" num_face2 " << num_face2  << " " << x2 << " " << y2  << finl;
           fic <<" "  << finl;
         }
-
-      fic_geom.close();
-      fic_Umoy.close();
 
     }
   fic.close();
