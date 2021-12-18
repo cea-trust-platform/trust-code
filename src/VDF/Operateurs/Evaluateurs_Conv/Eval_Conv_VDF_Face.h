@@ -60,217 +60,105 @@ public:
    * YES, we do magic ! Its all about : Substition Failure Is Not An Error (SFINAE) *
    * ****************************************************************************** */
 
-  /* ******************* *
-   * CAS SCALAIRE : FLUX *
-   * ******************* */
+  /* ************************************** *
+   * *********  POUR L'EXPLICITE ********** *
+   * ************************************** */
 
-  // TODO : FIXME : a faire void un jour !!!!!!
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t<Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, double>
-  flux_fa7(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+  flux_fa7(const DoubleTab&, int , const Neumann_sortie_libre&, int, DoubleVect& ) const;
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, double>
-  flux_fa7(const DoubleTab&, int, int, int) const ;
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+  flux_fa7(const DoubleTab&, int, int, int, DoubleVect& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, double>
-  flux_arete(const DoubleTab&, int, int, int, int ) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, double>
-  flux_arete(const DoubleTab&, int, int, int, int ) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), double>
-  flux_arete(const DoubleTab&, int, int, int, int ) const { return 0; }
-
-  // void
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
-  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const ;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const ;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
-  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const ;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
-  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const ;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const;
-
-  /* ********************* *
-   * CAS SCALAIRE : COEFFS *
-   * ********************* */
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-  coeffs_fa7(int, const Neumann_sortie_libre&, double& , double& ) const;
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-  coeffs_fa7(int, int, int, double& , double& ) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
-  coeffs_arete(int, int, int, int, double& , double& ) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
-  coeffs_arete(int, int, int, int, double& , double& ) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
-  coeffs_arete(int, int, int, int, double& , double& ) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
-  coeffs_arete(int, int, int, int, double& , double& , double& ) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-  coeffs_arete(int, int, int, int, double& , double& , double& ) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
-  coeffs_arete(int, int, int, int, double& , double& , double& ) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-  coeffs_arete(int, int, int, int, double& , double& , double& ) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
-  coeffs_arete(int, int, int, int, double& , double& , double& ) const { /* do nothing */ }
-
-  /* ********************* *
-   * CAS SCALAIRE : SECMEM *
-   * ********************* */
-
-  // TODO : FIXME : a faire void un jour !!!!!!
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, double>
-  secmem_fa7(int, const Neumann_sortie_libre&, int ) const;
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, double>
-  secmem_fa7( int, int, int) const { return 0; }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
-                      Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), double>
-  secmem_arete(int, int, int, int) const { return 0; }
-
-  // void
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
-  secmem_arete(int, int, int, int, double&, double&) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-  secmem_arete(int, int, int, int, double&, double&) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
-  secmem_arete(int, int, int, int, double&, double&) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-  secmem_arete(int, int, int, int, double&, double&) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
-  secmem_arete(int, int, int, int, double&, double&) const { /* do nothing */ }
-
-  /* ******************** *
-   * CAS VECTORIEL : FLUX *
-   * ******************** */
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-  flux_fa7(const DoubleTab&, int , const Neumann_sortie_libre&, int, DoubleVect& flux) const;
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-  flux_fa7(const DoubleTab&, int, int, int, DoubleVect& flux) const;
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const ;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const ;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
+  inline enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const ;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const ;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect&) const
-  {
-    Cerr << "ToDo: code like Eval_Conv_VDF_Face::flux_arete_coin_fluide for a scalar inco" << finl;
-    Process::exit();
-  }
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect&) const;
 
-  /* ********************** *
-   * CAS VECTORIEL : COEFFS *
-   * ********************** */
+  /* ************************************** *
+   * *********  POUR L'IMPLICITE ********** *
+   * ************************************** */
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
   coeffs_fa7(int , const Neumann_sortie_libre&, DoubleVect& , DoubleVect& ) const;
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
   coeffs_fa7(int, int, int, DoubleVect& , DoubleVect& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
+
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline
+  enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const { /* do nothing */ }
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const
-  {
-    Cerr << "ToDo: code like Eval_Conv_VDF_Face::coeffs_arete_coin_fluide for a scalar inco" << finl;
-    Process::exit();
-  }
+  /* ************************************** *
+   * *********  POUR L'IMPLICITE ********** *
+   * ************************************** */
 
-  /* ********************** *
-   * CAS VECTORIEL : SECMEM *
-   * ********************** */
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
   secmem_fa7(int , const Neumann_sortie_libre&, int, DoubleVect& ) const;
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
   secmem_fa7(int, int, int, DoubleVect& ) const { /* do nothing */ }
 
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
                       Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
   secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
   secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
   secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
   secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const;
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+  secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const ;
+
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
   secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-  secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const
-  {
-    Cerr << "ToDo: code like Eval_Conv_VDF_Face::secmem_arete_coin_fluide for a scalar inco" <<finl;
-    Process::exit();
-  }
 };
 
 //************************
@@ -391,615 +279,283 @@ inline const Zone_Cl_VDF& Eval_Conv_VDF_Face<DERIVED_T>::la_zcl() const
   return static_cast<const DERIVED_T *>(this)->get_la_zcl();
 }
 
-//************************
-// CAS SCALAIRE
-//************************
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe,double& flux3, double& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int face, const Neumann_sortie_libre& la_cl, int num1,DoubleVect& flux) const
 {
-  double flux, psc;
-  // Calcul de flux3:
-  psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2)) * (surface(fac1)+surface(fac2)));
-  if ((psc*signe)>0) flux=inco(fac3)*psc ;
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
+  const int elem1 = elem_(face,0);
+  const double psc = dt_vitesse(face)*surface(face);
+  if (is_SCALAIRE)
+    {
+      if (DERIVED_T::IS_QUICK || DERIVED_T::IS_CENTRE4) // TODO : FIXME : pareil mais on corrige apres
+        {
+          if (elem1 != -1) flux(0) = (psc > 0) ? -psc*inco(face) : -psc*la_cl.val_ext(face-num1,orientation(face));
+          else flux(0) = (psc < 0) ? -psc*inco(face) : -psc*la_cl.val_ext(face-num1,orientation(face));
+        }
+      else
+        {
+          if (elem1 != -1) flux(0) = (psc > 0) ? -psc*inco(face)*porosite(face) : -psc*la_cl.val_ext(face-num1,orientation(face));
+          else flux(0) = (psc < 0) ? -psc*inco(face)*porosite(face) : -psc*la_cl.val_ext(face-num1,orientation(face));
+        }
+    }
   else
     {
-      const int pfb = premiere_face_bord(), ori = orientation(fac3);
-      // TODO : FIXME : euh ? pourquoi ca ?
-      const int rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 : (fac2-pfb);
-      flux = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl())
-                  + Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl()))* psc ;
+      if (elem1 != -1)
+        {
+          if (psc > 0)
+            {
+              if (DERIVED_T::IS_QUICK || DERIVED_T::IS_CENTRE4) // porosite !!! TODO : FIXME
+                for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(face,k);
+              else
+                for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(face,k)*porosite(face);
+            }
+          else
+            for (int k=0; k<flux.size(); k++) flux(k) = -psc*la_cl.val_ext(face-num1,k);
+        }
+      else // (elem2 != -1)
+        {
+          if (psc < 0)
+            {
+              if (DERIVED_T::IS_QUICK || DERIVED_T::IS_CENTRE4) // porosite !!! TODO : FIXME
+                for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(face,k);
+              else
+                for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(face,k)*porosite(face);
+            }
+          else
+            for (int k=0; k<flux.size(); k++) flux(k) = -psc*la_cl.val_ext(face-num1,k);
+        }
     }
-  flux3 = -flux;
-
-  // Calcul de flux1_2:
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  flux = (psc>0) ? psc*inco(fac1) : ( DERIVED_T::IS_CENTRE ? psc*0.5*(inco(fac1)+inco(fac2)) : psc*inco(fac2));
-  flux1_2 = -flux;
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int , int fac3, int signe, double& flux3, double& flux1_2) const
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int num_elem, int fac1, int fac2, DoubleVect& flux) const
+{
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
+  double psc = 0.25 * (dt_vitesse(fac1)+dt_vitesse(fac2))*(surface(fac1)+surface(fac2));
+  if (is_SCALAIRE)
+    {
+      if (DERIVED_T::IS_AMONT) flux(0) = (psc>0) ? -psc * inco(fac1)*porosite(fac1) : -psc * inco(fac2)*porosite(fac2);
+      else if (DERIVED_T::IS_CENTRE) flux(0) = -psc * 0.5*(inco(fac1)*porosite(fac1)+inco(fac2)*porosite(fac2));
+      else
+        {
+          const int num0_0 = face_amont_princ_(fac1,0), num1_1 = face_amont_princ_(fac2,1);
+          if (DERIVED_T::IS_CENTRE4)
+            {
+              if  ( (num0_0 == -1) || (num1_1== -1) ) flux(0) = -psc * 0.5*(inco(fac1)*porosite(fac1)+inco(fac2)*porosite(fac2)); // Schema centre 2
+              else // Schema centre 4
+                {
+                  const int ori=orientation(fac1);
+                  const double dx = dim_elem_(num_elem,ori), dxam = dim_elem_(elem_(fac1,0),ori), dxav = dim_elem_(elem_(fac2,1),ori),
+                               vit_0 = inco(fac1)*porosite(fac1), vit_0_0 = inco(num0_0)*porosite(num0_0),
+                               vit_1 = inco(fac2)*porosite(fac2), vit_1_1 = inco(num1_1)*porosite(num1_1);
+                  double g1,g2,g3,g4;
+                  calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
+                  flux(0) = -conv_centre_(psc,vit_0_0,vit_0,vit_1,vit_1_1,g1,g2,g3,g4);
+                }
+            }
+          else
+            {
+              if  (psc > 0)
+                {
+                  if (num0_0 == -1) flux(0) = -psc*inco[fac1]*porosite(fac1); // Schema amont
+                  else
+                    {
+                      const int ori = orientation(fac1), elem_amont = elem_(fac1,0);
+                      const double dx = dim_elem_(num_elem,ori), dm = dist_elem_period_(elem_amont,num_elem,ori);
+                      const double dxam = dim_elem_(elem_amont,ori), vit_0 = inco[fac1]*porosite(fac1),
+                                   vit_0_0 = inco[num0_0]*porosite(num0_0), vit_1 = inco[fac2]*porosite(fac2);
+                      flux(0) = -conv_quick_sharp_plus_(psc,vit_0,vit_1,vit_0_0,dx,dm,dxam);
+                    }
+                }
+              else // (psc < 0)
+                {
+                  if (num1_1 == -1) flux(0) = -psc*inco[fac2]*porosite(fac2); // Schema amont
+                  else
+                    {
+                      const int ori = orientation(fac2), elem_amont = elem_(fac2,1);
+                      const double dx = dim_elem_(num_elem,ori), dm = dist_elem_period_(num_elem,elem_amont,ori);
+                      const double dxam = dim_elem_(elem_amont,ori), vit_0 = inco[fac1]*porosite(fac1),
+                                   vit_1 = inco[fac2]*porosite(fac2), vit_1_1 = inco[num1_1]*porosite(num1_1);
+                      flux(0) = -conv_quick_sharp_moins_(psc,vit_0,vit_1,vit_1_1,dx,dm,dxam);
+                    }
+                }
+            }
+        }
+    }
+  else
+    {
+      if (DERIVED_T::IS_AMONT)
+        {
+          if (psc>0)
+            for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(fac1,k)*porosite(fac1);
+          else
+            for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(fac2,k)*porosite(fac2);
+        }
+      else if (DERIVED_T::IS_CENTRE)
+        {
+          if (psc>0) for (int k=0; k<flux.size(); k++) flux(k) = -psc*0.5*(inco(fac1,k)*porosite(fac1)+inco(fac2,k)*porosite(fac2));
+        }
+      else
+        {
+          const int num0_0 = face_amont_princ_(fac1,0), num1_1 = face_amont_princ_(fac2,1), ncomp = flux.size();
+          if (DERIVED_T::IS_CENTRE4)
+            {
+              const int ori = orientation(fac1);
+              //TODO : FIXME : pourquoi porosite ici ?????
+              double psc2 = 0.25* (dt_vitesse(fac1)*porosite(fac1) + dt_vitesse(fac2)*porosite(fac2)) * (surface(fac1) + surface(fac2));
+              if ( (num0_0 == -1) || (num1_1== -1) ) // Schema centre2
+                for (int k=0; k<ncomp; k++) flux(k) = -psc2*0.5*(inco(fac1,k)*porosite(fac1)+inco(fac2,k)*porosite(fac2));
+              else // Schema centre4
+                {
+                  const double dx = dim_elem_(num_elem,ori), dxam = dim_elem_(elem_(fac1,0),ori), dxav = dim_elem_(elem_(fac2,1),ori);
+                  ArrOfDouble vit_0(ncomp),vit_0_0(ncomp),vit_1_1(ncomp),vit_1(ncomp);
+                  double g1,g2,g3,g4;
+                  calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
+                  for (int k=0; k<ncomp; k++)
+                    {
+                      vit_0(k) = inco(fac1,k)* porosite(fac1);
+                      vit_0_0(k) = inco(num0_0,k)*porosite(num0_0);
+                      vit_1(k) = inco(fac2,k)*porosite(fac2);
+                      vit_1_1(k)=inco(num1_1,k)*porosite(num1_1);
+                      flux(k) = -conv_centre_(psc2,vit_0_0(k),vit_0(k),vit_1(k),vit_1_1(k),g1,g2,g3,g4);
+                    }
+                }
+            }
+          else // QUICK
+            {
+              if  (psc > 0)
+                {
+                  if (num0_0 == -1) // Schema amont
+                    for (int k=0; k<ncomp; k++) flux(k) = -psc*inco(fac1,k)*porosite(fac1);
+                  else
+                    {
+                      const int ori = orientation(fac1), elem_amont = elem_(fac1,0);
+                      const double dx = dim_elem_(num_elem,ori), dm = dist_elem_period_(elem_amont,num_elem,ori), dxam = dim_elem_(elem_amont,ori);
+                      ArrOfDouble vit_0(ncomp), vit_0_0(ncomp), vit_1(ncomp);
+                      for (int k=0; k<ncomp; k++)
+                        {
+                          vit_0(k) = inco(fac1,k)*porosite(fac1);
+                          vit_0_0(k) = inco(num0_0,k)*porosite(num0_0);
+                          vit_1(k) = inco(fac2,k)*porosite(fac2);
+                          flux(k) = -conv_quick_sharp_plus_(psc,vit_0(k),vit_1(k),vit_0_0(k),dx,dm,dxam);
+                        }
+                    }
+                }
+              else // (psc < 0)
+                {
+                  if (num1_1 == -1) // Schema amont
+                    for (int k=0; k<ncomp; k++) flux(k) = -psc*inco(fac2,k)*porosite(fac2);
+                  else
+                    {
+                      const int ori = orientation(fac2), elem_amont = elem_(fac2,1);
+                      const double dx = dim_elem_(num_elem,ori), dm = dist_elem_period_(num_elem,elem_amont,ori), dxam = dim_elem_(elem_amont,ori);
+                      ArrOfDouble vit_0(ncomp), vit_1(ncomp), vit_1_1(ncomp);
+                      for (int k=0; k<ncomp; k++)
+                        {
+                          vit_0(k) = inco(fac1,k)*porosite(fac1);
+                          vit_1(k) = inco(fac2,k)*porosite(fac2);
+                          vit_1_1(k) = inco(num1_1,k)*porosite(num1_1);
+                          flux(k) = -conv_quick_sharp_moins_(psc,vit_0(k),vit_1(k),vit_1_1(k),dx,dm,dxam);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
+{
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
+  double psc;
+  if (is_SCALAIRE)
+    {
+      // Calcul de flux3:
+      psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2)) * (surface(fac1)+surface(fac2)));
+      if ((psc*signe)>0) flux3(0) = -inco(fac3)*psc ;
+      else
+        {
+          const int pfb = premiere_face_bord(), ori = orientation(fac3);
+          // TODO : FIXME : euh ? pourquoi ca ?
+          const int rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 : (fac2-pfb);
+          flux3(0) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl())
+                           + Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl()))* psc ;
+        }
+
+      // Calcul de flux1_2:
+      psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
+      flux1_2(0) = (psc>0) ? -psc*inco(fac1) : ( DERIVED_T::IS_CENTRE ? -psc*0.5*(inco(fac1)+inco(fac2)) : -psc*inco(fac2));
+    }
+  else
+    {
+      // Calcul de flux3
+      psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+      if ((psc*signe)>0)
+        for (int k=0; k<flux3.size(); k++) flux3(k) = -inco(fac3,k)*psc ;
+      else
+        {
+          const int pfb = premiere_face_bord() , ori = orientation(fac3);
+          const int rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 : (fac2-pfb);
+          for (int k=0; k<flux3.size(); k++)
+            flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,ori,la_zcl())
+                             +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,ori,la_zcl()))* psc ;
+        }
+      // Calcul de flux1_2:
+      psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
+      if (psc>0)
+        for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac1,k);
+      else
+        for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
+    }
+}
+
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int , int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   if (!DERIVED_T::IS_AMONT)
     {
       Cerr << "ToDo: code like amont scheme ! " <<finl;
       Process::exit();
     }
-
-  double flux, psc;
-  // Calcul de flux3:
-  psc = 0.5 * dt_vitesse(fac1) * porosite(fac1) * surface(fac1);
-
-  if ((psc * signe) > 0) flux = inco(fac3) * psc;
-  else
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
+  if (is_SCALAIRE)
     {
-      const int pfb = premiere_face_bord(), rang1 = (fac1 - pfb), ori = orientation(fac3);
-      flux = Champ_Face_get_val_imp_face_bord(inconnue->temps(), rang1, ori, la_zcl()) * psc;
-    }
-  flux3 = -flux;
-
-  // Calcul de flux1_2:
-  psc = 0.5 * dt_vitesse(fac3) * surface(fac3) * porosite(fac3);
-  if (psc > 0)
-    flux = psc * inco(fac1);
-  else
-    {
-      const int pfb = premiere_face_bord(), rang3 = (fac3 - pfb), ori = orientation(fac1);
-      flux = psc * Champ_Face_get_val_imp_face_bord(inconnue->temps(), rang3, ori, la_zcl());
-    }
-  flux1_2 = -flux;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, double& aii1_2, double& aii3_4, double& ajj1_2) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc;
-  // Calcul de flux3:
-  psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+ dt_vitesse(fac2)*porosite(fac2)) * (surface(fac1)+surface(fac2)));
-  aii3_4 = ((psc*signe)>0) ? psc : 0;
-
-  // Calcul de flux1_2:
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  if (psc>0)
-    {
-      aii1_2 = psc;
-      ajj1_2 = 0;
-    }
-  else
-    {
-      ajj1_2 = -psc;
-      aii1_2 = 0;
-    }
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int, int fac3, int signe, double& aii1_2, double& aii3_4, double& ajj1_2) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc;
-  // Calcul de flux3:
-  psc = 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1);
-  aii3_4 = ((psc*signe)>0) ? psc : 0;
-
-  // Calcul de flux1_2:
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  if (psc>0)
-    {
-      aii1_2 = psc;
-      ajj1_2 = 0;
-    }
-  else
-    {
-      ajj1_2 = -psc;
-      aii1_2 = 0;
-    }
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe,  double& flux3, double& flux1_2) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc;
-  // Calcul de flux3:
-  psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)<0)
-    {
-      const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), rang2 = (fac2-pfb), ori = orientation(fac3);
-      flux3 = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl())
-                    + Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl()))* psc ;
-    }
-  else flux3 = 0;
-
-  flux1_2 = 0;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int , int fac3, int signe, double& flux3, double& flux1_2) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc;
-  // Calcul de flux3:
-  psc = 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1);
-  if ((psc*signe)<0)
-    {
-      const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), ori = orientation(fac3);
-      flux3 = - Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl()) * psc ;
-    }
-  else flux3 = 0;
-
-  flux1_2 = 0;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, double>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco , int fac1, int fac2, int fac3, int fac4) const
-{
-  double flux;
-  double psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2));
-  if (DERIVED_T::IS_AMONT) flux = (psc>0) ? psc*inco(fac3) : psc*inco(fac4);
-  else if (DERIVED_T::IS_CENTRE) flux = 0.5*(inco(fac3)+inco(fac4))*psc ;
-  else
-    {
-      const int ori = orientation(fac1), num0_0 = face_amont_conj_(fac3,ori,0), num1_1 = face_amont_conj_(fac4,ori,1);
-
-      if (DERIVED_T::IS_CENTRE4)
-        {
-          if ( (num0_0 == -1)||(num1_1== -1) ) flux = 0.5*(inco[fac3]+inco[fac4])*psc ; // Schema centre 2 (pas assez de faces)
-          else  // Schema Centre 4
-            {
-              const double dx = dist_face_(fac3,fac4,ori); // Inutile de prendre dist_face_period car fac3 et fac4 ne peuvent etre periodiques (arete interne)
-              const double dxam = dist_face_period_(num0_0,fac3,ori), dxav = dist_face_period_(fac4,num1_1,ori), vit_0 = inco(fac3),
-                           vit_0_0 = inco(num0_0), vit_1 = inco(fac4), vit_1_1 = inco(num1_1);
-              double g1,g2,g3,g4;
-              calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
-              flux = conv_centre_(psc,vit_0_0,vit_0,vit_1,vit_1_1,g1,g2,g3,g4);
-            }
-        }
-      else // IS_QUICK
-        {
-          if (psc > 0)
-            {
-              if (num0_0 == -1) flux = psc*inco(fac3); // Schema amont
-              else // Schema quick
-                {
-                  const double dx = dist_face_period_(fac3,fac4,ori), dm = dim_face_(fac3,ori), dxam = dist_face_period_(num0_0,fac3,ori);
-                  const double vit_0 = inco(fac3), vit_0_0 = inco(num0_0), vit_1 = inco(fac4);
-                  flux = conv_quick_sharp_plus_(psc,vit_0,vit_1,vit_0_0,dx,dm,dxam);
-                }
-            }
-          else // (psc <= 0)
-            {
-              if (num1_1 == -1) flux = psc*inco(fac4); // Schema amont
-              else // Schema quick
-                {
-                  const double dx = dist_face_period_(fac3,fac4,ori), dm = dim_face_(fac4,ori), dxam = dist_face_period_(fac4,num1_1,ori);
-                  const double vit_0 = inco(fac3), vit_1 = inco(fac4), vit_1_1 = inco(num1_1);
-                  flux = conv_quick_sharp_moins_(psc,vit_0,vit_1,vit_1_1,dx,dm,dxam);
-                }
-            }
-        }
-    }
-  return -flux;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int fac4, double& aii, double& ajj) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2));
-  if (psc>0)
-    {
-      aii = psc;
-      ajj=0;
-    }
-  else
-    {
-      ajj = -psc;
-      aii=0;
-    }
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, double>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco , int fac1, int fac2, int fac3, int fac4) const
-{
-  double flux;
-  double psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) + surface(fac2));
-
-  if (DERIVED_T::IS_CENTRE) flux = psc*0.5*(inco(fac3)+inco(fac4));
-  else flux = (psc>0) ? psc*inco(fac3) : psc*inco(fac4);
-
-  return -flux;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int fac4, double& aii, double& ajj) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) + surface(fac2));
-  if (psc>0)
-    {
-      aii = psc;
-      ajj = 0;
-    }
-  else
-    {
-      ajj = -psc;
-      aii = 0;
-    }
-}
-
-template <typename DERIVED_T>template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int fac2, int fac3, int signe, double& flux3 , double& flux1_2) const
-{
-  double psc,flux;
-  // Calcul de flux3:
-  psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) + surface(fac2));
-  if ((psc*signe)>0) flux=inco(fac3)*psc ;
-  else
-    {
-      const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), rang2 = (fac2-pfb), ori = orientation(fac3);
-      flux = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl())
-                  +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl()))* psc ;
-    }
-  flux3 = -flux;
-
-  // Calcul de flux1_2:
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  flux = (psc>0) ? psc*inco(fac1) : ( DERIVED_T::IS_CENTRE ? psc*0.5*(inco(fac1)+inco(fac2)) : psc*inco(fac2));
-  flux1_2 = -flux;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, double& aii1_2, double& aii3_4, double& ajj1_2) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc;
-  psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) + surface(fac2));
-  aii3_4 = ((psc*signe)>0) ? psc : 0;
-
-  // Calcul des coefficients entre les faces 1 et 2.
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  if (psc>0)
-    {
-      aii1_2 = psc;
-      ajj1_2 = 0;
-    }
-  else
-    {
-      ajj1_2 = -psc;
-      aii1_2 = 0;
-    }
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe, double& flux3 , double& flux1_2) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) + surface(fac2));
-  if ((psc*signe)<0)
-    {
-      const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), rang2 = (fac2-pfb), ori = orientation(fac3);
-      flux3 = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl())
-                    +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl()))* psc ;
-    }
-  else flux3 = 0;
-  flux1_2 = 0;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int fac2, int fac3, int fac4, double& flux3_4 , double& flux1_2) const
-{
-  if (DERIVED_T::IS_QUICK) // XXX : LOL
-    {
-      if (DERIVED_T::IS_AXI) return;
-      flux3_4 = flux_arete<Type_Flux_Arete::INTERNE>(inco,fac1, fac2,fac3, fac4) ;
-      flux1_2 = flux_arete<Type_Flux_Arete::INTERNE>(inco,fac3, fac4,fac1, fac2) ;
-      return;
-    }
-
-  double flux, psc;
-  // On calcule le flux convectif entre les volumes de controle associes a fac3 et fac4:
-  psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) + surface(fac2));
-  if (DERIVED_T::IS_CENTRE4)
-    {
-      const int ori = orientation(fac1), num0_0 = face_amont_conj_(fac3,ori,0), num1_1 = face_amont_conj_(fac4,ori,1);
-      if ( (num0_0 == -1)||(num1_1== -1) ) flux = psc*0.5*(inco[fac3]+inco[fac4]); // Schema centre 2 (pas assez de faces)
-      else // Schema Centre4
-        {
-          const double dx = dist_face_period_(fac3,fac4,ori), dxam = dist_face_period_(num0_0,fac3,ori),
-                       dxav = dist_face_period_(fac4,num1_1,ori), vit_0 = inco(fac3), vit_0_0 = inco(num0_0),
-                       vit_1 = inco(fac4), vit_1_1 = inco(num1_1);
-          double g1,g2,g3,g4;
-          calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
-          flux = conv_centre_(psc,vit_0_0,vit_0,vit_1,vit_1_1,g1,g2,g3,g4);
-        }
-    }
-  else
-    {
-      if (DERIVED_T::IS_CENTRE) flux = psc*0.5*(inco(fac3)+inco(fac4));
-      else flux = (psc>0) ? psc*inco(fac3) : psc*inco(fac4);
-
-    }
-  flux3_4 = -flux;
-
-  // On calcule le flux convectif entre les volumes de controle associes a fac1 et fac2:
-  psc = 0.25*(dt_vitesse(fac3)*porosite(fac3)+dt_vitesse(fac4)*porosite(fac4))*(surface(fac3)+surface(fac4));
-  if (DERIVED_T::IS_CENTRE4)
-    {
-      const int ori = orientation(fac3), num0_0 = face_amont_conj_(fac1,ori,0), num1_1 = face_amont_conj_(fac2,ori,1);
-
-      if ( (num0_0 == -1)||(num1_1== -1) ) flux = psc*0.5*(inco[fac1]+inco[fac2]); // Schema centre 2 (pas assez de faces)
-      else // Schema Centre4
-        {
-          const double dx = dist_face_period_(fac1,fac2,ori), dxam = dist_face_period_(num0_0,fac1,ori),
-                       dxav = dist_face_period_(fac2,num1_1,ori), vit_0 = inco(fac1), vit_0_0 = inco(num0_0),
-                       vit_1 = inco(fac2), vit_1_1 = inco(num1_1);
-          double g1,g2,g3,g4;
-          calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
-          flux = conv_centre_(psc,vit_0_0,vit_0,vit_1,vit_1_1,g1,g2,g3,g4);
-        }
-    }
-  else
-    {
-      if (DERIVED_T::IS_CENTRE) flux = psc*0.5*(inco(fac1)+inco(fac2));
-      else flux = (psc>0) ? psc*inco(fac1) : psc*inco(fac2);
-    }
-  flux1_2 = -flux;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int fac4, double& aii , double& ajj) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) + surface(fac2));
-  if (psc>0)
-    {
-      aii = psc;
-      ajj = 0;
-    }
-  else
-    {
-      ajj = -psc;
-      aii = 0;
-    }
-}
-
-template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, double>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int num_elem, int fac1, int fac2) const
-{
-  double flux, psc = 0.25 * (dt_vitesse(fac1)+dt_vitesse(fac2))*(surface(fac1)+surface(fac2));
-  if (DERIVED_T::IS_AMONT) flux = (psc>0) ? psc * inco(fac1)*porosite(fac1) : psc * inco(fac2)*porosite(fac2);
-  else if (DERIVED_T::IS_CENTRE) flux = psc * 0.5*(inco(fac1)*porosite(fac1)+inco(fac2)*porosite(fac2));
-  else
-    {
-      const int num0_0 = face_amont_princ_(fac1,0), num1_1 = face_amont_princ_(fac2,1);
-      if (DERIVED_T::IS_CENTRE4)
-        {
-          if  ( (num0_0 == -1) || (num1_1== -1) ) flux = psc * 0.5*(inco(fac1)*porosite(fac1)+inco(fac2)*porosite(fac2)); // Schema centre 2
-          else // Schema centre 4
-            {
-              const int ori=orientation(fac1);
-              const double dx = dim_elem_(num_elem,ori), dxam = dim_elem_(elem_(fac1,0),ori), dxav = dim_elem_(elem_(fac2,1),ori),
-                           vit_0 = inco(fac1)*porosite(fac1), vit_0_0 = inco(num0_0)*porosite(num0_0),
-                           vit_1 = inco(fac2)*porosite(fac2), vit_1_1 = inco(num1_1)*porosite(num1_1);
-              double g1,g2,g3,g4;
-              calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
-              flux = conv_centre_(psc,vit_0_0,vit_0,vit_1,vit_1_1,g1,g2,g3,g4);
-            }
-        }
+      double psc;
+      // Calcul de flux3:
+      psc = 0.5 * dt_vitesse(fac1) * porosite(fac1) * surface(fac1);
+      if ((psc * signe) > 0) flux3(0) = -inco(fac3) * psc;
       else
         {
-          if  (psc > 0)
-            {
-              if (num0_0 == -1) flux = psc*inco[fac1]*porosite(fac1); // Schema amont
-              else
-                {
-                  const int ori = orientation(fac1), elem_amont = elem_(fac1,0);
-                  const double dx = dim_elem_(num_elem,ori), dm = dist_elem_period_(elem_amont,num_elem,ori);
-                  const double dxam = dim_elem_(elem_amont,ori), vit_0 = inco[fac1]*porosite(fac1),
-                               vit_0_0 = inco[num0_0]*porosite(num0_0), vit_1 = inco[fac2]*porosite(fac2);
-                  flux = conv_quick_sharp_plus_(psc,vit_0,vit_1,vit_0_0,dx,dm,dxam);
-                }
-            }
-          else // (psc < 0)
-            {
-              if (num1_1 == -1) flux = psc*inco[fac2]*porosite(fac2); // Schema amont
-              else
-                {
-                  const int ori = orientation(fac2), elem_amont = elem_(fac2,1);
-                  const double dx = dim_elem_(num_elem,ori), dm = dist_elem_period_(num_elem,elem_amont,ori);
-                  const double dxam = dim_elem_(elem_amont,ori), vit_0 = inco[fac1]*porosite(fac1),
-                               vit_1 = inco[fac2]*porosite(fac2), vit_1_1 = inco[num1_1]*porosite(num1_1);
-                  flux = conv_quick_sharp_moins_(psc,vit_0,vit_1,vit_1_1,dx,dm,dxam);
-                }
-            }
+          const int pfb = premiere_face_bord(), rang1 = (fac1 - pfb), ori = orientation(fac3);
+          flux3(0) = -Champ_Face_get_val_imp_face_bord(inconnue->temps(), rang1, ori, la_zcl()) * psc;
+        }
+      // Calcul de flux1_2:
+      psc = 0.5 * dt_vitesse(fac3) * surface(fac3) * porosite(fac3);
+      if (psc > 0) flux1_2(0) = -psc * inco(fac1);
+      else
+        {
+          const int pfb = premiere_face_bord(), rang3 = (fac3 - pfb), ori = orientation(fac1);
+          flux1_2(0) = -psc * Champ_Face_get_val_imp_face_bord(inconnue->temps(), rang3, ori, la_zcl());
         }
     }
-  return -flux;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int, int fac1, int fac2, double& aii, double& ajj) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc = 0.25 * (dt_vitesse(fac1)+dt_vitesse(fac2)) * (surface(fac1)+surface(fac2));
-  if (psc>0)
-    {
-      aii = psc*porosite(fac1);
-      ajj = 0;
-    }
   else
     {
-      ajj = -psc*porosite(fac2);
-      aii = 0;
+      Cerr << "ToDo: code like Eval_Conv_VDF_Face::flux_arete_coin_fluide for a scalar inco" << finl;
+      Process::exit();
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, double>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int face, const Neumann_sortie_libre& la_cl, int num1) const
-{
-  const int elem1 = elem_(face,0);
-  double flux, psc = dt_vitesse(face)*surface(face);
-  if (DERIVED_T::IS_QUICK || DERIVED_T::IS_CENTRE4) // TODO : FIXME : pareil mais on corrige apres
-    {
-      if (elem1 != -1) flux = (psc > 0) ? psc*inco(face) : psc*la_cl.val_ext(face-num1,orientation(face));
-      else flux = (psc < 0) ? psc*inco(face) : psc*la_cl.val_ext(face-num1,orientation(face));
-    }
-  else
-    {
-      if (elem1 != -1) flux = (psc > 0) ? psc*inco(face)*porosite(face) : psc*la_cl.val_ext(face-num1,orientation(face));
-      else flux = (psc < 0) ? psc*inco(face)*porosite(face) : psc*la_cl.val_ext(face-num1,orientation(face));
-    }
-  return -flux;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int face, const Neumann_sortie_libre& la_cl, double& aii, double& ajj) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc = dt_vitesse(face)*surface(face);
-  if (psc > 0)
-    {
-      aii = psc*porosite(face);
-      ajj = 0;
-    }
-  else
-    {
-      ajj = -psc*porosite(face);
-      aii = 0;
-    }
-}
-
-template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, double>
-Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7(int face, const Neumann_sortie_libre& la_cl, int num1) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return 0.;
-
-  const int i = elem_(face,0);
-  double flux, psc = dt_vitesse(face)*surface(face);
-
-  if (i != -1) flux = (psc < 0) ?  psc*la_cl.val_ext(face-num1,orientation(face)) : 0;
-  else flux = (psc > 0) ? psc*la_cl.val_ext(face-num1,orientation(face)) : 0;
-
-  return -flux;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int fac2, int fac3, int signe, double& flux3, double& flux1_2) const
-{
-  if (DERIVED_T::IS_AXI) return;
-
-  double flux,psc;
-  // Calcul de flux3:
-  psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)>0) flux=inco(fac3)*psc ;
-  else
-    {
-      const int pfb = premiere_face_bord(), ori = orientation(fac3);
-      const int rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 :(fac2-pfb);
-      flux = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,ori,la_zcl())
-                  +  Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,ori,la_zcl()))* psc ;
-    }
-  flux3 =  -flux;
-
-  // Calcul de flux1_2:
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  flux = (psc>0) ? psc*inco(fac1) : ( (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4) ? psc*0.5*(inco(fac1)+inco(fac2)) : psc*inco(fac2));
-  flux1_2 = -flux;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, double& aii1_2, double& aii3_4,double& ajj1_2) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc;
-  // Calcul de flux3:
-  psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  aii3_4 = ((psc*signe)>0) ? psc : 0;
-
-  // Calcul de flux1_2:
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  if (psc>0)
-    {
-      aii1_2 = psc;
-      ajj1_2 = 0;
-    }
-  else
-    {
-      ajj1_2 = -psc;
-      aii1_2 = 0;
-    }
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe, double& flux3, double& flux1_2) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)<0)
-    {
-      const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), rang2 = (fac2-pfb), ori = orientation(fac3);
-      flux3 = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl())
-                    + Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl()))* psc ;
-    }
-  else flux3 = 0;
-
-  flux1_2 = 0;
-}
-
-//************************
-// CAS VECTORIEL
-//************************
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
-{
-  // Calcul de flux3
-  double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)>0)
-    for (int k=0; k<flux3.size(); k++) flux3(k) = -inco(fac3,k)*psc ;
-  else
-    {
-      const int pfb = premiere_face_bord() , ori = orientation(fac3);
-      const int rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 : (fac2-pfb);
-      for (int k=0; k<flux3.size(); k++)
-        flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,ori,la_zcl())
-                         +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,ori,la_zcl()))* psc ;
-    }
-  // Calcul de flux1_2:
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  if (psc>0)
-    for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac1,k);
-  else
-    for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
   double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)>0)
-    for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = psc ;
-  else
-    for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = 0 ;
-
-  // Calcul des coefficients entre 1 et 2:
+  // Calcul de flux3:
+  if ((psc*signe)>0) for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = psc ;
+  else for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = 0 ;
+  // Calcul de flux1_2:
   psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
   if (psc>0)
     {
@@ -1013,7 +569,38 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int si
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int, int fac3, int signe, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+{
+  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
+  if (is_SCALAIRE)
+    {
+      // Calcul de flux3:
+      double psc = 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1);
+      aii3_4(0) = ((psc*signe)>0) ? psc : 0;
+
+      // Calcul de flux1_2:
+      psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
+      if (psc>0)
+        {
+          aii1_2(0) = psc;
+          ajj1_2(0) = 0;
+        }
+      else
+        {
+          ajj1_2(0) = -psc;
+          aii1_2(0) = 0;
+        }
+    }
+  else
+    {
+      Cerr << "ToDo: code like Eval_Conv_VDF_Face::coeffs_arete_coin_fluide for a scalar inco" << finl;
+      Process::exit();
+    }
+}
+
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
@@ -1032,78 +619,153 @@ Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int si
   for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = 0;
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2,int fac3, int fac4, DoubleVect& flux) const
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int , int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
-  double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if (DERIVED_T::IS_AMONT)
+  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
+  if (is_SCALAIRE)
     {
-      if (psc>0)
-        for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(fac3,k);
-      else
-        for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(fac4,k);
-    }
-  else if (DERIVED_T::IS_CENTRE)
-    {
-      for (int k=0; k<flux.size(); k++) flux(k) = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
+      // Calcul de flux3:
+      double psc = 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1);
+      if ((psc*signe)<0)
+        {
+          const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), ori = orientation(fac3);
+          flux3(0) = -Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl()) * psc ;
+        }
+      else flux3(0) = 0;
+
+      flux1_2(0) = 0;
     }
   else
     {
-      const int ncomp = flux.size(), ori = orientation(fac1),
-                num0_0 = face_amont_conj_(fac3,ori,0),num1_1 = face_amont_conj_(fac4,ori,1);
-      if (DERIVED_T::IS_CENTRE4)
+      Cerr << "ToDo: code like Eval_Conv_VDF_Face::secmem_arete_coin_fluide for a scalar inco" <<finl;
+      Process::exit();
+    }
+}
+
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
+Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2,int fac3, int fac4, DoubleVect& flux) const
+{
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
+  double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+  if (is_SCALAIRE)
+    {
+      if (DERIVED_T::IS_AMONT) flux(0) = (psc>0) ? -psc*inco(fac3) : -psc*inco(fac4);
+      else if (DERIVED_T::IS_CENTRE) flux(0) = -0.5*(inco(fac3)+inco(fac4))*psc ;
+      else
         {
-          if  ( (num0_0 == -1) || (num1_1== -1) ) // Schema centre 2
-            for (int k=0; k<ncomp; k++) flux(k) = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
-          else   // Schema centre4
+          const int ori = orientation(fac1), num0_0 = face_amont_conj_(fac3,ori,0), num1_1 = face_amont_conj_(fac4,ori,1);
+
+          if (DERIVED_T::IS_CENTRE4)
             {
-              const double dx = dist_face_(fac3,fac4,ori), dxam = dist_face_period_(num0_0,fac3,ori), dxav = dist_face_period_(fac4,num1_1,ori);
-              ArrOfDouble vit_0(ncomp), vit_0_0(ncomp), vit_1_1(ncomp), vit_1(ncomp);
-              double g1,g2,g3,g4;
-              calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
-              for (int k=0; k<ncomp; k++)
+              if ( (num0_0 == -1)||(num1_1== -1) ) flux(0) = -0.5*(inco[fac3]+inco[fac4])*psc ; // Schema centre 2 (pas assez de faces)
+              else  // Schema Centre 4
                 {
-                  vit_0(k) = inco(fac3,k);
-                  vit_0_0(k) = inco(num0_0,k);
-                  vit_1(k) = inco(fac4,k);
-                  vit_1_1(k)=inco(num1_1,k);
-                  flux(k) = -conv_centre_(psc,vit_0_0(k),vit_0(k),vit_1(k),vit_1_1(k),g1,g2,g3,g4);
+                  const double dx = dist_face_(fac3,fac4,ori); // Inutile de prendre dist_face_period car fac3 et fac4 ne peuvent etre periodiques (arete interne)
+                  const double dxam = dist_face_period_(num0_0,fac3,ori), dxav = dist_face_period_(fac4,num1_1,ori), vit_0 = inco(fac3),
+                               vit_0_0 = inco(num0_0), vit_1 = inco(fac4), vit_1_1 = inco(num1_1);
+                  double g1,g2,g3,g4;
+                  calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
+                  flux(0) = -conv_centre_(psc,vit_0_0,vit_0,vit_1,vit_1_1,g1,g2,g3,g4);
+                }
+            }
+          else // IS_QUICK
+            {
+              if (psc > 0)
+                {
+                  if (num0_0 == -1) flux(0) = -psc*inco(fac3); // Schema amont
+                  else // Schema quick
+                    {
+                      const double dx = dist_face_period_(fac3,fac4,ori), dm = dim_face_(fac3,ori), dxam = dist_face_period_(num0_0,fac3,ori);
+                      const double vit_0 = inco(fac3), vit_0_0 = inco(num0_0), vit_1 = inco(fac4);
+                      flux(0) = -conv_quick_sharp_plus_(psc,vit_0,vit_1,vit_0_0,dx,dm,dxam);
+                    }
+                }
+              else // (psc <= 0)
+                {
+                  if (num1_1 == -1) flux(0) = -psc*inco(fac4); // Schema amont
+                  else // Schema quick
+                    {
+                      const double dx = dist_face_period_(fac3,fac4,ori), dm = dim_face_(fac4,ori), dxam = dist_face_period_(fac4,num1_1,ori);
+                      const double vit_0 = inco(fac3), vit_1 = inco(fac4), vit_1_1 = inco(num1_1);
+                      flux(0) = -conv_quick_sharp_moins_(psc,vit_0,vit_1,vit_1_1,dx,dm,dxam);
+                    }
                 }
             }
         }
-      else // QUICK
+    }
+  else
+    {
+      if (DERIVED_T::IS_AMONT)
         {
-          if (psc > 0)
+          if (psc>0)
+            for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(fac3,k);
+          else
+            for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(fac4,k);
+        }
+      else if (DERIVED_T::IS_CENTRE)
+        {
+          for (int k=0; k<flux.size(); k++) flux(k) = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
+        }
+      else
+        {
+          const int ncomp = flux.size(), ori = orientation(fac1),
+                    num0_0 = face_amont_conj_(fac3,ori,0),num1_1 = face_amont_conj_(fac4,ori,1);
+          if (DERIVED_T::IS_CENTRE4)
             {
-              if (num0_0 == -1) // Schema amont
-                for (int k=0; k<ncomp; k++) flux(k) = -psc*inco(fac3,k);
-              else // Schema quick
+              if  ( (num0_0 == -1) || (num1_1== -1) ) // Schema centre 2
+                for (int k=0; k<ncomp; k++) flux(k) = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
+              else   // Schema centre4
                 {
-                  const double dx = dist_face_(fac3,fac4,ori), dm = dim_face_(fac3,ori), dxam = dist_face_period_(num0_0,fac3,ori);
-                  ArrOfDouble vit_0(ncomp), vit_0_0(ncomp), vit_1(ncomp);
+                  const double dx = dist_face_(fac3,fac4,ori), dxam = dist_face_period_(num0_0,fac3,ori), dxav = dist_face_period_(fac4,num1_1,ori);
+                  ArrOfDouble vit_0(ncomp), vit_0_0(ncomp), vit_1_1(ncomp), vit_1(ncomp);
+                  double g1,g2,g3,g4;
+                  calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
                   for (int k=0; k<ncomp; k++)
                     {
                       vit_0(k) = inco(fac3,k);
                       vit_0_0(k) = inco(num0_0,k);
                       vit_1(k) = inco(fac4,k);
-                      flux(k) = -conv_quick_sharp_plus_(psc,vit_0(k),vit_1(k),vit_0_0(k),dx,dm,dxam);
+                      vit_1_1(k)=inco(num1_1,k);
+                      flux(k) = -conv_centre_(psc,vit_0_0(k),vit_0(k),vit_1(k),vit_1_1(k),g1,g2,g3,g4);
                     }
                 }
             }
-          else // (psc <= 0)
+          else // QUICK
             {
-              if (num1_1 == -1) // Schema amont
-                for (int k=0; k<ncomp; k++) flux(k) = -psc*inco(fac4,k);
-              else // Schema quick
+              if (psc > 0)
                 {
-                  const double dx = dist_face_(fac3,fac4,ori), dm = dim_face_(fac4,ori), dxam = dist_face_period_(fac4,num1_1,ori);
-                  ArrOfDouble vit_0(ncomp), vit_1(ncomp), vit_1_1(ncomp);
-                  for (int k=0; k<ncomp; k++)
+                  if (num0_0 == -1) // Schema amont
+                    for (int k=0; k<ncomp; k++) flux(k) = -psc*inco(fac3,k);
+                  else // Schema quick
                     {
-                      vit_0(k) = inco(fac3,k);
-                      vit_1(k) = inco(fac4,k);
-                      vit_1_1(k) = inco(num1_1,k);
-                      flux(k) = -conv_quick_sharp_moins_(psc,vit_0(k),vit_1(k),vit_1_1(k),dx,dm,dxam);
+                      const double dx = dist_face_(fac3,fac4,ori), dm = dim_face_(fac3,ori), dxam = dist_face_period_(num0_0,fac3,ori);
+                      ArrOfDouble vit_0(ncomp), vit_0_0(ncomp), vit_1(ncomp);
+                      for (int k=0; k<ncomp; k++)
+                        {
+                          vit_0(k) = inco(fac3,k);
+                          vit_0_0(k) = inco(num0_0,k);
+                          vit_1(k) = inco(fac4,k);
+                          flux(k) = -conv_quick_sharp_plus_(psc,vit_0(k),vit_1(k),vit_0_0(k),dx,dm,dxam);
+                        }
+                    }
+                }
+              else // (psc <= 0)
+                {
+                  if (num1_1 == -1) // Schema amont
+                    for (int k=0; k<ncomp; k++) flux(k) = -psc*inco(fac4,k);
+                  else // Schema quick
+                    {
+                      const double dx = dist_face_(fac3,fac4,ori), dm = dim_face_(fac4,ori), dxam = dist_face_period_(fac4,num1_1,ori);
+                      ArrOfDouble vit_0(ncomp), vit_1(ncomp), vit_1_1(ncomp);
+                      for (int k=0; k<ncomp; k++)
+                        {
+                          vit_0(k) = inco(fac3,k);
+                          vit_1(k) = inco(fac4,k);
+                          vit_1_1(k) = inco(num1_1,k);
+                          flux(k) = -conv_quick_sharp_moins_(psc,vit_0(k),vit_1(k),vit_1_1(k),dx,dm,dxam);
+                        }
                     }
                 }
             }
@@ -1111,7 +773,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fa
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3, int fac4, DoubleVect& aii, DoubleVect& ajj ) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
@@ -1119,7 +781,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3, int fac
   double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
   if (psc>0)
     {
-      for (int k=0; k<aii.size(); k++)  aii(k) = psc;
+      for (int k=0; k<aii.size(); k++) aii(k) = psc;
       for (int k=0; k<ajj.size(); k++) ajj(k) = 0;
     }
   else
@@ -1129,7 +791,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3, int fac
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2,int fac3, int fac4, DoubleVect& flux) const
 {
   double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
@@ -1146,7 +808,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fa
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3, int fac4, DoubleVect& aii, DoubleVect& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
@@ -1164,40 +826,57 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3, int fac
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2,int fac3,int signe,DoubleVect& flux3,DoubleVect& flux1_2) const
 {
   double psc;
-  // Calcul de flux3
-  psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)>0)
-    for (int k=0; k<flux3.size(); k++) flux3(k) = -inco(fac3,k)*psc ;
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
+  if (is_SCALAIRE)
+    {
+      psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) + surface(fac2));
+      if ((psc*signe)>0) flux3(0) = -inco(fac3)*psc ;
+      else
+        {
+          const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), rang2 = (fac2-pfb), ori = orientation(fac3);
+          flux3(0) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl())
+                           +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl()))* psc ;
+        }
+
+      // Calcul de flux1_2:
+      psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
+      flux1_2(0) = (psc>0) ? -psc*inco(fac1) : ( DERIVED_T::IS_CENTRE ? -psc*0.5*(inco(fac1)+inco(fac2)) : -psc*inco(fac2));
+    }
   else
     {
-      const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), rang2 = (fac2-pfb), ori = orientation(fac3);
-      for (int k=0; k<flux3.size(); k++)
-        flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,ori,la_zcl())
-                         +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,ori,la_zcl()))* psc ;
-    }
+      psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+      // Calcul de flux3
+      if ((psc*signe)>0)
+        for (int k=0; k<flux3.size(); k++) flux3(k) = -inco(fac3,k)*psc ;
+      else
+        {
+          const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), rang2 = (fac2-pfb), ori = orientation(fac3);
+          for (int k=0; k<flux3.size(); k++)
+            flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,ori,la_zcl())
+                             +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,ori,la_zcl()))* psc ;
+        }
 
-  // Calcul de flux1_2:
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  if (psc>0)
-    for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac1,k);
-  else
-    for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
+      // Calcul de flux1_2:
+      psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
+      if (psc>0)
+        for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac1,k);
+      else
+        for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
+    }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3,int signe,DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
   double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)>0)
-    for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = psc ;
-  else
-    for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = 0;
+  if ((psc*signe)>0) for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = psc ;
+  else for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = 0;
 
   psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
   if (psc>0)
@@ -1212,7 +891,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3,int sign
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2,int fac3,int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
@@ -1231,85 +910,143 @@ Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2,int fac3,int sign
   for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = 0;
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int fac2 , int fac3, int fac4, DoubleVect& flux3_4, DoubleVect& flux1_2) const
 {
-  if (DERIVED_T::IS_AXI) return;
-
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
   double psc;
-  // On calcule le flux convectif entre les volumes de controle associes a fac3 et fac4:
-  psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if (DERIVED_T::IS_CENTRE)
+  if (is_SCALAIRE)
     {
-      for (int k=0; k<flux3_4.size(); k++) flux3_4(k) = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
-    }
-  else if (DERIVED_T::IS_CENTRE4)
-    {
-      const int ncomp = flux3_4.size(),ori = orientation(fac1),num0_0 = face_amont_conj_(fac3,ori,0),num1_1 = face_amont_conj_(fac4,ori,1);
-      if ( (num0_0 == -1) || (num1_1== -1) ) // Schema centre 2
-        for (int k=0; k<ncomp; k++) flux3_4(k) = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
-      else // Schema centre 4
+      if (DERIVED_T::IS_QUICK) // XXX : LOL
         {
-          const double dx = dist_face_period_(fac3,fac4,ori), dxam = dist_face_period_(num0_0,fac3,ori), dxav = dist_face_period_(fac4,num1_1,ori);
-          ArrOfDouble vit_0(ncomp), vit_0_0(ncomp), vit_1_1(ncomp), vit_1(ncomp);
-          double g1,g2,g3,g4;
-          calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
-          for (int k=0; k<ncomp; k++)
-            {
-              vit_0(k) = inco(fac3,k);
-              vit_0_0(k) = inco(num0_0,k);
-              vit_1(k) = inco(fac4,k);
-              vit_1_1(k)=inco(num1_1,k);
-              flux3_4(k) = -conv_centre_(psc,vit_0_0(k),vit_0(k),vit_1(k),vit_1_1(k),g1,g2,g3,g4);
-            }
+          if (DERIVED_T::IS_AXI) return;
+          flux_arete<Type_Flux_Arete::INTERNE,Field_Type>(inco,fac1,fac2,fac3,fac4,flux3_4);
+          flux_arete<Type_Flux_Arete::INTERNE,Field_Type>(inco,fac3,fac4,fac1,fac2,flux1_2);
+          return;
         }
-    }
-  else
-    {
-      if (psc>0)
-        for (int k=0; k<flux3_4.size(); k++) flux3_4(k) = -psc*inco(fac3,k);
-      else
-        for (int k=0; k<flux3_4.size(); k++) flux3_4(k) = -psc*inco(fac4,k);
-    }
 
-  // On calcule le flux convectifs entre les volumes de controle associes a fac1 et fac2:
-  psc = 0.25 *(dt_vitesse(fac3)*porosite(fac3)+dt_vitesse(fac4)*porosite(fac4))*(surface(fac3) + surface(fac4));
-  if (DERIVED_T::IS_CENTRE)
-    {
-      for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*0.5*(inco(fac1,k)+inco(fac2,k));
-    }
-  else if (DERIVED_T::IS_CENTRE4)
-    {
-      const int ncomp = flux1_2.size(), ori = orientation(fac3), num0_0 = face_amont_conj_(fac1,ori,0), num1_1 = face_amont_conj_(fac2,ori,1);
-      if ( (num0_0 == -1) || (num1_1== -1) ) // Schema centre2
-        for (int k=0; k<ncomp; k++)
-          flux1_2(k) = -psc*0.5*(inco(fac1,k)+inco(fac2,k));
-      else // Schema centre4
+      // On calcule le flux convectif entre les volumes de controle associes a fac3 et fac4:
+      psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) + surface(fac2));
+      if (DERIVED_T::IS_CENTRE4)
         {
-          const double dx = dist_face_period_(fac1,fac2,ori),dxam = dist_face_period_(num0_0,fac1,ori), dxav = dist_face_period_(fac2,num1_1,ori);
-          ArrOfDouble vit_0(ncomp),vit_0_0(ncomp),vit_1_1(ncomp),vit_1(ncomp);
-          double g1,g2,g3,g4;
-          calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
-          for (int k=0; k<ncomp; k++)
+          const int ori = orientation(fac1), num0_0 = face_amont_conj_(fac3,ori,0), num1_1 = face_amont_conj_(fac4,ori,1);
+          if ( (num0_0 == -1)||(num1_1== -1) ) flux3_4(0) = -psc*0.5*(inco[fac3]+inco[fac4]); // Schema centre 2 (pas assez de faces)
+          else // Schema Centre4
             {
-              vit_0(k) = inco(fac1,k);
-              vit_0_0(k) = inco(num0_0,k);
-              vit_1(k) = inco(fac2,k);
-              vit_1_1(k)=inco(num1_1,k);
-              flux1_2(k) = -conv_centre_(psc,vit_0_0(k),vit_0(k),vit_1(k),vit_1_1(k),g1,g2,g3,g4);
+              const double dx = dist_face_period_(fac3,fac4,ori), dxam = dist_face_period_(num0_0,fac3,ori),
+                           dxav = dist_face_period_(fac4,num1_1,ori), vit_0 = inco(fac3), vit_0_0 = inco(num0_0),
+                           vit_1 = inco(fac4), vit_1_1 = inco(num1_1);
+              double g1,g2,g3,g4;
+              calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
+              flux3_4(0) = -conv_centre_(psc,vit_0_0,vit_0,vit_1,vit_1_1,g1,g2,g3,g4);
             }
+        }
+      else
+        {
+          if (DERIVED_T::IS_CENTRE) flux3_4(0) = -psc*0.5*(inco(fac3)+inco(fac4));
+          else flux3_4 = (psc>0) ? -psc*inco(fac3) : -psc*inco(fac4);
+        }
+
+      // On calcule le flux convectif entre les volumes de controle associes a fac1 et fac2:
+      psc = 0.25*(dt_vitesse(fac3)*porosite(fac3)+dt_vitesse(fac4)*porosite(fac4))*(surface(fac3)+surface(fac4));
+      if (DERIVED_T::IS_CENTRE4)
+        {
+          const int ori = orientation(fac3), num0_0 = face_amont_conj_(fac1,ori,0), num1_1 = face_amont_conj_(fac2,ori,1);
+
+          if ( (num0_0 == -1)||(num1_1== -1) ) flux1_2(0) = -psc*0.5*(inco[fac1]+inco[fac2]); // Schema centre 2 (pas assez de faces)
+          else // Schema Centre4
+            {
+              const double dx = dist_face_period_(fac1,fac2,ori), dxam = dist_face_period_(num0_0,fac1,ori),
+                           dxav = dist_face_period_(fac2,num1_1,ori), vit_0 = inco(fac1), vit_0_0 = inco(num0_0),
+                           vit_1 = inco(fac2), vit_1_1 = inco(num1_1);
+              double g1,g2,g3,g4;
+              calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
+              flux1_2(0) = -conv_centre_(psc,vit_0_0,vit_0,vit_1,vit_1_1,g1,g2,g3,g4);
+            }
+        }
+      else
+        {
+          if (DERIVED_T::IS_CENTRE) flux1_2(0) = -psc*0.5*(inco(fac1)+inco(fac2));
+          else flux1_2(0) = (psc>0) ? -psc*inco(fac1) : -psc*inco(fac2);
         }
     }
   else
     {
-      if (psc>0)
-        for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac1,k);
+      if (DERIVED_T::IS_AXI) return;
+      // On calcule le flux convectif entre les volumes de controle associes a fac3 et fac4:
+      psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+      if (DERIVED_T::IS_CENTRE)
+        {
+          for (int k=0; k<flux3_4.size(); k++) flux3_4(k) = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
+        }
+      else if (DERIVED_T::IS_CENTRE4)
+        {
+          const int ncomp = flux3_4.size(),ori = orientation(fac1),num0_0 = face_amont_conj_(fac3,ori,0),num1_1 = face_amont_conj_(fac4,ori,1);
+          if ( (num0_0 == -1) || (num1_1== -1) ) // Schema centre 2
+            for (int k=0; k<ncomp; k++) flux3_4(k) = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
+          else // Schema centre 4
+            {
+              const double dx = dist_face_period_(fac3,fac4,ori), dxam = dist_face_period_(num0_0,fac3,ori), dxav = dist_face_period_(fac4,num1_1,ori);
+              ArrOfDouble vit_0(ncomp), vit_0_0(ncomp), vit_1_1(ncomp), vit_1(ncomp);
+              double g1,g2,g3,g4;
+              calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
+              for (int k=0; k<ncomp; k++)
+                {
+                  vit_0(k) = inco(fac3,k);
+                  vit_0_0(k) = inco(num0_0,k);
+                  vit_1(k) = inco(fac4,k);
+                  vit_1_1(k)=inco(num1_1,k);
+                  flux3_4(k) = -conv_centre_(psc,vit_0_0(k),vit_0(k),vit_1(k),vit_1_1(k),g1,g2,g3,g4);
+                }
+            }
+        }
       else
-        for (int k=0; k<flux3_4.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
+        {
+          if (psc>0)
+            for (int k=0; k<flux3_4.size(); k++) flux3_4(k) = -psc*inco(fac3,k);
+          else
+            for (int k=0; k<flux3_4.size(); k++) flux3_4(k) = -psc*inco(fac4,k);
+        }
+
+      // On calcule le flux convectifs entre les volumes de controle associes a fac1 et fac2:
+      psc = 0.25 *(dt_vitesse(fac3)*porosite(fac3)+dt_vitesse(fac4)*porosite(fac4))*(surface(fac3) + surface(fac4));
+      if (DERIVED_T::IS_CENTRE)
+        {
+          for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*0.5*(inco(fac1,k)+inco(fac2,k));
+        }
+      else if (DERIVED_T::IS_CENTRE4)
+        {
+          const int ncomp = flux1_2.size(), ori = orientation(fac3), num0_0 = face_amont_conj_(fac1,ori,0), num1_1 = face_amont_conj_(fac2,ori,1);
+          if ( (num0_0 == -1) || (num1_1== -1) ) // Schema centre2
+            for (int k=0; k<ncomp; k++)
+              flux1_2(k) = -psc*0.5*(inco(fac1,k)+inco(fac2,k));
+          else // Schema centre4
+            {
+              const double dx = dist_face_period_(fac1,fac2,ori),dxam = dist_face_period_(num0_0,fac1,ori), dxav = dist_face_period_(fac2,num1_1,ori);
+              ArrOfDouble vit_0(ncomp),vit_0_0(ncomp),vit_1_1(ncomp),vit_1(ncomp);
+              double g1,g2,g3,g4;
+              calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
+              for (int k=0; k<ncomp; k++)
+                {
+                  vit_0(k) = inco(fac1,k);
+                  vit_0_0(k) = inco(num0_0,k);
+                  vit_1(k) = inco(fac2,k);
+                  vit_1_1(k)=inco(num1_1,k);
+                  flux1_2(k) = -conv_centre_(psc,vit_0_0(k),vit_0(k),vit_1(k),vit_1_1(k),g1,g2,g3,g4);
+                }
+            }
+        }
+      else
+        {
+          if (psc>0)
+            for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac1,k);
+          else
+            for (int k=0; k<flux3_4.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
+        }
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2 , int fac3, int fac4, DoubleVect& aii, DoubleVect& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
@@ -1327,90 +1064,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2 , int fac3, int f
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int num_elem, int fac1, int fac2, DoubleVect& flux) const
-{
-  double psc = 0.25 * (dt_vitesse(fac1)+dt_vitesse(fac2))* (surface(fac1)+surface(fac2));
-  if (DERIVED_T::IS_AMONT)
-    {
-      if (psc>0)
-        for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(fac1,k)*porosite(fac1);
-      else
-        for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(fac2,k)*porosite(fac2);
-    }
-  else if (DERIVED_T::IS_CENTRE)
-    {
-      if (psc>0) for (int k=0; k<flux.size(); k++) flux(k) = -psc*0.5*(inco(fac1,k)*porosite(fac1)+inco(fac2,k)*porosite(fac2));
-    }
-  else
-    {
-      const int num0_0 = face_amont_princ_(fac1,0), num1_1 = face_amont_princ_(fac2,1), ncomp = flux.size();
-      if (DERIVED_T::IS_CENTRE4)
-        {
-          const int ori = orientation(fac1);
-          //TODO : FIXME : pourquoi porosite ici ?????
-          double psc2 = 0.25* (dt_vitesse(fac1)*porosite(fac1) + dt_vitesse(fac2)*porosite(fac2)) * (surface(fac1) + surface(fac2));
-          if ( (num0_0 == -1) || (num1_1== -1) ) // Schema centre2
-            for (int k=0; k<ncomp; k++) flux(k) = -psc2*0.5*(inco(fac1,k)*porosite(fac1)+inco(fac2,k)*porosite(fac2));
-          else // Schema centre4
-            {
-              const double dx = dim_elem_(num_elem,ori), dxam = dim_elem_(elem_(fac1,0),ori), dxav = dim_elem_(elem_(fac2,1),ori);
-              ArrOfDouble vit_0(ncomp),vit_0_0(ncomp),vit_1_1(ncomp),vit_1(ncomp);
-              double g1,g2,g3,g4;
-              calcul_g_(dxam,dx,dxav,g1,g2,g3,g4);
-              for (int k=0; k<ncomp; k++)
-                {
-                  vit_0(k) = inco(fac1,k)* porosite(fac1);
-                  vit_0_0(k) = inco(num0_0,k)*porosite(num0_0);
-                  vit_1(k) = inco(fac2,k)*porosite(fac2);
-                  vit_1_1(k)=inco(num1_1,k)*porosite(num1_1);
-                  flux(k) = -conv_centre_(psc2,vit_0_0(k),vit_0(k),vit_1(k),vit_1_1(k),g1,g2,g3,g4);
-                }
-            }
-        }
-      else // QUICK
-        {
-          if  (psc > 0)
-            {
-              if (num0_0 == -1) // Schema amont
-                for (int k=0; k<ncomp; k++) flux(k) = -psc*inco(fac1,k)*porosite(fac1);
-              else
-                {
-                  const int ori = orientation(fac1), elem_amont = elem_(fac1,0);
-                  const double dx = dim_elem_(num_elem,ori), dm = dist_elem_period_(elem_amont,num_elem,ori), dxam = dim_elem_(elem_amont,ori);
-                  ArrOfDouble vit_0(ncomp), vit_0_0(ncomp), vit_1(ncomp);
-                  for (int k=0; k<ncomp; k++)
-                    {
-                      vit_0(k) = inco(fac1,k)*porosite(fac1);
-                      vit_0_0(k) = inco(num0_0,k)*porosite(num0_0);
-                      vit_1(k) = inco(fac2,k)*porosite(fac2);
-                      flux(k) = -conv_quick_sharp_plus_(psc,vit_0(k),vit_1(k),vit_0_0(k),dx,dm,dxam);
-                    }
-                }
-            }
-          else // (psc < 0)
-            {
-              if (num1_1 == -1) // Schema amont
-                for (int k=0; k<ncomp; k++) flux(k) = -psc*inco(fac2,k)*porosite(fac2);
-              else
-                {
-                  const int ori = orientation(fac2), elem_amont = elem_(fac2,1);
-                  const double dx = dim_elem_(num_elem,ori), dm = dist_elem_period_(num_elem,elem_amont,ori), dxam = dim_elem_(elem_amont,ori);
-                  ArrOfDouble vit_0(ncomp), vit_1(ncomp), vit_1_1(ncomp);
-                  for (int k=0; k<ncomp; k++)
-                    {
-                      vit_0(k) = inco(fac1,k)*porosite(fac1);
-                      vit_1(k) = inco(fac2,k)*porosite(fac2);
-                      vit_1_1(k) = inco(num1_1,k)*porosite(num1_1);
-                      flux(k) = -conv_quick_sharp_moins_(psc,vit_0(k),vit_1(k),vit_1_1(k),dx,dm,dxam);
-                    }
-                }
-            }
-        }
-    }
-}
-
-template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
 Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int, int fac1, int fac2, DoubleVect& aii, DoubleVect& ajj ) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
@@ -1428,38 +1082,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int, int fac1, int fac2, DoubleVect& a
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int face, const Neumann_sortie_libre& la_cl, int num1,DoubleVect& flux) const
-{
-  const int elem1 = elem_(face,0);
-  const double psc = dt_vitesse(face)*surface(face);
-  if (elem1 != -1)
-    {
-      if (psc > 0)
-        {
-          if (DERIVED_T::IS_QUICK || DERIVED_T::IS_CENTRE4) // porosite !!! TODO : FIXME
-            for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(face,k);
-          else
-            for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(face,k)*porosite(face);
-        }
-      else
-        for (int k=0; k<flux.size(); k++) flux(k) = -psc*la_cl.val_ext(face-num1,k);
-    }
-  else // (elem2 != -1)
-    {
-      if (psc < 0)
-        {
-          if (DERIVED_T::IS_QUICK || DERIVED_T::IS_CENTRE4) // porosite !!! TODO : FIXME
-            for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(face,k);
-          else
-            for (int k=0; k<flux.size(); k++) flux(k) = -psc*inco(face,k)*porosite(face);
-        }
-      else
-        for (int k=0; k<flux.size(); k++) flux(k) = -psc*la_cl.val_ext(face-num1,k);
-    }
-}
-
-template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int face,const Neumann_sortie_libre& la_cl, DoubleVect& aii, DoubleVect& ajj) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
@@ -1477,63 +1100,89 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int face,const Neumann_sortie_libre& l
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7(int face, const Neumann_sortie_libre& la_cl, int num1,DoubleVect& flux) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
   const int i = elem_(face,0);
   const double psc = dt_vitesse(face)*surface(face);
-  if (i != -1)
+  if (is_SCALAIRE)
     {
-      if (psc < 0)
-        for (int k=0; k<flux.size(); k++) flux(k) = -psc*la_cl.val_ext(face-num1,k);
-      else
-        for (int k=0; k<flux.size(); k++) flux(k) = 0;
+      if (i != -1) flux(0) = (psc < 0) ?  -psc*la_cl.val_ext(face-num1,orientation(face)) : 0;
+      else flux(0) = (psc > 0) ? -psc*la_cl.val_ext(face-num1,orientation(face)) : 0;
     }
-  else   // (elem2 != -1)
+  else
     {
-      if (psc > 0)
-        for (int k=0; k<flux.size(); k++) flux(k) = -psc*la_cl.val_ext(face-num1,k);
-      else
-        for (int k=0; k<flux.size(); k++) flux(k) = 0;
+      if (i != -1)
+        {
+          if (psc < 0)
+            for (int k=0; k<flux.size(); k++) flux(k) = -psc*la_cl.val_ext(face-num1,k);
+          else
+            for (int k=0; k<flux.size(); k++) flux(k) = 0;
+        }
+      else   // (elem2 != -1)
+        {
+          if (psc > 0)
+            for (int k=0; k<flux.size(); k++) flux(k) = -psc*la_cl.val_ext(face-num1,k);
+          else
+            for (int k=0; k<flux.size(); k++) flux(k) = 0;
+        }
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   if (DERIVED_T::IS_AXI) return;
-
-  double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)>0)
-    for (int k=0; k<flux3.size(); k++) flux3(k) = -inco(fac3,k)*psc ;
+  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
+  double psc;
+  if (is_SCALAIRE)
+    {
+      // Calcul de flux3:
+      psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+      if ((psc*signe)>0) flux3(0) = -inco(fac3)*psc ;
+      else
+        {
+          const int pfb = premiere_face_bord(), ori = orientation(fac3);
+          const int rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 :(fac2-pfb);
+          flux3(0) = -0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,ori,la_zcl())
+                           +  Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,ori,la_zcl()))* psc ;
+        }
+      // Calcul de flux1_2:
+      psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
+      flux1_2(0) = (psc>0) ? -psc*inco(fac1) : ( (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4) ? -psc*0.5*(inco(fac1)+inco(fac2)) : -psc*inco(fac2));
+    }
   else
     {
-      const int pfb = premiere_face_bord(), ori = orientation(fac3);
-      const int rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 : (fac2-pfb);
-      for (int k=0; k<flux3.size(); k++)
-        flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,ori,la_zcl())
-                         +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,ori,la_zcl()))* psc ;
-    }
+      psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+      if ((psc*signe)>0)
+        for (int k=0; k<flux3.size(); k++) flux3(k) = -inco(fac3,k)*psc ;
+      else
+        {
+          const int pfb = premiere_face_bord(), ori = orientation(fac3);
+          const int rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 : (fac2-pfb);
+          for (int k=0; k<flux3.size(); k++)
+            flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,k,ori,la_zcl())
+                             +  Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,k,ori,la_zcl()))* psc ;
+        }
 
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  if (psc>0)
-    for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac1,k);
-  else
-    for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
+      psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
+      if (psc>0)
+        for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac1,k);
+      else
+        for (int k=0; k<flux1_2.size(); k++) flux1_2(k) = -psc*inco(fac2,k);
+    }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
   double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)>0)
-    for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = psc ;
-  else
-    for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = 0 ;
+  if ((psc*signe)>0) for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = psc ;
+  else for (int k=0; k<aii3_4.size(); k++) aii3_4(k) = 0 ;
 
   // Calcul des coefficients entre 1 et 2:
   psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
@@ -1549,7 +1198,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int si
     }
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Typ> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe,DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;

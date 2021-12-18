@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,139 +40,71 @@ public:
    * YES, we do magic ! Its all about : Substition Failure Is Not An Error (SFINAE) *
    * ****************************************************************************** */
 
-  /* ******************* *
-   * CAS SCALAIRE : FLUX *
-   * ******************* */
+  /* ************************************** *
+   * *********  POUR L'EXPLICITE ********** *
+   * ************************************** */
 
-  // TODO : FIXME : a faire void un jour !!!!!!
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t<Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, double>
-  flux_fa7(const DoubleTab&, int face, const Neumann_sortie_libre& la_cl, int num1) const { return la_cl.flux_impose(face-num1)*surface(face); }
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+  flux_fa7(const DoubleTab& , int face, const Neumann_sortie_libre& la_cl, int num1,DoubleVect& flux) const
+  {
+    for (int k=0; k<flux.size(); k++) flux(k) = la_cl.flux_impose(face-num1,k)*surface(face);
+  }
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, double>
-  flux_fa7(const DoubleTab& inco, int elem, int fac1, int) const { return inco(elem)*surface(fac1); }
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+  flux_fa7(const DoubleTab& inco, int elem, int fac1, int, DoubleVect& flux) const
+  {
+    for (int k=0; k<flux.size(); k++) flux(k) = inco(elem,k)*surface(fac1);
+  }
 
-  template<Type_Flux_Arete Arete_Type>
-  inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
-                      Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), double>
-  flux_arete(const DoubleTab&, int, int, int, int) const { return 0; }
-
-  // void
-  template<Type_Flux_Arete Arete_Type>
-  inline enable_if_t<(Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PERIODICITE ||
-                      Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
-  flux_arete(const DoubleTab&, int, int, int, int, double&, double&) const { /* do nothing */ }
-
-  /* ********************* *
-   * CAS SCALAIRE : COEFFS *
-   * ********************* */
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-  coeffs_fa7(int, const Neumann_sortie_libre&, double& , double& ) const { /* do nothing */ }
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-  coeffs_fa7(int, int, int, double& , double& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PERIODICITE), void>
-  coeffs_arete(int, int, int, int, double& , double& ) const { /* do nothing */ }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI || Arete_Type == Type_Flux_Arete::FLUIDE ||
-                      Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
-  coeffs_arete(int, int, int, int, double& , double& , double& ) const { /* do nothing */ }
-
-  /* ********************* *
-   * CAS SCALAIRE : SECMEM *
-   * ********************* */
-
-  // TODO : FIXME : a faire void un jour !!!!!!
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, double>
-  secmem_fa7(int, const Neumann_sortie_libre&, int ) const { return 0; }
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, double>
-  secmem_fa7( int, int, int) const { return 0; }
-
-  template<Type_Flux_Arete Arete_Type>
-  inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
-                      Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), double>
-  secmem_arete(int, int, int, int) const { return 0; }
-
-  // void
-  template<Type_Flux_Arete Arete_Type>
-  inline enable_if_t<(Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PERIODICITE||
-                      Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
-  secmem_arete(int, int, int, int, double&, double&) const { /* do nothing */ }
-
-  /* ******************** *
-   * CAS VECTORIEL : FLUX *
-   * ******************** */
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-  flux_fa7(const DoubleTab&, int , const Neumann_sortie_libre&, int, DoubleVect& ) const;
-
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-  flux_fa7(const DoubleTab&, int, int, int, DoubleVect& ) const;
-
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
                       Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
 
 
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PERIODICITE||
                       Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ,DoubleVect&) const { /* do nothing */ }
 
-  /* ********************** *
-   * CAS VECTORIEL : COEFFS *
-   * ********************** */
+  /* ************************************** *
+   * *********  POUR L'IMPLICITE ********** *
+   * ************************************** */
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-  coeffs_fa7(int , const Neumann_sortie_libre&, DoubleVect& , DoubleVect& ) const { /* do nothing */ }
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+  coeffs_fa7(int, const Neumann_sortie_libre&, DoubleVect& , DoubleVect& ) const { /* do nothing */ }
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
   coeffs_fa7(int, int, int, DoubleVect& , DoubleVect& ) const { /* do nothing */ }
 
-  template<Type_Flux_Arete Arete_Type> inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PERIODICITE), void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
+  inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PERIODICITE), void>
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const { /* do nothing */ }
 
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI || Arete_Type == Type_Flux_Arete::FLUIDE ||
                       Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const { /* do nothing */ }
 
-  /* ********************** *
-   * CAS VECTORIEL : SECMEM *
-   * ********************** */
+  /* ************************************** *
+   * *********  POUR L'IMPLICITE ********** *
+   * ************************************** */
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-  secmem_fa7(int , const Neumann_sortie_libre&, int, DoubleVect&) const { /* do nothing */ }
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+  secmem_fa7(int, const Neumann_sortie_libre&, int , DoubleVect&) const { /* do nothing */ }
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-  secmem_fa7(int, int, int, DoubleVect& flux) const { /* do nothing */ }
+  template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+  secmem_fa7( int, int, int, DoubleVect&) const { /* do nothing */ }
 
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
                       Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
   secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
 
-
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PERIODICITE||
                       Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
   secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const { /* do nothing */ }
 };
-
-template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-Eval_Grad_VDF_Face::flux_fa7(const DoubleTab& , int face, const Neumann_sortie_libre& la_cl, int num1,DoubleVect& flux) const
-{
-  for (int k=0; k<flux.size(); k++) flux(k) = la_cl.flux_impose(face-num1,k)*surface(face);
-}
-
-template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-Eval_Grad_VDF_Face::flux_fa7(const DoubleTab& inco, int elem, int fac1, int, DoubleVect& flux) const
-{
-  for (int k=0; k<flux.size(); k++) flux(k) = inco(elem,k)*surface(fac1);
-}
 
 #endif /* Eval_Grad_VDF_Face_included */
