@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ public:
   inline double tau_tan_impl(int i, int j) const { return 0.; }
   inline bool uses_wall() const { return false; }
   inline bool uses_mod() const { return false; }
-  inline DoubleTab get_k_elem() const { return 0.; }
+  inline const DoubleTab& get_k_elem() const { throw; } // pour F5 seulement ...
 
   inline double compute_heq_impl(double d0, int i, double d1, int j, int compo) const
   {
