@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -136,13 +136,35 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
       // assert(valeurs_rho.size_array()== ma_zone.les_elems().dimension_tot(0));
       // Champ_P0_PolyMAC : champ aux elems et aux faces
       // Champ de masse volumique variable.
+      const IntTab& e_f = la_zone_poly_->elem_faces();
+      //Cerr << e_f << finl;
       for (int elem = 0; elem < nb_elem; elem++)
         {
-          const double h_carre = la_zone_poly_->carre_pas_maille(elem);
-          const double diffu   = valeurs_diffu(elem);
-          const double rho     = valeurs_rho(elem);
-          const double dt      = h_carre * rho / (deux_dim * (diffu+DMINFLOAT));
-          if (dt_stab > dt)
+          const double diffu = valeurs_diffu(elem);
+          const double rho = valeurs_rho(elem);
+          double dt;
+          if (e_f.dimension(1)==deux_dim || e_f(elem, deux_dim)==-1)
+            {
+              // Maille type VDF (deux_dim faces sur l'element)
+              // ToDo: coder dans le cas has_champ_masse_volumique()==false
+              double h = 0;
+              for (int f=0; f<deux_dim; f++)
+                {
+                  int face = e_f(elem, f);
+                  const double d = la_zone_poly_->volumes(elem) / la_zone_poly_->surface(face);
+                  h += 0.5/(d*d); // On multiplie par 0.5 car face comptee 2 fois
+                  //Cerr << elem << " " << face << " " << la_zone_poly_->surface(face) << finl;
+                }
+              // Voir Op_Diff_VDF_Elem_base::calculer_dt_stab():
+              dt = 0.5 * rho / ((diffu + DMINFLOAT)*h);
+              //Cerr << "VDF " << dt << finl;
+            }
+          else
+            {
+              dt = la_zone_poly_->carre_pas_maille(elem) * rho / (deux_dim * (diffu + DMINFLOAT));
+              //Cerr << "NC  " << dt << finl;
+            }
+          if (dt < dt_stab)
             dt_stab = dt;
         }
     }
