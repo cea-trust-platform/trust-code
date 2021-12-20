@@ -110,13 +110,6 @@ circle_3 sonde_base circle_3 0 Keyword to define several probes located on a cir
   attr radius floattant radius 0 Radius of the circle.
   attr theta1 floattant theta1 0 First angle.
   attr theta2 floattant theta2 0 Second angle.
-sonde objet_lecture nul 0 Keyword is used to define the probes. Observations: the probe coordinates should be given in Cartesian coordinates (X, Y, Z), including axisymmetric.
-  attr nom_sonde chaine nom_sonde 0 Name of the file in which the values taken over time will be saved. The complete file name is nom_sonde.son.
-  attr special chaine(into=["chsom","nodes","grav","som"]) special 1 Option to change the positions of the probes. Several options are available: NL2 grav : each probe is moved to the nearest cell center of the mesh; NL2 som : each probe is moved to the nearest vertex of the mesh NL2 nodes : each probe is moved to the nearest face center of the mesh; NL2 chsom : only available for P1NC sampled field. The values of the probes are calculated according to P1-Conform corresponding field.
-  attr nom_inco chaine nom_inco 0 Name of the sampled field.
-  attr mperiode chaine(into=["periode"]) mperiode 0 Keyword to set the sampled field measurement frequency.
-  attr prd floattant prd 0 Period value. Every prd seconds, the field value calculated at the previous time step is written to the nom_sonde.son file.
-  attr type sonde_base type 0 Type of probe.
 sondes listobj nul 1 sonde 0 List of probes.
 champ_generique_base objet_u champ_generique_base 1 not_set
 listchamp_generique listobj nul 1 champ_generique_base 1 XXX

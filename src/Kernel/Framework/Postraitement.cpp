@@ -361,17 +361,20 @@ Entree& Postraitement::readOn(Entree& s )
 
 void Postraitement::set_param(Param& param)
 {
-  param.ajouter("Fichier",&nom_fich_);
-  param.ajouter("Format",&format);
-  param.ajouter("Parallele",&option_para);
-  param.ajouter_non_std("Sondes|Probes",(this));
-  param.ajouter_non_std("champs|fields",(this));
-  param.ajouter_non_std("Statistiques",(this));
-  param.ajouter_non_std("Domaine",(this));
+// XD postraitement postraitement_base postraitement -1 An object of post-processing (without name).
+//  attr interfaces champs_posts interfaces 1 Keyword to read all the caracteristics of the interfaces. Different kind of interfaces exist as well as different interface intitialisations.
+  param.ajouter("Fichier",&nom_fich_); // XD_ADD_P chaine Name of file.
+  param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","lata_v1","lata_v2","med","med_major"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
+  param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
+  param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
+  param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.
+  param.ajouter_non_std("Sondes|Probes",(this)); // XD_ADD_P sondes Probe.
+  param.ajouter_non_std("Sondes_fichier|Probes_file",(this)); // XD_ADD_P sondes_fichier Probe read in a file.
+  param.ajouter_non_std("champs|fields",(this)); // XD_ADD_P champs_posts Field\'s write mode.
+  param.ajouter_non_std("Statistiques",(this));  // XD_ADD_P stats_posts Statistics between two points fixed : start of integration time and end of integration time.
   param.ajouter_non_std("Sondes_Int",(this));
   param.ajouter_non_std("Tableaux_Int",(this));
-  param.ajouter_non_std("Statistiques_en_serie",(this));
-  param.ajouter_non_std("Definition_champs",(this));
+  param.ajouter_non_std("Statistiques_en_serie",(this));// XD_ADD_P stats_serie_posts Statistics between two points not fixed : on period of integration.
 }
 
 int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
@@ -382,6 +385,20 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       Cerr << "Reading of probes" << finl;
       les_sondes_.associer_post(*this);
       s >> les_sondes_;
+      sondes_demande_ = 1;
+      return 1;
+    }
+  if (mot=="Sondes_fichier|Probes_file")
+    {
+      Nom file;
+      Param param2("probes_files");
+      // XD sondes_fichier objet_lecture nul 1 not_set
+      param2.ajouter("fichier",&file,Param::REQUIRED); // XD_ADD_P chaine name of file
+      param2.lire_avec_accolades_depuis(s);
+
+      Cerr << "Reading of probes" << finl;
+      les_sondes_.associer_post(*this);
+      les_sondes_.lire_fichier(file);
       sondes_demande_ = 1;
       return 1;
     }
@@ -2203,7 +2220,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
         }
       ++curseur_liste_champs;
     }
-  //Cerr<<nom<<" not found !!! "<< finl;
+  Cerr<<"Field " <<nom<<" not found."<< finl;
   throw Champs_compris_erreur();
 
   //Pour compilation
