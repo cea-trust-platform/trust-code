@@ -308,68 +308,11 @@ void CoviMAC_discretisation::distance_paroi(const Schema_Temps_base& sch,
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
-// Description:
-//    discretise en CoviMAC le fluide incompressible, donc  K e N
-// Precondition:
-// Parametre: Zone_dis&
-//    Signification: zone a discretiser
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Parametre: Fluide_Ostwald&
-//    Signification: fluide a discretiser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: Champ_Inc&
-//    Signification: ch_vitesse
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces:
-// Parametre: Champ_Inc&
-//    Signification: temperature
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 void CoviMAC_discretisation::proprietes_physiques_fluide_Ostwald(const Zone_dis& z, Fluide_Ostwald& le_fluide,
                                                                  const Navier_Stokes_std& eqn_hydr, const Champ_Inc& ch_temper ) const
 {
-
-#ifdef dependance
-  Cerr << "Discretisation CoviMAC du fluide_Ostwald" << finl;
-  const Zone_CoviMAC& zone_CoviMAC=ref_cast(Zone_CoviMAC, z.valeur());
-  const Champ_Inc& ch_vitesse = eqn_hydr.inconnue();
-  const Champ_P1_CoviMAC& vit = ref_cast(Champ_P1_CoviMAC,ch_vitesse.valeur());
-
-
-
-
-  Champ_Don& mu = le_fluide.viscosite_dynamique();
-  //  mu est toujours un champ_Ostwald_CoviMAC , il faut toujours faire ce qui suit
-  mu.typer("Champ_Ostwald_CoviMAC");
-  Champ_Ostwald_CoviMAC& ch_mu = ref_cast(Champ_Ostwald_CoviMAC,mu.valeur());
-  Cerr<<"associe zonedisbase CoviMAC"<<finl;
-  ch_mu.associer_zone_dis_base(zone_CoviMAC);
-  ch_mu.associer_fluide(le_fluide);
-  ch_mu.associer_champ(vit);
-  ch_mu.associer_eqn(eqn_hydr);
-  Cerr<<"associations finies zone dis base, fluide, champ CoviMAC"<<finl;
-  ch_mu.fixer_nb_comp(1);
-
-  Cerr<<"fait fixer_nb_valeurs_nodales"<<finl;
-  Cerr<<"nb_valeurs_nodales CoviMAC = "<<zone_CoviMAC.nb_elem()<<finl;
-  ch_mu.fixer_nb_valeurs_nodales(zone_CoviMAC.nb_elem());
-
-  Cerr<<"fait changer_temps"<<finl;
-  ch_mu.changer_temps(vit.temps());
-  Cerr<<"mu CoviMAC est discretise "<<finl;
-#endif
+  Cerr << "CoviMAC_discretisation::proprietes_physiques_fluide_Ostwald isn't coded" << finl; // voir fonction similaire dans discretisation_VDF pour le coder
+  abort();
 }
 
 
@@ -389,22 +332,8 @@ void CoviMAC_discretisation::zone_Cl_dis(Zone_dis& z,
 
 void CoviMAC_discretisation::critere_Q(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
-#ifdef dependance
-  // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
-  // mais on ne s'en sert pas!!!
-  Cerr << "Discretisation du critere Q " << finl;
-  const Champ_P1_CoviMAC& vit = ref_cast(Champ_P1_CoviMAC,ch_vitesse.valeur());
-  const Zone_CoviMAC& zone_CoviMAC=ref_cast(Zone_CoviMAC, z.valeur());
-  ch.typer("Critere_Q_Champ_P1_CoviMAC");
-  Critere_Q_Champ_P1_CoviMAC& ch_cQ=ref_cast(Critere_Q_Champ_P1_CoviMAC,ch.valeur());
-  ch_cQ.associer_zone_dis_base(zone_CoviMAC);
-  ch_cQ.associer_champ(vit);
-  ch_cQ.nommer("Critere_Q");
-  ch_cQ.fixer_nb_comp(1);
-  ch_cQ.fixer_nb_valeurs_nodales(zone_CoviMAC.nb_elem());
-  ch_cQ.fixer_unite("s-2");
-  ch_cQ.changer_temps(ch_vitesse.temps());
-#endif
+	  Cerr << "CoviMAC_discretisation::critere_Q isn't coded" << finl; // voir fonction similaire dans VDF_discretisation pour le coder
+	  abort();
 }
 
 
@@ -431,22 +360,8 @@ void CoviMAC_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,con
 
 void CoviMAC_discretisation::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
 {
-#ifdef dependance
-  Cerr << "Discretisation de gradient_temperature" << finl;
-  const Champ_P1_CoviMAC& temp = ref_cast(Champ_P1_CoviMAC,ch_temperature.valeur());
-  const Zone_CoviMAC& zone_CoviMAC=ref_cast(Zone_CoviMAC, z.valeur());
-  const Zone_Cl_CoviMAC& zone_cl_CoviMAC=ref_cast(Zone_Cl_CoviMAC, zcl.valeur());
-  ch.typer("gradient_temperature_Champ_P1_CoviMAC");
-  grad_T_Champ_P1_CoviMAC& ch_gt=ref_cast(grad_T_Champ_P1_CoviMAC,ch.valeur());
-  ch_gt.associer_zone_dis_base(zone_CoviMAC);
-  ch_gt.associer_zone_Cl_dis_base(zone_cl_CoviMAC);
-  ch_gt.associer_champ(temp);
-  ch_gt.nommer("gradient_temperature");
-  ch_gt.fixer_nb_comp(dimension);
-  ch_gt.fixer_nb_valeurs_nodales(zone_CoviMAC.nb_elem());
-  ch_gt.fixer_unite("K/m");
-  ch_gt.changer_temps(ch_temperature.temps());
-#endif
+	  Cerr << "CoviMAC_discretisation::grad_T isn't coded" << finl; // voir fonction similaire dans VDF_discretisation pour le coder
+	  abort();
 }
 
 void CoviMAC_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
@@ -540,24 +455,8 @@ void CoviMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
 
 void CoviMAC_discretisation::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
 {
-#ifdef dependance
-  Cerr << "Discretisation de h_conv" << finl;
-  const Champ_P1_CoviMAC& temp = ref_cast(Champ_P1_CoviMAC,ch_temperature.valeur());
-  const Zone_CoviMAC& zone_CoviMAC=ref_cast(Zone_CoviMAC, z.valeur());
-  const Zone_Cl_CoviMAC& zone_cl_CoviMAC=ref_cast(Zone_Cl_CoviMAC, zcl.valeur());
-  ch.typer("h_conv_Champ_P1_CoviMAC");
-  h_conv_Champ_P1_CoviMAC& ch_gt=ref_cast(h_conv_Champ_P1_CoviMAC,ch.valeur());
-  ch_gt.associer_zone_dis_base(zone_CoviMAC);
-  ch_gt.associer_zone_Cl_dis_base(zone_cl_CoviMAC);
-  ch_gt.associer_champ(temp);
-  ch_gt.temp_ref()=temp_ref;
-  ////ch_gt.nommer("h_conv");
-  ch_gt.nommer(nom);
-  ch_gt.fixer_nb_comp(1);
-  ch_gt.fixer_nb_valeurs_nodales(zone_CoviMAC.nb_elem());
-  ch_gt.fixer_unite("W/m2.K");
-  ch_gt.changer_temps(ch_temperature.temps());
-#endif
+	  Cerr << "CoviMAC_discretisation::h_conv isn't coded" << finl; // voir fonction similaire dans VDF_discretisation pour le coder
+	  abort();
 }
 void CoviMAC_discretisation::modifier_champ_tabule(const Zone_dis_base& Zone_CoviMAC,Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base))&  champs_param) const
 {

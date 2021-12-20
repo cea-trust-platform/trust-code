@@ -88,6 +88,9 @@ protected:
   std::vector<Champ_Inc> vit_phases_; //vitesses de chaque phase
   Motcles noms_vit_phases_; //leurs noms
 
+  std::vector<Champ_Fonc> grad_vit_phases_; //gradient des vitesses de chaque phase
+  Motcles noms_grad_vit_phases_; //leurs noms
+
   Operateur_Evanescence evanescence;
 };
 
