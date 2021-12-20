@@ -23,6 +23,7 @@
 #include <QDM_Multiphase.h>
 #include <Pb_Multiphase.h>
 #include <Discret_Thyd.h>
+#include <Discretisation_base.h>
 #include <Fluide_base.h>
 #include <Operateur_Diff_base.h>
 #include <Schema_Temps_base.h>
@@ -30,6 +31,8 @@
 #include <Param.h>
 #include <EChaine.h>
 #include <ConstDoubleTab_parts.h>
+#include <Nom.h>
+#include <vector>
 
 Implemente_instanciable(QDM_Multiphase,"QDM_Multiphase",Navier_Stokes_std);
 // XD QDM_Multiphase eqn_base QDM_Multiphase -1 Momentum conservation equation for a multi-phase problem where the unknown is the velocity
@@ -113,6 +116,10 @@ Entree& QDM_Multiphase::readOn(Entree& is)
   for (int i = 0; i < pb.nb_phases(); i++)
     champs_compris_.ajoute_nom_compris(noms_vit_phases_[i] = Nom("vitesse_") + pb.nom_phase(i));
 
+  noms_grad_vit_phases_.dimensionner(pb.nb_phases()), grad_vit_phases_.resize(pb.nb_phases());
+  for (int i = 0; i < pb.nb_phases(); i++)
+    champs_compris_.ajoute_nom_compris(noms_grad_vit_phases_[i] = Nom("gradient_vitesse_") + pb.nom_phase(i));
+
   return is;
 }
 
@@ -177,9 +184,28 @@ void QDM_Multiphase::mettre_a_jour(double temps)
             else abort(); //on ne connait pas
           }
       }
+
   if (grad_u.non_nul()) grad_u.mettre_a_jour(temps);
   if (la_vorticite.non_nul()) la_vorticite.mettre_a_jour(temps);
   if (Taux_cisaillement.non_nul()) Taux_cisaillement.mettre_a_jour(temps);
+  for (n = 0; n < N; n++) if (grad_vit_phases_[n].non_nul())
+      {
+        grad_vit_phases_[n].mettre_a_jour(temps);
+        DoubleTab_parts psrc(grad_u->valeurs()), pdst(grad_vit_phases_[n].valeurs());
+        int copied = 0;
+        for (i = 0; i < psrc.size(); i++) for (j = 0; j < pdst.size(); j++)
+            {
+              DoubleTab& src = psrc[i], &dst = pdst[j];
+              if (src.line_size() == N * D * D && dst.line_size() == D * D) /* une colonne par composante */
+                {
+                  for (int k = 0; k < src.dimension_tot(0); k++)
+                    for (int dU = 0; dU < D; dU++) for (int dX = 0; dX < D; dX++)
+                        dst(k, dX + D * dU) = src(k, dX, dU + n * D);// Les lignes et les colonnes sont inversees quand on passe dans DoubleTab_parts
+                  copied += 1;
+                }
+            }
+        if (copied != 1) { Cerr << "Problem in filling the gradients by phase" << finl ; abort();} //on ne connait pas
+      }
 }
 
 bool QDM_Multiphase::initTimeStep(double dt)
@@ -265,6 +291,23 @@ void QDM_Multiphase::creer_champ(const Motcle& motlu)
     {
       discretisation().discretiser_champ("vitesse",zone_dis(), noms_vit_phases_[i], "m/s",dimension, 1, 0, vit_phases_[i]);
       champs_compris_.ajoute_champ(vit_phases_[i]);
+    }
+  i = noms_grad_vit_phases_.rang(motlu);
+  if (i >= 0 && !(grad_vit_phases_[i].non_nul()))
+    {
+      int D = dimension ;
+      Noms noms(D * D), unites(D * D);
+      std::vector<Nom> composantsVitesse({Nom("dU"), Nom("dV"), Nom("dW")});
+      std::vector<Nom> composantsDerivee({Nom("dx"), Nom("dy"), Nom("dz")});
+      for (int dU = 0 ; dU< D ; dU++) for (int dX = 0 ; dX < D ; dX++)
+          {
+            noms[ D * dU + dX]=Nom(composantsVitesse[dU] + "/" + composantsDerivee[dX]);
+            unites[ D * dU + dX] = Nom("m2/s");
+          }
+      noms[0] = noms_grad_vit_phases_[i]; // Pour lui donner le bon nom dans discretiser_champ ; consequence : la premiere coordonnee en sortie n'a pas le bon nom
+      Motcle typeChamp = "champ_elem" ;
+      discretisation().discretiser_champ(typeChamp, zone_dis(), multi_scalaire, noms , unites, D*D, 0, grad_vit_phases_[0]);
+      champs_compris_.ajoute_champ(grad_vit_phases_[i]);
     }
 }
 

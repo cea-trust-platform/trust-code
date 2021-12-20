@@ -62,7 +62,7 @@ public:
   virtual const Noms        get_property(const Motcle& query) const;  //repond aux requetes nom, nom_cible, unites et composantes
 
   virtual Entity            get_localisation(const int index = -1) const; //localisation ELEMENT ou SOM sont post-traitables
-  virtual int            get_nb_localisations() const;
+  virtual int               get_nb_localisations() const;
 
   virtual const DoubleTab&  get_ref_values() const;
   virtual void              get_copy_values(DoubleTab&) const;

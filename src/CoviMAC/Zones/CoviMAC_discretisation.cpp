@@ -131,12 +131,6 @@ void CoviMAC_discretisation::discretiser_champ(
   else if (type.debute_par("Champ_P1_CoviMAC")) nb_ddl = zone_CoviMAC.nb_som();
   else assert(0);
 
-  // Si c'est un champ multiscalaire, uh !
-  /* if (nature == multi_scalaire) {
-    // Pas encore code
-    Cerr << "Champ multi_scalaire pas code" << finl;
-    assert(0); exit();
-    } else {*/
   if (nb_comp < 0)
     nb_comp = default_nb_comp;
   assert(nb_comp > 0);
@@ -332,8 +326,8 @@ void CoviMAC_discretisation::zone_Cl_dis(Zone_dis& z,
 
 void CoviMAC_discretisation::critere_Q(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
-	  Cerr << "CoviMAC_discretisation::critere_Q isn't coded" << finl; // voir fonction similaire dans VDF_discretisation pour le coder
-	  abort();
+  Cerr << "CoviMAC_discretisation::critere_Q isn't coded" << finl; // voir fonction similaire dans VDF_discretisation pour le coder
+  abort();
 }
 
 
@@ -360,8 +354,8 @@ void CoviMAC_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,con
 
 void CoviMAC_discretisation::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
 {
-	  Cerr << "CoviMAC_discretisation::grad_T isn't coded" << finl; // voir fonction similaire dans VDF_discretisation pour le coder
-	  abort();
+  Cerr << "CoviMAC_discretisation::grad_T isn't coded" << finl; // voir fonction similaire dans VDF_discretisation pour le coder
+  abort();
 }
 
 void CoviMAC_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
@@ -455,8 +449,8 @@ void CoviMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
 
 void CoviMAC_discretisation::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
 {
-	  Cerr << "CoviMAC_discretisation::h_conv isn't coded" << finl; // voir fonction similaire dans VDF_discretisation pour le coder
-	  abort();
+  Cerr << "CoviMAC_discretisation::h_conv isn't coded" << finl; // voir fonction similaire dans VDF_discretisation pour le coder
+  abort();
 }
 void CoviMAC_discretisation::modifier_champ_tabule(const Zone_dis_base& Zone_CoviMAC,Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base))&  champs_param) const
 {
