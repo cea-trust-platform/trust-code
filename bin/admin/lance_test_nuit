@@ -3891,7 +3891,7 @@ then
 	 # Creation des packages TRUST et externalpackages
 	 echo " "
 	 echo "  Creation of the packages of TRUST and externalpackages"
-         echo "!!! See ARCHIVES_TRUST (Warning externalpackages) and ARCHIVES_triocfd !!!" | mail_ -s\"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that packages for sourceforge.net are correct...\" $TRUST_MAIL
+         echo "!!! See ARCHIVES_TRUST (Warning externalpackages) and ARCHIVES_triocfd !!!" | mail_ -s\"[lance_test_nuit] WARNING! TRUST v$new released: Ensure that packages for ftp website and github are correct...\" $TRUST_MAIL
          mise_a_jour_TRUST_tar
          GRAVAGE=$WORKDIR/archives/ARCHIVES_TRUST
          version_arch=TRUST-$new".tar.gz"
@@ -3964,6 +3964,8 @@ then
 	       #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
 	       fi
 	       git checkout -- Multiphase/Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
+	       # Update the version in README.md file (displayed on github)
+	       sed -i "s/$old/$new/g" README.md
 	    fi
             git commit --all -m"Commit for an official Release $label version."
             echo "    Call git tag $label"
@@ -4167,8 +4169,9 @@ then
    do
       echo "Stable release announcement sent to $dest"
       echo "
-TRUST is a thermohydraulic software package for CFD 
-simulations of incompressible monophasic flows.
+TRUST is a thermohydraulic software package for CFD simulations.
+It was originally designed for incompressible monophasic flows, but an
+increasing effort is made towards simulating real compressible multiphasic flows.
 This software is OpenSource (BSD license).
 
 -------------------------------------------------
@@ -4195,43 +4198,21 @@ To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRA
 ---------------------------------------------------------------------------------------------
 1. How to install?
 ---------------------------------------------------------------------------------------------
-## From github:
-
 # First method:
 git clone https://github.com/cea-trust-platform/trust-code.git TRUST-$new
 cd TRUST-$new
 wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-$new.tar
 tar xf externalpackages-$new.tar
-./configure \$OPTIONS
+./configure -help # To see the possible configure options. On various OS, we configure TRUST with OPTIONS -force_provided_mpich (DO NOT use it on HPC clusters)
+./configure \$OPTIONS # where \$OPTIONS is the list of selected options.
 make
 
 # Second method:
 wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version$new/TRUST-$new.tar.gz
 tar xzf TRUST-$new.tar.gz
 cd TRUST-$new
-./configure \$OPTIONS
-make
-
-## From sourceforge:
-
-# First method:
-wget http://downloads.sourceforge.net/project/trust-platform/Installer_TRUST.sh;
-chmod +x Installer_TRUST.sh;
-./Installer_TRUST.sh -configure-options \"\$OPTIONS\"
-
-# Second method:
-wget http://downloads.sourceforge.net/project/trust-platform/$new/TRUST-$new.tar.gz;
-tar xzf TRUST-$new.tar.gz;
-cd TRUST-$new;
-./configure \$OPTIONS;
-make
-
-# Third method:
-git clone git://git.code.sf.net/p/trust-platform/code TRUST-$new;
-cd TRUST-$new;
-wget http://downloads.sourceforge.net/project/trust-platform/$new/externalpackages-$new.tar;
-tar xf externalpackages-$new.tar;
-./configure \$OPTIONS;
+./configure -help # To see the possible configure options. On various OS, we configure TRUST with OPTIONS -force_provided_mpich (DO NOT use it on HPC clusters)
+./configure \$OPTIONS # where \$OPTIONS is the list of selected options.
 make
 
 Warning: Check carefully the MPI version you want to use for parallel computing before installing the code, especially onto a HPC cluster.
@@ -4245,20 +4226,23 @@ type mpicxx
 # for CEA Saclay (PC Titania file system or orcus cluster):
 source /home/trust_trio-public/env_TRUST-$new.sh
 
-# for CEA Saclay (PC Thalie file system) (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
+# for CEA Saclay (PC Thalie file system):
 source /home/triou/env_TRUST_$new.sh
 
-# for TOPAZE supercomputer:
-source /ccc/cont002/home/den/triou/env_TRUST-$new.sh
-
-# for IRENE (Skylake & AMD Rome) supercomputer (int64 version only)
+# for TOPAZE and IRENE (Skylake & AMD Rome) supercomputers (64-bit integers version):
 source /ccc/cont002/home/den/triou/env_TRUST-$new-int64.sh
 
-# for IDRIS supercomputer (jean-zay):
-source /gpfswork/rech/fej/ugz82dj/env_TRUST-$new.sh
+# for TOPAZE and IRENE (AMD Rome) supercomputers (GPU version):
+source /ccc/cont002/home/den/triou/env_TRUST-$new-gpu.sh
 
-# for CINES supercomputer (occigen):
-source /panfs/panasas/softs/applications/trio_u/TRUST/env_TRUST-$new.sh
+# for IDRIS (jean-zay) supercomputer (64-bit integers version):
+source /gpfswork/rech/fej/ugz82dj/env_TRUST-$new-int64.sh
+
+# for IDRIS (jean-zay) supercomputer (GPU version):
+source /gpfswork/rech/fej/ugz82dj/env_TRUST-$new-gpu.sh
+
+# for CINES (occigen) supercomputer (64-bit integers version):
+source /panfs/panasas/softs/applications/trio_u/TRUST/env_TRUST-$new-int64.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
@@ -4318,23 +4302,37 @@ To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRA
 ---------------------------------------------------------------------------------------------
 1. How to install?
 ---------------------------------------------------------------------------------------------
-# First method if TRUST-$new platform is not installed:
-wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
-chmod +x Installer_TrioCFD.sh;
-./Installer_TrioCFD.sh -configure-options \"\$OPTIONS\"
+If TRUST-$new is not already installed, install it either with:
+     $> git clone https://github.com/cea-trust-platform/trust-code.git TRUST-$new
+     $> cd TRUST-$new
+     $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-$new.tar
+     $> tar xf externalpackages-$new.tar
+     $> ./configure \$OPTIONS
+     $> make
+or:
+     $> wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version$new/TRUST-$new.tar.gz
+     $> tar xzf TRUST-$new.tar.gz
+     $> cd TRUST-$new
+     $> ./configure \$OPTIONS
+     $> make
 
-# Second method if TRUST-$new platform is already installed:
-wget http://sourceforge.net/projects/triocfd/files/Installer_TrioCFD.sh;
-chmod +x Installer_TrioCFD.sh;
-./Installer_TrioCFD.sh -with-trust \$TRUST_ROOT
+Then, install TrioCFD-$new using one of these methods:
+   # First method:
+     $> git clone https://github.com/cea-trust-platform/TrioCFD-code.git TrioCFD-$new
+     $> cd TrioCFD-$new
+     $> source PathToTRUST-$new/env_TRUST.sh
+     $> baltik_build_configure -execute
+     $> make optim debug
 
-# Third method if TRUST-$new platform is already installed:
-git clone git://git.code.sf.net/p/triocfd/code TrioCFD-$new;
-cd TrioCFD-$new;
-source \$TRUST_ROOT/env_TRUST.sh;
-baltik_build_configure -execute;
-make optim debug
-
+   # Second method:
+     $> wget ftp://ftp.cea.fr/pub/TRUST/TrioCFD/versions/v$new/TrioCFD-$new.tar.gz
+     $> tar xzf TrioCFD-$new.tar.gz
+     $> mv TrioCFD TrioCFD-$new
+     $> cd TrioCFD-$new
+     $> source PathToTRUST-$new/env_TRUST.sh
+     $> baltik_build_configure -execute
+     $> make optim debug
+     
 ---------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo "
 ----------------------------------------------------------------------------------------------------
@@ -4343,19 +4341,22 @@ make optim debug
 # for CEA Saclay (PC Titania file system or orcus cluster):
 source /home/trust_trio-public/env_TrioCFD-$new.sh
 
-# for CEA Saclay (PC Thalie file system) (For Ubuntu 16.04 running VisIt requires a specific procedure, please contact TRUST support for help):
+# for CEA Saclay (PC Thalie file system):
 source /home/triou/env_TrioCFD_$new.sh
 
-# for CCRT-TGCC supercomputer (topaze):
-source /ccc/cont002/home/den/triou/env_TrioCFD-$new.sh
-
-# for IRENE (Skylake & AMD Rome) supercomputer (int64 version only)
+# for TOPAZE and IRENE (Skylake & AMD Rome) supercomputers (64-bit integers version):
 source /ccc/cont002/home/den/triou/env_TrioCFD-$new-int64.sh
 
-# for IDRIS supercomputer (jean-zay):
-source /gpfswork/rech/fej/ugz82dj/env_TrioCFD-$new.sh
+# for TOPAZE and IRENE (AMD Rome) supercomputers (GPU version):
+source /ccc/cont002/home/den/triou/env_TrioCFD-$new-gpu.sh
 
-# for CINES supercomputer (occigen):
+# for IDRIS (jean-zay) supercomputer (64-bit integers version):
+source /gpfswork/rech/fej/ugz82dj/env_TrioCFD-$new-int64.sh
+
+# for IDRIS (jean-zay) supercomputer (GPU version):
+source /gpfswork/rech/fej/ugz82dj/env_TrioCFD-$new-gpu.sh
+
+# for CINES (occigen) supercomputer (64-bit integers version):
 source /panfs/panasas/softs/applications/trio_u/TrioCFD/env_TrioCFD-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
