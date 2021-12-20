@@ -24,13 +24,13 @@
 #define Eval_Grad_VDF_Face_included
 
 #include <Neumann_sortie_libre.h>
+#include <Evaluateur_VDF.h>
 #include <Eval_VDF_Face.h>
-#include <Eval_Grad_VDF.h>
 
 // .DESCRIPTION class Eval_Grad_VDF_Face
 // Evaluateur VDF pour le gradient
 // .SECTION voir aussi Eval_Grad_VDF
-class Eval_Grad_VDF_Face : public Eval_Grad_VDF, public Eval_VDF_Face
+class Eval_Grad_VDF_Face : public Evaluateur_VDF, public Eval_VDF_Face
 {
 public:
   static constexpr bool CALC_FA7_SORTIE_LIB = true, CALC_ARR_FL = false, CALC_ARR_BORD = false, CALC_ARR_INT = false, CALC_ARR_MIXTE = false,
