@@ -11,6 +11,8 @@ reordonner FineMesh
 discretiser_domaine FineMesh
 ecrire_fichier_formatte FineMesh geom.geom
 
+DomaineAxi1D dom
+ModifyDomaineAxi1D dom { origine Champ_Uniforme 3 0.2 0.2 0.2 }
 # FIN MAILLAGE #
 # DEBUT DECOUPAGE 
 Decouper FineMesh
