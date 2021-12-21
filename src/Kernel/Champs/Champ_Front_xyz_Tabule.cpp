@@ -28,6 +28,9 @@
 #include <Lecture_Table.h>
 
 Implemente_instanciable( Champ_Front_xyz_Tabule, "Champ_Front_xyz_Tabule", Champ_front_txyz ) ;
+// XD Champ_Front_xyz_Tabule champ_front_fonc_txyz Champ_Front_xyz_Tabule 0 Space dependent field on the boundary, tabulated as a function of time.
+// XD attr val listchaine val 0 Values of field components (mathematical expressions).
+// XD attr bloc bloc_lecture bloc 0 {nt1 t2 t3 ....tn u1 [v1 w1 ...] u2 [v2 w2 ...] u3 [v3 w3 ...] ... un [vn wn ...] } NL2 Values are entered into a table based on n couples (ti, ui) if nb_comp value is 1. The value of a field at a given time is calculated by linear interpolation from this table.
 
 Sortie& Champ_Front_xyz_Tabule::printOn( Sortie& os ) const
 {

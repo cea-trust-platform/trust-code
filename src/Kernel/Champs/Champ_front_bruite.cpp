@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,9 @@
 #include <Frontiere.h>
 
 Implemente_instanciable(Champ_front_bruite,"Champ_front_bruite",Ch_front_var_instationnaire_indep);
+// XD champ_front_bruite front_field_base champ_front_bruite 0 Field which is variable in time and space in a random manner.
+// XD attr nb_comp entier nb_comp 0 Number of field components.
+// XD attr bloc bloc_lecture bloc 0 { [N val L val ] Moyenne m_1.....[m_i ] Amplitude A_1.....[A_ i ]}: Random nois: If N and L are not defined, the ith component of the field varies randomly around an average value m_i with a maximum amplitude A_i. NL2 White noise: If N and L are defined, these two additional parameters correspond to L, the domain length and N, the number of nodes in the domain. Noise frequency will be between 2*Pi/L and 2*Pi*N/(4*L). NL2 For example, formula for velocity: u=U0(t) v=U1(t)Uj(t)=Mj+2*Aj*bruit_blanc where bruit_blanc (white_noise) is the formula given in the mettre_a_jour (update) method of the Champ_front_bruite (noise_boundary_field) (Refer to the Ch_fr_bruite.cpp file).
 
 // Description:
 //    Impression sur un flot de sortie au format:

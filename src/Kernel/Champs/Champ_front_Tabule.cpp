@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,8 +24,9 @@
 #include <DoubleTrav.h>
 
 Implemente_instanciable(Champ_front_Tabule,"Champ_front_Tabule",Champ_front_instationnaire_base);
-
-
+// XD champ_front_tabule front_field_base champ_front_tabule 0 Constant field on the boundary, tabulated as a function of time.
+// XD attr nb_comp entier nb_comp 0 Number of field components.
+// XD attr bloc bloc_lecture bloc 0 {nt1 t2 t3 ....tn u1 [v1 w1 ...] u2 [v2 w2 ...] u3 [v3 w3 ...] ... un [vn wn ...] } NL2 Values are entered into a table based on n couples (ti, ui) if nb_comp value is 1. The value of a field at a given time is calculated by linear interpolation from this table.
 
 // Description:
 //    Imprime les valeurs du champ sur un flot de sortie.

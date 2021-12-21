@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,8 @@
 #include <DoubleTrav.h>
 
 Implemente_instanciable(Champ_front_txyz,"Champ_front_fonc_txyz",Ch_front_var_instationnaire_indep);
-
+// XD champ_front_fonc_txyz front_field_base champ_front_fonc_txyz 0 Boundary field which is not constant in space and in time.
+// XD attr val listchaine val 0 Values of field components (mathematical expressions).
 
 // Description:
 //    Imprime le champ sur flot de sortie.

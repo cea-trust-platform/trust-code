@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,11 +21,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <DomaineAxi1d.h>
-//#include <Champ_base.h>
-//#include <Champ.h>
 
 Implemente_instanciable_sans_constructeur( DomaineAxi1d, "DomaineAxi1d", Domaine ) ;
-
+// XD DomaineAxi1d domaine DomaineAxi1d -1 1D domain
 DomaineAxi1d::DomaineAxi1d()
 {
   axi1d = 1;

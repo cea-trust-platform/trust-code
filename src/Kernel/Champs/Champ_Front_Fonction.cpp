@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,10 @@
 #include <Front_VF.h>
 
 Implemente_instanciable(Champ_Front_Fonction,"Champ_Front_Fonction",Ch_front_var_instationnaire_dep);
+// XD champ_front_fonction front_field_base champ_front_fonction 0 boundary field that is function of another field
+// XD attr dim entier dim 0 Number of field components.
+// XD attr inco chaine inco 0 Name of the field (for example: temperature).
+// XD attr expression chaine expression 0 keyword to use a analytical expression like 10.*EXP(-0.1*val) where val be the keyword for the field.
 
 
 // Description:

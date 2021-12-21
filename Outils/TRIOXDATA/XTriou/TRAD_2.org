@@ -596,10 +596,6 @@ init_par_partie champ_don_base init_par_partie 0 ne marche que pour n_comp=1
   attr val3 floattant val3 0 not_set
 champ_front_uniforme front_field_base champ_front_uniforme 0 Boundary field which is constant in space and stationary.
   attr val list val 0 Values of field components.
-champ_front_fonc_xyz front_field_base champ_front_fonc_xyz 0 Boundary field which is not constant in space.
-  attr val listchaine val 0 Values of field components (mathematical expressions).
-champ_front_fonc_txyz front_field_base champ_front_fonc_txyz 0 Boundary field which is not constant in space and in time.
-  attr val listchaine val 0 Values of field components (mathematical expressions).
 champ_front_fonc_pois_ipsn front_field_base champ_front_fonc_pois_ipsn 0 Boundary field champ_front_fonc_pois_ipsn.
   attr r_tube floattant r_tube 0 not_set
   attr umoy list umoy 0 not_set
@@ -609,16 +605,6 @@ champ_front_fonc_pois_tube front_field_base champ_front_fonc_pois_tube 0 Boundar
   attr umoy list umoy 0 not_set
   attr r_loc listf r_loc 0 not_set
   attr r_loc_mult listentierf r_loc_mult 0 not_set
-champ_front_tabule front_field_base champ_front_tabule 0 Constant field on the boundary, tabulated as a function of time.
-  attr nb_comp entier nb_comp 0 Number of field components.
-  attr bloc bloc_lecture bloc 0 {nt1 t2 t3 ....tn u1 [v1 w1 ...] u2 [v2 w2 ...] u3 [v3 w3 ...] ... un [vn wn ...] } NL2 Values are entered into a table based on n couples (ti, ui) if nb_comp value is 1. The value of a field at a given time is calculated by linear interpolation from this table.
-champ_front_fonction front_field_base champ_front_fonction 0 boundary field that is function of another field
-  attr dim entier dim 0 Number of field components.
-  attr inco chaine inco 0 Name of the field (for example: temperature).
-  attr expression chaine expression 0 keyword to use a analytical expression like 10.*EXP(-0.1*val) where val be the keyword for the field.
-champ_front_bruite front_field_base champ_front_bruite 0 Field which is variable in time and space in a random manner.
-  attr nb_comp entier nb_comp 0 Number of field components.
-  attr bloc bloc_lecture bloc 0 { [N val L val ] Moyenne m_1.....[m_i ] Amplitude A_1.....[A_ i ]}: Random nois: If N and L are not defined, the ith component of the field varies randomly around an average value m_i with a maximum amplitude A_i. NL2 White noise: If N and L are defined, these two additional parameters correspond to L, the domain length and N, the number of nodes in the domain. Noise frequency will be between 2*Pi/L and 2*Pi*N/(4*L). NL2 For example, formula for velocity: u=U0(t) v=U1(t)Uj(t)=Mj+2*Aj*bruit_blanc where bruit_blanc (white_noise) is the formula given in the mettre_a_jour (update) method of the Champ_front_bruite (noise_boundary_field) (Refer to the Ch_fr_bruite.cpp file).
 champ_front_tangentiel_vef front_field_base champ_front_tangentiel_vef 0 Field to define the tangential velocity vector field standard at the boundary in VEF discretization.
   attr mot chaine(into=["vitesse_tangentielle"]) mot 0 Name of vector field.
   attr vit_tan floattant vit_tan 0 Vector field standard [m/s].
