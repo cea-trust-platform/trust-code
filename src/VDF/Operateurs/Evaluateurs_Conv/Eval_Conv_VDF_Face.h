@@ -58,16 +58,11 @@ public:
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect& ) const { /* do nothing */ }
 
-  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE, void>
-  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const;
-
-  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
+  inline enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const;
 
   template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
-  flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const ;
-
-  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
   flux_arete(const DoubleTab&, int, int, int, int, DoubleVect&, DoubleVect& ) const ;
 
   template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
