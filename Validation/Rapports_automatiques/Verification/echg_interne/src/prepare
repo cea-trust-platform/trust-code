@@ -1,0 +1,62 @@
+#!/bin/bash -e
+
+h_null="1.0e-12"
+h_mid="0.02"
+h_inf="1.0e12"
+
+#echo Generation du maillage MED ...
+source $TRUST_MEDCOUPLING_ROOT/env.sh || echo Warning: impossible de sourcer MEDCoupling. On prend l existant.
+python gen_mesh.py || echo Warning: le maillage n a pas pu etre regenere. On prend l existant.
+python gen_mesh_1D.py || echo Warning: le maillage n a pas pu etre regenere. On prend l existant.
+
+#
+# VDF
+#
+mkdir -p echg_interne_hNul
+mkdir -p echg_interne_hInf
+mkdir -p echg_interne_pft
+
+cp domain.med echg_interne
+cp domain.med echg_interne_hNul
+cp domain.med echg_interne_hInf
+cp domain.med echg_interne_pft
+
+sed "s/h_gap Champ_Front_Uniforme 1 ${h_mid}/h_gap Champ_Front_Uniforme 1 ${h_null}/g" echg_interne/echg_interne.data > echg_interne_hNul/echg_interne_hNul.data 
+sed "s/h_gap Champ_Front_Uniforme 1 ${h_mid}/h_gap Champ_Front_Uniforme 1 ${h_inf}/g" echg_interne/echg_interne.data > echg_interne_hInf/echg_interne_hInf.data 
+sed "s/h_gap Champ_Front_Uniforme 1 ${h_mid}//g; s/Paroi_echange_interne_impose/Paroi_echange_interne_parfait/" echg_interne/echg_interne.data > echg_interne_pft/echg_interne_pft.data 
+
+#
+# VEF
+#
+mkdir -p echg_interne_VEF
+mkdir -p echg_interne_VEF_hNul
+mkdir -p echg_interne_VEF_hInf
+
+cp domain.med echg_interne_VEF
+cp domain.med echg_interne_VEF_hNul
+cp domain.med echg_interne_VEF_hInf
+
+sed "s/Paroi_echange_interne_impose/Paroi_echange_interne_global_impose/g; s/VDF dis/trianguler_h dom\nVEFPreP1B dis/g" echg_interne/echg_interne.data > echg_interne_VEF/echg_interne_VEF.data 
+sed "s/h_gap Champ_Front_Uniforme 1 ${h_mid}/h_gap Champ_Front_Uniforme 1 ${h_null}/g" echg_interne_VEF/echg_interne_VEF.data > echg_interne_VEF_hNul/echg_interne_VEF_hNul.data 
+sed "s/h_gap Champ_Front_Uniforme 1 ${h_mid}/h_gap Champ_Front_Uniforme 1 ${h_inf}/g" echg_interne_VEF/echg_interne_VEF.data > echg_interne_VEF_hInf/echg_interne_VEF_hInf.data 
+
+#
+# EF
+#
+mkdir -p echg_interne_EF_hNul
+mkdir -p echg_interne_EF_hInf
+mkdir -p echg_interne_EF_pft
+
+cp domain_1D.med echg_interne_EF
+cp domain_1D.med echg_interne_EF_hNul
+cp domain_1D.med echg_interne_EF_hInf
+cp domain_1D.med echg_interne_EF_pft
+
+sed "s/h_gap Champ_Front_Uniforme 1 ${h_mid}/h_gap Champ_Front_Uniforme 1 ${h_null}/g" echg_interne_EF/echg_interne_EF.data > echg_interne_EF_hNul/echg_interne_EF_hNul.data 
+sed "s/h_gap Champ_Front_Uniforme 1 ${h_mid}/h_gap Champ_Front_Uniforme 1 ${h_inf}/g" echg_interne_EF/echg_interne_EF.data > echg_interne_EF_hInf/echg_interne_EF_hInf.data
+sed "s/h_gap Champ_Front_Uniforme 1 ${h_mid}//g; s/Paroi_echange_interne_global_impose/Paroi_echange_interne_global_parfait/" echg_interne_EF/echg_interne_EF.data > echg_interne_EF_pft/echg_interne_EF_pft.data  
+
+
+echo Done prepare
+exit 0
+

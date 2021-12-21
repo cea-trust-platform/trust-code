@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,9 @@
 #include <Navier_Stokes_std.h>
 #include <Porosites_champ.h>
 #include <Check_espace_virtuel.h>
+#include <Echange_couplage_thermique.h>
+#include <Echange_interne_global_impose.h>
+#include <Champ_front_calc_interne.h>
 
 Implemente_instanciable(Op_Diff_VEF_Face,"Op_Diff_VEF_const_P1NC",Op_Diff_VEF_base);
 
@@ -241,6 +244,24 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
               resu[face] += flux;
               tab_flux_bords(face,0) = flux;
             }
+        }
+      else if (sub_type(Echange_couplage_thermique, la_cl.valeur()))
+        {
+          const Echange_couplage_thermique& la_cl_paroi = ref_cast(Echange_couplage_thermique, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+
+          for (int face=ndeb; face<nfin; face++)
+            {
+              double h=la_cl_paroi.h_imp(face-ndeb);
+              double Text=la_cl_paroi.T_ext(face-ndeb);
+              double phiext=la_cl_paroi.flux_exterieur_impose(face-ndeb);
+              flux=(phiext+h*(Text-inconnue(face)))*zone_VEF.surface(face);
+              resu[face] += flux;
+              tab_flux_bords(face,0) = flux;
+            }
+
         }
       else if (sub_type(Neumann_homogene,la_cl.valeur())
                || sub_type(Symetrie,la_cl.valeur())
@@ -598,6 +619,23 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                 }
             }
         }
+      else if (sub_type(Echange_couplage_thermique,la_cl.valeur()))
+        {
+          const Echange_couplage_thermique& la_cl_paroi = ref_cast(Echange_couplage_thermique, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face=ndeb; face<nfin; face++)
+            {
+              for (int nc=0; nc<nb_comp; nc++)
+                {
+                  double phiext = la_cl_paroi.flux_exterieur_impose(face-ndeb,nc);
+                  flux0 = (phiext + la_cl_paroi.h_imp(face-ndeb,nc)*(la_cl_paroi.T_ext(face-ndeb,nc)-inconnue(face,nc)))*zone_VEF.surface(face);
+                  resu(face,nc) += flux0;
+                  tab_flux_bords(face,nc) = flux0;
+                }
+            }
+        }
       else if (sub_type(Neumann_homogene,la_cl.valeur())
                || sub_type(Symetrie,la_cl.valeur())
                || sub_type(Neumann_sortie_libre,la_cl.valeur()))
@@ -835,6 +873,37 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
             {
               matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*zone_VEF.face_surfaces(face);
             }
+        }
+      // [ABN]: à finir il faut encore corriger le dimensionnement de la matrice ...
+//      else if (sub_type(Echange_interne_global_impose,la_cl.valeur()))
+//        {
+//          const Echange_interne_global_impose& la_cl_paroi = ref_cast(Echange_interne_global_impose, la_cl.valeur());
+//          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+//          const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext().valeur());
+//          const IntTab& fmap = Text.face_map();
+//          int ndeb = le_bord.num_premiere_face();
+//          int nfin = ndeb + le_bord.nb_faces();
+//          for (int face=ndeb; face<nfin; face++)
+//            {
+//              int opp_face = fmap(face-ndeb)+ndeb;
+//              matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*zone_VEF.face_surfaces(face);
+//              matrice(opp_face,face) -= la_cl_paroi.h_imp(face-ndeb)*zone_VEF.face_surfaces(face);
+//            }
+//        }
+      else if (sub_type(Echange_couplage_thermique, la_cl.valeur()))
+        {
+          const Echange_couplage_thermique& la_cl_paroi = ref_cast(Echange_couplage_thermique, la_cl.valeur());
+          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+
+          int ndeb = le_bord.num_premiere_face();
+          int nfin = ndeb + le_bord.nb_faces();
+          for (int face=ndeb; face<nfin; face++)
+            {
+              double h=la_cl_paroi.h_imp(face-ndeb);
+              double dphi_dT=la_cl_paroi.derivee_flux_exterieur_imposee(face-ndeb);
+              matrice(face,face) += (h+dphi_dT)*zone_VEF.face_surfaces(face);
+            }
+
         }
       else if (sub_type(Neumann_homogene,la_cl.valeur())
                || sub_type(Symetrie,la_cl.valeur())

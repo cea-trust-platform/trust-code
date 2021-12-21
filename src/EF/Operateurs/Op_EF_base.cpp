@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,6 +40,11 @@
 #include <Operateur_Diff_base.h>
 #include <EcrFicPartage.h>
 #include <Array_tools.h>
+#include <Echange_interne_global_impose.h>
+#include <Echange_interne_global_parfait.h>
+#include <Champ_front_calc_interne.h>
+#include <map>
+#include <vector>
 
 // Description
 // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
@@ -55,7 +60,8 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
   int matrice_stocke=1;
   if (matrice_stocke)
     {
-      if (matrice_sto_.nb_colonnes())
+      //if (matrice_sto_.nb_colonnes()) PL: non faux en //, nb_colonnes() peut etre nul localement
+      if (Process::mp_sum(matrice_sto_.nb_colonnes()))
         {
           la_matrice=matrice_sto_;
           return;
@@ -82,7 +88,29 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
   //int nb_elem=la_zone.zone().nb_elem();
   int nb_elem_tot=la_zone.zone().nb_elem_tot();
   int nb_som_elem=la_zone.zone().nb_som_elem();
-  int nb_coeff=(int)(nb_elem_tot*(nb_som_elem*(nb_som_elem)));
+  int nb_som_face=la_zone.nb_som_face();
+
+  // Computation of the number of non void coeffs:
+  int extra_nb_coeff = 0;
+  // Specific BC that will require extra terms in the matrix:
+  for(int i=0; i<la_zone_cl.nb_cond_lim(); i++)
+    {
+      const Cond_lim_base& ccl = la_zone_cl.les_conditions_limites(i).valeur();
+      if(sub_type(Echange_interne_global_impose, ccl))
+        {
+          if (nb_som_face != 1)
+            {
+              Cerr << "Boundary condition 'Echange_interne_global_impose' or 'Echange_interne_parfait' is not validated for EF and mesh_dim > 1 (i.e. sth other than a wire mesh)!!" << finl;
+              Process::exit(-1);
+            }
+          const Echange_interne_global_impose& cl = ref_cast(Echange_interne_global_impose, ccl);
+          const Champ_front_calc_interne& ch = ref_cast(Champ_front_calc_interne, cl.T_ext().valeur());
+          extra_nb_coeff += ch.face_map().size_array();
+          if(sub_type(Echange_interne_global_parfait, ccl))
+            extra_nb_coeff += ch.face_map().size_array() / 2;
+        }
+    }
+  int nb_coeff=(int)(nb_elem_tot*(nb_som_elem*(nb_som_elem)))+extra_nb_coeff;
   la_matrice.dimensionner(nb_som*nb_comp,nfin*nb_comp,0);
   IntTab Indice(nb_coeff,2),p(1,2);
   int tot=0;
@@ -100,6 +128,71 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
                   Indice(tot,1)=glob2;
                   tot++;
                 }
+            }
+        }
+    }
+  // Specific BC that will require extra terms in the matrix:
+  for(int i=0; i<la_zone_cl.nb_cond_lim(); i++)
+    {
+      const Cond_lim_base& ccl = la_zone_cl.les_conditions_limites(i).valeur();
+      if(sub_type(Echange_interne_global_impose, ccl))
+        {
+          const Echange_interne_global_impose& cl = ref_cast(Echange_interne_global_impose, ccl);
+          bool is_parfait = sub_type(Echange_interne_global_parfait, ccl);
+          const Champ_front_calc_interne& ch = ref_cast(Champ_front_calc_interne, cl.T_ext().valeur());
+          const IntTab& mp = ch.face_map();   // indices of (local) *faces*
+          const Front_VF& le_bord = ref_cast(Front_VF,cl.frontiere_dis());
+          int nfacedeb = le_bord.num_premiere_face();
+          int nfacefin = nfacedeb + le_bord.nb_faces();
+          std::vector<bool> hit(le_bord.nb_faces());
+          std::fill(hit.begin(), hit.end(), false);
+          for(int face_recto=nfacedeb; face_recto < nfacefin; face_recto++)
+            {
+              int face_verso = mp(face_recto-nfacedeb)+nfacedeb;
+              int face_plus_2 = 0;
+
+              if (is_parfait)
+                {
+                  // element attached to the face
+                  int elem1 = la_zone.face_voisins(face_verso, 0);
+                  int elem = (elem1 != -1) ? elem1 : la_zone.face_voisins(face_verso, 1);
+                  // other face of the element (i.e. face "after" opp_face)
+                  int f1 = la_zone.elem_faces(elem, 0);
+                  face_plus_2 = f1 != face_verso ? f1 : la_zone.elem_faces(elem, 1);  // 2 faces per elem max - 1D
+                }
+
+              // all vertices of recto face are put in correspondance with all vertices of verso face:
+              for(int som_idx=0; som_idx < nb_som_face; som_idx++)
+                {
+                  int som_recto = la_zone.face_sommets(face_recto, som_idx);
+                  for(int som_idx2=0; som_idx2 < nb_som_face; som_idx2++)
+                    {
+                      int som_verso = la_zone.face_sommets(face_verso, som_idx2);
+                      // tri-diagonal structure extended through the wall
+                      // actually this puts too many coeffs in case of is_parfait, but I can't be bothered ...
+                      Indice(tot, 0) = som_recto;
+                      Indice(tot, 1) = som_verso;
+                      tot++;
+
+                      if (is_parfait)   // more complicated: recto face takes (i-1), i and ("next face after opp_face")
+                        // verso face will just serve to connect recto and verso
+                        {
+                          int som_plus_2 = la_zone.face_sommets(face_plus_2, som_idx2);
+                          if(!hit[face_recto-nfacedeb])  // first inner face
+                            {
+                              Indice(tot, 0) = som_recto;
+                              Indice(tot, 1) = som_plus_2;
+                              tot++;
+                            }
+                          else                  // opposite inner face
+                            {
+                              // Nothing to do! no extra tri-band coeff.
+                            }
+                        }
+                    }
+                }
+              hit[face_recto-nfacedeb] = true;
+              hit[face_verso-nfacedeb] = true;
             }
         }
     }

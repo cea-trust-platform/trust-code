@@ -35,9 +35,15 @@
 #include <Neumann_paroi.h>
 #include <Neumann_sortie_libre.h>
 #include <Echange_global_impose.h>
+#include <Echange_interne_global_impose.h>
+#include <Echange_couplage_thermique.h>
+#include <Echange_interne_global_parfait.h>
+#include <Champ_front_calc_interne.h>
 
 #include <Param.h>
 #include <Op_Conv_EF.h>
+
+#include <vector>
 
 Implemente_instanciable_sans_constructeur(Op_Diff_EF,"Op_Diff_EF",Op_Diff_EF_base);
 
@@ -122,8 +128,8 @@ void remplir_marqueur_sommet_neumann(ArrOfInt& marqueur,const Zone_EF& zone_EF,c
 //
 /*
 void Op_Diff_EF::associer(const Zone_dis& zone_dis,
-				const Zone_Cl_dis& zone_cl_dis,
-				const Champ_Inc& ch_transporte)
+                                const Zone_Cl_dis& zone_cl_dis,
+                                const Champ_Inc& ch_transporte)
 {
   const Zone_EF& zEF = ref_cast(Zone_EF,zone_dis.valeur());
   const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF,zone_cl_dis.valeur());
@@ -173,7 +179,7 @@ void Op_Diff_EF::remplir_nu(DoubleTab& nu) const
 {
   const Zone_EF& zone_EF = la_zone_EF.valeur();
   // On dimensionne nu
-  if (nu.size()==0)
+  if (!nu.get_md_vector().non_nul())
     zone_EF.zone().creer_tableau_elements(nu);
   const DoubleTab& diffu=diffusivite().valeurs();
   if (diffu.size()==1)
@@ -1028,6 +1034,136 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
                 }
             }
         }
+      else if (sub_type(Echange_couplage_thermique, la_cl.valeur()))
+        {
+          const Echange_couplage_thermique& la_cl_paroi = ref_cast(Echange_couplage_thermique, la_cl.valeur());
+          for (int face=ndeb; face<nfin; face++)
+            {
+
+              double h=la_cl_paroi.h_imp(face-ndeb);
+              double Text=la_cl_paroi.T_ext(face-ndeb);
+              double phiext=la_cl_paroi.flux_exterieur_impose(face-ndeb);
+
+              double tm=0;
+              if (contrib_interne)
+                {
+                  for (int i1=0; i1<nb_som_face; i1++)
+                    {
+                      int glob2=face_sommets(face,i1);
+                      tm+=tab_inconnue(glob2);
+                    }
+                  tm/=nb_som_face;
+                }
+              double flux=(phiext+h*(Text-tm))*zone_EF.surface(face);
+              flux_bords_(face,0) = flux;
+              flux/=nb_som_face;
+              for (int i1=0; i1<nb_som_face; i1++)
+                {
+                  int glob2=face_sommets(face,i1);
+                  resu[glob2] += flux;
+                }
+            }
+        }
+      else if (sub_type(Echange_interne_global_parfait, la_cl.valeur()))
+        {
+          if (contrib_interne)
+            {
+              const Echange_interne_global_parfait& la_cl_paroi = ref_cast(Echange_interne_global_parfait, la_cl.valeur());
+              const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext().valeur());
+              const IntTab& fmap = Text.face_map();
+              std::vector<bool> hit(nfin-ndeb);
+              std::fill(hit.begin(), hit.end(), false);
+              for (int face=ndeb; face<nfin; face++)
+                {
+                  int opp_face = fmap(face-ndeb)+ndeb;   // face on the other side of the inner wall:
+
+                  // STRONG assumption : 1D, only one node per face:
+                  int som=face_sommets(face,0);
+                  int som_opp=face_sommets(opp_face,0);
+                  if (!hit[face-ndeb])  // first time we encounter one of the face of the pair
+                    {
+                      // This where we write the heat equation skipping duplicated face: -A.T(i-1) + (A*T(i)+B.T(i)) - B.T(i+2)
+                      // By default, we just have -A.T(i-1) + A*T(i)
+                      // Recompute the extra bit of flux coming from the other side:
+                      //    Get opposite element
+                      int elem1 = zone_EF.face_voisins(opp_face, 0);
+                      int elem_opp = (elem1 != -1) ? elem1 : zone_EF.face_voisins(opp_face, 1);
+                      //    Other face of the opposite element (i.e. face "after" opp_face)
+                      int f1 = zone_EF.elem_faces(elem_opp, 0);
+                      int face_plus_2 = f1 != opp_face ? f1 : zone_EF.elem_faces(elem_opp, 1);  // 2 faces per elem max - 1D
+                      int som_p2 = face_sommets(face_plus_2, 0);
+
+                      double pond = volumes_thilde(elem_opp)/volumes(elem_opp)/volumes(elem_opp); // taken from ajouter() ...
+                      double B = nu_(elem_opp)*pond;
+                      resu[som] -= B*(tab_inconnue[som]-tab_inconnue[som_p2]);
+                    }
+                  else
+                    {
+                      // This is where we set a Dirichlet T(face) = T(opposite_face)
+                      // Initially, flux for this som is -B.T(i+1) + B.T(i+2)   with B = nu(i+1)  (nu being the diffusivity)
+                      // -> We want to have  B.T(i) - B.T(i+1)
+                      int elem = zone_EF.face_voisins(face, 0);
+                      int f1 = zone_EF.elem_faces(elem, 0);
+                      int face_p2 = f1 != face ? f1 : zone_EF.elem_faces(elem, 1);  // other face of the current elem
+                      int som_p2=face_sommets(face_p2,0);
+
+                      double pond = volumes_thilde(elem)/volumes(elem)/volumes(elem); // taken from ajouter() ...
+                      double B = nu_(elem)*pond;
+                      resu[som] += B*(-tab_inconnue[som_p2] + tab_inconnue[som_opp]); // remove B.T(i+2) and add B.T(i)
+                    }
+                  hit[face-ndeb] = true;
+                  hit[opp_face-ndeb] = true;
+                }
+            }
+          else   // contrib_interne=0 --> implicit
+            {
+              for (int face=ndeb; face<nfin; face++)
+                {
+                  flux_bords_(face,0) = 0.0;
+                }
+            }
+        }
+      else if (sub_type(Echange_interne_global_impose, la_cl.valeur()))
+        {
+          const Echange_interne_global_impose& la_cl_paroi = ref_cast(Echange_interne_global_impose, la_cl.valeur());
+          const DoubleVect& surface_gap = la_cl_paroi.surface_gap();
+          for (int face=ndeb; face<nfin; face++)
+            {
+              double h=la_cl_paroi.h_imp(face-ndeb);
+              const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext().valeur());
+              const IntTab& fmap = Text.face_map();
+              int opp_face = fmap(face-ndeb)+ndeb;
+
+              double tm=0.0;
+              double to=0.0;  // opposite temp.
+              double flux=0.0;
+              if (contrib_interne)  // explicit case
+                {
+                  for (int i1=0; i1<nb_som_face; i1++)
+                    {
+                      int glob2=face_sommets(face,i1);
+                      int glob3 =face_sommets(opp_face,i1);
+                      tm+=tab_inconnue(glob2);
+                      to+=tab_inconnue(glob3);
+                    }
+                  tm/=nb_som_face;
+                  to/=nb_som_face;
+                  //flux=h*(to-tm)*zone_EF.surface(face);
+                  flux=h*(to-tm)*surface_gap(face-ndeb);
+                }
+              else   // implicit case via contribuer_au_second_membre()
+                {
+                  flux = 0.0;
+                }
+              flux_bords_(face,0) = flux;
+              flux/=nb_som_face;
+              for (int i1=0; i1<nb_som_face; i1++)
+                {
+                  int glob2=face_sommets(face,i1);
+                  resu[glob2] += flux;
+                }
+            }
+        }
       else if (sub_type(Echange_global_impose, la_cl.valeur()))
         {
           const Echange_global_impose& la_cl_paroi = ref_cast(Echange_global_impose, la_cl.valeur());
@@ -1101,18 +1237,116 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
 
+      if (sub_type(Echange_couplage_thermique, la_cl.valeur()))
+        {
+          //  matrice.imprimer(Cout);
+          const Echange_couplage_thermique& la_cl_paroi = ref_cast(Echange_couplage_thermique, la_cl.valeur());
+          for (int face=ndeb; face<nfin; face++)
+            {
 
-      if (sub_type(Echange_global_impose, la_cl.valeur()))
+              double h=la_cl_paroi.h_imp(face-ndeb);
+              double dphi_dT=la_cl_paroi.derivee_flux_exterieur_imposee(face-ndeb);
+
+              double tm=1./(nb_som_face*nb_som_face);
+              double flux=(dphi_dT+h)*zone_EF.surface(face)*tm;
+
+              for (int i1=0; i1<nb_som_face; i1++)
+                {
+                  int glob2=face_sommets(face,i1);
+                  for (int j1=0; j1<nb_som_face; j1++)
+                    {
+                      int glob1=face_sommets(face,j1);
+                      matrice.coef(glob1,glob2) += flux;
+                    }
+                }
+            }
+          //  matrice.imprimer(Cout);exit();
+        }
+      else if (sub_type(Echange_interne_global_parfait, la_cl.valeur()))
+        {
+          const Echange_interne_global_parfait& la_cl_paroi = ref_cast(Echange_interne_global_parfait, la_cl.valeur());
+          const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext().valeur());
+          const IntTab& fmap = Text.face_map();
+          std::vector<bool> hit(nfin-ndeb);
+          std::fill(hit.begin(), hit.end(), false);
+          for (int face=ndeb; face<nfin; face++)
+            {
+              // face on the other side of the inner wall:
+              int opp_face = fmap(face-ndeb)+ndeb;
+              // element attached to it
+              int elem1 = zone_EF.face_voisins(opp_face, 0);
+              int elem_opp = (elem1 != -1) ? elem1 : zone_EF.face_voisins(opp_face, 1);
+              // other face of the opposite element (i.e. face "after" opp_face)
+              int f1 = zone_EF.elem_faces(elem_opp, 0);
+              int face_plus_2 = f1 != opp_face ? f1 : zone_EF.elem_faces(elem_opp, 1);  // 2 faces per elem max - 1D
+              // other face of the current elem
+              int elem = zone_EF.face_voisins(face, 0);
+              f1 = zone_EF.elem_faces(elem, 0);
+              int face_min_1 = f1 != face ? f1 : zone_EF.elem_faces(elem, 1);
+
+              for (int i1=0; i1<nb_som_face; i1++)
+                {
+                  int som=face_sommets(face,i1);
+                  int som_opp=face_sommets(opp_face,i1);
+                  if (!hit[face-ndeb])  // first time we encounter one of the face of the pair
+                    {
+                      for (int j1=0; j1<nb_som_face; j1++)
+                        {
+                          // heat equation skipping duplicated face: -T(i-1) + 2*T(i) - T(i+2)
+                          int som_p2=face_sommets(face_plus_2,j1);
+                          matrice.coef(som,som_p2) -= matrice.coef(som_opp, som_opp);
+                          matrice.coef(som, som) += matrice.coef(som_opp, som_opp);
+                        }
+                      hit[face-ndeb] = true;
+                      hit[opp_face-ndeb] = true;
+                    }
+                  else   // we have already handled the opposite side of the wall
+                    for (int j1=0; j1<nb_som_face; j1++)
+                      {
+                        // Dirichlet T(face) = T(opposite_face) and cancelling right term in the tri-band
+                        int som_m1=face_sommets(face_min_1, j1);
+                        matrice.coef(som,som_opp) = -matrice.coef(som,som);
+                        matrice.coef(som,som_m1) = 0;
+                      }
+                }
+            }
+//          matrice.imprimer(Cout);
+        }
+      else if (sub_type(Echange_interne_global_impose, la_cl.valeur()))
+        {
+          const Echange_interne_global_impose& la_cl_paroi = ref_cast(Echange_interne_global_impose, la_cl.valeur());
+          const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, la_cl_paroi.T_ext().valeur());
+          const IntTab& fmap = Text.face_map();
+          const DoubleVect& surface_gap = la_cl_paroi.surface_gap();
+          for (int face=ndeb; face<nfin; face++)
+            {
+              double h=la_cl_paroi.h_imp(face-ndeb);
+              double tm=1./(nb_som_face*nb_som_face);
+              //double flux=h*zone_EF.surface(face)*tm;
+              double flux=h*surface_gap(face-ndeb)*tm;
+              int opp_face = fmap(face-ndeb)+ndeb;
+
+              for (int i1=0; i1<nb_som_face; i1++)
+                {
+                  int glob2=face_sommets(face,i1);
+                  int glob3=face_sommets(opp_face,i1);
+                  for (int j1=0; j1<nb_som_face; j1++)
+                    {
+                      int glob1=face_sommets(face,j1);
+                      matrice.coef(glob1,glob2) += flux;
+                      matrice.coef(glob1,glob3) -= flux;
+                    }
+                }
+            }
+//          matrice.imprimer(Cout);
+        }
+      else if (sub_type(Echange_global_impose, la_cl.valeur()))
         {
           //  matrice.imprimer(Cout);
           const Echange_global_impose& la_cl_paroi = ref_cast(Echange_global_impose, la_cl.valeur());
           for (int face=ndeb; face<nfin; face++)
             {
-
               double h=la_cl_paroi.h_imp(face-ndeb);
-              //double Text=la_cl_paroi.T_ext(face-ndeb);
-
-
               double tm=1./(nb_som_face*nb_som_face);
               double flux=h*zone_EF.surface(face)*tm;
               for (int i1=0; i1<nb_som_face; i1++)
@@ -1121,14 +1355,10 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
                   for (int j1=0; j1<nb_som_face; j1++)
                     {
                       int glob1=face_sommets(face,j1);
-                      {
-                        matrice_coef(glob1,glob2) += flux;
-                      }
-
+                      matrice.coef(glob1,glob2) += flux;
                     }
                 }
             }
-          //  matrice.imprimer(Cout);exit();
         }
     }
 }

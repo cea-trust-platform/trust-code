@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source $TRUST_MEDCOUPLING_ROOT/env.sh || exit 0  # Not run if no MC
+
+jdd=$1
+
+echo Verifie $jdd
+
+if [[ "x$jdd" = "xechg_interne_jdd6" ]]; then
+  python $project_directory/share/utils/verifie_med.py echg_interne_jdd6_0000.med  echg_interne_1D_REFERENCE.med || exit 25
+  exit 0
+fi
+
+exit 25
+

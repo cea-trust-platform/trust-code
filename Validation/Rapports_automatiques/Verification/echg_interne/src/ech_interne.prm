@@ -1,0 +1,256 @@
+Parameters {
+   Title "Echange interne"
+   Description "Validation des nouvelles classes Echange_interne_impose et Echange_interne_global_impose, faisant respectivement le travail de Echange_externe_impose et Echange_global_impose mais pour une paroi interne."
+   Description "Un nouveau champ a été developpé (champ_front_calc_interne) dont le travail est de reporter la valeur de la température de part et d'autre de la paroi interne. Les deux nouvelles CLs encapsulent une instanciation de ce champ pour transmettre la température de part et d'autre de la paroi."
+   Description "On rappelle que la différence entre ces deux types est que Echange_externe_impose (et donc Echange_interne_impose dont elle derivée) calcule le coefficient d'échange en prenant en compte l'épaisseur de la demi-maille."
+   Description "Les solutions analytiques présentées ci dessosu sont décrites dans le document de M. Djinga."
+   Description "On présente dans toute la fiche les résultats pour des valeurs de h extrêmes, et moyennes, ainsi que les résultats obtenues des CL particulières codant une valeur de h infinie ('paroi_echange_interne_global_parfait' en EF, et 'paroi_echange_interne_parfait en VDF')".
+     
+   Author "A.Bruneton"
+   code FLICA5
+   # VDF
+  TestCase echg_interne echg_interne.data
+  TestCase echg_interne_hNul echg_interne_hNul.data
+  TestCase echg_interne_hInf echg_interne_hInf.data
+  TestCase echg_interne_pft echg_interne_pft.data
+  
+  # VEF
+  #TestCase echg_interne_VEF echg_interne_VEF.data
+  #TestCase echg_interne_VEF_hNul echg_interne_VEF_hNul.data
+  #TestCase echg_interne_VEF_hInf echg_interne_VEF_hInf.data
+  
+  # EF
+  TestCase echg_interne_EF echg_interne_EF.data
+  TestCase echg_interne_EF_hNul echg_interne_EF_hNul.data
+  TestCase echg_interne_EF_hInf echg_interne_EF_hInf.data
+  TestCase echg_interne_EF_pft echg_interne_EF_pft.data
+}
+
+Chapter {
+   Title "Convergence" 
+
+   figure { 
+      title "Résidus"
+      include_description_curves 0
+      labelX "t(s)"
+      labelY "residu=max|Ri|"
+      logX
+      logY
+      grid
+      
+      curve {
+         legend h=moy - VDF
+         file ./echg_interne/echg_interne.dt_ev
+         columns 1 4
+         style lines
+        }
+      curve {
+      legend h=0.0 - VDF 
+         file ./echg_interne_hNul/echg_interne_hNul.dt_ev
+         columns 1 4
+         style lines
+         }
+       curve {
+       legend h=+inf - VDF 
+         file ./echg_interne_hInf/echg_interne_hInf.dt_ev
+         columns 1 4
+         style lines
+       }
+       
+      curve {
+         legend h=moy - EF
+         file ./echg_interne_EF/echg_interne_EF.dt_ev
+         columns 1 4
+         style lines
+        }
+      curve {
+      legend h=0.0 - EF 
+         file ./echg_interne_EF_hNul/echg_interne_EF_hNul.dt_ev
+         columns 1 4
+         style lines
+         }
+       curve {
+       legend h=+inf - EF 
+         file ./echg_interne_EF_hInf/echg_interne_EF_hInf.dt_ev
+         columns 1 4
+         style lines
+       }
+
+   }
+}
+
+Chapter {
+   Title "Paroi interne"
+
+   Description "Géometrie: une barre horizontale de 30 éléments s'étendant de -1 à +1."
+   Description "ATTENTION en EF on ne peut pas utiliser la condition Echange_interne_impose car celle ci a besoin de calculer la demi épaisseur de maille ce qui est seulement valable poour les discrétisations où la température est au centre de l'élément."
+   Description "ATTENTION aussi, en EF, on triangularise (trianguler_h) le domaine pour ne pas tomber sur la discrétisation quadrangle, pas assez validée. "
+  Description "Les CL sont des températures imposées à 20deg à gauche, et 100deg à droite, condition initiale temp=60deg."
+
+   Figure {
+   Title "Variation en espace - VDF - Valeurs extrêmes de h"
+   Description "Profils de température pour des coefficients nuls, moyen (=0.02) et infinis en VDF. On voit qu'à coefficient nul, la CL se comporte comme une adiabatique et à coefficient infini, la paroi est transparente pour le flux de chaleur. La CL Echange_interne_impose est utilisée."  
+   Description "On a un très bon match entre h=1e12 et la CL 'paroi_echange_interne_parfait' pour laquelle la moyenne harmonique $ h_{tot} = 1/(1/h_{gap} + e / \lambda) $ se réduit à $ h_{tot} = \lambda / e $."
+   Dimension 2
+   include_description_curves 0
+   LabelX "X"
+  LabelY "T"
+  grid
+  Curve {
+      legend "t=final - h=0.0"
+      segment ./echg_interne_hNul/echg_interne_hNul.data sonde_horiz 
+      Style linespoints
+   }
+ Curve {
+      legend "t=final - h=0.02"
+      segment ./echg_interne/echg_interne.data sonde_horiz 
+      Style linespoints
+   }
+
+  Curve {
+      legend "t=final - h=1e12"
+      segment ./echg_interne_hInf/echg_interne_hInf.data sonde_horiz 
+      Style linespoints
+   }
+   Curve {
+      legend "t=final - Parfait"
+      segment ./echg_interne_pft/echg_interne_pft.data sonde_horiz
+      Style linespoints
+   }
+  Curve {
+      legend "analytic - h=0.02"
+      # T(-) = T0-(x-x0)*hg/lambda1*(T0-T1) / [ 1 + hg*(L1/lambda1 + L2/lambda2) ] 
+      # T(+) = T1-(x-x1)*hg/lambda2*(T0-T1) / [ 1 + hg*(L1/lambda1 + L2/lambda2) ]  
+      fonction (x<0) ? 20-(x+1)*0.02/0.01*(20-100)/(1+0.02*(1/0.01 + 1/0.03)) : 100-(x-1)*0.02/0.03*(20-100)/(1+0.02*(1/0.01 + 1/0.03))
+   }
+   Curve {
+      legend "analytic - h=1e12"  
+      #   on divise juste en haut et en bas par hg pour une meilleure numérique:
+      fonction (x<0) ? 20-(x+1)*1/0.01*(20-100)/(1/1e12+(1/0.01 + 1/0.03)) : 100-(x-1)*1/0.03*(20-100)/(1/1e12+(1/0.01 + 1/0.03))
+    }
+
+ }
+
+#   Figure {
+#   Title "Variation en espace - VEF - Valeurs extrêmes de h"
+#   Description "Même chose que précédemment en VEF cette fois. La CL Echange_global_impose est utilisée cette fois, car on ne veut pas l'épaisseur de la demi-maille en VEF."  
+#   Dimension 2
+#   include_description_curves 0
+#   LabelX "X"
+#  LabelY "T"
+#  grid
+#  Curve {
+#      legend "t=final - h=0.0"
+#      segment ./echg_interne_VEF_hNul/echg_interne_VEF_hNul.data sonde_horiz 
+#      Style linespoints
+#   }
+# Curve {
+#      legend "t=final - h=0.02"
+#      segment ./echg_interne_VEF/echg_interne_VEF.data sonde_horiz 
+#      Style linespoints
+#   }
+#
+#  Curve {
+#      legend "t=final - h=1e12"
+#      segment ./echg_interne_VEF_hInf/echg_interne_VEF_hInf.data sonde_horiz 
+#      Style linespoints
+#   }
+#  Curve {
+#      legend "analytic - h=0.02"
+#      # T(-) = T0-(x-x0)*hg/lambda1*(T0-T1) / [ 1 + hg*(L1/lambda1 + L2/lambda2) ] 
+#      # T(+) = T1-(x-x1)*hg/lambda2*(T0-T1) / [ 1 + hg*(L1/lambda1 + L2/lambda2) ]  
+#      fonction (x<0) ? 20-(x+1)*0.02/0.01*(20-100)/(1+0.02*(1/0.01 + 1/0.03)) : 100-(x-1)*0.02/0.03*(20-100)/(1+0.02*(1/0.01 + 1/0.03))
+#   }
+#   Curve {
+#      legend "analytic - h=1e12"  
+#      #   on divise juste en haut et en bas par hg pour une meilleure numérique:
+#      fonction (x<0) ? 20-(x+1)*1/0.01*(20-100)/(1/1e12+(1/0.01 + 1/0.03)) : 100-(x-1)*1/0.03*(20-100)/(1/1e12+(1/0.01 + 1/0.03))
+#    }
+#
+# }
+
+   Figure {
+   Title "Variation en espace - EF - Valeurs extrêmes de h"
+   Description "Même chose que précédemment en EF cette fois. La CL Echange_global_impose est utilisée ici aussi, comme en VEF, car on ne veut pas l'épaisseur de la demi-maille."  
+   Description "ATTENTION: le solveur implicite joue ici un rôle crucial. Pour une valeur aussi grande de h, le GMRES ne passe pas, il faut Cholesky. Cela ne se pose pas en VDF car on a toujours l'épaisseur de la demi-maille qui nous compense (?)."
+   Description "ATTENTION aussi: au-delà de 1e12, on arrive sur la précision machine, les résultats ne collent plus à l'analytique."  
+   Description "On a un très bon match entre h=1e12 et la CL 'paroi_echange_interne_global_parfait' mais pour le codage de celle-ci le remplissage de la matrice implicite a du être modifié pour imposer un Dirichlet de température à la paroi interne."
+
+   Dimension 2
+   include_description_curves 0
+   LabelX "X"
+  LabelY "T"
+  grid
+  Curve {
+      legend "t=final - h=0.0"
+      segment ./echg_interne_EF_hNul/echg_interne_EF_hNul.data sonde_horiz
+      Style linespoints
+   }
+  Curve {
+      legend "t=final - h=0.02"
+      segment ./echg_interne_EF/echg_interne_EF.data sonde_horiz
+      Style linespoints
+   }
+
+  Curve {
+      legend "t=final - h=1e12"
+      segment ./echg_interne_EF_hInf/echg_interne_EF_hInf.data sonde_horiz
+      Style linespoints
+   }
+  
+  Curve {
+      legend "t=final - Parfait"
+      segment ./echg_interne_EF_pft/echg_interne_EF_pft.data sonde_horiz
+      Style linespoints
+   }
+    
+  Curve {
+      legend "analytic - h=0.02"
+      # T(-) = T0-(x-x0)*hg/lambda1*(T0-T1) / [ 1 + hg*(L1/lambda1 + L2/lambda2) ] 
+      # T(+) = T1-(x-x1)*hg/lambda2*(T0-T1) / [ 1 + hg*(L1/lambda1 + L2/lambda2) ]  
+      fonction (x<0) ? 20-(x+1)*0.02/0.01*(20-100)/(1+0.02*(1/0.01 + 1/0.03)) : 100-(x-1)*0.02/0.03*(20-100)/(1+0.02*(1/0.01 + 1/0.03))
+   }
+   Curve {
+      legend "analytic - h=1e12"  
+      #   on divise juste en haut et en bas par hg pour une meilleure numérique:
+      fonction (x<0) ? 20-(x+1)*1/0.01*(20-100)/(1/1e12+(1/0.01 + 1/0.03)) : 100-(x-1)*1/0.03*(20-100)/(1/1e12+(1/0.01 + 1/0.03))
+    }
+
+ }
+ 
+ 
+   Figure {
+   Title "Evolution temporelle - VDF - EF"
+   Description "Profils temporels autour de la paroi (0-eps) et (0+eps) pour toutes les discrétisations traitées dans le cas de h moyen."  
+   Dimension 2
+   include_description_curves 0
+   LabelX "t"
+  LabelY "T"
+  grid
+  Curve {
+      legend "x = 0-eps (VDF)"
+      file ./echg_interne/echg_interne_SONDE_POINT_G.son
+      Style linespoints
+   }
+  Curve {
+      legend "x = 0+eps (VDF)"
+      file ./echg_interne/echg_interne_SONDE_POINT_D.son
+      Style linespoints
+   }
+   
+#  Curve {
+#      legend "x = 0-eps (EF)"
+#      file ./echg_interne_EF/echg_interne_EF_SONDE_POINT_G.son
+#      Style linespoints
+#   }
+# Curve {
+#      legend "x = 0+eps (EF)"
+#      file ./echg_interne_EF/echg_interne_EF_SONDE_POINT_D.son
+#      Style linespoints
+#   }
+ }
+ 
+
+}
+
+

@@ -1,0 +1,62 @@
+Parameters {
+	Title "Validation analytique des CL 'Echange_*_impose'"
+	Description "Validation de Echange_global_impose en EF 1D, et de la CL Echange_externe_impose en VDF pseudo 1D."
+  Description "Tous les cas sont en implicite (c'est ce que l'on veut valider), avec T_gauche=0 et a droite h=2, T_ext=10."
+  Description "On en profite aussi pour vérifier le bon comportement des sondes en EF 1D et notamment l'option 'som'."
+	Author "A.Bruneton"
+	code FLICA5
+
+#   Variation temporelle:
+  TestCase echg_imp_EF echg_imp_EF.data
+  TestCase echg_imp_EF_quad echg_imp_EF_quad.data
+  TestCase echg_imp_VDF echg_imp_VDF.data
+  TestCase echg_imp_VEF echg_imp_VEF.data
+}
+
+
+Chapter {
+	Title "Cas analytique"
+	Description "Geometrie 1D pure."  
+	
+Figure {
+	Title "Profil de temperature"
+	Description "La courbe EF_quad correspond au maillage 1D mais sur lequel les points sont placés de manière irrégulière. Cela sert à tester le bon comportement de la sonde avec l'option 'som' sur un maillage 1D irrégulier."  
+	Dimension 2
+	include_description_curves 0
+	LabelX "x"
+  LabelY "T"
+  
+	Curve {
+		legend "EF, t=final"	
+    segment echg_imp_EF/echg_imp_EF.data  sonde_horiz 
+		Style linespoints
+	}
+
+  Curve {
+		legend "EF - quad points, t=final"	
+  	segment echg_imp_EF_quad/echg_imp_EF_quad.data sonde_horiz 
+		Style linespoints
+	}
+	
+  Curve {
+		legend "VDF, t=final"	
+  	segment echg_imp_VDF/echg_imp_VDF.data sonde_horiz 
+		Style linespoints
+	}
+
+  Curve {
+		legend "VEF, t=final"	
+  	segment echg_imp_VEF/echg_imp_VEF.data sonde_horiz 
+		Style linespoints
+  }
+
+  Curve {
+    legend "analytic"
+    fonction (x+1)*10./(3.0/2.0 + 1 +1)   # Text/(lamb/h + L + 1)
+  }
+	
+}
+
+}
+
+

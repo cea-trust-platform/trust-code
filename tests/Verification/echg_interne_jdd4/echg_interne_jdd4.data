@@ -1,0 +1,114 @@
+# Conduction 1D : une barre horizontale faite de deux materiaux  #
+# PARALLEL OK #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom med_domain domain.med
+read_file dom_ssz.geo ;
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { nb_parts 1 }
+    nb_parts_tot 2
+    Larg_joint 1
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+read_file dom_ssz_par.geo ;
+END SCATTER #
+
+VDF dis
+
+Scheme_euler_implicit sch
+Read sch
+{
+    Tinit 0
+    tmax 300.
+    dt_min 0.00001
+    dt_max 0.1
+    dt_impr 0.00001
+    dt_sauv 100
+    seuil_statio -1
+
+    facsec_max 100
+    facsec 10
+
+    solveur implicite { solveur gmres { diag seuil 1.0e-8 } }
+
+}
+
+Solide sol
+Read sol
+{
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme_morceaux dom 1
+    {
+	    defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
+            left_elem 0.01
+            right_elem 0.03
+    }
+    Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Read pb
+{
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 60.0
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche paroi_temperature_imposee        Champ_Front_Uniforme 1 20.
+            Droit paroi_temperature_imposee         Champ_Front_Uniforme 1 100.
+
+#      interne_gauche Paroi_echange_global_impose
+            h_imp Champ_Front_Uniforme 1 100.
+            T_ext Champ_Front_Uniforme 1 50.
+
+            interne_droite Paroi_echange_global_impose
+            h_imp Champ_Front_Uniforme 1 100.
+            T_ext Champ_Front_Uniforme 1 70.   #
+
+            interne_tout Paroi_echange_interne_parfait
+            
+        }
+
+    }
+
+    Post_processing
+    {
+        fields dt_post 1.0
+        {
+            temperature
+        }
+
+        Probes
+        {
+            sonde_horiz temperature periode 1. segment 30 -0.96667 0.5 0.96667 0.5   # aux centres des elements en VDF #
+            /* sonde_horiz nodes temperature periode 1. segment 61 -1.0 0.5 1.0 0.5   # aux centres des faces en VEF, au centre des elements en VDF # */
+            sonde_point_g temperature periode 5 points 1 -0.03333 0.5   # 0.03333 is the center of the elem in VDF #
+            sonde_point_d temperature periode 5 points 1  0.03333 0.5
+        }
+    }
+}
+
+Solve pb
+
+End

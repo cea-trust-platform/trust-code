@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@
 #include <Champ_Generique_base.h>
 
 Declare_liste(Sonde);
-Declare_liste(Champ);
+//Declare_liste(Champ);
 
 //////////////////////////////////////////////////////////////////////////////
 //

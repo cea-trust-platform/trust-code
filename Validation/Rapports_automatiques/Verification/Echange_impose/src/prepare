@@ -1,0 +1,27 @@
+#!/bin/bash
+
+mkdir -p echg_imp_EF
+mkdir -p echg_imp_EF_quad
+mkdir -p echg_imp_VEF
+mkdir -p echg_imp_VDF
+
+source $TRUST_MEDCOUPLING_ROOT/env.sh || echo Warning: impossible de sourcer MEDCoupling. On prend l existant.
+python gen_mesh_1D.py || echo Warning: le maillage n a pas pu etre regenere. On prend l existant.
+python gen_mesh_1D_quad.py || echo Warning: le maillage n a pas pu etre regenere. On prend l existant.
+python gen_mesh_2D.py || echo Warning: le maillage n a pas pu etre regenere. On prend l existant.
+
+cp domain_1D.med echg_imp_EF
+cp domain_1D_quad.med echg_imp_EF_quad
+cp domain_2D.med echg_imp_VEF
+cp domain_2D.med echg_imp_VDF
+
+sed "s/domain_1D.med/domain_1D_quad.med/" echg_imp_EF.data > echg_imp_EF_quad/echg_imp_EF_quad.data
+
+cp echg_imp_EF.data echg_imp_EF
+cp echg_imp_VDF.data echg_imp_VDF
+cp echg_imp_VEF.data echg_imp_VEF
+
+echo Done prepare
+exit 0
+
+

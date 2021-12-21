@@ -1,0 +1,121 @@
+# Conduction 1D : une barre horizontale faite de deux materiaux  #
+# PARALLEL OK #
+dimension 2
+
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom med_domain_1D domain_1D.med
+read_file dom_ssz.geo ;
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { nb_parts 1 }
+    nb_parts_tot 2
+    Larg_joint 1
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+read_file dom_ssz_par.geo ;
+END SCATTER #
+
+EF dis
+
+Scheme_euler_implicit sch
+Read sch
+{
+    Tinit 0
+    tmax 300.
+    dt_min 0.00001
+    dt_max 0.1
+    dt_impr 0.00001
+    dt_sauv 100
+    seuil_statio -1
+
+    facsec_max 100
+    facsec 10
+
+# solveur implicite { solveur gmres { diag seuil 1e-8 impr } } #
+    solveur implicite { solveur petsc cholesky {  } }
+}
+
+/*
+Scheme_euler_explicit sch
+Read sch
+{
+	Tinit 0
+	tmax 300.
+	dt_min 0.00001
+	dt_max 0.1
+	dt_impr 0.00001
+	dt_sauv 100
+	seuil_statio -1
+} */
+
+
+Solide sol
+Read sol
+{
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme_morceaux dom 1
+    {
+            defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
+            left_elem 0.01
+            right_elem 0.03
+        }
+    Cp Champ_Uniforme 1 0.5
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Read pb
+{
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 60.
+        }
+        boundary_conditions {
+            Gauche paroi_temperature_imposee        Champ_Front_Uniforme 1 20.
+            Droit paroi_temperature_imposee         Champ_Front_Uniforme 1 100.
+
+#      interne_gauche Paroi_echange_global_impose
+            h_imp Champ_Front_Uniforme 1 100.
+            T_ext Champ_Front_Uniforme 1 50.
+
+            interne_droite Paroi_echange_global_impose
+            h_imp Champ_Front_Uniforme 1 100.
+            T_ext Champ_Front_Uniforme 1 70.   #
+
+            interne_tout Paroi_echange_interne_global_impose
+            h_gap Champ_Front_Uniforme 1 0.02
+        }
+    }
+
+    Post_processing
+    {
+        fields dt_post 1.0
+        {
+            temperature
+        }
+
+        probes {
+            sonde_horiz som temperature periode 1. segment 31 -1.0 0.0 1.0 0.0   # som is important #
+        }
+    }
+}
+
+Solve pb
+
+End
