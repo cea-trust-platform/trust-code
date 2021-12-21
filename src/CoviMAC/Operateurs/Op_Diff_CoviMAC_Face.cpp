@@ -68,15 +68,6 @@ void Op_Diff_CoviMAC_Face::completer()
     Cerr << "Op_Diff_CoviMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
   porosite_e.ref(zone.porosite_elem());
   porosite_f.ref(zone.porosite_face());
-
-
-  const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-  if (modele_turbulence.non_nul())
-    {
-      const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
-      const Champ_Fonc& alpha_t = mod_turb.viscosite_turbulente();
-      associer_diffusivite_turbulente(alpha_t);
-    }
 }
 
 double Op_Diff_CoviMAC_Face::calculer_dt_stab() const

@@ -88,7 +88,7 @@ void Op_Diff_CoviMAC_base::completer()
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   zone.zone().creer_tableau_elements(nu_);
 
-  nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) && !has_diffusivite_turbulente();
+  nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) ;
 }
 
 int Op_Diff_CoviMAC_base::impr(Sortie& os) const
@@ -264,18 +264,6 @@ void Op_Diff_CoviMAC_base::update_nu() const
   else if (N_nu == N * D * D && (N_nu_src == N || N_nu_src == N * D)) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) //complet
         for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N ? n : D * n + d);
   else abort();
-
-  if (has_diffusivite_turbulente()) /* prise en compte de la turbulence */
-    {
-      const DoubleTab& nut_src = diffusivite_turbulente().valeurs();
-      int c_nut = (nut_src.dimension_tot(0) == 1), N_nut_src = nut_src.line_size();
-      if (N_nu == N_nut_src) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N_nu; n++) nu_.addr()[N_nu * e + n] += nut_src(!c_nut * e, n); //facile
-      else if (N_nu == N * D && N_nut_src == N) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //diagonal
-              nu_(e, n, d) += nut_src(!c_nut * e, n);
-      else if (N_nu == N * D * D && (N_nut_src == N || N_nut_src == N * D)) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) //complet
-            for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, n, d, db) += (d == db) * nut_src(!c_nut * e, N_nut_src == N ? n : D * n + d);
-      else abort();
-    }
 
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
   const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;

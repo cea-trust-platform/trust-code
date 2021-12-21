@@ -82,14 +82,6 @@ void Op_Diff_CoviMAC_Elem::completer()
     Cerr << "Op_Diff_CoviMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
   flux_bords_.resize(zone.premiere_face_int(), ch.valeurs().line_size());
 
-  const RefObjU& modele_turbulence = eq.get_modele(TURBULENCE);
-  if (modele_turbulence.non_nul())
-    {
-      const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
-      const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
-      associer_diffusivite_turbulente(lambda_t);
-    }
-
   /* tableau q_pi */
   if (sub_type(Energie_Multiphase, eq))
     q_pi_.resize(0, ch.valeurs().line_size(), ch.valeurs().line_size()), zone.zone().creer_tableau_elements(q_pi_);

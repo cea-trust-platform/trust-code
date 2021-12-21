@@ -51,7 +51,7 @@ class Champ_Fonc;
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Op_Diff_CoviMAC_base : public Operateur_Diff_base, public Op_Diff_Turbulent_base
+class Op_Diff_CoviMAC_base : public Operateur_Diff_base
 {
 
 
