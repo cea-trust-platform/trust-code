@@ -286,7 +286,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
   if (DERIVED_T::IS_CENTRE) for (int k = 0; k < ncomp; k++) flux1_2(k) = -psc*0.5*(inco(fac1,k)+inco(fac2,k));
   else if (DERIVED_T::IS_CENTRE4)
     {
-      const int ncomp = flux1_2.size(), ori = orientation(fac3), num0_0 = face_amont_conj_(fac1,ori,0), num1_1 = face_amont_conj_(fac2,ori,1);
+      const int ori = orientation(fac3), num0_0 = face_amont_conj_(fac1,ori,0), num1_1 = face_amont_conj_(fac2,ori,1);
 
       if ( (num0_0 == -1)||(num1_1== -1) ) for (int k=0; k<ncomp; k++)  flux1_2(k) = -psc*0.5*(inco(fac1,k)+inco(fac2,k)); // Schema centre 2 (pas assez de faces)
       else // Schema Centre4
@@ -365,17 +365,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int face,const Neumann_sortie_libre& l
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
-  const double psc = dt_vitesse(face)*surface(face);
-  if (psc>0)
-    {
-      for (int k = 0; k < aii.size(); k++) aii(k) = psc*porosite(face);
-      for (int k = 0; k < ajj.size(); k++) ajj(k) = 0.;
-    }
-  else
-    {
-      for (int k = 0; k < aii.size(); k++) aii(k) = 0.;
-      for (int k = 0; k < ajj.size(); k++) ajj(k) = -psc*porosite(face);
-    }
+  const double psc = dt_vitesse(face)*surface(face)*porosite(face);
+  fill_coeffs_proto(psc,psc,aii,ajj);
 }
 
 template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
@@ -383,17 +374,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_fa7(int, int fac1, int fac2, DoubleVect& a
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
-  const double psc = 0.25 * (dt_vitesse(fac1)+dt_vitesse(fac2))* (surface(fac1)+surface(fac2));
-  if (psc>0)
-    {
-      for (int k = 0; k < aii.size(); k++) aii(k) = psc*porosite(fac1);
-      for (int k = 0; k < ajj.size(); k++) ajj(k) = 0.;
-    }
-  else
-    {
-      for (int k = 0; k < aii.size(); k++) aii(k) = 0.;
-      for (int k = 0; k < ajj.size(); k++) ajj(k) = -psc*porosite(fac2);
-    }
+  const double psc = 0.25*(dt_vitesse(fac1)+dt_vitesse(fac2))*(surface(fac1)+surface(fac2)), psc1 = psc*porosite(fac1), psc2 = psc*porosite(fac2);
+  fill_coeffs_proto(psc1,psc2,aii,ajj);
 }
 
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline
@@ -403,61 +385,37 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2 , int fac3, int f
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
   const double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if (psc>0)
-    {
-      for (int k = 0; k < aii.size(); k++) aii(k) = psc;
-      for (int k = 0; k < ajj.size(); k++) ajj(k) = 0.;
-    }
-  else
-    {
-      for (int k = 0; k < aii.size(); k++) aii(k) = 0.;
-      for (int k = 0; k < ajj.size(); k++) ajj(k) = -psc;
-    }
+  fill_coeffs_proto(psc,psc,aii,ajj);
 }
 
-
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline
-enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3,int signe,DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
-  double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+  constexpr bool is_COIN = (Arete_Type == Type_Flux_Arete::COIN_FLUIDE);
+
+  double psc = is_COIN ? 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1) : 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
   if ((psc*signe)>0) for (int k = 0; k < aii3_4.size(); k++) aii3_4(k) = psc ;
   else for (int k = 0; k < aii3_4.size(); k++) aii3_4(k) = 0.;
 
   psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  if (psc>0)
-    {
-      for (int k = 0; k < aii1_2.size(); k++) aii1_2(k) = psc;
-      for (int k = 0; k < ajj1_2.size(); k++) ajj1_2(k) = 0.;
-    }
-  else
-    {
-      for (int k = 0; k < aii1_2.size(); k++) aii1_2(k) = 0.;
-      for (int k = 0; k < ajj1_2.size(); k++) ajj1_2(k) = -psc;
-    }
+  fill_coeffs_proto(psc,psc,aii1_2,ajj1_2);
 }
 
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int, int fac3, int signe, DoubleVect& aii1_2, DoubleVect& aii3_4, DoubleVect& ajj1_2) const
+template <typename DERIVED_T>
+inline void Eval_Conv_VDF_Face<DERIVED_T>::fill_coeffs_proto(const double psc1, const double psc2, DoubleVect& A, DoubleVect& B) const
 {
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  double psc = 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1);
-  if ((psc*signe)>0) for (int k = 0; k < aii3_4.size(); k++) aii3_4(k) = psc ;
-  else for (int k = 0; k < aii3_4.size(); k++) aii3_4(k) = 0.;
-
-  psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  if (psc>0)
+  if (psc1 > 0)
     {
-      for (int k = 0; k < aii1_2.size(); k++) aii1_2(k) = psc;
-      for (int k = 0; k < ajj1_2.size(); k++) ajj1_2(k) = 0.;
+      for (int k = 0; k < A.size(); k++) A(k) = psc1;
+      for (int k = 0; k < B.size(); k++) B(k) = 0.;
     }
   else
     {
-      for (int k = 0; k < aii1_2.size(); k++) aii1_2(k) = 0.;
-      for (int k = 0; k < ajj1_2.size(); k++) ajj1_2(k) = -psc;
+      for (int k = 0; k < A.size(); k++) A(k) = 0.;
+      for (int k = 0; k < B.size(); k++) B(k) = -psc2;
     }
 }
 
@@ -471,6 +429,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7(int face, const Neumann_sortie_libre& 
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
   constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
+
   const int i = elem_(face,0), ncomp = flux.size();
   const double psc = dt_vitesse(face)*surface(face);
   if (i != -1)
@@ -486,34 +445,22 @@ Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7(int face, const Neumann_sortie_libre& 
 }
 
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Typ>
-inline enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+inline enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
-  const double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+  constexpr bool is_COIN = (Arete_Type == Type_Flux_Arete::COIN_FLUIDE);
+
+  const double tps = inconnue->temps(), psc = is_COIN ? 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1) :
+      0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+
   if ((psc*signe)<0)
     {
       const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), rang2 = (fac2-pfb), ori = orientation(fac3);
       for (int k = 0; k < flux3.size(); k++)
-        flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl())
-                         + Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori,la_zcl()))* psc ;
-    }
-  else for (int k = 0; k < flux3.size(); k++) flux3(k) = 0.;
-
-  for (int k = 0; k < flux1_2.size(); k++) flux1_2(k) = 0.;
-}
-
-template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int , int fac3, int signe, DoubleVect& flux3, DoubleVect& flux1_2) const
-{
-  if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
-
-  const double psc = 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1);
-  if ((psc*signe)<0)
-    {
-      const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), ori = orientation(fac3);
-      for (int k = 0; k < flux3.size(); k++) flux3(k) = -Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori,la_zcl()) * psc ;
+        flux3(k) = is_COIN ? -Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl()) * psc :
+            -0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl())+Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl()))*psc ;
     }
   else for (int k = 0; k < flux3.size(); k++) flux3(k) = 0.;
 

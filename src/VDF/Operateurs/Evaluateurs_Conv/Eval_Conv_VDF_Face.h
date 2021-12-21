@@ -88,10 +88,7 @@ public:
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& ) const;
 
   template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
-  inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
-  coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
-
-  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+  inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
   coeffs_arete(int, int, int, int, DoubleVect& , DoubleVect& , DoubleVect& ) const;
 
   template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline
@@ -114,16 +111,14 @@ public:
   secmem_arete(int, int, int, int, DoubleVect& ) const { /* do nothing */ }
 
   template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
-  inline enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+  inline enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
   secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const;
-
-  template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-  secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const ;
 
   template<Type_Flux_Arete Arete_Type, Type_Champ Field_Type> inline enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
   secmem_arete(int, int, int, int, DoubleVect&, DoubleVect&) const { /* do nothing */ }
 
 private:
+  inline void fill_coeffs_proto(const double , const double, DoubleVect& , DoubleVect& ) const;
   // CRTP pattern to static_cast the appropriate class and get the implementation: This is magic !
   inline int premiere_face_bord() const { return static_cast<const DERIVED_T *>(this)->get_premiere_face_bord(); }
   inline int orientation(int face) const { return static_cast<const DERIVED_T *>(this)->get_orientation(face); }
