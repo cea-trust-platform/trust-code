@@ -30,18 +30,17 @@
 template <typename DERIVED_T> template<Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
 Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int face, const Neumann_sortie_libre& la_cl, int num1, ArrOfDouble& flux) const
 {
-  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
   const int elem1 = elem_(face,0), ncomp = flux.size_array();
   const double psc = dt_vitesse(face)*surface(face);
   if (elem1 != -1)
     {
       if (psc > 0) for (int k = 0; k < flux.size_array(); k++) flux(k) = -psc*inco(face,k)*porosite(face);
-      else for (int k = 0; k < ncomp; k++) flux(k) = is_SCALAIRE ? -psc*la_cl.val_ext(face-num1,orientation(face)) : -psc*la_cl.val_ext(face-num1,k); // TODO : FIXME : Yannick help :/
+      else for (int k = 0; k < ncomp; k++) flux(k) = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k); // TODO : FIXME : Yannick help :/
     }
   else
     {
       if (psc < 0) for (int k = 0; k < flux.size_array(); k++) flux(k) = -psc*inco(face,k)*porosite(face);
-      else for (int k = 0; k < ncomp; k++) flux(k) =  is_SCALAIRE ? -psc*la_cl.val_ext(face-num1,orientation(face)) : -psc*la_cl.val_ext(face-num1,k);
+      else for (int k = 0; k < ncomp; k++) flux(k) = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k);
     }
 }
 
@@ -402,18 +401,16 @@ Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7(int face, const Neumann_sortie_libre& 
 {
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_AXI || DERIVED_T::IS_CENTRE4) return;
 
-  constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
-
   const int i = elem_(face,0), ncomp = flux.size_array();
   const double psc = dt_vitesse(face)*surface(face);
   if (i != -1)
     {
-      if (psc < 0) for (int k = 0; k < ncomp; k++) flux(k) = is_SCALAIRE ? -psc*la_cl.val_ext(face-num1,orientation(face)) : -psc*la_cl.val_ext(face-num1,k); // TODO : FIXME : Yannick help :/
+      if (psc < 0) for (int k = 0; k < ncomp; k++) flux(k) = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k); // TODO : FIXME : Yannick help :/
       else for (int k = 0; k < ncomp; k++) flux(k) = 0.;
     }
   else // (elem2 != -1)
     {
-      if (psc > 0) for (int k = 0; k < ncomp; k++) flux(k) = is_SCALAIRE ? -psc*la_cl.val_ext(face-num1,orientation(face)) : -psc*la_cl.val_ext(face-num1,k);
+      if (psc > 0) for (int k = 0; k < ncomp; k++) flux(k) = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k);
       else for (int k = 0; k < ncomp; k++) flux(k) = 0.;
     }
 }
