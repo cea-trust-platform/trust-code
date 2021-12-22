@@ -483,7 +483,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const Doubl
 template <class _TYPE_> template<Type_Champ Field_Type>
 void T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, const DoubleTab& inco, DoubleTab& resu) const
 {
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       flux_evaluateur.template flux_fa7<Type_Flux_Fa7::ELEM,Field_Type>(inco,num_elem,fac1,fac2,flux);
       for (int k=0; k<ncomp; k++) resu(face,k) += signe*flux(k);
 }
@@ -496,7 +496,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int n, con
     {
       constexpr bool is_PAROI = (Arete_Type == Type_Flux_Arete::PAROI), is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       if (is_SCALAIRE)
         {
           flux_evaluateur.template flux_arete<Arete_Type,Field_Type>(inco, fac1, fac2, fac3, signe, flux);
@@ -535,7 +535,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int n, con
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
       if (is_SCALAIRE)
         {
-          DoubleVect flux3(ncomp), flux1_2(ncomp), flux3_4(ncomp);
+          ArrOfDouble flux3(ncomp), flux1_2(ncomp), flux3_4(ncomp);
           if (is_PERIO)
             {
               int fac4 = signe;
@@ -558,12 +558,12 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int n, con
         }
       else
         {
-          DoubleVect flux3(ncomp), flux1_2(ncomp);
+          ArrOfDouble flux3(ncomp), flux1_2(ncomp);
           flux_evaluateur.template flux_arete<Arete_Type,Field_Type>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
           if (is_PERIO)
             {
               int fac4 = signe;
-              DoubleVect flux3_4 = flux3;
+              ArrOfDouble flux3_4 = flux3;
               for (int k=0; k<ncomp; k++)
                 {
                   resu(fac3,k) += 0.5*flux3_4(k);
@@ -594,7 +594,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp,
     {
       constexpr bool is_PERIO_PAROI = (Arete_Type_Coin == TypeAreteCoinVDF::PERIO_PAROI), is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       if (is_SCALAIRE)
         {
           flux_evaluateur.template flux_arete<Arete_Type,Field_Type>(inco, fac1, fac2, fac3, signe,flux);
@@ -632,13 +632,13 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int n, con
       constexpr bool is_PERIO = (Arete_Type == Type_Flux_Arete::PERIODICITE), is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
       if (is_SCALAIRE)
         {
-          DoubleVect flux3(ncomp), flux1_2(ncomp);
+          ArrOfDouble flux3(ncomp), flux1_2(ncomp);
           int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
           flux_evaluateur.template flux_arete<Arete_Type,Field_Type>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
           if (is_PERIO)
             {
               int fac4 = signe;
-              DoubleVect flux3_4 = flux3;
+              ArrOfDouble flux3_4 = flux3;
               resu(fac3) += 0.5*flux3_4(0);
               resu(fac4) -= 0.5*flux3_4(0);
               resu(fac1) += 0.5*flux1_2(0);
@@ -671,7 +671,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_aretes_internes_(const int n_arete, const in
         }
       else
         {
-          DoubleVect flux(ncomp);
+          ArrOfDouble flux(ncomp);
           int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3);
           flux_evaluateur.template flux_arete<Arete_Type,Field_Type>(inco, fac1, fac2, fac3, fac4, flux);
           for (int k = 0; k < ncomp; k++)
@@ -697,7 +697,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes_(const int n_arete, const int 
       constexpr bool is_MIXTE = (Arete_Type == Type_Flux_Arete::MIXTE), is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
       if (is_SCALAIRE)
         {
-          DoubleVect flux(ncomp);
+          ArrOfDouble flux(ncomp);
           int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3);
           flux_evaluateur.template flux_arete<Arete_Type,Field_Type>(inco, fac1, fac2, fac3, fac4,flux);
           resu(fac3) += flux(0);
@@ -742,7 +742,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre_(const int ndeb, const int 
   if (should_calc_flux)
     {
       constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           if (is_SCALAIRE)
@@ -766,7 +766,7 @@ template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type>
 void T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem_(const int num_elem, const int n, const int ncomp, const DoubleTab& inco, DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
-  DoubleVect flux(ncomp);
+  ArrOfDouble flux(ncomp);
   for (int fa7 = 0; fa7 < dimension; fa7++)
     {
       int fac1 = elem_faces(num_elem,fa7), fac2 = elem_faces(num_elem,fa7+dimension);
@@ -965,7 +965,7 @@ template <class _TYPE_> template<Type_Champ Field_Type>
 void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, const IntVect& tab1, const IntVect& tab2, Matrice_Morse& matrice, DoubleVect& coeff) const
 {
   constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
-  DoubleVect aii(ncomp), ajj(ncomp);
+  ArrOfDouble aii(ncomp), ajj(ncomp);
   if (is_SCALAIRE)
     {
       flux_evaluateur.template coeffs_fa7<Type_Flux_Fa7::ELEM,Field_Type>(num_elem, fac1, fac2, aii, ajj);
@@ -997,7 +997,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, con
     {
       constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
-      DoubleVect aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
+      ArrOfDouble aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
       if (is_SCALAIRE)
         {
           flux_evaluateur.template coeffs_arete<Arete_Type,Field_Type>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
@@ -1019,7 +1019,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, con
     {
       constexpr bool is_FLUIDE = (Arete_Type == Type_Flux_Arete::FLUIDE), is_SYM_FLUIDE = (Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE), is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
-      DoubleVect aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
+      ArrOfDouble aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
       if(is_SCALAIRE)
         {
           flux_evaluateur.template coeffs_arete<Arete_Type,Field_Type>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
@@ -1068,7 +1068,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, con
     {
       constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3);
-      DoubleVect aii(ncomp), ajj(ncomp);
+      ArrOfDouble aii(ncomp), ajj(ncomp);
       if (is_SCALAIRE)
         {
           flux_evaluateur.template coeffs_arete<Arete_Type,Field_Type>(fac3, fac4, fac1, fac2, aii, ajj);
@@ -1137,7 +1137,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, Mat
   if (should_calc_flux)
     {
       constexpr bool is_COIN_FL = (Arete_Type == Type_Flux_Arete::COIN_FLUIDE), is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
-      DoubleVect aii1_2(1), aii3_4(1), ajj1_2(1); // TODO : FIXME : should pass ncomp ....
+      ArrOfDouble aii1_2(1), aii3_4(1), ajj1_2(1); // TODO : FIXME : should pass ncomp ....
       if (is_SCALAIRE)
         {
           int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
@@ -1156,7 +1156,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, Mat
   if (should_calc_flux)
     {
       constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
-      DoubleVect aii(1), ajj(1); // TODO : FIXME : should pass ncomp ....
+      ArrOfDouble aii(1), ajj(1); // TODO : FIXME : should pass ncomp ....
       if (is_SCALAIRE)
         {
           int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3);
@@ -1191,7 +1191,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes_(const int n_aret
   else
     {
       // TODO : FIXME ; je sais que c'est ................. mais bon a faire
-      DoubleVect aii(ncomp), ajj(ncomp);
+      ArrOfDouble aii(ncomp), ajj(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3);
       flux_evaluateur.template coeffs_arete<Arete_Type,Field_Type>(fac1, fac2, fac3, fac4, aii, ajj); /* XXX : codage pas identique a ce qu'on a dans ajouter_contribution_aretes_bords_ PERIODICITE */
       for (int i = 0; i < ncomp; i++ )
@@ -1230,7 +1230,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre_(const int nde
   if (should_calc_flux)
     {
       constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
-      DoubleVect aii(ncomp), ajj(ncomp);
+      ArrOfDouble aii(ncomp), ajj(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           if (is_SCALAIRE)
@@ -1253,7 +1253,7 @@ template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem_(const int num_elem, const int ncomp, const IntVect& tab1, const IntVect& tab2, Matrice_Morse& matrice, DoubleVect& coeff) const
 {
   constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
-  DoubleVect aii(ncomp), ajj(ncomp);
+  ArrOfDouble aii(ncomp), ajj(ncomp);
   for (int fa7 = 0; fa7 < dimension; fa7++)
     {
       const int fac1 = elem_faces(num_elem,fa7), fac2 = elem_faces(num_elem,fa7+dimension);
@@ -1449,7 +1449,7 @@ void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite(DoubleTab& resu
 template <class _TYPE_> template<Type_Champ Field_Type>
 void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, DoubleTab& resu) const
 {
-  DoubleVect flux(ncomp);
+  ArrOfDouble flux(ncomp);
   flux_evaluateur.template secmem_fa7<Type_Flux_Fa7::ELEM,Field_Type>(num_elem,fac1,fac2,flux);
   for (int k = 0; k < ncomp; k++) resu(face,k) += signe*flux(k);
 }
@@ -1461,7 +1461,7 @@ T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_are
   if (should_calc_flux)
     {
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       flux_evaluateur.template secmem_arete<Arete_Type,Field_Type>(fac1, fac2, fac3, signe, flux);
       for (int k = 0; k < ncomp; k++) resu(fac3,k) += signe*flux(k);
     }
@@ -1477,12 +1477,12 @@ T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_are
     {
       constexpr bool is_PERIO = (Arete_Type == Type_Flux_Arete::PERIODICITE);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
-      DoubleVect flux3(ncomp), flux1_2(ncomp);
+      ArrOfDouble flux3(ncomp), flux1_2(ncomp);
       flux_evaluateur.template secmem_arete<Arete_Type,Field_Type>(fac1, fac2, fac3, signe, flux3, flux1_2);
       if (is_PERIO)
         {
           int fac4 = signe;
-          DoubleVect flux3_4 = flux3;
+          ArrOfDouble flux3_4 = flux3;
           for (int k=0; k<ncomp; k++)
             {
               resu(fac3,k) += 0.5*flux3_4(k);
@@ -1515,13 +1515,13 @@ T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins_(const int n_are
       constexpr bool is_PERIO = (Arete_Type == Type_Flux_Arete::PERIODICITE), is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
       if (is_SCALAIRE)
         {
-          DoubleVect flux3(ncomp), flux1_2(ncomp);
+          ArrOfDouble flux3(ncomp), flux1_2(ncomp);
           int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
           flux_evaluateur.template secmem_arete<Arete_Type,Field_Type>(fac1, fac2, fac3, signe, flux3, flux1_2);
           if (is_PERIO)
             {
               int fac4 = signe;
-              DoubleVect flux3_4 = flux3;
+              ArrOfDouble flux3_4 = flux3;
               resu(fac3) += 0.5*flux3_4(0);
               resu(fac4) -= 0.5*flux3_4(0);
               resu(fac1) += 0.5*flux1_2(0);
@@ -1546,7 +1546,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_internes_(const i
 {
   if (should_calc_flux)
     {
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3);
       flux_evaluateur.template secmem_arete<Arete_Type,Field_Type>(fac1, fac2, fac3, fac4,flux);
       for (int k=0; k<ncomp; k++)
@@ -1575,7 +1575,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre_(const 
   if (should_calc_flux)
     {
       constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           if (is_SCALAIRE)
@@ -1599,7 +1599,7 @@ template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem_(const int num_elem, const int ncomp, DoubleTab& resu) const
 {
   constexpr bool is_SCALAIRE = (Field_Type == Type_Champ::SCALAIRE);
-  DoubleVect flux(ncomp);
+  ArrOfDouble flux(ncomp);
   for (int fa7 = 0; fa7 < dimension; fa7++)
     {
       const int fac1 = elem_faces(num_elem,fa7), fac2 = elem_faces(num_elem,fa7+dimension);
