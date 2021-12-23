@@ -30,6 +30,6 @@ enum class Type_Flux_Arete { FLUIDE, BORD, COIN_FLUIDE, INTERNE, MIXTE, PERIODIC
 
 enum class Type_Flux_Fa7 { ELEM, SORTIE_LIBRE };
 
-enum class Type_Champ { SCALAIRE, VECTORIEL };
+//enum class Type_Champ { SCALAIRE, VECTORIEL };
 
 #endif /* CL_Types_Aretes_enum_included */

@@ -79,112 +79,113 @@ private:
    * *********  POUR L'EXPLICITE ********** *
    * ************************************** */
 
-  template <Type_Champ Field_Type> DoubleTab& ajouter_aretes_bords(const int , const DoubleTab&, DoubleTab& ) const;
-  template <Type_Champ Field_Type> DoubleTab& ajouter_aretes_coins(const int , const DoubleTab&, DoubleTab& ) const;
-  template <Type_Champ Field_Type> DoubleTab& ajouter_aretes_internes(const int , const DoubleTab&, DoubleTab& ) const;
-  template <Type_Champ Field_Type> DoubleTab& ajouter_aretes_mixtes(const int , const DoubleTab&, DoubleTab& ) const;
-  template <Type_Champ Field_Type> DoubleTab& ajouter_fa7_sortie_libre(const int , const DoubleTab&, DoubleTab& ) const;
-  template <Type_Champ Field_Type> DoubleTab& ajouter_fa7_elem(const int , const DoubleTab&, DoubleTab& ) const;
-  template <Type_Champ Field_Type> DoubleTab& corriger_flux_fa7_elem_periodicite(const int , const DoubleTab&, DoubleTab& ) const;
-  template <Type_Champ Field_Type> void corriger_flux_fa7_elem_periodicite_(const int , const int , const int , const int , const int , const int , const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& ajouter_aretes_bords(const int , const DoubleTab&, DoubleTab& ) const;
+  DoubleTab& ajouter_aretes_coins(const int , const DoubleTab&, DoubleTab& ) const;
+  DoubleTab& ajouter_aretes_internes(const int , const DoubleTab&, DoubleTab& ) const;
+  DoubleTab& ajouter_aretes_mixtes(const int , const DoubleTab&, DoubleTab& ) const;
+  DoubleTab& ajouter_fa7_sortie_libre(const int , const DoubleTab&, DoubleTab& ) const;
+  DoubleTab& ajouter_fa7_elem(const int , const DoubleTab&, DoubleTab& ) const;
+  DoubleTab& corriger_flux_fa7_elem_periodicite(const int , const DoubleTab&, DoubleTab& ) const;
+  void corriger_flux_fa7_elem_periodicite_(const int , const int , const int , const int , const int , const int , const DoubleTab& , DoubleTab& ) const;
+  inline void fill_resu_tab(const int , const int , const int , const ArrOfDouble& , DoubleTab& ) const;
+  inline void multiply_by_rho_if_hydraulique(DoubleTab& ) const;
 
   /* Private SFINAE templates */
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
   enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
   ajouter_aretes_bords_(const int , const int , const DoubleTab& , DoubleTab& , DoubleTab& ) const;
 
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
   enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
   ajouter_aretes_bords_(const int , const int , const DoubleTab& , DoubleTab& , DoubleTab& ) const;
 
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, TypeAreteCoinVDF::type_arete Arete_Type_Coin, Type_Champ Field_Type>
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, TypeAreteCoinVDF::type_arete Arete_Type_Coin>
   enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, void>
-  ajouter_aretes_coins_(const int , const int , const DoubleTab& ,DoubleTab& , DoubleTab& ) const;
+  ajouter_aretes_coins_(const int , const int , const DoubleTab& , DoubleTab& , DoubleTab& ) const;
 
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
   enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-  ajouter_aretes_coins_(const int , const int , const DoubleTab& ,DoubleTab& , DoubleTab& ) const;
+  ajouter_aretes_coins_(const int , const int , const DoubleTab& , DoubleTab& , DoubleTab& ) const;
 
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type> void ajouter_aretes_internes_(const int , const int , const DoubleTab& , DoubleTab& ) const;
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type> void ajouter_aretes_mixtes_(const int , const int ,const DoubleTab& , DoubleTab& , DoubleTab& ) const;
-  template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> void ajouter_fa7_sortie_libre_(const int , const int , const int  , const Neumann_sortie_libre& , const DoubleTab& , DoubleTab& , DoubleTab& ) const;
-  template <Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> void ajouter_fa7_elem_(const int , const int , const DoubleTab& , DoubleTab& , DoubleTab& ) const;
-  inline void fill_resu_tab(const int , const int , const int , const ArrOfDouble& , DoubleTab& ) const;
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type> void ajouter_aretes_internes_(const int , const int , const DoubleTab& , DoubleTab& ) const;
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type> void ajouter_aretes_mixtes_(const int , const int ,const DoubleTab& , DoubleTab& , DoubleTab& ) const;
+  template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type> void ajouter_fa7_sortie_libre_(const int , const int , const int  , const Neumann_sortie_libre& , const DoubleTab& , DoubleTab& , DoubleTab& ) const;
+  template <Type_Flux_Fa7 Fa7_Type> void ajouter_fa7_elem_(const int , const int , const DoubleTab& , DoubleTab& , DoubleTab& ) const;
 
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
 
-  template <Type_Champ Field_Type> void ajouter_contribution_aretes_bords(const int , const DoubleTab&, Matrice_Morse& ) const;
-  template <Type_Champ Field_Type> void ajouter_contribution_aretes_coins(const int , const DoubleTab&, Matrice_Morse& ) const ;
-  template <Type_Champ Field_Type> void ajouter_contribution_aretes_internes(const int , const DoubleTab&, Matrice_Morse& ) const;
-  template <Type_Champ Field_Type> void ajouter_contribution_aretes_mixtes(const int , const DoubleTab&, Matrice_Morse& ) const;
-  template <Type_Champ Field_Type> void ajouter_contribution_fa7_sortie_libre(const int , const DoubleTab&, Matrice_Morse& ) const;
-  template <Type_Champ Field_Type> void ajouter_contribution_fa7_elem(const int , const DoubleTab&, Matrice_Morse& ) const;
-  template <Type_Champ Field_Type> void corriger_coeffs_fa7_elem_periodicite(const int , const DoubleTab&, Matrice_Morse& ) const;
-  template <Type_Champ Field_Type> void corriger_coeffs_fa7_elem_periodicite_(const int , const int , const int , const int , const int , const int , Matrice_Morse& ) const;
-
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
-  enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
-  ajouter_contribution_aretes_bords_(const int , const int , Matrice_Morse& ) const;
-
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
-  enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
-  ajouter_contribution_aretes_bords_(const int , const int , Matrice_Morse& ) const;
-
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
-  enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::INTERNE, void>
-  ajouter_contribution_aretes_bords_(const int , const int , Matrice_Morse& ) const;
-
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
-  enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
-  ajouter_contribution_aretes_coins_(const int , const int , Matrice_Morse& ) const;
-
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
-  enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE, void>
-  ajouter_contribution_aretes_coins_(const int , const int , Matrice_Morse& ) const;
-
-  template <Type_Flux_Arete Arete_Type, Type_Champ Field_Type> void ajouter_contribution_aretes_internes_(const int , const int , Matrice_Morse& ) const;
-  template <Type_Flux_Arete Arete_Type, Type_Champ Field_Type> void ajouter_contribution_aretes_mixtes_(const int , const int , Matrice_Morse& ) const;
-  template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> void ajouter_contribution_fa7_sortie_libre_(const int , const int , const int , const Neumann_sortie_libre& , Matrice_Morse& ) const;
-  template <Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> void ajouter_contribution_fa7_elem_(const int , const int , Matrice_Morse& ) const;
+  void ajouter_contribution_aretes_bords(const int , const DoubleTab&, Matrice_Morse& ) const;
+  void ajouter_contribution_aretes_coins(const int , const DoubleTab&, Matrice_Morse& ) const ;
+  void ajouter_contribution_aretes_internes(const int , const DoubleTab&, Matrice_Morse& ) const;
+  void ajouter_contribution_aretes_mixtes(const int , const DoubleTab&, Matrice_Morse& ) const;
+  void ajouter_contribution_fa7_sortie_libre(const int , const DoubleTab&, Matrice_Morse& ) const;
+  void ajouter_contribution_fa7_elem(const int , const DoubleTab&, Matrice_Morse& ) const;
+  void corriger_coeffs_fa7_elem_periodicite(const int , const DoubleTab&, Matrice_Morse& ) const;
+  void corriger_coeffs_fa7_elem_periodicite_(const int , const int , const int , const int , const int , const int , Matrice_Morse& ) const;
   inline void fill_coeff_matrice_morse(const int , const int , const int , const int , const ArrOfDouble& , Matrice_Morse&) const;
   inline void fill_coeff_matrice_morse(const int , const int , const int , const int , const ArrOfDouble& , const ArrOfDouble& , Matrice_Morse&) const;
 
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+  enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
+  ajouter_contribution_aretes_bords_(const int , const int , Matrice_Morse& ) const;
+
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+  enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+  ajouter_contribution_aretes_bords_(const int , const int , Matrice_Morse& ) const;
+
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+  enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::INTERNE, void>
+  ajouter_contribution_aretes_bords_(const int , const int , Matrice_Morse& ) const;
+
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+  enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+  ajouter_contribution_aretes_coins_(const int , const int , Matrice_Morse& ) const;
+
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+  enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE, void>
+  ajouter_contribution_aretes_coins_(const int , const int , Matrice_Morse& ) const;
+
+  template <Type_Flux_Arete Arete_Type> void ajouter_contribution_aretes_internes_(const int , const int , Matrice_Morse& ) const;
+  template <Type_Flux_Arete Arete_Type> void ajouter_contribution_aretes_mixtes_(const int , const int , Matrice_Morse& ) const;
+  template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type> void ajouter_contribution_fa7_sortie_libre_(const int , const int , const int , const Neumann_sortie_libre& , Matrice_Morse& ) const;
+  template <Type_Flux_Fa7 Fa7_Type> void ajouter_contribution_fa7_elem_(const int , const int , Matrice_Morse& ) const;
+
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
 
-  template <Type_Champ Field_Type> void contribuer_au_second_membre_aretes_bords(const int , DoubleTab& ) const;
-  template <Type_Champ Field_Type> void contribuer_au_second_membre_aretes_coins(const int , DoubleTab& ) const;
-  template <Type_Champ Field_Type> void contribuer_au_second_membre_aretes_internes(const int , DoubleTab& ) const;
-  template <Type_Champ Field_Type> void contribuer_au_second_membre_aretes_mixtes(const int , DoubleTab& ) const;
-  template <Type_Champ Field_Type> void contribuer_au_second_membre_fa7_sortie_libre(const int , DoubleTab& ) const;
-  template <Type_Champ Field_Type> void contribuer_au_second_membre_fa7_elem(const int , DoubleTab& ) const;
-  template <Type_Champ Field_Type> void corriger_secmem_fa7_elem_periodicite(const int , DoubleTab& ) const;
-  template <Type_Champ Field_Type> void corriger_secmem_fa7_elem_periodicite_(const int , const int , const int , const int , const int , const int , DoubleTab& ) const;
+  void contribuer_au_second_membre_aretes_bords(const int , DoubleTab& ) const;
+  void contribuer_au_second_membre_aretes_coins(const int , DoubleTab& ) const;
+  void contribuer_au_second_membre_aretes_internes(const int , DoubleTab& ) const;
+  void contribuer_au_second_membre_aretes_mixtes(const int , DoubleTab& ) const;
+  void contribuer_au_second_membre_fa7_sortie_libre(const int , DoubleTab& ) const;
+  void contribuer_au_second_membre_fa7_elem(const int , DoubleTab& ) const;
+  void corriger_secmem_fa7_elem_periodicite(const int , DoubleTab& ) const;
+  void corriger_secmem_fa7_elem_periodicite_(const int , const int , const int , const int , const int , const int , DoubleTab& ) const;
 
   /* Private SFINAE templates */
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
   enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
   contribuer_au_second_membre_aretes_bords_(const int , const int , DoubleTab& ) const;
 
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
   enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
   contribuer_au_second_membre_aretes_bords_(const int , const int , DoubleTab& ) const;
 
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
   enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, void>
   contribuer_au_second_membre_aretes_coins_(const int , const int , DoubleTab& ) const;
 
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type>
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
   enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
   contribuer_au_second_membre_aretes_coins_(const int , const int , DoubleTab& ) const;
 
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type> void contribuer_au_second_membre_aretes_internes_(const int , const int , DoubleTab& ) const;
-  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, Type_Champ Field_Type> void contribuer_au_second_membre_aretes_mixtes_(const int , const int , DoubleTab& ) const;
-  template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> void contribuer_au_second_membre_fa7_sortie_libre_(const int , const int , const int , const Neumann_sortie_libre& , DoubleTab& ) const;
-  template <Type_Flux_Fa7 Fa7_Type, Type_Champ Field_Type> void contribuer_au_second_membre_fa7_elem_(const int , const int , DoubleTab& ) const;
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type> void contribuer_au_second_membre_aretes_internes_(const int , const int , DoubleTab& ) const;
+  template <bool should_calc_flux, Type_Flux_Arete Arete_Type> void contribuer_au_second_membre_aretes_mixtes_(const int , const int , DoubleTab& ) const;
+  template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type> void contribuer_au_second_membre_fa7_sortie_libre_(const int , const int , const int , const Neumann_sortie_libre& , DoubleTab& ) const;
+  template <Type_Flux_Fa7 Fa7_Type> void contribuer_au_second_membre_fa7_elem_(const int , const int , DoubleTab& ) const;
 };
 
 #include <T_It_VDF_Face.tpp> // templates specializations ici ;)
