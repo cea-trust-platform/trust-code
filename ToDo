@@ -1,8 +1,7 @@
 Version	Qui				Tache
-1.8.5   trust@cea.fr            Envoi des emails de livraison depuis la nouvelle machine de l'atelier ne fonctionne pas.
 1.8.5   trust@cea.fr            mise a jour other baltik tutorial avec 184
 1.8.5   trust@cea.fr            Remplacer -fabi-version=6 par -fabi-version=0 dans env_src/configurer_env
-1.8.5   trust@cea.fr            Ajouter au lance_test_nuit le changement de version dans TrioCFD (ex: README.md et rapports d'install ?)
+1.8.5   julie.darona@cea.fr     Ajouter methode install TrioCFD depuis FTP du mail dans README.md de TrioCFD
 1.8.5   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC
 1.8.5   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
 1.8.5   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
@@ -10,13 +9,12 @@ Version	Qui				Tache
 1.8.5   adrien.bruneton@cea.fr  Nettoyer le vieux code med fichier
 1.8.5   adrien.bruneton@cea.fr  Revoir LireMED pour ne pas utiliser les familles mais que les groupes
 1.8.5   adrien.bruneton@cea.fr  Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
+1.8.5   pierre.ledac@cea.fr     Modifier scripts Baltik pour qu un Baltik quelconque puisse etre deplace sans souci apres installation
 1.8.5   pierre.ledac@cea.fr     Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
 1.8.5   pierre.ledac@cea.fr     Doxygen update + remove #ifdef DOXYGEN_SHOULD_SKIP_THIS from Eval_DiffF22_VDF_const_Elem.h
 1.8.5   pierre.ledac@cea.fr     Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
 1.8.5   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
 1.8.5   pierre.ledac@cea.fr	Fedora 36 et GNU 11.?
-1.8.5   trust@cea.fr            Corriger les problemes de F5 et pemfc sur Fedora 34
-1.8.5   trust@cea.fr            Corriger les problemes de F5 et de TrioCFD (Rayonnement_Cuve_2D en parallele) sur Fedora 34
 1.8.5   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE Canal_172M_PE_4913 sur un cluster
 1.8.5   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 185" (cf DI 188128)
 1.8.5   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
@@ -31,13 +29,13 @@ Version	Qui				Tache
 1.8.5   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'annee)
 1.8.5   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
 1.8.5   pierre.ledac@cea.fr     LDC: recuperer aupres du RPL l archive de couverture de code et la mettre sous doc/Coverage
-1.8.5   trust@cea.fr            LDC: envoyer BDL
 1.8.5   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
+1.8.5   trust@cea.fr            LDC: envoyer BDL
+1.8.5   trust@cea.fr            LDC: Creer new RELEASE dans TRUST et TrioCFD 
 1.8.5   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
 
 
 1.8.x   trust@cea.fr            mise a jour other baltik tutorial avec 184
-1.8.x   trust@cea.fr            AGL: Ajout d'update de master maintenance
 1.8.x   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC
 1.8.x   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
 1.8.x   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
@@ -50,8 +48,6 @@ Version	Qui				Tache
 1.8.x   pierre.ledac@cea.fr     Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
 1.8.x   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
 1.8.x   pierre.ledac@cea.fr	Fedora 36 et GNU 11.?
-1.8.x   trust@cea.fr            Corriger les problemes de F5 et pemfc sur Fedora 34
-1.8.x   trust@cea.fr            Corriger les problemes de F5 et de TrioCFD (Rayonnement_Cuve_2D en parallele) sur Fedora 34
 1.8.x   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE Canal_172M_PE_4913 sur un cluster
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 185" (cf DI 188128)
 1.8.x   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
@@ -68,4 +64,5 @@ Version	Qui				Tache
 1.8.x   pierre.ledac@cea.fr     LDC: recuperer aupres du RPL l archive de couverture de code et la mettre sous doc/Coverage
 1.8.x   trust@cea.fr            LDC: envoyer BDL
 1.8.x   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
+1.8.x   trust@cea.fr            LDC: Creer new RELEASE dans TRUST et TrioCFD
 1.8.x   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks

@@ -16,8 +16,9 @@ ssh_command()
     if [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n pwd 1>/dev/null 2>&1;echo $?`" = 0 ]
     then
        scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
-       # Add -X to have DISPLAY ?
-       ssh -X -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ~/command_'$machine';~/command_'$machine 2>/dev/null
+       # Add -X to have DISPLAY ? not on jean-zay cause it hangs
+       opt_="-X" && [ "$log" = "ugz82dj" ] && opt_=""
+       ssh $opt_ -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ~/command_'$machine';~/command_'$machine 2>/dev/null
     fi
     rm -f $command
 }

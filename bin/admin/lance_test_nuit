@@ -245,6 +245,9 @@ check_components()
 	       elif [ "$Composant" = mathys ]
 	       then
 	          machines=`liste_machines "\-MATHYS"`
+               elif [ "$Composant" = cathare3D ]
+               then
+                  machines=`liste_machines "\-C3D"`
                elif [ "$Composant" = TRUST-NK ]
                then
                   machines=`liste_machines "\-TRUST-NK"`
@@ -548,10 +551,10 @@ VOBS="TRUST Composants"
 #ComposantsLns="Test_Baltik basic equation_convection_diffusion ICoCo"
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
 #ComposantsGit="triocfd ijk polymac triomc mathys mpcube genepi3 pxp flica5"
-ComposantsOfficial="triocfd ijk mpcube genepi3 flica5 TRUST-NK"
+ComposantsOfficial="triocfd ijk mpcube genepi3 flica5 TRUST-NK cathare3D"
 # 14/10/2020 : je retire mathys et triomc sur decision RPL
 #export ComposantsBeta="triomc mathys sides scorpio pemfc"
-export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5"
+export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5 cathare3D"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 ComposantsGit=`echo $ComposantsGit | xargs -n1 | sort -u | xargs`
 export Composants=$ComposantsLns" "$ComposantsGit
@@ -912,7 +915,7 @@ fi
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "TRUST-NK" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
+      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "TRUST-NK" && "$Composant" != "cathare3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
       then
          #if [[ "$Composant" == "triocfd" ]]
          #then
@@ -967,6 +970,32 @@ fi
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage KO \" $TRUST_MAIL
          else
             cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage OK \" $TRUST_MAIL
+         fi
+         rm tmp.log 1>/dev/null 2>&1
+         cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
+         git remote update
+         git checkout .
+         git checkout master
+         git pull 1>tmp.log 2>&1
+         if [ $? != 0 ]
+         then
+            cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master KO \" $TRUST_MAIL
+         else
+            cat tmp.log | mail_ -s\"[lance_test_nuit_maintenance] $Composant : git pull master OK \" $TRUST_MAIL
+         fi
+         rm tmp.log 1>/dev/null 2>&1
+         cd -
+      elif [[ "$Composant" == "cathare3D" ]]
+      then
+         git remote update
+         git checkout .
+         git checkout Issue0066_portage185
+         git pull 1>tmp.log 2>&1
+         if [ $? != 0 ]
+         then
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0066_portage185 KO \" $TRUST_MAIL
+         else
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0066_portage185 OK \" $TRUST_MAIL
          fi
          rm tmp.log 1>/dev/null 2>&1
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
@@ -2388,11 +2417,13 @@ echo "# Verify the validation of XData #"
 echo "##################################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 validation_xdata=""
+machines_=`liste_machines "\-xdata"`
 machines=`liste_machines "\-xdata" | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 echo "Validation by -xdata on $machines"
 # Si une machine a XData qui fonctionne c'est OK
-for machine in $machines
+for machine_ in $machines_
 do
+   machine=`echo $machine_ | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
    check_xdata_log=$REP_NUIT"/check_xdata_"$machine".log"
    rm -f $check_xdata_log
    if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
@@ -2403,15 +2434,16 @@ do
       echo | mail_ -s\"[lance_test_nuit] Error when receiving XData log from $machine not accessible via ssh.\" $TRUST_MAIL
    else
       echo "  See $check_xdata_log"
-      #scp triou@$machine:~/$WORKBASE$machine/TRUST/Outils/TRIOXDATA/check_xdata.log $check_xdata_log
+      log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
+      #scp $log@$machine:~/$WORKBASE$machine/TRUST/Outils/TRIOXDATA/check_xdata.log $check_xdata_log
       if  [ "${machine:0:2}" = "is" ]
       then
-         #scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
-         scp triou@$machine:/export/home/triou/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log 1>/dev/null 2>&1
+         #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
+         scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log 1>/dev/null 2>&1
          scp_error=$?
-         [ $scp_error != 0 ] && scp triou@$machine:/volatile/triou/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log && scp_error=$?
+         #[ $scp_error != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log && scp_error=$?
       else
-         scp triou@$machine:~/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
+         scp $log@$machine:~/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
          scp_error=$?
       fi
       if [ $scp_error != 0 ]
@@ -2559,6 +2591,7 @@ cd $TRUST_ROOT/Validation/Valgrind
 Build=$TRUST_ROOT/build/Validation/Valgrind
 [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
 rm -f $Build/ANA_*.log $Build/casmem_* $Build/caserr_*
+machines_=`liste_machines "\-check-valgrind"`
 machines=`liste_machines "\-check-valgrind" | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 if [ ${#machines} = 0 ]
 then
@@ -2569,8 +2602,9 @@ else
    echo $machines
    echo " "
 fi
-for machine in $machines
+for machine_ in $machines_
 do
+   machine=`echo $machine_ | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
    valgrind_log=$Build"/ANA_"$machine".log"
    if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
@@ -2580,15 +2614,16 @@ do
       echo | mail_ -s\"[lance_test_nuit] Error when receiving Valgrind log from $machine not accessible via ssh.\" $TRUST_MAIL
    else
       echo "Verification of $valgrind_log"
-      #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log $valgrind_log
+      log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
+      #scp $log@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log $valgrind_log
       if [ "${machine:0:2}" = "is" ]
       then
-         #scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/ANA.log $valgrind_log
-         scp triou@$machine:/export/home/triou/.tmp_TRUST_$machine/ANA.log $valgrind_log 1>/dev/null 2>&1
+         #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/ANA.log $valgrind_log
+         scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/ANA.log $valgrind_log 1>/dev/null 2>&1
          scp_error=$?
-         [ $scp_error != 0 ] && scp triou@$machine:/volatile/triou/.tmp_TRUST_$machine/ANA.log $valgrind_log && scp_error=$?
+         #[ $scp_error != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/ANA.log $valgrind_log && scp_error=$?
       else
-         scp triou@$machine:~/.tmp_TRUST_$machine/ANA.log $valgrind_log
+         scp $log@$machine:~/.tmp_TRUST_$machine/ANA.log $valgrind_log
          scp_error=$?
       fi
       if [ $scp_error != 0 ]
@@ -2602,14 +2637,14 @@ do
          echo "  valgrind not finished"
          valgrind=0
       else
-         #scp triou@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/casmem $Build/casmem_$machine
+         #scp $log@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/casmem $Build/casmem_$machine
          if [ "${machine:0:2}" = "is" ]
          then
-            #scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
-            scp triou@$machine:/export/home/triou/.tmp_TRUST_$machine/casmem $Build/casmem_$machine 1>/dev/null 2>&1
-            [ $? != 0 ] && scp triou@$machine:/volatile/triou/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
+            #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
+            scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem $Build/casmem_$machine 1>/dev/null 2>&1
+            #[ $? != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
          else
-            scp triou@$machine:~/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
+            scp $log@$machine:~/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
          fi
 	 # [ ! -s $valgrind_log ] && echo "  Empty file" && valgrind=0
          cat $valgrind_log 2>/dev/null | $TRUST_Awk -F: '/ errors from /{gsub("\\.val","",$2);print $2}' > $Build/caserr_$machine
@@ -2732,6 +2767,7 @@ fi
 for machine_gcov in $machines # Compilation avec -gcov et passage de tous les cas tests
 do
    hostname=`echo $machine_gcov | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'` 
+   log=`awk -v adr=$machine_gcov '($2==adr) {print $4}' ~/.netrc | head -1`
    echo "  Recovery from $hostname"
    if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine_gcov -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
@@ -2741,27 +2777,27 @@ do
       echo "    See $REP_NUIT/analyse_couverture_$hostname.log"
       if  [ "${hostname:0:2}" = "is" ]
       then
-         scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
-         scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
-         scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
-         scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
+         scp $log@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
+         scp $log@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
+         scp $log@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
+         scp $log@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
       else
-         scp triou@$machine_gcov:~/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
-         scp triou@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
-         scp triou@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
-         scp triou@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
+         scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
+         scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
+         scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
+         scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
       fi
       # Copie cpp.gcov.tar.gz 
       file=cpp.gcov.tar.gz  
       #echo "    Copy $file to $TRUST_ROOT/doc/Coverage/" # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
       echo "    Copy $file to $TRUST_TMP/"
       rm -f $TRUST_TMP/$file
-      #scp triou@$machine_gcov:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
+      #scp $log@$machine_gcov:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
       if  [ "${hostname:0:2}" = "is" ]
       then
-         scp triou@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+         scp $log@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
       else
-         scp triou@$machine_gcov:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+         scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
       fi
       if [ "`diff $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file`" != "" ]
       then
@@ -2789,6 +2825,7 @@ for machine in $machines # Compilation avec -prof et passage de tous les cas tes
 do
    cd $TRUST_ROOT/doc/Coverage
    hostname=`echo $machine | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
+   log=`awk -v adr=$machine '($2==adr) {print $4}' ~/.netrc | head -1`
    echo "  Recovery from $hostname"
    if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
@@ -2798,9 +2835,9 @@ do
       echo "    See $REP_NUIT/make_Couverture_$hostname.log"
       if [ "${hostname:0:2}" = "is" ]
       then
-         scp triou@$machine:$WORKDIR/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
+         scp $log@$machine:$WORKDIR/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
       else
-         scp triou@$machine:~/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
+         scp $log@$machine:~/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
       fi
       error_log=`grep "Problem with the gprof command" $REP_NUIT/make_Couverture_$hostname.log`
       [ ${#error_log} != 0 ] && cat $REP_NUIT/make_Couverture_$hostname.log | mail_ -s\"[lance_test_nuit] Problem with the gprof command on $hostname in make_Couverture\" $TRUST_MAIL
@@ -2810,12 +2847,12 @@ do
          #echo "    Copy $file to $TRUST_ROOT/doc/Coverage/" # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
          echo "    Copy $file to $TRUST_TMP/"
          rm -f $TRUST_TMP/$file
-         #scp triou@$machine:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
+         #scp $log@$machine:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
          if [ "${hostname:0:2}" = "is" ]
          then
-            scp triou@$machine:$WORKDIR/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+            scp $log@$machine:$WORKDIR/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
          else
-            scp triou@$machine:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+            scp $log@$machine:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
          fi
          if [ -f $TRUST_TMP/$file ] && [ "`diff $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file`" != "" ]
          then
@@ -2835,9 +2872,9 @@ do
             #CHECKOUT $cpu 
             if [ "${hostname:0:2}" = "is" ]
 	    then
-               scp triou@$machine:$WORKDIR/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
+               scp $log@$machine:$WORKDIR/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
 	    else
-               scp triou@$machine:~/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
+               scp $log@$machine:~/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
 	    fi
             #CHECKIN $cpu
             ls -la $TRUST_ROOT"/doc/Coverage/"$cpu
@@ -3100,6 +3137,7 @@ echo "#####################################"
 echo "# Test the stability of parallelism #"
 echo "#####################################"
 echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
+machine_=`liste_machines "\-Check_decoupage"`
 machine=`liste_machines "\-Check_decoupage" | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 echo "Validation by -Check_decoupage on $machine"
 if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
@@ -3114,13 +3152,14 @@ then
    echo "Release criterion: Parallelism KO"
 else
    echo "  See $REP_NUIT/Check_decoupage.ksh_$machine.log"
+   log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
    if [ "${machine:0:2}" = "is" ]
    then
-      #scp triou@$machine:$WORKDIR/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
-      scp triou@$machine:/export/home/triou/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log 1>/dev/null 2>&1
-      [ $? != 0 ] && scp triou@$machine:/volatile/triou/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
+      #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
+      scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log 1>/dev/null 2>&1
+      #[ $? != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
    else
-      scp triou@$machine:~/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
+      scp $log@$machine:~/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
    fi
    error_log=`grep "Failure on " $REP_NUIT/Check_decoupage.ksh_$machine.log`
    [ ${#error_log} != 0 ] && cat $REP_NUIT/Check_decoupage.ksh_$machine.log | mail_ -s\"[lance_test_nuit] Check_decoupage.ksh on $machine KO\" $TRUST_MAIL
