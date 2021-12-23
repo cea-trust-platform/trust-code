@@ -104,7 +104,7 @@ int Convection_Diffusion_Chaleur_QC::lire_motcle_non_standard(const Motcle& mot,
   return 1;
 }
 
-const Champ_base& Convection_Diffusion_Chaleur_QC::vitesse_pour_transport()
+const Champ_base& Convection_Diffusion_Chaleur_QC::vitesse_pour_transport() const
 {
   if (mode_convection_==2) return Convection_Diffusion_Chaleur_Fluide_Dilatable_base::vitesse_pour_transport();
   else

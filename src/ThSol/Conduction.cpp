@@ -149,12 +149,12 @@ int Conduction::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 }
 
 // retourne la *conductivite* et non la diffusivite comme dans Conduction
-const Champ_Don& Conduction::diffusivite_pour_transport()
+const Champ_Don& Conduction::diffusivite_pour_transport() const
 {
   return milieu().conductivite();
 }
 
-const Champ_base& Conduction::diffusivite_pour_pas_de_temps()
+const Champ_base& Conduction::diffusivite_pour_pas_de_temps() const
 {
   return terme_diffusif.diffusivite();
 }

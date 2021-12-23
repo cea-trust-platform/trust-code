@@ -130,9 +130,9 @@ public :
   inline const Champ_Inc& pression_pa() const;
   inline const Champ_Inc& div() const;
 
-  virtual const Champ_Don& diffusivite_pour_transport();
-  virtual const Champ_base& diffusivite_pour_pas_de_temps();
-  virtual const Champ_base& vitesse_pour_transport();
+  virtual const Champ_Don& diffusivite_pour_transport() const;
+  virtual const Champ_base& diffusivite_pour_pas_de_temps() const;
+  virtual const Champ_base& vitesse_pour_transport() const;
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////

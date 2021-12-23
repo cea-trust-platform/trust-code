@@ -190,17 +190,17 @@ Operateur& Convection_Diffusion_std::operateur(int i)
   return terme_diffusif;
 }
 
-const Champ_Don& Convection_Diffusion_std::diffusivite_pour_transport()
+const Champ_Don& Convection_Diffusion_std::diffusivite_pour_transport() const
 {
   return milieu().diffusivite();
 }
 
-const Champ_base& Convection_Diffusion_std::diffusivite_pour_pas_de_temps()
+const Champ_base& Convection_Diffusion_std::diffusivite_pour_pas_de_temps() const
 {
   return terme_diffusif.diffusivite();
 }
 
-const Champ_base& Convection_Diffusion_std::vitesse_pour_transport()
+const Champ_base& Convection_Diffusion_std::vitesse_pour_transport() const
 {
   return probleme().get_champ("vitesse");
 }

@@ -63,7 +63,7 @@ int Convection_Diffusion_Fluide_Dilatable_base::impr(Sortie& os) const
   return Equation_base::impr(os);
 }
 
-const Champ_Don& Convection_Diffusion_Fluide_Dilatable_base::diffusivite_pour_transport()
+const Champ_Don& Convection_Diffusion_Fluide_Dilatable_base::diffusivite_pour_transport() const
 {
   return is_thermal() ? milieu().conductivite() /* lambda */ : le_fluide->mu_sur_Schmidt() /* rho * D */;
 }

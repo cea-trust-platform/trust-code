@@ -57,9 +57,8 @@ public :
   Milieu_base& milieu() override;
   void associer_milieu_base(const Milieu_base& ) override;
   int impr(Sortie& os) const override;
-  const Champ_Don& diffusivite_pour_transport() override;
-  const Champ_base& diffusivite_pour_pas_de_temps() override;
-
+  const Champ_Don& diffusivite_pour_transport() const override;
+  const Champ_base& diffusivite_pour_pas_de_temps() const override;
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;

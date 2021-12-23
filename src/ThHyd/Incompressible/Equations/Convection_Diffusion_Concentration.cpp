@@ -172,7 +172,7 @@ void Convection_Diffusion_Concentration::associer_milieu_base(const Milieu_base&
     }
 }
 
-const Champ_Don& Convection_Diffusion_Concentration::diffusivite_pour_transport()
+const Champ_Don& Convection_Diffusion_Concentration::diffusivite_pour_transport() const
 {
   return constituant().diffusivite_constituant();
 }

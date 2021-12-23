@@ -233,17 +233,17 @@ void QDM_Multiphase::discretiser_vitesse()
   dis.vitesse(schema_temps(), zone_dis(), la_vitesse, ref_cast(Pb_Multiphase, probleme()).nb_phases());
 }
 
-const Champ_Don& QDM_Multiphase::diffusivite_pour_transport()
+const Champ_Don& QDM_Multiphase::diffusivite_pour_transport() const
 {
   return le_fluide->viscosite_dynamique();
 }
 
-const Champ_base& QDM_Multiphase::diffusivite_pour_pas_de_temps()
+const Champ_base& QDM_Multiphase::diffusivite_pour_pas_de_temps() const
 {
   return le_fluide->viscosite_cinematique();
 }
 
-const Champ_base& QDM_Multiphase::vitesse_pour_transport()
+const Champ_base& QDM_Multiphase::vitesse_pour_transport() const
 {
   return la_vitesse;
 }

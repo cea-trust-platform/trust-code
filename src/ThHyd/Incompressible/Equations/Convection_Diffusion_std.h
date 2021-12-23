@@ -68,10 +68,9 @@ public :
   inline const Champ_Inc_base& vitesse_transportante() const;
   const Champ_Inc& inconnue() const override =0;
   Champ_Inc& inconnue() override =0;
-  virtual const Champ_Don& diffusivite_pour_transport();
-  virtual const Champ_base& diffusivite_pour_pas_de_temps();
-  virtual const Champ_base& vitesse_pour_transport();
-
+  virtual const Champ_Don& diffusivite_pour_transport() const;
+  virtual const Champ_base& diffusivite_pour_pas_de_temps() const;
+  virtual const Champ_base& vitesse_pour_transport() const;
   // E. Saikali : Methodes utiles pour un heritage V
   int sauvegarder_base(Sortie&) const;
   int reprendre_base(Entree&);

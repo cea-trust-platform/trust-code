@@ -47,10 +47,10 @@ public :
   void calculer_div_u_ou_div_rhou(DoubleTab& res) const override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int preparer_calcul() override;
-  const Champ_base& vitesse_pour_transport() override;
+  const Champ_base& vitesse_pour_transport() const override;
 
   // Methodes inlines
-  inline bool is_generic() override { return mode_convection_ == 2 ? true : false;}
+  inline bool is_generic() const override { return mode_convection_ == 2 ? true : false;}
 
 protected :
   int mode_convection_; // 0 par divergence u 1 par conv(u) 2 par conv(rho u)

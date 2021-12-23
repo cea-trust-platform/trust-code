@@ -49,12 +49,12 @@ Entree& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::readOn(Entree& is)
   return is;
 }
 
-const Champ_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::diffusivite_pour_pas_de_temps()
+const Champ_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::diffusivite_pour_pas_de_temps() const
 {
   return milieu().diffusivite();
 }
 
-const Champ_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::vitesse_pour_transport()
+const Champ_base& Convection_Diffusion_Chaleur_Fluide_Dilatable_base::vitesse_pour_transport() const
 {
   const Probleme_base& pb = probleme();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,pb.equation(0));

@@ -59,9 +59,7 @@ public :
   int impr(Sortie& os) const override;
   int preparer_calcul() override;
   void mettre_a_jour(double) override;
-  const Champ_Don& diffusivite_pour_transport() override;
-
-
+  const Champ_Don& diffusivite_pour_transport() const override;
   const Motcle& domaine_application() const override;
   const double& masse_molaire() const;
 

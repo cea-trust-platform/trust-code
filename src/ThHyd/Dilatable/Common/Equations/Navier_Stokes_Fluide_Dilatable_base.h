@@ -60,9 +60,9 @@ class Navier_Stokes_Fluide_Dilatable_base : public Navier_Stokes_std, public Nav
 public :
   void discretiser() override;
   int preparer_calcul() override;
-  const Champ_Don& diffusivite_pour_transport() override;
-  const Champ_base& diffusivite_pour_pas_de_temps() override;
-  const Champ_base& vitesse_pour_transport() override;
+  const Champ_Don& diffusivite_pour_transport() const override;
+  const Champ_base& diffusivite_pour_pas_de_temps() const override;
+  const Champ_base& vitesse_pour_transport() const override;
 
   // Methodes virtuelles
   DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;

@@ -55,8 +55,8 @@ public :
   DoubleTab& derivee_en_temps_inco(DoubleTab& ) override = 0;
 
   // Methodes inlines
-  inline bool is_thermal() override { return false; }
-  inline bool is_generic() override { return true; }
+  inline bool is_thermal() const override { return false; }
+  inline bool is_generic() const override { return true; }
 };
 
 #endif /* Convection_Diffusion_Espece_Fluide_Dilatable_base_included */

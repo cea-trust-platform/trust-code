@@ -55,8 +55,8 @@ protected:
                                                            DoubleTab& derivee, const bool is_expl);
 
   virtual void calculer_div_u_ou_div_rhou(DoubleTab& res) const = 0;
-  virtual bool is_thermal() = 0;
-  virtual bool is_generic() = 0;
+  virtual bool is_thermal() const = 0;
+  virtual bool is_generic() const = 0;
 };
 
 #endif /* Convection_Diffusion_Fluide_Dilatable_Proto_included */

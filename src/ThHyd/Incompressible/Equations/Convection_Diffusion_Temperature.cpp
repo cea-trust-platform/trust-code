@@ -1448,12 +1448,12 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
     }
 }
 
-const Champ_Don& Convection_Diffusion_Temperature::diffusivite_pour_transport()
+const Champ_Don& Convection_Diffusion_Temperature::diffusivite_pour_transport() const
 {
   return milieu().conductivite();
 }
 
-const Champ_base& Convection_Diffusion_Temperature::diffusivite_pour_pas_de_temps()
+const Champ_base& Convection_Diffusion_Temperature::diffusivite_pour_pas_de_temps() const
 {
   return milieu().diffusivite();
 }

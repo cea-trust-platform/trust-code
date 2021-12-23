@@ -335,17 +335,17 @@ int Navier_Stokes_std::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   return 1;
 }
 
-const Champ_Don& Navier_Stokes_std::diffusivite_pour_transport()
+const Champ_Don& Navier_Stokes_std::diffusivite_pour_transport() const
 {
   return fluide().viscosite_cinematique();
 }
 
-const Champ_base& Navier_Stokes_std::diffusivite_pour_pas_de_temps()
+const Champ_base& Navier_Stokes_std::diffusivite_pour_pas_de_temps() const
 {
   return terme_diffusif.diffusivite();
 }
 
-const Champ_base& Navier_Stokes_std::vitesse_pour_transport()
+const Champ_base& Navier_Stokes_std::vitesse_pour_transport() const
 {
   return la_vitesse;
 }

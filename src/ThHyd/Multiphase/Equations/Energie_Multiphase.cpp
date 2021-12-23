@@ -142,12 +142,12 @@ void Energie_Multiphase::associer_milieu_base(const Milieu_base& un_milieu)
   associer_fluide(un_fluide);
 }
 
-const Champ_Don& Energie_Multiphase::diffusivite_pour_transport()
+const Champ_Don& Energie_Multiphase::diffusivite_pour_transport() const
 {
   return milieu().conductivite();
 }
 
-const Champ_base& Energie_Multiphase::diffusivite_pour_pas_de_temps()
+const Champ_base& Energie_Multiphase::diffusivite_pour_pas_de_temps() const
 {
   return milieu().diffusivite();
 }

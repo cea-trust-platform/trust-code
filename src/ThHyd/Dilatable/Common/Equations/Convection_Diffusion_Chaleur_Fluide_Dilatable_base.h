@@ -45,20 +45,20 @@ public :
   void discretiser() override;
   int preparer_calcul() override;
   int remplir_cl_modifiee();
-  const Champ_base& diffusivite_pour_pas_de_temps() override;
+  const Champ_base& diffusivite_pour_pas_de_temps() const override;
   void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& resu) override;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
-  const Champ_base& vitesse_pour_transport() override;
+  const Champ_base& vitesse_pour_transport() const override;
   const Motcle& domaine_application() const override;
   DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
 
   // Methodes virtuelles pure
-  bool is_generic() override =0;
+  bool is_generic() const override =0;
   void calculer_div_u_ou_div_rhou(DoubleTab& res) const override =0; // encore une fois desole
 
   // Methodes inlines
-  inline bool is_thermal() override { return true; }
+  inline bool is_thermal() const override { return true; }
 };
 
 #endif /* Convection_Diffusion_Chaleur_Fluide_Dilatable_base_included */

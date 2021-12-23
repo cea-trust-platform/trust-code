@@ -75,11 +75,9 @@ public :
   int has_interface_blocs() const override;
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-
-  const Champ_Don& diffusivite_pour_transport() override;
-  const Champ_base& diffusivite_pour_pas_de_temps() override;
-  const Champ_base& vitesse_pour_transport() override;
-
+  const Champ_Don& diffusivite_pour_transport() const override;
+  const Champ_base& diffusivite_pour_pas_de_temps() const override;
+  const Champ_base& vitesse_pour_transport() const override;
   void creer_champ(const Motcle& motlu) override;
 
 protected:

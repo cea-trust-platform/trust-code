@@ -44,8 +44,8 @@ public :
   void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int preparer_calcul() override;
-  const Champ_base& diffusivite_pour_pas_de_temps() override;
-  const Champ_base& vitesse_pour_transport() override;
+  const Champ_base& diffusivite_pour_pas_de_temps() const override;
+  const Champ_base& vitesse_pour_transport() const override;
   DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
   void completer() override;
 };

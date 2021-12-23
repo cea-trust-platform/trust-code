@@ -80,12 +80,12 @@ int Convection_Diffusion_Espece_Binaire_base::lire_motcle_non_standard(const Mot
 
 }
 
-const Champ_base& Convection_Diffusion_Espece_Binaire_base::diffusivite_pour_pas_de_temps()
+const Champ_base& Convection_Diffusion_Espece_Binaire_base::diffusivite_pour_pas_de_temps() const
 {
   return le_fluide->nu_sur_Schmidt(); // D (diffusion coefficient)
 }
 
-const Champ_base& Convection_Diffusion_Espece_Binaire_base::vitesse_pour_transport()
+const Champ_base& Convection_Diffusion_Espece_Binaire_base::vitesse_pour_transport() const
 {
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,probleme().equation(0));
   return eqn_hydr.rho_la_vitesse() /* rho * u and not u */;

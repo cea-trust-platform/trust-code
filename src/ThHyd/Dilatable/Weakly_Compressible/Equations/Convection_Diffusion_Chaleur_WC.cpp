@@ -83,7 +83,7 @@ void Convection_Diffusion_Chaleur_WC::completer()
   Op_Grad_WC_->associer(zdis, zcl, inco);
 }
 
-const Champ_base& Convection_Diffusion_Chaleur_WC::vitesse_pour_transport()
+const Champ_base& Convection_Diffusion_Chaleur_WC::vitesse_pour_transport() const
 {
   return Convection_Diffusion_Chaleur_Fluide_Dilatable_base::vitesse_pour_transport();
 }

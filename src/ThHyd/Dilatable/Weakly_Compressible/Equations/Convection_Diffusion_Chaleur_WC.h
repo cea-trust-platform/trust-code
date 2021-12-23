@@ -45,10 +45,9 @@ class Convection_Diffusion_Chaleur_WC : public Convection_Diffusion_Chaleur_Flui
 public :
   void set_param(Param& titi) override;
   void completer() override;
-  const Champ_base& vitesse_pour_transport() override;
+  const Champ_base& vitesse_pour_transport() const override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int preparer_calcul() override;
-
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
 
@@ -56,7 +55,7 @@ public :
   //  d P_tot / d t = del P / del t + u.grad(P_tot)
   // Il faut donc un operateur grad
   inline const Operateur_Grad& operateur_gradient_WC() const { return Op_Grad_WC_;}
-  inline bool is_generic() override { return true; }
+  inline bool is_generic() const override { return true; }
 
 protected:
   void calculer_div_u_ou_div_rhou(DoubleTab& res) const override;

@@ -45,7 +45,7 @@ public :
   void associer_fluide(const Fluide_Dilatable_base& );
   void associer_milieu_base(const Milieu_base& ) override;
   int impr(Sortie& os) const override;
-  const Champ_Don& diffusivite_pour_transport() override;
+  const Champ_Don& diffusivite_pour_transport() const override;
   const Fluide_Dilatable_base& fluide() const;
   Fluide_Dilatable_base& fluide();
   const Milieu_base& milieu() const override;

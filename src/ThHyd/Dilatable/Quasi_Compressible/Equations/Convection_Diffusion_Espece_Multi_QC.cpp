@@ -46,7 +46,7 @@ void Convection_Diffusion_Espece_Multi_QC::set_param(Param& param)
   param.ajouter("espece",&mon_espece_); // XD_ADD_P espece Assosciate a species (with its properties) to the equation
 }
 
-const Champ_base& Convection_Diffusion_Espece_Multi_QC::diffusivite_pour_pas_de_temps()
+const Champ_base& Convection_Diffusion_Espece_Multi_QC::diffusivite_pour_pas_de_temps() const
 {
   // TODO : FIXME : on passe actuellement en parametre mu_sur_Schmidt
   // qu il faut remplacer par nu_sur_Schmidt

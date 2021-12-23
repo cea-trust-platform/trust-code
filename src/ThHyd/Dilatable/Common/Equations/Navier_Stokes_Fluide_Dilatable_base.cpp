@@ -94,17 +94,17 @@ void Navier_Stokes_Fluide_Dilatable_base::completer()
   Cerr<<"Equation type : " << inconnue()->equation().que_suis_je() << finl;
 }
 
-const Champ_Don& Navier_Stokes_Fluide_Dilatable_base::diffusivite_pour_transport()
+const Champ_Don& Navier_Stokes_Fluide_Dilatable_base::diffusivite_pour_transport() const
 {
   return le_fluide->viscosite_dynamique();
 }
 
-const Champ_base& Navier_Stokes_Fluide_Dilatable_base::diffusivite_pour_pas_de_temps()
+const Champ_base& Navier_Stokes_Fluide_Dilatable_base::diffusivite_pour_pas_de_temps() const
 {
   return le_fluide->viscosite_cinematique();
 }
 
-const Champ_base& Navier_Stokes_Fluide_Dilatable_base::vitesse_pour_transport()
+const Champ_base& Navier_Stokes_Fluide_Dilatable_base::vitesse_pour_transport() const
 {
   return la_vitesse;
 }

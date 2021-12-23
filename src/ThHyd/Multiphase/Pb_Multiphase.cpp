@@ -120,15 +120,9 @@ Entree& Pb_Multiphase::lire_correlations(Entree& is)
   Motcle mot;
   is >> mot;
   if (mot != "{") Cerr << "correlations : { expected instead of " << mot << finl, Process::exit();
-
-  for (is >> mot; mot != "}"; is >> mot) if (!correlations.count(mot.getString()))
-      {
-        Correlation c;
-        c.typer_lire(*this, mot, is);
-        correlations[mot.getString()] = c;
-      }
-    else Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
-
+  for (is >> mot; mot != "}"; is >> mot)
+      if (correlations.count(mot.getString())) Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
+      else correlations[mot.getString()].typer_lire(*this, mot, is);
   return is;
 }
 
