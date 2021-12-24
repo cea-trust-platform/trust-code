@@ -67,19 +67,24 @@ public:
 
   // Generic return
   template <typename BC>
-  inline void flux_face(const DoubleTab&,int , const BC&,int, DoubleVect& flux) const;
+  inline void flux_face(const DoubleTab& inco, int face, const BC&, int , DoubleVect& flux) const
+  { for (int k=0; k<flux.size(); k++) flux(k) = inco(face,k)*surface(face)*porosite(face); }
 
-  inline void flux_face(const DoubleTab&, int , const Symetrie&, int, DoubleVect& flux) const { /* Do nothing */ }
-  inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_fixe&, int, DoubleVect& flux) const { /* Do nothing */ }
-  inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int, DoubleVect& flux) const { /* Do nothing */ }
-  inline void flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&, int, DoubleVect& flux) const;
-  inline void flux_faces_interne(const DoubleTab&, int , DoubleVect& flux) const;
+  inline void flux_face(const DoubleTab&, int , const Symetrie&, int, DoubleVect& ) const { /* Do nothing */ }
+  inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_fixe&, int, DoubleVect& ) const { /* Do nothing */ }
+  inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int, DoubleVect& ) const { /* Do nothing */ }
+
+  inline void flux_face(const DoubleTab& inco, int boundary_index, int face, int local_face, const Echange_externe_impose&, int, DoubleVect& flux) const
+  { for (int k=0; k<flux.size(); k++) flux(k) = inco(face,k)*surface(face)*porosite(face); }
+
+  inline void flux_faces_interne(const DoubleTab& inco, int face, DoubleVect& flux) const
+  { for (int k=0; k<flux.size(); k++) flux(k) = inco(face,k)*surface(face)*porosite(face); }
 
   template <typename BC>
-  inline void coeffs_face(int, int,const BC&, DoubleVect& aii, DoubleVect& ajj ) const { /* Do nothing */ }
+  inline void coeffs_face(int, int,const BC&, DoubleVect& , DoubleVect&  ) const { /* Do nothing */ }
 
-  inline void coeffs_face(int,int,int,int, const Echange_externe_impose&, DoubleVect& aii, DoubleVect& ajj ) const { /* Do nothing */ }
-  inline void coeffs_faces_interne(int, DoubleVect& aii, DoubleVect& ajj ) const { /* Do nothing */ }
+  inline void coeffs_face(int,int,int,int, const Echange_externe_impose&, DoubleVect& , DoubleVect&  ) const { /* Do nothing */ }
+  inline void coeffs_faces_interne(int, DoubleVect& , DoubleVect&  ) const { /* Do nothing */ }
 
   template <typename BC>
   inline void secmem_face(int, const BC&, int, DoubleVect& ) const { /* Do nothing */ }
@@ -87,24 +92,5 @@ public:
   inline void secmem_face(int, int, int, const Echange_externe_impose&, int, DoubleVect& ) const { /* Do nothing */ }
   inline void secmem_faces_interne(int, DoubleVect& ) const { /* Do nothing */ }
 };
-
-// Generic return
-template <typename BC>
-inline void Eval_Div_VDF_Elem::flux_face(const DoubleTab& inco,int face, const BC&,int, DoubleVect& flux) const
-{
-  for (int k=0; k<flux.size(); k++) flux(k) = inco(face,k)*surface(face)*porosite(face);
-}
-
-// flux_face avec Echange_externe_impose
-inline void Eval_Div_VDF_Elem::flux_face(const DoubleTab& inco, int boundary_index, int face, int local_face, const Echange_externe_impose&, int, DoubleVect& flux) const
-{
-  for (int k=0; k<flux.size(); k++) flux(k) = inco(face,k)*surface(face)*porosite(face);
-}
-
-// flux_faces_interne
-inline void Eval_Div_VDF_Elem::flux_faces_interne(const DoubleTab& inco, int face,DoubleVect& flux) const
-{
-  for (int k=0; k<flux.size(); k++) flux(k) = inco(face,k)*surface(face)*porosite(face);
-}
 
 #endif /* Eval_Div_VDF_Elem_included */
