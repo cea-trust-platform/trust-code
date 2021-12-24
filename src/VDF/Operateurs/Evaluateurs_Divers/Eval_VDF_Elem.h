@@ -40,10 +40,10 @@ public:
                         CALC_FLUX_FACES_SORTIE_LIB = false, CALC_FLUX_FACES_SYMM = false, CALC_FLUX_FACES_PERIO = true;
 
   template <typename BC_TYPE>
-  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int ) const { return 0.; }
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int , DoubleVect& ) const { /* Do nothing */ }
 
-  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const { return 0.; }
-  inline double coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int ) const { return 0.; }
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int , DoubleVect& ) const { /* Do nothing */ }
+  inline void coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int , DoubleVect& ) const { /* Do nothing */ }
   inline void associer_inconnue(const Champ_base& );
 
 protected:

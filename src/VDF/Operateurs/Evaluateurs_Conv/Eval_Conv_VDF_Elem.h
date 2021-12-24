@@ -74,14 +74,14 @@ public:
 
   // contribution de la derivee en vitesse d'une equation scalaire
   // Generic return
-  template <typename BC_TYPE>
-  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int ) const { return 0.; }
+  template <typename BC>
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC&, int , DoubleVect&) const { /* Do nothing */ }
   // Overloaded
-  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
-  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
-  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , const Periodique&, int ) const;
-  inline double coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const { return 0.; }
-  inline double coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int ) const;
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_entree_fluide&, int , DoubleVect&) const;
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_sortie_libre&, int , DoubleVect&) const;
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const Periodique&, int , DoubleVect&) const;
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int , DoubleVect&) const { /* Do nothing */ }
+  inline void coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int , DoubleVect&) const;
 
   // Generic return
   template<typename BC>
@@ -254,18 +254,16 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(int face, int, const Diri
 }
 
 template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
-                                                                      const Dirichlet_entree_fluide& la_cl, int num1) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face, const Dirichlet_entree_fluide& la_cl, int num1, DoubleVect& flux) const
 {
-  if (DERIVED_T::IS_CENTRE4) return 0.;
+  if (DERIVED_T::IS_CENTRE4) return ;
 
   int n0 = elem_(face,0), n1 = elem_(face,1);
-  double flux, psc = surface_porosite(face), val_imp = la_cl.val_imp(face-num1);
+  double psc = surface_porosite(face), val_imp = la_cl.val_imp(face-num1);
 
-  if (n0 != -1) flux = (dt_vitesse(face) > 0) ? psc*inco[n0] : psc*val_imp;
-  else  flux = (dt_vitesse(face)>0) ? psc*val_imp : psc*inco[n1]; // n1 != -1
+  if (n0 != -1) for (int k = 0; k < flux.size(); k++) flux(k) = (dt_vitesse(face) > 0) ? psc*inco(n0,k) : psc*val_imp;
+  else for (int k = 0; k < flux.size(); k++) flux(k) = (dt_vitesse(face)>0) ? psc*val_imp : psc*inco(n1,k); // n1 != -1
 
-  return flux;
 }
 
 template <typename DERIVED_T>
@@ -345,18 +343,16 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(int face, int,const Neuma
 }
 
 template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
-                                                                      const Neumann_sortie_libre& la_cl, int num1) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face, const Neumann_sortie_libre& la_cl, int num1, DoubleVect& flux) const
 {
-  if (DERIVED_T::IS_CENTRE4) return 0.;
+  if (DERIVED_T::IS_CENTRE4) return;
 
   int n0 = elem_(face,0), n1 = elem_(face,1);
-  double flux, psc = surface_porosite(face), val_ext = la_cl.val_ext(face-num1);
+  double psc = surface_porosite(face), val_ext = la_cl.val_ext(face-num1);
 
-  if (n0 != -1) flux = (dt_vitesse(face) > 0) ? psc*inco[n0] : psc*val_ext;
-  else flux = (dt_vitesse(face) > 0) ?  psc*val_ext : psc*inco[n1]; // n1 != -1
+  if (n0 != -1) for (int k = 0; k < flux.size(); k++) flux(k) = (dt_vitesse(face) > 0) ? psc*inco(n0,k) : psc*val_ext;
+  else for (int k = 0; k < flux.size(); k++) flux(k) = (dt_vitesse(face) > 0) ?  psc*val_ext : psc*inco(n1,k); // n1 != -1
 
-  return flux;
 }
 
 template <typename DERIVED_T>
@@ -415,20 +411,17 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(int face, int,const Perio
 }
 
 template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face,
-                                                                      const Periodique& la_cl, int  ) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, int face, const Periodique& la_cl, int , DoubleVect& flux ) const
 {
-  if (DERIVED_T::IS_CENTRE4) return 0.;
+  if (DERIVED_T::IS_CENTRE4) return;
 
-  double flux, psc = surface_porosite(face);
+  double psc = surface_porosite(face);
   if (DERIVED_T::IS_CENTRE)
     {
       const int n0 = elem_(face,0), n1 = elem_(face,1), n0_0 = amont_amont_(face,0), n1_1 = amont_amont_(face,1);
-      flux = qcentre_(psc,n0,n1,n0_0,n1_1,face,inco);
+      for (int k = 0; k < flux.size(); k++) flux(k) = qcentre_(psc,n0,n1,n0_0,n1_1,face,inco);
     }
-  else flux = (dt_vitesse(face) > 0) ? psc*inco(elem_(face,0)) : psc*inco(elem_(face,1));
-
-  return flux;
+  else for (int k = 0; k < flux.size(); k++) flux(k) = (dt_vitesse(face) > 0) ? psc*inco(elem_(face,0),k) : psc*inco(elem_(face,1),k);
 }
 
 /* Function templates specialization for flux_faces_interne */
@@ -501,17 +494,15 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne(int face,double&
 }
 
 template <typename DERIVED_T>
-inline double Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne_bloc_vitesse(const DoubleTab& inco, int face) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne_bloc_vitesse(const DoubleTab& inco, int face , DoubleVect& flux) const
 {
-  double flux, psc = surface_porosite(face);
+  double psc = surface_porosite(face);
   if (DERIVED_T::IS_CENTRE)
     {
       const int n0 = elem_(face,0), n1 = elem_(face,1), n0_0 = amont_amont_(face,0), n1_1 = amont_amont_(face,1);
-      flux = qcentre_(psc,n0,n1,n0_0,n1_1,face,inco);
+      for (int k = 0; k < flux.size(); k++) flux(k) = qcentre_(psc,n0,n1,n0_0,n1_1,face,inco);
     }
-  else flux = (dt_vitesse(face) > 0) ? psc*inco(elem_(face,0)) : psc*inco(elem_(face,1));
-
-  return flux;
+  else for (int k = 0; k < flux.size(); k++) flux(k) = (dt_vitesse(face) > 0) ? psc*inco(elem_(face,0),k) : psc*inco(elem_(face,1),k);
 }
 
 //************************
@@ -520,8 +511,7 @@ inline double Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne_bloc_vitesse(c
 
 /* Function templates specialization for Periodique */
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int face,
-                                                     const Periodique& la_cl, int num1, DoubleVect& flux) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, int face, const Periodique& la_cl, int num1, DoubleVect& flux) const
 {
   int k, elem1 = elem_(face,0), elem2 = elem_(face,1);
   double psc = dt_vitesse(face)*surface_porosite(face);

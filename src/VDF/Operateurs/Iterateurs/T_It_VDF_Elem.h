@@ -110,9 +110,9 @@ private:
   void ajouter_contribution_interne_vitesse(const int , const DoubleTab&, Matrice_Morse& ) const;
   void ajouter_contribution_bords_vitesse(const int , const DoubleTab&, Matrice_Morse& ) const;
 
-  template <bool should_calc_flux, typename BC> void ajouter_contribution_bords_vitesse_(const BC& , int ,int ,const DoubleTab& , Matrice_Morse& ) const;
-  void ajouter_contribution_bords_vitesse_(const Periodique& , int ,int ,const DoubleTab& ,const Front_VF&, Matrice_Morse& ) const;
-  void ajouter_contribution_bords_vitesse_(const Echange_externe_impose& , int ,int ,int ,const DoubleTab& ,const Front_VF&, Matrice_Morse& ) const;
+  template <bool should_calc_flux, typename BC> void ajouter_contribution_bords_vitesse_(const BC& , const int , const int , const int , const DoubleTab& , Matrice_Morse& ) const;
+  void ajouter_contribution_bords_vitesse_(const Periodique& , const int , const int , const int , const DoubleTab& , const Front_VF&, Matrice_Morse& ) const;
+  void ajouter_contribution_bords_vitesse_(const Echange_externe_impose& , const int , const int , const int , const int , const DoubleTab& ,const Front_VF&, Matrice_Morse& ) const;
 
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *

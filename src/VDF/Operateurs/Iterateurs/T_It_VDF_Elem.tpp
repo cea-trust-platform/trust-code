@@ -674,14 +674,15 @@ template <class _TYPE_>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const int ncomp,const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Zone_VDF& zone_VDF = la_zone.valeur();
-  double aef = 0;
+  DoubleVect aef(ncomp);
   const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int face = ndeb; face < nfin; face++)
     {
-      const int elem1 = elem(face, 0), elem2 = elem(face);
-      aef = flux_evaluateur.coeffs_faces_interne_bloc_vitesse(inco, face);
-      matrice(elem1,face) += aef;
-      matrice(elem2,face) -= aef;
+      const int elem1 = elem(face, 0), elem2 = elem(face,1);
+      flux_evaluateur.coeffs_faces_interne_bloc_vitesse(inco, face,aef);
+      // TODO : FIXME : add for
+      matrice(elem1,face) += aef(0);
+      matrice(elem2,face) -= aef(0);
     }
 }
 
@@ -697,34 +698,34 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const int ncomp, 
       switch(type_cl(la_cl))
         {
         case symetrie :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(), ndeb,nfin,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case sortie_libre :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(), ndeb,nfin,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case entree_fluide :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(), ndeb,nfin,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case paroi_fixe :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(), ndeb,nfin,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case paroi_defilante :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(), ndeb,nfin,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case paroi_adiabatique :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(), ndeb,nfin,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case paroi :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(), ndeb,nfin,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case echange_global_impose :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(), ndeb,nfin,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case echange_externe_impose :
-          ajouter_contribution_bords_vitesse_((const Echange_externe_impose&) la_cl.valeur(), ndeb,nfin,num_cl,inco,frontiere_dis,matrice);
+          ajouter_contribution_bords_vitesse_((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,ncomp,inco,frontiere_dis,matrice);
           break;
         case periodique :
-          ajouter_contribution_bords_vitesse_((const Periodique&) la_cl.valeur(), ndeb,nfin,inco,frontiere_dis,matrice);
+          ajouter_contribution_bords_vitesse_((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,inco,frontiere_dis,matrice);
           break;
         default :
           Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse" << finl;
@@ -735,41 +736,43 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const int ncomp, 
 }
 
 template <class _TYPE_> template <bool should_calc_flux, typename BC>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const BC& cl, int ndeb,int nfin,const DoubleTab& inco, Matrice_Morse& matrice) const
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const BC& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  double aef=0;
+  DoubleVect aef(ncomp);
   if (should_calc_flux)
     {
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face, 0), elem2 = elem(face, 1);
-          aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, face, cl, ndeb);
-          if ( elem1 > -1) matrice(elem1,face) += aef;
-          if ( elem2 > -1) matrice(elem2,face) -= aef;
+          flux_evaluateur.coeffs_face_bloc_vitesse(inco, face, cl, ndeb,aef);
+          // TODO : FIXME : add for
+          if ( elem1 > -1) matrice(elem1,face) += aef(0);
+          if ( elem2 > -1) matrice(elem2,face) -= aef(0);
         }
     }
 }
 
 template <class _TYPE_>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Periodique& cl, int ndeb,int nfin,const DoubleTab& inco,const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& inco, const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
 {
-  double aef=0;
+  DoubleVect aef(ncomp);
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face, 0), elem2 = elem(face, 1);
-          aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, face, cl, ndeb);
-          if ( elem1 > -1) if ( face < (ndeb + frontiere_dis.nb_faces()/2)  ) matrice(elem1,face) += aef;
-          if ( elem2 > -1) if ( (ndeb + frontiere_dis.nb_faces()/2) <= face ) matrice(elem2,face) -= aef;
+          flux_evaluateur.coeffs_face_bloc_vitesse(inco, face, cl, ndeb,aef);
+          // TODO : FIXME : add for
+          if ( elem1 > -1) if ( face < (ndeb + frontiere_dis.nb_faces()/2)  ) matrice(elem1,face) += aef(0);
+          if ( elem2 > -1) if ( (ndeb + frontiere_dis.nb_faces()/2) <= face ) matrice(elem2,face) -= aef(0);
         }
     }
 }
 
 template <class _TYPE_>
-void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_externe_impose& cl, int ndeb,int nfin,int num_cl,const DoubleTab& inco,const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
+void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const DoubleTab& inco,const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
 {
-  double aef=0;
+  DoubleVect aef(ncomp);
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
       int boundary_index = -1;
@@ -777,9 +780,10 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_ex
       for (int face = ndeb; face < nfin; face++)
         {
           const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face), elem1 = elem(face, 0), elem2 = elem(face, 1);
-          aef = flux_evaluateur.coeffs_face_bloc_vitesse(inco, boundary_index, face, local_face, cl, ndeb);
-          if ( elem1 > -1) matrice(elem1,face) += aef;
-          if ( elem2 > -1) matrice(elem2,face) -= aef; //BUG FIX ?? pas elem1 !!
+          flux_evaluateur.coeffs_face_bloc_vitesse(inco, boundary_index, face, local_face, cl, ndeb,aef);
+          // TODO : FIXME : add for
+          if ( elem1 > -1) matrice(elem1,face) += aef(0);
+          if ( elem2 > -1) matrice(elem2,face) -= aef(0); //BUG FIX ?? pas elem1 !!
         }
     }
 }
