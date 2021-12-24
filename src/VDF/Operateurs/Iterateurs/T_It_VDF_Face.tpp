@@ -413,35 +413,39 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem(const int ncomp, const Double
 template <class _TYPE_>
 DoubleTab& T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
-  const int nb_front_Cl = la_zone->nb_front_Cl();
-  for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
+  for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl_perio.frontiere_dis());
-          const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
-          int num_elem, signe;
-          for (int face=ndeb; face < nfin; face++)
+          int num_elem, signe, fac1, fac2, ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+          for (int face = ndeb; face < nfin; face++)
             {
-              int elem1 = elem(face,0), elem2 = elem(face,1), ori = orientation(face);
-              if ( (face == elem_faces(elem1,ori)) || (face == elem_faces(elem1,ori+dimension)) )
-                {
-                  num_elem = elem2;
-                  signe = 1;
-                }
-              else
-                {
-                  num_elem = elem1;
-                  signe = -1;
-                }
-              const int fac1 = elem_faces(num_elem,ori), fac2 = elem_faces(num_elem,ori+dimension);
+              prepare_corriger_pour_periodicite(face,num_elem,signe,fac1,fac2);
               corriger_flux_fa7_elem_periodicite_(ncomp,num_elem,fac1,fac2,face,signe,inco,resu);
             }
         }
     }
   return resu;
+}
+
+template <class _TYPE_>
+void T_It_VDF_Face<_TYPE_>::prepare_corriger_pour_periodicite(const int face, int& num_elem, int& signe, int& fac1, int& fac2) const
+{
+  const int elem1 = elem(face,0), elem2 = elem(face,1), ori = orientation(face);
+  if ( (face == elem_faces(elem1,ori)) || (face == elem_faces(elem1,ori+dimension)) )
+    {
+      num_elem = elem2;
+      signe = 1;
+    }
+  else
+    {
+      num_elem = elem1;
+      signe = -1;
+    }
+  fac1 = elem_faces(num_elem,ori), fac2 = elem_faces(num_elem,ori+dimension);
 }
 
 template <class _TYPE_>
@@ -775,29 +779,17 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem(const int ncomp, const
 template <class _TYPE_>
 void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
-  int nb_front_Cl = la_zone->nb_front_Cl();
-  for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
+  for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl_perio.frontiere_dis());
-          int num_elem, signe, ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+          int num_elem, signe, fac1, fac2, ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
           for (int face = ndeb; face < nfin; face++)
             {
-              const int elem1 = elem(face,0), elem2 = elem(face,1), ori = orientation(face);
-              if ( (face == elem_faces(elem1,ori)) || (face == elem_faces(elem1,ori+dimension)) )
-                {
-                  num_elem = elem2;
-                  signe = 1;
-                }
-              else
-                {
-                  num_elem = elem1;
-                  signe = -1;
-                }
-              const int fac1 = elem_faces(num_elem,ori), fac2 = elem_faces(num_elem,ori+dimension);
+              prepare_corriger_pour_periodicite(face,num_elem,signe,fac1,fac2);
               corriger_coeffs_fa7_elem_periodicite_(ncomp,num_elem,fac1,fac2,face,signe,matrice);
             }
         }
@@ -1022,12 +1014,8 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(const int n
       int n_type = type_arete_coin(n_arete - premiere_arete_coin);
       switch(n_type)
         {
-        case TypeAreteCoinVDF::PAROI_FLUIDE:
-          contribuer_au_second_membre_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI>(n_arete,ncomp,resu);
-          break;
+        case TypeAreteCoinVDF::PAROI_FLUIDE: /* fall through */
         case TypeAreteCoinVDF::FLUIDE_PAROI:
-          contribuer_au_second_membre_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI>(n_arete,ncomp,resu);
-          break;
         case TypeAreteCoinVDF::PERIO_PAROI:
           contribuer_au_second_membre_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI>(n_arete,ncomp,resu);
           break;
@@ -1095,31 +1083,19 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem(const int ncomp
 }
 
 template <class _TYPE_>
-void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite(const int ncomp,DoubleTab& resu) const // TODO : FIXME : a factoriser avec corriger_flux_fa7_elem_periodicite !!
+void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite(const int ncomp,DoubleTab& resu) const
 {
-  const int nb_front_Cl = la_zone->nb_front_Cl();
-  for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
+  for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl_perio.frontiere_dis());
-          int num_elem, signe, ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+          int num_elem, signe, fac1, fac2, ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
           for (int face = ndeb; face < nfin; face++)
             {
-              int elem1 = elem(face,0), elem2 = elem(face,1), ori = orientation(face);
-              if ( (face == elem_faces(elem1,ori)) || (face == elem_faces(elem1,ori+dimension)) )
-                {
-                  num_elem = elem2;
-                  signe = 1;
-                }
-              else
-                {
-                  num_elem = elem1;
-                  signe = -1;
-                }
-              const int fac1 = elem_faces(num_elem,ori), fac2 = elem_faces(num_elem,ori+dimension);
+              prepare_corriger_pour_periodicite(face,num_elem,signe,fac1,fac2);
               corriger_secmem_fa7_elem_periodicite_(ncomp,num_elem,fac1,fac2,face,signe,resu);
             }
         }

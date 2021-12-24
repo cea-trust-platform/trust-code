@@ -89,6 +89,8 @@ private:
   void corriger_flux_fa7_elem_periodicite_(const int , const int , const int , const int , const int , const int , const DoubleTab& , DoubleTab& ) const;
   inline void fill_resu_tab(const int , const int , const int , const ArrOfDouble& , DoubleTab& ) const;
   inline void multiply_by_rho_if_hydraulique(DoubleTab& ) const;
+  inline void prepare_corriger_pour_periodicite(const int , int& , int& , int& , int& ) const;
+
 
   /* Private SFINAE templates */
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
