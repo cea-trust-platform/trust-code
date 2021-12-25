@@ -35,99 +35,73 @@ public:
   static constexpr bool CALC_FLUX_FACES_ECH_EXT_IMP = false, CALC_FLUX_FACES_ECH_GLOB_IMP = false, CALC_FLUX_FACES_PAR = false,
                         CALC_FLUX_FACES_PAR_FIXE = false, CALC_FLUX_FACES_SORTIE_LIB = true;
 
-  // CRTP pattern to static_cast the appropriate class and get the implementation
-  // This is magic !
-  inline int elem_(int i, int j) const;
-  inline double dt_vitesse(int face) const;
-  inline double surface_porosite(int face) const;
-  inline int amont_amont_(int face, int i) const;
-  inline double quick_fram_(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
-  inline void quick_fram_(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
-  inline double qcentre_(const double&, const int, const int, const int, const int, const int, const DoubleTab& ) const;
-  inline void qcentre_(const double&, const int, const int, const int, const int, const int, const DoubleTab&, ArrOfDouble& ) const;
+  /* ************************************** *
+   * *********  POUR L'EXPLICITE ********** *
+   * ************************************** */
 
-  //************************
-  // CAS SCALAIRE
-  //************************
-
-  // Generic return
-  template<typename BC>
-  inline double flux_face(const DoubleTab&, int , const BC&, int ) const { return 0; }
+  template <typename BC> // Generic return
+  inline void flux_face(const DoubleTab&, const int, const BC&, const int, DoubleVect& ) const { /* Do nothing */ }
 
   // To overload
-  inline double flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Periodique&, int ) const;
-  inline double flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const { return 0; }
-  inline double flux_faces_interne(const DoubleTab&, int ) const;
+  inline void flux_face(const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, DoubleVect& ) const;
+  inline void flux_face(const DoubleTab&, const int, const Neumann_sortie_libre&, const int, DoubleVect& ) const;
+  inline void flux_face(const DoubleTab&, const int, const Periodique&, const int, DoubleVect& ) const;
+  inline void flux_face(const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, DoubleVect& ) const { /* Do nothing */ }
+  inline void flux_faces_interne(const DoubleTab&, const int, DoubleVect& ) const;
 
-  // Generic return
-  template<typename BC>
-  inline void coeffs_face(int,int, const BC&, double& aii, double& ajj ) const { /* Do nothing */ }
+  /* ************************************** *
+   * *********  POUR L'IMPLICITE ********** *
+   * ************************************** */
+
+  template <typename BC> // Generic return
+  inline void coeffs_face(const int, const int, const BC&, DoubleVect& , DoubleVect& ) const { /* Do nothing */ }
 
   // To overload
-  inline void coeffs_face(int,int, const Dirichlet_entree_fluide&, double& aii, double& ajj ) const;
-  inline void coeffs_face(int,int, const Neumann_sortie_libre&, double& aii, double& ajj ) const;
-  inline void coeffs_face(int,int, const Periodique&, double& aii, double& ajj ) const;
-  inline void coeffs_face(int,int,int,int, const Echange_externe_impose&, double& aii, double& ajj ) const { /* Do nothing */ }
-  inline void coeffs_faces_interne(int, double& aii, double& ajj ) const;
+  inline void coeffs_face(const int, const int, const Dirichlet_entree_fluide&, DoubleVect&, DoubleVect& ) const;
+  inline void coeffs_face(const int, const int, const Neumann_sortie_libre&, DoubleVect&, DoubleVect& ) const;
+  inline void coeffs_face(const int, const int, const Periodique&, DoubleVect&, DoubleVect& ) const;
+  inline void coeffs_face(const int, const int, const int, const int, const Echange_externe_impose&, DoubleVect&, DoubleVect& ) const { /* Do nothing */ }
+  inline void coeffs_faces_interne(const int, DoubleVect&, DoubleVect& ) const;
 
   // contribution de la derivee en vitesse d'une equation scalaire
-  // Generic return
-  template <typename BC>
-  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC&, int , DoubleVect&) const { /* Do nothing */ }
+  template <typename BC> // Generic return
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, const int, const BC&, const int, DoubleVect& ) const { /* Do nothing */ }
+
   // Overloaded
-  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const Dirichlet_entree_fluide&, int , DoubleVect&) const;
-  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const Neumann_sortie_libre&, int , DoubleVect&) const;
-  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const Periodique&, int , DoubleVect&) const;
-  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int , DoubleVect&) const { /* Do nothing */ }
-  inline void coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int , DoubleVect&) const;
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, DoubleVect& ) const;
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, const int, const Neumann_sortie_libre&, const int, DoubleVect& ) const;
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, const int, const Periodique&, const int, DoubleVect& ) const;
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, DoubleVect& ) const { /* Do nothing */ }
+  inline void coeffs_faces_interne_bloc_vitesse(const DoubleTab&, const int, DoubleVect& ) const;
 
-  // Generic return
-  template<typename BC>
-  inline double secmem_face(int, const BC&, int ) const { return 0; }
+  /* ************************************** *
+   * *********  POUR L'IMPLICITE ********** *
+   * ************************************** */
 
-  // To overload
-  inline double secmem_face(int, const Dirichlet_entree_fluide&, int ) const;
-  inline double secmem_face(int, const Neumann_sortie_libre&, int ) const;
-  inline double secmem_face(int, int, int, const Echange_externe_impose&, int ) const { return 0; }
-  inline double secmem_faces_interne(int ) const { return 0; };
-
-  //************************
-  // CAS VECTORIEL
-  //************************
-
-  // Generic return
-  template <typename BC>
-  inline void flux_face(const DoubleTab&,int , const BC&,int, DoubleVect& flux) const { /* Do nothing */ }
-  // To overload
-
-  inline void flux_face(const DoubleTab&, int , const Periodique&, int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , const Neumann_sortie_libre&, int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&, int, DoubleVect& flux) const;
-  inline void flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&, int, DoubleVect& flux) const { /* Do nothing */ }
-  inline void flux_faces_interne(const DoubleTab&, int , DoubleVect& flux) const;
-
-  // Generic return
-  template <typename BC>
-  inline void coeffs_face(int, int,const BC&, DoubleVect& aii, DoubleVect& ajj ) const { /* Do nothing */ }
+  template <typename BC> // Generic return
+  inline void secmem_face(const int, const BC&, const int, DoubleVect& ) const { /* Do nothing */ }
 
   // To overload
-  inline void coeffs_face(int,int, const Periodique&, DoubleVect& aii, DoubleVect& ajj ) const;
-  inline void coeffs_face(int,int, const Neumann_sortie_libre&, DoubleVect& aii, DoubleVect& ajj ) const;
-  inline void coeffs_face(int,int, const Dirichlet_entree_fluide&, DoubleVect& aii, DoubleVect& ajj ) const;
-  inline void coeffs_face(int,int,int,int, const Echange_externe_impose&, DoubleVect& aii, DoubleVect& ajj ) const { /* Do nothing */ }
-  inline void coeffs_faces_interne(int, DoubleVect& aii, DoubleVect& ajj ) const;
+  inline void secmem_face(const int, const Dirichlet_entree_fluide&, const int, DoubleVect& ) const;
+  inline void secmem_face(const int, const Neumann_sortie_libre&, const int, DoubleVect& ) const;
+  inline void secmem_face(const int, const int, const int, const Echange_externe_impose&, const int, DoubleVect& ) const { /* Do nothing */ }
+  inline void secmem_faces_interne(const int, DoubleVect& ) const { /* Do nothing */ }
 
-  // Generic return
-  template <typename BC>
-  inline void secmem_face(int, const BC&, int, DoubleVect& ) const { /* Do nothing */ }
+private:
+  inline void coeffs_face_common(const int, DoubleVect&, DoubleVect& ) const;
+  inline void coeffs_face_bloc_vitesse_common(const DoubleTab&, const int, DoubleVect& ) const;
 
-  // To overload
-  inline void secmem_face(int, const Neumann_sortie_libre&, int, DoubleVect& ) const;
-  inline void secmem_face(int, const Dirichlet_entree_fluide&, int, DoubleVect& ) const;
-  inline void secmem_face(int, int, int, const Echange_externe_impose&, int, DoubleVect& ) const { /* Do nothing */ }
-  inline void secmem_faces_interne(int, DoubleVect& ) const { /* Do nothing */ }
+  // CRTP pattern to static_cast the appropriate class and get the implementation : This is magic !
+  inline int elem_(const int i, const int j) const { return static_cast<const DERIVED_T *>(this)->get_elem(i,j); }
+  inline int amont_amont_(const int face, const int i) const { return static_cast<const DERIVED_T *>(this)->amont_amont(face,i); }
+  inline double dt_vitesse(const int face) const { return static_cast<const DERIVED_T *>(this)->get_dt_vitesse(face); }
+  inline double surface_porosite(const int face) const { return static_cast<const DERIVED_T *>(this)->get_surface_porosite(face); }
+
+  inline void quick_fram_(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte, ArrOfDouble& flux) const
+  { static_cast<const DERIVED_T *>(this)->quick_fram(psc, num0, num1, num0_0, num1_1, face, transporte, flux); }
+
+  inline void qcentre_(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte, ArrOfDouble& flux) const
+  { static_cast<const DERIVED_T *>(this)->qcentre(psc,num0,num1,num0_0,num1_1,face,transporte,flux); }
 };
 
 #include <Eval_Conv_VDF_Elem.tpp> // templates specializations ici ;)

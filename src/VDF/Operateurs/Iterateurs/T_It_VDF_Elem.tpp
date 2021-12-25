@@ -189,7 +189,8 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& inco, 
 template <class _TYPE_>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
 {
-  double aii=0, ajj=0;
+  const int ncomp = inco.line_size();
+  DoubleVect aii(ncomp), ajj(ncomp);
   const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
   const int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
   if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
@@ -199,7 +200,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco,
         {
           flux_evaluateur.coeffs_face(f, ndeb, cl, aii, ajj);
           const int e1 = f2e[f].first, e2 = f2e[f].second;
-          matrice(e1, e2) = -(elem(f, 0) > -1 ? aii : ajj);
+          matrice(e1, e2) = -(elem(f, 0) > -1 ? aii(0) : ajj(0)); // TODO : FIXME : add loop
         }
     }
 }
@@ -483,7 +484,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const BC& cl, int ndeb,int nfin,
 {
   constexpr bool is_Neum_paroi_adiab = std::is_same<BC,Neumann_paroi_adiabatique>::value;
   int face;
-  double flux;
+  DoubleVect flux(1); // TODO :FIXME
   if (should_calc_flux)
     {
       for (face=ndeb; face<nfin; face++)
@@ -493,10 +494,10 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const BC& cl, int ndeb,int nfin,
               assert(0);
               Process::exit(); // On bloque ici :-)
             }
-          else flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb); //Generic
+          else flux_evaluateur.flux_face(donnee, face, cl, ndeb,flux); //Generic
 
-          if ( (elem(face,0)) > -1) flux_bords(face,0) += flux;
-          if ( (elem(face,1)) > -1) flux_bords(face,0) -= flux;
+          if ( (elem(face,0)) > -1) flux_bords(face,0) += flux(0);
+          if ( (elem(face,1)) > -1) flux_bords(face,0) -= flux(0);
         }
     }
 }
@@ -505,17 +506,17 @@ template <class _TYPE_>
 void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Periodique& cl, int ndeb,int nfin,const DoubleTab& donnee,const Front_VF& frontiere_dis, DoubleTab& flux_bords) const
 {
   int face;
-  double flux;
+  DoubleVect flux(1); // TODO :FIXME
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
       for (face=ndeb; face<nfin; face++)
         {
-          flux = flux_evaluateur.flux_face(donnee, face, cl, ndeb);
+          flux_evaluateur.flux_face(donnee, face, cl, ndeb,flux);
           if ( (elem(face,0)) > -1 )
-            if ( face < (ndeb+frontiere_dis.nb_faces()/2) ) flux_bords(face,0) += flux;
+            if ( face < (ndeb+frontiere_dis.nb_faces()/2) ) flux_bords(face,0) += flux(0);
 
           if ( (elem(face,1)) > -1 )
-            if ( (ndeb+frontiere_dis.nb_faces()/2) <= face ) flux_bords(face,0) -= flux;
+            if ( (ndeb+frontiere_dis.nb_faces()/2) <= face ) flux_bords(face,0) -= flux(0);
         }
     }
 }
@@ -524,7 +525,7 @@ template <class _TYPE_>
 void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl, int ndeb,int nfin,int num_cl,const DoubleTab& donnee,const Front_VF& frontiere_dis,DoubleTab& flux_bords) const
 {
   int face;
-  double flux;
+  DoubleVect flux(1); // TODO :FIXME
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
       int boundary_index = -1;
@@ -532,9 +533,9 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl
       for (face=ndeb; face<nfin; face++)
         {
           int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(face);
-          flux = flux_evaluateur.flux_face(donnee, boundary_index,face,local_face, cl, ndeb);
-          if ( (elem(face,0)) > -1) flux_bords(face,0) += flux;
-          if ( (elem(face,1)) > -1) flux_bords(face,0) -= flux;
+          flux_evaluateur.flux_face(donnee, boundary_index,face,local_face, cl, ndeb,flux);
+          if ( (elem(face,0)) > -1) flux_bords(face,0) += flux(0);
+          if ( (elem(face,1)) > -1) flux_bords(face,0) -= flux(0);
         }
     }
 }
