@@ -190,7 +190,7 @@ template <class _TYPE_>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>& f2e) const
 {
   const int ncomp = inco.line_size();
-  DoubleVect aii(ncomp), ajj(ncomp);
+  ArrOfDouble aii(ncomp), ajj(ncomp);
   const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
   const int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
   if (_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP)
@@ -282,7 +282,7 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const int ncomp, const DoubleTab
 template <class _TYPE_>
 DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_interne(const int ncomp, const DoubleTab& donnee, DoubleTab& resu) const
 {
-  DoubleVect flux(ncomp);
+  ArrOfDouble flux(ncomp);
   const Zone_VDF& zone_VDF = la_zone.valeur();
   const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int face = ndeb; face<nfin; face++)
@@ -304,7 +304,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const BC& cl, const int ndeb, const i
   constexpr bool is_Neum_paroi_adiab = std::is_same<BC,Neumann_paroi_adiabatique>::value;
   if (should_calc_flux)
     {
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           if (is_Neum_paroi_adiab) Process::exit(); // On bloque ici :-)
@@ -320,7 +320,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const Periodique& cl, const int ndeb,
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face,0), elem2 = elem(face,1);
@@ -346,7 +346,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const Echange_externe_impose& cl, con
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       int boundary_index = -1;
       if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
 
@@ -360,7 +360,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const Echange_externe_impose& cl, con
 }
 
 template <class _TYPE_>
-inline void T_It_VDF_Elem<_TYPE_>::fill_flux_tables_(const int face, const int ncomp, const double coeff , const DoubleVect& flux, DoubleTab& resu) const
+inline void T_It_VDF_Elem<_TYPE_>::fill_flux_tables_(const int face, const int ncomp, const double coeff , const ArrOfDouble& flux, DoubleTab& resu) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
   const int elem1 = elem(face,0), elem2 = elem(face,1);
@@ -483,7 +483,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const BC& cl, const int ndeb, co
   DoubleTab& flux_bords = op_base->flux_bords();
   if (should_calc_flux)
     {
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face,0), elem2 = elem(face,1);
@@ -502,7 +502,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Periodique& cl, const int 
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face,0), elem2 = elem(face,1);
@@ -519,7 +519,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       int boundary_index = -1;
       if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
       for (int face = ndeb; face < nfin; face++)
@@ -589,7 +589,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(const int ncomp, Matrice_
 template <class _TYPE_>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne(const int ncomp, Matrice_Morse& matrice ) const
 {
-  DoubleVect aii(ncomp), ajj(ncomp);
+  ArrOfDouble aii(ncomp), ajj(ncomp);
   const Zone_VDF& zone_VDF = la_zone.valeur();
   const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int face = ndeb; face < nfin; face++)
@@ -610,7 +610,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne(const int ncomp, Matric
 template <class _TYPE_> template <bool should_calc_flux, typename BC>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const BC& cl, const int ndeb, const int nfin, const int ncomp, Matrice_Morse& matrice) const
 {
-  DoubleVect aii(ncomp), ajj(ncomp);
+  ArrOfDouble aii(ncomp), ajj(ncomp);
   if (should_calc_flux)
     {
       for (int face = ndeb; face < nfin; face++)
@@ -628,7 +628,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Periodique& cl, co
 {
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
-      DoubleVect aii(ncomp), ajj(ncomp);
+      ArrOfDouble aii(ncomp), ajj(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face,0), elem2 = elem(face,1);
@@ -648,7 +648,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Periodique& cl, co
 template <class _TYPE_>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
 {
-  DoubleVect aii(ncomp), ajj(ncomp);
+  ArrOfDouble aii(ncomp), ajj(ncomp);
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
       int boundary_index = -1;
@@ -667,7 +667,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Echange_externe_im
 template <class _TYPE_>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  DoubleVect aef(ncomp);
+  ArrOfDouble aef(ncomp);
   const Zone_VDF& zone_VDF = la_zone.valeur();
   const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int face = ndeb; face < nfin; face++)
@@ -736,7 +736,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const BC& cl, co
 {
   if (should_calc_flux)
     {
-      DoubleVect aef(ncomp);
+      ArrOfDouble aef(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face, 0), elem2 = elem(face, 1);
@@ -752,7 +752,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Periodique
 {
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
-      DoubleVect aef(ncomp);
+      ArrOfDouble aef(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face, 0), elem2 = elem(face, 1);
@@ -768,7 +768,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_ex
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
-      DoubleVect aef(ncomp);
+      ArrOfDouble aef(ncomp);
       int boundary_index = -1;
       if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
       for (int face = ndeb; face < nfin; face++)
@@ -836,7 +836,7 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(const int ncomp, D
 template <class _TYPE_>
 void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_interne(const int ncomp, DoubleTab& resu) const
 {
-  DoubleVect flux(ncomp);
+  ArrOfDouble flux(ncomp);
   const Zone_VDF& zone_VDF = la_zone.valeur();
   const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int face = ndeb; face < nfin; face++)
@@ -857,7 +857,7 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const BC& cl, con
   constexpr bool is_Periodique = std::is_same<BC,Periodique>::value;
   if (should_calc_flux)
     {
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           flux_evaluateur.secmem_face(face, cl, ndeb, flux); // Generic code
@@ -871,7 +871,7 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const Echange_ext
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
-      DoubleVect flux(ncomp);
+      ArrOfDouble flux(ncomp);
       int boundary_index=-1;
       if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
       for (int face = ndeb; face < nfin; face++)

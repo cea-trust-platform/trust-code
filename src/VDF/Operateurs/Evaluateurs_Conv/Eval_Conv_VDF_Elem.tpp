@@ -28,27 +28,27 @@
  * ************************************** */
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Dirichlet_entree_fluide& la_cl, const int num1, DoubleVect& flux) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Dirichlet_entree_fluide& la_cl, const int num1, ArrOfDouble& flux) const
 {
-  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size();
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
   if (i != -1) for (int k = 0; k < ncomp; k++) flux(k) = (psc > 0) ? -psc*inco(i,k) : -psc*la_cl.val_imp(face-num1,k);
   else for (int k = 0; k < ncomp; k++) flux(k) = (psc > 0) ? -psc*la_cl.val_imp(face-num1,k) : -psc*inco(j,k); /* j != -1 */
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Neumann_sortie_libre& la_cl, const int num1, DoubleVect& flux) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Neumann_sortie_libre& la_cl, const int num1, ArrOfDouble& flux) const
 {
-  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size();
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
   if (i != -1) for (int k = 0; k < ncomp; k++) flux(k) = (psc > 0) ? -psc*inco(i,k) : -psc*la_cl.val_ext(face-num1,k);
   else for (int k = 0; k < ncomp; k++) flux(k) = (psc > 0) ? -psc*la_cl.val_ext(face-num1,k) : -psc*inco(j,k); /* j != -1 */
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Periodique& la_cl, const int num1, DoubleVect& flux) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Periodique& la_cl, const int num1, ArrOfDouble& flux) const
 {
-  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size();
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
 
   if (!DERIVED_T::IS_AMONT)
@@ -64,9 +64,9 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& inco, const int face, DoubleVect& flux) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& inco, const int face, ArrOfDouble& flux) const
 {
-  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size();
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
   if (!DERIVED_T::IS_AMONT)
     {
@@ -111,10 +111,10 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& i
  * ************************************** */
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_common(const int face, DoubleVect& aii, DoubleVect& ajj) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_common(const int face, ArrOfDouble& aii, ArrOfDouble& ajj) const
 {
-  assert (aii.size() == ajj.size());
-  const int i = elem_(face,0), ncomp = aii.size();
+  assert (aii.size_array() == ajj.size_array());
+  const int i = elem_(face,0), ncomp = aii.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
   if (i != -1)
     {
@@ -145,22 +145,22 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_common(const int face, Do
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int, const Dirichlet_entree_fluide& la_cl, DoubleVect& aii, DoubleVect& ajj) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int, const Dirichlet_entree_fluide& la_cl, ArrOfDouble& aii, ArrOfDouble& ajj) const
 {
   coeffs_face_common(face,aii,ajj);
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int, const Neumann_sortie_libre& la_cl, DoubleVect& aii, DoubleVect& ajj) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int, const Neumann_sortie_libre& la_cl, ArrOfDouble& aii, ArrOfDouble& ajj) const
 {
   coeffs_face_common(face,aii,ajj);
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int, const Periodique& la_cl, DoubleVect& aii, DoubleVect& ajj ) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int, const Periodique& la_cl, ArrOfDouble& aii, ArrOfDouble& ajj ) const
 {
-  assert (aii.size() == ajj.size());
-  const int ncomp = aii.size();
+  assert (aii.size_array() == ajj.size_array());
+  const int ncomp = aii.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4)
     {
@@ -179,10 +179,10 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne(const int face, DoubleVect& aii, DoubleVect& ajj ) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne(const int face, ArrOfDouble& aii, ArrOfDouble& ajj ) const
 {
-  assert (aii.size() == ajj.size());
-  const int ncomp = aii.size();
+  assert (aii.size_array() == ajj.size_array());
+  const int ncomp = aii.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
   if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4)
     {
@@ -209,11 +209,11 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne(const int face, 
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, const int face, const Dirichlet_entree_fluide& la_cl, const int num1, DoubleVect& flux) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, const int face, const Dirichlet_entree_fluide& la_cl, const int num1, ArrOfDouble& flux) const
 {
   if (DERIVED_T::IS_CENTRE4) return ;
 
-  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size();
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   double psc = surface_porosite(face), val_imp = la_cl.val_imp(face-num1);
 
   if (i != -1) for (int k = 0; k < ncomp; k++) flux(k) = (dt_vitesse(face) > 0) ? psc*inco(i,k) : psc*val_imp;
@@ -221,11 +221,11 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const Double
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, const int face, const Neumann_sortie_libre& la_cl, const int num1, DoubleVect& flux) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, const int face, const Neumann_sortie_libre& la_cl, const int num1, ArrOfDouble& flux) const
 {
   if (DERIVED_T::IS_CENTRE4) return;
 
-  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size();
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double psc = surface_porosite(face), val_ext = la_cl.val_ext(face-num1);
 
   if (i != -1) for (int k = 0; k < ncomp; k++) flux(k) = (dt_vitesse(face) > 0) ? psc*inco(i,k) : psc*val_ext;
@@ -234,11 +234,11 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const Double
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse_common(const DoubleTab& inco, const int face, DoubleVect& flux ) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse_common(const DoubleTab& inco, const int face, ArrOfDouble& flux ) const
 {
   if (DERIVED_T::IS_CENTRE4) return;
 
-  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size();
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double psc = surface_porosite(face);
   if (DERIVED_T::IS_CENTRE)
     {
@@ -249,13 +249,13 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse_common(const
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, const int face, const Periodique& la_cl, const int, DoubleVect& flux ) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const DoubleTab& inco, const int face, const Periodique& la_cl, const int, ArrOfDouble& flux ) const
 {
   coeffs_face_bloc_vitesse_common(inco,face,flux);
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne_bloc_vitesse(const DoubleTab& inco, const int face , DoubleVect& flux) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne_bloc_vitesse(const DoubleTab& inco, const int face , ArrOfDouble& flux) const
 {
   coeffs_face_bloc_vitesse_common(inco,face,flux);
 }
@@ -265,9 +265,9 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne_bloc_vitesse(con
  * ************************************** */
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Dirichlet_entree_fluide& la_cl, const int num1, DoubleVect& flux) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Dirichlet_entree_fluide& la_cl, const int num1, ArrOfDouble& flux) const
 {
-  const int i = elem_(face,0), ncomp = flux.size();
+  const int i = elem_(face,0), ncomp = flux.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
   if (i != -1)
     {
@@ -288,9 +288,9 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Dir
 }
 
 template <typename DERIVED_T>
-inline void Eval_Conv_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Neumann_sortie_libre& la_cl, const int num1, DoubleVect& flux) const
+inline void Eval_Conv_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Neumann_sortie_libre& la_cl, const int num1, ArrOfDouble& flux) const
 {
-  const int i = elem_(face,0), ncomp = flux.size();
+  const int i = elem_(face,0), ncomp = flux.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
   if (i != -1)
     {

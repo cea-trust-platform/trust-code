@@ -88,7 +88,7 @@ private:
   void ajouter_bords_(const Echange_externe_impose& , const int , const int , const int , const int , const DoubleTab& , const Front_VF& , DoubleTab& ) const;
 
   void modifier_flux() const;
-  inline void fill_flux_tables_(const int, const int , const double , const DoubleVect& , DoubleTab& ) const;
+  inline void fill_flux_tables_(const int, const int , const double , const ArrOfDouble& , DoubleTab& ) const;
 
   // Inutile, jamais utilise ...
   void calculer_flux_bord2(const int, const DoubleTab&) const;
