@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Eval_Conv_VDF_leaves.h
+// File:        Eval_Conv_VDF_Elem_leaves.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Evaluateurs_Conv
 // Version:     /main/15
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Eval_Conv_VDF_leaves_included
-#define Eval_Conv_VDF_leaves_included
+#ifndef Eval_Conv_VDF_Elem_leaves_included
+#define Eval_Conv_VDF_Elem_leaves_included
 
 #include <Eval_Conv_VDF_Elem.h>
 #include <Eval_Conv_VDF.h>
@@ -34,7 +34,7 @@
  *
  * We use DOXYGEN_SHOULD_SKIP_THIS macro to skip this class in the doxygen documentation
  */
-class Eval_Conv_VDF_leaves: public Eval_Conv_VDF_Elem<Eval_Conv_VDF_leaves>,
+class Eval_Conv_VDF_Elem_leaves: public Eval_Conv_VDF_Elem<Eval_Conv_VDF_Elem_leaves>,
   public Eval_Conv_VDF {};
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
@@ -136,4 +136,4 @@ inline void Eval_Quick_VDF_Elem::quick_fram(const double& psc, const int num0, c
   quick_fram_impl(ori,dx,dm0,dxam0,dm1,dxam1,psc,num0,num1,num0_0,num1_1,face,transporte,flux);
 }
 
-#endif /* Eval_Conv_VDF_leaves_included */
+#endif /* Eval_Conv_VDF_Elem_leaves_included */

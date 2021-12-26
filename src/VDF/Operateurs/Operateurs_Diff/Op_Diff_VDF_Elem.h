@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,8 +23,8 @@
 #ifndef Op_Diff_VDF_Elem_included
 #define Op_Diff_VDF_Elem_included
 
+#include <Eval_Diff_VDF_Elem_leaves.h>
 #include <Op_Diff_VDF_Elem_base.h>
-#include <Eval_Diff_VDF_leaves.h>
 #include <Op_VDF_Elem.h>
 #include <ItVDFEl.h>
 
