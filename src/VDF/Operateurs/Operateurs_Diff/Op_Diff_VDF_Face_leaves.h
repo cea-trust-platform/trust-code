@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,44 +14,53 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_var_Face.h
+// File:        Op_Diff_VDF_Face_leaves.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
-// Version:     /main/12
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Diff_VDF_var_Face_included
-#define Op_Diff_VDF_var_Face_included
+#ifndef Op_Diff_VDF_Face_leaves_included
+#define Op_Diff_VDF_Face_leaves_included
 
 #include <Eval_Diff_VDF_Face_leaves.h>
 #include <Op_Diff_VDF_Face_base.h>
+#include <Op_Diff_VDF.h>
 
-// .DESCRIPTION class Op_Diff_VDF_var_Face
-//  Cette classe represente l'operateur de diffusion associe a une equation de
-//  la quantite de mouvement.
-//  La discretisation est VDF
-//  Le champ diffuse est un Champ_Face
-//  Le champ de diffusivite n'est pas uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Face
-//  L'evaluateur associe est de type Eval_Diff_VDF_var_Face
+#ifdef DOXYGEN_SHOULD_SKIP_THIS // seulement un truc inutile pour check_source ...
+class Op_Diff_VDF_Face_leaves
+{ };
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-declare_It_VDF_Face(Eval_Diff_VDF_var_Face)
+//////////////// CONST /////////////////
 
-class Op_Diff_VDF_var_Face : public Op_Diff_VDF_Face_base
+declare_It_VDF_Face(Eval_Diff_VDF_const_Face)
+// .DESCRIPTION class Op_Diff_VDF_Face
+//  Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
+//  La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite est uniforme
+//  L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_const_Face
+class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base, public Op_Diff_VDF<Op_Diff_VDF_Face>
 {
-
-  Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Face);
-
+  Declare_instanciable_sans_constructeur(Op_Diff_VDF_Face);
 public:
-  inline Eval_VDF_Face& get_eval_face();
-  Op_Diff_VDF_var_Face();
+  Op_Diff_VDF_Face();
+  inline Eval_VDF_Face& get_eval_face() { return get_eval_face_impl<Eval_Diff_VDF_const_Face>(); }
 };
 
-// Description renvoit l'evaluateur caste en Ecal_VDF_Face corretement
-inline Eval_VDF_Face& Op_Diff_VDF_var_Face::get_eval_face()
-{
-  Eval_Diff_VDF_var_Face& eval_diff = dynamic_cast<Eval_Diff_VDF_var_Face&> (iter.evaluateur());
-  return eval_diff;
-}
+//////////////// VAR /////////////////
 
-#endif /* Op_Diff_VDF_var_Face_included */
+declare_It_VDF_Face(Eval_Diff_VDF_var_Face)
+// .DESCRIPTION class Op_Diff_VDF_var_Face
+//  Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
+//  La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite n'est pas uniforme
+//  L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_var_Face
+class Op_Diff_VDF_var_Face : public Op_Diff_VDF_Face_base, public Op_Diff_VDF<Op_Diff_VDF_var_Face>
+{
+  Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Face);
+public:
+  Op_Diff_VDF_var_Face();
+  inline Eval_VDF_Face& get_eval_face() { return get_eval_face_impl<Eval_Diff_VDF_var_Face>(); }
+};
+
+
+#endif /* Op_Diff_VDF_Face_leaves_included */

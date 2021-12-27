@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,21 +14,25 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Multi_inco_Elem_Axi.cpp
+// File:        Op_Diff_VDF_Face_leaves.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
-// Version:     /main/11
+// Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Diff_VDF_Multi_inco_Elem_Axi.h>
+#include <Op_Diff_VDF_Face_leaves.h>
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem_Axi,"Op_Diff_VDF_Multi_inco_const_P0_VDF_Axi",Op_Diff_VDF_Elem_base);
-implemente_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem_Axi)
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Face,"Op_Diff_VDF_const_Face",Op_Diff_VDF_Face_base);
+implemente_It_VDF_Face(Eval_Diff_VDF_const_Face)
+Sortie& Op_Diff_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_Face::readOn(Entree& s ) { return s ; }
+Op_Diff_VDF_Face::Op_Diff_VDF_Face() : Op_Diff_VDF_Face_base(It_VDF_Face(Eval_Diff_VDF_const_Face)()) { }
 
-Sortie& Op_Diff_VDF_Multi_inco_Elem_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Diff_VDF_Multi_inco_Elem_Axi::readOn(Entree& s ) { return s ; }
-
-// Description:
-// constructeur
-Op_Diff_VDF_Multi_inco_Elem_Axi::Op_Diff_VDF_Multi_inco_Elem_Axi() :
-  Op_Diff_VDF_Elem_base( It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem_Axi)()) { }
+Implemente_instanciable_sans_constructeur(Op_Diff_VDF_var_Face,"Op_Diff_VDF_var_Face",Op_Diff_VDF_Face_base);
+implemente_It_VDF_Face(Eval_Diff_VDF_var_Face)
+Sortie& Op_Diff_VDF_var_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Diff_VDF_var_Face::readOn(Entree& s ) { return s ; }
+Op_Diff_VDF_var_Face::Op_Diff_VDF_var_Face() : Op_Diff_VDF_Face_base(It_VDF_Face(Eval_Diff_VDF_var_Face)())
+{
+  declare_support_masse_volumique(1);
+}

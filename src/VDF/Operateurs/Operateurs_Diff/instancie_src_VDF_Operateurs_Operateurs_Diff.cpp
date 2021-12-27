@@ -3,18 +3,9 @@
 // To update this file, run: make depend
 //
 #include <verifie_pere.h>
-#include <Op_Diff_VDF_Elem.h>
-#include <Op_Diff_VDF_Elem_Axi.h>
-#include <Op_Diff_VDF_Face.h>
+#include <Op_Diff_VDF_Elem_leaves.h>
 #include <Op_Diff_VDF_Face_Axi.h>
-#include <Op_Diff_VDF_Multi_inco_Elem.h>
-#include <Op_Diff_VDF_Multi_inco_Elem_Axi.h>
-#include <Op_Diff_VDF_Multi_inco_var_Elem.h>
-#include <Op_Diff_VDF_Multi_inco_var_Elem_Axi.h>
-#include <Op_Diff_VDF_var_Elem.h>
-#include <Op_Diff_VDF_var_Elem_Axi.h>
-#include <Op_Diff_VDF_var_Elem_aniso.h>
-#include <Op_Diff_VDF_var_Face.h>
+#include <Op_Diff_VDF_Face_leaves.h>
 #include <Op_Diff_VDF_var_Face_Axi.h>
 #include <Op_Dift_VDF_Elem.h>
 #include <Op_Dift_VDF_Elem_Axi.h>
@@ -32,15 +23,15 @@ void instancie_src_VDF_Operateurs_Operateurs_Diff() {
 Cerr << "src_VDF_Operateurs_Operateurs_Diff" << finl;
 Op_Diff_VDF_Elem inst1;verifie_pere(inst1);
 Op_Diff_VDF_Elem_Axi inst2;verifie_pere(inst2);
-Op_Diff_VDF_Face inst3;verifie_pere(inst3);
-Op_Diff_VDF_Face_Axi inst4;verifie_pere(inst4);
-Op_Diff_VDF_Multi_inco_Elem inst5;verifie_pere(inst5);
-Op_Diff_VDF_Multi_inco_Elem_Axi inst6;verifie_pere(inst6);
-Op_Diff_VDF_Multi_inco_var_Elem inst7;verifie_pere(inst7);
-Op_Diff_VDF_Multi_inco_var_Elem_Axi inst8;verifie_pere(inst8);
-Op_Diff_VDF_var_Elem inst9;verifie_pere(inst9);
-Op_Diff_VDF_var_Elem_Axi inst10;verifie_pere(inst10);
-Op_Diff_VDF_var_Elem_aniso inst11;verifie_pere(inst11);
+Op_Diff_VDF_Multi_inco_Elem inst3;verifie_pere(inst3);
+Op_Diff_VDF_Multi_inco_Elem_Axi inst4;verifie_pere(inst4);
+Op_Diff_VDF_var_Elem inst5;verifie_pere(inst5);
+Op_Diff_VDF_var_Elem_Axi inst6;verifie_pere(inst6);
+Op_Diff_VDF_var_Elem_aniso inst7;verifie_pere(inst7);
+Op_Diff_VDF_Multi_inco_var_Elem inst8;verifie_pere(inst8);
+Op_Diff_VDF_Multi_inco_var_Elem_Axi inst9;verifie_pere(inst9);
+Op_Diff_VDF_Face_Axi inst10;verifie_pere(inst10);
+Op_Diff_VDF_Face inst11;verifie_pere(inst11);
 Op_Diff_VDF_var_Face inst12;verifie_pere(inst12);
 Op_Diff_VDF_var_Face_Axi inst13;verifie_pere(inst13);
 Op_Dift_VDF_Elem inst14;verifie_pere(inst14);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,6 +43,9 @@ public:
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
   virtual int impr(Sortie& os) const;
   virtual void calculer_flux_bord(const DoubleTab& inco) const;
+
+  inline const Iterateur_VDF& get_iter() const { return iter; }
+  inline Iterateur_VDF& get_iter() { return iter; }
 
 protected:
   Iterateur_VDF iter;

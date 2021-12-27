@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,21 +14,42 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Multi_inco_Elem.cpp
+// File:        Op_Diff_VDF.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
-// Version:     /main/11
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Diff_VDF_Multi_inco_Elem.h>
+#ifndef Op_Diff_VDF_included
+#define Op_Diff_VDF_included
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VDF_Multi_inco_Elem,"Op_Diff_VDF_Multi_inco_const_P0_VDF",Op_Diff_VDF_Elem_base);
-implemente_It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem)
+#include <Iterateur_VDF_base.h>
+#include <Eval_VDF_Elem.h>
+#include <Eval_VDF_Face.h>
 
-Sortie& Op_Diff_VDF_Multi_inco_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
-Entree& Op_Diff_VDF_Multi_inco_Elem::readOn(Entree& s ) { return s ; }
+template <typename OP_TYPE>
+class Op_Diff_VDF
+{
+protected:
 
-// Description:
-// constructeur
-Op_Diff_VDF_Multi_inco_Elem::Op_Diff_VDF_Multi_inco_Elem() :
-  Op_Diff_VDF_Elem_base( It_VDF_Elem(Eval_Diff_VDF_Multi_inco_const_Elem)()) { }
+  template <typename EVAL_TYPE>
+  inline Eval_VDF_Elem& get_eval_elem_impl()
+  {
+    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    return eval_diff;
+  }
+
+  template <typename EVAL_TYPE>
+  inline Eval_VDF_Face& get_eval_face_impl()
+  {
+    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    return eval_diff;
+  }
+
+private:
+  // CRTP pour recuperer l'iter
+//  inline const Iterateur_VDF& iter_() const { return static_cast<const OP_TYPE *>(this)->get_iter(); }
+  inline Iterateur_VDF& iter_() { return static_cast<OP_TYPE *>(this)->get_iter(); }
+};
+
+#endif /* Op_Diff_VDF_included */
