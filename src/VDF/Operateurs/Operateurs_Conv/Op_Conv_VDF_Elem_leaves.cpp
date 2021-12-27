@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,56 +14,34 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Conv_Quick_VDF_Face_Axi.h
+// File:        Op_Conv_VDF_Elem_leaves.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Conv
-// Version:     /main/8
-//
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION  class Op_Conv_Quick_VDF_Face_Axi
-//
-// Decrire ici la classe Op_Conv_Quick_VDF_Face_Axi
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Conv_Quick_VDF_Face_Axi_included
-#define Op_Conv_Quick_VDF_Face_Axi_included
+#include <Op_Conv_VDF_Elem_leaves.h>
 
-#include <Eval_Conv_VDF_Face_leaves.h>
-#include <Op_Conv_VDF_base.h>
-#include <ItVDFFa.h>
+Implemente_instanciable_sans_constructeur(Op_Conv_Amont_VDF_Elem,"Op_Conv_Amont_VDF_P0_VDF",Op_Conv_VDF_base);
+implemente_It_VDF_Elem(Eval_Amont_VDF_Elem)
+Sortie& Op_Conv_Amont_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Conv_Amont_VDF_Elem::readOn(Entree& s ) { return s ; }
+Op_Conv_Amont_VDF_Elem::Op_Conv_Amont_VDF_Elem() : Op_Conv_VDF_base(It_VDF_Elem(Eval_Amont_VDF_Elem)()) { }
 
-// .DESCRIPTION class Op_Conv_Quick_VDF_Face
-//  Cette classe represente l'operateur de convection associe a une equation de
-//  la quantite de mouvement.
-//  La discretisation est VDF
-//  Le champ convecte est de type Champ_Face
-//  Le schema de convection est du type Quick
-//  L'iterateur associe est de type Iterateur_VDF_Face
-//  L'evaluateur associe est de type Eval_Quick_VDF_Face
+Implemente_instanciable_sans_constructeur(Op_Conv_Centre_VDF_Elem,"Op_Conv_Centre_VDF_P0_VDF",Op_Conv_VDF_base);
+implemente_It_VDF_Elem(Eval_Centre_VDF_Elem)
+Sortie& Op_Conv_Centre_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Conv_Centre_VDF_Elem::readOn(Entree& s ) { return s ; }
+Op_Conv_Centre_VDF_Elem::Op_Conv_Centre_VDF_Elem() : Op_Conv_VDF_base(It_VDF_Elem(Eval_Centre_VDF_Elem)()) { }
 
-declare_It_VDF_Face(Eval_Quick_VDF_Face_Axi)
+Implemente_instanciable_sans_constructeur(Op_Conv_Centre4_VDF_Elem,"Op_Conv_Centre4_VDF_P0_VDF",Op_Conv_VDF_base);
+implemente_It_VDF_Elem(Eval_Centre4_VDF_Elem)
+Sortie& Op_Conv_Centre4_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Conv_Centre4_VDF_Elem::readOn(Entree& s ) { return s ; }
+Op_Conv_Centre4_VDF_Elem::Op_Conv_Centre4_VDF_Elem() : Op_Conv_VDF_base(It_VDF_Elem(Eval_Centre4_VDF_Elem)()) { }
 
-class Op_Conv_Quick_VDF_Face_Axi : public Op_Conv_VDF_base
-{
-  Declare_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Face_Axi);
-
-public:
-  Op_Conv_Quick_VDF_Face_Axi();
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
-  Champ_Inc_base& vitesse();
-  const Champ_Inc_base& vitesse() const;
-  inline void associer_vitesse(const Champ_base&) ;
-};
-
-// Description:
-// associe le champ de vitesse a l'evaluateur
-inline void Op_Conv_Quick_VDF_Face_Axi::associer_vitesse(const Champ_base& ch_vit)
-{
-  const Champ_Face& vit = (Champ_Face&) ch_vit;
-
-  Eval_Quick_VDF_Face_Axi& eval_conv = dynamic_cast<Eval_Quick_VDF_Face_Axi&> (iter.evaluateur());
-  eval_conv.associer(vit );                // Eval_Conv_VDF::associer
-}
-
-#endif /* Op_Conv_Quick_VDF_Face_Axi_included */
+Implemente_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Elem,"Op_Conv_Quick_VDF_P0_VDF",Op_Conv_VDF_base);
+implemente_It_VDF_Elem(Eval_Quick_VDF_Elem)
+Sortie& Op_Conv_Quick_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Conv_Quick_VDF_Elem::readOn(Entree& s ) { return s ; }
+Op_Conv_Quick_VDF_Elem::Op_Conv_Quick_VDF_Elem() : Op_Conv_VDF_base(It_VDF_Elem(Eval_Quick_VDF_Elem)()) { }
