@@ -4,9 +4,7 @@
 //
 #include <verifie_pere.h>
 #include <Op_Diff_VDF_Elem_leaves.h>
-#include <Op_Diff_VDF_Face_Axi.h>
 #include <Op_Diff_VDF_Face_leaves.h>
-#include <Op_Diff_VDF_var_Face_Axi.h>
 #include <Op_Dift_VDF_Elem.h>
 #include <Op_Dift_VDF_Elem_Axi.h>
 #include <Op_Dift_VDF_Face.h>
@@ -30,8 +28,8 @@ Op_Diff_VDF_var_Elem_Axi inst6;verifie_pere(inst6);
 Op_Diff_VDF_var_Elem_aniso inst7;verifie_pere(inst7);
 Op_Diff_VDF_Multi_inco_var_Elem inst8;verifie_pere(inst8);
 Op_Diff_VDF_Multi_inco_var_Elem_Axi inst9;verifie_pere(inst9);
-Op_Diff_VDF_Face_Axi inst10;verifie_pere(inst10);
-Op_Diff_VDF_Face inst11;verifie_pere(inst11);
+Op_Diff_VDF_Face inst10;verifie_pere(inst10);
+Op_Diff_VDF_Face_Axi inst11;verifie_pere(inst11);
 Op_Diff_VDF_var_Face inst12;verifie_pere(inst12);
 Op_Diff_VDF_var_Face_Axi inst13;verifie_pere(inst13);
 Op_Dift_VDF_Elem inst14;verifie_pere(inst14);

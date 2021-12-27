@@ -24,7 +24,9 @@
 #define Op_Diff_VDF_Face_leaves_included
 
 #include <Eval_Diff_VDF_Face_leaves.h>
+#include <Op_Diff_VDF_Face_Axi_base.h>
 #include <Op_Diff_VDF_Face_base.h>
+#include <Ref_Champ_Uniforme.h>
 #include <Op_Diff_VDF.h>
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS // seulement un truc inutile pour check_source ...
@@ -47,6 +49,24 @@ public:
   inline Eval_VDF_Face& get_eval_face() { return get_eval_face_impl<Eval_Diff_VDF_const_Face>(); }
 };
 
+// .DESCRIPTION class Op_Diff_VDF_Face_Axi
+//  Cette classe represente l'operateur de diffusion associe aux equations de quantite de mouvement en coordonnees cylindriques.
+//  La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite est uniforme
+//  Cette classe n'utilise ni iterateur ni evaluateur (il y avait trop de termes supplementaires dus aux coordonnees cylindriques)
+class Op_Diff_VDF_Face_Axi : public Op_Diff_VDF_Face_Axi_base
+{
+  Declare_instanciable(Op_Diff_VDF_Face_Axi);
+public:
+  inline double nu_(const int i) const { return diffusivite_.valeur()(0,0); }
+  inline double nu_mean_2_pts_(const int , const int ) const { return diffusivite_.valeur()(0,0); }
+  inline double nu_mean_4_pts_(const int , const int ) const { return diffusivite_.valeur()(0,0); }
+  inline void associer_diffusivite(const Champ_base& diffu) { diffusivite_ = ref_cast(Champ_Uniforme, diffu); }
+  inline const Champ_base& diffusivite() const { return diffusivite_; }
+
+protected:
+  REF(Champ_Uniforme) diffusivite_;
+};
+
 //////////////// VAR /////////////////
 
 declare_It_VDF_Face(Eval_Diff_VDF_var_Face)
@@ -62,5 +82,50 @@ public:
   inline Eval_VDF_Face& get_eval_face() { return get_eval_face_impl<Eval_Diff_VDF_var_Face>(); }
 };
 
+// .DESCRIPTION class Op_Diff_VDF_var_Face_Axi
+//  Cette classe represente l'operateur de diffusion associe aux equations de quantite de mouvement en coordonnees cylindriques.
+//  La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite n'est pas uniforme
+//  Cette classe n'utilise ni iterateur ni evaluateur (il y avait trop de termes supplementaires dus aux coordonnees cylindriques)
+class Op_Diff_VDF_var_Face_Axi : public Op_Diff_VDF_Face_Axi_base
+{
+  Declare_instanciable(Op_Diff_VDF_var_Face_Axi);
+public:
+  inline double nu_(const int i) const { return diffusivite_->valeurs()(i); }
+  inline double nu_mean_2_pts_(const int i, const int j) const { return 0.5*(diffusivite_->valeurs()(i)+diffusivite_->valeurs()(j)); }
+  inline double nu_mean_4_pts_(const int , const int ) const;
+  inline void associer_diffusivite(const Champ_base& diffu) { diffusivite_ = diffu; }
+  inline const Champ_base& diffusivite() const { return diffusivite_; }
+protected:
+  REF(Champ_base) diffusivite_;
+};
+
+inline double Op_Diff_VDF_var_Face_Axi::nu_mean_4_pts_(const int i, const int j) const
+{
+  double db_diffusivite = 0;
+  int element, compteur = 0;
+
+  if ((element=face_voisins(i,0)) != -1)
+    {
+      db_diffusivite += diffusivite_->valeurs()(element);
+      compteur++;
+    }
+  if ((element=face_voisins(i,1)) != -1)
+    {
+      db_diffusivite += diffusivite_->valeurs()(element);
+      compteur++;
+    }
+  if ((element=face_voisins(j,0)) != -1)
+    {
+      db_diffusivite += diffusivite_->valeurs()(element);
+      compteur++;
+    }
+  if ((element=face_voisins(j,1)) != -1)
+    {
+      db_diffusivite += diffusivite_->valeurs()(element);
+      compteur++;
+    }
+  db_diffusivite /= compteur;
+  return db_diffusivite;
+}
 
 #endif /* Op_Diff_VDF_Face_leaves_included */
