@@ -14,53 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_var_Elem.h
+// File:        Op_Dift_VDF_Elem_base.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
-// Version:     /main/9
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Dift_VDF_var_Elem_included
-#define Op_Dift_VDF_var_Elem_included
+#ifndef Op_Dift_VDF_Elem_base_included
+#define Op_Dift_VDF_Elem_base_included
 
-#include <Eval_Dift_VDF_Elem_leaves.h>
 #include <Op_Dift_VDF_base.h>
 #include <Op_VDF_Elem.h>
 #include <ItVDFEl.h>
 
-declare_It_VDF_Elem(Eval_Dift_VDF_var_Elem)
-
 class Turbulence_paroi_scal;
-class Champ_Fonc;
-class Champ_base;
 
-class Op_Dift_VDF_var_Elem : public Op_Dift_VDF_base, public Op_VDF_Elem
+class Op_Dift_VDF_Elem_base : public Op_Dift_VDF_base, public Op_VDF_Elem
 {
-  Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Elem);
+  Declare_base(Op_Dift_VDF_Elem_base);
 public:
-  Op_Dift_VDF_var_Elem();
-  double calculer_dt_stab() const;
-  void completer();
-  void associer_loipar(const Turbulence_paroi_scal& );
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
-  void associer_diffusivite(const Champ_base& );
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  const Champ_base& diffusivite() const;
+  inline Op_Dift_VDF_Elem_base(const Iterateur_VDF_base& iter_base) : Op_Dift_VDF_base(iter_base) { }
+  double calculer_dt_stab_elem() const;
+  double calculer_dt_stab_elem_axi() const;
+  double calculer_dt_stab_elem_var_axi() const;
+  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
+  // Methodes utiles pour l'heritage V
+  inline void associer_diffusivite_turbulente_base(const Champ_Fonc& diff_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb); }
+  inline void completer_Op_Dift_VDF_base() { Op_Dift_VDF_base::completer(); }
 
-  inline void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
+protected:
+  virtual double alpha_(const int ) const = 0;
 };
 
-// Description:
-// on dimensionne notre matrice.
-inline  void Op_Dift_VDF_var_Elem::dimensionner(Matrice_Morse& matrice) const
-{
-  Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
-}
-
-inline void Op_Dift_VDF_var_Elem::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
-{
-  Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
-}
-
-#endif /* Op_Dift_VDF_var_Elem_included */
+#endif /* Op_Dift_VDF_Elem_base_included */

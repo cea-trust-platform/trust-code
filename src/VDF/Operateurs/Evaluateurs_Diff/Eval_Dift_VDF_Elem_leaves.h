@@ -76,16 +76,13 @@ public :
     ind_Fluctu_Term = 0;
   }
 
-  void associer_modele_turbulence(const Modele_turbulence_scal_base& mod)
+  void init_ind_fluctu_term()
   {
-    // On remplit la reference au modele de turbulence et le tableau k:
-    le_modele_turbulence = mod;
     ind_Fluctu_Term = 0;
     if (!loipar.non_nul()) ind_Fluctu_Term = 1;
   }
 
 private:
-  REF(Modele_turbulence_scal_base) le_modele_turbulence;
   int ind_Fluctu_Term;
 };
 
@@ -105,17 +102,14 @@ public:
 // .SECTION voir aussi Eval_Dift_VDF_var
 class Eval_Dift_VDF_var_Elem : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_var_Elem>, public Eval_Dift_VDF_var
 {
-
 public:
   inline Eval_Dift_VDF_var_Elem( ): ind_Fluctu_Term(1) {}
   static constexpr bool IS_MODIF_DEQ = true;
 
   inline int get_ind_Fluctu_Term() const { return ind_Fluctu_Term; }
 
-  inline void associer_modele_turbulence(const Modele_turbulence_scal_base& mod)
+  inline void init_ind_fluctu_term()
   {
-    // On remplit la reference au modele de turbulence et le tableau k:
-    le_modele_turbulence = mod;
     ind_Fluctu_Term = 0;
     if (!loipar.non_nul()) ind_Fluctu_Term = 1;
   }
@@ -127,8 +121,7 @@ public:
   }
 
 private:
-  REF(Modele_turbulence_scal_base) le_modele_turbulence;
-  int ind_Fluctu_Term;  // TODO: WTF ?
+  int ind_Fluctu_Term;
 };
 
 /*

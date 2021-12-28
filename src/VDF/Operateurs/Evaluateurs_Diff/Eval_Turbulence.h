@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,7 @@ class Eval_Turbulence
 public:
   virtual ~Eval_Turbulence() {}
   inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi) { loipar = loi_paroi; }
+  inline virtual void init_ind_fluctu_term() { /* do nothing */}
   void update_equivalent_distance() ;
 
 protected:
