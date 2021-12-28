@@ -24,32 +24,68 @@
 #define Op_Diff_VDF_included
 
 #include <Iterateur_VDF_base.h>
-#include <Eval_VDF_Elem.h>
-#include <Eval_VDF_Face.h>
+#include <Champ_P0_VDF.h>
+#include <type_traits>
+
+enum class Type_Operateur { Op_ELEM , Op_FACE } ; // ne touche pas !
 
 template <typename OP_TYPE>
 class Op_Diff_VDF
 {
 protected:
 
-  template <typename EVAL_TYPE>
-  inline Eval_VDF_Elem& get_eval_elem_impl()
+  template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_ELEM, void>::type
+  associer_impl(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_diffuse)
   {
-    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
-    return eval_diff;
+    const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
+    associer_<EVAL_TYPE>(zone_dis,zone_cl_dis).associer_inconnue(inco);
+  }
+
+  template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_FACE, void>::type
+  associer_impl(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_transporte)
+  {
+    const Champ_Face& inco = ref_cast(Champ_Face,ch_transporte.valeur());
+    associer_<EVAL_TYPE>(zone_dis,zone_cl_dis).associer_inconnue(inco);
   }
 
   template <typename EVAL_TYPE>
-  inline Eval_VDF_Face& get_eval_face_impl()
+  inline void associer_diffusivite_impl(const Champ_base& ch_diff)
   {
-    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
-    return eval_diff;
+    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&>(iter_()->evaluateur() );
+    eval_diff.associer(ch_diff);
+  }
+  template <typename EVAL_TYPE>
+  inline const Champ_base& diffusivite_impl() const
+  {
+    const EVAL_TYPE& eval_diff = static_cast<const EVAL_TYPE&>(iter_()->evaluateur());
+    return eval_diff.get_diffusivite();
+  }
+
+  template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_FACE, void>::type
+  mettre_a_jour_impl()
+  {
+    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
+    eval_diff.mettre_a_jour();
   }
 
 private:
   // CRTP pour recuperer l'iter
-//  inline const Iterateur_VDF& iter_() const { return static_cast<const OP_TYPE *>(this)->get_iter(); }
+  inline const Iterateur_VDF& iter_() const { return static_cast<const OP_TYPE *>(this)->get_iter(); }
   inline Iterateur_VDF& iter_() { return static_cast<OP_TYPE *>(this)->get_iter(); }
+
+  template <typename EVAL_TYPE>
+  EVAL_TYPE& associer_(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+  {
+    const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
+    const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
+    iter_()->associer(zvdf,zclvdf,static_cast<OP_TYPE&>(*this));
+    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
+    eval_diff.associer_zones(zvdf,zclvdf);
+    return eval_diff;
+  }
 };
 
 #endif /* Op_Diff_VDF_included */

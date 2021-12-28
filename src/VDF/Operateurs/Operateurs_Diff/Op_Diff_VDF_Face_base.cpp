@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,10 +32,7 @@ Implemente_base(Op_Diff_VDF_Face_base,"Op_Diff_VDF_Face_base",Op_Diff_VDF_base);
 Sortie& Op_Diff_VDF_Face_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Diff_VDF_Face_base::readOn(Entree& s ) { return s ; }
 
-double Op_Diff_VDF_Face_base::calculer_dt_stab() const
-{
-  return Op_Diff_VDF_Face_base::calculer_dt_stab(iter.zone());
-}
+double Op_Diff_VDF_Face_base::calculer_dt_stab() const { return Op_Diff_VDF_Face_base::calculer_dt_stab(iter.zone()); }
 
 double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
 {
@@ -85,40 +82,4 @@ double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
 
   double dt_stab = (coef==0 ? DMAXFLOAT : 0.5/coef);
   return Process::mp_min(dt_stab);
-}
-
-// Description:
-// complete l'iterateur et l'evaluateur
-void Op_Diff_VDF_Face_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_transporte)
-{
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
-  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-  const Champ_Face& inco = ref_cast(Champ_Face,ch_transporte.valeur());
-
-  iter.associer(zvdf, zclvdf, *this);
-
-  Evaluateur_VDF& eval_diff =  iter.evaluateur();
-  eval_diff.associer_zones(zvdf, zclvdf );          // Evaluateur_VDF::associer_zones
-  //  (dynamic_cast<Eval_VDF_Face&>(eval_diff)).associer_inconnue(inco );        // Eval_VDF_Face::associer_inconnue
-  get_eval_face().associer_inconnue(inco );
-}
-
-// Description:
-// associe le champ de diffusivite a l'evaluateur
-void Op_Diff_VDF_Face_base::associer_diffusivite(const Champ_base& ch_diff)
-{
-  Eval_Diff_VDF& eval_diff = dynamic_cast<Eval_Diff_VDF&> (iter.evaluateur());
-  eval_diff.associer(ch_diff);          // Eval_Diff_VDF::associer
-}
-
-const Champ_base& Op_Diff_VDF_Face_base::diffusivite() const
-{
-  const Eval_Diff_VDF& eval_diff = dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
-  return eval_diff.get_diffusivite();
-}
-
-void Op_Diff_VDF_Face_base::mettre_a_jour(double temps)
-{
-  Eval_Diff_VDF& eval_diff = dynamic_cast<Eval_Diff_VDF&> (iter.evaluateur());
-  eval_diff.mettre_a_jour();
 }

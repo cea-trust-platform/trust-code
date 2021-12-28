@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,21 +59,18 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
       // GF le max permet de traiter le multi_inco
       double alpha=max_array(diffu);
 
-      double coef = 1/(zone_VDF.h_x()*zone_VDF.h_x())
-                    + 1/(zone_VDF.h_y()*zone_VDF.h_y());
+      double coef = 1/(zone_VDF.h_x()*zone_VDF.h_x()) + 1/(zone_VDF.h_y()*zone_VDF.h_y());
 
-      if (dimension == 3)
-        coef += 1/(zone_VDF.h_z()*zone_VDF.h_z());
-      if (alpha==0)
-        dt_stab = DMAXFLOAT;
-      else
-        dt_stab = 0.5/(alpha*coef);
+      if (dimension == 3) coef += 1/(zone_VDF.h_z()*zone_VDF.h_z());
+
+      if (alpha==0) dt_stab = DMAXFLOAT;
+      else dt_stab = 0.5/(alpha*coef);
     }
   else
     {
       double alpha_loc;
-      int nb_elem=diffu.dimension(0);
-      for (int elem=0 ; elem<nb_elem; elem++)
+      const int nb_elem = diffu.dimension(0);
+      for (int elem = 0 ; elem < nb_elem; elem++)
         {
           double h = 0;
           for (int i=0 ; i<dimension; i++)
@@ -82,55 +79,18 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
               h += 1./(l*l);
             }
           alpha_loc = diffu(elem,0);
-          for (int ncomp=1; ncomp<diffu.dimension(1); ncomp++)
-            alpha_loc = max(alpha_loc,diffu(elem,ncomp));
+          for (int ncomp=1; ncomp<diffu.dimension(1); ncomp++) alpha_loc = max(alpha_loc,diffu(elem,ncomp));
           if (has_champ_masse_volumique())
             {
               const DoubleTab& rho = get_champ_masse_volumique().valeurs();
               alpha_loc/= rho(elem);
             }
           double dt_loc = 0.5/((alpha_loc+DMINFLOAT)*h);
-          if (dt_loc<dt_stab)
-            dt_stab = dt_loc;
+          if (dt_loc<dt_stab) dt_stab = dt_loc;
         }
     }
 
   return Process::mp_min(dt_stab);
-}
-
-
-// Description:
-// complete l'iterateur et l'evaluateur
-void Op_Diff_VDF_Elem_base::associer(const Zone_dis& zone_dis,
-                                     const Zone_Cl_dis& zone_cl_dis,
-                                     const Champ_Inc& ch_diffuse)
-{
-  const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
-  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-  iter.associer(zvdf, zclvdf, *this);
-
-  Evaluateur_VDF& iter_vdf=iter.evaluateur();
-  iter_vdf.associer_zones(zvdf, zclvdf );
-  // GF sans dynamic_cast il FAUT rajouter une methode associer_inconnue
-  // la ligne du dessu fait core_dump (j'ai eu le meme pb avec ocnd_lim_rayo)
-  //(dynamic_cast<Eval_VDF_Elem&> (iter_vdf)).associer_inconnue(inco );
-  get_eval_elem().associer_inconnue(inco );
-}
-
-
-// Description:
-// associe le champ de diffusivite a l'evaluateur
-void Op_Diff_VDF_Elem_base::associer_diffusivite(const Champ_base& ch_diff)
-{
-  Eval_Diff_VDF& eval_diff = dynamic_cast<Eval_Diff_VDF&>( iter.evaluateur() );
-  eval_diff.associer(ch_diff);
-}
-
-const Champ_base& Op_Diff_VDF_Elem_base::diffusivite() const
-{
-  const Eval_Diff_VDF& eval_diff = dynamic_cast<const Eval_Diff_VDF&>(iter.evaluateur());
-  return eval_diff.get_diffusivite();
 }
 
 void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const

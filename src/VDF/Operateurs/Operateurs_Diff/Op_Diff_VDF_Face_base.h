@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,56 +30,22 @@ class Eval_VDF_Face;
 class Champ_Inc;
 
 // .DESCRIPTION class Op_Diff_VDF_Face_base
-//  Cette classe represente l'operateur de diffusion associe a une equation de
-//  la quantite de mouvement.
-//  La discretisation est VDF
-//  Le champ diffuse est un Champ_Face
-//  Le champ de diffusivite est uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Face
-//  L'evaluateur associe est de type Eval_Diff_VDF_const_Face
-
+//  Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
+//  La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite est uniforme
+//  L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_const_Face
 class Op_Diff_VDF_Face_base : public Op_Diff_VDF_base, public Op_VDF_Face
 {
   Declare_base(Op_Diff_VDF_Face_base);
 public:
-  inline Op_Diff_VDF_Face_base(const Iterateur_VDF_base& iterateur);
+  inline Op_Diff_VDF_Face_base(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_base(iterateur)
+  {
+    declare_support_masse_volumique(1);
+  }
+
   double calculer_dt_stab() const;
   double calculer_dt_stab(const Zone_VDF&) const;
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
-  void associer_diffusivite(const Champ_base& );
-  const Champ_base& diffusivite() const;
-  virtual void mettre_a_jour(double temps);
-
-  inline void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  inline virtual Eval_VDF_Face& get_eval_face();
+  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
 };
-
-// Description:
-// constructeur
-inline Op_Diff_VDF_Face_base::Op_Diff_VDF_Face_base(const Iterateur_VDF_base& iterateur)
-  : Op_Diff_VDF_base(iterateur)
-{
-  declare_support_masse_volumique(1);
-}
-
-// Description:
-// on dimensionne notre matrice.
-inline  void Op_Diff_VDF_Face_base::dimensionner(Matrice_Morse& matrice) const
-{
-  Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), matrice);
-}
-
-inline void Op_Diff_VDF_Face_base::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
-{
-  Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
-}
-
-inline Eval_VDF_Face& Op_Diff_VDF_Face_base::get_eval_face()
-{
-  Cerr<<"get_eval_face doit etre surcharge par "<<que_suis_je();
-  Process::exit();
-  return (Eval_VDF_Face&) iter.evaluateur();
-}
 
 #endif /* Op_Diff_VDF_Face_base_included */

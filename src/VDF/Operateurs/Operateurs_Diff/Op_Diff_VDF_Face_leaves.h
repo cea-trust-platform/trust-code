@@ -46,7 +46,10 @@ class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base, public Op_Diff_VDF<Op_Dif
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Face);
 public:
   Op_Diff_VDF_Face();
-  inline Eval_VDF_Face& get_eval_face() { return get_eval_face_impl<Eval_Diff_VDF_const_Face>(); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Diff_VDF_const_Face>(zd,zcd,ch); }
+  inline void associer_diffusivite(const Champ_base& ch) { associer_diffusivite_impl<Eval_Diff_VDF_const_Face>(ch); }
+  inline const Champ_base& diffusivite() const { return diffusivite_impl<Eval_Diff_VDF_const_Face>(); }
+  inline virtual void mettre_a_jour(double ) { mettre_a_jour_impl<Type_Operateur::Op_FACE,Eval_Diff_VDF_const_Face>(); }
 };
 
 // .DESCRIPTION class Op_Diff_VDF_Face_Axi
@@ -79,7 +82,10 @@ class Op_Diff_VDF_var_Face : public Op_Diff_VDF_Face_base, public Op_Diff_VDF<Op
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Face);
 public:
   Op_Diff_VDF_var_Face();
-  inline Eval_VDF_Face& get_eval_face() { return get_eval_face_impl<Eval_Diff_VDF_var_Face>(); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Diff_VDF_var_Face>(zd,zcd,ch); }
+  inline void associer_diffusivite(const Champ_base& ch) { associer_diffusivite_impl<Eval_Diff_VDF_var_Face>(ch); }
+  inline const Champ_base& diffusivite() const { return diffusivite_impl<Eval_Diff_VDF_var_Face>(); }
+  inline virtual void mettre_a_jour(double ) { mettre_a_jour_impl<Type_Operateur::Op_FACE,Eval_Diff_VDF_var_Face>(); }
 };
 
 // .DESCRIPTION class Op_Diff_VDF_var_Face_Axi
