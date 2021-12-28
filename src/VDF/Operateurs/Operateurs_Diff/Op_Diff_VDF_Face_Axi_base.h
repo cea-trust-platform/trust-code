@@ -61,6 +61,7 @@ private:
   void ajouter_aretes_bords(const DoubleTab& , DoubleTab& ) const;
   void ajouter_aretes_mixtes_internes(const DoubleTab& , DoubleTab& ) const;
 
+  void fill_coeff_matrice_morse(const int , const int , const double , Matrice_Morse& ) const;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
   void ajouter_contribution_elem(const DoubleTab& , Matrice_Morse& ) const;
   void ajouter_contribution_elem_3D(Matrice_Morse& ) const;

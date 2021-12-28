@@ -106,16 +106,14 @@ void  Op_Diff_VDF_Face_Axi_base::ajouter_aretes_bords(const DoubleTab& inco, Dou
           {
             const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe  = Qdm(n_arete,3), ori1 = orientation(fac1), ori3 = orientation(fac3);
             const int rang1 = fac1 - la_zone_vdf->premiere_face_bord(), rang2 = fac2 - la_zone_vdf->premiere_face_bord();
-            double vit_imp, dist3;
+            double vit_imp, dist3, tps = inconnue->temps();
 
             if (n_type == TypeAreteBordVDF::PAROI_FLUIDE) // arete paroi_fluide :il faut determiner qui est la face fluide
               {
-                if (est_egal(inco[fac1],0)) vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori3,la_zcl_vdf);
-                else vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori3,la_zcl_vdf);
+                if (est_egal(inco[fac1],0)) vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf);
+                else vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf);
               }
-            else
-              vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori3,la_zcl_vdf)+
-                             Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori3,la_zcl_vdf));
+            else vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf)+Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf));
 
             const double db_diffusivite = nu_mean_2_pts_(face_voisins(fac3,0),face_voisins(fac3,1));
 
@@ -165,7 +163,7 @@ void  Op_Diff_VDF_Face_Axi_base::ajouter_aretes_bords(const DoubleTab& inco, Dou
                     // XXX : attention si ecart : dans le cas constant c'etait tau23 = signe*(vit_imp-inco[fac3])/dist3 (normalement c'est la meme mais bon)
                     const double tau23 = (inco[fac3]-vit_imp)/dist3;
                     const double flux3 = db_diffusivite*tau23*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
-                    resu[fac3]+=signe*flux3;
+                    resu[fac3] += signe*flux3;
                   }
               }
             else // (ori1 == 2) bord d'equation Z = cte
@@ -229,11 +227,8 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_aretes_mixtes_internes(const DoubleTab& 
           resu(fac3) += flux1;
           resu(fac4) -= flux1;
 
-          // Termes supplementaires dans le laplacien en axi
-          // Ils sont integres comme des termes sources
-
+          // Termes supplementaires dans le laplacien en axi : Ils sont integres comme des termes sources
           const double coef_laplacien_axi = 0.5*db_diffusivite*tau21;
-
           resu(fac1) += coef_laplacien_axi*volumes_entrelaces(fac1)*porosite(fac1)/xv(fac1,0);
           resu(fac2) += coef_laplacien_axi*volumes_entrelaces(fac2)*porosite(fac2)/xv(fac2,0);
 
@@ -297,8 +292,24 @@ DoubleTab& Op_Diff_VDF_Face_Axi_base::ajouter(const DoubleTab& inco,  DoubleTab&
 
 DoubleTab& Op_Diff_VDF_Face_Axi_base::calculer(const DoubleTab& inco, DoubleTab& resu) const
 {
-  resu=0;
+  resu = 0;
   return ajouter(inco,resu);
+}
+
+void Op_Diff_VDF_Face_Axi_base::fill_coeff_matrice_morse(const int fac1, const int fac2, const double flux, Matrice_Morse& matrice) const
+{
+  const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
+  DoubleVect& coeff = matrice.get_set_coeff();
+  for (int k = tab1[fac1]-1; k < tab1[fac1+1]-1; k++)
+    {
+      if (tab2[k]-1 == fac1) coeff[k] += flux;
+      if (tab2[k]-1 == fac2) coeff[k] -= flux;
+    }
+  for (int k = tab1[fac2]-1; k < tab1[fac2+1]-1; k++)
+    {
+      if (tab2[k]-1 == fac1) coeff[k] -= flux;
+      if (tab2[k]-1 == fac2) coeff[k] += flux;
+    }
 }
 
 void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_elem(const DoubleTab& inco, Matrice_Morse& matrice) const
@@ -323,27 +334,8 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_elem(const DoubleTab& inco,
       tau22 += 0.5/R;
       const double flux_X = tau11*nu_(num_elem)*0.5*(surface(fx0)+surface(fx1));
       const double flux_Y = tau22*nu_(num_elem)*0.5*(surface(fy0)+surface(fy1));
-
-      for (int k = tab1[fx0]-1; k < tab1[fx0+1]-1; k++)
-        {
-          if (tab2[k]-1 == fx0) coeff[k] += flux_X;
-          if (tab2[k]-1 == fx1) coeff[k] -= flux_X;
-        }
-      for (int k = tab1[fx1]-1; k < tab1[fx1+1]-1; k++)
-        {
-          if (tab2[k]-1 == fx0) coeff[k] -= flux_X;
-          if (tab2[k]-1 == fx1) coeff[k] += flux_X;
-        }
-      for (int k = tab1[fy0]-1; k < tab1[fy0+1]-1; k++)
-        {
-          if (tab2[k]-1 == fy0) coeff[k] += flux_Y;
-          if (tab2[k]-1 == fy1) coeff[k] -= flux_Y;
-        }
-      for (int k = tab1[fy1]-1; k < tab1[fy1+1]-1; k++)
-        {
-          if (tab2[k]-1 == fy0) coeff[k] -= flux_Y;
-          if (tab2[k]-1 == fy1) coeff[k] += flux_Y;
-        }
+      fill_coeff_matrice_morse(fx0,fx1,flux_X,matrice);
+      fill_coeff_matrice_morse(fy0,fy1,flux_Y,matrice);
 
       // Termes supplementaires dans le laplacien en axi : Ils sont integres comme des termes sources
       const double coef_laplacien_axi = +0.5*tau22*nu_(num_elem);
@@ -358,26 +350,13 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_elem(const DoubleTab& inco,
 
 void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_elem_3D(Matrice_Morse& matrice) const
 {
-  const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
-  DoubleVect& coeff = matrice.get_set_coeff();
   for (int num_elem = 0; num_elem < la_zone_vdf->nb_elem(); num_elem++)
     {
       const int fz0 = elem_faces(num_elem,2), fz1 = elem_faces(num_elem,2+dimension);
-
       // Calcul de tau33
       const double tau33 = 1/(xv(fz1,2) - xv(fz0,2));
-
       const double flux_Z = tau33*nu_(num_elem)*0.5*(surface(fz0)+surface(fz1));
-      for (int k = tab1[fz0]-1; k < tab1[fz0+1]-1; k++)
-        {
-          if (tab2[k]-1 == fz0) coeff[k] += flux_Z;
-          if (tab2[k]-1 == fz1) coeff[k] -= flux_Z;
-        }
-      for (int k = tab1[fz1]-1; k < tab1[fz1+1]-1; k++)
-        {
-          if (tab2[k]-1 == fz0) coeff[k] -= flux_Z;
-          if (tab2[k]-1 == fz1) coeff[k] += flux_Z;
-        }
+      fill_coeff_matrice_morse(fz0,fz1,flux_Z,matrice);
     }
 }
 
@@ -514,43 +493,22 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_mixtes_internes(Matr
 
           // flux de tau21 sur la facette a cheval sur les faces fac1 et fac2
           flux1 = db_diffusivite*tau21*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
-          for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac3) coeff[k] += flux1;
-              if (tab2[k]-1 == fac4) coeff[k] -= flux1;
-            }
-          for (int k = tab1[fac4]-1; k < tab1[fac4+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac3) coeff[k] -= flux1;
-              if (tab2[k]-1 == fac4) coeff[k] += flux1;
-            }
+          fill_coeff_matrice_morse(fac3,fac4,flux1,matrice);
 
           // Termes supplementaires dans le laplacien en axi : Ils sont integres comme des termes sources
           const double coef_laplacien_axi = 0.5*db_diffusivite*tau21;
           for (int k = tab1[fac1]-1; k < tab1[fac1+1]-1; k++)
-            if (tab2[k]-1 == fac1)
-              coeff[k] += coef_laplacien_axi*volumes_entrelaces(fac1)*porosite(fac1)/xv(fac1,0);
+            if (tab2[k]-1 == fac1) coeff[k] += coef_laplacien_axi*volumes_entrelaces(fac1)*porosite(fac1)/xv(fac1,0);
 
           for (int k = tab1[fac2]-1; k < tab1[fac2+1]-1; k++)
-            if (tab2[k]-1 == fac2)
-              coeff[k] += coef_laplacien_axi*volumes_entrelaces(fac2)*porosite(fac2)/xv(fac2,0);
+            if (tab2[k]-1 == fac2) coeff[k] += coef_laplacien_axi*volumes_entrelaces(fac2)*porosite(fac2)/xv(fac2,0);
 
           // Calcul de tau12
           const double tau12 = 1/(xv(fac2,0) - xv(fac1,0));
 
           // flux de tau12 sur la facette a cheval sur les faces fac3 et fac4
           flux1 = db_diffusivite*tau12*0.25*(surface(fac3)+surface(fac4))*(porosite(fac3)+porosite(fac4));
-
-          for (int k = tab1[fac1]-1; k < tab1[fac1+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac1) coeff[k] += flux1;
-              if (tab2[k]-1 == fac2) coeff[k] -= flux1;
-            }
-          for (int k = tab1[fac2]-1; k < tab1[fac2+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac1) coeff[k] -= flux1;
-              if (tab2[k]-1 == fac2) coeff[k] += flux1;
-            }
+          fill_coeff_matrice_morse(fac1,fac2,flux1,matrice);
         }
       else if (ori3 == 1) // (seule possibilite ori1 = 2) arete YZ
         {
@@ -560,16 +518,7 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_mixtes_internes(Matr
 
           // flux de tau32 sur la facette a cheval sur les faces fac1 et fac2
           flux2 = db_diffusivite*tau32*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
-          for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac3) coeff[k] += flux2;
-              if (tab2[k]-1 == fac4) coeff[k] -= flux2;
-            }
-          for (int k = tab1[fac4]-1; k < tab1[fac4+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac3) coeff[k] -= flux2;
-              if (tab2[k]-1 == fac4) coeff[k] += flux2;
-            }
+          fill_coeff_matrice_morse(fac3,fac4,flux2,matrice);
 
           // Calcul de tau23
           const double R = xv(fac1,0);
@@ -579,16 +528,7 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_mixtes_internes(Matr
 
           // flux de tau23 sur la facette a cheval sur les faces fac3 et fac4
           flux2 = db_diffusivite*tau23*0.25*(surface(fac3)+surface(fac4))*(porosite(fac3)+porosite(fac4));
-          for (int k = tab1[fac1]-1; k < tab1[fac1+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac1) coeff[k] += flux2;
-              if (tab2[k]-1 == fac2) coeff[k] -= flux2;
-            }
-          for (int k = tab1[fac2]-1; k < tab1[fac2+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac1) coeff[k] -= flux2;
-              if (tab2[k]-1 == fac2) coeff[k] += flux2;
-            }
+          fill_coeff_matrice_morse(fac1,fac2,flux2,matrice);
         }
       else // seule possibilite ori1 = 2 et ori3 = 0:  arete XZ
         {
@@ -598,34 +538,14 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_mixtes_internes(Matr
 
           // flux de tau31 sur la facette a cheval sur les faces fac1 et fac2
           flux3 = db_diffusivite*tau31*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
-
-          for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac3) coeff[k] += flux3;
-              if (tab2[k]-1 == fac4) coeff[k] -= flux3;
-            }
-          for (int k = tab1[fac4]-1; k < tab1[fac4+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac3) coeff[k] -= flux3;
-              if (tab2[k]-1 == fac4) coeff[k] += flux3;
-            }
+          fill_coeff_matrice_morse(fac3,fac4,flux3,matrice);
 
           // Calcul de tau13
           const double tau13 = 1/(xv(fac2,0) - xv(fac1,0));
 
           // flux de tau13 sur la facette a cheval sur les faces fac3 et fac4
           flux3 = db_diffusivite*tau13*0.25*(surface(fac3)+surface(fac4))*(porosite(fac3)+porosite(fac4));
-
-          for (int k = tab1[fac1]-1; k < tab1[fac1+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac1) coeff[k] += flux3;
-              if (tab2[k]-1 == fac2) coeff[k] -= flux3;
-            }
-          for (int k = tab1[fac2]-1; k < tab1[fac2+1]-1; k++)
-            {
-              if (tab2[k]-1 == fac1) coeff[k] -= flux3;
-              if (tab2[k]-1 == fac2) coeff[k] += flux3;
-            }
+          fill_coeff_matrice_morse(fac1,fac2,flux3,matrice);
         }
     }
 }
@@ -652,16 +572,14 @@ void Op_Diff_VDF_Face_Axi_base::contribue_au_second_membre(DoubleTab& resu) cons
           {
             const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe  = Qdm(n_arete,3);
             const int ori1 = orientation(fac1), ori3 = orientation(fac3), rang1 = fac1 - la_zone_vdf->premiere_face_bord(), rang2 = fac2 - la_zone_vdf->premiere_face_bord();
-            double vit_imp;
+            double vit_imp, tps = inconnue->temps();
 
             if (n_type == TypeAreteBordVDF::PAROI_FLUIDE) // arete paroi_fluide :il faut determiner qui est la face fluide
               {
-                if (est_egal(inconnue.valeur()(fac1),0)) vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori3,la_zcl_vdf);
-                else vit_imp = Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori3,la_zcl_vdf);
+                if (est_egal(inconnue.valeur()(fac1),0)) vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf);
+                else vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf);
               }
-            else
-              vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang1,ori3,la_zcl_vdf)+
-                             Champ_Face_get_val_imp_face_bord(inconnue->temps(),rang2,ori3,la_zcl_vdf));
+            else vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf)+Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf));
 
             const double db_diffusivite =  nu_mean_2_pts_(face_voisins(fac3,0),face_voisins(fac3,1));
 
@@ -683,7 +601,6 @@ void Op_Diff_VDF_Face_Axi_base::contribue_au_second_membre(DoubleTab& resu) cons
                     const double tau13 = (-vit_imp)/dist3;
                     flux1 = db_diffusivite*tau13*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
                   }
-
                 resu[fac3] += signe*flux1;
               }
             else if (ori1 == 1) // bord d'equation teta = cte
