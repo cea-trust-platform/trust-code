@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,17 +28,16 @@
 
 class Op_Dift_VDF_base : public Op_Diff_VDF_base, public Op_Diff_Turbulent_base
 {
-
   Declare_base(Op_Dift_VDF_base);
-
 public:
-
-  inline Op_Dift_VDF_base(const Iterateur_VDF_base& iter_base);// : Op_Diff_VDF_base(iter_base) { }
+  inline Op_Dift_VDF_base(const Iterateur_VDF_base& iter_base) : Op_Diff_VDF_base(iter_base) { }
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
   void contribuer_au_second_membre(DoubleTab& ) const;
-};
 
-inline Op_Dift_VDF_base::Op_Dift_VDF_base(const Iterateur_VDF_base& iter_base): Op_Diff_VDF_base(iter_base) { }
+  // Methodes utiles pour l'heritage V
+  inline void associer_diffusivite_turbulente_base(const Champ_Fonc& diff_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb); }
+  inline void completer_Op_Dift_VDF_base() { Op_Diff_VDF_base::completer(); }
+};
 
 #endif /* Op_Dift_VDF_base_included */

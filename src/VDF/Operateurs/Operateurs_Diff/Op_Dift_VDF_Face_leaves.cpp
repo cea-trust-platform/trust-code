@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,38 +14,29 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_var_Face.h
+// File:        Op_Dift_VDF_Face_leaves.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
-// Version:     /main/11
+// Version:     /main/27
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Dift_VDF_var_Face_included
-#define Op_Dift_VDF_var_Face_included
+#include <Op_Dift_VDF_Face_leaves.h>
 
-#include <Eval_Dift_VDF_Face_leaves.h>
-#include <Op_Dift_VDF_Face_base.h>
+//////////////// CONST /////////////////
 
-declare_It_VDF_Face(Eval_Dift_VDF_var_Face)
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_Face,"Op_Dift_VDF_Face",Op_Dift_VDF_Face_base);
+implemente_It_VDF_Face(Eval_Dift_VDF_const_Face)
+Sortie& Op_Dift_VDF_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_Face::readOn(Entree& s ) { return s ; }
+Op_Dift_VDF_Face::Op_Dift_VDF_Face() : Op_Dift_VDF_Face_base(It_VDF_Face(Eval_Dift_VDF_const_Face)()) { }
 
-class Champ_Fonc;
-class Mod_turb_hyd_base;
+//////////////// VAR /////////////////
 
-class Op_Dift_VDF_var_Face : public Op_Dift_VDF_Face_base
+Implemente_instanciable_sans_constructeur(Op_Dift_VDF_var_Face,"Op_Dift_VDF_var_Face",Op_Dift_VDF_Face_base);
+implemente_It_VDF_Face(Eval_Dift_VDF_var_Face)
+Sortie& Op_Dift_VDF_var_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Entree& Op_Dift_VDF_var_Face::readOn(Entree& s ) { return s ; }
+Op_Dift_VDF_var_Face::Op_Dift_VDF_var_Face() : Op_Dift_VDF_Face_base(It_VDF_Face(Eval_Dift_VDF_var_Face)())
 {
-  Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Face);
-
-public:
-  Op_Dift_VDF_var_Face();
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  virtual void completer();
-  inline Eval_VDF_Face& get_eval_face();
-};
-
-inline Eval_VDF_Face& Op_Dift_VDF_var_Face::get_eval_face()
-{
-  Eval_Dift_VDF_var_Face& eval_diff = dynamic_cast<Eval_Dift_VDF_var_Face&> (iter.evaluateur());
-  return eval_diff;
+  declare_support_masse_volumique(1);
 }
-
-#endif /* Op_Dift_VDF_var_Face_included */

@@ -27,8 +27,6 @@
 #include <Champ_P0_VDF.h>
 #include <type_traits>
 
-enum class Type_Operateur { Op_ELEM , Op_FACE } ; // ne touche pas !
-
 template <typename OP_TYPE>
 class Op_Diff_VDF
 {

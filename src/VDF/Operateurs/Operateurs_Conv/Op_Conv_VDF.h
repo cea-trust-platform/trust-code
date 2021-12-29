@@ -28,8 +28,6 @@
 #include <Op_VDF_Face.h>
 #include <type_traits>
 
-enum class Type_Operateur { Op_ELEM , Op_FACE } ; // ne touche pas !
-
 template <typename OP_TYPE>
 class Op_Conv_VDF : public Op_VDF_Elem, public Op_VDF_Face
 {

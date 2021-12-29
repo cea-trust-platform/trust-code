@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,26 +39,12 @@ public:
   double calculer_dt_stab() const;
   double calculer_dt_stab(const Zone_VDF&) const;
   void calculer_borne_locale(DoubleVect& ,double , double ) const;
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
-  void associer_diffusivite(const Champ_base& );
-  void dimensionner(Matrice_Morse& ) const;
-  void associer_loipar(const Turbulence_paroi& );
-  const Champ_base& diffusivite() const;
 
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  inline virtual Eval_VDF_Face& get_eval_face();
+  virtual const Champ_base& diffusivite() const = 0; // XXX : E Saikali : juste pour securite ...
+
+  inline void associer_loipar(const Turbulence_paroi& ) { /* do nothing */ }
+  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
 };
-
-inline Eval_VDF_Face& Op_Dift_VDF_Face_base::get_eval_face()
-{
-  Cerr<<"get_eval_face doit etre surcharge par "<<que_suis_je();
-  Process::exit();
-  return (Eval_VDF_Face&) iter.evaluateur();
-}
-
-inline void Op_Dift_VDF_Face_base::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
-{
-  Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem);
-}
 
 #endif /* Op_Dift_VDF_Face_base_included */

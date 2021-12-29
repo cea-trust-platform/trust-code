@@ -32,6 +32,8 @@
 #include <Champ_Face.h>
 #include <Zone_VDF.h>
 
+enum class Type_Operateur { Op_ELEM , Op_FACE } ; // ne touche pas !
+
 enum Type_Cl_VDF
 {
   symetrie // Symetrie

@@ -39,9 +39,6 @@ public:
   double calculer_dt_stab_elem_var_axi() const;
   inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
-  // Methodes utiles pour l'heritage V
-  inline void associer_diffusivite_turbulente_base(const Champ_Fonc& diff_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb); }
-  inline void completer_Op_Dift_VDF_base() { Op_Dift_VDF_base::completer(); }
 
 protected:
   virtual double alpha_(const int ) const = 0;
