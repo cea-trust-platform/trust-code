@@ -14,73 +14,66 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_var_Face_Axi.h
+// File:        Op_Dift_VDF_Face_Axi_base.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift
-// Version:     /main/13
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Dift_VDF_var_Face_Axi_included
-#define Op_Dift_VDF_var_Face_Axi_included
+#ifndef Op_Dift_VDF_Face_Axi_base_included
+#define Op_Dift_VDF_Face_Axi_base_included
 
 #include <Op_Dift_VDF_Face_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Ref_Mod_turb_hyd_base.h>
+#include <Ref_Champ_Uniforme.h>
 #include <Ref_Champ_Face.h>
 
-// .DESCRIPTION class Op_Dift_VDF_var_Face_Axi
-//  Cette classe represente l'operateur de diffusion global (diffusions
-//  laminaire et turbulente) associe aux equations de quantite de mouvement
-//  en coordonnees cylindriques.
-//  La discretisation est VDF
-//  Le champ diffuse est un Champ_Face
-//  Le champ de diffusivite laminaire est variable
-//  Cette classe n'utilise ni iterateur ni evaluateur (il y avait
-//  trop de termes supplementaires dus aux coordonnees cylindriques)
-
-class Op_Dift_VDF_var_Face_Axi : public Op_Dift_VDF_Face_base
+class Op_Dift_VDF_Face_Axi_base : public Op_Dift_VDF_Face_base
 {
-  Declare_instanciable(Op_Dift_VDF_var_Face_Axi);
+  Declare_base(Op_Dift_VDF_Face_Axi_base);
 public:
   double calculer_dt_stab() const;
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
   void completer();
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
   void associer_modele_turbulence(const Mod_turb_hyd_base& );
-  void associer_diffusivite(const Champ_base& );
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  void associer_loipar(const Turbulence_paroi& );
-  void contribue_au_second_membre(DoubleTab& ) const;
-  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
   void mettre_a_jour(double );
-  const Champ_base& diffusivite() const;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
+  void contribue_au_second_membre(DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
 
-  inline void dimensionner(Matrice_Morse&) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const { ajouter_contribution(inco, matrice); }
-  inline void contribuer_au_second_membre(DoubleTab& resu) const { contribue_au_second_membre(resu); }
+  inline void associer_loipar(const Turbulence_paroi& ) { /* do nothing */}
+  inline void associer_diffusivite_turbulente(const Champ_Fonc& visc_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(visc_turb);}
+  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl( la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
 
 protected:
   REF(Mod_turb_hyd_base) le_modele_turbulence;
   REF(Champ_Face) inconnue;
   REF(Zone_VDF) la_zone_vdf;
   REF(Zone_Cl_VDF) la_zcl_vdf;
-  REF(Champ_base) diffusivite_;
-  IntTab Qdm, face_voisins, elem_faces;
   IntVect orientation, type_arete_bord;
+  IntTab Qdm, face_voisins, elem_faces;
   DoubleVect surface, volumes_entrelaces, porosite;
   DoubleTab xp, xv, tau_tan;
+
+  virtual void mettre_a_jour_var(double ) const = 0;
+  virtual bool is_VAR() const = 0;
+  virtual double nu_(const int ) const = 0;
+  virtual double nu_mean_2_pts_(const int , const int ) const = 0;
+  virtual double nu_mean_4_pts_(const int , const int ) const = 0;
+  virtual double nu_mean_4_pts_(const int , const int , const int , const int ) const = 0;
+
+private:
+
+  void fill_coeff_matrice_morse(const int , const int , const double , Matrice_Morse& ) const;
+
+  inline void not_implemented(const char * nom_funct) const
+  {
+    std::cerr << "Erreur dans : " << nom_funct << std::endl;
+    std::cerr << "On ne sait pas traiter la diffusion d'un Champ_Face a plusieurs inconnues ! " << std::endl;
+    throw;
+  }
 };
 
-// Description:
-// on dimensionne notre matrice.
-inline void Op_Dift_VDF_var_Face_Axi::dimensionner(Matrice_Morse& matrice) const
-{
-  Op_VDF_Face::dimensionner(la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice);
-}
-inline void Op_Dift_VDF_var_Face_Axi::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
-{
-  Op_VDF_Face::modifier_pour_Cl( la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem);
-}
-
-#endif /* Op_Dift_VDF_var_Face_Axi_included */
+#endif /* Op_Dift_VDF_Face_Axi_base_included */
