@@ -43,7 +43,7 @@ protected:
 
   // pour les deux !
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
-  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_ELEM, void>::type
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_CONV_ELEM, void>::type
   associer_impl(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_transporte)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Elem>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Elem>::value;
@@ -52,7 +52,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
-  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_FACE, void>::type
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_CONV_FACE, void>::type
   associer_impl(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_vit)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Face>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Face>::value;

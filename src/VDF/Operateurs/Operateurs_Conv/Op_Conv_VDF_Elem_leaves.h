@@ -46,7 +46,7 @@ public:
   inline void dimensionner(Matrice_Morse& matrice) const { dimensionner_elem(matrice); }
   inline void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const { dimensionner_bloc_vitesse_elem(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { modifier_pour_Cl_elem(matrice,secmem); }
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_ELEM,Eval_Amont_VDF_Elem>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Amont_VDF_Elem>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) { associer_vitesse_impl<Eval_Amont_VDF_Elem>(ch_vit); }
   inline Champ_base& vitesse() { return vitesse_impl<Eval_Amont_VDF_Elem>(); }
   inline const Champ_base& vitesse() const { return vitesse_impl<Eval_Amont_VDF_Elem>(); }
@@ -69,7 +69,7 @@ public:
   inline void dimensionner(Matrice_Morse& matrice) const { dimensionner_elem(matrice); }
   inline void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const { dimensionner_bloc_vitesse_elem(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { modifier_pour_Cl_elem(matrice,secmem); }
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_ELEM,Eval_Centre_VDF_Elem>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Centre_VDF_Elem>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) { associer_vitesse_impl<Eval_Centre_VDF_Elem>(ch_vit); }
   inline Champ_base& vitesse() { return vitesse_impl<Eval_Centre_VDF_Elem>(); }
   inline const Champ_base& vitesse() const { return vitesse_impl<Eval_Centre_VDF_Elem>(); }
@@ -85,7 +85,7 @@ class Op_Conv_Centre4_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_
   Declare_instanciable_sans_constructeur(Op_Conv_Centre4_VDF_Elem);
 public:
   Op_Conv_Centre4_VDF_Elem();
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_ELEM,Eval_Centre4_VDF_Elem>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Centre4_VDF_Elem>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) { associer_vitesse_impl<Eval_Centre4_VDF_Elem>(ch_vit); }
   inline Champ_base& vitesse() { return vitesse_impl<Eval_Centre4_VDF_Elem>(); }
   inline const Champ_base& vitesse() const { return vitesse_impl<Eval_Centre4_VDF_Elem>(); }
@@ -103,7 +103,7 @@ public:
   Op_Conv_Quick_VDF_Elem();
   inline void dimensionner(Matrice_Morse& matrice) const { dimensionner_elem(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { modifier_pour_Cl_elem(matrice,secmem); }
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_ELEM,Eval_Quick_VDF_Elem>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Quick_VDF_Elem>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) { associer_vitesse_impl<Eval_Quick_VDF_Elem>(ch_vit); }
   inline Champ_base& vitesse() { return vitesse_impl<Eval_Quick_VDF_Elem>(); }
   inline const Champ_base& vitesse() const { return vitesse_impl<Eval_Quick_VDF_Elem>(); }

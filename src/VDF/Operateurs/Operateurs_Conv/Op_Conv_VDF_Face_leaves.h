@@ -45,7 +45,7 @@ public:
   Op_Conv_Amont_VDF_Face();
   inline void dimensionner(Matrice_Morse& matrice) const { dimensionner_face(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { modifier_pour_Cl_face(matrice,secmem); }
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Amont_VDF_Face>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Amont_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) { associer_vitesse_impl<Eval_Amont_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() { return vitesse_impl<Eval_Amont_VDF_Face>(); }
   inline const Champ_base& vitesse() const { return vitesse_impl<Eval_Amont_VDF_Face>(); }
@@ -63,7 +63,7 @@ public:
   Op_Conv_Centre_VDF_Face();
   inline void dimensionner(Matrice_Morse& matrice) const { dimensionner_face(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { modifier_pour_Cl_face(matrice,secmem); }
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Centre_VDF_Face>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Centre_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) { associer_vitesse_impl<Eval_Centre_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() { return vitesse_impl<Eval_Centre_VDF_Face>(); }
   inline const Champ_base& vitesse() const { return vitesse_impl<Eval_Centre_VDF_Face>(); }
@@ -79,7 +79,7 @@ class Op_Conv_Centre4_VDF_Face : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_
   Declare_instanciable_sans_constructeur(Op_Conv_Centre4_VDF_Face);
 public:
   Op_Conv_Centre4_VDF_Face();
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Centre4_VDF_Face>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Centre4_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) { associer_vitesse_impl<Eval_Centre4_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() { return vitesse_impl<Eval_Centre4_VDF_Face>(); }
   inline const Champ_base& vitesse() const { return vitesse_impl<Eval_Centre4_VDF_Face>(); }
@@ -95,7 +95,7 @@ class Op_Conv_Quick_VDF_Face_Axi : public Op_Conv_VDF_base, public Op_Conv_VDF<O
   Declare_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Face_Axi);
 public:
   Op_Conv_Quick_VDF_Face_Axi();
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Quick_VDF_Face_Axi>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Quick_VDF_Face_Axi>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) { associer_vitesse_impl<Eval_Quick_VDF_Face_Axi>(ch_vit); }
   inline Champ_base& vitesse() { return vitesse_impl<Eval_Quick_VDF_Face_Axi>(); }
   inline const Champ_base& vitesse() const { return vitesse_impl<Eval_Quick_VDF_Face_Axi>(); }
@@ -113,7 +113,7 @@ public:
   Op_Conv_Quick_VDF_Face();
   inline void dimensionner(Matrice_Morse& matrice) const { dimensionner_face(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { modifier_pour_Cl_face(matrice,secmem); }
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Quick_VDF_Face>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Quick_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) { associer_vitesse_impl<Eval_Quick_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() { return vitesse_impl<Eval_Quick_VDF_Face>(); }
   inline const Champ_base& vitesse() const { return vitesse_impl<Eval_Quick_VDF_Face>(); }

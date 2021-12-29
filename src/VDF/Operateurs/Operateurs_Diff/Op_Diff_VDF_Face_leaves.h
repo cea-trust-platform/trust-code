@@ -27,7 +27,7 @@
 #include <Op_Diff_VDF_Face_Axi_base.h>
 #include <Op_Diff_VDF_Face_base.h>
 #include <Ref_Champ_Uniforme.h>
-#include <Op_Diff_VDF.h>
+#include <Op_Diff_Dift_VDF.h>
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS // seulement un truc inutile pour check_source ...
 class Op_Diff_VDF_Face_leaves
@@ -41,15 +41,15 @@ declare_It_VDF_Face(Eval_Diff_VDF_const_Face)
 //  Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
 //  La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite est uniforme
 //  L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_const_Face
-class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base, public Op_Diff_VDF<Op_Diff_VDF_Face>
+class Op_Diff_VDF_Face : public Op_Diff_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_Face>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_Face);
 public:
   Op_Diff_VDF_Face();
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Diff_VDF_const_Face>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_DIFF_FACE,Eval_Diff_VDF_const_Face>(zd,zcd,ch); }
   inline void associer_diffusivite(const Champ_base& ch) { associer_diffusivite_impl<Eval_Diff_VDF_const_Face>(ch); }
   inline const Champ_base& diffusivite() const { return diffusivite_impl<Eval_Diff_VDF_const_Face>(); }
-  inline virtual void mettre_a_jour(double ) { mettre_a_jour_impl<Type_Operateur::Op_FACE,Eval_Diff_VDF_const_Face>(); }
+  inline virtual void mettre_a_jour(double ) { mettre_a_jour_impl<Type_Operateur::Op_DIFF_FACE,Eval_Diff_VDF_const_Face>(); }
 };
 
 // .DESCRIPTION class Op_Diff_VDF_Face_Axi
@@ -77,15 +77,15 @@ declare_It_VDF_Face(Eval_Diff_VDF_var_Face)
 //  Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
 //  La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite n'est pas uniforme
 //  L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_var_Face
-class Op_Diff_VDF_var_Face : public Op_Diff_VDF_Face_base, public Op_Diff_VDF<Op_Diff_VDF_var_Face>
+class Op_Diff_VDF_var_Face : public Op_Diff_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Diff_VDF_var_Face>
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VDF_var_Face);
 public:
   Op_Diff_VDF_var_Face();
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Diff_VDF_var_Face>(zd,zcd,ch); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_DIFF_FACE,Eval_Diff_VDF_var_Face>(zd,zcd,ch); }
   inline void associer_diffusivite(const Champ_base& ch) { associer_diffusivite_impl<Eval_Diff_VDF_var_Face>(ch); }
   inline const Champ_base& diffusivite() const { return diffusivite_impl<Eval_Diff_VDF_var_Face>(); }
-  inline virtual void mettre_a_jour(double ) { mettre_a_jour_impl<Type_Operateur::Op_FACE,Eval_Diff_VDF_var_Face>(); }
+  inline virtual void mettre_a_jour(double ) { mettre_a_jour_impl<Type_Operateur::Op_DIFF_FACE,Eval_Diff_VDF_var_Face>(); }
 };
 
 // .DESCRIPTION class Op_Diff_VDF_var_Face_Axi

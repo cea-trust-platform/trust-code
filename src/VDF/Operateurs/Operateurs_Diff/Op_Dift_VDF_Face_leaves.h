@@ -25,7 +25,7 @@
 
 #include <Eval_Dift_VDF_Face_leaves.h>
 #include <Op_Dift_VDF_Face_base.h>
-#include <Op_Dift_VDF.h>
+#include <Op_Diff_Dift_VDF.h>
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS // seulement un truc inutile pour check_source ...
 class Op_Dift_VDF_Face_leaves
@@ -38,31 +38,31 @@ class Champ_Fonc;
 //////////////// CONST /////////////////
 
 declare_It_VDF_Face(Eval_Dift_VDF_const_Face)
-class Op_Dift_VDF_Face : public Op_Dift_VDF_Face_base, public Op_Dift_VDF<Op_Dift_VDF_Face>
+class Op_Dift_VDF_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Face>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_Face);
 public:
   Op_Dift_VDF_Face();
-  inline void completer() { completer_impl<Type_Operateur::Op_FACE,Eval_Dift_VDF_const_Face>(); }
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Dift_VDF_const_Face>(zd,zcd,ch); }
+  inline void completer() { completer_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_const_Face>(); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_const_Face>(zd,zcd,ch); }
+  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_const_Face>(ch); }
   inline void associer_diffusivite(const Champ_base& ch) { associer_diffusivite_impl<Eval_Dift_VDF_const_Face>(ch); }
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Eval_Dift_VDF_const_Face>(ch); }
   inline const Champ_base& diffusivite() const { return diffusivite_impl<Eval_Dift_VDF_const_Face>(); }
 };
 
 //////////////// VAR /////////////////
 
 declare_It_VDF_Face(Eval_Dift_VDF_var_Face)
-class Op_Dift_VDF_var_Face : public Op_Dift_VDF_Face_base, public Op_Dift_VDF<Op_Dift_VDF_var_Face>
+class Op_Dift_VDF_var_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_var_Face>
 {
   Declare_instanciable_sans_constructeur(Op_Dift_VDF_var_Face);
 
 public:
   Op_Dift_VDF_var_Face();
-  inline void completer() { completer_impl<Type_Operateur::Op_FACE,Eval_Dift_VDF_var_Face>(); }
-  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_FACE,Eval_Dift_VDF_var_Face>(zd,zcd,ch); }
+  inline void completer() { completer_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_var_Face>(); }
+  inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd, const Champ_Inc& ch) { associer_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_var_Face>(zd,zcd,ch); }
+  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Type_Operateur::Op_DIFT_FACE,Eval_Dift_VDF_var_Face>(ch); }
   inline void associer_diffusivite(const Champ_base& ch) { associer_diffusivite_impl<Eval_Dift_VDF_var_Face>(ch); }
-  inline void associer_diffusivite_turbulente(const Champ_Fonc& ch) { associer_diffusivite_turbulente_impl<Eval_Dift_VDF_var_Face>(ch); }
   inline const Champ_base& diffusivite() const { return diffusivite_impl<Eval_Dift_VDF_var_Face>(); }
 };
 

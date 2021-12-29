@@ -32,7 +32,7 @@
 #include <Champ_Face.h>
 #include <Zone_VDF.h>
 
-enum class Type_Operateur { Op_ELEM , Op_FACE } ; // ne touche pas !
+enum class Type_Operateur { Op_CONV_ELEM , Op_CONV_FACE , Op_DIFF_ELEM , Op_DIFT_ELEM , Op_DIFF_FACE , Op_DIFT_FACE } ; // ne touche pas !
 
 enum Type_Cl_VDF
 {

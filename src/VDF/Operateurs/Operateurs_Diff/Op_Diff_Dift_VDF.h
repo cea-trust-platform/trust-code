@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF.h
+// File:        Op_Diff_Dift_VDF.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Operateurs_Diff
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Dift_VDF_included
-#define Op_Dift_VDF_included
+#ifndef Op_Diff_Dift_VDF_included
+#define Op_Diff_Dift_VDF_included
 
 #include <Modele_turbulence_scal_base.h>
 #include <Iterateur_VDF_base.h>
@@ -34,12 +34,12 @@ class Champ_Fonc;
 class Champ_base;
 
 template <typename OP_TYPE>
-class Op_Dift_VDF
+class Op_Diff_Dift_VDF
 {
 protected:
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_ELEM, void>::type
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_DIFF_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>::type
   associer_impl(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_diffuse)
   {
     const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
@@ -47,7 +47,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_FACE, void>::type
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_DIFF_FACE || _TYPE_ == Type_Operateur::Op_DIFT_FACE, void>::type
   associer_impl(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_diffuse)
   {
     const Champ_Face& inco = ref_cast(Champ_Face,ch_diffuse.valeur());
@@ -68,8 +68,17 @@ protected:
     return eval_diff_turb.get_diffusivite();
   }
 
-  template <typename EVAL_TYPE>
-  void associer_diffusivite_turbulente_impl(const Champ_Fonc& visc_ou_diff_turb)
+  template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_DIFF_FACE, void>::type
+  mettre_a_jour_impl()
+  {
+    EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
+    eval_diff.mettre_a_jour();
+  }
+
+  template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_DIFT_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_FACE, void>::type
+  associer_diffusivite_turbulente_impl(const Champ_Fonc& visc_ou_diff_turb)
   {
     static_cast<OP_TYPE *>(this)->associer_diffusivite_turbulente_base(visc_ou_diff_turb); // hohohoho
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
@@ -77,7 +86,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_ELEM, void>::type
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>::type
   associer_loipar_impl(const Turbulence_paroi_scal& loi_paroi)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
@@ -85,7 +94,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_ELEM, void>::type completer_impl()
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>::type completer_impl()
   {
     static_cast<OP_TYPE *>(this)->completer_Op_Dift_VDF_base();
     const RefObjU& modele_turbulence = static_cast<OP_TYPE *>(this)->equation().get_modele(TURBULENCE);
@@ -93,7 +102,7 @@ protected:
       {
         const Modele_turbulence_scal_base& mod_turb = ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur());
         const Champ_Fonc& lambda_t = mod_turb.conductivite_turbulente();
-        associer_diffusivite_turbulente_impl<EVAL_TYPE>(lambda_t); // YES !
+        associer_diffusivite_turbulente_impl<_TYPE_,EVAL_TYPE>(lambda_t); // YES !
 
         const Turbulence_paroi_scal& loipar = mod_turb.loi_paroi();
         if (loipar.non_nul()) associer_loipar_impl<_TYPE_,EVAL_TYPE>(loipar); // Et YES !
@@ -105,18 +114,18 @@ protected:
       {
         const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
         const Champ_Fonc& alpha_t = mod_turb.viscosite_turbulente();
-        associer_diffusivite_turbulente_impl<EVAL_TYPE>(alpha_t);
+        associer_diffusivite_turbulente_impl<_TYPE_,EVAL_TYPE>(alpha_t);
       }
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_FACE, void>::type completer_impl()
+  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_DIFT_FACE, void>::type completer_impl()
   {
     static_cast<OP_TYPE *>(this)->completer_Op_Dift_VDF_base();
     const RefObjU& modele_turbulence = static_cast<OP_TYPE *>(this)->equation().get_modele(TURBULENCE);
     const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
     const Champ_Fonc& visc_turb = mod_turb.viscosite_turbulente();
-    associer_diffusivite_turbulente_impl<EVAL_TYPE>(visc_turb);
+    associer_diffusivite_turbulente_impl<_TYPE_,EVAL_TYPE>(visc_turb);
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
     eval_diff_turb.associer_modele_turbulence(mod_turb);
   }
@@ -138,4 +147,4 @@ private:
   }
 };
 
-#endif /* Op_Dift_VDF_included */
+#endif /* Op_Diff_Dift_VDF_included */
