@@ -20,75 +20,58 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_VDF_Elem.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
-#include <Periodique.h>
 #include <Matrice_Morse.h>
 #include <Equation_base.h>
-#include <Champ_Inc.h>
 #include <Matrix_tools.h>
+#include <Op_VDF_Elem.h>
+#include <Zone_Cl_VDF.h>
 #include <Array_tools.h>
+#include <Periodique.h>
+#include <Champ_Inc.h>
+#include <Zone_VDF.h>
 
-void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone,
-                               const Zone_Cl_VDF& la_zone_cl,
-                               Matrice_Morse& la_matrice) const
+void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zone_cl, Matrice_Morse& la_matrice) const
 {
-  // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
-  // la convection, de la diffusion pour le cas des elements.
+  // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de la convection, de la diffusion pour le cas des elements.
   // Cette matrice a une structure de matrice morse.
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
 
-  int num_face,face,k;
-  int n1 = la_zone.zone().nb_elem_tot();
-  int elem1,elem2, i;
   const IntTab& face_voisins = la_zone.face_voisins();
-  //  const DoubleVect& face_surfaces = la_zone.face_surfaces();
-  //  const DoubleVect& volumes_entrelaces = la_zone.volumes_entrelaces();
-  //  const DoubleVect& porosite_face = la_zone.porosite_face();
   const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
   const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
-  int nb_comp = champ_inconnue.line_size();
-  //Cerr << "nb_compo de Op_VDF_Elem::dimensionner" << nb_comp << finl;
-  //Cerr << " nombre d'elements de Op_VDF_Elem::dimensionner" << n1 << finl;
+  const int n1 = la_zone.zone().nb_elem_tot(), nb_comp = champ_inconnue.line_size();
 
   la_matrice.dimensionner(n1*nb_comp, n1*nb_comp, 0);
 
-  IntVect& tab1=la_matrice.get_set_tab1();
-  IntVect& tab2=la_matrice.get_set_tab2();
-
-  int ndeb = la_zone.premiere_face_int();
-  int nfin = la_zone.nb_faces();
+  IntVect& tab1 = la_matrice.get_set_tab1(), &tab2 = la_matrice.get_set_tab2();
   DoubleVect& coeff = la_matrice.get_set_coeff();
-  coeff=0;
+
+  const int ndeb = la_zone.premiere_face_int(), nfin = la_zone.nb_faces();
+  coeff = 0;
 
   IntVect rang_voisin(n1*nb_comp);
-  rang_voisin=1;
+  rang_voisin = 1;
 
-  for (num_face=ndeb; num_face<nfin; num_face++)
+  for (int num_face = ndeb; num_face < nfin; num_face++)
     {
-      elem1 = face_voisins(num_face,0);
-      elem2 = face_voisins(num_face,1);
+      const int elem1 = face_voisins(num_face,0), elem2 = face_voisins(num_face,1);
       (rang_voisin(elem2))++;
       (rang_voisin(elem1))++;
     }
 
   // Prise en compte des conditions de type periodicite
-
-  for (i=0; i<les_cl.size(); i++)
+  for (int i = 0; i < les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
-
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
           const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int numdeb = la_front_dis.num_premiere_face();
-          int nfaces = la_front_dis.nb_faces();
+          const int numdeb = la_front_dis.num_premiere_face(), nfaces = la_front_dis.nb_faces();
           int ind_face_global;
           IntVect fait(nfaces);
           fait = 0;
-          for (face=0; face<nfaces; face++)
+          for (int face = 0; face < nfaces; face++)
             {
               if (fait[face] == 0)
                 {
@@ -96,8 +79,7 @@ void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone,
                   fait[la_cl_perio.face_associee(face)] = 1;
                   ind_face_global = face+numdeb;
 
-                  elem1 = face_voisins(ind_face_global,0);
-                  elem2 = face_voisins(ind_face_global,1);
+                  const int elem1 = face_voisins(ind_face_global,0), elem2 = face_voisins(ind_face_global,1);
 
                   (rang_voisin(elem2))++;
                   (rang_voisin(elem1))++;
@@ -107,124 +89,89 @@ void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone,
     }
 
   // on balaye les elements pour dimensionner tab1 et tab2
+  tab1(0) = 1;
+  for(int i = 0; i < n1; i++) for (int k = 0; k < nb_comp; k++) tab1(i*nb_comp+1+k) = rang_voisin(i) +  tab1(i*nb_comp+k);
 
-  tab1(0)=1;
-  for(i=0; i<n1; i++)
-    for (k=0; k< nb_comp; k++)
-      tab1(i*nb_comp+1+k)=rang_voisin(i) +  tab1(i*nb_comp+k);
-  //  Cerr << " dimension de la matrice " << n1*nb_comp
-  //    << "   " << tab1(n1*nb_comp)-1 <<finl;
   la_matrice.dimensionner(n1*nb_comp,tab1(n1*nb_comp)-1);
 
-  for(i=0; i<n1*nb_comp; i++)
+  for (int i = 0; i < n1*nb_comp; i++)
     {
-      tab2[tab1[i]-1]=i+1;
-      rang_voisin[i]=tab1[i];
+      tab2[tab1[i]-1] = i+1;
+      rang_voisin[i] = tab1[i];
     }
 
   // on traite les faces internes pour les voisins
-
-  for (num_face=ndeb; num_face<nfin; num_face++)
+  for (int num_face = ndeb; num_face < nfin; num_face++)
     {
-      elem1 = face_voisins(num_face,0);
-      elem2 = face_voisins(num_face,1);
-
-      for (k=0; k<nb_comp; k++)
+      const int elem1 = face_voisins(num_face,0), elem2 = face_voisins(num_face,1);
+      for (int k = 0; k < nb_comp; k++)
         {
-          tab2[rang_voisin[elem2*nb_comp+k]]=elem1*nb_comp+1+k;
+          tab2[rang_voisin[elem2*nb_comp+k]] = elem1*nb_comp+1+k;
           rang_voisin[elem2*nb_comp+k]++;
 
-          tab2[rang_voisin[elem1*nb_comp+k]]=elem2*nb_comp+1+k;
+          tab2[rang_voisin[elem1*nb_comp+k]] = elem2*nb_comp+1+k;
           rang_voisin[elem1*nb_comp+k]++;
         }
     }
-  // Cerr << "tab2 = " << tab2 << finl;
+
   // on traite la condition de periodicite
-  for (i=0; i<les_cl.size(); i++)
+  for (int i=0; i<les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
       if (sub_type(Periodique,la_cl.valeur()) )
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
           const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int numdeb = la_front_dis.num_premiere_face();
-          int nfaces = la_front_dis.nb_faces();
-          int ind_face_local;
+          const int numdeb = la_front_dis.num_premiere_face(), nfaces = la_front_dis.nb_faces();
           IntVect fait(nfaces);
           fait = 0;
-          for (ind_face_local=0; ind_face_local<nfaces; ind_face_local++)
+          for (int ind_face_local = 0; ind_face_local < nfaces; ind_face_local++)
             {
-              //              ind_face_local = num_face - ndeb;
               if (fait[ind_face_local] == 0)
                 {
-                  num_face = numdeb + ind_face_local;
+                  const int num_face = numdeb + ind_face_local;
                   fait[ind_face_local] = 1;
                   fait[la_cl_perio.face_associee(ind_face_local)] = 1;
 
-                  elem1 = face_voisins(num_face,0);
-                  elem2 = face_voisins(num_face,1);
+                  const int elem1 = face_voisins(num_face,0), elem2 = face_voisins(num_face,1);
 
-                  for (k=0; k<nb_comp; k++)
+                  for (int k = 0; k < nb_comp; k++)
                     {
-                      tab2[rang_voisin[elem2*nb_comp+k]]=elem1*nb_comp+1+k;
+                      tab2[rang_voisin[elem2*nb_comp+k]] = elem1*nb_comp+1+k;
                       rang_voisin[elem2*nb_comp+k]++;
 
-                      tab2[rang_voisin[elem1*nb_comp+k]]=elem2*nb_comp+1+k;
+                      tab2[rang_voisin[elem1*nb_comp+k]] = elem2*nb_comp+1+k;
                       rang_voisin[elem1*nb_comp+k]++;
                     }
                 }
             }
         }
     }
-  // Cerr << "tab2 = " << tab2 << finl;
 }
 
-void Op_VDF_Elem::dimensionner_bloc_vitesse(const Zone_VDF& la_zone,
-                                            const Zone_Cl_VDF& la_zone_cl,
-                                            Matrice_Morse& matrice) const
+void Op_VDF_Elem::dimensionner_bloc_vitesse(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zone_cl, Matrice_Morse& matrice) const
 {
-
-  int nb_faces=la_zone.nb_faces();
-  int nb_faces_tot=la_zone.nb_faces_tot();
-  int nb_elem_tot=la_zone.nb_elem_tot();
+  const int nb_faces = la_zone.nb_faces(), nb_faces_tot = la_zone.nb_faces_tot(), nb_elem_tot = la_zone.nb_elem_tot();
+  const IntTab& face_voisins = la_zone.face_voisins();
   IntTab stencyl(0,2);
   stencyl.set_smart_resize(1);
-  const IntTab& face_voisins = la_zone.face_voisins();
 
-  int nb_coef=0;
-  for (int face=0; face<nb_faces; face++)
-    {
-      for (int dir=0; dir<2; dir++)
-        {
-          int elem=face_voisins(face,dir);
-          if (elem!=-1)
-            {
-              stencyl.resize(nb_coef+1,2);
-              stencyl(nb_coef,0)=elem;
-              stencyl(nb_coef,1)=face;
-              nb_coef++;
-            }
-        }
-    }
+  int nb_coef = 0;
+  for (int face = 0; face < nb_faces; face++)
+    for (int dir = 0; dir < 2; dir++)
+      {
+        const int elem = face_voisins(face,dir);
+        if (elem != -1)
+          {
+            stencyl.resize(nb_coef+1,2);
+            stencyl(nb_coef,0) = elem;
+            stencyl(nb_coef,1) = face;
+            nb_coef++;
+          }
+      }
+
   tableau_trier_retirer_doublons(stencyl);
   Matrix_tools::allocate_morse_matrix(nb_elem_tot,nb_faces_tot,stencyl,matrice);
-
 }
 
-void Op_VDF_Elem:: modifier_pour_Cl(const Zone_VDF& la_zone,
-                                    const Zone_Cl_VDF& la_zone_cl,
-                                    Matrice_Morse& la_matrice, DoubleTab& secmem) const
-{
-  // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
-  // la convection, de la diffusion pour le cas des faces.
-  // Cette matrice a une structure de matrice morse.
-  // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
-
-  //  int nfin = la_zone.nb_faces();
-  //  const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
-  //  const IntVect& orientation=la_zone.orientation();
-
-  // Prise en compte des conditions de type periodicite
-  //Cerr << "dans Op_VDF_Elem:: modifier_pour_Cl" << finl;
-
-}
+void Op_VDF_Elem:: modifier_pour_Cl(const Zone_VDF& , const Zone_Cl_VDF& , Matrice_Morse& , DoubleTab& ) const { /* Do nothing */ }

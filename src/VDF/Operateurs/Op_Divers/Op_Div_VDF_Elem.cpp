@@ -23,40 +23,23 @@
 #include <Op_Div_VDF_Elem.h>
 
 Implemente_instanciable_sans_constructeur(Op_Div_VDF_Elem,"Op_Div_VDF_Face",Op_Div_VDF_base);
-
-
 implemente_It_VDF_Elem(Eval_Div_VDF_Elem)
-//// printOn
-//
 
-Sortie& Op_Div_VDF_Elem::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Op_Div_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je(); }
+Entree& Op_Div_VDF_Elem::readOn(Entree& s ) { return s; }
 
-//// readOn
-//
+Op_Div_VDF_Elem::Op_Div_VDF_Elem() : Op_Div_VDF_base(It_VDF_Elem(Eval_Div_VDF_Elem)()) { }
 
-Entree& Op_Div_VDF_Elem::readOn(Entree& s )
-{
-  return s ;
-}
-
-
-void Op_Div_VDF_Elem::associer(const Zone_dis& zone_dis,
-                               const Zone_Cl_dis& zone_Cl_dis,
-                               const Champ_Inc& )
+void Op_Div_VDF_Elem::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis, const Champ_Inc& )
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_Cl_dis.valeur());
+  // On n'associe pas div a la vitesse car non P0.
+  // On n'associe pas div a la pression car div(P) n'a pas de sens. Donc on fait rien !
 
-
-  // On n'associe pas div a la vitesse car non P0
-  // On n'associe pas div a la pression car div(P) n'a pas de sens.
-
-  iter.associer(zvdf, zclvdf, *this);
-  Eval_Div_VDF_Elem& eval_div = (Eval_Div_VDF_Elem&) iter.evaluateur();
-  eval_div.associer_zones(zvdf, zclvdf );          // Evaluateur_VDF::associer_zones
+  iter->associer(zvdf,zclvdf,*this);
+  Eval_Div_VDF_Elem& eval_div = static_cast<Eval_Div_VDF_Elem&> (iter->evaluateur());
+  eval_div.associer_zones(zvdf, zclvdf );
 
   la_zone_vdf = zvdf;
   la_zcl_vdf = zclvdf;
@@ -64,22 +47,9 @@ void Op_Div_VDF_Elem::associer(const Zone_dis& zone_dis,
 
 void Op_Div_VDF_Elem::volumique(DoubleTab& div) const
 {
-  // PQ : 04/03
   const Zone_VDF& zone_VDF = la_zone_vdf.valeur();
   const DoubleVect& vol = zone_VDF.volumes();
-  int nb_elem=zone_VDF.zone().nb_elem_tot();
-  int num_elem;
+  const int nb_elem = zone_VDF.zone().nb_elem_tot();
 
-  for(num_elem=0; num_elem<nb_elem; num_elem++)
-    div(num_elem)/=vol(num_elem);
-}
-
-//
-// Fonctions inline de la classe Op_Div_VDF_Elem
-//
-// Description:
-// constructeur
-Op_Div_VDF_Elem::Op_Div_VDF_Elem() :
-  Op_Div_VDF_base(It_VDF_Elem(Eval_Div_VDF_Elem)())
-{
+  for(int num_elem = 0; num_elem < nb_elem; num_elem++) div(num_elem) /= vol(num_elem);
 }

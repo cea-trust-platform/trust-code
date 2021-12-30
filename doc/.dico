@@ -741,6 +741,7 @@
  Op_Grad_PolyMAC_Face Op_Grad_PolyMAC_Face Op_Grad_PolyMAC_Face.h
  Op_Grad_VDF_base Op_Grad_VDF_base Op_Grad_VDF_base.h
  Op_Grad_VDF_Face Op_Grad_VDF_Face Op_Grad_VDF_Face.h
+ Op_Grad_VDF_Face_base Op_Grad_VDF_Face_base Op_Grad_VDF_Face_base.h
  Op_Grad_VEFPreP1B_P1NC Op_Grad_VEF_P1B_Face Op_Grad_VEF_P1B_Face.h
  Op_Grad_VEF_P1NC Op_Grad_VEF_Face Op_Grad_VEF_Face.h
  Op_Moyenne Op_Moyenne Op_Moyenne.h

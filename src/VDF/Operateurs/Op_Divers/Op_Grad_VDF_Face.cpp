@@ -20,64 +20,29 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Op_Grad_VDF_Face.h>
-#include <Champ_P0_VDF.h>
-#include <Zone_Cl_VDF.h>
 #include <Neumann_sortie_libre.h>
-#include <Periodique.h>
-#include <Symetrie.h>
-#include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Navier_Stokes_std.h>
-#include <Probleme_base.h>
-#include <Option_VDF.h>
-#include <Schema_Temps_base.h>
-#include <EcrFicPartage.h>
-#include <SFichier.h>
 #include <Check_espace_virtuel.h>
+#include <Dirichlet_homogene.h>
+#include <Schema_Temps_base.h>
+#include <Navier_Stokes_std.h>
+#include <Op_Grad_VDF_Face.h>
 #include <communications.h>
-#include <DoubleTrav.h>
-#include <Array_tools.h>
+#include <Probleme_base.h>
+#include <EcrFicPartage.h>
+#include <Champ_P0_VDF.h>
 #include <Matrix_tools.h>
+#include <Zone_Cl_VDF.h>
+#include <Array_tools.h>
+#include <Option_VDF.h>
+#include <DoubleTrav.h>
+#include <Periodique.h>
+#include <Dirichlet.h>
+#include <Symetrie.h>
 
-Implemente_instanciable(Op_Grad_VDF_Face,"Op_Grad_VDF_Face",Operateur_Grad_base);
+Implemente_instanciable(Op_Grad_VDF_Face,"Op_Grad_VDF_Face",Op_Grad_VDF_Face_base);
 
-
-//// printOn
-//
-
-Sortie& Op_Grad_VDF_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() ;
-}
-
-//// readOn
-//
-
-Entree& Op_Grad_VDF_Face::readOn(Entree& s)
-{
-  return s ;
-}
-
-
-
-// Description:
-void Op_Grad_VDF_Face::associer(const Zone_dis& zone_dis,
-                                const Zone_Cl_dis& zone_Cl_dis,
-                                const Champ_Inc& )
-{
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF, zone_dis.valeur());
-  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
-  la_zone_vdf = zvdf;
-  la_zcl_vdf = zclvdf;
-
-  porosite_surf.ref(zvdf.porosite_face());
-  volume_entrelaces.ref(zvdf.volumes_entrelaces());
-  face_voisins.ref(zvdf.face_voisins());
-  orientation.ref(zvdf.orientation());
-  xp.ref(zvdf.xp());
-
-}
+Sortie& Op_Grad_VDF_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Op_Grad_VDF_Face::readOn(Entree& s) { return s; }
 
 void Op_Grad_VDF_Face::dimensionner(Matrice_Morse& mat) const
 {
@@ -102,30 +67,24 @@ DoubleTab& Op_Grad_VDF_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) con
   int n0, n1;
 
   // Boucle sur les bords pour traiter les conditions aux limites
-  int ndeb, nfin, num_face;
-  for (int n_bord=0; n_bord<zvdf.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < zvdf.nb_front_Cl(); n_bord++)
     {
-
       // pour chaque Condition Limite on regarde son type
-      // Si face de Dirichlet ou de Symetrie on ne fait rien
-      // Si face de Neumann on calcule la contribution au terme source
-
+      // Si face de Dirichlet ou de Symetrie on ne fait rien. Si face de Neumann on calcule la contribution au terme source
       const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+
       if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         {
-          const Neumann_sortie_libre& la_cl_typee =
-            ref_cast(Neumann_sortie_libre, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          ndeb = le_bord.num_premiere_face();
-          nfin = ndeb + le_bord.nb_faces();
-
-          for (num_face=ndeb; num_face<nfin; num_face++)
+          const Neumann_sortie_libre& la_cl_typee = ref_cast(Neumann_sortie_libre, la_cl.valeur());
+          for (int num_face = ndeb; num_face < nfin; num_face++)
             {
-              double P_imp = la_cl_typee.flux_impose(num_face-ndeb);
+              const double P_imp = la_cl_typee.flux_impose(num_face-ndeb);
               n0 = face_voisins(num_face,0);
               if (n0 != -1)
                 {
-                  coef = face_surfaces(num_face)*porosite_surf(num_face)*Option_VDF::coeff_P_neumann;
+                  coef = face_surfaces(num_face)*porosite_surf(num_face)*Option_VDF::coeff_P_neumann; // XXX : ET OUI ATTENTION !
                   resu(num_face) += (coef*(P_imp - inco(n0)));
                 }
               else
@@ -136,52 +95,31 @@ DoubleTab& Op_Grad_VDF_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) con
                 }
             }
         }
-
-      // Correction periodicite :
-      else if (sub_type(Periodique,la_cl.valeur()))
+      else if (sub_type(Periodique,la_cl.valeur())) // Correction periodicite
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          ndeb = le_bord.num_premiere_face();
-          nfin = ndeb + le_bord.nb_faces();
-          for (num_face=ndeb; num_face<nfin; num_face++)
+          for (int num_face = ndeb; num_face < nfin; num_face++)
             {
-              n0 = face_voisins(num_face,0);
-              n1 = face_voisins(num_face,1);
+              n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
               coef = face_surfaces(num_face)*porosite_surf(num_face);
               resu(num_face) += (coef*(inco(n1) - inco(n0)));
             }
         }
-      else if (sub_type(Symetrie,la_cl.valeur()))
-        ;
-      else if ( (sub_type(Dirichlet,la_cl.valeur()))
-                ||
-                (sub_type(Dirichlet_homogene,la_cl.valeur()))
-              )
-        {
-          // do nothing
-          ;
-        }
-
-      // Fin de la boucle for
+      else if (sub_type(Symetrie,la_cl.valeur())) { /* Do nothing */ }
+      else if ( (sub_type(Dirichlet,la_cl.valeur())) || (sub_type(Dirichlet_homogene,la_cl.valeur())) ) { /* Do nothing */ }
     }
 
   // Boucle sur les faces internes
-  for (num_face=zvdf.premiere_face_int(); num_face<zvdf.nb_faces(); num_face++)
+  for (int num_face = zvdf.premiere_face_int(); num_face < zvdf.nb_faces(); num_face++)
     {
-      n0 = face_voisins(num_face,0);
-      n1 = face_voisins(num_face,1);
+      n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
       coef = face_surfaces(num_face)*porosite_surf(num_face);
       resu(num_face) += coef*(inco(n1)-inco(n0));
     }
+
   resu.echange_espace_virtuel();
   return resu;
 }
 
-DoubleTab& Op_Grad_VDF_Face::calculer(const DoubleTab& inco, DoubleTab& resu) const
-{
-  resu=0;
-  return ajouter(inco,resu);
-}
 
 void Op_Grad_VDF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& la_matrice) const
 {
@@ -194,22 +132,15 @@ void Op_Grad_VDF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& l
   int n0, n1;
 
   // Boucle sur les bords pour traiter les conditions aux limites
-  int ndeb, nfin, num_face;
-  for (int n_bord=0; n_bord<zvdf.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < zvdf.nb_front_Cl(); n_bord++)
     {
-
-      // pour chaque Condition Limite on regarde son type
-      // Si face de Dirichlet ou de Symetrie on ne fait rien
-      // Si face de Neumann on calcule la contribution au terme source
-
       const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
       if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          ndeb = le_bord.num_premiere_face();
-          nfin = ndeb + le_bord.nb_faces();
+          const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
-          for (num_face=ndeb; num_face<nfin; num_face++)
+          for (int num_face = ndeb; num_face < nfin; num_face++)
             {
               n0 = face_voisins(num_face,0);
               if (n0 != -1)
@@ -225,14 +156,12 @@ void Op_Grad_VDF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& l
                 }
             }
         }
-      // Fin de la boucle for
     }
 
   // Boucle sur les faces internes
-  for (num_face=zvdf.premiere_face_int(); num_face<zvdf.nb_faces(); num_face++)
+  for (int num_face = zvdf.premiere_face_int(); num_face < zvdf.nb_faces(); num_face++)
     {
-      n0 = face_voisins(num_face,0);
-      n1 = face_voisins(num_face,1);
+      n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
       coef = face_surfaces(num_face)*porosite_surf(num_face);
       la_matrice(num_face, n0) += coef;
       la_matrice(num_face, n1) -= coef;
@@ -252,9 +181,8 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
   const Champ_P0_VDF& la_pression_P0 = ref_cast(Champ_P0_VDF,eqn_hydr.pression_pa().valeur());
   const DoubleTab& pression_P0 = la_pression_P0.valeurs();
-  int elem0, elem1 ;
-  int face, ori;
-  double n0;//, n1, n2 ;
+  int elem0, elem1, face, ori;
+  double n0;
   const int nb_faces =  zvdf.nb_faces_tot();
   DoubleTab xgr(nb_faces,dimension);
   xgr=0.;
@@ -263,8 +191,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
       const DoubleTab& xgrav = zvdf.xv();
       const ArrOfDouble& c_grav=zvdf.zone().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
-        for (int i=0; i<dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
+        for (int i=0; i<dimension; i++) xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
     }
 
   flux_bords_.resize(zvdf.nb_faces_bord(),dimension);

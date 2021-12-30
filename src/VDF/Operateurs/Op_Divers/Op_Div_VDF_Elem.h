@@ -20,51 +20,29 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Div_VDF_Elem_included
 #define Op_Div_VDF_Elem_included
 
+#include <Eval_Div_VDF_Elem.h>
 #include <Op_Div_VDF_base.h>
 #include <ItVDFEl.h>
-#include <Eval_Div_VDF_Elem.h>
-
-//
-// .DESCRIPTION class Op_Div_VDF_Elem
-//
-//  Cette classe represente l'operateur de divergence
-//  La discretisation est VDF
-//  On calcule la divergence d'un champ de type Champ_Face
-//  L'iterateur associe est de type Iterateur_VDF_Elem
-//  L'evaluateur associe est de type Eval_Div_VDF_Elem
-
-//
-// .SECTION voir aussi
-//
-//
 
 declare_It_VDF_Elem(Eval_Div_VDF_Elem)
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Div_VDF_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
-
+// .DESCRIPTION class Op_Div_VDF_Elem
+//  Cette classe represente l'operateur de divergence
+//  La discretisation est VDF. On calcule la divergence d'un champ de type Champ_Face
+//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Div_VDF_Elem
 class Op_Div_VDF_Elem : public Op_Div_VDF_base
 {
-
   Declare_instanciable_sans_constructeur(Op_Div_VDF_Elem);
-
 public:
-
   Op_Div_VDF_Elem();
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& );
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
   void volumique(DoubleTab& ) const;
 
 protected:
-
   REF(Zone_VDF) la_zone_vdf;
   REF(Zone_Cl_VDF) la_zcl_vdf;
 };
-#endif
+
+#endif /* Op_Div_VDF_Elem_included */

@@ -14,16 +14,41 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Div_VDF.h
+// File:        Op_Grad_VDF_Face_base.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Divers
-// Version:     /main/3
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Div_VDF_H
-#define Op_Div_VDF_H
+#include <Op_Grad_VDF_Face_base.h>
+#include <Zone_Cl_VDF.h>
 
-#include <Op_Div_VDF_Elem.h>
+Implemente_base(Op_Grad_VDF_Face_base,"Op_Grad_VDF_Face_base",Operateur_Grad_base);
 
+Sortie& Op_Grad_VDF_Face_base::printOn(Sortie& s ) const { return s << que_suis_je(); }
+Entree& Op_Grad_VDF_Face_base::readOn(Entree& s ) { return s; }
 
-#endif
+void Op_Grad_VDF_Face_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis, const Champ_Inc& )
+{
+  const Zone_VDF& zvdf = ref_cast(Zone_VDF, zone_dis.valeur());
+  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  la_zone_vdf = zvdf;
+  la_zcl_vdf = zclvdf;
+  porosite_surf.ref(zvdf.porosite_face());
+  volume_entrelaces.ref(zvdf.volumes_entrelaces());
+  face_voisins.ref(zvdf.face_voisins());
+  orientation.ref(zvdf.orientation());
+  xp.ref(zvdf.xp());
+}
+
+DoubleTab& Op_Grad_VDF_Face_base::calculer(const DoubleTab& inco, DoubleTab& resu) const
+{
+  resu = 0;
+  return ajouter(inco,resu);
+}
+
+int Op_Grad_VDF_Face_base::impr(Sortie& os) const
+{
+  Cerr << "Op_Grad_VDF_Face_base::impr is not coded ! Check its derived classes !" << finl;
+  throw;
+}

@@ -14,34 +14,52 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Grad_VDF_Face.h
+// File:        Op_Grad_VDF_Face_base.h
 // Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Divers
-// Version:     /main/12
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Grad_VDF_Face_included
-#define Op_Grad_VDF_Face_included
+#ifndef Op_Grad_VDF_Face_base_included
+#define Op_Grad_VDF_Face_base_included
 
-#include <Op_Grad_VDF_Face_base.h>
-#include <Matrice_Morse.h>
+#include <Operateur_Grad_base.h>
+#include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Zone_VDF.h>
 #include <Zone_VDF.h>
-#include <SFichier.h>
 
-// .DESCRIPTION class Op_Grad_VDF_Face
-//  Cette classe represente l'operateur de gradient
-//  La discretisation est VDF. On calcule le gradient d'un champ_P0_VDF (la pression)
-class Op_Grad_VDF_Face : public Op_Grad_VDF_Face_base
+class Op_Grad_VDF_Face_base : public Operateur_Grad_base
 {
-  Declare_instanciable(Op_Grad_VDF_Face);
+  Declare_base(Op_Grad_VDF_Face_base);
 public:
-  int impr(Sortie& os) const;
-  void dimensionner(Matrice_Morse& ) const;
-  void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  virtual int impr(Sortie& os) const;
+
+  virtual DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const = 0; // ET OUI ! ATTENTION !! VIRTUELLE PURE !!!
+
+  inline Zone_VDF& zone_VDF() { return la_zone_vdf.valeur(); }
+  inline const Zone_VDF& zone_VDF() const { return la_zone_vdf.valeur(); }
+  inline Zone_Cl_VDF& zone_Cl_VDF() { return la_zcl_vdf.valeur(); }
+  inline const Zone_Cl_VDF& zone_Cl_VDF() const { return la_zcl_vdf.valeur(); }
+  inline int& face_voisins_(int i, int j) { return face_voisins(i,j); }
+  inline const int& face_voisins_(int i, int j) const { return face_voisins(i,j); }
+  inline double volume_entrelaces_(int i) { return volume_entrelaces(i); }
+  inline const double& volume_entrelaces_(int i) const { return volume_entrelaces(i); }
+  inline double porosite_surf_(int i)  { return porosite_surf(i); }
+  inline const double& porosite_surf_(int i) const { return porosite_surf(i); }
+  inline int orientation_(int face) { return orientation(face); }
+  inline const int& orientation_(int face) const { return orientation(face); }
+  inline double xp_(int elem, int ori) { return xp(elem,ori); }
+  inline const double& xp_(int elem, int ori) const { return xp(elem,ori); }
 
 protected:
-  mutable SFichier Flux_grad, Flux_grad_moment, Flux_grad_sum;
+  REF(Zone_VDF) la_zone_vdf;
+  REF(Zone_Cl_VDF) la_zcl_vdf;
+  IntVect orientation;
+  IntTab face_voisins;
+  DoubleVect porosite_surf, volume_entrelaces;
+  DoubleTab xp;
 };
 
-#endif /* Op_Grad_VDF_Face_included */
+#endif /* Op_Grad_VDF_Face_base_included */

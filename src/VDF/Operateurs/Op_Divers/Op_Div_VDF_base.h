@@ -20,74 +20,28 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Div_VDF_base_included
 #define Op_Div_VDF_base_included
 
-#include <Operateur_Div.h>
 #include <Iterateur_VDF_base.h>
+#include <Operateur_Div.h>
 
-//
 // .DESCRIPTION class Op_Div_VDF_base
-//
 // Classe de base des operateurs de divergence VDF
-
-//
-// .SECTION voir aussi
-//
-//
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Div_VDF_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Op_Div_VDF_base : public Operateur_Div_base
 {
-
   Declare_base(Op_Div_VDF_base);
-
 public:
+  inline Op_Div_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
 
-  inline Op_Div_VDF_base( const Iterateur_VDF_base&);
-  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const;
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const;
   void completer();
   virtual int impr(Sortie& os) const;
 
+  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const { return iter->ajouter(inco,resu); } // ajoute la contribution de la divergence a resu
+  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const { return iter->calculer(inco,resu); } // calcule la contribution de la divergence
+
 protected:
-
   Iterateur_VDF iter;
-
 };
 
-//
-// Fonctions inline de la classe Op_Div_VDF_base
-//
-
-// Description:
-// constructeur
-inline Op_Div_VDF_base::Op_Div_VDF_base(const Iterateur_VDF_base& iter_base) :
-  iter(iter_base)
-{}
-
-// Description:
-// ajoute la contribution de la divergence a resu
-// renvoie resu
-inline DoubleTab& Op_Div_VDF_base::ajouter(const DoubleTab& inco, DoubleTab& resu) const
-{
-  return iter.ajouter(inco, resu);
-}
-
-// Description:
-// calcule la contribution de la divergence, la range dans resu
-// renvoie resu
-inline DoubleTab& Op_Div_VDF_base::calculer(const DoubleTab& inco, DoubleTab& resu) const
-{
-  return iter.calculer(inco, resu);
-}
-
-
-#endif
+#endif /* Op_Div_VDF_base_included */

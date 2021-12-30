@@ -24,32 +24,16 @@
 
 Implemente_base(Op_Div_VDF_base,"Op_Div_VDF_base",Operateur_Div_base);
 
-
-//// printOn
-//
-
-Sortie& Op_Div_VDF_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-
-//// readOn
-//
-
-Entree& Op_Div_VDF_base::readOn(Entree& s )
-{
-  return s ;
-}
+Sortie& Op_Div_VDF_base::printOn(Sortie& s ) const { return s << que_suis_je(); }
+Entree& Op_Div_VDF_base::readOn(Entree& s ) { return s; }
 
 void Op_Div_VDF_base::completer()
 {
   Operateur_base::completer();
-  iter.completer_();
+  iter->completer_();
 }
-
 
 int Op_Div_VDF_base::impr(Sortie& os) const
 {
-  return iter.impr(os);
+  return iter->impr(os);
 }

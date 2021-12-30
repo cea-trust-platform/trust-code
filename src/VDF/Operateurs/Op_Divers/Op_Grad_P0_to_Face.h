@@ -20,151 +20,21 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Grad_P0_to_Face_included
 #define Op_Grad_P0_to_Face_included
 
-#include <Operateur_Grad.h>
-#include <Ref_Zone_VDF.h>
+#include <Op_Grad_VDF_Face_base.h>
 #include <Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
 
-//
 // .DESCRIPTION class Op_Grad_P0_to_Face
-//
 //  Cette classe represente l'operateur de gradient
-//  La discretisation est VDF
-//  On calcule le gradient d'un champ_P0 (autre que la pression)
-//   et le champ de sortie est aux elements Faces
-
-// .SECTION voir aussi
-// Operateur_Grad_base
-//
-
-class Op_Grad_P0_to_Face : public Operateur_Grad_base
+//  La discretisation est VDF. On calcule le gradient d'un champ_P0 (autre que la pression)
+//  et le champ de sortie est aux Faces
+class Op_Grad_P0_to_Face : public Op_Grad_VDF_Face_base
 {
-
   Declare_instanciable(Op_Grad_P0_to_Face);
-
 public:
-
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& );
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  int impr(Sortie& os) const;
-
-  inline Zone_VDF& zone_VDF();
-  inline const Zone_VDF& zone_VDF() const;
-  inline Zone_Cl_VDF& zone_Cl_VDF();
-  inline const Zone_Cl_VDF& zone_Cl_VDF() const;
-  inline int& face_voisins_(int i, int j);
-  inline const int& face_voisins_(int i, int j) const ;
-  inline double volume_entrelaces_(int i) ;
-  inline const double& volume_entrelaces_(int i) const ;
-  inline double porosite_surf_(int i) ;
-  inline const double& porosite_surf_(int i) const ;
-  inline int orientation_(int face);
-  inline const int& orientation_(int face) const;
-  inline double xp_(int elem, int ori);
-  inline const double& xp_(int elem, int ori) const;
-
-private:
-
-  REF(Zone_VDF) la_zone_vdf;
-  REF(Zone_Cl_VDF) la_zcl_vdf;
-
-  DoubleVect porosite_surf;
-  DoubleTab xp;
-  DoubleVect volume_entrelaces;
-  IntTab face_voisins;
-  IntVect orientation;
-
-  inline double dist_norm(int ) const;
-  inline double dist_norm_bord(int ) const;
-
-
 };
 
-inline double Op_Grad_P0_to_Face::xp_(int elem, int ori)
-{
-  return xp(elem,ori);
-}
-
-inline const double& Op_Grad_P0_to_Face::xp_(int elem, int ori) const
-{
-  return xp(elem,ori);
-}
-
-inline int Op_Grad_P0_to_Face::orientation_(int face)
-{
-  return orientation(face);
-}
-
-inline const int& Op_Grad_P0_to_Face::orientation_(int face) const
-{
-  return orientation(face);
-}
-
-inline double Op_Grad_P0_to_Face::porosite_surf_(int i)
-{
-  return porosite_surf(i);
-}
-
-inline const double& Op_Grad_P0_to_Face::porosite_surf_(int i) const
-{
-  return porosite_surf(i);
-}
-
-inline double Op_Grad_P0_to_Face::volume_entrelaces_(int i)
-{
-  return volume_entrelaces(i);
-}
-
-inline const double& Op_Grad_P0_to_Face::volume_entrelaces_(int i) const
-{
-  return volume_entrelaces(i);
-}
-
-
-inline int& Op_Grad_P0_to_Face::face_voisins_(int i, int j)
-{
-  return face_voisins(i,j);
-}
-
-inline const int& Op_Grad_P0_to_Face::face_voisins_(int i, int j) const
-{
-  return face_voisins(i,j);
-}
-
-inline Zone_VDF& Op_Grad_P0_to_Face::zone_VDF()
-{
-  return la_zone_vdf.valeur();
-}
-
-inline const Zone_VDF& Op_Grad_P0_to_Face::zone_VDF() const
-{
-  return la_zone_vdf.valeur();
-}
-
-inline Zone_Cl_VDF& Op_Grad_P0_to_Face::zone_Cl_VDF()
-{
-  return la_zcl_vdf.valeur();
-}
-
-inline const Zone_Cl_VDF& Op_Grad_P0_to_Face::zone_Cl_VDF() const
-{
-  return la_zcl_vdf.valeur();
-}
-
-inline double Op_Grad_P0_to_Face::dist_norm(int num_face) const
-{
-  return la_zone_vdf->dist_norm(num_face);
-}
-
-inline double Op_Grad_P0_to_Face::dist_norm_bord(int num_face) const
-{
-  return la_zone_vdf->dist_norm_bord(num_face);
-}
-
-#endif
+#endif /* Op_Grad_P0_to_Face_included */

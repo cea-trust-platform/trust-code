@@ -24,20 +24,16 @@
 #define Op_VDF_Elem_included
 
 class Matrice_Morse;
-class Zone_VDF;
 class Zone_Cl_VDF;
 class DoubleTab;
+class Zone_VDF;
 
 class Op_VDF_Elem
 {
 public :
-
   void dimensionner(const Zone_VDF&, const Zone_Cl_VDF&, Matrice_Morse&) const;
   void dimensionner_bloc_vitesse(const Zone_VDF&, const Zone_Cl_VDF&, Matrice_Morse&) const;
   void modifier_pour_Cl(const Zone_VDF&, const Zone_Cl_VDF&, Matrice_Morse&, DoubleTab&) const;
 };
 
-#endif
-
-
-
+#endif /* Op_VDF_Elem_included */
