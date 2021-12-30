@@ -48,4 +48,3 @@ Op_Dift_VDF_var_Face::Op_Dift_VDF_var_Face() : Op_Dift_VDF_Face_base(It_VDF_Face
 Implemente_instanciable(Op_Dift_VDF_var_Face_Axi,"Op_Dift_VDF_var_Face_Axi",Op_Dift_VDF_Face_Axi_base);
 Sortie& Op_Dift_VDF_var_Face_Axi::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Dift_VDF_var_Face_Axi::readOn(Entree& s ) { return s ; }
-

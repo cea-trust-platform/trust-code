@@ -59,11 +59,9 @@ class Op_Dift_VDF_Face_Axi : public Op_Dift_VDF_Face_Axi_base
 public:
   inline bool is_VAR() const { return false; }
   inline double nu_(const int ) const { return diffusivite_.valeur()(0,0); }
-  inline double nu_mean_2_pts_(const int , const int ) const { return diffusivite_.valeur()(0,0); }
-  inline double nu_mean_4_pts_(const int , const int ) const { return diffusivite_.valeur()(0,0); }
-  inline double nu_mean_4_pts_(const int , const int , const int , const int ) const { return diffusivite_.valeur()(0,0); }
-  inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const { ajouter_contribution(inco, matrice); }
-  inline void contribuer_au_second_membre(DoubleTab& resu) const { contribue_au_second_membre(resu); }
+  inline double nu_mean_2_pts_(const int i, const int ) const { return nu_(i); }
+  inline double nu_mean_4_pts_(const int i, const int ) const { return nu_(i); }
+  inline double nu_mean_4_pts_(const int i, const int , const int , const int ) const { return nu_(i); }
   inline void associer_diffusivite(const Champ_base& diffu) { diffusivite_ = ref_cast(Champ_Uniforme, diffu); }
   inline void mettre_a_jour_var(double ) const { /* do nothing */}
   inline const Champ_base& diffusivite() const { return diffusivite_; }
@@ -103,8 +101,6 @@ public:
   {
     return 0.25*( diffusivite_->valeurs()(i) + diffusivite_->valeurs()(j) + diffusivite_->valeurs()(k) + diffusivite_->valeurs()(l));
   }
-  inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const { ajouter_contribution(inco, matrice); }
-  inline void contribuer_au_second_membre(DoubleTab& resu) const { contribue_au_second_membre(resu); }
   inline void associer_diffusivite(const Champ_base& diffu) { diffusivite_ = diffu; }
   inline void mettre_a_jour_var(double t) const { ref_cast_non_const(Op_Dift_VDF_var_Face_Axi,(*this)).mettre_a_jour(t); }
   inline const Champ_base& diffusivite() const { return diffusivite_; }
@@ -115,8 +111,8 @@ protected:
 
 inline double Op_Dift_VDF_var_Face_Axi::nu_mean_4_pts_(const int i, const int j) const
 {
-  double d_visco_lam = 0;
   int element;
+  double d_visco_lam = 0;
   if ((element=face_voisins(i,0)) != -1) d_visco_lam += diffusivite_->valeurs()(element);
   if ((element=face_voisins(i,1)) != -1) d_visco_lam += diffusivite_->valeurs()(element);
   if ((element=face_voisins(j,0)) != -1) d_visco_lam += diffusivite_->valeurs()(element);

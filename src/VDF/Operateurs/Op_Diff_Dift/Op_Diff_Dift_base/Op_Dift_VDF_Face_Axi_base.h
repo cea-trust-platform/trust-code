@@ -37,11 +37,11 @@ public:
   void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
   void associer_modele_turbulence(const Mod_turb_hyd_base& );
   void mettre_a_jour(double );
-  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
   void contribue_au_second_membre(DoubleTab& ) const;
-  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
 
+  inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const { ajouter_contribution(inco, matrice); }
+  inline void contribuer_au_second_membre(DoubleTab& resu) const { contribue_au_second_membre(resu); }
   inline void associer_loipar(const Turbulence_paroi& ) { /* do nothing */}
   inline void associer_diffusivite_turbulente(const Champ_Fonc& visc_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(visc_turb);}
   inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
@@ -65,8 +65,22 @@ protected:
   virtual double nu_mean_4_pts_(const int , const int , const int , const int ) const = 0;
 
 private:
+  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const;
+  void ajouter_elem(const DoubleVect& , const DoubleTab& , DoubleTab& ) const;
+  void ajouter_elem_3D(const DoubleVect& , const DoubleTab& , DoubleTab& ) const;
+  void ajouter_aretes_bords(const DoubleVect& , const DoubleTab& , DoubleTab& ) const;
+  void fill_resu_aretes_mixtes(const int , const int , const int , const int , const double , const double , DoubleTab& ) const;
+  void ajouter_aretes_mixtes(const DoubleTab& , DoubleTab& ) const;
+  void fill_resu_aretes_internes(const int , const int , const int , const int , const double , const double , const double , const double , DoubleTab& ) const;
+  void ajouter_aretes_internes(const DoubleVect& , const DoubleTab& , DoubleTab& ) const;
 
   void fill_coeff_matrice_morse(const int , const int , const double , Matrice_Morse& ) const;
+  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
+  void ajouter_contribution_elem(const DoubleVect& , const DoubleTab& , Matrice_Morse& ) const;
+  void ajouter_contribution_elem_3D(const DoubleVect& , const DoubleTab& , Matrice_Morse& ) const;
+  void ajouter_contribution_aretes_bords(const DoubleVect& , const DoubleTab& , Matrice_Morse& ) const;
+  void ajouter_contribution_aretes_mixtes(Matrice_Morse& ) const;
+  void ajouter_contribution_aretes_internes(const DoubleVect& , Matrice_Morse& ) const;
 
   inline void not_implemented(const char * nom_funct) const
   {
