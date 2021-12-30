@@ -14,41 +14,39 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_base.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift
-// Version:     /main/13
+// File:        Op_Diff_VDF_Elem_base.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift/Op_Diff_Dift_base
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Diff_VDF_base_included
-#define Op_Diff_VDF_base_included
+#ifndef Op_Diff_VDF_Elem_base_included
+#define Op_Diff_VDF_Elem_base_included
 
-#include <Operateur_Diff_base.h>
-#include <Iterateur_VDF_base.h>
-class Champ_Fonc;
+#include <Op_Diff_VDF_base.h>
+#include <Op_VDF_Elem.h>
+#include <ItVDFEl.h>
+class Eval_VDF_Elem;
 
-// .DESCRIPTION class Op_Diff_VDF_base
-// Classe de base des operateurs de diffusion VDF
-
-class Op_Diff_VDF_base : public Operateur_Diff_base
+// .DESCRIPTION class Op_Diff_VDF_Elem_base
+//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
+//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite est uniforme
+//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_const_Elem
+class Op_Diff_VDF_Elem_base : public Op_Diff_VDF_base, public Op_VDF_Elem
 {
-  Declare_base(Op_Diff_VDF_base);
-
+  Declare_base_sans_constructeur(Op_Diff_VDF_Elem_base);
 public:
-  inline Op_Diff_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
-  void completer();
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  void contribuer_au_second_membre(DoubleTab& ) const;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  virtual int impr(Sortie& os) const;
-  virtual void calculer_flux_bord(const DoubleTab& inco) const;
+  // Ce constructeur permet de creer des classes filles des evalateurs (utilise dans le constructeur de Op_Diff_VDF_var_Elem_temp_FTBM)
+  inline Op_Diff_VDF_Elem_base(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_base(iterateur)
+  {
+    declare_support_masse_volumique(1);
+  }
 
-  inline const Iterateur_VDF& get_iter() const { return iter; }
-  inline Iterateur_VDF& get_iter() { return iter; }
-
-protected:
-  Iterateur_VDF iter;
+  double calculer_dt_stab() const;
+  virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const;
+  virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco,  Matrice_Morse& matrice) const;
+  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
 };
 
-#endif /* Op_Diff_VDF_base_included */
+#endif /* Op_Diff_VDF_Elem_base_included */

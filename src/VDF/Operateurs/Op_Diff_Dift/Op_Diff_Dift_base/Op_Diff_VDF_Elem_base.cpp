@@ -15,15 +15,13 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Diff_VDF_Elem_base.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift/Op_Diff_Dift_base
 // Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_VDF_Elem_base.h>
 #include <Echange_contact_VDF.h>
-#include <Eval_VDF_Elem.h>
-#include <Eval_Diff_VDF.h>
 #include <Champ_P0_VDF.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>

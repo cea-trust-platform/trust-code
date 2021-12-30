@@ -14,39 +14,37 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Elem_base.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift
-// Version:     /main/8
+// File:        Op_Dift_VDF_Face_base.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift/Op_Diff_Dift_base
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Diff_VDF_Elem_base_included
-#define Op_Diff_VDF_Elem_base_included
+#ifndef Op_Dift_VDF_Face_base_included
+#define Op_Dift_VDF_Face_base_included
 
-#include <Op_Diff_VDF_base.h>
-#include <Op_VDF_Elem.h>
-#include <ItVDFEl.h>
-class Eval_VDF_Elem;
+#include <Op_Dift_VDF_base.h>
+#include <Op_VDF_Face.h>
+#include <ItVDFFa.h>
 
-// .DESCRIPTION class Op_Diff_VDF_Elem_base
-//  Cette classe represente l'operateur de diffusion associe a une equation de transport.
-//  La discretisation est VDF. Le champ diffuse est scalaire. Le champ de diffusivite est uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Elem. L'evaluateur associe est de type Eval_Diff_VDF_const_Elem
-class Op_Diff_VDF_Elem_base : public Op_Diff_VDF_base, public Op_VDF_Elem
+class Mod_turb_hyd_base;
+class Eval_VDF_Face;
+class Champ_Fonc;
+
+class Op_Dift_VDF_Face_base : public Op_Dift_VDF_base, public Op_VDF_Face
 {
-  Declare_base_sans_constructeur(Op_Diff_VDF_Elem_base);
+  Declare_base(Op_Dift_VDF_Face_base);
 public:
-  // Ce constructeur permet de creer des classes filles des evalateurs (utilise dans le constructeur de Op_Diff_VDF_var_Elem_temp_FTBM)
-  inline Op_Diff_VDF_Elem_base(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_base(iterateur)
-  {
-    declare_support_masse_volumique(1);
-  }
-
+  inline Op_Dift_VDF_Face_base(const Iterateur_VDF_base& iter_base ) : Op_Dift_VDF_base(iter_base) {}
   double calculer_dt_stab() const;
-  virtual void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const;
-  virtual void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco,  Matrice_Morse& matrice) const;
-  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
+  double calculer_dt_stab(const Zone_VDF&) const;
+  void calculer_borne_locale(DoubleVect& ,double , double ) const;
+
+  virtual const Champ_base& diffusivite() const = 0; // XXX : E Saikali : juste pour securite ...
+
+  inline void associer_loipar(const Turbulence_paroi& ) { /* do nothing */ }
+  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
 };
 
-#endif /* Op_Diff_VDF_Elem_base_included */
+#endif /* Op_Dift_VDF_Face_base_included */

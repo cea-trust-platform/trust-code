@@ -7,25 +7,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
-	-I$(TRUST_ROOT)/src/ThHyd\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Champs\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Problems\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Sources\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible\
-	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
-	-I$(TRUST_ROOT)/src/ThSol\
 	-I$(TRUST_ROOT)/src/VDF/Champs\
 	-I$(TRUST_ROOT)/src/VDF/Zones\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Eval_Divers\
-    -I$(TRUST_ROOT)/src/VDF/Operateurs/Eval_Diff_Dift\
-	-I$(TRUST_ROOT)/src/VDF/Operateurs/Iterateurs\
-    -I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Diff_Dift\
-    -I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Divers\
-    -I$(TRUST_ROOT)/src/VDF/Operateurs\
-	-I$(TRUST_ROOT)/src/VDF/Zones\
 
 Lib = $(TRUST_LIB)/libevalvdf_conv

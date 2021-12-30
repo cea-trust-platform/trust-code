@@ -14,38 +14,34 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Diff_VDF_Face_base.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift
-// Version:     /main/9
+// File:        Op_Dift_VDF_Elem_base.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift/Op_Diff_Dift_base
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Diff_VDF_Face_base_included
-#define Op_Diff_VDF_Face_base_included
+#ifndef Op_Dift_VDF_Elem_base_included
+#define Op_Dift_VDF_Elem_base_included
 
-#include <Op_Diff_VDF_base.h>
-#include <Op_VDF_Face.h>
-#include <ItVDFFa.h>
-class Eval_VDF_Face;
-class Champ_Inc;
+#include <Op_Dift_VDF_base.h>
+#include <Op_VDF_Elem.h>
+#include <ItVDFEl.h>
 
-// .DESCRIPTION class Op_Diff_VDF_Face_base
-//  Cette classe represente l'operateur de diffusion associe a une equation de la quantite de mouvement.
-//  La discretisation est VDF. Le champ diffuse est un Champ_Face. Le champ de diffusivite est uniforme
-//  L'iterateur associe est de type Iterateur_VDF_Face. L'evaluateur associe est de type Eval_Diff_VDF_const_Face
-class Op_Diff_VDF_Face_base : public Op_Diff_VDF_base, public Op_VDF_Face
+class Turbulence_paroi_scal;
+
+class Op_Dift_VDF_Elem_base : public Op_Dift_VDF_base, public Op_VDF_Elem
 {
-  Declare_base(Op_Diff_VDF_Face_base);
+  Declare_base(Op_Dift_VDF_Elem_base);
 public:
-  inline Op_Diff_VDF_Face_base(const Iterateur_VDF_base& iterateur) : Op_Diff_VDF_base(iterateur)
-  {
-    declare_support_masse_volumique(1);
-  }
+  inline Op_Dift_VDF_Elem_base(const Iterateur_VDF_base& iter_base) : Op_Dift_VDF_base(iter_base) { }
+  double calculer_dt_stab_elem() const;
+  double calculer_dt_stab_elem_axi() const;
+  double calculer_dt_stab_elem_var_axi() const;
+  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
 
-  double calculer_dt_stab() const;
-  double calculer_dt_stab(const Zone_VDF&) const;
-  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
+protected:
+  virtual double alpha_(const int ) const = 0;
 };
 
-#endif /* Op_Diff_VDF_Face_base_included */
+#endif /* Op_Dift_VDF_Elem_base_included */

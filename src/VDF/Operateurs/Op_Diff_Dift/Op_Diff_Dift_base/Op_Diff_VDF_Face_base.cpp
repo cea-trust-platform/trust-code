@@ -15,17 +15,12 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Op_Diff_VDF_Face_base.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift/Op_Diff_Dift_base
 // Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_VDF_Face_base.h>
-#include <Fluide_Incompressible.h>
-#include <Eval_VDF_Face.h>
-#include <Eval_Diff_VDF.h>
-#include <Champ_Inc.h>
-#include <SFichier.h>
 
 Implemente_base(Op_Diff_VDF_Face_base,"Op_Diff_VDF_Face_base",Op_Diff_VDF_base);
 

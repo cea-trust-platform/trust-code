@@ -14,34 +14,30 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_Elem_base.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift
-// Version:     /main/10
+// File:        Op_Dift_VDF_base.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift/Op_Diff_Dift_base
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Dift_VDF_Elem_base_included
-#define Op_Dift_VDF_Elem_base_included
+#ifndef Op_Dift_VDF_base_included
+#define Op_Dift_VDF_base_included
 
-#include <Op_Dift_VDF_base.h>
-#include <Op_VDF_Elem.h>
-#include <ItVDFEl.h>
+#include <Op_Diff_Turbulent_base.h>
+#include <Op_Diff_VDF_base.h>
 
-class Turbulence_paroi_scal;
-
-class Op_Dift_VDF_Elem_base : public Op_Dift_VDF_base, public Op_VDF_Elem
+class Op_Dift_VDF_base : public Op_Diff_VDF_base, public Op_Diff_Turbulent_base
 {
-  Declare_base(Op_Dift_VDF_Elem_base);
+  Declare_base(Op_Dift_VDF_base);
 public:
-  inline Op_Dift_VDF_Elem_base(const Iterateur_VDF_base& iter_base) : Op_Dift_VDF_base(iter_base) { }
-  double calculer_dt_stab_elem() const;
-  double calculer_dt_stab_elem_axi() const;
-  double calculer_dt_stab_elem_var_axi() const;
-  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Elem::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
+  inline Op_Dift_VDF_base(const Iterateur_VDF_base& iter_base) : Op_Diff_VDF_base(iter_base) { }
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  void contribuer_au_second_membre(DoubleTab& ) const;
 
-protected:
-  virtual double alpha_(const int ) const = 0;
+  // Methodes utiles pour l'heritage V
+  inline void associer_diffusivite_turbulente_base(const Champ_Fonc& diff_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb); }
+  inline void completer_Op_Dift_VDF_base() { Op_Diff_VDF_base::completer(); }
 };
 
-#endif /* Op_Dift_VDF_Elem_base_included */
+#endif /* Op_Dift_VDF_base_included */

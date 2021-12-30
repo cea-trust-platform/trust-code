@@ -14,37 +14,41 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Dift_VDF_Face_base.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift
-// Version:     /main/10
+// File:        Op_Diff_VDF_base.h
+// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Diff_Dift/Op_Diff_Dift_base
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Dift_VDF_Face_base_included
-#define Op_Dift_VDF_Face_base_included
+#ifndef Op_Diff_VDF_base_included
+#define Op_Diff_VDF_base_included
 
-#include <Op_Dift_VDF_base.h>
-#include <Op_VDF_Face.h>
-#include <ItVDFFa.h>
-
-class Mod_turb_hyd_base;
-class Eval_VDF_Face;
+#include <Operateur_Diff_base.h>
+#include <Iterateur_VDF_base.h>
 class Champ_Fonc;
 
-class Op_Dift_VDF_Face_base : public Op_Dift_VDF_base, public Op_VDF_Face
+// .DESCRIPTION class Op_Diff_VDF_base
+// Classe de base des operateurs de diffusion VDF
+
+class Op_Diff_VDF_base : public Operateur_Diff_base
 {
-  Declare_base(Op_Dift_VDF_Face_base);
+  Declare_base(Op_Diff_VDF_base);
+
 public:
-  inline Op_Dift_VDF_Face_base(const Iterateur_VDF_base& iter_base ) : Op_Dift_VDF_base(iter_base) {}
-  double calculer_dt_stab() const;
-  double calculer_dt_stab(const Zone_VDF&) const;
-  void calculer_borne_locale(DoubleVect& ,double , double ) const;
+  inline Op_Diff_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
+  void completer();
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  void contribuer_au_second_membre(DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  virtual int impr(Sortie& os) const;
+  virtual void calculer_flux_bord(const DoubleTab& inco) const;
 
-  virtual const Champ_base& diffusivite() const = 0; // XXX : E Saikali : juste pour securite ...
+  inline const Iterateur_VDF& get_iter() const { return iter; }
+  inline Iterateur_VDF& get_iter() { return iter; }
 
-  inline void associer_loipar(const Turbulence_paroi& ) { /* do nothing */ }
-  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
+protected:
+  Iterateur_VDF iter;
 };
 
-#endif /* Op_Dift_VDF_Face_base_included */
+#endif /* Op_Diff_VDF_base_included */
