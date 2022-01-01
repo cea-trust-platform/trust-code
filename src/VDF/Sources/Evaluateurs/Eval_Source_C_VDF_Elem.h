@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,42 +23,31 @@
 #ifndef Eval_Source_C_VDF_Elem_included
 #define Eval_Source_C_VDF_Elem_included
 
-
 #include <Evaluateur_Source_VDF_Elem.h>
+#include <Champ_Uniforme.h>
 #include <Ref_Champ_Don.h>
 #include <DoubleTab.h>
-#include <Champ_Uniforme.h>
 #include <Champ_Don.h>
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Source_C_VDF_Elem
-//
-////////////////////////////////////////////////////////////////////////////
 
 class Eval_Source_C_VDF_Elem : public Evaluateur_Source_VDF_Elem
 {
-
 public:
-
-  inline Eval_Source_C_VDF_Elem();
-  void associer_champs(const Champ_Don& );
-  void mettre_a_jour( );
+  Eval_Source_C_VDF_Elem() { }
   inline double calculer_terme_source(int ) const;
   inline void calculer_terme_source(int , DoubleVect& ) const;
+  inline void associer_champs(const Champ_Don& );
+  inline void mettre_a_jour() { /* Do nothing */ }
 
 protected:
-
   REF(Champ_Don) la_source_constituant;
   DoubleTab source_constituant;
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_Uniforme_VDF_Elem
-//
-
-inline Eval_Source_C_VDF_Elem::Eval_Source_C_VDF_Elem() {}
+inline void Eval_Source_C_VDF_Elem::associer_champs(const Champ_Don& Q)
+{
+  la_source_constituant = Q;
+  source_constituant.ref(Q.valeurs());
+}
 
 inline double Eval_Source_C_VDF_Elem::calculer_terme_source(int num_elem) const
 {
@@ -68,13 +57,11 @@ inline double Eval_Source_C_VDF_Elem::calculer_terme_source(int num_elem) const
 
 inline void Eval_Source_C_VDF_Elem::calculer_terme_source(int num_elem, DoubleVect& source) const
 {
-  int size=source.size();
+  const int size = source.size();
   if (sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()))
-    for (int i=0; i<size; i++)
-      source(i) = source_constituant(0,i)*volumes(num_elem)*porosite_vol(num_elem);
+    for (int i = 0; i < size; i++) source(i) = source_constituant(0,i)*volumes(num_elem)*porosite_vol(num_elem);
   else
-    for (int i=0; i<size; i++)
-      source(i) = source_constituant(num_elem,i)*volumes(num_elem)*porosite_vol(num_elem);
+    for (int i = 0; i < size; i++) source(i) = source_constituant(num_elem,i)*volumes(num_elem)*porosite_vol(num_elem);
 }
 
-#endif
+#endif /* Eval_Source_C_VDF_Elem_included */

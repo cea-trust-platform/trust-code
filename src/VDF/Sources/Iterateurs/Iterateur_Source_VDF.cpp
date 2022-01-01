@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,24 +24,5 @@
 
 Implemente_deriv(Iterateur_Source_VDF_base);
 Implemente_instanciable(Iterateur_Source_VDF,"Iterateur_Source_VDF",DERIV(Iterateur_Source_VDF_base));
-
-//// printOn
-//
-
-Sortie& Iterateur_Source_VDF::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-
-//// readOn
-//
-
-Entree& Iterateur_Source_VDF::readOn(Entree& s )
-{
-  return s ;
-}
-
-
-
-
+Sortie& Iterateur_Source_VDF::printOn(Sortie& s ) const { return s << que_suis_je(); }
+Entree& Iterateur_Source_VDF::readOn(Entree& s ) { return s; }

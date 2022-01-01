@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,35 +24,21 @@
 #define Evaluateur_Source_VDF_Face_included
 
 #include <Evaluateur_Source_VDF.h>
-#include <IntVect.h>
 #include <DoubleVect.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Evaluateur_Source_VDF_Face
-//
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <IntVect.h>
 
 class Evaluateur_Source_VDF_Face : public Evaluateur_Source_VDF
 {
-
 public:
-
-  inline Evaluateur_Source_VDF_Face();
+  Evaluateur_Source_VDF_Face() { }
   Evaluateur_Source_VDF_Face(const Evaluateur_Source_VDF_Face& );
   void completer();
-  virtual double calculer_terme_source_bord(int ) const =0;
-  virtual void calculer_terme_source_bord(int , DoubleVect&  ) const =0;
+  virtual double calculer_terme_source_bord(int ) const = 0;
+  virtual void calculer_terme_source_bord(int , DoubleVect& ) const = 0;
 
 protected:
-
-  IntVect orientation;           // orientations des faces
-  DoubleVect volumes_entrelaces;
-  DoubleVect porosite_surf;          // porosites surfaciques
-
+  IntVect orientation; // orientations des faces
+  DoubleVect volumes_entrelaces, porosite_surf; // porosites surfaciques
 };
 
-inline Evaluateur_Source_VDF_Face::Evaluateur_Source_VDF_Face()
-{}
-#endif
+#endif /* Evaluateur_Source_VDF_Face_included */

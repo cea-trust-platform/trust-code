@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,36 +23,44 @@
 #ifndef Eval_Echange_Himp_VDF_Elem_included
 #define Eval_Echange_Himp_VDF_Elem_included
 
-#include <DoubleTab.h>
 #include <Evaluateur_Source_VDF_Elem.h>
-#include <Ref_Champ_Don.h>
-#include <Champ_Don.h>
 #include <Ref_Champ_Inc.h>
+#include <Champ_Inc.h>
+#include <DoubleTab.h>
 
 class Eval_Echange_Himp_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {
-
 public:
-  Eval_Echange_Himp_VDF_Elem() {}
-  void associer_champs(const Champ_Inc& ,const Champ_Inc& ,const double );
-  void mettre_a_jour( );
+  Eval_Echange_Himp_VDF_Elem() : h_(-1.) { }
   inline double calculer_terme_source(int ) const;
-  inline void calculer_terme_source(int , DoubleVect& ) const;
+  inline void calculer_terme_source(int , DoubleVect& ) const { /* Do nothing */ }
+  inline void associer_champs(const Champ_Inc& ,const Champ_Inc& ,const double );
+  inline void mettre_a_jour();
 
 protected:
-  REF(Champ_Inc) T;
-  REF(Champ_Inc) T_voisin;
-  DoubleTab Tcourant;
-  DoubleTab Tvois;
+  REF(Champ_Inc) T, T_voisin;
+  DoubleTab Tcourant, Tvois;
   double h_;
 };
+
+inline void Eval_Echange_Himp_VDF_Elem::associer_champs(const Champ_Inc& tc, const Champ_Inc& tv, const double dh)
+{
+  this->h_ = dh;
+  T = tc;
+  T_voisin = tv;
+  Tcourant.ref(T->valeurs());
+  mettre_a_jour();
+}
+
+inline void Eval_Echange_Himp_VDF_Elem::mettre_a_jour()
+{
+  Tcourant.ref(T->valeurs());
+  Tvois.ref(T_voisin->valeurs());
+}
 
 inline double Eval_Echange_Himp_VDF_Elem::calculer_terme_source(int num_elem) const
 {
   return h_*(Tvois(num_elem)-Tcourant(num_elem)) * volumes(num_elem)*porosite_vol(num_elem);
 }
 
-inline void Eval_Echange_Himp_VDF_Elem::calculer_terme_source(int , DoubleVect& ) const { }
-
-#endif
-
+#endif /* Eval_Echange_Himp_VDF_Elem_included */

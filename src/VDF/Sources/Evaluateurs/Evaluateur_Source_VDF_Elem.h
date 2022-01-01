@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,38 +23,18 @@
 #ifndef Evaluateur_Source_VDF_Elem_included
 #define Evaluateur_Source_VDF_Elem_included
 
-
 #include <Evaluateur_Source_VDF.h>
 #include <DoubleVect.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Evaluateur_Source_VDF_Elem
-//
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Evaluateur_Source_VDF_Elem : public Evaluateur_Source_VDF
 {
-
 public:
-
-  inline Evaluateur_Source_VDF_Elem();
+  Evaluateur_Source_VDF_Elem() { }
   Evaluateur_Source_VDF_Elem(const Evaluateur_Source_VDF_Elem& );
   void completer();
 
 protected:
-
-  DoubleVect volumes;
-  DoubleVect porosite_vol;     // porosites volumiques
-
+  DoubleVect volumes, porosite_vol; // porosites volumiques
 };
 
-//
-//   Fonctions inline de Evaluateur_Source_VDF
-//
-
-inline Evaluateur_Source_VDF_Elem::Evaluateur_Source_VDF_Elem() {}
-
-
-#endif
+#endif /* Evaluateur_Source_VDF_Elem_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,59 +23,46 @@
 #ifndef Eval_Dirac_VDF_Elem_included
 #define Eval_Dirac_VDF_Elem_included
 
-
 #include <Evaluateur_Source_VDF_Elem.h>
 #include <Ref_Champ_Don.h>
+#include <Champ_Don.h>
 #include <Zone.h>
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Dirac_VDF_Elem
-//
-////////////////////////////////////////////////////////////////////////////
 
 class Eval_Dirac_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {
-
 public:
-
-  inline Eval_Dirac_VDF_Elem();
-  inline virtual ~Eval_Dirac_VDF_Elem() {};
-  void associer_champs(const Champ_Don& );
-  void mettre_a_jour( );
+  Eval_Dirac_VDF_Elem() : puissance(-100.), nb_dirac(-1.) { }
+  virtual ~Eval_Dirac_VDF_Elem() { }
   inline double calculer_terme_source(int ) const;
-  inline void calculer_terme_source(int , DoubleVect& ) const;
-  void associer_nb_elem_dirac(int );
+  inline void calculer_terme_source(int , DoubleVect& ) const { /* Do nothing */ }
+  inline void associer_nb_elem_dirac(int n) { nb_dirac = 1./n; }
+  inline void associer_champs(const Champ_Don& );
+  inline void mettre_a_jour();
 
   DoubleVect le_point;
 protected:
 
   REF(Champ_Don) la_puissance;
-  double puissance;
   REF(Zone) ma_zone;
-  double nb_dirac;
+  double puissance, nb_dirac;
 };
 
+inline void Eval_Dirac_VDF_Elem::associer_champs(const Champ_Don& Q)
+{
+  la_puissance = Q;
+  puissance = Q(0);
+}
 
-//
-//   Fonctions inline de la classe Eval_Dirac_VDF_Elem
-//
-
-inline Eval_Dirac_VDF_Elem::Eval_Dirac_VDF_Elem() {}
+inline void Eval_Dirac_VDF_Elem::mettre_a_jour()
+{
+  puissance = la_puissance.valeur()(0);
+  ma_zone = la_zone.valeur().zone();
+}
 
 inline double Eval_Dirac_VDF_Elem::calculer_terme_source(int num_elem) const
 {
-  int test =  ma_zone.valeur().type_elem().contient(le_point,num_elem) ;
-  if (test == 1)
-    return nb_dirac*puissance;
-  else
-    return 0;
+  const int test =  ma_zone.valeur().type_elem().contient(le_point,num_elem);
+  return (test == 1) ? nb_dirac*puissance : 0.;
 }
 
-inline void Eval_Dirac_VDF_Elem::calculer_terme_source(int , DoubleVect& ) const
-{
-  ;
-}
-
-#endif
-
+#endif /* Eval_Dirac_VDF_Elem_included */

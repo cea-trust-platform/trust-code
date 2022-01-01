@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,77 +23,36 @@
 #ifndef Eval_Gravite_VDF_Face_included
 #define Eval_Gravite_VDF_Face_included
 
-////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION class Eval_Gravite_VDF_Face
-//
-////////////////////////////////////////////////////////////////////////////
-
 #include <Evaluateur_Source_VDF_Face.h>
 #include <Ref_Champ_Don_base.h>
+#include <Champ_Don_base.h>
+
 class Eval_Gravite_VDF_Face: public Evaluateur_Source_VDF_Face
 {
-
 public:
-
-  inline Eval_Gravite_VDF_Face();
-  inline Eval_Gravite_VDF_Face(const Eval_Gravite_VDF_Face& eval);
-  void associer(const Champ_Don_base& );
-  inline void mettre_a_jour( );
+  Eval_Gravite_VDF_Face() { }
+  Eval_Gravite_VDF_Face(const Eval_Gravite_VDF_Face& eval) : Evaluateur_Source_VDF_Face(eval), la_gravite(eval.la_gravite) { g.ref(eval.g); }
   inline double calculer_terme_source(int ) const;
-  inline void calculer_terme_source(int , DoubleVect& ) const;
-  inline double calculer_terme_source_bord(int ) const;
-  inline void calculer_terme_source_bord(int , DoubleVect& ) const;
-
+  inline double calculer_terme_source_bord(int num_face) const { return calculer_terme_source(num_face); }
+  inline void calculer_terme_source(int , DoubleVect& ) const { /* Do nothing */ }
+  inline void calculer_terme_source_bord(int , DoubleVect& ) const { /* Do nothing */ }
+  inline void associer(const Champ_Don_base& );
+  inline void mettre_a_jour() { /* Do nothing */ }
 
 protected:
-
   REF(Champ_Don_base) la_gravite;
   DoubleVect g;
-
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Gravite_VDF_Face
-//
-
-inline Eval_Gravite_VDF_Face::Eval_Gravite_VDF_Face()
-{}
-
-inline Eval_Gravite_VDF_Face::Eval_Gravite_VDF_Face(const Eval_Gravite_VDF_Face& eval)
-  : Evaluateur_Source_VDF_Face(eval), la_gravite(eval.la_gravite)
+inline void Eval_Gravite_VDF_Face::associer(const Champ_Don_base& gravite)
 {
-  g.ref(eval.g);
-}
-
-
-inline void Eval_Gravite_VDF_Face::mettre_a_jour( )
-{
-  ;
+  la_gravite = gravite;
+  g.ref(gravite.valeurs());
 }
 
 inline double Eval_Gravite_VDF_Face::calculer_terme_source(int num_face) const
 {
-  return g(orientation(num_face))*
-         volumes_entrelaces(num_face)*porosite_surf(num_face);
+  return g(orientation(num_face))*volumes_entrelaces(num_face)*porosite_surf(num_face);
 }
 
-inline void Eval_Gravite_VDF_Face::calculer_terme_source(int ,
-                                                         DoubleVect& ) const
-{
-  // EMPTY;
-}
-
-inline double Eval_Gravite_VDF_Face::calculer_terme_source_bord(int num_face) const
-{
-  return calculer_terme_source(num_face);
-}
-
-inline void Eval_Gravite_VDF_Face::calculer_terme_source_bord(int ,
-                                                              DoubleVect& ) const
-{
-  // EMPTY;
-}
-
-#endif
+#endif /* Eval_Gravite_VDF_Face_included */

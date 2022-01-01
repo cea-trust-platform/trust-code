@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,19 +23,12 @@
 #ifndef ItSouVDFFa_H
 #define ItSouVDFFa_H
 
-
-#include <Config_Template_Version_Sources_VDF.h>
 #define It_Sou_VDF_Face(_TYPE_) name2(Iterateur_Source_VDF_Face, _TYPE_)
 
-#ifdef Template_Version_VDF
 #include <T_It_Sou_VDF_Face.h>
-
 #define declare_It_Sou_VDF_Face(_TYPE_)				\
   typedef T_It_Sou_VDF_Face<_TYPE_> It_Sou_VDF_Face(_TYPE_);
+
 #define implemente_It_Sou_VDF_Face(_TYPE_)
 
-#else
-#include <MItSouVDFFa.h>
-#endif
-
-#endif
+#endif /* ItSouVDFFa_H */

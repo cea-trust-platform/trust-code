@@ -97,6 +97,8 @@ void instancie_src_VDF_Operateurs_Op_Divers();
 void instancie_src_VDF_Solveurs();
 void instancie_src_VDF_Sources();
 void instancie_src_VDF_Sources_Iterateurs();
+void instancie_src_VDF_Sources_Sources_It_Eval();
+void instancie_src_VDF_Traitement_particulier();
 void instancie_src_VDF_Zones();
 void instancie_src_VEF();
 void instancie_src_VEF_Champs();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,66 +23,22 @@
 #ifndef Iterateur_Source_VDF_included
 #define Iterateur_Source_VDF_included
 
-
-//
-// .DESCRIPTION class Iterateur_Source_VDF
-//
-// .SECTION voir aussi
-//
 #include <Iterateur_Source_VDF_base.h>
 #include <ItSouVDFFa.h>
 
 Declare_deriv(Iterateur_Source_VDF_base);
-
 class Iterateur_Source_VDF : public DERIV(Iterateur_Source_VDF_base)
 {
-
   Declare_instanciable(Iterateur_Source_VDF);
-
 public:
+  Iterateur_Source_VDF(const Iterateur_Source_VDF_base& Opb) : DERIV(Iterateur_Source_VDF_base)()
+  { DERIV(Iterateur_Source_VDF_base)::operator=(Opb); }
 
-  inline Iterateur_Source_VDF(const Iterateur_Source_VDF_base&);
-  inline void completer_();
-  inline DoubleTab& ajouter(DoubleTab& ) const;
-  inline DoubleTab& calculer(DoubleTab& ) const;
-  inline Evaluateur_Source_VDF& evaluateur();
-  inline void associer(const Source_base& source);
+  inline void completer_() { valeur().completer_(); }
+  inline void associer(const Source_base& source) { return valeur().associer(source); }
+  inline DoubleTab& ajouter(DoubleTab& resu) const { return valeur().ajouter(resu); }
+  inline DoubleTab& calculer(DoubleTab& resu) const { return valeur().calculer(resu); }
+  inline Evaluateur_Source_VDF& evaluateur() { return valeur().evaluateur(); }
 };
 
-
-//
-//  Fonctions inline de la classe Iterateur_Source_VDF
-//
-
-inline Iterateur_Source_VDF::Iterateur_Source_VDF(const Iterateur_Source_VDF_base& Opb)
-
-  : DERIV(Iterateur_Source_VDF_base)()
-{
-  DERIV(Iterateur_Source_VDF_base)::operator=(Opb);
-}
-
-inline void Iterateur_Source_VDF::completer_()
-{
-  valeur().completer_();
-}
-
-inline Evaluateur_Source_VDF& Iterateur_Source_VDF::evaluateur()
-{
-  return valeur().evaluateur();
-}
-
-inline DoubleTab& Iterateur_Source_VDF::ajouter(DoubleTab& resu) const
-{
-  return valeur().ajouter(resu);
-}
-
-inline DoubleTab& Iterateur_Source_VDF::calculer(DoubleTab& resu) const
-{
-  return valeur().calculer(resu);
-}
-
-inline void Iterateur_Source_VDF::associer(const Source_base& source)
-{
-  return valeur().associer(source);
-}
-#endif
+#endif /* Iterateur_Source_VDF_included */

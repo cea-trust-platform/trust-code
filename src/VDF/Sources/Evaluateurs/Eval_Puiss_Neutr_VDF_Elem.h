@@ -1,5 +1,9 @@
 /****************************************************************************
+<<<<<<< HEAD
 * Copyright (c) 2021, CEA
+=======
+* Copyright (c) 2022, CEA
+>>>>>>> [Templates Sources VDF] Remove macros, activate template version and organize files
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,55 +28,32 @@
 #define Eval_Puiss_Neutr_VDF_Elem_included
 
 #include <Evaluateur_Source_VDF_Elem.h>
-#include <Ref_Champ_Don.h>
-#include <Ref_Champ_base.h>
-#include <DoubleTab.h>
 #include <Ref_Champ_Uniforme.h>
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Puiss_Neutr_VDF_Elem
-//
-////////////////////////////////////////////////////////////////////////////
+#include <Ref_Champ_base.h>
+#include <Ref_Champ_Don.h>
+#include <DoubleTab.h>
 
 class Eval_Puiss_Neutr_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {
-
 public:
-
-  inline Eval_Puiss_Neutr_VDF_Elem();
+  Eval_Puiss_Neutr_VDF_Elem() : puissance(-123.) { }
   void associer_champs(const Champ_Don& );
   void associer_repartition(const Nom& fxyz, const Nom& nom_ssz);
-  void mettre_a_jour( );
-  inline double calculer_terme_source(int ) const;
-  inline void calculer_terme_source(int , DoubleVect& ) const;
+  void mettre_a_jour();
   void completer();
+  inline double calculer_terme_source(int ) const;
+  inline void calculer_terme_source(int , DoubleVect& ) const { /* Do nothing */}
 
 protected:
-
   REF(Champ_Uniforme) la_puissance;
   double puissance;
-  //double volume_tot;
   DoubleTab rep;
   Nom fxyz;
 };
-
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Neutr_VDF_Elem
-//
-
-inline Eval_Puiss_Neutr_VDF_Elem::Eval_Puiss_Neutr_VDF_Elem() {}
 
 inline double Eval_Puiss_Neutr_VDF_Elem::calculer_terme_source(int num_elem) const
 {
   return rep(num_elem)*puissance*volumes(num_elem)*porosite_vol(num_elem);
 }
 
-inline void Eval_Puiss_Neutr_VDF_Elem::calculer_terme_source(int , DoubleVect& ) const
-{
-  ;
-}
-
-#endif
-
+#endif /* Eval_Puiss_Neutr_VDF_Elem_included */

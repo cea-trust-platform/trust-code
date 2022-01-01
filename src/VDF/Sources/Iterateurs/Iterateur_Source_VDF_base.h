@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,56 +23,49 @@
 #ifndef Iterateur_Source_VDF_base_included
 #define Iterateur_Source_VDF_base_included
 
-
-//
-// .DESCRIPTION class Iterateur_Source_VDF_base
-//
-// .SECTION voir aussi Objet_U
-//
-
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
-#include <Zone_Cl_VDF.h>
-#include <Equation_base.h>
 #include <Ref_Source_base.h>
+#include <Ref_Zone_Cl_VDF.h>
+#include <Equation_base.h>
+#include <Ref_Zone_VDF.h>
+#include <Zone_Cl_VDF.h>
 
-class DoubleTab;
 class Evaluateur_Source_VDF;
+class DoubleTab;
 
 class Iterateur_Source_VDF_base : public Objet_U
 {
-
   Declare_base(Iterateur_Source_VDF_base);
-
 public:
+  virtual DoubleTab& ajouter(DoubleTab& ) const = 0;
+  virtual DoubleTab& calculer(DoubleTab& ) const = 0;
+  virtual Evaluateur_Source_VDF& evaluateur() = 0;
+  virtual void completer_() = 0;
 
-  void associer_zones(const Zone_VDF&, const Zone_Cl_VDF&);
+  inline int equation_divisee_par_rho() const;
+  inline void associer_zones(const Zone_VDF&, const Zone_Cl_VDF&);
   inline void associer(const Source_base& source);
-  virtual DoubleTab& ajouter(DoubleTab& ) const=0;
-  virtual DoubleTab& calculer(DoubleTab& ) const=0;
-  virtual Evaluateur_Source_VDF& evaluateur() =0;
-  virtual void completer_()=0;
-
-  virtual inline int equation_divisee_par_rho() const;
 
 protected:
-
   REF(Zone_VDF) la_zone;
   REF(Zone_Cl_VDF) la_zcl;
   REF(Source_base) so_base;
-
 };
+
 int Iterateur_Source_VDF_base::equation_divisee_par_rho() const
 {
-  Nom nom_eqn=la_zcl->equation().que_suis_je();
-  if (nom_eqn.debute_par("Navier_Stokes"))
-    return 1;
-  else
-    return 0;
+  Nom nom_eqn = la_zcl->equation().que_suis_je();
+  return (nom_eqn.debute_par("Navier_Stokes")) ? 1 : 0;
+}
+
+void Iterateur_Source_VDF_base::associer_zones(const Zone_VDF& zone_vdf, const Zone_Cl_VDF& zone_cl_vdf)
+{
+  la_zone = zone_vdf;
+  la_zcl = zone_cl_vdf;
 }
 
 void Iterateur_Source_VDF_base::associer(const Source_base& source)
 {
   so_base = source;
 }
-#endif
+
+#endif /* Iterateur_Source_VDF_base_included */

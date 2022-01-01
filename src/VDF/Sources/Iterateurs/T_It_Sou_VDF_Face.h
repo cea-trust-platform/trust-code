@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,23 +24,16 @@
 #define T_It_Sou_VDF_Face_included
 
 #include <Iterateur_Source_VDF_base.h>
-#include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
-#include <Zone_VDF.h>
 #include <Champ_Uniforme.h>
 #include <Milieu_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS Iterateur_Source_VDF_Face
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <Dirichlet.h>
+#include <Zone_VDF.h>
 
 template <class _TYPE_>
 class T_It_Sou_VDF_Face : public Iterateur_Source_VDF_base
 {
-
-  //Declare_instanciable(T_It_Sou_VDF_Face<_TYPE_>);
+  inline unsigned taille_memoire() const { throw; }
 
   inline int duplique() const
   {
@@ -51,108 +44,84 @@ class T_It_Sou_VDF_Face : public Iterateur_Source_VDF_base
         exit();
       }
     return xxx->numero();
-  };
-  inline unsigned taille_memoire() const
-  {
-    throw;
-  };
+  }
 
 public:
-  inline T_It_Sou_VDF_Face() { };
+  inline T_It_Sou_VDF_Face() : nb_faces(-1), premiere_face_interne(-1) { }
   inline T_It_Sou_VDF_Face(const T_It_Sou_VDF_Face<_TYPE_>&);
-  inline Evaluateur_Source_VDF& evaluateur();
 
   DoubleTab& calculer(DoubleTab& ) const;
   DoubleTab& ajouter(DoubleTab& ) const;
+
   inline void completer_();
+  inline Evaluateur_Source_VDF& evaluateur();
 
 protected:
-
   _TYPE_ evaluateur_source_face;
+  int nb_faces, premiere_face_interne;
+  mutable DoubleTab coef;
 
   DoubleTab& ajouter_faces_internes(DoubleTab& ) const;
   DoubleTab& ajouter_faces_internes(DoubleTab& ,int ) const;
   DoubleTab& ajouter_faces_bords(DoubleTab& ) const;
   DoubleTab& ajouter_faces_bords(DoubleTab& ,int ) const;
-  inline const int& faces_doubles(int num_face) const
-  {
-    return la_zone->faces_doubles()[num_face];
-  };
-
-  int nb_faces;
-  int premiere_face_interne;
-  mutable DoubleTab coef;
-
+  inline const int& faces_doubles(int num_face) const { return la_zone->faces_doubles()[num_face]; }
 };
 
 template <class _TYPE_>
 inline T_It_Sou_VDF_Face<_TYPE_>::
-T_It_Sou_VDF_Face(const T_It_Sou_VDF_Face<_TYPE_>& iter)
+T_It_Sou_VDF_Face(const T_It_Sou_VDF_Face<_TYPE_>& iter) : Iterateur_Source_VDF_base(iter),
+  evaluateur_source_face(iter.evaluateur_source_face),
+  nb_faces(iter.nb_faces), premiere_face_interne(iter.premiere_face_interne) { }
 
-  : Iterateur_Source_VDF_base(iter),
-    evaluateur_source_face(iter.evaluateur_source_face),
-    nb_faces(iter.nb_faces), premiere_face_interne(iter.premiere_face_interne)
-
-{}
 template <class _TYPE_>
 inline void T_It_Sou_VDF_Face<_TYPE_>::completer_()
 {
-  nb_faces=la_zone->nb_faces();
-  premiere_face_interne=la_zone->premiere_face_int();
+  nb_faces = la_zone->nb_faces();
+  premiere_face_interne = la_zone->premiere_face_int();
 }
+
 template <class _TYPE_>
 inline Evaluateur_Source_VDF& T_It_Sou_VDF_Face<_TYPE_>::evaluateur()
 {
-  Evaluateur_Source_VDF& eval = (Evaluateur_Source_VDF&) evaluateur_source_face;
+  Evaluateur_Source_VDF& eval = static_cast<Evaluateur_Source_VDF&> (evaluateur_source_face);
   return eval;
 }
 
-//  Implemente_instanciable(T_It_Sou_VDF_Face<_TYPE_>,"Iterateur_Source_VDF_Face",Iterateur_Source_VDF_base);
-/*
-  Sortie& T_It_Sou_VDF_Face<_TYPE_>::printOn(Sortie& s ) const {
-    return s << que_suis_je() ;
-  }
-
-  Entree& T_It_Sou_VDF_Face<_TYPE_>::readOn(Entree& s ) {
-    return s ;
-  }
-*/
 template <class _TYPE_>
 DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter(DoubleTab& resu) const
 {
-  ((_TYPE_&) (evaluateur_source_face)).mettre_a_jour( );
+  ((_TYPE_&) (evaluateur_source_face)).mettre_a_jour();
 
   assert(resu.nb_dim() < 3);
   const int ncomp = resu.line_size();
 
   DoubleVect& bilan = so_base->bilan();
   bilan=0;
-  int nb_faces_tot = la_zone.valeur().nb_faces_tot();
+  const int nb_faces_tot = la_zone.valeur().nb_faces_tot();
   coef.resize(nb_faces_tot,Array_base::NOCOPY_NOINIT);
   coef=1;
   if (equation_divisee_par_rho())
     {
       const Milieu_base& milieu = la_zcl->equation().milieu();
       const Champ_base& rho = milieu.masse_volumique();
-      if (sub_type(Champ_Uniforme,rho))
-        coef = rho(0,0);
+      if (sub_type(Champ_Uniforme,rho)) coef = rho(0,0);
       else
         {
           const DoubleTab& val_rho = rho.valeurs();
           const IntTab& face_vois = la_zone.valeur().face_voisins();
           const DoubleVect& volumes = la_zone.valeur().volumes();
           coef = 0.;
-          for (int fac=0; fac<nb_faces_tot; fac++)
+          for (int fac = 0; fac < nb_faces_tot; fac++)
             {
-              int elem1 = face_vois(fac,0);
-              int elem2 = face_vois(fac,1);
-              double vol = 0;
-              if (elem1!=-1)
+              const int elem1 = face_vois(fac,0), elem2 = face_vois(fac,1);
+              double vol = 0.;
+              if (elem1 != -1)
                 {
                   coef(fac) += val_rho(elem1)*volumes(elem1);
                   vol += volumes(elem1);
                 }
-              if (elem2!=-1)
+              if (elem2 != -1)
                 {
                   coef(fac) += val_rho(elem2)*volumes(elem2);
                   vol += volumes(elem2);
@@ -173,25 +142,19 @@ DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter(DoubleTab& resu) const
     }
   return resu;
 }
+
 template <class _TYPE_>
 DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_bords(DoubleTab& resu) const
 {
-  int num_cl;
-  int num_face;
   DoubleVect& bilan = so_base->bilan();
-  for (num_cl =0; num_cl<la_zone->nb_front_Cl(); num_cl++)
+  for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int ndeb = le_bord.num_premiere_face();
-      int nfin = ndeb + le_bord.nb_faces();
-      if ( (sub_type(Dirichlet,la_cl.valeur()))
-           ||
-           (sub_type(Dirichlet_homogene,la_cl.valeur()))
-         )
-        ;
+      const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+      if ( (sub_type(Dirichlet,la_cl.valeur())) || (sub_type(Dirichlet_homogene,la_cl.valeur())) ) { /* Do nothing */ }
       else
-        for (num_face=ndeb; num_face<nfin; num_face++)
+        for (int num_face = ndeb; num_face < nfin; num_face++)
           {
             double source = evaluateur_source_face.calculer_terme_source_bord(num_face);
             resu(num_face) += source;
@@ -201,27 +164,23 @@ DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_bords(DoubleTab& resu) const
     }
   return resu;
 }
+
 template <class _TYPE_>
 DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_bords(DoubleTab& resu,int ncomp) const
 {
-  int num_cl;
-  int num_face;
   DoubleVect source(ncomp);
   DoubleVect& bilan = so_base->bilan();
-  for (num_cl =0; num_cl<la_zone->nb_front_Cl(); num_cl++)
+  for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int ndeb = le_bord.num_premiere_face();
-      int nfin = ndeb + le_bord.nb_faces();
-      if ( (sub_type(Dirichlet,la_cl.valeur()))
-           || (sub_type(Dirichlet_homogene,la_cl.valeur())) )
-        ;
+      const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+      if ( (sub_type(Dirichlet,la_cl.valeur())) || (sub_type(Dirichlet_homogene,la_cl.valeur())) ) { /* Do nothing */ }
       else
-        for (num_face=ndeb; num_face<nfin; num_face++)
+        for (int num_face = ndeb; num_face < nfin; num_face++)
           {
             evaluateur_source_face.calculer_terme_source_bord(num_face,source);
-            for (int k=0; k<ncomp; k++)
+            for (int k = 0; k < ncomp; k++)
               {
                 resu(num_face,k) += source(k);
                 double contribution = (faces_doubles(num_face)==1) ? 0.5 : 1 ;
@@ -231,6 +190,7 @@ DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_bords(DoubleTab& resu,int nc
     }
   return resu;
 }
+
 template <class _TYPE_>
 DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_internes(DoubleTab& resu) const
 {
@@ -244,6 +204,7 @@ DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_internes(DoubleTab& resu) co
     }
   return resu;
 }
+
 template <class _TYPE_>
 DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_internes(DoubleTab& resu,int ncomp) const
 {
@@ -261,11 +222,12 @@ DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_internes(DoubleTab& resu,int
     }
   return resu;
 }
+
 template <class _TYPE_>
 DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::calculer(DoubleTab& resu) const
 {
-  resu=0;
+  resu = 0;
   return ajouter(resu);
 }
 
-#endif
+#endif /* T_It_Sou_VDF_Face_included */

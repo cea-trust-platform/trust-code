@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,37 +24,29 @@
 #define Eval_Puiss_Th_VDF_Elem_included
 
 #include <Evaluateur_Source_VDF_Elem.h>
+#include <Champ_Uniforme.h>
 #include <Ref_Champ_Don.h>
 #include <DoubleTab.h>
-#include <Champ_Uniforme.h>
 #include <Champ_Don.h>
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Puiss_Th_VDF_Elem
-//
-////////////////////////////////////////////////////////////////////////////
 
 class Eval_Puiss_Th_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {
-
 public:
-
-  void associer_champs(const Champ_Don& );
-  virtual void mettre_a_jour();
   inline double calculer_terme_source(int ) const;
-  inline void calculer_terme_source(int , DoubleVect& ) const;
+  inline void calculer_terme_source(int , DoubleVect& ) const { /* Do nothing */}
+  inline void associer_champs(const Champ_Don& );
+  virtual void mettre_a_jour() { /* Do nothing */}
 
 protected:
-
   REF(Champ_Don) la_puissance;
   DoubleTab puissance;
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_VDF_Elem
-//
+inline void Eval_Puiss_Th_VDF_Elem::associer_champs(const Champ_Don& Q)
+{
+  la_puissance = Q;
+  puissance.ref(Q.valeurs());
+}
 
 inline double Eval_Puiss_Th_VDF_Elem::calculer_terme_source(int num_elem) const
 {
@@ -62,10 +54,4 @@ inline double Eval_Puiss_Th_VDF_Elem::calculer_terme_source(int num_elem) const
   return puissance(k, 0) * volumes(num_elem) * porosite_vol(num_elem);
 }
 
-inline void Eval_Puiss_Th_VDF_Elem::calculer_terme_source(int , DoubleVect& ) const
-{
-  ;
-}
-
-#endif
-
+#endif /* Eval_Puiss_Th_VDF_Elem_included */

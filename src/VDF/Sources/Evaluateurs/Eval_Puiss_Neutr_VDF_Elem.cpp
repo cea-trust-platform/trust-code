@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,11 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Eval_Puiss_Neutr_VDF_Elem.h>
+#include <Champ_Uniforme.h>
 #include <Champ_Don.h>
+#include <Sous_Zone.h>
 #include <Zone_VDF.h>
 #include <Parser.h>
-#include <Sous_Zone.h>
-#include <Champ_Uniforme.h>
 
 void Eval_Puiss_Neutr_VDF_Elem::associer_champs(const Champ_Don& Q)
 {
@@ -42,7 +42,7 @@ void Eval_Puiss_Neutr_VDF_Elem::associer_repartition(const Nom& n, const Nom& no
   fxyz = n;
 
   String2 sfxyz(fxyz.getChar());
-  Parser         p(sfxyz,3);
+  Parser p(sfxyz,3);
   p.addVar("x");
   p.addVar("y");
   p.addVar("z");
@@ -50,8 +50,7 @@ void Eval_Puiss_Neutr_VDF_Elem::associer_repartition(const Nom& n, const Nom& no
 
   rep.resize(nb_elem);
   rep = 0.;
-  for(int i=0; i<ssz.nb_elem_tot(); i++)
-    rep(ssz(i))=1.;
+  for(int i=0; i<ssz.nb_elem_tot(); i++) rep(ssz(i)) = 1.;
 
   for (int i=0; i<nb_elem; i++)
     {
@@ -65,22 +64,14 @@ void Eval_Puiss_Neutr_VDF_Elem::associer_repartition(const Nom& n, const Nom& no
       p.setVar("z",z);
       rep(i) *= p.eval();
     }
-
 }
 
 void Eval_Puiss_Neutr_VDF_Elem::mettre_a_jour( )
 {
   puissance = la_puissance->valeurs()(0); // on met a jour le tableau de puissance
-
 }
+
 void Eval_Puiss_Neutr_VDF_Elem::completer()
 {
   Evaluateur_Source_VDF_Elem::completer();
-  /*volume_tot = 0.;
-    const int nb_elem = la_zone->nb_elem();
-    for (int i=0;i<nb_elem;i++)
-    volume_tot += volumes(i);
-  */
-
-  //Cerr << "Volume total du domaine contenant les termes sources de neutronique " << volume_tot << finl;
 }

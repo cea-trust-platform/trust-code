@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,31 +23,5 @@
 #include <Iterateur_Source_VDF_base.h>
 
 Implemente_base(Iterateur_Source_VDF_base,"Iterateur_Source_VDF_base",Objet_U);
-
-//// printOn
-//
-
-Sortie& Iterateur_Source_VDF_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-//// readOn
-//
-
-Entree& Iterateur_Source_VDF_base::readOn(Entree& s )
-{
-  return s ;
-}
-
-//
-//  Fonctions de la classe Iterateur_Source_VDF_base
-//
-
-
-void Iterateur_Source_VDF_base::associer_zones(const Zone_VDF& zone_vdf,
-                                               const Zone_Cl_VDF& zone_cl_vdf)
-{
-  la_zone = zone_vdf;
-  la_zcl = zone_cl_vdf;
-}
+Sortie& Iterateur_Source_VDF_base::printOn(Sortie& s ) const { return s << que_suis_je(); }
+Entree& Iterateur_Source_VDF_base::readOn(Entree& s ) { return s; }
