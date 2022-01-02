@@ -33,8 +33,7 @@ class Eval_Source_C_VDF_Elem : public Evaluateur_Source_VDF_Elem
 {
 public:
   Eval_Source_C_VDF_Elem() { }
-  inline double calculer_terme_source(int ) const;
-  inline void calculer_terme_source(int , DoubleVect& ) const;
+  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
   inline void associer_champs(const Champ_Don& );
   inline void mettre_a_jour() { /* Do nothing */ }
 
@@ -49,19 +48,10 @@ inline void Eval_Source_C_VDF_Elem::associer_champs(const Champ_Don& Q)
   source_constituant.ref(Q.valeurs());
 }
 
-inline double Eval_Source_C_VDF_Elem::calculer_terme_source(int num_elem) const
+inline void Eval_Source_C_VDF_Elem::calculer_terme_source(const int num_elem, ArrOfDouble& source) const
 {
-  const int k = sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()) ? 0 : num_elem;
-  return source_constituant(k, 0) * volumes(num_elem) * porosite_vol(num_elem);
-}
-
-inline void Eval_Source_C_VDF_Elem::calculer_terme_source(int num_elem, DoubleVect& source) const
-{
-  const int size = source.size();
-  if (sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()))
-    for (int i = 0; i < size; i++) source(i) = source_constituant(0,i)*volumes(num_elem)*porosite_vol(num_elem);
-  else
-    for (int i = 0; i < size; i++) source(i) = source_constituant(num_elem,i)*volumes(num_elem)*porosite_vol(num_elem);
+  const int k = sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()) ? 0 : num_elem, size = source.size_array();
+  for (int i = 0; i < size; i++) source(i) = source_constituant(k,i)*volumes(num_elem)*porosite_vol(num_elem);
 }
 
 #endif /* Eval_Source_C_VDF_Elem_included */

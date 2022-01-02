@@ -33,8 +33,7 @@ public:
   Evaluateur_Source_VDF_Face() { }
   Evaluateur_Source_VDF_Face(const Evaluateur_Source_VDF_Face& );
   void completer();
-  virtual double calculer_terme_source_bord(int ) const = 0;
-  virtual void calculer_terme_source_bord(int , DoubleVect& ) const = 0;
+  virtual void calculer_terme_source_bord(int , ArrOfDouble& ) const = 0;
 
 protected:
   IntVect orientation; // orientations des faces

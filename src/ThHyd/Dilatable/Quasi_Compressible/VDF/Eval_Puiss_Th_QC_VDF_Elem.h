@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,49 +23,35 @@
 #ifndef Eval_Puiss_Th_QC_VDF_Elem_included
 #define Eval_Puiss_Th_QC_VDF_Elem_included
 
+#include <Ref_Fluide_Quasi_Compressible.h>
 #include <Evaluateur_Source_VDF_Elem.h>
+#include <Fluide_Quasi_Compressible.h>
 #include <Ref_Champ_Don.h>
 #include <DoubleTab.h>
-#include <Ref_Fluide_Quasi_Compressible.h>
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Puiss_Th_QC_VDF_Elem
-//
-////////////////////////////////////////////////////////////////////////////
 
 class Eval_Puiss_Th_QC_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {
-
 public:
-
-  inline Eval_Puiss_Th_QC_VDF_Elem();
-  void associer_puissance(const Champ_Don& Q);
-  void mettre_a_jour( );
-  inline double calculer_terme_source(int ) const;
-  inline void calculer_terme_source(int , DoubleVect& ) const;
+  Eval_Puiss_Th_QC_VDF_Elem() { }
+  inline void associer_puissance(const Champ_Don& Q);
+  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
+  inline void mettre_a_jour() { /* Do nothing */}
 
 protected:
-
   REF(Champ_Don) la_puissance;
   DoubleTab puissance;
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_QC_VDF_Elem
-//
-inline Eval_Puiss_Th_QC_VDF_Elem::Eval_Puiss_Th_QC_VDF_Elem() {}
-inline double Eval_Puiss_Th_QC_VDF_Elem::calculer_terme_source(int num_elem) const
+inline void Eval_Puiss_Th_QC_VDF_Elem::associer_puissance(const Champ_Don& Q)
 {
-  const int k = (puissance.size_array() == 1) ? 0 : num_elem;
-  return puissance(k, 0) * volumes(num_elem) * porosite_vol(num_elem);
+  la_puissance = Q;
+  puissance.ref(Q.valeurs());
 }
 
-inline void Eval_Puiss_Th_QC_VDF_Elem::calculer_terme_source(int , DoubleVect& ) const
+inline void  Eval_Puiss_Th_QC_VDF_Elem::calculer_terme_source(const int num_elem, ArrOfDouble& source) const
 {
-  ;
+  const int k = (puissance.size_array() == 1) ? 0 : num_elem, size = source.size_array();
+  for (int i = 0; i < size; i++) source(i) = puissance(k, i) * volumes(num_elem) * porosite_vol(num_elem);
 }
 
-#endif
-
+#endif /* Eval_Puiss_Th_QC_VDF_Elem_included */

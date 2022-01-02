@@ -35,10 +35,8 @@ public:
   Eval_Darcy_VDF_Face() : porosite(1) { }
   Eval_Darcy_VDF_Face(const Eval_Darcy_VDF_Face& eval) : Evaluateur_Source_VDF_Face(eval), porosite(1) { }
   inline double& getPorosite() { return porosite; }
-  inline double calculer_terme_source(int ) const;
-  inline double calculer_terme_source_bord(int num_face) const { return calculer_terme_source(num_face); }
-  inline void calculer_terme_source(int , DoubleVect& ) const { /* Do nothing */}
-  inline void calculer_terme_source_bord(int , DoubleVect& ) const { /* Do nothing */}
+  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
+  inline void calculer_terme_source_bord(int num_face, ArrOfDouble& source) const { calculer_terme_source(num_face,source); }
   inline void mettre_a_jour();
   inline void associer(const Champ_Don&);
   inline void associer(const Champ_Inc& vit) { vitesse = vit; }
@@ -70,7 +68,7 @@ inline void Eval_Darcy_VDF_Face::mettre_a_jour()
     {
       const DoubleTab& val_diff = diffusivite_.valeur().valeurs();
       const IntTab& face_vois = la_zone.valeur().face_voisins();
-      const DoubleVect& volumes = la_zone.valeur().volumes();
+      const ArrOfDouble& volumes = la_zone.valeur().volumes();
       db_diffusivite = 0.;
       // Compute nu(fac)=(nu(elem1).vol(elem1)+nu(elem2).vol(elem2))/(vol(elem1)+vol(elem2))
       // Viscosity at face is the volume weighted average of viscosity on elements
@@ -93,9 +91,10 @@ inline void Eval_Darcy_VDF_Face::mettre_a_jour()
     }
 }
 
-inline double Eval_Darcy_VDF_Face::calculer_terme_source(int num_face) const
+inline void Eval_Darcy_VDF_Face::calculer_terme_source(const int num_face, ArrOfDouble& source) const
 {
-  return -db_diffusivite(num_face)/modK->getK(porosite)*volumes_entrelaces(num_face)*porosite_surf(num_face)*(vitesse->valeurs())(num_face); // -mu.vol.psi.U/K
+  const int size = source.size_array();
+  for (int i = 0; i < size; i++) source(i) = -db_diffusivite(num_face)/modK->getK(porosite)*volumes_entrelaces(num_face)*porosite_surf(num_face)*(vitesse->valeurs())(num_face,i); // -mu.vol.psi.U/K
 }
 
 #endif /* Eval_Darcy_VDF_Face_included */

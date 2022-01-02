@@ -32,8 +32,7 @@
 class Eval_Puiss_Th_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {
 public:
-  inline double calculer_terme_source(int ) const;
-  inline void calculer_terme_source(int , DoubleVect& ) const { /* Do nothing */}
+  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
   inline void associer_champs(const Champ_Don& );
   virtual void mettre_a_jour() { /* Do nothing */}
 
@@ -48,10 +47,10 @@ inline void Eval_Puiss_Th_VDF_Elem::associer_champs(const Champ_Don& Q)
   puissance.ref(Q.valeurs());
 }
 
-inline double Eval_Puiss_Th_VDF_Elem::calculer_terme_source(int num_elem) const
+inline void Eval_Puiss_Th_VDF_Elem::calculer_terme_source(const int num_elem, ArrOfDouble& source) const
 {
-  const int k = sub_type(Champ_Uniforme,la_puissance.valeur().valeur()) ? 0 : num_elem;
-  return puissance(k, 0) * volumes(num_elem) * porosite_vol(num_elem);
+  const int k = sub_type(Champ_Uniforme,la_puissance.valeur().valeur()) ? 0 : num_elem, size = source.size_array();
+  for (int i = 0; i < size; i++) source(i) = puissance(k, i) * volumes(num_elem) * porosite_vol(num_elem);
 }
 
 #endif /* Eval_Puiss_Th_VDF_Elem_included */

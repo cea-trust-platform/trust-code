@@ -37,8 +37,7 @@ public:
   Evaluateur_Source_VDF(const Evaluateur_Source_VDF& eval) : la_zone(eval.la_zone),la_zcl(eval.la_zcl) { }
   virtual ~Evaluateur_Source_VDF() { }
 
-  virtual double calculer_terme_source(int ) const = 0;
-  virtual void calculer_terme_source(int , DoubleVect&  ) const = 0;
+  virtual void calculer_terme_source(int , ArrOfDouble&  ) const = 0;
   virtual void mettre_a_jour( ) = 0;
   virtual void completer() = 0;
 

@@ -32,10 +32,8 @@ class Eval_Forchheimer_VDF_Face: public Evaluateur_Source_VDF_Face
 public:
   Eval_Forchheimer_VDF_Face() : Cf(1.), porosite(1) { }
   Eval_Forchheimer_VDF_Face(const Eval_Forchheimer_VDF_Face& eval) : Evaluateur_Source_VDF_Face(eval), Cf(1.), porosite(1) { }
-  inline double calculer_terme_source(int ) const;
-  inline double calculer_terme_source_bord(int num_face) const { return calculer_terme_source(num_face); }
-  inline void calculer_terme_source(int , DoubleVect& ) const { /* Do nothing */}
-  inline void calculer_terme_source_bord(int , DoubleVect& ) const { /* Do nothing */}
+  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
+  inline void calculer_terme_source_bord(const int num_face, ArrOfDouble& source) const { calculer_terme_source(num_face,source); }
   inline void mettre_a_jour() { /* Do nothing */}
   inline void setCf(double c) { Cf = c; }
   inline void associer(const Champ_Inc& vit) { vitesse = vit;}
@@ -48,10 +46,14 @@ protected:
   double Cf, porosite;
 };
 
-inline double Eval_Forchheimer_VDF_Face::calculer_terme_source(int num_face) const
+inline void Eval_Forchheimer_VDF_Face::calculer_terme_source(const int num_face, ArrOfDouble& source) const
 {
-  const double U = (vitesse->valeurs())(num_face);
-  return -Cf/sqrt(modK->getK(porosite))*volumes_entrelaces(num_face)*porosite_surf(num_face)*dabs(U)*U;
+  const int size = source.size_array();
+  for (int i = 0; i < size; i++)
+    {
+      const double U = (vitesse->valeurs())(num_face,i);
+      source(i) = -Cf/sqrt(modK->getK(porosite))*volumes_entrelaces(num_face)*porosite_surf(num_face)*dabs(U)*U;
+    }
 }
 
 #endif /* Eval_Forchheimer_VDF_Face_included */

@@ -54,8 +54,7 @@ protected:
   _TYPE_ evaluateur_source_elem;
   int nb_elem_;
 
-  DoubleTab& ajouter_(DoubleTab& ) const;
-  DoubleTab& ajouter_(DoubleTab& , int ) const;
+  DoubleTab& ajouter_(const int, DoubleTab& ) const;
 };
 
 template <class _TYPE_>
@@ -80,29 +79,14 @@ DoubleTab& T_It_Sou_VDF_Elem<_TYPE_>::ajouter(DoubleTab& resu) const
   DoubleVect& bilan = so_base->bilan();
   bilan=0;
 
-  if( ncomp == 1)  ajouter_(resu) ;
-  else ajouter_(resu, ncomp) ;
-
+  ajouter_(ncomp,resu);
   return resu;
 }
 
 template <class _TYPE_>
-DoubleTab& T_It_Sou_VDF_Elem<_TYPE_>::ajouter_(DoubleTab& resu) const
+DoubleTab& T_It_Sou_VDF_Elem<_TYPE_>::ajouter_(const int ncomp, DoubleTab& resu) const
 {
-  DoubleVect& bilan = so_base->bilan();
-  for (int num_elem = 0; num_elem < nb_elem_; num_elem++)
-    {
-      double source = evaluateur_source_elem.calculer_terme_source(num_elem);
-      resu[num_elem] += source;
-      bilan(0) += source;
-    }
-  return resu;
-}
-
-template <class _TYPE_>
-DoubleTab& T_It_Sou_VDF_Elem<_TYPE_>::ajouter_(DoubleTab& resu,int ncomp) const
-{
-  DoubleVect source(ncomp);
+  ArrOfDouble source(ncomp);
   DoubleVect& bilan = so_base->bilan();
   for (int num_elem = 0; num_elem < nb_elem_; num_elem++)
     {

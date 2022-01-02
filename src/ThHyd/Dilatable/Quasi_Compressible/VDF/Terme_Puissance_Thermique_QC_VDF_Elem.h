@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,47 +23,26 @@
 #ifndef Terme_Puissance_Thermique_QC_VDF_Elem_included
 #define Terme_Puissance_Thermique_QC_VDF_Elem_included
 
-
 #include <Terme_Puissance_Thermique_VDF_base.h>
 #include <Eval_Puiss_Th_QC_VDF_Elem.h>
 #include <ItSouVDFEl.h>
 
-
 declare_It_Sou_VDF_Elem(Eval_Puiss_Th_QC_VDF_Elem)
-
 //.DESCRIPTION class Terme_Puissance_Thermique_QC_VDF_Elem
-//
 // Cette classe represente un terme source de l'equation de la thermique
 // du type degagement volumique de puissance thermique
-//
-//.SECTION
-// voir aussi Terme_Puissance_Thermique, Terme_Source_VDF_base
-
+//.SECTION voir aussi Terme_Puissance_Thermique, Terme_Source_VDF_base
 class Terme_Puissance_Thermique_QC_VDF_Elem : public Terme_Puissance_Thermique_VDF_base
 {
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_QC_VDF_Elem);
-
 public:
-
   inline Terme_Puissance_Thermique_QC_VDF_Elem();
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
   void associer_pb(const Probleme_base& );
-  virtual void mettre_a_jour(double temps)
-  {
-    Terme_Puissance_Thermique::mettre_a_jour(temps);
-  }
-
-protected:
-
+  virtual void mettre_a_jour(double temps) { Terme_Puissance_Thermique::mettre_a_jour(temps); }
 };
 
-//
-// Fonctions inline de la classe Terme_Puissance_Thermique_QC_VDF_Elem
-//
 inline Terme_Puissance_Thermique_QC_VDF_Elem::Terme_Puissance_Thermique_QC_VDF_Elem()
-  : Terme_Puissance_Thermique_VDF_base(It_Sou_VDF_Elem(Eval_Puiss_Th_QC_VDF_Elem)())
-{
-}
+  : Terme_Puissance_Thermique_VDF_base(It_Sou_VDF_Elem(Eval_Puiss_Th_QC_VDF_Elem)()) { }
 
-#endif
-
+#endif /* Terme_Puissance_Thermique_QC_VDF_Elem_included */
