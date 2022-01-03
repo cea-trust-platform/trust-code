@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -121,8 +121,8 @@ Entree& Pb_Multiphase::lire_correlations(Entree& is)
   is >> mot;
   if (mot != "{") Cerr << "correlations : { expected instead of " << mot << finl, Process::exit();
   for (is >> mot; mot != "}"; is >> mot)
-      if (correlations.count(mot.getString())) Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
-      else correlations[mot.getString()].typer_lire(*this, mot, is);
+    if (correlations.count(mot.getString())) Process::exit(que_suis_je() + " : a correlation already exists for " + mot + " !");
+    else correlations[mot.getString()].typer_lire(*this, mot, is);
   return is;
 }
 

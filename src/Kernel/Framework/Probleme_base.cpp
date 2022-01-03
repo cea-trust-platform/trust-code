@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -747,7 +747,7 @@ Entree& Probleme_base::lire_equations(Entree& is, Motcle& dernier_mot)
       is >> un_nom ;
       is >> getset_equation_by_name(un_nom);
     }
-
+  is >> dernier_mot;
   return is;
 }
 
