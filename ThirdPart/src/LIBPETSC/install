@@ -558,10 +558,10 @@ do
    # On recupere les flags de compilation de TRUST pour etre coherent (oubli de -fPIC dans 1.6.2)
    fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ $debug = 0 ] && echo _opt`
    COPTFLAGS=`$TRUST_Awk '/ccFLAGS =/ {gsub("ccFLAGS =","",$0);print $0}' $fic_env`
-
+   # On compile les librairies Fortran (eg:MUMPS) en int32:
    if [ "$TRUST_INT64" = "1" ]
    then
-      FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env | sed "s/-fdefault-integer-8//g" `
+      FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env | sed "s/-fdefault-integer-8//g" | sed "s/-i8//g" `
    else
       FOPTFLAGS=`$TRUST_Awk '/F77Flags =/ {gsub("F77Flags =","",$0);print $0}' $fic_env`
    fi
