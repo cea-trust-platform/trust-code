@@ -3,13 +3,10 @@
 // To update this file, run: make depend
 //
 #include <verifie_pere.h>
-#include <ModPerm_Carman_Kozeny.h>
-#include <ModPerm_Cte.h>
-#include <ModPerm_ErgunPourDarcy.h>
-#include <ModPerm_ErgunPourForch.h>
 #include <Perte_Charge_Reguliere_VDF_Face.h>
 #include <Perte_Charge_Singuliere_VDF_Face.h>
 #include <Source_Generique_VDF_Face.h>
+#include <Source_Permeabilite_VDF.h>
 #include <Terme_Boussinesq_VDF_Face.h>
 #include <Terme_Puissance_Thermique_Echange_Impose_P0_VDF.h>
 #include <Terme_Source_Acceleration_VDF_Face.h>
@@ -24,13 +21,13 @@
 #include <Terme_Source_inc_th_VDF_Face.h>
 void instancie_src_VDF_Sources() {
 Cerr << "src_VDF_Sources" << finl;
-ModPerm_Carman_Kozeny inst1;verifie_pere(inst1);
-ModPerm_Cte inst2;verifie_pere(inst2);
-ModPerm_ErgunPourDarcy inst3;verifie_pere(inst3);
-ModPerm_ErgunPourForch inst4;verifie_pere(inst4);
-Perte_Charge_Reguliere_VDF_Face inst5;verifie_pere(inst5);
-Perte_Charge_Singuliere_VDF_Face inst6;verifie_pere(inst6);
-Source_Generique_VDF_Face inst7;verifie_pere(inst7);
+Perte_Charge_Reguliere_VDF_Face inst1;verifie_pere(inst1);
+Perte_Charge_Singuliere_VDF_Face inst2;verifie_pere(inst2);
+Source_Generique_VDF_Face inst3;verifie_pere(inst3);
+ModPerm_Cte inst4;verifie_pere(inst4);
+ModPerm_Carman_Kozeny inst5;verifie_pere(inst5);
+ModPerm_ErgunPourDarcy inst6;verifie_pere(inst6);
+ModPerm_ErgunPourForch inst7;verifie_pere(inst7);
 Terme_Boussinesq_VDF_Face inst8;verifie_pere(inst8);
 Terme_Puissance_Thermique_Echange_Impose_P0_VDF inst9;verifie_pere(inst9);
 Terme_Source_Acceleration_VDF_Face inst10;verifie_pere(inst10);

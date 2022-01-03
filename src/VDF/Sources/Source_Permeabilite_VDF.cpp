@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,92 +14,39 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        ModPerm_Cte.cpp
+// File:        Source_Permeabilite_VDF.cpp
 // Directory:   $TRUST_ROOT/src/VDF/Sources
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ModPerm_Cte.h>
-#include <Motcle.h>
+#include <Source_Permeabilite_VDF.h>
+#include <Param.h>
 
 Implemente_instanciable_sans_constructeur(ModPerm_Cte,"K_constant",Modele_Permeabilite_base);
-
-ModPerm_Cte::ModPerm_Cte() : cte(1.) { }
-
-
-// Description:
-//    Imprime le type du modele sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& ModPerm_Cte::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << "\n";
-}
-
-
-// Description:
-//    Lit les specifications d'un modele Permeabilite
-//    a partir d'un flot d'entree.
-//    Controle dynamique du type du terme source.
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+Sortie& ModPerm_Cte::printOn(Sortie& s ) const { return s << que_suis_je() << "\n"; }
 Entree& ModPerm_Cte::readOn(Entree& is )
 {
-  Motcles les_mots(1);
-  {
-    les_mots[0] = "valeur";
-  }
-
-  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
-  is >> motlu;
-  if(motlu!=accolade_ouverte)
-    {
-      Cerr << "On attendait une { a la lecture d'une " << que_suis_je() << finl;
-      Cerr << "et non : " << motlu << finl;
-      exit();
-    }
-  is >> motlu;
-  while (motlu != accolade_fermee)
-    {
-      int rang=les_mots.search(motlu);
-      switch(rang)
-        {
-        case 0 :
-          {
-            is >> cte;
-            break;
-          }
-        default :
-          {
-            Cerr << "Mot cle inconnu dans ModPerm_Cte  " << finl;
-            exit();
-          }
-        }
-      is >> motlu;
-    }
-  //Cout << "<<<<<<<<<<<<<<Dans ModPerm_Cte cte = " << cte << finl;
+  Param param(que_suis_je());
+  param.ajouter("valeur",&cte);
+  param.lire_avec_accolades_depuis(is);
   return is;
 }
 
+Implemente_instanciable_sans_constructeur(ModPerm_Carman_Kozeny,"Carman_Kozeny",Modele_Permeabilite_base);
+Sortie& ModPerm_Carman_Kozeny::printOn(Sortie& s ) const { return s << que_suis_je() << "\n"; }
+Entree& ModPerm_Carman_Kozeny::readOn(Entree& is )
+{
+  Param param(que_suis_je());
+  param.ajouter("diametre",&diam);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
 
+Implemente_instanciable_sans_constructeur(ModPerm_ErgunPourDarcy,"ErgunDarcy",ModPerm_Carman_Kozeny);
+Sortie& ModPerm_ErgunPourDarcy::printOn(Sortie& s) const { return s << que_suis_je() << "\n"; }
+Entree& ModPerm_ErgunPourDarcy::readOn(Entree& is) { return ModPerm_Carman_Kozeny::readOn(is); }
+
+Implemente_instanciable_sans_constructeur(ModPerm_ErgunPourForch,"ErgunForchheimer",ModPerm_Carman_Kozeny);
+Sortie& ModPerm_ErgunPourForch::printOn(Sortie& s ) const { return s << que_suis_je() << "\n"; }
+Entree& ModPerm_ErgunPourForch::readOn(Entree& is) { return ModPerm_Carman_Kozeny::readOn(is); }

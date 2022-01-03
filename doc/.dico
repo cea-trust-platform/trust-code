@@ -44,7 +44,7 @@
  Canal_perio_VEF_P1NC Terme_Source_Canal_perio_VEF_P1NC Terme_Source_Canal_perio_VEF_P1NC.h
  Canal_RANS_LES_VDF_Face Terme_Source_Canal_RANS_LES_VDF_Face Terme_Source_Canal_RANS_LES_VDF_Face.h
  Canal_RANS_LES_VDF_P0_VDF Terme_Source_Canal_RANS_LES_VDF_Elem Terme_Source_Canal_RANS_LES_VDF_Elem.h
- Carman_Kozeny ModPerm_Carman_Kozeny ModPerm_Carman_Kozeny.h
+ Carman_Kozeny ModPerm_Carman_Kozeny Source_Permeabilite_VDF.h
  Champ Champ Champ.h
  Champs_compris Champs_compris Champs_compris.h
  Champs_Fonc Champs_Fonc Champs_Fonc.h
@@ -334,8 +334,8 @@
  Equations_Scalaires_Passifs|Equations_Especes List_Equations_Scalaires_Passifs_Especes List_Equations_Scalaires_Passifs_Especes.h
  Equation_base Equation_base Equation_base.h
  Erf Erf StdFunction.h
- ErgunDarcy ModPerm_ErgunPourDarcy ModPerm_ErgunPourDarcy.h
- ErgunForchheimer ModPerm_ErgunPourForch ModPerm_ErgunPourForch.h
+ ErgunDarcy ModPerm_ErgunPourDarcy Source_Permeabilite_VDF.h
+ ErgunForchheimer ModPerm_ErgunPourForch Source_Permeabilite_VDF.h
  Espece Espece Espece.h
  Esp_Dist Esp_Dist Esp_Dist.h
  Esp_Virt Esp_Virt Esp_Virt.h
@@ -472,7 +472,7 @@
  Iterateur_VDF_base Iterateur_VDF_base Iterateur_VDF_base.h
  Joint Joint Joint.h
  Joints Joints Joints.h
- K_constant ModPerm_Cte ModPerm_Cte.h
+ K_constant ModPerm_Cte Source_Permeabilite_VDF.h
  Lata_To_MED LataToMED LataToMED.h
  lata_to_other latatoother LataToMED.h
  Leap_frog Leap_frog Leap_frog.h
