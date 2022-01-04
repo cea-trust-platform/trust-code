@@ -36,7 +36,7 @@
 #include <Motcle.h>
 
 //
-//.DESCRIPTION  classe grad_Champ_Face_CoviMAC
+//.DESCRIPTION  class grad_Champ_Face_CoviMAC_TC for the calculation of the shear rate (taux de cisaillement)
 //
 
 class Champ_Fonc_P0_CoviMAC_TC : public Champ_Fonc_P0_CoviMAC
