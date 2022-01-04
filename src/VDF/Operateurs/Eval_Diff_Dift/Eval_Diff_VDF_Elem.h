@@ -66,48 +66,48 @@ public:
    * *********  POUR L'EXPLICITE ********** *
    * ************************************** */
 
-  template <typename BC> // Generic return
-  inline void flux_face(const DoubleTab&, const int, const BC&, int, ArrOfDouble& ) const { /* Do nothing */ }
+  template <typename BC, typename Type_Double> // Generic return
+  inline void flux_face(const DoubleTab&, const int, const BC&, int, Type_Double& ) const { /* Do nothing */ }
 
   // To overload
-  inline void flux_face(const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, ArrOfDouble& ) const;
-  inline void flux_face(const DoubleTab&, const int, const Neumann_paroi&, const int, ArrOfDouble& ) const;
-  inline void flux_face(const DoubleTab&, const int, const Periodique&, const int, ArrOfDouble& ) const;
-  inline void flux_face(const DoubleTab&, const int, const Echange_global_impose&, const int, ArrOfDouble& ) const;
-  inline void flux_face(const DoubleTab&, const int, const Dirichlet_paroi_fixe&, const int, ArrOfDouble& ) const;
-  inline void flux_face(const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, ArrOfDouble& ) const;
-  inline void flux_faces_interne(const DoubleTab&, const int, ArrOfDouble& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Neumann_paroi&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Periodique&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Echange_global_impose&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const Dirichlet_paroi_fixe&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_faces_interne(const DoubleTab&, const int, Type_Double& ) const;
 
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
 
-  template <typename BC> // Generic return
-  inline void coeffs_face(const int, const int, const BC&, ArrOfDouble&, ArrOfDouble& ) const { /* Do nothing */ }
+  template <typename BC, typename Type_Double> // Generic return
+  inline void coeffs_face(const int, const int, const BC&, Type_Double&, Type_Double& ) const { /* Do nothing */ }
 
   // To overload
-  inline void coeffs_face(const int, const int, const Dirichlet_entree_fluide&, ArrOfDouble&, ArrOfDouble& ) const;
-  inline void coeffs_face(const int, const int, const Neumann_paroi&, ArrOfDouble&, ArrOfDouble& ) const;
-  inline void coeffs_face(const int, const int, const Periodique&, ArrOfDouble&, ArrOfDouble& ) const;
-  inline void coeffs_face(const int, const int, const Echange_global_impose&, ArrOfDouble&, ArrOfDouble& ) const;
-  inline void coeffs_face(const int, const int, const Dirichlet_paroi_fixe&, ArrOfDouble&, ArrOfDouble& ) const;
-  inline void coeffs_face(const int, const int, const int, const int, const Echange_externe_impose&, ArrOfDouble&, ArrOfDouble& ) const;
-  inline void coeffs_faces_interne(const int, ArrOfDouble&, ArrOfDouble& ) const;
+  template <typename Type_Double> inline void coeffs_face(const int, const int, const Dirichlet_entree_fluide&, Type_Double&, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_face(const int, const int, const Neumann_paroi&, Type_Double&, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_face(const int, const int, const Periodique&, Type_Double&, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_face(const int, const int, const Echange_global_impose&, Type_Double&, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_face(const int, const int, const Dirichlet_paroi_fixe&, Type_Double&, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_face(const int, const int, const int, const int, const Echange_externe_impose&, Type_Double&, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_faces_interne(const int, Type_Double&, Type_Double& ) const;
 
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
 
-  template <typename BC> // Generic return
-  inline void secmem_face(const int, const BC&, const int, ArrOfDouble& ) const { /* Do nothing */ }
+  template <typename BC, typename Type_Double> // Generic return
+  inline void secmem_face(const int, const BC&, const int, Type_Double& ) const { /* Do nothing */ }
 
   // To overload
-  inline void secmem_face(const int, const Dirichlet_entree_fluide&, const int, ArrOfDouble& ) const;
-  inline void secmem_face(const int, const Neumann_paroi&, const int, ArrOfDouble& ) const;
-  inline void secmem_face(const int, const Echange_global_impose&, const int, ArrOfDouble& ) const;
-  inline void secmem_face(const int, const Dirichlet_paroi_fixe&, const int, ArrOfDouble& ) const;
-  inline void secmem_face(const int, const int, const int, const Echange_externe_impose&, const int, ArrOfDouble& ) const;
-  inline void secmem_faces_interne(const int, ArrOfDouble& ) const;
+  template <typename Type_Double> inline void secmem_face(const int, const Dirichlet_entree_fluide&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void secmem_face(const int, const Neumann_paroi&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void secmem_face(const int, const Echange_global_impose&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void secmem_face(const int, const Dirichlet_paroi_fixe&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void secmem_face(const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void secmem_faces_interne(const int, Type_Double& ) const;
 
 private:
   inline double Dist_face_elem0(const int face, const int n0) const { return DERIVED_T::IS_AXI ? la_zone->dist_face_elem0_axi(face,n0) : la_zone->dist_face_elem0(face,n0); }

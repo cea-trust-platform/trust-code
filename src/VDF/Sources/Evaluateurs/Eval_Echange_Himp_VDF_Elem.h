@@ -32,7 +32,7 @@ class Eval_Echange_Himp_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {
 public:
   Eval_Echange_Himp_VDF_Elem() : h_(-1.) { }
-  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
+  template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
   inline void associer_champs(const Champ_Inc& ,const Champ_Inc& ,const double );
   inline void mettre_a_jour();
 
@@ -57,7 +57,8 @@ inline void Eval_Echange_Himp_VDF_Elem::mettre_a_jour()
   Tvois.ref(T_voisin->valeurs());
 }
 
-inline void Eval_Echange_Himp_VDF_Elem::calculer_terme_source(const int num_elem, ArrOfDouble& source) const
+template <typename Type_Double>
+void Eval_Echange_Himp_VDF_Elem::calculer_terme_source(const int num_elem, Type_Double& source) const
 {
   const int size = source.size_array();
   for (int i = 0; i < size; i++) source(i) = h_*(Tvois(num_elem,i)-Tcourant(num_elem,i)) * volumes(num_elem)*porosite_vol(num_elem);

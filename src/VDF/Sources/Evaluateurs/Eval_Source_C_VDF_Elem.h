@@ -33,7 +33,7 @@ class Eval_Source_C_VDF_Elem : public Evaluateur_Source_VDF_Elem
 {
 public:
   Eval_Source_C_VDF_Elem() { }
-  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
+  template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
   inline void associer_champs(const Champ_Don& );
   inline void mettre_a_jour() { /* Do nothing */ }
 
@@ -48,7 +48,8 @@ inline void Eval_Source_C_VDF_Elem::associer_champs(const Champ_Don& Q)
   source_constituant.ref(Q.valeurs());
 }
 
-inline void Eval_Source_C_VDF_Elem::calculer_terme_source(const int num_elem, ArrOfDouble& source) const
+template <typename Type_Double>
+void Eval_Source_C_VDF_Elem::calculer_terme_source(const int num_elem, Type_Double& source) const
 {
   const int k = sub_type(Champ_Uniforme,la_source_constituant.valeur().valeur()) ? 0 : num_elem, size = source.size_array();
   for (int i = 0; i < size; i++) source(i) = source_constituant(k,i)*volumes(num_elem)*porosite_vol(num_elem);

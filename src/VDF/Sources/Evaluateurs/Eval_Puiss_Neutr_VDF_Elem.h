@@ -41,7 +41,7 @@ public:
   void associer_repartition(const Nom& fxyz, const Nom& nom_ssz);
   void mettre_a_jour();
   void completer();
-  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
+  template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
 
 protected:
   REF(Champ_Uniforme) la_puissance;
@@ -50,7 +50,8 @@ protected:
   Nom fxyz;
 };
 
-inline void Eval_Puiss_Neutr_VDF_Elem::calculer_terme_source(const int num_elem, ArrOfDouble& source) const
+template <typename Type_Double>
+void Eval_Puiss_Neutr_VDF_Elem::calculer_terme_source(const int num_elem, Type_Double& source) const
 {
   const int size = source.size_array();
   assert(size == 1);

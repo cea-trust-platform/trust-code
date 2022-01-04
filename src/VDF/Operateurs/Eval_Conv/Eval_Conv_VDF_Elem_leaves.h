@@ -69,11 +69,10 @@ public:
   inline double dim_elem(int n1, int k) const { return la_zone->dim_elem(n1,k); }
   inline double dist_elem(int n1, int n2, int k) const { return la_zone->dist_elem(n1,n2,k); }
   inline double dist_face_elem1(int num_face,int n1) const { return la_zone->dist_face_elem1(num_face, n1); }
-  inline double qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face,const DoubleTab& transporte) const
-  { return qcentre2_impl(psc,num0,num1,num0_0,num1_1,face,transporte); }
 
-  inline void qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1,const int face,const DoubleTab& transporte,ArrOfDouble& flux) const
-  { qcentre2_impl(psc,num0,num1,num0_0,num1_1,face,transporte,flux); }
+  template <typename Type_Double>
+  inline void qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1,const int face,const DoubleTab& transporte, Type_Double& flux) const
+  { qcentre2_impl<Type_Double>(psc,num0,num1,num0_0,num1_1,face,transporte,flux); }
 };
 
 // .DESCRIPTION class Eval_Centre4_VDF_Elem
@@ -86,22 +85,15 @@ public:
   static constexpr bool IS_CENTRE4 = true;
   inline int amont_amont(int face, int i) const { return la_zone->amont_amont(face, i); }
   inline double dist_elem(int n1, int n2, int k) const { return la_zone->dist_elem_period(n1,n2,k); }
-  inline double qcentre(const double& ,const int ,const int ,const int ,const int ,const int ,const DoubleTab& ) const;
-  inline void qcentre(const double& ,const int ,const int ,const int ,const int ,const int , const DoubleTab& ,ArrOfDouble& ) const;
+  template <typename Type_Double> inline void qcentre(const double& ,const int ,const int ,const int ,const int ,const int , const DoubleTab& ,Type_Double& ) const;
 };
 
-inline double Eval_Centre4_VDF_Elem::qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face,const DoubleTab& transporte) const
+template <typename Type_Double>
+inline void Eval_Centre4_VDF_Elem::qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte, Type_Double& flux) const
 {
   const int ori = orientation(face);
   const double dx = dist_elem(num0, num1, ori), dxam = dist_elem(num0_0, num0, ori), dxav = dist_elem(num1, num1_1, ori);
-  return qcentre4_impl(ori,dx,dxam,dxav,psc,num0,num1,num0_0,num1_1,face,transporte);
-}
-
-inline void Eval_Centre4_VDF_Elem::qcentre(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte,ArrOfDouble& flux) const
-{
-  const int ori = orientation(face);
-  const double dx = dist_elem(num0, num1, ori), dxam = dist_elem(num0_0, num0, ori), dxav = dist_elem(num1, num1_1, ori);
-  qcentre4_impl(ori,dx,dxam,dxav,psc,num0,num1,num0_0,num1_1,face,transporte,flux);
+  qcentre4_impl<Type_Double>(ori,dx,dxam,dxav,psc,num0,num1,num0_0,num1_1,face,transporte,flux);
 }
 
 // .DESCRIPTION class Eval_Quick_VDF_Elem
@@ -114,26 +106,17 @@ public:
   inline int amont_amont(int face, int i) const { return la_zone->amont_amont(face, i); }
   inline double dim_elem(int n1, int k) const { return la_zone->dim_elem(n1,k); }
   inline double dist_elem(int n1, int n2, int k) const { return la_zone->dist_elem_period(n1,n2,k); }
-  inline double quick_fram(const double&, const int, const int,const int, const int ,const int ,const DoubleTab& ) const;
-  inline void quick_fram(const double&, const int, const int,const int, const int ,const int ,const DoubleTab&,ArrOfDouble& ) const;
+  template <typename Type_Double> inline void quick_fram(const double&, const int, const int,const int, const int ,const int ,const DoubleTab&, Type_Double& ) const;
 };
 
-inline double Eval_Quick_VDF_Elem::quick_fram(const double& psc, const int num0, const int num1,const int num0_0, const int num1_1, const int face,const DoubleTab& transporte) const
-{
-  const int ori = orientation(face);
-  const double dx = dist_elem(num0, num1, ori),
-               dm1 = dim_elem(num0, ori), dxam1 = dist_elem(num0_0, num0, ori),
-               dm2 = dim_elem(num1, ori), dxam2 = dist_elem(num1, num1_1, ori);
-  return quick_fram_impl(ori,dx,dm1,dxam1,dm2,dxam2,psc,num0,num1,num0_0,num1_1,face,transporte);
-}
-
-inline void Eval_Quick_VDF_Elem::quick_fram(const double& psc, const int num0, const int num1,const int num0_0, const int num1_1, const int face,const DoubleTab& transporte,ArrOfDouble& flux) const
+template <typename Type_Double>
+inline void Eval_Quick_VDF_Elem::quick_fram(const double& psc, const int num0, const int num1,const int num0_0, const int num1_1, const int face,const DoubleTab& transporte, Type_Double& flux) const
 {
   const int ori = orientation(face);
   const double dx = dist_elem(num0, num1, ori),
                dm0 = dim_elem(num0, ori), dxam0 = (num0_0!=-1?dist_elem(num0_0, num0, ori):0),
                dm1 = dim_elem(num1, ori), dxam1 = (num1_1!=-1?dist_elem(num1, num1_1, ori):0);
-  quick_fram_impl(ori,dx,dm0,dxam0,dm1,dxam1,psc,num0,num1,num0_0,num1_1,face,transporte,flux);
+  quick_fram_impl<Type_Double>(ori,dx,dm0,dxam0,dm1,dxam1,psc,num0,num1,num0_0,num1_1,face,transporte,flux);
 }
 
 #endif /* Eval_Conv_VDF_Elem_leaves_included */

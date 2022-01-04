@@ -35,8 +35,8 @@ public:
   Eval_Darcy_VDF_Face() : porosite(1) { }
   Eval_Darcy_VDF_Face(const Eval_Darcy_VDF_Face& eval) : Evaluateur_Source_VDF_Face(eval), porosite(1) { }
   inline double& getPorosite() { return porosite; }
-  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
-  inline void calculer_terme_source_bord(int num_face, ArrOfDouble& source) const { calculer_terme_source(num_face,source); }
+  template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
+  template <typename Type_Double> void calculer_terme_source_bord(int num_face, Type_Double& source) const { calculer_terme_source(num_face,source); }
   inline void mettre_a_jour();
   inline void associer(const Champ_Don&);
   inline void associer(const Champ_Inc& vit) { vitesse = vit; }
@@ -91,7 +91,8 @@ inline void Eval_Darcy_VDF_Face::mettre_a_jour()
     }
 }
 
-inline void Eval_Darcy_VDF_Face::calculer_terme_source(const int num_face, ArrOfDouble& source) const
+template <typename Type_Double>
+void Eval_Darcy_VDF_Face::calculer_terme_source(const int num_face, Type_Double& source) const
 {
   const int size = source.size_array();
   for (int i = 0; i < size; i++) source(i) = -db_diffusivite(num_face)/modK->getK(porosite)*volumes_entrelaces(num_face)*porosite_surf(num_face)*(vitesse->valeurs())(num_face,i); // -mu.vol.psi.U/K

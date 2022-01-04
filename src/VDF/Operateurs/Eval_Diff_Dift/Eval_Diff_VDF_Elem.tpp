@@ -27,8 +27,8 @@
  * *********  POUR L'EXPLICITE ********** *
  * ************************************** */
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Dirichlet_entree_fluide& la_cl, const int num1, ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Dirichlet_entree_fluide& la_cl, const int num1, Type_Double& flux) const
 {
   if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
 
@@ -45,15 +45,15 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , const int face, const Neumann_paroi& la_cl, const int num1, ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , const int face, const Neumann_paroi& la_cl, const int num1, Type_Double& flux) const
 {
   const int i = elem_(face,0), ncomp = flux.size_array();
   for (int k=0; k < ncomp; k++) flux(k) = ((i != -1) ? 1 : -1) * la_cl.flux_impose(face-num1,k)*surface(face);
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Periodique& la_cl, const int , ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Periodique& la_cl, const int , Type_Double& flux) const
 {
   if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
 
@@ -68,8 +68,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face , const Echange_global_impose& la_cl, const int num1, ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face , const Echange_global_impose& la_cl, const int num1, Type_Double& flux) const
 {
   if (DERIVED_T::IS_QUASI)  not_implemented_k_eps(__func__);
 
@@ -82,21 +82,20 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Dirichlet_paroi_fixe&, const int num1, ArrOfDouble& flux ) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Dirichlet_paroi_fixe&, const int num1, Type_Double& flux ) const
 {
   if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
 
   // TODO : FIXME : Yannick help :/ methode pas code a la base pour cas scalaire ... mais on a 0 cas test dans trust et on entre jamais ici :-)
-  flux = 0.;
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double dist = Dist_norm_bord(face);
 
   for (int k = 0; k < ncomp; k++) flux(k) = (i != -1) ? -inco(i,k)*surface(face)*porosite(face)*nu_1(i,k)/dist : inco(j,k)*surface(face)*porosite(face)*nu_1(j,k)/dist;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int boundary_index, const int face, const int local_face, const Echange_externe_impose& la_cl, const int num1, ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int boundary_index, const int face, const int local_face, const Echange_externe_impose& la_cl, const int num1, Type_Double& flux) const
 {
   if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
 
@@ -141,8 +140,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& inco, const int face, ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& inco, const int face, Type_Double& flux) const
 {
   if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
 
@@ -165,8 +164,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& i
  * *********  POUR L'IMPLICITE ********** *
  * ************************************** */
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int, const Dirichlet_entree_fluide& la_cl, ArrOfDouble& aii, ArrOfDouble& ajj) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int, const Dirichlet_entree_fluide& la_cl, Type_Double& aii, Type_Double& ajj) const
 {
   assert (aii.size_array() == ajj.size_array());
   const int i = elem_(face,0), j = elem_(face,1), ncomp = aii.size_array();
@@ -179,14 +178,15 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int num1, const Neumann_paroi&, ArrOfDouble& aii, ArrOfDouble& ajj ) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int num1, const Neumann_paroi&, Type_Double& aii, Type_Double& ajj ) const
 {
-  aii = ajj = 0.; // On peut faire ca !
+  assert (aii.size_array() == ajj.size_array());
+  for (int k = 0; k < aii.size_array(); k++) aii(k) = ajj(k) = 0.; // On peut faire ca !
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int, const Periodique& la_cl, ArrOfDouble& aii, ArrOfDouble& ajj ) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int, const Periodique& la_cl, Type_Double& aii, Type_Double& ajj ) const
 {
   assert (aii.size_array() == ajj.size_array());
   const int i = elem_(face,0), j = elem_(face,1), ncomp = aii.size_array();
@@ -199,8 +199,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int num1, const Echange_global_impose& la_cl, ArrOfDouble& aii, ArrOfDouble& ajj ) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int num1, const Echange_global_impose& la_cl, Type_Double& aii, Type_Double& ajj ) const
 {
   assert (aii.size_array() == ajj.size_array());
   const int i = elem_(face,0), ncomp = aii.size_array();
@@ -211,8 +211,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int num1, const Dirichlet_paroi_fixe&, ArrOfDouble& aii , ArrOfDouble& ajj) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int num1, const Dirichlet_paroi_fixe&, Type_Double& aii , Type_Double& ajj) const
 {
   if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
 
@@ -226,8 +226,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int boundary_index, const int face, const int local_face, const int num1, const Echange_externe_impose& la_cl, ArrOfDouble& aii, ArrOfDouble& ajj) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int boundary_index, const int face, const int local_face, const int num1, const Echange_externe_impose& la_cl, Type_Double& aii, Type_Double& ajj) const
 {
   // C.L de type Echange_externe_impose : 1/h_total = (1/h_imp) + (e/diffusivite) : La C.L fournit h_imp ; il faut calculer e/diffusivite
   assert (aii.size_array() == ajj.size_array());
@@ -267,8 +267,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int boundary_index,
       }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_faces_interne(const int face, ArrOfDouble& aii, ArrOfDouble& ajj ) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_faces_interne(const int face, Type_Double& aii, Type_Double& ajj ) const
 {
   assert (aii.size_array() == ajj.size_array());
   const int i = elem_(face,0), j = elem_(face,1), ncomp = aii.size_array();
@@ -290,8 +290,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_faces_interne(const int face, 
  * *********  POUR L'IMPLICITE ********** *
  * ************************************** */
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Dirichlet_entree_fluide& la_cl, const int num1, ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Dirichlet_entree_fluide& la_cl, const int num1, Type_Double& flux) const
 {
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   double dist = Dist_norm_bord(face);
@@ -303,15 +303,15 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Dir
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Neumann_paroi& la_cl, const int num1, ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Neumann_paroi& la_cl, const int num1, Type_Double& flux) const
 {
   const int i = elem_(face,0), ncomp = flux.size_array();
   for (int k = 0; k < ncomp; k++) flux(k) = ((i != -1) ? 1 : -1) * la_cl.flux_impose(face-num1,k)*surface(face);
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Echange_global_impose& la_cl, const int num1, ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Echange_global_impose& la_cl, const int num1, Type_Double& flux) const
 {
   const int i = elem_(face,0), ncomp = flux.size_array();
   for (int k = 0; k < ncomp; k++)
@@ -321,14 +321,14 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Ech
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Dirichlet_paroi_fixe&, const int, ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Dirichlet_paroi_fixe&, const int, Type_Double& flux) const
 {
-  flux = 0.;
+  for (int k = 0; k < flux.size_array(); k++) flux(k) = 0.;
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int boundary_index, const int face, const int local_face, const Echange_externe_impose& la_cl, const int num1, ArrOfDouble& flux) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int boundary_index, const int face, const int local_face, const Echange_externe_impose& la_cl, const int num1, Type_Double& flux) const
 {
   // C.L de type Echange_externe_impose : 1/h_total = (1/h_imp) + (e/diffusivite) : La C.L fournit h_imp ; il faut calculer e/diffusivite
   double e, h_total_inv, heq;
@@ -369,10 +369,10 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int boundary_index,
     }
 }
 
-template <typename DERIVED_T>
-inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_faces_interne(const int, ArrOfDouble& flux ) const
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_faces_interne(const int, Type_Double& flux ) const
 {
-  flux = 0.;
+  for (int k = 0; k < flux.size_array(); k++) flux(k) = 0.;
 }
 
 #endif /* Eval_Diff_VDF_Elem_TPP_included */

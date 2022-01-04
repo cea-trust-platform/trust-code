@@ -39,39 +39,41 @@ public:
    * *********  POUR L'EXPLICITE ********** *
    * ************************************** */
 
-  template <typename BC> // Generic return
-  inline void flux_face(const DoubleTab& inco, const int face, const BC&, const int , ArrOfDouble& flux) const
+  template <typename BC, typename Type_Double> // Generic return
+  inline void flux_face(const DoubleTab& inco, const int face, const BC&, const int , Type_Double& flux) const
   { for (int k=0; k<flux.size_array(); k++) flux(k) = inco(face,k)*surface(face)*porosite(face); }
 
-  inline void flux_face(const DoubleTab&, const int , const Symetrie&, const int, ArrOfDouble& ) const { /* Do nothing */ }
-  inline void flux_face(const DoubleTab&, const int , const Dirichlet_paroi_fixe&, const int, ArrOfDouble& ) const { /* Do nothing */ }
-  inline void flux_face(const DoubleTab&, const int , const Dirichlet_paroi_defilante&, const int, ArrOfDouble& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int , const Symetrie&, const int, Type_Double& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int , const Dirichlet_paroi_fixe&, const int, Type_Double& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const int , const Dirichlet_paroi_defilante&, const int, Type_Double& ) const { /* Do nothing */ }
 
-  inline void flux_face(const DoubleTab& inco, const int boundary_index, const int face, const int local_face, const Echange_externe_impose&, const int, ArrOfDouble& flux) const
+  template <typename Type_Double>
+  inline void flux_face(const DoubleTab& inco, const int boundary_index, const int face, const int local_face, const Echange_externe_impose&, const int, Type_Double& flux) const
   { for (int k=0; k<flux.size_array(); k++) flux(k) = inco(face,k)*surface(face)*porosite(face); }
 
-  inline void flux_faces_interne(const DoubleTab& inco, const int face, ArrOfDouble& flux) const
+  template <typename Type_Double>
+  inline void flux_faces_interne(const DoubleTab& inco, const int face, Type_Double& flux) const
   { for (int k=0; k<flux.size_array(); k++) flux(k) = inco(face,k)*surface(face)*porosite(face); }
 
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
 
-  template <typename BC>
-  inline void coeffs_face(const int, const int, const BC&, ArrOfDouble& , ArrOfDouble&  ) const { /* Do nothing */ }
+  template <typename BC, typename Type_Double>
+  inline void coeffs_face(const int, const int, const BC&, Type_Double& , Type_Double&  ) const { /* Do nothing */ }
 
-  inline void coeffs_face(const int, const int, const int, const int, const Echange_externe_impose&, ArrOfDouble& , ArrOfDouble&  ) const { /* Do nothing */ }
-  inline void coeffs_faces_interne(const int, ArrOfDouble& , ArrOfDouble&  ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void coeffs_face(const int, const int, const int, const int, const Echange_externe_impose&, Type_Double& , Type_Double&  ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void coeffs_faces_interne(const int, Type_Double& , Type_Double&  ) const { /* Do nothing */ }
 
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
 
-  template <typename BC>
-  inline void secmem_face(const int, const BC&, const int, ArrOfDouble& ) const { /* Do nothing */ }
+  template <typename BC, typename Type_Double>
+  inline void secmem_face(const int, const BC&, const int, Type_Double& ) const { /* Do nothing */ }
 
-  inline void secmem_face(const int, const int, const int, const Echange_externe_impose&, const int, ArrOfDouble& ) const { /* Do nothing */ }
-  inline void secmem_faces_interne(const int, ArrOfDouble& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void secmem_face(const int, const int, const int, const Echange_externe_impose&, const int, Type_Double& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void secmem_faces_interne(const int, Type_Double& ) const { /* Do nothing */ }
 };
 
 #endif /* Eval_Div_VDF_Elem_included */

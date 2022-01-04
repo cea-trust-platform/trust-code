@@ -33,7 +33,7 @@ class Eval_Dirac_VDF_Elem: public Evaluateur_Source_VDF_Elem
 public:
   Eval_Dirac_VDF_Elem() : puissance(-100.), nb_dirac(-1.) { }
   virtual ~Eval_Dirac_VDF_Elem() { }
-  inline void calculer_terme_source(const int , ArrOfDouble& source) const;
+  template <typename Type_Double> void calculer_terme_source(const int , Type_Double& source) const;
   inline void associer_nb_elem_dirac(int n) { nb_dirac = 1./n; }
   inline void associer_champs(const Champ_Don& );
   inline void mettre_a_jour();
@@ -58,7 +58,8 @@ inline void Eval_Dirac_VDF_Elem::mettre_a_jour()
   ma_zone = la_zone.valeur().zone();
 }
 
-inline void Eval_Dirac_VDF_Elem::calculer_terme_source(const int num_elem, ArrOfDouble& source) const
+template <typename Type_Double>
+void Eval_Dirac_VDF_Elem::calculer_terme_source(const int num_elem, Type_Double& source) const
 {
   const int size = source.size_array(), test = ma_zone.valeur().type_elem().contient(le_point,num_elem);
   for (int i = 0; i < size; i++) source(i) = (test == 1) ? nb_dirac*puissance : 0.;

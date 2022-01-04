@@ -39,11 +39,11 @@ public:
                         CALC_FLUX_FACES_PAR = true, CALC_FLUX_FACES_PAR_ADIAB = false, CALC_FLUX_FACES_PAR_DEFIL = false, CALC_FLUX_FACES_PAR_FIXE = true,
                         CALC_FLUX_FACES_SORTIE_LIB = false, CALC_FLUX_FACES_SYMM = false, CALC_FLUX_FACES_PERIO = true;
 
-  template <typename BC_TYPE>
-  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int , ArrOfDouble& ) const { /* Do nothing */ }
+  template <typename BC_TYPE, typename Type_Double>
+  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , const BC_TYPE&, int , Type_Double& ) const { /* Do nothing */ }
 
-  inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int , ArrOfDouble& ) const { /* Do nothing */ }
-  inline void coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int , ArrOfDouble& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void coeffs_face_bloc_vitesse(const DoubleTab&, int , int, int, const Echange_externe_impose&, int , Type_Double& ) const { /* Do nothing */ }
+  template <typename Type_Double> inline void coeffs_faces_interne_bloc_vitesse(const DoubleTab&, int , Type_Double& ) const { /* Do nothing */ }
   inline void associer_inconnue(const Champ_base& );
 
 protected:

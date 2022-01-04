@@ -142,8 +142,16 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter(const DoubleTab& donne, DoubleTab& res
     double *data = resu.addr() + resu.size();
     for (; n; n--, data++) *data = 0.;
   }
-  ajouter_bords(ncomp,donne,resu);
-  ajouter_interne(ncomp,donne,resu);
+  if (ncomp == 1)
+    {
+      ajouter_bords<SingleDouble>(ncomp,donne,resu);
+      ajouter_interne<SingleDouble>(ncomp,donne,resu);
+    }
+  else
+    {
+      ajouter_bords<ArrOfDouble>(ncomp,donne,resu);
+      ajouter_interne<ArrOfDouble>(ncomp,donne,resu);
+    }
   modifier_flux();
   return resu;
 }
@@ -158,7 +166,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord(const DoubleTab& donnee) const //
   flux_bords.resize(la_zone->nb_faces_bord(),ncomp);
   flux_bords=0;
   if( ncomp != 1) Process::exit(); /* cas scalaire */
-  calculer_flux_bord2(ncomp,donnee);
+  (ncomp == 1) ? calculer_flux_bord2<SingleDouble>(ncomp,donnee) : calculer_flux_bord2<ArrOfDouble>(ncomp,donnee);
   modifier_flux() ;
 }
 
@@ -171,8 +179,16 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution(const DoubleTab& inco, Matrice_
   DoubleTab& flux_bords = op_base->flux_bords();
   flux_bords.resize(la_zone->nb_faces_bord(),ncomp);
   flux_bords=0;
-  ajouter_contribution_bords(ncomp,matrice);
-  ajouter_contribution_interne(ncomp,matrice);
+  if (ncomp == 1)
+    {
+      ajouter_contribution_bords<SingleDouble>(ncomp,matrice);
+      ajouter_contribution_interne<SingleDouble>(ncomp,matrice);
+    }
+  else
+    {
+      ajouter_contribution_bords<ArrOfDouble>(ncomp,matrice);
+      ajouter_contribution_interne<ArrOfDouble>(ncomp,matrice);
+    }
 }
 
 template <class _TYPE_>
@@ -182,8 +198,16 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& inco, 
   assert(inco.nb_dim() < 3 && la_zcl.non_nul() && la_zone.non_nul());
   const int ncomp = inco.line_size();
   if( ncomp != 1) Process::exit(); /* cas scalaire */ // TODO : FIXME : Yannick c'est vrai ? :-)
-  ajouter_contribution_bords_vitesse(ncomp,inco,matrice);
-  ajouter_contribution_interne_vitesse(ncomp,inco,matrice);
+  if (ncomp == 1)
+    {
+      ajouter_contribution_bords_vitesse<SingleDouble>(ncomp,inco,matrice);
+      ajouter_contribution_interne_vitesse<SingleDouble>(ncomp,inco,matrice);
+    }
+  else
+    {
+      ajouter_contribution_bords_vitesse<ArrOfDouble>(ncomp,inco,matrice);
+      ajouter_contribution_interne_vitesse<ArrOfDouble>(ncomp,inco,matrice);
+    }
 }
 
 template <class _TYPE_>
@@ -212,15 +236,23 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) const
   const int ncomp = resu.line_size();
   assert(resu.nb_dim() < 3 && la_zcl.non_nul() && la_zone.non_nul());
   assert(op_base->flux_bords().dimension(0)==la_zone->nb_faces_bord()); /* resize deja fait */
-  contribuer_au_second_membre_bords(ncomp,resu);
-  contribuer_au_second_membre_interne(ncomp,resu);
+  if (ncomp == 1)
+    {
+      contribuer_au_second_membre_bords<SingleDouble>(ncomp,resu);
+      contribuer_au_second_membre_interne<SingleDouble>(ncomp,resu);
+    }
+  else
+    {
+      contribuer_au_second_membre_bords<ArrOfDouble>(ncomp,resu);
+      contribuer_au_second_membre_interne<ArrOfDouble>(ncomp,resu);
+    }
 }
 
 /* ************************************** *
  * *********  POUR L'EXPLICITE ********** *
  * ************************************** */
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const int ncomp, const DoubleTab& donnee, DoubleTab& resu) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
@@ -241,34 +273,34 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const int ncomp, const DoubleTab
       switch(type_cl(la_cl))
         {
         case symetrie :
-          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_SYMM,Type_Double>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
           break;
         case sortie_libre :
-          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB,Type_Double>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
           break;
         case entree_fluide :
-          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL,Type_Double>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
           break;
         case paroi_fixe :
-          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE,Type_Double>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
           break;
         case paroi_defilante :
-          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL,Type_Double>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
           break;
         case paroi :
-          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR,Type_Double>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
           break;
         case echange_global_impose :
-          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP,Type_Double>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
           break;
         case paroi_adiabatique :
-          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
+          ajouter_bords_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB,Type_Double>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,resu);
           break;
         case echange_externe_impose :
-          ajouter_bords_((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,ncomp,donnee,frontiere_dis,resu);
+          ajouter_bords_<Type_Double>((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,ncomp,donnee,frontiere_dis,resu);
           break;
         case periodique :
-          ajouter_bords_((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,frontiere_dis,resu);
+          ajouter_bords_<Type_Double>((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,frontiere_dis,resu);
           break;
         default :
           Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::ajouter_bords" << finl;
@@ -279,10 +311,10 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_bords(const int ncomp, const DoubleTab
   return resu;
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_interne(const int ncomp, const DoubleTab& donnee, DoubleTab& resu) const
 {
-  ArrOfDouble flux(ncomp);
+  Type_Double flux(ncomp);
   const Zone_VDF& zone_VDF = la_zone.valeur();
   const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int face = ndeb; face<nfin; face++)
@@ -298,29 +330,29 @@ DoubleTab& T_It_VDF_Elem<_TYPE_>::ajouter_interne(const int ncomp, const DoubleT
   return resu;
 }
 
-template <class _TYPE_> template <bool should_calc_flux, typename BC>
+template <class _TYPE_> template <bool should_calc_flux, typename Type_Double,typename BC>
 void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const BC& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee, DoubleTab& resu) const
 {
   constexpr bool is_Neum_paroi_adiab = std::is_same<BC,Neumann_paroi_adiabatique>::value;
   if (should_calc_flux)
     {
-      ArrOfDouble flux(ncomp);
+      if (is_Neum_paroi_adiab) Process::exit(); // On bloque ici :-)
+      Type_Double flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
-          if (is_Neum_paroi_adiab) Process::exit(); // On bloque ici :-)
-          else flux_evaluateur.flux_face(donnee,face,cl,ndeb,flux); // Generic code
+          flux_evaluateur.flux_face(donnee,face,cl,ndeb,flux); // Generic code
           fill_flux_tables_(face,ncomp,1.0 /* coeff */,flux,resu);
         }
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee, const Front_VF& frontiere_dis,  DoubleTab& resu) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face,0), elem2 = elem(face,1);
@@ -341,12 +373,12 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const Periodique& cl, const int ndeb,
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const DoubleTab& donnee,const Front_VF& frontiere_dis,DoubleTab& resu) const
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       int boundary_index = -1;
       if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
 
@@ -359,8 +391,8 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_bords_(const Echange_externe_impose& cl, con
     }
 }
 
-template <class _TYPE_>
-inline void T_It_VDF_Elem<_TYPE_>::fill_flux_tables_(const int face, const int ncomp, const double coeff , const ArrOfDouble& flux, DoubleTab& resu) const
+template <class _TYPE_> template <typename Type_Double>
+inline void T_It_VDF_Elem<_TYPE_>::fill_flux_tables_(const int face, const int ncomp, const double coeff , const Type_Double& flux, DoubleTab& resu) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
   const int elem1 = elem(face,0), elem2 = elem(face,1);
@@ -418,7 +450,7 @@ void  T_It_VDF_Elem<_TYPE_>::modifier_flux() const
 }
 
 // Debut : Inutile, jamais utilise ...
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord2(const int ncomp, const DoubleTab& donnee) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
@@ -439,34 +471,34 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord2(const int ncomp, const DoubleTab
       switch(type_cl(la_cl))
       {
         case symetrie :
-          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_SYMM,Type_Double>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
           break;
         case sortie_libre :
-          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB,Type_Double>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
           break;
         case entree_fluide :
-          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL,Type_Double>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
           break;
         case paroi_fixe :
-          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE,Type_Double>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
           break;
         case paroi_defilante :
-          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL,Type_Double>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
           break;
         case paroi :
-          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR,Type_Double>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
           break;
         case echange_global_impose :
-          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP,Type_Double>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
           break;
         case paroi_adiabatique :
-          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
+          calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB,Type_Double>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
           break;
         case periodique :
-          calculer_flux_bord_((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,frontiere_dis);
+          calculer_flux_bord_<Type_Double>((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,donnee,frontiere_dis);
           break;
         case echange_externe_impose :
-          calculer_flux_bord_((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,ncomp,donnee,frontiere_dis);
+          calculer_flux_bord_<Type_Double>((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,ncomp,donnee,frontiere_dis);
           break;
         default :
           Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::calculer_flux_bord" << finl;
@@ -476,19 +508,19 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord2(const int ncomp, const DoubleTab
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, typename BC>
+template <class _TYPE_> template <bool should_calc_flux, typename Type_Double, typename BC>
 void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const BC& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee ) const
 {
   constexpr bool is_Neum_paroi_adiab = std::is_same<BC,Neumann_paroi_adiabatique>::value;
   DoubleTab& flux_bords = op_base->flux_bords();
   if (should_calc_flux)
     {
-      ArrOfDouble flux(ncomp);
+      if (is_Neum_paroi_adiab) Process::exit(); // On bloque ici :-)
+      Type_Double flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face,0), elem2 = elem(face,1);
-          if (is_Neum_paroi_adiab) Process::exit(); // On bloque ici :-)
-          else flux_evaluateur.flux_face(donnee, face, cl, ndeb,flux); //Generic
+          flux_evaluateur.flux_face(donnee, face, cl, ndeb,flux); //Generic
 
           if ( elem1 > -1) for (int k = 0; k < ncomp; k++) flux_bords(face,k) += flux(k);
           if ( elem2 > -1) for (int k = 0; k < ncomp; k++) flux_bords(face,k) -= flux(k);
@@ -496,13 +528,13 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const BC& cl, const int ndeb, co
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& donnee, const Front_VF& frontiere_dis) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face,0), elem2 = elem(face,1);
@@ -513,13 +545,13 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Periodique& cl, const int 
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const DoubleTab& donnee, const Front_VF& frontiere_dis) const
 {
   DoubleTab& flux_bords = op_base->flux_bords();
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       int boundary_index = -1;
       if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
       for (int face = ndeb; face < nfin; face++)
@@ -538,7 +570,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl
  * *********  POUR L'IMPLICITE ********** *
  * ************************************** */
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(const int ncomp, Matrice_Morse& matrice ) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
@@ -549,34 +581,34 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(const int ncomp, Matrice_
       switch(type_cl(la_cl))
         {
         case symetrie :
-          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_SYMM,Type_Double>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
           break;
         case sortie_libre :
-          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB,Type_Double>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
           break;
         case entree_fluide :
-          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL,Type_Double>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
           break;
         case paroi_fixe :
-          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE,Type_Double>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
           break;
         case paroi_defilante :
-          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL,Type_Double>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
           break;
         case paroi_adiabatique :
-          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB,Type_Double>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
           break;
         case paroi :
-          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_PAR,Type_Double>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
           break;
         case echange_global_impose :
-          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
+          ajouter_contribution_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP,Type_Double>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
           break;
         case echange_externe_impose :
-          ajouter_contribution_bords_((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,ncomp,frontiere_dis,matrice);
+          ajouter_contribution_bords_<Type_Double>((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,ncomp,frontiere_dis,matrice);
           break;
         case periodique :
-          ajouter_contribution_bords_((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
+          ajouter_contribution_bords_<Type_Double>((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,matrice);
           break;
         default :
           Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords" << finl;
@@ -586,10 +618,10 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords(const int ncomp, Matrice_
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne(const int ncomp, Matrice_Morse& matrice ) const
 {
-  ArrOfDouble aii(ncomp), ajj(ncomp);
+  Type_Double aii(ncomp), ajj(ncomp);
   const Zone_VDF& zone_VDF = la_zone.valeur();
   const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int face = ndeb; face < nfin; face++)
@@ -607,10 +639,10 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne(const int ncomp, Matric
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, typename BC>
+template <class _TYPE_> template <bool should_calc_flux, typename Type_Double, typename BC>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const BC& cl, const int ndeb, const int nfin, const int ncomp, Matrice_Morse& matrice) const
 {
-  ArrOfDouble aii(ncomp), ajj(ncomp);
+  Type_Double aii(ncomp), ajj(ncomp);
   if (should_calc_flux)
     {
       for (int face = ndeb; face < nfin; face++)
@@ -623,12 +655,12 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const BC& cl, const int 
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, Matrice_Morse& matrice) const
 {
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
-      ArrOfDouble aii(ncomp), ajj(ncomp);
+      Type_Double aii(ncomp), ajj(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face,0), elem2 = elem(face,1);
@@ -645,10 +677,10 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Periodique& cl, co
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
 {
-  ArrOfDouble aii(ncomp), ajj(ncomp);
+  Type_Double aii(ncomp), ajj(ncomp);
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
       int boundary_index = -1;
@@ -664,10 +696,10 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Echange_externe_im
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  ArrOfDouble aef(ncomp);
+  Type_Double aef(ncomp);
   const Zone_VDF& zone_VDF = la_zone.valeur();
   const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int face = ndeb; face < nfin; face++)
@@ -682,7 +714,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_interne_vitesse(const int ncomp
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice ) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
@@ -694,34 +726,34 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const int ncomp, 
       switch(type_cl(la_cl))
         {
         case symetrie :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_SYMM,Type_Double>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case sortie_libre :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB,Type_Double>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case entree_fluide :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL,Type_Double>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case paroi_fixe :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE,Type_Double>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case paroi_defilante :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL,Type_Double>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case paroi_adiabatique :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB,Type_Double>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case paroi :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_PAR,Type_Double>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case echange_global_impose :
-          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
+          ajouter_contribution_bords_vitesse_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP,Type_Double>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,inco,matrice);
           break;
         case echange_externe_impose :
-          ajouter_contribution_bords_vitesse_((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,ncomp,inco,frontiere_dis,matrice);
+          ajouter_contribution_bords_vitesse_<Type_Double>((const Echange_externe_impose&) la_cl.valeur(),ndeb,nfin,num_cl,ncomp,inco,frontiere_dis,matrice);
           break;
         case periodique :
-          ajouter_contribution_bords_vitesse_((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,inco,frontiere_dis,matrice);
+          ajouter_contribution_bords_vitesse_<Type_Double>((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,inco,frontiere_dis,matrice);
           break;
         default :
           Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse" << finl;
@@ -731,12 +763,12 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse(const int ncomp, 
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, typename BC>
+template <class _TYPE_> template <bool should_calc_flux, typename Type_Double, typename BC>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const BC& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
-      ArrOfDouble aef(ncomp);
+      Type_Double aef(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face, 0), elem2 = elem(face, 1);
@@ -747,12 +779,12 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const BC& cl, co
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Periodique& cl, const int ndeb, const int nfin, const int ncomp, const DoubleTab& inco, const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
 {
   if (_TYPE_::CALC_FLUX_FACES_PERIO)
     {
-      ArrOfDouble aef(ncomp);
+      Type_Double aef(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           const int elem1 = elem(face, 0), elem2 = elem(face, 1);
@@ -763,12 +795,12 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Periodique
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const DoubleTab& inco,const Front_VF& frontiere_dis, Matrice_Morse& matrice) const
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
-      ArrOfDouble aef(ncomp);
+      Type_Double aef(ncomp);
       int boundary_index = -1;
       if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
       for (int face = ndeb; face < nfin; face++)
@@ -785,7 +817,7 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_ex
  * *********  POUR L'IMPLICITE ********** *
  * ************************************** */
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(const int ncomp, DoubleTab& resu) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
@@ -796,34 +828,34 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(const int ncomp, D
       switch(type_cl(la_cl))
         {
         case symetrie :
-          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_SYMM>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_SYMM,Type_Double>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
           break;
         case sortie_libre :
-          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_SORTIE_LIB,Type_Double>((const Neumann_sortie_libre&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
           break;
         case entree_fluide :
-          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_ENTREE_FL,Type_Double>((const Dirichlet_entree_fluide&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
           break;
         case paroi_fixe :
-          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR_FIXE,Type_Double>((const Dirichlet_paroi_fixe&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
           break;
         case paroi_defilante :
-          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR_DEFIL,Type_Double>((const Dirichlet_paroi_defilante&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
           break;
         case paroi_adiabatique :
-          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR_ADIAB,Type_Double>((const Neumann_paroi_adiabatique&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
           break;
         case paroi :
-          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PAR,Type_Double>((const Neumann_paroi&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
           break;
         case echange_global_impose :
-          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_ECH_GLOB_IMP,Type_Double>((const Echange_global_impose&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
           break;
         case periodique :
-          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PERIO>((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
+          contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_PERIO,Type_Double>((const Periodique&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
           break;
         case echange_externe_impose :
-          contribuer_au_second_membre_bords_((const Echange_externe_impose&)la_cl.valeur(), ndeb,nfin,num_cl,ncomp,frontiere_dis,resu);
+          contribuer_au_second_membre_bords_<Type_Double>((const Echange_externe_impose&)la_cl.valeur(), ndeb,nfin,num_cl,ncomp,frontiere_dis,resu);
           break;
         default :
           Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords" << finl;
@@ -833,10 +865,10 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(const int ncomp, D
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_interne(const int ncomp, DoubleTab& resu) const
 {
-  ArrOfDouble flux(ncomp);
+  Type_Double flux(ncomp);
   const Zone_VDF& zone_VDF = la_zone.valeur();
   const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int face = ndeb; face < nfin; face++)
@@ -851,13 +883,13 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_interne(const int ncomp,
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, typename BC>
+template <class _TYPE_> template <bool should_calc_flux, typename Type_Double, typename BC>
 void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const BC& cl, const int ndeb, const int nfin, const int ncomp, DoubleTab& resu) const
 {
   constexpr bool is_Periodique = std::is_same<BC,Periodique>::value;
   if (should_calc_flux)
     {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           flux_evaluateur.secmem_face(face, cl, ndeb, flux); // Generic code
@@ -866,12 +898,12 @@ void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const BC& cl, con
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const Echange_externe_impose& cl, const int ndeb, const int nfin, const int num_cl, const int ncomp, const Front_VF& frontiere_dis, DoubleTab& resu) const
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       int boundary_index=-1;
       if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
       for (int face = ndeb; face < nfin; face++)

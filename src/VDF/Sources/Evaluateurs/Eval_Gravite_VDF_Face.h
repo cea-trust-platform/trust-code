@@ -32,8 +32,8 @@ class Eval_Gravite_VDF_Face: public Evaluateur_Source_VDF_Face
 public:
   Eval_Gravite_VDF_Face() { }
   Eval_Gravite_VDF_Face(const Eval_Gravite_VDF_Face& eval) : Evaluateur_Source_VDF_Face(eval), la_gravite(eval.la_gravite) { g.ref(eval.g); }
-  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
-  inline void calculer_terme_source_bord(const int num_face, ArrOfDouble& source) const { calculer_terme_source(num_face,source);}
+  template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
+  template <typename Type_Double> void calculer_terme_source_bord(const int num_face, Type_Double& source) const { calculer_terme_source(num_face,source);}
   inline void associer(const Champ_Don_base& );
   inline void mettre_a_jour() { /* Do nothing */ }
 
@@ -48,7 +48,8 @@ inline void Eval_Gravite_VDF_Face::associer(const Champ_Don_base& gravite)
   g.ref(gravite.valeurs());
 }
 
-inline void Eval_Gravite_VDF_Face::calculer_terme_source(const int num_face, ArrOfDouble& source) const
+template <typename Type_Double>
+void Eval_Gravite_VDF_Face::calculer_terme_source(const int num_face, Type_Double& source) const
 {
   const int size = source.size_array();
   for (int i = 0; i < size; i++) source(i) = g(orientation(num_face))*volumes_entrelaces(num_face)*porosite_surf(num_face);

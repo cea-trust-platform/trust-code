@@ -32,8 +32,8 @@ class Eval_Forchheimer_VDF_Face: public Evaluateur_Source_VDF_Face
 public:
   Eval_Forchheimer_VDF_Face() : Cf(1.), porosite(1) { }
   Eval_Forchheimer_VDF_Face(const Eval_Forchheimer_VDF_Face& eval) : Evaluateur_Source_VDF_Face(eval), Cf(1.), porosite(1) { }
-  inline void calculer_terme_source(const int , ArrOfDouble& ) const;
-  inline void calculer_terme_source_bord(const int num_face, ArrOfDouble& source) const { calculer_terme_source(num_face,source); }
+  template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
+  template <typename Type_Double> void calculer_terme_source_bord(const int num_face, Type_Double& source) const { calculer_terme_source(num_face,source); }
   inline void mettre_a_jour() { /* Do nothing */}
   inline void setCf(double c) { Cf = c; }
   inline void associer(const Champ_Inc& vit) { vitesse = vit;}
@@ -46,7 +46,8 @@ protected:
   double Cf, porosite;
 };
 
-inline void Eval_Forchheimer_VDF_Face::calculer_terme_source(const int num_face, ArrOfDouble& source) const
+template <typename Type_Double>
+void Eval_Forchheimer_VDF_Face::calculer_terme_source(const int num_face, Type_Double& source) const
 {
   const int size = source.size_array();
   for (int i = 0; i < size; i++)

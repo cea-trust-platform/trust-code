@@ -26,6 +26,7 @@
 #include <Iterateur_Source_VDF_base.h>
 #include <Dirichlet_homogene.h>
 #include <Champ_Uniforme.h>
+#include <SingleDouble.h>
 #include <Milieu_base.h>
 #include <Dirichlet.h>
 #include <Zone_VDF.h>
@@ -61,8 +62,8 @@ protected:
   int nb_faces, premiere_face_interne;
   mutable DoubleTab coef;
 
-  DoubleTab& ajouter_faces_internes(const int, DoubleTab& ) const;
-  DoubleTab& ajouter_faces_bords(const int, DoubleTab& ) const;
+  template <typename Type_Double> DoubleTab& ajouter_faces_internes(const int, DoubleTab& ) const;
+  template <typename Type_Double> DoubleTab& ajouter_faces_bords(const int, DoubleTab& ) const;
   inline const int& faces_doubles(int num_face) const { return la_zone->faces_doubles()[num_face]; }
 };
 
@@ -129,15 +130,23 @@ DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter(DoubleTab& resu) const
         }
     }
 
-  ajouter_faces_bords(ncomp,resu);
-  ajouter_faces_internes(ncomp,resu);
+  if (ncomp == 1)
+    {
+      ajouter_faces_bords<SingleDouble>(ncomp,resu);
+      ajouter_faces_internes<SingleDouble>(ncomp,resu);
+    }
+  else
+    {
+      ajouter_faces_bords<ArrOfDouble>(ncomp,resu);
+      ajouter_faces_internes<ArrOfDouble>(ncomp,resu);
+    }
   return resu;
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_bords(const int ncomp, DoubleTab& resu) const
 {
-  ArrOfDouble source(ncomp);
+  Type_Double source(ncomp);
   DoubleVect& bilan = so_base->bilan();
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
     {
@@ -160,10 +169,10 @@ DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_bords(const int ncomp, Doubl
   return resu;
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_internes(const int ncomp, DoubleTab& resu) const
 {
-  ArrOfDouble source(ncomp);
+  Type_Double source(ncomp);
   DoubleVect& bilan = so_base->bilan();
   for (int num_face=premiere_face_interne; num_face<nb_faces; num_face++)
     {

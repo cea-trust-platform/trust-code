@@ -44,72 +44,72 @@ public:
    * *********  POUR L'EXPLICITE ********** *
    * ************************************** */
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-  flux_fa7(const DoubleTab& , int face, const Neumann_sortie_libre& la_cl, int num1,ArrOfDouble& flux) const
+  template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+  flux_fa7(const DoubleTab& , int face, const Neumann_sortie_libre& la_cl, int num1,Type_Double& flux) const
   {
     for (int k=0; k<flux.size_array(); k++) flux(k) = la_cl.flux_impose(face-num1,k)*surface(face);
   }
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-  flux_fa7(const DoubleTab& inco, int elem, int fac1, int, ArrOfDouble& flux) const
+  template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+  flux_fa7(const DoubleTab& inco, int elem, int fac1, int, Type_Double& flux) const
   {
     for (int k=0; k<flux.size_array(); k++) flux(k) = inco(elem,k)*surface(fac1);
   }
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
                       Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
-  flux_arete(const DoubleTab&, int, int, int, int, ArrOfDouble& ) const { /* do nothing */ }
+  flux_arete(const DoubleTab&, int, int, int, int, Type_Double& ) const { /* do nothing */ }
 
 
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PERIODICITE||
                       Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
-  flux_arete(const DoubleTab&, int, int, int, int, ArrOfDouble& ,ArrOfDouble&) const { /* do nothing */ }
+  flux_arete(const DoubleTab&, int, int, int, int, Type_Double& ,Type_Double&) const { /* do nothing */ }
 #endif
 
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-  coeffs_fa7(int, const Neumann_sortie_libre&, ArrOfDouble& , ArrOfDouble& ) const { /* do nothing */ }
+  template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+  coeffs_fa7(int, const Neumann_sortie_libre&, Type_Double& , Type_Double& ) const { /* do nothing */ }
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-  coeffs_fa7(int, int, int, ArrOfDouble& , ArrOfDouble& ) const { /* do nothing */ }
+  template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+  coeffs_fa7(int, int, int, Type_Double& , Type_Double& ) const { /* do nothing */ }
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PERIODICITE), void>
-  coeffs_arete(int, int, int, int, ArrOfDouble& , ArrOfDouble& ) const { /* do nothing */ }
+  coeffs_arete(int, int, int, int, Type_Double& , Type_Double& ) const { /* do nothing */ }
 
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI || Arete_Type == Type_Flux_Arete::FLUIDE ||
                       Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
-  coeffs_arete(int, int, int, int, ArrOfDouble& , ArrOfDouble& , ArrOfDouble& ) const { /* do nothing */ }
+  coeffs_arete(int, int, int, int, Type_Double& , Type_Double& , Type_Double& ) const { /* do nothing */ }
 #endif
 
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
    * ************************************** */
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
-  secmem_fa7(int, const Neumann_sortie_libre&, int , ArrOfDouble&) const { /* do nothing */ }
+  template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::SORTIE_LIBRE, void>
+  secmem_fa7(int, const Neumann_sortie_libre&, int , Type_Double&) const { /* do nothing */ }
 
-  template<Type_Flux_Fa7 Fa7_Type> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
-  secmem_fa7( int, int, int, ArrOfDouble&) const { /* do nothing */ }
+  template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+  secmem_fa7( int, int, int, Type_Double&) const { /* do nothing */ }
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
                       Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
-  secmem_arete(int, int, int, int, ArrOfDouble& ) const { /* do nothing */ }
+  secmem_arete(int, int, int, int, Type_Double& ) const { /* do nothing */ }
 
-  template<Type_Flux_Arete Arete_Type>
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PERIODICITE||
                       Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
-  secmem_arete(int, int, int, int, ArrOfDouble&, ArrOfDouble&) const { /* do nothing */ }
+  secmem_arete(int, int, int, int, Type_Double&, Type_Double&) const { /* do nothing */ }
 #endif
 };
 

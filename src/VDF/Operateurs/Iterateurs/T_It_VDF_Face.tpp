@@ -193,12 +193,24 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter(const DoubleTab& inco, DoubleTab& resu
   tab_flux_bords.resize(la_zone->nb_faces_bord(),dimension);
   tab_flux_bords=0;
 
-  ajouter_aretes_bords(ncomp,inco,resu);
-  ajouter_aretes_coins(ncomp,inco,resu);
-  ajouter_aretes_internes(ncomp,inco,resu);
-  ajouter_aretes_mixtes(ncomp,inco,resu);
-  ajouter_fa7_sortie_libre(ncomp,inco,resu);
-  ajouter_fa7_elem(ncomp,inco,resu);
+  if (ncomp == 1)
+    {
+      ajouter_aretes_bords<SingleDouble>(ncomp,inco,resu);
+      ajouter_aretes_coins<SingleDouble>(ncomp,inco,resu);
+      ajouter_aretes_internes<SingleDouble>(ncomp,inco,resu);
+      ajouter_aretes_mixtes<SingleDouble>(ncomp,inco,resu);
+      ajouter_fa7_sortie_libre<SingleDouble>(ncomp,inco,resu);
+      ajouter_fa7_elem<SingleDouble>(ncomp,inco,resu);
+    }
+  else
+    {
+      ajouter_aretes_bords<ArrOfDouble>(ncomp,inco,resu);
+      ajouter_aretes_coins<ArrOfDouble>(ncomp,inco,resu);
+      ajouter_aretes_internes<ArrOfDouble>(ncomp,inco,resu);
+      ajouter_aretes_mixtes<ArrOfDouble>(ncomp,inco,resu);
+      ajouter_fa7_sortie_libre<ArrOfDouble>(ncomp,inco,resu);
+      ajouter_fa7_elem<ArrOfDouble>(ncomp,inco,resu);
+    }
 
   // On multiplie les flux au bord par rho en hydraulique (sert uniquement a la sortie)
   multiply_by_rho_if_hydraulique(tab_flux_bords);
@@ -239,12 +251,24 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution(const DoubleTab& inco, Matrice_
   tab_flux_bords.resize(la_zone->nb_faces_bord(),ncomp);
   tab_flux_bords = 0;
 
-  ajouter_contribution_aretes_bords(ncomp,inco,matrice);
-  ajouter_contribution_aretes_coins(ncomp,inco,matrice);
-  ajouter_contribution_aretes_internes(ncomp,inco,matrice);
-  ajouter_contribution_aretes_mixtes(ncomp,inco,matrice);
-  ajouter_contribution_fa7_sortie_libre(ncomp,inco,matrice);
-  ajouter_contribution_fa7_elem(ncomp,inco,matrice);
+  if (ncomp == 1)
+    {
+      ajouter_contribution_aretes_bords<SingleDouble>(ncomp,inco,matrice);
+      ajouter_contribution_aretes_coins<SingleDouble>(ncomp,inco,matrice);
+      ajouter_contribution_aretes_internes<SingleDouble>(ncomp,inco,matrice);
+      ajouter_contribution_aretes_mixtes<SingleDouble>(ncomp,inco,matrice);
+      ajouter_contribution_fa7_sortie_libre<SingleDouble>(ncomp,inco,matrice);
+      ajouter_contribution_fa7_elem<SingleDouble>(ncomp,inco,matrice);
+    }
+  else
+    {
+      ajouter_contribution_aretes_bords<ArrOfDouble>(ncomp,inco,matrice);
+      ajouter_contribution_aretes_coins<ArrOfDouble>(ncomp,inco,matrice);
+      ajouter_contribution_aretes_internes<ArrOfDouble>(ncomp,inco,matrice);
+      ajouter_contribution_aretes_mixtes<ArrOfDouble>(ncomp,inco,matrice);
+      ajouter_contribution_fa7_sortie_libre<ArrOfDouble>(ncomp,inco,matrice);
+      ajouter_contribution_fa7_elem<ArrOfDouble>(ncomp,inco,matrice);
+    }
 }
 
 template <class _TYPE_>
@@ -260,12 +284,24 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) const
       tab_flux_bords=0;
     }
 
-  contribuer_au_second_membre_aretes_bords(ncomp,resu);
-  contribuer_au_second_membre_aretes_coins(ncomp,resu);
-  contribuer_au_second_membre_aretes_internes(ncomp,resu);
-  contribuer_au_second_membre_aretes_mixtes(ncomp,resu);
-  contribuer_au_second_membre_fa7_sortie_libre(ncomp,resu);
-  contribuer_au_second_membre_fa7_elem(ncomp,resu);
+  if (ncomp == 1)
+    {
+      contribuer_au_second_membre_aretes_bords<SingleDouble>(ncomp,resu);
+      contribuer_au_second_membre_aretes_coins<SingleDouble>(ncomp,resu);
+      contribuer_au_second_membre_aretes_internes<SingleDouble>(ncomp,resu);
+      contribuer_au_second_membre_aretes_mixtes<SingleDouble>(ncomp,resu);
+      contribuer_au_second_membre_fa7_sortie_libre<SingleDouble>(ncomp,resu);
+      contribuer_au_second_membre_fa7_elem<SingleDouble>(ncomp,resu);
+    }
+  else
+    {
+      contribuer_au_second_membre_aretes_bords<ArrOfDouble>(ncomp,resu);
+      contribuer_au_second_membre_aretes_coins<ArrOfDouble>(ncomp,resu);
+      contribuer_au_second_membre_aretes_internes<ArrOfDouble>(ncomp,resu);
+      contribuer_au_second_membre_aretes_mixtes<ArrOfDouble>(ncomp,resu);
+      contribuer_au_second_membre_fa7_sortie_libre<ArrOfDouble>(ncomp,resu);
+      contribuer_au_second_membre_fa7_elem<ArrOfDouble>(ncomp,resu);
+    }
 }
 
 template <class _TYPE_>
@@ -279,7 +315,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_vitesse(const DoubleTab& , Matr
  * *********  POUR L'EXPLICITE ********** *
  * ************************************** */
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   if (!_TYPE_::CALC_ARR_BORD) return resu;
@@ -290,25 +326,25 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const int ncomp, const Do
       switch(n_type)
         {
         case TypeAreteBordVDF::PAROI_PAROI:
-          ajouter_aretes_bords_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_bords_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         case TypeAreteBordVDF::SYM_SYM:
-          ajouter_aretes_bords_<_TYPE_::CALC_ARR_SYMM,Type_Flux_Arete::SYMETRIE>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_bords_<_TYPE_::CALC_ARR_SYMM,Type_Flux_Arete::SYMETRIE,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         case TypeAreteBordVDF::PAROI_SYM:
-          ajouter_aretes_bords_<_TYPE_::CALC_ARR_SYMM_PAR,Type_Flux_Arete::SYMETRIE_PAROI>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_bords_<_TYPE_::CALC_ARR_SYMM_PAR,Type_Flux_Arete::SYMETRIE_PAROI,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
-          ajouter_aretes_bords_<_TYPE_::CALC_ARR_FL,Type_Flux_Arete::FLUIDE>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_bords_<_TYPE_::CALC_ARR_FL,Type_Flux_Arete::FLUIDE,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         case TypeAreteBordVDF::PAROI_FLUIDE:
-          ajouter_aretes_bords_<_TYPE_::CALC_ARR_PAR_FL,Type_Flux_Arete::PAROI_FLUIDE>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_bords_<_TYPE_::CALC_ARR_PAR_FL,Type_Flux_Arete::PAROI_FLUIDE,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         case TypeAreteBordVDF::PERIO_PERIO:
-          ajouter_aretes_bords_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_bords_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         case TypeAreteBordVDF::FLUIDE_SYM:
-          ajouter_aretes_bords_<_TYPE_::CALC_ARR_SYMM_FL,Type_Flux_Arete::SYMETRIE_FLUIDE>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_bords_<_TYPE_::CALC_ARR_SYMM_FL,Type_Flux_Arete::SYMETRIE_FLUIDE,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         default :
           Cerr << "On a rencontre un type d'arete non prevu : [ num arete : " << n_arete << " ], [ type : " << n_type << " ]" << finl;
@@ -319,7 +355,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords(const int ncomp, const Do
   return resu;
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   DoubleTab& tab_flux_bords=op_base->flux_bords();
@@ -329,19 +365,19 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const int ncomp, const Do
       switch(n_type)
         {
         case TypeAreteCoinVDF::PAROI_FLUIDE:
-          ajouter_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,TypeAreteCoinVDF::PAROI_FLUIDE>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,TypeAreteCoinVDF::PAROI_FLUIDE,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         case TypeAreteCoinVDF::FLUIDE_PAROI:
-          ajouter_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,TypeAreteCoinVDF::FLUIDE_PAROI>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,TypeAreteCoinVDF::FLUIDE_PAROI,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         case TypeAreteCoinVDF::PERIO_PAROI:
-          ajouter_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,TypeAreteCoinVDF::PERIO_PAROI>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,TypeAreteCoinVDF::PERIO_PAROI,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         case TypeAreteCoinVDF::FLUIDE_FLUIDE:
-          ajouter_aretes_coins_<_TYPE_::CALC_ARR_COIN_FL,Type_Flux_Arete::COIN_FLUIDE>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_coins_<_TYPE_::CALC_ARR_COIN_FL,Type_Flux_Arete::COIN_FLUIDE,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         case TypeAreteCoinVDF::PERIO_PERIO:
-          ajouter_aretes_coins_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE>(n_arete,ncomp,inco,resu,tab_flux_bords);
+          ajouter_aretes_coins_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
           break;
         default :
           break;
@@ -350,24 +386,24 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins(const int ncomp, const Do
   return resu;
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_internes(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   if(!_TYPE_::CALC_ARR_INT) return resu;
-  for (int n_arete = premiere_arete_interne; n_arete < derniere_arete_interne; n_arete++) ajouter_aretes_internes_<true,Type_Flux_Arete::INTERNE>(n_arete,ncomp,inco,resu);
+  for (int n_arete = premiere_arete_interne; n_arete < derniere_arete_interne; n_arete++) ajouter_aretes_internes_<true,Type_Flux_Arete::INTERNE,Type_Double>(n_arete,ncomp,inco,resu);
   return resu;
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   if(!_TYPE_::CALC_ARR_MIXTE) return resu;
   DoubleTab& tab_flux_bords = op_base->flux_bords();
-  for (int n_arete = premiere_arete_mixte; n_arete < derniere_arete_mixte; n_arete++) ajouter_aretes_mixtes_<true,Type_Flux_Arete::MIXTE>(n_arete,ncomp,inco,resu,tab_flux_bords);
+  for (int n_arete = premiere_arete_mixte; n_arete < derniere_arete_mixte; n_arete++) ajouter_aretes_mixtes_<true,Type_Flux_Arete::MIXTE,Type_Double>(n_arete,ncomp,inco,resu,tab_flux_bords);
   return resu;
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre(const int ncomp, const DoubleTab& inco,DoubleTab& resu) const
 {
   const int nb_front_Cl = la_zone->nb_front_Cl();
@@ -380,7 +416,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre(const int ncomp, cons
       switch(type_cl(la_cl))
         {
         case sortie_libre :
-          ajouter_fa7_sortie_libre_<_TYPE_::CALC_FA7_SORTIE_LIB,Type_Flux_Fa7::SORTIE_LIBRE>(ndeb,nfin,ncomp,(const Neumann_sortie_libre&) la_cl.valeur(),inco,resu,tab_flux_bords);
+          ajouter_fa7_sortie_libre_<_TYPE_::CALC_FA7_SORTIE_LIB,Type_Flux_Fa7::SORTIE_LIBRE,Type_Double>(ndeb,nfin,ncomp,(const Neumann_sortie_libre&) la_cl.valeur(),inco,resu,tab_flux_bords);
           break;
         case symetrie : /* fall through */
         case entree_fluide :
@@ -401,16 +437,16 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre(const int ncomp, cons
   return resu;
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   DoubleTab& tab_flux_bords = op_base->flux_bords();
-  for(int num_elem = 0 ; num_elem < nb_elem; num_elem++) ajouter_fa7_elem_<Type_Flux_Fa7::ELEM>(num_elem,ncomp,inco,resu,tab_flux_bords);
-  corriger_flux_fa7_elem_periodicite(ncomp,inco,resu);
+  for(int num_elem = 0 ; num_elem < nb_elem; num_elem++) ajouter_fa7_elem_<Type_Flux_Fa7::ELEM,Type_Double>(num_elem,ncomp,inco,resu,tab_flux_bords);
+  corriger_flux_fa7_elem_periodicite<Type_Double>(ncomp,inco,resu);
   return resu;
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
@@ -424,7 +460,7 @@ DoubleTab& T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite(const int n
           for (int face = ndeb; face < nfin; face++)
             {
               prepare_corriger_pour_periodicite(face,num_elem,signe,fac1,fac2);
-              corriger_flux_fa7_elem_periodicite_(ncomp,num_elem,fac1,fac2,face,signe,inco,resu);
+              corriger_flux_fa7_elem_periodicite_<Type_Double>(ncomp,num_elem,fac1,fac2,face,signe,inco,resu);
             }
         }
     }
@@ -448,15 +484,15 @@ void T_It_VDF_Face<_TYPE_>::prepare_corriger_pour_periodicite(const int face, in
   fac1 = elem_faces(num_elem,ori), fac2 = elem_faces(num_elem,ori+dimension);
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, const DoubleTab& inco, DoubleTab& resu) const
 {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       flux_evaluateur.template flux_fa7<Type_Flux_Fa7::ELEM>(inco,num_elem,fac1,fac2,flux);
       for (int k=0; k<ncomp; k++) resu(face,k) += signe*flux(k);
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
 T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
@@ -464,7 +500,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp,
     {
       constexpr bool is_PAROI = (Arete_Type == Type_Flux_Arete::PAROI);
       const int n = la_zone->nb_faces_bord(), fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       flux_evaluateur.template flux_arete<Arete_Type>(inco, fac1, fac2, fac3, signe, flux);
       for (int k=0; k < ncomp; k++)
         {
@@ -478,20 +514,20 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp,
     }
 }
 
-template <class _TYPE_>  template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_>  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
 T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   if (should_calc_flux)
     {
       constexpr bool is_PERIO = (Arete_Type == Type_Flux_Arete::PERIODICITE), is_FLUIDE = (Arete_Type == Type_Flux_Arete::FLUIDE), is_PAROI_FL = (Arete_Type == Type_Flux_Arete::PAROI_FLUIDE);
-      ArrOfDouble flux3(ncomp), flux1_2(ncomp);
+      Type_Double flux3(ncomp), flux1_2(ncomp);
       const int n = la_zone->nb_faces_bord(), fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
       flux_evaluateur.template flux_arete<Arete_Type>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
       if (is_PERIO)
         {
           int fac4 = signe;
-          ArrOfDouble flux3_4 = flux3;
+          Type_Double flux3_4 = flux3;
           for (int k=0; k<ncomp; k++)
             {
               resu(fac3,k) += 0.5*flux3_4(k);
@@ -500,7 +536,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp,
         }
       else for (int k=0; k<ncomp; k++) resu(fac3,k) += signe*flux3(k); // les autres Type_Flux_Arete ...
 
-      fill_resu_tab(fac1,fac2,ncomp,flux1_2,resu); // pour tous les types !
+      fill_resu_tab<Type_Double>(fac1,fac2,ncomp,flux1_2,resu); // pour tous les types !
 
       if (is_FLUIDE || is_PAROI_FL) // TODO : FIXME : Yannick help :/ j'ai fait comme le cas scalaire
         {
@@ -510,7 +546,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp,
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, TypeAreteCoinVDF::type_arete Arete_Type_Coin>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, TypeAreteCoinVDF::type_arete Arete_Type_Coin, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, void>
 T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
@@ -518,7 +554,7 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp,
     {
       constexpr bool is_PERIO_PAROI = (Arete_Type_Coin == TypeAreteCoinVDF::PERIO_PAROI);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       flux_evaluateur.template flux_arete<Arete_Type>(inco, fac1, fac2, fac3, signe,flux);
       for (int k = 0; k < ncomp; k++)
         {
@@ -533,20 +569,20 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp,
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
 T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp, const DoubleTab& inco,DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   if (should_calc_flux)
     {
       constexpr bool is_PERIO = (Arete_Type == Type_Flux_Arete::PERIODICITE);
-      ArrOfDouble flux3(ncomp), flux1_2(ncomp);
+      Type_Double flux3(ncomp), flux1_2(ncomp);
       const int n = la_zone->nb_faces_bord(), fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
       flux_evaluateur.template flux_arete<Arete_Type>(inco, fac1, fac2, fac3, signe, flux3, flux1_2);
       if (is_PERIO)
         {
           int fac4 = signe;
-          ArrOfDouble flux3_4 = flux3;
+          Type_Double flux3_4 = flux3;
           for (int k=0; k<ncomp; k++)
             {
               resu(fac3,k) += 0.5*flux3_4(k);
@@ -567,23 +603,23 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_coins_(const int n_arete, const int ncomp,
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_aretes_internes_(const int n_arete, const int ncomp, const DoubleTab& inco, DoubleTab& resu) const
 {
-  if(should_calc_flux) ajouter_aretes_mixtes_<should_calc_flux,Arete_Type>(n_arete,ncomp,inco,resu,op_base->flux_bords() /* inutile */);
+  if(should_calc_flux) ajouter_aretes_mixtes_<should_calc_flux,Arete_Type,Type_Double>(n_arete,ncomp,inco,resu,op_base->flux_bords() /* inutile */);
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes_(const int n_arete, const int ncomp, const DoubleTab& inco, DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   if (should_calc_flux)
     {
       constexpr bool is_MIXTE = (Arete_Type == Type_Flux_Arete::MIXTE);
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3);
       const int n = la_zone->nb_faces_bord(), n2 = la_zone->nb_faces_tot(); /* GF pour assurer bilan seq = para */
       flux_evaluateur.template flux_arete<Arete_Type>(inco, fac1, fac2, fac3, fac4, flux);
-      fill_resu_tab(fac3,fac4,ncomp,flux,resu);
+      fill_resu_tab<Type_Double>(fac3,fac4,ncomp,flux,resu);
       if (is_MIXTE) // TODO : FIXME : Yannick help :/ j'ai fait comme le cas scalaire (pas code a la base pour vect)
         {
           if (fac4 < n2)
@@ -599,7 +635,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes_(const int n_arete, const int 
         }
 
       flux_evaluateur.template flux_arete<Arete_Type>(inco, fac3, fac4, fac1, fac2, flux);
-      fill_resu_tab(fac1,fac2,ncomp,flux,resu);
+      fill_resu_tab<Type_Double>(fac1,fac2,ncomp,flux,resu);
       if (is_MIXTE) // TODO : FIXME : Yannick help :/ j'ai fait comme le cas scalaire (pas code a la base pour vect)
         {
           if (fac2 < n2)
@@ -616,12 +652,12 @@ void T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes_(const int n_arete, const int 
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre_(const int ndeb, const int nfin, const int ncomp , const Neumann_sortie_libre& cl, const DoubleTab& inco, DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   if (should_calc_flux)
     {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           flux_evaluateur.template flux_fa7<Fa7_Type>(inco,face,cl,ndeb,flux);
@@ -632,23 +668,23 @@ void T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre_(const int ndeb, const int 
     }
 }
 
-template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type>
+template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem_(const int num_elem, const int ncomp, const DoubleTab& inco, DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
-  ArrOfDouble flux(ncomp);
+  Type_Double flux(ncomp);
   const int n = la_zone->nb_faces_bord();
   for (int fa7 = 0; fa7 < dimension; fa7++)
     {
       int fac1 = elem_faces(num_elem,fa7), fac2 = elem_faces(num_elem,fa7+dimension);
       flux_evaluateur.template flux_fa7<Fa7_Type>(inco, num_elem, fac1, fac2,flux);
-      fill_resu_tab(fac1,fac2,ncomp,flux,resu);
+      fill_resu_tab<Type_Double>(fac1,fac2,ncomp,flux,resu);
       if (fac1 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac1,orientation(fac1)) += flux(k); // TODO : FIXME : Yannick help :/ j'ai fait comme le cas scalaire (pas code a la base pour vect)
       if (fac2 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac2,orientation(fac2)) -= flux(k);
     }
 }
 
-template <class _TYPE_>
-inline void T_It_VDF_Face<_TYPE_>::fill_resu_tab(const int fac1, const int fac2, const int ncomp, const ArrOfDouble& flux, DoubleTab& resu) const
+template <class _TYPE_> template <typename Type_Double>
+inline void T_It_VDF_Face<_TYPE_>::fill_resu_tab(const int fac1, const int fac2, const int ncomp, const Type_Double& flux, DoubleTab& resu) const
 {
   for (int k = 0; k < ncomp; k++)
     {
@@ -661,7 +697,7 @@ inline void T_It_VDF_Face<_TYPE_>::fill_resu_tab(const int fac1, const int fac2,
  * *********  POUR L'IMPLICITE ********** *
  * ************************************** */
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const int ncomp, const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   for (int n_arete = premiere_arete_bord; n_arete < derniere_arete_bord; n_arete++)
@@ -670,25 +706,25 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const int ncomp, c
       switch(n_type)
         {
         case TypeAreteBordVDF::PAROI_PAROI:
-          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI>(n_arete,ncomp,matrice);
+          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,Type_Double>(n_arete,ncomp,matrice);
           break;
         case TypeAreteBordVDF::SYM_SYM:
-          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_SYMM,Type_Flux_Arete::SYMETRIE>(n_arete,ncomp,matrice);
+          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_SYMM,Type_Flux_Arete::SYMETRIE,Type_Double>(n_arete,ncomp,matrice);
           break;
         case TypeAreteBordVDF::PAROI_SYM:
-          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_SYMM_PAR,Type_Flux_Arete::SYMETRIE_PAROI>(n_arete,ncomp,matrice);
+          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_SYMM_PAR,Type_Flux_Arete::SYMETRIE_PAROI,Type_Double>(n_arete,ncomp,matrice);
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
-          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_FL,Type_Flux_Arete::FLUIDE>(n_arete,ncomp,matrice);
+          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_FL,Type_Flux_Arete::FLUIDE,Type_Double>(n_arete,ncomp,matrice);
           break;
         case TypeAreteBordVDF::PAROI_FLUIDE:
-          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_PAR_FL,Type_Flux_Arete::PAROI_FLUIDE>(n_arete,ncomp,matrice);
+          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_PAR_FL,Type_Flux_Arete::PAROI_FLUIDE,Type_Double>(n_arete,ncomp,matrice);
           break;
         case TypeAreteBordVDF::FLUIDE_SYM:
-          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_SYMM_FL,Type_Flux_Arete::SYMETRIE_FLUIDE>(n_arete,ncomp,matrice);
+          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_SYMM_FL,Type_Flux_Arete::SYMETRIE_FLUIDE,Type_Double>(n_arete,ncomp,matrice);
           break;
         case TypeAreteBordVDF::PERIO_PERIO:
-          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE>(n_arete,ncomp,matrice);
+          ajouter_contribution_aretes_bords_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE,Type_Double>(n_arete,ncomp,matrice);
           break;
         default :
           Cerr << "On a rencontre un type d'arete non prevu : [ num arete : " << n_arete << " ], [ type : " << n_type << " ]" << finl;
@@ -697,7 +733,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords(const int ncomp, c
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
   for (int n_arete = premiere_arete_coin; n_arete < derniere_arete_coin; n_arete++)
@@ -706,13 +742,13 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const int ncomp, c
       switch(n_type)
         {
         case TypeAreteCoinVDF::PERIO_PERIO:
-          ajouter_contribution_aretes_coins_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE>(n_arete,ncomp,matrice);
+          ajouter_contribution_aretes_coins_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE,Type_Double>(n_arete,ncomp,matrice);
           break;
         case TypeAreteCoinVDF::PERIO_PAROI:
-          ajouter_contribution_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI>(n_arete,ncomp,matrice);
+          ajouter_contribution_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,Type_Double>(n_arete,ncomp,matrice);
           break;
         case TypeAreteCoinVDF::FLUIDE_FLUIDE:
-          ajouter_contribution_aretes_coins_<true,Type_Flux_Arete::COIN_FLUIDE>(n_arete,ncomp,matrice);
+          ajouter_contribution_aretes_coins_<true,Type_Flux_Arete::COIN_FLUIDE,Type_Double>(n_arete,ncomp,matrice);
           break;
         case TypeAreteCoinVDF::PAROI_FLUIDE: /* fall through */
         case TypeAreteCoinVDF::FLUIDE_PAROI:
@@ -724,20 +760,20 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const int ncomp, c
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
-  for (int n_arete = premiere_arete_interne; n_arete < derniere_arete_interne; n_arete++) ajouter_contribution_aretes_internes_<Type_Flux_Arete::INTERNE>(n_arete,ncomp,matrice);
+  for (int n_arete = premiere_arete_interne; n_arete < derniere_arete_interne; n_arete++) ajouter_contribution_aretes_internes_<Type_Flux_Arete::INTERNE,Type_Double>(n_arete,ncomp,matrice);
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
   if (!_TYPE_::CALC_ARR_MIXTE) return;
-  for (int n_arete = premiere_arete_mixte; n_arete < derniere_arete_mixte; n_arete++) ajouter_contribution_aretes_mixtes_<Type_Flux_Arete::MIXTE>(n_arete,ncomp,matrice);
+  for (int n_arete = premiere_arete_mixte; n_arete < derniere_arete_mixte; n_arete++) ajouter_contribution_aretes_mixtes_<Type_Flux_Arete::MIXTE,Type_Double>(n_arete,ncomp,matrice);
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
   const int nb_front_Cl = la_zone->nb_front_Cl();
@@ -749,7 +785,7 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const int ncom
       switch(type_cl(la_cl))
         {
         case sortie_libre :
-          ajouter_contribution_fa7_sortie_libre_<_TYPE_::CALC_FA7_SORTIE_LIB,Type_Flux_Fa7::SORTIE_LIBRE>(ndeb,nfin,ncomp,(const Neumann_sortie_libre&) la_cl.valeur(),matrice);
+          ajouter_contribution_fa7_sortie_libre_<_TYPE_::CALC_FA7_SORTIE_LIB,Type_Flux_Fa7::SORTIE_LIBRE,Type_Double>(ndeb,nfin,ncomp,(const Neumann_sortie_libre&) la_cl.valeur(),matrice);
           break;
         case symetrie : /* fall through */
         case entree_fluide :
@@ -769,14 +805,14 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre(const int ncom
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
-  for(int num_elem=0; num_elem<nb_elem; num_elem++) ajouter_contribution_fa7_elem_<Type_Flux_Fa7::ELEM>(num_elem,ncomp,matrice);
-  corriger_coeffs_fa7_elem_periodicite(ncomp,inco,matrice);
+  for(int num_elem=0; num_elem<nb_elem; num_elem++) ajouter_contribution_fa7_elem_<Type_Flux_Fa7::ELEM,Type_Double>(num_elem,ncomp,matrice);
+  corriger_coeffs_fa7_elem_periodicite<Type_Double>(ncomp,inco,matrice);
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite(const int ncomp, const DoubleTab& inco , Matrice_Morse& matrice) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
@@ -790,16 +826,16 @@ void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite(const int ncomp
           for (int face = ndeb; face < nfin; face++)
             {
               prepare_corriger_pour_periodicite(face,num_elem,signe,fac1,fac2);
-              corriger_coeffs_fa7_elem_periodicite_(ncomp,num_elem,fac1,fac2,face,signe,matrice);
+              corriger_coeffs_fa7_elem_periodicite_<Type_Double>(ncomp,num_elem,fac1,fac2,face,signe,matrice);
             }
         }
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, Matrice_Morse& matrice) const
 {
-  ArrOfDouble aii(ncomp), ajj(ncomp);
+  Type_Double aii(ncomp), ajj(ncomp);
   flux_evaluateur.template coeffs_fa7<Type_Flux_Fa7::ELEM>(num_elem, fac1, fac2, aii, ajj);
   const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
@@ -816,43 +852,43 @@ void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite_(const int ncom
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
 T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
-      ArrOfDouble aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
+      Type_Double aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
       flux_evaluateur.template coeffs_arete<Arete_Type>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
-      for (int i = 0; i < ncomp; i++) fill_coeff_matrice_morse(fac3,i,ncomp,signe,aii3_4,matrice);
+      for (int i = 0; i < ncomp; i++) fill_coeff_matrice_morse<Type_Double>(fac3,i,ncomp,signe,aii3_4,matrice);
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
 T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
-      ArrOfDouble aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
+      Type_Double aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
       flux_evaluateur.template coeffs_arete<Arete_Type>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
       for (int i = 0; i < ncomp; i++ )
         {
-          fill_coeff_matrice_morse(fac3,i,ncomp,signe,aii3_4,matrice);
-          fill_coeff_matrice_morse(fac1,fac2,i,ncomp,aii1_2,ajj1_2,matrice);
+          fill_coeff_matrice_morse<Type_Double>(fac3,i,ncomp,signe,aii3_4,matrice);
+          fill_coeff_matrice_morse<Type_Double>(fac1,fac2,i,ncomp,aii1_2,ajj1_2,matrice);
         }
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::INTERNE, void>
 T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
-      ArrOfDouble aii(ncomp), ajj(ncomp);
+      Type_Double aii(ncomp), ajj(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3);
       flux_evaluateur.template coeffs_arete<Arete_Type>(fac3, fac4, fac1, fac2, aii, ajj);
       for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse(fac1,fac2,i,ncomp,aii,ajj,matrice);
@@ -863,93 +899,93 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_bords_(const int n_arete, con
           // XXX : Elie Saikali : j'ai fait comme le codage initial pour le cas Scalaire... par contre j'ai vire le test if (facxxx < nb_face_reelle).. inutile je pense
           aii(i) *= 0.5;
           ajj(i) *= 0.5;
-          fill_coeff_matrice_morse(fac3,fac4,i,ncomp,aii,ajj,matrice);
+          fill_coeff_matrice_morse<Type_Double>(fac3,fac4,i,ncomp,aii,ajj,matrice);
         }
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
 T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
       constexpr bool is_COIN_FL = (Arete_Type == Type_Flux_Arete::COIN_FLUIDE);
-      ArrOfDouble aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
+      Type_Double aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
       flux_evaluateur.template coeffs_arete<Arete_Type>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
 
       for (int i = 0; i < ncomp; i++) fill_coeff_matrice_morse(fac3,i,ncomp,signe,aii3_4,matrice);
-      if(is_COIN_FL) for (int i = 0; i < ncomp; i++) fill_coeff_matrice_morse(fac1,i,ncomp,1,aii1_2,matrice);
+      if(is_COIN_FL) for (int i = 0; i < ncomp; i++) fill_coeff_matrice_morse<Type_Double>(fac1,i,ncomp,1,aii1_2,matrice);
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE, void>
 T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
-      ArrOfDouble aii(ncomp), ajj(ncomp);
+      Type_Double aii(ncomp), ajj(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3);
       flux_evaluateur.template coeffs_arete<Arete_Type>(fac3, fac4, fac1, fac2, aii, ajj);
-      for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse(fac1,fac2,i,ncomp,aii,ajj,matrice);
+      for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse<Type_Double>(fac1,fac2,i,ncomp,aii,ajj,matrice);
 
       flux_evaluateur.template coeffs_arete<Arete_Type>(fac1, fac2, fac3, fac4, aii, ajj);
-      for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse(fac3,fac4,i,ncomp,aii,ajj,matrice);
+      for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse<Type_Double>(fac3,fac4,i,ncomp,aii,ajj,matrice);
     }
 }
 
-template <class _TYPE_> template <Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <Type_Flux_Arete Arete_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_internes_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
   // XXX : Elie Saikali : j'ai fait comme le codage initial pour le cas Scalaire...
-  ajouter_contribution_aretes_coins_<true,Arete_Type>(n_arete,ncomp,matrice); /* meme codage que le cas PERIODICITE */
+  ajouter_contribution_aretes_coins_<true,Arete_Type,Type_Double>(n_arete,ncomp,matrice); /* meme codage que le cas PERIODICITE */
 }
 
-template <class _TYPE_> template <Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <Type_Flux_Arete Arete_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_mixtes_(const int n_arete, const int ncomp, Matrice_Morse& matrice) const
 {
-  ajouter_contribution_aretes_coins_<true,Arete_Type>(n_arete,ncomp,matrice); /* meme codage que le cas PERIODICITE */
+  ajouter_contribution_aretes_coins_<true,Arete_Type,Type_Double>(n_arete,ncomp,matrice); /* meme codage que le cas PERIODICITE */
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre_(const int ndeb, const int nfin, const int ncomp, const Neumann_sortie_libre& cl, Matrice_Morse& matrice) const
 {
   if (should_calc_flux)
     {
-      ArrOfDouble aii(ncomp), ajj(ncomp);
+      Type_Double aii(ncomp), ajj(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           flux_evaluateur.template coeffs_fa7<Fa7_Type>(face,cl, aii, ajj);
-          if ( (elem(face,0)) > -1) for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse(face,i,ncomp,1,aii,matrice);
-          if ( (elem(face,1)) > -1) for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse(face,i,ncomp,1,ajj,matrice);
+          if ( (elem(face,0)) > -1) for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse<Type_Double>(face,i,ncomp,1,aii,matrice);
+          if ( (elem(face,1)) > -1) for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse<Type_Double>(face,i,ncomp,1,ajj,matrice);
         }
     }
 }
 
-template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type>
+template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_elem_(const int num_elem, const int ncomp, Matrice_Morse& matrice) const
 {
-  ArrOfDouble aii(ncomp), ajj(ncomp);
+  Type_Double aii(ncomp), ajj(ncomp);
   for (int fa7 = 0; fa7 < dimension; fa7++)
     {
       const int fac1 = elem_faces(num_elem,fa7), fac2 = elem_faces(num_elem,fa7+dimension);
       flux_evaluateur.template coeffs_fa7<Fa7_Type>(num_elem, fac1, fac2, aii, ajj);
-      for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse(fac1,fac2,i,ncomp,aii,ajj,matrice);
+      for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse<Type_Double>(fac1,fac2,i,ncomp,aii,ajj,matrice);
     }
 }
 
-template <class _TYPE_>
-inline void T_It_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int face, const int i, const int ncomp, const int signe, const ArrOfDouble& A, Matrice_Morse& matrice) const
+template <class _TYPE_> template <typename Type_Double>
+void T_It_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int face, const int i, const int ncomp, const int signe, const Type_Double& A, Matrice_Morse& matrice) const
 {
   const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
   for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++) if (tab2[k]-1 == face*ncomp+i) coeff[k] += signe*A(i); // equivalent a matrice(face,face) += signe*A(i)
 }
 
-template <class _TYPE_>
-inline void T_It_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int fac1, const int fac2, const int i, const int ncomp, const ArrOfDouble& A, const ArrOfDouble& B, Matrice_Morse& matrice) const
+template <class _TYPE_> template <typename Type_Double>
+void T_It_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int fac1, const int fac2, const int i, const int ncomp, const Type_Double& A, const Type_Double& B, Matrice_Morse& matrice) const
 {
   const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
@@ -969,7 +1005,7 @@ inline void T_It_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int fac1, cons
  * *********  POUR L'IMPLICITE ********** *
  * ************************************** */
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(const int ncomp,DoubleTab& resu) const
 {
   for (int n_arete = premiere_arete_bord; n_arete<derniere_arete_bord; n_arete++)
@@ -978,25 +1014,25 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(const int n
       switch(n_type)
         {
         case TypeAreteBordVDF::PAROI_PAROI:
-          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI>(n_arete,ncomp,resu);
+          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,Type_Double>(n_arete,ncomp,resu);
           break;
         case TypeAreteBordVDF::SYM_SYM:
-          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_SYMM,Type_Flux_Arete::SYMETRIE>(n_arete,ncomp,resu);
+          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_SYMM,Type_Flux_Arete::SYMETRIE,Type_Double>(n_arete,ncomp,resu);
           break;
         case TypeAreteBordVDF::PAROI_SYM:
-          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_SYMM_PAR,Type_Flux_Arete::SYMETRIE_PAROI>(n_arete,ncomp,resu);
+          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_SYMM_PAR,Type_Flux_Arete::SYMETRIE_PAROI,Type_Double>(n_arete,ncomp,resu);
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
-          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_FL,Type_Flux_Arete::FLUIDE>(n_arete,ncomp,resu);
+          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_FL,Type_Flux_Arete::FLUIDE,Type_Double>(n_arete,ncomp,resu);
           break;
         case TypeAreteBordVDF::PAROI_FLUIDE:
-          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_PAR_FL,Type_Flux_Arete::PAROI_FLUIDE>(n_arete,ncomp,resu);
+          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_PAR_FL,Type_Flux_Arete::PAROI_FLUIDE,Type_Double>(n_arete,ncomp,resu);
           break;
         case TypeAreteBordVDF::PERIO_PERIO:
-          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE>(n_arete,ncomp,resu);
+          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE,Type_Double>(n_arete,ncomp,resu);
           break;
         case TypeAreteBordVDF::FLUIDE_SYM:
-          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_SYMM_FL,Type_Flux_Arete::SYMETRIE_FLUIDE>(n_arete,ncomp,resu);
+          contribuer_au_second_membre_aretes_bords_<_TYPE_::CALC_ARR_SYMM_FL,Type_Flux_Arete::SYMETRIE_FLUIDE,Type_Double>(n_arete,ncomp,resu);
           break;
         default :
           Cerr << "On a rencontre un type d'arete non prevu : [ num arete : " << n_arete << " ], [ type : " << n_type << " ]" << finl;
@@ -1006,7 +1042,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords(const int n
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_>template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(const int ncomp,DoubleTab& resu) const
 {
   for (int n_arete = premiere_arete_coin; n_arete < derniere_arete_coin; n_arete++)
@@ -1017,13 +1053,13 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(const int n
         case TypeAreteCoinVDF::PAROI_FLUIDE: /* fall through */
         case TypeAreteCoinVDF::FLUIDE_PAROI:
         case TypeAreteCoinVDF::PERIO_PAROI:
-          contribuer_au_second_membre_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI>(n_arete,ncomp,resu);
+          contribuer_au_second_membre_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,Type_Double>(n_arete,ncomp,resu);
           break;
         case TypeAreteCoinVDF::FLUIDE_FLUIDE:
-          contribuer_au_second_membre_aretes_coins_<_TYPE_::CALC_ARR_COIN_FL,Type_Flux_Arete::COIN_FLUIDE>(n_arete,ncomp,resu);
+          contribuer_au_second_membre_aretes_coins_<_TYPE_::CALC_ARR_COIN_FL,Type_Flux_Arete::COIN_FLUIDE,Type_Double>(n_arete,ncomp,resu);
           break;
         case TypeAreteCoinVDF::PERIO_PERIO:
-          contribuer_au_second_membre_aretes_coins_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE>(n_arete,ncomp,resu);
+          contribuer_au_second_membre_aretes_coins_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE,Type_Double>(n_arete,ncomp,resu);
           break;
         default :
           break;
@@ -1031,19 +1067,19 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins(const int n
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_>template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_internes(const int ncomp,DoubleTab& resu) const
 {
-  for (int n_arete = premiere_arete_interne; n_arete < derniere_arete_interne; n_arete++) contribuer_au_second_membre_aretes_internes_<true,Type_Flux_Arete::INTERNE>(n_arete,ncomp,resu);
+  for (int n_arete = premiere_arete_interne; n_arete < derniere_arete_interne; n_arete++) contribuer_au_second_membre_aretes_internes_<true,Type_Flux_Arete::INTERNE,Type_Double>(n_arete,ncomp,resu);
 }
 
-template <class _TYPE_>
+template <class _TYPE_>template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_mixtes(const int ncomp,DoubleTab& resu) const
 {
-  for (int n_arete=premiere_arete_mixte; n_arete<derniere_arete_mixte; n_arete++) contribuer_au_second_membre_aretes_mixtes_<true,Type_Flux_Arete::MIXTE>(n_arete,ncomp,resu);
+  for (int n_arete=premiere_arete_mixte; n_arete<derniere_arete_mixte; n_arete++) contribuer_au_second_membre_aretes_mixtes_<true,Type_Flux_Arete::MIXTE,Type_Double>(n_arete,ncomp,resu);
 }
 
-template <class _TYPE_>
+template <class _TYPE_>template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre(const int ncomp,DoubleTab& resu) const
 {
   int nb_front_Cl = la_zone->nb_front_Cl();
@@ -1055,7 +1091,7 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre(const i
       switch(type_cl(la_cl))
         {
         case sortie_libre :
-          contribuer_au_second_membre_fa7_sortie_libre_<_TYPE_::CALC_FA7_SORTIE_LIB,Type_Flux_Fa7::SORTIE_LIBRE>(ndeb,nfin,ncomp,(const Neumann_sortie_libre&) la_cl.valeur(),resu);
+          contribuer_au_second_membre_fa7_sortie_libre_<_TYPE_::CALC_FA7_SORTIE_LIB,Type_Flux_Fa7::SORTIE_LIBRE,Type_Double>(ndeb,nfin,ncomp,(const Neumann_sortie_libre&) la_cl.valeur(),resu);
           break;
         case symetrie : /* fall through */
         case entree_fluide :
@@ -1075,14 +1111,14 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre(const i
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_>template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem(const int ncomp,DoubleTab& resu) const
 {
-  for(int num_elem = 0; num_elem < nb_elem; num_elem++) contribuer_au_second_membre_fa7_elem_<Type_Flux_Fa7::ELEM>(num_elem,ncomp,resu);
-  corriger_secmem_fa7_elem_periodicite(ncomp,resu);
+  for(int num_elem = 0; num_elem < nb_elem; num_elem++) contribuer_au_second_membre_fa7_elem_<Type_Flux_Fa7::ELEM,Type_Double>(num_elem,ncomp,resu);
+  corriger_secmem_fa7_elem_periodicite<Type_Double>(ncomp,resu);
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite(const int ncomp,DoubleTab& resu) const
 {
   for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
@@ -1096,46 +1132,46 @@ void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite(const int ncomp
           for (int face = ndeb; face < nfin; face++)
             {
               prepare_corriger_pour_periodicite(face,num_elem,signe,fac1,fac2);
-              corriger_secmem_fa7_elem_periodicite_(ncomp,num_elem,fac1,fac2,face,signe,resu);
+              corriger_secmem_fa7_elem_periodicite_<Type_Double>(ncomp,num_elem,fac1,fac2,face,signe,resu);
             }
         }
     }
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::corriger_secmem_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, DoubleTab& resu) const
 {
-  ArrOfDouble flux(ncomp);
+  Type_Double flux(ncomp);
   flux_evaluateur.template secmem_fa7<Type_Flux_Fa7::ELEM>(num_elem,fac1,fac2,flux);
   for (int k = 0; k < ncomp; k++) resu(face,k) += signe*flux(k);
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
 T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   if (should_calc_flux)
     {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
       flux_evaluateur.template secmem_arete<Arete_Type>(fac1, fac2, fac3, signe, flux);
       for (int k = 0; k < ncomp; k++) resu(fac3,k) += signe*flux(k);
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
 T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   if (should_calc_flux)
     {
       constexpr bool is_PERIO = (Arete_Type == Type_Flux_Arete::PERIODICITE);
-      ArrOfDouble flux3(ncomp), flux1_2(ncomp);
+      Type_Double flux3(ncomp), flux1_2(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
       flux_evaluateur.template secmem_arete<Arete_Type>(fac1, fac2, fac3, signe, flux3, flux1_2);
       if (is_PERIO)
         {
-          ArrOfDouble flux3_4 = flux3;
+          Type_Double flux3_4 = flux3;
           const int fac4 = signe;
           for (int k=0; k<ncomp; k++)
             {
@@ -1144,30 +1180,30 @@ T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_bords_(const int n_are
             }
         }
       else for (int k=0; k<ncomp; k++) resu(fac3,k) += signe*flux3(k);
-      fill_resu_tab(fac1,fac2,ncomp,flux1_2,resu);
+      fill_resu_tab<Type_Double>(fac1,fac2,ncomp,flux1_2,resu);
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type> enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, void>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double> enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, void>
 T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   // XXX : Elie Saikali : j'ai fait comme le codage initial pour le cas Scalaire...
-  contribuer_au_second_membre_aretes_bords_<should_calc_flux,Arete_Type>(n_arete,ncomp,resu);
+  contribuer_au_second_membre_aretes_bords_<should_calc_flux,Arete_Type,Type_Double>(n_arete,ncomp,resu);
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
 T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   if (should_calc_flux)
     {
       constexpr bool is_PERIO = (Arete_Type == Type_Flux_Arete::PERIODICITE);
-      ArrOfDouble flux3(ncomp), flux1_2(ncomp);
+      Type_Double flux3(ncomp), flux1_2(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe = Qdm(n_arete,3);
       flux_evaluateur.template secmem_arete<Arete_Type>(fac1, fac2, fac3, signe, flux3, flux1_2);
       if (is_PERIO)
         {
-          ArrOfDouble flux3_4 = flux3;
+          Type_Double flux3_4 = flux3;
           const int fac4 = signe;
           for (int k=0; k<ncomp; k++)
             {
@@ -1186,33 +1222,33 @@ T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_coins_(const int n_are
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_internes_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
   if (should_calc_flux)
     {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3);
       flux_evaluateur.template secmem_arete<Arete_Type>(fac1,fac2,fac3,fac4,flux);
-      fill_resu_tab(fac3,fac4,ncomp,flux,resu);
+      fill_resu_tab<Type_Double>(fac3,fac4,ncomp,flux,resu);
 
       flux_evaluateur.template secmem_arete<Arete_Type>(fac3,fac4,fac1,fac2,flux);
-      fill_resu_tab(fac1,fac2,ncomp,flux,resu);
+      fill_resu_tab<Type_Double>(fac1,fac2,ncomp,flux,resu);
     }
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_aretes_mixtes_(const int n_arete, const int ncomp, DoubleTab& resu) const
 {
-  contribuer_au_second_membre_aretes_internes_<should_calc_flux,Arete_Type>(n_arete,ncomp,resu);
+  contribuer_au_second_membre_aretes_internes_<should_calc_flux,Arete_Type,Type_Double>(n_arete,ncomp,resu);
 }
 
-template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type>
+template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Fa7 Fa7_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre_(const int ndeb, const int nfin, const int ncomp, const Neumann_sortie_libre& cl, DoubleTab& resu) const
 {
   if (should_calc_flux)
     {
-      ArrOfDouble flux(ncomp);
+      Type_Double flux(ncomp);
       for (int face = ndeb; face < nfin; face++)
         {
           flux_evaluateur.template secmem_fa7<Fa7_Type>(face,cl, ndeb, flux);
@@ -1222,15 +1258,15 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre_(const 
     }
 }
 
-template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type>
+template <class _TYPE_> template <Type_Flux_Fa7 Fa7_Type, typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_elem_(const int num_elem, const int ncomp, DoubleTab& resu) const
 {
-  ArrOfDouble flux(ncomp);
+  Type_Double flux(ncomp);
   for (int fa7 = 0; fa7 < dimension; fa7++)
     {
       const int fac1 = elem_faces(num_elem,fa7), fac2 = elem_faces(num_elem,fa7+dimension);
       flux_evaluateur.template secmem_fa7<Fa7_Type>(num_elem,fac1,fac2,flux);
-      fill_resu_tab(fac1,fac2,ncomp,flux,resu);
+      fill_resu_tab<Type_Double>(fac1,fac2,ncomp,flux,resu);
     }
 }
 

@@ -25,6 +25,7 @@
 
 #include <Iterateur_Source_VDF_base.h>
 #include <Champ_Uniforme.h>
+#include <SingleDouble.h>
 #include <Zone_VDF.h>
 
 template <class _TYPE_>
@@ -54,7 +55,7 @@ protected:
   _TYPE_ evaluateur_source_elem;
   int nb_elem_;
 
-  DoubleTab& ajouter_(const int, DoubleTab& ) const;
+  template <typename Type_Double> DoubleTab& ajouter_(const int, DoubleTab& ) const;
 };
 
 template <class _TYPE_>
@@ -79,14 +80,14 @@ DoubleTab& T_It_Sou_VDF_Elem<_TYPE_>::ajouter(DoubleTab& resu) const
   DoubleVect& bilan = so_base->bilan();
   bilan=0;
 
-  ajouter_(ncomp,resu);
+  (ncomp == 1) ? ajouter_<SingleDouble>(ncomp,resu) : ajouter_<ArrOfDouble>(ncomp,resu);
   return resu;
 }
 
-template <class _TYPE_>
+template <class _TYPE_> template <typename Type_Double>
 DoubleTab& T_It_Sou_VDF_Elem<_TYPE_>::ajouter_(const int ncomp, DoubleTab& resu) const
 {
-  ArrOfDouble source(ncomp);
+  Type_Double source(ncomp);
   DoubleVect& bilan = so_base->bilan();
   for (int num_elem = 0; num_elem < nb_elem_; num_elem++)
     {
