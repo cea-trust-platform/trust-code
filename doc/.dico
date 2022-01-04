@@ -285,6 +285,7 @@
  DoubleVects DoubleVects DoubleVects.h
  DP_Impose_Face_CoviMAC DP_Impose_CoviMAC_Face DP_Impose_CoviMAC_Face.h
  DP_Impose_Face_PolyMAC DP_Impose_PolyMAC_Face DP_Impose_PolyMAC_Face.h
+ Echange_couplage_thermique Echange_couplage_thermique Echange_couplage_thermique.h
  Echange_impose_base Echange_impose_base Echange_impose_base.h
  Echange_thermique_h_imp_VDF_P0_VDF Source_Echange_Th_VDF Source_Echange_Th_VDF.h
  EcrFicCollecte EcrFicCollecte EcrFicCollecte.h
@@ -480,6 +481,7 @@
  LecFicDiffuse_JDD LecFicDiffuse_JDD LecFicDiffuse_JDD.h
  LecFicDistribue LecFicDistribue LecFicDistribue.h
  LecFicDistribueBin LecFicDistribueBin LecFicDistribueBin.h
+ Lecture_Champ Lecture_Champ Lecture_Champ.h
  Lecture_Table Lecture_Table Lecture_Table.h
  Lec_Diffuse_base Lec_Diffuse_base Lec_Diffuse_base.h
  Lire_Fichier_Bin|Read_File_Binary Lire_Fichier_Bin Lire_Fichier_Bin.h

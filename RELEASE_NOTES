@@ -1,4 +1,4 @@
-XX/XX/22 (TURTS)  New kewyord : ToDo Echange_interne test cases...
+XX/XX/22 (TRUST)  New keyword : Internal thermal boundary conditions. See validation sheets Echange_impose and echg_interne
 XX/XX/22 (TRUST)  New keyword : ModifyDomaineAxi1D to modify an 1D axisymmetric mesh
 XX/XX/22 (TRUST)  New keyword : Champ_front_xyz_tabule to define a space-dependent boundary field which is also time tabulated. E.g: champ_front_xyz_tabule 1 x*y { 0.0 1.0 2.0 1.0 1.1 1.05 }  
 XX/XX/22 (TRUST)  Change      : Stability time step for diffusion operator is now the same on PolyMAC conform mesh compared to VDF mesh 

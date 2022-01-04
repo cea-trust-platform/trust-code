@@ -14,86 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Lecture_Champ.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
+// File:        Ref_Echange_couplage_thermique.cpp
+// Directory:   $TRUST_ROOT/src/ThSol
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Lecture_Champ.h>
-#include <Motcle.h>
-#include <List_Nom.h>
+#include <Ref_Echange_couplage_thermique.h>
+#include <Echange_couplage_thermique.h>
 
-Implemente_instanciable_sans_constructeur( Lecture_Champ, "Lecture_Champ", Objet_U ) ;
-
-Lecture_Champ::Lecture_Champ()
-{
-  champs_lus_= false;
-}
-
-Sortie& Lecture_Champ::printOn( Sortie& os ) const
-{
-  Objet_U::printOn( os );
-  return os;
-}
-
-Entree& Lecture_Champ::readOn( Entree& is )
-{
-  Objet_U::readOn( is );
-  return is;
-}
-
-Entree& Lecture_Champ::lire_champs( Entree& is , List_Nom& noms_champs)
-{
-
-  Cerr << "Reading Fields\n";
-  Nom nom;
-
-  const Motcle accolade_ouverte = Motcle("{");
-  const Motcle accolade_fermee = Motcle("}");
-
-  is >> nom;
-
-  if(Motcle(nom)!= accolade_ouverte)
-    {
-      Cerr << "We expected a { while reading " << que_suis_je() << finl;
-      Cerr << "and not : " << nom << finl;
-      Process::exit();
-    }
-
-  int lu = 0;
-
-  while (1)
-    {
-      is >> nom;
-      if (Motcle(nom) == accolade_fermee)
-        break;
-
-      if (noms_champs.contient(nom))
-        {
-          liste_champs.add(Champ());
-          is >> liste_champs(lu);
-          liste_champs(lu).nommer(nom);
-          lu++;
-        }
-      else
-        {
-          Cerr << "Unknown field name : " << nom << finl;
-          Cerr << "Expected names :" << finl;
-          Cerr << noms_champs << finl;
-          Process::exit();
-        }
-    }
-
-  champs_lus_ =  lu==noms_champs.size();
-
-  if (lu>0 && !champs_lus_)
-    {
-      Cerr << "Error while reading input fields." << finl;
-      Cerr << "We expected "<< noms_champs.size() <<" fields." << finl;
-      Process::exit();
-    }
-
-  return is;
-}
-
+Implemente_ref( Echange_couplage_thermique ) ;
