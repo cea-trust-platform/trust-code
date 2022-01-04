@@ -87,7 +87,7 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
         }
     }
   // Equivalent de -abort_on_error (aucune erreur PETSc n'est tolere):
-  PetscPushErrorHandler(PetscAbortErrorHandler,PETSC_NULL);
+  PetscPushErrorHandler(PetscAbortErrorHandler, PETSC_NULLPTR);
   // Desactive le signal handler en optimise pour eviter d'etre trop bavard
   // et de "masquer" les messages d'erreur TRUST:
   PetscPopSignalHandler();

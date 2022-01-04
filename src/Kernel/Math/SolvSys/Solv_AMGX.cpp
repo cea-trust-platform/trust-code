@@ -152,7 +152,7 @@ PetscErrorCode Solv_AMGX::petscToCSR(Mat& A, Vec& lhs_petsc, Vec& rhs_petsc)
     }
   else
     {
-      SETERRQ1(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG,"Mat type %s is not supported!\n", type);
+      SETERRQ(PETSC_COMM_WORLD, PETSC_ERR_ARG_WRONG,"Mat type %s is not supported!\n", type);
     }
 
   // Get row and column indices in compressed row format

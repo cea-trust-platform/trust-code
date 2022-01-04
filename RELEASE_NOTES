@@ -1,3 +1,4 @@
+XX/XX/23 (TRUST) Library      : Update PETSc to 3.20.0 (dependancies like MUMPS, Hypre,... not updated yet)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.4_beta : Enhancements, modifications and corrected bugs since version 1.9.3 :
 --------------------------------------------------------------------------------------------------

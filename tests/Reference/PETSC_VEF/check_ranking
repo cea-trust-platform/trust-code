@@ -8,7 +8,7 @@ its_max=$2
 res_max=$3
 delta_ram_max=$4
 cpu_max=$5
-check=0 && [ "$HOST" = "$TRUST_HOST_ADMIN" ] && check=1
+check=0 #&& [ "$HOST" = "$TRUST_HOST_ADMIN" ] && check=1
 [ ! -f $file ] && exit -1
 $TRUST_Awk -v its_max=$its_max -v res_max=$res_max -v delta_ram_max=$delta_ram_max -v cpu_max=$cpu_max -v check=$check 'BEGIN {min_ram=100000} \
 /OK/ {its+=$3;if ($4>res) res=$4;if ($5>max_ram) max_ram=$5;if ($5<min_ram) min_ram=$5;cpu+=$1;} \

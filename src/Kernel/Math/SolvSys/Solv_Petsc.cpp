@@ -148,7 +148,7 @@ void Solv_Petsc::create_solver(Entree& entree)
       petsc_TU+=nom_du_cas();
       petsc_TU+="_petsc.TU";
       add_option("log_view",petsc_TU); 	// Monitor performances at the end of the calculation
-      PetscLogAllBegin(); 		// Necessary cause if not Event logs not printed in petsc_TU file ... I don't know why...
+      PetscLogDefaultBegin(); 		// Necessary cause if not Event logs not printed in petsc_TU file ... I don't know why...
     }
 #ifdef NDEBUG
   // PETSc 3.14 active par defaut les exceptions, on desactive en production ?
@@ -1586,7 +1586,7 @@ bool Solv_Petsc::enable_ksp_view( void )
   Nom empty="                                                                                                 ";
   char *option_value = strdup( empty );
   PetscBool enable; // enable this option ?
-  PetscOptionsGetString( PETSC_NULL, PETSC_NULL, option, option_value, empty.longueur( ), &enable );
+  PetscOptionsGetString( PETSC_NULLPTR, PETSC_NULLPTR, option, option_value, empty.longueur( ), &enable );
   //Nom actual_value( option_value );
   free( option_value );
   return enable ;
@@ -1637,19 +1637,19 @@ int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
   PetscBool flg;
   Nom vide="                                                                                                 ";
   char* tmp=strdup(vide);
-  PetscOptionsGetString(PETSC_NULL,PETSC_NULL,option,tmp,vide.longueur(),&flg);
+  PetscOptionsGetString(PETSC_NULLPTR,PETSC_NULLPTR,option,tmp,vide.longueur(),&flg);
   Nom actual_value(tmp);
   free(tmp);
   if (actual_value==vide)
     {
       if (value=="")
         {
-          PetscOptionsSetValue(PETSC_NULL, option, PETSC_NULL);
+          PetscOptionsSetValue(PETSC_NULLPTR, option, PETSC_NULLPTR);
           if (limpr() >= 0) Cerr << "Option Petsc: " << option << finl;
         }
       else
         {
-          PetscOptionsSetValue(PETSC_NULL, option, value);
+          PetscOptionsSetValue(PETSC_NULLPTR, option, value);
           if (limpr() >= 0) Cerr << "Option Petsc: " << option << " " << value << finl;
         }
       return 1;
@@ -1837,7 +1837,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
     {
       if (limpr() == 1)
         {
-          KSPMonitorSet(SolveurPetsc_, MyKSPMonitor, PETSC_NULL, PETSC_NULL);
+          KSPMonitorSet(SolveurPetsc_, MyKSPMonitor, PETSC_NULLPTR, PETSC_NULLPTR);
         }
       else
         KSPMonitorCancel(SolveurPetsc_);
@@ -1852,7 +1852,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
     {
       set_reuse_preconditioner(false); // Par defaut, precond est refait
       PetscBool flg;
-      PetscOptionsHasName(PETSC_NULL,option_prefix_,"-ksp_reuse_preconditioner",&flg);
+      PetscOptionsHasName(PETSC_NULLPTR,option_prefix_,"-ksp_reuse_preconditioner",&flg);
       if (flg)
         set_reuse_preconditioner(true);
       else if (reuse_preconditioner_nb_it_max_>0)
@@ -2590,8 +2590,8 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
           // If partition of TRUST and PETSc differs, difficult to preallocate the matrix finely so:
           // ToDo, try to optimize:
           PetscInt nz = (int) mp_max((nnz.size_array() == 0 ? 0 : max_array(nnz)));
-          MatSeqSBAIJSetPreallocation(MatricePetsc, block_size_, nz, PETSC_NULL);
-          MatMPISBAIJSetPreallocation(MatricePetsc, block_size_, nz, PETSC_NULL, nz, PETSC_NULL);
+          MatSeqSBAIJSetPreallocation(MatricePetsc, block_size_, nz, PETSC_NULLPTR);
+          MatMPISBAIJSetPreallocation(MatricePetsc, block_size_, nz, PETSC_NULLPTR, nz, PETSC_NULLPTR);
         }
       else
         {
@@ -2608,8 +2608,8 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
           // If partition of TRUST and PETSc differs, difficult to preallocate the matrix finely so:
           // ToDo, try to optimize:
           PetscInt nz = (int) mp_max((nnz.size_array() == 0 ? 0 : max_array(nnz)));
-          MatSeqAIJSetPreallocation(MatricePetsc, nz, PETSC_NULL);
-          MatMPIAIJSetPreallocation(MatricePetsc, nz, PETSC_NULL, nz, PETSC_NULL);
+          MatSeqAIJSetPreallocation(MatricePetsc, nz, PETSC_NULLPTR);
+          MatMPIAIJSetPreallocation(MatricePetsc, nz, PETSC_NULLPTR, nz, PETSC_NULLPTR);
         }
       else
         {
