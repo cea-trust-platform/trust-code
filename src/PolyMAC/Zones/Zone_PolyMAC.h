@@ -154,6 +154,20 @@ public :
   //som_arete[som1][som2 > som1] -> arete correspondant a (som1, som2)
   std::vector<std::map<int, int> > som_arete;
 
+  //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
+  inline double nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
+
+  //matrices locales par elements (operateurs de Hodge) permettant de faire des interpolations :
+  void M2(const DoubleTab *nu, int e, DoubleTab &m2) const; //normales aux faces -> tangentes aux faces duales :   (nu x_ef.v)    = m2 (|f|n_ef.v)
+  void W2(const DoubleTab *nu, int e, DoubleTab &w2) const; //tangentes aux faces duales -> normales aux faces :   (nu |f|n_ef.v) = w2 (x_ef.v)
+  void M1(const DoubleTab *nu, int e, DoubleTab &m1) const; //normales aux aretes duales -> tangentes aux aretes : (nu|a|t_a.v)   = m1 (S_ea.v)
+  void W1(const DoubleTab *nu, int e, DoubleTab &w1) const; //tangentes aux aretes -> normales aux aretes duales : (nu S_ea.v)    = w1 (|a|t_a.v)
+  //possibilite pour le tenseur nu :
+  //nul -> nu = Id ci-dessous
+  //isotrope -> nu(n_e, N) avec n_e = 1 (tenseur constant) / nb_elem_tot() (tenseur par element), et N un nombre de composantes
+  //anisotrope -> nu(n_e, N, D) (anisotrope diagonal) ou nu(n_e, N, D, D) (anisotrope complet)
+  //la matrice en sortie est de taile (n_f, n_f, N) (pour M2/W2) ou (n_a, n_a, N) (pour M1 / W1)
+
   //quelles structures optionelles on a initialise
   mutable std::map<std::string, int> is_init;
   //interpolations d'ordre 1 du vecteur vitesse aux elements
@@ -218,6 +232,8 @@ private:
 
   mutable IntTab arete_faces_; //connectivite face -> aretes
   mutable DoubleTab ta_;       //vecteurs tangents aux aretes
+
+  double beta_; //facteur de stabilisation utilise dans M1 / M2 / W1 / W2
 };
 
 // Fonctions inline
@@ -386,6 +402,20 @@ static inline double kersol(const DoubleTab& M, DoubleTab& b, double eps, Double
   DoubleTab res = prod(M, x);
   for (i = 0; i < m; i++) for (j = 0; j < b.dimension(1); j++) res2 += std::pow(res(i, j) - b(i, j), 2);
   return sqrt(res2);
+}
+
+//renvoie le produit scalaire a.nu.b quelle que soient le nombre de composantes et le type de tenseur de nu
+inline double Zone_PolyMAC::nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma, const double *mb) const
+{
+  if (!nu) return dot(a, b, ma, mb);
+  int d, db, D = dimension;
+  double resu = 0;
+  if (nu->nb_dim() == 2) resu += (*nu)(e, n) * dot(a, b, ma, mb); //isotrope
+  else if (nu->nb_dim() == 3) for (d = 0; d < D; d++) //anisotrope diagonal
+      resu += (*nu)(e, n, d) * (a[d] - (ma ? ma[d] : 0)) * (b[d] - (mb ? mb[d] : 0));
+  else for (d = 0; d < D; d++) for (db = 0; db < D; db++)
+        resu += (*nu)(e, n, d, db) * (a[d] - (ma ? ma[d] : 0)) * (b[db] - (mb ? mb[db] : 0));
+  return resu;
 }
 
 /* equivalent du dist_norm_bord du VDF */
