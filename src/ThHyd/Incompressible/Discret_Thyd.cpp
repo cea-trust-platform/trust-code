@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -240,10 +240,18 @@ void Discret_Thyd::porosite_volumique(const Zone_dis& z, const Schema_Temps_base
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,ch.valeur());
   ch_fonc.valeurs().ref(zone_VF.porosite_elem());
 }
-
-void Discret_Thyd::diametre_hydraulique(const Zone_dis& z, const Schema_Temps_base& sch , Champ_Fonc& ch ) const
+void Discret_Thyd::diametre_hydraulique_elem(const Zone_dis& z, const Schema_Temps_base& sch , Champ_Fonc& ch ) const
 {
-  Cerr << "Hydraulic diameter field discretization" << finl;
+  Cerr << "Hydraulic diameter elem field discretization" << finl;
+  const Zone_VF& zone_VF=ref_cast(Zone_VF, z.valeur());
+  discretiser_champ("champ_elem",zone_VF,"diametre_hydraulique","m",1,sch.temps_courant(),ch);
+  Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,ch.valeur());
+  ch_fonc.valeurs().ref(zone_VF.diametre_hydraulique_elem());
+}
+
+void Discret_Thyd::diametre_hydraulique_face(const Zone_dis& z, const Schema_Temps_base& sch , Champ_Fonc& ch ) const
+{
+  Cerr << "Hydraulic diameter face field discretization" << finl;
   const Zone_VF& zone_VF=ref_cast(Zone_VF, z.valeur());
   discretiser_champ("champ_face",zone_VF,"diametre_hydraulique","m",dimension,sch.temps_courant(),ch);
   Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base,ch.valeur());

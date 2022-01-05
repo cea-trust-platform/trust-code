@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,9 @@
 #include <Discretisation_base.h>
 
 Implemente_instanciable(Diametre_hyd_champ,"Diametre_hyd_champ",Interprete);
+// XD Diametre_hyd_champ interprete Diametre_hyd_champ -2 The hydraulic diameter is given at each element and the hydraulic diameter at each face is calculated by the average of the hydraulic diameters of the two neighbour elements
+// XD attr pb ref_Pb_base pb 0 Name of the problem to which the sub-area is attached
+// XD attr ch field_base ch 0 field used to define the hydraulic diameter field
 
 Sortie& Diametre_hyd_champ::printOn(Sortie& os) const
 {
@@ -68,6 +71,25 @@ Entree& Diametre_hyd_champ::interpreter(Entree& is)
   dh_elem_p.valeur().valeurs()=0;
   dh_elem_p.valeur().affecter(le_champ);
   dh_elem = dh_elem_p.valeurs();
+
+  // calcul des diametres_hydrauliques aux faces
+  DoubleVect& dh_face = zvf.diametre_hydraulique_face();
+  dh_face = 0.;
+  const int nb_face_tot = zvf.nb_faces_tot();
+  const IntTab& f_e = zvf.face_voisins();
+  int e;
+
+  for (int f = 0; f < nb_face_tot; f++)
+    {
+      double nv = 0.0;
+      for (int i = 0; i < 2; i++) if ((e = f_e(f, i)) > -1)
+          {
+            dh_face(f) += dh_elem(e);
+            nv += 1.0;
+          }
+      dh_face(f) /= nv;
+    }
+
 
   return is;
 }

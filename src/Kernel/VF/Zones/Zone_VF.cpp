@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -399,11 +399,12 @@ void Zone_VF::calculer_porosites()
 // remplissage des diametres hydrauliques
 void Zone_VF::calculer_diametres_hydrauliques()
 {
-  // les diametres hydrauliques valent 1
+  // les diametres hydrauliques valent 0
   creer_tableau_faces(diametre_hydraulique_face_, Array_base::NOCOPY_NOINIT);
   diametre_hydraulique_face_ = 0.;
 
-  diametre_hydraulique_elem_.resize(0,Objet_U::dimension);
+  // diametre_hydraulique_elem_.resize(0,Objet_U::dimension);
+  // Desormais diametre_hydraulique_elem_ scalaire
   zone().creer_tableau_elements(diametre_hydraulique_elem_, Array_base::NOCOPY_NOINIT);
   diametre_hydraulique_elem_ = 0.;
 }

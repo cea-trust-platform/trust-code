@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,7 +91,9 @@ public :
     exit();
   };
   void porosite_volumique(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
-  void diametre_hydraulique(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
+  // void diametre_hydraulique(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
+  void diametre_hydraulique_elem(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
+  void diametre_hydraulique_face(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
   void section_passage(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
   virtual void y_plus(const Zone_dis& ,const Zone_Cl_dis&,  const Champ_Inc&, Champ_Fonc& ) const;
   virtual void grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl, const Champ_Inc& eqn,Champ_Fonc& ch) const;
