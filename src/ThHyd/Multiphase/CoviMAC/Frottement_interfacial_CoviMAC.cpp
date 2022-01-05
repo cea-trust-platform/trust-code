@@ -43,8 +43,8 @@ Sortie& Frottement_interfacial_CoviMAC::printOn(Sortie& os) const
 Entree& Frottement_interfacial_CoviMAC::readOn(Entree& is)
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  if (!pbm.has_correlation("frottement_interfacial")) Process::exit(que_suis_je() + " : a frottement_interfacial correlation must be defined in the global correlations { } block!");
-  correlation_ = pbm.get_correlation("frottement_interfacial");
+  if (pbm.has_correlation("frottement_interfacial")) correlation_ = pbm.get_correlation("frottement_interfacial"); //correlation fournie par le bloc correlation
+  else correlation_.typer_lire(pbm, "frottement_interfacial", is); //sinon -> on la lit
   return is;
 }
 
@@ -96,7 +96,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                               cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), exp_res = 2;
   DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), dv(N, N), ddv(N, N, 4), ddv_c(4), coeff(N, N, 2); //arguments pour coeff
   double dv_min = 0.1, dh, a_res = 1e-2;
-  const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur().valeur());
+  const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
   /* faces */
   for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2)

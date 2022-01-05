@@ -24,7 +24,7 @@
 #define Frottement_interfacial_CoviMAC_included
 
 #include <Source_base.h>
-#include <Ref_Correlation.h>
+#include <Correlation.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -52,7 +52,7 @@ public :
   void associer_pb(const Probleme_base& ) override { };
   void mettre_a_jour(double temps) override { };
 private:
-  REF(Correlation) correlation_; //correlation donnant le coeff de frottement interfacial
+  Correlation correlation_; //correlation donnant le coeff de frottement interfacial
 };
 
 #endif
