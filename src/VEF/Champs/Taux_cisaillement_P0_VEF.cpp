@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Taux_cisaillement_P0_VEF.h>
-#include <Zone_VEF.h>
+#include <Zone_VF.h>
 #include <Champ_P1NC.h>
 #include <Zone_Cl_VEF.h>
 
@@ -52,7 +52,7 @@ void Taux_cisaillement_P0_VEF::associer_champ(const Champ_P1NC& la_vitesse, cons
 
 void Taux_cisaillement_P0_VEF::mettre_a_jour(double tps)
 {
-  int nb_elem = la_zone_VEF->nb_elem();
+  int nb_elem = la_zone_VF->nb_elem();
   DoubleVect tmp(nb_elem);
   vitesse_->calcul_S_barre(vitesse_.valeur().valeurs(),tmp,la_zone_Cl_VEF.valeur());
   DoubleTab& S = valeurs(); // Shear rate

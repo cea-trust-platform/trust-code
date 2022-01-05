@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@
 #include <Champ_Fonc_P0_VDF.h>
 #include <Ref_Champ_base.h>
 #include <Zone_dis.h>
+#include <Zone_VF.h>
 
 //
 //.DESCRIPTION  classe Correlation_Vec_Sca_VDF
@@ -66,9 +67,9 @@ inline const Champ_base& Correlation_Vec_Sca_VDF::mon_champ_Sca() const
 
 inline void Correlation_Vec_Sca_VDF::mettre_a_jour(double tps)
 {
-  int nb_elem=la_zone_VDF.valeur().zone().nb_elem();
+  int nb_elem=la_zone_VF.valeur().zone().nb_elem();
 
-  const DoubleTab& centres_de_gravites = la_zone_VDF->xp();
+  const DoubleTab& centres_de_gravites = la_zone_VF->xp();
 
   DoubleTab& correlation = valeurs();
   int elem, ncom;

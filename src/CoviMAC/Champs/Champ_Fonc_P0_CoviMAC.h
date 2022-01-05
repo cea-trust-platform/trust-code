@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,6 @@
 #define Champ_Fonc_P0_CoviMAC_included
 
 #include <Champ_Fonc_P0_base.h>
-#include <Ref_Zone_CoviMAC.h>
 
 //.DESCRIPTION classe Champ_Fonc_P0_CoviMAC
 //
@@ -35,29 +34,7 @@
 
 class Champ_Fonc_P0_CoviMAC: public Champ_Fonc_P0_base
 {
-
   Declare_instanciable(Champ_Fonc_P0_CoviMAC);
-
-public :
-
-  inline void associer_zone_dis_base(const Zone_dis_base&);
-  const Zone_dis_base& zone_dis_base() const;
-  virtual void mettre_a_jour(double );
-  double valeur_au_bord(int face) const;
-  //   DoubleVect moyenne() const;
-  //   double moyenne(int ) const;
-  virtual int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
-  DoubleVect moyenne() const;
-  double moyenne(int ) const;
-  int imprime(Sortie& , int ) const;
-protected:
-
-  REF(Zone_CoviMAC) la_zone_CoviMAC;
 };
-
-inline void Champ_Fonc_P0_CoviMAC::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  la_zone_CoviMAC = (const Zone_CoviMAC&) la_zone_dis_base;
-}
 
 #endif

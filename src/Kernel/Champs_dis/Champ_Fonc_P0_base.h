@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 
 #include <Champ_Fonc_base.h>
 #include <Champ_implementation_P0.h>
+#include <Ref_Zone_VF.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // .DESCRIPTION        : class Champ_Fonc_P0_base
@@ -54,6 +55,16 @@ public :
   virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double ,int distant) const;
   virtual Champ_base& affecter_(const Champ_base& ) ;
   int fixer_nb_valeurs_nodales(int n);
+  inline void associer_zone_dis_base(const Zone_dis_base&);
+  const Zone_dis_base& zone_dis_base() const;
+  double moyenne(int ) const;
+  DoubleVect moyenne() const;
+  virtual int imprime(Sortie& , int ) const;
+  virtual void mettre_a_jour(double );
+  double valeur_au_bord(int face) const;
+
+protected:
+  REF(Zone_VF) la_zone_VF;
 };
 
 inline DoubleVect& Champ_Fonc_P0_base::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
@@ -94,6 +105,11 @@ inline DoubleTab& Champ_Fonc_P0_base::remplir_coord_noeuds(DoubleTab& positions)
 inline int Champ_Fonc_P0_base::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
 {
   return Champ_implementation_P0::remplir_coord_noeuds_et_polys(positions,polys);
+}
+
+inline void Champ_Fonc_P0_base::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
+{
+  la_zone_VF = (const Zone_VF&) la_zone_dis_base;
 }
 
 #endif /* Champ_Fonc_P0_base_inclus*/

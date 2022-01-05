@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,6 @@
 #define Champ_Fonc_P0_VEF_included
 
 #include <Champ_Fonc_P0_base.h>
-#include <Ref_Zone_VEF.h>
 
 //.DESCRIPTION classe Champ_Fonc_P0_VEF
 //
@@ -35,27 +34,7 @@
 
 class Champ_Fonc_P0_VEF: public Champ_Fonc_P0_base
 {
-
   Declare_instanciable(Champ_Fonc_P0_VEF);
-
-public :
-
-  inline void associer_zone_dis_base(const Zone_dis_base&);
-  const Zone_dis_base& zone_dis_base() const;
-  virtual void mettre_a_jour(double );
-  double valeur_au_bord(int face) const;
-  virtual int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
-  DoubleVect moyenne() const;
-  double moyenne(int ) const;
-  int imprime(Sortie& , int ) const;
-protected:
-
-  REF(Zone_VEF) la_zone_VEF;
 };
-
-inline void Champ_Fonc_P0_VEF::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  la_zone_VEF = (const Zone_VEF&) la_zone_dis_base;
-}
 
 #endif

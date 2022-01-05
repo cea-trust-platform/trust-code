@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Champ_Fonc_Tabule_P0_VDF.h>
 #include <Champ_Inc.h>
 #include <Table.h>
+#include <Zone_VF.h>
 
 Implemente_instanciable(Champ_Fonc_Tabule_P0_VDF,"Champ_Fonc_Tabule_P0_VDF",Champ_Fonc_P0_VDF);
 
@@ -48,17 +49,17 @@ void Champ_Fonc_Tabule_P0_VDF::associer_param(const VECT(REF(Champ_base))& les_c
 
 void Champ_Fonc_Tabule_P0_VDF::mettre_a_jour(double t)
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VF& zone_VF = la_zone_VF.valeur();
   const Table& table = la_table.valeur();
   DoubleTab& mes_valeurs = valeurs();
-  const int nb_elem = zone_VDF.nb_elem(), nb_elem_tot = zone_VDF.nb_elem_tot(), nb_param = les_ch_param.size();
+  const int nb_elem = zone_VF.nb_elem(), nb_elem_tot = zone_VF.nb_elem_tot(), nb_param = les_ch_param.size();
   VECT(DoubleTab) val_params_aux_elems;
   for (int i = 0; i < nb_param; i++)
     {
       DoubleTab vp(nb_elem_tot, mes_valeurs.dimension(1));
       val_params_aux_elems.add(vp);
     }
-  const DoubleTab& centres_de_gravites = zone_VDF.xp();
+  const DoubleTab& centres_de_gravites = zone_VF.xp();
   IntVect les_polys(nb_elem_tot);
   for(int elem = 0; elem < nb_elem_tot; elem++) les_polys(elem) = elem;
 

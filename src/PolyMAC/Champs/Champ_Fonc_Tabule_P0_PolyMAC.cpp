@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_Fonc_Tabule_P0_PolyMAC.h>
-#include <Zone_PolyMAC.h>
+#include <Zone_VF.h>
 #include <Champ_Inc.h>
 #include <Table.h>
 
@@ -52,17 +52,17 @@ void Champ_Fonc_Tabule_P0_PolyMAC::associer_param(const VECT(REF(Champ_base))& l
 
 void Champ_Fonc_Tabule_P0_PolyMAC::mettre_a_jour(double t)
 {
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
+  const Zone_VF& zvf = la_zone_VF.valeur();
   const Table& table = la_table.valeur();
   DoubleTab& mes_valeurs = valeurs();
-  const int nb_elem = zone_PolyMAC.nb_elem(), nb_elem_tot = zone_PolyMAC.nb_elem_tot(), nb_param = les_ch_param.size();
+  const int nb_elem = zvf.nb_elem(), nb_elem_tot = zvf.nb_elem_tot(), nb_param = les_ch_param.size();
   VECT(DoubleTab) val_params_aux_elems;
   for (int i = 0; i < nb_param; i++)
     {
       DoubleTab vp(nb_elem_tot, mes_valeurs.dimension(1));
       val_params_aux_elems.add(vp);
     }
-  const DoubleTab& centres_de_gravites = zone_PolyMAC.xp();
+  const DoubleTab& centres_de_gravites = zvf.xp();
   IntVect les_polys(nb_elem_tot);
   for(int elem = 0; elem < nb_elem_tot; elem++) les_polys(elem) = elem;
 

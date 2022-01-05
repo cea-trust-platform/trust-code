@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 #include <Periodique.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Fonc_P0_VDF.h>
+#include <Zone_VDF.h>
 
 Implemente_instanciable(Terme_Source_Acceleration_VDF_Face,"Acceleration_VDF_Face",Terme_Source_Acceleration);
 
