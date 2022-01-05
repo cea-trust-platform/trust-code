@@ -89,26 +89,20 @@ const DoubleTab& Op_Grad_CoviMAC_Face::mu_f(int full_stencil) const
 {
   const Zone_CoviMAC& zone = ref_zone.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const DoubleTab& press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &rho = equation().milieu().masse_volumique().passe(), &vfd = zone.volumes_entrelaces_dir(),
+  const DoubleTab& press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &vfd = zone.volumes_entrelaces_dir(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const IntTab& f_e = zone.face_voisins();
-  int i, e, f, n, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), N = ch.valeurs().line_size(), m, M = press.line_size(), cR = rho.dimension_tot(0) == 1, D = dimension;
+  int i, e, f, n, nf_tot = zone.nb_faces_tot(), N = ch.valeurs().line_size(), m, M = press.line_size();
   double t_past = equation().inconnue().valeur().recuperer_temps_passe(), sum;
   if (!full_stencil && (alp ? (last_gradp_ >= t_past) : (last_gradp_ != -DBL_MAX))) return mu_f_; //deja calcule a ce temps -> rien a faire
 
-
-  DoubleTrav nu(alp ? ne_tot : 0, M), xh(nf_tot, M, D), wh(nf_tot, M), fgrad_w(nf_tot, M); /* diffusivite, donnees des points harmoniques, poids de l'amont */
-  /* diffusivite : rien hors Pb_Multiphase, 1 / rho_m en 6 equations, 1 / (alpha_k rho_k) en 7 equations */
-  if (alp && M == N) for (e = 0; e < ne_tot; e++) for (m = 0; m < M; m++) nu(e, m) = 1. / rho(!cR * e, m);
-  else if (alp && M == 1) for (e = 0; e < ne_tot; nu(e, 0) = 1. / nu(e, 0), e++)
-      for (n = 0; n < N; n++) nu(e, 0) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n);
   /* gradient */
-  zone.fgrad(M, 1, ref_zcl->les_conditions_limites(), ch.fcl(), alp ? &nu : NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
+  zone.fgrad(M, 1, ref_zcl->les_conditions_limites(), ch.fcl(), NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
 
   /* mu_f_ : poids de l'amont/aval */
   for (mu_f_.resize(nf_tot, N, 2), f = 0; f < nf_tot; f++) for (n = 0, m = 0; n < N; n++, m += (M > 1))
       {
-        for (sum = 0, i = 0; i < 2; i++) sum += (mu_f_(f, n, i) = (e = f_e(f, i)) >= 0 ? vfd(f, i) / (alp ? nu(e, m) : 1) : 0);
+        for (sum = 0, i = 0; i < 2; i++) sum += (mu_f_(f, n, i) = (e = f_e(f, i)) >= 0 ? vfd(f, i) : 0);
         for (i = 0; i < 2; i++) mu_f_(f, n, i) /= sum;
       }
 
@@ -182,8 +176,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(),
                    &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &mu = mu_f(),
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
-                     *rho = alp ? &equation().milieu().masse_volumique().passe() : NULL;
+                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &pe = zone.porosite_elem(), &pf = zone.porosite_face();
   int i, j, e, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = secmem.line_size(), m, M = press.line_size();
 
@@ -191,7 +184,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   Matrice_Morse *mat_p = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : NULL,
                  *mat_v = !semi_impl.count(nom_inc) && matrices.count(nom_inc) ? matrices.at(nom_inc) : NULL;
 
-  DoubleTrav gb(nf_tot, M), gf(N), alpha_rho(N); //grad p aux bords , alpha |f| (grad p)_f
+  DoubleTrav gb(nf_tot, M), gf(N), alpha(N); //grad p aux bords , alpha |f| (grad p)_f
   std::map<int, std::map<int, double>> dgp_gb, dgb_v; //dependances vitesses -(dgb_v)-> grad p aux bords -(dgp_gb)-> grad p ailleurs
   for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl(f, 0) > 1)  //Dirichlet/Symetrie : pression du voisin + correction en regardant l'eq de NS dans celui-ci
       for (e = f_e(f, 0), n = 0, m = 0; n < N; n++, m += (M > 1))
@@ -211,7 +204,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   std::vector<std::map<int, double>> dgf_pe(N), dgf_gb(N); //dependance de [grad p]_f en les pressions aux elements, en les grad p aux faces de bord
   for (f = 0; f < zone.nb_faces_tot(); f++)
     {
-      for (alpha_rho = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++) alpha_rho(n) += mu(f, n, i) * (alp ? (*alp)(e, n) : 1) * (rho ? (*rho)(e, n) : 1);
+      for (alpha = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++) alpha(n) += mu(f, n, i) * (alp ? (*alp)(e, n) : 1);
 
       /* |f| grad p */
       for (gf = 0, i = fgrad_d(f); i < fgrad_d(f + 1); i++)
@@ -226,7 +219,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       /* face -> vf(f) * phi grad p */
       if (fcl(f, 0) < 2) for (n = 0, m = 0; n < N; n++, m += (M > 1))
           {
-            double fac = alpha_rho(n) * pf(f) * vf(f);
+            double fac = alpha(n) * pf(f) * vf(f);
             secmem(f, n) -= fac * gf(n);
             if (f < zone.nb_faces()) for (auto &&i_c : dgf_pe[n]) (*mat_p)(N * f + n, M * i_c.first + m) += fac * i_c.second;
             for (auto &&i_c : dgf_gb[n]) dgp_gb[N * f + n][M * i_c.first + m] += fac * i_c.second;
@@ -235,7 +228,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (d = 0; d < D; d++)
             if (fs(f) * std::fabs(xv(f, d) - xp(e, d)) > 1e-6 * ve(e)) for (n = 0, m = 0; n < N; n++, m += (M > 1))
                 {
-                  double fac = (i ? -1 : 1) * fs(f) * pe(e) * (xv(f, d) - xp(e, d)) * (alp ? (*alp)(e, n) : 1) * (rho ? (*rho)(e, n) : 1);
+                  double fac = (i ? -1 : 1) * fs(f) * pe(e) * (xv(f, d) - xp(e, d)) * (alp ? (*alp)(e, n) : 1);
                   secmem(nf_tot + D * e + d, n) -= fac * gf(n);
                   for (auto &i_c : dgf_pe[n]) (*mat_p)(N * (nf_tot + D * e + d) + n, M * i_c.first + m) += fac * i_c.second;
                   for (auto &i_c : dgf_gb[n]) dgp_gb[N * (nf_tot + D * e + d) + n][M * i_c.first + m] += fac * i_c.second;
