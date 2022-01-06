@@ -1,3 +1,4 @@
+XX/XX/22 (TRUST)  New option  : Option save_matrix_mtx_format to export from PETSc solvers the matrix to Matrix Market format file (.mtx)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------

@@ -1,0 +1,13 @@
+#!/bin/bash
+# Resolution du systeme par PETSc
+# Conversion en matrice PETSc:
+for file in `ls *.mtx 2>/dev/null`
+do
+   echo -e "Converting $file to ${file%.mtx}.petsc... \c"
+   python $PETSC_DIR/lib/petsc/bin/PetscBinaryIO.py convert $file || exit -1
+   echo "OK!"
+done
+for file in `ls *.petsc 2>/dev/null`
+do
+   ./petsc_matrix.sh -n 1 $file -rhs ONE || exit -1
+done

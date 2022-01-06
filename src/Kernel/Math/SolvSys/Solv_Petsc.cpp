@@ -1699,11 +1699,11 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       else if (save_matrix_==2)
         {
           // Format matrix market ToDo : method
-          if (Process::nproc()>1) Process::exit("Error, matrix market format is not available yet in parallel.");
+          if (Process::nproc() > 1) Process::exit("Error, matrix market format is not available yet in parallel.");
           Nom filename(Objet_U::nom_du_cas());
-          filename+="_matrix";
-          filename+=(Nom)instance;
-          filename+=".mtx";
+          filename += "_matrix";
+          filename += (Nom) instance;
+          filename += ".mtx";
           SFichier mtx(filename);
           PetscInt rows;
           const PetscInt *ia, *ja;
@@ -1712,25 +1712,44 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
           if (!done) Process::exit("Error in MatGetRowIJ");
           PetscScalar *v;
           MatType mat_type;
-          MatGetType(MatricePetsc_,&mat_type);
-          if (strcmp(mat_type,MATSEQAIJ)==0)
-            MatSeqAIJGetArray(MatricePetsc_, &v);
-          else if (strcmp(mat_type,MATSEQSBAIJ)==0)
-            MatSeqSBAIJGetArray(MatricePetsc_, &v);
+          MatGetType(MatricePetsc_, &mat_type);
+          Nom type;
+          if (strcmp(mat_type, MATSEQAIJ) == 0)
+            {
+              type = "general";
+              MatSeqAIJGetArray(MatricePetsc_, &v);
+            }
+          else if (strcmp(mat_type, MATSEQSBAIJ) == 0)
+            {
+              type = "symmetric";
+              MatSeqSBAIJGetArray(MatricePetsc_, &v);
+            }
           else Process::exit("Matrix type not supported.");
-          Cerr << "Matrix (" << rows << " lines) written into file with RHS and solution: " << filename << finl;
-          mtx << "%%MatrixMarket matrix coordinate real general" << finl;
-          mtx << "%%AMGX rhs solution" << finl;
+          mtx << "%%MatrixMarket matrix coordinate real " << type << finl;
+          bool vectors = false; // Ecriture des vecteurs supporte par AmgX mais cela ne marche pas encore
+          if (vectors)
+            {
+              Cerr << "Matrix (" << rows << " lines) written into file with RHS and solution: " << filename << finl;
+              mtx << "%%matrix rhs solution" << finl;
+            }
+          else
+            {
+              Cerr << "Matrix (" << rows << " lines) written into file: " << filename << finl;
+              mtx << "%%matrix" << finl;
+            }
           mtx << rows << " " << rows << " " << ia[rows] << finl;
           for (int row=0; row<rows; row++)
             for (int j=ia[row]; j<ia[row+1]; j++)
               mtx << row+1 << " " << ja[j]+1 << " " << v[j] << finl;
-          mtx << "%%" << finl << "%% optional rhs " << secmem.size_array() << finl;
-          for (int i=0; i<secmem.size_array(); i++)
-            mtx << secmem(i) << finl;
-          mtx << "%%" << finl << "%% optional solution " << solution.size_array() << finl;
-          for (int i=0; i<solution.size_array(); i++)
-            mtx << solution(i) << finl;
+          if (vectors)
+            {
+              mtx << "%%" << finl << "%% optional rhs " << secmem.size_array() << finl;
+              for (int i = 0; i < secmem.size_array(); i++)
+                mtx << secmem(i) << finl;
+              mtx << "%%" << finl << "%% optional solution " << solution.size_array() << finl;
+              for (int i = 0; i < solution.size_array(); i++)
+                mtx << solution(i) << finl;
+            }
         }
       if (save_matrix_ && verbose) Cout << "[Petsc] Time to write matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
     }
