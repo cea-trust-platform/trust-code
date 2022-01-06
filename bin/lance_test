@@ -1389,7 +1389,7 @@ fi
 # Envoi d un mail #
 ###################
 qui=`whoami 2>/dev/null`
-if [ "$qui" = triou ]
+if [ "$qui" = triou ] || [ "$qui" = ndjati ]
 then
    dest=$TRUST_MAIL
 else

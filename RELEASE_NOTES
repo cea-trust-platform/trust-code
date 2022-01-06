@@ -1,12 +1,12 @@
-XX/XX/22 (TRUST)  Fix         : PETSc Cholesky crashed on int64 builds with Intel compiler
-XX/XX/22 (TRUST)  New keyword : Internal thermal boundary conditions. See validation sheets Echange_impose and echg_interne
-XX/XX/22 (TRUST)  New keyword : ModifyDomaineAxi1D|Convert_1D_to_1Daxi to convert 1D mesh to 1D axisymmetric mesh
-XX/XX/22 (TRUST)  New keyword : Champ_front_xyz_tabule to define a space-dependent boundary field which is also time tabulated. E.g: champ_front_xyz_tabule 1 x*y { t0 t1 t2 a1 a2 a3 }  
-XX/XX/22 (TRUST)  Change      : Stability time step for diffusion operator is now the same on PolyMAC conform mesh compared to VDF mesh 
-XX/XX/22 (TRUST)  New keyword : Sondes_fichier { fichier filename } to read probes definition into a file
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
+06/01/22 (TRUST)  Fix         : PETSc Cholesky crashed on int64 builds with Intel compiler
+06/01/22 (TRUST)  New keyword : Internal thermal boundary conditions. See validation sheets Echange_impose and echg_interne
+06/01/22 (TRUST)  New keyword : ModifyDomaineAxi1D|Convert_1D_to_1Daxi to convert 1D mesh to 1D axisymmetric mesh
+06/01/22 (TRUST)  New keyword : Champ_front_xyz_tabule to define a space-dependent boundary field which is also time tabulated. E.g: champ_front_xyz_tabule 1 x*y { t0 t1 t2 a1 a2 a3 }
+06/01/22 (TRUST)  Change      : Stability time step for diffusion operator is now the same on PolyMAC conform mesh compared to VDF mesh
+06/01/22 (TRUST)  New keyword : Sondes_fichier { fichier filename } to read probes definition into a file
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.4 : Enhancements, modifications and corrected bugs since version 1.8.3 :
 --------------------------------------------------------------------------------------------------

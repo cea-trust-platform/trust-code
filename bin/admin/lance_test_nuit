@@ -190,7 +190,11 @@ check_components()
 	       # Machines en mode debug
 	       debug_machines=`liste_machines "\-g "` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode semi_opt
-	       semi_opt_machines=`liste_machines "\-semi_opt "`
+	       semi_opt_machines=`liste_machines "\-semi_opt"`
+	       # Machines en mode gcov
+	       gcov_machines=`liste_machines "\-gcov"`
+	       # Machines en mode prof
+	       prof_machines=`liste_machines "\-prof"`
 	       # Machines en mode avx
 	       avx_machines=`liste_machines "\-avx"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode valgrind
@@ -312,6 +316,12 @@ check_components()
 	                elif [[ "$semi_opt_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines semi_opt
 		        then
 		           mode_option="--with-mode=semi_optim"
+		        elif [[ "$gcov_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines gcov
+		        then
+		           mode_option="--with-mode=gcov"
+		        elif [[ "$prof_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines prof
+		        then
+		           mode_option="--with-mode=prof"
 	                elif [[ "$debug_machines" = *"$adr"* ]] # Test si machine est dans la liste des machines debug
 		        then
 		           mode_option="--with-mode=debug"
@@ -2775,12 +2785,13 @@ do
       echo "    No $REP_NUIT/analyse_couverture_$hostname.log"
    else
       echo "    See $REP_NUIT/analyse_couverture_$hostname.log"
+      workdir=`ssh $machine -n 'echo $WORKDIR'`
       if  [ "${hostname:0:2}" = "is" ]
       then
-         scp $log@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
-         scp $log@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
-         scp $log@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
-         scp $log@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
+         scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
+         scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
+         scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
+         scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
       else
          scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
          scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
@@ -2795,7 +2806,7 @@ do
       #scp $log@$machine_gcov:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
       if  [ "${hostname:0:2}" = "is" ]
       then
-         scp $log@$machine_gcov:$WORKDIR/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+         scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
       else
          scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
       fi
@@ -2833,9 +2844,10 @@ do
       echo "    No $REP_NUIT/make_Couverture_$hostname.log"
    else
       echo "    See $REP_NUIT/make_Couverture_$hostname.log"
+      workdir=`ssh $machine -n 'echo $WORKDIR'`
       if [ "${hostname:0:2}" = "is" ]
       then
-         scp $log@$machine:$WORKDIR/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
+         scp $log@$machine:$workdir/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
       else
          scp $log@$machine:~/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
       fi
@@ -2850,7 +2862,7 @@ do
          #scp $log@$machine:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
          if [ "${hostname:0:2}" = "is" ]
          then
-            scp $log@$machine:$WORKDIR/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+            scp $log@$machine:$workdir/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
          else
             scp $log@$machine:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
          fi
@@ -2872,7 +2884,7 @@ do
             #CHECKOUT $cpu 
             if [ "${hostname:0:2}" = "is" ]
 	    then
-               scp $log@$machine:$WORKDIR/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
+               scp $log@$machine:$workdir/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
 	    else
                scp $log@$machine:~/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
 	    fi
@@ -3156,7 +3168,8 @@ else
    if [ "${machine:0:2}" = "is" ]
    then
       #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
-      scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log 1>/dev/null 2>&1
+      workdir=`ssh $machine -n 'echo $WORKDIR'`
+      scp $log@$machine:$workdir/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log 1>/dev/null 2>&1
       #[ $? != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
    else
       scp $log@$machine:~/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
