@@ -24,6 +24,7 @@
 #include <Champ_P0_CoviMAC.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_Cl_CoviMAC.h>
+#include <Zone_CoviMAC.h>
 #include <Domaine.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
@@ -153,3 +154,16 @@ void Champ_P0_CoviMAC::init_fcl() const
     }
   fcl_init_ = 1;
 }
+
+void Champ_P0_CoviMAC::update_tab_grad(double tps, int full_stencil) const
+{
+  if (tps != tps_dernier_calc_tab_grad_)
+    {
+      const IntTab&             f_cl = fcl();
+      const Zone_CoviMAC&       zone = ref_cast(Zone_CoviMAC, la_zone_VF.valeur());
+      const Conds_lim&           cls = zone_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
+      zone.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
+      tps_dernier_calc_tab_grad_ = tps;
+    }
+}
+

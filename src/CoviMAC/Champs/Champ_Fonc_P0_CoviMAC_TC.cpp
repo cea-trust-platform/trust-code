@@ -70,8 +70,8 @@ void Champ_Fonc_P0_CoviMAC_TC::me_calculer(double tps) //See Pope 2000 page 367 
         tab_tc(e, n) = 0;
         for (d_U = 0; d_U < D; d_U++) for (d_X = 0; d_X < D; d_X++)
             {
-        	  double Sij = 0.5 * (tab_grad(nf_tot + d_X + e * D , D * n + d_U) + tab_grad(nf_tot + d_U + e * D , D * n + d_X)) ;
-        	  if (d_U == d_X) for (int i = 0 ; i <D ; i++) Sij += -1./3.*tab_grad(nf_tot + i + e * D , D * n + i) ;
+              double Sij = 0.5 * (tab_grad(nf_tot + d_X + e * D , D * n + d_U) + tab_grad(nf_tot + d_U + e * D , D * n + d_X)) ;
+              if (d_U == d_X) for (int i = 0 ; i <D ; i++) Sij += -1./3.*tab_grad(nf_tot + i + e * D , D * n + i) ;
               tab_tc(e, n) += Sij * Sij ;
             }
         tab_tc(e, n) = sqrt(2 * tab_tc(e, n));

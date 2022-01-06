@@ -64,6 +64,11 @@ public :
     return fcl_;
   }
 
+// Fonctions pour le calcul des coefficients du gradient
+  mutable IntTab fgrad_d, fgrad_e;             // Tables used in zone_CoviMAC::fgrad
+  mutable DoubleTab fgrad_w;
+  void update_tab_grad(double tps, int full_stencil) const;      // Call to update the tables ; initialisation isn't not necessary as they are always redimensionned in fgrad
+
 protected :
 
   REF(Zone_VF) la_zone_VF;
@@ -71,6 +76,8 @@ protected :
   void init_fcl() const;
   mutable IntTab fcl_;
   mutable int fcl_init_ = 0;
+
+  mutable double tps_dernier_calc_tab_grad_ = -1;
 };
 
 #endif
