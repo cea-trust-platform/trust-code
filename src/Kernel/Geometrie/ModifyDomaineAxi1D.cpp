@@ -24,8 +24,8 @@
 #include <Param.h>
 #include <DomaineAxi1d.h>
 
-Implemente_instanciable(ModifyDomaineAxi1D,"ModifyDomaineAxi1D",Interprete);
-// XD modifydomaineAxi1d interprete modifydomaineAxi1d 0 not_set
+Implemente_instanciable(ModifyDomaineAxi1D,"ModifyDomaineAxi1D|Convert_1D_to_1Daxi",Interprete);
+// XD modifydomaineAxi1d interprete modifydomaineAxi1d 0 Convert a 1D mesh to 1D axisymmetric mesh
 // XD attr dom chaine dom 0 not_set
 // XD attr bloc bloc_lecture bloc 0 not_set
 //

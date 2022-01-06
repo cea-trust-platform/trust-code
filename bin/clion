@@ -38,16 +38,16 @@ do
       rep_dev=$BUILD_ROOT python $TRUST_ROOT/bin/KSH/Createcmakefile.py -atelier
    fi
 done
-# Configuration for Clion:
-cd $PROJECT_ROOT
-for BUILD_ROOT in $BUILD_ROOTS
-do
-   # Create a link to build directory to avoid change CLion settings
-   rep=cmake-build-debug && [ "`echo $BUILD_ROOT | grep _opt`" != "" ] && rep=cmake-build-release
-   rm -r -f $rep
-   echo "Creating a link $PROJECT_ROOT/$rep -> $BUILD_ROOT"
-   ln -s -f $BUILD_ROOT $rep
-done
+# Configuration for Clion: Les liens cela ne marche pas... Il faut modifier le workspace.xml
+#cd $PROJECT_ROOT
+#for BUILD_ROOT in $BUILD_ROOTS
+#do
+#   # Create a link to build directory to avoid change CLion settings
+#   rep=cmake-build-debug && [ "`echo $BUILD_ROOT | grep _opt`" != "" ] && rep=cmake-build-release
+#   rm -r -f $rep
+#   echo "Creating a link $PROJECT_ROOT/$rep -> $BUILD_ROOT"
+#   ln -s -f $BUILD_ROOT $rep
+#done
 
 # Run Clion
 echo "Running Clion on $CMakeLists project..."

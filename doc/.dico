@@ -551,7 +551,7 @@
  Modele_turbulence_scal Modele_turbulence_scal Modele_turbulence_scal.h
  Modele_turbulence_scal_base Modele_turbulence_scal_base Modele_turbulence_scal_base.h
  modifier_pour_QC Champ_Generique_modifier_pour_QC Champ_Generique_modifier_pour_QC.h
- ModifyDomaineAxi1D ModifyDomaineAxi1D ModifyDomaineAxi1D.h
+ ModifyDomaineAxi1D|Convert_1D_to_1Daxi ModifyDomaineAxi1D ModifyDomaineAxi1D.h
  Modif_bord_to_raccord Modif_bord_to_raccord Modif_bord_to_raccord.h
  Mod_turb_hyd Mod_turb_hyd Mod_turb_hyd.h
  Mod_turb_hyd_base Mod_turb_hyd_base Mod_turb_hyd_base.h

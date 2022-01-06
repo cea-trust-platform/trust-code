@@ -1,4 +1,4 @@
-# Thermohydraulique 2D : Conditions limites instationnaires #
+# Keyword Champ_Front_xyz_Tabule #
 # PARALLEL OK 2 #
 dimension 2
 Pb_Thermohydraulique pb
@@ -88,7 +88,7 @@ Read pb
 		boundary_conditions {
 			Haut1 frontiere_ouverte_vitesse_imposee
 				Champ_front_bruite 2 {
-					Moyenne 0. -0.01
+					Moyenne 0. -0.01 
 					Amplitude 0. 0. }
 			Haut2 frontiere_ouverte_vitesse_imposee
 				Champ_front_tabule 2
@@ -104,18 +104,19 @@ Read pb
 	{
 		diffusion { }
 		convection { quick }
+  		# Champ_Front_xyz_Tabule: T(x,y,z,t) = f(x,y,z) * a(t) with f(x,y,z)=10*(x+0.5)/(x+0.5) and a(t)=a(i)+(a(i+1)-a(i))*(t-t(i))/(t(i+1)-t(i)) si t(i)<t<t(i+1) # 
 		boundary_conditions 
 		{
+ 			Gauche paroi_temperature_imposee 
+				 Champ_Front_xyz_Tabule 1 10*(x+0.5)/(x+0.5) 
+				{ 6 0. 0.1 0.101 1.5 1.501 2.5
+				    0. 0. 1. 1. 0. 0. } 
 			Haut1 frontiere_ouverte_temperature_imposee
 				Champ_front_Uniforme 1 5.
 			Haut2 frontiere_ouverte_temperature_imposee
 				Champ_front_Uniforme 1 5.
 			Bas frontiere_ouverte T_ext
 				Champ_front_Uniforme 1 5.
- 			Gauche paroi_temperature_imposee 
-				 Champ_Front_xyz_Tabule 1 10*(x+0.5)/(x+0.5) 
-				{ 6 0. 0.1 0.101 1.5 1.501 2.5
-				    0. 0. 1. 1. 0. 0. } 
 			Droit  paroi_temperature_imposee 
 				 Champ_Front_Uniforme 1  0.
 		}
