@@ -35,7 +35,7 @@ linux	rsync_ssh	tache	is241483.intra.cea.fr		-all		-MPCube -TrioCFD -GENEPI3 -IJ
 linux	rsync_ssh	tache	is232971.intra.cea.fr				-TRUST -MPCube -PAREX+  -GENEPI3				-force_provided_openmpi -remote_install_TRUST_kernel_only 			# Fedora 26 	Bat 451 LGLS	bureau Pierre LEDAC
 linux	rsync_ssh	non	is226423.intra.cea.fr		-all		-GENEPI3 -IJK-FT 			-g		-force_provided_mpich -download-visit -without-pdflatex 						# Ubuntu 20 titania	Bat 451 LMSF	bureau Michel Filippi
 linux	rsync_ssh	non	is221710.intra.cea.fr			-TRUST -MPCube -GENEPI3 				-force_provided_mpich 								# Fedora 24	Bat 454	LMEC	bureau Marc Elmo
-linux	rsync_ssh	non	is224594-clang.intra.cea.fr			-GENEPI3 -IJK-FT -TrioMC		-clang		-force_provided_openmpi								# Fedora 30	Bat 454 LMEC	bureau Yannick Gorsse
+linux	rsync_ssh	non	is224594-clang.intra.cea.fr			-GENEPI3 -IJK-FT -TrioMC -FLICA5 -C3D 		-clang		-force_provided_openmpi								# Fedora 30	Bat 454 LMEC	bureau Yannick Gorsse
 linux	rsync_ssh	non	is233137.intra.cea.fr				-FLICA5 -C3D 						-disable-mpi 			 -without-visit 						# Fedora 26	Bat 451 LMSF	bureau Guillaume Bois
 linux	rsync_ssh	non	is226423-clang.intra.cea.fr			-MPCube						-clang	-force_provided_openmpi -without-visit -without-pdflatex 							# Ubuntu 20 	Bat 451 LMSF	bureau Michel Filippi
 linux	rsync_ssh	non	is212915.intra.cea.fr				-TrioCFD -SIDES -SCORPIO -STT -PEMFC 				-g 		-force_provided_mpich	-without-pdflatex					# CentOS 7.9	Bat 451 LMSF	bureau Michel Filippi
@@ -50,9 +50,9 @@ linux	rsync_ssh	tache	is230500-build64.intra.cea.fr			-TrioCFD -IJK-FT -STT -PEM
 linux	rsync_ssh	tache	is244274-build64.intra.cea.fr			 							-build_64_bit -force-provided-mpich 							# Fedora 32	Bat 451	LGLS bureau Gilles
 linux	rsync_ssh	tache	is244274.intra.cea.fr			 	-TRUST-NK  				-Check_decoupage 		 -force-provided-mpich 							# Fedora 32	Bat 451	LGLS bureau Gilles
 linux	rsync_ssh	tache	is231771.intra.cea.fr				-TrioCFD -SIDES -SCORPIO -TRUST-NK -FLICA5 -C3D 								-prof -force_provided_mpich								# CentOS 7.9	Bat 451 LGLS	bureau Pierre Ledac
-linux   rsync_ssh	tache	is223288.intra.cea.fr 			     					-semi_opt  -force_provided_mpich 								# Fedora 26	Bat 451	LGLS	Bureau Adrien Bruneton
+linux   rsync_ssh	tache	is223288.intra.cea.fr 			     	-FLICA5 -C3D 				-semi_opt  -force_provided_mpich 								# Fedora 26	Bat 451	LGLS	Bureau Adrien Bruneton
 linux   rsync_ssh	tache	is212912.intra.cea.fr 		-all		-TrioCFD  					-g 		-force_provided_mpich 								# Ubuntu 18	Bat 451	LMSF	Bureau Michel (machine pilote)
-linux   rsync_ssh	non	is212958.intra.cea.fr 		-all		-TrioCFD -GENEPI3   					    -g 		-force_provided_mpich 								# CentOS 7.9	Bat 451	LMSF	Bureau Michel (machine pilote titania)
+linux   rsync_ssh	non	is212958.intra.cea.fr 		-all		-TrioCFD -GENEPI3 -FLICA5 -C3D   					    -g 		-force_provided_mpich 								# CentOS 7.9	Bat 451	LMSF	Bureau Michel (machine pilote titania)
 linux   rsync_ssh	non	is224668.intra.cea.fr 		-all		-TrioCFD -IJK-FT -GENEPI3  				-g 		-force_provided_mpich 								# Ubuntu 18.04	Bat 451	LMSF	Bureau Michel (machine pilote titania)
 linux   rsync_ssh	non	is213122.intra.cea.fr 		-all		-TrioCFD -IJK-FT -STT -PEMFC -GENEPI3     	 		-force_provided_mpich -without-pdflatex  								# Ubuntu 20.04	Bat 451	LMSF	Bureau Michel (machine pilote titania)
 linux	rsync_ssh	non	is225300.intra.cea.fr		-all     	-MPCube -IJK-FT -GENEPI3 -SIDES -SCORPIO -STT -PEMFC  -force_latest_mpich  							# Fedora 34	titania Erwan
@@ -65,4 +65,4 @@ linux   rsync_ssh   tache   is229955.intra.cea.fr 			  					                    
 linux   rsync_ssh   tache   is231796.intra.cea.fr       -all    -MPCube -TrioCFD  -GENEPI3       -prof       -force_provided_mpich -without-pdflatex             # Debian 10 Bat 451 LGLS  Portable Clarisse
 linux   rsync_ssh	non	is232973.intra.cea.fr 		-all		-TrioCFD -GENEPI3 -IJK-FT -STT -PEMFC      	 		-force_provided_mpich -without-pdflatex 								# Ubuntu 20.04	Bat 451	LMSF	Bureau TMA TRUST titania
 linux   rsync_ssh	non	is232973-gui.intra.cea.fr 		-all		-TrioCFD -GENEPI3      -gui   	 		-force_provided_mpich -without-pdflatex  								# Ubuntu 20.04	Bat 451	LMSF	Bureau TMA TRUST
-linux	rsync_ssh	non	is227246.intra.cea.fr		-all     	-MPCube -IJK-FT -GENEPI3 -SIDES -SCORPIO -STT -PEMFC  -force_latest_openmpi  							# Fedora 34	titania Erwan
+linux	rsync_ssh	non	is227246.intra.cea.fr		-all     	-MPCube -IJK-FT -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D   -force_latest_openmpi  							# Fedora 34	titania Erwan

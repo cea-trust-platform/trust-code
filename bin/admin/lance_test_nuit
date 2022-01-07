@@ -2445,11 +2445,12 @@ do
    else
       echo "  See $check_xdata_log"
       log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
+      workdir=`ssh $machine -n 'echo $WORKDIR'`
       #scp $log@$machine:~/$WORKBASE$machine/TRUST/Outils/TRIOXDATA/check_xdata.log $check_xdata_log
       if  [ "${machine:0:2}" = "is" ]
       then
-         #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
-         scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log 1>/dev/null 2>&1
+         #scp $log@$machine:$workdir/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
+         scp $log@$machine:$workdir/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log 1>/dev/null 2>&1
          scp_error=$?
          #[ $scp_error != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log && scp_error=$?
       else
@@ -2625,11 +2626,12 @@ do
    else
       echo "Verification of $valgrind_log"
       log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
+      workdir=`ssh $machine -n 'echo $WORKDIR'`
       #scp $log@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log $valgrind_log
       if [ "${machine:0:2}" = "is" ]
       then
          #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/ANA.log $valgrind_log
-         scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/ANA.log $valgrind_log 1>/dev/null 2>&1
+         scp $log@$machine:$workdir/.tmp_TRUST_$machine/ANA.log $valgrind_log 1>/dev/null 2>&1
          scp_error=$?
          #[ $scp_error != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/ANA.log $valgrind_log && scp_error=$?
       else
@@ -2651,7 +2653,7 @@ do
          if [ "${machine:0:2}" = "is" ]
          then
             #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
-            scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem $Build/casmem_$machine 1>/dev/null 2>&1
+            scp $log@$machine:$workdir/.tmp_TRUST_$machine/casmem $Build/casmem_$machine 1>/dev/null 2>&1
             #[ $? != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
          else
             scp $log@$machine:~/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
