@@ -59,6 +59,7 @@ then
    # Nouvelle procedure
    build=build_new.sh
    version=3_1_1
+   version_extp=$version
    export HTTPS="https://github.com/visit-dav/visit/releases/download"
    [ "$MPI_ROOT" != "" ] && parallel="parallel"
    # See https://visit-dav.github.io/visit-website/releases-as-tables/#latest
@@ -82,6 +83,7 @@ else
    # Ancienne procedure, peu a peu obsolete
    build=build.sh
    version=2_12_1
+   version_extp=$version
    # suppression de python/conda du path :
    OLDPATH_=$PATH
    NEWPATH_=`echo $PATH | sed "s/exec\/python\/bin/exec/g"`
@@ -118,8 +120,9 @@ then
       fi
    done
    [ $DOWNLOADED = 0 ] && echo "Fail to download $visit_install" && exit -1
-   chmod +x $visit_install  
-   MKELEM $visit_install 1>/dev/null 2>&1
+   chmod +x $visit_install
+   # On ne met en gestion de conf le script d'install que si la version VisIt est dans extp  
+   [ "$version" = "$version_extp" ] && MKELEM $visit_install 1>/dev/null 2>&1
 fi
 
 ##################################
