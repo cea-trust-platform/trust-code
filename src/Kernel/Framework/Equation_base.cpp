@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1860,6 +1860,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           Cerr << "solveur_dffusion_implicite can't be used yet with penalization. " << finl;
           Process::exit();
         }
+      statistiques().begin_count(assemblage_sys_counter_);
       DoubleTab present(solution); // I(n)
       // On multiplie secmem par M (qui etait divise par M avant l'appel...)
       DoubleTab copie(secmem);
@@ -1871,11 +1872,14 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       matrice.clean(); // A=0
       // Add diffusion matrix L into matrix
       operateur(0).l_op_base().contribuer_a_avec(present, matrice); // A=L
+      statistiques().end_count(assemblage_sys_counter_);
       operateur(0).ajouter(present, secmem);
+      statistiques().begin_count(assemblage_sys_counter_);
       matrice.ajouter_multvect(present, secmem);
       // Add M/dt into matrix
       schema_temps().ajouter_inertie(matrice,secmem,(*this)); // A=M/dt+L
       modifier_pour_Cl(matrice,secmem);
+      statistiques().end_count(assemblage_sys_counter_,0,0);
       // Solve to get I(n+1):
       SolveurSys& solveur = ref_cast(Parametre_diffusion_implicite, parametre_equation().valeur()).solveur();
       solveur->reinit(); // New matrix but same sparsity
@@ -1887,6 +1891,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
 
       solution-=present; // dI=I(n+1)-I(n)
       solution/=schema_temps().pas_de_temps(); // dI/dt
+
     }
   else
     {
@@ -1895,7 +1900,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       if (marq_tot)
         {
           DoubleTrav toto(secmem);
-          statistiques().end_count(diffusion_implicite_counter_);
+          statistiques().end_count(diffusion_implicite_counter_,0,0);
           for (int i = 0; i < size_s; i++)
             if (marq(i))
               sources()(i).ajouter(toto);
@@ -1950,6 +1955,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           if (param.nb_it_max() > 0)
             nmax = param.nb_it_max();
         }
+      statistiques().end_count(diffusion_implicite_counter_,0,0);
 
       /////////////////////
       // Preconditionnement
@@ -1992,7 +1998,6 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           statistiques().end_count(assemblage_sys_counter_);
         }
       // On utilise p pour calculer phiB :
-      statistiques().end_count(diffusion_implicite_counter_);
       operateur(0).ajouter(p, phiB);
       if (marq_tot)
         {
