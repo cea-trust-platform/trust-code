@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
+10/01/22 (TRUST)  Fix         : Champ_front_recyclage was not working properly if used in parallel calculations
 06/01/22 (TRUST)  Fix         : PETSc Cholesky crashed on int64 builds with Intel compiler
 06/01/22 (TRUST)  New keyword : Internal thermal boundary conditions. See validation sheets Echange_impose and echg_interne
 06/01/22 (TRUST)  New keyword : ModifyDomaineAxi1D|Convert_1D_to_1Daxi to convert 1D mesh to 1D axisymmetric mesh

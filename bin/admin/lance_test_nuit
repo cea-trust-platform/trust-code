@@ -4104,7 +4104,7 @@ fi
 echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
 echo `date` >> $MESSAGES_NUIT
 echo "----------------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-grep -A `echo $(($total_criteres+3))` -B 1 "Release criteria of the" $MESSAGES_NUIT > tmp_NUIT.txt
+grep -A `echo $(($total_criteres+4))` -B 1 "Release criteria of the" $MESSAGES_NUIT > tmp_NUIT.txt
 sed 's/$/ <BR>/g' tmp_NUIT.txt > tmp_NUIT.html
 cat tmp_NUIT.html >> $REP_NUIT/NUIT.html
 rm -f tmp_NUIT.txt tmp_NUIT.html
