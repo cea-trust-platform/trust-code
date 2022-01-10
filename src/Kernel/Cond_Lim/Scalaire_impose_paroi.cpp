@@ -139,9 +139,10 @@ int Scalaire_impose_paroi::compatible_avec_eqn(const Equation_base& eqn) const
   Motcle dom_app=eqn.domaine_application();
   Motcle Thermique="Thermique";
   Motcle Concentration="Concentration";
+  Motcle Turbulence="Turbulence";
   Motcle indetermine="indetermine";
 
-  if ( (dom_app==Thermique) || (dom_app==Concentration) || (dom_app==indetermine) )
+  if ( (dom_app==Thermique) || (dom_app==Concentration) || (dom_app==indetermine) || (dom_app==Turbulence) )
     return 1;
   else
     {

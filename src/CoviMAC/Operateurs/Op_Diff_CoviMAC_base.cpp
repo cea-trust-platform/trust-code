@@ -71,10 +71,11 @@ void Op_Diff_CoviMAC_base::completer()
 {
   Operateur_base::completer();
   const Equation_base& eq = equation();
-  int N = eq.inconnue().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
-  if (N_nu == N) nu_.resize(0, N); //isotrope
-  else if (N_nu == N * D) nu_.resize(0, N, D); //diagonal
-  else if (N_nu == N * D * D) nu_.resize(0, N, D, D); //complet
+  int N_mil = eq.milieu().masse_volumique().valeurs().line_size(), N_diff = diffusivite().valeurs().line_size();
+  int N = equation().inconnue().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), N_diff);
+  if (N_nu == N_mil) nu_.resize(0, N); //isotrope
+  else if (N_nu == N_mil * D) nu_.resize(0, N, D); //diagonal
+  else if (N_nu == N_mil * D * D) nu_.resize(0, N, D, D); //complet
   else Process::exit(Nom("Op_Diff_CoviMAC_base : diffusivity component count ") + Nom(N_nu) + "not among (" + Nom(N) + ", " + Nom(N * D) + ", " + Nom(N * D * D)  + ")!");
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   zone.zone().creer_tableau_elements(nu_);
@@ -245,15 +246,17 @@ void Op_Diff_CoviMAC_base::update_nu() const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const DoubleTab& nu_src = diffusivite().valeurs();
-  int e, i, m, n, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
+  int e, i, m, n, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
+  int N_mil = equation().milieu().masse_volumique().valeurs().line_size(), N = equation().inconnue().valeurs().line_size(),
+      N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N;
   assert(N_nu % N == 0);
 
   /* nu_ : si necessaire, on doit etendre la champ source */
-  if (N_nu == N_nu_src) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N_nu; n++) nu_.addr()[N_nu * e +  n] = nu_src(!c_nu * e, n); //facile
-  else if (N_nu == N * D && N_nu_src == N) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //diagonal
+  if (N_nu == N && N_nu_src == N_mil) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) nu_.addr()[N_nu * e +  n] = nu_src(!c_nu * e, n); //facile
+  else if (N_nu == N * D && N_nu_src == N_mil) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //diagonal
           nu_(e, n, d) = nu_src(!c_nu * e, n);
-  else if (N_nu == N * D * D && (N_nu_src == N || N_nu_src == N * D)) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) //complet
-        for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N ? n : D * n + d);
+  else if (N_nu == N * D * D && (N_nu_src == N_mil || N_nu_src == N_mil * D)) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) //complet
+        for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N_mil ? n : D * n + d);
   else abort();
 
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
