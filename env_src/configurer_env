@@ -774,7 +774,8 @@ then
     # Then we install miniconda and the different packages
     conda_installer=`cd $TRUST_ROOT/externalpackages/Miniconda;ls Mini*3*-$system"-"$model.sh`
     echo "Trying to install $conda_installer"
-    $TRUST_ROOT/externalpackages/Miniconda/./$conda_installer -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
+    # PL: Change le TMPDIR car par defaut sur /tmp et pb si mis a noexec
+    TMPDIR=$TRUST_TMP $TRUST_ROOT/externalpackages/Miniconda/./$conda_installer -p $TRUST_ROOT/exec/python/ -b 1>$TRUST_ROOT/exec/conda_python.log 2>&1
     [ $? != 0 ] && echo "Error while installing $conda_installer. See $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED && exit -1
 
     # Installing packages from local channel
