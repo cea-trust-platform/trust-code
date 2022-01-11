@@ -232,7 +232,7 @@ CONFIG=config/BuildSystem/config/packages/SuiteSparse.py
 if [ -f $CONFIG ]
 then
    # Version plus recent (A100 compute_30 supprime):
-   sed -i "1,$ s?5.7.1?5.10.1?" $CONFIG || exit -1
+   # sed -i "1,$ s?5.7.1?5.10.1?" $CONFIG || exit -1
    # HPC SDK:
    if [ "$CUDA_MATH" != "" ]
    then
@@ -462,9 +462,8 @@ then
    # New (SuiteSparse/Cholmod):
    if [ "$minimal_mumps" = 0 ]
    then
-      add_package SuiteSparse
       # Cholmod GPU pas portable sur A100, on desactive en attendant montee de version:
-      # [ "$TRUST_USE_CUDA" = 1 ] && with_packages=$with_packages" --download-suitesparse-disablegpu=0" # Add --with-64-bit-indices ?
+      [ "$TRUST_USE_CUDA" = 0 ] && add_package SuiteSparse && with_packages=$with_packages" --download-suitesparse-disablegpu=0" # Add --with-64-bit-indices ?
    fi
    # New (Pastix) pb sous cygwin
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
