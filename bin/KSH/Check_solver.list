@@ -67,8 +67,12 @@ if [ "`grep -i superlu $TRUST_ENV/make.liba`" != "" ]
 then
    i=$i+1;solver[$i]="Petsc Cholesky_SuperLU { impr }"								;sym[$i]=1 
 fi
-let i=$i+1;solver[$i]="Petsc Cholesky_Cholmod { impr }"                               		;par[$i]=0      ;sym[$i]=1 
-let i=$i+1;solver[$i]="Petsc Cholesky_Umfpack { impr }"						;par[$i]=0	;sym[$i]=1 
+# SuiteSparse:
+if [ -f $PETSC_DIR/lib/libcholmod.a ]
+then
+   let i=$i+1;solver[$i]="Petsc Cholesky_Cholmod { impr }"                      ;par[$i]=0  ;sym[$i]=1 
+   let i=$i+1;solver[$i]="Petsc Cholesky_Umfpack { impr }"						;par[$i]=0	;sym[$i]=1 
+fi
 let i=$i+1;solver[$i]="Petsc Cholesky_Lapack  { impr }"						;par[$i]=0	;sym[$i]=1 
 
 # GC + SSOR / EISENSTAT / ASM 
