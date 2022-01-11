@@ -78,7 +78,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
   for (int k = 0; k < ncomp; k++)
     {
       const double h = la_cl.h_imp(face-num1,k), T_ext = la_cl.T_ext(face-num1,k);
-      flux(k) = (i != -1) ? h*(T_ext-inco(i,k))*surface(face) : h*(inco(j,k)-T_ext)*surface(face);
+      const double phi_ext = la_cl.has_phi_ext() ? la_cl.flux_exterieur_impose(face-num1,k) : 0;
+      flux(k) = (i != -1) ? (phi_ext+h*(T_ext-inco(i,k)))*surface(face) : (-phi_ext+h*(inco(j,k)-T_ext))*surface(face);
     }
 }
 
@@ -87,7 +88,6 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
 {
   if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
 
-  // TODO : FIXME : Yannick help :/ methode pas code a la base pour cas scalaire ... mais on a 0 cas test dans trust et on entre jamais ici :-)
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double dist = Dist_norm_bord(face);
 
@@ -106,6 +106,19 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
   if (DERIVED_T::IS_MODIF_DEQ) e = ind_Fluctu_Term()==1 ? Dist_norm_bord_externe_(face) : equivalent_distance(boundary_index,local_face);
   else e = DERIVED_T::IS_DEQUIV ? equivalent_distance(boundary_index,local_face) : Dist_norm_bord_externe_(face);
 
+  int elem_opp = -1;
+  if (sub_type(Echange_interne_impose, la_cl))
+    {
+      // In this case, T_ext might change within the timestep (e.g. Newton's algorithm used for the
+      // variable gap model). Make sure we get the most up-to-date value.
+      const Echange_interne_impose& cl = ref_cast(Echange_interne_impose, la_cl);
+      const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, cl.T_ext().valeur());
+      const IntTab& fmap = Text.face_map();
+      int opp_face = fmap[face-num1]+num1;  // num1 is the index of the first face
+      int elem1 = la_zone->face_voisins(opp_face, 0);
+      elem_opp = (elem1 != -1) ? elem1 : la_zone->face_voisins(opp_face, 1);
+    }
+
   // XXX : E. Saikali 08/03/2021 : The test of a zero diffusion was not done before. I think it should be like that
   // Attention for DIFT OPERATORS : nu_2 and not nu_1 (only laminar part)
   if ( i != -1 )
@@ -113,7 +126,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
       for (int k = 0; k < ncomp; k++)
         {
           const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
-          const double h_imp = la_cl.h_imp(face-num1,k), T_ext = la_cl.T_ext(face-num1,k);
+          const double h_imp = la_cl.h_imp(face-num1,k), T_ext = (elem_opp == -1) ? la_cl.T_ext(face-num1,k) : inco(elem_opp,k);
           if ( nu_2(i,ori) == 0.0 ) heq = h_imp; // Should be 0 ??
           else
             {
@@ -128,7 +141,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
       for (int k = 0; k < ncomp; k++)
         {
           const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
-          const double h_imp = la_cl.h_imp(face-num1,k), T_ext = la_cl.T_ext(face-num1,k);
+          const double h_imp = la_cl.h_imp(face-num1,k), T_ext = (elem_opp == -1) ? la_cl.T_ext(face-num1,k) : inco(elem_opp,k);
           if ( nu_2(j,ori) == 0.0 ) heq = h_imp; // Should be 0 ??
           else
             {
@@ -206,8 +219,10 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int
   const int i = elem_(face,0), ncomp = aii.size_array();
   for (int k = 0; k < ncomp; k++)
     {
-      aii(k) = (i != -1) ? la_cl.h_imp(face-num1,k)*surface(face) : 0.;
-      ajj(k) = (i != -1) ? 0. : la_cl.h_imp(face-num1,k)*surface(face);
+      const double h = la_cl.h_imp(face-num1,k);
+      const double dphi_dT = la_cl.has_phi_ext() ? la_cl.derivee_flux_exterieur_imposee(face-num1,k) : 0;
+      aii(k) = (i != -1) ? (dphi_dT + h)*surface(face) : 0.;
+      ajj(k) = (i != -1) ? 0. : (dphi_dT + h)*surface(face);
     }
 }
 
@@ -237,6 +252,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int boundary_index,
   if (DERIVED_T::IS_MODIF_DEQ) e = ind_Fluctu_Term() == 1 ? Dist_norm_bord_externe_(face) : equivalent_distance(boundary_index,local_face);
   else e = DERIVED_T::IS_DEQUIV ? equivalent_distance(boundary_index,local_face) : Dist_norm_bord_externe_(face);
 
+  const bool is_internal = sub_type(Echange_interne_impose, la_cl) ? true : false;
+
   if (i != -1)
     for (int k = 0; k < ncomp; k++)
       {
@@ -249,7 +266,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int boundary_index,
             heq = 1.0 / h_total_inv;
           }
         aii(k) = heq*surface(face);
-        ajj(k) = 0.;
+        ajj(k) = is_internal ? heq*surface(face) : 0.;
       }
   else
     for (int k = 0; k < ncomp; k++)
@@ -263,7 +280,7 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int boundary_index,
             heq = 1.0 / h_total_inv;
           }
         ajj(k) = heq*surface(face);
-        aii(k) = 0.;
+        aii(k) = is_internal ? heq*surface(face) : 0.;
       }
 }
 
@@ -317,7 +334,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Ech
   for (int k = 0; k < ncomp; k++)
     {
       const double h = la_cl.h_imp(face-num1,k), T_ext = la_cl.T_ext(face-num1,k);
-      flux(k) = (i != -1) ? h*T_ext*surface(face) : -h*T_ext*surface(face);
+      const double phi_ext = la_cl.has_phi_ext() ? la_cl.flux_exterieur_impose(face-num1, k) : 0.;
+      flux(k) = (i != -1) ? (phi_ext+h*T_ext)*surface(face) : (-phi_ext-h*T_ext)*surface(face);
     }
 }
 

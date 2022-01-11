@@ -23,6 +23,8 @@
 #ifndef Eval_Diff_VDF_Elem_included
 #define Eval_Diff_VDF_Elem_included
 
+#include <Champ_front_calc_interne.h>
+#include <Echange_interne_impose.h>
 #include <CL_Types_include.h>
 #include <Evaluateur_VDF.h>
 #include <Eval_VDF_Elem.h>
