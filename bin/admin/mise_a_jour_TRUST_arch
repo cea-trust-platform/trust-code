@@ -1186,22 +1186,12 @@ fi
 change_droits
 # Ajout des droits d'execution car mal faits
 #chmod ugo+x `find . -type f -executable`
-if [ "`grep intra.cea.fr /etc/* 2>/dev/null`" != "" ]
-then
-   # Fichiers en 444 au moins
-   echo "Checking permission (>=444) on files at "`date '+%H:%M:%S'`" ..."
-   find . -type f -exec stat -L --format="%a %N" {} \; | grep -v [4-7][4-7][4-7]
-   # Fichiers en 555 au moins
-   echo "Checking permission (>=555) on directories at "`date '+%H:%M:%S'`" ..."
-   find . -type d -exec stat -L --format="%a %N" {} \; | grep -v [5-7][5-7][5-7]
-else
-   # Fichiers en 440 au moins
-   echo "Checking permission (>=440) on files at "`date '+%H:%M:%S'`" ..."
-   find . -type f -exec stat -L --format="%a %N" {} \; | grep -v [4-7][4-7]0
-   # Fichiers en 550 au moins
-   echo "Checking permission (>=550) on directories at "`date '+%H:%M:%S'`" ..."
-   find . -type d -exec stat -L --format="%a %N" {} \; | grep -v [5-7][5-7]0
-fi
+# Fichiers en 444 au moins
+echo "Checking permission (>=444) on files at "`date '+%H:%M:%S'`" ..."
+find . -type f -exec stat -L --format="%a %N" {} \; | grep -v [4-7][4-7][4-7]
+# Fichiers en 555 au moins
+echo "Checking permission (>=555) on directories at "`date '+%H:%M:%S'`" ..."
+find . -type d -exec stat -L --format="%a %N" {} \; | grep -v [5-7][5-7][5-7]
 ##############################################
 # envoi d'un mail a l'expediteur si en journee
 ##############################################
