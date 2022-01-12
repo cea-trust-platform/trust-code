@@ -1,7 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.5_beta : Changes since version 1.8.4 :
 -------------------------------------------------------------
-03/01/22 (TRUST) A part of the VDF source terms that use iters/evals pass to a template implementation (macros are removed)
+12/01/22 (TRUST) A part of the VDF source terms that use iters/evals pass to a template implementation (macros are removed)
 31/12/21 (TRUST) Substitution Failure Is Not An Error (SFINAE) templates are introduced for Eval/Iter and VDF operators
 31/12/21 (TRUST) No more scalar methods for VDF flux iterators/evaluators
 31/12/21 (TRUST) ArrOfDouble for VDF elem/face fluxes and not DoubleVect (no // structure required !)

@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
-11/01/22 (TRUST)  Major Change: Class and Substitution Failure Is Not An Error (SFINAE) templates are extensively used for the VDF evaluators, iterators and operators 
+12/01/22 (TRUST)  Major Change: Class and Substitution Failure Is Not An Error (SFINAE) templates are extensively used for the VDF evaluators, iterators and operators 
 10/01/22 (TRUST)  Fix         : Champ_front_recyclage was not working properly if used in parallel calculations
 06/01/22 (TRUST)  Fix         : PETSc Cholesky crashed on int64 builds with Intel compiler
 06/01/22 (TRUST)  New keyword : Internal thermal boundary conditions. See validation sheets Echange_impose and echg_interne
