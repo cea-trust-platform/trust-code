@@ -14,7 +14,8 @@ Mailler dom
 		Longueurs 1. 1.
 	}
 	{
-		Bord Gauche X = 0. 0. <= Y <= 1.
+		Bord Gauche1 X = 0. 0. <= Y <= 0.5
+		Bord Gauche2 X = 0. 0.5 <= Y <= 1.
 		Bord Haut   Y = 1. 0. <= X <= 1.
 		Bord Bas    Y = 0. 0. <= X <= 1.
 		Bord Droit  X = 1. 0. <= Y <= 1.
@@ -78,9 +79,10 @@ Read pb
 			        Champ_Front_Uniforme 1 5.
 			Droit paroi_flux_impose  
 			      Champ_Front_Uniforme 1 0.1
-			Gauche paroi_echange_global_impose 
+			Gauche1 paroi_echange_global_impose 
 			       h_imp Champ_Front_Uniforme 1 0.1 
 			       T_ext Champ_Front_Uniforme 1 0.
+			Gauche2 echange_couplage_thermique { temperature_paroi Champ_uniforme 1 0 flux_paroi Champ_uniforme 1 0.1 }
 		}
 	}
 
@@ -99,10 +101,21 @@ Read pb
 					}
 				}
          		}
-			flux_Gauche Reduction_0D { 
+			flux_Gauche1 Reduction_0D { 
 				methode sum 
 				source Interpolation {
-					domaine dom_boundaries_Gauche
+					domaine dom_boundaries_Gauche1
+					localisation elem
+					source Morceau_Equation {
+						type operateur numero 0 option flux_bords
+						source refChamp { Pb_champ pb temperature }
+					}
+				}
+         		}
+			flux_Gauche2 Reduction_0D { 
+				methode sum 
+				source Interpolation {
+					domaine dom_boundaries_Gauche2
 					localisation elem
 					source Morceau_Equation {
 						type operateur numero 0 option flux_bords
@@ -137,7 +150,8 @@ Read pb
 		{
 			sonde temperature periode 5. points 1 0.45 0.45
 			flux_Haut flux_Haut periode 5 numero_elem_sur_maitre 0
-			flux_Gauche flux_Gauche periode 5 numero_elem_sur_maitre 0
+			flux_Gauche1 flux_Gauche1 periode 5 numero_elem_sur_maitre 0
+			flux_Gauche2 flux_Gauche2 periode 5 numero_elem_sur_maitre 0
 			flux_Droit flux_Droit periode 5 numero_elem_sur_maitre 0
 			flux_Bas flux_Bas periode 5 numero_elem_sur_maitre 0
 		}

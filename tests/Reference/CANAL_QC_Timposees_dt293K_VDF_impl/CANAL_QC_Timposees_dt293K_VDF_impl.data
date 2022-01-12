@@ -152,6 +152,7 @@ Post_processing
         	{ 
         		sonde_vit vitesse periode 0.00005 segment 121  0.0469 0. 0.0234 0.0469 0.02984 0.0234
         		sonde_temp temperature periode 0.00005 segment 121	0.0469 0. 0.0234 0.0469 0.02984 0.0234 
+        		sonde_circle temperature periode 0.00005 radius 10  0.0469 0. 0.0234 90 0.1 0.2
 		}
 	format lml
         fields binaire dt_post 0.01
