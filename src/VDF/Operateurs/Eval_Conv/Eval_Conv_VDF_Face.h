@@ -31,8 +31,7 @@ class Eval_Conv_VDF_Face : public Eval_VDF_Face
 {
 public:
   static constexpr bool IS_AMONT = false, IS_CENTRE = false, IS_CENTRE4 = false, IS_QUICK = false, IS_AXI = false;
-  static constexpr bool CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR = false, CALC_ARR_SYMM_PAR = false, CALC_ARR_PERIO = DERIVED_T::IS_AXI ? false : true,
-                        CALC_ARR_SYMM_FL = DERIVED_T::IS_AXI ? false : true, CALC_ARR_COIN_FL = DERIVED_T::IS_AMONT ? true : false;  // pas code pour les autres
+  static constexpr bool CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR = false, CALC_ARR_SYMM_PAR = false;
 
   /* ****************************************************************************** *
    * YES, we do magic ! Its all about : Substition Failure Is Not An Error (SFINAE) *

@@ -51,7 +51,7 @@ class Eval_Dift_VDF_const_Face : public Eval_Diff_VDF_Face<Eval_Dift_VDF_const_F
   public Eval_Dift_VDF_const
 {
 public:
-  static constexpr bool IS_TURB = true;
+  static constexpr bool IS_TURB = true, CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR_FL = false;
   inline void associer_modele_turbulence(const Mod_turb_hyd_base& mod) { le_modele_turbulence= mod; }
   inline void mettre_a_jour();
 
@@ -95,8 +95,7 @@ class Eval_Dift_VDF_var_Face : public Eval_Diff_VDF_Face<Eval_Dift_VDF_var_Face>
   public Eval_Dift_VDF_var
 {
 public:
-  static constexpr bool IS_VAR = true;
-  static constexpr bool IS_TURB = true;
+  static constexpr bool IS_VAR = true, IS_TURB = true, CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR_FL = false;
   inline void associer_modele_turbulence(const Mod_turb_hyd_base& mod) { le_modele_turbulence = mod;  }
   inline void mettre_a_jour();
 

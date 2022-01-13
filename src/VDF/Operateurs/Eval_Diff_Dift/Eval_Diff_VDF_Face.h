@@ -36,7 +36,6 @@ class Eval_Diff_VDF_Face : public Eval_VDF_Face, public Evaluateur_VDF
 {
 public:
   static constexpr bool IS_VAR = false, IS_TURB = false;
-  static constexpr bool CALC_FA7_SORTIE_LIB = DERIVED_T::IS_TURB ? true : false, CALC_ARR_PAR_FL = DERIVED_T::IS_TURB ? false : true;
 
   /* ****************************************************************************** *
    * YES, we do magic ! Its all about : Substition Failure Is Not An Error (SFINAE) *

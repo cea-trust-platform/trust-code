@@ -55,7 +55,7 @@ class Eval_Conv_VDF_Face_leaves : public Eval_Conv_VDF_Face<Eval_Conv_VDF_Face_l
 class Eval_Amont_VDF_Face : public Eval_Conv_VDF_Face<Eval_Amont_VDF_Face>, public Eval_Conv_VDF
 {
 public:
-  static constexpr bool IS_AMONT = true;
+  static constexpr bool IS_AMONT = true, CALC_ARR_COIN_FL = true;
 };
 
 // .DESCRIPTION  class Eval_Centre_VDF_Face
@@ -119,7 +119,7 @@ public:
 class Eval_Quick_VDF_Face_Axi : public Eval_Conv_VDF_Face<Eval_Quick_VDF_Face_Axi>, public Eval_Conv_VDF
 {
 public:
-  static constexpr bool IS_AXI = true, IS_QUICK = true;
+  static constexpr bool IS_AXI = true, IS_QUICK = true, CALC_ARR_PERIO = false, CALC_ARR_SYMM_FL = false;
 
   inline int face_amont_princ(int num_face,int i) const { return la_zone->face_amont_princ(num_face, i); }
   inline int face_amont_conj(int ,int ,int ) const;
