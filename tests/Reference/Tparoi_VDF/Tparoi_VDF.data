@@ -75,8 +75,8 @@ Read pb
 		boundary_conditions {
 			Haut	paroi_echange_externe_impose	h_imp Champ_Front_Uniforme 1 0.1 T_ext Champ_Front_Uniforme 1 0.
 			Bas 	paroi_temperature_imposee	Champ_Front_Uniforme 1 5.
-			Droit 	paroi_flux_impose  		Champ_Front_Uniforme 1 0.1
-			Gauche 	paroi_echange_global_impose 	h_imp Champ_Front_Uniforme 1 0.1 T_ext Champ_Front_Uniforme 1 0.
+			Droit 	paroi_flux_impose  		Champ_Front_Uniforme 1 10.2
+			Gauche  echange_couplage_thermique { temperature_paroi Champ_uniforme 1 10 flux_paroi Champ_uniforme 1 0.1 }
 		}
 	}
 
