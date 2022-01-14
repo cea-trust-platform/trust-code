@@ -31,6 +31,8 @@ class Job(object):
     def __str__(self):
         """ Short representation of a job """
         msg = "#%d (PID %d) -- %s" % (self.id, self.pid, self.cmd_short)
+        if self.nb != 1:
+          msg += " (on %d procs)" % self.nb
         return msg
 
     def get_long_status(self):
