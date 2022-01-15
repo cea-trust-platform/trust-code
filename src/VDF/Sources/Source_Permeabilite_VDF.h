@@ -25,10 +25,10 @@
 
 #include <Modele_Permeabilite_base.h>
 
-#ifdef DOXYGEN_SHOULD_SKIP_THIS // seulement un truc inutile pour check_source ...
+/// \cond DO_NOT_DOCUMENT
 class Source_Permeabilite_VDF
 { };
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+/// \endcond
 
 // .DESCRIPTION class ModPerm_Cte
 //  Cette classe represente une permeabilite cte.

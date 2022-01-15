@@ -26,17 +26,10 @@
 #include <Eval_Conv_VDF_Elem.h>
 #include <Eval_Conv_VDF.h>
 
-#ifdef DOXYGEN_SHOULD_SKIP_THIS
-/*
- * xxx xxx
- * THIS IS ONLY SPECIFIC TO TRUST CHECK_SOURCE :
- * WE ARE OBLIGED TO HAVE THE 1ST CLASS WITH THE SAME NAME AS THE FILE OTHERWISE DO NOT COMPILE
- *
- * We use DOXYGEN_SHOULD_SKIP_THIS macro to skip this class in the doxygen documentation
- */
+/// \cond DO_NOT_DOCUMENT
 class Eval_Conv_VDF_Elem_leaves: public Eval_Conv_VDF_Elem<Eval_Conv_VDF_Elem_leaves>,
   public Eval_Conv_VDF {};
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+/// \endcond
 
 /*
  * NOTA BENE : (pour tous les evals)

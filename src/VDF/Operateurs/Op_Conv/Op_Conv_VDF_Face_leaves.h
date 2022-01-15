@@ -28,10 +28,10 @@
 #include <Op_Conv_VDF.h>
 #include <ItVDFFa.h>
 
-#ifdef DOXYGEN_SHOULD_SKIP_THIS // seulement un truc inutile pour check_source ...
+/// \cond DO_NOT_DOCUMENT
 class Op_Conv_VDF_Face_leaves
 { };
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+/// \endcond
 
 declare_It_VDF_Face(Eval_Amont_VDF_Face)
 // .DESCRIPTION class Op_Conv_Amont_VDF_Face

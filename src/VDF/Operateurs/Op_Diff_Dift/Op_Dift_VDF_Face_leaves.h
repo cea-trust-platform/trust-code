@@ -28,10 +28,10 @@
 #include <Op_Dift_VDF_Face_base.h>
 #include <Op_Diff_Dift_VDF.h>
 
-#ifdef DOXYGEN_SHOULD_SKIP_THIS // seulement un truc inutile pour check_source ...
+/// \cond DO_NOT_DOCUMENT
 class Op_Dift_VDF_Face_leaves
 { };
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+/// \endcond
 
 class Mod_turb_hyd_base;
 class Champ_Fonc;

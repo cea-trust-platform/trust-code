@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,11 +35,10 @@
 #include <Terme_Source_Acceleration_VEF_Face.h>
 #include <Perte_Charge_Directionnelle_VEF_P1NC.h>
 
-
-#ifdef DOXYGEN_SHOULD_SKIP_THIS
+/// \cond DO_NOT_DOCUMENT
 class Source_QC_VEF_P1NC
 { };
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+/// \endcond
 
 /*
  * HERITAGE V ABSOLUMENT INUTILE :-(

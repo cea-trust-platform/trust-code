@@ -24,24 +24,15 @@
 #define Eval_Dift_VDF_Face_leaves_included
 
 #include <Ref_Turbulence_paroi_base.h>
-//#include <Turbulence_paroi_base.h>
 #include <Eval_Dift_VDF_const.h>
 #include <Eval_Diff_VDF_Face.h>
 #include <Eval_Dift_VDF_var.h>
 #include <Mod_turb_hyd_base.h>
 
-#ifdef DOXYGEN_SHOULD_SKIP_THIS
-/*
- * xxx xxx
- * THIS IS ONLY SPECIFIC TO TRUST CHECK_SOURCE :
- * WE ARE OBLIGED TO HAVE THE 1ST CLASS WITH THE SAME NAME AS THE FILE
- * OTHERWISE DO NOT COMPILE
- *
- * We use DOXYGEN_SHOULD_SKIP_THIS macro to skip this class in the doxygen documentation
- */
+/// \cond DO_NOT_DOCUMENT
 class Eval_Dift_VDF_Face_leaves : public Eval_Diff_VDF_Face<Eval_Dift_VDF_Face_leaves>,
   public Eval_Dift_VDF_const {};
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+/// \endcond
 
 // .DESCRIPTION class Eval_Dift_VDF_const_Face
 // Evaluateur VDF pour la diffusion totale (laminaire et turbulente)

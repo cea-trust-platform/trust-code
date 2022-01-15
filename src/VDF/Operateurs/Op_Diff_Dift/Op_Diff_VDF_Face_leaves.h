@@ -29,10 +29,10 @@
 #include <Ref_Champ_Uniforme.h>
 #include <Op_Diff_Dift_VDF.h>
 
-#ifdef DOXYGEN_SHOULD_SKIP_THIS // seulement un truc inutile pour check_source ...
+/// \cond DO_NOT_DOCUMENT
 class Op_Diff_VDF_Face_leaves
 { };
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+/// \endcond
 
 //////////////// CONST /////////////////
 

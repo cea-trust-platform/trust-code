@@ -27,10 +27,10 @@
 #include <Op_Dift_VDF_Elem_base.h>
 #include <Op_Diff_Dift_VDF.h>
 
-#ifdef DOXYGEN_SHOULD_SKIP_THIS // seulement un truc inutile pour check_source ...
+/// \cond DO_NOT_DOCUMENT
 class Op_Dift_VDF_Elem_leaves
 { };
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+/// \endcond
 
 class Turbulence_paroi_scal;
 class Champ_Fonc;

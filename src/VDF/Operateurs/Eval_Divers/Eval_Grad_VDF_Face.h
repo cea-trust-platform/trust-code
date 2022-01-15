@@ -56,7 +56,7 @@ public:
     for (int k=0; k<flux.size_array(); k++) flux(k) = inco(elem,k)*surface(fac1);
   }
 
-#ifdef DOXYGEN_SHOULD_SKIP_THIS
+  /// \cond DO_NOT_DOCUMENT
   template<Type_Flux_Arete Arete_Type, typename Type_Double>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
                       Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
@@ -67,7 +67,7 @@ public:
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PERIODICITE||
                       Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
   flux_arete(const DoubleTab&, int, int, int, int, Type_Double& ,Type_Double&) const { /* do nothing */ }
-#endif
+  /// \endcond
 
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
@@ -79,7 +79,7 @@ public:
   template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
   coeffs_fa7(int, int, int, Type_Double& , Type_Double& ) const { /* do nothing */ }
 
-#ifdef DOXYGEN_SHOULD_SKIP_THIS
+  /// \cond DO_NOT_DOCUMENT
   template<Type_Flux_Arete Arete_Type, typename Type_Double>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PERIODICITE), void>
   coeffs_arete(int, int, int, int, Type_Double& , Type_Double& ) const { /* do nothing */ }
@@ -88,7 +88,7 @@ public:
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI || Arete_Type == Type_Flux_Arete::FLUIDE ||
                       Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
   coeffs_arete(int, int, int, int, Type_Double& , Type_Double& , Type_Double& ) const { /* do nothing */ }
-#endif
+  /// \endcond
 
   /* ************************************** *
    * *********  POUR L'IMPLICITE ********** *
@@ -100,7 +100,7 @@ public:
   template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
   secmem_fa7( int, int, int, Type_Double&) const { /* do nothing */ }
 
-#ifdef DOXYGEN_SHOULD_SKIP_THIS
+  /// \cond DO_NOT_DOCUMENT
   template<Type_Flux_Arete Arete_Type, typename Type_Double>
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::PAROI ||
                       Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
@@ -110,7 +110,7 @@ public:
   inline enable_if_t<(Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PERIODICITE||
                       Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
   secmem_arete(int, int, int, int, Type_Double&, Type_Double&) const { /* do nothing */ }
-#endif
+  /// \endcond
 };
 
 #endif /* Eval_Grad_VDF_Face_included */
