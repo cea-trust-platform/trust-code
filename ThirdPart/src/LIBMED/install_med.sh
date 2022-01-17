@@ -20,10 +20,11 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 
   build_root=$TRUST_ROOT/build/lib
+  #build_dir=$build_root/med_build
   actual_install_dir=$install_dir/med_install
 
+  #mkdir -p $build_dir
   mkdir -p $actual_install_dir
-  mkdir -p $build_root
   cd $build_root
   
   echo "Un-packing ..."
@@ -61,7 +62,7 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   if [ "$USE_CMAKE" = 0 ]
   then
      echo "Configuring with autotools  ..."  # [ABN] CMake is there too in MED, but for how long?? Eric prefers autotools ...
-     # Options: no Python, static libraries and path to HDF5 
+     # Options: no Python, static libraries and path to HDF5
      options="--enable-static --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT"  # TRUST_MED_ROOT is also HDF5 root ...
      #INT64
      if [ "$TRUST_INT64" = "1" ]
