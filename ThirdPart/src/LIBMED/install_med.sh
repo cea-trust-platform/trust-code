@@ -44,23 +44,39 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   echo "Patching header file to avoid compilation error"
   sed -i "s/extern MEDC_EXPORT const char \* const  MEDget/extern MEDC_EXPORT const char *  MEDget/g"  $(find . -name med.h.in)
   sed -i "s/const char \* const  MEDget/const char * MEDget/g"  $(find . -name MEDiterators.c)
+  sed -i 's/GET_PROPERTY(_lib_lst TARGET hdf5 PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)/SET(_lib_lst)/' $(find . -name FindMedfileHDF5.cmake)
 
-  echo "Configuring with autotools  ..."  # [ABN] CMake is there too in MED, but for how long?? Eric prefers autotools ...
   # fPIC is not there by default in MED autotools ...
   CFLAGS="${CFLAGS} -fPIC"
   CPPFLAGS="${CPPFLAGS} -fPIC"
+  CXXFLAGS="${CXXFLAGS} -fPIC"
   FFLAGS="${FFLAGS} -fPIC"
-  export CFLAGS CPPFLAGS FFLAGS
+  export CFLAGS CPPFLAGS CXXFLAGS FFLAGS
 
-  # Options: no Python, static libraries and path to HDF5 
-  options="--enable-static --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT"  # TRUST_MED_ROOT is also HDF5 root ...
-  # ARM ? options="--enable-shared --enable-fortran --enable-parallel --enable-hl -with-default-api-version=v110 --enable-build-mode=production --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT"
-  [ "$TRUST_INT64" = "1" ] && options="$options --with-med_int=long"
-  # Ajout de python/lib car parfois zlib pas installe sur la machine (Ubuntu 20)
-  LDFLAGS="" && [ ! -f /usr/lib64/libz.so ] && LDFLAGS="LDFLAGS=-L$TRUST_ROOT/exec/python/lib"
-  env $LDFLAGS CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 ./configure --prefix="$actual_install_dir" $options #   For debug, add:   CFLAGS="-g -O0" CXXFLAGS="-g -O0"
-  # Hack sur irene-arm (libtool embarque ne marche pas)
-  [ ${HOST#irene-arm} != $HOST ] && ln -s -f /usr/bin/libtool .
+  # PL: On utilise cmake par defaut pour MED (merci Adrien). Cela evite des problemes avec libtool
+  USE_CMAKE=1
+  if [ "$USE_CMAKE" = 0 ]
+  then
+     echo "Configuring with autotools  ..."  # [ABN] CMake is there too in MED, but for how long?? Eric prefers autotools ...
+     # Options: no Python, static libraries and path to HDF5 
+     options="--enable-static --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT"  # TRUST_MED_ROOT is also HDF5 root ...
+     #INT64
+     if [ "$TRUST_INT64" = "1" ]
+     then
+        options="$options  --with-med_int=long"
+     fi
+     # Ajout de python/lib car parfois zlib pas installe sur la machine (Ubuntu 20)
+     LDFLAGS="" && [ ! -f /usr/lib64/libz.so ] && LDFLAGS="LDFLAGS=-L$TRUST_ROOT/exec/python/lib"
+     #LDFLAGS="--allow-shlib-undefined"
+     env $LDFLAGS CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 ./configure --prefix="$actual_install_dir" $options #   For debug, add:CFLAGS="-g -O0" CXXFLAGS="-g -O0"
+     # Hack sur irene-arm (libtool embarque ne marche pas)
+     [ ${HOST#irene-arm} != $HOST ] && ln -s -f /usr/bin/libtool .
+  else ## With CMAKE
+    echo "Configuring with CMake ..."
+    mkdir BUILD
+    cd BUILD
+    env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_MED_ROOT/hdf5_install -DMEDFILE_USE_MPI=ON
+  fi
   $TRUST_MAKE  || exit -1
   make install || exit -1
 
