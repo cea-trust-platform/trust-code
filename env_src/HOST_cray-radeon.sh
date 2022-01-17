@@ -13,7 +13,7 @@ define_modules_config()
    then
       module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.1.0"
    else
-      module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.1.0"
+      module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.1.0 rocm/rocm craype-accel-amd-gfx908"
    fi
    #
    echo "# Module $module detected and loaded on $HOST."
