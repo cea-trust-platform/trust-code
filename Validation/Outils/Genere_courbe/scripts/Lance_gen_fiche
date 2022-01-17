@@ -17,7 +17,7 @@ get_list_prm_from_Times()
   for cas in `awk '{print $NF}' $file`
     do
     cadt=`find $Rapports_auto_root/Validation/Rapports_automatiques -name $cas -follow | grep -v '/src/'`
-    if [ ! -f $cadt/skip_prm ]; then
+    if [ ! -f $cadt/skip_prm ] && [ ! -f $cadt/src/skip_prm ]; then
       list=$list" "$cadt
     fi
     done
@@ -47,8 +47,7 @@ get_list_prm()
       echo "$dir bizarre!!!!"
       else
         dirn_cas=`dirname $cas`
-        if [ ! -f $dirn_cas/skip_prm ]
-        then
+        if [ ! -f $dirn_cas/skip_prm ] && [ ! -f $dirn_cas/src/skip_prm ]; then
           echo `dirname $cas`
         fi
       fi

@@ -91,7 +91,7 @@ verif_archives()
       f=`dirname $file`
       ze_dir=`dirname $f`
       f=`basename $ze_dir`
-      if [ -f $ze_dir/skip_prm ]
+      if [ -f $ze_dir/skip_prm ] || [ -f $ze_dir/src/skip_prm ]
     then
     if [ -f $f.pdf ]
         then
