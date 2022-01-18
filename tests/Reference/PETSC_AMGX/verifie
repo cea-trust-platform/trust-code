@@ -5,6 +5,7 @@ jdd=`basename $jdd`
 matrix=`ls -rt Matrix_*.petsc | tail -1`
 echo "Testing reading $matrix with petsc_matrix.sh..."
 ./petsc_matrix.sh $matrix 1>petsc_matrix.log 2>&1
+[ $? != 0 ] && echo "Error, see `pwd`/petsc_matrix.log !" && exit -1
 if [ -f PETSC_AMGX.TU ] && [ ! -f PAR_PETSC_AMGX.TU ] && [ "$TRUST_WITHOUT_HOST" = 1 ] && [ -f $TRUST_ROOT/exec/valgrind/bin/valgrind ]
 then
    echo "Quick valgrind check on a smaller test case ..."
