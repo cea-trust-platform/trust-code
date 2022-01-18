@@ -270,7 +270,7 @@ check_src()
 check_all()
 {
   # Used by Baltik projects
-  for file in `ls *.cpp *.h *.c 2>/dev/null` 
+  for file in `ls *.tpp *.cpp *.h *.c 2>/dev/null`
   do
      # ls 1>/dev/null
      check_recent_src $file
@@ -307,10 +307,10 @@ then
       # Build a list of newer files than ${reffile} or this script to speed up some tests (eg: french check)
       if [ ! -f ${reffile} ] || [ $0 -nt ${reffile} ]
       then
-         newer_files=`\ls make.include *.cpp *.h *.c 2>/dev/null | grep -v / | grep -v "\.o$"`
+         newer_files=`\ls make.include *.cpp *.h *.tpp *.c 2>/dev/null | grep -v / | grep -v "\.o$"`
          new_newer_files=$newer_files
       else
-         newer_files=`find * -type f  \( -name make.include -o -name '*'.cpp -o -name '*'.h -o -name '*'.c \) -newer ${reffile} | grep -v / | grep -v "\.o$"`
+         newer_files=`find * -type f  \( -name make.include -o -name '*'.cpp -o -name '*'.h -o -name '*'.tpp -o -name '*'.c \) -newer ${reffile} | grep -v / | grep -v "\.o$"`
          new_newer_files=`find . -maxdepth 1 -type f -newer ${reffile} | grep -v CMakeLists.txt` 
       fi
       [ "$new_newer_files" = "" ] && exit 0
