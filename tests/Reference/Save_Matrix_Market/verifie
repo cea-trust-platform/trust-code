@@ -7,7 +7,7 @@ do
    python $PETSC_DIR/lib/petsc/bin/PetscBinaryIO.py convert $file || exit -1
    echo "OK!"
 done
-for file in `ls *.petsc 2>/dev/null`
+for file in `ls *matrix*.petsc 2>/dev/null`
 do
    ./petsc_matrix.sh -n 1 $file -rhs ONE || exit -1
 done

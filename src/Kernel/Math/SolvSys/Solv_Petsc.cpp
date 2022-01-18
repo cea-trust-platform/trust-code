@@ -1705,6 +1705,8 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
           filename += (Nom) instance;
           filename += ".mtx";
           SFichier mtx(filename);
+          mtx.precision(14);
+          mtx.setf(ios::scientific);
           PetscInt rows;
           const PetscInt *ia, *ja;
           PetscBool done;
@@ -1749,6 +1751,18 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
               mtx << "%%" << finl << "%% optional solution " << solution.size_array() << finl;
               for (int i = 0; i < solution.size_array(); i++)
                 mtx << solution(i) << finl;
+            }
+          else
+            {
+              // Provisoire: sauve un vector Petsc
+              PetscViewer viewer;
+              Nom rhs_filename(Objet_U::nom_du_cas());
+              rhs_filename += "_rhs";
+              rhs_filename += (Nom) instance;
+              rhs_filename += ".petsc";
+              PetscViewerBinaryOpen(PETSC_COMM_WORLD,rhs_filename,FILE_MODE_WRITE,&viewer);
+              VecView(SecondMembrePetsc_, viewer);
+              Cerr << "Save RHS into " << rhs_filename << finl;
             }
         }
       if (save_matrix_ && verbose) Cout << "[Petsc] Time to write matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
