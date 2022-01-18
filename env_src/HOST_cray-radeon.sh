@@ -9,12 +9,7 @@ define_modules_config()
    echo "source /etc/profile" >> $env
    #
    # Load modules
-   if [ "$TRUST_USE_CUDA" = 1 ]
-   then
-      module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.1.0"
-   else
-      module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.1.0 rocm/rocm craype-accel-amd-gfx908"
-   fi
+   module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.1.0 rocm/rocm craype-accel-amd-gfx908"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
