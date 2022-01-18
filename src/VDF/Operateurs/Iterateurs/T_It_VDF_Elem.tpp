@@ -469,7 +469,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord2(const int ncomp, const DoubleTab
             }
         }
       switch(type_cl(la_cl))
-      {
+        {
         case symetrie :
           calculer_flux_bord_<_TYPE_::CALC_FLUX_FACES_SYMM,Type_Double>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,donnee);
           break;
@@ -504,7 +504,7 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord2(const int ncomp, const DoubleTab
           Cerr << "On ne reconnait pas la condition limite : " << la_cl.valeur() << " , dans T_It_VDF_Elem<_TYPE_>::calculer_flux_bord" << finl;
           Process::exit();
           break;
-      }
+        }
     }
 }
 

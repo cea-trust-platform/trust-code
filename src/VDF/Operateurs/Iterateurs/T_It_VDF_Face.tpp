@@ -487,9 +487,9 @@ void T_It_VDF_Face<_TYPE_>::prepare_corriger_pour_periodicite(const int face, in
 template <class _TYPE_> template <typename Type_Double>
 void T_It_VDF_Face<_TYPE_>::corriger_flux_fa7_elem_periodicite_(const int ncomp, const int num_elem, const int fac1, const int fac2, const int face, const int signe, const DoubleTab& inco, DoubleTab& resu) const
 {
-      Type_Double flux(ncomp);
-      flux_evaluateur.template flux_fa7<Type_Flux_Fa7::ELEM>(inco,num_elem,fac1,fac2,flux);
-      for (int k=0; k<ncomp; k++) resu(face,k) += signe*flux(k);
+  Type_Double flux(ncomp);
+  flux_evaluateur.template flux_fa7<Type_Flux_Fa7::ELEM>(inco,num_elem,fac1,fac2,flux);
+  for (int k=0; k<ncomp; k++) resu(face,k) += signe*flux(k);
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>

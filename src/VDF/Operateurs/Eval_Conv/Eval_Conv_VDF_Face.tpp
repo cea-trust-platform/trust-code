@@ -218,7 +218,7 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fa
       const int pfb = premiere_face_bord(), ori = orientation(fac3), rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 :(fac2-pfb); // TODO : FIXME : euh ? pourquoi ca ?
       for (int k = 0; k < ncomp; k++)
         flux3(k) = -0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang1,ori,la_zcl())
-            +  Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,ori,la_zcl()))*psc ;
+                         +  Champ_Face_get_val_imp_face_bord_sym(inco,inconnue->temps(),rang2,ori,la_zcl()))*psc ;
     }
 
   psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
@@ -426,14 +426,14 @@ Eval_Conv_VDF_Face<DERIVED_T>::secmem_arete(int fac1, int fac2, int fac3, int si
   const int ncomp = flux3.size_array();
 
   const double tps = inconnue->temps(), psc = is_COIN ? 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1) :
-      0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
+                                              0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
 
   if ((psc*signe)<0)
     {
       const int pfb = premiere_face_bord(), rang1 = (fac1-pfb), rang2 = (fac2-pfb), ori = orientation(fac3);
       for (int k = 0; k < ncomp; k++)
         flux3(k) = is_COIN ? -Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl()) * psc :
-            -0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl())+Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl()))*psc ;
+                   -0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl())+Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl()))*psc ;
     }
   else for (int k = 0; k < ncomp; k++) flux3(k) = 0.;
 
