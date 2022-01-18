@@ -117,7 +117,7 @@ public:
   secmem_fa7(int, int, int, Type_Double& ) const { /* Do nothing */ }
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
-  secmem_arete(int, int, int, int , Type_Double& ) const;
+  secmem_arete(int, int, int, int , Type_Double& ) const { throw; }
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double> inline
   enable_if_t<(Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE || Arete_Type == Type_Flux_Arete::SYMETRIE), void>
@@ -125,7 +125,7 @@ public:
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double>
   inline enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
-  secmem_arete(int, int, int, int, Type_Double&, Type_Double& ) const;
+  secmem_arete(int, int, int, int, Type_Double&, Type_Double& ) const { throw; }
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t<(Arete_Type == Type_Flux_Arete::PERIODICITE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
   secmem_arete(int, int, int, int, Type_Double&, Type_Double& ) const { /* Do nothing */ }
