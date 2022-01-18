@@ -49,20 +49,21 @@ class Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC :  public Source_base
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC);
 
 public:
-
-  DoubleTab& ajouter(DoubleTab& )  const override ;
-  DoubleTab& calculer(DoubleTab& ) const override ;
-  void associer_pb(const Probleme_base& ) override { };
-  void mettre_a_jour(double ) override;
-
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  void associer_pb(const Probleme_base& ) { };
+  void mettre_a_jour(double );
 
 protected:
 
   REF(Zone_PolyMAC) la_zone_PolyMAC;
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
   Champ_Don himp_,Text_;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
 
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Masse_PolyMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Zones
+// Directory:   $TRUST_ROOT/src/PolyMAC/Solveurs
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -41,20 +41,22 @@ class Masse_PolyMAC_Elem : public Solveur_Masse_base
 
 public:
 
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void associer_zone_dis_base(const Zone_dis_base& );
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
+  void preparer_calcul();
 
-  void dimensionner(Matrice_Morse& matrix) const override;
-  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const override;
-  Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const override;
+  DoubleTab& appliquer_impl(DoubleTab& ) const;
 
-  DoubleTab& appliquer_impl(DoubleTab& ) const override;
-  void completer() override;
-  void appliquer_coef(DoubleVect& coef) const;
+  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
+  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const;
 
 private:
 
-  bool no_diff_;
   REF(Zone_PolyMAC) la_zone_PolyMAC;
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
 };

@@ -653,7 +653,6 @@
  Op_Diff_EF Op_Diff_EF Op_Diff_EF.h
  Op_Diff_EF_base Op_Diff_EF_base Op_Diff_EF_base.h
  Op_Diff_negligeable Op_Diff_negligeable Op_Diff_negligeable.h
- Op_Diff_nonlinear_PolyMAC_Elem|Op_Diff_nonlinear_PolyMAC_var_Elem Op_Diff_Nonlinear_PolyMAC_Elem Op_Diff_PolyMAC_Elem.h
  Op_Diff_option_EF Op_Diff_option_EF Op_Diff_EF.h
  Op_Diff_PolyMAC_base Op_Diff_PolyMAC_base Op_Diff_PolyMAC_base.h
  Op_Diff_PolyMAC_Elem|Op_Diff_PolyMAC_var_Elem Op_Diff_PolyMAC_Elem Op_Diff_PolyMAC_Elem.h
@@ -693,8 +692,6 @@
  Op_Dift_EF_Q1 Op_Dift_EF_Q1 Op_Dift_EF_Q1.h
  Op_Dift_EF_Q1_option Op_Dift_EF_Q1_option Op_Dift_EF_Q1.h
  Op_Dift_negligeable Op_Dift_negligeable Op_Diff_negligeable.h
- Op_Dift_PolyMAC_P0_PolyMAC_nonlinear|Op_Dift_PolyMAC_var_P0_PolyMAC_nonlinear Op_Dift_Nonlinear_PolyMAC_Elem Op_Diff_PolyMAC_Elem.h
- Op_Dift_PolyMAC_P0_PolyMAC|Op_Dift_PolyMAC_var_P0_PolyMAC Op_Dift_PolyMAC_Elem Op_Diff_PolyMAC_Elem.h
  Op_Dift_VDF_base Op_Dift_VDF_base Op_Dift_VDF_base.h
  Op_Dift_VDF_Elem_base Op_Dift_VDF_Elem_base Op_Dift_VDF_Elem_base.h
  Op_Dift_VDF_Face Op_Dift_VDF_Face Op_Dift_VDF_Face_leaves.h

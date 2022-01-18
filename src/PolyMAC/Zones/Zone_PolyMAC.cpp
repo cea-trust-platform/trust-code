@@ -900,121 +900,121 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
 
 //matrices locales par elements (operateurs de Hodge) permettant de faire des interpolations :
 //normales aux faces -> tangentes aux faces duales : (nu x_ef.v) = m2 (|f|n_ef.v)
-void Zone_PolyMAC::M2(const DoubleTab *nu, int e, DoubleTab &m2) const
+void Zone_PolyMAC::M2(const DoubleTab *nu, int e, DoubleTab& m2) const
 {
-  int i, j, k, f, fb, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_f, d, D = dimension;
+  int i, j, k, f, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_f, d, D = dimension;
   double prefac, fac;
-  const IntTab &e_f = elem_faces(), &f_e = face_voisins();
-  const DoubleTab &xe = xp(), &xf = xv(), &nf = face_normales();
-  const DoubleVect &ve = volumes(), &fs = face_surfaces();
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
+  const DoubleTab& xe = xp(), &xf = xv(), &nf = face_normales();
+  const DoubleVect& ve = volumes(), &fs = face_surfaces();
   for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++; //nombre de faces de e
   m2.resize(n_f, n_f, N), m2 = 0;
   DoubleTrav v_e(n_f, D), v_ef(n_f, n_f, D); //interpolations du vecteur complet : non stabilisee en e, stabilisee en (e, f)
   for (i = 0; i < n_f; i++) for (f = e_f(e, i), d = 0; d < D; d++) v_e(i, d) = (xf(f, d) - xe(e, d)) / ve(e);
   for (i = 0; i < n_f; i++) for (f = e_f(e, i), prefac = D * beta_ / dabs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))), j = 0; j < n_f; j++)
-      for (fb = e_f(e, j), fac = prefac * ((j == i) - (e == f_e(f, 0) ? 1 : -1) * dot(&nf(f, 0), &v_e(j, 0))), d = 0; d < D; d++)
-          v_ef(i, j, d) = v_e(j, d) + fac * (xf(f, d) - xe(e, d));
+      for (fac = prefac * ((j == i) - (e == f_e(f, 0) ? 1 : -1) * dot(&nf(f, 0), &v_e(j, 0))), d = 0; d < D; d++)
+        v_ef(i, j, d) = v_e(j, d) + fac * (xf(f, d) - xe(e, d));
   //matrice!
   for (m2 = 0, i = 0; i < n_f; i++) for (j = 0; j < n_f; j++)
-    if (j < i) for (n = 0; n < N; n++) m2(i, j, n) = m2(j, i, n); //sous la diagonale -> avec l'autre cote 
-    else for (k = 0; k < n_f; k++) for (f = e_f(e, k), fac = dabs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
-      m2(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ef(k, i, 0), &v_ef(k, j, 0));
+      if (j < i) for (n = 0; n < N; n++) m2(i, j, n) = m2(j, i, n); //sous la diagonale -> avec l'autre cote
+      else for (k = 0; k < n_f; k++) for (f = e_f(e, k), fac = dabs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
+            m2(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ef(k, i, 0), &v_ef(k, j, 0));
 }
 
 //tangentes aux faces duales -> normales aux faces : nu|f|n_ef.v = w2.(x_ef.v)
-void Zone_PolyMAC::W2(const DoubleTab *nu, int e, DoubleTab &w2) const
+void Zone_PolyMAC::W2(const DoubleTab *nu, int e, DoubleTab& w2) const
 {
-  int i, j, k, f, fb, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_f, d, D = dimension;
+  int i, j, k, f, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_f, d, D = dimension;
   double prefac, fac;
-  const IntTab &e_f = elem_faces(), &f_e = face_voisins();
-  const DoubleTab &xe = xp(), &xf = xv(), &nf = face_normales();
-  const DoubleVect &ve = volumes(), &fs = face_surfaces();
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
+  const DoubleTab& xe = xp(), &xf = xv(), &nf = face_normales();
+  const DoubleVect& ve = volumes(), &fs = face_surfaces();
   for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++; //nombre de faces de e
   w2.resize(n_f, n_f, N), w2 = 0;
   DoubleTrav v_e(n_f, D), v_ef(n_f, n_f, D); //interpolations du vecteur complet : non stabilisee en e, stabilisee en (e, f)
   for (i = 0; i < n_f; i++) for (f = e_f(e, i), d = 0; d < D; d++) v_e(i, d) = (e == f_e(f, 0) ? 1 : -1) * nf(f, d) / ve(e);
   for (i = 0; i < n_f; i++) for (f = e_f(e, i), prefac = D * beta_ * (e == f_e(f, 0) ? 1 : -1) / dabs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))), j = 0; j < n_f; j++)
-      for (fb = e_f(e, j), fac = prefac * ((j == i) - dot(&xf(f, 0), &v_e(j, 0), &xe(e, 0))), d = 0; d < D; d++)
-          v_ef(i, j, d) = v_e(j, d) + fac * nf(f, d);
+      for (fac = prefac * ((j == i) - dot(&xf(f, 0), &v_e(j, 0), &xe(e, 0))), d = 0; d < D; d++)
+        v_ef(i, j, d) = v_e(j, d) + fac * nf(f, d);
   //matrice!
   for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++)
-    if (j < i) for (n = 0; n < N; n++) w2(i, j, n) = w2(j, i, n); //sous-diagonale -> on copie l'autre cote
-    else for (k = 0; k < n_f; k++) for (f = e_f(e, k), fac = dabs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++) 
-      w2(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ef(k, i, 0), &v_ef(k, j, 0));
+      if (j < i) for (n = 0; n < N; n++) w2(i, j, n) = w2(j, i, n); //sous-diagonale -> on copie l'autre cote
+      else for (k = 0; k < n_f; k++) for (f = e_f(e, k), fac = dabs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
+            w2(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ef(k, i, 0), &v_ef(k, j, 0));
 }
 
 //normales aux aretes duales -> tangentes aux aretes : (nu|a|t_a.v)   = m1 (S_ea.v)
-void Zone_PolyMAC::M1(const DoubleTab *nu, int e, DoubleTab &m1) const
+void Zone_PolyMAC::M1(const DoubleTab *nu, int e, DoubleTab& m1) const
 {
   int i, j, k, f, a, s, sb, sgn, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_a, d, D = dimension;
   double prefac, fac, vecz[3] = { 0, 0, 1 };
-  const IntTab &e_f = elem_faces(), &f_e = face_voisins(), &f_s = face_sommets(), &e_a = D < 3 ? e_f : zone().elem_aretes(), &a_s = D < 3 ? f_s : zone().aretes_som(); //en 2D, les aretes sont les faces!
-  const DoubleTab &xe = xp(), &xf = xv(), &xs = zone().domaine().coord_sommets();
-  const DoubleVect &ve = volumes();
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins(), &f_s = face_sommets(), &e_a = D < 3 ? e_f : zone().elem_aretes(), &a_s = D < 3 ? f_s : zone().aretes_som(); //en 2D, les aretes sont les faces!
+  const DoubleTab& xe = xp(), &xf = xv(), &xs = zone().domaine().coord_sommets();
+  const DoubleVect& ve = volumes();
   for (n_a = 0; n_a < e_a.dimension(1) && e_a(e, n_a) >= 0;) n_a++; //nombre d'aretes autour de e
   m1.resize(n_a, n_a, N), m1 = 0;
   DoubleTrav S_ea(n_a, D), v_e(n_a, D), v_ea(n_a, n_a, D); //vecteur "surface duale x normale" (oriente comme a), interpolations non stabilisees / stabilisees
   //construction de S_ea
   if (D < 3) for (i = 0; i < n_a; i++) //2D : arete <-> face, avec orientation du premier au second sommet de f_s
-    {
-      auto vec = cross(D, 3, &xf(f = e_f(e, i), 0), vecz, &xe(e, 0)); //rotation de (xf - xe)
-      for (sgn = dot(&xs(f_s(f, 1), 0), &vec[0], &xs(f_s(f, 0), 0)) > 0 ? 1 : -1, d = 0; d < D; d++) S_ea(i, d) = sgn * vec[d]; //avec la bonne orientation
-    }
+      {
+        auto vec = cross(D, 3, &xf(f = e_f(e, i), 0), vecz, &xe(e, 0)); //rotation de (xf - xe)
+        for (sgn = dot(&xs(f_s(f, 1), 0), &vec[0], &xs(f_s(f, 0), 0)) > 0 ? 1 : -1, d = 0; d < D; d++) S_ea(i, d) = sgn * vec[d]; //avec la bonne orientation
+      }
   else for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++) //3D: une contribution par couple (f, a)
-    {
-      sb = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0); //autre sommet
-      a = som_arete[s].at(sb), k = std::find(&e_a(e, 0), &e_a(e, 0) + n_a, a) - &e_a(e, 0); //arete, son indice dans e_a
-      auto vec = cross(D, D, &xf(f, 0), &xa_(a, 0), &xe(e, 0), &xe(e, 0)); //non oriente
-      for (sgn = dot(&vec[0], &ta_(a, 0)) >= 0 ? 1 : -1, d = 0; d < D; d++) S_ea(k, d) += sgn * vec[d] / 2;
-    }
+        {
+          sb = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0); //autre sommet
+          a = som_arete[s].at(sb), k = std::find(&e_a(e, 0), &e_a(e, 0) + n_a, a) - &e_a(e, 0); //arete, son indice dans e_a
+          auto vec = cross(D, D, &xf(f, 0), &xa_(a, 0), &xe(e, 0), &xe(e, 0)); //non oriente
+          for (sgn = dot(&vec[0], &ta_(a, 0)) >= 0 ? 1 : -1, d = 0; d < D; d++) S_ea(k, d) += sgn * vec[d] / 2;
+        }
   //v_e (interpolation non stabilisee)
   for (i = 0; i < n_a; i++) for (a = e_a(e, i), s = a_s(a, 0), sb = a_s(a, 1), d = 0; d < D; d++) v_e(i, d) = (xs(sb, d) - xs(s, d)) / ve(e);
   //v_ea (interpolation stabilisee)
   for (i = 0; i < n_a; i++) for (a = e_a(e, i), s = a_s(a, 0), sb = a_s(a, 1), prefac = D * beta_ / dot(&xs(sb, 0), &S_ea(i, 0), &xs(s, 0)), j = 0; j < n_a; j++)
-    for (fac = prefac * ((j == i) - dot(&S_ea(i, 0), &v_e(j, 0))), d = 0; d < D; d++)
-      v_ea(i, j, d) = v_e(j, d) + fac * (xs(sb, d) - xs(s, d));
+      for (fac = prefac * ((j == i) - dot(&S_ea(i, 0), &v_e(j, 0))), d = 0; d < D; d++)
+        v_ea(i, j, d) = v_e(j, d) + fac * (xs(sb, d) - xs(s, d));
   //matrice!
   for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++)
-    if (j < i) for (n = 0; n < N; n++) m1(i, j, n) = m1(j, i, n); //sous-diagonale -> on copie l'autre cote
-    else for (k = 0; k < n_a; k++) for (a = e_a(e, k), s = a_s(a, 0), sb = a_s(a, 1), fac = dot(&xs(sb, 0), &S_ea(k, 0), &xs(s, 0)) / D, n = 0; n < N; n++)
-      m1(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ea(k, i, 0), &v_ea(k, j, 0));
+      if (j < i) for (n = 0; n < N; n++) m1(i, j, n) = m1(j, i, n); //sous-diagonale -> on copie l'autre cote
+      else for (k = 0; k < n_a; k++) for (a = e_a(e, k), s = a_s(a, 0), sb = a_s(a, 1), fac = dot(&xs(sb, 0), &S_ea(k, 0), &xs(s, 0)) / D, n = 0; n < N; n++)
+            m1(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ea(k, i, 0), &v_ea(k, j, 0));
 }
 
 //tangentes aux aretes -> normales aux aretes duales : (nuS_ea.v) = w1 (|a|t_a.v)
-void Zone_PolyMAC::W1(const DoubleTab *nu, int e, DoubleTab &w1) const
+void Zone_PolyMAC::W1(const DoubleTab *nu, int e, DoubleTab& w1) const
 {
   int i, j, k, f, a, s, sb, sgn, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_a, d, D = dimension;
   double prefac, fac, vecz[3] = { 0, 0, 1 };
-  const IntTab &e_f = elem_faces(), &f_e = face_voisins(), &f_s = face_sommets(), &e_a = D < 3 ? e_f : zone().elem_aretes(), &a_s = D < 3 ? f_s : zone().aretes_som(); //en 2D, les aretes sont les faces!
-  const DoubleTab &xe = xp(), &xf = xv(), &xs = zone().domaine().coord_sommets();
-  const DoubleVect &ve = volumes();
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins(), &f_s = face_sommets(), &e_a = D < 3 ? e_f : zone().elem_aretes(), &a_s = D < 3 ? f_s : zone().aretes_som(); //en 2D, les aretes sont les faces!
+  const DoubleTab& xe = xp(), &xf = xv(), &xs = zone().domaine().coord_sommets();
+  const DoubleVect& ve = volumes();
   for (n_a = 0; n_a < e_a.dimension(1) && e_a(e, n_a) >= 0;) n_a++; //nombre d'aretes autour de e
   w1.resize(n_a, n_a, N), w1 = 0;
   DoubleTrav S_ea(n_a, D), v_e(n_a, D), v_ea(n_a, n_a, D); //vecteur "surface duale x normale" (oriente comme a), interpolations non stabilisees / stabilisees
   //construction de S_ea
   if (D < 3) for (i = 0; i < n_a; i++) //2D : arete <-> face, avec orientation du premier au second sommet de f_s
-    {
-      auto vec = cross(D, 3, &xf(f = e_f(e, i), 0), vecz, &xe(e, 0)); //rotation de (xf - xe)
-      for (sgn = dot(&xs(f_s(f, 1), 0), &vec[0], &xs(f_s(f, 0), 0)) > 0 ? 1 : -1, d = 0; d < D; d++) S_ea(i, d) = sgn * vec[d]; //avec la bonne orientation
-    }
+      {
+        auto vec = cross(D, 3, &xf(f = e_f(e, i), 0), vecz, &xe(e, 0)); //rotation de (xf - xe)
+        for (sgn = dot(&xs(f_s(f, 1), 0), &vec[0], &xs(f_s(f, 0), 0)) > 0 ? 1 : -1, d = 0; d < D; d++) S_ea(i, d) = sgn * vec[d]; //avec la bonne orientation
+      }
   else for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++) //3D: une contribution par couple (f, a)
-    {
-      sb = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0); //autre sommet
-      a = som_arete[s].at(sb), k = std::find(&e_a(e, 0), &e_a(e, 0) + n_a, a) - &e_a(e, 0); //arete, son indice dans e_a
-      auto vec = cross(D, D, &xf(f, 0), &xa_(a, 0), &xe(e, 0), &xe(e, 0)); //non oriente
-      for (sgn = dot(&vec[0], &ta_(a, 0)) >= 0 ? 1 : -1, d = 0; d < D; d++) S_ea(k, d) += sgn * vec[d] / 2;
-    }
+        {
+          sb = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0); //autre sommet
+          a = som_arete[s].at(sb), k = std::find(&e_a(e, 0), &e_a(e, 0) + n_a, a) - &e_a(e, 0); //arete, son indice dans e_a
+          auto vec = cross(D, D, &xf(f, 0), &xa_(a, 0), &xe(e, 0), &xe(e, 0)); //non oriente
+          for (sgn = dot(&vec[0], &ta_(a, 0)) >= 0 ? 1 : -1, d = 0; d < D; d++) S_ea(k, d) += sgn * vec[d] / 2;
+        }
   //v_e (interpolation non stabilisee)
   for (i = 0; i < n_a; i++) for (d = 0; d < D; d++) v_e(i, d) = S_ea(i, d) / ve(e);
   //v_ea (interpolation stabilisee)
   for (i = 0; i < n_a; i++) for (a = e_a(e, i), s = a_s(a, 0), sb = a_s(a, 1), prefac = D * beta_ / dot(&xs(sb, 0), &S_ea(i, 0), &xs(s, 0)), j = 0; j < n_a; j++)
-    for (fac = prefac * ((j == i) - dot(&xs(sb, 0), &v_e(j, 0), &xs(s, 0))), d = 0; d < D; d++)
-      v_ea(i, j, d) = v_e(j, d) + fac * S_ea(i, d);
+      for (fac = prefac * ((j == i) - dot(&xs(sb, 0), &v_e(j, 0), &xs(s, 0))), d = 0; d < D; d++)
+        v_ea(i, j, d) = v_e(j, d) + fac * S_ea(i, d);
   //matrice!
   for (i = 0; i < n_a; i++) for (j = 0; j < n_a; j++)
-    if (j < i) for (n = 0; n < N; n++) w1(i, j, n) = w1(j, i, n); //sous-diagonale -> on copie l'autre cote
-    else for (k = 0; k < n_a; k++) for (a = e_a(e, k), s = a_s(a, 0), sb = a_s(a, 1), fac = dot(&xs(sb, 0), &S_ea(k, 0), &xs(s, 0)) / D, n = 0; n < N; n++)
-      w1(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ea(k, i, 0), &v_ea(k, j, 0));
+      if (j < i) for (n = 0; n < N; n++) w1(i, j, n) = w1(j, i, n); //sous-diagonale -> on copie l'autre cote
+      else for (k = 0; k < n_a; k++) for (a = e_a(e, k), s = a_s(a, 0), sb = a_s(a, 1), fac = dot(&xs(sb, 0), &S_ea(k, 0), &xs(s, 0)) / D, n = 0; n < N; n++)
+            w1(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ea(k, i, 0), &v_ea(k, j, 0));
 }
 
 //stabilisation des matrices m1 et m2 de PolyMAC

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,9 +24,11 @@
 #define Echange_contact_PolyMAC_included
 
 #include <Echange_externe_impose.h>
+#include <Op_Diff_PolyMAC_Elem.h>
 #include <TRUSTTabs_forward.h>
-
+#include <MD_Vector_tools.h>
 #include <Ref_Champ_Inc.h>
+#include <Ref_Front_VF.h>
 #include <Ref_IntTab.h>
 
 class Zone_PolyMAC;
@@ -41,29 +43,23 @@ class Echange_contact_PolyMAC  : public Echange_externe_impose
 {
   Declare_instanciable(Echange_contact_PolyMAC);
 public :
-  void completer() override;
-  int initialiser(double temps) override;
-  void calculer_correspondance();
-  void update_coeffs();
-  void update_delta() const;
-  void mettre_a_jour(double ) override;
-  inline Champ_front& T_autre_pb() { return T_autre_pb_; }
-  inline const Champ_front& T_autre_pb() const { return T_autre_pb_; }
-  inline const Nom& nom_autre_pb() const { return nom_autre_pb_; }
+  virtual int initialiser(double temps);
+  virtual void mettre_a_jour(double temps) { }; //non utilise
+  virtual void verifie_ch_init_nb_comp() { }; //pas de contrainte sur les composantes de chaque cote
 
-  //item(i, j) : indice du j-ieme item dont on a besoin pour la face i de la frontiere
-  mutable IntTab item;
+  REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
+  int i_fvf, i_o_fvf;  //indices de frontiere de chaque cote
+  REF(Op_Diff_PolyMAC_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
 
-  //coeff(i, j) : coefficient de la face, puis coefficient de item(i, j - 1) (element, puis autres faces) dans la formule du flux a la face
-  //delta(i, j, 0/1) -> idem pour la correction non-lineaire de Le Potier
-  mutable DoubleTab coeff, delta_int, delta;
-  int monolithic; //1 si on resout la thermique en monolithique
+  /* faces de l'autre cote de la frontiere */
+  void init_f_dist() const; //initialisation de f_dist
+  mutable IntTab f_dist;     //face de l'autre cote de chaque face de la frontiere
+  mutable int f_dist_init_ = 0;
+
+  double invh_paroi; //resistance thermique (1 / h) de la paroi
+
 protected :
-  int stab_; //1 si on utilise la stabilisation de Le Potier
-  mutable int coeffs_a_jour_, delta_a_jour_; //dernier temps auquel on a mis a jour les coeffs
-  double h_paroi;
-  Champ_front T_autre_pb_;
-  Nom nom_autre_pb_;
+  Nom nom_autre_pb_, nom_bord_, nom_champ_; //nom du probleme distant, du bord, du champ
 };
 
 #endif

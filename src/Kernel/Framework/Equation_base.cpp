@@ -22,6 +22,7 @@
 
 #include <Parametre_diffusion_implicite.h>
 #include <Schema_Euler_explicite.h>
+#include <ConstDoubleTab_parts.h>
 #include <Source_dep_inco_base.h>
 #include <Operateur_Conv_base.h>
 #include <Op_Conv_negligeable.h>
@@ -2455,7 +2456,8 @@ void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab&
 void Equation_base::init_champ_conserve() const
 {
   if (champ_conserve_.non_nul()) return; //deja fait
-  int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue().valeurs().dimension(0), Nc = inconnue().valeurs().line_size();
+  ConstDoubleTab_parts part(inconnue().valeurs()); //si l'inconnue est multi-localisee, on prend le premier morceau
+  int Nt = inconnue()->nb_valeurs_temporelles(), Nl = part[0].dimension(0), Nc = inconnue().valeurs().line_size();
   //champ_conserve_ : meme type / support que l'inconnue
   discretisation().creer_champ(champ_conserve_, zone_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_conserve_->associer_eqn(*this);
@@ -2470,8 +2472,9 @@ void Equation_base::calculer_champ_conserve(const Objet_U& obj, DoubleTab& val, 
   const Equation_base& eqn = ref_cast(Equation_base, obj);
   const Champ_base *coeff = eqn.solv_masse().valeur().has_coefficient_temporel() ? &eqn.get_champ(eqn.solv_masse().valeur().get_name_of_coefficient_temporel()) : NULL; //coeff temporel
   const Champ_Inc_base& inco = eqn.inconnue();
+  ConstDoubleTab_parts part(inco.valeurs());
   //valeur du champ lui-meme
-  val = inco.valeurs();
+  val = part[0];
   if (coeff) tab_multiply_any_shape(val, coeff->valeurs());
 
   bval = inco.valeur_aux_bords();

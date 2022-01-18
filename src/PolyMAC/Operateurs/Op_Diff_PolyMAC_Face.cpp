@@ -61,12 +61,6 @@ void Op_Diff_PolyMAC_Face::completer()
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
   ch.init_ra(), zone.init_rf(), zone.init_m1(), zone.init_m2();
-
-  if (que_suis_je() == "Op_Diff_PolyMAC_Face") return;
-  const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
-  const Champ_Fonc& alpha_t = mod_turb.viscosite_turbulente();
-  associer_diffusivite_turbulente(alpha_t);
 }
 
 void Op_Diff_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const

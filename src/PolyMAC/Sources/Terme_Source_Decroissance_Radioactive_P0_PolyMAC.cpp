@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,10 @@
 #include <Equation_base.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_PolyMAC.h>
+#include <Array_tools.h>
+#include <Matrix_tools.h>
 #include <Synonyme_info.h>
+#include <Probleme_base.h>
 
 Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_P0_PolyMAC,"Decroissance_Radioactive_P0_PolyMAC",Source_base);
 Add_synonym(Terme_Source_Decroissance_Radioactive_P0_PolyMAC,"radioactive_decay_P0_PolyMAC");
@@ -73,32 +76,36 @@ void Terme_Source_Decroissance_Radioactive_P0_PolyMAC::associer_zones(const Zone
   la_zone_PolyMAC = ref_cast(Zone_PolyMAC, zone_dis.valeur());
 }
 
-DoubleTab& Terme_Source_Decroissance_Radioactive_P0_PolyMAC::ajouter(DoubleTab& resu)  const
+void Terme_Source_Decroissance_Radioactive_P0_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  int nb_elem = la_zone_PolyMAC.valeur().nb_elem();
   const Zone_VF& zone = la_zone_PolyMAC.valeur();
-  const DoubleVect& ve = zone.volumes();
+  const DoubleTab& inco = equation().inconnue().valeurs();
+  const int ne = zone.nb_elem(), N = inco.line_size();
+
+  for (auto &&n_m : matrices) if (n_m.first == "concentration")
+      {
+        Matrice_Morse& mat = *n_m.second, mat2;
+        IntTrav sten(0, 2);
+        sten.set_smart_resize(1);
+        for (int e = 0; e < ne; e++) for (int n = 0; n < N; n++) sten.append_line(N * e + n, N * e + n);
+        tableau_trier_retirer_doublons(sten);
+        Matrix_tools::allocate_morse_matrix(inco.size_totale(), equation().probleme().get_champ(n_m.first.c_str()).valeurs().size_totale(), sten, mat2);
+        mat.nb_colonnes() ? mat += mat2 : mat = mat2;
+      }
+}
+
+void Terme_Source_Decroissance_Radioactive_P0_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  const Zone_VF& zone = la_zone_PolyMAC.valeur();
+  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
   const DoubleTab& c = equation().inconnue().valeurs();
+  Matrice_Morse *Mc = matrices.count("concentration") ? matrices.at("concentration") : NULL;
+  const int N = c.line_size();
 
-  for (int e = 0; e < nb_elem; e++) for (int l = 0; l < nb_groupes; l++)
-      resu(e, l) -= lambda[l] * c(e, l) * ve(e);
-
-  return resu;
-}
-
-DoubleTab& Terme_Source_Decroissance_Radioactive_P0_PolyMAC::calculer(DoubleTab& resu) const
-{
-  resu=0;
-  ajouter(resu);
-  return resu;
-}
-
-void Terme_Source_Decroissance_Radioactive_P0_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  int nb_elem = la_zone_PolyMAC.valeur().nb_elem();
-  const Zone_VF& zone = la_zone_PolyMAC.valeur();
-  const DoubleVect& ve = zone.volumes();
-
-  for (int e = 0, k = 0; e < nb_elem; e++) for (int l = 0; l < nb_groupes; l++, k++)
-      matrice(k, k) += lambda[l] * ve(e);
+  for (int e = 0; e < zone.nb_elem(); e++) for (int l = 0; l < N; l++)
+      {
+        const double fac = pe(e) * ve(e) * lambda[l];
+        secmem(e, l) -= fac * c(e, l);
+        if (Mc) (*Mc)(N * e + l, N * e + l) += fac;
+      }
 }

@@ -57,23 +57,28 @@ public :
   DoubleTab& valeur_aux_faces(DoubleTab& vals) const override;
   inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const override;
 
-  //tableaux utilitaires sur les CLs
+  //tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
   //types de CL : 0 -> pas de CL
   //              1 -> Echange_externe_impose
   //              2 -> Echange_global_impose
-  //              3 -> Echange_contact_PolyMAC gere en monolithique
+  //              3 -> Echange_contact_PolyMAC
   //              4 -> Neumann_paroi
-  //              5 -> Neumann_sortie_libre
+  //              5 -> Neumann_val_ext
   //              6 -> Dirichlet
   //              7 -> Dirichlet_homogene
-  void init_cl() const;
-  mutable IntTab icl; //icl(f, .) = (type de la CL, no de la CL, indice dans la CL)
+  inline const IntTab& fcl() const
+  {
+    if (!fcl_init_) init_fcl();
+    return fcl_;
+  }
 
 protected :
 
   REF(Zone_VF) la_zone_VF;
 
-
+  void init_fcl() const;
+  mutable IntTab fcl_;
+  mutable int fcl_init_ = 0;
 };
 
 inline DoubleTab& Champ_P0_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const

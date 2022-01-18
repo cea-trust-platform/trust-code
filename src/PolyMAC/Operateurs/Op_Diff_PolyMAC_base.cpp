@@ -20,25 +20,30 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
+#include <Modele_turbulence_scal_base.h>
+#include <Linear_algebra_tools_impl.h>
+#include <Echange_contact_PolyMAC.h>
 #include <Op_Diff_PolyMAC_base.h>
-
-
-#include <Champ_Uniforme.h>
-#include <TRUSTTrav.h>
 #include <Check_espace_virtuel.h>
-#include <Zone_PolyMAC.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Probleme_base.h>
+#include <Op_Diff_PolyMAC_Face.h>
+#include <Champ_Don_Fonc_xyz.h>
+#include <Champ_Face_PolyMAC.h>
+#include <Flux_parietal_base.h>
 #include <Schema_Temps_base.h>
-#include <Milieu_base.h>
-#include <SFichier.h>
+#include <Champ_P0_PolyMAC.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Champ_Uniforme.h>
 #include <communications.h>
 #include <EcrFicPartage.h>
-#include <Modele_turbulence_scal_base.h>
-#include <Champ_Fonc_P0_base.h>
-#include <Echange_externe_impose.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Probleme_base.h>
+#include <Pb_Multiphase.h>
+#include <Zone_PolyMAC.h>
+#include <Milieu_base.h>
+#include <Matrice33.h>
+#include <TRUSTTrav.h>
+#include <Vecteur3.h>
+#include <SFichier.h>
+#include <cfloat>
 
 Implemente_base(Op_Diff_PolyMAC_base,"Op_Diff_PolyMAC_base",Operateur_Diff_base);
 
@@ -59,127 +64,26 @@ Entree& Op_Diff_PolyMAC_base::readOn(Entree& s )
   return s ;
 }
 
-
-double Op_Diff_PolyMAC_base::calculer_dt_stab() const
+void Op_Diff_PolyMAC_base::mettre_a_jour(double t)
 {
-  update_nu();
-  const Zone& ma_zone=la_zone_poly_->zone();
-  double dt_stab = DMAXFLOAT;
-
-  const int nb_elem =  ma_zone.nb_elem();
-
-  if (! has_champ_masse_volumique())
-    {
-      // Methode "standard" de calcul du pas de temps
-      // Ce calcul est tres conservatif: si le max de la diffusivite
-      // n'est pas atteint a l'endroit ou le min de delta_h_carre est atteint,
-      // le pas de temps est sous-estime.
-      const Champ_base& champ_diffusivite = diffusivite_pour_pas_de_temps();
-      const DoubleVect&      valeurs_diffusivite = champ_diffusivite.valeurs();
-      double alpha_max = local_max_vect(valeurs_diffusivite);
-
-      // Detect if a heat flux is imposed on a boundary through Paroi_echange_externe_impose keyword
-      double h_imp_max = -1, h_imp_temp=-2;
-
-      const Zone_Cl_PolyMAC& la_zone_cl_poly = la_zcl_poly_.valeur();
-      for(int i=0; i<la_zone_cl_poly.nb_cond_lim(); i++)
-        {
-          // loop on boundaries
-          const Cond_lim_base& la_cl = la_zone_cl_poly.les_conditions_limites(i).valeur();
-
-          if (sub_type(Echange_externe_impose,la_cl))
-            {
-              const Echange_externe_impose& la_cl_int = ref_cast(Echange_externe_impose,la_cl);
-              const Champ_front_base& le_ch_front = ref_cast( Champ_front_base, la_cl_int.h_imp().valeur());
-              const DoubleVect& tab = le_ch_front.valeurs();
-              if(tab.size() != 0)
-                {
-                  h_imp_temp = local_max_vect(tab); // get h_imp from datafile
-                  h_imp_temp = std::fabs(h_imp_temp); // we should take the absolute value since it can be negative!
-                  h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
-                }
-            }
-        } // End loop on boundaries
-      h_imp_max = Process::mp_max(h_imp_max);
-
-      if(alpha_max != 0.0 && nb_elem != 0)
-        {
-          double min_delta_h_carre = la_zone_poly_->carre_pas_du_maillage();
-          if(h_imp_max>0.0)  //a heat flux is imposed on a boundary condition
-            {
-              // get the thermal conductivity
-              const Equation_base& mon_eqn = la_zone_cl_poly.equation();
-              const Milieu_base& mon_milieu = mon_eqn.milieu();
-              const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
-              double max_conductivity = local_max_vect(tab_lambda);
-
-              // compute Biot number given by Bi = L*h/lambda.
-              double Bi = h_imp_max*sqrt(min_delta_h_carre)/max_conductivity;
-              // if Bi>1, replace conductivity by h_imp*h in diffusivity. We are very conservative since h_imp_max is not necessarily located where max_conductivity is.
-              if (Bi>1.0)
-                alpha_max *= h_imp_max*sqrt(min_delta_h_carre)/max_conductivity;
-            }
-          dt_stab = min_delta_h_carre / (2. * dimension * alpha_max);
-        }
-
-    }
-  else
-    {
-      const double           deux_dim      = 2. * Objet_U::dimension;
-      const Champ_base& champ_diffu   = diffusivite();
-      const DoubleTab&       valeurs_diffu = champ_diffu.valeurs();
-      const Champ_base&      champ_rho     = get_champ_masse_volumique();
-      const DoubleTab&       valeurs_rho   = champ_rho.valeurs();
-
-      assert(sub_type(Champ_P0_PolyMAC, champ_rho));
-      assert(sub_type(Champ_Fonc_P0_base, champ_diffu));
-      // assert(valeurs_rho.size_array()== ma_zone.les_elems().dimension_tot(0));
-      // Champ_P0_PolyMAC : champ aux elems et aux faces
-      // Champ de masse volumique variable.
-      const IntTab& e_f = la_zone_poly_->elem_faces();
-      //Cerr << e_f << finl;
-      for (int elem = 0; elem < nb_elem; elem++)
-        {
-          const double diffu = valeurs_diffu(elem);
-          const double rho = valeurs_rho(elem);
-          double dt;
-          if (e_f.dimension(1)==deux_dim || e_f(elem, deux_dim)==-1)
-            {
-              // Maille type VDF (deux_dim faces sur l'element)
-              // ToDo: coder dans le cas has_champ_masse_volumique()==false
-              double h = 0;
-              for (int f=0; f<deux_dim; f++)
-                {
-                  int face = e_f(elem, f);
-                  const double d = la_zone_poly_->volumes(elem) / la_zone_poly_->surface(face);
-                  h += 0.5/(d*d); // On multiplie par 0.5 car face comptee 2 fois
-                  //Cerr << elem << " " << face << " " << la_zone_poly_->surface(face) << finl;
-                }
-              // Voir Op_Diff_VDF_Elem_base::calculer_dt_stab():
-              dt = 0.5 * rho / ((diffu + DMINFLOAT)*h);
-              //Cerr << "VDF " << dt << finl;
-            }
-          else
-            {
-              dt = la_zone_poly_->carre_pas_maille(elem) * rho / (deux_dim * (diffu + DMINFLOAT));
-              //Cerr << "NC  " << dt << finl;
-            }
-          if (dt < dt_stab)
-            dt_stab = dt;
-        }
-    }
-
-  dt_stab = Process::mp_min(dt_stab);
-  return dt_stab;
+  Operateur_base::mettre_a_jour(t);
+  //si le champ est constant en temps, alors pas besoin de recalculer nu_ et les interpolations
+  if (t <= t_last_maj_) return;
+  if (!nu_constant_) nu_a_jour_ = 0;
+  t_last_maj_ = t;
 }
+
 
 void Op_Diff_PolyMAC_base::completer()
 {
   Operateur_base::completer();
-  nu_.resize(0, equation().que_suis_je() == "Transport_K_Eps" ? 2 : diffusivite().valeurs().line_size());
+  const Equation_base& eq = equation();
+  int N = eq.inconnue().valeurs().line_size(), D = dimension, N_nu = max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
+  if (N_nu == N) nu_.resize(0, N); //isotrope
+  else if (N_nu == N * D) nu_.resize(0, N, D); //diagonal
+  else if (N_nu == N * D * D) nu_.resize(0, N, D, D); //complet
+  else Process::exit(Nom("Op_Diff_PolyMAC_base : diffusivity component count ") + Nom(N_nu) + "not among (" + Nom(N) + ", " + Nom(N * D) + ", " + Nom(N * D * D)  + ")!");
   la_zone_poly_.valeur().zone().creer_tableau_elements(nu_);
-  la_zone_poly_.valeur().creer_tableau_faces(nu_fac_);
-  nu_a_jour_ = 0;
 }
 
 int Op_Diff_PolyMAC_base::impr(Sortie& os) const
@@ -336,98 +240,33 @@ void Op_Diff_PolyMAC_base::associer_diffusivite(const Champ_base& diffu)
   diffusivite_ = diffu;
 }
 
-
 const Champ_base& Op_Diff_PolyMAC_base::diffusivite() const
 {
   return diffusivite_.valeur();
 }
 
-
 void Op_Diff_PolyMAC_base::update_nu() const
 {
-  if (nu_a_jour_) return; //on a deja fait le travail
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
-  int i, j, f;
+  const DoubleTab& nu_src = diffusivite().valeurs();
+  int e, i, m, n, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
+  assert(N_nu % N == 0);
 
-  /* 1. nu_ */
-  //dimensionnement
-  const DoubleTab& diffu=diffusivite().valeurs();
-  if (equation().que_suis_je() != "Transport_K_Eps")
-    {
-      if (!diffu.get_md_vector().non_nul())
-        {
-          // diffusvite uniforme
-          int n = nu_.dimension_tot(0), nb_comp = nu_.line_size();
-          // Tableaux vus comme uni-dimenionnels:
-          const DoubleVect& arr_diffu = diffu;
-          DoubleVect& arr_nu = nu_;
-          for (i = 0; i < n; i++)
-            for (j = 0; j < nb_comp; j++)
-              arr_nu[i*nb_comp + j] = arr_diffu[j];
-        }
-      else
-        {
-          assert(nu_.get_md_vector() == diffu.get_md_vector());
-          assert_espace_virtuel_vect(diffu);
-          nu_.inject_array(diffu);
-        }
-    }
+  /* nu_ : si necessaire, on doit etendre la champ source */
+  if (N_nu == N_nu_src) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N_nu; n++) nu_.addr()[N_nu * e +  n] = nu_src(!c_nu * e, n); //facile
+  else if (N_nu == N * D && N_nu_src == N) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //diagonal
+          nu_(e, n, d) = nu_src(!c_nu * e, n);
+  else if (N_nu == N * D * D && (N_nu_src == N || N_nu_src == N * D)) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) //complet
+        for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N ? n : D * n + d);
+  else abort();
 
-  /* ajout de la diffusivite turbulente si elle existe */
-  if (has_diffusivite_turbulente())
-    {
-      const DoubleTab& diffu_turb = diffusivite_turbulente().valeurs();
-      if (equation().que_suis_je() == "Transport_K_Eps")
-        {
-          bool nu_uniforme = sub_type(Champ_Uniforme, diffusivite());
-          double val_nu = diffu(0, 0);
-          for (i = 0; i < diffu_turb.dimension(0); i++) for (j = 0; j < 2; j++)
-              {
-                if (!nu_uniforme) val_nu = diffu(i, 0);
-                nu_(i, j) = val_nu + diffu_turb(i, j);
-              }
-        }
-      else
-        {
-          if (!diffu_turb.get_md_vector().non_nul())
-            {
-              // diffusvite uniforme
-              int n = nu_.dimension_tot(0), nb_comp = nu_.line_size();
-              // Tableaux vus comme uni-dimenionnels:
-              const DoubleVect& arr_diffu_turb = diffu_turb;
-              DoubleVect& arr_nu = nu_;
-              for (i = 0; i < n; i++)
-                for (j = 0; j < nb_comp; j++)
-                  arr_nu[i*nb_comp + j] += arr_diffu_turb[j];
-            }
-          else
-            {
-              assert(nu_.get_md_vector() == diffu_turb.get_md_vector());
-              assert_espace_virtuel_vect(diffu_turb);
-              nu_ += diffu_turb;
-            }
-        }
-    }
+  /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
+  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0, i = 0; n < N; n++) for (m = 0; m < mult; m++, i++)
+        nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? max((*alp)(e, n), 1e-8) : 1);
 
-  /* 2. nu_fac : prend en compte les lois de parois et le facteur utilisateur (nu_fac_mod) */
-  // utilise-t-on des lois de paroi ?
-  const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-  int loi_par = modele_turbulence.non_nul() && sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()) &&
-                ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().use_equivalent_distance();
+  /* modification par une classe fille */
+  modifier_nu(nu_);
 
-  for (i = 0; i <= cls.size(); i++) //boucle sur les bords, puis sur les faces internes
-    {
-      int deb = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).num_premiere_face() : zone.premiere_face_int(),
-          num = i < cls.size() ? ref_cast(Front_VF, cls[i].frontiere_dis()).nb_faces()          : zone.nb_faces() - zone.premiere_face_int();
-      for (f = deb; f < deb + num; f++) //nu par composante a chaque face
-        {
-          if (i < cls.size() && loi_par) //facteur multiplicatif du a une loi de paroi
-            nu_fac_(f) = zone.dist_norm_bord(f) / ref_cast(Modele_turbulence_scal_base,modele_turbulence.valeur()).loi_paroi().valeur().equivalent_distance(i, f - deb);
-          else nu_fac_(f) = zone.porosite_face(f); //par defaut : facteur du a la porosite
-          if (nu_fac_mod.size()) nu_fac_(f) *= nu_fac_mod(f); //prise en compte de nu_fac_mod
-        }
-    }
-  nu_fac_.echange_espace_virtuel();
   nu_a_jour_ = 1;
 }

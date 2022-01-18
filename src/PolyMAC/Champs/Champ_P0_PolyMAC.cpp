@@ -147,26 +147,25 @@ Champ_base& Champ_P0_PolyMAC::affecter_(const Champ_base& ch)
 }
 
 //utilitaires pour CL
-void Champ_P0_PolyMAC::init_cl() const
+void Champ_P0_PolyMAC::init_fcl() const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,la_zone_VF.valeur());
   const Conds_lim& cls = ma_zone_cl_dis.valeur().les_conditions_limites();
   int i, f, n;
 
-  if (icl.dimension(0)) return;
-  icl.resize(zone.nb_faces_tot(), 3);
+  fcl_.resize(zone.nb_faces_tot(), 3);
   for (n = 0; n < cls.size(); n++)
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
       int idx = sub_type(Echange_externe_impose, cls[n].valeur()) + 2 * sub_type(Echange_global_impose, cls[n].valeur())
                 + 4 * sub_type(Neumann_paroi, cls[n].valeur())      + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_sortie_libre, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
                 + 6 * sub_type(Dirichlet, cls[n].valeur())          + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());
-      if (sub_type(Echange_contact_PolyMAC, cls[n].valeur()) && sub_type(Schema_Euler_Implicite, equation().schema_temps())
-          && ref_cast(Schema_Euler_Implicite, equation().schema_temps()).resolution_monolithique(equation().domaine_application())) idx = 3;
+      if (sub_type(Echange_contact_PolyMAC, cls[n].valeur())) idx = 3;
       if (!idx) Cerr << "Champ_P0_PolyMAC : CL non codee rencontree!" << finl, Process::exit();
       for (i = 0; i < fvf.nb_faces_tot(); i++)
-        f = fvf.num_face(i), icl(f, 0) = idx, icl(f, 1) = n, icl(f, 2) = i;
+        f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;
     }
+  fcl_init_ = 1;
 }
 
 DoubleTab& Champ_P0_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
