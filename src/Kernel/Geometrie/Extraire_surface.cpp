@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -205,13 +205,13 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
   IntTab marq_elem;
 
   zone_vf.zone().creer_tableau_elements(marq_elem);
-
+  String2 X("x"), Y("y"), Z("z"); // Pour eviter les creations de String2 a partir d'un char* dans la boucle:
   for (int elem=0; elem<nb_elem; elem++)
     {
-      condition_elements.setVar("x",xp(elem,0));
-      condition_elements.setVar("y",xp(elem,1));
+      condition_elements.setVar(X,xp(elem,0));
+      condition_elements.setVar(Y,xp(elem,1));
       if (dimension==3)
-        condition_elements.setVar("z",xp(elem,2));
+        condition_elements.setVar(Z,xp(elem,2));
       double res=condition_elements.eval();
       if (std::fabs(res)>1e-5)
         marq_elem(elem)=1;
@@ -283,10 +283,10 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
           if (((val0*val1==0)&&(val0+val1==1))||((val0==1)&&(face_bord_int(fac)==1))||((val1==1)&&(face_bord_int(fac)==1)))
             //if (zone_test.chercher_elements(xv(fac,0),xv(fac,1),xv(fac,2))==0)
             {
-              condition_faces.setVar("x",xv(fac,0));
-              condition_faces.setVar("y",xv(fac,1));
+              condition_faces.setVar(X,xv(fac,0));
+              condition_faces.setVar(Y,xv(fac,1));
               if (dimension==3)
-                condition_faces.setVar("z",xv(fac,2));
+                condition_faces.setVar(Z,xv(fac,2));
               double res=condition_faces.eval();
               if (std::fabs(res)>1e-5)
                 if (marq(fac)!=-1)  // pas un joint, ou on est le proprietaire
@@ -307,6 +307,7 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
   les_elems.resize(nb_t,nb_sommet_face);
   int nb=0;
   ArrOfDouble normal(dimension);
+  ArrOfDouble normal_b(3);
   for (int fac=0; fac<nb_faces; fac++)
     if (marq(fac)==1)
       {
@@ -323,7 +324,6 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
           {
             if (dimension==3)
               {
-                ArrOfDouble normal_b(3);
                 for (int i=0; i<3; i++)
                   {
                     point0b(i)=coord(les_elems(nb,0),i);

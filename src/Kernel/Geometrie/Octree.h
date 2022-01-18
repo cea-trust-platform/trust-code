@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -177,6 +177,7 @@ public :
   OctreeFloor(Octree* mon_pere, const ArrOfInt& val,
               const OctreeLoc& loc)
   {
+    pos.resize_array(Objet_U::dimension);
     construire(mon_pere, val, loc);
   }
   void construire(Octree* , const ArrOfInt&, const OctreeLoc&);
@@ -187,8 +188,8 @@ public :
   virtual Entree& readOn(Entree& is);
   int taille() const;
 protected :
-
   ArrOfInt num_elem;
+  mutable ArrOfDouble pos; // Travail de travail
 };
 
 #endif//OCTREE_INCLUS

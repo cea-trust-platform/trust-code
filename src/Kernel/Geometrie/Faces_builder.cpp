@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -335,15 +335,8 @@ int Faces_builder::chercher_face_element(const IntTab&    elem_som,
 #endif
 #endif
 
-  const int nb_sommets_par_element    = elem_som.dimension(1);
-  ArrOfInt sommets_element(nb_sommets_par_element);
   const int nb_faces_element          = faces_element_ref.dimension(0);
   const int nb_sommets_par_face       = faces_element_ref.dimension(1);
-  //  assert(nb_sommets_par_element <= 8);
-
-  int i;
-  for (i = 0; i < nb_sommets_par_element; i++)
-    sommets_element[i] = elem_som(elem, i);
 
   int i_face, i_som, i_som2;
   for (i_face = 0; i_face < nb_faces_element; i_face++)
@@ -355,8 +348,7 @@ int Faces_builder::chercher_face_element(const IntTab&    elem_som,
           if (sommet_elem_ref==-1)
             sommet_domaine=-1;
           else
-            sommet_domaine = sommets_element[sommet_elem_ref];
-          //const int sommet_domaine = sommets_element[sommet_elem_ref];
+            sommet_domaine = elem_som(elem, sommet_elem_ref);
           for (i_som2 = 0; i_som2 < nb_sommets_par_face; i_som2++)
             if (une_face[i_som2] == sommet_domaine) // si sommet trouve, stop
               break;

@@ -133,6 +133,7 @@ help()
    echo "-valgrind_strict              : Run under valgrind with no suppressions."
    echo "-callgrind                    : Run callgrind tool (profiling) from valgrind."
    echo "-massif                       : Run massif tool (heap profile) from valgrind." 
+   echo "-heaptrack                    : Run heaptrack (heap profile). Better than massif."
    echo "-advisor                      : Run advisor tool (vectorization)."
    echo "-vtune                        : Run vtune tool (profiling)."
    echo "-perf                         : Run perf tool (profiling)."
@@ -428,6 +429,9 @@ do
    elif [ "$1" = "-massif" ]
    then 
       MASSIF=1
+   elif [ "$1" = "-heaptrack" ]
+   then 
+      HEAPTRACK=1
    elif [ "$1" = "-advisor" ]
    then 
       ADVISOR=1
@@ -742,24 +746,23 @@ if [ "$CALLGRIND" = "1" ]
 then
    echo $binary
    exec="$val --tool=callgrind --dump-instr=yes --trace-jump=yes --callgrind-out-file=$NOM.callgrind $binary"
-fi
-if [ "$MASSIF" = 1 ]
+elif [ "$MASSIF" = 1 ]
 then
-   exec="$val --tool=massif --massif-out-file=$NOM.massif.%p $binary"
-fi
-if [ "$ADVISOR" = 1 ]
+   exec="$val --tool=massif --massif-out-file=$NOM.massif.%p --detailed-freq=1 --time-unit=ms $binary"
+elif [ "$HEAPTRACK" = 1 ]
+then
+   [ "`heaptrack -v 1>/dev/null 2>&1;echo $?`" != 0 ] && echo "Install heaptrack tool first." && exit -1
+   exec="heaptrack $binary"
+elif [ "$ADVISOR" = 1 ]
 then
    exec="advisor --collect=survey $binary"
-fi
-if [ "$VTUNE" = 1 ]
+elif [ "$VTUNE" = 1 ]
 then
    exec="vtune -collect hotspots $binary"
-fi
-if [ "$PERF" = 1 ]
+elif [ "$PERF" = 1 ]
 then
    exec="perf record --call-graph dwarf -o $NOM.perf $binary" # Plus complet 
-fi
-if [ "$VT_PCTRACE" != "" ]
+elif [ "$VT_PCTRACE" != "" ]
 then
    exec="-trace $binary"
 fi
@@ -1173,15 +1176,26 @@ then
    echo "You could try now: kcachegrind $NOM.callgrind" && [ ! -f /usr/bin/kcachegrind ] && echo "But kcachegrind is not installed."
    echo "To see source code, you need a binary built with -g -O0, eg: \$exec_gcov"
    echo "You can build it with: make gcov"
-fi
-if [ "$MASSIF" = 1 ]
+elif [ "$MASSIF" = 1 ]
 then
    echo "Massif log $NOM.massif.* are created."
    echo "You could try now: massif-visualizer $NOM.massif.*" && [ ! -f /usr/bin/massif-visualizer ] && echo "But massif-visualizer is not installed."
+elif [ "$HEAPTRACK" = 1 ]
+then
+   echo "Heaptrack log ?.* are created."
+   heaptrack --analyze `find . -newer $NOM.log -name heaptrack.'*'.gz`
+elif [ "$VTUNE" = 1 ]
+then
+   vtune-gui `ls -art | grep hs | tail -1`
+elif [ "$ADVISOR" = 1 ]
+then
+   advisor-gui `ls -art | grep e0 | tail -1`
+elif [ "$PERF" = 1 ] && [ -f $NOM.perf ]
+then
+   perf report -i $NOM.perf
+elif [ "$VT_PCTRACE" != "" ] && [ -f `basename $binary`.stf ]
+then
+   echo "Use -g flag or $exec_gcov binary for source code..." && traceanalyzer `basename $binary`.stf
 fi
-[ "$VTUNE" = 1 ] && vtune-gui `ls -art | grep hs | tail -1`
-[ "$ADVISOR" = 1 ] && advisor-gui `ls -art | grep e0 | tail -1`
-[ "$PERF" = 1 ] && [ -f $NOM.perf ] && perf report -i $NOM.perf
-[ "$VT_PCTRACE" != "" ] && [ -f `basename $binary`.stf ] && echo "Use -g flag or $exec_gcov binary for source code..." && traceanalyzer `basename $binary`.stf
 exit $err
 

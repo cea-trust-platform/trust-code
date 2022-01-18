@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,9 +64,14 @@ public :
   inline double eval();
 
   /**
-   * Fixe la valeur de la variable representee par une chaine String2 v.
+   * Fixe la valeur de la variable representee par une chaine sv.
    */
   inline void setVar(const char* sv, double val);
+
+  /**
+   * Fixe la valeur de la variable representee par une chaine String2 v.
+   */
+  inline void setVar(const String2& v, double val);
 
   /**
    * Fixe la valeur de la variable de numero specifie. Ce numero correspondt a l'ordre de l'ajout des variables par la methode addVar().
@@ -123,11 +128,19 @@ inline double Parser_U::eval()
 }
 
 /**
- * Fixe la valeur de la variable representee par une chaine String2 v.
+ * Fixe la valeur de la variable representee par une chaine sv.
  */
 inline void Parser_U::setVar(const char* sv, double val)
 {
   parser->setVar(sv, val);
+}
+
+/**
+ * Fixe la valeur de la variable representee par une chaine String2 v.
+ */
+inline void Parser_U::setVar(const String2& v, double val)
+{
+  parser->setVar(v, val);
 }
 
 /**
