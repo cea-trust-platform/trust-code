@@ -34,8 +34,8 @@ Eval_Diff_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int elem, int fac
   const double dist = dist_face(fac1,fac2,ori), surf = 0.5*(surface(fac1)*porosite(fac1)+surface(fac2)*porosite(fac2)), visc_lam = nu_lam(elem);
   for (int k = 0; k < ncomp; k++)
     {
-      const double tau = (inco(fac2,k)-inco(fac1,k))/dist, reyn = DERIVED_T::IS_TURB ? - 2.*nu_turb(elem)*tau : 0.0; // On considere que l energie est dans la pression
-      flux(k) = (DERIVED_T::IS_VAR && DERIVED_T::IS_TURB) ? (-reyn + 2.*visc_lam*tau) * surf : (-reyn + visc_lam*tau) * surf ;
+      const double tau = (inco(fac2,k)-inco(fac1,k))/dist, reyn = DERIVED_T::IS_TURB ? 2.*nu_turb(elem)*tau : 0.0; // On considere que l energie est dans la pression
+      flux(k) = DERIVED_T::IS_VAR ? (reyn + 2.*visc_lam*tau) * surf : (reyn + visc_lam*tau) * surf;
     }
 }
 
@@ -43,12 +43,14 @@ template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type
 Eval_Diff_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int fac2, int fac3, int fac4, Type_Double& flux) const
 {
   const int ori1 = orientation(fac1), ori3 = orientation(fac3), elem1 = elem_(fac3,0), elem2 = elem_(fac3,1), elem3 = elem_(fac4,0), elem4 = elem_(fac4,1), ncomp = flux.size_array();
-  const double visc_lam = nu_lam_mean_4pts(elem1,elem2,elem3,elem4,ori3), visc_turb = nu_mean_4pts(elem1,elem2,elem3,elem4,ori3), surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2);
+  const double visc_lam = nu_lam_mean_4pts(elem1,elem2,elem3,elem4,ori3),
+               visc_turb = DERIVED_T::IS_TURB ? nu_mean_4pts(elem1,elem2,elem3,elem4,ori3) : 0.0, surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2);
   for (int k = 0; k < ncomp; k++)
     {
-      const double tau = (inco(fac4,k)-inco(fac3,k))/dist_face(fac3,fac4,ori1), tau_tr = (inco(fac2,k)-inco(fac1,k))/dist_face(fac1,fac2,ori3),
-          reyn = DERIVED_T::IS_TURB ? (tau + tau_tr)*visc_turb : 0.0;
-      flux(k) = (DERIVED_T::IS_VAR && DERIVED_T::IS_TURB) ? (reyn + visc_lam*(tau+tau_tr))* surf*poros : (reyn + visc_lam*tau)*surf*poros;
+      const double tau = (inco(fac4,k)-inco(fac3,k))/dist_face(fac3,fac4,ori1),
+                   tau_tr = DERIVED_T::IS_VAR ? (inco(fac2,k)-inco(fac1,k))/dist_face(fac1,fac2,ori3) : 0.0,
+          reyn = (tau + tau_tr) * visc_turb;
+      flux(k) = (reyn + visc_lam * (tau + tau_tr)) * surf * poros;
     }
 }
 
@@ -67,16 +69,16 @@ Eval_Diff_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
       }
   visc_lam_temp /= 3.0;
   visc_turb_temp /= 3.0;
-  const double visc_lam = DERIVED_T::IS_VAR ? visc_lam_temp : nu_lam(0), visc_turb = visc_turb_temp, surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2);
+  const double visc_lam = DERIVED_T::IS_VAR ? visc_lam_temp : nu_lam(0), visc_turb = DERIVED_T::IS_TURB ? visc_turb_temp : 0.0, surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2);
 
   for (int k = 0; k < flux.size_array(); k++)
     if (inco(fac4,k)*inco(fac3,k) != 0)
       {
-        const double tau = (inco(fac4,k)-inco(fac3,k))/dist_face(fac3,fac4,ori1), tau_tr = (inco(fac2,k)-inco(fac1,k))/dist_face(fac1,fac2,ori3),
-            reyn = DERIVED_T::IS_TURB ? (tau + tau_tr)*visc_turb : 0.0;
-        flux(k) = (DERIVED_T::IS_VAR && DERIVED_T::IS_TURB) ? (reyn + visc_lam*(tau+tau_tr)) * surf * poros : tau * surf * visc_lam * poros;
+        const double tau = (inco(fac4,k)-inco(fac3,k))/dist_face(fac3,fac4,ori1),
+                     tau_tr = DERIVED_T::IS_VAR ? (inco(fac2,k)-inco(fac1,k))/dist_face(fac1,fac2,ori3) : 0,
+                     reyn = (tau + tau_tr) * visc_turb;
+        flux(k) = (reyn + visc_lam*(tau+tau_tr)) * surf * poros;
       }
-  // XXX : il faut else flux(k) = 0 non ? Yannick help :/
 }
 
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type_Double>
@@ -94,15 +96,14 @@ Eval_Diff_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
           else if (elem2 == -1) elem2 = elem1;
         }
 
-      const double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori), visc_turb = nu_mean_2pts(elem1,elem2,ori), surf = surface_(fac1,fac2), dist = dist_norm_bord(fac1), tps = inconnue->temps();
+      const double visc_lam = nu_lam_mean_2pts(elem1,elem2,ori), visc_turb = DERIVED_T::IS_TURB ? nu_mean_2pts(elem1,elem2,ori) : 0.0, surf = surface_(fac1,fac2), dist = dist_norm_bord(fac1), tps = inconnue->temps();
       const double vit_imp = is_PAROI ? 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl)+Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl)) :
           0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,tps,rang1,ori,la_zcl)+Champ_Face_get_val_imp_face_bord_sym(inco,tps,rang2,ori,la_zcl));
 
       for (int k = 0; k < ncomp; k++)
         {
           const double tau  = signe*(vit_imp-inco(fac3,k))/dist;
-          if (is_PAROI) flux(k) = (DERIVED_T::IS_TURB && DERIVED_T::IS_VAR) ? tau*surf*(visc_lam+visc_turb) : tau*surf*visc_lam;
-          else flux(k) = DERIVED_T::IS_TURB ? tau * surf * (visc_lam + visc_turb) : tau * surf * visc_lam;
+          flux(k) = tau * surf * (visc_lam + visc_turb);
         }
     }
   else
