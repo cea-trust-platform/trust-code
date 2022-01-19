@@ -62,12 +62,12 @@ then
    sed -i "1,$ s?if (\${\${runs}})??"    AmgXWrapper/cmake-modules/FindPETSc.cmake
    cd $LIB && rm -r -f build && mkdir -p build && cd build
    BUILD=RELEASE
-   CMAKE_CXX_FLAGS="" && [ "$PETSC_HAVE_OPENMP" = 1 ] && CMAKE_CXX_FLAGS="-DCMAKE_CXX_FLAGS=-fopenmp"
+   CMAKE_CXX_FLAGS="" && [ "$TRUST_USE_OPENMP" = 1 ] && CMAKE_CXX_FLAGS="-DCMAKE_CXX_FLAGS=-fopenmp"
    #BUILD=DEBUG
    # On specifie CC et CXX car si HPC SDK, nvc et nvc++ pris a la place (orcus):
    export CC=$TRUST_cc
    export CXX=$TRUST_CC
-   CMAKE_FLAGS="$CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$TRUST_CC_BASE"
+   CMAKE_FLAGS="$CMAKE_CXX_FLAGS -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$TRUST_CC"
    # cmake (meme recent, 3.20) pas foutu de detecter correctement le nvcc du HPC SDK (cannot find -lcudadevrt -lcudart_static):
    [ "$NVHPC" != "" ] && echo "$CUDA_ROOT/bin/nvcc -L$CUDA_ROOT/lib64 \$*" > nvcc && chmod +x nvcc && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CUDA_COMPILER=`pwd`/nvcc"
    # Configure and build:

@@ -5,7 +5,7 @@ then
    # NB: aijperm ne vaut rien
    sbaij=sbaij
    [ $exec = $exec_debug ] || [ $exec = $exec_semi_opt ] && sbaij="" # Crash bizarre en debug et en semi_opt
-   options="`[ $PETSC_HAVE_OPENMP = 0 ] && echo $sbaij` aij aijsell "`echo $TRUST_BLAS_LAPACK | grep mkl 1>/dev/null && echo aijmkl` # BlasIntel doit etre installee pour aijmkl
+   options="`[ $TRUST_USE_OPENMP = 0 ] && echo $sbaij` aij aijsell "`echo $TRUST_BLAS_LAPACK | grep mkl 1>/dev/null && echo aijmkl` # BlasIntel doit etre installee pour aijmkl
    for option in $options
    do
       echo "Test solve PETSc with -mat_type $option"

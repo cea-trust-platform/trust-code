@@ -10,10 +10,10 @@ install_OpenBlas()
 
    # Installation
    rm -r -f *-OpenBLAS-*
-   echo "Installation of $package (USE_THREAD=$PETSC_HAVE_OPENMP)..."
+   echo "Installation of $package (USE_THREAD=$TRUST_USE_OPENMP)..."
    gunzip -f -c $package | tar -xf -
    cd OpenBLAS-$version_openblas
-   $TRUST_MAKE CC=$TRUST_cc FC=$TRUST_F77 USE_THREAD=$PETSC_HAVE_OPENMP
+   $TRUST_MAKE CC=$TRUST_cc FC=$TRUST_F77 USE_THREAD=$TRUST_USE_OPENMP
 
    # On copie la librairie si elle existe sinon on sort
    if [ -f $lib ]
@@ -106,7 +106,7 @@ TRY_OPENBLAS=1 # Installation d'OpenBlas (multithreade uniquement si support Ope
 # fvca8_jdd5 ATTENTION 8 ecarts possible sur ce cas...
 # fvca8_jdd6 ATTENTION 8 ecarts possible sur ce cas...
 # fvca8_jdd9 ATTENTION 8 ecarts possible sur ce cas...
-if [ "$TRY_OPENBLAS" = 1 ] && [ "$PETSC_HAVE_OPENMP" = 1 ]
+if [ "$TRY_OPENBLAS" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
 then
    # Parfois OpenBlas ne s'installe pas, on switche sur la version classique
    install_OpenBlas

@@ -329,8 +329,8 @@ export TRUST_BUILD_IN_TMP=1
 option_configure=" -disable-ccache"
 # Cuda
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda" | grep ^$HOST"\."`" != "" ] 				&& option_configure=$option_configure" -cuda"
-# PETSc with OpenMP 
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_openmp" | grep ^$HOST"\."`" != "" ] 	&& option_configure=$option_configure" -force_petsc_have_openmp"
+# TRUST with OpenMP
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-openmp" | grep ^$HOST"\."`" != "" ] 	&& option_configure=$option_configure" -openmp"
 # without PETSc 
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-petsc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-petsc"
 # without VC
@@ -969,6 +969,8 @@ do
 	 # Test MED_COUPLING_PYTHON
          echo Lata_conversion_scripts_jdd1 >> liste_cherche
          echo MED_major_jdd1 >> liste_cherche
+         # GPU
+         echo "PETSC_CUDA PETSC_AMGX gpu_3D" > liste_cherche_gpu
 	 # Ensuite selon les options, on affine:
 	 teste=0
 	 if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without_run" | grep ^$HOST_BUILD"\."`" ]
@@ -991,8 +993,8 @@ do
             [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=cpu_3D
 	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda" | grep ^$HOST_BUILD"\."`" ]
 	 then
-	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=PETSC_AMGX
-	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_openmp" | grep ^$HOST_BUILD"\."`" ]
+	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=liste_cherche_gpu
+	 elif [ "`$TRUST_ROOT/bin/admin/liste_machines "\-openmp" | grep ^$HOST_BUILD"\."`" ]
 	 then
 	    [ $NUIT = 1 ] || [ $teste = 1 ] && NUM=PETSC_OPENMP
 	 fi

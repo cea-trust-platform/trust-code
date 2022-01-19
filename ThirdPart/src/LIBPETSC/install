@@ -298,6 +298,7 @@ fi
 ####################
 # OpenMP support ? #
 ####################
+PETSC_HAVE_OPENMP=$TRUST_USE_OPENMP
 if [ "$PETSC_HAVE_OPENMP" = 1 ]
 then
    with_openmp="--with-openmp"

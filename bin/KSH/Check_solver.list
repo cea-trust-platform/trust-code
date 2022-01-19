@@ -125,8 +125,11 @@ let i=$i+1;solver[$i]="Petsc_GPU GCP  { seuil $seuil precond BLOCK_JACOBI_ILU { 
 #let i=$i+1;solver[$i]="Petsc_GPU CLI  { -ksp_type cg -pc_type asm -sub_pc_type ilu -ksp_atol $seuil }"		;gpu[$i]=1	;sym[$i]=1 	;par[$i]=0 # Bug submitted to PETSc ?
 let i=$i+1;solver[$i]="Petsc_GPU BICGSTAB { seuil $seuil precond DIAG { } impr }"				;gpu[$i]=1	;sym[$i]=1
 let i=$i+1;solver[$i]="Petsc     Cholesky         { impr }"							;gpu[$i]=1	
-let i=$i+1;solver[$i]="Petsc_GPU Cholesky_cholmod { impr }"							;gpu[$i]=1	;sym[$i]=1	;par[$i]=0 # ToDo non parallele et limite a sbaij
-[ "$PETSC_HAVE_OPENMP" = 1 ] && let i=$i+1 && solver[$i]="Petsc_GPU Cholesky_superlu { impr }"			;gpu[$i]=1			# Parallele et supporte aij (LU)	
+if [ "$TRUST_USE_OPENMP" = 1 ] && [ -f $PETSC_DIR/lib/libcholmod.a ]
+then
+   let i=$i+1;solver[$i]="Petsc_GPU Cholesky_cholmod { impr }"							;gpu[$i]=1	;sym[$i]=1	;par[$i]=0 # ToDo non parallele et limite a sbaij
+fi
+[ "$TRUST_USE_OPENMP" = 1 ] && let i=$i+1 && solver[$i]="Petsc_GPU Cholesky_superlu { impr }"			;gpu[$i]=1			# Parallele et supporte aij (LU)	
 let i=$i+1;solver[$i]="AMGX GCP { seuil $seuil precond C-AMG { } impr }" 					;gpu[$i]=1	;sym[$i]=1
 
 ###############################
