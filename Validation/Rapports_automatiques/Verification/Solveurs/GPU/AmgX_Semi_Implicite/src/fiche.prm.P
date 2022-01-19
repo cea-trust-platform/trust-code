@@ -1,0 +1,135 @@
+Parameters {
+	Title "Convergence of Euler diffusive-implicited scheme with different GPU solvers from AmgX library"
+	Author "Pierre LEDAC"
+        VersionTrio_U 1.8.4
+        InclureData 1
+        Description "Flow calculation (laminar, permanent, 2 MPI parallel processes) with TRUST on different meshes (3D unstructured)"
+#Pforeach _mesh_ ( _meshes_ )   
+#Pforeach _cas_ ( _liste_cas_ )   
+ 	TestCase _mesh_ _cas_.data _cpu_
+#Pendforeach(_cas_) 
+#Pendforeach(_mesh_) 
+	Description "Several solvers are tested: Gradient Conjugate (GC) and FGMRES (Flexible GMRES) with GS (Gauss-Seidel) or SSOR (Symmetric Successive Over Relaxation) preconditioners"
+	Description "Intriguely, convergence is much faster with GC+GS on GPU than GC+SSOR on CPU. Should implement GS for PETSc to check cause GC without preconditioner give same results on CPU and GPU"
+	Description "Conclusion: Solvers on GPU are validated and GC (or FGMRES) and GS preconditionner is the optimal choice to use for a diffusive-implicited scheme. Warning: performance of GPU solvers indicated here are not relevant on this small test case and/or on a entry-level NVidia card where double-precision kernels are not efficient." 
+}
+#Pforeach _mesh_ ( _meshes_ )   
+Chapter 
+{
+	Title "Solver convergence with different solvers on mesh 40x_mesh_" 
+        figure 
+            { 
+        	description "Relative residual  \latex_( $\lVert Ax(n)-b \rVert / \lVert Ax(0)-b \rVert$  \latex_) during the fist time step:"
+		Width 12cm
+		include_description_curves 0
+		labelX "Iteration"
+        	labelY "Residual"
+		logy 
+#Pforeach _cas_ ( _liste_cas_ )
+	        curve {
+			file _mesh_/_cas_.res
+			columns ($1) ($2)
+			legende "_cas_"
+			style linespoints
+		}
+#Pendforeach(_cas_)
+	}
+}
+#Pendforeach(_mesh_) 
+
+#Pforeach _mesh_ ( _meshes_ )   
+Chapter 
+{
+	Title "Time convergence with different solvers on mesh 40x_mesh_" 
+        figure 
+            { 
+        	description "Relative residual  \latex_( $\lVert dI(n)/dt \rVert / \lVert dI(0)/dt \rVert$  \latex_) up to convergence:"
+		Width 12cm
+		include_description_curves 0
+		labelX "Time"
+        	labelY "Residual"
+		logy 
+#Pforeach _cas_ ( _liste_cas_ )
+	        curve {
+			file _mesh_/_cas_.dt_ev
+			columns ($1) ($4)
+			legende "_cas_"
+			style lines
+		}
+#Pendforeach(_cas_)
+	}
+}
+#Pendforeach(_mesh_) 
+
+#Pforeach _mesh_ ( _meshes_ )   
+Chapter 
+{
+	Title "Friction drag with different solvers on mesh 40x_mesh_" 
+        figure 
+            { 
+        	description "Fx(Wall) up to convergence:"
+		Width 12cm
+		include_description_curves 0
+		labelX "Time"
+        	labelY "Drag [N]"
+#Pforeach _cas_ ( _liste_cas_ )
+	        curve {
+			file _mesh_/_cas__pb_Contrainte_visqueuse.out
+			columns ($1) ($5)
+			legende "_cas_"
+			style lines
+		}
+#Pendforeach(_cas_)
+	}
+}
+#Pendforeach(_mesh_) 
+
+#Pforeach _mesh_ ( _meshes_ )  
+Chapter 
+{
+	Title "RAM evolution for different solvers on mesh 40x_mesh_" 
+        figure 
+            { 
+        	description "RAM (MB) during calculation:"
+		Width 12cm
+		include_description_curves 0
+		labelX "Time step"
+        	labelY "RAM [MB]"
+#Pforeach _cas_ ( _liste_cas_ )
+	        curve {
+			file _mesh_/_cas_.ram
+			columns ($1) ($2)
+			legende "_cas_"
+			style linespoints
+		}
+#Pendforeach(_cas_)
+	}
+}
+#Pendforeach(_mesh_) 
+
+Chapitre {
+        Titre "Time needed to copy and solve the linear system on GPU (during the last time step)"
+#Pforeach _mesh_ ( _meshes_ )   
+        Table 
+        {                
+                Title "Mesh 40x_mesh_"
+                nb_columns 3
+                label Copy[s] | Solve[s] | Total[s]
+#Pforeach _cas_ ( _liste_cas_ )
+                line {
+                        legend "_cas_"
+                        file _mesh_/_cas_.cpu
+                        last_line
+                     }
+#Pendforeach(_cas_)
+	}
+#Pendforeach(_mesh_) 
+        }
+
+   
+ Chapter {
+        Title "Computer performance"
+        tableau_performance {
+        }
+}
+       

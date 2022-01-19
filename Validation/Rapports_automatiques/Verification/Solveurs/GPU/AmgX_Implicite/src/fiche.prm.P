@@ -9,10 +9,10 @@ Parameters {
 #Pendforeach(_cas_) 
 #Pendforeach(_mesh_) 
 	Description "Several solvers are tested: BiCGStab, FGMRES (Flexible GMRES), or GCP (Conjugate Gradient)"
-	Description "Prefer SSOR preconditioner (Gauss Seidel version) to Jacobi (diagonal) one (very slow to converge)"
+	Description "Prefer GS preconditioner (Gauss Seidel version) to Jacobi (diagonal) one (very slow to converge)"
 	Description "and even to multigrid ones (C-AMG or SA-AMG) as re-setup (matrix coefficients change) on GPU is quite expensive"
 	Description "Important: GMRES fails to return a valid solution with AmgX library."
-	Description "Conclusion: FGMRES or BiCGStab+SSOR may be the faster choice for using GPU solver for an implicit scheme."
+	Description "Conclusion: FGMRES or BiCGStab+GS may be the faster choice for using GPU solver for an implicit scheme."
 }
 #Pforeach _mesh_ ( _meshes_ )   
 Chapter 

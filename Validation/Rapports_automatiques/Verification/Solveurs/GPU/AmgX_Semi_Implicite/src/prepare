@@ -1,0 +1,48 @@
+#!/bin/bash
+meshes="21x21x21 11x11x11 6x6x6"
+meshes="10x10x10" && cpu=2 # ~20000 cells/MPI
+#meshes="4x4x4" && cpu=2
+#meshes="4x4x4" && cpu=1
+#meshes="19x19x19" && cpu=8
+liste_cas="" 
+seuil=1.e-4
+option[0]="solveur amgx gcp   		{ precond null { }           impr rtol  $seuil }"       && liste_cas=$liste_cas"amgx_gc "  
+option[1]="solveur amgx gcp   		{ precond gs   { omega 0.9 } impr rtol  $seuil }"	&& liste_cas=$liste_cas"amgx_gc_gs "  
+option[2]="solveur amgx fgmres   	{ precond gs   { omega 0.9 } impr rtol  $seuil }"	&& liste_cas=$liste_cas"amgx_fgmres_gs "  
+option[3]="solveur petsc gcp 		{ precond null { } impr rtol  $seuil }"			&& liste_cas=$liste_cas"petsc_gc "
+option[4]="solveur petsc gcp 		{ precond ssor { omega 1.6 } impr rtol  $seuil }"	&& liste_cas=$liste_cas"petsc_gc_ssor "
+#option[5]="solveur amgx cli 		{ -file cli.amgx }"					&& liste_cas=$liste_cas"amgx_cli " # Verifier le seuil (converge pas)
+#option[3]="solveur amgx gcp 		{ precond ilu  { level 0   } impr rtol  $seuil }"	&& liste_cas=$liste_cas"amgx_gc_ilu0 "
+#option[3]="solveur petsc gcp   		{ precond diag { } impr rtol  $seuil }"			&& liste_cas=$liste_cas"petsc_gc_diag "  
+#option[4]="solveur petsc gmres   	{ precond diag { } impr rtol  $seuil }"			&& liste_cas=$liste_cas"petsc_gmres_diag "  
+#option[5]="seuil_diffusion_implicite $seuil"					&& liste_cas=$liste_cas"matrix_free_gc "
+i=-1
+for cas in $liste_cas
+do
+   let i=i+1
+   for mesh in $meshes
+   do
+      mkdir -p $mesh
+      cd $mesh
+      jdd=$cas.data
+      mesh=`echo $mesh | sed "1,$ s?x? ?g"`      
+      cp ../base.data $jdd
+      cp ../cli.amgx .
+      cp ../post_run .
+      sed -i "1,$ s?_solveur_pression_?Petsc cholesky { }?g" $jdd
+      sed -i "1,$ s?_solveur_diffusion_implicite_?${option[$i]}?g" $jdd
+      sed -i "1,$ s?_mesh_?$mesh?g" $jdd
+      if [ "$cpu" != 1 ]
+      then
+         make_PAR.data $jdd $cpu
+         mv PAR_$jdd $jdd
+      fi
+      cd .. 1>/dev/null 2>&1
+   done
+done
+sed -i "1,$ s?_cpu_?$cpu?g" fiche.prm.P
+sed -i "1,$ s?_meshes_?$meshes?g" fiche.prm.P
+sed -i "1,$ s?_meshes_?$meshes?g" post_run
+sed -i "1,$ s?_liste_cas_?$liste_cas?g" fiche.prm.P
+python $TRUST_ROOT/bin/KSH/preprocessor.py fiche.prm.P fiche.prm
+exit 0

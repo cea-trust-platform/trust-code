@@ -1,0 +1,16 @@
+#!/bin/bash
+cas=${1%.data}
+
+# Premiere convergence seulement
+ncomp=1
+echo awk -v ncomp=$ncomp -v res=$cas.res -f ../res.awk $cas.out
+awk -v ncomp=$ncomp -v res=$cas.res -f ../res.awk $cas.out
+# Memoire:
+awk '/Total Memory Usage/ {setup=$4} /Maximum Memory Usage:/ {solve=$4} END { print "setup solve";printf("%.3f %.3f\n",solve,setup) }' $cas.out 1>$cas.mem
+# clock Ax=B: 0.633495 s for solveur_diffusion_implicit
+awk '/AmgX/ && /Time to/ && /copy/ && /on GPU:/ {copy=$NF} /Time to solve system/ {solve=$NF} /clock/ && /for solveur/ {total=$3} END { print "copy solve total";printf("%.3f %.3f %.3f\n",copy,solve,total) }' $cas.out 1>$cas.cpu
+awk '/RAM taken by/ {i++;print i" "$(NF-1)}' $cas.out 1>$cas.ram
+
+memory_gpu=`awk '/Total amount of global memory/ {print $6}' $TRUST_ROOT/env/card.log 2>/dev/null` && [ "$memory_gpu" = "" ] && memory_gpu=0
+name_gpu=`awk -F\" '/Device / {print $2}' $TRUST_ROOT/env/card.log 2>/dev/null` && [ "$name_gpu" = "" ] && name_gpu="GPU"
+
