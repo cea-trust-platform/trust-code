@@ -82,7 +82,7 @@ static bool is_number(const std::string& s)
   return !s.empty() && it == s.end();
 }
 #endif
-static bool verbose = false;
+
 // Lecture et creation du solveur
 void Solv_Petsc::create_solver(Entree& entree)
 {
@@ -527,7 +527,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[25] = "clean_matrix";
         les_parametres_solveur[26] = "save_matrix_mtx_format";
       }
-      option_double omega("omega",1.5);
+      option_double omega("omega",amgx_ ? 0.9 : 1.5);
       option_int    level("level",1);
       option_double epsilon("epsilon",0.1);
       option_string ordering("ordering",(Nom)"");
@@ -921,7 +921,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 
       int pc_supported_on_gpu_by_petsc=0;
       int pc_supported_on_gpu_by_amgx=0;
-      Motcles les_precond(12);
+      Motcles les_precond(13);
       {
         les_precond[0] = "NULL";               // Pas de preconditionnement
         les_precond[1] = "ILU";                // Incomplete LU
@@ -935,6 +935,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_precond[9] = "BLOCK_JACOBI_ILU";   // Block Jacobi ILU preconditioner (code dans PETSc, optimise)
         les_precond[10] = "C-AMG";    // Classical AMG
         les_precond[11] = "SA-AMG";   // Aggregated AMG
+        les_precond[12] = "GS";   // Gauss-Seidel
       }
 
       if (pc!="")
@@ -955,7 +956,11 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 PCSetType(PreconditionneurPetsc_, PCNONE);
                 pc_supported_on_gpu_by_petsc=1;
-                solver_supported_on_gpu_by_amgx=1;
+                pc_supported_on_gpu_by_amgx=1;
+                if (amgx_)
+                  {
+                    amgx_option+="s:preconditioner(p)=NOSOLVER\n";
+                  }
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
@@ -980,7 +985,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 pc_supported_on_gpu_by_amgx=1;
                 if (amgx_)
                   {
-                    amgx_option+="s:preconditioner(p)=MULTICOLOR_DILU\n";
+                    amgx_option+="s:preconditioner(p)=MULTICOLOR_DILU\n"; // Converge mal...
                   }
                 else if (gpu_)
                   {
@@ -1001,6 +1006,7 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 2:
               {
                 PCSetType(PreconditionneurPetsc_, PCSOR);
+                if (amgx_) Process::exit("SSOR is not available on GPU, try GC (Gauss Seidel)");
                 if (omega.value()>=1. && omega.value()<=2.)
                   {
                     PCSORSetOmega(PreconditionneurPetsc_, omega.value());
@@ -1010,15 +1016,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                     Cerr << "omega value for SSOR should be between 1 and 2" << finl;
                     exit();
                   }
-                pc_supported_on_gpu_by_amgx=1;
-                if (amgx_)
-                  {
-                    amgx_option+="s:preconditioner(p)=GS\n"; // Dans AMGX, c'est un Gauss Seidel... MULTICOLOR_GS lent
-                    Nom relaxation_factor="p:relaxation_factor="; // Defaut 0.9
-                    relaxation_factor+=Nom(omega.value()-1); // Astuce moyenne... ToDo faire un GS ?
-                    amgx_option+=relaxation_factor+"\n";
-                    if (matrice_symetrique_) amgx_option+="p:symmetric_GS=1\n";
-                  }
+                pc_supported_on_gpu_by_amgx=0;
                 check_not_defined(level);
                 check_not_defined(epsilon);
                 check_not_defined(ordering);
@@ -1076,7 +1074,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                 if (amgx_)
                   {
                     amgx_option += "s:preconditioner(p)=BLOCK_JACOBI\n";
-                    Process::exit("Diagonal preconditioner on GPI with AmgX is slow to converge. Try SSOR preconditioner.");
+                    Process::exit("Diagonal preconditioner on GPU with AmgX is slow to converge. Try GS (Gauss-Seidel) preconditioner.");
                   }
                 check_not_defined(omega);
                 check_not_defined(level);
@@ -1194,6 +1192,29 @@ void Solv_Petsc::create_solver(Entree& entree)
 //                        add_option("pc_gamg_agg_nsmooths","1"); //Crash
                       }
                   }
+                break;
+              }
+            case 12:
+              {
+                if (!amgx_) Process::exit("GS (Gauss-Seidel) not available yet.");
+                if (omega.value()<0 || omega.value()>2)
+                  {
+                    Cerr << "Relaxation value omega for GS should be between 0 and 2" << finl;
+                    exit();
+                  }
+                pc_supported_on_gpu_by_amgx=1;
+                if (amgx_)
+                  {
+                    amgx_option+="s:preconditioner(p)=GS\n"; // Non documente...
+                    //amgx_option+="s:preconditioner(p)=MULTICOLOR_GS\n"; // MULTICOLOR_GS lent dans AmgX ?
+                    Nom relaxation_factor="p:relaxation_factor="; // Defaut 0.9
+                    relaxation_factor+=Nom(omega.value());
+                    amgx_option+=relaxation_factor+"\n";
+                    if (matrice_symetrique_) amgx_option+="p:symmetric_GS=1\n";
+                  }
+                check_not_defined(level);
+                check_not_defined(epsilon);
+                check_not_defined(ordering);
                 break;
               }
             default:
@@ -1774,9 +1795,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   int size_residu = nb_it_max_ + 1;
   //DoubleTrav residu(size_residu); // bad_alloc sur gros cas, curie pourquoi ?
   ArrOfDouble residu(size_residu);
-  start = std::clock();
   int nbiter = solve(residu);
-  if (verbose) Cout << "[Petsc] Time to solve system: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
   if (limpr()>-1)
     {
       double residu_relatif=(residu(0)>0?residu(nbiter)/residu(0):residu(nbiter));
@@ -1988,7 +2007,7 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
       int check_matrice_symetrique_ = matrice_symetrique_;
       // Check cancelled for:
 #ifdef PETSC_HAVE_CUDA
-      check_matrice_symetrique_=0; // Bug with CUDA ?
+      if (!amgx_) check_matrice_symetrique_=0; // Bug with CUDA ?
 #endif
 #ifdef NDEBUG
       check_matrice_symetrique_=0; // Not done in production

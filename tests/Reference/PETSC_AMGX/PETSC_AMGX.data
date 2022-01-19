@@ -56,7 +56,7 @@ Read sch
 	Solveur Implicite
 	   {
 		seuil_convergence_implicite 1.e-6
-		solveur amgx bicgstab { precond ssor { } impr seuil 1.e-12 save_matrix save_matrix_petsc_format }
+		solveur amgx bicgstab { precond gs { } impr seuil 1.e-12 save_matrix save_matrix_petsc_format }
 	   }
 }
 

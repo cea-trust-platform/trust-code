@@ -169,6 +169,7 @@ protected :
   bool rebuild_matrix_;
   bool allow_realloc_;
   bool clean_matrix_;
+  bool verbose = false; // Timing
 };
 
 #define NB_IT_MAX_DEFINED 10000
