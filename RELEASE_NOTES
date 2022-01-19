@@ -1,4 +1,5 @@
 XX/XX/22 (TRUST)  Fix         : Option Correction_visco_turb_pour_controle_pas_de_temps wasn't correctly implemented producing residual jumps during restart
+XX/XX/22 (TRUST)  V&V         : New verification sheet for GPU solver with semi-implicit scheme added under Validation/Rapports_automatiques/Verification/Solveurs/GPU directory
 XX/02/22 (TRUST)  New keyword : Add impr_extremums 0|1 option for time scheme in order to print unknowns range with dt_impr period (useful to track over/undershoots caused by convective operator)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
