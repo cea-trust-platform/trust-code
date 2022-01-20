@@ -158,39 +158,37 @@ double Champ_Face_PolyMAC::valeur_a_elem_compo(const DoubleVect& position, int p
 }
 
 //tableaux de correspondance pour les CLs
-void Champ_Face_PolyMAC::init_cl() const
+void Champ_Face_PolyMAC::init_fcl() const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
   int i, f, n;
 
-  if (icl.dimension(0)) return;
-  icl.resize(zone.nb_faces_tot(), 3);
+  fcl_.resize(zone.nb_faces_tot(), 3);
   for (n = 0; n < cls.size(); n++)
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
       int idx = sub_type(Neumann, cls[n].valeur())
                 + 2 * sub_type(Navier, cls[n].valeur())
-                + 3 * sub_type(Dirichlet, cls[n].valeur()) + 3 * sub_type(Neumann_homogene, cls[n].valeur())
-                + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
+                + 3 * sub_type(Dirichlet, cls[n].valeur()) + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
       if (!idx) Cerr << "Champ_Face_PolyMAC : CL non codee rencontree!" << finl, Process::exit();
       for (i = 0; i < fvf.nb_faces_tot(); i++)
-        f = fvf.num_face(i), icl(f, 0) = idx, icl(f, 1) = n, icl(f, 2) = i;
+        f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;
     }
-  CRIMP(icl);
+  fcl_init_ = 1;
 }
 
 //interpolation de l'integrale de v autour d'une arete duale, multipliee par la longueur de l'arete
 void Champ_Face_PolyMAC::init_ra() const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
-  const IntTab& a_f = zone.arete_faces(), &e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const IntTab& a_f = zone.arete_faces(), &e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &icl = fcl();
   const DoubleTab& nf = zone.face_normales(), &ta = zone.ta(), &xs = zone.zone().domaine().coord_sommets(), &xa = dimension < 3 ? xs : zone.xa(), &xv = zone.xv();
   const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes();
   int i, j, k, l, r, e, f, fb, a, idx;
 
   if (radeb.dimension(0)) return;
-  init_cl(), zone.init_m2(), init_va();
+  zone.init_m2(), init_va();
   radeb.resize(1, 2), racf.resize(0, 3);
   radeb.set_smart_resize(1), raji.set_smart_resize(1), rajf.set_smart_resize(1);
   raci.set_smart_resize(1), racf.set_smart_resize(1);
@@ -234,7 +232,7 @@ void Champ_Face_PolyMAC::init_ra() const
 void Champ_Face_PolyMAC::init_va() const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
-  const IntTab& f_e = zone.face_voisins(), &a_f = zone.arete_faces();
+  const IntTab& f_e = zone.face_voisins(), &a_f = zone.arete_faces(), &icl = fcl();
   const DoubleTab& xv = zone.xv(), &ta = zone.ta(), &xs = zone.zone().domaine().coord_sommets(),
                    &xa = dimension < 3 ? xs : zone.xa(), &nf = zone.face_normales(), &xp = zone.xp();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
@@ -389,6 +387,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
   const DoubleTab& nf = zone.face_normales();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  const IntTab &icl = fcl();
   int e, f, j, k, r;
 
   zone.init_ve();
@@ -436,7 +435,7 @@ void Champ_Face_PolyMAC::interp_gve(const DoubleTab& inco, DoubleTab& vals) cons
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &icl = fcl();
   const DoubleTab& nf = zone.face_normales();
   const DoubleVect& fs = zone.face_surfaces();
   int i, j, k, f, e;
@@ -511,7 +510,6 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, cons
 
 DoubleVect& Champ_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const
 {
-  init_cl();
   const Champ_base& cha=le_champ();
   assert(val.size() == polys.size());
 
@@ -600,7 +598,6 @@ DoubleVect& Champ_Face_PolyMAC::calcul_S_barre(const DoubleTab& vitesse, DoubleV
 DoubleTab& Champ_Face_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
   assert(distant==0);
-  init_cl();
   const bool vectoriel = (le_champ().nb_comp() > 1);
   const int dim = vectoriel ? dimension : 1;
   const Front_VF& fr_vf = ref_cast(Front_VF, fr);

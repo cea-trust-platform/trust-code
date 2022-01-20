@@ -76,14 +76,17 @@ public :
 
   int fixer_nb_valeurs_nodales(int n) override;
 
-  //tableaux de correspondance lies aux CLs
+  //tableaux de correspondance lies aux CLs : fcl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
   //types de CL : 0 -> pas de CL
   //              1 -> Neumann ou Neumann_homogene
   //              2 -> Navier
   //              3 -> Dirichlet
   //              4 -> Dirichlet_homogene
-  void init_cl() const;
-  mutable IntTab icl; // icl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
+  inline const IntTab& fcl() const
+  {
+    if (!fcl_init_) init_fcl();
+    return fcl_;
+  }
 
   //integrale de la vitesse sur le bord des aretes duales -> pour calculer la vorticite
   void init_ra() const;
@@ -103,6 +106,10 @@ public :
 
 protected:
   REF(Zone_VF) ref_zone_vf_;
+
+  void init_fcl() const;
+  mutable IntTab fcl_;
+  mutable int fcl_init_ = 0;
 };
 
 

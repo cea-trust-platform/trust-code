@@ -65,7 +65,7 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vit = la_vitesse->valeurs();
   const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
   const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
   int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());
   double t = equation().schema_temps().temps_courant();
   DoubleVect pos(dimension), ve(dimension), ved(dimension), vep(dimension) , dir(dimension);
@@ -85,7 +85,7 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
       coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
 
       /* contributions aux faces de e */
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.icl(f, 0) < 2)
+      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && fcl(f, 0) < 2)
           {
             double m2vf = 0, contrib;
             for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
@@ -107,7 +107,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vit = inco;
   const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
   const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
   int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme,nu.valeur()), C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur());
   double t = equation().schema_temps().temps_courant();
   DoubleVect pos(dimension), ve(dimension), vf(dimension), dir(dimension);
@@ -126,7 +126,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
       coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
 
       /* contributions aux faces de e */
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && ch.icl(f, 0) < 2)
+      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && fcl(f, 0) < 2)
           {
             double m2vf = 0, contrib;
             for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++)
@@ -134,14 +134,14 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
             contrib = C_iso * m2vf + fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&ve(0), &dir(0)) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
             if (contrib >= std::min(C_dir, C_iso) * m2vf)
               {
-                for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
+                for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (fcl(fb = e_f(e, zone.m2j(k)), 0) < 2)
                     matrice(f, fb) += C_iso * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
-                for (k = zone.vedeb(e); k < zone.vedeb(e + 1); k++) if (ch.icl(fb = zone.veji(k), 0) < 2)
+                for (k = zone.vedeb(e); k < zone.vedeb(e + 1); k++) if (fcl(fb = zone.veji(k), 0) < 2)
                     matrice(f, fb) += fs(f) * pf(f) * (C_dir - C_iso) * zone.dot(&zone.veci(k, 0), &dir(0)) * pf(fb) / pe(e) * (e == f_e(f, 0) ? 1 : -1) * zone.dot(&xv(f, 0), &dir(0), &xp(e, 0));
               }
             else
               {
-                for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (ch.icl(fb = e_f(e, zone.m2j(k)), 0) < 2)
+                for (k = zone.m2i(zone.m2d(e) + j); k < zone.m2i(zone.m2d(e) + j + 1); k++) if (fcl(fb = e_f(e, zone.m2j(k)), 0) < 2)
                     matrice(f, fb) += std::min(C_dir, C_iso) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * zone.volumes(e) * zone.m2c(k) * pf(fb) / pe(e);
               }
           }

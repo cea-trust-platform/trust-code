@@ -59,7 +59,7 @@ DoubleTab& Terme_Boussinesq_PolyMAC_Face::ajouter(DoubleTab& resu) const
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
   const DoubleVect& grav = gravite().valeurs();
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
   const DoubleVect& pf = zone.porosite_face();
   const DoubleVect& fs = zone.face_surfaces();
@@ -72,7 +72,7 @@ DoubleTab& Terme_Boussinesq_PolyMAC_Face::ajouter(DoubleTab& resu) const
   // Verifie la validite de T0:
   check();
   int e, i, f, n;
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; ch.icl(f, 0) < 2 && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; fcl(f, 0) < 2 && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
       {
         double coeff = 0;
         for (n = 0; n < nb_dim; n++) coeff += valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));

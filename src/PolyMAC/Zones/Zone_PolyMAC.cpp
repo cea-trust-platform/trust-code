@@ -498,9 +498,16 @@ void Zone_PolyMAC::discretiser()
 
   detecter_faces_non_planes();
 
+  //volumes_entrelaces_ et volumes_entrelaces_dir : par projection de l'amont/aval sur la normale a la face
+  creer_tableau_faces(volumes_entrelaces_);
+  volumes_entrelaces_dir_.resize(0, 2), creer_tableau_faces(volumes_entrelaces_dir_);
+  for (int f = 0, i, e; f < nb_faces(); f++)
+    for (i = 0; i < 2 && (e = face_voisins_(f, i)) >= 0; volumes_entrelaces_(f) += volumes_entrelaces_dir_(f, i), i++)
+      volumes_entrelaces_dir_(f, i) = dabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0)));
+  volumes_entrelaces_.echange_espace_virtuel(), volumes_entrelaces_dir_.echange_espace_virtuel();
+
   Zone_VF::calculer_porosites();
   Zone_VF::calculer_diametres_hydrauliques();
-  calculer_volumes_entrelaces();
   calculer_h_carre();
 
   /* ordre canonique dans elem_faces_ */
@@ -689,32 +696,6 @@ void Zone_PolyMAC::calculer_h_carre()
     }
 }
 
-void Zone_PolyMAC::calculer_volumes_entrelaces()
-{
-  //  Cerr << "les normales aux faces " << face_normales() << finl;
-  // On calcule les volumes entrelaces;
-  //  volumes_entrelaces_.resize(nb_faces());
-
-  creer_tableau_faces(volumes_entrelaces_);
-  volumes_entrelaces_dir_.resize(nb_faces(), 2);
-  creer_tableau_faces(volumes_entrelaces_dir_);
-  const DoubleVect& fs = face_surfaces();
-
-  for (int num_face=0; num_face<nb_faces(); num_face++)
-    {
-      for (int dir=0; dir<2; dir++)
-        {
-          int elem = face_voisins_(num_face,dir);
-          if (elem!=-1)
-            {
-              volumes_entrelaces_dir_(num_face, dir) = sqrt(dot(&xp_(elem, 0), &xp_(elem, 0), &xv_(num_face, 0), &xv_(num_face, 0))) * fs[num_face];
-              volumes_entrelaces_[num_face] += volumes_entrelaces_dir_(num_face, dir);
-            }
-        }
-    }
-  volumes_entrelaces_.echange_espace_virtuel();
-  volumes_entrelaces_dir_.echange_espace_virtuel();
-}
 void Zone_PolyMAC::remplir_elem_faces()
 {
   creer_faces_virtuelles_non_std();
