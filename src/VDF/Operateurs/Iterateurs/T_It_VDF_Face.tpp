@@ -744,15 +744,13 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins(const int ncomp, c
         case TypeAreteCoinVDF::PERIO_PERIO:
           ajouter_contribution_aretes_coins_<_TYPE_::CALC_ARR_PERIO,Type_Flux_Arete::PERIODICITE,Type_Double>(n_arete,ncomp,matrice);
           break;
-        case TypeAreteCoinVDF::PERIO_PAROI:
-          ajouter_contribution_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,Type_Double>(n_arete,ncomp,matrice);
-          break;
         case TypeAreteCoinVDF::FLUIDE_FLUIDE:
           ajouter_contribution_aretes_coins_<true,Type_Flux_Arete::COIN_FLUIDE,Type_Double>(n_arete,ncomp,matrice);
           break;
         case TypeAreteCoinVDF::PAROI_FLUIDE: /* fall through */
         case TypeAreteCoinVDF::FLUIDE_PAROI:
-          Process::exit(); /* non code */
+        case TypeAreteCoinVDF::PERIO_PAROI:
+          ajouter_contribution_aretes_coins_<_TYPE_::CALC_ARR_PAR,Type_Flux_Arete::PAROI,Type_Double>(n_arete,ncomp,matrice);
           break;
         default :
           break;
