@@ -170,6 +170,10 @@ public :
 
   //quelles structures optionelles on a initialise
   mutable std::map<std::string, int> is_init;
+  //faces "equivalentes" : equiv(f, 0/1, i) = face equivalente a e_f(f_e(f, 0/1), i) de l'autre cote, -1 si il n'y en a pas
+  void init_equiv() const;
+  mutable IntTab equiv;
+
   //interpolations d'ordre 1 du vecteur vitesse aux elements
   void init_ve() const;
   mutable IntTab vedeb, veji; //reconstruction de ve par (veji, veci)[vedeb(e), vedeb(e + 1)[ (faces)

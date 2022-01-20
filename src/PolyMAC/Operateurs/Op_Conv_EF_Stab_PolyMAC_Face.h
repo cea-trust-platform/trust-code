@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,20 +40,37 @@ class Op_Conv_EF_Stab_PolyMAC_Face : public Op_Conv_PolyMAC_base
   Declare_instanciable( Op_Conv_EF_Stab_PolyMAC_Face ) ;
 
 public :
-  void completer() override;
-  DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  void contribuer_au_second_membre(DoubleTab& ) const override;
-  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { };
-  void dimensionner(Matrice_Morse& mat) const override;
-  void set_incompressible(const int flag) override;
+  void completer();
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
+  double calculer_dt_stab() const;
+
+  /* interface ajouter_blocs */
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+
+  void check_multiphase_compatibility() const { }; //of course
+  void set_incompressible(const int flag)
+  {
+    incompressible_ = flag;
+  }
 
 protected :
   double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
-  DoubleVect porosite_f;
-  DoubleVect porosite_e;
-private :
-  IntTab equiv; //equiv(f, i, j) = f2 si la face f1 = e_f(f_e(f, i), j) est equivalente a la face f2 de l'autre cote
+  DoubleVect porosite_f, porosite_e; //pour F5
+};
+
+class Op_Conv_Amont_PolyMAC_Face : public Op_Conv_EF_Stab_PolyMAC_Face
+{
+  Declare_instanciable( Op_Conv_Amont_PolyMAC_Face ) ;
+};
+
+class Op_Conv_Centre_PolyMAC_Face : public Op_Conv_EF_Stab_PolyMAC_Face
+{
+  Declare_instanciable( Op_Conv_Centre_PolyMAC_Face ) ;
 };
 
 #endif /* Op_Conv_EF_Stab_PolyMAC_Face_included */

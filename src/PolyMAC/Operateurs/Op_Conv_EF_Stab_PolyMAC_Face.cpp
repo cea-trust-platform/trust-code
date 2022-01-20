@@ -25,7 +25,7 @@
 #include <Champ_Face_PolyMAC.h>
 #include <Schema_Temps_base.h>
 #include <Zone_Cl_PolyMAC.h>
-#include <Probleme_base.h>
+#include <Pb_Multiphase.h>
 #include <Zone_PolyMAC.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
@@ -34,16 +34,26 @@
 
 #include <Param.h>
 #include <cmath>
+#include <Masse_ajoutee_base.h>
 
-Implemente_instanciable_sans_constructeur( Op_Conv_EF_Stab_PolyMAC_Face, "Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC", Op_Conv_PolyMAC_base ) ;
+Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_Face, "Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC", Op_Conv_PolyMAC_base ) ;
+Implemente_instanciable( Op_Conv_Amont_PolyMAC_Face, "Op_Conv_Amont_PolyMAC_Face_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Face ) ;
+Implemente_instanciable( Op_Conv_Centre_PolyMAC_Face, "Op_Conv_Centre_PolyMAC_Face_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Face ) ;
 
-Op_Conv_EF_Stab_PolyMAC_Face::Op_Conv_EF_Stab_PolyMAC_Face()
+// XD Op_Conv_EF_Stab_PolyMAC_Face interprete Op_Conv_EF_Stab_PolyMAC_Face 1 Class Op_Conv_EF_Stab_PolyMAC_Face
+Sortie& Op_Conv_EF_Stab_PolyMAC_Face::printOn( Sortie& os ) const
 {
-  alpha = 1; //par defaut, on fait de l'amont
+  Op_Conv_PolyMAC_base::printOn( os );
+  return os;
 }
 
-// XD Op_Conv_EF_Stab_PolyMAC_Face interprete Op_Conv_EF_Stab_PolyMAC_Face 1 Class Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC
-Sortie& Op_Conv_EF_Stab_PolyMAC_Face::printOn( Sortie& os ) const
+Sortie& Op_Conv_Amont_PolyMAC_Face::printOn( Sortie& os ) const
+{
+  Op_Conv_PolyMAC_base::printOn( os );
+  return os;
+}
+
+Sortie& Op_Conv_Centre_PolyMAC_Face::printOn( Sortie& os ) const
 {
   Op_Conv_PolyMAC_base::printOn( os );
   return os;
@@ -58,172 +68,170 @@ Entree& Op_Conv_EF_Stab_PolyMAC_Face::readOn( Entree& is )
   return is;
 }
 
+Entree& Op_Conv_Amont_PolyMAC_Face::readOn( Entree& is )
+{
+  Op_Conv_PolyMAC_base::readOn( is );
+  alpha = 1;
+  return is;
+}
+
+Entree& Op_Conv_Centre_PolyMAC_Face::readOn( Entree& is )
+{
+  Op_Conv_PolyMAC_base::readOn( is );
+  alpha = 0;
+  return is;
+}
+
 void Op_Conv_EF_Stab_PolyMAC_Face::completer()
 {
   Op_Conv_PolyMAC_base::completer();
+  /* au cas ou... */
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv();
-  int i, j, k, e1, e2, f, f1, f2, ok;
+  zone.init_equiv();
 
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
     Cerr << "Op_Conv_EF_Stab_PolyMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
-
-  Cerr << zone.zone().domaine().le_nom() << " : initialisation de la convection aux faces... ";
-
-  IntTrav ntot, nequiv;
-  zone.creer_tableau_faces(ntot), zone.creer_tableau_faces(nequiv);
-  equiv.resize(zone.nb_faces_tot(), 2, e_f.dimension(1));
-  for (f = 0, equiv = -1; f < zone.nb_faces_tot(); f++) if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
-      for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
-        for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
-          {
-            for (k = 0, ok = 1; ok && k < dimension; k++) ok &= std::fabs((xv(f1, k) - xp(e1, k)) - (xv(f2, k) - xp(e2, k))) < 1e-6;
-            if (ok) equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++;
-          }
-  if (mp_somme_vect(ntot)) Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de convection directe!" << finl;
   porosite_f.ref(zone.porosite_face());
   porosite_e.ref(zone.porosite_elem());
 }
 
-void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
+double Op_Conv_EF_Stab_PolyMAC_Face::calculer_dt_stab() const
+{
+  double dt = 1e10;
+  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &ve = zone.volumes(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces();
+  const DoubleTab& vit = vitesse_->valeurs(), &vfd = zone.volumes_entrelaces_dir(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
+  int i, e, f, n, N = vit.line_size();
+  DoubleTrav flux(N), vol(N); //somme des flux pf * |f| * vf, volume minimal des mailles d'elements/faces affectes par ce flux
+
+  for (e = 0; e < zone.nb_elem(); e++)
+    {
+      for (vol = pe(e) * ve(e), flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
+          {
+            flux(n) += pf(f) * fs(f) * max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
+            if (0 && fcl(f, 0) < 2) vol(n) = min(vol(n), pf(f) * vf(f) * vf(f) / vfd(f, e != f_e(f, 0))); //prise en compte de la contribution aux faces
+          }
+      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = min(dt, vol(n) / flux(n));
+    }
+
+  return Process::mp_min(dt);
+}
+
+void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv();
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
-  int i, j, k, l, m, e, eb, f, fb, fc, idx;
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
+  const DoubleTab& nf = zone.face_normales(), &inco = ch.valeurs(), &xp = zone.xp(), &xv = zone.xv();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes();
 
-  zone.init_ve();
+  const std::string& nom_inco = ch.le_nom().getString();
+  if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //pas de bloc diagonal ou semi-implicite -> rien a faire
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
+  Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
+
+  int i, j, k, l, e, eb, f, fb, fc, m, n, N = equation().inconnue().valeurs().line_size();
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
 
-  for (e = 0; e < zone.nb_elem_tot(); e++)  for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-      for (j = 0; f < zone.nb_faces() && fcl(f, 0) < 2 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-        {
-          if (fcl(fb, 0) < 2) stencil.append_line(f, fb);
-          if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 1) < 0) //equivalence ou bord -> convection de m2
-            {
-              int fa[2] = { f, fc }, ea[2] = { e, f_e(fb, e == f_e(fb, 0)) };
-              for (k = 0; k < 2 && ea[k] >= 0; k++) for (l = zone.m2d(ea[k]), idx = 0; l < zone.m2d(ea[k] + 1); l++, idx++)
-                  for (m = zone.m2i(l); e_f(ea[k], idx) == fa[k] && m < zone.m2i(l + 1); m++)
-                    if (fcl(fc = e_f(ea[k], zone.m2j(m)), 0) < 2) stencil.append_line(f, fc);
-            }
-          else for (k = 0; k < 2 && (eb = f_e(fb, k)) >= 0; k++) for (l = zone.vedeb(eb); l < zone.vedeb(eb + 1); l++) //sinon -> convection de ve.(xv-xp)
-                if (std::abs(zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0))) > 1e-8 * vf(f) / fs(f) && fcl(fc = zone.veji(l), 0) < 2)
-                  stencil.append_line(f, fc);
-        }
+  /* agit uniquement aux elements; diagonale omise */
+  for (f = 0; f < zone.nb_faces_tot(); f++) if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 3))
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
+          {
+            for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && fcl(fb, 0) < 2)
+                {
+                  if ((fc = zone.equiv(f, i, k)) >= 0) //equivalence : face -> face
+                    for (n = 0; fcl(fc, 0) < 2 && n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * fc + m);
+                  else if (f_e(f, 1) >= 0) for (l = 0; l < e_f.dimension(1) && (fc = e_f(eb, l)) >= 0; l++) //pas d'equivalence : faces de l'elem -> face
+                      if(fcl(fc, 0) < 2 && std::abs(fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0))) > 1e-6 * ve(eb) * fs(fb)) for (n = 0; n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+                            stencil.append_line(N * fb + n, N * fc + m);
+                }
+          }
 
   tableau_trier_retirer_doublons(stencil);
-  int taille = zone.nb_faces_tot() + (dimension < 3 ? zone.zone().domaine().nb_som_tot() : zone.zone().nb_aretes_tot());
-  Matrix_tools::allocate_morse_matrix(taille, taille, stencil, mat);
+  Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), stencil, mat2);
+  mat.nb_colonnes() ? mat += mat2 : mat = mat2;
 }
 
 // ajoute la contribution de la convection au second membre resu
 // renvoie resu
-inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) const
+void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pf = porosite_f, &pe = porosite_e;
+  const DoubleTab& vit = ch.passe(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(), &xp = zone.xp(), &xv = zone.xv();
+  const DoubleVect& fs = zone.face_surfaces(), &pe = porosite_e, &pf = porosite_f, &ve = zone.volumes();
 
-  int i, j, k, l, m, e, eb, f, fb, fc, fd, fam, idx;
-  double div;
-  zone.init_ve();
+  /* a_r : produit alpha_rho si Pb_Multiphase -> par semi_implicite, ou en recuperant le champ_conserve de l'equation de masse */
+  const std::string& nom_inco = ch.le_nom().getString();
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
+  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : ch.valeurs(),
+                   *a_r = !pbm ? NULL : semi_impl.count("alpha_rho") ? &semi_impl.at("alpha_rho") : &pbm->eq_masse.champ_conserve().valeurs(),
+                    *alp = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, &rho = equation().milieu().masse_volumique().passe();
+  Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
-  //element e -> contribution de la face fb a l'equation a la face f
-  for (e = 0; e < zone.nb_elem_tot(); e++)
-    {
-      for (i = 0, div = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; div += fs(f) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * vit(f), i++)
-        for (j = 0; f < zone.nb_faces() && fcl(f, 0) < 2 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-          for (k = 0; k < 2; k++) //amont/aval de fb
-            {
-              eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
-              double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) * (1. + (vit(fb) * (k ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
-              if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
+  int i, j, k, l, e, eb, f, fb, fc, fd, m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;
+  double mult;
+
+  DoubleTrav dfac(2, N, N), masse(N, N);
+  for (f = 0; f < zone.nb_faces_tot(); f++) if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 1 || fcl(f, 0) == 3))
+      {
+        for (i = 0, dfac = 0; i < 2; i++)
+          {
+            //masse : diagonale + masse ajoutee si correlation
+            for (masse = 0, e = f_e(f, f_e(f, i) >= 0 ? i : 0), n = 0; n < N; n++) masse(n, n) = a_r ? (*a_r)(e, n) : 1;
+            if (corr) corr->ajouter(&(*alp)(e, 0), &rho(e, 0), masse);
+            //contribution a dfac
+            for (e = f_e(f, i), eb = f_e(f, i), n = 0; n < N; n++) for (m = 0; m < N; m++)
+                dfac(fcl(f, 0) == 1 ? 0 : i, n, m) += fs(f) * vit(f, m) * pe(eb >= 0 ? eb : f_e(f, 0)) * masse(n, m)
+                                                      * (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : vit(f, m) ? -1. : 0.) * alpha) / 2;
+          }
+        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+          {
+            for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && fcl(fb, 0) < 2) //partie "faces"
                 {
-                  if (eb >= 0) for (fam = (eb == e ? f : fc), l = zone.m2d(eb), idx = 0; l < zone.m2d(eb + 1); l++, idx++)
-                      for (m = zone.m2i(l); fam == e_f(eb, idx) && m < zone.m2i(l + 1); m++) //convection de m2
-                        fd = e_f(eb, zone.m2j(m)), resu(f) -= fac * (eb == f_e(fd, 0) ? 1 : -1) * ve(eb) * zone.m2c(m) * vfd(f, e != f_e(f, 0)) / vfd(fam, eb != f_e(fam, 0)) * pe(eb) * inco(fd);
-                  else if (fcl(fb, 0) == 3) for (l = 0; l < dimension; l++) //face de Dirichlet -> on convecte la vitesse au bord
-                      resu(f) -= fac * fs(f) * (xv(f, l) - xp(e, l)) * ref_cast(Dirichlet, cls[fcl(fb, 1)].valeur()).val_imp(fcl(fb, 2), l);
-                }
-              else for (l = zone.vedeb(eb); l < zone.vedeb(eb + 1); l++) //face interne sans equivalence -> convection de ve
-                  fc = zone.veji(l), resu(f) -= fac * fs(f) * zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0)) * pe(eb) * inco(fc);
-            }
-
-      //partie - (div v) v
-      if (!incompressible_)
-        for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = zone.m2i(zone.m2d(e) + i); f < zone.nb_faces() && fcl(f, 0) < 2 && j < zone.m2i(zone.m2d(e) + i); j++)
-            fb = e_f(e, zone.m2j(j)), resu(f) += (f == f_e(e, 0) ? 1 : -1) * (fb == f_e(e, 0) ? 1 : -1) * ve(e) * div * inco(fb);
-    }
-
-  return resu;
-}
-
-//Description:
-//on assemble la matrice.
-
-inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(), &vit = vitesse_->valeurs();
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pe = porosite_e, &pf = porosite_f;
-  int i, j, k, l, m, e, eb, f, fb, fc, fd, fam, idx;
-  double div;
-
-  //element e -> contribution de la face fb a l'equation a la face f
-  for (e = 0; e < zone.nb_elem_tot(); e++)
-    {
-      for (i = 0, div = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; div += fs(f) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * vit(f), i++)
-        for (j = 0; f < zone.nb_faces() && fcl(f, 0) < 2 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
-          for (k = 0; (fcl(fb, 0) < 2 || fcl(fb, 0) == 3) && k < 2; k++) //amont/aval de fb
-            {
-              eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
-              double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) * (1. + (vit(fb) * (k ? -1. : 1) >= 0 ? 1. : -1.) * alpha) / 2;
-              if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
-                {
-                  if (eb >= 0)
+                  if ((fc = zone.equiv(f, i, k)) >= 0 || f_e(f, 1) < 0) for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
+                      {
+                        eb = f_e(f, j), fd = (j == i ? fb : fc); //element/face sources
+                        mult = (fd < 0 || zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1) * (fd >= 0 ? pf(fd) / pe(eb) : 1); //multiplicateur pour passer de vf a ve
+                        for (n = 0; n < N; n++) for (m = 0; m < N; m++) if (dfac(j, n, m))
+                              {
+                                double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) / ve(e);
+                                if (fd >= 0) secmem(fb, n) -= fac * mult * inco(fd, m); //autre face calculee
+                                else for (d = 0; d < D; d++)  //CL de Dirichlet
+                                    secmem(fb, n) -= fac * nf(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
+                                if (comp) secmem(fb, n) += fac * inco(fb, m); //partie v div(alpha rho v)
+                                if (!mat) continue;
+                                if (fd >= 0 && fcl(fd, 0) < 2) (*mat)(N * fb + n, N * fd + m) += fac * mult;
+                                if (comp) (*mat)(N * fb + n, N * fb + m) -= fac;
+                              }
+                      }
+                  else for (j = 0; j < 2; j++)  //pas d'equivalence : n_f * operateur aux elements
                     {
-                      for (fam = (eb == e ? f : fc), l = zone.m2d(eb), idx = 0; l < zone.m2d(eb + 1); l++, idx++)
-                        for (m = zone.m2i(l); fam == e_f(eb, idx) && m < zone.m2i(l + 1); m++) if (fcl(fd = e_f(eb, zone.m2j(m)), 0) < 2) //convection de m2
-                            matrice(f, fd) += fac * (eb == f_e(fd, 0) ? 1 : -1) * ve(eb) * zone.m2c(m) * vfd(f, e != f_e(f, 0)) / vfd(fam, eb != f_e(fam, 0)) * pe(eb);
+                      for (eb = f_e(f, j), l = 0; l < e_f.dimension(1) && (fc = e_f(eb, l)) >= 0; l++)
+                        if (std::abs(fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0))) > 1e-6 * ve(eb) * fs(fb)) for (n = 0; n < N; n++) for (m = 0; m < N; m++) if (dfac(j, n, m))
+                                  {
+                                    double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * (eb == f_e(fc, 0) ? 1 : -1) * fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0)) / (ve(e) * ve(eb) * fs(fb));
+                                    secmem(fb, n) -= fac * inco(fc, m);
+                                    if (mat && fac && fcl(fc, 0) < 2) (*mat)(N * fb + n, N * fc + m) += fac;
+                                  }
+                      if (comp) for (l = 0; l < e_f.dimension(1) && (fc = e_f(e, l)) >= 0; l++)
+                        if (std::abs(fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(e, 0))) > 1e-6 * ve(e) * fs(fb)) for (n = 0; n < N; n++) for (m = 0; m < N; m++) if (dfac(j, n, m))
+                                  {
+                                    double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * (e == f_e(fc, 0) ? 1 : -1) * fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(e, 0)) / (ve(e) * ve(e) * fs(fb));
+                                    secmem(fb, n) += fac * inco(fc, m);
+                                    if (mat && fac && fcl(fc, 0) < 2) (*mat)(N * fb + n, N * fc + m) -= fac;
+                                  }
                     }
                 }
-              else for (l = zone.vedeb(eb); l < zone.vedeb(eb + 1); l++) //face interne sans equivalence -> convection de ve
-                  if (fcl(fc = zone.veji(l), 0) < 2 && std::abs(zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0))) > 1e-8 * vf(f) / fs(f))
-                    matrice(f, fc) += fac * fs(f) * zone.dot(&xv(f, 0), &zone.veci(l, 0), &xp(e, 0)) * pe(eb);
-            }
-
-      //partie - (div v) v
-      if (!incompressible_)
-        for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = zone.m2i(zone.m2d(e) + i); f < zone.nb_faces() && fcl(f, 0) < 2 && j < zone.m2i(zone.m2d(e) + i); j++)
-            if (fcl(fb = e_f(e, zone.m2j(j)), 0) < 2) matrice(f, fb) -= (f == f_e(e, 0) ? 1 : -1) * (fb == f_e(e, 0) ? 1 : -1) * ve(e) * div;
-    }
-}
-
-//Description:
-//on ajoute la contribution du second membre.
-
-void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_au_second_membre(DoubleTab& resu) const
-{
-  abort();
-
-}
-
-void Op_Conv_EF_Stab_PolyMAC_Face::set_incompressible(const int flag)
-{
-  if (flag == 0)
-    {
-      Cerr << "Compressible form of operator \"" << que_suis_je() << "\" :" << finl;
-      Cerr << "Discretization of \u2207(inco \u2297 v) - v \u2207.(inco)" << finl;
-    }
-  incompressible_ = flag;
+          }
+      }
 }
