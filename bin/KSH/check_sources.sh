@@ -78,7 +78,11 @@ check_src_in_gc()
    ############
    # Git checks
    ############
-   $TRUST_ROOT/bin/GIT/check_sources_GIT.sh ; erreur $?
+   # Source files should be tracked:
+   #if [ -d $TRUST_ROOT/.git ]
+   git tag 1>/dev/null 2>&1 && pwd_=`pwd` && git status -s *.cpp *.h *.f *.c *.P 2>/dev/null | grep -v config.h | $TRUST_Awk -v dir=$pwd_ 'BEGIN {err=0}
+   !/~/ && ($1=="??") {err=1;print "\nThe file "dir"/"$2" is not staged under Git!\nStage the file with \"git add "dir"/"$2"\" or delete this file."}
+   END {exit err}' || erreur 1
 }
 
 check_recent_src()
@@ -87,17 +91,13 @@ check_recent_src()
     indent_file.sh $file
     
     # pas daccumulation de <<  sinon cela met des heures avec gcc 6.6.1 #
-    #   gros_pipe=`awk -F\<\< '{if (NF>19) {print NF $0}}' $file`
-    #gros_pipe=`awk -F\<\< '{if (NF>1) { te=$0;a=gsub(";","ok",te); if (((NF+old)>19)&&(a!=0))  {print ("line:",FNR, "number",NF+old, $0)}  ; if ((NF>1)&&(a==0)) { old=NF+old } else { old =0 } }}' $file`
-    gros_pipe=`awk -F\<\< '{old=0;if (NF>1) { te=$0;a=gsub(";","ok",te); if (((NF+old)>16)&&(a!=0))  {print ("line:",FNR, "number",NF+old, $0)}  ; if ((NF>1)&&(a==0)) { old=NF+old } else { old =0 } }}' $file`
-
-
-    [ "$gros_pipe" != "" ] && echo $file two many pipes $gros_pipe && erreur 1
+#    gros_pipe=`awk -F\<\< '{old=0;if (NF>1) { te=$0;a=gsub(";","ok",te); if (((NF+old)>16)&&(a!=0))  {print ("line:",FNR, "number",NF+old, $0)}  ; if ((NF>1)&&(a==0)) { old=NF+old } else { old =0 } }}' $file`
+#    [ "$gros_pipe" != "" ] && echo $file two many pipes $gros_pipe && erreur 1
 
     #############################################################
     # Interdiction de entier au lieu de int a partir de la v1.6.8
     #############################################################
-    grep -e "[$,( ]entier[& ]" $file | grep -v "XD attr" && echo "-> Error in $file: entier type should be replace by int type" && echo && erreur 1
+#    grep -e "[$,( ]entier[& ]" $file | grep -v "XD attr" && echo "-> Error in $file: entier type should be replace by int type" && echo && erreur 1
     
     ################################################
     # Only UTF-8 or ASCII encoding since v1.7.6
@@ -111,8 +111,8 @@ check_recent_src()
     ###############################################################
     if [ "`echo $PWD | grep /TRUST/src/Kernel/`" != "" ]
     then
-	$TRUST_ROOT/bin/KSH/forbid_french.ct $file
-	erreur $?
+       $TRUST_ROOT/bin/KSH/forbid_french.ct $file
+       erreur $?
     fi
 
     #################################################
@@ -121,11 +121,11 @@ check_recent_src()
     ok=`grep include $file | grep "#" | grep "\"*\"" 2>/dev/null`
     if [ "$ok" != "" ]
     then
-	echo "**************************************************************"
-	echo "An include file is written under the form: #include \"toto.h\""
-	echo "It should be written like: #include <toto.h>"
-	echo "**************************************************************"
-	erreur 1
+       echo "**************************************************************"
+       echo "An include file is written under the form: #include \"toto.h\""
+       echo "It should be written like: #include <toto.h>"
+       echo "**************************************************************"
+       erreur 1
     fi  
 
     ####################################################################
@@ -303,11 +303,11 @@ then
       # Build a list of newer files than ${reffile} or this script to speed up some tests (eg: french check)
       if [ ! -f ${reffile} ] || [ $0 -nt ${reffile} ]
       then
-	 newer_files=`\ls make.include *.cpp *.h *.c 2>/dev/null | grep -v / | grep -v "\.o$"`
-	 new_newer_files=$newer_files
+         newer_files=`\ls make.include *.cpp *.h *.c 2>/dev/null | grep -v / | grep -v "\.o$"`
+         new_newer_files=$newer_files
       else
-	 newer_files=`find * -type f  \( -name make.include -o -name '*'.cpp -o -name '*'.h -o -name '*'.c \) -newer ${reffile} | grep -v / | grep -v "\.o$"`
-	 new_newer_files=`find . -maxdepth 1 -type f -newer ${reffile} | grep -v CMakeLists.txt` 
+         newer_files=`find * -type f  \( -name make.include -o -name '*'.cpp -o -name '*'.h -o -name '*'.c \) -newer ${reffile} | grep -v / | grep -v "\.o$"`
+         new_newer_files=`find . -maxdepth 1 -type f -newer ${reffile} | grep -v CMakeLists.txt` 
       fi
       [ "$new_newer_files" = "" ] && exit 0
       mk_Instancie
@@ -322,13 +322,13 @@ then
       rep=`pwd`
       for file in $newer_files
       do
-	 # Interdiction de briser la dependance des modules
-	 if [ $file = make.include ]
-	 then
+         # Interdiction de briser la dependance des modules
+         if [ $file = make.include ]
+         then
             check_dependancy || exit 1
-	 else
-	    check_recent_src $file
-	 fi
+         else
+            check_recent_src $file
+         fi
       done   
 
       ##################
@@ -343,8 +343,8 @@ then
       ########################################################  
       if [ -f check.sh ]
       then
-	 ./check.sh
-	 erreur $?
+         ./check.sh
+         erreur $?
       fi
 
       #################
@@ -369,12 +369,12 @@ then
 
       if [ $err = 1 ]
       then
-	rm -f ${reffile}
-	 exit 1
+        rm -f ${reffile}
+          exit 1
       else
-	 date >  ${reffile}   
-	#[ "$1" != "" ] && touch check_sources.cpp
-	 exit 0
+         date >  ${reffile}   
+         #[ "$1" != "" ] && touch check_sources.cpp
+         exit 0
       fi
       cd $org
    fi
