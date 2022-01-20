@@ -13,6 +13,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
 	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
 	-I$(TRUST_ROOT)/src/PolyMAC/Cond_Lim\
+	-I$(TRUST_ROOT)/src/PolyMAC/Solveurs\
 	-I$(TRUST_ROOT)/src/PolyMAC/Zones\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
