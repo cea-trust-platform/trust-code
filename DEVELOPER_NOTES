@@ -1,7 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.5_beta : Changes since version 1.8.4 :
 -------------------------------------------------------------
-12/01/22 (TRUST) Add SingleDouble class:  encapsulates a unique double value with the same public interface as ArrOfDouble. Used for efficiency purposes in VDF flux/sources evals/iters when dealing with single-component field.
+12/01/22 (TRUST) Add SingleDouble class: encapsulates a unique double value with the same public interface as ArrOfDouble. Used for efficiency purposes in VDF flux/sources evals/iters when dealing with single-component field.
 12/01/22 (TRUST) A part of the VDF source terms that use iters/evals pass to a template implementation (macros are removed)
 12/01/22 (TRUST) Substitution Failure Is Not An Error (SFINAE) templates are introduced for Eval/Iter and VDF operators
 12/01/22 (TRUST) No more scalar methods for VDF flux iterators/evaluators

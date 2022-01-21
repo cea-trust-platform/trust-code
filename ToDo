@@ -8,11 +8,10 @@ Version	Qui				Tache
 1.8.5   adrien.bruneton@cea.fr  Nettoyer le vieux code med fichier
 1.8.5   adrien.bruneton@cea.fr  Revoir LireMED pour ne pas utiliser les familles mais que les groupes
 1.8.5   adrien.bruneton@cea.fr  Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
-1.8.5   pierre.ledac@cea.fr     [topaze-gpu] Generaliser correction faite lors de l'install reseau, ligne 463 LIBPETSC/install commentee pour cet OS
 1.8.5   pierre.ledac@cea.fr     [PETSC_AMGX] Corriger erreur valgrind sur machine gpu en mettant a jour AMGX*
 1.8.5   pierre.ledac@cea.fr     Modifier scripts Baltik pour qu un Baltik quelconque puisse etre deplace sans souci apres installation
 1.8.5   pierre.ledac@cea.fr     Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
-1.8.5   pierre.ledac@cea.fr     Doxygen update + remove #ifdef DOXYGEN_SHOULD_SKIP_THIS from Eval_DiffF22_VDF_const_Elem.h
+1.8.5   pierre.ledac@cea.fr     Doxygen update + remove  \cond DO_NOT_DOCUMENT ... \endcond from TRUST and G3
 1.8.5   pierre.ledac@cea.fr     Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
 1.8.5   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
 1.8.5   pierre.ledac@cea.fr	Fedora 36 et GNU 11.?
