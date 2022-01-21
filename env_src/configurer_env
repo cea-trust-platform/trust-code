@@ -1030,6 +1030,26 @@ else
    TRUST_USE_CUDA=0
 fi
 
+##############
+# rocALUTION #
+##############
+if [ "$TRUST_ROCALUTION" = "" ]
+then
+   e="TRUST_ROCALUTION=\"\$TRUST_ROOT/lib/src/LIBROCALUTION/mock\" && export TRUST_ROCALUTION"
+elif [ "$TRUST_ROCALUTION" = install ]
+then
+   e="TRUST_ROCALUTION=\"\$TRUST_ROOT/lib/src/LIBROCALUTION\" && export TRUST_ROCALUTION"
+elif [ -f $TRUST_ROCALUTION/lib/librocalution.so ] && [ -f $TRUST_ROCALUTION/include/rocalution.hpp ]
+then
+   e="TRUST_ROCALUTION=\"$TRUST_ROCALUTION\" && export TRUST_ROCALUTION"
+else
+   echo "Please, specify the good path to rocALUTION:"
+   echo "Don't find $TRUST_ROCALUTION/lib/librocalution.so and $TRUST_ROCALUTION/include/rocalution.hpp"
+   exit -1
+fi
+m="# Path to rocALUTION";ecrit $m"|"$e"|"$env;eval $e
+echo "ADD_LD_LIBRARY_PATH \$TRUST_ROCALUTION/lib" >> $env
+
 #############
 # Debut MPI #
 #############
@@ -2159,6 +2179,7 @@ cd $TRUST_ROOT/bin
 includes="
 $TRUST_ROOT/lib/src/LIBAMGX/AmgXWrapper/include/AmgXSolver.hpp
 $TRUST_ROOT/lib/src/LIBAMGX/AmgX/include/amgx_c.h
+$TRUST_ROCALUTION/include/rocalution.hpp
 $TRUST_ROOT/lib/src/LIBMETIS/include/metis.h
 $TRUST_ROOT/lib/src/LIBMED/MED/include/med.h
 $TRUST_ROOT/lib/src/LIBLATAFILTER/include/LataV1_field_definitions.h

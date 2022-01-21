@@ -980,6 +980,7 @@
  Solv_Optimal Solv_Optimal Solv_Optimal.h
  Solv_Petsc Solv_Petsc Solv_Petsc.h
  Solv_Petsc_GPU Solv_Petsc_GPU Solv_Petsc_GPU.h
+ Solv_rocALUTION Solv_rocALUTION Solv_rocALUTION.h
  Sonde Sonde Sonde.h
  Sondes_Int Sondes_Int Sondes_Int.h
  Sondes|Probes Sondes Sondes.h

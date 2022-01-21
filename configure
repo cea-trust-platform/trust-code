@@ -44,7 +44,7 @@ whence2_()
       err=$?
       [ "`uname -s`" = OSF1 ] && err=1
       if [ "`uname -s`" = "Darwin" ]; then
-        which $1  
+        which $1
       elif [ $err = 0 ]; then
          whence $1 > .toto
          cat .toto
@@ -264,7 +264,8 @@ echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk -F= '/defa
 echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version (default with -cuda)."
 echo "[-force_system_mpi]               Use the system-provided MPI library."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
-echo "[-cuda]                           Activate the CUDA support into several libraries for GPU computing (experimental)."
+echo "[-cuda]                           Activate the CUDA support into several libraries for GPU computing (experimental). It activates OpenMP support."
+echo "[-rocalution=<path>]              Set path to rocALUTION library for GPU computing on AMD Radeon (experimental). With -rocalution=install, it will be installed."
 echo "[-openmp]                         Enable OpenMP support (use of threaded BLAS like Mkl or OpenBlas and build PETSc with OpenMP support."
 echo "[-disable-petsc]                  Disable PETSc library installation."
 echo "[-enable-petsc-debug]             Enable PETSc library debug only with \$exec_debug of TRUST."
@@ -443,7 +444,7 @@ do
    elif [ "${1#-force_system_mpi}" != "$1" ]
    then
       export TRUST_FORCE_SYSTEM_MPI=1
-   
+
    elif [ "${1#-enable-petsc-debug}" != "$1" ]
    then
       export TRUST_ENABLE_PETSC_DEBUG=1
@@ -452,7 +453,11 @@ do
    then
       export TRUST_USE_CUDA=1
 
-   elif [ "${1#-with-64-bit-indices}" != "$1" ]
+   elif [ "${1#-rocalution=}" != "$1" ]
+   then
+      export TRUST_ROCALUTION=${1#-rocalution=}
+
+      elif [ "${1#-with-64-bit-indices}" != "$1" ]
    then
       export TRUST_INT64=1
 
@@ -755,7 +760,7 @@ then
      echo "        $opts_configure -without-pdflatex" >> NON_INSTALLED
      exiterror=1
   fi
-  
+
 fi
 
 if [ "`grep 'Ubuntu 2[0-1]' /etc/issue 2>/dev/null`" != "" ]

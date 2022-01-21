@@ -22,6 +22,7 @@
 #include <Solv_Optimal.h>
 #include <Solv_Petsc.h>
 #include <Solv_Petsc_GPU.h>
+#include <Solv_rocALUTION.h>
 #include <SolveurSys.h>
 void instancie_src_Kernel_Math_SolvSys() {
 Cerr << "src_Kernel_Math_SolvSys" << finl;
@@ -44,5 +45,6 @@ Solv_Optimal inst16;verifie_pere(inst16);
 Test_solveur inst17;verifie_pere(inst17);
 Solv_Petsc inst18;verifie_pere(inst18);
 Solv_Petsc_GPU inst19;verifie_pere(inst19);
-SolveurSys inst20;verifie_pere(inst20);
+Solv_rocALUTION inst20;verifie_pere(inst20);
+SolveurSys inst21;verifie_pere(inst21);
 }

@@ -21,7 +21,7 @@ then
       [ -f libcmumps.a ] && PETSC=$PETSC" -lcmumps -ldmumps -lmumps_common -lsmumps -lzmumps -lpord"
       [ -f libpastix.a ] && PETSC=$PETSC" -lpastix"
       [ -f libml.a ] && PETSC=$PETSC" -lml"
-      for lib in HYPRE scalapack blacs spai parms parmetis metis ptesmumps ptscotcherr ptscotcherrexit ptscotchparmetis ptscotch scotch scotcherr scotcherrexit Vc  
+      for lib in HYPRE scalapack blacs spai parms parmetis metis ptesmumps ptscotcherr ptscotcherrexit ptscotchparmetis ptscotch scotch scotcherr scotcherrexit Vc
       do
          [ -f lib$lib.a ] && PETSC=$PETSC" -l$lib"
       done
@@ -89,7 +89,7 @@ else
       METIS="-L\$(METIS_ROOT)/lib -lmetis"
    else
       METIS=""
-   fi 
+   fi
 fi
 
 #############
@@ -202,6 +202,7 @@ do
    [ "$PETSC" != "" ] && echo $ECHO_OPTS "$PETSC \\"				>> $fic
    [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"				>> $fic
    [ "$VC" != "" ] && echo $ECHO_OPTS "$VC \\"                     		>> $fic
+   [ -f ${TRUST_ROCALUTION}/lib/librocalution.so ] && echo $ECHO_OPTS "-L\$(TRUST_ROCALUTION)/lib -lrocalution \\" >> $fic
    [ -f ${TRUST_OSQP_ROOT}/lib/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib -losqp \\" >> $fic
    [ -f ${TRUST_OSQP_ROOT}/lib64/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib64 -losqp \\" >> $fic
    LIBS_MEDC=""
