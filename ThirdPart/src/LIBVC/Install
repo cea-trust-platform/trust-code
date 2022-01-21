@@ -20,8 +20,16 @@ cd $build_dir
 cmake ../$package -DCMAKE_INSTALL_PREFIX=$install_dir -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$TRUST_cc_BASE -DCMAKE_CXX_COMPILER=$TRUST_CC_BASE
  
 # Compilation
-$TRUST_MAKE || exit -1
+$TRUST_MAKE
 
 # Installation
-make install || exit -1
+make install
+
+status=$?
+if [ $status -ne 0 ]; then
+    echo "[ERROR] Installation of Vc failed. You can disable it with ./configure -disable-vc"
+    exit -1
+fi
+
+
 exit 0

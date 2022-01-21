@@ -261,6 +261,7 @@ echo "[-disable-ccache]                 Disable ccache detection/installation."
 echo "[-disable-valgrind]               Disable valgrind installation and build."
 echo "[-disable-gnuplot]                Disable gnuplot installation and build."
 echo "[-disable-tcl_tk]                 Disable Tcl/Tk detection/installation."
+echo "[-disable-vc]                     Disable VC installation, might be necessary for intel compilers with lower version than 17"
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
 echo "[-disable-plot2d]                 Disable PLOT2D and WIZZARD installation and build."
 echo "[-disable-mpiio]                  Disable MPI-IO mode for writing of .xyz binary output file."
@@ -281,7 +282,7 @@ cc=""
 F77=""
 clean=""
 
-LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING CCACHE GMSH VALGRIND GNUPLOT TCL_TK PLOT2D"
+LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING VC CCACHE GMSH VALGRIND GNUPLOT TCL_TK PLOT2D"
 
 #[ -f configure.log ] && sed "s/^/# /" -i  configure.log
 [ -f configure.log ] && sed "s/# //" -i  configure.log && sed "s/^/# /" -i  configure.log
@@ -299,7 +300,7 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $*
+  $0 -disable-ccache -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $*
   exit $?
 fi
 if [ "$1" = "-disable-tools" ]
