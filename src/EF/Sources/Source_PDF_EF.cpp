@@ -1086,7 +1086,7 @@ int Source_PDF_EF::impr(Sortie& os) const
               source_term[i] = 0.;
               for (int j=0; j<nb_som_tot; j++)
                 {
-                  int filter = (fabs(resu(j,i)) > 1.e-6?1:0);
+                  int filter = (std::fabs(resu(j,i)) > 1.e-6?1:0);
                   source_term[i](j) = resu(j,i) - sec_mem_pdf(j,i) + secmem_conv(j,i)*filter;
                 }
               bilan_(i) = mp_somme_vect(source_term[i]);

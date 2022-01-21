@@ -135,17 +135,17 @@ void Op_Diff_PolyMAC_Elem::update_delta_int() const
               {
                 fac_n = fac * nu_ef(l, n) * (inco(ne_tot + fb, n) - inco(e, n));
                 de_num(n) += fac_n, delta_f_int(f, n, 0) += fac_n;
-                delta_f_int(f, n, 1) += fabs(inco(ne_tot + fb, n) - inco(ne_tot + f, n));
+                delta_f_int(f, n, 1) += std::fabs(inco(ne_tot + fb, n) - inco(ne_tot + f, n));
               }
           //partie 'face-element'
           for (n = 0; n < N; n++)
             {
-              fac = fabs(inco(e, n) - inco(ne_tot + f, n));
+              fac = std::fabs(inco(e, n) - inco(ne_tot + f, n));
               de_den(n) += fac, delta_f_int(f, n, 1) += fac;
             }
         }
       //on peut calculer delta_e des maintenant
-      for (n = 0; n < N; n++) delta_e(e, n) = de_den(n) > 1e-8 ? fabs(de_num(n)) / de_den(n) : 0;
+      for (n = 0; n < N; n++) delta_e(e, n) = de_den(n) > 1e-8 ? std::fabs(de_num(n)) / de_den(n) : 0;
     }
   delta_e.echange_espace_virtuel(), delta_f_int.echange_espace_virtuel();
   delta_int_a_jour_ = 1;
@@ -169,7 +169,7 @@ void Op_Diff_PolyMAC_Elem::update_delta() const
         double n_d[2] = { delta_f_int(f, n, 0), delta_f_int(f, n, 1) };
         //contribution de l'autre probleme par des CL de type Echange_contact
         for (i = 0; ch.icl(f, 0) == 3 && i < 2; i++) n_d[i] += ref_cast(Echange_contact_PolyMAC, cls[ch.icl(f, 1)].valeur()).delta_int(ch.icl(f, 2), n, i);
-        delta_f(f, n) = n_d[1] > 1e-8 ? fabs(n_d[0]) / n_d[1] : 0;
+        delta_f(f, n) = n_d[1] > 1e-8 ? std::fabs(n_d[0]) / n_d[1] : 0;
       }
   delta_f.echange_espace_virtuel();
   delta_a_jour_ = 1;

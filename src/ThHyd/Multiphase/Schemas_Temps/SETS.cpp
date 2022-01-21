@@ -125,7 +125,7 @@ static inline double corriger_incr_alpha(const DoubleTab& alpha, DoubleTab& incr
       for (a_sum = 0, n = 0; n < N; n++) n_a(n) = std::max(n_a(n), 0.), a_sum += n_a(n);
       if (a_sum) for (n = 0; n < N; n++) n_a(n) /= a_sum;
       else for (n = 0; n < N; n++) n_a(n) = 1. / N;
-      for (n = 0; n < N; n++) corr_max = std::max(corr_max, fabs(alpha(i, n) + incr(i, n) - n_a(n))), incr(i, n) = n_a(n) - alpha(i, n);
+      for (n = 0; n < N; n++) corr_max = std::max(corr_max, std::fabs(alpha(i, n) + incr(i, n) - n_a(n))), incr(i, n) = n_a(n) - alpha(i, n);
     }
   return Process::mp_max(corr_max);
 }
@@ -299,7 +299,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 #endif
       for (auto &&n_v : incr)
         {
-          double vm = mp_min_vect(n_v.second), vM = mp_max_vect(n_v.second), x = fabs(vM) > fabs(vm) ? vM : vm;
+          double vm = mp_min_vect(n_v.second), vM = mp_max_vect(n_v.second), x = std::fabs(vM) > std::fabs(vm) ? vM : vm;
           if (!Process::me()) fprintf(stderr, " %11g", x);
         }
       if (!Process::me()) fprintf(stderr, "\n");

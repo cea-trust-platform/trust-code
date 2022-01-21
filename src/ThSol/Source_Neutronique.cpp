@@ -347,7 +347,7 @@ void Source_Neutronique::aller_au_temps(double temps)
 {
   while (temps_courant<temps)
     {
-      const double dt_stab = 0.8*Tvie/beta_som*std::max(fabs(rho(temps_courant,Tmoy)-1),1.);
+      const double dt_stab = 0.8*Tvie/beta_som*std::max(std::fabs(rho(temps_courant,Tmoy)-1),1.);
       dt = std::min(dt_stab, temps-temps_courant);
       (this->*faire_un_pas_de_temps)();
       Un = Unp1;

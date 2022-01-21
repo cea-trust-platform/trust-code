@@ -59,8 +59,8 @@ inline double minmod(double grad1, double grad2, double gradc)
   double gradlim;
   if ((s1==s2) && (s2==sc))
     {
-      gradlim=std::min(fabs(grad1), fabs(grad2));
-      gradlim=std::min(fabs(gradlim), fabs(gradc));
+      gradlim=std::min(std::fabs(grad1), std::fabs(grad2));
+      gradlim=std::min(std::fabs(gradlim), std::fabs(gradc));
       return sc*gradlim;
     }
   else

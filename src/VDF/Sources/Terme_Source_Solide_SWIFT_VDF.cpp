@@ -203,7 +203,7 @@ void Terme_Source_Solide_SWIFT_VDF::init_calcul_moyenne(const Conduction& my_eqn
       trouve = 0;
       for (j=0; j<indic+1; j++)
         {
-          if(fabs(y-Y[j])<=1e-8)
+          if(std::fabs(y-Y[j])<=1e-8)
             {
               corresp[num_elem] = j;
               compt[j] ++;
@@ -242,7 +242,7 @@ void Terme_Source_Solide_SWIFT_VDF::correspondance_SWIFT_coarse( )
       int burk=1;
       for(int i=0; i<t_C; i++)
         {
-          if(fabs(Y_swift[j]-Y_corse[i])<=1e-8)
+          if(std::fabs(Y_swift[j]-Y_corse[i])<=1e-8)
             {
               burk=0;
               corresp_SC[j]=i;

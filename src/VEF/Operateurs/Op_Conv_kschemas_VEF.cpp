@@ -134,7 +134,7 @@ void convkschemas(const double K, const int ncomp, int dimension, const int poly
             {
               deltat = deltat0 + deltat1;
 
-              if  (fabs(deltat) <= 1.e-5)
+              if  (std::fabs(deltat) <= 1.e-5)
                 {
                   CF = 0.125;
                 }
@@ -145,7 +145,7 @@ void convkschemas(const double K, const int ncomp, int dimension, const int poly
                   if ( (UTC <= -1.) || (UTC >= 1.5) )      CF = 0.125;
                   else if ((UTC > -1.) && (UTC <= 0.))     CF = 0.5 + 0.375*UTC;
                   else if ((UTC > 0.) && (UTC <= 0.25))    CF = 0.5 - 0.625*sqrt(UTC);
-                  else if ((UTC > 0.25) && (UTC < 1.5 ))   CF = 0.25* fabs(UTC - 1.);
+                  else if ((UTC > 0.25) && (UTC < 1.5 ))   CF = 0.25* std::fabs(UTC - 1.);
                   else
                     {
                       CF=0.;

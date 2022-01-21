@@ -317,7 +317,7 @@ void Echange_contact_Correlation_VDF::calculer_prop_physique()
 double Echange_contact_Correlation_VDF::calculer_coefficient_echange(int i)
 {
   double Re,Pr;
-  Re = fabs(getQh()*getDh()/getMu(i));
+  Re = std::fabs(getQh()*getDh()/getMu(i));
   Pr = getMu(i)*getCp()/getLambda(i);
   fct_Nu.setVar("Re",Re);
   fct_Nu.setVar("Pr",Pr);

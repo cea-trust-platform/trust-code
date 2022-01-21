@@ -58,7 +58,7 @@ projette(ArrOfDouble& gradi, int face, const DoubleTab& normales)
       norm+=normales(face,comp)*normales(face,comp);
     }
   // psc/=norm; // Fixed bug: Arithmetic exception
-  if (fabs(norm)>=DMINFLOAT) psc/=norm;
+  if (std::fabs(norm)>=DMINFLOAT) psc/=norm;
   for(comp=0; comp<dimension; comp++)
     {
       gradi(comp)-=psc*normales(face,comp);

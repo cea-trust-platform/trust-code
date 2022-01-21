@@ -56,7 +56,7 @@ void Multiplicateur_diphasique_Friedel::coefficient(const double *alpha, const d
                                                     const double Fm, DoubleTab& coeff) const
 {
   int min_ = min_sensas_ || min_lottes_flinn_;
-  double G = alpha[n_l] * rho[n_l] * fabs(v[n_l]) + alpha[n_g] * rho[n_g] * fabs(v[n_g]), //debit total
+  double G = alpha[n_l] * rho[n_l] * std::fabs(v[n_l]) + alpha[n_g] * rho[n_g] * std::fabs(v[n_g]), //debit total
          x = G ? alpha[n_g] * rho[n_g] * v[n_g] / G : 0, //titre
          E = (1 - x) * (1 - x) + x * x * (rho[n_l] * f[n_g] / rho[n_g] * f[n_l]),
          F = std::pow(x, 0.78) * std::pow(1 - x, 0.224),

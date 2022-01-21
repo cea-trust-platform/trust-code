@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,19 +35,6 @@
 //    fonctions utiles sur les int
 // .SECTION voir aussi
 //////////////////////////////////////////////////////////////////////////////
-
-// Description: returns (x>y ? x:y)
-/* inline int max(int x, int y)
-{
-  return(x>y ? x:y);
-} */
-
-// Description: returns (x>y ? y:x)
-/* inline int min(int x, int y)
-{
-  // same test as above, faster if min and max are used together
-  return(x>y ? y:x);
-} */
 
 // Description: sorts x and y in ascending order
 inline void sort_values(int& x, int& y)

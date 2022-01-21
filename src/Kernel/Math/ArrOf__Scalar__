@@ -1158,7 +1158,7 @@ __scalar__ max_array(const ArrOf__Scalar__& dx)
 static inline __scalar__ scalar_abs(__scalar__ x)
 {
 #Pif("__scalar__"=="double")
-  return fabs(x);
+  return std::fabs(x);
 #Pendif
 #Pif("__scalar__"=="int")
   return abs(x);

@@ -1092,11 +1092,11 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
   const int& n = tab_critere_abs.dimension_tot(0);
   if(size == 1)
     for(int i=0; i< n; i++)
-      tab_critere_abs(i) = fabs(tab_critere_abs(i));
+      tab_critere_abs(i) = std::fabs(tab_critere_abs(i));
   else
     for(int j=0; j<size; j++)
       for(int i=0; i< n; i++)
-        tab_critere_abs(i,j) = fabs(tab_critere_abs(i,j));
+        tab_critere_abs(i,j) = std::fabs(tab_critere_abs(i,j));
 
   equation.set_residuals(tab_critere_abs);
 
@@ -1129,9 +1129,9 @@ void Schema_Temps_base::imprimer_temps_courant(SFichier& os) const
   int precision_actuelle=os.get_precision();
   int precision_temps;
   if (!est_egal(temps_courant(),0.))
-    precision_temps=std::max( precision_actuelle, (int)(2+log10(1/fabs(pas_de_temps()))+(int)(log10(fabs(temps_courant())))) );
+    precision_temps=std::max( precision_actuelle, (int)(2+log10(1/std::fabs(pas_de_temps()))+(int)(log10(std::fabs(temps_courant())))) );
   else
-    precision_temps=std::max( precision_actuelle, (int)(2+log10(1/fabs(pas_de_temps()))) );
+    precision_temps=std::max( precision_actuelle, (int)(2+log10(1/std::fabs(pas_de_temps()))) );
   os.precision(precision_temps);
   os << temps_courant();
   os.precision(precision_actuelle);

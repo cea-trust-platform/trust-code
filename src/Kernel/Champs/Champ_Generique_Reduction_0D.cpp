@@ -370,7 +370,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
             {
               for (int i=0; i<nb_elem; i++)
                 {
-                  sum+=fabs(val_source(i))*volumes(i);
+                  sum+=std::fabs(val_source(i))*volumes(i);
                 }
             }
           else if (methode_ =="L2_norm")
@@ -415,7 +415,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
                     {
                       if (ori(i)==composante_VDF)
                         {
-                          sum+=fabs(val_source(k))*volume_controle_(i);
+                          sum+=std::fabs(val_source(k))*volume_controle_(i);
                           k++;
                         }
                     }
@@ -443,7 +443,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
                 {
                   for (int i=0; i<nb_face; i++)
                     {
-                      sum+=fabs(val_source(i))*volume_controle_(i);
+                      sum+=std::fabs(val_source(i))*volume_controle_(i);
                     }
                 }
               else if (methode_ =="L2_norm")
@@ -483,7 +483,7 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
             {
               for (int i=0; i<nb_som; i++)
                 {
-                  sum+=fabs(val_source(i))*volume_controle_(i);
+                  sum+=std::fabs(val_source(i))*volume_controle_(i);
                 }
             }
           else if (methode_ =="L2_norm")

@@ -221,7 +221,7 @@ void Convection_Diffusion_Espece_Multi_QC::assembler( Matrice_Morse& matrice, co
         {
 
           for (int i=0; i<resu.size(); i++)
-            if (fabs(test(i))>1e-5)
+            if (std::fabs(test(i))>1e-5)
               Cerr<<i << " "<<test(i)<<finl;
           //        Cerr<<resu <<finl;
           Process::exit();

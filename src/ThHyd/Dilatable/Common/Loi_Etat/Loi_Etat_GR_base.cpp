@@ -283,13 +283,13 @@ double Loi_Etat_GR_base::inverser_Pth(double H, double rho)
   double P = le_fluide->pression_th();
   double acc = (calculer_masse_volumique(P,H) - rho) / Drho_DP(P,H);
   int i=0;
-  while (fabs(acc)>1e-8 && i<1000)
+  while (std::fabs(acc)>1e-8 && i<1000)
     {
       P = P-acc;
       acc = (calculer_masse_volumique(P,H) - rho) / Drho_DP(P,H);
       i++;
     }
-  if (fabs(acc)>1e-8)
+  if (std::fabs(acc)>1e-8)
     {
       Cerr<<"Probleme dans l'inversion de la pression : nb_iter="<<i<<finl;
       Cerr<<" Pth="<<P<<" H="<<H<<" rho="<<rho<<finl;

@@ -462,7 +462,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
 
   for ( int i=0; i<nb_faces; i++ )
     {
-      if (fabs (P[i]) > 1.e-9 )richard_loc [i] = -G[i]/P[i] ;
+      if (std::fabs (P[i]) > 1.e-9 )richard_loc [i] = -G[i]/P[i] ;
       else richard_loc [i] = 0. ;
     }
 

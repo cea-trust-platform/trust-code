@@ -26,12 +26,12 @@
 // Description: calcul de la norme Linfini de la matrice
 // Propriete: on note |x| la norme Linfini de x (vecteur ou matrice)
 //  On a |m * x| <= |m| * |x|
-// En pratique: c'est le max sur j de la somme sur i de fabs(m(i,j))
+// En pratique: c'est le max sur j de la somme sur i de std::fabs(m(i,j))
 inline double Matrice33::norme_Linfini()
 {
-  double x = fabs(m[0][0]) + fabs(m[0][1]) + fabs(m[0][2]);
-  double y = fabs(m[1][0]) + fabs(m[1][1]) + fabs(m[1][2]);
-  double z = fabs(m[2][0]) + fabs(m[2][1]) + fabs(m[2][2]);
+  double x = std::fabs(m[0][0]) + std::fabs(m[0][1]) + std::fabs(m[0][2]);
+  double y = std::fabs(m[1][0]) + std::fabs(m[1][1]) + std::fabs(m[1][2]);
+  double z = std::fabs(m[2][0]) + std::fabs(m[2][1]) + std::fabs(m[2][2]);
   double resu = ((x > y) ? x : y);
   resu = ((resu > z) ? resu : z);
   return resu;
@@ -61,9 +61,9 @@ inline double Vecteur3::produit_scalaire(const Vecteur3& x, const Vecteur3& y)
 // Description: norme L_infini, c'est le max des abs(v[i])
 inline double Vecteur3::norme_Linfini()
 {
-  double x = fabs(v[0]);
-  double y = fabs(v[1]);
-  double z = fabs(v[2]);
+  double x = std::fabs(v[0]);
+  double y = std::fabs(v[1]);
+  double z = std::fabs(v[2]);
   double resu = ((x > y) ? x : y);
   resu = ((resu > z) ? resu : z);
   return resu;

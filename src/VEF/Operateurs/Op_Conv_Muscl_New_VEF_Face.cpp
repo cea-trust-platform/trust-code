@@ -1021,7 +1021,7 @@ void Op_Conv_Muscl_New_VEF_Face::remplir_fluent(DoubleVect& fluent_) const
       psc=0.;
       for (int i=0; i<dimension; i++)
         psc+=velocity(num_face,i)*face_normales(num_face,i);
-      fluent_(num_face)=fabs(psc);
+      fluent_(num_face)=std::fabs(psc);
     }
 }
 
@@ -1774,8 +1774,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& Kij, const
                 // if (fij>=0.) R=(P_plus(dim)==0.)?0.:Q_plus(dim)/(P_plus(dim)+DMINFLOAT);
                 // else R=(P_moins(dim)==0.)?0.:Q_moins(dim)/(P_moins(dim)+DMINFLOAT);
 
-                if (fij>=0.) R=(fabs(P_plus(dim))<DMINFLOAT)?0.:Q_plus(dim)/P_plus(dim);
-                else R=(fabs(P_moins(dim))<DMINFLOAT)?0.:Q_moins(dim)/P_moins(dim);
+                if (fij>=0.) R=(std::fabs(P_plus(dim))<DMINFLOAT)?0.:Q_plus(dim)/P_plus(dim);
+                else R=(std::fabs(P_moins(dim))<DMINFLOAT)?0.:Q_moins(dim)/P_moins(dim);
 
 
                 R=(*limiteur_)(R);
@@ -1797,8 +1797,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& Kij, const
                 // if (fji<=0.) R=(P_moins(dim)==0.)?0.:Q_moins(dim)/(P_moins(dim)+DMINFLOAT);
                 // else R=(P_plus(dim)==0.)?0.:Q_plus(dim)/(P_plus(dim)+DMINFLOAT);
 
-                if (fji<=0.) R=(fabs(P_moins(dim))<DMINFLOAT)?0.:Q_moins(dim)/P_moins(dim);
-                else R=(fabs(P_plus(dim))<DMINFLOAT)?0.:Q_plus(dim)/P_plus(dim);
+                if (fji<=0.) R=(std::fabs(P_moins(dim))<DMINFLOAT)?0.:Q_moins(dim)/P_moins(dim);
+                else R=(std::fabs(P_plus(dim))<DMINFLOAT)?0.:Q_plus(dim)/P_plus(dim);
 
 
                 R=(*limiteur_)(R);
@@ -1910,8 +1910,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
                     // Ri=(Pi_plus(dim)==0.)?0.:Qi_plus(dim)/(Pi_plus(dim)+DMINFLOAT);
                     // Rj=(Pj_moins(dim)==0.)?0.:Qj_moins(dim)/(Pj_moins(dim)+DMINFLOAT);//car fji=-fij
 
-                    Ri=(fabs(Pi_plus(dim))<DMINFLOAT)?0.:Qi_plus(dim)/Pi_plus(dim);
-                    Rj=(fabs(Pj_moins(dim))<DMINFLOAT)?0.:Qj_moins(dim)/Pj_moins(dim);//car fji=-fij
+                    Ri=(std::fabs(Pi_plus(dim))<DMINFLOAT)?0.:Qi_plus(dim)/Pi_plus(dim);
+                    Rj=(std::fabs(Pj_moins(dim))<DMINFLOAT)?0.:Qj_moins(dim)/Pj_moins(dim);//car fji=-fij
                   }
                 else
                   {
@@ -1921,8 +1921,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
                     // Ri=(Pi_moins(dim)==0.)?0.:Qi_moins(dim)/(Pi_moins(dim)+DMINFLOAT);
                     // Rj=(Pj_plus(dim)==0.)?0.:Qj_plus(dim)/(Pj_plus(dim)+DMINFLOAT);//car fji=-fij
 
-                    Ri=(fabs(Pi_moins(dim))<DMINFLOAT)?0.:Qi_moins(dim)/Pi_moins(dim);
-                    Rj=(fabs(Pj_plus(dim))<DMINFLOAT)?0.:Qj_plus(dim)/Pj_plus(dim);//car fji=-fij
+                    Ri=(std::fabs(Pi_moins(dim))<DMINFLOAT)?0.:Qi_moins(dim)/Pi_moins(dim);
+                    Rj=(std::fabs(Pj_plus(dim))<DMINFLOAT)?0.:Qj_plus(dim)/Pj_plus(dim);//car fji=-fij
                   }
 
                 if (is_dirichlet_faces_(facej)) Rj=DMAXFLOAT;//on n'a pas besoin de prendre le min quand il y a une face de Dirichlet
@@ -1944,8 +1944,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
                     // Rj=(Pj_moins(dim)==0.)?0.:Qj_moins(dim)/(Pj_moins(dim)+DMINFLOAT);
                     // Ri=(Pi_plus(dim)==0.)?0.:Qi_plus(dim)/(Pi_plus(dim)+DMINFLOAT);
 
-                    Rj=(fabs(Pj_moins(dim))<DMINFLOAT)?0.:Qj_moins(dim)/Pj_moins(dim);
-                    Ri=(fabs(Pi_plus(dim))<DMINFLOAT)?0.:Qi_plus(dim)/Pi_plus(dim);
+                    Rj=(std::fabs(Pj_moins(dim))<DMINFLOAT)?0.:Qj_moins(dim)/Pj_moins(dim);
+                    Ri=(std::fabs(Pi_plus(dim))<DMINFLOAT)?0.:Qi_plus(dim)/Pi_plus(dim);
                   }
                 else
                   {
@@ -1955,8 +1955,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
                     // Rj=(Pj_plus(dim)==0.)?0.:Qj_plus(dim)/(Pj_plus(dim)+DMINFLOAT);
                     // Ri=(Pi_moins(dim)==0.)?0.:Qi_moins(dim)/(Pi_moins(dim)+DMINFLOAT);
 
-                    Rj=(fabs(Pj_plus(dim))<DMINFLOAT)?0.:Qj_plus(dim)/Pj_plus(dim);
-                    Ri=(fabs(Pi_moins(dim))<DMINFLOAT)?0.:Qi_moins(dim)/Pi_moins(dim);
+                    Rj=(std::fabs(Pj_plus(dim))<DMINFLOAT)?0.:Qj_plus(dim)/Pj_plus(dim);
+                    Ri=(std::fabs(Pi_moins(dim))<DMINFLOAT)?0.:Qi_moins(dim)/Pi_moins(dim);
                   }
 
                 if (is_dirichlet_faces_(facei)) Ri=DMAXFLOAT;//on n'a pas besoin de prendre le min quand il y a une face de Dirichlet

@@ -664,7 +664,7 @@ inline int Zone_VF::orientation_si_definie(int num_face) const
 {
   for (int dir=0; dir<dimension; dir++)
     {
-      if (est_egal(fabs(face_normales(num_face, dir)), face_surfaces(num_face)))
+      if (est_egal(std::fabs(face_normales(num_face, dir)), face_surfaces(num_face)))
         return dir;
     }
   return -1;
@@ -674,7 +674,7 @@ inline int Zone_VF::orientation(int num_face) const
 {
   for (int dir=0; dir<dimension; dir++)
     {
-      if (est_egal(fabs(face_normales(num_face, dir)), face_surfaces(num_face)))
+      if (est_egal(std::fabs(face_normales(num_face, dir)), face_surfaces(num_face)))
         return dir;
     }
   Cerr<<"Your mesh is not axis oriented."<<finl;

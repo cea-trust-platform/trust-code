@@ -465,7 +465,7 @@ void Zone_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
                               surf += face_n*face_n;
                             }
                           // flux /= surf; // Fixed bug: Arithmetic exception
-                          if (fabs(surf)>=DMINFLOAT) flux /= surf;
+                          if (std::fabs(surf)>=DMINFLOAT) flux /= surf;
                           for (ncomp=0; ncomp<nb_comp; ncomp++)
                             ch_tab(num_face,ncomp) -= flux*face_normales(num_face,ncomp);
                         }
@@ -563,7 +563,7 @@ void Zone_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
                               surf += face_n*face_n;
                             }
                           // flux /= surf; // Fixed bug: Arithmetic exception
-                          if (fabs(surf)>=DMINFLOAT) flux /= surf;
+                          if (std::fabs(surf)>=DMINFLOAT) flux /= surf;
                           for (ncomp=0; ncomp<nb_comp; ncomp++)
                             ch_tab(num_face,ncomp) = la_cl_diri.val_imp_au_temps(temps,num_face-ndeb, ncomp) - flux * face_normales(num_face,ncomp);
                         }
@@ -633,7 +633,7 @@ void Zone_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
                               surf += face_n*face_n;
                             }
                           // flux /= surf; // Fixed bug: Arithmetic exception
-                          if (fabs(surf)>=DMINFLOAT) flux /= surf;
+                          if (std::fabs(surf)>=DMINFLOAT) flux /= surf;
                           for (ncomp=0; ncomp<nb_comp; ncomp++)
                             ch_tab(num_face,ncomp) -= flux*face_normales(num_face,ncomp);
                         }

@@ -234,7 +234,7 @@ int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
               + yn * ( pos[1] - dom.coord(som0,1) )
               + zn * ( pos[2] - dom.coord(som0,2) );
       // Si le point est sur le plan (prod2 quasi nul) : on ne peut pas conclure...
-      if (prod1*prod2 < 0 && fabs(prod2)>fabs(prod1)*Objet_U::precision_geom) return 0;
+      if (prod1*prod2 < 0 && std::fabs(prod2)>std::fabs(prod1)*Objet_U::precision_geom) return 0;
     }
   return 1;
 }
@@ -335,7 +335,7 @@ void Prisme::calculer_volumes(DoubleVect& volumes) const
       double P = (a1*e2*h3 + b1*e2*f3) - (a1*e3*h2 + b1*e3*f2) -
                  (a2*e1*h3 + b2*e1*f3) + (a2*e3*h1 + b2*e3*f1) +
                  (a3*e1*h2 + b3*e1*f2) - (a3*e2*h1 + b3*e2*f1);
-      volumes[num_poly]=fabs(-2.0*(2.0*(A + B + D + E + G + H) + C + F + P)/9.0);
+      volumes[num_poly]=std::fabs(-2.0*(2.0*(A + B + D + E + G + H) + C + F + P)/9.0);
 
     }
 

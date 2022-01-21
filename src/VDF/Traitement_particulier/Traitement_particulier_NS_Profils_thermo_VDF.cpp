@@ -197,7 +197,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::post_traitement_particulier()
       calculer_moyennes_spatiales_thermo(Tmoy_p,Trms_p,upTp_p,vpTp_p,wpTp_p,corresp_uv_p,compt_uv_p,Nuv,xUVp);
 
       static double temps_dern_post_inst = -100.;
-      if (fabs(tps-temps_dern_post_inst)>=dt_post_inst)
+      if (std::fabs(tps-temps_dern_post_inst)>=dt_post_inst)
         {
           ecriture_fichier_moy_spat_thermo(Tmoy_m,Trms_m,upTp_m,vpTp_m,wpTp_m,Tmoy_p,Trms_p,upTp_p,vpTp_p,wpTp_p,Yuv_m,Nuv,delta_UVm, delta_UVp);
 
@@ -229,7 +229,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::post_traitement_particulier()
           calculer_integrales_temporelles(wpTp_temp,wpTp_m,wpTp_p,delta_UVm,delta_UVp);
 
           static double temps_dern_post_stat = -100.;
-          if (fabs(tpsbis-temps_dern_post_stat)>=dt_post_stat)
+          if (std::fabs(tpsbis-temps_dern_post_stat)>=dt_post_stat)
             {
               double dt = tpsbis-temps_deb;
               ecriture_fichier_moy_temp_thermo(Tmoy_temp,Trms_temp,upTp_temp,vpTp_temp,wpTp_temp,Yuv_m,dt,Nuv);

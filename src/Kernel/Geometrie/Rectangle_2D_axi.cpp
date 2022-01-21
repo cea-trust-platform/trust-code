@@ -183,8 +183,8 @@ void Rectangle_2D_axi::calculer_volumes(DoubleVect& volumes) const
       r2= dom.coord(S2,0);
       if (r1< r2) r =r1;
       else r =r2;
-      dr =fabs( dom.coord(S2,0) - dom.coord(S1,0));
-      dz =fabs( dom.coord(S3,1) - dom.coord(S1,1));
+      dr =std::fabs( dom.coord(S2,0) - dom.coord(S1,0));
+      dz =std::fabs( dom.coord(S3,1) - dom.coord(S1,1));
       volumes[num_poly]= 2*M_PI*(r*dr+0.5*dr*dr)*dz;
     }
   /*

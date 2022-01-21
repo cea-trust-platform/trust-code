@@ -57,8 +57,8 @@ void Faces_VDF::calculer_orientation(IntVect& tab_orientation,
     {
       if(dimension == 2)
         {
-          dx = fabs(dom.coord(sommet(face, 1), 0)-dom.coord(sommet(face, 0), 0));
-          dy = fabs(dom.coord(sommet(face, 1), 1)-dom.coord(sommet(face, 0), 1));
+          dx = std::fabs(dom.coord(sommet(face, 1), 0)-dom.coord(sommet(face, 0), 0));
+          dy = std::fabs(dom.coord(sommet(face, 1), 1)-dom.coord(sommet(face, 0), 1));
         }
       else if(dimension == 3)
         {
@@ -68,9 +68,9 @@ void Faces_VDF::calculer_orientation(IntVect& tab_orientation,
               Cerr << "There is a problem with mesh or with chosen discretization." << finl;
               exit();
             }
-          dx = fabs(dom.coord(sommet(face, 3), 0)-dom.coord(sommet(face, 0), 0));
-          dy = fabs(dom.coord(sommet(face, 3), 1)-dom.coord(sommet(face, 0), 1));
-          dz = fabs(dom.coord(sommet(face, 3), 2)-dom.coord(sommet(face, 0), 2));
+          dx = std::fabs(dom.coord(sommet(face, 3), 0)-dom.coord(sommet(face, 0), 0));
+          dy = std::fabs(dom.coord(sommet(face, 3), 1)-dom.coord(sommet(face, 0), 1));
+          dz = std::fabs(dom.coord(sommet(face, 3), 2)-dom.coord(sommet(face, 0), 2));
         }
       if(axi)
         {

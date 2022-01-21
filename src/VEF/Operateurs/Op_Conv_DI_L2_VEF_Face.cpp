@@ -66,7 +66,7 @@ void flora(DoubleTab A, int& N , DoubleVect B, DoubleVect& U, int& test_flora)
   for(m=0; m<N1; m++)
     {
       m1 = m+1;
-      if(fabs(A(m,m)) > 1e-20)
+      if(std::fabs(A(m,m)) > 1e-20)
         {
           for(i=m1; i<N; i++)
             {
@@ -83,7 +83,7 @@ void flora(DoubleTab A, int& N , DoubleVect B, DoubleVect& U, int& test_flora)
         }
 
     }
-  if(fabs(A(N-1,N-1)) >= 1e-20)
+  if(std::fabs(A(N-1,N-1)) >= 1e-20)
     {
       U(N-1) = B(N-1)/A(N-1,N-1);
       for(l=0; l<N1; l++)
@@ -115,7 +115,7 @@ void flora_p(DoubleTab& A, int& N, DoubleVect& B, DoubleVect& U, int& test_flora
   for(m=0; m<N1; m++)
     {
       m1 = m+1;
-      if(fabs(A(m,m))  >= 1.e-10)
+      if(std::fabs(A(m,m))  >= 1.e-10)
         {
           for(i=m1; i<N; i++)
             {
@@ -130,7 +130,7 @@ void flora_p(DoubleTab& A, int& N, DoubleVect& B, DoubleVect& U, int& test_flora
           j=m+1;
           while(j<N && test == 0)
             {
-              if(fabs(A(m,j)) >= 1.e-10) test =1;
+              if(std::fabs(A(m,j)) >= 1.e-10) test =1;
               j++;
             }
           if(j == N)
@@ -155,7 +155,7 @@ void flora_p(DoubleTab& A, int& N, DoubleVect& B, DoubleVect& U, int& test_flora
         }
 
     }
-  if(fabs(A(N-1,N-1)) >= 1.e-10)
+  if(std::fabs(A(N-1,N-1)) >= 1.e-10)
     {
       U(N-1) = B(N-1)/A(N-1,N-1);
       for(l=0; l<N1; l++)
@@ -190,8 +190,8 @@ void qrdcmp(DoubleTab& A, int& N, DoubleVect& C, DoubleVect& D, int& sing)
     {
       scale = 0.;
       for(i=k; i<N; i++)
-        if(scale < fabs(A(i,k)))                scale = fabs(A(i,k));
-      if(fabs(scale)<1.e-15)
+        if(scale < std::fabs(A(i,k)))                scale = std::fabs(A(i,k));
+      if(std::fabs(scale)<1.e-15)
         {
           //cas singulier
           Cerr << " huhu " << finl ;
@@ -218,7 +218,7 @@ void qrdcmp(DoubleTab& A, int& N, DoubleVect& C, DoubleVect& D, int& sing)
         }
     }
   D(N-1) = A(N-1,N-1);
-  if(fabs(D(N-1)) <1.e-12)
+  if(std::fabs(D(N-1)) <1.e-12)
     {
       Cerr << " hoho " << finl ;
       sing =1;

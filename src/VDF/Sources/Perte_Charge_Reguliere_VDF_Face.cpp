@@ -175,7 +175,7 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,Doubl
         {
           numfa = num_faces[i];
           U = inco[numfa];
-          U_abs = fabs(vit[numfa]);
+          U_abs = std::fabs(vit[numfa]);
 
           if (!l_visco_unif)
             {
@@ -239,7 +239,7 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,Doubl
               CK = -0.5*Cf/D();
               if (U != 0)
                 {
-                  corr_sign = U/fabs(U);
+                  corr_sign = U/std::fabs(U);
                 }
               resu[numfa] += CK*U_res*U_res*volumes_entrelaces[numfa]*porosite_surf[numfa]*corr_front_ss[i]*corr_sign;
             }

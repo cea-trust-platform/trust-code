@@ -584,7 +584,7 @@ void Matrice_Morse::compacte(int elim_coeff_nul)
       for(int i=0; i<n; i++)
         for (int k=tab1_(i)-1; k<tab1_(i+1)-1; k++)
           {
-            if (fabs(coeff_(k))>coeff_max(i)) coeff_max(i)=fabs(coeff_(k));
+            if (std::fabs(coeff_(k))>coeff_max(i)) coeff_max(i)=std::fabs(coeff_(k));
             if (coeff_(k)==0)
               {
                 coeff_nuls++;
@@ -600,7 +600,7 @@ void Matrice_Morse::compacte(int elim_coeff_nul)
                 && coeff_max(i)<1e10)          // On ne supprime pas un coefficient quasi-nul d'une ligne ou la diagonale peut etre mise a 1e12
               for (int k=tab1_(i)-1; k<tab1_(i+1)-1; k++)
                 if (coeff_(k)!=0                 // Les coefficients nuls ont deja ete trouves
-                    && est_egal(fabs(coeff_(k))/coeff_max(i),0))
+                    && est_egal(std::fabs(coeff_(k))/coeff_max(i),0))
                   {
                     coeff_quasi_nuls++;
                     elim_coeff(k)=1;

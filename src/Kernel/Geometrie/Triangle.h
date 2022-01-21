@@ -75,7 +75,7 @@ inline double aire_triangle(const DoubleTab& pos)
   double y2 = pos(2,1);
   double dz = (x1-x0)*(y2-y0) - (x2-x0)*(y1-y0);
   if (Objet_U::dimension==2)
-    return 0.5 * fabs(dz);
+    return 0.5 * std::fabs(dz);
   else
     {
       double z0 = pos(0,2);

@@ -876,7 +876,7 @@ double local_max_abs_vect(const DoubleVect& vx, Mp_vect_options opt)
       for (; count; count--)
         {
           const double x = *x_ptr;
-          double xx = fabs(x);
+          double xx = std::fabs(x);
           max_val = (xx > max_val) ? xx : max_val;
           x_ptr++;
         }
@@ -933,7 +933,7 @@ double local_min_abs_vect(const DoubleVect& vx, Mp_vect_options opt)
       for (; count; count--)
         {
           const double x = *x_ptr;
-          double xx = fabs(x);
+          double xx = std::fabs(x);
           min_val = (xx < min_val) ? xx : min_val;
           x_ptr++;
         }
@@ -987,7 +987,7 @@ void operator_abs(DoubleVect& resu, Mp_vect_options opt)
       for (; count; count--)
         {
           double& p_resu = *(resu_ptr++);
-          p_resu = fabs(p_resu);
+          p_resu = std::fabs(p_resu);
         }
     }
   // In debug mode, put invalid values where data has not been computed

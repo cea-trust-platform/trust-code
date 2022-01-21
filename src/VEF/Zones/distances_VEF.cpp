@@ -209,7 +209,7 @@ double distance_2D(int fac,int elem,const Zone_VEF& zone)
   double x1=xp(elem,0);
   double y1=xp(elem,1);
 
-  return fabs(r0*(x1-x0)+r1*(y1-y0));
+  return std::fabs(r0*(x1-x0)+r1*(y1-y0));
 }
 
 double norm_2D_vit1_k(const DoubleTab& vit,int fac,int num1,
@@ -487,7 +487,7 @@ double distance_3D(int fac,int elem,const Zone_VEF& zone)
   double y1=xp(elem,1);
   double z1=xp(elem,2);
 
-  return fabs(r0*(x1-x0)+r1*(y1-y0)+r2*(z1-z0));
+  return std::fabs(r0*(x1-x0)+r1*(y1-y0)+r2*(z1-z0));
 }
 
 DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& methode, const Zone_VEF& zone)
@@ -714,7 +714,7 @@ double som_pscal(const int som0, const int som1, const int som2, const int som3,
   v2/=n2;
   v3/=n3;
 
-  double som_psc=fabs(dotproduct_array(v1,v2))+fabs(dotproduct_array(v2,v3))+fabs(dotproduct_array(v3,v1));
+  double som_psc=std::fabs(dotproduct_array(v1,v2))+std::fabs(dotproduct_array(v2,v3))+std::fabs(dotproduct_array(v3,v1));
   return som_psc;
 }
 

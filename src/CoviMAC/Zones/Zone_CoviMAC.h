@@ -379,22 +379,22 @@ static inline double kersol(const DoubleTab& M, DoubleTab& b, double eps, Double
 inline double Zone_CoviMAC::dist_norm_bord(int f) const
 {
   assert(face_voisins(f, 1) == -1);
-  return fabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+  return std::fabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
 }
 
 inline double Zone_CoviMAC::dist_norm(int f) const
 {
-  return fabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xp_(face_voisins(f, 1), 0))) / face_surfaces(f);
+  return std::fabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xp_(face_voisins(f, 1), 0))) / face_surfaces(f);
 }
 
 inline double Zone_CoviMAC::dist_face_elem0(int f,int e) const
 {
-  return fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+  return std::fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
 }
 
 inline double Zone_CoviMAC::dist_face_elem1(int f,int e) const
 {
-  return fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+  return std::fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
 }
 
 inline double Zone_CoviMAC::dist_face_elem0_period(int num_face,int n0,double l) const

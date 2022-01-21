@@ -66,6 +66,6 @@ void Segment_axi::calculer_volumes(DoubleVect& volumes) const
       double r2 = sqrt((x2-x0)*(x2-x0)+(y2-y0)*(y2-y0));
 
 
-      volumes[num_poly]= M_PI*fabs(r2*r2-r1*r1);
+      volumes[num_poly]= M_PI*std::fabs(r2*r2-r1*r1);
     }
 }

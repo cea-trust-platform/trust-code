@@ -427,7 +427,7 @@ void Sonde_Int::ouvrir_fichier()
             }
           zn=(p(1,1)-p(0,1))*(p(nbre_points1,0)-p(0,0))
              -(p(1,0)-p(0,0))*(p(nbre_points1,1)-p(0,1));
-          norme=fabs(xn)+fabs(yn)+fabs(zn);
+          norme=std::fabs(xn)+std::fabs(yn)+std::fabs(zn);
           xn/=norme;
           yn/=norme;
           zn/=norme;

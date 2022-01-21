@@ -653,8 +653,8 @@ void Champ_front_contact_VEF::remplir_connect_bords()
   double erreur = 0.;
   int ii;
   for (ii=0; ii<dimension; ii++)
-    if (fabs(xv1(ndeb1,ii) - xv1(ndeb1+nb_faces,ii)) > erreur )
-      erreur = fabs(xv1(ndeb1,ii) - xv1(ndeb1+nb_faces,ii));
+    if (std::fabs(xv1(ndeb1,ii) - xv1(ndeb1+nb_faces,ii)) > erreur )
+      erreur = std::fabs(xv1(ndeb1,ii) - xv1(ndeb1+nb_faces,ii));
   //
   // L'erreur est 1.e-5 fois la distance maximale entre deux faces de bord
   erreur *=1.e-5;
@@ -747,7 +747,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
           // O.C. : dimension plutot que dim1 dans la boucle suivante :
           //          for (k=0 ; k<dim1 ; k++)
           for (k=0 ; k<dimension ; k++)
-            if (fabs(xv1(ndeb1+i,k) - xv2(ndeb2+j,k)) > erreur) break;
+            if (std::fabs(xv1(ndeb1+i,k) - xv2(ndeb2+j,k)) > erreur) break;
           // Si on a passe le test ci-dessus, c'est que les dim coordonnees de la face
           // sont les memes (d == dim)
           if (k==dimension)
@@ -759,9 +759,9 @@ void Champ_front_contact_VEF::remplir_connect_bords()
                   Cout << "xv i j " << xv1(ndeb1+i,0) << " " << xv2(ndeb2+j,0) << finl;
                   Cout << "xv i j " << xv1(ndeb1+i,1) << " " << xv2(ndeb2+j,1) << finl;
                   Cout << "xv i j " << xv1(ndeb1+i,2) << " " << xv2(ndeb2+j,2) << finl;
-                  Cout << "err i j " << fabs(xv1(ndeb1+i,0) - xv2(ndeb2+j,0)) << finl;
-                  Cout << "err i j " << fabs(xv1(ndeb1+i,1) - xv2(ndeb2+j,1)) << finl;
-                  Cout << "err i j " << fabs(xv1(ndeb1+i,2) - xv2(ndeb2+j,2)) << finl;
+                  Cout << "err i j " << std::fabs(xv1(ndeb1+i,0) - xv2(ndeb2+j,0)) << finl;
+                  Cout << "err i j " << std::fabs(xv1(ndeb1+i,1) - xv2(ndeb2+j,1)) << finl;
+                  Cout << "err i j " << std::fabs(xv1(ndeb1+i,2) - xv2(ndeb2+j,2)) << finl;
                   Cout << "erreur " << erreur << finl;
                   }*/
               connect_bords(i)=j;
@@ -773,7 +773,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
         for (j=0; j<i; j++)
           {
             for (k=0 ; k<dimension ; k++)
-              if (fabs(xv1(ndeb1+i,k) - xv2(ndeb2+j,k)) > erreur) break;
+              if (std::fabs(xv1(ndeb1+i,k) - xv2(ndeb2+j,k)) > erreur) break;
 
             // Si on a passe le test ci-dessus, c'est que les dim coordonnees de la face
             // sont les memes (d == dim)
@@ -785,9 +785,9 @@ void Champ_front_contact_VEF::remplir_connect_bords()
                      Cout << "xv i j " << xv1(ndeb1+i,0) << " " << xv2(ndeb2+j,0) << finl;
                      Cout << "xv i j " << xv1(ndeb1+i,1) << " " << xv2(ndeb2+j,1) << finl;
                      Cout << "xv i j " << xv1(ndeb1+i,2) << " " << xv2(ndeb2+j,2) << finl;
-                     Cout << "err i j " << fabs(xv1(ndeb1+i,0) - xv2(ndeb2+j,0)) << finl;
-                     Cout << "err i j " << fabs(xv1(ndeb1+i,1) - xv2(ndeb2+j,1)) << finl;
-                     Cout << "err i j " << fabs(xv1(ndeb1+i,2) - xv2(ndeb2+j,2)) << finl;
+                     Cout << "err i j " << std::fabs(xv1(ndeb1+i,0) - xv2(ndeb2+j,0)) << finl;
+                     Cout << "err i j " << std::fabs(xv1(ndeb1+i,1) - xv2(ndeb2+j,1)) << finl;
+                     Cout << "err i j " << std::fabs(xv1(ndeb1+i,2) - xv2(ndeb2+j,2)) << finl;
                      Cout << "erreur " << erreur << finl;
                      }*/
                 connect_bords(i)=j;

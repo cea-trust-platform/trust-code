@@ -102,11 +102,11 @@ void Perte_Charge_Singuliere_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
   DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
   for (i = 0; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone.nb_faces() && fcl(f, 0) < 2)
       {
-        double fac = (direction_perte_charge() < 0 ? fs(f) : fabs(nf(f,direction_perte_charge()))) * pf(f) * K();
+        double fac = (direction_perte_charge() < 0 ? fs(f) : std::fabs(nf(f,direction_perte_charge()))) * pf(f) * K();
         if (pbm) for (aar_f = 0, j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) aar_f(n) += mu_f(f, n, j) * (*a_r)(e, n) * (*alpha)(e, n);
         else aar_f = 1;
-        for (n = 0; n < N; n++)  secmem(f, n) -= 0.5 * fac * aar_f(n) * vit(f, n) * fabs(vit(f, n));
-        if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += fac * aar_f(n) * fabs(vit(f, n));
+        for (n = 0; n < N; n++)  secmem(f, n) -= 0.5 * fac * aar_f(n) * vit(f, n) * std::fabs(vit(f, n));
+        if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += fac * aar_f(n) * std::fabs(vit(f, n));
       }
 }
 

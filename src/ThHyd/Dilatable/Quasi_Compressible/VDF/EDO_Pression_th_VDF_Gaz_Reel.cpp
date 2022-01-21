@@ -168,7 +168,7 @@ double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)
   //   Cerr<<"Pression thermo recalculee (impl) = "<<Pth<<finl;
   double tmp=0,r;
   int k=0;
-  while (fabs(tmp-Pth)/Pth>1e-9 && k++<20)
+  while (std::fabs(tmp-Pth)/Pth>1e-9 && k++<20)
     {
       tmp = Pth;
       Fnp1 = 0;

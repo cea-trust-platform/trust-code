@@ -415,7 +415,7 @@ corriger_div_pour_Cl(DoubleTab& div ) const
                       norme += face_normales(face,comp)*face_normales(face,comp);
 
                     // psc/=norme; // Fixed bug: Arithmetic exception
-                    if (fabs(norme)>=DMINFLOAT) psc/=norme;
+                    if (std::fabs(norme)>=DMINFLOAT) psc/=norme;
                     for (comp=0; comp<dimension; comp++)
                       div(face,comp)-=psc*face_normales(face,comp);
                   }

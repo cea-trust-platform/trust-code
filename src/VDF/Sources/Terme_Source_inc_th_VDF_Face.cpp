@@ -805,7 +805,7 @@ DoubleTab& Terme_Source_inc_th_VDF_Face::ajouter(DoubleTab& resu) const
 
         temp_1(elem)=Lij(elem,0)+Lij(elem,1);
         temp_2(elem)=4.*Qij(elem,0)+4.*Qij(elem,1);
-        if(fabs(temp_2(elem)) < 1.e-12)
+        if(std::fabs(temp_2(elem)) < 1.e-12)
           f(elem)=0.;
         else
           f(elem)=temp_1(elem)/temp_2(elem);
@@ -818,7 +818,7 @@ DoubleTab& Terme_Source_inc_th_VDF_Face::ajouter(DoubleTab& resu) const
 
         temp_1(elem)=Lij(elem,0)+Lij(elem,1)+Lij(elem,2);
         temp_2(elem)=4.*Qij(elem,0)+4.*Qij(elem,1)+4.*Qij(elem,2);
-        if(fabs(temp_2(elem)) < 1.e-12)
+        if(std::fabs(temp_2(elem)) < 1.e-12)
           f(elem)=0.;
         else
           f(elem)=temp_1(elem)/temp_2(elem);

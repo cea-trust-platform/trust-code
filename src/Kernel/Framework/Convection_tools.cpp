@@ -31,7 +31,7 @@
 double minmod(double grad1, double grad2)
 {
   double gradlim=0.;
-  if(grad1*grad2>0.) (fabs(grad1)<fabs(grad2)) ? gradlim=grad1 : gradlim=grad2 ;
+  if(grad1*grad2>0.) (std::fabs(grad1)<std::fabs(grad2)) ? gradlim=grad1 : gradlim=grad2 ;
   return gradlim;
 }
 

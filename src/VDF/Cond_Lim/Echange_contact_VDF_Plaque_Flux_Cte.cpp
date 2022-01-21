@@ -54,7 +54,7 @@ double Echange_contact_VDF_Plaque_Flux_Cte::calculer_coefficient_echange(int i)
   double Nu;
   //double x_star;
 
-  //  Re = fabs(getQh()*getDh()/getMu(i));
+  //  Re = std::fabs(getQh()*getDh()/getMu(i));
   //Pr = getMu(i)*getCp()/getLambda(i);
   /*x_star = coord(i)-coord(0);
 

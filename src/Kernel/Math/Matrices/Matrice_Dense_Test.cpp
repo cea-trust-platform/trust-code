@@ -80,7 +80,7 @@ public:
 
     //check access functions
     double coeff_35 = dense_matrix_( 0 , 2 );
-    double diff = fabs( coeff_35 - 3.5 );
+    double diff = std::fabs( coeff_35 - 3.5 );
     int ok = ( diff < 1e-14 );
     CPPUNIT_ASSERT_EQUAL_MESSAGE("access function ( ) is broken ",ok, 1 );
 
@@ -114,8 +114,8 @@ public:
     DoubleVect error( nb_lines );
     for(int i=0 ; i<nb_lines; i++)
       {
-        error_dense_vs_morse( i ) = fabs( result_obtained_with_dense_matrix( i ) - result_obtained_with_morse_matrix( i )  );
-        error( i ) = fabs( result_obtained_with_dense_matrix( i ) - true_result( i ) );
+        error_dense_vs_morse( i ) = std::fabs( result_obtained_with_dense_matrix( i ) - result_obtained_with_morse_matrix( i )  );
+        error( i ) = std::fabs( result_obtained_with_dense_matrix( i ) - true_result( i ) );
       }
 
     double norm_error_dense_vs_morse = error_dense_vs_morse.mp_norme_vect( );
@@ -137,7 +137,7 @@ public:
     true_result( 2 ) =  4.0500  ;
     for(int i=0 ; i<nb_lines; i++)
       {
-        error( i ) = fabs( result_obtained_with_dense_matrix( i ) - true_result( i ) );
+        error( i ) = std::fabs( result_obtained_with_dense_matrix( i ) - true_result( i ) );
       }
 
     norm_error = error.mp_norme_vect( );
@@ -189,7 +189,7 @@ public:
     DoubleVect error( nb_lines );
     for(int i=0 ; i<nb_lines; i++)
       {
-        error( i ) = fabs( result_obtained_with_dense_matrix( i ) - true_result( i ) );
+        error( i ) = std::fabs( result_obtained_with_dense_matrix( i ) - true_result( i ) );
       }
 
     double norm_error = error.mp_norme_vect( );

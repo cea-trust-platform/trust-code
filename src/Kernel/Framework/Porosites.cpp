@@ -117,8 +117,8 @@ Entree& Porosites::interpreter(Entree& is)
               porosite_face(elem_faces(elem, j))=0.;
               for (iii=0; iii<dimension; iii++)
                 {
-                  porosite_face(elem_faces(elem, j))+= porosites_surf(iii)*fabs(zvf.face_normales(elem_faces(elem, j),iii))
-                                                       *fabs(zvf.face_normales(elem_faces(elem, j),iii))/norme_normale;
+                  porosite_face(elem_faces(elem, j))+= porosites_surf(iii)*std::fabs(zvf.face_normales(elem_faces(elem, j),iii))
+                                                       *std::fabs(zvf.face_normales(elem_faces(elem, j),iii))/norme_normale;
                 }
             }
         }

@@ -484,8 +484,8 @@ void Debog_Pb::verifier(const char* const msg, double x, double *ref_value)
       goto_msg(msg);
       double y;
       debog_data_file_ >> y;
-      const double adim = std::max(fabs(x), fabs(y));
-      const double delta = fabs(x-y);
+      const double adim = std::max(std::fabs(x), std::fabs(y));
+      const double delta = std::fabs(x-y);
       double err = 0;
       if (delta >= seuil_absolu_ && delta / adim >= seuil_relatif_)
         {
@@ -765,7 +765,7 @@ void Debog_Pb::verifier_partie_std(const DoubleVect& reference,
               const double x = arr_ptr[i1+j]; // ne pas passer par operator[] pour ne pas planter sur DMAXFLOAT
               const double y = reference[i2+j];
               // Comparaison de x et y
-              const double delta = fabs(x-y) / adim;
+              const double delta = std::fabs(x-y) / adim;
               max_err = std::max(max_err, delta);
               // pour les items reels, indiquer si on est hors bornes:
               if (step==0 && !(x>=-DMAXFLOAT && x<=DMAXFLOAT))

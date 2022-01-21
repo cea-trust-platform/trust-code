@@ -140,7 +140,7 @@ void Op_Diff_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
                   if ((fc = zone.equiv(fb, c, i_f)) >= 0 && fcl(f_s = e_s == e ? f : fc, 0) < 2) /* amont/aval si equivalence : operateur entre faces */
                     for (n = 0; n < N; n++) stencil.append_line(N * f + n, N * f_s + n);
                   /* sinon : elem -> face, avec un traitement particulier de e_s == e pour eviter les modes en echiquier dans la diffusion */
-                  for (d = 0; d < D; d++) if (fabs(nf(f, d)) > 1e-6 * fs(f)) for (n = 0; n < N; n++)
+                  for (d = 0; d < D; d++) if (std::fabs(nf(f, d)) > 1e-6 * fs(f)) for (n = 0; n < N; n++)
                         stencil.append_line(N * f + n, N * (nf_tot + D * e_s + d) + n);
                   if (e_s == e) for (n = 0; n < N; n++) stencil.append_line(N * f + n, N * f + n);
                 }
@@ -191,7 +191,7 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             {
               int tpfa = 1;
               for (k = phif_d(fb, 0); k < phif_d(fb + 1, 0); k++) if ((e_s = phif_e(k)) < ne_tot && e_s != f_e(fb, 0) && e_s != f_e(fb, 1)) tpfa = 0;
-              double df_sur_d = tpfa && fcl(fb, 0) ? std::max(fabs(zone.dot(&xv(fb, 0), &nf(fb, 0), &xv(f, 0)) / zone.dot(&xv(fb, 0), &nf(fb, 0), &xp(e, 0))) , 1.) : 1;
+              double df_sur_d = tpfa && fcl(fb, 0) ? std::max(std::fabs(zone.dot(&xv(fb, 0), &nf(fb, 0), &xv(f, 0)) / zone.dot(&xv(fb, 0), &nf(fb, 0), &xp(e, 0))) , 1.) : 1;
               for (c = (e != f_e(fb, 0)), n = 0; n < N; n++) coeff(n) = mu_f(f, n, i) * vf(f) / ve(e) * fs(fb) * (c ? 1 : -1) / df_sur_d; /* prefacteur diff elem -> diff face */
               for (k = phif_d(fb, 0); k < phif_d(fb + 1, 0); k++)
                 {
@@ -212,7 +212,7 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                       double f_eps = e_s != e ? 0 : tpfa && fcl(fb, 0) ? 1 : std::min(eps, 1000 * std::pow(vf(f) / fs(f), 2));
                       for (d = 0; d < D; d++) for (n = 0; n < N; n++)
                           secmem(f, n) -= fac(n) * (1 - f_eps) * inco(nf_tot + D * e_s + d, n) * nf(f, d) / fs(f);
-                      if (mat) for (d = 0; d < D; d++) if (fabs(nf(f, d)) > 1e-6 * fs(f)) for (n = 0; n < N; n++)
+                      if (mat) for (d = 0; d < D; d++) if (std::fabs(nf(f, d)) > 1e-6 * fs(f)) for (n = 0; n < N; n++)
                               (*mat)(N * f + n, N * (nf_tot + D * e_s + d) + n) += fac(n) * (1 - f_eps) * nf(f, d) / fs(f);
                       if (!f_eps) continue;
                       for (n = 0; n < N; n++) secmem(f, n) -= fac(n) * f_eps * inco(f, n);

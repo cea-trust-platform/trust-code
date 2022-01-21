@@ -152,7 +152,7 @@ void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
               xgl*=0.25;
               S1+=  moinsS0;
               S2+=  moinsS0;
-              double vol_l= fabs(
+              double vol_l= std::fabs(
                               S1[0] * ( S2[1] * S3[2] - S3[1] * S2[2] )
                               + S2[0] * ( S3[1] * S1[2] - S1[1] * S3[2] )
                               + S3[0] * ( S1[1] * S2[2] - S2[1] * S1[2] ) );
@@ -407,7 +407,7 @@ void Polyedre::calculer_volumes(DoubleVect& volumes) const
               Vecteur3 S2(coord(n2,0),coord(n2,1),coord(n2,2));
               S1+=  moinsS0;
               S2+=  moinsS0;
-              volume += fabs(
+              volume += std::fabs(
                           S1[0] * ( S2[1] * S3[2] - S3[1] * S2[2] )
                           + S2[0] * ( S3[1] * S1[2] - S1[1] * S3[2] )
                           + S3[0] * ( S1[1] * S2[2] - S2[1] * S1[2] ) );

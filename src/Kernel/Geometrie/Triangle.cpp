@@ -174,7 +174,7 @@ int Triangle::contient(const ArrOfDouble& pos, int ielem) const
   p2 = (pos[0]-dom.coord(som2,0))*(pos[1]-dom.coord(som0,1))
        - (pos[1]-dom.coord(som2,1))*(pos[0]-dom.coord(som0,0));
   p2 *= signe;
-  double epsilon=fabs(prod)*Objet_U::precision_geom;
+  double epsilon=std::fabs(prod)*Objet_U::precision_geom;
   if ((p0>-epsilon) && (p1>-epsilon) && (p2>-epsilon))
     return 1;
   else

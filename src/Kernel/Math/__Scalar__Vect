@@ -682,7 +682,7 @@ static void invalidate_data(__Scalar__Vect & resu, Mp_vect_options opt)
 #Pif (ANY_SHAPE=="any_shape")
   int line_size_vx = vx.line_size();
 #Pendif
-#Pif ("__scalar__"=="double")#Pset(ABS fabs)#Pelse#Pset(ABS abs)#Pendif
+#Pif ("__scalar__"=="double")#Pset(ABS std::fabs)#Pelse#Pset(ABS abs)#Pendif
   const MD_Vector & md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
 #Pif (WITH_VX=="with_vx")

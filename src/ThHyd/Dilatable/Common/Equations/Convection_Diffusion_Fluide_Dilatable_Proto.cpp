@@ -314,7 +314,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
           DoubleVect& diff_=diff;
           Cerr<<" size "<< diff_.size()<<finl;
           for (int i=0; i<diff_.size(); i++)
-            if (fabs(diff_(i))>1e-5) Cerr<<i << " "<< diff_(i)<< " "<<finl;
+            if (std::fabs(diff_(i))>1e-5) Cerr<<i << " "<< diff_(i)<< " "<<finl;
 
           if (test_op==1)
             {

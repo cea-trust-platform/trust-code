@@ -213,7 +213,7 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
       if (dimension==3)
         condition_elements.setVar("z",xp(elem,2));
       double res=condition_elements.eval();
-      if (fabs(res)>1e-5)
+      if (std::fabs(res)>1e-5)
         marq_elem(elem)=1;
       else
         marq_elem(elem)=0;
@@ -288,7 +288,7 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
               if (dimension==3)
                 condition_faces.setVar("z",xv(fac,2));
               double res=condition_faces.eval();
-              if (fabs(res)>1e-5)
+              if (std::fabs(res)>1e-5)
                 if (marq(fac)!=-1)  // pas un joint, ou on est le proprietaire
                   {
                     marq(fac)=1;

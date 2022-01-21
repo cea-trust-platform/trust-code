@@ -1137,18 +1137,18 @@ int OctreeRoot::rang_sommet(double x, double y, double z) const
             {
               //switch
             case 1:
-              if(fabs(dom.coord(sommet,0)-x)<epsilon)
+              if(std::fabs(dom.coord(sommet,0)-x)<epsilon)
                 return sommet;
               break;
             case 2:
-              if((fabs(dom.coord(sommet,0)-x)<epsilon) &&
-                  (fabs(dom.coord(sommet,1)-y)<epsilon))
+              if((std::fabs(dom.coord(sommet,0)-x)<epsilon) &&
+                  (std::fabs(dom.coord(sommet,1)-y)<epsilon))
                 return sommet;
               break;
             case 3:
-              if((fabs(dom.coord(sommet,0)-x)<epsilon) &&
-                  (fabs(dom.coord(sommet,1)-y)<epsilon) &&
-                  (fabs(dom.coord(sommet,2)-z)<epsilon))
+              if((std::fabs(dom.coord(sommet,0)-x)<epsilon) &&
+                  (std::fabs(dom.coord(sommet,1)-y)<epsilon) &&
+                  (std::fabs(dom.coord(sommet,2)-z)<epsilon))
                 return sommet;
               break;
             default:
@@ -1212,9 +1212,9 @@ int OctreeRoot::rang_arete(double x, double y, double z) const
           switch(Objet_U::dimension)
             {
             case 3:
-              if((fabs(0.5*(coord(s0,0)+coord(s1,0))-x)<epsilon) &&
-                  (fabs(0.5*(coord(s0,1)+coord(s1,1))-y)<epsilon) &&
-                  (fabs(0.5*(coord(s0,2)+coord(s1,2))-z)<epsilon))
+              if((std::fabs(0.5*(coord(s0,0)+coord(s1,0))-x)<epsilon) &&
+                  (std::fabs(0.5*(coord(s0,1)+coord(s1,1))-y)<epsilon) &&
+                  (std::fabs(0.5*(coord(s0,2)+coord(s1,2))-z)<epsilon))
                 return arete;
               break;
             default:

@@ -1711,7 +1711,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           int trouve=1;
           double val1=sommets2(0,dir);
           for (int i=0; i<nbsom; i++)
-            if (fabs(val1-sommets2(i,dir))>epsilon)
+            if (std::fabs(val1-sommets2(i,dir))>epsilon)
               {
                 trouve=0;
                 Cerr<<val1 << " "<<sommets2(i,dir)<<finl;

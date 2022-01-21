@@ -514,7 +514,7 @@ void Zone_CoviMAC::discretiser()
   volumes_entrelaces_dir_.resize(0, 2), creer_tableau_faces(volumes_entrelaces_dir_);
   for (int f = 0, i, e; f < nb_faces(); f++)
     for (i = 0; i < 2 && (e = face_voisins_(f, i)) >= 0; volumes_entrelaces_(f) += volumes_entrelaces_dir_(f, i), i++)
-      volumes_entrelaces_dir_(f, i) = fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0)));
+      volumes_entrelaces_dir_(f, i) = std::fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0)));
   volumes_entrelaces_.echange_espace_virtuel(), volumes_entrelaces_dir_.echange_espace_virtuel();
 
   Zone_VF::calculer_porosites();
@@ -675,8 +675,8 @@ void Zone_CoviMAC::init_equiv() const
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
           {
-            if (fabs(fabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6) continue; //normales colineaires?
-            for (ok = 1, d = 0; d < D; d++) ok &= fabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
+            if (std::fabs(std::fabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6) continue; //normales colineaires?
+            for (ok = 1, d = 0; d < D; d++) ok &= std::fabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
             if (!ok) continue;
             equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
           }
@@ -894,7 +894,7 @@ void Zone_CoviMAC::fgrad(const Conds_lim& cls, const IntTab& fcl, const DoubleTa
                 nw = -1, F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
                 W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
                 /* correction de interp (avec ecretage) */
-                for (i = 0; i < nrhs; i++) for (j = 0; j < nc; j++) interp(j, n, i) += fabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
+                for (i = 0; i < nrhs; i++) for (j = 0; j < nc; j++) interp(j, n, i) += std::fabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
               }
           }
 

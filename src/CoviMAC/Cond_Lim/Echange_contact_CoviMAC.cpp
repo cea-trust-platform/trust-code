@@ -264,7 +264,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
 
               /* correction de interp (avec ecretage) */
               for (i = 0, j = 0; i < 2; i++) for (n = 0; n < (i ? oN : N); n++, j++) for (k = 0, il = 0; k < n_tf; k++)
-                    for (m = 0; m < (k > n_f ? oN : N); m++, il++) interp(i, n, k, m) += fabs(B(j, il)) > 1e-8 ? B(j, il) : 0;
+                    for (m = 0; m < (k > n_f ? oN : N); m++, il++) interp(i, n, k, m) += std::fabs(B(j, il)) > 1e-8 ? B(j, il) : 0;
             }
         }
       else for (n = 0; n < N; n++) /* sinon -> composante par composante */
@@ -294,7 +294,7 @@ void Echange_contact_CoviMAC::fgrad(int full_stencil, DoubleTab& phif_w, IntTab&
                 nw = -1, F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
                 W.resize(nw = W(0)), F77NAME(dgels)(&trans, &nl, &nc, &nrhs, &A(0, 0), &nl, &B(0, 0), &nc, &W(0), &nw, &infoo);
                 /* correction de interp (avec ecretage) */
-                for (i = 0; i < 2; i++) for (j = 0; j < nc; j++) interp(i, n, j, n) += fabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
+                for (i = 0; i < 2; i++) for (j = 0; j < nc; j++) interp(i, n, j, n) += std::fabs(B(i, j)) > 1e-8 ? B(i, j) : 0;
               }
 
           }

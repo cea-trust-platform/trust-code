@@ -208,7 +208,7 @@ int contient_triangle(const ArrOfDouble& pos,int som0,int som1,int som2,const Do
   p2 = (pos[0]-coord(som2,0))*(pos[1]-coord(som0,1))
        - (pos[1]-coord(som2,1))*(pos[0]-coord(som0,0));
   p2 *= signe;
-  double epsilon=fabs(prod)*Objet_U::precision_geom;
+  double epsilon=std::fabs(prod)*Objet_U::precision_geom;
   if ((p0>-epsilon) && (p1>-epsilon) && (p2>-epsilon))
     return 1;
   else

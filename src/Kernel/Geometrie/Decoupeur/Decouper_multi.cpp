@@ -164,7 +164,7 @@ Entree& Decouper_multi::interpreter(Entree& is)
       double dmax = 0;
       for (i = 0; i < (int) racc_som[0].size(); i++)
         {
-          for (d = 0; d < D; d++) dmax = std::max(dmax, fabs(racc_coord[0]->getIJ(i, d) - racc_coord[1]->getIJ(corr->getIJ(i, 0), d)));
+          for (d = 0; d < D; d++) dmax = std::max(dmax, std::fabs(racc_coord[0]->getIJ(i, d) - racc_coord[1]->getIJ(corr->getIJ(i, 0), d)));
           int s[2] = { racc_som[0][i], racc_som[1][corr->getIJ(i, 0)] }; //sommets du cote 0/1
           //boucle sur les cotes : pour j = 0, on regarde du cote 1 pour ajouter des procs demandant le sommet du cote 0
           for (j = 0; j < 2; j++) for (k = 0; k < som_elem[!j]->get_list_size(s[!j]); k++)

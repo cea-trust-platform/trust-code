@@ -760,8 +760,8 @@ inline double Zone_VDF::dist_face_period(int fac1 , int fac2, int k) const
 {
   const Domaine& le_domaine = zone().domaine();
   const DoubleTab& coord_sommets = le_domaine.coord_sommets();
-  double dist= fabs(coord_sommets(face_sommets(fac1,1),k)-xv_(fac1,k));
-  dist += fabs(xv_(fac2,k) - coord_sommets(face_sommets(fac2,0),k));
+  double dist= std::fabs(coord_sommets(face_sommets(fac1,1),k)-xv_(fac1,k));
+  dist += std::fabs(xv_(fac2,k) - coord_sommets(face_sommets(fac2,0),k));
   return dist;
 
 }

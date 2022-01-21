@@ -51,7 +51,7 @@ Entree& Echange_contact_Colburn_VDF::readOn(Entree& is )
 double Echange_contact_Colburn_VDF::calculer_coefficient_echange(int i)
 {
   double Re,Pr;
-  Re = fabs(getQh()*getDh()/getMu(i));
+  Re = std::fabs(getQh()*getDh()/getMu(i));
   Pr = getMu(i)*getCp()/getLambda(i);
   return 0.023*pow(Re,0.8)*pow(Pr,1./3.)*getLambda(i)/getDh();
 }

@@ -262,7 +262,7 @@ int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
           n0 = face_surfaces(face)*porosite_surf(face);
           for (int r = 0; r < dimension; r++)
             {
-              flux_bords_(face,r) = fabs(zpolymac.face_normales(face, r) / face_surfaces(face)) * (pression_P0(elem0))*n0;
+              flux_bords_(face,r) = std::fabs(zpolymac.face_normales(face, r) / face_surfaces(face)) * (pression_P0(elem0))*n0;
               tab_flux_bords(0, n_bord, r) += flux_bords_(face,r);
             }
 

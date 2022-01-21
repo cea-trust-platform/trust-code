@@ -1165,7 +1165,7 @@ void Op_Diff_VEF_Face::verifier() const
           resu(i,comp)/=(volumes_entrelaces(i));
       for(i=0; i<nbf; i++)
         {
-          if(fabs(resu(i,0))>1.e-10)
+          if(std::fabs(resu(i,0))>1.e-10)
             {
               Cerr << " delta(x,0) ("<<i<<") = "
                    << resu(i,0);
@@ -1184,7 +1184,7 @@ void Op_Diff_VEF_Face::verifier() const
           resu(i,comp)/=(volumes_entrelaces(i));
       for(i=0; i<nbf; i++)
         {
-          if(fabs(2-resu(i,0))>1.e-10)
+          if(std::fabs(2-resu(i,0))>1.e-10)
             {
               Cerr << " delta(y(1-y),0) ("<<i<<") = "
                    << resu(i,0);

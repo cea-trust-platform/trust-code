@@ -94,7 +94,7 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
     }
   const double min = min_array(delta);
   const double max = max_array(delta);
-  double facteur = (fabs(min) > fabs(max)) ? min : max;
+  double facteur = (std::fabs(min) > std::fabs(max)) ? min : max;
   for (i = 0; i < dim; i++)
     direction_perio[i] = normale(0, i) * facteur;
   Cerr << "Periodicity direction for " << dom.le_nom() << "/" << bord << " " << direction_perio;
@@ -254,7 +254,7 @@ int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& front
       calculer_vecteur_2faces(coord, faces, i, i+n, vect);
       // Calcul de la difference entre vect et vecteur_delta:
       for (int compo = 0; compo < dim; compo++)
-        erreur[compo] = std::max(erreur[compo], fabs(vecteur_delta[compo] - vect[compo]));
+        erreur[compo] = std::max(erreur[compo], std::fabs(vecteur_delta[compo] - vect[compo]));
     }
   double maxerr = 0.;
   // Calcul du max sur tous les procs:
@@ -339,7 +339,7 @@ void Reordonner_faces_periodiques::renum_som_perio(const Domaine& domaine,
                   sommet_opp = faces_sommets(i_face_opposee, i_som_opp);
                   for (i = 0; i < dim; i++)
                     {
-                      double epsilon = fabs((coord(sommet_opp, i) - coord(sommet, i)) - delta[i]);
+                      double epsilon = std::fabs((coord(sommet_opp, i) - coord(sommet, i)) - delta[i]);
                       if (epsilon > Objet_U::precision_geom)
                         break;
                     }

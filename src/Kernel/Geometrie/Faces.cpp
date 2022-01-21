@@ -640,12 +640,12 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
           {
             r0 = dom.coord(sommet(face ,0), 0);
             r1 = dom.coord(sommet(face ,1), 0);
-            delta_r=fabs(r1-r0);
+            delta_r=std::fabs(r1-r0);
             if ( est_egal(delta_r,0) ) //  faces de direction r
               {
                 z0 = dom.coord(sommet(face ,0), 1);
                 z1 = dom.coord(sommet(face ,1), 1);
-                delta_z=fabs(z1-z0);
+                delta_z=std::fabs(z1-z0);
                 surfaces(face) = 2*M_PI*r0*delta_z;
               }
             else //face de direction z
@@ -668,12 +668,12 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
               {
                 teta0 = dom.coord(sommet(face ,0), 1);
                 teta1 = dom.coord(sommet(face ,1), 1);
-                d_teta = fabs(teta1-teta0);
+                d_teta = std::fabs(teta1-teta0);
                 if(d_teta > M_PI) d_teta=2.*M_PI-d_teta;
                 surfaces(face)=r0*d_teta;
               }
             else //  surface = r1-r2
-              surfaces(face)=fabs(r1-r0);
+              surfaces(face)=std::fabs(r1-r0);
           }
         break;
       }
@@ -759,16 +759,16 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
           {
             r0 = dom.coord(sommet(face ,0), 0);
             r1 = dom.coord(sommet(face ,1), 0);
-            delta_r = fabs(r1 - r0);
+            delta_r = std::fabs(r1 - r0);
             if ( est_egal(r0,r1) )
               {
                 teta0 = dom.coord(sommet(face ,0), 1);
                 teta1 = dom.coord(sommet(face ,1), 1);
                 z0 = dom.coord(sommet(face ,0), 2);
                 z2 = dom.coord(sommet(face ,2), 2);
-                d_teta = fabs(teta1-teta0);
+                d_teta = std::fabs(teta1-teta0);
                 if(d_teta > M_PI) d_teta=2.*M_PI-d_teta;
-                surfaces(face)=r0*d_teta*fabs(z2-z0);
+                surfaces(face)=r0*d_teta*std::fabs(z2-z0);
               }
             else
               {
@@ -778,11 +778,11 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
                   {
                     z0 = dom.coord(sommet(face ,0), 2);
                     z2 = dom.coord(sommet(face ,2), 2);
-                    surfaces(face) = delta_r*fabs(z2-z0);
+                    surfaces(face) = delta_r*std::fabs(z2-z0);
                   }
                 else
                   {
-                    d_teta=fabs(teta2-teta0);
+                    d_teta=std::fabs(teta2-teta0);
                     if(d_teta > M_PI) d_teta=2.*M_PI-d_teta;
                     surfaces(face) = 0.5*(r0+r1)*d_teta*delta_r;
                   }

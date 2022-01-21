@@ -146,13 +146,13 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
               /* limite thermique */
               double Tk = temp(e, k), Tl = temp(e, l), p = press(e, 0), Ts = sat.Tsat(p), dP_Ts = sat.dP_Tsat(p), //temperature de chaque cote + Tsat + derivees
                      phi = hi(k, l) * (Tk - Ts) + hi(l, k) * (Tl - Ts), L = (phi < 0 ? h(e, l) : sat.Hvs(p)) - (phi > 0 ? h(e, k) : sat.Hls(p));
-              if ((is_therm = !correlation_G || fabs(G) > fabs(phi / L))) G = phi / L;
+              if ((is_therm = !correlation_G || std::fabs(G) > std::fabs(phi / L))) G = phi / L;
               /* enthalpies des phases (dans le sens correspondant au mode choisi pour G) */
 
               /* G est-il limite par l'evanescence cote k ou l ? */
               int n_lim = G > 0 ? k : l, sgn = G > 0 ? 1 : -1; //phase sortante
               double Glim = sec_m(e, n_lim) / vol + p_ar(e, n_lim) / dt; //changement de phase max acceptable par cette phase
-              if (fabs(G) < Glim) n_lim = -1;       //G ne rend pas la phase evanescente -> pas de limitation (n_lim = -2)
+              if (std::fabs(G) < Glim) n_lim = -1;       //G ne rend pas la phase evanescente -> pas de limitation (n_lim = -2)
               else G = (G > 0 ? 1 : -1) * Glim;//la phase serait evanescente a cause de G -> on le bloque a G_lim (n_lim = k / l)
 
               double hk = G > 0 ? h(e, k) : sat.Hls(p), dTk_hk = G > 0 && dT_h ? (*dT_h)(e, k) : 0, dP_hk = G > 0 ? (dP_h ? (*dP_h)(e, k) : 0) : sat.dP_Hls(p),

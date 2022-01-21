@@ -63,7 +63,7 @@ void trier_abs(const DoubleVect& a, ArrOfInt& c)
   c.resize_array(a.size_array());
   int i;
 
-  for (i=0; i<a2.size_array(); i++) a2[i]=fabs(a[i]);
+  for (i=0; i<a2.size_array(); i++) a2[i]=std::fabs(a[i]);
   for ( i=0; i<c.size_array(); i++) c[i]=i;
 
   QuickSort(a2, 0, a2.size_array()-1, c);

@@ -169,7 +169,7 @@ DoubleTab& Champ_Fonc_Face_CoviMAC::valeur_aux_elems(const DoubleTab& positions,
                   for(int ncomp=0; ncomp<nb_compo; ncomp++)
                     {
                       vale(ncomp)+=ch(face)*normales(face,ncomp);
-                      s(ncomp)+=fabs(normales(face,ncomp));
+                      s(ncomp)+=std::fabs(normales(face,ncomp));
                     }
                 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -177,103 +177,10 @@ inline double norme(int n, const double* const a)
 // Exception:
 // Effets de bord:
 // Postcondition:
-/* inline double max(double x, double y)
-{
-  return(x>y ? x:y);
-} */
-
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-/* inline double min(double x, double y)
-{
-  return(x<y ? x:y);
-} */
-
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-/* inline double dmax(double x, double y)
-{
-  return(x>y ? x:y);
-} */
-
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-/* inline double dmin(double x, double y)
-{
-  return(x<y ? x:y);
-} */
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-/* inline double dabs(double x)
-{
-  return fabs(x);
-} */
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline int est_egal(double x1, double x2, double eps)
 {
-  double somme = fabs(x1)+fabs(x2);
-  return ( (somme < eps) || (fabs(x1-x2) < eps * somme) );
+  double somme = std::fabs(x1)+std::fabs(x2);
+  return ( (somme < eps) || (std::fabs(x1-x2) < eps * somme) );
 }
 
 inline int est_egal(double x1, double x2)
@@ -320,7 +227,7 @@ inline int est_different(double x1, double x2)
 // Postcondition:
 inline int inf_ou_egal(double x1, double x2, double eps)
 {
-  double somme=fabs(x1)+fabs(x2);
+  double somme=std::fabs(x1)+std::fabs(x2);
   return ( (somme < eps) || (x1 < x2 + eps * somme));
 }
 
@@ -344,7 +251,7 @@ inline int inf_ou_egal(double x1, double x2)
 // Postcondition:
 inline int inf_strict(double x1, double x2, double eps)
 {
-  double somme=fabs(x1)+fabs(x2);
+  double somme=std::fabs(x1)+std::fabs(x2);
   return ( (somme > eps) && (x1 < x2 - eps * somme) );
 }
 

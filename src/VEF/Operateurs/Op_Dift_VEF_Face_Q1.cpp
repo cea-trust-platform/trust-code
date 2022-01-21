@@ -125,7 +125,7 @@ static double viscA_Q1(const Zone_VEF& la_zone,int num_face,int num2,int dimensi
       Valeur=la_zone.face_normales(num_face,0)*
              la_zone.face_normales(num2,1) -
              la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,0);
-      Valeur=constante*fabs(Valeur);
+      Valeur=constante*std::fabs(Valeur);
     }
   else
     {
@@ -135,7 +135,7 @@ static double viscA_Q1(const Zone_VEF& la_zone,int num_face,int num2,int dimensi
               la_zone.face_normales(num_face,0)*la_zone.face_normales(num2,2)) +
              (la_zone.face_normales(num_face,0)*la_zone.face_normales(num2,1) -
               la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,0));
-      Valeur=constante*fabs(Valeur);
+      Valeur=constante*std::fabs(Valeur);
     }
   return Valeur;
 }

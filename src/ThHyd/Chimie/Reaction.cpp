@@ -384,7 +384,7 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
                   }
               }
         }
-      proportion_max_sur_delta_t_=std::max(proportion_max_sur_delta_t_,fabs(proportion));
+      proportion_max_sur_delta_t_=std::max(proportion_max_sur_delta_t_,std::fabs(proportion));
       //if (ite==0)
       //  proportion_directe_es=proportion_directe;
       for (int i=0; i<nbc; i++)
@@ -412,7 +412,7 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
                   exit();
                 //pond=0;
                 double nc=((C0(i)-proportion*coeff_stoechio_[i]/2.+pond/2.*C(i))/(1.+pond/2.)-C(i));
-                double dc=fabs(nc);
+                double dc=std::fabs(nc);
                 C(i)+=nc;
                 if (dc>dmax)
                   dmax=dc;
@@ -423,7 +423,7 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
           {
             double nc=C0(i)-proportion*coeff_stoechio_[i]/2.-C(i);
             C(i)+=nc;
-            double dc=fabs(nc);
+            double dc=std::fabs(nc);
             if (dc>dmax)
               dmax=dc;
           }

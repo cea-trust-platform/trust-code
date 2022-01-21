@@ -47,7 +47,7 @@ double norm_2D_vit(const DoubleVect& vit,int elem,int iori,const Zone_VDF& zone,
 {
   double v;
   moy_2D_vit(vit,elem,iori,zone,v);
-  v=fabs(v);
+  v=std::fabs(v);
   if (v == 0)
     u = 0;
   else
@@ -78,7 +78,7 @@ double norm_2D_vit(const DoubleVect& vit,int elem,int iori,const Zone_VDF& zone,
   //Les valeurs du cisaillement parietal sont maintenant signees.
   //En considerant les valeurs signees de la projection de la vitesse sur le plan parietal
   v = v - vit_paroi;
-  n_v = fabs(v);
+  n_v = std::fabs(v);
 
   //Fin modif YB
 
@@ -128,8 +128,8 @@ void moy_3D_vit(const DoubleVect& vit,int elem,int iori,const Zone_VDF& zone, do
 double norm_3D_vit(const DoubleVect& vit,int elem,int iori,const Zone_VDF& zone, double& val1,double& val2)
 {
   moy_3D_vit(vit,elem,iori,zone,val1,val2);
-  double v1 = fabs(val1);
-  double v2 = fabs(val2);
+  double v1 = std::fabs(val1);
+  double v2 = std::fabs(val2);
   double norm_vit = sqrt(v1*v1+v2*v2);
   val1 = v1/(norm_vit+DMINFLOAT);
   val2 = v2/(norm_vit+DMINFLOAT);

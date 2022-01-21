@@ -466,7 +466,7 @@ int meme_point2(const DoubleVect& x,const DoubleVect& y)
   assert(dim==y.size());
   int ind =1;
   for (int k=0; k<dim; k++)
-    if (fabs(x(k)-y(k))>=Objet_U::precision_geom)
+    if (std::fabs(x(k)-y(k))>=Objet_U::precision_geom)
       {
         ind = 0;
         return ind;

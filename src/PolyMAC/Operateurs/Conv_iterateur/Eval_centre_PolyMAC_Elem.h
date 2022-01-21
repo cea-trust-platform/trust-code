@@ -1186,7 +1186,7 @@ inline void Eval_centre_PolyMAC_Elem::secmem_faces_interne(int, DoubleVect& ) co
 /*   double smax1 = std::max(s3,s1); */
 /*   double sr0 = (s3-smin0)/(smax0-smin0+DMINFLOAT); */
 /*   double sr1 = (s2-smin1)/(smax1-smin1+DMINFLOAT); */
-/*   double fr = 2.*std::max(fabs(sr0-0.5),fabs(sr1-0.5)); */
+/*   double fr = 2.*std::max(std::fabs(sr0-0.5),std::fabs(sr1-0.5)); */
 /*   fr *= fr; */
 /*   fr *= fr; */
 /*   return dmin(fr,1.0); */

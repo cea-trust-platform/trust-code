@@ -701,7 +701,7 @@ void Operateur_base::tester_contribuer_a_avec(const DoubleTab& inco, const Matri
         DoubleVect& resu_=resu;
         Cerr<<" size "<< resu_.size()<<finl;
         for (int i=0; i<resu_.size(); i++)
-          if (fabs(resu_(i))>1e-10)
+          if (std::fabs(resu_(i))>1e-10)
             {
               Cerr<<i << " "<< resu_(i)<< " "<<finl;
             }

@@ -265,7 +265,7 @@ modifier_grad_pour_Cl(DoubleTab& grad ) const
                         norm += face_normales(face,comp)*face_normales(face,comp);
                       }
                     // psc/=norm; // Fixed bug: Arithmetic exception
-                    if (fabs(norm)>=DMINFLOAT) psc/=norm;
+                    if (std::fabs(norm)>=DMINFLOAT) psc/=norm;
                     for (comp=0; comp<dimension; comp++)
                       grad(face,comp)-=psc*face_normales(face,comp);
                   }

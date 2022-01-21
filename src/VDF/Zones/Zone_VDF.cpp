@@ -334,7 +334,7 @@ void Zone_VDF::calculer_volumes_entrelaces()
                   const double r1 = xv(num_face, 0);
                   const double r2 = xp(elem, 0);
                   const double dz = dim_elem(elem, 1);
-                  const double dr = fabs(r1 - r2);
+                  const double dr = std::fabs(r1 - r2);
                   const double r = std::min(r1, r2);
                   volumes_entrelaces_dir_(num_face, dir) = 2. * M_PI * (r * dr + 0.5 * dr * dr) * dz;
                 }

@@ -111,12 +111,12 @@ Entree& Moyenne_volumique::readOn(Entree& is )
 }
 inline double fonction_quadra(double x, double l_)
 {
-  assert(fabs(x) <= l_);
-  double ax = 1. - fabs(x) / l_;
+  assert(std::fabs(x) <= l_);
+  double ax = 1. - std::fabs(x) / l_;
   ax = ax * ax;
-  if (fabs(x) < (l_/3.))
+  if (std::fabs(x) < (l_/3.))
     {
-      double bx = -3. / l_ * fabs(x) + 1.;
+      double bx = -3. / l_ * std::fabs(x) + 1.;
       ax -= bx * bx / 3.; // signifie ax = ax - bx*bx/3
     }
   return ax * (27. / (16. * l_));
@@ -179,9 +179,9 @@ void Moyenne_volumique::eval_filtre(const DoubleTab& coords, ArrOfDouble& result
             const double y = coords(i, 1);
             const double z = (dim == 3) ? coords(i, 2) : 0.;
             double resu = 0.;
-            const double ax = fabs(x);
-            const double ay = fabs(y);
-            const double az = fabs(z);
+            const double ax = std::fabs(x);
+            const double ay = std::fabs(y);
+            const double az = std::fabs(z);
             if (ax <= l_ && ay <= l_ && az <= l_)
               resu = (l_-ax) * (l_-ay) * (l_-az) * facteur;
             result[i] = resu;
@@ -214,7 +214,7 @@ void Moyenne_volumique::eval_filtre(const DoubleTab& coords, ArrOfDouble& result
             const double y = coords(i, 1);
             const double z = (dim == 3) ? coords(i, 2) : 0.;
             double resu = 0;
-            if (fabs(x) < l_ && fabs(y) < l_ && fabs(z) < l_)
+            if (std::fabs(x) < l_ && std::fabs(y) < l_ && std::fabs(z) < l_)
               {
                 resu = fonction_quadra(x,l_) * fonction_quadra(y,l_);
                 if (dim == 3)

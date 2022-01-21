@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -227,7 +227,7 @@ int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
               + yn * ( pos[1] - Y0 )
               + zn * ( pos[2] - Z0 );
       // Si le point est sur le plan (prod2 quasi nul) : on ne peut pas conclure...
-      if (prod1*prod2 < 0 && fabs(prod2)>fabs(prod1)*Objet_U::precision_geom) return 0;
+      if (prod1*prod2 < 0 && std::fabs(prod2)>std::fabs(prod1)*Objet_U::precision_geom) return 0;
     }
   return 1;
 }
@@ -318,9 +318,9 @@ void Tetraedre::calculer_volumes(DoubleVect& volumes) const
       y3 = dom.coord(s[3],1);
       z3 = dom.coord(s[3],2);
 
-      volumes[num_poly] = fabs((x1-x0)*((y2-y0)*(z3-z0)-(y3-y0)*(z2-z0))-
-                               (x2-x0)*((y1-y0)*(z3-z0)-(y3-y0)*(z1-z0))+
-                               (x3-x0)*((y1-y0)*(z2-z0)-(y2-y0)*(z1-z0)))/6;
+      volumes[num_poly] = std::fabs((x1-x0)*((y2-y0)*(z3-z0)-(y3-y0)*(z2-z0))-
+                                    (x2-x0)*((y1-y0)*(z3-z0)-(y3-y0)*(z1-z0))+
+                                    (x3-x0)*((y1-y0)*(z2-z0)-(y2-y0)*(z1-z0)))/6;
     }
 }
 

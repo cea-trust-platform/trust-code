@@ -313,9 +313,9 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
           x1=coord_sommets3D(les_faces3D(0,0),test);
           x2=coord_sommets3D(les_faces3D(0,1),test);
           x3=coord_sommets3D(les_faces3D(0,2),test);
-          double tmp=fabs(x1-x2);
+          double tmp=std::fabs(x1-x2);
           precision=(tmp<precision && tmp>0?tmp:precision);
-          tmp=fabs(x3-x2);
+          tmp=std::fabs(x3-x2);
           precision=(tmp<precision && tmp>0?tmp:precision);
           if (est_egal(x1,x2)&&est_egal(x2,x3)) break;
         }

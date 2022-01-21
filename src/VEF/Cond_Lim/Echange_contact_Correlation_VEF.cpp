@@ -445,7 +445,7 @@ void Echange_contact_Correlation_VEF::calculer_prop_physique()
 double Echange_contact_Correlation_VEF::calculer_coefficient_echange(int i)
 {
   double Re,Pr;
-  Re = fabs(getQh()*getDh(i)/getMu(i));
+  Re = std::fabs(getQh()*getDh(i)/getMu(i));
   Pr = getMu(i)*getCp()/getLambda(i);
   fct_Nu.setVar("Re",Re);
   fct_Nu.setVar("Pr",Pr);
@@ -528,12 +528,12 @@ void Echange_contact_Correlation_VEF::init()
   correspondance_solide_fluide.resize(nb_faces_bord);
   for(int i=0; i<nb_faces_bord; i++)
     {
-      double min=fabs(xv(i+ndeb,dir)-coord(1));
+      double min=std::fabs(xv(i+ndeb,dir)-coord(1));
       double tmp=0.;
       int jmin=1;
       for (int j=2; j<N-1; j++)
         {
-          if ((tmp=fabs(xv(i+ndeb,dir)-coord(j))) < min)
+          if ((tmp=std::fabs(xv(i+ndeb,dir)-coord(j))) < min)
             {
               min = tmp;
               jmin = j;
@@ -604,7 +604,7 @@ void Echange_contact_Correlation_VEF::init()
                         {
                           pscal += normale(idim)*(coord_som(sj_0,idim)-coord_som(s0,idim));
                         }
-                      if (fabs(pscal) < precision)
+                      if (std::fabs(pscal) < precision)
                         {
                           traite(j) = 1;
                           if (compteur_face==MAX_FACES_PATCH)
@@ -1064,7 +1064,7 @@ double Echange_contact_Correlation_VEF::pdt_scalSqrt(const Zone_VEF& la_zone,int
           + la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,1);
   if (dim == 3)
     pscal += la_zone.face_normales(num_face,2)*la_zone.face_normales(num2,2);
-  pscal = sqrt(fabs(pscal));
+  pscal = sqrt(std::fabs(pscal));
 
   return (pscal*diffu)/la_zone.volumes(num_elem);
 }

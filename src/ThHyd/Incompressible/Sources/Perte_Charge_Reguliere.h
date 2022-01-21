@@ -188,9 +188,9 @@ inline double Perte_Charge_Reguliere::correction_direction(DoubleVect& xp, int k
       //          if (k == 0 ) cor_dir = x1/scale ;
       //          if (k == 1 ) cor_dir = y1/scale ;
       //         if (k == 2 ) cor_dir = z1/scale ;
-      if (k == 0 ) cor_dir = fabs(x1)/scale ;
-      if (k == 1 ) cor_dir = fabs(y1)/scale ;
-      if (k == 2 ) cor_dir = fabs(z1)/scale ;
+      if (k == 0 ) cor_dir = std::fabs(x1)/scale ;
+      if (k == 1 ) cor_dir = std::fabs(y1)/scale ;
+      if (k == 2 ) cor_dir = std::fabs(z1)/scale ;
 
     }
 

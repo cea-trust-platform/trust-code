@@ -306,7 +306,7 @@ void ExtrudeParoi::extrude(Domaine& dom)
               for(int k=0; k<3; k++)
                 {
                   int som=som_face[k];
-                  dmin_som(som) = std::min(dmin_som(som),fabs(dist_paroi));
+                  dmin_som(som) = std::min(dmin_som(som),std::fabs(dist_paroi));
                   for(int j=0; j<3; j++) normale_som(som,j) += normale(j);
                 }
             }

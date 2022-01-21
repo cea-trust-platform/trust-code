@@ -290,13 +290,13 @@ DoubleTab& Op_Conv_Vort_VEF_Face::ajouter(const DoubleTab& transporte,
           // *** ??? : evaluation du fluent
           if (f_int>0.)
             {
-              // fluent_[num2] += fabs(f_int);
-              fluent_[num20] = ( fluent_[num20] > fabs(f_int))? fluent_[num20] : fabs(f_int);
+              // fluent_[num2] += std::fabs(f_int);
+              fluent_[num20] = ( fluent_[num20] > std::fabs(f_int))? fluent_[num20] : std::fabs(f_int);
             }
           else
             {
-              fluent_[num10] = ( fluent_[num10] > fabs(f_int))? fluent_[num10] : fabs(f_int);
-              // fluent_[num1] += fabs(f_int);
+              fluent_[num10] = ( fluent_[num10] > std::fabs(f_int))? fluent_[num10] : std::fabs(f_int);
+              // fluent_[num1] += std::fabs(f_int);
             }
 
         }

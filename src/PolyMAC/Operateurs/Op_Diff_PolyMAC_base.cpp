@@ -95,7 +95,7 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
               if(tab.size() != 0)
                 {
                   h_imp_temp = local_max_vect(tab); // get h_imp from datafile
-                  h_imp_temp = fabs(h_imp_temp); // we should take the absolute value since it can be negative!
+                  h_imp_temp = std::fabs(h_imp_temp); // we should take the absolute value since it can be negative!
                   h_imp_max = (h_imp_temp>h_imp_max) ? h_imp_temp : h_imp_max ; // Should we take the max if more than one bc has h_imp ?
                 }
             }

@@ -1041,7 +1041,7 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
                           for (int dir=0; dir<dimension; dir++)
                             {
                               double test=nodes_dest(node,dir)-(nodes_dest(io,dir)+nodes_dest(s,dir))*0.5;
-                              if (fabs(test)>1e-7)
+                              if (std::fabs(test)>1e-7)
                                 {
                                   Cerr<<" pB position ?"<<test <<finl;
                                   exit();

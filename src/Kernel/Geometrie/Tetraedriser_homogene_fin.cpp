@@ -290,9 +290,9 @@ int Tetraedriser_homogene_fin::creer_sommet (
       do
         {
 
-          if ((fabs(coord_sommets(new_soms_old_elems(trouve, j), 0)-x)<epsilon) &&
-              (fabs(coord_sommets(new_soms_old_elems(trouve, j), 1)-y)<epsilon)&&
-              (fabs(coord_sommets(new_soms_old_elems(trouve, j), 2)-z)<epsilon))
+          if ((std::fabs(coord_sommets(new_soms_old_elems(trouve, j), 0)-x)<epsilon) &&
+              (std::fabs(coord_sommets(new_soms_old_elems(trouve, j), 1)-y)<epsilon)&&
+              (std::fabs(coord_sommets(new_soms_old_elems(trouve, j), 2)-z)<epsilon))
 
             {
               _out = new_soms_old_elems(trouve, j);

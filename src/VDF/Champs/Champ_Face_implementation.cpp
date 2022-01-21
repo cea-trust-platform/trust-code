@@ -110,9 +110,9 @@ DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& position
 double Champ_Face_implementation::interpolation(const double val1, const double val2, const double psi) const
 {
   double epsilon=1.e-12;
-  if (fabs(psi) < epsilon)
+  if (std::fabs(psi) < epsilon)
     return val1 ;
-  else if (fabs(1.-psi) < epsilon)
+  else if (std::fabs(1.-psi) < epsilon)
     return val2 ;
   else
     return val1 + psi * (val2-val1) ;

@@ -246,7 +246,7 @@ void Champ_Face_CoviMAC::init_ve2() const
             ve2i(i, j) += iM(j, k) * ve2(i, k);
 
       /* stockage */
-      for (d = 0; d < D; d++, ve2d.append_line(ve2c.size(), ve2bc.size())) for (i = 0; i < nc; i++) if (fabs(ve2i(i, d)) > 1e-6 && (i_v[i][1] < 0 || fcl_(i_v[i][0], 0) == 3))
+      for (d = 0; d < D; d++, ve2d.append_line(ve2c.size(), ve2bc.size())) for (i = 0; i < nc; i++) if (std::fabs(ve2i(i, d)) > 1e-6 && (i_v[i][1] < 0 || fcl_(i_v[i][0], 0) == 3))
             {
               i_v[i][1] < 0 ? ve2j.append_line(i_v[i][0])  : ve2bj.append_line(i_v[i][0], i_v[i][1]);
               (i_v[i][1] < 0 ? &ve2c : &ve2bc)->append_line(ve2i(i, d) * pf(i_v[i][0]) / pe(e));

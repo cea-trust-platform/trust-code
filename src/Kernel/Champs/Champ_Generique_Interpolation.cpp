@@ -412,7 +412,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
           if (v>0)
             {
               iproche=int(v+0.1); // on ajoute 0.1 pour le cas ou v vaut i-epsilon
-              if (fabs(iproche-v)>1e-5)
+              if (std::fabs(iproche-v)>1e-5)
                 {
                   ok=0;
                   Cerr<<nom_champ[0]<<" optimisation ko "<< finl;

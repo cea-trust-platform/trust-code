@@ -89,7 +89,7 @@ void Periodique::completer()
   direction_xyz_ = -2;
   for (i = 0; i < dim; i++)
     {
-      if (fabs(direction_perio_[i]) > precision_geom)
+      if (std::fabs(direction_perio_[i]) > precision_geom)
         {
           if (direction_xyz_ == -2)
             direction_xyz_ = i;

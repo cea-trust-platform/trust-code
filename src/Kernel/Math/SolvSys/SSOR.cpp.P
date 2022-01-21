@@ -241,7 +241,7 @@ void NOM_DESCENTE(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2
 #Pusemacro(my_assert)(nvois >= 1 && (*tab2_ptr) == i && (*coeff_ptr) > 0.);
 #Pif (OMEGA_DIAG==1)
           // omega_diag doit etre egal a omega / coeff_ptr
-#Pusemacro(my_assert)(fabs((*omega_diag_ptr) * (*coeff_ptr) - omega) < 1e-14);
+#Pusemacro(my_assert)(std::fabs((*omega_diag_ptr) * (*coeff_ptr) - omega) < 1e-14);
           const double omega_coeff_i_i = (*omega_diag_ptr++);
 #Pelse
           const double omega_coeff_i_i = omega / (*coeff_ptr);
@@ -408,7 +408,7 @@ void NOM_REMONTEE(const double omega, const ArrOfInt& tab1, const ArrOfInt& tab2
 #Pusemacro(my_assert)((*tab2_ptr) == i);
 #Pif (OMEGA_DIAG==1)
           // omega_diag doit etre egal a omega / coeff_ptr
-#Pusemacro(my_assert)(fabs((*omega_diag_ptr) * (*coeff_ptr) - omega) < 1e-14);
+#Pusemacro(my_assert)(std::fabs((*omega_diag_ptr) * (*coeff_ptr) - omega) < 1e-14);
           const double omega_coeff_i_i = (*omega_diag_ptr--);
 #Pelse
           const double coeff_i_i = *coeff_ptr;

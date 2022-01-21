@@ -114,10 +114,10 @@ Entree& Redresser_hexaedres_vdf::interpreter_(Entree& is)
                   // verifier que le sommet est bien dans la boite (l'octree
                   // renvoie les sommets "potentiellement" a l'interieur
                   const double coord = les_sommets(j, direction);
-                  if (fabs(coord-coord_ref) > epsilon)
+                  if (std::fabs(coord-coord_ref) > epsilon)
                     continue;
 
-                  correction_max=std::max(correction_max,fabs(coord_ref-les_sommets(j, direction)));
+                  correction_max=std::max(correction_max,std::fabs(coord_ref-les_sommets(j, direction)));
                   // Corriger:
                   les_sommets(j, direction) = coord_ref;
                   marqueurs[j] = 1; // sommet traite !

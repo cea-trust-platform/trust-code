@@ -91,7 +91,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
                << Origine(0) << " " << Origine(0)+Longueurs(0) << finl;
           exit();
         }
-      if(fabs(coupe - Origine(0))<epsilon())
+      if(std::fabs(coupe - Origine(0))<epsilon())
         som(0,0)=0;
       else
         som(0,0)=Mx;
@@ -159,20 +159,20 @@ void Pave::lire_front(Entree& is, Frontiere& front)
       IntTab som;
       if (X=="X")
         {
-          if ( (fabs(Origine(0) - coupe)>epsilon()) &&
-               (fabs(coupe - Origine(0)-Longueurs(0))>epsilon()) && (!internes))
+          if ( (std::fabs(Origine(0) - coupe)>epsilon()) &&
+               (std::fabs(coupe - Origine(0)-Longueurs(0))>epsilon()) && (!internes))
             {
               Cerr << "X = " << coupe << " is not a boundary" << finl;
               exit();
             }
-          if ( ((fabs(Origine(0) - coupe)<epsilon()) ||
-                (fabs(coupe - Origine(0)-Longueurs(0))<epsilon())) && (internes))
+          if ( ((std::fabs(Origine(0) - coupe)<epsilon()) ||
+                (std::fabs(coupe - Origine(0)-Longueurs(0))<epsilon())) && (internes))
             {
               Cerr << "X = " << coupe << " is a boundary" << finl;
               exit();
             }
           int jmin, jmax;
-          if (fabs(Origine(0) - coupe)<epsilon())
+          if (std::fabs(Origine(0) - coupe)<epsilon())
             i=0;
           else
             i=Nx;
@@ -180,7 +180,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
             for(i=0; coord_noeud(i,0,0)+epsilon()<coupe; i++) {};
           jmin=0;
           for(; coord_noeud(0,jmin,1)+epsilon()<xmin; jmin++) {};
-          if(fabs(xmax-(Origine(1)+Longueurs(1)))<epsilon())
+          if(std::fabs(xmax-(Origine(1)+Longueurs(1)))<epsilon())
             {
               assert(tour_complet!=-123);
               jmax=My-1+tour_complet;
@@ -209,20 +209,20 @@ void Pave::lire_front(Entree& is, Frontiere& front)
               double deux_pi=M_PI*2.0 ;
               coupe*=deux_pi;
             }
-          if ( (fabs(Origine(1) - coupe)>epsilon()) &&
-               (fabs(coupe - Origine(1)-Longueurs(1))>epsilon()) && (!internes))
+          if ( (std::fabs(Origine(1) - coupe)>epsilon()) &&
+               (std::fabs(coupe - Origine(1)-Longueurs(1))>epsilon()) && (!internes))
             {
               Cerr << "Y = " << coupe << " is not a boundary" << finl;
               exit();
             }
-          if ( ((fabs(Origine(1) - coupe)<epsilon()) ||
-                (fabs(coupe - Origine(1)-Longueurs(1))<epsilon())) && (internes))
+          if ( ((std::fabs(Origine(1) - coupe)<epsilon()) ||
+                (std::fabs(coupe - Origine(1)-Longueurs(1))<epsilon())) && (internes))
             {
               Cerr << "Y = " << coupe <<" is a boundary" << finl;
               exit();
             }
           int imin, imax;
-          if (fabs(coupe-Origine(1))<epsilon())
+          if (std::fabs(coupe-Origine(1))<epsilon())
             j=0;
           else
             j=Ny;
@@ -230,7 +230,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
             for(j=0; coord_noeud(0,j,1)+epsilon()<coupe; j++) {};
           imin=0;
           for(; coord_noeud(imin,0,0)+epsilon()<xmin; imin++) {};
-          if(fabs(xmax-(Origine(0)+Longueurs(0)))<epsilon())
+          if(std::fabs(xmax-(Origine(0)+Longueurs(0)))<epsilon())
             imax=Mx-1;
           else
             {
@@ -353,20 +353,20 @@ void Pave::lire_front(Entree& is, Frontiere& front)
       IntTab som;
       if (X=="X")
         {
-          if ( (fabs(Origine(0)-coupe)>epsilon()) &&
-               (fabs(Origine(0)+Longueurs(0)-coupe)>epsilon()) && (!internes) )
+          if ( (std::fabs(Origine(0)-coupe)>epsilon()) &&
+               (std::fabs(Origine(0)+Longueurs(0)-coupe)>epsilon()) && (!internes) )
             {
               Cerr << "X = " << coupe << " is not a boundary " << finl;
               exit();
             }
-          if ( ((fabs(Origine(0)-coupe)<epsilon()) ||
-                (fabs(Origine(0)+Longueurs(0)-coupe)<epsilon())) && (internes) )
+          if ( ((std::fabs(Origine(0)-coupe)<epsilon()) ||
+                (std::fabs(Origine(0)+Longueurs(0)-coupe)<epsilon())) && (internes) )
             {
               Cerr << "X = " << coupe << " is a boundary " << finl;
               exit();
             }
           int jmin, jmax, kmin, kmax;
-          if (fabs(Origine(0)-coupe)<epsilon())
+          if (std::fabs(Origine(0)-coupe)<epsilon())
             i=0;
           else
             i=Nx;
@@ -377,7 +377,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
           for(; coord_noeud(0,0,kmin,2)+epsilon()<ymin; kmin++) {};
           jmax = jmin;
           kmax=kmin;
-          if(fabs(xmax-(Origine(1)+Longueurs(1)))<epsilon())
+          if(std::fabs(xmax-(Origine(1)+Longueurs(1)))<epsilon())
             {
               assert(tour_complet!=-123);
               jmax=My-1+tour_complet;
@@ -407,20 +407,20 @@ void Pave::lire_front(Entree& is, Frontiere& front)
               double deux_pi=M_PI*2.0 ;
               coupe*=deux_pi;
             }
-          if ( (fabs(Origine(1) - coupe)>epsilon()) &&
-               (fabs(coupe - Origine(1)-Longueurs(1))>epsilon()) && (!internes)        )
+          if ( (std::fabs(Origine(1) - coupe)>epsilon()) &&
+               (std::fabs(coupe - Origine(1)-Longueurs(1))>epsilon()) && (!internes)        )
             {
               Cerr << "Y = " << coupe << " is not a boundary " << finl;
               exit();
             }
-          if ( ((fabs(Origine(1) - coupe)<epsilon()) ||
-                (fabs(coupe - Origine(1)-Longueurs(1))<epsilon())) && (internes)        )
+          if ( ((std::fabs(Origine(1) - coupe)<epsilon()) ||
+                (std::fabs(coupe - Origine(1)-Longueurs(1))<epsilon())) && (internes)        )
             {
               Cerr << "Y = " << coupe << " is a boundary " << finl;
               exit();
             }
           int imin, imax, kmin, kmax;
-          if (fabs(coupe-Origine(1))<epsilon())
+          if (std::fabs(coupe-Origine(1))<epsilon())
             j=0;
           else
             j=Ny;
@@ -450,20 +450,20 @@ void Pave::lire_front(Entree& is, Frontiere& front)
         }
       else
         {
-          if ( (fabs(Origine(2)-coupe)>epsilon()) &&
-               (fabs(coupe-Origine(2)-Longueurs(2))>epsilon()) && (!internes))
+          if ( (std::fabs(Origine(2)-coupe)>epsilon()) &&
+               (std::fabs(coupe-Origine(2)-Longueurs(2))>epsilon()) && (!internes))
             {
               Cerr << "Z = " << coupe << " is not a boundary " << finl;
               exit();
             }
-          if ( ((fabs(Origine(2)-coupe)<epsilon()) ||
-                (fabs(coupe-Origine(2)-Longueurs(2))<epsilon())) && (internes))
+          if ( ((std::fabs(Origine(2)-coupe)<epsilon()) ||
+                (std::fabs(coupe-Origine(2)-Longueurs(2))<epsilon())) && (internes))
             {
               Cerr << "Z = " << coupe << " is a boundary " << finl;
               exit();
             }
           int imin, imax, jmin, jmax;
-          if (fabs(coupe-Origine(2))<epsilon())
+          if (std::fabs(coupe-Origine(2))<epsilon())
             k=0;
           else
             k=Nz;
@@ -475,7 +475,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
           imax = imin;
           jmax=jmin;
           for(; coord_noeud(imax,0,0,0)+epsilon()<xmax; imax++) {};
-          if(fabs(ymax-(Origine(1)+Longueurs(1)))<epsilon())
+          if(std::fabs(ymax-(Origine(1)+Longueurs(1)))<epsilon())
             {
               assert(tour_complet!=-123);
               jmax=My-1+tour_complet;
