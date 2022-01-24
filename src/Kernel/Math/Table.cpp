@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -174,23 +174,22 @@ double nlinear_interpolation(const std::vector<double>& x, const std::vector<std
   return interpolant;
 }
 
-// Description:
-//    Retourne la valeur calculee pour le point val_param
-//    La valeur est exacte si le point correspond a un parametre donne.
-//    Sinon, la valeur est interpolee (interp. lineaire d'ordre 1)
-// Precondition:
-// Parametre: const double& val_param
-//    Signification: le point en lequel calculer la valeur
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: la valeur calculee
-//    Contraintes:
-// Exception:
-//    Sort en erreur s'il manque des parametres
-// Effets de bord:
-// Postcondition:
+// n'utilise pas nlinear_interpolation : codage pour nb_comp = 1 et nb_param = 1
+double Table::val_simple(double vp) const
+{
+  assert(les_parametres.size() == 1);
+  const DoubleVect& p = les_parametres[0];
+  const int size = p.size();
+  if (p[0] >= vp) return les_valeurs(0);
+  else
+    {
+      for (int i = 1; i < size; i++)
+        if (p[i] == vp)     return les_valeurs(i);
+        else if (p[i] > vp) return (les_valeurs(i - 1) + ((les_valeurs(i) - les_valeurs(i - 1)) / (p[i] - p[i - 1])) * (vp - p[i - 1]));
+    }
+  return les_valeurs(size - 1);
+}
+
 double Table::val(const double& val_param, int ncomp) const
 {
   std::vector<double> vals_param {val_param};
