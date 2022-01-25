@@ -1361,7 +1361,7 @@ fi
 ########################
 # Installation de Salome
 ########################
-version_salome=9.7.0
+version_salome=9.8.0
 if [ $TRUST_DOWNLOAD_SALOME = 1 ]
 then
    package=SALOME-$version_salome
