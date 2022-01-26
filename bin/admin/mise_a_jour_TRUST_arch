@@ -333,6 +333,8 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_petsc_have_openmp" | grep ^$HOST"\."`" != "" ] 	&& option_configure=$option_configure" -force_petsc_have_openmp"
 # without PETSc 
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-petsc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-petsc"
+# without VC
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-vc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-vc"
 # OpenMPI
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_old_openmpi" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_old_openmpi"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_provided_openmpi" | grep ^$HOST"\."`" != "" ] 	&& option_configure=$option_configure" -force_provided_openmpi"

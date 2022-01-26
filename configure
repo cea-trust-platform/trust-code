@@ -687,6 +687,24 @@ then
 
 fi
 
+if [ "`grep 'Ubuntu 2[0-1]' /etc/issue 2>/dev/null`" != "" ]
+then
+   if [ "$TRUST_DISABLE_GMSH" != 1 ] || [ $TRUST_WITHOUT_VISIT != 1 ]
+   then
+      missing=""
+      [ `eval dpkg-query -W libx11-dev 1>/dev/null 2>&1;echo $?` != 0 ] && missing="libx11-dev"
+      [ `eval dpkg-query -W libegl1-mesa-dev  1>/dev/null 2>&1;echo $?` != 0 ] && missing=$missing" libegl1-mesa-dev"
+      [ `eval dpkg-query -W libglu1-mesa-dev  1>/dev/null 2>&1;echo $?` != 0 ] && missing=$missing" libglu1-mesa-dev"
+      if [ "$missing" != "" ]
+      then
+         echo "Visit and gmsh cannot be installed unless you install some packages using:" >> NON_INSTALLED
+         echo "   sudo apt install $missing" >> NON_INSTALLED
+         echo "You can also disable VisIt and Gmsh by adding -without-visit and -disable-gmsh to configure options"  >> NON_INSTALLED
+         exiterror=1
+      fi
+   fi
+fi
+
 if [ -f $TRUST_ROOT/NON_INSTALLED ]
 then
    echo ""
