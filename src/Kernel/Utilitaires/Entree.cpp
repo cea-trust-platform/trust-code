@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,6 +44,11 @@ const istream& Entree::get_istream() const
 void Entree::set_istream(istream* is)
 {
   istream_ = is;
+}
+
+void Entree::set_different_int_size(bool is_different_int_size)
+{
+  is_different_int_size_ = is_different_int_size;
 }
 
 Entree& Entree::operator >>(Entree& (*f)(Entree&))

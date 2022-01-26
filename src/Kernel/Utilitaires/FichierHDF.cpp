@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -81,7 +81,7 @@ void FichierHDF::create(Nom filename)
   file_id_ = H5Fcreate(filename, H5F_ACC_TRUNC /*H5F_ACC_EXCL*/, H5P_DEFAULT, file_access_plst_);
   hdf5_error<hid_t>(file_id_);
   Cerr << "HDF5 " << filename << " file created !" << finl;
-
+  set_int_size();
 }
 
 void FichierHDF::open(Nom filename, bool readOnly)
@@ -91,7 +91,7 @@ void FichierHDF::open(Nom filename, bool readOnly)
   file_id_ = H5Fopen(filename, st, file_access_plst_);
   hdf5_error<hid_t>(file_id_);
   Cerr << "HDF5 " << filename << " file opened !" << finl;
-
+  check_int_size(filename);
 }
 
 void FichierHDF::prepare_file_props()
@@ -144,6 +144,7 @@ void FichierHDF::read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute&
   Cerr << " Done !" << finl;
 
   // Put extracted data in a standard Entree_Brute from TRUST, that we then use to feed TRUST objects
+  entree.set_different_int_size(is_different_int_size_);
   entree.set_data(dset_data, sz);  // data are copied into the Entree
 
   delete[] dset_data;
@@ -293,6 +294,78 @@ bool FichierHDF::exists(const char* dataset_name)
 bool FichierHDF::is_hdf5(const char * file_name)
 {
   return H5Fis_hdf5(file_name)>0;
+}
+
+
+void FichierHDF::set_int_size()
+{
+  // Create attribute specifying whether ints are 32 or 64 bits
+  hid_t space_id = H5Screate(H5S_SCALAR);
+  hid_t attr_id = H5Acreate(file_id_, "int_size_in_bits", H5T_NATIVE_INT32, space_id, H5P_DEFAULT, H5P_DEFAULT);
+#ifdef INT_is_64_
+  True_int int_size = 64;
+#else
+  True_int int_size = 32;
+#endif
+  H5Awrite(attr_id, H5T_NATIVE_INT32, &int_size);
+  H5Aclose(attr_id);
+  H5Sclose(space_id);
+
+}
+
+void  FichierHDF::check_int_size(Nom filename)
+{
+  int TRUST_int_type_exists_in_file = H5Aexists(file_id_, "int_size_in_bits");
+  if (TRUST_int_type_exists_in_file < 0)
+    {
+      Cerr << "Error " << (int) TRUST_int_type_exists_in_file;
+      Cerr << " while getting the attribute 'int_size_in_bits' in the ";
+      Cerr << filename << " HDF file" << finl;
+      Process::exit(-1);
+    }
+  else if (TRUST_int_type_exists_in_file == 0)
+    {
+      Cerr << "Warning, we can't find whether the " << filename << " HDF file was written with -int32 or -int64" << finl;
+      Cerr << "If an error occurs, or results seem weird, try opening it with ";
+#ifdef INT_is_64_
+      Cerr << "an -int32 TRUST version." << finl;
+#else
+      Cerr << "an -int64 TRUST version." << finl;
+#endif
+    }
+  else
+    {
+      hid_t attr_id = H5Aopen(file_id_, "int_size_in_bits", H5P_DEFAULT);
+      True_int int_size_in_bits;
+      H5Aread(attr_id, H5T_NATIVE_INT32, &int_size_in_bits);
+      Cerr << "[HDF5] We read that "<< filename << " was written in -int" << (int)int_size_in_bits << finl;
+#ifdef INT_is_64_
+      if (int_size_in_bits == 32)
+        {
+          is_different_int_size_ = true;
+        }
+      else if (int_size_in_bits != 64)
+        {
+          Cerr << "[HDF5] We read -int"<< (int)int_size_in_bits << " in " << filename << " which is abnormal." << finl;
+          H5Aclose(attr_id);
+          Process::exit(-1);
+        }
+#else
+      if (int_size_in_bits == 64)
+        {
+          is_different_int_size_ = true;
+          Cerr << "Warning, HDF file " << filename << " was written with an -int64 version and you are reading it with an -int32 version."<< finl;
+          Cerr << "Make sure your mesh doesn't contain more than 2^32 elements, nodes or faces." << finl;
+        }
+      else if (int_size_in_bits != 32)
+        {
+          Cerr << "[HDF5] We read -int"<< (int)int_size_in_bits << " in " << filename << " which is abnormal." << finl;
+          H5Aclose(attr_id);
+          Process::exit(-1);
+        }
+#endif
+      H5Aclose(attr_id);
+    }
 }
 
 // void FichierHDF::get_chunking(hsize_t datasetLen)

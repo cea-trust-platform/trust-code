@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,6 +61,7 @@ public:
   virtual istream& get_istream();
   virtual const istream& get_istream() const;
   void set_istream(istream* is);
+  void set_different_int_size(bool is_different_int_size);
 
   Entree& operator >>(Entree& (*f)(Entree&));
   Entree& operator >>(istream& (*f)(istream&));

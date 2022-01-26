@@ -1,8 +1,9 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
-04/02/22 (TRUST)  Major Change: Most of the PRM validation forms are migrated to the Jupyter notebook format. 
-04/02/22 (TRUST)  New feature : Jupyter validation forms are fully functional. See Validation/Rapports_automatiques/README_jupyter.md. This is now the preferred format for validation forms.
+10/02/22 (TRUST)  Fix         : Add the possibility to read int64 HDF5 files if possible (no overflow) with an int32 binary, and vice-versa.
+09/02/22 (TRUST)  Major Change: Most of the PRM validation forms are migrated to the Jupyter notebook format. 
+09/02/22 (TRUST)  New feature : Jupyter validation forms are fully functional. See Validation/Rapports_automatiques/README_jupyter.md. This is now the preferred format for validation forms.
 12/01/22 (TRUST)  Major Change: Class and Substitution Failure Is Not An Error (SFINAE) templates are extensively used for the VDF evaluators, iterators and operators
 10/01/22 (TRUST)  Fix         : Champ_front_recyclage was not working properly if used in parallel calculations
 06/01/22 (TRUST)  Fix         : PETSc Cholesky crashed on int64 builds with Intel compiler

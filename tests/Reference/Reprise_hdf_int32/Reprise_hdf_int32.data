@@ -1,0 +1,167 @@
+# Hydraulique 2D laminar with Quick scheme #
+# PARALLEL ONLY 4 #
+# lance_test 2 ecarts #
+
+# Dimension 2D or 3D #
+dimension 2
+
+# Domain definition #
+Domaine dom
+
+# BEGIN MESH
+  /* Read mesh from ICEM */
+/* Read_File_Binary dom mesh.bin */
+  /* Read mesh from Salome */
+/* Read_MED dom Mesh_1 mesh.med */
+  /* Create domain and mesh from TRUST */
+Read_file Reprise_hdf_int32.geo ;
+END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        /* Choose Nb_parts so to have ~ 25000 cells per processor */
+	Partition_tool metis { nb_parts 4 }
+	Larg_joint 2
+	zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER #
+Scatter DOM.Zones dom
+# END SCATTER #
+
+# Discretization on hexa or tetra mesh #
+VDF ma_discretisation
+
+# Time scheme explicit or implicit #
+Scheme_euler_explicit mon_schema
+Read mon_schema
+{
+        # Time step #
+          # Initial time [s] #
+	tinit 0
+          # Min time step #
+	dt_min 5.e-3
+          # Max time step #
+	dt_max 5.e-3 # dt_min=dt_max so dt imposed #
+          # facsec such as dt = facsec * min(dt(CFL),dt_max) ; for explicit scheme facsec <= 1. By default facsec equals to 1 #
+	# facsec 0.5 #
+          # make the diffusion term in NS equation implicit : disable(0) or enable(1) #
+        diffusion_implicite 0
+
+        # Output criteria #
+          # .out files printing period #
+        dt_impr 5.e-3 # Note: small value to print at each time step #
+          # .sauv files printing period #
+	dt_sauv 100
+        periode_sauvegarde_securite_en_heures 23
+
+        # Stop if one of the following criteria is checked: #
+          # End time [s] #
+	tmax 10.0
+          # Max number of time steps #
+        nb_pas_dt_max 3
+          # Convergence threshold (see .dt_ev file) #
+	seuil_statio 1.e-8
+}
+
+# Problem definition #
+Pb_hydraulique pb
+
+# Physical characteristcs of medium #
+Fluide_Incompressible milieu
+Read milieu
+{
+        # hydraulic problem #
+          # Dynamic viscosity [kg/m/s] #
+	mu Champ_Uniforme 1 3.7e-05
+          # Volumic mass [kg/m3] #
+	rho Champ_Uniforme 1 2
+}
+
+# Association between the different objects #
+Associate pb dom
+Associate pb mon_schema
+Associate pb milieu
+Discretize pb ma_discretisation
+
+# New domains for post-treatment #
+# By default each boundary condition of the domain is already extracted with names such as "dom"_boundaries_"BC" #
+
+# Problem description #
+Read pb
+{
+        # hydraulic problem #
+	Navier_Stokes_standard
+	{
+		# Pressure matrix solved with #
+		solveur_pression GCP { 
+			precond ssor { omega 1.500000 } 
+			seuil 1.000000e-06 
+			impr 
+		}
+		# Two operators are defined #
+		convection { quick }
+		diffusion { }
+
+		# Uniform initial condition for velocity #
+		initial_conditions {
+			vitesse Champ_Uniforme 2 0. 0.
+			}
+		# Boundary conditions #
+		boundary_conditions {
+			Square 	paroi_fixe
+		      	Upper  	symetrie
+			Lower 	symetrie
+			Outlet 	frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+			Inlet 	frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 1. 0.
+		}
+	}
+
+        # Post_processing description #
+        /* To know domains that can be treated directly, search in .err output file: "Creating a surface domain named" */
+        /* To know fields  that can be treated directly, search in .err output file: "Reading of fields to be postprocessed" */
+	Post_processing
+	{
+		# Probes #
+		Probes
+		{
+                        # Note: periode with small value to print at each time step (necessary for spectral analysis) #
+			sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+			sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105	0.14 0.115
+			sonde_vit vitesse periode 0.005 segment 22 0.14 0.0 0.14 0.22
+			sonde_P pression periode 0.01 plan 23 11 0.01 0.005 0.91 0.005 0.01 0.21
+			sonde_Pmoy Moyenne_pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+			sonde_Pect Ecart_type_pression periode 0.005 points 2 0.13 0.105 0.13 0.115			
+		}
+		# Fields #
+                format lml # lata for VisIt tool #
+		fields dt_post 1.  # Note: Warning to memory space if dt_post too small #
+		{
+			pression elem
+			pression som
+			vitesse elem
+			vitesse som
+		}
+		# Statistical fields #
+		Statistiques dt_post 1.
+		{
+			t_deb 1. t_fin 5.
+			moyenne vitesse
+			ecart_type vitesse
+			moyenne pression
+			ecart_type pression
+		}
+	} 
+
+        # Saving and restarting process #
+        /* sauvegarde_simple single_hdf datafile.sauv */ # Note: last time step only saved #
+        resume_last_time single_hdf datafile.sauv
+}
+
+# The problem is solved with #
+Solve pb
+# Not necessary keyword to finish #
+End

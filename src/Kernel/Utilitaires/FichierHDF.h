@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,6 +88,9 @@ public:
   virtual bool exists(const char* dataset_name);
   //check if the file file_name is in the HDF5 format
   static bool is_hdf5(const char *file_name);
+  // Checks if HDF file was written in int32 or int64, and sets 'is_different_int_size_' accordingly
+  void  check_int_size(Nom filename);
+  void  set_int_size();
 
 protected:
   virtual void prepare_file_props();
@@ -98,6 +101,7 @@ protected:
   hid_t file_id_;
   hid_t file_access_plst_;
   hid_t dataset_transfer_plst_;
+  bool is_different_int_size_=false; // File with int32 (or int64) whereas version is int64 (or int32)
 #endif
 
 private:
