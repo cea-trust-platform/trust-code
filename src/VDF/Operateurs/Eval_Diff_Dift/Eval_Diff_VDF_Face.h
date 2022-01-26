@@ -145,6 +145,50 @@ private:
   inline bool uses_wall_law() const { return static_cast<const DERIVED_T *>(this)->uses_wall(); }
   inline bool uses_mod_turb() const { return static_cast<const DERIVED_T *>(this)->uses_mod(); }
   inline const DoubleTab& k_elem() const { return static_cast<const DERIVED_T *>(this)->get_k_elem(); } // pour F5 seulement ...
+
+  // methods to check coeffs/flux implementation
+  static constexpr double EPS = 1e-6;
+
+  template<typename Type_Double> void check_error(const char * , const int, const int , const Type_Double& , const Type_Double& , const Type_Double& ) const;
+
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
+  inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE, void>
+  test_coeffs_common(const int , const int , const int , const int , Type_Double& , Type_Double& ) const;
+
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
+  inline enable_if_t<Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
+  test_coeffs_common(const int , const int , const int , const int , Type_Double& , Type_Double& ) const;
+
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
+  inline enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+  test_coeffs_common(const int , const int , const int , const int , Type_Double& , Type_Double& , Type_Double& , Type_Double&) const;
+
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
+  inline enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+  test_coeffs_common(const int , const int , const int , const int , Type_Double& , Type_Double& ) const;
+
+  template<Type_Flux_Fa7 Fa7_Type, typename Type_Double> inline enable_if_t< Fa7_Type == Type_Flux_Fa7::ELEM, void>
+  test_coeffs_fa7(const int, const int, const int, const Type_Double& ) const;
+
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
+  inline enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE, void>
+  test_coeffs_arete(const int, const int, const int, const int, const Type_Double& ) const;
+
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
+  inline enable_if_t<Arete_Type == Type_Flux_Arete::MIXTE, void>
+  test_coeffs_arete(const int, const int, const int, const int, const Type_Double& ) const;
+
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
+  inline enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+  test_coeffs_arete(const int, const int, const int, const int, const Type_Double& ) const;
+
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
+  inline enable_if_t<Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
+  test_coeffs_arete(const int, const int, const int, const int, const Type_Double&) const;
+
+  template<Type_Flux_Arete Arete_Type, typename Type_Double>
+  inline enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+  test_coeffs_arete(const int, const int, const int, const int, const Type_Double& , const Type_Double&) const;
 };
 
 #include <Eval_Diff_VDF_Face.tpp> // templates specializations ici ;)
