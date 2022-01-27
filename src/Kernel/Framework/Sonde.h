@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -162,7 +162,6 @@ inline void Sonde::fermer_fichier()
 {
   if (fichier().is_open())
     {
-      if (dim == 2 || dim == 3) fichier() << "FIN" << finl;
       le_fichier_.close();
     }
 }
