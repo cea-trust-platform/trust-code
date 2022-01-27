@@ -70,7 +70,7 @@ Sortie& SETS::printOn(Sortie& os ) const
 Entree& SETS::readOn(Entree& is )
 {
   /* valeurs par defaut des criteres de convergence */
-  crit_conv = { { "alpha", 1e-2 }, { "temperature", 1e-1 }, { "vitesse", 1e-2 }, { "pression", 100 } };
+  crit_conv = { { "alpha", 1e-2 }, { "temperature", 1e-1 }, { "vitesse", 1e-2 }, { "pression", 100 }, {"k", 1e-2}, {"tau", 1e-2} };
   first_call_ = 1;
   Simpler::readOn(is);
   return is;
@@ -124,6 +124,18 @@ static inline double corriger_incr_alpha(const DoubleTab& alpha, DoubleTab& incr
   return Process::mp_max(corr_max);
 }
 
+double SETS::unknown_positivation(const DoubleTab& uk, DoubleTab& incr)
+{
+  double corr_max = 0;
+  int N = uk.line_size();
+  for (int i=0 ; i<uk.dimension_tot(0) ; i++) for (int n = 0 ; n<N ; n++) if (uk(i, n) + incr(i, n) < 0)
+        {
+          if (- uk(i, n) - incr(i, n) > corr_max) corr_max =  std::abs(uk(i, n) + incr(i, n));
+          incr(i, n) = -uk(i, n);
+        }
+  return Process::mp_max(corr_max);
+}
+
 bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& current, double dt, int numero_iteration, int& ok)
 {
   int cv;
@@ -131,8 +143,8 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
   if (!sub_type(Pb_Multiphase, eqn.probleme()) && !sub_type(Pb_Conduction, eqn.probleme()))
     Process::exit(que_suis_je() + " cannot be applied to the problem " + eqn.probleme().le_nom() + " of type " + eqn.probleme().que_suis_je() + "!");
 
-  /* equations non resolues directement : Masse_Multiphase (toujours), Energie_Multiphase (en ICE) */
-  if (sub_type(Masse_Multiphase, eqn) || (!sets_ && sub_type(Energie_Multiphase, eqn)))
+  /* equations non resolues directement : Masse_Multiphase (toujours), Energie_Multiphase (en ICE), Convection_Diffusion_std i.e. quantites turbulentes (en ICE) */
+  if (sub_type(Masse_Multiphase, eqn) || (!sets_ && sub_type(Energie_Multiphase, eqn))|| (!sets_ && sub_type(Convection_Diffusion_std, eqn)))
     return true;
 
   /* QDM_Multiphase: resolue par iterer_NS */
@@ -161,6 +173,16 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
   mat_pred[nom_inco].ajouter_multvect(current, secmem); //passage increment -> variable
   solv.valeur().reinit();
   solv.resoudre_systeme(mat_pred[nom_inco], secmem, current);
+
+  if (eqn.positive_unkown()==1)
+    {
+      DoubleTrav incr ;
+      incr = current;
+      incr -= eqn.inconnue()->valeurs();
+      unknown_positivation(eqn.inconnue()->valeurs(), incr);
+      incr += eqn.inconnue()->valeurs();
+      current = incr;
+    }
 
   /* mise a jour */
   eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
@@ -288,6 +310,11 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       /* convergence? */
       cv = (corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"]) < crit_conv["alpha"]);
+      for (i = 0 ; i < pb.nombre_d_equations(); i++) if (pb.equation(i).positive_unkown()==1)
+          {
+            std::string nom_inco = pb.equation(i).inconnue().le_nom().getString() ;
+            cv &= (unknown_positivation(inco[nom_inco]->valeurs(), incr[nom_inco]) < crit_conv[nom_inco]);
+          }
       for (auto && n_v : incr) if (crit_conv.count(n_v.first)) cv &= mp_max_abs_vect(n_v.second) < crit_conv.at(n_v.first);
 
       if (!Process::me())

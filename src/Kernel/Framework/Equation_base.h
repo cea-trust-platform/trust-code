@@ -291,6 +291,7 @@ public :
     if(field_residu_.non_nul())
       field_residu_.valeur().valeurs() = r;
   };
+  virtual int positive_unkown() {return 0;};
 
 protected :
 
@@ -332,6 +333,10 @@ protected :
   //pour l'interface assembler_blocs
   mutable Champ_Inc champ_conserve_;
   mutable Champ_Inc champ_convecte_;
+
+  // pour une positivation du terme en fin d'iteration si necessaire
+  // renvoie 1 pour un champ positif, 0 pour un champ negatif
+
 private :
   void Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& solution, int size_terme_mul, const DoubleTab& term_mul);
 
