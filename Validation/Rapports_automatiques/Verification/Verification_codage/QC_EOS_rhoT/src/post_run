@@ -11,7 +11,7 @@ rm -f *.dat
 # points_VDF = nombre de points de maillage le long d'un cote du carre en VDF
 
 liste_dis=(VDF)
-liste_calculs_VDF="1000_amont 1000_quick 1000_centre 1100_amont 1100_quick 1100_centre"
+liste_calculs_VDF="1000_amont 1000_quick 1000_centre 1110_amont 1110_quick 1110_centre"
 
 points_VDF=(5 9 17 33 65 129 257)
 # points_VDF=(3 5 9 17 33 65 129 257)
