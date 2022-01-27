@@ -1,3 +1,4 @@
+XX/XX/22 (TRUST)  Build       : configure option -force_provided_mpich becomes the default on PC. On HPC cluster, configure keeps on detecting MPI modules loaded 
 XX/XX/22 (TRUST)  V&V         : New verification sheet for GPU solver with semi-implicit scheme added under Validation/Rapports_automatiques/Verification/Solveurs/GPU directory
 XX/XX/22 (TRUST)  New option  : Option save_matrix_mtx_format to export from PETSc solvers the matrix to Matrix Market format file (.mtx)
 --------------------------------------------------------------------------------------------------

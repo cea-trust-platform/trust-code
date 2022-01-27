@@ -617,6 +617,20 @@ fi
 # TRUST_DISABLE_CHECK_SRC=1 sur clusters (machine de production parfois lente a compiler):
 [ "$TRUST_WITHOUT_HOST" = 0 ] && TRUST_DISABLE_CHECK_SRC=1
 
+BATCH_SYSTEM_DETECTED=0
+for cmd in sinfo qstat bqueues
+do
+   [ "`$cmd --help 2>&1 1>/dev/null;echo $?`" = 0 ] && BATCH_SYSTEM_DETECTED=1 && break
+done
+# Par defaut (aucun TRUST_FORCE specifie) alors hors clusters et Cuda, FORCE_PROVIDED_MPICH car plus pratique pour VisIt, tests de NR plus rapides, valgrind error-free:
+if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ]
+then
+   if [ "$BATCH_SYSTEM_DETECTED" = 0 ] || [ "$TRUST_WITHOUT_HOST" = 1 ]
+   then
+      TRUST_FORCE_PROVIDED_MPICH=1 && [ "$TRUST_USE_CUDA" = 1 ] && TRUST_FORCE_LATEST_OPENMPI=1 # OpenMPI Cuda-Aware
+   fi
+fi
+
 #######################
 # Quelle architecture ?
 #######################
@@ -1214,7 +1228,7 @@ else
    then
       if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_MPI_NATIF" = 1 ]
       then
-         if [ "$TRUST_WITHOUT_HOST" = 0 ]
+         if [ "$TRUST_WITHOUT_HOST" = 0 ] || [ "$BATCH_SYSTEM_DETECTED" = 1 ]
          then
             echo "Native MPI SHOULD be used on $HOST for optimal performances."
             echo "Check carefully the MPI version you want to use for parallel computing before installing the code, especially onto a HPC cluster."
