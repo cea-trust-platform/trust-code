@@ -1060,7 +1060,7 @@ else
    COMM="_mpi";export COMM
    COMFLAGS=" -DMPI_"
    mpi_detecte=0
-   if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_OLD_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ]
+   if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ]
    then
       ############################################
       # Detection de MPI par le wrapper C++ trouve
@@ -1241,7 +1241,7 @@ else
       MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/mpich"
       # New 1.7.5 -> OpenMPI by default instead of MPICH (2.0.2 valgrind free)
       #MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/openmpi"
-      if [ "$TRUST_FORCE_PROVIDED_OPENMPI" = 1 ] || [ "$TRUST_FORCE_OLD_OPENMPI" = 1 ] || [ "$TRUST_FORCE_LATEST_OPENMPI" = 1 ]
+      if [ "$TRUST_FORCE_PROVIDED_OPENMPI" = 1 ] || [ "$TRUST_FORCE_LATEST_OPENMPI" = 1 ]
       then
          MPI_ROOT="$TRUST_ROOT/lib/src/LIBMPI/openmpi"
       fi

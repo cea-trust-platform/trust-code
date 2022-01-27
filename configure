@@ -243,7 +243,6 @@ echo "[-native]                         Add compiler optimizations relative to n
 echo "[-force_provided_mpich]           Use the provided MPICH `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version (default if a native and valid MPI is not found)."
 echo "[-force_latest_mpich]             Download and use the MPICH `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version."
 echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
-echo "[-force_old_openmpi]              Download and use the OpenMPI `awk -F= '/old_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version (valgrind free)."
 echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
 echo "[-cuda]                           Activate the CUDA support into several libraries for GPU computing (experimental)."
@@ -406,10 +405,6 @@ do
    elif [ "${1#-force_provided_openmpi}" != "$1" ]
    then
       export TRUST_FORCE_PROVIDED_OPENMPI=1
-
-   elif [ "${1#-force_old_openmpi}" != "$1" ]
-   then
-      export TRUST_FORCE_OLD_OPENMPI=1
 
    elif [ "${1#-force_latest_mpich}" != "$1" ]
    then

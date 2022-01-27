@@ -13,7 +13,7 @@ define_modules_config()
       ligne_supp="source $GNU_ENV # Last GNU compilers"
       echo $ligne_supp  >> $env
       source $GNU_ENV  
-      if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_OLD_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ]
+      if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ]
       then
         echo "You must use provided mpi on this host"
         exit -1
