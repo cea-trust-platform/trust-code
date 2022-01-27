@@ -614,8 +614,8 @@ then
    echo "TRUST_DISABLE_JUPYTER=$TRUST_DISABLE_JUPYTER && export TRUST_DISABLE_JUPYTER  # disable jupyter build`[ "$TRUST_WITHOUT_HOST" = 0 ] && echo since TRUST_WITHOUT_HOST=0`." >> configure.env
    . ./configure.env
 fi
-# ToDo: Forcer TRUST_DISABLE_CHECK_SRC=1 sur clusters ?
-[ $HOST = jean-zay ] && [ "$TRUST_DISABLE_CHECK_SRC" = 0 ] && echo "Add -disable-check_sources to configure on JeanZay cause very slow." && exit -1
+# TRUST_DISABLE_CHECK_SRC=1 sur clusters (machine de production parfois lente a compiler):
+[ "$TRUST_WITHOUT_HOST" = 0 ] && TRUST_DISABLE_CHECK_SRC=1
 
 #######################
 # Quelle architecture ?
@@ -1224,7 +1224,7 @@ else
          else
             echo "MPI not detected by TRUST:"
             echo " - On a HPC cluster, contact $HOST's administrator or TRUST support team."
-            echo " - On your computer, you can use: ./configure -force_provided_openmpi|mpich to force basic OpenMPI|MPICH installation."
+            echo " - On PC, you can use: ./configure -force_provided_mpich|openmpi to force basic MPICH|OPENMPI installation."
             echo "Contact TRUST support team for further questions."
          fi
          [ -f $TRUST_ROOT/NON_INSTALLED ] && Display_Missing_packages
