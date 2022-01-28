@@ -222,7 +222,7 @@ then
    # bin/mklibs pour le link
    # bin/KSH/Createcmakefile.py pour les includes de la librairie
    # env_src/make.all_includes.TRUST pour les includes aussi
-   reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` LIBMED LIBMEDCOUPLING `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` `[ "$TRUST_USE_CUDA" = 1 ] && echo LIBAMGX` LIBOSQP `[ "$TRUST_DISABLE_VC" = 0 ] && echo LIBVC`"
+   reps="LIBMFFT LIBMFFT_C LIBSKIT LIBLATAFILTER LIBICOCOAPI $LIBMETIS `[ ${#TRUST_BLAS_LAPACK} = 0 ] && echo LIBLAPACK` LIBMED LIBMEDCOUPLING `[ "$TRUST_DISABLE_PETSC" = 0 ] && echo LIBPETSC` `[ "$TRUST_USE_CUDA" = 1 ] && echo LIBAMGX` LIBOSQP `[ "$TRUST_DISABLE_VC" != 1 ] && echo LIBVC`"
    time=`date "+%s"`
    for rep in $reps
    do

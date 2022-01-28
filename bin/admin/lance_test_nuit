@@ -954,7 +954,7 @@ fi
          rm tmp.log 1>/dev/null 2>&1
          git push github_write Livraison:next 1>tmp.log 2>&1
          cat tmp.log
-         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push github TMA\" $TRUST_MAIL 
+         [ "`cat tmp.log`" != "Already up to date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push github TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
       elif [[ "$Composant" == "TRUST-NK" ]]
       then
@@ -3110,7 +3110,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=81.40 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=81.57 #81.40 v1.8.4 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
@@ -4185,7 +4185,7 @@ then
    echo " " >> $MESSAGES_NUIT
    echo "To unsubscribe from this list, send an e-mail to $TRUST_MAIL " >> $MESSAGES_NUIT
 else
-   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TMA_PROJECT_LEADER" "$triocfd_PROJECT_LEADER" "$genepi3_PROJECT_LEADER
+   ALL_DEVELOPERS_TRUST_MAIL=$TRUST_MAIL" "$TMA_PROJECT_LEADER" "$triocfd_PROJECT_LEADER" "$genepi3_PROJECT_LEADER" "$trust_team_members
 fi
 
 #####################################

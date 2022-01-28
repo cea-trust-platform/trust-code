@@ -156,10 +156,10 @@ if [ -f  $TRUST_MED_ROOT/lib/libhdf5.so ] ; then
 fi
 MEDLDFLAGS="\$(TRUST_MED_ROOT)/lib/libmed.a \$(TRUST_MED_ROOT)/lib/libmedimport.a \$(TRUST_MED_ROOT)/lib/libmedC.a \$(TRUST_MED_ROOT)/lib/libhdf5.a \$(TRUST_MED_ROOT)/lib/libhdf5_hl.a $lz-lm -ldl"
 
-if [ $TRUST_DISABLE_VC = 0 ] ; then
-    VC="-L\$(TRUST_ROOT)/lib/src/LIBVC/lib -lVc"
-else 
+if [ $TRUST_DISABLE_VC = 1 ] ; then
     VC=""
+else
+    VC="-L\$(TRUST_ROOT)/lib/src/LIBVC/lib -lVc"
 fi
 
 #################################################
