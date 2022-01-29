@@ -103,14 +103,14 @@ Eval_Diff_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
 
       for (int k = 0; k < ncomp; k++)
         {
-          const double tau  = signe*(vit_imp-inco(fac3,k))/dist;
-          flux(k) = (tau * (visc_lam + visc_turb)) * surf; // XXX : Yannick, pas de tau_tr ?? TODO : FIXME
+          const double tau  = signe*(vit_imp-inco(fac3,k))/dist, tau_tr = 0.; // XXX : Yannick, pas de tau_tr ?? TODO : FIXME
+          flux(k) = ((tau + tau_tr) * (visc_lam + visc_turb)) * surf; // XXX : Yannick, pas de porosite ?? TODO : FIXME
         }
     }
   else
     {
       double tau1 = tau_tan(rang1,ori)*0.5*surface(fac1), tau2 = tau_tan(rang2,ori)*0.5*surface(fac2);
-      for (int k = 0; k < ncomp; k++) flux(k) = tau1 + tau2; // XXX ??? Yannick help :/
+      for (int k = 0; k < ncomp; k++) flux(k) = tau1 + tau2;
     }
 }
 
@@ -144,8 +144,8 @@ Eval_Diff_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
 
       // fac3 est la face interne et fac1 et fac2 sont au bord
       const double tau_3 = signe*(vit_imp-inco(fac3,k))/dist1, tau_12 = (inco(fac2,k)-inco(fac1,k))/dist2, tau_tr_3 = tau_12, tau_tr_12 = tau_3;
-      flux3(k) = ((tau_3+tau_tr_3) * (visc_lam + visc_turb)) * surf * poros;
-      flux1_2(k) = ( is_SYM_FL ? 0.5 : 1.0) * ((tau_12+tau_tr_12) * (visc_lam + visc_turb)) * surfporos; // XXX : bordel ici
+      flux3(k) = ((tau_3 + tau_tr_3) * (visc_lam + visc_turb)) * surf * poros;
+      flux1_2(k) = ((tau_12 + tau_tr_12) * (visc_lam + visc_turb)) * surfporos;
     }
 }
 
@@ -240,12 +240,12 @@ Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int si
 
       const double surf = surface_(fac1,fac2), dist = dist_norm_bord(fac1),
                    visc_lam = nu_lam_mean_2pts(elem1,elem2,ori), visc_turb = DERIVED_T::IS_TURB ? nu_mean_2pts(elem1,elem2,ori) : 0.,
-                   d_tau = signe / dist;
+                   d_tau = signe / dist, d_tau_tr = 0.; // On a pas derive ... deja nul dans le flux !
 
       for (int k = 0; k < ncomp; k++)
         {
           aii1_2(k) = ajj1_2(k) = 0.;
-          aii3_4(k) = (d_tau * (visc_lam + visc_turb)) * surf; // XXX : Yannick, pas de tau_tr ?? TODO : FIXME
+          aii3_4(k) = ((d_tau + d_tau_tr) * (visc_lam + visc_turb)) * surf; // XXX : Yannick, pas porosite ?? TODO : FIXME
         }
     }
   else for (int k = 0; k < ncomp; k++) aii3_4(k) = aii1_2(k) = ajj1_2(k) = 0.;
@@ -256,7 +256,6 @@ inline enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_
 Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int signe, Type_Double& aii1_2, Type_Double& aii3, Type_Double& ajj1_2) const
 {
   assert(aii1_2.size_array() == aii3.size_array() && aii1_2.size_array() == ajj1_2.size_array());
-  constexpr bool is_SYM_FL = (Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE);
   const int elem1 = elem_(fac3,0), elem2 = elem_(fac3,1), ori= orientation(fac3), ncomp = aii1_2.size_array();
   const double surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2), surfporos = surface(fac3)*porosite(fac3),
                dist1 = dist_norm_bord(fac1), dist2 = dist_face(fac1,fac2,ori),
@@ -267,7 +266,7 @@ Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int si
   for (int k = 0; k < ncomp; k++)
     {
       aii3(k) = ((d_tau_3 + d_tau_tr_3) * (visc_lam + visc_turb)) * surf * poros;
-      aii1_2(k) = ajj1_2(k)  = (is_SYM_FL ? 0.5 : 1.0) * ((d_tau_12 + d_tau_tr_12) * (visc_lam + visc_turb)) * surfporos; // TODO : FIXME : prochaine etape ...
+      aii1_2(k) = ajj1_2(k) = ((d_tau_12 + d_tau_tr_12) * (visc_lam + visc_turb)) * surfporos;
     }
 }
 
