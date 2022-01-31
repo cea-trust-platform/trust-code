@@ -7,9 +7,13 @@
 REP=$1
 ref=$TRUST_TESTS
 [ "$2" != "" ] && ref=$2
+
+# Sourcing Python environment - needed for Jupyter validation forms.
+. $TRUST_ROOT/env_for_python.sh
+
 # Si on ne trouve pas le cas test on le cherche sous $ref
 # le / apres $REP permet de suivre l eventuel lien
-if [ ! -d $ref/$REP/ ] 
+if [ ! -d $ref/$REP/ ]
 then
     org=`pwd`;
     [ ! -d $ref ] && echo "The directory $ref does not exist under the directory `pwd`" && exit 1
@@ -69,7 +73,7 @@ do
       # Sinon lien relatif
       ln -sf $arrivee `basename $depart`
    fi
-done	
+done
 
 #################################
 # Cas d'un cas test de validation
@@ -86,7 +90,7 @@ then
    jeu=`echo $jeu2 | $TRUST_Awk -F'/build/' '{print $NF}'`
    FICHE_ROOT=`echo $jeu2 | sed "s?/build/$jeu??"`
    test=`pwd`
-   test=`basename $test`   
+   test=`basename $test`
    TMP_BUILD=`mktemp_ -d`
    # Est ce que la fiche existe ?
    if [ -d $FICHE_ROOT ]
@@ -96,27 +100,32 @@ then
       cd $FICHE_ROOT
       prm=`\ls src/*.prm 2>/dev/null`
       nombre_prm=`echo $prm | $TRUST_Awk '{print NF}'`
-      if [ $nombre_prm != 1 ]
-      then
-         echo "On doit avoir un seul fichier .prm par fiche de validation."
-	 echo "Or on en trouve $nombre_prm fichiers sous `pwd`!"
-	 rm -r -f $TMP_BUILD
-         exit -1
+      if [ $nombre_prm != 1 ]; then
+         tt=`\ls *.ipynb 2>/dev/null`
+         nombre_jy=`echo $tt | $TRUST_Awk '{print NF}'`
+         if [ $nombre_jy != 1 ]; then
+            echo "On doit avoir un seul fichier .prm / .ipynb par fiche de validation."
+            echo "Or on en trouve $nombre_prm fichiers sous `pwd`!"
+            rm -r -f $TMP_BUILD
+            exit -1
+         else
+            prm=$tt
+         fi
       fi
       # Ce build est fait sous le repertoire temporaire $TMP_BUILD:
       rm -r -f $TMP_BUILD/build
       # $TRUST_ROOT/Validation/Outils/Genere_courbe/Run $prm -dest $TMP_BUILD -not_run --get_cmd_to_run=yes 1>$TMP_BUILD/command
       )
       echo $ECHO_OPTS "Extracting test case ($jeu) ...\c"
-      # jeux=`cat $TMP_BUILD/command 2>&1 | grep get_total_time | sed "s/\.perf/.data/g" | sed "s/get_total_time//" | sed "s/\.\///g"` 
-      jeux=`( cd $FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_list_cas_nr src/*prm -dest $TMP_BUILD)` 
+      # jeux=`cat $TMP_BUILD/command 2>&1 | grep get_total_time | sed "s/\.perf/.data/g" | sed "s/get_total_time//" | sed "s/\.\///g"`
+      jeux=`( cd $FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_list_cas_nr . -dest $TMP_BUILD)`
       echo "End."
    else
       jeux=""
    fi
    # Est ce que le jeu de donnees $jeu fait partie de la liste des jeux $jeux qui tournent encore ?
    OK=0
-   for file in $jeux 
+   for file in $jeux
    do
       [ $file = $jeu ] && OK=1
    done
@@ -153,7 +162,7 @@ then
       if [ -d $repertoire_jeu/$file ]
       then
 	 cp -r $repertoire_jeu/$file .
-      fi 
+      fi
    done
    # Renomme le .data et le modifie pour qqs pas de temps
    old=`basename $jeu`
@@ -193,31 +202,31 @@ then
    # Met en gestion de configuration du .data si possible
    # L'utilisateur possede le repertoire
    #if [ $TRUST_LOGIN = `whoami` ]
-   # Nouveau 1.6.7, les cas tests sont crees dans 2 repertoires possibles: 
+   # Nouveau 1.6.7, les cas tests sont crees dans 2 repertoires possibles:
    # -soit dans $TRUST_TESTS/Validation   si c'est une fiche sous Validation/Rapports_automatiques/Validant
    # -soit dans $TRUST_TESTS/Verification si c'est une fiche sous Validation/Rapports_automatiques/Verification
    if [ "`echo $FICHE_ROOT | grep /Validant/`" != "" ]
    then
-      cible=$TRUST_TESTS/Validation/$test 
+      cible=$TRUST_TESTS/Validation/$test
    elif [ "`echo $FICHE_ROOT | grep /Verification/`" != "" ]
    then
-      cible=$TRUST_TESTS/Verification/$test 
+      cible=$TRUST_TESTS/Verification/$test
    else
       # Si on ne sait pas determiner, on met dans Validation...
       # Exemple: Baltik
-      cible=$TRUST_TESTS/Validation/$test 
+      cible=$TRUST_TESTS/Validation/$test
       #echo "Cas non prevu pour $FICHE_ROOT dans copie_cas_test."
       #exit -1
-   fi 
-   if [ -O $cible ] 
+   fi
+   if [ -O $cible ]
    then
       cible=$cible/$test.data
       [ -f $cible ] && chmod gu-w $cible
-      if [ ! -f $cible ] || [ "`diff $test.data $cible`" != "" ] 
+      if [ ! -f $cible ] || [ "`diff $test.data $cible`" != "" ]
       then
          DEST=`pwd`
 	 cd `dirname $cible`
-	 if [ ! -f $cible ] 
+	 if [ ! -f $cible ]
 	 then
 	    touch $cible
 	    chmod +w $cible
@@ -227,9 +236,9 @@ then
 	 else
 	    msg="Changement du jeu de donnees $cible\n
 suite a une modification d'un jeu de donnees de la fiche de validation associee.\n
-Mise a jour du jeu de donnees seulement... A vous de voir pour le .lml.gz" 
+Mise a jour du jeu de donnees seulement... A vous de voir pour le .lml.gz"
 	    echo $ECHO_OPTS $msg
-	    touch $DEST/check_lml_gz	    
+	    touch $DEST/check_lml_gz
 	 fi
 	 cd - 1>/dev/null 2>&1
 	 chmod gu+w $cible
@@ -238,7 +247,7 @@ Mise a jour du jeu de donnees seulement... A vous de voir pour le .lml.gz"
       fi
    fi
    rm -r -f $TMP_BUILD
-   # Execute l'equivalent du prepare 
+   # Execute l'equivalent du prepare
    rm -f prepare
    if [ -f pre_run ]
    then
@@ -248,9 +257,9 @@ Mise a jour du jeu de donnees seulement... A vous de voir pour le .lml.gz"
       for data in `ls *.data 2>/dev/null`
       do
 	 [ "`grep '# nb_pas_dt_max 3 #' $data`" != "" ] && echo $ECHO_OPTS "1,$ s?# nb_pas_dt_max 3 #?nb_pas_dt_max 3?g\nw" | ed $data 1>/dev/null 2>&1
-      done   
+      done
    fi
-fi	
+fi
 
 # Pre requis (script prepare)
 if [ -f ./prepare ]

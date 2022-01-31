@@ -40,8 +40,9 @@ from filelist import FileAccumulator
 
 def Usage(gestMsg):
     '''Renvoie l usage du script.'''
+    import sys
     gestMsg.ecrire(GestionMessages._DEBOG, 'DEBUT %s' % getNomFonction(), niveau=15)
-    usage = genererCourbes.__doc__
+    usage = sys.modules[__name__].__doc__
     return usage
 
 def getOptions(argv, gestMsg):

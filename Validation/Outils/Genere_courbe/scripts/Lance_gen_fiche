@@ -39,16 +39,33 @@ get_list_prm_from_Times()
 
 get_list_prm()
 {
-    for dir in `find $Rapports_auto_root/Validation/Rapports_automatiques -name '*.prm' -follow  | grep '/src/'`
+    # PRM 
+    for f in `find $Rapports_auto_root/Validation/Rapports_automatiques -name '*.prm' -follow  | grep '/src/'`
       do
-      cas=`dirname $dir`
+      cas=`dirname $f`
       if [ "`basename $cas`" != "src" ]
       then
-      echo "$dir bizarre!!!!"
+        echo "$f is strange - a PRM not in a src folder!!!!"
+        return
       else
         dirn_cas=`dirname $cas`
         if [ ! -f $dirn_cas/skip_prm ] && [ ! -f $dirn_cas/src/skip_prm ]; then
           echo `dirname $cas`
+        fi
+      fi
+    done
+
+    # Jupyter notebooks
+    for f in `find $Rapports_auto_root/Validation/Rapports_automatiques -type f \( -name '*.ipynb' ! -path '*.ipynb_checkpoints*' \) -follow`
+      do
+      cas=`dirname $f`
+      if [ ! -d "$cas/src" ]
+      then
+        echo "$f is strange - missing src subfolder!!!!"
+        return
+      else
+        if [ ! -f $cas/skip_prm ] && [ ! -f $cas/src/skip_prm ]; then
+          echo $cas
         fi
       fi
     done
@@ -63,7 +80,16 @@ genere_fiche()
     cd $org
     mkdir -p BUILD archives
     dir=$1
+    is_jupyter=false
     prm=`ls $dir/src/*.prm`
+    if [ ! $? -eq 0 ]; then
+      prm=`ls $dir/*.ipynb`
+      if [ ! $? -eq 0 ]; then
+         echo ERROR: no PRM and no notebook file found!
+         exit 1
+      fi
+      is_jupyter=true
+    fi
     cas=`basename $dir`
     opt=""
     if [ $with_sjob -eq 1 ]
@@ -79,13 +105,22 @@ genere_fiche()
       cp -rL $dir/ BUILD
       chmod -R +w  BUILD/$cas
       cd BUILD/$cas
+      curr_dir=`pwd`
       # if the file KO has been created in a previous test, delete it for the current test
       rm -f KO*
       touch Running$OPTIONS_PRM
-      echo "@@@ About to execute Run script ..."
-      ${GENERE_COURBE}/Run $prm $opt  $OPTIONS_PRM 1> run$OPTIONS_PRM.log 2>&1
-      status=$?
-      echo "@@@ Done executing Run script."
+      if ! $is_jupyter; then   # PRM format 
+         echo "@@@ About to execute Run script (PRM) ..."
+         ${GENERE_COURBE}/Run $prm $opt  $OPTIONS_PRM 1> run$OPTIONS_PRM.log 2>&1
+         status=$?
+         echo "@@@ Done executing Run script."
+      else    # Jupyter format
+         echo "@@@ About to execute and export Jupyter notebook to PDF ..."
+         env JUPYTER_RUN_OPTIONS="$opt" jupyter nbconvert --to pdf --output "$curr_dir/build/rapport.pdf" --execute $prm 1>run$OPTIONS_PRM.log 2>&1
+         status=$?
+         echo "@@@ Done processing Jupyter notebook with exit status $status."
+      fi
+      
 
       if [ ! -f build/rapport.pdf ] || [ "$status" != "0" ]
           then
@@ -135,7 +170,7 @@ genere_fiche()
 }
 
 ###
-### MAIN
+### MAIN:q
 ###
 
 org=`pwd`

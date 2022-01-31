@@ -214,8 +214,12 @@ then
          echo "Trying to install Jupyter stuff..."
          conda install -f -c conda-forge jupyterlab ipywidgets ca-certificates=2020.10.14 conda=4.9.2 certifi=2020.6.20
       fi
+      echo "----------------------------------------------------------------------"
+      echo "Launching Jupyter in your web browser ... hit Ctrl-C when you're done."
+      echo "  >  jupyter-notebook $prm"
+      echo "----------------------------------------------------------------------"
       source $TRUST_ROOT/env_for_python.sh
-      jupyter-notebook &
+      jupyter-notebook $prm
       exit 0
    fi
    # Verifie la syntaxe des visu

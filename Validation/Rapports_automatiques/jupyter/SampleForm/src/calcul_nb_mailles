@@ -1,0 +1,7 @@
+#!/bin/bash 
+cat /dev/null >fin_total
+for f in `ls grad_*.data`
+do
+	nbr_maille=`grep -i nombre_de_noeud $data| $TRUST_Awk '{print ($2-1)*($3-1)*($4-1)}'`
+ $TRUST_Awk -v nbr_maille=$nbr_maille '{print ( nbr_maille,$2)}' $f >>  fin_total
+done

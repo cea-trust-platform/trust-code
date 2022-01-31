@@ -7,7 +7,7 @@
 # which relies itself on src/fileList.py
 #
 
-echo "usage $0 src/file.prm [archive_name]"
+echo "usage $0 {src/file.prm|file.ipynb} [archive_name]"
 
 # cd to the real directory in case of link
 cd `pwd -P`
@@ -15,15 +15,42 @@ prm=$1
 log_file=archive.log
 
 #
+# Check valid input
+# 
+if [ ! -f $prm ]; then
+   echo "File $prm does not exist!"
+   exit -1
+fi
+is_jupyter=false
+if [[ "$prm" == *.ipynb ]]; then
+  is_jupyter=true
+else 
+   if [[ ! "$prm" == *.prm ]]; then
+      echo "Invalid parameter to archive_resultat: $prm"
+      exit 
+   fi
+fi
+base_prm=$(basename $prm)
+
+DIR=`dirname $0`
+DIR=`(cd $DIR; pwd)`
+
+#
 # Prepare preserve dir and check computation has run:
 #
 rm -rf preserve archive.log
 mkdir preserve
-DIR=`dirname $0`
-DIR=`(cd $DIR; pwd)`
-$DIR/Run $prm -not_run  -o test.pdf 1>$log_file 2>&1
-[ ! -f build/test.pdf ] && echo "Unable to generate report. Exiting. Launch 'Run_fiche' before 'Run_fiche -archive'." && exit 1
-rm -rf build/test.pdf
+if ! $is_jupyter; then
+    $DIR/Run $prm -not_run  -o test.pdf 1>$log_file 2>&1
+    [ ! -f build/test.pdf ] && echo "Unable to generate report. Exiting. Launch 'Run_fiche' before 'Run_fiche -archive'." && exit 1
+    rm -rf build/test.pdf
+else  # For Jupyter, make it simpler, by default just check the build directory is there
+    echo "Jupyter archiving -- warning: it is **your** responsibility to have an up-to-date 'build' directory ..."
+    if [ ! -d build ]; then 
+       echo "'build' directory not found!!"
+       exit -1
+    fi
+fi
 
 ##
 ## Main
@@ -31,7 +58,7 @@ rm -rf build/test.pdf
 echo "ARCHIVE: Copying necessary files ..."
 cp build/version_utilisee build/temps_total build/used_files preserve
 cp -r src/* preserve
-cp build/$1 preserve   # In F5 for example, the PRM itself is generated from a Python script ...
+cp build/$base_prm preserve   # In F5 for example, the PRM itself is generated from a Python script ...
 cp -r build/.tmp preserve  # Mandatory for "make validation"
 chmod -R +w preserve
 cd build 
@@ -60,8 +87,16 @@ echo "ARCHIVE: Testing archive ..."
 tar zxf $archive.tgz
 cd preserve
 
-python $DIR/src/genererCourbes.py -p $prm --no_prereq -o ../old_rapport.pdf 1> ../$log_file 2>&1
-[ $? -ne 0 ] && echo "*** FAILED generating archive!! Last logs of (failed) report build can be seen in $log_file" &&  mv ../$archive.tgz ../${archive}_FAILED.tgz && exit 2
+if ! $is_jupyter; then
+    python $DIR/src/genererCourbes.py -p $base_prm --no_prereq -o ../old_rapport.pdf 1> ../$log_file 2>&1
+    status=$?
+else  # Jupyter notebook
+    curr_dir=`pwd`
+    env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter nbconvert --to pdf --output "$curr_dir/../old_rapport.pdf" --execute ../$base_prm 1>../$log_file 2>&1
+    status=$?
+fi
+
+[ $status -ne 0 ] && echo "*** FAILED generating archive!! Last logs of (failed) report build can be seen in $log_file" &&  mv ../$archive.tgz ../${archive}_FAILED.tgz && exit 2
 cd ..
 gzip -f old_rapport.pdf
 rm -rf preserve 

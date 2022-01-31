@@ -230,7 +230,7 @@ add_test_case_from_validation()
 	    rm -r -f *.unloaded 1>/dev/null 2>&1
 	    # Liste les fiches des cas tests existants completes (tous les .lml.gz sont la)
 	    for FICHE in `find * -type d -follow 2>/dev/null | $TRUST_Awk -F_jdd '{print $1}' | sort -u`
-	    do
+	  	  do
                let NB_FICHES=$NB_FICHES+1
                echo $ECHO_OPTS "-\c"
 	       ok=1
@@ -313,7 +313,7 @@ add_test_case_from_validation()
 			     #cleartool mv $DIRECTORY/$cas_test $NEW_DIRECTORY 1>/dev/null 2>&1
 			     #echo "Test case $cas_test is moved from $DIRECTORY/$cas_test to `pwd`/$NEW_DIRECTORY"
 			     echo "Test case $cas_test SHOULD be moved from $DIRECTORY/$cas_test to `pwd`/$NEW_DIRECTORY"
-			     echo cleartool mv $DIRECTORY/$cas_test $NEW_DIRECTORY
+			     echo "   (with 'git mv $DIRECTORY/$cas_test $NEW_DIRECTORY')"
 			  fi
 			  cd - 1>/dev/null 2>&1
 		       fi
@@ -332,7 +332,7 @@ add_test_case_from_validation()
 		  # Nombre de cas tests de la fiche	  
 		  if [ -d ${Rapports_auto_root}/$FICHE_ROOT ]
 		  then
-     		     nombre_cas_test_fiche2=`(cd ${Rapports_auto_root}/$FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_nb_cas_nr src/*prm -dest $TMP_BUILD)`
+             nombre_cas_test_fiche2=`(cd ${Rapports_auto_root}/$FICHE_ROOT;$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_nb_cas_nr . -dest $TMP_BUILD)`
 		  else
 		     nombre_cas_test_fiche2=0
 		  fi
@@ -364,9 +364,11 @@ add_test_case_from_validation()
       #############################################################################
       # Creation eventuelle de nouveaux cas tests depuis les fiches de validation #
       #############################################################################
-      for FICHE_ROOT in `cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.prm | $TRUST_Awk -F/src '!/build/ {print $1}'`
+	  
+      for FICHE_ROOT in `cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.prm | $TRUST_Awk -F/src '!/build/ {print $1}';
+	                     cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.ipynb -not -path "*/.ipynb_checkpoints*" | xargs dirname`
       do
-         ####################
+     ####################
 	 # Nouveau cas test #
 	 ####################
 	 if [ "`grep " $FICHE_ROOT " $FICHES`" = "" ] && [ ! -f ${Rapports_auto_root}/$FICHE_ROOT/src/fiche_exclu_nr ]
@@ -374,19 +376,23 @@ add_test_case_from_validation()
            msg="\nThe validation form $FICHE_ROOT is new or its number of test cases has changed ...\n"
            msg_warning="\n-----------------------------Warning--------------------------------------\n"
            msg_warning+="You can skip the validation form or a part of its test cases : \n"
-           msg_warning+="- To skip the validation form, add a file skip_prm into $FICHE_ROOT \n"
-           msg_warning+="- To not build one or several test cases, add them in the file liste_cas_exclu_nr in $FICHE_ROOT/src\n"
-           msg_warning+="- To build no test cases, add a file fiche_exclu_nr into $FICHE_ROOT/src\n"
+           msg_warning+="- To skip the validation form, add a file skip_prm into '$FICHE_ROOT' or '$FICHE_ROOT/src'\n"
+           msg_warning+="- To not build one or several test cases, add them in the file liste_cas_exclu_nr in '$FICHE_ROOT/src'\n"
+           msg_warning+="- To build no test cases, add a file fiche_exclu_nr into '$FICHE_ROOT/src'\n"
            msg_warning+="--------------------------------------------------------------------------\n"
            echo $ECHO_OPTS $msg $msg_warning
 	    FICHE_ROOT=${Rapports_auto_root}/$FICHE_ROOT
 	    cd $FICHE_ROOT
-	    prm=`ls $FICHE_ROOT/src/*prm`
-	    TMP_BUILD=`mktemp_ -d`
+		if ls $FICHE_ROOT/src/*.prm 1>/dev/null 2>&1; then
+	       prm=`ls $FICHE_ROOT/src/*prm`
+	    else
+		   prm=`ls $FICHE_ROOT/*.ipynb`
+		fi
+		TMP_BUILD=`mktemp_ -d`
 	    jeux=`$TRUST_ROOT/Validation/Outils/Genere_courbe/scripts/get_list_cas_nr $prm -dest $TMP_BUILD`
 	    if [ ! -d $TMP_BUILD/build ]
 	    then
-	       echo "Error during the build of the form $FICHE_ROOT" && exit -1
+	       echo "Error during the build of the form $FICHE_ROOT"; exit -1
 	    fi
 	    # Determination du repertoire de $TRUST_TESTS a utiliser:
 	    if [ "`echo $FICHE_ROOT | grep /Validant/`" != "" ]
@@ -421,7 +427,7 @@ add_test_case_from_validation()
 		  then
 		     if [ ! -f $TRUST_TESTS/$DIRECTORY/$test/lien_fiche_validation ]
 		     then
-                        org=`pwd`
+                org=`pwd`
 			if [ ! -d $TRUST_TESTS/$DIRECTORY/$test ]
 			then
 		           cd $TRUST_TESTS/$DIRECTORY
@@ -498,6 +504,9 @@ add_test_case_from_validation()
 ###################
 
 [ ${#TRUST_ROOT} = 0 ] && echo "TRUST environment not initialized. Go to the directory of TRUST installation and run: source ./env_TRUST.sh" && exit
+
+# Sourcing Python environment - needed for Jupyter validation forms.
+. $TRUST_ROOT/env_for_python.sh
 
 LANG=C
 PETSC_DEBUG=0 && [ $PETSC_DEBUG = 1 ] && echo "ATTENTION PETSC_DEBUG MIS A 1 !!!" 

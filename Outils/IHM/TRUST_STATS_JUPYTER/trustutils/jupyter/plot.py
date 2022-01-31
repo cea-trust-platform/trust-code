@@ -13,9 +13,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy  as np 
 import os
-import re 
+import re
+import math
 from trustutils.jupyter.filelist import FileAccumulator
-mon_dictionnaire = {"x": "0", "y": "1", "z": "2",  "Temperature": "0"}
+from trustutils.jupyter.run import BUILD_DIRECTORY
+mon_dictionnaire = {"x": "0", "y": "1", "z": "2"}
+
+pd.set_option('display.notebook_repr_html', True)
 
 def saveFileAccumulator(data):
     """
@@ -30,13 +34,14 @@ def saveFileAccumulator(data):
     ------- 
     """
         
-    origin=os.getcwd(); 
-    path=origin+"/build/"
+    origin=os.getcwd();
+    path=os.path.join(origin,BUILD_DIRECTORY)
     os.chdir(path)
         
     FileAccumulator.active = True 
     FileAccumulator.Append(data)
-    
+    FileAccumulator.WriteToFile("used_files", mode="a")
+
     os.chdir(origin)
     
 def loadText(data,index_column=0,nb_column=-1,transpose=True,dtype="float", skiprows=0):
@@ -65,23 +70,52 @@ def loadText(data,index_column=0,nb_column=-1,transpose=True,dtype="float", skip
     """
         
     origin=os.getcwd(); 
-    path=origin+"/build/"
+    path=os.path.join(origin,BUILD_DIRECTORY)
     os.chdir(path)
     
     if nb_column==-1:
         nb=None
     else:
         nb=index_column+nb_column
-    
-    if transpose:
-        matrix = np.loadtxt(data,dtype=dtype, skiprows=skiprows)[index_column:nb].T
-    else:
-        matrix = np.loadtxt(data,dtype=dtype, skiprows=skiprows)[index_column:nb]
+
+    try:
+        if transpose:
+            matrix = np.loadtxt(data,dtype=dtype, skiprows=skiprows).T[index_column:nb]
+        else:
+            matrix = np.loadtxt(data,dtype=dtype, skiprows=skiprows)[index_column:nb]
+    except:
+        matrix = np.loadtxt(data,dtype=dtype, skiprows=skiprows)
         
     os.chdir(origin)
     
     saveFileAccumulator(data)
     return(matrix)
+
+def readFile(name):
+    """
+    Method for loading and saving files.
+        
+    Parameters
+    --------- 
+    data : str 
+        name of the file we want to save. 
+
+    Returns
+    ------- 
+    list of lines
+    """
+        
+    origin=os.getcwd(); 
+    path=os.path.join(origin,BUILD_DIRECTORY)
+    os.chdir(path)
+
+    f=open(name,"r")
+    data=f.read().splitlines()
+    
+    os.chdir(origin)
+    saveFileAccumulator(name)
+
+    return(data)
 
 def lastMoment(name):
     """
@@ -132,7 +166,7 @@ class Graph:
     Graph is a class to plot .son file
     
     """
-    def __init__(self,title=None,subtitle=None,nX=1,nY=1,size=15):
+    def __init__(self,title=None,subtitle=None,nX=1,nY=1,size=[12,10]):
         """
 
         Constructor of the class Graph.
@@ -147,8 +181,8 @@ class Graph:
             number of plot in the x axe. 
         nY : int 
             number of plot in the Y axe. 
-        size : int 
-            Image's size of the plot. 
+        size : float*2 
+            Image's size (x,y) of the plot. 
         
         """
         self.x_label=""
@@ -180,7 +214,6 @@ class Graph:
         
         """
         if(self.nX==1 & self.nY==1):
-            #raise ValueError("Use plot and not plot2!!!")
             return(1) 
         elif((self.nX==1)|(self.nY==1)): 
             return(max(self.xIndice,self.yIndice))
@@ -191,15 +224,20 @@ class Graph:
     def _reset(self):  
         """ 
         
-        Methode to reinitialice the plot.
+        Methode to reinitialize the plot.
         
         """  
-        self.fig,self.axs=plt.subplots(self.nY,self.nX,figsize=(self.size*self.nX,self.size))
+        plt.rc('xtick', labelsize=14) # Font size 
+        plt.rc('ytick', labelsize=14)
+        plt.rcParams.update({'font.size': 14})
+        self.fig,self.axs=plt.subplots(self.nX,self.nY,figsize=(self.size[0]*self.nY,self.size[1]*self.nX))
+        if self.nX*self.nY!=1: 
+            for ax in self.axs.reshape(-1):
+                ax.axis('off')
+            self.fig.suptitle(self.subtitle) 
         self.addPlot(self.coordonee()) 
-        if self.nX*self.nY!=1: self.fig.suptitle(self.subtitle) 
 
-    def add(self,x,y,coordonee=0,marker="-",color=None,label="",title=None):
-        #verifie si coordone 0 marche
+    def add(self,x,y,marker="-",label=None,title=None,xIndice=None,yIndice=None,**kwargs):
         """
         
         Methode to add a curve to the plot from a point sonde.
@@ -212,29 +250,31 @@ class Graph:
             y coordinates.  
         coordonee : int or int array
             coordinates in the subplotlist.  
-        color : str
-            collor of the curve.  
         label : str
-            label of the curve.  
+            label of the curve.
         title : str
             title of the curve.  
+        xlabel : str
+            label of the xaxis.
+        ylabel : str
+            label of the yaxis.
+        kwargs : dictionary
+            properties of line for matplotlib.pyplot.plot
             
         """ 
-        if not (title is None): self.title=title
+        if not title is None: self.title=title
+        if not xIndice is None: self.xIndice = xIndice
+        if not yIndice is None: self.yIndice = yIndice
+       
+        self.addPlot(self.coordonee()) 
         
-        self.addPlot(coordonee) 
         ### On plot les données ### 
+        self.subplot.plot(x,y,marker,label=label,**kwargs)
         
-        if color is None: 
-                self.subplot.plot(x,y,marker,label=label)
-        else: 
-                self.subplot.plot(x,y,marker,label=label,color=color) 
-        
+        if (label): self.subplot.legend()
 
-        self.subplot.legend()
-        ## On ajoute des titres 
+        ## On ajoute des titres
         self.subplot.set(xlabel=self.x_label,ylabel=self.y_label)
-        self.subplot.grid()
             
     def addPlot(self,coordonee,title=""):   
         """
@@ -253,19 +293,22 @@ class Graph:
             self.title=title
             
         if(self.nX==1 & self.nY==1):
-            #raise ValueError("Use plot and not plot2!!!")
             self.flag=True
-        elif (self.nX==1)|(self.nY==1): self.xIndice=coordonee
+        elif (self.nX==1)|(self.nY==1): 
+            self.xIndice=coordonee
         else: 
             self.xIndice=coordonee[0]
             self.yIndice=coordonee[1]
             
         if self.flag : self.subplot=self.axs
         else: self.subplot=self.axs[self.coordonee()]
-        self.subplot.grid()  
-        self.subplot.set_title(self.title)  
+
+        self.subplot.axis('on')
+        self.subplot.grid(visible=True)  
+        self.subplot.set_title(self.title)
+
         
-    def addPoint(self,data,color=None,marker="-",var="x",start=0,end=1000000000000,label=None,param="Time"):
+    def addPoint(self,data,marker="-",var="x",start=0,end=1000000000000,label="",func=None,**kwargs):
         """
         
         Methode to add a curve to the plot from a point sonde.
@@ -274,34 +317,34 @@ class Graph:
         --------- 
         data : str
             Adress of the file.
-        color : str
-            Color of the curve.
         marker : str
             symbol of the ploted line.
         var :  str
-            coordinate we want to plor.
+            coordinate we want to plot.
         start : float
             Time start.
         end :  float
             Time end.
         label : str
             title of the curve .
-        param : str
-            parameter of the curve .
+        func : function
+            function to apply to data before plot (ex: computation of error)
+        kwargs : dictionary
+            properties of line for matplotlib.pyplot.plot
             
         """
         
-        if label==None:
-            label=data
+        if label=="":
+            label=data.split(".")[0]
         
-        donne =tf.SonPOINTFile("build/" + data, None) 
-        
-        
+        path=os.path.join(BUILD_DIRECTORY,data)
+        donne =tf.SonPOINTFile(path, None) 
+         
         saveFileAccumulator(data)
         #filelist.FileAccumulator.AppendFromProbe("build/"+data)
         ### On recupere le nom des variables ### 
-        self.y_label=donne.getEntries()[0]   
-        self.x_label=donne.getXLabel()
+        self.y_label=donne.getEntries()[0] 
+        self.x_label=donne.getXLabel() 
         T=[]   
         x=[]
         y=[]
@@ -311,7 +354,7 @@ class Graph:
             
         t=donne.getValues(self.y_label)[0] 
         
-        tmp=re.findall(r"[-+]?\d*\.\d+|\d+", donne.getEntries()[0])
+        tmp=re.findall(r"[-+]?\d*\.\d+|[-+]?\d+", donne.getEntries()[0])
         x.append(float(tmp[0]))
         y.append(float(tmp[1]))
         varTMP=len(y) ### Variable pour connaitre la taille du vecteur ### 
@@ -330,19 +373,173 @@ class Graph:
         for i in range(len(T)):
             r[str(i)]=T[i]
         
-        r=r[(r["Time"]<end)&(r["Time"]>start)] 
+        r=r[(r["Time"]<=end)&(r["Time"]>=start)] 
+        
+        X=np.array(r["Time"])
+        Y=np.array(r[mon_dictionnaire[var]])
+        
+        if not func is None:
+            Y=func(X,Y)
+        
         ### On plot les données ### 
-        if color is None: 
-                self.subplot.plot(list(r[param]),list(r[mon_dictionnaire[var]]),marker,label=label)
-        else: 
-                self.subplot.plot(list(r[param]),list(r[mon_dictionnaire[var]]),marker,label=label,color=color) 
+        self.subplot.plot(X,Y,marker,label=label,**kwargs)
         
 
-        self.subplot.legend()
+        if not label is None:
+            self.subplot.legend()
         ## On ajoute des titres 
         self.subplot.set(xlabel=self.x_label,ylabel=self.y_label)
     
-    ## Faut tester
+    def addSegment(self,data,value=None,marker="-",label="",var="x",func=None,**kwargs):
+        """
+        
+        Methode to add a curve to the plot from a segment sonde.
+        
+        Parameters
+        ---------  
+        data : str
+            Adress of the file.
+        value : str
+            value of the parameter. If None, it equals to zero.
+        marker: str
+            symbol of the ploted line.
+        label : str
+            title of the curve .
+        var :  str
+            component we want to plot.
+        nb : float
+            erreur tolerated between the comparaison to find the right data.
+        func : function
+            function to apply to data before plot (ex: computation of error)
+        kwargs : dictionary
+            properties of line for matplotlib.pyplot.plot
+
+        Returns
+        ------- 
+        
+        """ 
+       
+        path=os.path.join(BUILD_DIRECTORY,data)
+        if label=="":
+            label=data.split(".")[0]
+        # On plot le dernier instant 
+        if(value==None):
+            value=float(lastMoment(path)) 
+        donne =tf.SonSEGFile(path, None)  
+        
+        saveFileAccumulator(data)
+        
+        # On recupere le nom des variables, leur dimension et la coordonnee que l'on veut tracer
+        coord = int(mon_dictionnaire[var])
+        ncompo = donne.getnCompo()
+        self.y_label=donne.getEntries()[coord].split()[0]
+        self.x_label=donne.getXLabel()
+        self.start, self.end = donne.getXTremePoints()
+
+        t=donne.getValues(donne.getEntries()[0])[0]
+        ## find closest value of t
+        idx = (np.abs(t - value)).argmin()
+        closest_value = t[idx]
+        
+        x=[]
+        y=[]
+        z=[]
+        norm = []
+        T = []
+        diff = [0.]*3
+
+        for i in donne.getEntries()[coord::ncompo]:
+            tmp=re.findall(r"[-+]?\d*\.\d+|[-+]?\d+", i)
+            x.append(float(tmp[0]))
+            diff[0] = self.start[0] - float(tmp[0])
+            y.append(float(tmp[1]))
+            diff[1] = self.start[1] - float(tmp[1])
+            varTMP=len(y) ### Variable pour connaitre la taille du vecteur ###
+            if len(tmp)>2:
+                z.append(float(tmp[2]))
+                diff[2] = self.start[2] - float(tmp[2])
+            else:   
+                z.append(list(np.zeros(varTMP))[0])
+            norm.append(math.sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2]))
+            T.append(list(donne.getValues(i)[1])[idx])
+
+        orient = donne.getOrientation()
+        df = pd.DataFrame({"x": x, "y": y,"z":z,"curvi.":norm,"value":T})
+        
+        # On plot les données
+        X=np.array(df[orient])
+        Y=np.array(df["value"]) 
+
+        if not func is None:
+            Y=func(X,Y)
+
+        self.subplot.plot(X,Y,marker,label=label,**kwargs)
+
+        if not label is None:
+            self.subplot.legend()
+        ## On ajoute des titres 
+        self.subplot.set(xlabel=self.x_label,ylabel=self.y_label)
+    
+    def addResidu(self,data,marker="-",var="residu=max|Ri|",start=0,end=1000000000000,label="",**kwargs):
+        """
+        
+        Methode to add a curve to the plot from a dt_ev file.
+        
+        Parameters
+        --------- 
+        data : str
+            Adress of the file.
+        color : str
+            Color of the curve.
+        marker : str
+            symbol of the ploted line.
+        var :  str
+            coordinate we want to plot.
+        start : float
+            Time start.
+        end :  float
+            Time end.
+        label : str
+            title of the curve .
+            
+        """
+        
+        if label=="":
+            label=data.split(".")[0]
+        
+        path=os.path.join(BUILD_DIRECTORY,data)
+        donne =tf.DTEVFile(path, None) 
+        
+        
+        saveFileAccumulator(data)
+        #filelist.FileAccumulator.AppendFromProbe("build/"+data)
+        ### On recupere le nom des variables ### 
+        self.y_label=var
+        self.x_label=donne.getXLabel() 
+       
+        r = pd.DataFrame({"Time": donne.getValues(var)[0], var: donne.getValues(var)[1]})
+
+        r=r[(r["Time"]<=end)&(r["Time"]>=start)]
+        
+        ### On plot les données ### 
+        self.subplot.plot(list(r["Time"]),list(r[self.y_label]),marker,label=label,**kwargs)
+
+        if not label is None:
+            self.subplot.legend()
+        ## On ajoute des titres 
+        self.subplot.set(xlabel=self.x_label,ylabel=self.y_label)
+    
+    def scale(self,xscale='linear',yscale='linear'):
+        """
+        xscale : str
+            The axis scale type to apply to the x-axis
+        yscale : str
+            The axis scale type to apply to the y-axis
+        """
+        
+        self.subplot.set_xscale(xscale)
+        self.subplot.set_yscale(yscale)
+
     def visu(self,xmin=None,xmax=None,ymin=None,ymax=None):
         """
         
@@ -358,151 +555,14 @@ class Graph:
             Minimun of the ploted interval of y.
         ymax : float
             Maximun of the ploted interval of y.
+        coordonee : 
+            coordinates in the subplotlist.  
             
         """ 
-        if self.nY*self.nX==1: 
-            plt.legend()
-            plt.gca().set_xlim([xmin,xmax])
-            plt.gca().set_ylim([ymin,ymax]) 
-            
-        plt.show()   
-        
-    ## addSegment
-    def addSegment(self,data,antecedant,param="Time",value=None,start=0,end=1000000,color=None,marker="-",label=None,var="x",nb=1):
-        """
-        
-        Methode to add a curve to the plot from a segment sonde.
-        
-        Parameters
-        ---------  
-        data : str
-            Adress of the file.
-        antecedant : str
-            variable
-        param : str
-            parameter we consider constant .
-        value : str
-            value of the parameter. If None, it equals to cero.
-        start : float
-            Time start.
-        end : float 
-            Time end.
-        color: str
-            Color of the curve.
-        marker: str
-            symbol of the ploted line.
-        label : str
-            title of the curve .
-        var : int
-            coordinate we want to plor.
-        nb : float
-            erreur tolerated between the comparaison to find the right data.
-
-        Returns
-        ------- 
-        
-        """ 
-        
-        if label==None:
-            label=data
-        # On plot le dernier instant 
-        if(value==None) and (param=="Time"):
-            value=float(lastMoment("build/"  + data)) 
-        elif(param!="Time"):
-            value=0
-        donne =tf.SonSEGFile("build/" + data, None)  
-        
-        saveFileAccumulator(data)
-        # On recupere le nom des variables 
-        self.y_label=donne.getEntries()[0]   
-        self.x_label=donne.getXLabel()
-        x=[]
-        y=[]
-        z=[]
-        t=donne.getValues(self.y_label)[0]
-        T=[]      
-        for i in donne.getEntries():
-            tmp=re.findall(r"[-+]?\d*\.\d+|\d+", i)
-            x.append(float(tmp[0]))
-            y.append(float(tmp[1]))
-            varTMP=len(y) ### Variable pour connaitre la taille du vecteur ### 
-            if len(tmp)>2:
-                z.append(tmp[2])
-            else:   
-                z.append(list(np.zeros(varTMP))[0])
-        
-        for i in donne.getEntries(): 
-            T.append(list(donne.getValues(i)[1]))
-        T=np.resize(np.array(T).T,(len(T)*len(T[0])))
-        df = pd.DataFrame({"x": x, "y": y,"z":z})
-        dt = pd.DataFrame({"Time": t}) 
-        r=pd.merge(df.assign(key=0), dt.assign(key=0), on='key').drop('key', axis=1)
-        r=r.sort_values(by=['Time','x','y','z'])   
-        tempVar=0
-        for i in T:
-            r[str(tempVar)]=T
-            tempVar+=tempVar
-            
-        r=r[(start<=r["Time"])&(end>=r["Time"])] 
-        # On plot les données
-        #print(r)
-        
-        condition=(round(r[param],nb)==round(value,nb))
-        #condition=(abs(r[param]-value)<0.00000000000000001) 
-        if(color==""):
-            self.subplot.plot(list(r[condition][antecedant]),list(r[condition][mon_dictionnaire[var]]),marker,label=label)
-        else :
-            self.subplot.plot(list(r[condition][antecedant]),list(r[condition][mon_dictionnaire[var]]),marker,label=label,color=color)  
-
-
-
-        self.subplot.legend()
-        ## On ajoute des titres 
-        self.subplot.set(xlabel=self.x_label,ylabel=self.y_label)
-        
-    ## addSegment
-    def addSegment2(self,data,value="x",color=None,marker="-",label=None):
-        """
-        
-        Methode to add a curve to the plot from a segment sonde.
-        
-        Parameters
-        ---------  
-        data : str
-            Adress of the file.
-        value : str
-            axe 
-        color: str
-            Color of the curve.
-        Marker: str
-            symbol of the ploted line.
-        var :
-            coordinate we want to plor. 
-        label : str
-            title of the curve . 
-
-        Returns
-        ------- 
-        
-        """ 
-        
-        if label==None:
-            label=data
-            
-        donne = tf.SonSEGFile("build/" +data, None) 
-        dat = donne.getEntriesSeg() 
-        x, y = donne.getValues(dat[int(mon_dictionnaire[value])])  
-        if(color==""):
-            self.subplot.plot(x,y,marker,label=label)
-        else :
-            self.subplot.plot(x,y,marker,label=label,color=color)  
-        
-        saveFileAccumulator(data)
-        self.subplot.legend()
-        ## On ajoute des titres 
-        self.subplot.set(xlabel=self.x_label,ylabel=self.y_label)
-         
-    def label(self,x_label,y_label):
+        self.subplot.set_xlim([xmin,xmax])
+        self.subplot.set_ylim([ymin,ymax]) 
+ 
+    def label(self,x_label,y_label,**kwargs):
         """
         
         Methode to change labels.  
@@ -513,14 +573,34 @@ class Graph:
             Label of x.
         y_label :str
             Label of y.
+        
+        Returns
+        ------- 
+        
+        """
+        self.subplot.set(xlabel=x_label,ylabel=y_label,**kwargs)
+    
+    def legend(self,**kwargs):
+        """
+        
+        Methode to change labels.  
+
+        Parameters
+        ---------  
+        coordonee : 
+            coordinates in the subplotlist.
+        **kwargs :
+            option of ax.legend
 
         Returns
         ------- 
         
         """
-        self.subplot.set(xlabel=x_label,ylabel=y_label)
+        self.subplot.legend(**kwargs)
+
+     
         
-class Table: #ancian tableau  
+class Table: #ancien tableau  
     r"""
     
     Class to plot a Table.
@@ -586,7 +666,8 @@ class Table: #ancian tableau
         ------- 
         
         """
-        self.addLigne([list(np.loadtxt("build/" + data, dtype=float ))],name)
+        path=os.path.join(BUILD_DIRECTORY,data)
+        self.addLigne([list(np.loadtxt(path, dtype=float ))],name)
         saveFileAccumulator(data)
         
     def loadPoint(self,data,name):
@@ -605,10 +686,35 @@ class Table: #ancian tableau
         ------- 
         
         """
-        tmp=tf.SonPOINTFile("build/"+data, None) 
+        path=os.path.join(BUILD_DIRECTORY,data)
+        tmp=tf.SonPOINTFile(path, None) 
         saveFileAccumulator(data)
         
         a=tmp.getValues(tmp.getEntries()[0])[1][1]
         self.addLigne([[a]],name) 
     
+    def sum(self,name):
+        """ 
+        
+        Methode to sum data in a column.
+
+        Parameters
+        --------- 
+        name : str 
+            Name of the column. 
+
+        Returns
+        ------- 
+        
+        """
+        
+        self.df[name] = self.df[name].astype(np.float64)
+        total = self.df[name].sum()
+        row = [""]*len(self.df.columns)
+        index = self.df.columns.get_loc(name)
+        row[index] = total
+        self.addLigne([row],"Total")
+
+    def print(self):
+        return(self.df)
      

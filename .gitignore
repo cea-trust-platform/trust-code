@@ -19,6 +19,7 @@ __pycache__
 .toto
 .check_sources.ok
 make.lock
+.ipynb_checkpoints/
 
 # XDATA stuff
 
@@ -82,4 +83,6 @@ doc/tmp_files
 .settings/
 .pydevproject
 
+# Jupyter
+.ipynb_checkpoints/
 

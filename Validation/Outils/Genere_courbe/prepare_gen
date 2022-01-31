@@ -14,7 +14,7 @@ chmod -R +w *
 if [ -f prepare ]
 then
    echo $ECHO_OPTS "==============================================="
-   echo $ECHO_OPTS "-> Run script prepare in the build directory..."
+   echo $ECHO_OPTS "-> Run prepare script in the build directory..."
    echo $ECHO_OPTS "==============================================="
    chmod +x prepare
    # Detection pour empecher que le script triou, trust, make_PAR.data ou $exec soit utilise dans le prepare

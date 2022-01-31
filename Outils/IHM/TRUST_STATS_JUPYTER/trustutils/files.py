@@ -202,9 +202,9 @@ class TrustFile(object):
             else:
                 break
         # No data, just a header:
-        if len(arrPy[i:-1]) == 0:
+        if len(arrPy[i:]) == 0:
             return remainData, npArr
-        arrData = " ".join(arrPy[i:-1])
+        arrData = " ".join(arrPy[i:])
         arrData = np.fromstring(arrData, dtype=np.float64, sep=' ')
         if arrData.shape[0] % self._ncols:
             raise Exception("Misformatted file: the line below has an invalid numb of cols:\n%s" % a)
@@ -330,6 +330,14 @@ class SonFile(TrustFile):
         # Reset last index:
         self._lastIndex = dict( list(zip(list(self._entries.keys()), [-1] * len(self._entries))) )
 
+    def getnCompo(self):
+        status = self._queryAndUpdateStatus(update=False)
+        if status == "invalid":
+            return []
+        if not len(self._entries):
+            hdr = self._populateFromHeader()
+        return self._ncompo
+
 class SonPOINTFile(SonFile):
     def __init__(self, filePath, refPath):
         SonFile.__init__(self, filePath, refPath)
@@ -394,6 +402,12 @@ class SonSEGFile(SonFile):
         else:
             self._orient = "curvi."
         self._start, self._end = start, end
+    
+    def getXTremePoints(self):
+        return self._start, self._end
+
+    def getOrientation(self):
+        return self._orient
 
     def getXLabel(self):
         return "Coordinate (%s)" % self._orient

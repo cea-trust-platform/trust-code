@@ -30,11 +30,11 @@ Scheme_euler_explicit sch
 Read sch
 {
 	tinit 0
-	tmax 2.5
+	tmax 10
 	dt_max 5.e-3
 	dt_impr 5.e-1
-	dt_sauv 1
-	seuil_statio 1.e-5
+	dt_sauv 10
+	seuil_statio 1.e-8
 	dt_min 5e-5
     nb_pas_dt_max 10
 }
@@ -97,6 +97,10 @@ Read pb
 		{
 			pression_pa elem
 			vitesse som
+		}
+		Probes
+		{
+			sonde_v     nodes vitesse   periode 1. segment 10 -1. -1. -1. 1. 1. 1.
 		}
 	}
 }

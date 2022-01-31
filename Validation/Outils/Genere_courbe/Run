@@ -9,7 +9,7 @@
 usage()
 {
   echo "Usage:"
-  echo "  `dirname $0`/Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -parallel_sjob ] [ -nb_pas_dt_max N ] [ -archive ] $*"
+  echo "  `dirname $0`/Run ./src/fichier.prm [ -help ] [  -dest dir dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -parallel_sjob ] [ -nb_pas_dt_max N ] [ -archive ] [ -prepare_only ] $*"
   echo "  the other options are passed to genererCourbes.py"
   exit 0
 }
@@ -42,10 +42,31 @@ fi
 [ "$1" = "-help" ] && usage
 shift
 
-[ "$1" = "-help" ] && usage
+# Est ce une fiche Jupyter?
+is_jupyter=false
+if [[ "$prm" == *.ipynb ]]; then
+  is_jupyter=true
+fi
+
+# If a directory is provided as main argument, try to find the PRM or Jupyter notebook associated to it.
+if [ "$prm" != "-help" ] && [ -d $prm ]; then
+  if ls $prm/src/*.prm 1>/dev/null 2>&1; then 
+    prm=`ls $prm/src/*.prm`
+  else 
+    if ls $prm/*.ipynb 1>/dev/null 2>&1; then
+      prm=`ls $prm/*.ipynb`
+      is_jupyter=true
+    else
+      echo "Neither a PRM nor a Jupyter notebook??"
+      exit -1
+    fi
+  fi
+fi
+
 run=1
 parallel=0
 orig="."
+prepare_only=0
 if [ "$1" = "-dest" ]
 then
     orig=`pwd`
@@ -65,7 +86,14 @@ fi
 [ "$1" = "-parallel_run" ] && parallel=1 && shift
 [ "$1" = "-parallel_sjob" ] && parallel=2 && shift
 [ "$1" = "-nb_pas_dt_max" ] && shift && NBPASMAX=$1 && shift
-prm=`basename $prm .prm`.prm
+[ "$1" = "-prepare_only" ] && run=0 && shift && prepare_only=1
+
+if $is_jupyter ; then
+  prm=`basename $prm .ipynb`.ipynb
+else 
+  prm=`basename $prm .prm`.prm
+fi
+
 if [ "$1" = "-archive" ] 
 then
   bash $DIR/archive_resultat $prm
@@ -76,9 +104,9 @@ then
     echo "-> Error! Directory src does not exist."
     exit
 fi
-if [ ! -f "$orig/src/$prm" ]
+if [ ! -f "$orig/src/$prm" ] || $is_jupyter && [ ! -f "$orig/$prm" ]
 then
-    echo "-> Error! Report template file $prm does not exist."
+    echo "-> Error! Report template file $orig/(src/)$prm does not exist."
     exit
 fi
 # Prevent parallel_run 
@@ -92,7 +120,6 @@ then
   echo Sserver detected. Will use Salloc.
 fi
 
-
 # Copy content of src directory to build directory go to ./build directory and
 # execute "./prepare" script (if exists).
 # WARNING: prepare_gen is executed even if -not_run is given
@@ -100,6 +127,13 @@ fi
 if [ $run -ne -2 ]
     then
     $DIR/prepare_gen $orig || exit -1
+    if $is_jupyter; then
+       # Execute Python cells of the Jupyter notebook up to the runCases() invocation - this is now part of the 'prepare' process
+       if ! python $DIR/get_nr_cases_jup.py "$orig/$prm" 1>/dev/null 2>&1; then
+         echo "Failed runing begining of Jupyter Notebook."
+         exit -1 
+       fi
+    fi
     if [ "$NBPASMAX" != "" ] 
     then
     echo "We modify .data to run only on $NBPASMAX time step"
@@ -113,7 +147,7 @@ if [ $run -ne -2 ]
     done
     fi
     # dans le cas ou on copie le cas test on verifie que le prm est identique dans src et dans build (cas des prm generes par prepare)
-    if [ $run -eq -1 ]
+    if [ $run -eq -1 ] && ! $is_jupyter
     then
     modif=`diff $orig/src/*prm build/${prm}`
     if [ "$modif" != "" ]
@@ -126,12 +160,27 @@ if [ $run -ne -2 ]
     fi
     fi
 else
-# $DIR/prepare_gen $orig
     mkdir -p build
     cd build
     ln -sf $orig/src/* .
     cd ..
 fi
+
+if [ $prepare_only -eq 1 ]; then
+   exit 0
+fi
+
+## From this point onwards, Jupyter is not supported by this script - 
+## (the begining of the script is kept since it is responsible for runnning the prepare script
+## and ameding the .data files ...)
+if $is_jupyter ; then
+   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+   echo "Jupyter notebooks should not be executed with the 'Run' script!"
+   echo "Use Run_fiche instead."
+   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+   exit -1
+fi
+
 # If "run" requested, run trust testcases and PreRequis command found in the
 # header of the .prm file
 
@@ -140,7 +189,7 @@ if [ $run -eq 1 ]
 then
   python $DIR/src/genererCourbes.py --get_cmd_to_run=yes  -p $prm $*   > cmds
   python $DIR/scripts/get_nb_procs.py $prm  > nb_procs || exit -1
-
+    
   get_version
   echo "================================================"
   echo "-> Running commands in the ./build/cmds file ..."
@@ -199,7 +248,14 @@ then
 
         fi
      done
+     
+     ##
+     ##  NOW wait FOR ALL BACKGROUND PROCESSES TO TERMINATE
+     ##
      wait
+     ##
+     ##
+     ##
 
      # Lancement du post_run 
      bash ./post_run.sh

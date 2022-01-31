@@ -4,4 +4,20 @@ DIR=`(cd $DIR;pwd)`
 mot=liste_cas_nr
 
 
-$DIR/../Run $* -get_nb_cas_nr | grep $mot | sed "s/$mot //" | wc -w
+if [[ "$1" == *.prm ]] || ls $1/src/*.prm 1>/dev/null 2>&1; then
+  $DIR/../Run $* -get_nb_cas_nr | grep $mot | sed "s/$mot //" | wc -w
+else
+  # Jupyter?
+  ze_file=""
+  if [[ "$1" == *.ipynb ]]; then           ze_file=$1;              fi
+  if ls $1/*.ipynb 1>/dev/null 2>&1; then  ze_file=`ls $1/*.ipynb`; fi
+  if [ $ze_file != "" ]; then
+    # Some notebooks invoke local Python scripts, so amend PYTHONPATH temporarily:
+    src_dir=`readlink -f $(dirname $ze_file)`/src
+    PYTHONPATH=$src_dir:$PYTHONPATH
+    python $DIR/get_nr_cases_jup.py $ze_file 2>/dev/null | grep "@@@CAS_NR_JY@@@" | wc -l
+  else
+    echo "Something wrong ... neither PRM nor Jupyter!"
+    exit -1
+  fi
+fi
