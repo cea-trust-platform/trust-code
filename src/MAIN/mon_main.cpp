@@ -24,6 +24,11 @@
 #include <Statistiques.h>
 #include <communications.h>
 #include <petsc_for_kernel.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+#include <rocalution.hpp>
+#pragma GCC diagnostic pop
+using namespace rocalution;
 #include <stat_counters.h>
 #include <info_atelier.h>
 #include <unistd.h> // Pour chdir for other compiler
@@ -109,7 +114,9 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
     }
 #endif
 #endif
-
+#ifdef ROCALUTION_ROCALUTION_HPP_
+  init_rocalution();
+#endif
   return 1;
 }
 
@@ -251,6 +258,9 @@ void mon_main::finalize()
 #endif
       PetscFinalize();
     }
+#endif
+#ifdef ROCALUTION_ROCALUTION_HPP_
+  stop_rocalution();
 #endif
 #ifdef MPI_
   if (trio_began_mpi_)

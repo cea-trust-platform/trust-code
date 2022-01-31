@@ -24,10 +24,14 @@
 #define Solv_rocALUTION_included
 
 #include <SolveurSys_base.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+#include <rocalution.hpp>
+#pragma GCC diagnostic pop
+using namespace rocalution;
 
 class Solv_rocALUTION : public SolveurSys_base
 {
-
   Declare_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION);
 
 public :
@@ -39,7 +43,10 @@ public :
   int resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x) override;
 
 protected :
-
+  LocalVector<double> sol;
+  LocalVector<double> rhs;
+  LocalVector<double> res;
+  LocalMatrix<double> mat;
 };
 #endif
 

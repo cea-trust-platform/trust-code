@@ -21,11 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Solv_rocALUTION.h>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Woverloaded-virtual"
-#include <rocalution.hpp>
-#pragma GCC diagnostic pop
-using namespace rocalution;
+#include <Matrice_Morse.h>
+#include <DoubleVect.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION,"Solv_rocALUTION",SolveurSys_base);
 
@@ -43,23 +40,76 @@ Entree& Solv_rocALUTION::readOn(Entree& is)
 
 Solv_rocALUTION::Solv_rocALUTION()
 {
-#ifdef ROCALUTION_ROCALUTION_HPP_
-  init_rocalution();
-#endif
 }
 Solv_rocALUTION::~Solv_rocALUTION()
 {
-#ifdef ROCALUTION_ROCALUTION_HPP_
-  stop_rocalution();
-#endif
 }
 
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)
 {
-  Cerr << "Solv_rocALUTION::resoudre_systeme, Not implemented yet." << finl;
-  Process::exit();
 #ifdef ROCALUTION_ROCALUTION_HPP_
-  // ToDo
+
+  // Build matrix
+  const Matrice_Morse& csr = ref_cast(Matrice_Morse, a);
+  ArrOfInt tab1_(csr.get_tab1()), tab2_(csr.get_tab2());
+  ArrOfDouble coeff_(csr.get_coeff());
+  mat.SetDataPtrCSR((int**)tab1_.addr(), (int**)tab2_.addr(), (double**)coeff_.addr(), "a", coeff_.size_array(), tab1_.size_array(), tab1_.size_array());
+
+  // Move objects to accelerator
+  mat.MoveToAccelerator();
+  sol.MoveToAccelerator();
+  rhs.MoveToAccelerator();
+  res.MoveToAccelerator();
+
+  // Allocate vectors
+  sol.Allocate("sol", mat.GetN());
+  rhs.Allocate("rhs", mat.GetM());
+  res.Allocate("res", mat.GetN());
+
+  // Linear Solver
+  CG<LocalMatrix<double>, LocalVector<double>, double> ls;
+
+  // Preconditioner
+  MultiColoredSGS<LocalMatrix<double>, LocalVector<double>, double> p;
+  p.SetRelaxation(1.6); // ToDo omega
+
+  // Build rhs and initial solution:
+  assert(mat.GetN()==b.size());
+  assert(mat.GetN()==x.size());
+  DoubleVect b_(b);
+  rhs.SetDataPtr((double**)b_.addr(), "rhs", b.size_array());
+  DoubleVect x_(x);
+  sol.SetDataPtr((double**)x_.addr(), "sol", x.size_array());
+
+  // Set solver operator
+  ls.SetOperator(mat);
+  ls.SetPreconditioner(p);
+  ls.Build();
+  ls.Verbose(2); // Verbosity output
+  //ls.InitMinIter(20);
+
+  // Print matrix info
+  mat.Info();
+
+  // Start time measurement
+  double tick, tack;
+  tick = rocalution_time();
+
+  // Solve A x = rhs
+  ls.Solve(rhs, &sol);
+
+  // Stop time measurement
+  tack = rocalution_time();
+  Cout << "Solver execution:" << (tack - tick) / 1e6 << " sec" << finl;
+
+  // Clear solver ?
+  ls.Clear();
+
+  // Check residual again e=||Ax-rhs||
+  mat.Apply(sol, &res);
+  res.ScaleAdd(-1.0, rhs);
+  Cout << "||Ax - rhs||_2 = " << res.Norm() << finl;
+
 #endif
   return 1;
 }
