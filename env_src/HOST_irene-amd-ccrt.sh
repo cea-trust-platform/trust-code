@@ -99,6 +99,6 @@ define_soumission_batch()
    mpirun="ccc_mprun $binding -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
    espacedir="work,scratch"
-   project="dendm2s" #&& [ "`id | grep gch0406`" != "" ] && project="gch0406"
+   project="dendm2s" && [ "$gpu" = 1 ] && [ "`id | grep gen13364`" != "" ] && project="gen13364" # 10000h sur gen13364
    [ "$project" = "" ] && project=`PYTHONPATH=/usr/lib64/python2.7/site-packages ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }
