@@ -82,7 +82,7 @@ for CAS in $LISTE_CAS; do
       fi
       
     elif test "$CAS" = "Ar1_iso"; then
-    
+			 
       cp $MEDC2 $REP/$MEDC2
       cp $PRERUN $REP/$PRERUN
       cp $POSTRUN $REP/$POSTRUN
@@ -241,6 +241,3 @@ for CAS in $LISTE_CAS; do
 
   done
 done
-
-# finally, just compile the useful scripts file
-cd .. && pdflatex useful_scripts.tex 1>useful_scripts.log 2>/dev/null

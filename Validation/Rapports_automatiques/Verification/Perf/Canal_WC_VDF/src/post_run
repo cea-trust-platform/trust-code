@@ -1,5 +1,6 @@
 #!/bin/bash
 
+./extract_perf $1
 if test "${PWD##*/}" = "SEQ_C1" ; then
  awk '$1=="Cas"{print 1 " " $4}' Cas.perf > Cas.perf.txt
 elif test "${PWD##*/}" = "PAR_2_C1" ; then

@@ -1,0 +1,115 @@
+#################################################################################
+#                                                                               #
+#                NOTEBOOKS TRUST FAIT PAR VICTOR BANON GARCIA                   #
+#                                                                               #
+################################################################################# 
+
+# LISTE DE NOTEBOOK QUI FONCTIONNE/en procesus
+         
+-CoviMAC
+    * cavite_entrainee_2D_2                -A Reviser+Valider (bug avec addSEgment: double plot, seulement les valeurs pairs sont plot dans rapport .pdf)
+    * conduction_stationnaire_2            -A Reviser+Valider ("erreur avec erreur en %"")
+    * conv_poiseuille_2                    -A Reviser+Valider (probleme avec dumpData)
+    * convergence_conduction_2             -A Reviser+Valider (probleme diagonal)
+    * fvca8_2                              -A Reviser+Valider (erreur prepare)
+    * hydrostatique_2                      -A valider
+    * hydrostatique_3D_2                   -A Reviser+Valider (a remplir ??????+ probleme avec norm)
+    * porosite_2D_2                        -A Valider
+-EF
+    * EF_Conduc_instat                     -A Reviser
+    * EF_Conduc_k_var_1                    -A Reviser+Valider
+    * EF_Conduc_k_var_2                    -A Reviser+Valider
+    * EF_Conduc_S_lin_1                    -A Reviser+Valider
+    * EF_Conduc_S_sin_1                    -A Reviser+Valider
+    * EF_Conduction_diagonale              -A valider
+    * EF_Eclt_coude                        -A Reviser+Valider
+    * EF_Eclt_coude_frottement             -A valider (pk il y a des fichiet latex qu'on utilise pas?)
+    * EF_Eclt_coude_Genepi2                -A valider
+    * EF_Eclt_coude_pression               -A valider
+    * EF_Eclt_coude_pression_3D            -A valider
+    * EF_Frottement_incline                -A valider
+    * EF_Grad_U_Transpose_2D               -A valider
+    * EF_Grad_U_Transpose_2D_Source        -A valider
+    * EF_Grad_U_Transpose_3D_2D            -A valider(diference avec EF_Grad_U_Transpose_2D_Source?????)
+    * EF_Grad_U_Transpose_3D_a             -A valider
+    * EF_Grad_U_Transpose_3D_b             -A valider
+    * EF_Grad_U_Transpose_3D_c             -A valider?
+    * EF_Grad_U_Transpose_3D_d             -A valider?
+    * EF_Pois_impl_3D                      -A valider?
+-HowTo:
+    * Postreatment_internal_plane 
+    * Postreatment_XYZ                     -A valider
+    * Postprocessed_Pressure               -A Reviser+Valider(Impossible de run avec run_fiche)
+-pas_fini
+    * conduction_couple                      -A valider+Valider(add segment qui plot pluiseur segment, probleme nb,+ faut ajouter les fichier???)
+    * DarcyFlow                            
+    * Kernel_Raffiner_simplex                 -A valider+Valider(achouter des titres et mettre les bon angles)
+    * Multistep_Methods
+    * QC_verifP                               -A valider+Valider(faut implementer l utilisation de fonction du prm)
+    * test_op_conv_vef                        -A valider+Valider(bug post run)
+-PolyMAC
+    * fvca8                                   -A Reviser+Valider(mettre les titres)
+    * cavite_entrainee_2D                     -A Reviser+Valider(Verifier que c est celui de Polymac et non Covimac)
+    * conduction_stationnaire                 -A Reviser+Valider(Verifier que c est celui de Polymac et non Covimac)
+    * convergence_conduction                  -A Reviser+Valider(Verifier que c est celui de Polymac et non Covimac)
+    * conv_poiseuille                         -A Reviser+Valider(Verifier que c est celui de Polymac et non Covimac)
+    * hydrostatique                           -A Reviser+Valider(Verifier que c est celui de Polymac et non Covimac)
+    * hydrostatique_3D                        -A Reviser+Valider(Verifier que c est celui de Polymac et non Covimac)
+    * porosite_2D                             -A Reviser+Valider(Verifier que c est celui de Polymac et non Covimac)
+    * k_regul_dp_impose                       -A Reviser+Valider(manque des fonction du prm) 
+-Problemes_en_cours
+    * Poiseuille_3D_Channel
+    * ThermalCoupling_LaminarFlow_VEF         -A Reviser+Valider(probleme avec run, en particulier avec le prepare, et aussi avec les plots)
+    * Bilan_chaleur_vef                       -A Reviser(black vector)
+-Verification_codage    
+    * Abort_timestep                           -A valider
+    * Champ_Fonc_Fonction_txyz_Morceaux        -A valider
+    * Champs_Tabule                            -A Reviser+Valider(erreur de prepare???) 
+    * Champ_front_xyz_debit
+    * Conduction_h_imp_on_BC    
+    * Echange_impose_VEF                       -A valider(cette fiche est elle utile???)
+    * Loi_Fermeture_Test                       -A valider 
+    * MED_major                                -A valider 
+    * Optimisation_Interpolation_sous_domaine  -A Reviser+Valider(probleme tableperf)  
+    * Part_Ss_Dom_Union                        -A Reviser+Valider(plot difficile avvec visit de faire +Probleme: pseudocolor_with_range)
+    * Perte_Charge_Circulaire_VEF              -A valider 
+    * Post_GravCl_SegmentFaces                 -A Reviser+Valider(dumpdata: #probes does not apear?????+erreur plot double a cause de la sensibilité du plotSegment)
+    * Time_dependent_velocity
+    * PeChaReg_VEF 
+    * conduc_mil_var   
+    * debit_impose                         -A Reviser+Valider(fonction prm???)      
+    * diffusion_anisotrope_VEF             -A Reviser+Valider(resoudre le parralelisme)       
+    * diffusion_implicite                  -A Reviser+Valider(arreglar add Point)      
+    * diffusion_implicite_source           -A Valider   
+    * ef_stab                              -A Valider(faut mettre la description ???)           
+    * gradient_vitesse                     -A Reviser+Valider(probleme en incorporrant une image)  
+    * hdf5_io                              -A Reviser+Valider(erreur fatale faut refaire la chase show de visit+deux plot identique)   
+    * no_verify                            -A Valider
+    * radioactive_decay                    -A Valider(nouvelle type .son :NUMERO_ELEM_SUR_MAITRE)   
+    * source_text                          -A Valider
+    * test_conservation_energie_QC         -A Valider
+    * thermique_monolithique               -A Reviser+Valider(manque la fonction prm curve)   
+    * Test_schema                          -A Reviser+Valider(necesite des fonction prm)
+    * Plan_to_lata_conversion_script       -A Reviser+Valider(necesite des fonction prm)
+    * Test_pression_from_u                 -A Reviser+Valider(Erreur fatale)
+    * Source_canal_perio                   -A Reviser+Valider(Changer couler fleche)
+    * Lata_conversion_scripts              -A Reviser+Valider(Impossible de run avec run_fiche) 
+    * QC_d_rho_dt                          -A Reviser+Valider(Impossible de run avec run_fiche)
+    * Inward_field                         -A Reviser+Valider(Comande compliquer, demander a adrien)
+    * share                                -Erreur fatale(pas de fichier prm) 
+-test Elie
+    * Explicit_vs_semi-implicit  
+-Test Victor:
+    * canal_perio                          -Erreur fatale(baltik)
+
+# LISTE DE NOTEBOOK QUI NE FONCTIONNE PAS
+
+-CoviMAC:
+-EF:             
+-HowTo:
+-pas_fini:
+-PolyMAC:
+-Problemes_en_cours:
+-Verification_codage:  
+-test ELie
+-Test Victor: 

@@ -15,6 +15,7 @@ for CAS in $LISTE_CAS; do
   SRCDATA2=Cas2.data
   SRCPRERUN=pre_run
   SRCPOSTRUN=post_run
+  EXTRACTPERF=extract_perf
   REP=./$CAS
   mkdir $REP
   DESTDATA=$REP/$SRCDATA
@@ -22,6 +23,7 @@ for CAS in $LISTE_CAS; do
   DESTPRERUN=$REP/$SRCPRERUN
 
   cp $SRCPOSTRUN $REP/$SRCPOSTRUN
+  cp $EXTRACTPERF $REP/$EXTRACTPERF
   if test "$CAS" = "SEQ_C1"; then
 
     cp $SRCDATA $DESTDATA

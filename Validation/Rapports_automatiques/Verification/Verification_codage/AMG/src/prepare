@@ -17,8 +17,4 @@ do
       sed -i "1,$ s?precond ssor?precond $pc?" $jdd
    done
 done
-sed -i "1,$ s?_cpu_?$cpu?g" AMG.prm.P
-sed -i "1,$ s?_pcs_?$pcs?g" AMG.prm.P
-sed -i "1,$ s?_liste_cas_?$liste_cas?g" AMG.prm.P
-python $TRUST_ROOT/bin/KSH/preprocessor.py AMG.prm.P AMG.prm
 exit 0

@@ -48,13 +48,6 @@ if __name__ == "__main__":
                 with open("{}/{}/maillage_{}x{}/jdd.data".format(k, d, nx, ny), "w") as file:
                     file.write(result)
 
-    with open("poiseuille.prm.P.m", "r") as file:
-        fileprm = Template(file.read())
-    result = fileprm.safe_substitute(meshes=" ".join(sorted(list(set(list_meshes)))), list_dis=" ".join(sorted(list(set(list(list_dis))))))
-
-    with open("poiseuille.prm.P", "w") as file:
-        file.write(result)
-
     with open("extract_convergence", "r") as file:
         fileconv = Template(file.read())
     result = fileconv.safe_substitute(list_dis=" ".join(sorted(list(set(list(list_dis))))))

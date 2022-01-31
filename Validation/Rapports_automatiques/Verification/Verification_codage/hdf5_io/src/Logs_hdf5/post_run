@@ -9,7 +9,7 @@ then
 
 	# on regarde si les journaux ont bien ete ecrits
 	python $TRUST_ROOT/bin/KSH/hdf5_log_to_ascii_log.py PAR_journal_shared.log 2
-	journals=`grep "End of Journal logging" PAR_journal_shared.ascii | wc -l`
+	journals=`grep 'End of Journal logging' PAR_journal_shared.ascii | wc -l`
 	if [ "$journals" == "2" ]; then
    	   echo Shared journal successfully written ! > result.txt	
 	else
