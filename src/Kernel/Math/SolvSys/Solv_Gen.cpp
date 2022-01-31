@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,7 @@
 #include <Motcle.h>
 #include <Matrice_Morse_Sym.h>
 #include <Matrice_Bloc.h>
-#include <ILU.h>
+#include <ILU_SP.h>
 
 Implemente_instanciable_sans_constructeur(Solv_Gen,"Solv_Gen",solv_iteratif);
 
@@ -224,9 +224,9 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
   ipar[0] = 0; //on def tjrs cela pour commencer le calcul
   if(le_precond_.non_nul())
     {
-      if(sub_type(ILU,le_precond_.valeur()))
+      if(sub_type(ILU_SP,le_precond_.valeur()))
         {
-          ILU& pilu = ref_cast(ILU,le_precond_.valeur());
+          ILU_SP& pilu = ref_cast(ILU_SP, le_precond_.valeur());
           ipar[1] = pilu.type_precond();
         }
       else
@@ -303,7 +303,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
         {
           // On preconditionne
           //int ii;
-          if(sub_type(ILU,le_precond_.valeur()))
+          if(sub_type(ILU_SP,le_precond_.valeur()))
             le_precond_.preconditionner(mat_loc, W7, W8);
           else
             le_precond_.preconditionner(mat_loc,secmem,solution);
@@ -315,7 +315,7 @@ int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, co
         {
           exit();
           // On preconditionne
-          if(sub_type(ILU,le_precond_.valeur()))
+          if(sub_type(ILU_SP,le_precond_.valeur()))
             le_precond_.preconditionner(mat_loc, W7, W8);
           else
             le_precond_.preconditionner(mat_loc,secmem,solution);

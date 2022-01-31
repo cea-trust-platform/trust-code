@@ -13,24 +13,24 @@
 *
 *****************************************************************************/
 
-#include <ILU.h>
+#include <ILU_SP.h>
 #include <Matrice_Bloc.h>
 #include <Matrice_Morse_Sym.h>
 #include <SPV2.h>
 #include <Param.h>
 
-Implemente_instanciable(ILU,"ILU",Precond_base);
+Implemente_instanciable(ILU_SP, "ILU_SP", Precond_base);
 //
 // printOn et readOn
 
-Sortie& ILU::printOn(Sortie& s ) const
+Sortie& ILU_SP::printOn(Sortie& s ) const
 {
   s << " { type "<<precond_ ;
   s << " filling "<< lfil_ << " } " ;
   return s;
 }
 
-Entree& ILU::readOn(Entree& is )
+Entree& ILU_SP::readOn(Entree& is )
 {
   precond_ = _TYPE_ILU_;
   lfil_ = _LFIL_ILU_;
@@ -59,13 +59,13 @@ void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M)
 }
 
 
-void ILU::prepare_(const Matrice_Base& la_matrice, const DoubleVect& v)
+void ILU_SP::prepare_(const Matrice_Base& la_matrice, const DoubleVect& v)
 {
   if (get_status() != READY)
     {
       if(sub_type(Matrice_Morse_Sym,la_matrice))
         {
-          Cerr<<"ILU ERROR : one is not able to carry out a ILU preconditioning"
+          Cerr<<"ILU_SP ERROR : one is not able to carry out a ILU_SP preconditioning"
               <<" on a symetric matrix"<<finl;
           exit();
         }
@@ -81,7 +81,7 @@ void ILU::prepare_(const Matrice_Base& la_matrice, const DoubleVect& v)
           if(sub_type(Matrice_Morse_Sym,bloc0.valeur()))
             {
               /*
-                Cerr<<"ILU ERROR : one is not able to carry out a ILU preconditioning"
+                Cerr<<"ILU_SP ERROR : one is not able to carry out a ILU_SP preconditioning"
                 <<" on a symetric matrix"<<finl;
                 exit();
               */
@@ -98,7 +98,7 @@ void ILU::prepare_(const Matrice_Base& la_matrice, const DoubleVect& v)
         }
       else
         {
-          Cerr<<"ILU : Warning : preconditioning can be carry out only for linear systems based on Matrice_Morse or Matrice_Bloc type matrixes"<<finl;
+          Cerr<<"ILU_SP : Warning : preconditioning can be carry out only for linear systems based on Matrice_Morse or Matrice_Bloc type matrixes"<<finl;
           exit();
         }
     }
@@ -116,8 +116,8 @@ int ILU::preconditionner_(const Matrice_Base& la_matrice,
   return ilu(n,u,s);
 }
 
-int ILU::factoriser(const Matrice_Morse& mat,
-                    const DoubleVect& b)
+int ILU_SP::factoriser(const Matrice_Morse& mat,
+                       const DoubleVect& b)
 {
   int ie=1;                                // niveau d'erreur
   if (precond_!=0)
@@ -180,7 +180,7 @@ int ILU::factoriser(const Matrice_Morse& mat,
   return 0;
 }
 
-int ILU::factorisation(const Matrice_Morse& mat,const DoubleVect& secmem)
+int ILU_SP::factorisation(const Matrice_Morse& mat, const DoubleVect& secmem)
 {
   if (nproc()==1)
     {
@@ -259,13 +259,13 @@ int ILU::factorisation(const Matrice_Morse& mat,const DoubleVect& secmem)
   return factoriser(MLOC,secmem);
 }
 
-int ILU::ilu(int n, const DoubleVect& u, DoubleVect& s)
+int ILU_SP::ilu(int n, const DoubleVect& u, DoubleVect& s)
 {
   F77NAME(LUSOLV2)(&n,u.addr(),s.addr(),alu.addr(),jlu.addr(),ju.addr());
   return 1;
 }
 
-int ILU::ilut(int n, const DoubleVect& u, DoubleVect& s)
+int ILU_SP::ilut(int n, const DoubleVect& u, DoubleVect& s)
 {
   F77NAME(LUTSOLV2)(&n,u.addr(),s.addr(),alu.addr(),jlu.addr(),ju.addr());
   return 1;

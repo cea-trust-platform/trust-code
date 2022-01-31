@@ -4,7 +4,7 @@
 // TRUST_NO_INDENT
 //
 #include <verifie_pere.h>
-#include <ILU.h>
+#include <ILU_SP.h>
 #include <Precond.h>
 #include <PrecondA.h>
 #include <PrecondSolv.h>
@@ -26,7 +26,7 @@
 #include <SolveurSys.h>
 void instancie_src_Kernel_Math_SolvSys() {
 Cerr << "src_Kernel_Math_SolvSys" << finl;
-ILU inst1;verifie_pere(inst1);
+ILU_SP inst1;verifie_pere(inst1);
 Precond inst2;verifie_pere(inst2);
 PrecondA inst3;verifie_pere(inst3);
 PrecondSolv inst4;verifie_pere(inst4);

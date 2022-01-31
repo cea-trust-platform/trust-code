@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef ILU_included
-#define ILU_included
+#ifndef ILU_SP_included
+#define ILU_SP_included
 
 #include <Precond_base.h>
 #include <Matrice_Morse.h>
@@ -22,9 +22,9 @@
 #define _LFIL_ILU_ 1
 #define _TYPE_ILU_ 2
 
-class ILU : public Precond_base
+class ILU_SP : public Precond_base
 {
-  Declare_instanciable(ILU);
+  Declare_instanciable(ILU_SP);
 public:
   inline int a_un_interet() { return 1; }
   inline int type_precond() { return precond_; }
@@ -41,9 +41,23 @@ protected:
   ArrOfDouble alu;                // tableau pour L et U
   ArrOfInt jlu;                // tableau pour L et U
   enum Type_Precond { PRECOND_NUL = 0, PRECOND_GAUCHE = 1, PRECOND_DROITE = 2, PRECOND_GAUCHE_DROITE = 3};
-  int precond_ ;         // Flag pour le preconditionnement ILU
+  int precond_ ;         // Flag pour le preconditionnement ILU_SP
   int lfil_;             // Parametre de remplissage pour ilut
   Matrice_Morse MLOC;
 };
 
-#endif /* ILU_included */
+
+
+inline int ILU_SP::a_un_interet()
+{
+  return 1;
+}
+
+inline int ILU_SP::type_precond()
+{
+  return precond_;
+}
+
+
+
+#endif

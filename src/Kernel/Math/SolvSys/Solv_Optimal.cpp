@@ -154,9 +154,9 @@ void generate_defaut(const Matrice_Base& matrice, const double seuil, Sortie& so
             sortie <<" solveur petsc cholesky { impr }"<< finl;
           else
             {
-              // Pour les tres grands calculs on bascule de Cholesky a BICGSTAB ILU(1) par bloc
+              // Pour les tres grands calculs on bascule de Cholesky a BICGSTAB ILU_SP(1) par bloc
               sortie <<" solveur petsc bicgstab { precond block_jacobi_icc { level 1 } seuil "<<seuil <<" "<<impr<<"}"<<finl;
-              // Voire CG ILU(1) par bloc car BICGSTAB peut avoir du mal a converger lors de la projection initiale...
+              // Voire CG ILU_SP(1) par bloc car BICGSTAB peut avoir du mal a converger lors de la projection initiale...
               sortie <<" solveur petsc gcp { precond block_jacobi_icc { level 1 } seuil "<<seuil <<" "<<impr<<"}"<<finl;
             }
           // SPAI n'a jamais fait ses preuves (comme tous les preconditionnements de Hypre), on l'enleve
