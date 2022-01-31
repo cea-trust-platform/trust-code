@@ -18,6 +18,8 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Objet_U.h>
+#include <Nom.h>
+class DoubleVect;
 class Matrice_Base;
 
 class SolveurSys_base : public Objet_U
@@ -68,6 +70,10 @@ protected :
   int save_matrice_;     // Drapeau pour savoir si un stockage disque est a refaire
   int return_on_error_ = 0; //drapeau pour savoir si on doit faire exit() ou renvoyer -1 si resoudre_
 
+  // Pour lecture/stockage des parametres des solveurs:
+  Nom chaine_lue_;
+  void lecture(Entree&);
+  inline const Nom& get_chaine_lue() const { return chaine_lue_ ; };
 private:
   int limpr_;            // Drapeau pour impression ou non de la convergence du solveur
   int schema_temps_limpr_; // Authorization printing flag set by the time scheme

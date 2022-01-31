@@ -17,7 +17,8 @@
 #include <EcrFicCollecte.h>
 #include <Matrice_Base.h>
 #include <MD_Vector_tools.h>
-
+#include <SChaine.h>
+#include <Motcle.h>
 
 Implemente_base_sans_constructeur(SolveurSys_base,"SolveurSys_base",Objet_U);
 SolveurSys_base::SolveurSys_base()
@@ -86,5 +87,40 @@ void SolveurSys_base::save_matrice_secmem_conditionnel(const Matrice_Base& la_ma
       }
       Cout <<"Saving of the matrix, secmem and solution ended."<<finl;
     }
+}
+
+
+// Lecture des parametres du solveurs
+// Ex: solveur type { ... }
+// chaine_lue_ = "type { ... }"
+void SolveurSys_base::lecture(Entree& is)
+{
+  // Lecture de la chaine de mot cles
+  Motcle accolade_ouverte("{");
+  Motcle accolade_fermee("}");
+  Motcle motlu;
+  Nom nomlu;
+  is >> motlu;
+  SChaine prov;
+  prov<<motlu;
+  is >> motlu;
+  if (motlu != accolade_ouverte)
+    {
+      Cerr << "Error while reading parameters of Petsc: " << finl;
+      Cerr << "We expected " << accolade_ouverte << " instead of " << motlu << finl;
+      Process::exit();
+    }
+  prov<<" { ";
+  int nb_acco=1;
+  while (nb_acco!=0)
+    {
+      is >> nomlu;
+      prov<<nomlu<<" ";
+      if (nomlu==accolade_ouverte)
+        nb_acco++;
+      else if (nomlu==accolade_fermee)
+        nb_acco--;
+    }
+  chaine_lue_=prov.get_str();
 }
 

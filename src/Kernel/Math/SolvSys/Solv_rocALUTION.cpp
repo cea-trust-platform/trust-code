@@ -23,26 +23,103 @@
 #include <Solv_rocALUTION.h>
 #include <Matrice_Morse.h>
 #include <DoubleVect.h>
+#include <EChaine.h>
+#include <Motcle.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION,"Solv_rocALUTION",SolveurSys_base);
 
 // printOn
 Sortie& Solv_rocALUTION::printOn(Sortie& s ) const
 {
+  s << chaine_lue_;
   return s;
 }
 
 // readOn
 Entree& Solv_rocALUTION::readOn(Entree& is)
 {
+  create_solver(is);
   return is;
 }
 
-Solv_rocALUTION::Solv_rocALUTION()
+Solv_rocALUTION::Solv_rocALUTION(const Solv_rocALUTION& org)
 {
+  // on relance la lecture ....
+  EChaine recup(org.get_chaine_lue());
+  readOn(recup);
 }
-Solv_rocALUTION::~Solv_rocALUTION()
+
+// Lecture et creation du solveur
+void Solv_rocALUTION::create_solver(Entree& entree)
 {
+#ifdef ROCALUTION_ROCALUTION_HPP_
+  lecture(entree);
+  EChaine is(get_chaine_lue());
+
+  Motcle accolade_ouverte("{"), accolade_fermee("}");
+  Nom solver, precond, motlu;
+  is >> solver;   // On lit le solveur en premier puis les options du solveur: PETSC ksp { ... }
+  is >> motlu; // On lit l'accolade
+  if (motlu != accolade_ouverte)
+    {
+      Cerr << "Error while reading the parameters of the solver " << solver << " { ... }" << finl;
+      Cerr << "We expected " << accolade_ouverte << " instead of " << motlu << finl;
+      exit();
+    }
+  Motcles les_solveurs(2);
+  {
+    les_solveurs[0] = "GCP";
+    les_solveurs[1] = "GMRES";
+  }
+  int rang=les_solveurs.search(solver);
+  switch(rang)
+    {
+    case 0:
+      {
+        break;
+      }
+    case 1:
+      {
+        break;
+      }
+    default:
+      {
+        Cerr << solver << " solver not recognized for rocALUTION:" << finl << les_solveurs << finl;
+        Process::exit();
+      }
+    }
+  // Lecture des parametres du solver:
+  Motcles les_parametres_solveur(3);
+  {
+    les_parametres_solveur[0] = "impr";
+    les_parametres_solveur[1] = "seuil"; // Seuil absolu (atol)
+    les_parametres_solveur[2] = "precond";
+  }
+  is >> motlu;
+  while (motlu!=accolade_fermee)
+    {
+      switch (les_parametres_solveur.search(motlu))
+        {
+        case 0:
+          {
+            break;
+          }
+        case 1:
+          {
+            break;
+          }
+        case 2:
+          {
+            break;
+          }
+        default:
+          {
+            Cerr << solver << " keyword not recognized for solver:" << finl << les_parametres_solveur << finl;
+            Process::exit();
+          }
+        }
+    }
+#endif
 }
 
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)

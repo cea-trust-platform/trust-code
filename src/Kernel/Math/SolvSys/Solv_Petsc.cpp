@@ -1443,41 +1443,6 @@ void Solv_Petsc::RestoreMatrixFromFile()
   Cerr << "The matrix read has " << nb_rows_tot << " rows." << finl;
 }
 
-
-// Remplissage de chaine_lue_ Petsc ksp { ... }
-// chaine_lue_="ksp { ... }"
-void Solv_Petsc::lecture(Entree& is)
-{
-  // Lecture de la chaine de mot cles
-  Motcle accolade_ouverte("{");
-  Motcle accolade_fermee("}");
-  Motcle motlu;
-  Nom nomlu;
-  is >> motlu;
-  SChaine prov;
-  prov<<motlu;
-  is >> motlu;
-  if (motlu != accolade_ouverte)
-    {
-      Cerr << "Error while reading parameters of Petsc: " << finl;
-      Cerr << "We expected " << accolade_ouverte << " instead of " << motlu << finl;
-      Process::exit();
-    }
-  prov<<" { ";
-  int nb_acco=1;
-  while (nb_acco!=0)
-    {
-      is >> nomlu;
-      prov<<nomlu<<" ";
-      if (nomlu==accolade_ouverte)
-        nb_acco++;
-      else if (nomlu==accolade_fermee)
-        nb_acco--;
-    }
-  chaine_lue_=prov.get_str();
-}
-
-
 // SV
 // Since PETSc 3.10 The option ksp_view is not taken into account for (at least) instance = 2
 // I don't understand why ??!!

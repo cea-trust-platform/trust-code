@@ -35,12 +35,15 @@ class Solv_rocALUTION : public SolveurSys_base
   Declare_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION);
 
 public :
-  Solv_rocALUTION();
-  ~Solv_rocALUTION() override;
+  Solv_rocALUTION() {};
+  Solv_rocALUTION(const Solv_rocALUTION&);
+  ~Solv_rocALUTION() override {};
+
   inline int solveur_direct() const override { return 0; };
   inline int resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x, int niter_max) override { return resoudre_systeme(a,b,x); };
 
   int resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x) override;
+  void create_solver(Entree& entree);
 
 protected :
   LocalVector<double> sol;

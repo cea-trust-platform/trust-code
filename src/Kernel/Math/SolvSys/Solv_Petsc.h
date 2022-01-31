@@ -63,10 +63,6 @@ public :
   inline Solv_Petsc(const Solv_Petsc&);
 
   inline void initialize();
-  inline const Nom& get_chaine_lue() const
-  {
-    return chaine_lue_ ;
-  };
   inline bool gpu() const
   {
     return gpu_;
@@ -79,7 +75,6 @@ public :
   {
     return amgx_initialized_;
   };
-  void lecture(Entree&);
   PetscErrorCode set_convergence_test(PetscErrorCode (*converge)(KSP,PetscInt,PetscReal,KSPConvergedReason*,void*),void *cctx,PetscErrorCode (*destroy)(void*))
   {
     return KSPSetConvergenceTest(SolveurPetsc_, converge, cctx, destroy);
@@ -159,7 +154,6 @@ protected :
   VecScatter VecScatter_;	// Scatter context needed when petsc_decide_=1 to gather values of global to local solution
 #endif
   int solveur_direct_;          // Pour savoir si l'on manipule un solveur direct et non iteratif
-  Nom chaine_lue_; 		// Chaine des mots cles lus
   int read_matrix_;		// Read constant matrix in a file
   bool gpu_;                    // Utilisation des solveurs GPU de PETSc
   bool amgx_;			// Utilisation des solveurs GPU de AMGX
