@@ -78,7 +78,7 @@ Read pb
             vy grav vitesse periode 0.5 segment 500  0 0.5 1 0.5
         }
 
-        Format Lata
+        Format lata
         fields dt_post 10
         {
             pression_pa elem

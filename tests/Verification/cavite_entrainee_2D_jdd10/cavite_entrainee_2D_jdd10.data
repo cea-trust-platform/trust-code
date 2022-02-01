@@ -28,10 +28,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-CoviMAC  dis
-# VDF  dis #
-option_vdf { P_imposee_aux_faces oui }
-
+VEFPreP1B dis
 
 Schema_euler_implicite sch
 Read sch
@@ -39,11 +36,9 @@ Read sch
     tinit 0
 	nb_pas_dt_max 3
     dt_max  0.1
+    facsec 1e30
     seuil_statio 1e-10
-    solveur implicite
-    {
-        solveur petsc cli { }
-    }
+    solveur implicite { solveur petsc cli { } }
 }
 
 Fluide_Incompressible eau
@@ -84,7 +79,7 @@ Read pb
             vy grav vitesse periode 0.5 segment 500  0 0.5 1 0.5
         }
 
-        Format Lata
+        Format lml
         fields dt_post 10
         {
             pression_pa elem
@@ -94,5 +89,4 @@ Read pb
     sauvegarde formatte ascci.sauv
 }
 Solve pb
-lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 End
