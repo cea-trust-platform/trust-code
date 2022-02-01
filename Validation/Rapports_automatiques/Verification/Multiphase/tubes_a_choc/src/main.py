@@ -25,12 +25,12 @@ def stiffenedgas_h(rho, p, gamma, pinf):
 def run_Riemann_problem(TC, name, numsamples=100):
     # Output test solution for many different Riemann problems
 
-    print("")
-    print(
-        "Determination of the exact solution of a Riemann problem for the Euler equations on "
-        + str(numsamples)
-        + " sample points."
-    )
+    #print("")
+    #print(
+    #    "Determination of the exact solution of a Riemann problem for the Euler equations on "
+    #    + str(numsamples)
+    #    + " sample points."
+    #)
 
     xmin = 0.0
     xmax = 1.0
@@ -38,18 +38,18 @@ def run_Riemann_problem(TC, name, numsamples=100):
     RS = exact_rs_stiffenedgas.exact_rs_stiffenedgas(TC["gamma"], TC["gamma"], TC["pinf"], TC["pinf"])
     RS.solve_RP(TC["WL"], TC["WR"])
 
-    print("")
-    print("Solved Riemann problem for TC = ", name)
-    print("Star state pressure calculated as ", RS.P_STAR)
-    print("Star state velocity calculated as ", RS.S_STAR)
-    print("Left star state density calculated as ", RS.rho_star_L)
-    print("Right state state density calculated as ", RS.rho_star_R)
-    print("Left shock speed calculated as ", RS.S_L)
-    print("Right shock speed calculated as ", RS.S_R)
-    print("Left rarefaction head speed calculated as ", RS.S_HL)
-    print("Left rarefaction tail speed calculated as ", RS.S_TL)
-    print("Right rarefaction head speed calculated as ", RS.S_HR)
-    print("Right rarefaction tail speed calculated as ", RS.S_TR)
+    #print("")
+    #print("Solved Riemann problem for TC = ", name)
+    #print("Star state pressure calculated as ", RS.P_STAR)
+    #print("Star state velocity calculated as ", RS.S_STAR)
+    #print("Left star state density calculated as ", RS.rho_star_L)
+    #print("Right state state density calculated as ", RS.rho_star_R)
+    #print("Left shock speed calculated as ", RS.S_L)
+    #print("Right shock speed calculated as ", RS.S_R)
+    #print("Left rarefaction head speed calculated as ", RS.S_HL)
+    #print("Left rarefaction tail speed calculated as ", RS.S_TL)
+    #print("Right rarefaction head speed calculated as ", RS.S_HR)
+    #print("Right rarefaction tail speed calculated as ", RS.S_TR)
 
     delx = (xmax - xmin) / numsamples
 
@@ -143,7 +143,8 @@ if __name__ == "__main__":
     for n in meshes:
         os.system("mkdir n{}".format(n))
 
-    tab_latex = ""
+    columns = [r"$\gamma$", r"$p_\infty$", r"$\rho_L$", r"$u_L$", r"$p_L$", r"$\rho_R$", r"$u_R$", r"$p_R$",r"$x_d$"]
+    tab = plot.Table(columns)
     for name in ["Toro1", "Toro2", "Toro3", "Toro4", "Toro5", "Toro6", "Toro7", "PWR1", "PWR2", "PWR3"]:
 
         with open("jdd.data", "r") as file:
@@ -160,9 +161,9 @@ if __name__ == "__main__":
         filedata = filedata.replace(
             "__Tr__", str((TCs[name]["WR"][2] + TCs[name]["pinf"]) / (TCs[name]["WR"][0] * 8.31446261815324))
         )
-        tab_latex += "\\hline {}&{}&{}&{}&{}&{}&{}&{}&{}&{}\\\\".format(
-            *([name, TCs[name]["gamma"], TCs[name]["pinf"]] + TCs[name]["WL"] + TCs[name]["WR"] + [TCs[name]["x"]])
-        )
+        
+        tab.addLigne( [[TCs[name]["gamma"], TCs[name]["pinf"]] + TCs[name]["WL"] + TCs[name]["WR"] + [TCs[name]["x"]]], name)
+
         for n in ["tmax", "gamma", "pinf", "x"]:
             filedata = filedata.replace("__{}__".format(n), str(TCs[name][n]))
 
@@ -176,9 +177,3 @@ if __name__ == "__main__":
             filedata_ = filedata_.replace("__dt__", str(dt))
             with open("n{}/{}.data".format(n, name), "w") as file:
                 file.write(filedata_)
-
-    with open("jdd.prm.P.m", "r") as file:
-        fileprm = file.read()
-    fileprm = fileprm.replace("__tabular__", tab_latex)
-    with open("jdd.prm.P", "w") as file:
-        file.write(fileprm)

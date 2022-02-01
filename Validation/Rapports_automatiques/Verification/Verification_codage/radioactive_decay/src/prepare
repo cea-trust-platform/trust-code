@@ -17,5 +17,3 @@ do
         sed "s~__dt__~${dt}~;s~__dis__~${dis}~;s~__action_maillage__~${action_maillage[$dis]}~;s~__decay__~${source_const}~" jdd.data > ${dis}/dt${dt}/source_constituant.data
     done
 done
-
-python $TRUST_ROOT/bin/KSH/preprocessor.py concentration.prm.P concentration.prm

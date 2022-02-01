@@ -5,5 +5,3 @@ do
     ( mkdir -p $dir; cp jdd.data post_run $dir )
     sed -i "s/__tetra__//;s/__dis__/$dir/" $dir/jdd.data
 done
-
-python $TRUST_ROOT/bin/KSH/preprocessor.py porosite_1D.prm.P porosite_1D.prm

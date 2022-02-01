@@ -44,8 +44,8 @@ class exact_rs_stiffenedgas:
         # assert W_L[2] >= 0.0 # Since stiffened gases will often exhibit p<0..
         # assert W_R[2] >= 0.0 #
 
-        print("")
-        print("Solving Riemann problem for left state W_L=", W_L, ", and right state W_R=", W_R)
+        #print("")
+        #print("Solving Riemann problem for left state W_L=", W_L, ", and right state W_R=", W_R)
 
         # Calculate p_star
 

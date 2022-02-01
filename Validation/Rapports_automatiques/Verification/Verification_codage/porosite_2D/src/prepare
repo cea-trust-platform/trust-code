@@ -3,4 +3,3 @@ export project_directory=$TRUST_ROOT/Validation/Rapports_automatiques/Verificati
 source "$project_directory/share/maquette_decapoly/env_maquette.sh"
 python prepare_python.py
 for cas in */*/maillage_* ; do cp post_run ${cas}/. ; done
-python $TRUST_ROOT/bin/KSH/preprocessor.py porosite_2D.prm.P porosite_2D.prm

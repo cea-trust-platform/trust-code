@@ -27,6 +27,7 @@ if __name__ == "__main__":
                 result = filedata.substitute({"dis" : d})
                 with open(f"{k}/{d}/maillage_{nx}x{ny}/jdd.data", "w") as file:
                     file.write(result)
+                run.addCase(f"{k}/{d}/maillage_{nx}x{ny}", "jdd.data")
 
     with open("extract_convergence", "r") as file:
         fileconv = Template(file.read())

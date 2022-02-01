@@ -11,9 +11,6 @@ stdfacsecs="0.01 " #0.001"
 #stdfacsecs="1"
 
 facsecs="$stdfacsecs"
-sed "s/%list%/$list/; s/%cas%/$cas/;s/%extfacsecs%/$facsecs/;s/%facsecs%/$stdfacsecs/" conv.prm.P.m  > conv.prm.P
-
-python $TRUST_ROOT/bin/KSH/preprocessor.py conv.prm.P conv.prm
 [ "$?" != 0 ] && exit -1
 
 echo > ll

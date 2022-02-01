@@ -8,5 +8,3 @@ do
     sed "s~FIN$dis~/* FIN$dis~;s~DEBUT$dis~DEBUT$dis */~;s~__dis__~${dis}~;s~__rm__~resolution_monolithique { _hydraulique thermique }~;s~__cv__~1e30~" base.data > ${dis}/mono_sans_iteration.data
     sed "s~FIN$dis~/* FIN$dis~;s~DEBUT$dis~DEBUT$dis */~;s~__dis__~${dis}~;s~__rm__~resolution_monolithique { _hydraulique thermique }~;s~__cv__~1e-8~" base.data > ${dis}/mono_avec_iteration.data
 done
-
-python $TRUST_ROOT/bin/KSH/preprocessor.py thermique_monolithique.prm.P thermique_monolithique.prm
