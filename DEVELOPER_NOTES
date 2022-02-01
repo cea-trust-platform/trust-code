@@ -1,6 +1,8 @@
 -------------------------------------------------------------
 Developer notes version 1.8.5_beta : Changes since version 1.8.4 :
 -------------------------------------------------------------
+21/02/22 (TRUST) TEST_COEFF is a constexpr in the VDF diff evaluator. It can be used for debugging the coefficients of the implicit matrix and verify coherency with flux methods implementation
+21/02/22 (TRUST) The transpose of the velocity gradient is now taken into account in the VDF face diffusion operator (for const/var & lam/turb cases)
 17/02/22 (TRUST) Heaptrack tool supported to follow memory allocations: trust -heaptrack datafile
 15/02/22 (TRUST) TRUST methods (min, max, dmin, dmax, dabs) are now replaced by std::min, std::max, std::min, std::max and std::fabs methods respectively
 12/01/22 (TRUST) Add SingleDouble class: encapsulates a unique double value with the same public interface as ArrOfDouble. Used for efficiency purposes in VDF flux/sources evals/iters when dealing with single-component field.

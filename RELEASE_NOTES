@@ -1,6 +1,10 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
+21/02/22 (TRUST)  V&V         : Add new validation forms poiseuille_vdf & cavite_entrainee_2D
+21/02/22 (TRUST)  Fix         : It is possible to use now an implicit scheme with the VDF option traitement_coins (necessary for a Poiseuille test case for example)
+21/02/22 (TRUST)  Fix         : Coeff/flux implementations are now coherent in the VDF face diffusion operator
+21/02/22 (TRUST)  Major Change: The transpose of the velocity gradient is now taken into account in the VDF face diffusion operator (for const/var & lam/turb cases)
 17/02/22 (TRUST)  Build       : configure option -force_provided_mpich becomes the default on PC. On HPC cluster, configure keeps on detecting MPI modules loaded
 17/02/22 (TRUST)  V&V         : New verification sheet for GPU solver with semi-implicit scheme added under Validation/Rapports_automatiques/Verification/Solveurs/GPU directory
 17/02/22 (TRUST)  New option  : Option save_matrix_mtx_format to export from PETSc solvers the matrix to Matrix Market format file (.mtx)
