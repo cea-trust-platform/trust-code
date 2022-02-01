@@ -28,7 +28,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC  dis
+$dis dis
 
 Schema_euler_implicite sch
 Read sch
@@ -37,26 +37,13 @@ Read sch
     dt_max  0.1
     facsec 1e30
     seuil_statio 1e-10
-    solveur implicite
-    {
-        solveur petsc cli
-        {
-            -pc_type fieldsplit
-            -pc_fieldsplit_0_field b1
-            -pc_fieldsplit_1_field b0
-            -pc_fieldsplit_type schur
-            -ksp_type fgmres
-            -ksp_rtol 1e-8
-            -fieldsplit_b0_ksp_max_it 10
-            -fieldsplit_b1_ksp_max_it 10
-        }
-    }
+    solveur implicite { solveur petsc cli { } }
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-    mu  Champ_Uniforme 1 2.5
+    mu  Champ_Uniforme 1 $mu
     rho Champ_Uniforme 1 1000
 }
 
@@ -76,7 +63,7 @@ Read pb
         initial_conditions { vitesse Champ_Uniforme 2 0 0 }
         boundary_conditions
         {
-            up    paroi_defilante Champ_Front_Uniforme 2 1 0
+            up    paroi_defilante Champ_Front_Uniforme 2 $vwall 0
             down  paroi_fixe
             left  paroi_fixe
             right paroi_fixe
@@ -101,5 +88,4 @@ Read pb
     sauvegarde formatte ascci.sauv
 }
 Solve pb
-lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 End
