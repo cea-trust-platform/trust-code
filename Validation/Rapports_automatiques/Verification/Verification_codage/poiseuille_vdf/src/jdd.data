@@ -1,0 +1,85 @@
+# PARALLEL OK #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom mesh mesh.med
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VDF dis
+option_vdf { P_imposee_aux_faces oui traitement_coins oui }
+
+$scheme
+
+Fluide_Incompressible eau
+Read eau
+{
+    mu  Champ_Uniforme 1 $mu
+    rho Champ_Uniforme 1 10
+}
+
+Associate  pb dom
+Associate  pb sch
+Associate  pb eau
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { negligeable }
+        diffusion  { $uzawa }
+        initial_conditions { vitesse Champ_Uniforme 2 0 0 }
+        boundary_conditions
+        {
+            up    paroi_defilante Champ_Front_Uniforme 2 $vwall 0
+            down  paroi_fixe
+            left  frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 $pin
+            right frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 $pout
+        }
+    }
+
+    Post_processing
+    {
+        Definition_champs
+        {
+            p_exact transformation { methode formule expression 1 $pout+($pout-$pin)/$lx*(x-$lx) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+            v_exact transformation { methode vecteur expression 2 0.5/$mu*($pin-$pout)/($lx)*y*($ly-y)+$vwall*y/$ly 0 localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+        }
+        probes
+        {
+            # solution analytique #
+            p_ex grav p_exact periode 1e8 segment 500 0 0.5 1 0.5
+            v_ex grav v_exact periode 1e8 segment 500 0.5 0 0.5 1
+
+            # solution calculee #
+            p grav pression_pa periode 1e8 segment 500 0 0.5 1 0.5
+            v grav vitesse     periode 1e8 segment 500 0.5 0 0.5 1
+        }
+
+        Format lml
+        fields dt_post 10
+        {
+            pression_pa elem
+            vitesse elem
+        }
+    }
+}
+Solve pb
+End

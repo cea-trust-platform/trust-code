@@ -1,0 +1,241 @@
+Parameters
+{
+    Title "Ecoulement mixte Poiseuille Couette plan."
+    Author "Y. Gorsse"
+    code TRUST
+    Prerequisite "./extract_convergence"
+
+
+    TestCase const/explicit jdd.data
+    TestCase const/implicit jdd.data
+    TestCase const/uzawa jdd.data
+    TestCase var/explicit jdd.data
+    TestCase var/implicit jdd.data
+    TestCase var/uzawa jdd.data
+}
+
+Chapter
+{
+    Title "Comparaisons a une solution analytique"
+    Description ""
+    Figure
+    {
+        incluredesccourbes 0
+        Titre "Comparaison p"
+        Dimension 2
+        LabelX "position"
+         LabelY "pressure" 
+        description ""
+        # width 7cm
+        legende below
+
+        Courbe
+        {
+            Legende "reference"
+            segment ./const/explicit/jdd.data p_EX
+            Style l
+            colonnes ($1) ($2)
+            Style p
+            TypePoints 7
+            TypeLigne 3
+        }
+        Courbe
+        {
+            Legende "const/explicit"
+            Origine "Trio_U"
+            segment ./const/explicit/jdd.data p
+            Style l
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "const/implicit"
+            Origine "Trio_U"
+            segment ./const/implicit/jdd.data p
+            Style l
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "const/uzawa"
+            Origine "Trio_U"
+            segment ./const/uzawa/jdd.data p
+            Style l
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "var/explicit"
+            Origine "Trio_U"
+            segment ./var/explicit/jdd.data p
+            Style l
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "var/implicit"
+            Origine "Trio_U"
+            segment ./var/implicit/jdd.data p
+            Style l
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "var/uzawa"
+            Origine "Trio_U"
+            segment ./var/uzawa/jdd.data p
+            Style l
+            colonnes ($1) ($2)
+
+        }
+    }
+    Figure
+    {
+        incluredesccourbes 0
+        Titre "Comparaison v"
+        Dimension 2
+        LabelX "position"
+         LabelY "velocity" 
+        description ""
+        # width 7cm
+        legende below
+
+        Courbe
+        {
+            Legende "reference"
+            segment ./const/explicit/jdd.data v_EX
+            Style l
+            colonnes ($1) ($2)
+            Style p
+            TypePoints 7
+            TypeLigne 3
+        }
+        Courbe
+        {
+            Legende "const/explicit"
+            Origine "Trio_U"
+            segment ./const/explicit/jdd.data v
+            Style l
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "const/implicit"
+            Origine "Trio_U"
+            segment ./const/implicit/jdd.data v
+            Style l
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "const/uzawa"
+            Origine "Trio_U"
+            segment ./const/uzawa/jdd.data v
+            Style l
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "var/explicit"
+            Origine "Trio_U"
+            segment ./var/explicit/jdd.data v
+            Style l
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "var/implicit"
+            Origine "Trio_U"
+            segment ./var/implicit/jdd.data v
+            Style l
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "var/uzawa"
+            Origine "Trio_U"
+            segment ./var/uzawa/jdd.data v
+            Style l
+            colonnes ($1) ($2)
+
+        }
+    }
+    Figure
+    {
+        incluredesccourbes 0
+        Titre "Comparaison dt"
+        Dimension 2
+        LabelX "Time"
+        LabelY "dt"
+
+        description ""
+        # width 7cm
+        legende below
+        logy
+
+        Courbe
+        {
+            Legende "const/explicit"
+            Origine "Trio_U"
+            fichier ./const/explicit/jdd.dt_ev
+            Style lp
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "const/implicit"
+            Origine "Trio_U"
+            fichier ./const/implicit/jdd.dt_ev
+            Style lp
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "const/uzawa"
+            Origine "Trio_U"
+            fichier ./const/uzawa/jdd.dt_ev
+            Style lp
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "var/explicit"
+            Origine "Trio_U"
+            fichier ./var/explicit/jdd.dt_ev
+            Style lp
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "var/implicit"
+            Origine "Trio_U"
+            fichier ./var/implicit/jdd.dt_ev
+            Style lp
+            colonnes ($1) ($2)
+
+        }
+        Courbe
+        {
+            Legende "var/uzawa"
+            Origine "Trio_U"
+            fichier ./var/uzawa/jdd.dt_ev
+            Style lp
+            colonnes ($1) ($2)
+
+        }
+    }
+}
