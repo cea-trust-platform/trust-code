@@ -1,0 +1,5 @@
+#!/bin/bash
+export project_directory=$TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC
+source "$project_directory/share/maquette_decapoly/env_maquette.sh"
+python prepare_python.py
+python $TRUST_ROOT/bin/KSH/preprocessor.py rotating_flow_2D.prm.P rotating_flow_2D.prm

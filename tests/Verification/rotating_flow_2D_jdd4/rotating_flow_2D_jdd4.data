@@ -1,0 +1,94 @@
+# PARALLEL OK #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom mesh mesh.med
+transformer dom x-0.5 y-0.5
+# END MESH #
+
+# BEGIN PARTITION
+Postraiter_domaine
+{
+    fichier mesh.lata
+    format lml
+    domaine dom
+}
+
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+PolyMAC dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    dt_max  0.1
+    facsec 1e30
+    seuil_statio 1e-6
+    solveur implicite { solveur petsc cli { } }
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+    mu  Champ_Uniforme 1 2.5
+    rho Champ_Uniforme 1 1000
+}
+
+Associate  pb dom
+Associate  pb sch
+Associate  pb eau
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        methode_calcul_pression_initiale avec_sources_et_operateurs
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion  { }
+        initial_conditions { vitesse Champ_Uniforme 2 0 0 }
+        boundary_conditions
+        {
+            up    paroi_fixe
+            down  paroi_fixe
+            left  paroi_fixe
+            right paroi_fixe
+        }
+        sources { source_qdm Champ_Fonc_XYZ dom 2 -1.*cos(pi*x)*sin(pi*y)*((x*x+y*y)[0.01) 1.*sin(pi*x)*cos(pi*y)*((x*x+y*y)[0.01) }
+    }
+
+    Post_processing
+    {
+        probes
+        {
+            vx grav vitesse periode 0.5 segment 500  -0.35 -0.5 -0.35 0.5
+            vy grav vitesse periode 0.5 segment 500  -0.5 -0.35 0.5 -0.35
+        }
+
+        Format lml
+        fields dt_post 100
+        {
+            pression_pa elem
+            vitesse elem
+        }
+    }
+    sauvegarde formatte ascci.sauv
+}
+Solve pb
+End
