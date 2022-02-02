@@ -59,7 +59,6 @@ Eval_Diff_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
     }
 }
 
-// DIFT : Sur les aretes mixtes les termes croises du tenseur de Reynolds sont nuls: il ne reste donc que la diffusion laminaire (XXX : Yannick dit NON)
 template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t< Arete_Type == Type_Flux_Arete::MIXTE, void>
 Eval_Diff_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int fac2, int fac3, int fac4, Type_Double& flux) const
 {
@@ -100,7 +99,7 @@ Eval_Diff_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
           else if (elem2 == -1) elem2 = elem1;
         }
 
-      const double surf = surface_(fac1,fac2), dist = dist_norm_bord(fac1), tps = inconnue->temps(),
+      const double surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2), dist = dist_norm_bord(fac1), tps = inconnue->temps(),
                    visc_lam = nu_lam_mean_2pts(elem1,elem2,ori), visc_turb = DERIVED_T::IS_TURB ? nu_mean_2pts(elem1,elem2,ori) : 0.0;
 
       const double vit_imp = is_PAROI ? 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl)+Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl)) :
@@ -109,7 +108,7 @@ Eval_Diff_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
       for (int k = 0; k < ncomp; k++)
         {
           const double tau  = signe*(vit_imp-inco(fac3,k))/dist, tau_tr = 0.; // XXX : Yannick, pas de tau_tr ?? TODO : FIXME
-          flux(k) = ((tau + tau_tr) * (visc_lam + visc_turb)) * surf; // XXX : Yannick, pas de porosite ?? TODO : FIXME
+          flux(k) = ((tau + tau_tr) * (visc_lam + visc_turb)) * surf * poros;
         }
     }
   else
@@ -248,14 +247,14 @@ Eval_Diff_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2, int fac3, int si
           else if (elem2 == -1) elem2 = elem1;
         }
 
-      const double surf = surface_(fac1,fac2), dist = dist_norm_bord(fac1),
+      const double surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2), dist = dist_norm_bord(fac1),
                    visc_lam = nu_lam_mean_2pts(elem1,elem2,ori), visc_turb = DERIVED_T::IS_TURB ? nu_mean_2pts(elem1,elem2,ori) : 0.,
                    d_tau = signe / dist, d_tau_tr = 0.; // On a pas derive ... deja nul dans le flux !
 
       for (int k = 0; k < ncomp; k++)
         {
           aii1_2(k) = ajj1_2(k) = 0.;
-          aii3_4(k) = ((d_tau + d_tau_tr) * (visc_lam + visc_turb)) * surf; // XXX : Yannick, pas porosite ?? TODO : FIXME
+          aii3_4(k) = ((d_tau + d_tau_tr) * (visc_lam + visc_turb)) * surf * poros;
         }
     }
   else for (int k = 0; k < ncomp; k++) aii3_4(k) = aii1_2(k) = ajj1_2(k) = 0.;
