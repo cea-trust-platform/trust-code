@@ -314,33 +314,17 @@ fi
 
 ########################################################
 # 2 versions construites, une debug et une optimisee
-# sur les login TMA triou
 ########################################################
-#if [ "`whoami`" = triou ]
-if [ $HOST = $TRUST_HOST_ADMIN ]
+if [ $HOST = $TRUST_HOST_ADMIN ] || [ $TRUST_ENABLE_PETSC_DEBUG = 1 ]
 then
-   liste_debug="0 1"	# Version optimisee et debug consruite si machine TMA ou support CUDA
-   # Possibilite d'afficher la matrice sous forme graphique uniquement si:
-   # a) libX11 is available
-   # b) We are not building the official binary (less machine sensitive)
-   if [ "`ls /usr/lib*/libX11.so 2>/dev/null`" != "" ] && [ "`liste_machines "\get_binary" | grep ^$HOST"\."`" = "" ]
-   then
-      options="--with-x=1"
-   else
-      options="--with-x=0"
-   fi
-elif [ $TRUST_ENABLE_PETSC_DEBUG = 1 ]
-then
-   liste_debug="0 1"	# Version optimisee et debug consruites
-   options="--with-x=0"
+   liste_debug="0 1"	# Version optimisee et debug construite
    # cette variable construit seulement petsc_debug si on fait make debug. Elle est declaree dans bin/compile
    # [ "$only_make_debug_with_petsc_debug" = 1 ] && liste_debug="1"
 else
    liste_debug="0" 	# Une seule version construite (optimisee)
-   options="--with-x=0" # Car --with-x=1 pose probleme pour Insure
 fi
-
-
+# Possibilite d'afficher la matrice sous forme graphique uniquement sur PC avec libX11 disponible (-mat_view draw https://petsc.org/main/docs/manualpages/Mat/MatView.html)
+[ "`ls /usr/lib*/libX11.so 2>/dev/null`" != "" ] && [ "$TRUST_WITHOUT_HOST" = 1 ] && options="--with-x=1" # Car --with-x=1 pose probleme pour Insure
 
 #################################################
 # Trilinos Multi Level Preconditionning package #
