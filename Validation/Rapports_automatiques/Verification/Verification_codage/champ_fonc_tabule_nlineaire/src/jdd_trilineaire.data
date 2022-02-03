@@ -24,20 +24,19 @@ Mailler dom
 # END MESH #
 
 # BEGIN PARTITION
-system "rm -rf decoup; mkdir -p decoup"
 Decouper dom
 {
     partitionneur metis { nb_parts 2 }
     nb_parts_tot 2
     Larg_joint 2
-    Nom_Zones decoup/dom
-    ecrire_decoupage decoup/dom.txt
+    Nom_Zones dom
+    ecrire_decoupage dom.txt
 }
 Fin
 END PARTITION #
 
 # BEGIN SCATTER
-Scatter decoup/dom.Zones    dom
+Scatter dom.Zones    dom
 /* Read_file dom_ssz_par.geo ; */
 END SCATTER #
 
@@ -56,7 +55,10 @@ lire mil_fluide
 {
     rho      champ_uniforme 1  2000.0
     cp       champ_uniforme 1  3075.0
-    beta_th  champ_fonc_tabule { viscosite_dynamique conductivite temperature } 1
+    beta_th  champ_fonc_tabule { pb viscosite_dynamique 
+                                 pb conductivite 
+                                 pb temperature } 
+                               1
     {
         2 0 1 # viscosite #
         3 0 0.4 1 # conductivite #
