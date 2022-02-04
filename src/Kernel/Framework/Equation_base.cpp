@@ -1198,14 +1198,17 @@ void Equation_base::mettre_a_jour(double temps)
 
   les_sources.mettre_a_jour(temps);
 
-  if (champ_conserve_.non_nul()) champ_conserve_->mettre_a_jour(temps);
-  if (champ_convecte_.non_nul()) champ_convecte_->mettre_a_jour(temps);
-
   // On tourne la roue des CLs
   // Update the boundary condition:
   if (temps > schema_temps().temps_courant()) zone_Cl_dis()->avancer(temps);
 }
 
+//mise a jour de champ_conserve / champ_convecte : appele par Probleme_base::mettre_a_jour() apres avoir mis a jour le milieu
+void Equation_base::mettre_a_jour_champs_conserves(double temps)
+{
+  if (champ_conserve_.non_nul()) champ_conserve_->mettre_a_jour(temps);
+  if (champ_convecte_.non_nul()) champ_convecte_->mettre_a_jour(temps);
+}
 
 // Description:
 //    Reinitialiser ce qui doit l'etre.
@@ -2431,7 +2434,6 @@ void Equation_base::init_champ_conserve() const
   auto nom_fonc = get_fonc_champ_conserve();
   champ_conserve_->nommer(nom_fonc.first.c_str());
   champ_conserve_->init_champ_calcule(*this, nom_fonc.second);
-  champ_conserve_->mettre_a_jour(schema_temps().temps_courant());
 }
 
 /* methode de calcul par defaut de champ_conserve : produit coefficient_temporel * inconnue */

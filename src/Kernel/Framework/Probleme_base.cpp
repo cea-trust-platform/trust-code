@@ -1803,15 +1803,16 @@ void Probleme_base::mettre_a_jour(double temps)
   // Update the name of the problem being debugged
   Debog::set_nom_pb_actuel(le_nom());
 
-  // TODO : overload in Pb_multiphase because for turbulence, le_modele_turbulence.mettre_a_jour(temps)
-  // should be called before equation(i).mettre_a_jour(temps)
-
   // Update the equations:
   for(int i=0; i<nombre_d_equations(); i++)
     equation(i).mettre_a_jour(temps);
 
   // Update the media:
   milieu().mettre_a_jour(temps);
+
+  // Update the conserved fields in the equations (must be done after the media):
+  for(int i=0; i<nombre_d_equations(); i++)
+    equation(i).mettre_a_jour_champs_conserves(temps);
 
   // Update the post-processing:
   les_postraitements.mettre_a_jour(temps);
