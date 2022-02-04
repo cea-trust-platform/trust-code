@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,12 +39,19 @@ class Op_Diff_PolyMAC_Face : public Op_Diff_PolyMAC_base
   Declare_instanciable( Op_Diff_PolyMAC_Face ) ;
 
 public :
-  void completer() override;
-  DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  void contribuer_au_second_membre(DoubleTab& ) const override;
-  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { };
-  void dimensionner(Matrice_Morse& mat) const override;
+  void completer();
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
+  double calculer_dt_stab() const;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  void check_multiphase_compatibility() const {}; //ok
+protected :
+  DoubleVect porosite_e;
+  DoubleVect porosite_f;
 };
 
 #endif /* Op_Diff_PolyMAC_Face_included */
