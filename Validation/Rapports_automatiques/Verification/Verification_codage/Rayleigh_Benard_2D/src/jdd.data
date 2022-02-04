@@ -1,0 +1,117 @@
+# PARALLEL OK #
+dimension 2
+Pb_thermohydraulique pb
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom mesh mesh.med
+# END MESH #
+
+# BEGIN PARTITION
+Postraiter_domaine
+{
+    fichier mesh.lata
+    format lata
+    domaine dom
+}
+
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+$dis dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    dt_max  0.1
+    tmax 100
+    facsec 10
+    seuil_statio 1e-6
+    solveur implicite { solveur petsc cli { } }
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+        mu Champ_Uniforme 1 1.85e-5
+        rho Champ_Uniforme 1 1.17
+                lambda Champ_Uniforme 1 0.0262
+        Cp Champ_Uniforme 1 1006
+        beta_th Champ_Uniforme 1 3.41e-3
+}
+
+Champ_Uniforme gravite
+Read gravite 2 0. -9.81
+
+Associate eau gravite
+
+Associate  pb dom
+Associate  pb sch
+Associate  pb eau
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        methode_calcul_pression_initiale avec_sources_et_operateurs
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        sources { boussinesq_temperature { T0 0. } }
+        diffusion  { }
+        initial_conditions { vitesse Champ_Uniforme 2 0 0 }
+        boundary_conditions
+        {
+            up    paroi_fixe
+            down  paroi_fixe
+            left  paroi_fixe
+            right paroi_fixe
+        }
+    }
+            Convection_Diffusion_Temperature
+        {
+                diffusion { }
+                convection { amont }
+                boundary_conditions
+                {
+                        up paroi_temperature_imposee Champ_Front_Uniforme 1 -100.
+                        down paroi_temperature_imposee Champ_Front_Uniforme 1 100.
+						left paroi_adiabatique
+						right paroi_adiabatique
+                }
+                initial_conditions { Temperature champ_fonc_xyz dom 1 0. }
+        }
+
+    Post_processing
+    {
+        probes
+        {
+            vx grav vitesse periode 0.5 segment 500  0.5 0 0.5 1
+            vy grav vitesse periode 0.5 segment 500  0 0.5 1 0.5
+            tmp0 temperature periode 0.5 segment 500  0.5 0 0.5 1
+            tmp1 temperature periode 0.5 segment 500  0 0.5 1 0.5
+        }
+
+        Format lata
+        fields dt_post 10
+        {
+            pression_pa elem
+            vitesse elem
+            temperature elem
+        }
+    }
+    sauvegarde formatte ascci.sauv
+}
+Solve pb
+End

@@ -1,0 +1,306 @@
+Parameters
+{
+    Title "Rayleigh-Benard convection"
+    Description ""
+    Author "Elie Saikali and Yannick Gorsse"
+
+    TestCase NCa/CoviMAC jdd.data
+    TestCase NCa/PolyMAC jdd.data
+    TestCase NCr/CoviMAC jdd.data
+    TestCase NCr/PolyMAC jdd.data
+    TestCase cartesian/CoviMAC jdd.data
+    TestCase cartesian/PolyMAC jdd.data
+    TestCase cartesian/VDF jdd.data
+}
+
+Chapter
+{
+    Title "Comparaisons"
+    Description ""
+    Figure
+    {
+        incluredesccourbes 0
+        Titre "Comparaison vx"
+        Dimension 2
+        LabelX "position"
+        LabelY "velocity"
+        description ""
+        # width 7cm
+        legende below
+
+        Courbe
+        {
+            Legende "NCa/CoviMAC"
+            Origine "Trio_U"
+            segment ./NCa/CoviMAC/jdd.data vx
+            Style l
+             colonnes ($1) ($2) 
+        }
+        Courbe
+        {
+            Legende "NCa/PolyMAC"
+            Origine "Trio_U"
+            segment ./NCa/PolyMAC/jdd.data vx
+            Style l
+             colonnes ($1) ($2) 
+        }
+        Courbe
+        {
+            Legende "NCr/CoviMAC"
+            Origine "Trio_U"
+            segment ./NCr/CoviMAC/jdd.data vx
+            Style l
+             colonnes ($1) ($2) 
+        }
+        Courbe
+        {
+            Legende "NCr/PolyMAC"
+            Origine "Trio_U"
+            segment ./NCr/PolyMAC/jdd.data vx
+            Style l
+             colonnes ($1) ($2) 
+        }
+        Courbe
+        {
+            Legende "cartesian/CoviMAC"
+            Origine "Trio_U"
+            segment ./cartesian/CoviMAC/jdd.data vx
+            Style l
+             colonnes ($1) ($2) 
+        }
+        Courbe
+        {
+            Legende "cartesian/PolyMAC"
+            Origine "Trio_U"
+            segment ./cartesian/PolyMAC/jdd.data vx
+            Style l
+             colonnes ($1) ($2) 
+        }
+        Courbe
+        {
+            Legende "cartesian/VDF"
+            Origine "Trio_U"
+            segment ./cartesian/VDF/jdd.data vx
+            Style l
+             colonnes ($1) ($2) 
+        }
+    }
+    Figure
+    {
+        incluredesccourbes 0
+        Titre "Comparaison vy"
+        Dimension 2
+        LabelX "position"
+        LabelY "velocity"
+        description ""
+        # width 7cm
+        legende below
+
+        Courbe
+        {
+            Legende "NCa/CoviMAC"
+            Origine "Trio_U"
+            segment ./NCa/CoviMAC/jdd.data vy
+            Style l
+             colonnes ($1) ($3) 
+        }
+        Courbe
+        {
+            Legende "NCa/PolyMAC"
+            Origine "Trio_U"
+            segment ./NCa/PolyMAC/jdd.data vy
+            Style l
+             colonnes ($1) ($3) 
+        }
+        Courbe
+        {
+            Legende "NCr/CoviMAC"
+            Origine "Trio_U"
+            segment ./NCr/CoviMAC/jdd.data vy
+            Style l
+             colonnes ($1) ($3) 
+        }
+        Courbe
+        {
+            Legende "NCr/PolyMAC"
+            Origine "Trio_U"
+            segment ./NCr/PolyMAC/jdd.data vy
+            Style l
+             colonnes ($1) ($3) 
+        }
+        Courbe
+        {
+            Legende "cartesian/CoviMAC"
+            Origine "Trio_U"
+            segment ./cartesian/CoviMAC/jdd.data vy
+            Style l
+             colonnes ($1) ($3) 
+        }
+        Courbe
+        {
+            Legende "cartesian/PolyMAC"
+            Origine "Trio_U"
+            segment ./cartesian/PolyMAC/jdd.data vy
+            Style l
+             colonnes ($1) ($3) 
+        }
+        Courbe
+        {
+            Legende "cartesian/VDF"
+            Origine "Trio_U"
+            segment ./cartesian/VDF/jdd.data vy
+            Style l
+             colonnes ($1) ($3) 
+        }
+    }
+    Figure
+    {
+        incluredesccourbes 0
+        Titre "Comparaison tmp0"
+        Dimension 2
+        LabelX "position"
+        LabelY "temperature"
+        description ""
+        # width 7cm
+        legende below
+
+        Courbe
+        {
+            Legende "NCa/CoviMAC"
+            Origine "Trio_U"
+            segment ./NCa/CoviMAC/jdd.data tmp0
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "NCa/PolyMAC"
+            Origine "Trio_U"
+            segment ./NCa/PolyMAC/jdd.data tmp0
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "NCr/CoviMAC"
+            Origine "Trio_U"
+            segment ./NCr/CoviMAC/jdd.data tmp0
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "NCr/PolyMAC"
+            Origine "Trio_U"
+            segment ./NCr/PolyMAC/jdd.data tmp0
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "cartesian/CoviMAC"
+            Origine "Trio_U"
+            segment ./cartesian/CoviMAC/jdd.data tmp0
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "cartesian/PolyMAC"
+            Origine "Trio_U"
+            segment ./cartesian/PolyMAC/jdd.data tmp0
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "cartesian/VDF"
+            Origine "Trio_U"
+            segment ./cartesian/VDF/jdd.data tmp0
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+    }
+    Figure
+    {
+        incluredesccourbes 0
+        Titre "Comparaison tmp1"
+        Dimension 2
+        LabelX "position"
+        LabelY "temperature"
+        description ""
+        # width 7cm
+        legende below
+
+        Courbe
+        {
+            Legende "NCa/CoviMAC"
+            Origine "Trio_U"
+            segment ./NCa/CoviMAC/jdd.data tmp1
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "NCa/PolyMAC"
+            Origine "Trio_U"
+            segment ./NCa/PolyMAC/jdd.data tmp1
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "NCr/CoviMAC"
+            Origine "Trio_U"
+            segment ./NCr/CoviMAC/jdd.data tmp1
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "NCr/PolyMAC"
+            Origine "Trio_U"
+            segment ./NCr/PolyMAC/jdd.data tmp1
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "cartesian/CoviMAC"
+            Origine "Trio_U"
+            segment ./cartesian/CoviMAC/jdd.data tmp1
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "cartesian/PolyMAC"
+            Origine "Trio_U"
+            segment ./cartesian/PolyMAC/jdd.data tmp1
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+        Courbe
+        {
+            Legende "cartesian/VDF"
+            Origine "Trio_U"
+            segment ./cartesian/VDF/jdd.data tmp1
+            Style l
+             colonnes ($1) ($2) 
+
+        }
+    }
+}
