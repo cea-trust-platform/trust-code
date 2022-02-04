@@ -40,6 +40,19 @@ def displayMD(txt):
     if ok:
         display(Markdown(txt))
 
+def useMEDCoupling():
+    """ Load MEDCoupling environment in the PYTHONPATH so that 'import medcoupling' can work.
+    """
+    import sys
+    mcr = os.environ["TRUST_MEDCOUPLING_ROOT"]
+    sub = "lib/python%d.%d/site-packages" % (sys.version_info.major, sys.version_info.minor)
+    sys.path.append(os.path.join(mcr, sub))
+    sys.path.append(os.path.join(mcr, "bin"))
+    try:
+        import medcoupling
+    except:
+        raise Exception("Could not load MEDCoupling environment!")
+
 class TRUSTCase(object):
     """ Class which allows the user to load and execute a validation case
     """

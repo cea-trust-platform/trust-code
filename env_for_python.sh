@@ -34,10 +34,4 @@ then
  fi
 fi
 
-# Chargement TRUST_STATS_JUPYTER package
-if [ "`echo $PYTHONPATH | grep -i IHM/TRUST_STATS_JUPYTER`" = "" ]
-then
-  export PYTHONPATH=$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:$PYTHONPATH
-fi
-
 echo "env_for_python.sh successfully loaded."

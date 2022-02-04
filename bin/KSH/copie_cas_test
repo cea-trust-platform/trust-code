@@ -8,9 +8,6 @@ REP=$1
 ref=$TRUST_TESTS
 [ "$2" != "" ] && ref=$2
 
-# Sourcing Python environment - needed for Jupyter validation forms.
-. $TRUST_ROOT/env_for_python.sh
-
 # Si on ne trouve pas le cas test on le cherche sous $ref
 # le / apres $REP permet de suivre l eventuel lien
 if [ ! -d $ref/$REP/ ]

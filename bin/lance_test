@@ -505,9 +505,6 @@ add_test_case_from_validation()
 
 [ ${#TRUST_ROOT} = 0 ] && echo "TRUST environment not initialized. Go to the directory of TRUST installation and run: source ./env_TRUST.sh" && exit
 
-# Sourcing Python environment - needed for Jupyter validation forms.
-. $TRUST_ROOT/env_for_python.sh
-
 LANG=C
 PETSC_DEBUG=0 && [ $PETSC_DEBUG = 1 ] && echo "ATTENTION PETSC_DEBUG MIS A 1 !!!" 
 export LANG

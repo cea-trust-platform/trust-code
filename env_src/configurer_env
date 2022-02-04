@@ -359,7 +359,7 @@ check_nvidia_cuda()
    if [ "`$CUDA_NVCC --version 2>/dev/null`" = "" ]
    then
       echo "Error, no nvcc cuda compiler found."
-      echo "On Fedora, for instance you will install CUDA runtime with:" 
+      echo "On Fedora, for instance you will install CUDA runtime with:"
       echo "dnf config-manager --add-repo=https://negativo17.org/repos/fedora-nvidia.repo"
       echo "sudo dnf install nvidia-driver nvidia-driver-cuda cuda cuda-devel akmod-nvidia nvidia-settings cuda-gcc cuda-gcc-c++ cuda-gcc-gfortran cuda-samples"
       echo "See more there: https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7"
@@ -370,7 +370,7 @@ check_nvidia_cuda()
    #########################
    # On se base sur nvcc pour trouver les librairies
    # CUDA Toolkit:		NVIDIA HPC SDK:
-   # ROOT/bin/nvcc		ROOT/compilers/bin/nvcc 		
+   # ROOT/bin/nvcc		ROOT/compilers/bin/nvcc
    # ROOT/lib64 		ROOT/cuda/lib64
    ROOT=${CUDA_NVCC%/bin/nvcc}
    ROOT=${ROOT%/compilers}
@@ -821,6 +821,13 @@ then
        done
     fi
 fi
+
+# Adding utility package 'trustutils' in PYTHONPATH
+echo "if [ \"`echo \$PYTHONPATH | grep -i IHM/TRUST_STATS_JUPYTER`\" = \"\" ]; then" >> $env
+echo "  export PYTHONPATH=\$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:\$PYTHONPATH" >> $env
+echo "  echo export PYTHONPATH=\\\$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:\\\$PYTHONPATH" >> $env
+echo "fi" >> $env
+
 ####################
 # Compilateurs C/C++
 ####################
@@ -936,7 +943,7 @@ then
    # MKL: Math Kernel Library d'INTEL detecte (seems to work with Intel or Gnu compilers)
    TRUST_BLAS_LAPACK=`ls $MKLROOT/lib/*64*/libmkl_core.a $MKL_BASE/lib/*64*/libmkl_core.a 2>/dev/null | head -1`
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
-fi   
+fi
 m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && export TRUST_BLAS_LAPACK";ecrit $m"|"$e"|"$env
 
 ########
@@ -1557,7 +1564,7 @@ case $TRUST_ARCH_CC in
 	   rm -f test.cpp
 	   SYSLIBS=$SYSLIBS"-lgfortran"
 	   TRUST_GNU_VERSION=`$TRUST_F77_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
-	fi	
+	fi
 	[ "$TRUST_ARCH_CC" = linux_armclang++ ] && SYSLIBS=$SYSLIBS" -lflang -lflangrti -lflangADT -lflangArger"
 	F77Flags="-O3 -fPIC $ArmFlags $AoccFlags"
 	[ `echo $TRUST_GNU_VERSION | awk -F. '{print $1>=10}'` = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
