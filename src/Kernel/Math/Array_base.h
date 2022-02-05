@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,5 +36,8 @@ public:
   //  COPY_NOINIT: copier les anciennes, ne pas initialiser les nouvelles
   //  COPY_INIT: copier les anciennes et initialiser les nouvelles a zero
   enum Resize_Options { NOCOPY_NOINIT = 0, COPY_NOINIT = 1, COPY_INIT = 2 };
+  enum Storage { STANDARD, TEMP_STORAGE };
+
+  inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT) { throw; } // XXX : XXX : Elie Saikali : should have it virtual .... base non-template class !!
 };
 #endif

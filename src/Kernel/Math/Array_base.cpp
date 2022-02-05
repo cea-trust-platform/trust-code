@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,13 +23,5 @@
 #include <Array_base.h>
 
 Implemente_base_sans_constructeur_ni_destructeur(Array_base, "Array_base", Objet_U);
-
-Sortie& Array_base::printOn(Sortie& os) const
-{
-  return os;
-}
-
-Entree& Array_base::readOn(Entree& is)
-{
-  return is;
-}
+Sortie& Array_base::printOn(Sortie& os) const { return os; }
+Entree& Array_base::readOn(Entree& is) { return is; }

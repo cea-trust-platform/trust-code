@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,18 +23,12 @@
 #ifndef Memoire_ptr_included
 #define Memoire_ptr_included
 
+#include <Objet_U.h>
 #include <assert.h>
 #include <arch.h>
 
-class Objet_U;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Pointeur dans la Memoire de TRUST pour un Objet_U
-// .SECTION voir aussi
-//    Objet_U Memoire
-//////////////////////////////////////////////////////////////////////////////
+// .DESCRIPTION Pointeur dans la Memoire de TRUST pour un Objet_U
+// .SECTION voir aussi Objet_U Memoire
 class Memoire_ptr
 {
 public :
@@ -50,49 +44,95 @@ private :
   Objet_U* o_ptr;
 };
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Une zone de travail de la Memoire TRUST composee d'elements de type double
+// .DESCRIPTION  Une zone de travail de la Memoire TRUST composee d'elements de type int/double/float
 // .SECTION voir aussi
-//    Memoire Int_ptr_trav
-//////////////////////////////////////////////////////////////////////////////
-class Double_ptr_trav
+//    Memoire Int_ptr_trav Double_ptr_trav
+template<typename _TYPE_>
+class TRUST_ptr_trav
 {
 public :
-  inline Double_ptr_trav();
-  Double_ptr_trav* add(int n);
-  inline int unlock();
-  ~Double_ptr_trav();
-  inline double* d_ptr_() const;
+  typedef _TYPE_ value_type;
+
+  inline TRUST_ptr_trav() : sz(-1), data(0), lock_(0), next(0) { }
+
+  // Supprime les donnees attachees a la zone de travail
+  ~TRUST_ptr_trav()
+  {
+    if(sz!=-1)
+      {
+        if (next) delete next;
+        delete[] data;
+      }
+  }
+
+  inline int unlock() { return lock_ = 0; } // Deverrouille la zone de travail
+  inline _TYPE_* ptr_() const { return data ; } // Retourne un pointeur sur les donnees de la zone de travail
+  inline TRUST_ptr_trav* add(int n);
+
 private :
   int        sz;
-  double*    data;
+  _TYPE_*    data;
   int        lock_;
-  Double_ptr_trav*         next;
+  TRUST_ptr_trav*         next;
 } ;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Une zone de travail de la Memoire TRUST composee d'elements de type int
-// .SECTION voir aussi
-//    Memoire Double_ptr_trav
-//////////////////////////////////////////////////////////////////////////////
-class Int_ptr_trav
+typedef TRUST_ptr_trav<double> Double_ptr_trav;
+typedef TRUST_ptr_trav<int> Int_ptr_trav;
+
+// Description: Ajout d'elements dans la zone de travail
+// Parametre: int n
+//    Signification: le nombre d'element a creer dans la zone de travail
+// Retour: Double_ptr_trav*
+//    Signification: pointeur sur le zone de travail contenant les elements crees
+template<typename _TYPE_>
+inline TRUST_ptr_trav<_TYPE_>* TRUST_ptr_trav<_TYPE_>::add(int n)
 {
-public :
-  inline Int_ptr_trav();
-  Int_ptr_trav* add(int n);
-  inline int unlock();
-  ~Int_ptr_trav();
-  inline int* i_ptr_() const;
-private :
-  int        sz;
-  int*    data;
-  int        lock_;
-  Int_ptr_trav*         next;
-} ;
+  if(sz==-1)
+    {
+      sz=n;
+      data=new _TYPE_[sz];
+      if(!data)
+        {
+          Cerr << "Not enough memory " << finl;
+          Process::exit();
+        }
+      lock_=1;
+      next=0;
+      return this;
+    }
+  if ( (!lock_) && (sz==n))
+    {
+      lock_=1;
+      return this;
+    }
+  TRUST_ptr_trav* curseur=this;
+  while(curseur->next)
+    {
+      curseur=curseur->next;
+      if ( (!curseur->lock_) && (curseur->sz==n))
+        {
+          curseur->lock_=1;
+          return curseur;
+        }
+    }
+  curseur->next= new TRUST_ptr_trav();
+  if(!curseur->next)
+    {
+      Cerr << "Not enough memory " << finl;
+      Process::exit();
+    }
+  curseur=curseur->next;
+  curseur->sz=n;
+  curseur->data=new _TYPE_[n];
+  if(!data)
+    {
+      Cerr << "Not enough memory " << finl;
+      Process::exit();
+    }
+  curseur->lock_=1;
+  curseur->next=0;
+  return curseur;
+}
 
 // Description:
 //    Indique si le pointeur memoire est libre, c'est-a-dire s'il pointe sur un
@@ -176,126 +216,6 @@ inline Memoire_ptr& Memoire_ptr::operator=(const Memoire_ptr& mptr)
   next=mptr.next;
   return *this;
 }
-
-
-// Description:
-//    Constructeur
-//    La zone de travaille cree est vide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Double_ptr_trav::Double_ptr_trav() : sz(-1), data(0),
-  lock_(0), next(0)
-{
-}
-
-// Description:
-//    Deverrouille la zone de travail
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline int Double_ptr_trav::unlock()
-{
-  return lock_=0;
-}
-
-// Description:
-//    Retourne un pointeur sur les donnees de la zone de travail
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double*
-//    Signification: pointeur sur le tableau de donnees
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline double* Double_ptr_trav::d_ptr_() const
-{
-  return data;
-}
-
-
-// Description:
-//    Constructeur
-//    La zone de travail cree est vide
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Int_ptr_trav::Int_ptr_trav() : sz(-1), data(0),
-  lock_(0), next(0)
-{
-}
-
-// Description:
-//    Deverrouille la zone de travail
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline int Int_ptr_trav::unlock()
-{
-  return lock_=0;
-}
-
-// Description:
-//    Retourne un pointeur sur les donnees de la zone de travail
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int*
-//    Signification: pointeur sur le tableau des donnees
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline int* Int_ptr_trav::i_ptr_() const
-{
-  return data;
-}
-
-
 
 
 #endif
