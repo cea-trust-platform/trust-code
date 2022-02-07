@@ -1870,9 +1870,15 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
     }
   // Historique du residu
   KSPSetResidualHistory(SolveurPetsc_, residu.addr(), residu.size_array(), PETSC_TRUE);
-
+  // Ksp_view
   if (enable_ksp_view())
     KSPView(SolveurPetsc_, PETSC_VIEWER_STDOUT_WORLD);
+  // Keep precond ?
+  if (nouvelle_matrice_)
+    KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool)reuse_preconditioner()); // Default PETSC_FALSE
+  else
+    KSPSetReusePreconditioner(SolveurPetsc_, PETSC_TRUE);
+  // Solve
   KSPSolve(SolveurPetsc_, SecondMembrePetsc_, SolutionPetsc_);
   // Analyse de la convergence par Petsc
   KSPConvergedReason Reason;

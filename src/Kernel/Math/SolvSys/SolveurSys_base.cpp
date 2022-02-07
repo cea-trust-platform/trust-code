@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,6 +36,7 @@ SolveurSys_base::SolveurSys_base()
   // By default: result will have an updated virtual space:
   echange_ev_resu_ = 1;
   save_matrice_=0;
+  reuse_preconditioner_=false;
 }
 
 // printOn
