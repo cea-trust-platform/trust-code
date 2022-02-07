@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,6 +24,7 @@
 #include <MD_Vector_std.h>
 #include <VectMD_Vector.h>
 #include <DoubleTabs.h>
+#include <Noms.h>
 
 // .DESCRIPTION
 //  Metadata for a distributed composite vector.
@@ -34,7 +35,7 @@ class MD_Vector_composite : public MD_Vector_base2
 {
   Declare_instanciable(MD_Vector_composite);
 public:
-  void add_part(const MD_Vector& part, int shape = 0);
+  void add_part(const MD_Vector& part, int shape = 0, Nom name = "");
 
   int nb_parts() const
   {
@@ -47,6 +48,10 @@ public:
   int get_shape(int i) const
   {
     return shapes_[i];
+  }
+  Nom get_name(int i) const
+  {
+    return names_[i];
   }
   virtual void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const;
   virtual void prepare_send_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const;
@@ -63,6 +68,8 @@ public:
   ArrOfInt parts_offsets_;
   // Shape of each part of the array (see class DoubleTab_Parts)
   ArrOfInt shapes_;
+  // Name of each part
+  Noms names_;
 };
 
 #endif

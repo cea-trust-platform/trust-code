@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,6 +64,7 @@ Sortie& MD_Vector_composite::printOn(Sortie& os) const
   os << "global_md" << finl << global_md_ << finl;
   os << "parts_offsets" << space << parts_offsets_ << finl;
   os << "shapes" << space << shapes_ << finl;
+  os << "names" << space << names_ << finl;
   os << "}" << finl;
   return os;
 }
@@ -95,6 +96,7 @@ Entree& MD_Vector_composite::readOn(Entree& is)
   p.ajouter("global_md", &global_md_);
   p.ajouter("parts_offsets", &parts_offsets_);
   p.ajouter("shapes", &shapes_);
+  p.ajouter("names", &names_);
   p.lire_avec_accolades(is);
   return is;
 }
@@ -304,7 +306,7 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
 //       // parts[0] has nb_dim()==3, dimensions are [ zonevf.nb_faces_tot, 3, 4 ]
 //       // parts[1] has nb_dim()==2, dimension [ zone.nb_elem_tot, 4 ] /* speciel case shape==0 */
 //       // parts[2] has nb_dim()==3, dimension [ domaine.nb_som_tot, 1, 4 ]
-void MD_Vector_composite::add_part(const MD_Vector& part, int shape)
+void MD_Vector_composite::add_part(const MD_Vector& part, int shape, Nom name)
 {
   assert(part.non_nul());
   assert(shape >= 0);
@@ -321,6 +323,7 @@ void MD_Vector_composite::add_part(const MD_Vector& part, int shape)
   parts_offsets_.append_array(offset);
   shapes_.set_smart_resize(1);
   shapes_.append_array(shape);
+  names_.add(name);
 
   nb_items_tot_ += part.valeur().get_nb_items_tot() * multiplier;
   if (data_.size() > 1 || part.valeur().get_nb_items_reels() < 0)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,17 +111,17 @@ void Zone_VEF_PreP1b::discretiser_suite(const VEFPreP1B& discr)
     if (alphaE)
       {
         const MD_Vector& md = zone().md_vector_elements();
-        md_p1b.add_part(md);
+        md_p1b.add_part(md, 0, "P0");
       }
     if (alphaS)
       {
         const MD_Vector& md = zone().domaine().md_vector_sommets();
-        md_p1b.add_part(md);
+        md_p1b.add_part(md, 0, "P1");
       }
     if (alphaA)
       {
         const MD_Vector& md = md_vector_aretes();
-        md_p1b.add_part(md);
+        md_p1b.add_part(md, 0, "Pa");
       }
     md_vector_p1b_.copy(md_p1b);
   }
