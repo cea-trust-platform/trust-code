@@ -39,12 +39,14 @@
 
 //// Syntaxe a respecter pour jdd
 //
-// "nom_champ" Champ_Post_Statistiques_Eqn {
-//		source Champ_Post...{ ...source Champ_Post_ref_Champ { Pb_champ "nom_pb" "nom_champ_discret" } }
-//	       }
-// "nom_champ" fixe par utilisateur sera le nom du champ generique
-//Ce type de champ implique que le champ source possede des conditions limites
-//Son application est restreinte a certains champs discrets (pression VDF et VEF ou temperature en VEF)
+//nom_choisi operateur_eqn
+//			{
+//				sources { refchamp { pb_champ nom_pb nom_inconnue } }
+//				numero_source/numero op 1
+//			}
+// Il faut entrer le nom de l'inconnue et pas celui de l'equation
+// Le numero des termes sources est celui du jdd, bien respecter l'ordre
+// Pour les operateurs : 0 diffusion, 1 convection
 
 class Champ_Post_Operateur_Eqn : public Champ_Generique_Operateur_base
 {

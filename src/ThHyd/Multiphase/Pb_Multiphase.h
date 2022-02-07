@@ -67,6 +67,7 @@ public:
   int verifier() override;
   virtual Entree& lire_correlations(Entree& is);
   void preparer_calcul() override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
 
   /* nombre de phases du probleme */
   int nb_phases() const { return noms_phases_.size(); }

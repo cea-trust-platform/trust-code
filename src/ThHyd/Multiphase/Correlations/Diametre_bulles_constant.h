@@ -14,37 +14,35 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Correlation_base.h
+// File:        Diametre_bulles_constant.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Correlation_base_included
-#define Correlation_base_included
-#include <Param.h>
-#include <Ref_Probleme_base.h>
-#include <Champs_compris.h>
-#include <Champs_compris_interface.h>
+#ifndef Diametre_bulles_constant_included
+#define Diametre_bulles_constant_included
+#include <Correlation_base.h>
+#include <Champ_Fonc.h>
 
-class Correlation_base : public Objet_U, public Champs_compris_interface
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//    classe Diametre_bulles_constant
+//      Contient un champ de bulles de diametre constant
+//////////////////////////////////////////////////////////////////////////////
+
+class Diametre_bulles_constant : public Correlation_base
 {
-  Declare_base(Correlation_base);
+  Declare_instanciable(Diametre_bulles_constant);
+
 public:
-  virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
-  void associer_pb(const Probleme_base& pb);
 
-  //Methodes de l interface des champs postraitables
-  /////////////////////////////////////////////////////
-  virtual void creer_champ(const Motcle& motlu) {};
-  virtual const Champ_base& get_champ(const Motcle& nom) const { REF(Champ_base) ref_champ; throw Champs_compris_erreur();  return ref_champ;};
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const {};
-  /////////////////////////////////////////////////////
-
+  virtual const Champ_base& get_champ(const Motcle& nom) const ;
 
 protected:
-  REF(Probleme_base) pb_;
-  Champs_compris champs_compris_;
+  double d_bulle_;
+  Champ_Fonc diametres_;
 
 };
 

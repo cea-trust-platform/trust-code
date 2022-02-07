@@ -14,38 +14,54 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Correlation_base.h
+// File:        Diametre_bulles_constant.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Correlation_base_included
-#define Correlation_base_included
-#include <Param.h>
-#include <Ref_Probleme_base.h>
-#include <Champs_compris.h>
-#include <Champs_compris_interface.h>
+#include <Diametre_bulles_constant.h>
+#include <Ref_Champ_base.h>
+#include <Discret_Thyd.h>
+#include <Pb_Multiphase.h>
+#include <Zone_dis.h>
 
-class Correlation_base : public Objet_U, public Champs_compris_interface
+Implemente_instanciable(Diametre_bulles_constant, "Diametre_bulles_constant", Correlation_base);
+
+Sortie& Diametre_bulles_constant::printOn(Sortie& os) const
 {
-  Declare_base(Correlation_base);
-public:
-  virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
-  void associer_pb(const Probleme_base& pb);
+  return os;
+}
 
-  //Methodes de l interface des champs postraitables
-  /////////////////////////////////////////////////////
-  virtual void creer_champ(const Motcle& motlu) {};
-  virtual const Champ_base& get_champ(const Motcle& nom) const { REF(Champ_base) ref_champ; throw Champs_compris_erreur();  return ref_champ;};
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const {};
-  /////////////////////////////////////////////////////
+Entree& Diametre_bulles_constant::readOn(Entree& is)
+{
+  Param param(que_suis_je());
+  param.ajouter("diametre", &d_bulle_, Param::REQUIRED);
+  param.lire_avec_accolades_depuis(is);
 
+  Pb_Multiphase& pb = ref_cast(Pb_Multiphase, pb_.valeur());
+  const Discret_Thyd& dis=ref_cast(Discret_Thyd,pb.discretisation());
+  Noms noms(1), unites(1);
+  noms[0] = "diametre_bulles";
+  unites[0] = "m";
+  Motcle typeChamp = "champ_elem" ;
+  const Zone_dis& z = ref_cast(Zone_dis, pb.domaine_dis().zone_dis(0));
+  dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, 1, 0, diametres_);
 
-protected:
-  REF(Probleme_base) pb_;
-  Champs_compris champs_compris_;
+  champs_compris_.ajoute_champ(diametres_);
 
-};
+  DoubleTab& tab_diametres = diametres_->valeurs();
+  for (int i = 0 ; i < tab_diametres.dimension_tot(0) ; i++) tab_diametres(i, 0) = d_bulle_;
 
-#endif
+  return is;
+}
+
+const Champ_base& Diametre_bulles_constant::get_champ(const Motcle& nom) const
+{
+  REF(Champ_base) ref_champ;
+  if (nom=="diametre_bulles")
+    return champs_compris_.get_champ(nom);
+
+  throw Champs_compris_erreur();
+  return ref_champ;
+}

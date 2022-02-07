@@ -55,6 +55,7 @@ void grad_Champ_Face_CoviMAC::me_calculer(double tps)
   update_tab_grad(0); // calcule les coefficients de fgrad requis pour le calcul du champ aux faces
   calc_gradfve();
   update_ge(); // calcule le champ aux elements a partir du champ aux faces
+  valeurs().echange_espace_virtuel();
 }
 
 
@@ -81,7 +82,7 @@ void grad_Champ_Face_CoviMAC::calc_gradfve()
   int N = champ_a_deriver().valeurs().line_size(); //nombre phases
   int ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), nf = zone.nb_faces();
 
-  const DoubleTab& tab_ch = ch.valeurs();
+  const DoubleTab& tab_ch = ch.passe();
   DoubleTab&          val = valeurs();
 
   for (f = 0; f < nf; f++)
@@ -107,7 +108,6 @@ void grad_Champ_Face_CoviMAC::calc_gradfve()
           }
     }
 
-  val.echange_espace_virtuel();
 }
 
 void grad_Champ_Face_CoviMAC::update_ge()

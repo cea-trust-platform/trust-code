@@ -282,3 +282,24 @@ void Pb_Multiphase::preparer_calcul()
   const double temps = schema_temps().temps_courant();
   mettre_a_jour(temps);
 }
+
+
+const Champ_base& Pb_Multiphase::get_champ(const Motcle& un_nom) const
+{
+  REF(Champ_base) ref_champ;
+  for (auto &&corr : correlations)
+    {
+      try
+        {
+          return corr.second->get_champ(un_nom);
+        }
+      catch (Champs_compris_erreur)  {        }
+    }
+  try
+    {
+      return Pb_Fluide_base::get_champ(un_nom);
+    }
+  catch (Champs_compris_erreur)     {      }
+  throw Champs_compris_erreur();
+  return ref_champ;
+}
