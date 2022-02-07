@@ -2525,6 +2525,10 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   // Example: now possible to change aijcusparse to aijviennacl via CLI
   MatSetOptionsPrefix(MatricePetsc, option_prefix_);
   MatSetFromOptions(MatricePetsc);
+  // If -mat_type aij, update mataij flag:
+  MatType mat_type;
+  MatGetType(MatricePetsc, &mat_type);
+  if (strcmp(mat_type, MATSEQAIJ) == 0 || strcmp(mat_type, MATMPIAIJ) == 0) mataij = 1;
 
   /********************************************/
   /* Preallocation de la taille de la matrice */
