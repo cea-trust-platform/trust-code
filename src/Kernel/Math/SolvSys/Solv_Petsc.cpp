@@ -2373,7 +2373,10 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
                 {
                   std::vector<int> indices;
                   for (int j = 0; j < nb_seq; j++) indices.push_back(decalage_local_global_ + idx + j);
-                  champ[prefix + std::to_string((long long) i)] = indices;
+                  if (mdc.get_name(i)!="")
+                    champ[mdc.get_name(i).getString()] = indices;
+                  else
+                    champ[prefix + std::to_string((long long) i)] = indices;
                 }
               idx += nb_seq; //mise a jour du decalage (idx)
             }
@@ -2389,6 +2392,7 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
       for (auto &&kv : champ)
         {
           PetscSectionSetFieldName(sec, idx, kv.first.c_str());
+          Cerr << "Field " << kv.first.c_str() << " available for PCFieldsplit." << finl;
           for (int j = 0; j < (int) kv.second.size(); j++)
             PetscSectionSetDof(sec, kv.second[j], 1), PetscSectionSetFieldDof(sec, kv.second[j], idx, 1);
           idx++;
