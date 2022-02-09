@@ -824,6 +824,17 @@ fi
 
 # Adding utility package 'trustutils' in PYTHONPATH
 echo "export PYTHONPATH=\$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:\$PYTHONPATH" >> $env
+
+# Disable autosave in jupyter
+jupyter_config=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/notebook/static/custom/custom.js
+if [ -f $jupyter_config ] && [ "`grep set_autosave_interval $jupyter_config 2>/dev/null`" = "" ]
+then
+   echo "Disabling autosave in jupyter-notebook"
+   echo "\$([IPython.events]).on(notebook_loaded.Notebook, function () {
+IPython.notebook.set_autosave_interval(0);
+});" >> $jupyter_config
+fi
+
 ####################
 # Compilateurs C/C++
 ####################
