@@ -725,9 +725,9 @@ unset PYTHONPATH # We get a warning from Miniconda if we do not unset this varia
 # check the previous install of conda and conda packages if it exists
 model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
-pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison"
+pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison jupyter"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
-[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
+[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0 jupyter" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
 
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
