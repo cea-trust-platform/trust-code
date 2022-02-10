@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,9 +31,9 @@ class Solv_Optimal: public solv_iteratif
 {
   Declare_instanciable(Solv_Optimal);
 public :
-  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&);
-  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& , int);
-  void reinit();
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& , int) override;
+  void reinit() override;
   void prepare_resol(const Matrice_Base& matrice, const DoubleVect& secmem, DoubleVect& solution, int nmax=100);
 
 protected :
@@ -47,7 +47,7 @@ class Test_solveur : public Interprete
   Declare_instanciable(Test_solveur);
 
 public:
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
 };
 
 #endif

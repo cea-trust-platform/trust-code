@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,9 +36,9 @@ class Multiplicateur_diphasique_homogene : public Multiplicateur_diphasique_base
 {
   Declare_instanciable(Multiplicateur_diphasique_homogene);
 public:
-  virtual void coefficient(const double *alpha, const double *rho, const double *v, const double *f,
-                           const double *mu, const double Dh, const double gamma, const double *Fk,
-                           const double Fm, DoubleTab& coeff) const;
+  void coefficient(const double *alpha, const double *rho, const double *v, const double *f,
+                   const double *mu, const double Dh, const double gamma, const double *Fk,
+                   const double Fm, DoubleTab& coeff) const override;
 protected:
   double alpha_min_ = 0.9995, alpha_max_ = 1;
   int n_l = -1, n_g = -1; //indices des phases frottantes (liquide/gaz)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,13 +44,13 @@ class Pb_Dilatable_base : public Pb_Fluide_base
   Declare_base(Pb_Dilatable_base);
 
 public:
-  virtual bool initTimeStep(double dt);
-  virtual void preparer_calcul();
-  virtual void mettre_a_jour(double temps); // Ne met a jour que les postraitements
-  virtual void associer_milieu_base(const Milieu_base& );
-  virtual void associer_sch_tps_base(const Schema_Temps_base&);
+  bool initTimeStep(double dt) override;
+  void preparer_calcul() override;
+  void mettre_a_jour(double temps) override; // Ne met a jour que les postraitements
+  void associer_milieu_base(const Milieu_base& ) override;
+  void associer_sch_tps_base(const Schema_Temps_base&) override;
   virtual void update_pressure_fields(double );
-  virtual bool iterateTimeStep(bool& converged);
+  bool iterateTimeStep(bool& converged) override;
   virtual void solve_pressure_thermo() = 0;
 
 protected :

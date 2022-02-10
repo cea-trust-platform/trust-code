@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ class Champ_front_fonc_gradient_VEF : public Champ_front_fonc_gradient
   void associer_ch_inc_base(const Champ_Inc_base&);
 public:
 
-  virtual void mettre_a_jour(double temps);
+  void mettre_a_jour(double temps) override;
 protected:
   //REF(Champ_front) coefficient;
   //REF(Champ_front) inconnue_frontiere;

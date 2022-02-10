@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,9 +39,9 @@ class Multiplicateur_diphasique_Muhler_Steinhagen : public Multiplicateur_diphas
 {
   Declare_instanciable(Multiplicateur_diphasique_Muhler_Steinhagen);
 public:
-  virtual void coefficient(const double *alpha, const double *rho, const double *v, const double *f,
-                           const double *mu, const double Dh, const double gamma, const double *Fk,
-                           const double Fm, DoubleTab& coeff) const;
+  void coefficient(const double *alpha, const double *rho, const double *v, const double *f,
+                   const double *mu, const double Dh, const double gamma, const double *Fk,
+                   const double Fm, DoubleTab& coeff) const override;
 protected:
   double alpha_min_ = 1, alpha_max_ = 1.1, a_ = 2, b_ = 1, c_ = 3;
   int n_l = -1, n_g = -1, min_lottes_flinn_ = 0, min_sensas_ = 0; //indices des phases frottantes : liquide, gaz

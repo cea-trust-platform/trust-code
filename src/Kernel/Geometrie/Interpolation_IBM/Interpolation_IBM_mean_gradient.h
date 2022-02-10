@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class Interpolation_IBM_mean_gradient : public Interpolation_IBM_base, public In
   Declare_instanciable( Interpolation_IBM_mean_gradient ) ;
 
 public :
-  virtual void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF);
+  void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF) override;
 
 protected :
   friend class Source_PDF_EF;

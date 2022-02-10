@@ -38,11 +38,11 @@ class Terme_Source_Constituant_VDF_Elem : public Terme_Source_Constituant, publi
   Declare_instanciable_sans_constructeur(Terme_Source_Constituant_VDF_Elem);
 public:
   inline Terme_Source_Constituant_VDF_Elem();
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
-  void associer_pb(const Probleme_base& );
-  void mettre_a_jour(double temps) { Terme_Source_Constituant::mettre_a_jour(temps); }
-  void ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) const { Terme_Source_Constituant::ouvrir_fichier(equation(), out_, que_suis_je(), description(), os, type, flag); }
-  void completer();
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_pb(const Probleme_base& ) override;
+  void mettre_a_jour(double temps) override { Terme_Source_Constituant::mettre_a_jour(temps); }
+  void ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) const override { Terme_Source_Constituant::ouvrir_fichier(equation(), out_, que_suis_je(), description(), os, type, flag); }
+  void completer() override;
 };
 
 inline Terme_Source_Constituant_VDF_Elem::Terme_Source_Constituant_VDF_Elem()

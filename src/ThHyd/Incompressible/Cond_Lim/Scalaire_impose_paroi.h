@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,8 +42,8 @@ class Scalaire_impose_paroi  : public Dirichlet
 
 public :
 
-  virtual int compatible_avec_eqn(const Equation_base& ) const;
-  int compatible_avec_discr(const Discretisation_base& ) const;
+  int compatible_avec_eqn(const Equation_base& ) const override;
+  int compatible_avec_discr(const Discretisation_base& ) const override;
 };
 
 

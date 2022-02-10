@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,28 +48,28 @@ public :
 
 
   // Fonctions d'acces aux membres prives:
-  int face_sommet(int i, int j) const; // Cette methode n'est plus inlinee car probleme au link symbol "reference dans une section .rodata" sur certains compilateurs gcc 3.3.x
+  int face_sommet(int i, int j) const override; // Cette methode n'est plus inlinee car probleme au link symbol "reference dans une section .rodata" sur certains compilateurs gcc 3.3.x
   inline int face_sommet0(int i) const;
   inline int face_sommet1(int i) const;
   inline int face_sommet2(int i) const;
   inline int face_sommet3(int i) const;
   inline int face_sommet4(int i) const;
   inline int face_sommet5(int i) const;
-  inline int nb_som() const;
-  inline int nb_faces(int=0) const;
-  inline int nb_som_face(int=0) const;
-  inline int est_structure() const;
-  virtual const Nom& nom_lml() const;
-  virtual int contient(const ArrOfDouble&, int ) const;
-  virtual int contient(const ArrOfInt&, int ) const;
-  inline Type_Face type_face(int=0) const;
-  virtual void reordonner() ;
+  inline int nb_som() const override;
+  inline int nb_faces(int=0) const override;
+  inline int nb_som_face(int=0) const override;
+  inline int est_structure() const override;
+  const Nom& nom_lml() const override;
+  int contient(const ArrOfDouble&, int ) const override;
+  int contient(const ArrOfInt&, int ) const override;
+  inline Type_Face type_face(int=0) const override;
+  void reordonner() override ;
   int reordonner_elem();
-  virtual void calculer_volumes(DoubleVect& ) const;
+  void calculer_volumes(DoubleVect& ) const override;
   void calculer_normales(const IntTab& faces_sommets ,
-                         DoubleTab& face_normales) const;
+                         DoubleTab& face_normales) const override;
 
-  int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const;
+  int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const override;
 };
 
 // Description:

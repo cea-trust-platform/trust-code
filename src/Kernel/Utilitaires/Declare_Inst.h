@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,17 +39,17 @@
                                                                         \
   public :                                                                \
   static Objet_U* cree_instance() ;                                        \
-  unsigned taille_memoire() const;                                        \
-  int duplique() const;                                                \
+  unsigned taille_memoire() const override;                                        \
+  int duplique() const override;                                                \
   static const Type_info info_obj;                                        \
   static const Type_info* info();                                        \
-  const Type_info* get_info() const;                                        \
+  const Type_info* get_info() const override;                                        \
   /* methode rajoutee pour caster en python */                                \
   static _TYPE_& self_cast( Objet_U&) ;                                        \
   static const _TYPE_& self_cast(const Objet_U&) ;                        \
   protected :                                                                \
-  virtual Sortie& printOn(Sortie& x) const;                                \
-  virtual Entree& readOn(Entree&)
+  Sortie& printOn(Sortie& x) const override;                                \
+  Entree& readOn(Entree&) override
 
 #define Declare_instanciable_sans_constructeur(_TYPE_)                \
   public:                                                        \

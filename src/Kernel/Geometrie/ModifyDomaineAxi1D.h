@@ -29,7 +29,7 @@ class ModifyDomaineAxi1D: public Interprete
 {
   Declare_instanciable(ModifyDomaineAxi1D);
 public:
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,33 +75,33 @@ public:
   Matrice_Bloc_Sym(int N=0, int M=0);
 
   // Impression
-  Sortie& imprimer(Sortie& s) const;
-  Sortie& imprimer_formatte(Sortie& s) const;
+  Sortie& imprimer(Sortie& s) const override;
+  Sortie& imprimer_formatte(Sortie& s) const override;
 
   //Multiplications
-  virtual DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& y) const ;
-  virtual DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& y) const ;
-  virtual DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& y) const ;
+  DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& y) const override ;
+  DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& y) const override ;
+  DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& y) const override ;
 
   //Conversions:
   void BlocSymToMatMorseSym(Matrice_Morse_Sym& mat) const;
 
   // Dimensionnement
-  virtual void dimensionner(int N, int M); // dimensionnement de blocs_
+  void dimensionner(int N, int M) override; // dimensionnement de blocs_
 
   // Acces aux blocs: renvoie le bloc Aij avec A(N,M)
-  virtual const Matrice& get_bloc(int i, int j) const ; // (0<=i<N , i<=j<M)
-  virtual Matrice& get_bloc(int i, int j);
+  const Matrice& get_bloc(int i, int j) const override ; // (0<=i<N , i<=j<M)
+  Matrice& get_bloc(int i, int j) override;
 
-  virtual void get_stencil( IntTab& stencil ) const;
+  void get_stencil( IntTab& stencil ) const override;
 
-  virtual void get_symmetric_stencil( IntTab& stencil ) const;
+  void get_symmetric_stencil( IntTab& stencil ) const override;
 
-  virtual void get_stencil_and_coefficients( IntTab&      stencil,
-                                             ArrOfDouble& coefficients ) const;
+  void get_stencil_and_coefficients( IntTab&      stencil,
+                                     ArrOfDouble& coefficients ) const override;
 
-  virtual void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
-                                                       ArrOfDouble& coefficients ) const;
+  void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
+                                               ArrOfDouble& coefficients ) const override;
 
 public :
   bool check_symmetric_block_matrix_structure( void ) const;

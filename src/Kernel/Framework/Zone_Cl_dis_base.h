@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,7 +57,7 @@ class Zone_Cl_dis_base : public MorEqn, public Objet_U
 public:
 
   // Methode surchargee de Objet_U:
-  void nommer(const Nom& nom);
+  void nommer(const Nom& nom) override;
   const Cond_lim&  les_conditions_limites(int ) const;
   Cond_lim&        les_conditions_limites(int );
   Conds_lim&       les_conditions_limites();
@@ -89,7 +89,7 @@ public:
   int avancer(double temps);
   int reculer(double temps);
   virtual int initialiser(double temps);
-  inline const Nom& le_nom() const;
+  inline const Nom& le_nom() const override;
 
   virtual void associer_inconnue(const Champ_Inc&);
   virtual const Champ_Inc& inconnue() const;

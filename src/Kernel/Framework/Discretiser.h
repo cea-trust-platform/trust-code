@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ class Discretiser : public Interprete
 {
   Declare_instanciable(Discretiser);
 public :
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
 protected :
   static int is_deja_appele;
 };

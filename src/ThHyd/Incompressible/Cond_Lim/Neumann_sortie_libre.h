@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,22 +54,22 @@ class Neumann_sortie_libre : public Neumann_val_ext
 
 public:
 
-  virtual const DoubleTab& tab_ext() const;
-  virtual DoubleTab& tab_ext();
+  const DoubleTab& tab_ext() const override;
+  DoubleTab& tab_ext() override;
 
-  virtual double val_ext(int i) const;
-  virtual double val_ext(int i,int j) const;
-  virtual int compatible_avec_eqn(const Equation_base&) const;
-  virtual int initialiser(double temps);
-  virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
-  void verifie_ch_init_nb_comp();
+  double val_ext(int i) const override;
+  double val_ext(int i,int j) const override;
+  int compatible_avec_eqn(const Equation_base&) const override;
+  int initialiser(double temps) override;
+  void associer_fr_dis_base(const Frontiere_dis_base& ) override ;
+  void verifie_ch_init_nb_comp() override;
 
-  virtual void fixer_nb_valeurs_temporelles (int nb_cases);
-  virtual void mettre_a_jour(double temps);
-  virtual void set_temps_defaut(double temps);
-  virtual void changer_temps_futur(double temps, int i);
-  virtual int avancer(double temps);
-  virtual int reculer(double temps);
+  void fixer_nb_valeurs_temporelles (int nb_cases) override;
+  void mettre_a_jour(double temps) override;
+  void set_temps_defaut(double temps) override;
+  void changer_temps_futur(double temps, int i) override;
+  int avancer(double temps) override;
+  int reculer(double temps) override;
 
 protected:
 

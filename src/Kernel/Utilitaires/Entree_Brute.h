@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,8 +40,8 @@ class Entree_Brute : public Entree
 
 public:
   Entree_Brute();
-  ~Entree_Brute();
-  int set_bin(int bin);
+  ~Entree_Brute() override;
+  int set_bin(int bin) override;
 
   // [ABN] TODO should be const char * data ...
   void set_data(const char * data, unsigned sz);

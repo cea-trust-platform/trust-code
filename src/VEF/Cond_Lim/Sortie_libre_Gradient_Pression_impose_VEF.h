@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,9 +52,9 @@ class Sortie_libre_Gradient_Pression_impose_VEF : public Neumann_sortie_libre
 
 public:
 
-  virtual double flux_impose(int ) const;
-  virtual double flux_impose(int , int ) const;
-  int compatible_avec_eqn(const Equation_base&) const;
+  double flux_impose(int ) const override;
+  double flux_impose(int , int ) const override;
+  int compatible_avec_eqn(const Equation_base&) const override;
 
 protected:
 

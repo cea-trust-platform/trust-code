@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,10 +40,10 @@ class Terme_Source_Acceleration : public Source_base
 public:
 
   Terme_Source_Acceleration();
-  void         associer_pb(const Probleme_base& );
-  DoubleTab&   calculer(DoubleTab& ) const;
+  void         associer_pb(const Probleme_base& ) override;
+  DoubleTab&   calculer(DoubleTab& ) const override;
   int       a_pour_Champ_Fonc(const Motcle& mot,
-                              REF(Champ_base) & ch_ref) const;
+                              REF(Champ_base) & ch_ref) const override;
   inline const Champ_Don& champ_vitesse() const
   {
     return champ_vitesse_;
@@ -61,7 +61,7 @@ protected:
   const DoubleTab&                  calculer_la_source(DoubleTab& src_faces) const;
   virtual const Navier_Stokes_std& get_eq_hydraulique() const;
 
-  void                 mettre_a_jour(double temps);
+  void                 mettre_a_jour(double temps) override;
 
 
 private:

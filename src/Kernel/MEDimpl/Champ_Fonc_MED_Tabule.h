@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ class Champ_Fonc_MED_Tabule : public Champ_Fonc_MED
   Declare_instanciable( Champ_Fonc_MED_Tabule ) ;
 
 public :
-  void mettre_a_jour(double temps);
+  void mettre_a_jour(double temps) override;
 protected :
   DoubleTab tab1_,tab2_;
   double temps1_,temps2_,temps_calc_;

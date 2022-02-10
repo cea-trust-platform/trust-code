@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ public:
 
   inline Evaluateur_Source_PolyMAC_Elem();
   Evaluateur_Source_PolyMAC_Elem(const Evaluateur_Source_PolyMAC_Elem& );
-  void completer();
+  void completer() override;
 
 protected:
 

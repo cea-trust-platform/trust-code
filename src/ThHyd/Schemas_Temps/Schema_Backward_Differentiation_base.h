@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,16 +44,16 @@ class Schema_Backward_Differentiation_base: public Schema_Implicite_Multi_TimeSt
 
 public :
 
-  double changer_temps(Equation_base& eqn, const double& temps);
-  void   update_time_derivative(Equation_base& eqn, const DoubleTab& data);
-  void   mettre_a_jour_equation(Equation_base& eqn, const double& temps);
-  void   store_equation_parameters(Equation_base& eqn, DoubleTab& stored_parameters);
-  void   modify_equation_parameters(Equation_base& eqn, DoubleTab& stored_parameters);
-  void   compute_coefficients(double time_step, const DoubleTab& times) const;
-  void   add_multi_timestep_data(const Equation_base& eqn, Matrice_Base& mat_morse, DoubleTab& secmem) const;
+  double changer_temps(Equation_base& eqn, const double& temps) override;
+  void   update_time_derivative(Equation_base& eqn, const DoubleTab& data) override;
+  void   mettre_a_jour_equation(Equation_base& eqn, const double& temps) override;
+  void   store_equation_parameters(Equation_base& eqn, DoubleTab& stored_parameters) override;
+  void   modify_equation_parameters(Equation_base& eqn, DoubleTab& stored_parameters) override;
+  void   compute_coefficients(double time_step, const DoubleTab& times) const override;
+  void   add_multi_timestep_data(const Equation_base& eqn, Matrice_Base& mat_morse, DoubleTab& secmem) const override;
 
-  inline const DoubleTab& coefficients() const;
-  inline DoubleTab& coefficients();
+  inline const DoubleTab& coefficients() const override;
+  inline DoubleTab& coefficients() override;
 
 protected :
 

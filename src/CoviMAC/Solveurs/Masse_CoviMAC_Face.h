@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,22 +42,22 @@ class Masse_CoviMAC_Face : public Solveur_Masse_base
 
 public:
 
-  void associer_zone_dis_base(const Zone_dis_base& );
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
+  void associer_zone_dis_base(const Zone_dis_base& ) override;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
 
-  DoubleTab& appliquer_impl(DoubleTab& ) const;
+  DoubleTab& appliquer_impl(DoubleTab& ) const override;
 
-  virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const;
+  DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const override;
 
   /* interface ajouter_blocs */
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 
-  void check_multiphase_compatibility() const { };
+  void check_multiphase_compatibility() const override { };
 private:
 
   REF(Zone_CoviMAC) la_zone_CoviMAC;

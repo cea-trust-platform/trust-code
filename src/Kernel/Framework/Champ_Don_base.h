@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,20 +42,20 @@ class Champ_Don_base : public Champ_base
   Declare_base(Champ_Don_base);
 public:
   using Champ_Proto::valeurs;
-  DoubleTab& valeurs();
-  const DoubleTab& valeurs() const;
+  DoubleTab& valeurs() override;
+  const DoubleTab& valeurs() const override;
   inline operator DoubleTab& ();
   inline operator const DoubleTab& () const ;
-  virtual int fixer_nb_valeurs_nodales(int nb_noeuds);
-  inline int nb_valeurs_nodales() const;
+  int fixer_nb_valeurs_nodales(int nb_noeuds) override;
+  inline int nb_valeurs_nodales() const override;
   void dimensionner(int ,int);
-  virtual int imprime(Sortie& , int ) const;
-  virtual Champ_base& affecter_(const Champ_base& ) ;
-  virtual Champ_base& affecter_compo(const Champ_base& ,int );
-  virtual void mettre_a_jour(double temps);
+  int imprime(Sortie& , int ) const override;
+  Champ_base& affecter_(const Champ_base& ) override;
+  Champ_base& affecter_compo(const Champ_base& ,int ) override;
+  void mettre_a_jour(double temps) override;
   virtual int initialiser(const double& temps);
-  virtual int reprendre(Entree& ) ;
-  virtual int sauvegarder(Sortie& ) const;
+  int reprendre(Entree& ) override;
+  int sauvegarder(Sortie& ) const override;
 
 protected :
 

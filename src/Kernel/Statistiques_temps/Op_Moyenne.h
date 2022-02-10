@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,11 +45,11 @@ class Op_Moyenne : public Operateur_Statistique_tps_base
 
 public:
 
-  inline const Nom& le_nom() const
+  inline const Nom& le_nom() const override
   {
     return integrale_champ.le_nom();
   };
-  inline double temps() const
+  inline double temps() const override
   {
     return integrale_champ.temps();
   };
@@ -57,7 +57,7 @@ public:
   {
     return ch_moyenne_convergee_;
   };
-  inline const Integrale_tps_Champ& integrale() const
+  inline const Integrale_tps_Champ& integrale() const override
   {
     return integrale_champ;
   };
@@ -74,15 +74,15 @@ public:
   {
     return integrale_champ.dt_integration();
   };
-  inline void mettre_a_jour(double temps);
-  inline void initialiser(double val);
-  inline void associer(const Zone_dis_base& une_zdis,const Champ_Generique_base& le_champ, double t1,double t2);
-  inline void fixer_tstat_deb(double , double);
-  inline void fixer_tstat_fin(double tps);
-  inline int sauvegarder(Sortie& os) const;
-  inline int reprendre(Entree& is);
-  void completer(const Probleme_base& );
-  DoubleTab calculer_valeurs() const;
+  inline void mettre_a_jour(double temps) override;
+  inline void initialiser(double val) override;
+  inline void associer(const Zone_dis_base& une_zdis,const Champ_Generique_base& le_champ, double t1,double t2) override;
+  inline void fixer_tstat_deb(double , double) override;
+  inline void fixer_tstat_fin(double tps) override;
+  inline int sauvegarder(Sortie& os) const override;
+  inline int reprendre(Entree& is) override;
+  void completer(const Probleme_base& ) override;
+  DoubleTab calculer_valeurs() const override;
 
 protected:
 

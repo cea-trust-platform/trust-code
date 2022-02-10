@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,12 +39,12 @@ class Schema_Adams_Bashforth_base: public Schema_Explicite_Multi_TimeStep_base
 
 public :
 
-  void   associer_pb(const Probleme_base&);
-  void   modifier_second_membre(const Equation_base& eqn, DoubleTab& secmem) ;
-  void   compute_coefficients(double time_step, const DoubleTab& times);
+  void   associer_pb(const Probleme_base&) override;
+  void   modifier_second_membre(const Equation_base& eqn, DoubleTab& secmem) override ;
+  void   compute_coefficients(double time_step, const DoubleTab& times) override;
 
-  inline const DoubleTab& coefficients() const;
-  inline DoubleTab& coefficients();
+  inline const DoubleTab& coefficients() const override;
+  inline DoubleTab& coefficients() override;
 
 protected :
 

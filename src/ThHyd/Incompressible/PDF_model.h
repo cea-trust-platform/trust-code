@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ public :
     return eta_;
   }
 protected :
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   Champ_Don vitesse_imposee_lu_;
   Champ_Don vitesse_imposee_;
   double eta_;

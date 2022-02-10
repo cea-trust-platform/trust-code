@@ -46,8 +46,8 @@ class Acceleration_QC_VDF_Face :public Terme_Source_Acceleration_VDF_Face,  publ
 {
   Declare_instanciable(Acceleration_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  DoubleTab& ajouter(DoubleTab& ) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
@@ -55,8 +55,8 @@ class Source_qdm_QC_VDF_Face : public Terme_Source_Qdm_VDF_Face, public Source_F
 {
   Declare_instanciable(Source_qdm_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  DoubleTab& ajouter(DoubleTab& ) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
@@ -64,8 +64,8 @@ class Perte_Charge_Reguliere_QC_VDF_Face : public Perte_Charge_Reguliere_VDF_Fac
 {
   Declare_instanciable(Perte_Charge_Reguliere_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  DoubleTab& ajouter(DoubleTab& ) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
@@ -73,8 +73,8 @@ class Perte_Charge_Singuliere_QC_VDF_Face : public Perte_Charge_Singuliere_VDF_F
 {
   Declare_instanciable(Perte_Charge_Singuliere_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  DoubleTab& ajouter(DoubleTab& ) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
@@ -82,8 +82,8 @@ class Darcy_QC_VDF_Face : public Source_Darcy_VDF_Face, public Source_Fluide_Dil
 {
   Declare_instanciable(Darcy_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  DoubleTab& ajouter(DoubleTab& ) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 
@@ -91,8 +91,8 @@ class Forchheimer_QC_VDF_Face : public Source_Forchheimer_VDF_Face, public Sourc
 {
   Declare_instanciable(Forchheimer_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  DoubleTab& ajouter(DoubleTab& ) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,13 +41,13 @@ class Solveur_Masse_EF : public Solveur_Masse_base
 
 public:
 
-  void associer_zone_dis_base(const Zone_dis_base& );
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
+  void associer_zone_dis_base(const Zone_dis_base& ) override;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
 
-  virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const;
-  virtual DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation=1) const;
+  Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const override;
+  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation=1) const override;
 
-  DoubleTab& appliquer_impl(DoubleTab& ) const;
+  DoubleTab& appliquer_impl(DoubleTab& ) const override;
 
 private:
 

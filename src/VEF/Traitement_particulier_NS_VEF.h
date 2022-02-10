@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,15 +43,15 @@ class Traitement_particulier_NS_VEF : public Traitement_particulier_NS_base
 
 public :
 
-  void associer_eqn(const Equation_base& );
-  virtual inline void preparer_calcul_particulier(void) ;
+  void associer_eqn(const Equation_base& ) override;
+  inline void preparer_calcul_particulier(void) override ;
   virtual inline void traitement_particulier_debut_mettre_a_jour(double&);
   virtual inline void traitement_particulier_fin_mettre_a_jour(double&) ;
-  virtual inline void sauver_stat(void) const;
-  virtual inline void reprendre_stat(void) ;
-  virtual inline void post_traitement_particulier(void) ;
-  virtual void en_cours_de_resolution(int , DoubleTab& ,DoubleTab& ,double) ;
-  virtual Entree& lire(Entree& );
+  inline void sauver_stat(void) const override;
+  inline void reprendre_stat(void) override ;
+  inline void post_traitement_particulier(void) override ;
+  void en_cours_de_resolution(int , DoubleTab& ,DoubleTab& ,double) override ;
+  Entree& lire(Entree& ) override;
   virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const ;
   virtual int comprend_champ(const Motcle& mot) const ;
 

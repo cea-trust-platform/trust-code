@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,25 +36,25 @@ class Fluide_sodium_liquide: public Fluide_reel_base
 {
   Declare_instanciable(Fluide_sodium_liquide);
 
-  virtual std::map<std::string, std::array<double, 2>> unknown_range() const
+  std::map<std::string, std::array<double, 2>> unknown_range() const override
   {
     return { { "temperature", { 371 - 273.15, 2503.7 - 273.15 } } }; //de la temperature de solidification au pt tricritique
   }
 
 protected :
   // densite
-  virtual double     rho_(const double T, const double P) const;
-  virtual double  dP_rho_(const double T, const double P) const;
-  virtual double  dT_rho_(const double T, const double P) const;
+  double     rho_(const double T, const double P) const override;
+  double  dP_rho_(const double T, const double P) const override;
+  double  dT_rho_(const double T, const double P) const override;
   // enthalpie
-  virtual double       h_(const double T, const double P) const;
-  virtual double    dP_h_(const double T, const double P) const;
-  virtual double    dT_h_(const double T, const double P) const;
+  double       h_(const double T, const double P) const override;
+  double    dP_h_(const double T, const double P) const override;
+  double    dT_h_(const double T, const double P) const override;
   // lois champs "faibles" -> pas de derivees
-  virtual double      cp_(const double T, const double P) const;
-  virtual double    beta_(const double T, const double P) const;
-  virtual double      mu_(const double T, const double P) const;
-  virtual double  lambda_(const double T, const double P) const;
+  double      cp_(const double T, const double P) const override;
+  double    beta_(const double T, const double P) const override;
+  double      mu_(const double T, const double P) const override;
+  double  lambda_(const double T, const double P) const override;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,18 +40,18 @@ class Assembleur_P_CoviMAC : public Assembleur_base
   Declare_instanciable(Assembleur_P_CoviMAC);
 
 public:
-  void associer_zone_dis_base(const Zone_dis_base& )         ;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& )   ;
-  const Zone_dis_base& zone_dis_base() const                 ;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const           ;
-  int assembler(Matrice&)                                 ;
-  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u);
-  int modifier_secmem(DoubleTab&)
+  void associer_zone_dis_base(const Zone_dis_base& ) override         ;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override   ;
+  const Zone_dis_base& zone_dis_base() const override                 ;
+  const Zone_Cl_dis_base& zone_Cl_dis_base() const override           ;
+  int assembler(Matrice&) override                                 ;
+  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
+  int modifier_secmem(DoubleTab&) override
   {
     return 1;
   }
-  int modifier_solution(DoubleTab&)                       ;
-  void completer(const Equation_base& )                      ;
+  int modifier_solution(DoubleTab&) override                       ;
+  void completer(const Equation_base& ) override                      ;
   inline const Equation_base& equation() const                ;
 
 protected :

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,18 +53,18 @@ class Champ_Post_Operateur_Eqn : public Champ_Generique_Operateur_base
 
 public:
 
-  virtual const Noms get_property(const Motcle& query) const;
-  virtual Entity  get_localisation(const int index = -1) const;
-  virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
-  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
+  const Noms get_property(const Motcle& query) const override;
+  Entity  get_localisation(const int index = -1) const override;
+  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
 
 
-  const Operateur_base& Operateur() const;
-  Operateur_base& Operateur();
-  void completer(const Postraitement_base& post);
-  void nommer_source();
+  const Operateur_base& Operateur() const override;
+  Operateur_base& Operateur() override;
+  void completer(const Postraitement_base& post) override;
+  void nommer_source() override;
   //virtual Entree &   lire(const Motcle & motcle, Entree & is);
-  void set_param(Param& param);
+  void set_param(Param& param) override;
   void verification_cas_compo() const;
   const Champ_base&  get_champ_compo_without_evaluation(Champ& espace_stockage) const;
 

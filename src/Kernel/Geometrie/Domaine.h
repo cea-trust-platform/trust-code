@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,8 +62,8 @@ class Domaine : public Objet_U
 public :
 
   Domaine();
-  inline const Nom& le_nom() const;
-  inline void nommer(const Nom& );
+  inline const Nom& le_nom() const override;
+  inline void nommer(const Nom& ) override;
   inline int nb_zones() const;
   inline const Zone& zone(int) const;
   inline Zone& zone(int);
@@ -80,7 +80,7 @@ public :
   virtual int nb_som() const;
   virtual int nb_som_tot() const;
   void add(const Sous_Zone&);
-  int associer_(Objet_U&);
+  int associer_(Objet_U&) override;
   inline DoubleTab& les_sommets();
   inline const DoubleTab& les_sommets() const;
   DoubleTab getBoundingBox() const;

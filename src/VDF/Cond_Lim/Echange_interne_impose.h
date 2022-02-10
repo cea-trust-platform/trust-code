@@ -45,13 +45,13 @@ class Echange_interne_impose  : public Echange_externe_impose
   Declare_instanciable(Echange_interne_impose);
 
 public:
-  virtual int initialiser(double temps);
-  virtual void completer();
-  virtual void mettre_a_jour(double tps);
+  int initialiser(double temps) override;
+  void completer() override;
+  void mettre_a_jour(double tps) override;
 
   virtual void init();
 
-  virtual void verifie_ch_init_nb_comp();
+  void verifie_ch_init_nb_comp() override;
 
   // Overriden in Echange_interne_parfait to have h_gap=+infinity:
   virtual double calcul_h_imp(const double h_gap, const double invLambda) const;
@@ -63,12 +63,12 @@ public:
 
   // re-implemented to account for the second Champ_front in the class (h_gap_):
   //
-  virtual void  set_temps_defaut(double temps);
-  virtual void  fixer_nb_valeurs_temporelles(int nb_cases);
-  virtual void  changer_temps_futur(double temps,int i);
-  virtual int   avancer(double temps);
-  virtual int   reculer(double temps);
-  virtual void  associer_fr_dis_base(const Frontiere_dis_base& fr);
+  void  set_temps_defaut(double temps) override;
+  void  fixer_nb_valeurs_temporelles(int nb_cases) override;
+  void  changer_temps_futur(double temps,int i) override;
+  int   avancer(double temps) override;
+  int   reculer(double temps) override;
+  void  associer_fr_dis_base(const Frontiere_dis_base& fr) override;
   //
 
 protected:

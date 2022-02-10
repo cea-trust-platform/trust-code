@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,16 +47,16 @@ class Milieu_composite: public Fluide_base
 {
   Declare_instanciable(Milieu_composite);
 public :
-  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
-  virtual void mettre_a_jour(double temps);
-  virtual int initialiser(const double& temps);
-  virtual void associer_equation(const Equation_base* eqn) const;
+  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
+  void mettre_a_jour(double temps) override;
+  int initialiser(const double& temps) override;
+  void associer_equation(const Equation_base* eqn) const override;
   bool has_saturation(int k, int l) const;
   Saturation_base& get_saturation(int k, int l) const;
-  virtual void abortTimeStep();
-  virtual bool initTimeStep(double dt);
+  void abortTimeStep() override;
+  bool initTimeStep(double dt) override;
 
-  virtual int check_unknown_range() const;
+  int check_unknown_range() const override;
 
   LIST(Fluide_base) fluides;
 

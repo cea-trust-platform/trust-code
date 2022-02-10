@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,7 @@ public:
   // Methodes propres
 
   //! Genere les_faces en parcourant les faces de la zone_dis et en cherchant quels voisins appartiennent a la_sous_zone.
-  virtual void discretiser();
+  void discretiser() override;
 
 protected:
   REF(Zone_VF) la_zone_VF;

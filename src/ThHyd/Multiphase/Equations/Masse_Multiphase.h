@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,46 +44,46 @@ class Masse_Multiphase : public Convection_Diffusion_std
 public :
 
   Masse_Multiphase();
-  void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  void set_param(Param& param) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer_fluide(const Fluide_base& );
-  inline const Champ_Inc& inconnue() const;
-  inline Champ_Inc& inconnue();
+  inline const Champ_Inc& inconnue() const override;
+  inline Champ_Inc& inconnue() override;
 
-  void discretiser();
-  const Milieu_base& milieu() const;
+  void discretiser() override;
+  const Milieu_base& milieu() const override;
   const Fluide_base& fluide() const;
   Fluide_base& fluide();
-  Milieu_base& milieu();
-  void associer_milieu_base(const Milieu_base& );
-  virtual void completer();
+  Milieu_base& milieu() override;
+  void associer_milieu_base(const Milieu_base& ) override;
+  void completer() override;
 
-  int nombre_d_operateurs() const //pas de diffusion
+  int nombre_d_operateurs() const override //pas de diffusion
   {
     return 1;
   }
-  const Operateur& operateur(int) const;
-  Operateur& operateur(int);
+  const Operateur& operateur(int) const override;
+  Operateur& operateur(int) override;
 
-  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice);
+  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice) override;
 
   /*
     interface {dimensionner,assembler}_blocs
     specificites : prend en compte l'evanescence (en dernier)
   */
-  virtual  int has_interface_blocs() const;
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  virtual void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  int has_interface_blocs() const override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
   /* champ convecte : alpha * rho */
   static void calculer_alpha_rho(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
-  virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const
+  std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const override
   {
     return { "alpha_rho", calculer_alpha_rho };
   }
 
   /////////////////////////////////////////////////////
-  virtual const Motcle& domaine_application() const;
+  const Motcle& domaine_application() const override;
 
 protected :
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,12 +49,12 @@ class Echange_contact_PolyMAC  : public Echange_externe_impose
 
   Declare_instanciable(Echange_contact_PolyMAC);
 public :
-  virtual void completer();
-  virtual int initialiser(double temps);
+  void completer() override;
+  int initialiser(double temps) override;
   void calculer_correspondance();
   void update_coeffs();
   void update_delta() const;
-  virtual void mettre_a_jour(double );
+  void mettre_a_jour(double ) override;
   inline Champ_front& T_autre_pb()
   {
     return T_autre_pb_;

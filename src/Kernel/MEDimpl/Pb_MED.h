@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,9 +44,9 @@ class Pb_MED : public Probleme_base
 
 public:
 
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const ;
-  Equation_base& equation(int);
+  int nombre_d_equations() const override;
+  const Equation_base& equation(int) const override ;
+  Equation_base& equation(int) override;
   int comprend_champ(const Motcle& ) const;
 
   inline const ArrOfDouble& temps_sauv() const
@@ -60,9 +60,9 @@ public:
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
-  virtual void creer_champ(const Motcle& motlu);
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+  void creer_champ(const Motcle& motlu) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   /////////////////////////////////////////////////////
 
 protected :

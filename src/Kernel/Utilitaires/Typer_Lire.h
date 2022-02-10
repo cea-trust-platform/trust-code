@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,6 @@ class Typer_Lire : public Lire
 {
   Declare_instanciable(Typer_Lire);
 public :
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
 };
 #endif

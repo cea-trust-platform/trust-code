@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ public :
   inline const Objet_U& operator[](int) const;
   inline Objet_U& operator[](int);
   vect_impl(const vect_impl&);
-  virtual ~vect_impl();
+  ~vect_impl() override;
   vect_impl& operator=(const vect_impl& );
   void dimensionner(int) ;
   void dimensionner_force(int);

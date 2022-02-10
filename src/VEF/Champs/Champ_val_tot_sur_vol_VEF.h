@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class Champ_val_tot_sur_vol_VEF : public Champ_val_tot_sur_vol_base
 
 public:
 
-  DoubleVect& eval_contrib_loc(const Zone_dis_base& zdis,const Zone_Cl_dis_base& zcldis,DoubleVect& vol);
+  DoubleVect& eval_contrib_loc(const Zone_dis_base& zdis,const Zone_Cl_dis_base& zcldis,DoubleVect& vol) override;
 };
 
 #endif

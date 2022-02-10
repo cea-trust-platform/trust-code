@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,9 +43,9 @@ public:
   ///////////////////////////////////////////////////
   // 3 methodes a surcharger car heritees de Op_base.
   ///////////////////////////////////////////////////
-  DoubleTab& ajouter( const DoubleTab&, DoubleTab&) const;
-  DoubleTab& calculer( const DoubleTab&, DoubleTab&) const;
-  void associer( const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc&);
+  DoubleTab& ajouter( const DoubleTab&, DoubleTab&) const override;
+  DoubleTab& calculer( const DoubleTab&, DoubleTab&) const override;
+  void associer( const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc&) override;
 
   //////////////////////////////////////////////////////
   // Autres methodes

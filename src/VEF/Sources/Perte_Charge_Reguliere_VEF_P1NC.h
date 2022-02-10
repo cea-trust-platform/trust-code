@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,11 +45,11 @@ class Perte_Charge_Reguliere_VEF_P1NC : public Perte_Charge_VEF_Face,
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const ;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  DoubleTab& calculer(DoubleTab& ) const override ;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
   void remplir_num_faces(Nom& );
-  virtual void completer();
+  void completer() override;
 protected:
 
   IntVect num_faces;

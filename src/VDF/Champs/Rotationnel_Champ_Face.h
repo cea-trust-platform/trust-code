@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,9 +44,9 @@ class Rotationnel_Champ_Face : public Champ_Rotationnel,
 public:
 
   inline const Champ_Face& mon_champ() const;
-  inline void mettre_a_jour(double );
+  inline void mettre_a_jour(double ) override;
   void associer_champ(const Champ_Face& );
-  void me_calculer(double );
+  void me_calculer(double ) override;
 
 protected:
 

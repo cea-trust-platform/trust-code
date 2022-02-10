@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,17 +56,17 @@ class Pb_Multiphase : public Pb_Fluide_base
   Declare_instanciable(Pb_Multiphase);
 
 public:
-  void discretiser(const Discretisation_base&);
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const ;
-  Equation_base& equation(int);
-  void associer_milieu_base(const Milieu_base& );
+  void discretiser(const Discretisation_base&) override;
+  int nombre_d_equations() const override;
+  const Equation_base& equation(int) const override ;
+  Equation_base& equation(int) override;
+  void associer_milieu_base(const Milieu_base& ) override;
   void creer_milieu(const Noms);
-  int verifier();
-  void mettre_a_jour(double temps);
-  virtual Entree& lire_equations(Entree& is);
+  int verifier() override;
+  void mettre_a_jour(double temps) override;
+  Entree& lire_equations(Entree& is) override;
   virtual Entree& lire_correlations(Entree& is);
-  virtual void preparer_calcul();
+  void preparer_calcul() override;
 
   /* nombre de phases du probleme */
   int nb_phases() const

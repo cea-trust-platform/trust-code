@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,12 +60,12 @@
     const DERIV(_TYPE_)& operator=(const DERIV(_TYPE_)& );                \
     /* Ici on a retire les operateurs de conversion implicite */        \
     void   deplace(DERIV(_TYPE_)&);                                        \
-    int reprendre(Entree &);                                                \
-    int sauvegarder(Sortie &) const;                                        \
+    int reprendre(Entree &) override;                                                \
+    int sauvegarder(Sortie &) const override;                                        \
     /* methode reimplementee de O_U_Ptr : */                                \
-    const Type_info & get_info_ptr() const;                                \
+    const Type_info & get_info_ptr() const override;                                \
   protected:                                                                \
-    void set_O_U_Ptr(Objet_U *);                                        \
+    void set_O_U_Ptr(Objet_U *) override;                                        \
   private:                                                                \
     _TYPE_ * pointeur_;                                                        \
   };                                                                        \

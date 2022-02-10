@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ class Parametre_diffusion_implicite : public Parametre_equation_base
 {
   Declare_instanciable(Parametre_diffusion_implicite);
 public:
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   inline const double& seuil_diffusion_implicite() const
   {
     return seuil_diffusion_implicite_ ;

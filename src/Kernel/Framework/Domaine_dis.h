@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ class Domaine_dis : public Objet_U
 
 public:
   Domaine_dis();
-  ~Domaine_dis();
+  ~Domaine_dis() override;
   inline int nombre_de_zones() const;
   inline const Zone_dis& zone_dis(int) const;
   inline Zone_dis& zone_dis(int);

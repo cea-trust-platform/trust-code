@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,39 +49,39 @@ class EcrFicPartage : public SFichier
 public:
   EcrFicPartage();
   EcrFicPartage(const char* name,IOS_OPEN_MODE mode=ios::out);
-  int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::out);
-  ~EcrFicPartage();
+  int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::out) override;
+  ~EcrFicPartage() override;
   void close();
-  Sortie& lockfile();
-  Sortie& unlockfile();
-  Sortie& syncfile();
-  void precision(int);
-  virtual int get_precision();
+  Sortie& lockfile() override;
+  Sortie& unlockfile() override;
+  Sortie& syncfile() override;
+  void precision(int) override;
+  int get_precision() override;
 
-  Sortie& flush();
-  int set_bin(int bin);
+  Sortie& flush() override;
+  int set_bin(int bin) override;
 
-  Sortie& operator <<(const Separateur& );
-  Sortie& operator <<(const int& ob);
-  Sortie& operator <<(const unsigned& ob);
+  Sortie& operator <<(const Separateur& ) override;
+  Sortie& operator <<(const int& ob) override;
+  Sortie& operator <<(const unsigned& ob) override;
 #ifndef INT_is_64_
-  Sortie& operator <<(const long& ob);
+  Sortie& operator <<(const long& ob) override;
 #endif
-  Sortie& operator <<(const float& ob);
-  Sortie& operator <<(const double& ob);
-  Sortie& operator <<(const char* ob);
-  Sortie& operator <<(const Objet_U& ob);
+  Sortie& operator <<(const float& ob) override;
+  Sortie& operator <<(const double& ob) override;
+  Sortie& operator <<(const char* ob) override;
+  Sortie& operator <<(const Objet_U& ob) override;
 #ifdef IO_avec_string
   Sortie& operator <<(const string& ob);
 #endif
 
-  int put(const unsigned* ob, int n, int pas);
-  int put(const int* ob, int n, int pas);
+  int put(const unsigned* ob, int n, int pas) override;
+  int put(const int* ob, int n, int pas) override;
 #ifndef INT_is_64_
-  int put(const long* ob, int n, int pas);
+  int put(const long* ob, int n, int pas) override;
 #endif
-  int put(const float* ob, int n, int pas);
-  int put(const double* ob, int n, int pas);
+  int put(const float* ob, int n, int pas) override;
+  int put(const double* ob, int n, int pas) override;
 
 protected:
   Nom nom_fic_;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,10 +36,10 @@ class Sortie_Brute :  public Sortie
 {
 public:
   Sortie_Brute();
-  ~Sortie_Brute();
+  ~Sortie_Brute() override;
   const char* get_data() const;
   unsigned get_size() const;
-  int set_bin(int bin);
+  int set_bin(int bin) override;
 
 protected:
   mutable std::string string_;

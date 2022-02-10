@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ class Champ_front_fonc_pois_tube : public Champ_front_fonc
 
 public:
 
-  int initialiser(double temps, const Champ_Inc_base& inco);
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
 
 protected:
 

@@ -51,60 +51,60 @@ public:
 
   inline Eval_Quick_PolyMAC_Elem();
 
-  inline int calculer_flux_faces_echange_externe_impose() const;
-  inline int calculer_flux_faces_echange_global_impose() const;
-  inline int calculer_flux_faces_entree_fluide() const;
-  inline int calculer_flux_faces_paroi() const;
-  inline int calculer_flux_faces_paroi_adiabatique() const;
-  inline int calculer_flux_faces_paroi_defilante() const;
-  inline int calculer_flux_faces_paroi_fixe() const;
-  inline int calculer_flux_faces_sortie_libre() const;
-  inline int calculer_flux_faces_symetrie() const;
-  inline int calculer_flux_faces_periodique() const ;
+  inline int calculer_flux_faces_echange_externe_impose() const override;
+  inline int calculer_flux_faces_echange_global_impose() const override;
+  inline int calculer_flux_faces_entree_fluide() const override;
+  inline int calculer_flux_faces_paroi() const override;
+  inline int calculer_flux_faces_paroi_adiabatique() const override;
+  inline int calculer_flux_faces_paroi_defilante() const override;
+  inline int calculer_flux_faces_paroi_fixe() const override;
+  inline int calculer_flux_faces_sortie_libre() const override;
+  inline int calculer_flux_faces_symetrie() const override;
+  inline int calculer_flux_faces_periodique() const override ;
 
   // Fonctions qui servent a calculer le flux de grandeurs scalaires
   // Elles sont de type double et renvoient le flux
 
-  inline double flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Dirichlet_paroi_fixe&, int ) const;
-  inline double flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Echange_global_impose&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Neumann_paroi&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Neumann_paroi_adiabatique&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Symetrie&, int ) const;
-  inline double flux_face(const DoubleTab&, int , const Periodique&, int ) const;
-  inline double flux_faces_interne(const DoubleTab&, int ) const;
+  inline double flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&, int ) const override;
+  inline double flux_face(const DoubleTab&, int , const Dirichlet_paroi_defilante&, int ) const override;
+  inline double flux_face(const DoubleTab&, int , const Dirichlet_paroi_fixe&, int ) const override;
+  inline double flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&, int ) const override;
+  inline double flux_face(const DoubleTab&, int , const Echange_global_impose&, int ) const override;
+  inline double flux_face(const DoubleTab&, int , const Neumann_paroi&, int ) const override;
+  inline double flux_face(const DoubleTab&, int , const Neumann_paroi_adiabatique&, int ) const override;
+  inline double flux_face(const DoubleTab&, int , const Neumann_sortie_libre&, int ) const override;
+  inline double flux_face(const DoubleTab&, int , const Symetrie&, int ) const override;
+  inline double flux_face(const DoubleTab&, int , const Periodique&, int ) const override;
+  inline double flux_faces_interne(const DoubleTab&, int ) const override;
 
   // Fonctions qui servent a calculer le flux de grandeurs vectorielles
   // Elles sont de type void et remplissent le tableau flux
 
   inline void flux_face(const DoubleTab&, int , const Symetrie&,
-                        int, DoubleVect& flux) const;
+                        int, DoubleVect& flux) const override;
   inline void flux_face(const DoubleTab&, int , const Periodique&,
-                        int, DoubleVect& flux) const;
+                        int, DoubleVect& flux) const override;
   inline void flux_face(const DoubleTab&, int , const Neumann_sortie_libre&,
-                        int, DoubleVect& flux) const;
+                        int, DoubleVect& flux) const override;
   inline void flux_face(const DoubleTab&, int , const Dirichlet_entree_fluide&,
-                        int, DoubleVect& flux) const;
+                        int, DoubleVect& flux) const override;
   inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_fixe&,
-                        int, DoubleVect& flux) const;
+                        int, DoubleVect& flux) const override;
   inline void flux_face(const DoubleTab&, int , const Dirichlet_paroi_defilante&,
-                        int, DoubleVect& flux) const;
+                        int, DoubleVect& flux) const override;
   inline void flux_face(const DoubleTab&, int , const Neumann_paroi_adiabatique&,
-                        int, DoubleVect& flux) const;
+                        int, DoubleVect& flux) const override;
   inline void flux_face(const DoubleTab&, int , const Neumann_paroi&,
-                        int, DoubleVect& flux) const;
+                        int, DoubleVect& flux) const override;
   inline void flux_face(const DoubleTab&, int , int, int, const Echange_externe_impose&,
-                        int, DoubleVect& flux) const;
+                        int, DoubleVect& flux) const override;
   inline void flux_face(const DoubleTab&, int , const Echange_global_impose&,
-                        int, DoubleVect& flux) const;
+                        int, DoubleVect& flux) const override;
   //inline void flux_face(const DoubleTab&, int ,const Nouvelle_Cl_PolyMAC&,
   //                      int, DoubleVect& flux) const=0;
 
   inline void flux_faces_interne(const DoubleTab&, int ,
-                                 DoubleVect& flux) const;
+                                 DoubleVect& flux) const override;
 
 
 protected:

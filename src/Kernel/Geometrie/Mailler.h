@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,6 +61,6 @@ class Mailler : public Interprete_geometrique_base
 {
   Declare_instanciable(Mailler);
 public :
-  Entree& interpreter_(Entree&);
+  Entree& interpreter_(Entree&) override;
 };
 #endif

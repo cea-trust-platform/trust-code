@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,12 +48,12 @@ public :
   int nb_equation() const { return list_eq.size(); }
   int complete() { return complet; }
   int complete() const { return complet; }
-  virtual void discretiser() { };
-  virtual void associer_milieu_equation();
-  virtual void associer_milieu_base(const Milieu_base& mil1) { mil=mil1; }
-  virtual const Milieu_base& milieu() const { return mil.valeur(); }
-  virtual Milieu_base& milieu() { return mil.valeur(); }
-  virtual int nombre_d_operateurs() const { return 0; }
+  void discretiser() override { };
+  void associer_milieu_equation() override;
+  void associer_milieu_base(const Milieu_base& mil1) override { mil=mil1; }
+  const Milieu_base& milieu() const override { return mil.valeur(); }
+  Milieu_base& milieu() override { return mil.valeur(); }
+  int nombre_d_operateurs() const override { return 0; }
 
   Equation_base& equation(int i)
   {
@@ -65,28 +65,28 @@ public :
     return list_eq(i).valeur();
   };
 
-  virtual const Operateur& operateur(int) const
+  const Operateur& operateur(int) const override
   {
     Process::exit();
     Equation bidon;;
     return bidon.operateur(0);
   }
 
-  virtual Operateur& operateur(int)
+  Operateur& operateur(int) override
   {
     Process::exit();
     Equation bidon;
     return bidon.operateur(0);
   }
 
-  virtual const Champ_Inc& inconnue() const
+  const Champ_Inc& inconnue() const override
   {
     Process::exit(); ;
     Equation bidon;
     return bidon.inconnue();
   }
 
-  virtual Champ_Inc& inconnue()
+  Champ_Inc& inconnue() override
   {
     Process::exit();
     Equation bidon ;

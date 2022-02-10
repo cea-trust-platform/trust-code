@@ -37,9 +37,9 @@ class Terme_Puissance_Thermique_VDF_Elem : public Terme_Puissance_Thermique_VDF_
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_VDF_Elem);
 public:
   inline Terme_Puissance_Thermique_VDF_Elem();
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
-  void associer_pb(const Probleme_base& );
-  inline virtual void mettre_a_jour(double temps) { Terme_Puissance_Thermique::mettre_a_jour(temps); }
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_pb(const Probleme_base& ) override;
+  inline void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
 };
 
 inline Terme_Puissance_Thermique_VDF_Elem::Terme_Puissance_Thermique_VDF_Elem()

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,36 +47,36 @@ class Op_Conv_negligeable: public Operateur_negligeable,
 
 public :
 
-  inline void contribuer_au_second_membre(DoubleTab& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  inline void associer_zone_cl_dis(const Zone_Cl_dis_base&)
+  inline void contribuer_au_second_membre(DoubleTab& ) const override;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
+  inline void associer_zone_cl_dis(const Zone_Cl_dis_base&) override
   {
     ;
   } ;
   /* interface {dimensionner,ajouter}_blocs -> ne font rien */
-  virtual int  has_interface_blocs() const
+  int  has_interface_blocs() const override
   {
     return 1;
   };
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { };
-  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const { };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { };
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override { };
 
-  inline void mettre_a_jour(double);
-  void associer_vitesse(const Champ_base& ) ;
+  inline void mettre_a_jour(double) override;
+  void associer_vitesse(const Champ_base& ) override ;
   const Champ_base& vitesse() const;
 
-  virtual void ajouter_flux(const DoubleTab& inconnue, DoubleTab& contribution) const;
-  virtual void calculer_flux(const DoubleTab& inconnue, DoubleTab& flux) const;
+  void ajouter_flux(const DoubleTab& inconnue, DoubleTab& contribution) const override;
+  void calculer_flux(const DoubleTab& inconnue, DoubleTab& flux) const override;
 
-  void check_multiphase_compatibility() const { };
-  void set_incompressible(const int) { };
+  void check_multiphase_compatibility() const override { };
+  void set_incompressible(const int) override { };
 
 protected :
 
   REF(Champ_base) la_vitesse;
   inline void associer(const Zone_dis&,
                        const Zone_Cl_dis&,
-                       const Champ_Inc& ) ;
+                       const Champ_Inc& ) override ;
 };
 
 //Description:

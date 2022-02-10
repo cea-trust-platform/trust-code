@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -76,8 +76,8 @@ public :
   Matrice_Morse(const Matrice_Morse& ) ;
   Matrice_Morse(int , int , const IntLists& ,const DoubleLists& ,const DoubleVect& );
 
-  Sortie& imprimer(Sortie& s) const;
-  Sortie& imprimer_formatte(Sortie& s) const;
+  Sortie& imprimer(Sortie& s) const override;
+  Sortie& imprimer_formatte(Sortie& s) const override;
   Sortie& imprimer_formatte(Sortie& s, int symetrie) const;
   Sortie& imprimer_image(Sortie& s) const;
   Sortie& imprimer_image(Sortie& s, int symetrie) const;
@@ -94,13 +94,13 @@ public :
   void dimensionner(const IntTab&);
 
   // ordre retourne n si n==m
-  int ordre() const;
+  int ordre() const override;
 
-  int nb_lignes() const
+  int nb_lignes() const override
   {
     return tab1_.size()-1; // nb_lignes retourne n
   }
-  int nb_colonnes() const
+  int nb_colonnes() const override
   {
     return m_; // nb_colonnes retourne m
   }
@@ -172,12 +172,12 @@ public :
   friend Matrice_Morse operator +(const Matrice_Morse&, const Matrice_Morse& );
   Matrice_Morse& operator +=(const Matrice_Morse& );
   Matrice_Morse& operator *=(double );
-  virtual void scale( const double& x );
+  void scale( const double& x ) override;
 
-  virtual void get_stencil( IntTab& stencil ) const;
+  void get_stencil( IntTab& stencil ) const override;
 
-  virtual void get_stencil_and_coefficients( IntTab&      stencil,
-                                             ArrOfDouble& coefficients ) const;
+  void get_stencil_and_coefficients( IntTab&      stencil,
+                                     ArrOfDouble& coefficients ) const override;
 
   Matrice_Morse& operator /=(double );
   Matrice_Morse& operator *=(const DoubleVect& );
@@ -191,14 +191,14 @@ public :
   void compacte(int elim_coeff_nul=0);
 
   // y += Ax
-  virtual DoubleVect& ajouter_multvect_(const DoubleVect& ,DoubleVect& ) const;
+  DoubleVect& ajouter_multvect_(const DoubleVect& ,DoubleVect& ) const override;
   ArrOfDouble& ajouter_multvect_(const ArrOfDouble& ,ArrOfDouble&, ArrOfInt& ) const;
 
   // Y += AX ou X et Y sont des DoubleTab a 2 dimensions
-  virtual DoubleTab& ajouter_multTab_(const DoubleTab& ,DoubleTab& ) const;
+  DoubleTab& ajouter_multTab_(const DoubleTab& ,DoubleTab& ) const override;
 
   // y += transposee(A) x
-  virtual DoubleVect& ajouter_multvectT_(const DoubleVect& ,DoubleVect& ) const;
+  DoubleVect& ajouter_multvectT_(const DoubleVect& ,DoubleVect& ) const override;
   ArrOfDouble& ajouter_multvectT_(const ArrOfDouble& ,ArrOfDouble&, ArrOfInt& ) const;
 
   // A= creat_transposee(B)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,13 +42,13 @@ class O_U_Ptr : public Objet_U
 
 public:
   int        non_nul() const;
-  const Nom&    le_nom() const;
+  const Nom&    le_nom() const override;
   // Renvoie le Type_info du type de base accepte par le pointeur
   // (l'objet pointe derive obligatoirement de ce type).
   virtual const Type_info& get_info_ptr() const = 0;
 
 protected:
-  ~O_U_Ptr();
+  ~O_U_Ptr() override;
   O_U_Ptr();
 
   virtual void      set_O_U_Ptr(Objet_U *);
@@ -57,7 +57,7 @@ protected:
   int            get_ptr_object_id() const;
 
   void              recopie(const Objet_U&);
-  int            change_num(const int* const); // renumerotation des objets
+  int            change_num(const int* const) override; // renumerotation des objets
 
   Objet_U *         get_O_U_Ptr_check() const;
   int            check_O_U_Ptr_type(const Objet_U * ptr) const;

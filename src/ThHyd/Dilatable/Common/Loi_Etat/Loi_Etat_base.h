@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,9 +75,9 @@ public :
   virtual double De_DP(double,double) const ;
   virtual double De_DT(double,double) const ;
   //Methodes de l interface des champs postraitables
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void creer_champ(const Motcle& motlu);
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void creer_champ(const Motcle& motlu) override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
 
   // Methodes virtuelles pure
   const virtual Nom type_fluide() const =0;

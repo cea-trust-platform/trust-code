@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,15 +41,15 @@ class Masse_VEF_P1NC : public Solveur_Masse_base
 
 public:
 
-  void associer_zone_dis_base(const Zone_dis_base& );
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
+  void associer_zone_dis_base(const Zone_dis_base& ) override;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
 
-  DoubleTab& appliquer_impl(DoubleTab& sm) const;
+  DoubleTab& appliquer_impl(DoubleTab& sm) const override;
 
-  virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const;
-  virtual DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation=1) const;
+  Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const override;
+  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation=1) const override;
 
-  virtual DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const;
+  DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const override;
 
 private:
 

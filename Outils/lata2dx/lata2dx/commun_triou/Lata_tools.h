@@ -140,7 +140,7 @@ public:
       throw ERROR_TYPE;
     return *x;
   }
-  BigEntier compute_memory_size() const { if (ptr_) return ptr_->compute_memory_size(); else return 0; }
+  BigEntier compute_memory_size() const override { if (ptr_) return ptr_->compute_memory_size(); else return 0; }
 protected:
   LataDeriv(const LataDeriv<C> & c) { ptr_ = 0; operator=(c); }
   LataDeriv(const C & c) { ptr_ = 0; operator=(c); }

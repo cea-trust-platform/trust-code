@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ class LireMED : public Interprete_geometrique_base
   Declare_instanciable_sans_constructeur(LireMED);
 public :
   LireMED();
-  Entree& interpreter_(Entree&);
+  Entree& interpreter_(Entree&) override;
   void lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const Nom& nom_dom1, int isvef=0, int convertAllToPoly=0, int isfamilyshort=0);
   ///! Set use_medcoupling flag
   void setMEDCoupling(bool mc)

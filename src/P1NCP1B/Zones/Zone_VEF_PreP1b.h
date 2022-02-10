@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,9 +34,9 @@ class Zone_VEF_PreP1b : public Zone_VEF
   Declare_instanciable(Zone_VEF_PreP1b);
 
 public :
-  void discretiser();
+  void discretiser() override;
   virtual void discretiser_suite(const VEFPreP1B&);
-  void modifier_pour_Cl(const Conds_lim& );
+  void modifier_pour_Cl(const Conds_lim& ) override;
   int nb_som() const
   {
     return zone().nb_som();

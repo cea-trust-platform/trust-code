@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,13 +41,13 @@ public:
 // ~Sortie_Fichier_base();
   ofstream& get_ofstream();
   void close();
-  void precision(int pre);
+  void precision(int pre) override;
   virtual int get_precision();
-  void setf(IOS_FORMAT code);
+  void setf(IOS_FORMAT code) override;
   bool is_open() ;
   virtual int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::out);
 
-  Sortie& flush();
+  Sortie& flush() override;
 
 protected:
   ofstream* ofstream_;

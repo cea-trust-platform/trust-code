@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,13 +70,13 @@ public :
   ///////////////////////////////////////////////
 
   // interface UnsteadyProblem
-  virtual bool initTimeStep(double dt);
-  virtual double computeTimeStep(bool& stop) const;
-  virtual bool solveTimeStep();
+  bool initTimeStep(double dt) override;
+  double computeTimeStep(bool& stop) const override;
+  bool solveTimeStep() override;
 
   // interface IterativeUnsteadyProblem
 
-  virtual bool iterateTimeStep(bool& converged);
+  bool iterateTimeStep(bool& converged) override;
 
   ////////////////////////////////////////////////////////
   //                                                    //
@@ -84,17 +84,17 @@ public :
   //                                                    //
   ////////////////////////////////////////////////////////
 
-  virtual bool updateGivenFields();
+  bool updateGivenFields() override;
 
   void ajouter(Probleme_base&);
-  virtual int associer_(Objet_U&);
+  int associer_(Objet_U&) override;
   virtual void associer_sch_tps_base(Schema_Temps_base&);
   virtual const Schema_Temps_base& schema_temps() const;
   virtual Schema_Temps_base& schema_temps();
 
   virtual void discretiser(const Discretisation_base&);
   inline virtual void mettre_a_jour_modele_rayo(double temps);
-  void initialize();
+  void initialize() override;
 
 protected:
 

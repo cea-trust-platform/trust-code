@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,27 +37,27 @@ class Sortie_Nulle : public Sortie
 {
 public:
   Sortie_Nulle();
-  ~Sortie_Nulle();
-  Sortie& flush();
-  void setf(IOS_FORMAT);
-  void precision(int);
+  ~Sortie_Nulle() override;
+  Sortie& flush() override;
+  void setf(IOS_FORMAT) override;
+  void precision(int) override;
 
-  Sortie& operator <<(const Separateur& );
-  Sortie& operator <<(const Objet_U& ob);
-  Sortie& operator <<(const int& ob);
-  Sortie& operator <<(const unsigned& ob);
+  Sortie& operator <<(const Separateur& ) override;
+  Sortie& operator <<(const Objet_U& ob) override;
+  Sortie& operator <<(const int& ob) override;
+  Sortie& operator <<(const unsigned& ob) override;
 #ifndef INT_is_64_
-  Sortie& operator <<(const long& ob);
+  Sortie& operator <<(const long& ob) override;
 #endif
-  Sortie& operator <<(const float& ob);
-  Sortie& operator <<(const double& ob);
-  Sortie& operator <<(const char* ob);
-  int put(const unsigned* ob, int n, int pas=1);
-  int put(const int* ob, int n, int pas=1);
+  Sortie& operator <<(const float& ob) override;
+  Sortie& operator <<(const double& ob) override;
+  Sortie& operator <<(const char* ob) override;
+  int put(const unsigned* ob, int n, int pas=1) override;
+  int put(const int* ob, int n, int pas=1) override;
 #ifndef INT_is_64_
-  int put(const long* ob, int n, int pas=1);
+  int put(const long* ob, int n, int pas=1) override;
 #endif
-  int put(const float* ob, int n, int pas=1);
-  int put(const double* ob, int n, int pas=1);
+  int put(const float* ob, int n, int pas=1) override;
+  int put(const double* ob, int n, int pas=1) override;
 };
 #endif

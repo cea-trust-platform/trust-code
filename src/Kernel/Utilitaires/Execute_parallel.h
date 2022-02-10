@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ class Execute_parallel : public Interprete
 {
   Declare_instanciable(Execute_parallel);
 public:
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
 protected:
 };
 #endif

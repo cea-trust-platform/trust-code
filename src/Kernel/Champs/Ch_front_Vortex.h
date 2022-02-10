@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,14 +46,14 @@ class Ch_front_Vortex : public Champ_front_var_instationnaire
 
 public:
 
-  ~Ch_front_Vortex();
-  Champ_front_base& affecter_(const Champ_front_base& ch);
+  ~Ch_front_Vortex() override;
+  Champ_front_base& affecter_(const Champ_front_base& ch) override;
   int my_rand();
   void sauvegarder_vortex();
   void reprendre_vortex();
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
   void deplacement_vortex(double ,double ,double ,double ,double ,double& ,double& );
-  virtual void mettre_a_jour(double );
+  void mettre_a_jour(double ) override;
 
 protected :
 

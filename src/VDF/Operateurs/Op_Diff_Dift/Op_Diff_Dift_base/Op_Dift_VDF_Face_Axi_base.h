@@ -32,20 +32,20 @@ class Op_Dift_VDF_Face_Axi_base : public Op_Dift_VDF_Face_base
 {
   Declare_base(Op_Dift_VDF_Face_Axi_base);
 public:
-  double calculer_dt_stab() const;
-  void completer();
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
+  double calculer_dt_stab() const override;
+  void completer() override;
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
   void associer_modele_turbulence(const Mod_turb_hyd_base& );
-  void mettre_a_jour(double );
+  void mettre_a_jour(double ) override;
   void contribue_au_second_membre(DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
 
-  inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const { ajouter_contribution(inco, matrice); }
-  inline void contribuer_au_second_membre(DoubleTab& resu) const { contribue_au_second_membre(resu); }
+  inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override { ajouter_contribution(inco, matrice); }
+  inline void contribuer_au_second_membre(DoubleTab& resu) const override { contribue_au_second_membre(resu); }
   inline void associer_loipar(const Turbulence_paroi& ) { /* do nothing */}
   inline void associer_diffusivite_turbulente(const Champ_Fonc& visc_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(visc_turb);}
-  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl( la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
+  inline void dimensionner(Matrice_Morse& matrice) const override { Op_VDF_Face::dimensionner(la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl( la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
 
 protected:
   REF(Mod_turb_hyd_base) le_modele_turbulence;
@@ -65,7 +65,7 @@ protected:
   virtual double nu_mean_4_pts_(const int , const int , const int , const int ) const = 0;
 
 private:
-  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override;
   void ajouter_elem(const DoubleVect& , const DoubleTab& , DoubleTab& ) const;
   void ajouter_elem_3D(const DoubleVect& , const DoubleTab& , DoubleTab& ) const;
   void ajouter_aretes_bords(const DoubleVect& , const DoubleTab& , DoubleTab& ) const;

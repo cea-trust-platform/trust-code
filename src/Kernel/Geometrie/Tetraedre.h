@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,25 +44,25 @@ class Tetraedre  : public Elem_geom_base
 
 public :
 
-  inline int face_sommet(int i, int j) const;
+  inline int face_sommet(int i, int j) const override;
   inline int face_sommet0(int i) const;
   inline int face_sommet1(int i) const;
   inline int face_sommet2(int i) const;
   inline int face_sommet3(int i) const;
-  inline int nb_som() const;
-  inline int nb_faces(int=0) const;
-  inline int nb_som_face(int=0) const;
-  inline int est_structure() const;
-  const Nom& nom_lml() const;
-  virtual int contient(const ArrOfDouble&, int ) const;
-  virtual int contient(const ArrOfInt&, int ) const;
-  inline Type_Face type_face(int=0) const;
-  void calculer_volumes(DoubleVect& ) const;
+  inline int nb_som() const override;
+  inline int nb_faces(int=0) const override;
+  inline int nb_som_face(int=0) const override;
+  inline int est_structure() const override;
+  const Nom& nom_lml() const override;
+  int contient(const ArrOfDouble&, int ) const override;
+  int contient(const ArrOfInt&, int ) const override;
+  inline Type_Face type_face(int=0) const override;
+  void calculer_volumes(DoubleVect& ) const override;
   void calculer_normales(const IntTab& faces_sommets ,
-                         DoubleTab& face_normales) const;
+                         DoubleTab& face_normales) const override;
 
-  int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const;
-  void get_tab_aretes_sommets_locaux(IntTab& aretes_som_local) const;
+  int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const override;
+  void get_tab_aretes_sommets_locaux(IntTab& aretes_som_local) const override;
 
   static inline void matrice_base_tetraedre(const IntTab& polys,
                                             const DoubleTab& coords,

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,10 +48,10 @@ class Tetraedriser_homogene_fin : public Triangulation_base
 public :
 
   void decoupe(Zone& , Faces& , IntTab&, IntTab&, int, IntTab&, int) const;
-  virtual void trianguler(Zone&) const;
+  void trianguler(Zone&) const override;
   int creer_sommet (Domaine& ,Zone& ,DoubleTab& ,IntTab& ,IntTab& ,int ,
                     IntTab& , int& , int , int&, IntTab&, int&, IntTab&, int& ) const;
-  virtual inline int dimension_application() const;
+  inline int dimension_application() const override;
 };
 
 inline int Tetraedriser_homogene_fin::dimension_application() const

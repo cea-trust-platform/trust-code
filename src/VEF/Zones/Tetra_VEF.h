@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,23 +33,23 @@ class Tetra_VEF : public Elem_VEF_base
 
 public:
   Tetra_VEF();
-  inline int nb_facette() const
+  inline int nb_facette() const override
   {
     return 6;
   };
   void creer_facette_normales(const Zone&  ,DoubleTab&,
-                              const IntVect& ) const;
+                              const IntVect& ) const override;
   void creer_normales_facettes_Cl(DoubleTab&, int ,int ,
-                                  const DoubleTab& ,const DoubleVect& , const Zone&) const ;
-  void modif_volumes_entrelaces(int ,int ,const Zone_VEF& ,DoubleVect& ,int ) const ;
-  void modif_volumes_entrelaces_faces_joints(int ,int ,const Zone_VEF& ,DoubleVect& ,int ) const ;
-  void modif_normales_facettes_Cl(DoubleTab& ,int ,int ,int ,int, int ,int ) const ;
+                                  const DoubleTab& ,const DoubleVect& , const Zone&) const override ;
+  void modif_volumes_entrelaces(int ,int ,const Zone_VEF& ,DoubleVect& ,int ) const override ;
+  void modif_volumes_entrelaces_faces_joints(int ,int ,const Zone_VEF& ,DoubleVect& ,int ) const override ;
+  void modif_normales_facettes_Cl(DoubleTab& ,int ,int ,int ,int, int ,int ) const override ;
   void calcul_vc(const ArrOfInt& ,ArrOfDouble& ,const ArrOfDouble& ,
-                 const DoubleTab& ,const Champ_Inc_base& ,int, const DoubleVect& ) const ;
+                 const DoubleTab& ,const Champ_Inc_base& ,int, const DoubleVect& ) const override ;
   void calcul_xg(DoubleVect& ,const DoubleTab& ,const int ,int& ,
-                 int& ,int& ,int& ) const ;
+                 int& ,int& ,int& ) const override ;
   void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-               const IntTab& ,const Zone& )  const ;
+               const IntTab& ,const Zone& )  const override ;
 };
 
 #endif

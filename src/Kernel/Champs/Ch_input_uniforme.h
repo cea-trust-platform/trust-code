@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,18 +45,18 @@ class Ch_input_uniforme : public Champ_Uniforme, public Champ_Input_Proto
 
 public:
 
-  virtual Champ_base& affecter_(const Champ_base&)
+  Champ_base& affecter_(const Champ_base&) override
   {
     return *this;
   }
-  virtual void getTemplate(TrioField& afield) const;
-  virtual void setValue(const TrioField& afield);
+  void getTemplate(TrioField& afield) const override;
+  void setValue(const TrioField& afield) override;
 
 protected:
 
   // Factorisation function between several input field classes
-  virtual void set_nb_comp(int i); // calls fixer_nb_comp
-  virtual void set_name(const Nom& name); // calls nommer
+  void set_nb_comp(int i) override; // calls fixer_nb_comp
+  void set_name(const Nom& name) override; // calls nommer
   virtual const Nom& get_name() const; // calls le_nom
 };
 

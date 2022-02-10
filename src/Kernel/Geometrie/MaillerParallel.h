@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ class MaillerParallel : public Interprete
 {
   Declare_instanciable(MaillerParallel);
 public:
-  Entree& interpreter(Entree& is);
+  Entree& interpreter(Entree& is) override;
   //static void construire_domaine(Domaine & domaine, const int numproc);
 
 protected:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,17 +49,17 @@ class Op_Conv_EF : public Op_Conv_EF_base
 
 public:
 
-  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override;
   DoubleTab& ajouter_a_la_diffusion(const DoubleTab& , DoubleTab& ) const;
 
-  double calculer_dt_stab() const ;
+  double calculer_dt_stab() const override ;
 
   //virtual void remplir_fluent(DoubleVect& ) const;
   // Methodes pour l implicite.
-  inline void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  inline void contribuer_au_second_membre(DoubleTab& ) const;
+  inline void dimensionner(Matrice_Morse& ) const override;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
+  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  inline void contribuer_au_second_membre(DoubleTab& ) const override;
   void contribue_au_second_membre(DoubleTab& ) const;
   void ajouter_contribution_sous_cond(const DoubleTab& transporte, Matrice_Morse& matrice,int btd_impl,int hourglass_impl,int centre_impl ) const;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
@@ -72,12 +72,12 @@ public:
   DoubleTab& ajouter_sous_cond(const DoubleTab& transporte,
                                DoubleTab& resu,int btd_impl,int hourglass_impl,int centre_impl) const;
   virtual double coefficient_btd() const;
-  void completer();
+  void completer() override;
   double get_btd() const
   {
     return btd_;
   }
-  const Champ_base& get_champ(const Motcle& nom) const;
+  const Champ_base& get_champ(const Motcle& nom) const override;
 protected:
   double hourglass;
   int hourglass_impl_,btd_impl_,centre_impl_; // flag pour savoir si les termes sont implicites
@@ -103,8 +103,8 @@ protected:
 class Op_Conv_BTD_EF : public Op_Conv_EF
 {
   Declare_instanciable(Op_Conv_BTD_EF);
-  double coefficient_btd() const;
-  void completer();
+  double coefficient_btd() const override;
+  void completer() override;
 protected:
   double facteur_;
 };

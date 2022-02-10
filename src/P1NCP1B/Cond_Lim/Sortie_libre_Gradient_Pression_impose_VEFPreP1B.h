@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,10 +50,10 @@ class Sortie_libre_Gradient_Pression_impose_VEFPreP1B : public Sortie_libre_Grad
 
 public:
 
-  virtual int initialiser(double temps);
-  void mettre_a_jour(double );
+  int initialiser(double temps) override;
+  void mettre_a_jour(double ) override;
   virtual int calculer_trace_pression();
-  int compatible_avec_discr(const Discretisation_base& ) const;
+  int compatible_avec_discr(const Discretisation_base& ) const override;
 
 protected:
 

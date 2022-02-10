@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,9 +43,9 @@ class Loi_Etat_GP_WC : public Loi_Etat_Mono_GP_base
   Declare_instanciable(Loi_Etat_GP_WC);
 
 public :
-  virtual void calculer_masse_volumique();
-  virtual double calculer_masse_volumique(double,double) const;
-  virtual double inverser_Pth(double,double);
+  void calculer_masse_volumique() override;
+  double calculer_masse_volumique(double,double) const override;
+  double inverser_Pth(double,double) override;
 };
 
 #endif /* Loi_Etat_GP_WC_included */

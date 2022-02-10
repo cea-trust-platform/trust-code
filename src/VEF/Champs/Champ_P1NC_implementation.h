@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class Champ_P1NC_implementation: public Champ_implementation
 public:
 
   Champ_P1NC_implementation();
-  virtual ~Champ_P1NC_implementation() {};
+  ~Champ_P1NC_implementation() override {};
 
   int fixer_nb_valeurs_nodales(int);
 
@@ -76,26 +76,26 @@ public:
 
 
   // Retourne dans val la valeur du champ interpole aux coordonnees position de l'element le_poly
-  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const;
+  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
   // Retourne la valeur de la composante ncomp du champ interpole aux coordonnees position de l'element le_poly
-  double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const;
+  double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
   // Retourne dans valeurs les valeurs du champ interpolees aux coordonnees positions des elements les_polys
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
   // Retourne les valeurs de la composante ncomp du champ interpolees aux coordonnees positions des elements les_polys
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const ;
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override ;
   // Retourne dans ch_som les valeurs du champ interpole aux sommets
-  DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const;
+  DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const override;
   // Retourne dans ch_som les valeurs de la composante ncomp du champ interpole aux sommets
-  DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& ch_som, int ncomp) const;
+  DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& ch_som, int ncomp) const override;
   // Retourne la valeur de la composante ncomp du champ au sommet num_som sur l'element le_poly
   double valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const;
 
   DoubleTab& valeur_aux_elems_smooth(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs);
   DoubleVect& valeur_aux_elems_compo_smooth(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp);
 
-  DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const;
+  DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
   int remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                    IntVect& polys) const;
+                                    IntVect& polys) const override;
   int imprime_P1NC(Sortie&, int) const;
   void filtrer_L2(DoubleTab& ) const;
   void filtrer_H1(DoubleTab& ) const;

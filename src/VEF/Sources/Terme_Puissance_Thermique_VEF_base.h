@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,8 +44,8 @@ class Terme_Puissance_Thermique_VEF_base : public Terme_Puissance_Thermique, pub
 public:
 
   inline Terme_Puissance_Thermique_VEF_base(const Iterateur_Source_VEF_base&);
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis&);
-  int initialiser(double temps);
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
+  int initialiser(double temps) override;
 
 
   /////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ class Periodique  : public Cond_lim_base
 
 public:
 
-  void mettre_a_jour(double temps);
+  void mettre_a_jour(double temps) override;
   int face_associee(int i) const
   {
     return face_front_associee_[i];
@@ -77,8 +77,8 @@ protected:
   double distance_;
   // -1, 0, 1, ou 2
   int direction_xyz_;
-  int compatible_avec_eqn(const Equation_base&) const;
-  void   completer();
+  int compatible_avec_eqn(const Equation_base&) const override;
+  void   completer() override;
 };
 
 #endif

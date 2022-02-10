@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,11 +42,11 @@ class Eval_Puiss_Th_EF: public Evaluateur_Source_EF_Som
 
 public:
 
-  void completer();
+  void completer() override;
   void associer_champs(const Champ_Don& );
-  void mettre_a_jour();
-  inline double calculer_terme_source_standard(int ) const ;
-  inline void calculer_terme_source_standard(int , DoubleVect&  ) const ;
+  void mettre_a_jour() override;
+  inline double calculer_terme_source_standard(int ) const override ;
+  inline void calculer_terme_source_standard(int , DoubleVect&  ) const override ;
 
 protected:
 

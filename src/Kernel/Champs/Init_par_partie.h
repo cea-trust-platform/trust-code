@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,27 +37,27 @@ public :
 
   Champ_base& affecter(const Champ_base& ch);
   DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const;
+                       DoubleVect& valeurs) const override;
   double valeur_a_compo(const DoubleVect& position,
-                        int compo) const ;
+                        int compo) const override ;
   DoubleVect& valeur_a_elem(const DoubleVect& position,
                             DoubleVect& valeurs,
-                            int elem) const ;
+                            int elem) const override ;
   double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly,int ncomp) const;
+                             int le_poly,int ncomp) const override;
 
   DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const;
+                        DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const;
+                               DoubleVect& valeurs, int ncomp) const override;
 
   DoubleTab& valeur_aux_elems(const DoubleTab& positions,
                               const IntVect& les_polys,
-                              DoubleTab& valeurs) const ;
+                              DoubleTab& valeurs) const override ;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
                                      const IntVect& les_polys,
                                      DoubleVect& valeurs,
-                                     int ncomp) const;
+                                     int ncomp) const override;
 protected :
 
 

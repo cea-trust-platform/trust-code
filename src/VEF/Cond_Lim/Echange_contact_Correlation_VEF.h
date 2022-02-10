@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,9 +46,9 @@ class Echange_contact_Correlation_VEF  : public Temperature_imposee_paroi
   Declare_instanciable(Echange_contact_Correlation_VEF);
 
 public :
-  void mettre_a_jour(double );
-  virtual int compatible_avec_eqn(const Equation_base&) const;
-  virtual void completer();
+  void mettre_a_jour(double ) override;
+  int compatible_avec_eqn(const Equation_base&) const override;
+  void completer() override;
   virtual void imprimer(double ) const;
   virtual int limpr(double , double ) const;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,14 +54,14 @@ public:
   {
     return  matrice_pression_variable_bool_;
   };
-  virtual void associer_pb(const Probleme_base& );
-  virtual DoubleTab& ajouter_(const DoubleTab&, DoubleTab&) const;
+  void associer_pb(const Probleme_base& ) override;
+  DoubleTab& ajouter_(const DoubleTab&, DoubleTab&) const override;
   virtual DoubleTab& ajouter_(const DoubleTab&, DoubleTab&, const int) const;
-  DoubleTab& calculer(DoubleTab&) const;
+  DoubleTab& calculer(DoubleTab&) const override;
   DoubleTab& calculer(DoubleTab&, const int) const;
   DoubleTab& calculer_pdf(DoubleTab& ) const;
-  void mettre_a_jour(double );
-  virtual void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  void mettre_a_jour(double ) override;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
   double fonct_coeff(const double&, const double&, const double&) const;
   virtual DoubleVect diag_coeff_elem(ArrOfDouble&, const DoubleTab&, int) const ;
   virtual DoubleTab compute_coeff_elem() const;
@@ -76,8 +76,8 @@ public:
   {
     return modele_lu_;
   }
-  virtual int impr(Sortie&) const;
-  void ouvrir_fichier(SFichier&, const Nom&, const int&) const;
+  int impr(Sortie&) const override;
+  void ouvrir_fichier(SFichier&, const Nom&, const int&) const override;
   inline const DoubleTab& get_sec_mem_pdf() const
   {
     return sec_mem_pdf;
@@ -93,7 +93,7 @@ protected:
   virtual void calculer_vitesse_imposee_mean_grad();
   virtual void rotate_imposed_velocity(DoubleTab&);
   ArrOfDouble get_tuvw_local() const;
-  virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
   int type_vitesse_imposee_;
   Champ_Don champ_rotation_lu_;
   Champ_Don champ_rotation_;

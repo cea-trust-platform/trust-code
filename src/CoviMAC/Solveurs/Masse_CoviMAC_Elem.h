@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,19 +41,19 @@ class Masse_CoviMAC_Elem : public Solveur_Masse_base
 
 public:
 
-  void associer_zone_dis_base(const Zone_dis_base& );
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
-  void preparer_calcul();
+  void associer_zone_dis_base(const Zone_dis_base& ) override;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void preparer_calcul() override;
 
-  DoubleTab& appliquer_impl(DoubleTab& ) const;
+  DoubleTab& appliquer_impl(DoubleTab& ) const override;
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 
 private:
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,12 +37,12 @@ class Terme_Source_Acceleration_VEF_Face : public Terme_Source_Acceleration
   Declare_instanciable(Terme_Source_Acceleration_VEF_Face);
 
 public:
-  DoubleTab& ajouter(DoubleTab& ) const;
-  void        associer_champ_rho(const Champ_base& champ_rho);
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  void        associer_champ_rho(const Champ_base& champ_rho) override;
 
 protected:
-  const DoubleTab& calculer_vitesse_faces(DoubleTab& v_faces_stockage) const;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  const DoubleTab& calculer_vitesse_faces(DoubleTab& v_faces_stockage) const override;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
 
 private:
   // References remplies par associer_champ_rho

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,11 +57,11 @@ class Champ_front_contact_VEF : public Ch_front_var_instationnaire_dep
   Declare_instanciable(Champ_front_contact_VEF);
 
 public:
-  virtual void completer();
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
-  Champ_front_base& affecter_(const Champ_front_base& ch) ;
-  void mettre_a_jour(double temps);
-  void calculer_coeffs_echange(double temps);
+  void completer() override;
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
+  Champ_front_base& affecter_(const Champ_front_base& ch) override ;
+  void mettre_a_jour(double temps) override;
+  void calculer_coeffs_echange(double temps) override;
   void creer(const Nom&, const Nom&,const Nom&, const Nom&, const Motcle&);
   const Champ_Inc_base& inconnue() const;
   const Equation_base& equation() const;

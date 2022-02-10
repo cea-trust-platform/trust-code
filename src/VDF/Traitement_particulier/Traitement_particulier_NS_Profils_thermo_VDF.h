@@ -43,19 +43,19 @@ class Traitement_particulier_NS_Profils_thermo_VDF : public Traitement_particuli
 
 public :
 
-  Entree& lire(Entree& is);
-  Entree& lire(const Motcle& , Entree& );
-  void reprendre_stat();
-  void sauver_stat() const;
-  void associer_eqn(const Equation_base&);
+  Entree& lire(Entree& is) override;
+  Entree& lire(const Motcle& , Entree& ) override;
+  void reprendre_stat() override;
+  void sauver_stat() const override;
+  void associer_eqn(const Equation_base&) override;
   void ecriture_fichier_moy_spat_thermo(const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const IntVect&, const DoubleVect&,  const DoubleVect& );
   void ecriture_fichier_moy_temp_thermo(const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const double& , const IntVect& );
   void calculer_moyennes_spatiales_thermo(DoubleTab& , DoubleTab& , DoubleTab& , DoubleTab& , DoubleTab& , const IntTab& , const IntTab& , const IntVect& , const DoubleTab& );
   void calculer_integrales_temporelles(DoubleTab& , const DoubleTab& , const DoubleTab& , const DoubleVect& , const DoubleVect& );
 
-  void post_traitement_particulier();
-  void init_calcul_moyenne(void);
-  void preparer_calcul_particulier(void);
+  void post_traitement_particulier() override;
+  void init_calcul_moyenne(void) override;
+  void preparer_calcul_particulier(void) override;
   void init_calcul_stats(void);
 
 protected :

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,14 +50,14 @@ class Puissance_Thermique_QC_EF : public Terme_Puissance_Thermique,
 public:
 
   inline Puissance_Thermique_QC_EF();
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
-  void associer_pb(const Probleme_base& );
-  virtual void mettre_a_jour(double temps)
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_pb(const Probleme_base& ) override;
+  void mettre_a_jour(double temps) override
   {
     Terme_Puissance_Thermique::mettre_a_jour(temps);
   }
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
 private:
   Champs_compris champs_compris_;
 

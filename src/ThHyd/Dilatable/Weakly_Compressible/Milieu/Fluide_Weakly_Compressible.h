@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,17 +43,17 @@ class Fluide_Weakly_Compressible : public Fluide_Dilatable_base
 
 public :
   Fluide_Weakly_Compressible();
-  virtual void set_param(Param& param);
-  virtual void completer(const Probleme_base&);
-  virtual void preparer_pas_temps();
-  virtual void prepare_pressure_edo();
-  virtual void write_mean_edo(double);
-  virtual void checkTraitementPth(const Zone_Cl_dis&);
-  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
-  virtual void abortTimeStep();
-  virtual void calculer_pression_tot();
-  virtual void update_pressure_fields(double );
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  void set_param(Param& param) override;
+  void completer(const Probleme_base&) override;
+  void preparer_pas_temps() override;
+  void prepare_pressure_edo() override;
+  void write_mean_edo(double) override;
+  void checkTraitementPth(const Zone_Cl_dis&) override;
+  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
+  void abortTimeStep() override;
+  void calculer_pression_tot() override;
+  void update_pressure_fields(double ) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   // Methodes inlines
   inline const Champ_Don& pression_hydro() const { return pression_hydro_; }
@@ -66,7 +66,7 @@ public :
   inline DoubleTab& pression_th_tab() { return Pth_tab_; } // Tab Pression thermodynamique
   inline const DoubleTab& pression_thn_tab() const { return Pth_n_tab_; } // Tab Pression thermodynamique a l'etape precedente
   inline DoubleTab& pression_thn_tab() { return Pth_n_tab_; } // Tab Pression thermodynamique a l'etape precedente
-  inline void secmembre_divU_Z(DoubleTab& tab_W) const { eos_tools_->secmembre_divU_Z(tab_W); }
+  inline void secmembre_divU_Z(DoubleTab& tab_W) const override { eos_tools_->secmembre_divU_Z(tab_W); }
   inline void set_pression_th_tab(DoubleTab& Pth_tab) { Pth_n_tab_ = Pth_tab_ = Pth_tab; }
   inline void set_resume_flag() { sim_resumed_ = 1; }
   inline bool use_total_pressure() { return use_total_pressure_; }
@@ -88,7 +88,7 @@ private:
   void initialiser_pth();
   void initialiser_pth_xyz(const Probleme_base& pb);
   void initialiser_pth_for_EOS(const Probleme_base& pb);
-  void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot);
+  void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot) override;
   void remplir_champ_pression_for_EOS();
 };
 

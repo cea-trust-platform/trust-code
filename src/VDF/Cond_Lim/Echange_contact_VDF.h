@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,9 +52,9 @@ class Echange_contact_VDF  : public Echange_global_impose
 
   Declare_instanciable(Echange_contact_VDF);
 public :
-  virtual void completer();
-  virtual int initialiser(double temps);
-  virtual void mettre_a_jour(double );
+  void completer() override;
+  int initialiser(double temps) override;
+  void mettre_a_jour(double ) override;
   void calculer_h_autre_pb(DoubleTab& tab,double invhparoi,int opt);
   void calculer_h_mon_pb(DoubleTab&, double, int);
   inline virtual Champ_front& T_autre_pb()
@@ -87,9 +87,9 @@ public :
     return nom_autre_pb_;
   };
 
-  virtual void changer_temps_futur(double temps,int i);
-  virtual int avancer(double temps);
-  virtual int reculer(double temps);
+  void changer_temps_futur(double temps,int i) override;
+  int avancer(double temps) override;
+  int reculer(double temps) override;
   //item(i) : indice du ieme item dont on a besoin pour la face i de la frontiere
   mutable IntTab item;
   int monolithic; //1 si on resout la thermique en monolithique

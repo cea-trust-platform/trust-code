@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,23 +51,23 @@ class Polyedre  : public Poly_geom_base
 public :
 
 
-  void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const;
-  void calculer_centres_gravite(DoubleTab& xp) const;
+  void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const override;
+  void calculer_centres_gravite(DoubleTab& xp) const override;
   // Fonctions d'acces aux membres prives:
-  inline int face_sommet(int i, int j) const;
-  inline int nb_som() const;
-  inline int nb_faces(int=0) const;
-  inline int nb_som_face(int=0) const;
-  inline int est_structure() const;
-  virtual const Nom& nom_lml() const;
-  virtual int contient(const ArrOfDouble&, int ) const;
-  virtual int contient(const ArrOfInt&, int ) const;
-  inline Type_Face type_face(int=0) const;
-  virtual void reordonner() ;
-  virtual void calculer_volumes(DoubleVect& ) const;
-  virtual int nb_type_face() const;
-  int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const;
-  int get_tab_faces_sommets_locaux(IntTab& faces_som_local,int elem) const;
+  inline int face_sommet(int i, int j) const override;
+  inline int nb_som() const override;
+  inline int nb_faces(int=0) const override;
+  inline int nb_som_face(int=0) const override;
+  inline int est_structure() const override;
+  const Nom& nom_lml() const override;
+  int contient(const ArrOfDouble&, int ) const override;
+  int contient(const ArrOfInt&, int ) const override;
+  inline Type_Face type_face(int=0) const override;
+  void reordonner() override ;
+  void calculer_volumes(DoubleVect& ) const override;
+  int nb_type_face() const override;
+  int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const override;
+  int get_tab_faces_sommets_locaux(IntTab& faces_som_local,int elem) const override;
   void affecte_connectivite_numero_global(const ArrOfInt& Nodes,const ArrOfInt& FacesIndex,const ArrOfInt& PolyhedronIndex,IntTab& les_elems);
   int get_nb_som_elem_max() const;
   inline int get_nb_face_elem_max() const
@@ -78,9 +78,9 @@ public :
   {
     return nb_som_face_max_ ;
   } ;
-  int get_somme_nb_faces_elem() const;
+  int get_somme_nb_faces_elem() const override;
 
-  inline const ArrOfInt& getFacesIndex() const
+  inline const ArrOfInt& getFacesIndex() const override
   {
     return FacesIndex_;
   };
@@ -88,15 +88,15 @@ public :
   {
     return PolyhedronIndex_;
   };
-  inline const ArrOfInt& getElemIndex() const
+  inline const ArrOfInt& getElemIndex() const override
   {
     return PolyhedronIndex_;
   };
   void remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems ) const;
   // void affecte_connectivite_numero_local(Nodes,FacesIndex,PolyhedronIndex);
   void ajouter_elements(const Elem_geom_base& new_elem, const IntTab& new_elems, IntTab& les_elems);
-  void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const;
-  void compute_virtual_index();
+  void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const override;
+  void compute_virtual_index() override;
 
 private :
   ArrOfInt Nodes_,FacesIndex_,PolyhedronIndex_;     //         PolyhedronIndex_[ele]  numero premiere face de l'ele

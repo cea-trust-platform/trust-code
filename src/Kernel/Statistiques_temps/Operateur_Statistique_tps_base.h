@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,7 +62,7 @@ public:
   virtual void fixer_tstat_deb(double, double ) =0;
   virtual void fixer_tstat_fin(double ) =0;
   virtual void mettre_a_jour(double temps) =0;
-  virtual const Nom& le_nom() const =0;
+  const Nom& le_nom() const override =0;
   virtual double temps() const =0;
   virtual const Integrale_tps_Champ& integrale() const =0;
   virtual void initialiser(double val) =0;

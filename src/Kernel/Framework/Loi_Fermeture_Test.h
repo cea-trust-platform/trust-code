@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,9 +40,9 @@ class Loi_Fermeture_Test : public Loi_Fermeture_base
   Declare_instanciable( Loi_Fermeture_Test ) ;
 
 public :
-  virtual void mettre_a_jour(double temps);
-  virtual void discretiser(const Discretisation_base& );
-  virtual void set_param(Param& param);
+  void mettre_a_jour(double temps) override;
+  void discretiser(const Discretisation_base& ) override;
+  void set_param(Param& param) override;
 protected :
   Champ_Don champ_test_;
   double coef_;

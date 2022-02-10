@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class grad_U_Champ_Face_CoviMAC : public Champ_Fonc_P0_CoviMAC
 
 public:
 
-  inline void mettre_a_jour(double );
+  inline void mettre_a_jour(double ) override;
   void associer_champ(const Champ_Face_CoviMAC& );
   void me_calculer(double );
 

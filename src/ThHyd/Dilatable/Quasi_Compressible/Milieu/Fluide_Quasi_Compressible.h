@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,18 +44,18 @@ class Fluide_Quasi_Compressible : public Fluide_Dilatable_base
   Declare_instanciable_sans_constructeur(Fluide_Quasi_Compressible);
 public :
   Fluide_Quasi_Compressible();
-  virtual void set_param(Param& param);
-  virtual void completer(const Probleme_base&);
-  virtual void preparer_pas_temps();
-  virtual void prepare_pressure_edo();
-  virtual void write_mean_edo(double);
-  virtual void checkTraitementPth(const Zone_Cl_dis& zone_cl);
-  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  void set_param(Param& param) override;
+  void completer(const Probleme_base&) override;
+  void preparer_pas_temps() override;
+  void prepare_pressure_edo() override;
+  void write_mean_edo(double) override;
+  void checkTraitementPth(const Zone_Cl_dis& zone_cl) override;
+  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   // Methodes inlines
   inline void Resoudre_EDO_PT();
-  inline void secmembre_divU_Z(DoubleTab& ) const;
+  inline void secmembre_divU_Z(DoubleTab& ) const override;
   inline int get_traitement_rho_gravite() const { return traitement_rho_gravite_; }
   inline double masse_totale(double P,const DoubleTab& T) { return EDO_Pth_->masse_totale( P, T); }
 
@@ -68,7 +68,7 @@ protected :
 
 private :
   void completer_edo(const Probleme_base& );
-  void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot);
+  void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot) override;
 };
 
 inline void Fluide_Quasi_Compressible::Resoudre_EDO_PT()

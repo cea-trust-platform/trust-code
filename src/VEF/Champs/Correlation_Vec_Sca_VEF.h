@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ public:
 
   inline const Champ_base& mon_champ_Vec() const;
   inline const Champ_base& mon_champ_Sca() const;
-  inline void mettre_a_jour(double );
+  inline void mettre_a_jour(double ) override;
   void associer_champ_Vec(const Champ_base& );
   void associer_champ_Sca(const Champ_base& );
 

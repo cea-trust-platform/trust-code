@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,13 +41,13 @@ class Operateur_Evanescence  : public Operateur, public DERIV(Operateur_Evanesce
 {
   Declare_instanciable(Operateur_Evanescence);
 public:
-  Operateur_base&   l_op_base();
-  const Operateur_base& l_op_base() const;
-  DoubleTab&        ajouter(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab&        calculer(const DoubleTab&, DoubleTab& ) const;
-  void              typer();
+  Operateur_base&   l_op_base() override;
+  const Operateur_base& l_op_base() const override;
+  DoubleTab&        ajouter(const DoubleTab&, DoubleTab& ) const override;
+  DoubleTab&        calculer(const DoubleTab&, DoubleTab& ) const override;
+  void              typer() override;
   void              typer(const Nom&);
-  virtual inline int op_non_nul() const;
+  inline int op_non_nul() const override;
 
 protected:
   REF(Champ_base) la_diffusivite;

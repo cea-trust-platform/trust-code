@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,17 +33,17 @@ class Solv_GCP : public solv_iteratif
   Declare_instanciable_sans_constructeur(Solv_GCP);
 public :
   Solv_GCP();
-  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&);
-  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& , int);
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& , int) override;
   inline const Precond& get_precond() const;
   inline void set_precond(const Precond&);
-  void reinit();
-  int supporte_matrice_morse_sym()
+  void reinit() override;
+  int supporte_matrice_morse_sym() override
   {
     return !le_precond_.non_nul() || le_precond_.supporte_matrice_morse_sym();
   };
   // GCP does not need that b has an updated virtual space...
-  int get_flag_updated_input() const
+  int get_flag_updated_input() const override
   {
     return 0;
   }

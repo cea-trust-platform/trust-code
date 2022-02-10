@@ -61,14 +61,14 @@ public:
   DoubleTab(int n1, int n2);
   DoubleTab(int n1, int n2, int n3);
   DoubleTab(int n1, int n2, int n3, int n4);
-  virtual void ref(const DoubleVect&);
+  void ref(const DoubleVect&) override;
   virtual void ref(const DoubleTab&);
-  virtual void ref_data(double* ptr, int size);
-  virtual void ref_array(ArrOfDouble&, int start = 0, int sz = -1);
+  void ref_data(double* ptr, int size) override;
+  void ref_array(ArrOfDouble&, int start = 0, int sz = -1) override;
   virtual void ref_tab(DoubleTab&, int start_line = 0, int nb_lines = -1);
-  virtual void reset();
+  void reset() override;
 
-  virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
+  void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT) override;
   void resize_dim0(int n, Array_base::Resize_Options opt = COPY_INIT);
   void resize(int n, Array_base::Resize_Options opt = COPY_INIT);
   void resize(int n1, int n2, Array_base::Resize_Options opt = COPY_INIT);
@@ -109,10 +109,10 @@ public:
   void resoud_LU(int, ArrOfInt&, const ArrOfDouble&, ArrOfDouble&);
   double max_du_u(const DoubleTab&);
 
-  virtual void set_md_vector(const MD_Vector&);
-  virtual void jump(Entree&);
-  virtual void lit(Entree&, int resize_and_read=1);
-  virtual void ecrit(Sortie&) const;
+  void set_md_vector(const MD_Vector&) override;
+  void jump(Entree&) override;
+  void lit(Entree&, int resize_and_read=1) override;
+  void ecrit(Sortie&) const override;
 
   inline void append_line(double);
   inline void append_line(double, double);

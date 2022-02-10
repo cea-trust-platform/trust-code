@@ -57,12 +57,12 @@ class Op_Conv_Quick_PolyMAC_Elem : public Op_Conv_PolyMAC_iterateur_base, Op_Pol
 public:
 
   Op_Conv_Quick_PolyMAC_Elem();
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc&  );
-  inline void associer_vitesse(const Champ_base& );
-  const Champ_Inc_base& vitesse() const;
-  Champ_Inc_base& vitesse();
-  inline void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc&  ) override;
+  inline void associer_vitesse(const Champ_base& ) override;
+  const Champ_Inc_base& vitesse() const override;
+  Champ_Inc_base& vitesse() override;
+  inline void dimensionner(Matrice_Morse& ) const override;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
 
 protected:
   inline Op_Conv_Quick_PolyMAC_Elem(const Iterateur_PolyMAC_base&);

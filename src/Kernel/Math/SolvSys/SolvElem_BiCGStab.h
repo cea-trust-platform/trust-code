@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,8 +37,8 @@ public :
                         DoubleVect& solution,
                         ArrOfInt& ipar,
                         ArrOfDouble& fpar,
-                        ArrOfDouble& w);
-  inline ArrOfDouble& dimensionne_wks(int n, ArrOfDouble& w);
+                        ArrOfDouble& w) override;
+  inline ArrOfDouble& dimensionne_wks(int n, ArrOfDouble& w) override;
 };
 
 inline void SolvElem_BiCGStab::iteration(int n,

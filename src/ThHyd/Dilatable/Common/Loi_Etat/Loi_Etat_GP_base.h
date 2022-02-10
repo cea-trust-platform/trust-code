@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,16 +45,16 @@ class Loi_Etat_GP_base : public Loi_Etat_base
 
 public :
   Loi_Etat_GP_base();
-  const Nom type_fluide() const;
-  void associer_fluide(const Fluide_Dilatable_base&);
-  void calculer_lambda();
-  void calculer_alpha();
-  void remplir_T();
-  void calculer_Cp();
-  virtual void calculer_masse_volumique();
-  virtual void initialiser();
-  virtual double calculer_masse_volumique(double,double) const;
-  virtual double inverser_Pth(double,double);
+  const Nom type_fluide() const override;
+  void associer_fluide(const Fluide_Dilatable_base&) override;
+  void calculer_lambda() override;
+  void calculer_alpha() override;
+  void remplir_T() override;
+  void calculer_Cp() override;
+  void calculer_masse_volumique() override;
+  void initialiser() override;
+  double calculer_masse_volumique(double,double) const override;
+  double inverser_Pth(double,double) override;
 
   // Methodes inlines
   inline double R() const { return R_; }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,14 +47,14 @@ class Traitement_particulier_NS_canal_VEF : public Traitement_particulier_NS_can
 public :
 
   Entree& lire(const Motcle& , Entree& );
-  Entree& lire(Entree& );
+  Entree& lire(Entree& ) override;
 
 protected :
 
-  void remplir_Y(DoubleVect&, DoubleVect&, int& ) const;
-  void calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab&) const;
-  void calculer_moyenne_spatiale_nut(DoubleTab&) const;
-  void calculer_moyenne_spatiale_Temp(DoubleTab&) const;
+  void remplir_Y(DoubleVect&, DoubleVect&, int& ) const override;
+  void calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab&) const override;
+  void calculer_moyenne_spatiale_nut(DoubleTab&) const override;
+  void calculer_moyenne_spatiale_Temp(DoubleTab&) const override;
 
 };
 

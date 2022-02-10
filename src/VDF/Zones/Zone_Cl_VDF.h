@@ -86,13 +86,13 @@ public :
 
   void associer(const Zone_VDF& );
   inline int num_Cl_face(int ) const;
-  inline const Cond_lim& la_cl_de_la_face(int ) const;
+  inline const Cond_lim& la_cl_de_la_face(int ) const override;
   inline int type_arete_bord(int ) const;
   inline const IntVect& type_arete_bord() const;
   inline const int& type_arete_coin(int ) const;
   inline const IntVect& type_arete_coin() const;
-  void completer(const Zone_dis& );
-  void imposer_cond_lim(Champ_Inc&, double);
+  void completer(const Zone_dis& ) override;
+  void imposer_cond_lim(Champ_Inc&, double) override;
   int nb_faces_sortie_libre() const;
   Zone_VDF& zone_VDF();
   const Zone_VDF& zone_VDF() const;

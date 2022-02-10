@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,10 +40,10 @@ class Solv_Gmres : public solv_iteratif
 public :
 
   Solv_Gmres();
-  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& );
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& ) override;
   inline  int resoudre_systeme(const Matrice_Base& M, const DoubleVect& A,
                                DoubleVect& B,
-                               int niter_max)
+                               int niter_max) override
   {
     return resoudre_systeme(M, A,B);
   };

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ class Op_Conv_kschemas_centre_VEF : public Op_Conv_VEF_base
   Declare_base(Op_Conv_kschemas_centre_VEF);
 
 public:
-  DoubleTab& ajouter( const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& ajouter( const DoubleTab& , DoubleTab& ) const override;
   void convkschemas_centre(const double , const int, int , const int ,const int, const int,const int,const int ,const double& ,const DoubleTab&,DoubleVect& , DoubleVect& ,const DoubleVect& , const DoubleTab&,DoubleVect&) const ;
 protected:
 

@@ -53,9 +53,6 @@ public:
   inline virtual ~Eval_PolyMAC_Elem() {};
   void associer_inconnue(const Champ_base& );
 
-#ifndef _INLINE_EVALUATEURS_
-
-
   virtual int calculer_flux_faces_symetrie() const=0;
   virtual int calculer_flux_faces_sortie_libre() const=0;
   virtual int calculer_flux_faces_entree_fluide() const=0;
@@ -120,7 +117,6 @@ public:
 
 
 
-#endif
   // Fonctions qui servent a calculer les coefficients de la matrice pour des grandeurs
   // scalaires.
 

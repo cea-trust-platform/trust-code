@@ -36,7 +36,7 @@ class Champ_Fonc_P0_VDF: public Champ_Fonc_P0_base
 {
   Declare_instanciable(Champ_Fonc_P0_VDF);
 public :
-  int imprime(Sortie& , int ) const ;
+  int imprime(Sortie& , int ) const override ;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,10 +45,10 @@ class Pb_Thermohydraulique_QC : public Pb_QC_base, public Pb_Dilatable_Proto
 {
   Declare_instanciable(Pb_Thermohydraulique_QC);
 public:
-  int verifier();
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const ;
-  Equation_base& equation(int);
+  int verifier() override;
+  int nombre_d_equations() const override;
+  const Equation_base& equation(int) const override ;
+  Equation_base& equation(int) override;
 
 protected:
   Navier_Stokes_QC eq_hydraulique;

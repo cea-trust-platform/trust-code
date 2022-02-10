@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -97,8 +97,8 @@ public:
   virtual int initialiser(double temps, const Champ_Inc_base& inco);
   virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
   using Champ_Proto::valeurs;
-  inline DoubleTab& valeurs();
-  inline const DoubleTab& valeurs() const;
+  inline DoubleTab& valeurs() override;
+  inline const DoubleTab& valeurs() const override;
   virtual DoubleTab& valeurs_au_temps(double temps)=0;
   virtual const DoubleTab& valeurs_au_temps(double temps) const=0;
   inline const Frontiere_dis_base& frontiere_dis() const;

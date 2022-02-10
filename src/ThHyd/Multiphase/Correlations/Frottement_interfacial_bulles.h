@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,9 +38,9 @@ class Frottement_interfacial_bulles : public Frottement_interfacial_base
 {
   Declare_instanciable(Frottement_interfacial_bulles);
 public:
-  virtual void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                           const DoubleTab& rho, const DoubleTab& mu, double Dh,
-                           const DoubleTab& ndv, DoubleTab& coeff) const;
+  void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
+                   const DoubleTab& rho, const DoubleTab& mu, double Dh,
+                   const DoubleTab& ndv, DoubleTab& coeff) const override;
 protected:
   double r_bulle_, C_d_;
 };

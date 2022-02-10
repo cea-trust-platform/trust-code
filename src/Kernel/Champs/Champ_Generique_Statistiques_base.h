@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ class Champ_Generique_Statistiques_base : public Champ_Gen_de_Champs_Gen
 
 public:
 
-  void set_param(Param& param);
+  void set_param(Param& param) override;
   Champ_Generique_Statistiques_base();
 
   inline virtual void associer_op_stat(const Champ_Generique_Statistiques_base&) {};
@@ -59,15 +59,15 @@ public:
   virtual const Operateur_Statistique_tps_base& Operateur_Statistique() const = 0;
   virtual Operateur_Statistique_tps_base& Operateur_Statistique() = 0;
 
-  int sauvegarder(Sortie& os) const;
-  int reprendre(Entree& is);
-  virtual void   mettre_a_jour(double temps);
+  int sauvegarder(Sortie& os) const override;
+  int reprendre(Entree& is) override;
+  void   mettre_a_jour(double temps) override;
 
   void fixer_tdeb_tfin(const double& t_deb,const double& t_fin);
-  virtual void fixer_serie(const double& t1,const double& t2);
-  virtual void fixer_tstat_deb(const double& t1,const double& t2);
-  virtual void lire_bidon(Entree& is) const;
-  inline virtual const Champ_base&   get_champ_without_evaluation(Champ& espace_stockage) const
+  void fixer_serie(const double& t1,const double& t2) override;
+  void fixer_tstat_deb(const double& t1,const double& t2) override;
+  void lire_bidon(Entree& is) const override;
+  inline const Champ_base&   get_champ_without_evaluation(Champ& espace_stockage) const override
   {
     return get_champ(espace_stockage);
   };

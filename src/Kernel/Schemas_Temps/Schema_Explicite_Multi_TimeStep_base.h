@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,25 +45,25 @@ public :
   //                            //
   ////////////////////////////////
 
-  int nb_valeurs_futures() const;
-  double temps_futur(int i) const;
-  double temps_defaut() const;
+  int nb_valeurs_futures() const override;
+  double temps_futur(int i) const override;
+  double temps_defaut() const override;
 
   /////////////////////////////////////////
   //                                     //
   // Fin des caracteristiques du schema  //
   //                                     //
   /////////////////////////////////////////
-  virtual void       modifier_second_membre(const Equation_base& eqn, DoubleTab& secmem)         = 0;
+  void       modifier_second_membre(const Equation_base& eqn, DoubleTab& secmem)         override = 0;
   virtual void       compute_coefficients(double time_step, const DoubleTab& times)                   = 0;
   virtual DoubleTab& coefficients()                                                                   = 0;
   virtual int              nb_pas_dt_seuil()                                                          const = 0;
   virtual int              nb_valeurs_passees()                                                       const = 0;
   virtual const DoubleTab& coefficients()                                                             const = 0;
 
-  int faire_un_pas_de_temps_eqn_base(Equation_base&)   ;
+  int faire_un_pas_de_temps_eqn_base(Equation_base&) override   ;
 
-  inline void completer();
+  inline void completer() override;
 
 protected :
 

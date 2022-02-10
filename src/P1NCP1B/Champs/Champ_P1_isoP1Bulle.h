@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,42 +36,42 @@ class Champ_P1_isoP1Bulle : public Champ_Inc_base,
   Declare_instanciable(Champ_P1_isoP1Bulle);
 
 public :
-  int fixer_nb_valeurs_nodales(int);
-  const Zone_dis_base& zone_dis_base() const;
-  void associer_zone_dis_base(const Zone_dis_base&);
-  DoubleTab& remplir_coord_noeuds(DoubleTab& ) const;
+  int fixer_nb_valeurs_nodales(int) override;
+  const Zone_dis_base& zone_dis_base() const override;
+  void associer_zone_dis_base(const Zone_dis_base&) override;
+  DoubleTab& remplir_coord_noeuds(DoubleTab& ) const override;
   DoubleVect& valeur_a_elem(const DoubleVect& position,
                             DoubleVect& val,
-                            int le_poly) const;
+                            int le_poly) const override;
 
   double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly, int ncomp) const;
+                             int le_poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions,
                               const IntVect& les_polys,
-                              DoubleTab& valeurs) const;
+                              DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
                                      const IntVect& les_polys,
                                      DoubleVect& valeurs
-                                     ,int ncomp) const ;
-  inline virtual DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
-  inline virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                                      DoubleVect&, int) const;
+                                     ,int ncomp) const override ;
+  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
+                                              DoubleVect&, int) const override;
 
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ,int distant) const;
-  inline const Zone_VEF_PreP1b& zone_vef() const;
+  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double ,int distant) const override;
+  inline const Zone_VEF_PreP1b& zone_vef() const override;
   double valeur_au_bord(int face) const;
-  virtual Champ_base& affecter_(const Champ_base& ) ;
+  Champ_base& affecter_(const Champ_base& ) override ;
   double norme_L2(const Domaine& dom) const;
 
 protected :
 
   REF(Zone_VEF_PreP1b) la_Zone_VEF_PreP1b;
 
-  void completer(const Zone_Cl_dis_base& zcl);
+  void completer(const Zone_Cl_dis_base& zcl) override;
 
 private :
-  inline virtual const Champ_base& le_champ() const;
-  inline virtual Champ_base& le_champ();
+  inline const Champ_base& le_champ() const override;
+  inline Champ_base& le_champ() override;
 };
 
 inline const Zone_VEF_PreP1b& Champ_P1_isoP1Bulle::zone_vef() const

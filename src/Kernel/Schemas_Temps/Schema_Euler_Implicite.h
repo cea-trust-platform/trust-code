@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,9 +40,9 @@ class Schema_Euler_Implicite : public Schema_Implicite_base
 
 public :
 
-  virtual bool initTimeStep(double dt);
-  void set_param(Param& );
-  virtual int lire_motcle_non_standard(const Motcle& mot, Entree& is);
+  bool initTimeStep(double dt) override;
+  void set_param(Param& ) override;
+  int lire_motcle_non_standard(const Motcle& mot, Entree& is) override;
 
   ////////////////////////////////
   //                            //
@@ -50,10 +50,10 @@ public :
   //                            //
   ////////////////////////////////
 
-  virtual int nb_valeurs_temporelles() const;
-  virtual int nb_valeurs_futures() const;
-  virtual double temps_futur(int i) const;
-  virtual double temps_defaut() const;
+  int nb_valeurs_temporelles() const override;
+  int nb_valeurs_futures() const override;
+  double temps_futur(int i) const override;
+  double temps_defaut() const override;
 
   /////////////////////////////////////////
   //                                     //
@@ -64,16 +64,16 @@ public :
   void Initialiser_Champs(Probleme_base&);
   void test_stationnaire(Probleme_base&);
   int Iterer_Pb(Probleme_base&,int ite, int& ok);
-  virtual bool iterateTimeStep(bool& converged);
+  bool iterateTimeStep(bool& converged) override;
   virtual int faire_un_pas_de_temps_pb_couple(Probleme_Couple&, int& ok);
-  virtual int faire_un_pas_de_temps_eqn_base(Equation_base&);
+  int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
   inline const double& residu_old() const
   {
     return residu_old_ ;
   };
-  virtual int mettre_a_jour();
-  virtual int reprendre(Entree& );
-  inline virtual void completer(void) { } ;
+  int mettre_a_jour() override;
+  int reprendre(Entree& ) override;
+  inline void completer(void) override { } ;
   int resolution_monolithique(const Nom& nom) const;
 protected:
   int nb_ite_max;

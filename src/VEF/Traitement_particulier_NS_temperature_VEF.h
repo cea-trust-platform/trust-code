@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ class Traitement_particulier_NS_temperature_VEF : public Traitement_particulier_
 
 
 protected :
-  void calcul_temperature( );
+  void calcul_temperature( ) override;
 
   // private:
   REF(Convection_Diffusion_std) mon_equation_NRJ;

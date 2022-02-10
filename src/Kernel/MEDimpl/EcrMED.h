@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ public :
   {
     return major_mode ? _MED_VERSION(MED_NUM_MAJEUR,0,0) : MED_VERSION_STR;
   }
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
   void ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode=0);
   void ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_dom,int mode=0);
   void ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Noms& noms_compo,const Nom& type_elem,double time,int compteur);

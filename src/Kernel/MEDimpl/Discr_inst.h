@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ public:
   //
   // Methodes surchargees de Discretisation_base
   //
-  virtual void zone_Cl_dis(Zone_dis& , Zone_Cl_dis& ) const
+  void zone_Cl_dis(Zone_dis& , Zone_Cl_dis& ) const override
   {
     Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
     exit();
@@ -50,7 +50,7 @@ public:
     Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
     exit();
   };
-  void modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const
+  void modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const override
   {
     Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
     Process::exit();
@@ -60,17 +60,17 @@ public:
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, int nb_pas_dt, double temps,
-                         Champ_Inc& champ, const Nom& sous_type = nom_vide) const;
+                         Champ_Inc& champ, const Nom& sous_type = nom_vide) const override;
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, double temps,
-                         Champ_Fonc& champ) const;
+                         Champ_Fonc& champ) const override;
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, double temps,
-                         Champ_Don& champ) const;
+                         Champ_Don& champ) const override;
 private:
   void discretiser_champ_fonc_don(const Motcle& directive, const Zone_dis_base& z,
                                   Nature_du_champ nature, const Noms& noms, const Noms& unites,

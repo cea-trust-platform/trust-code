@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,9 +35,9 @@ class Flux_interfacial_Coef_Constant : public Flux_interfacial_base
 {
   Declare_instanciable(Flux_interfacial_Coef_Constant);
 public:
-  virtual void coeffs(const double& dh, const double *alpha, const double *T, const double p, const double *nv,
-                      const double *lambda, const double *mu, const double *rho, const double *Cp,
-                      DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const;
+  void coeffs(const double& dh, const double *alpha, const double *T, const double p, const double *nv,
+              const double *lambda, const double *mu, const double *rho, const double *Cp,
+              DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const override;
 protected:
   DoubleTab h_phase;
 };

@@ -40,8 +40,8 @@
 template <class _TYPE_>
 class T_It_VDF_Face : public Iterateur_VDF_base
 {
-  inline unsigned taille_memoire() const { throw; }
-  inline int duplique() const
+  inline unsigned taille_memoire() const override { throw; }
+  inline int duplique() const override
   {
     T_It_VDF_Face* xxx = new  T_It_VDF_Face(*this);
     if(!xxx)
@@ -56,16 +56,16 @@ public:
   inline T_It_VDF_Face() { }
   inline T_It_VDF_Face(const T_It_VDF_Face<_TYPE_>& );
 
-  int impr(Sortie& os) const;
-  void contribuer_au_second_membre(DoubleTab& ) const;
-  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
-  void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
+  int impr(Sortie& os) const override;
+  void contribuer_au_second_membre(DoubleTab& ) const override;
+  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const override;
+  void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
 
-  inline void completer_();
-  inline Evaluateur_VDF& evaluateur() { return (Evaluateur_VDF&) flux_evaluateur; }
-  inline const Evaluateur_VDF& evaluateur() const { return (Evaluateur_VDF&) flux_evaluateur; }
+  inline void completer_() override;
+  inline Evaluateur_VDF& evaluateur() override { return (Evaluateur_VDF&) flux_evaluateur; }
+  inline const Evaluateur_VDF& evaluateur() const override { return (Evaluateur_VDF&) flux_evaluateur; }
 
 protected:
   _TYPE_ flux_evaluateur;

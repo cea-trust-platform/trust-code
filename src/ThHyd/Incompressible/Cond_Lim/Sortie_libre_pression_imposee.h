@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,10 +46,10 @@ class Sortie_libre_pression_imposee : public Neumann_sortie_libre
 
 public :
 
-  int compatible_avec_eqn(const Equation_base&) const;
-  double flux_impose(int i) const;
-  double flux_impose(int i,int j) const;
-  void completer();
+  int compatible_avec_eqn(const Equation_base&) const override;
+  double flux_impose(int i) const override;
+  double flux_impose(int i,int j) const override;
+  void completer() override;
 
 protected:
 

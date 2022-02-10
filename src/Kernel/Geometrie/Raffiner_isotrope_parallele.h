@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ class Raffiner_isotrope_parallele : public Raffiner_Simplexes
 {
 
   Declare_instanciable( Raffiner_isotrope_parallele ) ;
-  Entree& interpreter(Entree& is);
+  Entree& interpreter(Entree& is) override;
 public :
 
 protected :

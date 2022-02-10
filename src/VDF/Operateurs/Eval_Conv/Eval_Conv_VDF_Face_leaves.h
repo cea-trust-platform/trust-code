@@ -68,16 +68,16 @@ class Eval_Centre4_VDF_Face : public Eval_Conv_VDF_Face<Eval_Centre4_VDF_Face>, 
 public:
   static constexpr bool IS_CENTRE4 = true;
 
-  inline int face_amont_conj(int num_face,int i,int k) const { return la_zone->face_amont_conj(num_face, i, k); }
-  inline int face_amont_princ(int num_face,int i) const { return la_zone->face_amont_princ(num_face, i); }
+  inline int face_amont_conj(int num_face,int i,int k) const override { return la_zone->face_amont_conj(num_face, i, k); }
+  inline int face_amont_princ(int num_face,int i) const override { return la_zone->face_amont_princ(num_face, i); }
   inline double dist_face(int n1,int n2,int k) const { return la_zone->dist_face(n1,n2,k); }
   inline double dist_face_period(int n1,int n2,int k) const { return la_zone->dist_face_period(n1,n2,k); }
-  inline double dist_elem_period(int n1,int n2,int k) const { return la_zone->dist_elem_period(n1,n2,k); }
-  inline double dim_elem(int n1,int k) const { return la_zone->dim_elem(n1,k); }
-  inline double conv_centre(const double& psc,const double& vit_0_0, const double& vit_0, const double& vit_1,const double& vit1_1,double g1, double g2, double g3,double g4) const
+  inline double dist_elem_period(int n1,int n2,int k) const override { return la_zone->dist_elem_period(n1,n2,k); }
+  inline double dim_elem(int n1,int k) const override { return la_zone->dim_elem(n1,k); }
+  inline double conv_centre(const double& psc,const double& vit_0_0, const double& vit_0, const double& vit_1,const double& vit1_1,double g1, double g2, double g3,double g4) const override
   { return (g1*vit_0_0 + g2*vit_0 + g3*vit_1 + g4*vit1_1) * psc; }
 
-  inline void calcul_g(const double& dxam, const double& dx, const double& dxav, double& g1, double& g2, double& g3, double& g4) const
+  inline void calcul_g(const double& dxam, const double& dx, const double& dxav, double& g1, double& g2, double& g3, double& g4) const override
   {return calcul_g_impl(dxam,dx,dxav,g1,g2,g3,g4); }
 };
 
@@ -89,20 +89,20 @@ class Eval_Quick_VDF_Face : public Eval_Conv_VDF_Face<Eval_Quick_VDF_Face>, publ
 public:
   static constexpr bool IS_QUICK = true;
 
-  inline int face_amont_conj(int num_face,int i,int k) const { return la_zone->face_amont_conj(num_face, i, k); }
-  inline int face_amont_princ(int num_face,int i) const { return la_zone->face_amont_princ(num_face, i); }
-  inline double dim_elem(int n1,int k) const { return la_zone->dim_elem(n1,k); }
-  inline double dim_face(int n1,int k) const { return la_zone->dim_face(n1,k); }
+  inline int face_amont_conj(int num_face,int i,int k) const override { return la_zone->face_amont_conj(num_face, i, k); }
+  inline int face_amont_princ(int num_face,int i) const override { return la_zone->face_amont_princ(num_face, i); }
+  inline double dim_elem(int n1,int k) const override { return la_zone->dim_elem(n1,k); }
+  inline double dim_face(int n1,int k) const override { return la_zone->dim_face(n1,k); }
   inline double dist_face(int n1,int n2,int k) const { return la_zone->dist_face(n1,n2,k); }
-  inline double dist_elem(int n1,int n2,int k) const { return la_zone->dist_elem(n1,n2,k); }
-  inline double dist_elem_period(int n1, int n2, int k) const { return la_zone->dist_elem_period(n1,n2,k); }
+  inline double dist_elem(int n1,int n2,int k) const override { return la_zone->dist_elem(n1,n2,k); }
+  inline double dist_elem_period(int n1, int n2, int k) const override { return la_zone->dist_elem_period(n1,n2,k); }
   inline double dist_face_period(int n1,int n2,int k) const { return la_zone->dist_face_period(n1,n2,k); }
   inline double conv_quick_sharp_plus(const double& psc,const double& vit_0, const double& vit_1, const double& vit_0_0,
-                                      const double& dx, const double& dm, const double& dxam) const
+                                      const double& dx, const double& dm, const double& dxam) const override
   { return conv_quick_sharp_plus_impl(psc,vit_0,vit_1,vit_0_0,dx,dm,dxam); }
 
   inline double conv_quick_sharp_moins(const double& psc,const double& vit_0,const double& vit_1, const double& vit_1_1,
-                                       const double& dx, const double& dm,const double& dxam) const
+                                       const double& dx, const double& dm,const double& dxam) const override
   { return conv_quick_sharp_moins_impl(psc,vit_0,vit_1,vit_1_1,dx,dm,dxam); }
 };
 
@@ -114,19 +114,19 @@ class Eval_Quick_VDF_Face_Axi : public Eval_Conv_VDF_Face<Eval_Quick_VDF_Face_Ax
 public:
   static constexpr bool IS_AXI = true, IS_QUICK = true, CALC_ARR_PERIO = false, CALC_ARR_SYMM_FL = false;
 
-  inline int face_amont_princ(int num_face,int i) const { return la_zone->face_amont_princ(num_face, i); }
-  inline int face_amont_conj(int ,int ,int ) const;
+  inline int face_amont_princ(int num_face,int i) const override { return la_zone->face_amont_princ(num_face, i); }
+  inline int face_amont_conj(int ,int ,int ) const override;
   inline double dist_face(int ,int ,int ) const;
-  inline double dist_elem_period(int n1, int n2, int k) const { return dist_face(n1,n2,k); }
-  inline double dim_face(int ,int ) const;
-  inline double dist_elem(int ,int ,int ) const;
-  inline double dim_elem(int ,int ) const;
+  inline double dist_elem_period(int n1, int n2, int k) const override { return dist_face(n1,n2,k); }
+  inline double dim_face(int ,int ) const override;
+  inline double dist_elem(int ,int ,int ) const override;
+  inline double dim_elem(int ,int ) const override;
   inline double conv_quick_sharp_plus(const double& psc,const double& vit_0, const double& vit_1, const double& vit_0_0,
-                                      const double& dx, const double& dm, const double& dxam) const
+                                      const double& dx, const double& dm, const double& dxam) const override
   { return conv_quick_sharp_plus_impl(psc,vit_0,vit_1,vit_0_0,dx,dm,dxam); }
 
   inline double conv_quick_sharp_moins(const double& psc,const double& vit_0,const double& vit_1, const double& vit_1_1,
-                                       const double& dx, const double& dm,const double& dxam) const
+                                       const double& dx, const double& dm,const double& dxam) const override
   { return conv_quick_sharp_moins_impl(psc,vit_0,vit_1,vit_1_1,dx,dm,dxam); }
 };
 

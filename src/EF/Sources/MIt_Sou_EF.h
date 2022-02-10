@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,12 +42,12 @@ class It_Sou_EF(_TYPE_) : public Iterateur_Source_EF_base\
 public:\
    \
    inline It_Sou_EF(_TYPE_)(const It_Sou_EF(_TYPE_)&);\
-   inline Evaluateur_Source_EF& evaluateur();\
+   inline Evaluateur_Source_EF& evaluateur() override;\
    \
-   DoubleTab& calculer(DoubleTab& ) const;\
-   DoubleTab& ajouter(DoubleTab& ) const;\
-   inline void completer_();\
-   inline int impr(Sortie&) const;\
+   DoubleTab& calculer(DoubleTab& ) const override;\
+   DoubleTab& ajouter(DoubleTab& ) const override;\
+   inline void completer_() override;\
+   inline int impr(Sortie&) const override;\
    \
 protected:\
    \

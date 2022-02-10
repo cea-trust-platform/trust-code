@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,13 +50,13 @@ class Fluide_Dilatable_base : public Fluide_base
 
 public :
   Fluide_Dilatable_base();
-  void verifier_coherence_champs(int& err,Nom& message);
+  void verifier_coherence_champs(int& err,Nom& message) override;
   void set_Cp(double);
-  void update_rho_cp(double temps);
-  void creer_champs_non_lus();
+  void update_rho_cp(double temps) override;
+  void creer_champs_non_lus() override;
   void initialiser_radiatives(const double& temps);
   void warn_syntax_Sutherland();
-  int initialiser(const double& temps);
+  int initialiser(const double& temps) override;
 
   const DoubleTab& temperature() const;
   const Champ_Don& ch_temperature() const;
@@ -64,14 +64,14 @@ public :
 
   virtual void calculer_pression_tot();
   virtual void preparer_pas_temps();
-  virtual void abortTimeStep();
-  virtual void set_param(Param& param);
-  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
-  virtual void mettre_a_jour(double );
+  void abortTimeStep() override;
+  void set_param(Param& param) override;
+  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
+  void mettre_a_jour(double ) override;
   virtual void update_pressure_fields(double );
-  virtual void preparer_calcul();
+  void preparer_calcul() override;
   virtual void completer(const Probleme_base&);
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   // Virtuelles pure
   virtual void checkTraitementPth(const Zone_Cl_dis&)=0;
@@ -80,8 +80,8 @@ public :
   virtual void secmembre_divU_Z(DoubleTab& ) const=0;
 
   // Methodes de l interface des champs postraitables
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
 
   // Methodes inlines
   inline const Nom type_fluide() const { return loi_etat_->type_fluide(); }
@@ -103,8 +103,8 @@ public :
   inline void calculer_Cp() { loi_etat_->calculer_Cp(); }
   inline void calculer_lambda() { loi_etat_->calculer_lambda(); }
   inline void calculer_mu() { loi_etat_->calculer_mu(); }
-  inline void calculer_nu() { loi_etat_->calculer_nu(); }
-  inline void calculer_alpha() { loi_etat_->calculer_alpha(); }
+  inline void calculer_nu() override { loi_etat_->calculer_nu(); }
+  inline void calculer_alpha() override { loi_etat_->calculer_alpha(); }
   inline void calculer_mu_sur_Sc() { loi_etat_-> calculer_mu_sur_Sc(); }
   inline void calculer_nu_sur_Sc() { loi_etat_-> calculer_nu_sur_Sc(); }
   inline void calculer_masse_volumique() { loi_etat_->calculer_masse_volumique(); }

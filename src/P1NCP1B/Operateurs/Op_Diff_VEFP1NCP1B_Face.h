@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,23 +58,23 @@ public:
 
   Op_Diff_VEFP1NCP1B_Face();
   void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& );
-  void completer();
+                const Champ_Inc& ) override;
+  void completer() override;
 
   //Methodes pour l'explicite
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  double calculer_dt_stab() const;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  double calculer_dt_stab() const override;
 
   //Acces aux zones
   const Zone_VEF_PreP1b& zone_VEFPreP1B() const;
   const Zone_Cl_VEFP1B& zone_Cl_VEFPreP1B() const;
 
   //Methodes pour l'implicite.
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  void dimensionner(Matrice_Morse&) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  void dimensionner(Matrice_Morse&) const override;
   void ajouter_contribution(const DoubleTab&,Matrice_Morse&) const;
-  void contribuer_au_second_membre(DoubleTab& ) const;
+  void contribuer_au_second_membre(DoubleTab& ) const override;
 
 
 protected :

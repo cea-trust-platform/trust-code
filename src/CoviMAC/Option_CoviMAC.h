@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,8 +33,8 @@ class Option_CoviMAC : public Interprete
 
 public :
 
-  Entree& interpreter(Entree&);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  Entree& interpreter(Entree&) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int test_mot(const Motcle& mot) const;
   static int interp_ve1;
 };

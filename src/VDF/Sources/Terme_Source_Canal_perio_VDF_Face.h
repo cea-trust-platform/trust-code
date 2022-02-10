@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,14 +50,14 @@ class Terme_Source_Canal_perio_VDF_Face : public Terme_Source_Canal_perio
   Declare_instanciable(Terme_Source_Canal_perio_VDF_Face);
 
 public :
-  virtual DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter(DoubleTab& ) const override;
 
 protected :
   REF(Zone_VDF) la_zone_VDF;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
 
-  virtual void calculer_debit(double&) const;
+  void calculer_debit(double&) const override;
 };
 class Terme_Source_Canal_perio_QC_VDF_Face : public Terme_Source_Canal_perio_VDF_Face
 {

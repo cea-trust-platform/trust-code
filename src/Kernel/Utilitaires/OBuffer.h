@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,16 +33,16 @@ class OBuffer : public Sortie
 
 public:
   OBuffer();
-  ~OBuffer();
+  ~OBuffer() override;
   void new_buffer();
-  void precision(int);
+  void precision(int) override;
   int get_precision();
   const char* str();
   int len();
-  virtual int set_bin(int bin);
+  int set_bin(int bin) override;
 
   void put_null_char();
-  Sortie& flush();
+  Sortie& flush() override;
 
 protected:
 

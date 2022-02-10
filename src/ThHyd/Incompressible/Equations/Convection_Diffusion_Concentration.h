@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,26 +43,26 @@ class Convection_Diffusion_Concentration : public Convection_Diffusion_std
 
 public :
 
-  void set_param(Param& titi);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  void set_param(Param& titi) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   Convection_Diffusion_Concentration();
-  const Milieu_base& milieu() const;
-  Milieu_base& milieu();
+  const Milieu_base& milieu() const override;
+  Milieu_base& milieu() override;
   const Constituant& constituant() const;
   Constituant& constituant();
-  void associer_milieu_base(const Milieu_base& );
+  void associer_milieu_base(const Milieu_base& ) override;
   inline void associer_constituant(const Constituant& );
-  void discretiser();
-  inline const Champ_Inc& inconnue() const;
-  inline Champ_Inc& inconnue();
+  void discretiser() override;
+  inline const Champ_Inc& inconnue() const override;
+  inline Champ_Inc& inconnue() override;
   inline int nb_constituants() const;
-  virtual int impr(Sortie& os) const;
-  virtual int preparer_calcul();
-  virtual void mettre_a_jour(double);
-  const Champ_Don& diffusivite_pour_transport();
+  int impr(Sortie& os) const override;
+  int preparer_calcul() override;
+  void mettre_a_jour(double) override;
+  const Champ_Don& diffusivite_pour_transport() override;
 
 
-  virtual const Motcle& domaine_application() const;
+  const Motcle& domaine_application() const override;
   const double& masse_molaire() const;
 
 protected :

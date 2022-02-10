@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ class Scatter : public Interprete
   Declare_instanciable_sans_constructeur(Scatter);
 public:
   Scatter();
-  Entree&         interpreter(Entree&);
+  Entree&         interpreter(Entree&) override;
   virtual void    lire_domaine(Nom&, Noms& liste_bords_periodiques);
   Domaine&        domaine();
 

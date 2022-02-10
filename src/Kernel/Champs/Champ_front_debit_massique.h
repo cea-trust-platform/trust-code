@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,10 +40,10 @@ class Champ_front_debit_massique : public Champ_front_debit
 {
   Declare_instanciable(Champ_front_debit_massique);
 public:
-  virtual void update_coeff(double temps);
+  void update_coeff(double temps) override;
 
 protected:
-  virtual void initialiser_coefficient(const Champ_Inc_base& inco, double temps);
+  void initialiser_coefficient(const Champ_Inc_base& inco, double temps) override;
   const Champ_base *ch_rho;
 };
 

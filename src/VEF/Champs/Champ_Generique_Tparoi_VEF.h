@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,10 +38,10 @@ class Champ_Generique_Tparoi_VEF : public Champ_Gen_de_Champs_Gen
 
 public:
 
-  virtual const Noms get_property(const Motcle& query) const;
-  virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
-  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
-  void nommer_source();
+  const Noms get_property(const Motcle& query) const override;
+  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
+  void nommer_source() override;
 
 protected:
 

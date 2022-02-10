@@ -37,7 +37,7 @@ class ModPerm_Cte : public Modele_Permeabilite_base
   Declare_instanciable_sans_constructeur(ModPerm_Cte);
 public:
   ModPerm_Cte() : cte(1.) { }
-  inline double getK(double ) const { return cte;} // Renvoie la valeur de la permeabilite en fonction de la porosite (d'une face par exemple).
+  inline double getK(double ) const override { return cte;} // Renvoie la valeur de la permeabilite en fonction de la porosite (d'une face par exemple).
 
 protected:
   double cte;
@@ -53,7 +53,7 @@ public:
   inline double getDiametre() const { return diam; }
   inline void setDiametre(double d) { diam = d; }
 
-  inline virtual double getK(double porosite) const // Renvoie la valeur de la permeabilite en fonction de la porosite (d'une face par exemple).
+  inline double getK(double porosite) const override // Renvoie la valeur de la permeabilite en fonction de la porosite (d'une face par exemple).
   {
     const double tmp = diam *porosite /(1.-porosite);
     return tmp*tmp*porosite/C;
@@ -81,7 +81,7 @@ class ModPerm_ErgunPourForch : public ModPerm_Carman_Kozeny
 public:
   ModPerm_ErgunPourForch() { C = 1.75; }
 
-  inline double getK(double porosite) const // Renvoie la valeur de la permeabilite en fonction de la porosite (d'une face par exemple).
+  inline double getK(double porosite) const override // Renvoie la valeur de la permeabilite en fonction de la porosite (d'une face par exemple).
   {
     const double tmp = diam *porosite*porosite*porosite /(1.-porosite)/C;
     return tmp*tmp;

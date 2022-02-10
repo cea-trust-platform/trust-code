@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ class Remove_elem : public Interprete_geometrique_base
 
 public :
 
-  Entree& interpreter_(Entree&);
+  Entree& interpreter_(Entree&) override;
   void Remove_elem_(Zone&);
   void recreer_faces(Zone& , Faces&, IntTab&) const;
   void creer_faces(Zone& , Faces&, IntTab&) const;
@@ -57,7 +57,7 @@ protected :
   Parser_U f;
   int f_ok;
 private :
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 };
 
 #endif

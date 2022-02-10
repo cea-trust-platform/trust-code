@@ -41,7 +41,7 @@ class Interpolation_IBM_elem_fluid : public Interpolation_IBM_base
   Declare_instanciable( Interpolation_IBM_elem_fluid ) ;
 
 public :
-  virtual void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF);
+  void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF) override;
 
 protected :
   virtual void computeFluidElems(Zone_dis_base&);

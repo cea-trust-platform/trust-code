@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,8 +49,8 @@ public:
   inline double tstat_dernier_calcul() const;
   inline int lserie() const;
   inline double dt_integr_serie() const;
-  int sauvegarder(Sortie& os) const;
-  int reprendre(Entree& is);
+  int sauvegarder(Sortie& os) const override;
+  int reprendre(Entree& is) override;
 
 protected:
 

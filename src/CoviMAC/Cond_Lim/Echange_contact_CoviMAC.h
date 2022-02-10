@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,9 +50,9 @@ class Echange_contact_CoviMAC  : public Echange_externe_impose
 {
   Declare_instanciable(Echange_contact_CoviMAC);
 public :
-  virtual int initialiser(double temps);
-  virtual void mettre_a_jour(double temps) { }; //non utilise
-  virtual void verifie_ch_init_nb_comp() { }; //pas de contrainte sur les composantes de chaque cote
+  int initialiser(double temps) override;
+  void mettre_a_jour(double temps) override { }; //non utilise
+  void verifie_ch_init_nb_comp() override { }; //pas de contrainte sur les composantes de chaque cote
 
   REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
   int i_fvf, i_o_fvf;  //indices de frontiere de chaque cote

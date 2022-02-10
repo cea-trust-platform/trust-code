@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,14 +51,14 @@ class Sortie_libre_Gradient_Pression_libre_VEF : public Neumann_sortie_libre
 
 public:
 
-  void completer();
-  virtual int initialiser(double temps);
-  virtual void mettre_a_jour(double temps);
-  virtual double flux_impose(int ) const;
-  virtual double flux_impose(int , int ) const;
+  void completer() override;
+  int initialiser(double temps) override;
+  void mettre_a_jour(double temps) override;
+  double flux_impose(int ) const override;
+  double flux_impose(int , int ) const override;
   virtual double Grad_P_lib_VEF(int ) const;
-  int compatible_avec_eqn(const Equation_base&) const;
-  int compatible_avec_discr(const Discretisation_base& ) const;
+  int compatible_avec_eqn(const Equation_base&) const override;
+  int compatible_avec_discr(const Discretisation_base& ) const override;
 
 protected:
 

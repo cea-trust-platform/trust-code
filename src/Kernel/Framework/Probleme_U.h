@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,8 +91,8 @@ public :
   virtual REF(Champ_Generique_base) findOutputField(const Nom& name) const;
   // Methodes d'acces aux membres :
 
-  inline void nommer(const Nom&);
-  inline const Nom& le_nom() const;
+  inline void nommer(const Nom&) override;
+  inline const Nom& le_nom() const override;
 
 
 protected :

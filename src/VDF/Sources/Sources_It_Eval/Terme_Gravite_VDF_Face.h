@@ -40,9 +40,9 @@ class Terme_Gravite_VDF_Face : public Terme_Source_VDF_base
   Declare_instanciable_sans_constructeur(Terme_Gravite_VDF_Face);
 public:
   inline Terme_Gravite_VDF_Face();
-  void associer_pb(const Probleme_base& );
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
-  inline void mettre_a_jour(double temps) { gravite->mettre_a_jour(temps); }
+  void associer_pb(const Probleme_base& ) override;
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  inline void mettre_a_jour(double temps) override { gravite->mettre_a_jour(temps); }
 
 protected:
   REF(Champ_Don_base) gravite;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,10 +51,10 @@ class Zone_Cl_EF : public Zone_Cl_dis_base
 public :
 
   void associer(const Zone_EF& );
-  void completer(const Zone_dis& );
+  void completer(const Zone_dis& ) override;
 //  void mettre_a_jour(double );
-  virtual int initialiser(double temps);
-  virtual void imposer_cond_lim(Champ_Inc&, double);
+  int initialiser(double temps) override;
+  void imposer_cond_lim(Champ_Inc&, double) override;
 
   void imposer_symetrie(DoubleTab&,int tous_les_sommets_sym=0) const;
   void imposer_symetrie_partiellement(DoubleTab&,const Noms&) const;

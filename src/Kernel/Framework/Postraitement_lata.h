@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,10 +59,10 @@ class Postraitement_lata : public Postraitement_base
   Declare_instanciable_sans_constructeur(Postraitement_lata);
 public:
   Postraitement_lata();
-  void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
-  void postraiter(int forcer);
-  inline void completer() {}
+  void set_param(Param& param) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  void postraiter(int forcer) override;
+  inline void completer() override {}
 
   enum Format { ASCII, BINAIRE };
   enum Type_Champ { CHAMP=0, STATISTIQUE=1 };

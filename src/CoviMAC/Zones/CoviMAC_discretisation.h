@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,38 +58,38 @@ public :
                          const Noms& nom, const Noms& unite,
                          int nb_comp, int nb_pas_dt, double temps,
                          Champ_Inc& champ,
-                         const Nom& sous_type = nom_vide) const;
+                         const Nom& sous_type = nom_vide) const override;
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, double temps,
-                         Champ_Fonc& champ) const;
+                         Champ_Fonc& champ) const override;
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, double temps,
-                         Champ_Don& champ) const;
-  void zone_Cl_dis(Zone_dis& z, Zone_Cl_dis& zcl) const;
+                         Champ_Don& champ) const override;
+  void zone_Cl_dis(Zone_dis& z, Zone_Cl_dis& zcl) const override;
   void distance_paroi(const Schema_Temps_base& , Zone_dis&, Champ_Fonc&) const;
   void proprietes_physiques_fluide_Ostwald(const Zone_dis& ,Fluide_Ostwald& ,
                                            const Navier_Stokes_std& ,
-                                           const Champ_Inc& ) const;
+                                           const Champ_Inc& ) const override;
 
   void vorticite(Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const;
-  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const;
-  void critere_Q(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const;
-  void y_plus(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const;
-  void grad_T(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch) const;
-  void grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const;
+  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
+  void critere_Q(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
+  void y_plus(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
+  void grad_T(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch) const override;
+  void grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const override;
   ////void h_conv(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch) const;
-  void h_conv(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const;
-  inline virtual type_calcul_du_residu codage_du_calcul_du_residu(void) const
+  void h_conv(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const override;
+  inline type_calcul_du_residu codage_du_calcul_du_residu(void) const override
   {
     return VIA_AJOUTER;
   }
 
-  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF(Champ_base)& champ_sup ) const;
-  void residu( const Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const;
+  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF(Champ_base)& champ_sup ) const override;
+  void residu( const Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const override;
 
 private:
   void discretiser_champ_fonc_don(
@@ -99,7 +99,7 @@ private:
     int nb_comp, double temps,
     Objet_U& champ) const;
 
-  void modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const;
+  void modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const override;
 
 
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ class Fluide_Incompressible : public Fluide_base
 public :
 
   Fluide_Incompressible();
-  void verifier_coherence_champs(int& err,Nom& message);
+  void verifier_coherence_champs(int& err,Nom& message) override;
 
 };
 

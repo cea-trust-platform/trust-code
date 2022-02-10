@@ -41,7 +41,7 @@ class Echange_interne_global_parfait : public Echange_interne_global_impose
 
   Declare_instanciable(Echange_interne_global_parfait);
 public:
-  int compatible_avec_discr(const Discretisation_base& discr) const;
+  int compatible_avec_discr(const Discretisation_base& discr) const override;
 
 };
 

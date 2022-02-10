@@ -36,12 +36,12 @@ class Op_Diff_VDF_base : public Operateur_Diff_base
 
 public:
   inline Op_Diff_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
-  void completer();
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  void contribuer_au_second_membre(DoubleTab& ) const;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  virtual int impr(Sortie& os) const;
+  void completer() override;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  void contribuer_au_second_membre(DoubleTab& ) const override;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  int impr(Sortie& os) const override;
   virtual void calculer_flux_bord(const DoubleTab& inco) const;
 
   inline const Iterateur_VDF& get_iter() const { return iter; }

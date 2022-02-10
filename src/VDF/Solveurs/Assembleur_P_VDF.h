@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,17 +42,17 @@ class Assembleur_P_VDF : public Assembleur_base
   Declare_instanciable(Assembleur_P_VDF);
 
 public:
-  void associer_zone_dis_base(const Zone_dis_base& )                ;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& )          ;
-  const Zone_dis_base& zone_dis_base() const                        ;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const                  ;
-  int assembler(Matrice&)                                        ;
-  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) ;
-  int assembler_rho_variable(Matrice&, const Champ_Don_base& rho);
-  int assembler_QC(const DoubleTab&, Matrice&)                   ;
-  int modifier_secmem(DoubleTab&)                                ;
-  int modifier_solution(DoubleTab&)                              ;
-  void completer(const Equation_base& )                             ;
+  void associer_zone_dis_base(const Zone_dis_base& ) override                ;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override          ;
+  const Zone_dis_base& zone_dis_base() const override                        ;
+  const Zone_Cl_dis_base& zone_Cl_dis_base() const override                  ;
+  int assembler(Matrice&) override                                        ;
+  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override ;
+  int assembler_rho_variable(Matrice&, const Champ_Don_base& rho) override;
+  int assembler_QC(const DoubleTab&, Matrice&) override                   ;
+  int modifier_secmem(DoubleTab&) override                                ;
+  int modifier_solution(DoubleTab&) override                              ;
+  void completer(const Equation_base& ) override                             ;
 
 protected:
   int construire(Matrice& la_matrice);

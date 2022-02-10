@@ -35,7 +35,7 @@ public:
   Eval_Source_C_VDF_Elem() { }
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
   inline void associer_champs(const Champ_Don& );
-  inline void mettre_a_jour() { /* Do nothing */ }
+  inline void mettre_a_jour() override { /* Do nothing */ }
 
 protected:
   REF(Champ_Don) la_source_constituant;

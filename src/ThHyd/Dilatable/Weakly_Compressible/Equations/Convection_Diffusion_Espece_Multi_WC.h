@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,11 +41,11 @@ class Convection_Diffusion_Espece_Multi_WC : public Convection_Diffusion_Espece_
   Declare_instanciable(Convection_Diffusion_Espece_Multi_WC);
 
 public :
-  void completer();
-  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  const Champ_base& diffusivite_pour_pas_de_temps();
-  const Champ_base& vitesse_pour_transport();
-  DoubleTab& derivee_en_temps_inco(DoubleTab& );
+  void completer() override;
+  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
+  const Champ_base& diffusivite_pour_pas_de_temps() override;
+  const Champ_base& vitesse_pour_transport() override;
+  DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
 };
 
 #endif /* Convection_Diffusion_Espece_Multi_WC_included */

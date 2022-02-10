@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,9 +74,9 @@ class Zone_VDF : public Zone_VF
 
 public :
 
-  void discretiser();
-  Faces* creer_faces();
-  virtual void reordonner(Faces& );
+  void discretiser() override;
+  Faces* creer_faces() override;
+  void reordonner(Faces& ) override;
   inline int nb_faces_X() const;
   inline int nb_faces_Y() const;
   inline int nb_faces_Z() const;
@@ -97,8 +97,8 @@ public :
   inline int Qdm(int num_arete,int ) const;
   //inline double porosite_face(int ) const;
   //inline double porosite_elem(int i) const;
-  inline int orientation(int ) const;
-  inline double face_normales(int , int ) const;
+  inline int orientation(int ) const override;
+  inline double face_normales(int , int ) const override;
   inline double dist_face(int , int , int k) const;
   inline double dist_norm(int num_face) const ;
   inline double dist_norm_bord(int num_face) const;
@@ -127,7 +127,7 @@ public :
   inline int elem_voisin(int , int , int ) const;
 
   inline IntVect& orientation();
-  inline const IntVect& orientation() const;
+  inline const IntVect& orientation() const override;
 
   // inline DoubleVect& porosite_face();
   // inline const DoubleVect& porosite_face() const;
@@ -137,8 +137,8 @@ public :
   inline IntTab& Qdm();
   inline const IntTab& Qdm() const;
   void calculer_volumes_entrelaces();
-  void modifier_pour_Cl(const Conds_lim& cl);
-  void creer_elements_fictifs(const Zone_Cl_dis_base& );
+  void modifier_pour_Cl(const Conds_lim& cl) override;
+  void creer_elements_fictifs(const Zone_Cl_dis_base& ) override;
   DoubleVect& dist_norm_bord(DoubleVect& , const Nom& nom_bord) const;
 
   //std::map permettant de retrouver le couple (proc, item local) associe a un item virtuel pour le mdv_elem
@@ -170,7 +170,7 @@ private:
   // distance entre deux centres de faces d'equation
   // X = cte (resp Y= cte)
 
-  void remplir_elem_faces();
+  void remplir_elem_faces() override;
   // void calculer_porosites();
   void genere_aretes();
   void calcul_h();

@@ -35,7 +35,7 @@ public:
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
   template <typename Type_Double> void calculer_terme_source_bord(const int num_face, Type_Double& source) const { calculer_terme_source(num_face,source);}
   inline void associer(const Champ_Don_base& );
-  inline void mettre_a_jour() { /* Do nothing */ }
+  inline void mettre_a_jour() override { /* Do nothing */ }
 
 protected:
   REF(Champ_Don_base) la_gravite;

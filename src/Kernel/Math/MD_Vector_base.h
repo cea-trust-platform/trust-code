@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ public:
   MD_Vector_base() : ref_count_(0) {};
   // attention, ne pas copier le ref_count_ !
   MD_Vector_base(const MD_Vector_base& ) : Objet_U(),ref_count_(0) {};
-  ~MD_Vector_base() {};
+  ~MD_Vector_base() override {};
   virtual int get_nb_items_reels() const = 0;
   virtual int get_nb_items_tot() const = 0;
   virtual void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const = 0;

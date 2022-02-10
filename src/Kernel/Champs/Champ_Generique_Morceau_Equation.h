@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,20 +51,20 @@ class Champ_Generique_Morceau_Equation : public Champ_Gen_de_Champs_Gen
 public:
 
   Champ_Generique_Morceau_Equation();
-  void set_param(Param& param);
-  virtual const Noms get_property(const Motcle& query) const;
-  virtual Entity  get_localisation(const int index = -1) const;
-  const   Motcle             get_directive_pour_discr() const;
-  virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
-  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
+  void set_param(Param& param) override;
+  const Noms get_property(const Motcle& query) const override;
+  Entity  get_localisation(const int index = -1) const override;
+  const   Motcle             get_directive_pour_discr() const override;
+  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
 
-  virtual Champ_Fonc& creer_espace_stockage(const Nature_du_champ& nature,
-                                            const int& nb_comp,
-                                            Champ_Fonc& es_tmp) const;
+  Champ_Fonc& creer_espace_stockage(const Nature_du_champ& nature,
+                                    const int& nb_comp,
+                                    Champ_Fonc& es_tmp) const override;
   const MorEqn& morceau() const;
   MorEqn& morceau();
-  void completer(const Postraitement_base& post);
-  void nommer_source();
+  void completer(const Postraitement_base& post) override;
+  void nommer_source() override;
 
 protected:
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,8 +52,8 @@ class Navier_Stokes_WC : public Navier_Stokes_Fluide_Dilatable_base
   Declare_instanciable(Navier_Stokes_WC);
 
 public :
-  virtual void completer();
-  virtual int impr(Sortie& os) const;
+  void completer() override;
+  int impr(Sortie& os) const override;
 };
 
 #endif /* Navier_Stokes_WC_included */

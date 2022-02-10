@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ class Champ_Q1NC_impl: public Champ_implementation
 
 public:
 
-  virtual ~Champ_Q1NC_impl() {}
+  ~Champ_Q1NC_impl() override {}
   inline double fonction_forme_2D(double x, double y, int le_poly,
                                   int face);
 
@@ -52,25 +52,25 @@ public:
 
   DoubleVect& valeur_a_elem(const DoubleVect& position,
                             DoubleVect& val,
-                            int le_poly) const;
+                            int le_poly) const override;
   double calcule_valeur_a_elem_compo(double xs, double ys, double zs,
                                      int le_poly, int ncomp) const;
   double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly, int ncomp) const;
+                             int le_poly, int ncomp) const override;
   double valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions,
                               const IntVect& les_polys,
-                              DoubleTab& valeurs) const;
+                              DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
                                      const IntVect& les_polys,
                                      DoubleVect& valeurs,
-                                     int ncomp) const ;
-  DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
+                                     int ncomp) const override ;
+  DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
   DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                       DoubleVect&, int) const;
-  DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const;
+                                       DoubleVect&, int) const override;
+  DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
   int remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                    IntVect& polys) const;
+                                    IntVect& polys) const override;
   void transforme_coord2D();
   void transforme_coord3D();
 

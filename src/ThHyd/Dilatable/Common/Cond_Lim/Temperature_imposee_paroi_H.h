@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,10 +41,10 @@ class Temperature_imposee_paroi_H  : public Temperature_imposee_paroi
   Declare_instanciable(Temperature_imposee_paroi_H);
 
 public :
-  void completer();
-  int compatible_avec_eqn(const Equation_base& ) const;
-  double val_imp(int i) const;
-  double val_imp(int i, int j) const;
+  void completer() override;
+  int compatible_avec_eqn(const Equation_base& ) const override;
+  double val_imp(int i) const override;
+  double val_imp(int i, int j) const override;
 
 protected :
   REF(Fluide_Dilatable_base) le_fluide;

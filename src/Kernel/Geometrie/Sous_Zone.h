@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,15 +45,15 @@ class Sous_Zone : public Objet_U
 
 public :
 
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   inline Sous_Zone(const Zone& );
-  inline const Nom& le_nom() const;
+  inline const Nom& le_nom() const override;
   inline int operator()(int) const;
   inline int operator[](int) const;
   inline int nb_elem_tot() const; // Returns the subzone number of elements (real+virtual elements in parallel)
   void associer_zone(const Zone&);
-  int associer_(Objet_U&);
-  virtual void nommer(const Nom&);
+  int associer_(Objet_U&) override;
+  void nommer(const Nom&) override;
   inline Zone& zone()
   {
     return la_zone_.valeur();

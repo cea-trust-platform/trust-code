@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ class Source_QC_Chaleur : public Source_Chaleur_Fluide_Dilatable_base
   Declare_base(Source_QC_Chaleur);
 
 public:
-  virtual DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter(DoubleTab& ) const override;
 };
 
 #endif /* Source_QC_Chaleur_included */

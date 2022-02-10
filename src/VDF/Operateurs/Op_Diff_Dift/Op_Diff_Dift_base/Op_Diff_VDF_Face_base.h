@@ -42,10 +42,10 @@ public:
     declare_support_masse_volumique(1);
   }
 
-  double calculer_dt_stab() const;
+  double calculer_dt_stab() const override;
   double calculer_dt_stab(const Zone_VDF&) const;
-  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
+  inline void dimensionner(Matrice_Morse& matrice) const override { Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
 };
 
 #endif /* Op_Diff_VDF_Face_base_included */

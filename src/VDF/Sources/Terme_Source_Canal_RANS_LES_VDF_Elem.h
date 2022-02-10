@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,15 +46,15 @@ class Terme_Source_Canal_RANS_LES_VDF_Elem : public Source_base
   Declare_instanciable_sans_destructeur(Terme_Source_Canal_RANS_LES_VDF_Elem);
 
 public :
-  ~Terme_Source_Canal_RANS_LES_VDF_Elem();
-  void associer_pb(const Probleme_base& );
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const;
+  ~Terme_Source_Canal_RANS_LES_VDF_Elem() override;
+  void associer_pb(const Probleme_base& ) override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  DoubleTab& calculer(DoubleTab& ) const override;
   void init();
-  void mettre_a_jour(double );
+  void mettre_a_jour(double ) override;
 
 protected :
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
   REF(Zone_VDF) la_zone_VDF;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
 

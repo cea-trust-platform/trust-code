@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class Interpolation_IBM_hybrid : public Interpolation_IBM_elem_fluid, public Int
   Declare_instanciable( Interpolation_IBM_hybrid ) ;
 
 public :
-  void discretise(const Discretisation_base&, Zone_dis_base&);
+  void discretise(const Discretisation_base&, Zone_dis_base&) override;
 
 protected :
   friend class Source_PDF_EF;

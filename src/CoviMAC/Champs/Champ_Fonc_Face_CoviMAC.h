@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ class Champ_Fonc_Face_CoviMAC : public Champ_Fonc_base
 
   Declare_instanciable(Champ_Fonc_Face_CoviMAC) ;
 public:
-  void mettre_a_jour(double);
+  void mettre_a_jour(double) override;
 
 protected :
   virtual       Champ_base& le_champ(void)      ;
@@ -50,24 +50,24 @@ protected :
 
 public :
 
-  void    associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const
+  void    associer_zone_dis_base(const Zone_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override
   {
     return ref_zone_vf_.valeur();
   } ;
 
-  virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const;
-  virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const;
-  virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const;
-  virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const;
+  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
+  double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
 
-  virtual DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const;
-  virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const;
+  DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
+  int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
 
-  virtual DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const;
-  virtual DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const;
+  DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const override;
+  DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const override;
 
-  Champ_base& affecter_(const Champ_base& );
+  Champ_base& affecter_(const Champ_base& ) override;
 
   const Zone_VF& zone_vf() const
   {
@@ -76,7 +76,7 @@ public :
 
 
 public :
-  virtual int fixer_nb_valeurs_nodales(int n);
+  int fixer_nb_valeurs_nodales(int n) override;
 protected:
   REF(Zone_VF) ref_zone_vf_;
 

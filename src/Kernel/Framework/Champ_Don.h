@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,8 +50,8 @@ class Champ_Don : public DERIV(Champ_Don_base), public Champ_Proto
 public :
 
   using Champ_Proto::valeurs;
-  inline DoubleTab& valeurs();
-  inline const DoubleTab& valeurs() const;
+  inline DoubleTab& valeurs() override;
+  inline const DoubleTab& valeurs() const override;
   inline operator DoubleTab& ();
   inline operator const DoubleTab& () const ;
   inline int fixer_nb_valeurs_nodales(int );

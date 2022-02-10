@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,12 +49,12 @@ class Op_Grad_PolyMAC_Face : public Operateur_Grad_base
 public:
 
   void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& );
-  void dimensionner(Matrice_Morse& ) const;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const;
-  int impr(Sortie& os) const;
+                const Champ_Inc& ) override;
+  void dimensionner(Matrice_Morse& ) const override;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override;
+  int impr(Sortie& os) const override;
 
   inline Zone_PolyMAC& zone_PolyMAC();
   inline const Zone_PolyMAC& zone_PolyMAC() const;

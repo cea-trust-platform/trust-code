@@ -32,11 +32,11 @@ class Eval_Dirac_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {
 public:
   Eval_Dirac_VDF_Elem() : puissance(-100.), nb_dirac(-1.) { }
-  virtual ~Eval_Dirac_VDF_Elem() { }
+  ~Eval_Dirac_VDF_Elem() override { }
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& source) const;
   inline void associer_nb_elem_dirac(int n) { nb_dirac = 1./n; }
   inline void associer_champs(const Champ_Don& );
-  inline void mettre_a_jour();
+  inline void mettre_a_jour() override;
 
   DoubleVect le_point;
 protected:

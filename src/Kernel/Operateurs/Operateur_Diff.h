@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,16 +45,16 @@ class Operateur_Diff  : public Operateur,
 {
   Declare_instanciable(Operateur_Diff);
 public:
-  Operateur_base&   l_op_base();
-  const Operateur_base& l_op_base() const;
-  DoubleTab&        ajouter(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab&        calculer(const DoubleTab&, DoubleTab& ) const;
+  Operateur_base&   l_op_base() override;
+  const Operateur_base& l_op_base() const override;
+  DoubleTab&        ajouter(const DoubleTab&, DoubleTab& ) const override;
+  DoubleTab&        calculer(const DoubleTab&, DoubleTab& ) const override;
   void              associer_diffusivite(const Champ_base&);
   void              associer_diffusivite_pour_pas_de_temps(const Champ_base&);
   const Champ_base& diffusivite() const;
-  void              typer();
+  void              typer() override;
   void              typer(const Nom&);
-  virtual inline int op_non_nul() const;
+  inline int op_non_nul() const override;
 
 protected:
   REF(Champ_base) la_diffusivite;

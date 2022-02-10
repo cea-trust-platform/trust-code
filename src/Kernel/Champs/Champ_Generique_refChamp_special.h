@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,10 +39,10 @@ class Champ_Generique_refChamp_special : public Champ_Generique_refChamp
   Declare_instanciable( Champ_Generique_refChamp_special ) ;
 
 public :
-  void set_param(Param& param);
-  const DoubleTab& get_ref_values() const;
+  void set_param(Param& param) override;
+  const DoubleTab& get_ref_values() const override;
 
-  const Champ_base& get_champ(Champ& espace_stockage) const;
+  const Champ_base& get_champ(Champ& espace_stockage) const override;
 protected :
   int case_;
 };

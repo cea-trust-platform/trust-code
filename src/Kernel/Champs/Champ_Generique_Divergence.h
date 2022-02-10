@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,16 +51,16 @@ class Champ_Generique_Divergence : public Champ_Generique_Operateur_base
 
 public:
 
-  virtual const Noms get_property(const Motcle& query) const;
-  virtual Entity  get_localisation(const int index = -1) const;
-  const   Motcle             get_directive_pour_discr() const;
-  virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
-  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
+  const Noms get_property(const Motcle& query) const override;
+  Entity  get_localisation(const int index = -1) const override;
+  const   Motcle             get_directive_pour_discr() const override;
+  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
 
-  inline const Operateur_base& Operateur() const;
-  inline Operateur_base& Operateur();
-  void completer(const Postraitement_base& post);
-  void nommer_source();
+  inline const Operateur_base& Operateur() const override;
+  inline Operateur_base& Operateur() override;
+  void completer(const Postraitement_base& post) override;
+  void nommer_source() override;
 
 protected:
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,15 +59,15 @@ class Convection_Diffusion_std : public Equation_base
 
 public :
 
-  void set_param(Param& titi);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
-  int nombre_d_operateurs() const;
-  const Operateur& operateur(int) const;
-  Operateur& operateur(int);
+  void set_param(Param& titi) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  int nombre_d_operateurs() const override;
+  const Operateur& operateur(int) const override;
+  Operateur& operateur(int) override;
   inline void associer_vitesse(const Champ_base& );
   inline const Champ_Inc_base& vitesse_transportante() const;
-  virtual const Champ_Inc& inconnue() const =0;
-  virtual Champ_Inc& inconnue() =0;
+  const Champ_Inc& inconnue() const override =0;
+  Champ_Inc& inconnue() override =0;
   virtual const Champ_Don& diffusivite_pour_transport();
   virtual const Champ_base& diffusivite_pour_pas_de_temps();
   virtual const Champ_base& vitesse_pour_transport();

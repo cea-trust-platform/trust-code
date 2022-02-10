@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,15 +49,15 @@ class Fluide_reel_base: public Fluide_base
   Declare_base(Fluide_reel_base);
 public :
 
-  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
-  virtual void abortTimeStep();
-  virtual bool initTimeStep(double dt);
-  virtual void mettre_a_jour(double temps);
-  virtual int initialiser(const double& temps);
-  virtual void set_param(Param& param);
+  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
+  void abortTimeStep() override;
+  bool initTimeStep(double dt) override;
+  void mettre_a_jour(double temps) override;
+  int initialiser(const double& temps) override;
+  void set_param(Param& param) override;
 
   //verifie que chaque inconnue "inco" est entre val_min[inco] et val_max[inco]
-  virtual int check_unknown_range() const;
+  int check_unknown_range() const override;
   //gamme range[inco] = { min, max} : par defaut, rien a controler
   virtual std::map<std::string, std::array<double, 2>> unknown_range() const
   {

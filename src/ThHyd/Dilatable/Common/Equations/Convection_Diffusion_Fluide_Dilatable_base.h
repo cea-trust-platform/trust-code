@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,25 +43,25 @@ class Convection_Diffusion_Fluide_Dilatable_base : public Convection_Diffusion_s
 
 public :
   void associer_fluide(const Fluide_Dilatable_base& );
-  void associer_milieu_base(const Milieu_base& );
-  int impr(Sortie& os) const;
-  const Champ_Don& diffusivite_pour_transport();
+  void associer_milieu_base(const Milieu_base& ) override;
+  int impr(Sortie& os) const override;
+  const Champ_Don& diffusivite_pour_transport() override;
   const Fluide_Dilatable_base& fluide() const;
   Fluide_Dilatable_base& fluide();
-  const Milieu_base& milieu() const;
-  Milieu_base& milieu();
+  const Milieu_base& milieu() const override;
+  Milieu_base& milieu() override;
 
-  virtual void set_param(Param& titi);
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  void set_param(Param& titi) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   // je sais, je sais ... mais pas maintenant !
-  virtual void calculer_div_u_ou_div_rhou(DoubleTab& res) const = 0;
-  virtual bool is_thermal() = 0;
-  virtual bool is_generic() = 0;
+  void calculer_div_u_ou_div_rhou(DoubleTab& res) const override = 0;
+  bool is_thermal() override = 0;
+  bool is_generic() override = 0;
 
   // Methodes inlines
-  inline const Champ_Inc& inconnue() const { return l_inco_ch; }
-  inline Champ_Inc& inconnue() { return l_inco_ch; }
+  inline const Champ_Inc& inconnue() const override { return l_inco_ch; }
+  inline Champ_Inc& inconnue() override { return l_inco_ch; }
   inline const Zone_Cl_dis& zone_cl_modif() const { return zcl_modif_ ;}
   inline Zone_Cl_dis& zone_cl_modif() { return zcl_modif_ ;}
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,34 +51,34 @@ class Champ_Fonc_Morceaux : public Champ_Don_base
   Declare_instanciable(Champ_Fonc_Morceaux);
 
 public :
-  Champ_base& affecter_(const Champ_base& ch);
+  Champ_base& affecter_(const Champ_base& ch) override;
   DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const;
+                       DoubleVect& valeurs) const override;
   DoubleVect& valeur_a_elem(const DoubleVect& position,
                             DoubleVect& valeurs,
-                            int le_poly) const ;
+                            int le_poly) const override ;
   double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly,int ncomp) const;
+                             int le_poly,int ncomp) const override;
 
   DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const;
+                        DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const;
+                               DoubleVect& valeurs, int ncomp) const override;
 
   DoubleTab& valeur_aux_elems(const DoubleTab& positions,
                               const IntVect& les_polys,
-                              DoubleTab& valeurs) const ;
+                              DoubleTab& valeurs) const override ;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
                                      const IntVect& les_polys,
                                      DoubleVect& valeurs,
-                                     int ncomp) const;
+                                     int ncomp) const override;
 
   const REF(Domaine)& domaine() const;
   REF(Domaine)& domaine();
   const LIST(REF(Sous_Zone))& sous_zones() const;
   LIST(REF(Sous_Zone))& sous_zones();
-  void mettre_a_jour(double temps);
-  int initialiser(const double& temps);
+  void mettre_a_jour(double temps) override;
+  int initialiser(const double& temps) override;
 
 protected :
 

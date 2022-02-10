@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,15 +46,15 @@ class Operateur_Conv  : public Operateur, public DERIV(Operateur_Conv_base)
   Declare_instanciable(Operateur_Conv);
 public :
 
-  inline Operateur_base& l_op_base();
-  inline const Operateur_base& l_op_base() const;
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const;
+  inline Operateur_base& l_op_base() override;
+  inline const Operateur_base& l_op_base() const override;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
+  DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const override;
   inline void associer_vitesse(const Champ_base&) ;
   inline const Champ_base&  vitesse() const ;
-  void typer();
+  void typer() override;
   inline void typer(const Nom&);
-  virtual inline int op_non_nul() const;
+  inline int op_non_nul() const override;
   void associer_norme_vitesse(const Champ_base&);
 protected :
 

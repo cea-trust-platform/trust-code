@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,15 +36,15 @@ class Champ_implementation_P1 : public Champ_implementation_sommet_base
 {
 
 protected :
-  virtual       Champ_base& le_champ(void)       =0;
-  virtual const Champ_base& le_champ(void) const =0;
+  Champ_base& le_champ(void)       override =0;
+  const Champ_base& le_champ(void) const override =0;
 
 public :
-  inline virtual ~Champ_implementation_P1() { };
+  inline ~Champ_implementation_P1() override { };
   static void init_from_file(DoubleTab& val, const Domaine& dom, int nb_comp, double tolerance, Entree& input);
 
 protected :
-  virtual void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp=-1) const;
+  void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp=-1) const override;
 private :
   virtual double form_function(const ArrOfDouble& position, const IntTab& les_elems, const DoubleTab& nodes, ArrOfInt& index, int cell, int ddl) const;
 };

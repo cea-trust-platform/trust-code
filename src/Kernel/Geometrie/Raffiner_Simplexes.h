@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class Raffiner_Simplexes : public Interprete_geometrique_base
   Declare_instanciable(Raffiner_Simplexes) ;
 
 public :
-  virtual Entree& interpreter_(Entree& is);
+  Entree& interpreter_(Entree& is) override;
 
 public :
   static void refine_domain(const Domaine& src,

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,10 +33,10 @@ class Partitionneur_Partition : public Partitionneur_base
   Declare_instanciable(Partitionneur_Partition);
 public:
 
-  void set_param(Param& param);
-  void associer_domaine(const Domaine& domaine);
+  void set_param(Param& param) override;
+  void associer_domaine(const Domaine& domaine) override;
   void initialiser();
-  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const;
+  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
 
 private:
   // Parametres du partitionneur

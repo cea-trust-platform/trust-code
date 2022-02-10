@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ class Op_Conv_VEF_base : public Operateur_Conv_base, public Op_VEF_Face
 
 public:
 
-  void associer_vitesse(const Champ_base& );
+  void associer_vitesse(const Champ_base& ) override;
   inline const Champ_Inc_base& vitesse() const
   {
     return vitesse_.valeur();
@@ -74,17 +74,17 @@ public:
   {
     return vitesse_.valeur();
   };
-  virtual void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  virtual void abortTimeStep();
-  double calculer_dt_stab() const ;
-  void calculer_dt_local(DoubleTab&) const ; //Local time step calculation
-  void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;
-  virtual Motcle get_localisation_pour_post(const Nom& option) const;
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  void abortTimeStep() override;
+  double calculer_dt_stab() const override ;
+  void calculer_dt_local(DoubleTab&) const override ; //Local time step calculation
+  void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
+  Motcle get_localisation_pour_post(const Nom& option) const override;
 
   virtual void remplir_fluent(DoubleVect& ) const;
-  virtual int impr(Sortie& os) const;
-  void associer_zone_cl_dis(const Zone_Cl_dis_base&);
+  int impr(Sortie& os) const override;
+  void associer_zone_cl_dis(const Zone_Cl_dis_base&) override;
   int  phi_u_transportant(const Equation_base& eq) const;
 
 protected:

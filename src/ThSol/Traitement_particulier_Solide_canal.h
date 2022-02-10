@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,10 +41,10 @@ class Traitement_particulier_Solide_canal : public Traitement_particulier_Solide
 
 public :
 
-  void preparer_calcul_particulier(void) ;
-  virtual void post_traitement_particulier(void) =0 ;
-  Entree& lire(Entree& );
-  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) ;
+  void preparer_calcul_particulier(void) override ;
+  void post_traitement_particulier(void) override =0 ;
+  Entree& lire(Entree& ) override;
+  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
   inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const  ;
   inline int comprend_champ(const Motcle& mot) const  ;
 

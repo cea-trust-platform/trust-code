@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,8 +57,8 @@ public :
   inline void fixer_nb_valeurs_nodales(int ) ;
   inline int nb_valeurs_nodales() const ;
   using Champ_Proto::valeurs;
-  inline DoubleTab& valeurs() ;
-  inline const DoubleTab& valeurs() const ;
+  inline DoubleTab& valeurs() override ;
+  inline const DoubleTab& valeurs() const override ;
   inline operator DoubleTab& () ;
   inline operator const DoubleTab& () const ;
   inline double temps() const ;
@@ -67,8 +67,8 @@ public :
   inline int initialiser(const double& un_temps);
   inline void associer_zone_dis_base(const Zone_dis_base&) ;
   inline const Zone_dis_base& zone_dis_base() const ;
-  inline int reprendre(Entree& ) ;
-  inline int sauvegarder(Sortie& ) const;
+  inline int reprendre(Entree& ) override ;
+  inline int sauvegarder(Sortie& ) const override;
   inline DoubleVect& valeur_a_elem(const DoubleVect& position,
                                    DoubleVect& les_valeurs,
                                    int le_poly) const ;
@@ -80,7 +80,7 @@ public :
   inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
   inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
                                               DoubleVect&, int) const;
-  inline void nommer(const Nom& nom)
+  inline void nommer(const Nom& nom) override
   {
     valeur().nommer(nom);
   };

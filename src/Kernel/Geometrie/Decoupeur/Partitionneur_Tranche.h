@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,10 +33,10 @@ class Partitionneur_Tranche : public Partitionneur_base
 {
   Declare_instanciable(Partitionneur_Tranche);
 public:
-  void set_param(Param& param);
-  void associer_domaine(const Domaine& domaine);
+  void set_param(Param& param) override;
+  void associer_domaine(const Domaine& domaine) override;
   void initialiser(const ArrOfInt& nb_tranches);
-  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const;
+  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
   static void chercher_direction_perio(const Zone& zone,
                                        const Noms& liste_bords_perio,
                                        ArrOfInt& directions_perio);

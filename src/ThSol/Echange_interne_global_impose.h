@@ -44,9 +44,9 @@ class Echange_interne_global_impose  : public Echange_global_impose
   Declare_instanciable(Echange_interne_global_impose);
 
 public:
-  virtual void completer();
+  void completer() override;
   virtual void init();   // != initialiser()
-  virtual void verifie_ch_init_nb_comp();
+  void verifie_ch_init_nb_comp() override;
 
 
   const DoubleVect surface_gap() const

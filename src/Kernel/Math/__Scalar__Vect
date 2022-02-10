@@ -23,18 +23,18 @@ public:
   __Scalar__Vect(const __Scalar__Vect&);
   // Pas de constructeur par copie de ArrOf__Scalar__, voir __Scalar__Vect(const __Scalar__Vect&)
   ~__Scalar__Vect() {};
-  virtual void reset();
+  void reset() override;
   virtual void detach_vect();
 
   __Scalar__Vect& operator=(const __Scalar__Vect&);
   __Scalar__Vect& operator=(__scalar__);
 
   virtual void ref(const __Scalar__Vect &);
-  virtual void ref_data(__scalar__* ptr, int new_size); 
-  virtual void ref_array(ArrOf__Scalar__ &, int start = 0, int sz = -1);
+  void ref_data(__scalar__* ptr, int new_size) override;
+  void ref_array(ArrOf__Scalar__ &, int start = 0, int sz = -1) override;
 
   inline void resize(int, Array_base::Resize_Options opt = COPY_INIT);
-  virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
+  void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT) override;
   void copy(const ArrOf__Scalar__ &, Array_base::Resize_Options opt = COPY_INIT);
   void copy(const __Scalar__Vect &, Array_base::Resize_Options opt = COPY_INIT);
 

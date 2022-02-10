@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,25 +48,25 @@ class Loi_Etat_GR_base : public Loi_Etat_base
 
 public :
   Loi_Etat_GR_base();
-  void initialiser_inco_ch();
-  void calculer_lambda();
-  void initialiser();
-  void remplir_T();
-  void calculer_Cp();
-  const Nom type_fluide() const;
-  double De_DP(double,double) const;
-  double De_DT(double,double) const;
+  void initialiser_inco_ch() override;
+  void calculer_lambda() override;
+  void initialiser() override;
+  void remplir_T() override;
+  void calculer_Cp() override;
+  const Nom type_fluide() const override;
+  double De_DP(double,double) const override;
+  double De_DT(double,double) const override;
   double Cp_calc(double,double) const;
-  double inverser_Pth(double,double);
-  virtual void calculer_masse_volumique();
+  double inverser_Pth(double,double) override;
+  void calculer_masse_volumique() override;
 
   // Methodes virtuelles pures
   virtual double calculer_temperature(double,double) = 0;
-  virtual double calculer_H(double,double) const = 0;
-  virtual double Drho_DP(double,double) const = 0;
-  virtual double Drho_DT(double,double) const = 0;
+  double calculer_H(double,double) const override = 0;
+  double Drho_DP(double,double) const override = 0;
+  double Drho_DT(double,double) const override = 0;
   virtual double DT_DH(double,double) const = 0;
-  virtual double calculer_masse_volumique(double,double) const = 0;
+  double calculer_masse_volumique(double,double) const override = 0;
 
   // Methodes inlines
   inline double masse_molaire() const { return MMole_; }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ class Terme_Boussinesq_base : public Source_base
 
 public :
 
-  void associer_pb(const Probleme_base& pb) ;
+  void associer_pb(const Probleme_base& pb) override ;
   inline const Champ_Don_base& gravite() const
   {
     return la_gravite_.valeur();
@@ -84,12 +84,12 @@ public :
   {
     return equation_scalaire_.valeur();
   };
-  DoubleTab& calculer(DoubleTab& resu) const
+  DoubleTab& calculer(DoubleTab& resu) const override
   {
     resu=0;
     return ajouter(resu);
   };
-  void mettre_a_jour(double temps)
+  void mettre_a_jour(double temps) override
   {
     for (int i=0; i<Scalaire0_.size_array(); i++)
       {

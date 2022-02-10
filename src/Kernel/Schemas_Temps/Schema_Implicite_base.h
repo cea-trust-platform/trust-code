@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ public:
 
   inline Solveur_Implicite& solveur();
   inline const  Solveur_Implicite& solveur() const;
-  virtual void set_param(Param& param);
+  void set_param(Param& param) override;
 
 protected:
   Solveur_Implicite le_solveur;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,13 +40,13 @@ class Terme_Boussinesq_VDF_Face : public Terme_Boussinesq_base
 
 public:
 
-  virtual DoubleTab& ajouter(DoubleTab& ) const ;
+  DoubleTab& ajouter(DoubleTab& ) const override ;
 
 protected:
 
   REF(Zone_VDF) la_zone_VDF;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,11 +43,11 @@ class Schema_Adams_Bashforth_order_2: public Schema_Adams_Bashforth_base
 
 public :
 
-  int nb_pas_dt_seuil() const ;
-  int nb_valeurs_passees() const ;
-  int nb_valeurs_temporelles() const ;
+  int nb_pas_dt_seuil() const override ;
+  int nb_valeurs_passees() const override ;
+  int nb_valeurs_temporelles() const override ;
 
-  void   compute_adams_bashforth_coefficients(double time_step, const DoubleTab& times)     ;
+  void   compute_adams_bashforth_coefficients(double time_step, const DoubleTab& times) override     ;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,22 +52,20 @@ class Champ_Fonc_base : public Champ_Don_base
 
 public :
 
-  virtual void mettre_a_jour(double temps) =0;
-  virtual void associer_zone_dis_base(const Zone_dis_base&) =0;
-  virtual const Zone_dis_base& zone_dis_base() const =0;
-  virtual int fixer_nb_valeurs_nodales(int nb_noeuds);
-  virtual int reprendre(Entree& ) ;
-  virtual int sauvegarder(Sortie& ) const;
+  void mettre_a_jour(double temps) override;
+  int fixer_nb_valeurs_nodales(int nb_noeuds) override;
+  int reprendre(Entree& ) override;
+  int sauvegarder(Sortie& ) const override;
 
-  virtual Champ_base& affecter_(const Champ_base& ) ;
-  virtual Champ_base& affecter_compo(const Champ_base& , int compo) ;
+  Champ_base& affecter_(const Champ_base& ) override;
+  Champ_base& affecter_compo(const Champ_base& , int compo) override;
   virtual int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
   virtual int remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, int) const;
   virtual DoubleTab& remplir_coord_noeuds(DoubleTab& ) const;
   virtual DoubleTab& remplir_coord_noeuds_compo(DoubleTab&, int ) const;
-  virtual DoubleTab& valeur_aux(const DoubleTab& , DoubleTab& ) const ;
+  DoubleTab& valeur_aux(const DoubleTab& , DoubleTab& ) const override;
   const Domaine& domaine() const;
-  virtual int a_une_zone_dis_base() const
+  int a_une_zone_dis_base() const override
   {
     return 1;
   };

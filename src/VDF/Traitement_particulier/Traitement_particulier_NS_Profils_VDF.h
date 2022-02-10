@@ -47,12 +47,12 @@ class Traitement_particulier_NS_Profils_VDF : public Traitement_particulier_NS_P
 
 public :
 
-  void post_traitement_particulier(void) ;
-  Entree& lire(const Motcle& , Entree& );
-  Entree& lire(Entree& );
+  void post_traitement_particulier(void) override ;
+  Entree& lire(const Motcle& , Entree& ) override;
+  Entree& lire(Entree& ) override;
 
 protected :
-  void init_calcul_moyenne(void);
+  void init_calcul_moyenne(void) override;
   void calculer_moyenne_spatiale_vitesse(DoubleTab& , DoubleTab& ,DoubleTab& , DoubleTab& , const IntTab& , const IntTab& , const IntVect& , const int& , const DoubleTab& );
   void calculer_moyenne_spatiale_uv(DoubleTab& , const IntTab& , const IntTab& , const IntVect& , const DoubleTab& );
   void ecriture_fichiers_moy_spat(const DoubleTab& ,const DoubleTab& , const DoubleTab& , const DoubleTab& ,const DoubleTab& ,const DoubleTab& , const DoubleTab& , const DoubleTab& , const DoubleVect& , const DoubleVect& , const IntVect& , const DoubleTab& , const int& );

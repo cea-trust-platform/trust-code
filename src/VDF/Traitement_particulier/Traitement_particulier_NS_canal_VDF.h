@@ -46,15 +46,15 @@ class Traitement_particulier_NS_canal_VDF : public Traitement_particulier_NS_can
 public :
 
   Entree& lire(const Motcle& , Entree& );
-  Entree& lire(Entree& );
+  Entree& lire(Entree& ) override;
 
 protected :
 
-  void remplir_Y(DoubleVect&, DoubleVect&, int& ) const;
-  void remplir_Tab_recap(IntTab&) const;
-  void calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab&) const;
-  void calculer_moyenne_spatiale_nut(DoubleTab&) const;
-  void calculer_moyenne_spatiale_Temp(DoubleTab&) const;
+  void remplir_Y(DoubleVect&, DoubleVect&, int& ) const override;
+  void remplir_Tab_recap(IntTab&) const override;
+  void calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab&) const override;
+  void calculer_moyenne_spatiale_nut(DoubleTab&) const override;
+  void calculer_moyenne_spatiale_Temp(DoubleTab&) const override;
 
 };
 #endif

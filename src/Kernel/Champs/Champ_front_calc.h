@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,13 +51,13 @@ class Champ_front_calc : public Ch_front_var_instationnaire_dep
 
 public:
   Champ_front_calc();
-  virtual void completer();
-  int initialiser(double, const Champ_Inc_base&);
+  void completer() override;
+  int initialiser(double, const Champ_Inc_base&) override;
   void associer_ch_inc_base(const Champ_Inc_base&);
-  Champ_front_base& affecter_(const Champ_front_base& ch);
-  virtual void mettre_a_jour(double temps);
+  Champ_front_base& affecter_(const Champ_front_base& ch) override;
+  void mettre_a_jour(double temps) override;
   void creer(const Nom&, const Nom&, const Motcle&);
-  void verifier(const Cond_lim_base& la_cl) const;
+  void verifier(const Cond_lim_base& la_cl) const override;
 
   // Methodes pour acceder aux objets opposes:
   const Champ_Inc_base& inconnue() const;

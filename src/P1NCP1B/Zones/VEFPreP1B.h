@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,18 +40,18 @@ public :
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, int nb_pas_dt, double temps,
-                         Champ_Inc& champ, const Nom& sous_type = nom_vide) const;
+                         Champ_Inc& champ, const Nom& sous_type = nom_vide) const override;
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, double temps,
-                         Champ_Fonc& champ) const;
+                         Champ_Fonc& champ) const override;
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, double temps,
-                         Champ_Don& champ) const;
-  void zone_Cl_dis(Zone_dis& z,Zone_Cl_dis& zcl) const;
+                         Champ_Don& champ) const override;
+  void zone_Cl_dis(Zone_dis& z,Zone_Cl_dis& zcl) const override;
 
   int get_P1Bulle() const
   {
@@ -85,7 +85,7 @@ private:
     const Noms& nom, const Noms& unite,
     int nb_comp, double temps,
     Objet_U& champ) const;
-  void discretiser(Domaine_dis&) const;
+  void discretiser(Domaine_dis&) const override;
 private :
   int P1Bulle_;
   int alphaE_;

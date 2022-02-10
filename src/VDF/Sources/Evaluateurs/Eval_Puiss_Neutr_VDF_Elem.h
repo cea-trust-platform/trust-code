@@ -35,8 +35,8 @@ public:
   Eval_Puiss_Neutr_VDF_Elem() : puissance(-123.) { }
   void associer_champs(const Champ_Don& );
   void associer_repartition(const Nom& fxyz, const Nom& nom_ssz);
-  void mettre_a_jour();
-  void completer();
+  void mettre_a_jour() override;
+  void completer() override;
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
 
 protected:

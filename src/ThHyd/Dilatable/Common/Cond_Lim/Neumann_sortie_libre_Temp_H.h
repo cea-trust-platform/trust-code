@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,10 +41,10 @@ class Neumann_sortie_libre_Temp_H : public Neumann_sortie_libre
   Declare_instanciable(Neumann_sortie_libre_Temp_H);
 
 public:
-  void completer();
-  int compatible_avec_eqn(const Equation_base&) const;
-  double val_ext(int i) const;
-  double val_ext(int i,int j) const;
+  void completer() override;
+  int compatible_avec_eqn(const Equation_base&) const override;
+  double val_ext(int i) const override;
+  double val_ext(int i,int j) const override;
 
 protected :
   REF(Fluide_Dilatable_base) le_fluide;

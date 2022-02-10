@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,13 +44,13 @@ class Champ_front_uniforme : public Champ_front_base
 
 public:
 
-  virtual DoubleTab& valeurs_au_temps(double temps);
-  virtual const DoubleTab& valeurs_au_temps(double temps) const;
-  virtual int avancer(double temps);
-  virtual int reculer(double temps);
-  Champ_front_base& affecter_(const Champ_front_base& ch);
-  void valeurs_face(int,DoubleVect&) const;
-  virtual void changer_temps_futur(double temps,int i);
+  DoubleTab& valeurs_au_temps(double temps) override;
+  const DoubleTab& valeurs_au_temps(double temps) const override;
+  int avancer(double temps) override;
+  int reculer(double temps) override;
+  Champ_front_base& affecter_(const Champ_front_base& ch) override;
+  void valeurs_face(int,DoubleVect&) const override;
+  void changer_temps_futur(double temps,int i) override;
 };
 
 #endif

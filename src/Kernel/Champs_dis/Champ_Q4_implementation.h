@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,22 +34,22 @@ public:
 
   DoubleVect& valeur_a_elem(const DoubleVect& position,
                             DoubleVect& val,
-                            int le_poly) const;
+                            int le_poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly, int ncomp) const;
+                             int le_poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions,
                               const IntVect& les_polys,
-                              DoubleTab& valeurs) const;
+                              DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
                                      const IntVect& les_polys,
                                      DoubleVect& valeurs,
-                                     int ncomp) const ;
-  DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
+                                     int ncomp) const override ;
+  DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
   DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                       DoubleVect&, int) const;
-  DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const;
+                                       DoubleVect&, int) const override;
+  DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
   int remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                    IntVect& polys) const;
+                                    IntVect& polys) const override;
   int imprime_Q4(Sortie& , int ) const;
 };
 

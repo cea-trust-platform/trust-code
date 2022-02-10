@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,9 +35,9 @@ class Champ_P1_EF : public Champ_Inc_P1_base
 public :
 
   const Zone_EF&        zone_EF() const;
-  void                         associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  int                       imprime(Sortie& , int ) const;
+  void                         associer_zone_dis_base(const Zone_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override;
+  int                       imprime(Sortie& , int ) const override;
 
 protected :
 

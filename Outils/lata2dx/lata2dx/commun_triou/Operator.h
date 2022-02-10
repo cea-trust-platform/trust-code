@@ -50,9 +50,9 @@ public:
 class OperatorClipbox : public Operator
 {
 public:
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest);
+  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
   void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest);
+                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
   // Renumerotation des sommets, elements et faces par rapport aux donnees brutes lues
   // renum_truc_[new_index] = index in lata file;
   // La renumerotation vient de clip_box et de regularize
@@ -65,10 +65,10 @@ class OperatorBoundary : public Operator
 {
 public:
   OperatorBoundary() { geom_init_ = 0; }
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest);
+  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
   void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest);
-  BigEntier compute_memory_size() const {
+                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
+  BigEntier compute_memory_size() const override {
     return
       memory_size(src_nodes_)
       + memory_size(src_element_)
@@ -89,11 +89,11 @@ public:
   OperatorRegularize() { tolerance_ = -1.; geom_init_ = 0; extend_layer_ = 0; }
   void set_tolerance(double epsilon) { tolerance_ = epsilon; }
   void set_extend_layer(entier n) { if (n >= 0) extend_layer_ = n; else extend_layer_ = 0; }
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest);
+  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
   void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest);
+                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
   
-  BigEntier compute_memory_size() const {
+  BigEntier compute_memory_size() const override {
     return
       memory_size(renum_nodes_)
       + memory_size(renum_elements_)
@@ -118,27 +118,27 @@ public:
 class OperatorDualMesh : public Operator
 {
 public:
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest);
+  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
   void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest);
-  BigEntier compute_memory_size() const { return 0; }
+                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
+  BigEntier compute_memory_size() const override { return 0; }
 };
 class OperatorFacesMesh : public Operator
 {
 public:
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest);
+  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
   void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest);
-  BigEntier compute_memory_size() const { return 0; }
+                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
+  BigEntier compute_memory_size() const override { return 0; }
 };
 
 class OperatorNCMesh : public Operator
 {
 public:
-  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest);
+  void build_geometry(const Domain & src_domain, LataDeriv<Domain> & dest) override;
   void build_field(const Domain & src_domain, const LataField_base & src_field, 
-                   const Domain & dest_domain, LataDeriv<LataField_base> & dest);  
-  BigEntier compute_memory_size() const { return 0; }
+                   const Domain & dest_domain, LataDeriv<LataField_base> & dest) override;
+  BigEntier compute_memory_size() const override { return 0; }
 };
 
 // These generic methods just say that the particular function does not exist:

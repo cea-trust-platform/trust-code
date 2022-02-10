@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,14 +48,14 @@ class Terme_Source_Canal_perio_VEF_P1NC : public Terme_Source_Canal_perio
   Declare_instanciable(Terme_Source_Canal_perio_VEF_P1NC);
 
 public :
-  virtual DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter(DoubleTab& ) const override;
 
 protected :
 
   REF(Zone_VEF) la_zone_VEF;
   REF(Zone_Cl_VEF) la_zone_Cl_VEF;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
-  virtual void calculer_debit(double&) const;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void calculer_debit(double&) const override;
   // les attributs ont ete mis dans la classe mere
 
 };

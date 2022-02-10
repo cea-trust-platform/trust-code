@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,10 +43,10 @@ class Pb_Hydraulique_Melange_Binaire_WC : public Pb_WC_base, public Pb_Dilatable
 {
   Declare_instanciable(Pb_Hydraulique_Melange_Binaire_WC);
 public:
-  int verifier();
-  int nombre_d_equations() const;
-  const Equation_base& equation(int) const ;
-  Equation_base& equation(int);
+  int verifier() override;
+  int nombre_d_equations() const override;
+  const Equation_base& equation(int) const override ;
+  Equation_base& equation(int) override;
 
 protected:
   Navier_Stokes_WC eq_hydraulique;

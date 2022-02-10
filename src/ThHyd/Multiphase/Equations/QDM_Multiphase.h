@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,37 +53,37 @@ class QDM_Multiphase : public Navier_Stokes_std
 
 public :
 
-  void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
-  void completer();
-  void discretiser_vitesse();
-  void mettre_a_jour(double temps);
-  int impr(Sortie& os) const
+  void set_param(Param& param) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  void completer() override;
+  void discretiser_vitesse() override;
+  void mettre_a_jour(double temps) override;
+  int impr(Sortie& os) const override
   {
     return Equation_base::impr(os); //idem
   }
-  bool initTimeStep(double dt);
-  void abortTimeStep();
+  bool initTimeStep(double dt) override;
+  void abortTimeStep() override;
 
-  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice);
+  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice) override;
 
   /*
     interface {dimensionner,assembler}_blocs
     specificites : prend en compte l'evanescence (en dernier)
   */
-  virtual  int has_interface_blocs() const;
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  virtual void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  int has_interface_blocs() const override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
-  const Champ_Don& diffusivite_pour_transport();
-  const Champ_base& diffusivite_pour_pas_de_temps();
-  const Champ_base& vitesse_pour_transport();
+  const Champ_Don& diffusivite_pour_transport() override;
+  const Champ_base& diffusivite_pour_pas_de_temps() override;
+  const Champ_base& vitesse_pour_transport() override;
 
-  void creer_champ(const Motcle& motlu);
+  void creer_champ(const Motcle& motlu) override;
 
 protected:
-  Entree& lire_cond_init(Entree&); //pour lire la pression
-  virtual int preparer_calcul(); //appelle la methode de Equation_base
+  Entree& lire_cond_init(Entree&) override; //pour lire la pression
+  int preparer_calcul() override; //appelle la methode de Equation_base
 
   std::vector<Champ_Inc> vit_phases_; //vitesses de chaque phase
   Motcles noms_vit_phases_; //leurs noms

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,16 +41,16 @@ class Masse_PolyMAC_Face : public Solveur_Masse_base
 
 public:
 
-  void associer_zone_dis_base(const Zone_dis_base& );
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& );
+  void associer_zone_dis_base(const Zone_dis_base& ) override;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
 
-  virtual void dimensionner(Matrice_Morse& matrix) const;
-  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const;
-  virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const;
+  void dimensionner(Matrice_Morse& matrix) const override;
+  DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const override;
+  Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const override;
 
-  DoubleTab& appliquer_impl(DoubleTab& ) const;
+  DoubleTab& appliquer_impl(DoubleTab& ) const override;
   void appliquer_coef(DoubleVect& ) const;
-  void completer();
+  void completer() override;
 
 private:
 

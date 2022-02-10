@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,10 +60,10 @@ public :
   //                            //
   ////////////////////////////////
 
-  virtual int nb_valeurs_temporelles() const;
-  virtual int nb_valeurs_futures() const;
-  virtual double temps_futur(int i) const;
-  virtual double temps_defaut() const;
+  int nb_valeurs_temporelles() const override;
+  int nb_valeurs_futures() const override;
+  double temps_futur(int i) const override;
+  double temps_defaut() const override;
 
   /////////////////////////////////////////
   //                                     //
@@ -71,8 +71,8 @@ public :
   //                                     //
   /////////////////////////////////////////
 
-  virtual int faire_un_pas_de_temps_eqn_base(Equation_base&);
-  inline void completer();
+  int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
+  inline void completer() override;
   //  virtual int faire_un_pas_de_temps_pb_couple(Probleme_Couple&);
 
 

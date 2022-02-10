@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,15 +42,15 @@ class Op_Correlation : public Operateur_Statistique_tps_base
   Declare_instanciable(Op_Correlation);
 
 public:
-  inline const Nom& le_nom() const
+  inline const Nom& le_nom() const override
   {
     return integrale_tps_ab_.le_nom();
   };
-  inline double temps() const
+  inline double temps() const override
   {
     return integrale_tps_ab_.temps();
   };
-  inline const Integrale_tps_produit_champs& integrale() const
+  inline const Integrale_tps_produit_champs& integrale() const override
   {
     return integrale_tps_ab_;
   };
@@ -86,19 +86,19 @@ public:
   {
     return integrale_tps_ab_.dt_integration();
   };
-  inline void mettre_a_jour(double tps);
-  inline void initialiser(double val);
+  inline void mettre_a_jour(double tps) override;
+  inline void initialiser(double val) override;
   inline void associer(const Zone_dis_base& , const Champ_base& , double t1, double t2 );
-  inline void associer(const Zone_dis_base& , const Champ_Generique_base& , double t1, double t2 );
+  inline void associer(const Zone_dis_base& , const Champ_Generique_base& , double t1, double t2 ) override;
   inline void associer(const Zone_dis_base& ,const Champ_Generique_base& ,const Champ_Generique_base& , double t1, double t2 );
-  inline void fixer_tstat_deb(double, double );
-  inline void fixer_tstat_fin(double );
-  int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format);
-  inline int sauvegarder(Sortie& os) const;
-  inline int reprendre(Entree& is);
-  inline void associer_op_stat(const Operateur_Statistique_tps_base&);
-  void completer(const Probleme_base& );
-  DoubleTab calculer_valeurs() const;
+  inline void fixer_tstat_deb(double, double ) override;
+  inline void fixer_tstat_fin(double ) override;
+  int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format) override;
+  inline int sauvegarder(Sortie& os) const override;
+  inline int reprendre(Entree& is) override;
+  inline void associer_op_stat(const Operateur_Statistique_tps_base&) override;
+  void completer(const Probleme_base& ) override;
+  DoubleTab calculer_valeurs() const override;
 
 protected:
   REF(Op_Moyenne) la_moyenne_a_;

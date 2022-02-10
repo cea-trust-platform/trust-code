@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,8 +52,8 @@ public:
   inline int reprise(Entree& );
 
   inline void discretiser();
-  inline int sauvegarder(Sortie& ) const;
-  inline int reprendre(Entree& );
+  inline int sauvegarder(Sortie& ) const override;
+  inline int reprendre(Entree& ) override;
   inline void imprimer(Sortie& os) const;
 
 };

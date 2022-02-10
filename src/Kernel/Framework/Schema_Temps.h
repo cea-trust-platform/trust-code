@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,8 +46,8 @@ class Schema_Temps : public DERIV(Schema_Temps_base)
   Declare_instanciable(Schema_Temps);
   //
 public :
-  inline int sauvegarder(Sortie& ) const;
-  inline int reprendre(Entree& );
+  inline int sauvegarder(Sortie& ) const override;
+  inline int reprendre(Entree& ) override;
   inline int faire_un_pas_de_temps_eqn_base(Equation_base& );
   inline bool iterateTimeStep(bool& converged);
   inline int mettre_a_jour();

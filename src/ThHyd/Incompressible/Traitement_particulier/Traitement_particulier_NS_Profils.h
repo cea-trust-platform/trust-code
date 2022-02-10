@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,15 +45,15 @@ class Traitement_particulier_NS_Profils : public Traitement_particulier_NS_base
   Declare_base(Traitement_particulier_NS_Profils);
 
 public :
-  Entree& lire(Entree& );
-  void preparer_calcul_particulier(void) ;
+  Entree& lire(Entree& ) override;
+  void preparer_calcul_particulier(void) override ;
 
   virtual Entree& lire(const Motcle& , Entree& ) =0;
-  virtual void post_traitement_particulier(void) =0 ;
-  virtual void reprendre_stat();
-  virtual void sauver_stat() const;
+  void post_traitement_particulier(void) override =0 ;
+  void reprendre_stat() override;
+  void sauver_stat() const override;
 
-  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) ;
+  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
 
 protected :
   void init_calcul_stats(void);

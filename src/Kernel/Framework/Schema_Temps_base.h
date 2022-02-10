@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -105,13 +105,13 @@ public :
   /////////////////////////////////////////
 
   Schema_Temps_base();
-  inline void nommer(const Nom&);
-  inline const Nom& le_nom() const;
+  inline void nommer(const Nom&) override;
+  inline const Nom& le_nom() const override;
   virtual int faire_un_pas_de_temps_eqn_base(Equation_base&) =0;
 
   virtual void set_param(Param& titi);
-  virtual int sauvegarder(Sortie& ) const;
-  virtual int reprendre(Entree& ) ;
+  int sauvegarder(Sortie& ) const override;
+  int reprendre(Entree& ) override ;
   virtual int mettre_a_jour();
   // pour empecher ancienne methode
   virtual void mettre_a_jour_dt(double toto)
@@ -176,7 +176,7 @@ public :
   {
     return no_error_if_not_converged_diff_impl_;
   };
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual Entree& lire_nb_pas_dt_max(Entree&);
   virtual Entree& lire_periode_sauvegarde_securite_en_heures(Entree&);
   virtual Entree& lire_temps_cpu_max(Entree&);

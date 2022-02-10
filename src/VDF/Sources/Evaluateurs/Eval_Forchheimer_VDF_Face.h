@@ -34,7 +34,7 @@ public:
   Eval_Forchheimer_VDF_Face(const Eval_Forchheimer_VDF_Face& eval) : Evaluateur_Source_VDF_Face(eval), Cf(1.), porosite(1) { }
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
   template <typename Type_Double> void calculer_terme_source_bord(const int num_face, Type_Double& source) const { calculer_terme_source(num_face,source); }
-  inline void mettre_a_jour() { /* Do nothing */}
+  inline void mettre_a_jour() override { /* Do nothing */}
   inline void setCf(double c) { Cf = c; }
   inline void associer(const Champ_Inc& vit) { vitesse = vit;}
   inline void setPorosite(double p) { porosite = p; }

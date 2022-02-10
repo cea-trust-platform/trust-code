@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,9 +44,9 @@ class Postraiter_domaine : public Interprete_geometrique_base
 {
   Declare_instanciable(Postraiter_domaine);
 public :
-  Entree& interpreter_(Entree&);
+  Entree& interpreter_(Entree&) override;
   void ecrire(Nom&);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 protected:
   int nb_domaine_;
   Nom commande_,format_post_;

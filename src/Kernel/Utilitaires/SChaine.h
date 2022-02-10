@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,12 +36,12 @@ class SChaine :  public Sortie
 {
 public:
   SChaine();
-  ~SChaine();
+  ~SChaine() override;
   const char* get_str() const;
   unsigned get_size() const;
-  void setf(IOS_FORMAT code);
+  void setf(IOS_FORMAT code) override;
 //  void self_test();   // [ABN] to be put in unit tests ...
-  int set_bin(int bin);
+  int set_bin(int bin) override;
 
 protected:
   mutable std::string string_;

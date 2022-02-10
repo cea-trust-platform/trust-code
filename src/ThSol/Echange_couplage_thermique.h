@@ -41,22 +41,22 @@ class Echange_couplage_thermique : public Echange_global_impose
 
 public :
 
-  virtual int compatible_avec_eqn(const Equation_base&) const;
-  virtual int compatible_avec_discr(const Discretisation_base& discr) const;
+  int compatible_avec_eqn(const Equation_base&) const override;
+  int compatible_avec_discr(const Discretisation_base& discr) const override;
 
-  virtual void completer();
-  virtual void set_temps_defaut(double temps);
-  virtual void changer_temps_futur(double temps, int i);
-  virtual int avancer(double temps);
-  virtual int reculer(double temps);
-  virtual void mettre_a_jour(double temps);
-  virtual int initialiser(double temps);
+  void completer() override;
+  void set_temps_defaut(double temps) override;
+  void changer_temps_futur(double temps, int i) override;
+  int avancer(double temps) override;
+  int reculer(double temps) override;
+  void mettre_a_jour(double temps) override;
+  int initialiser(double temps) override;
 
-  double champ_exterieur(int i,int j, const Champ_front& champ_ext) const;
-  double champ_exterieur(int i, const Champ_front& champ_ext) const;
+  double champ_exterieur(int i,int j, const Champ_front& champ_ext) const override;
+  double champ_exterieur(int i, const Champ_front& champ_ext) const override;
 
-  double flux_exterieur_impose(int i) const;
-  double flux_exterieur_impose(int i,int j) const;
+  double flux_exterieur_impose(int i) const override;
+  double flux_exterieur_impose(int i,int j) const override;
 
   inline Champ_front& T_p();
   inline const Champ_front& T_p() const;

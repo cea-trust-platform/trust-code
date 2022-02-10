@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,9 +48,9 @@ class Champ_front_synt : public Ch_front_var_instationnaire_dep
 
 public:
 
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
-  Champ_front_base& affecter_(const Champ_front_base& ch);
-  virtual void mettre_a_jour(double temps);
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
+  Champ_front_base& affecter_(const Champ_front_base& ch) override;
+  void mettre_a_jour(double temps) override;
 
 protected :
   REF(Champ_Inc_base) ref_inco_;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,11 +42,11 @@ class Op_Dift_VEF_base : public Op_Diff_VEF_base, public Op_Diff_Turbulent_base
 
 public:
 
-  virtual void calculer_borne_locale(DoubleVect& ,double ,double ) const;
+  void calculer_borne_locale(DoubleVect& ,double ,double ) const override;
   void associer_modele_turbulence(const Mod_turb_hyd_base& );
-  void mettre_a_jour(double temps);
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
-  void completer();
+  void mettre_a_jour(double temps) override;
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  void completer() override;
 
 protected:
   REF(Mod_turb_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?

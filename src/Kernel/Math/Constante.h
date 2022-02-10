@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ public:
     value = 0.;
     nom_ = "neant";
   }
-  ~Constante()
+  ~Constante() override
   {
   }
   Constante(const Constante& v): Objet_U(v)
@@ -52,11 +52,11 @@ public:
     value =v.value;
     nom_ = v.nom_;
   }
-  inline void nommer(const Nom& name )
+  inline void nommer(const Nom& name ) override
   {
     nom_ = name ;
   }
-  const Nom& le_nom() const
+  const Nom& le_nom() const override
   {
     return nom_;
   }
@@ -72,7 +72,7 @@ public:
   {
     value = x;
   }
-  int reprendre(Entree&);
+  int reprendre(Entree&) override;
 
 private:
   Nom nom_;

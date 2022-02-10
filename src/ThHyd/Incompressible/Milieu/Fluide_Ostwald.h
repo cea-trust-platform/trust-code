@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,11 +50,11 @@ public :
   inline const Champ_Don& indice_struct() const;
   inline Champ_Don& indice_struct();
 
-  void set_param(Param& param);
-  void creer_champs_non_lus();
-  void mettre_a_jour(double);
-  int initialiser(const double& temps);
-  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
+  void set_param(Param& param) override;
+  void creer_champs_non_lus() override;
+  void mettre_a_jour(double) override;
+  int initialiser(const double& temps) override;
+  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
 
 protected :
 

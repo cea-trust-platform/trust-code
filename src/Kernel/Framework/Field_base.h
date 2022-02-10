@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,8 +52,8 @@ public:
   Field_base(const Field_base& other) =default;
 
   // Methods reimplemented from Objet_U
-  void            nommer(const Nom& );
-  const Nom&      le_nom() const;
+  void            nommer(const Nom& ) override;
+  const Nom&      le_nom() const override;
 
   // Synonyms management
   inline const Noms& get_synonyms() const;

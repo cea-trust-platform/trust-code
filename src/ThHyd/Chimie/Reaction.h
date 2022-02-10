@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ public:
   double calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDouble& C0,double deltat, double seuil, double& poroportion_directe ) const;
   void extract_coef(ArrOfDouble& coeff_recactifs,ArrOfDouble& coeff_produits,const Motcles& list_var,const ArrOfDouble& masse_molaire) const;
   double calculer_pas_de_temps() const;
-  int lire_motcle_non_standard(const Motcle& motlu, Entree& is);
+  int lire_motcle_non_standard(const Motcle& motlu, Entree& is) override;
   inline const Champ_base& get_omega() const
   {
     return omega_.valeur();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,12 +54,12 @@ class Champ_Generique_Reduction_0D : public Champ_Gen_de_Champs_Gen
 
 public:
 
-  void set_param(Param& param);
-  void completer(const Postraitement_base& post);
-  virtual const Noms get_property(const Motcle& query) const;
-  virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
-  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
-  void nommer_source();
+  void set_param(Param& param) override;
+  void completer(const Postraitement_base& post) override;
+  const Noms get_property(const Motcle& query) const override;
+  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
+  void nommer_source() override;
   void extraire(double& val_extraites, const DoubleVect& val_source, const int& composante_VDF=-1) const;
 
 protected:

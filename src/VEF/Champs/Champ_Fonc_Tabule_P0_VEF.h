@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,8 +40,8 @@ class Champ_Fonc_Tabule_P0_VEF : public Champ_Fonc_P0_VEF
 public:
 
   void associer_param(const VECT(REF(Champ_base))&, const Table& );
-  void mettre_a_jour(double );
-  int initialiser(const double& temps);
+  void mettre_a_jour(double ) override;
+  int initialiser(const double& temps) override;
 
 protected:
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,13 +60,13 @@ class Op_Conv_Centre_PolyMAC_Elem : public Op_Conv_PolyMAC_iterateur_base, publi
 public:
 
   Op_Conv_Centre_PolyMAC_Elem();
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
-  void associer_vitesse(const Champ_base& );
-  const Champ_base& vitesse() const;
-  Champ_base& vitesse();
-  inline void dimensionner(Matrice_Morse& ) const;
-  inline void dimensionner_bloc_vitesse(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  void associer_vitesse(const Champ_base& ) override;
+  const Champ_base& vitesse() const override;
+  Champ_base& vitesse() override;
+  inline void dimensionner(Matrice_Morse& ) const override;
+  inline void dimensionner_bloc_vitesse(Matrice_Morse& ) const override;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
 
 protected:
   inline Op_Conv_Centre_PolyMAC_Elem(const Iterateur_PolyMAC_base&);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,9 +39,9 @@ public:
   inline double& e() ;
   inline const int& est_initialise() const;
   inline const double& e() const;
-  virtual void trace_elem_distant(const DoubleTab&, DoubleTab&) const;
-  virtual void trace_face_distant(const DoubleTab&, DoubleTab&) const;
-  virtual void trace_face_distant(const DoubleVect&, DoubleVect&) const;
+  void trace_elem_distant(const DoubleTab&, DoubleTab&) const override;
+  void trace_face_distant(const DoubleTab&, DoubleTab&) const override;
+  void trace_face_distant(const DoubleVect&, DoubleVect&) const override;
   void completer();
   void initialise(const Frontiere&, const Zone_dis_base&, const Zone_dis_base&);
 private :

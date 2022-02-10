@@ -3,6 +3,9 @@
 # changes from turning a kit on or off.
 SET(CMAKE_SKIP_RULE_DEPENDENCY 0 )
 
+# Tell cmake to create compile_commands.json for clang-tidy
+SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
 #OPTION(kernelonly "kernel only" OFF)
 #OPTION(microkernel "micro kernel only" OFF)
 #OPTION(microAL "micro kernel + AL" OFF)

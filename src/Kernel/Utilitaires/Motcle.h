@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,9 +48,9 @@ public:
   Motcle& operator+=(const char * const);
   int selftest();
 
-  int debute_par(const char* const) const;
-  int finit_par(const char* const) const;
-  virtual int find(const char * n) const;
+  int debute_par(const char* const) const override;
+  int finit_par(const char* const) const override;
+  int find(const char * n) const override;
 
   friend int operator ==(const Motcle& , const Motcle& ) ;
   friend int operator !=(const Motcle& , const Motcle& ) ;

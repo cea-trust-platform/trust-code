@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,21 +42,21 @@ class Convection_Diffusion_Espece_Fluide_Dilatable_base : public Convection_Diff
   Declare_base(Convection_Diffusion_Espece_Fluide_Dilatable_base);
 
 public :
-  void discretiser();
-  void calculer_div_u_ou_div_rhou(DoubleTab& res) const;
-  virtual int sauvegarder(Sortie&) const;
-  virtual int reprendre(Entree&);
-  virtual int preparer_calcul();
-  virtual const Motcle& domaine_application() const;
+  void discretiser() override;
+  void calculer_div_u_ou_div_rhou(DoubleTab& res) const override;
+  int sauvegarder(Sortie&) const override;
+  int reprendre(Entree&) override;
+  int preparer_calcul() override;
+  const Motcle& domaine_application() const override;
 
   // Methodes virtuelles pure
-  virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) = 0;
-  virtual const Champ_base& diffusivite_pour_pas_de_temps() = 0;
-  virtual DoubleTab& derivee_en_temps_inco(DoubleTab& ) = 0;
+  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override = 0;
+  const Champ_base& diffusivite_pour_pas_de_temps() override = 0;
+  DoubleTab& derivee_en_temps_inco(DoubleTab& ) override = 0;
 
   // Methodes inlines
-  inline bool is_thermal() { return false; }
-  inline bool is_generic() { return true; }
+  inline bool is_thermal() override { return false; }
+  inline bool is_generic() override { return true; }
 };
 
 #endif /* Convection_Diffusion_Espece_Fluide_Dilatable_base_included */

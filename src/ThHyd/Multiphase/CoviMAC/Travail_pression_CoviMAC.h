@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,17 +39,17 @@ class Travail_pression_CoviMAC: public Source_base
 {
   Declare_instanciable(Travail_pression_CoviMAC);
 public :
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-  void check_multiphase_compatibility() const {}; //of course
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void check_multiphase_compatibility() const override {}; //of course
 
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) { };
-  void associer_pb(const Probleme_base& ) { };
-  void mettre_a_jour(double temps) { };
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
+  void associer_pb(const Probleme_base& ) override { };
+  void mettre_a_jour(double temps) override { };
 };
 
 #endif

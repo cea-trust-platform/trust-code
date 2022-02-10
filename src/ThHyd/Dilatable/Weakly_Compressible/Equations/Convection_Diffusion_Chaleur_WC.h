@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,23 +43,23 @@ class Convection_Diffusion_Chaleur_WC : public Convection_Diffusion_Chaleur_Flui
   Declare_instanciable(Convection_Diffusion_Chaleur_WC);
 
 public :
-  void set_param(Param& titi);
-  void completer();
-  const Champ_base& vitesse_pour_transport();
-  int lire_motcle_non_standard(const Motcle&, Entree&);
-  int preparer_calcul();
+  void set_param(Param& titi) override;
+  void completer() override;
+  const Champ_base& vitesse_pour_transport() override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  int preparer_calcul() override;
 
-  virtual int sauvegarder(Sortie&) const;
-  virtual int reprendre(Entree&);
+  int sauvegarder(Sortie&) const override;
+  int reprendre(Entree&) override;
 
   // l'equation Convection_Diffusion_Chaleur_WC a un terme source supplementaire
   //  d P_tot / d t = del P / del t + u.grad(P_tot)
   // Il faut donc un operateur grad
   inline const Operateur_Grad& operateur_gradient_WC() const { return Op_Grad_WC_;}
-  inline bool is_generic() { return true; }
+  inline bool is_generic() override { return true; }
 
 protected:
-  void calculer_div_u_ou_div_rhou(DoubleTab& res) const;
+  void calculer_div_u_ou_div_rhou(DoubleTab& res) const override;
   Operateur_Grad Op_Grad_WC_;
 };
 

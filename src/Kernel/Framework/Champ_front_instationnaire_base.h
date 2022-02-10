@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,16 +47,16 @@ class Champ_front_instationnaire_base : public Champ_front_base
   Declare_base(Champ_front_instationnaire_base);
 
 public :
-  virtual void fixer_nb_valeurs_temporelles(int nb_cases);
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
+  void fixer_nb_valeurs_temporelles(int nb_cases) override;
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
   inline DoubleTab& Gpoint();
   inline const DoubleTab& Gpoint() const;
   void Gpoint(double t1, double t2);
-  virtual DoubleTab& valeurs_au_temps(double temps);
-  virtual const DoubleTab& valeurs_au_temps(double temps) const;
-  virtual int avancer(double temps);
-  virtual int reculer(double temps);
-  virtual void valeurs_face(int,DoubleVect&) const;
+  DoubleTab& valeurs_au_temps(double temps) override;
+  const DoubleTab& valeurs_au_temps(double temps) const override;
+  int avancer(double temps) override;
+  int reculer(double temps) override;
+  void valeurs_face(int,DoubleVect&) const override;
 
 protected :
   DoubleTab Gpoint_; // Derivee en temps des valeurs conditons limites

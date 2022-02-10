@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,9 +45,9 @@ class Terme_Puissance_Thermique_PolyMAC_Elem : public Terme_Puissance_Thermique_
 public:
 
   inline Terme_Puissance_Thermique_PolyMAC_Elem();
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
-  void associer_pb(const Probleme_base& );
-  virtual void mettre_a_jour(double temps)
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_pb(const Probleme_base& ) override;
+  void mettre_a_jour(double temps) override
   {
     Terme_Puissance_Thermique::mettre_a_jour(temps);
   }

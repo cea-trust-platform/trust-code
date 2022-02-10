@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ public:
   FloatTab(int ni, int nj);
   FloatTab(const FloatTab& tab);
   const FloatTab& operator=(const FloatTab& tab);
-  ~FloatTab();
+  ~FloatTab() override;
 
   inline float   operator()(int i, int j) const;
   inline float& operator()(int i, int j);

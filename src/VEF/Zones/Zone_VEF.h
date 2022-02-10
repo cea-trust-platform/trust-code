@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,11 +73,11 @@ class Zone_VEF : public Zone_VF
 
 public :
 
-  void discretiser();
+  void discretiser() override;
   void swap(int, int, int);
-  virtual void reordonner(Faces&);
-  void modifier_pour_Cl(const Conds_lim& );
-  void typer_elem(Zone&);
+  void reordonner(Faces&) override;
+  void modifier_pour_Cl(const Conds_lim& ) override;
+  void typer_elem(Zone&) override;
 
   inline const Elem_VEF& type_elem() const;
   inline int nb_elem_Cl() const;
@@ -91,7 +91,7 @@ public :
   {
     return h_carre_(i);
   };
-  inline double face_normales(int ,int ) const;
+  inline double face_normales(int ,int ) const override;
   inline DoubleTab& face_normales()
   {
     return face_normales_;
@@ -125,7 +125,7 @@ private:
   // relatifs aux elements non standards
 
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
-  void remplir_elem_faces();
+  void remplir_elem_faces() override;
   Sortie& ecrit(Sortie& os) const;
   void creer_faces_virtuelles_non_std();
   IntVect orientation_;

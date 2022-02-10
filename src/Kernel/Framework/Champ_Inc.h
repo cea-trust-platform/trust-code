@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,10 +51,10 @@ public:
   // Methodes reimplementees (Champ_Proto)
   //
   using Champ_Proto::valeurs;
-  DoubleTab&       valeurs() ;
-  const DoubleTab& valeurs() const ;
-  int           reprendre(Entree& ) ;
-  int           sauvegarder(Sortie& ) const;
+  DoubleTab&       valeurs() override ;
+  const DoubleTab& valeurs() const override ;
+  int           reprendre(Entree& ) override ;
+  int           sauvegarder(Sortie& ) const override;
   //
   // Nouvelles methodes
   //
@@ -66,10 +66,10 @@ public:
   const Zone_dis_base& zone_dis_base() const;
   double           changer_temps(const double& );
   double           temps() const;
-  DoubleTab&       futur(int i=1) ;
-  const DoubleTab& futur(int i=1) const ;
-  DoubleTab&       passe(int i=1) ;
-  const DoubleTab& passe(int i=1) const ;
+  DoubleTab&       futur(int i=1) override ;
+  const DoubleTab& futur(int i=1) const override ;
+  DoubleTab&       passe(int i=1) override ;
+  const DoubleTab& passe(int i=1) const override ;
   Champ_Inc_base&  avancer(int i=1);
   Champ_Inc_base&  reculer(int i=1);
   int lire_donnees(Entree& ) ;

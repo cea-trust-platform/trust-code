@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,25 +40,25 @@ class Matrice_Diagonale : public Matrice_Base
   Declare_instanciable_sans_constructeur(Matrice_Diagonale);
 
 public :
-  virtual int ordre( void ) const;
-  virtual int nb_lignes( void ) const;
-  virtual int nb_colonnes( void ) const;
+  int ordre( void ) const override;
+  int nb_lignes( void ) const override;
+  int nb_colonnes( void ) const override;
 
-  virtual DoubleVect& ajouter_multvect_( const DoubleVect& x, DoubleVect& r ) const;
-  virtual DoubleVect& ajouter_multvectT_( const DoubleVect& x, DoubleVect& r ) const;
-  virtual DoubleTab& ajouter_multTab_( const DoubleTab& x, DoubleTab& r ) const;
+  DoubleVect& ajouter_multvect_( const DoubleVect& x, DoubleVect& r ) const override;
+  DoubleVect& ajouter_multvectT_( const DoubleVect& x, DoubleVect& r ) const override;
+  DoubleTab& ajouter_multTab_( const DoubleTab& x, DoubleTab& r ) const override;
 
-  virtual void scale( const double& x );
+  void scale( const double& x ) override;
 
-  virtual void get_stencil( IntTab& stencil ) const;
+  void get_stencil( IntTab& stencil ) const override;
 
-  virtual void get_symmetric_stencil( IntTab& stencil ) const;
+  void get_symmetric_stencil( IntTab& stencil ) const override;
 
-  virtual void get_stencil_and_coefficients( IntTab&      stencil,
-                                             ArrOfDouble& coefficients ) const;
+  void get_stencil_and_coefficients( IntTab&      stencil,
+                                     ArrOfDouble& coefficients ) const override;
 
-  virtual void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
-                                                       ArrOfDouble& coefficients ) const;
+  void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
+                                               ArrOfDouble& coefficients ) const override;
 public :
   Matrice_Diagonale( void );
   Matrice_Diagonale( int size );

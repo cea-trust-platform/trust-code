@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,8 +46,8 @@ class Echange_contact_VDF_Plaque_Flux_Cte  : public Echange_contact_Correlation_
 
 public :
 
-  virtual double calculer_coefficient_echange(int i) ;
-  virtual double volume(double s, double d);
+  double calculer_coefficient_echange(int i) override ;
+  double volume(double s, double d) override;
 
 };
 

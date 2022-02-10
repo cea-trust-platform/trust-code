@@ -32,11 +32,11 @@ class Op_Grad_VDF_Face_base : public Operateur_Grad_base
 {
   Declare_base(Op_Grad_VDF_Face_base);
 public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  virtual int impr(Sortie& os) const;
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  int impr(Sortie& os) const override;
 
-  virtual DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const = 0; // ET OUI ! ATTENTION !! VIRTUELLE PURE !!!
+  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override = 0; // ET OUI ! ATTENTION !! VIRTUELLE PURE !!!
 
   inline Zone_VDF& zone_VDF() { return la_zone_vdf.valeur(); }
   inline const Zone_VDF& zone_VDF() const { return la_zone_vdf.valeur(); }

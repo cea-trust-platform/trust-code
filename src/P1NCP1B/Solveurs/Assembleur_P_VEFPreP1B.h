@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,15 +35,15 @@ class Assembleur_P_VEFPreP1B : public Assembleur_P_VEF
 
 public :
   const Zone_VEF_PreP1b& zone_Vef() const;
-  int assembler(Matrice&);
-  int assembler_rho_variable(Matrice&, const Champ_Don_base&);
-  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u);
-  int modifier_secmem(DoubleTab&);
+  int assembler(Matrice&) override;
+  int assembler_rho_variable(Matrice&, const Champ_Don_base&) override;
+  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
+  int modifier_secmem(DoubleTab&) override;
   int preparer_solution(DoubleTab&);
-  int modifier_solution(DoubleTab&);
-  virtual int modifier_matrice(Matrice&);
+  int modifier_solution(DoubleTab&) override;
+  int modifier_matrice(Matrice&) override;
   void verifier_dirichlet();
-  virtual void completer(const Equation_base& );
+  void completer(const Equation_base& ) override;
   inline const Equation_base& equation() const
   {
     if (mon_equation.non_nul()==0)

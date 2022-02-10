@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,19 +50,19 @@ class Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC :  public Source_base
 
 public:
 
-  virtual DoubleTab& ajouter(DoubleTab& )  const ;
-  virtual DoubleTab& calculer(DoubleTab& ) const ;
-  void associer_pb(const Probleme_base& ) { };
-  void mettre_a_jour(double );
+  DoubleTab& ajouter(DoubleTab& )  const override ;
+  DoubleTab& calculer(DoubleTab& ) const override ;
+  void associer_pb(const Probleme_base& ) override { };
+  void mettre_a_jour(double ) override;
 
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
 
 protected:
 
   REF(Zone_PolyMAC) la_zone_PolyMAC;
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
   Champ_Don himp_,Text_;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
 
 };
 

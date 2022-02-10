@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,13 +39,13 @@ class Champ_som_lu : public Champ_Don_base
 public:
   Champ_base& affecter(const Champ_base& ch);
   DoubleVect& valeur_a(const DoubleVect& positions, DoubleTab& valeurs) const;
-  DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& valeurs) const;
+  DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& valeurs) const override;
   DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& valeurs, int ncomp) const ;
   DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& valeurs, int le_poly,int ncomp) const;
-  DoubleTab&   valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const;
-  DoubleTab&   valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const ;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;
+  DoubleTab&   valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
+  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override;
+  DoubleTab&   valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override ;
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
 protected:
   REF(Domaine) mon_domaine;
   double tolerance_;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ class Taux_cisaillement_P0_VEF : public Champ_Fonc_P0_VEF
 
 public:
 
-  void mettre_a_jour(double );
+  void mettre_a_jour(double ) override;
   void associer_champ(const Champ_P1NC&, const Zone_Cl_dis_base&);
 
 private:

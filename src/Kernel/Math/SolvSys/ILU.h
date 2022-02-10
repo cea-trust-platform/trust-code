@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,8 +36,8 @@ public:
   inline int a_un_interet();
   inline int type_precond();
 protected:
-  void   prepare_(const Matrice_Base&, const DoubleVect&);
-  int preconditionner_(const Matrice_Base&, const DoubleVect&, DoubleVect&);
+  void   prepare_(const Matrice_Base&, const DoubleVect&) override;
+  int preconditionner_(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
 
   int factorisation(const Matrice_Morse&,const DoubleVect& secmem);
   virtual int factoriser(const Matrice_Morse&, const DoubleVect&);

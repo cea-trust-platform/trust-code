@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Zone_EF_axi.h
-// Directory : $TRUST_FIXES     # NAME OF THE PROJECT    (REQUIRED)_ROOT/src
+// File:        Zone_EF_axi.h
+// Directory:   $TRUST_ROOT/src/EF/Zones
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Zone_EF_axi_included
 #define Zone_EF_axi_included
@@ -40,15 +41,15 @@ class Zone_EF_axi : public Zone_EF
 
 public :
 
-  void calculer_IPhi();
-  void calculer_Bij_gen(DoubleTab& bij_) ;
+  void calculer_IPhi() override;
+  void calculer_Bij_gen(DoubleTab& bij_) override ;
   void remplir_tableau_origine();
-  void discretiser();
+  void discretiser() override;
 
   const DomaineAxi1d& domaine_axi() const;
   DomaineAxi1d& domaine_axi();
 
-  void verifie_compatibilite_domaine();
+  void verifie_compatibilite_domaine() override;
 
 protected :
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,7 +73,7 @@ public:
   friend Entree& operator>>(Entree&, Objet_U&);
   friend class Sortie;
 
-  virtual       ~Objet_U();
+  ~Objet_U() override;
   int        numero() const;
   int        get_object_id() const;
   static int dimension;

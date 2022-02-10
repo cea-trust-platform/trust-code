@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,8 +50,8 @@ public:
   void discretiser(const Probleme_base&);
   virtual const Champ_base& get_champ(const Motcle& nom) const;
   virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
-  virtual int sauvegarder(Sortie& ) const;
-  virtual int reprendre(Entree& );
+  int sauvegarder(Sortie& ) const override;
+  int reprendre(Entree& ) override;
 
 protected:
   LIST(Reaction) reactions_;

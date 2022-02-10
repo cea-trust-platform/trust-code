@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,22 +41,22 @@ class Op_Diff_PolyMAC_Elem : public Op_Diff_PolyMAC_base
 
 public :
 
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   virtual void calculer_flux_bord(const DoubleTab& inco) const;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  void contribuer_au_second_membre(DoubleTab& ) const;
-  void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const;
-  void completer();
-  void mettre_a_jour(double t)
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  void contribuer_au_second_membre(DoubleTab& ) const override;
+  void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override;
+  void completer() override;
+  void mettre_a_jour(double t) override
   {
     Op_Diff_PolyMAC_base::mettre_a_jour(t);
     delta_int_a_jour_ = delta_a_jour_ = (stab_ ? 0 : 1);
   }
-  void dimensionner(Matrice_Morse& mat) const;
+  void dimensionner(Matrice_Morse& mat) const override;
 
-  void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const;
-  void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const;
-  void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const;
+  void dimensionner_termes_croises(Matrice_Morse&, const Probleme_base& autre_pb, int nl, int nc) const override;
+  void ajouter_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, DoubleTab& resu) const override;
+  void contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const override;
 
   /* correction non lineaire de Le Potier / Mahamane : facteurs delta_e aux elements, delta_f aux faces */
   int stab_;                                    //1 si elle est activee

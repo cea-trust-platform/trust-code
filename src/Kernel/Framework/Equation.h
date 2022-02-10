@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,8 +54,8 @@ public :
   inline Champ_Inc& inconnue();
   inline void discretiser();
   //
-  inline int sauvegarder(Sortie& ) const;
-  inline int reprendre(Entree& );
+  inline int sauvegarder(Sortie& ) const override;
+  inline int reprendre(Entree& ) override;
   //
   inline void associer_sch_tps_base(const Schema_Temps_base&);
   inline void associer_milieu_base(const Milieu_base&);

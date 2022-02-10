@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,18 +42,18 @@ class Source_QC_QDM_Gen :  public Source_base
 public :
 
   Entree& readOn_spec(Entree& , Nom&);
-  virtual void mettre_a_jour(double temps);
-  virtual void completer();
-  virtual void creer_champ(const Motcle& motlu);
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
-  virtual int impr(Sortie& os) const;
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual DoubleTab& ajouter(DoubleTab& ) const;
-  virtual DoubleTab& calculer(DoubleTab& ) const;
+  void mettre_a_jour(double temps) override;
+  void completer() override;
+  void creer_champ(const Motcle& motlu) override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
+  int impr(Sortie& os) const override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  DoubleTab& calculer(DoubleTab& ) const override;
 
 protected :
-  virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) ;
-  virtual void associer_pb(const Probleme_base&  ) ;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override ;
+  void associer_pb(const Probleme_base&  ) override ;
   Source source_incompressible;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,8 +54,8 @@ public:
   void faire_un_pas_de_temps_RK();
   void faire_un_pas_de_temps_EE();
   void aller_au_temps(double);
-  virtual void mettre_a_jour(double temps);
-  virtual void completer();
+  void mettre_a_jour(double temps) override;
+  void completer() override;
   virtual void imprimer(double ) const;
   virtual int limpr(double , double ) const;
   inline double puissance_neutro() const

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,28 +50,28 @@ class Champ_Generique_Moyenne : public Champ_Generique_Statistiques_base
 
 public:
 
-  void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
-  virtual const Noms get_property(const Motcle& query) const;
+  void set_param(Param& param) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  const Noms get_property(const Motcle& query) const override;
 
-  inline double temps() const
+  inline double temps() const override
   {
     return Op_Moyenne_.integrale().temps();
   };
-  inline const Integrale_tps_Champ& integrale() const
+  inline const Integrale_tps_Champ& integrale() const override
   {
     return Op_Moyenne_.integrale();
   };
 
-  inline const Operateur_Statistique_tps_base& Operateur_Statistique() const;
-  inline Operateur_Statistique_tps_base& Operateur_Statistique();
-  void completer(const Postraitement_base& post);
+  inline const Operateur_Statistique_tps_base& Operateur_Statistique() const override;
+  inline Operateur_Statistique_tps_base& Operateur_Statistique() override;
+  void completer(const Postraitement_base& post) override;
 
-  virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
-  void nommer_source();
+  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  void nommer_source() override;
 
-  const Champ_Generique_base& get_champ_post(const Motcle& nom) const;
-  int comprend_champ_post(const Motcle& identifiant) const;
+  const Champ_Generique_base& get_champ_post(const Motcle& nom) const override;
+  int comprend_champ_post(const Motcle& identifiant) const override;
 
 protected:
 

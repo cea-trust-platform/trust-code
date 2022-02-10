@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,58 +61,58 @@ public :
 
   // interface Problem
   ProblemTrio();
-  virtual void setDataFile(const std::string& datafile);
-  virtual void setMPIComm(void*);
+  void setDataFile(const std::string& datafile) override;
+  void setMPIComm(void*) override;
 
 
-  virtual ~ProblemTrio()  ;
-  virtual bool initialize();
+  ~ProblemTrio() override  ;
+  bool initialize() override;
 
-  virtual void terminate();
+  void terminate() override;
 
   // interface UnsteadyProblem
 
-  virtual double presentTime() const;
-  virtual double computeTimeStep(bool& stop) const;
-  virtual bool initTimeStep(double dt);
-  virtual bool solveTimeStep();
-  virtual void validateTimeStep();
-  virtual void setStationaryMode(bool stationary); // new in V2
-  virtual bool getStationaryMode() const; // new in V2
-  virtual bool isStationary() const;
-  virtual void abortTimeStep();
+  double presentTime() const override;
+  double computeTimeStep(bool& stop) const override;
+  bool initTimeStep(double dt) override;
+  bool solveTimeStep() override;
+  void validateTimeStep() override;
+  void setStationaryMode(bool stationary) override; // new in V2
+  bool getStationaryMode() const override; // new in V2
+  bool isStationary() const override;
+  void abortTimeStep() override;
 
   // interface IterativeUnsteadyProblem
 
-  virtual bool iterateTimeStep(bool& converged);
+  bool iterateTimeStep(bool& converged) override;
 
   // Field I/O methods. Those methods are **optional**, and not all of them need to be implemented!
   //
-  virtual std::vector<std::string> getInputFieldsNames() const;
-  virtual std::vector<std::string> getOutputFieldsNames() const;
-  virtual ValueType getFieldType(const std::string& name) const;
+  std::vector<std::string> getInputFieldsNames() const override;
+  std::vector<std::string> getOutputFieldsNames() const override;
+  ValueType getFieldType(const std::string& name) const override;
 
   //     TrioField fields I/O
-  virtual void getInputFieldTemplate(const std::string& name, TrioField& afield) const;
-  virtual void setInputField(const std::string& name, const TrioField& afield);
-  virtual void getOutputField(const std::string& name, TrioField& afield) const;
-  virtual void updateOutputField(const std::string& name, TrioField& afield) const;
+  void getInputFieldTemplate(const std::string& name, TrioField& afield) const override;
+  void setInputField(const std::string& name, const TrioField& afield) override;
+  void getOutputField(const std::string& name, TrioField& afield) const override;
+  void updateOutputField(const std::string& name, TrioField& afield) const override;
 
   //
   //     MED fields I/O: double, int and string.
   //
-  virtual void getInputMEDDoubleFieldTemplate(const std::string& name, MEDDoubleField& afield) const;
-  virtual void setInputMEDDoubleField(const std::string& name, const MEDDoubleField& afield);
-  virtual void getOutputMEDDoubleField(const std::string& name, MEDDoubleField& afield) const;
-  virtual void updateOutputMEDDoubleField(const std::string& name, MEDDoubleField& afield) const;
+  void getInputMEDDoubleFieldTemplate(const std::string& name, MEDDoubleField& afield) const override;
+  void setInputMEDDoubleField(const std::string& name, const MEDDoubleField& afield) override;
+  void getOutputMEDDoubleField(const std::string& name, MEDDoubleField& afield) const override;
+  void updateOutputMEDDoubleField(const std::string& name, MEDDoubleField& afield) const override;
 
 
   //        Specific to MEDCoupling:
-  virtual int getMEDCouplingMajorVersion() const;
-  virtual bool isMEDCoupling64Bits() const;
+  int getMEDCouplingMajorVersion() const override;
+  bool isMEDCoupling64Bits() const override;
 
-  virtual double getOutputDoubleValue(const std::string& name) const;
-  virtual void setInputDoubleValue(const std::string& name, const double& val);
+  double getOutputDoubleValue(const std::string& name) const override;
+  void setInputDoubleValue(const std::string& name, const double& val) override;
 protected :
 
   Init_Params* my_params;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,23 +58,23 @@ class Navier_Stokes_Fluide_Dilatable_base : public Navier_Stokes_std, public Nav
   Declare_base(Navier_Stokes_Fluide_Dilatable_base);
 
 public :
-  void discretiser();
-  int preparer_calcul();
-  const Champ_Don& diffusivite_pour_transport();
-  const Champ_base& diffusivite_pour_pas_de_temps();
-  const Champ_base& vitesse_pour_transport();
+  void discretiser() override;
+  int preparer_calcul() override;
+  const Champ_Don& diffusivite_pour_transport() override;
+  const Champ_base& diffusivite_pour_pas_de_temps() override;
+  const Champ_base& vitesse_pour_transport() override;
 
   // Methodes virtuelles
-  virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void completer();
-  virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  virtual void assembler_avec_inertie( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  virtual int impr(Sortie& os) const;
-  virtual bool initTimeStep(double dt);
+  DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void completer() override;
+  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
+  void assembler_avec_inertie( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
+  int impr(Sortie& os) const override;
+  bool initTimeStep(double dt) override;
 
   // Methodes inlines
-  inline const Champ_Inc& rho_la_vitesse() const { return rho_la_vitesse_; }
+  inline const Champ_Inc& rho_la_vitesse() const override { return rho_la_vitesse_; }
 };
 
 #endif /* Navier_Stokes_Fluide_Dilatable_base_included */

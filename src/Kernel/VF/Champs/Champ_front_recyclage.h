@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -151,8 +151,8 @@ public:
   void initialiser_moyenne_imposee(DoubleTab& moyenne);
   void initialiser_moyenne_recyclee(DoubleTab& moyenne);
   void associer_champ_evaluateur(const Nom&, const Motcle&);
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
-  virtual void mettre_a_jour(double temps);
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
+  void mettre_a_jour(double temps) override;
 
   static void get_coord_faces(const Frontiere_dis_base& fr_vf,
                               DoubleTab& coords,

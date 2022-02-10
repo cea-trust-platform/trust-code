@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,30 +62,30 @@ public:
   double h_imp(int num,int k) const;
   virtual double T_ext(int num) const;
   virtual double T_ext(int num,int k) const;
-  virtual void mettre_a_jour(double );
-  virtual int initialiser(double temps);
-  virtual int a_mettre_a_jour_ss_pas_dt()
+  void mettre_a_jour(double ) override;
+  int initialiser(double temps) override;
+  int a_mettre_a_jour_ss_pas_dt() override
   {
     return 1;
   };
 
 
   // ajout de methode pour ne pas operer directement sur champ_front
-  virtual void set_temps_defaut(double temps);
-  virtual void fixer_nb_valeurs_temporelles(int nb_cases);
+  void set_temps_defaut(double temps) override;
+  void fixer_nb_valeurs_temporelles(int nb_cases) override;
   //
-  virtual void changer_temps_futur(double temps,int i);
-  virtual int avancer(double temps);
-  virtual int reculer(double temps);
-  virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
+  void changer_temps_futur(double temps,int i) override;
+  int avancer(double temps) override;
+  int reculer(double temps) override;
+  void associer_fr_dis_base(const Frontiere_dis_base& ) override ;
 
   inline Champ_front& T_ext();
   inline const Champ_front& T_ext() const;
   inline Champ_front& h_imp();
   inline const Champ_front& h_imp() const;
 
-  virtual int compatible_avec_eqn(const Equation_base&) const;
-  virtual int compatible_avec_discr(const Discretisation_base& ) const;
+  int compatible_avec_eqn(const Equation_base&) const override;
+  int compatible_avec_discr(const Discretisation_base& ) const override;
 protected :
 
   Champ_front h_imp_;

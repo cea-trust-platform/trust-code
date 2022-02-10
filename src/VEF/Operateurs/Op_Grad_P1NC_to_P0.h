@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,9 +58,9 @@ class Op_Grad_P1NC_to_P0 : public Operateur_Grad_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&);
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&) override;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
 
 protected:
 

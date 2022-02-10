@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,9 +40,9 @@ class Champ_Fonc_P1_VEF: public Champ_Fonc_P1_base
 
 public :
 
-  inline void associer_zone_dis_base(const Zone_dis_base&);
-  const Zone_dis_base& zone_dis_base() const;
-  virtual void mettre_a_jour(double );
+  inline void associer_zone_dis_base(const Zone_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override;
+  void mettre_a_jour(double ) override;
 
 protected:
 

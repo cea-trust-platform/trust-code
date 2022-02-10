@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,11 +44,11 @@ class Constituant : public Milieu_base
 
 public :
 
-  void set_param(Param& param);
+  void set_param(Param& param) override;
   inline const Champ_Don& diffusivite_constituant() const;
-  inline void mettre_a_jour(double);
-  virtual void discretiser(const Probleme_base& pb, const Discretisation_base& dis);
-  int initialiser(const double& temps);
+  inline void mettre_a_jour(double) override;
+  void discretiser(const Probleme_base& pb, const Discretisation_base& dis) override;
+  int initialiser(const double& temps) override;
   int nb_constituants() const;
 protected :
 

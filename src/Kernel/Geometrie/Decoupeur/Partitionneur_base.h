@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ class Partitionneur_base : public Objet_U
   Declare_base(Partitionneur_base);
 public:
   virtual void set_param(Param& param)=0;
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual void associer_domaine(const Domaine& domaine) = 0;
   virtual void declarer_bords_periodiques(const Noms& noms_bords_periodiques);
   virtual void construire_partition(IntVect& elem_part, int& nb_parts_tot) const = 0;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,12 +41,12 @@ class Terme_Source_Canal_perio_VDF_P0 : public Terme_Source_Canal_perio_VDF_Face
   Declare_instanciable(Terme_Source_Canal_perio_VDF_P0);
 
 public :
-  virtual DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter(DoubleTab& ) const override;
 
 protected :
   // This one is overridden from Terme_Source_Canal_perio essentially to store source
   // term on P0 location and not on Faces or P1NC.
-  virtual ArrOfDouble source_convection_diffusion(double debit_e) const;
+  ArrOfDouble source_convection_diffusion(double debit_e) const override;
 };
 
 #endif

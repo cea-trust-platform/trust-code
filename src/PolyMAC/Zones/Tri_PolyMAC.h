@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ class Tri_PolyMAC : public Elem_PolyMAC_base
 public:
   Tri_PolyMAC();
   void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-               const IntTab& ,const Zone& )  const ;
+               const IntTab& ,const Zone& )  const override ;
 };
 
 #endif

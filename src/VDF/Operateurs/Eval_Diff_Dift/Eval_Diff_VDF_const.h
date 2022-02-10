@@ -39,9 +39,9 @@ class Eval_Diff_VDF_const : public Eval_Diff_VDF
 {
 public:
   inline Eval_Diff_VDF_const() :db_diffusivite(-1.0e+300) {}
-  inline void associer(const Champ_base&);
-  inline void mettre_a_jour() { db_diffusivite = diffusivite_.valeur()(0,0); }
-  inline const Champ_base& get_diffusivite() const;
+  inline void associer(const Champ_base&) override;
+  inline void mettre_a_jour() override { db_diffusivite = diffusivite_.valeur()(0,0); }
+  inline const Champ_base& get_diffusivite() const override;
 
   // Methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const { return db_diffusivite; }

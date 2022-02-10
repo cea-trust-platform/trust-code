@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,8 +44,8 @@ class Terme_Puissance_Thermique_CoviMAC_base : public Terme_Puissance_Thermique,
 public:
 
   inline Terme_Puissance_Thermique_CoviMAC_base(const Iterateur_Source_CoviMAC_base&);
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
-  int initialiser(double temps);
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  int initialiser(double temps) override;
 
 
 protected:

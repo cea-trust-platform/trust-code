@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,21 +39,21 @@ class Champ_Inc_P0_base : public Champ_Inc_base, public Champ_implementation_P0
   Declare_base(Champ_Inc_P0_base);
 
 protected :
-  virtual       Champ_base& le_champ(void)      ;
-  virtual const Champ_base& le_champ(void) const;
+  Champ_base& le_champ(void) override      ;
+  const Champ_base& le_champ(void) const override;
 
 public :
-  inline virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const;
-  inline virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const;
-  inline virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const;
-  inline virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const;
-  inline virtual DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const;
-  inline virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const;
-  inline virtual DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const;
-  inline virtual DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const;
-  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double,int distant ) const;
-  virtual Champ_base& affecter_(const Champ_base& ) ;
-  int fixer_nb_valeurs_nodales(int n);
+  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
+  inline double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
+  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
+  inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
+  inline int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
+  inline DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const override;
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const override;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double,int distant ) const override;
+  Champ_base& affecter_(const Champ_base& ) override ;
+  int fixer_nb_valeurs_nodales(int n) override;
 };
 
 inline DoubleVect& Champ_Inc_P0_base::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,11 +39,11 @@
                                                                         \
   public:                                                                \
                                                                         \
-    inline Evaluateur_Source_CoviMAC& evaluateur();                                \
+    inline Evaluateur_Source_CoviMAC& evaluateur() override;                                \
                                                                         \
-    DoubleTab& calculer(DoubleTab& ) const;                                \
-    DoubleTab& ajouter(DoubleTab& ) const;                                \
-    inline void completer_();                                                \
+    DoubleTab& calculer(DoubleTab& ) const override;                                \
+    DoubleTab& ajouter(DoubleTab& ) const override;                                \
+    inline void completer_() override;                                                \
                                                                         \
   protected:                                                                \
                                                                         \
@@ -59,7 +59,7 @@
   inline void It_Sou_CoviMAC_Elem(_TYPE_)::completer_(){                        \
     nb_elem_=la_zone->nb_elem();                                        \
   }                                                                        \
-  inline Evaluateur_Source_CoviMAC& It_Sou_CoviMAC_Elem(_TYPE_)::evaluateur()        \
+  inline Evaluateur_Source_CoviMAC& It_Sou_CoviMAC_Elem(_TYPE_)::evaluateur()       \
   {                                                                        \
     Evaluateur_Source_CoviMAC& eval = (Evaluateur_Source_CoviMAC&) evaluateur_source_elem; \
     return eval;                                                        \
@@ -115,7 +115,7 @@
     }                                                                        \
     return resu;                                                        \
   }                                                                        \
-  DoubleTab& It_Sou_CoviMAC_Elem(_TYPE_)::calculer(DoubleTab& resu) const        \
+  DoubleTab& It_Sou_CoviMAC_Elem(_TYPE_)::calculer(DoubleTab& resu) const       \
   {                                                                        \
     return resu;                                                        \
   }

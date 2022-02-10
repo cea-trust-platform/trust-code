@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,9 +41,9 @@ class Convection_Diffusion_Espece_Multi_base : public Convection_Diffusion_Espec
   Declare_base(Convection_Diffusion_Espece_Multi_base);
 
 public:
-  const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void set_param(Param& titi);
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void set_param(Param& titi) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   // Methodes inlines
   inline const Motcle& get_alias() const { return alias_; }

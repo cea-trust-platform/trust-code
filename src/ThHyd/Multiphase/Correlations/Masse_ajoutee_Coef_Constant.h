@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ class Masse_ajoutee_Coef_Constant : public Masse_ajoutee_base
 {
   Declare_instanciable(Masse_ajoutee_Coef_Constant);
 public:
-  virtual void ajouter(const double *alpha, const double *rho, DoubleTab& a_r) const;
+  void ajouter(const double *alpha, const double *rho, DoubleTab& a_r) const override;
 protected:
   double beta = 0.5;
 };

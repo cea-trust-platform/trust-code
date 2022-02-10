@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,9 +41,9 @@ class Espece : public Fluide_Quasi_Compressible
 
 public :
   Espece();
-  void set_param(Param& param);
-  void creer_champs_non_lus() { };
-  void verifier_coherence_champs(int& err,Nom& message);
+  void set_param(Param& param) override;
+  void creer_champs_non_lus() override { };
+  void verifier_coherence_champs(int& err,Nom& message) override;
   inline double& masse_molaire() { return Masse_mol_; }
   inline const double& masse_molaire() const { return Masse_mol_; }
 

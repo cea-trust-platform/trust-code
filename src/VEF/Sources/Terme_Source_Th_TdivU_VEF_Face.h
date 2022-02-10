@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,17 +45,17 @@ class Terme_Source_Th_TdivU_VEF_Face : public Source_base, public Terme_Source_Q
 
 public:
 
-  void associer_pb(const Probleme_base& );
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const;
-  void mettre_a_jour(double );
-  void completer();
+  void associer_pb(const Probleme_base& ) override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  DoubleTab& calculer(DoubleTab& ) const override;
+  void mettre_a_jour(double ) override;
+  void completer() override;
   void associer_eqn_t();
 protected:
   void modifier_zone_cl();
 
 
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
   REF(Equation_base) eqn_t;
   Zone_Cl_dis ma_zonecl_;
   REF(Zone_Cl_dis_base) zonecl_sa;

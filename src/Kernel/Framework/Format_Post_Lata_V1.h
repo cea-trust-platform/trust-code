@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,11 +33,11 @@ class Format_Post_Lata_V1 : public Format_Post_Lata
 public:
   // Methodes declarees dans la classe de base (interface commune a tous
   // les formats de postraitment de champs):
-  virtual void reset();
+  void reset() override;
 
-  virtual int ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post);
-  virtual int finir(int& est_le_dernier_post);
-  virtual int ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post);
+  int ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post) override;
+  int finir(int& est_le_dernier_post) override;
+  int ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post) override;
   virtual int ecrire_bords(const Nom&     id_du_domaine,
                            const Motcle& type_faces,
                            const DoubleTab& sommets,
@@ -45,21 +45,21 @@ public:
                            const IntTab& faces_num_bord,
                            const Noms&    bords_nom);
 
-  virtual int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo,
-                           int ncomp,double temps_,double temps_courant,
-                           const Nom&   id_du_champ,
-                           const Nom&   id_du_domaine,
-                           const Nom&   localisation,
-                           const Nom&   nature,
-                           const DoubleTab& data);
+  int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo,
+                   int ncomp,double temps_,double temps_courant,
+                   const Nom&   id_du_champ,
+                   const Nom&   id_du_domaine,
+                   const Nom&   localisation,
+                   const Nom&   nature,
+                   const DoubleTab& data) override;
 
-  virtual int ecrire_item_int(const Nom&   id_item,
-                              const Nom&   id_du_domaine,
-                              const Nom&   id_zone,
-                              const Nom&   localisation,
-                              const Nom&   reference,
-                              const IntVect& data,
-                              const int reference_size);
+  int ecrire_item_int(const Nom&   id_item,
+                      const Nom&   id_du_domaine,
+                      const Nom&   id_zone,
+                      const Nom&   localisation,
+                      const Nom&   reference,
+                      const IntVect& data,
+                      const int reference_size) override;
 
   /*   virtual int ecrire_noms(const Nom  & id_de_la_liste, */
   /*                              const Nom  & id_du_domaine, */

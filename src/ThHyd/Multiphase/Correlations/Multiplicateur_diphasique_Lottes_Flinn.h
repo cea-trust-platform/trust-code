@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,9 +40,9 @@ class Multiplicateur_diphasique_Lottes_Flinn : public Multiplicateur_diphasique_
 {
   Declare_instanciable(Multiplicateur_diphasique_Lottes_Flinn);
 public:
-  virtual void coefficient(const double *alpha, const double *rho, const double *v, const double *f,
-                           const double *mu, const double Dh, const double gamma, const double *Fk,
-                           const double Fm, DoubleTab& coeff) const;
+  void coefficient(const double *alpha, const double *rho, const double *v, const double *f,
+                   const double *mu, const double Dh, const double gamma, const double *Fk,
+                   const double Fm, DoubleTab& coeff) const override;
 protected:
   double alpha_min_, alpha_max_;
   int n_l, n_g; //indices des phases frottantes : liquide, gaz

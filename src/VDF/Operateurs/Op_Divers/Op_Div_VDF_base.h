@@ -34,11 +34,11 @@ class Op_Div_VDF_base : public Operateur_Div_base
 public:
   inline Op_Div_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
 
-  void completer();
-  virtual int impr(Sortie& os) const;
+  void completer() override;
+  int impr(Sortie& os) const override;
 
-  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const { return iter->ajouter(inco,resu); } // ajoute la contribution de la divergence a resu
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const { return iter->calculer(inco,resu); } // calcule la contribution de la divergence
+  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override { return iter->ajouter(inco,resu); } // ajoute la contribution de la divergence a resu
+  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter->calculer(inco,resu); } // calcule la contribution de la divergence
 
 protected:
   Iterateur_VDF iter;

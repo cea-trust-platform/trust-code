@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,29 +65,29 @@ public :
   friend Matrice_Morse_Sym operator *(const Matrice_Morse_Sym&, double );
   friend Matrice_Morse_Sym operator *(double, const Matrice_Morse_Sym& );
   Matrice_Morse_Sym& operator *=(double );
-  virtual void scale( const double& x );
+  void scale( const double& x ) override;
 
-  virtual void get_stencil( IntTab& stencil ) const;
+  void get_stencil( IntTab& stencil ) const override;
 
-  virtual void get_symmetric_stencil( IntTab& stencil ) const;
+  void get_symmetric_stencil( IntTab& stencil ) const override;
 
-  virtual void get_stencil_and_coefficients( IntTab&      stencil,
-                                             ArrOfDouble& coefficients ) const;
+  void get_stencil_and_coefficients( IntTab&      stencil,
+                                     ArrOfDouble& coefficients ) const override;
 
-  virtual void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
-                                                       ArrOfDouble& coefficients ) const;
+  void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
+                                               ArrOfDouble& coefficients ) const override;
 
   Matrice_Morse_Sym  operator -() const;
 
-  virtual DoubleTab&  ajouter_multTab_(const DoubleTab&, DoubleTab& ) const ;
-  virtual DoubleVect& ajouter_multvect_(const DoubleVect&, DoubleVect& ) const ;
-  virtual DoubleVect& ajouter_multvectT_(const DoubleVect&, DoubleVect& ) const ;
+  DoubleTab&  ajouter_multTab_(const DoubleTab&, DoubleTab& ) const override;
+  DoubleVect& ajouter_multvect_(const DoubleVect&, DoubleVect& ) const override;
+  DoubleVect& ajouter_multvectT_(const DoubleVect&, DoubleVect& ) const override;
 
   virtual double multvect_et_prodscal(const DoubleVect&, DoubleVect& ) const ;
-  virtual int inverse(const DoubleVect&, DoubleVect&, double ) const ;
-  virtual int inverse(const DoubleVect&, DoubleVect&, double, int ) const ;
+  int inverse(const DoubleVect&, DoubleVect&, double ) const  override;
+  int inverse(const DoubleVect&, DoubleVect&, double, int ) const  override;
 
-  Sortie& imprimer_formatte(Sortie& s) const;
+  Sortie& imprimer_formatte(Sortie& s) const override;
   void compacte(int elim_coeff_nul=0);
   void renumerote() const;                       // Creation d'une matrice renumerotee pour reduire la largeur de bande
   Matrice& matrice_renumerotee()

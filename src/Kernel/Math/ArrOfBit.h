@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ class ArrOfBit : public Objet_U
 public:
   ArrOfBit(int n=0);
   ArrOfBit(const ArrOfBit& array);              // Constructeur par copie
-  ~ArrOfBit();                                  // Destructeur
+  ~ArrOfBit() override;                                  // Destructeur
   ArrOfBit& operator=(const ArrOfBit& array);   // Operateur copie
   ArrOfBit& operator=(int i);
   inline int operator[](int i) const;

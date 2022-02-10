@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@
     void add(const VECT(_TYPE_)&);				\
     Entree& lit(Entree& );						\
   protected:								\
-    Objet_U* cree_une_instance() const;					\
+    Objet_U* cree_une_instance() const override;					\
   };									\
   /* Returns the ith VECT element */					\
   inline const _TYPE_& VECT(_TYPE_)::operator[](int i) const {		\

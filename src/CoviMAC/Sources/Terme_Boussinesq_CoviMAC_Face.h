@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,19 +39,19 @@ class Terme_Boussinesq_CoviMAC_Face : public Terme_Boussinesq_base
   Declare_instanciable(Terme_Boussinesq_CoviMAC_Face);
 
 public:
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-  void check_multiphase_compatibility() const { };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void check_multiphase_compatibility() const override { };
 
 protected:
 
   REF(Zone_CoviMAC) la_zone_CoviMAC;
   REF(Zone_Cl_CoviMAC) la_zone_Cl_CoviMAC;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
 };
 
 #endif

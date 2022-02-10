@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,23 +40,23 @@ class Op_Dift_VEF_Face_Q1 : public Op_Dift_VEF_base
 
 public:
 
-  void associer_diffusivite(const Champ_base&);
-  const Champ_base& diffusivite() const;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  double calculer_dt_stab() const;
+  void associer_diffusivite(const Champ_base&) override;
+  const Champ_base& diffusivite() const override;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  double calculer_dt_stab() const override;
 
 
   // Methodes pour l implicite.
 
-  inline void dimensionner(Matrice_Morse& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  inline void contribuer_au_second_membre(DoubleTab& ) const;
+  inline void dimensionner(Matrice_Morse& ) const override;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
+  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  inline void contribuer_au_second_membre(DoubleTab& ) const override;
   void contribue_au_second_membre(DoubleTab& ) const;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
 
-  inline void remplir_nu(DoubleTab& ) const
+  inline void remplir_nu(DoubleTab& ) const override
   {
     Cerr<<__FILE__<<":"<<(int)__LINE__<<finl;
     exit();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 //
-// File      : Segment_EF_axi.h
-// Directory : $TRUST_FIXES     # NAME OF THE PROJECT    (REQUIRED)_ROOT/src
+// File:        Segment_EF_axi.h
+// Directory:   $TRUST_ROOT/src/EF/Zones
+// Version:     1
 //
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Segment_EF_axi_included
 #define Segment_EF_axi_included
@@ -40,7 +41,7 @@ class Segment_EF_axi : public Segment_EF
 public :
 
   void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-               const IntTab& ,const Zone& )  const ;
+               const IntTab& ,const Zone& )  const override ;
 
 protected :
 

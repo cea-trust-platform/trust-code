@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,9 +52,9 @@ public :
     symetrique_=2;
   };
   void dimensionne_diag(int n);
-  virtual DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& y) const ;
-  virtual DoubleVect& ajouter_multvectT_(const DoubleVect&, DoubleVect& ) const;
-  virtual DoubleTab& ajouter_multTab_(const DoubleTab& ,DoubleTab& ) const;
+  DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& y) const override ;
+  DoubleVect& ajouter_multvectT_(const DoubleVect&, DoubleVect& ) const override;
+  DoubleTab& ajouter_multTab_(const DoubleTab& ,DoubleTab& ) const override;
 private:
 };
 

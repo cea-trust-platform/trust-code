@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,16 +52,16 @@ class Op_Conv_CoviMAC_base : public Operateur_Conv_base
 
 public:
 
-  void completer();
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const;
+  void completer() override;
+  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override;
 
   //void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;
   //virtual Motcle get_localisation_pour_post(const Nom& option) const;
-  virtual int impr(Sortie& os) const;
-  void associer_zone_cl_dis(const Zone_Cl_dis_base&);
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
+  int impr(Sortie& os) const override;
+  void associer_zone_cl_dis(const Zone_Cl_dis_base&) override;
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
 
-  void associer_vitesse(const Champ_base& );
+  void associer_vitesse(const Champ_base& ) override;
 
 
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,36 +49,36 @@ class Op_Diff_negligeable: public Operateur_negligeable,
 
 public :
 
-  inline DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
-  inline DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const;
-  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
-  inline void contribuer_au_second_membre(DoubleTab& ) const;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
-  inline void dimensionner(Matrice_Morse& ) const;
-  inline void mettre_a_jour(double);
-  void associer_diffusivite(const Champ_base& ) ;
-  const Champ_base& diffusivite() const;
-  inline void associer_champ_masse_volumique(const Champ_base&);
-  void calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const;
-  virtual Motcle get_localisation_pour_post(const Nom& option) const;
+  inline DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
+  inline DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const override;
+  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  inline void contribuer_au_second_membre(DoubleTab& ) const override;
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
+  inline void dimensionner(Matrice_Morse& ) const override;
+  inline void mettre_a_jour(double) override;
+  void associer_diffusivite(const Champ_base& ) override ;
+  const Champ_base& diffusivite() const override;
+  inline void associer_champ_masse_volumique(const Champ_base&) override;
+  void calculer_pour_post(Champ& espace_stockage,const Nom& option, int comp) const override;
+  Motcle get_localisation_pour_post(const Nom& option) const override;
 
-  virtual void ajouter_flux(const DoubleTab& inconnue, DoubleTab& contribution) const;
-  virtual void calculer_flux(const DoubleTab& inconnue, DoubleTab& flux) const;
+  void ajouter_flux(const DoubleTab& inconnue, DoubleTab& contribution) const override;
+  void calculer_flux(const DoubleTab& inconnue, DoubleTab& flux) const override;
 
-  virtual int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const { };
-  void ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl = { }) const { };
-  void check_multiphase_compatibility() const { };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override { };
+  void ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl = { }) const override { };
+  void check_multiphase_compatibility() const override { };
 
 protected :
 
   REF(Champ_base) la_diffusivite;
   inline void associer(const Zone_dis&,
                        const Zone_Cl_dis&,
-                       const Champ_Inc& ) ;
+                       const Champ_Inc& ) override ;
 };
 
 class Op_Dift_negligeable: public Op_Diff_negligeable

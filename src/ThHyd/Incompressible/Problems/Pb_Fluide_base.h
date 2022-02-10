@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ class Pb_Fluide_base : public Probleme_base
 
 public:
 
-  virtual int expression_predefini(const Motcle& motlu, Nom& expression);
+  int expression_predefini(const Motcle& motlu, Nom& expression) override;
 
 protected :
 

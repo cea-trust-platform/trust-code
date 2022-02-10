@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,10 +54,10 @@ class Zone_Cl_VEF : public Zone_Cl_dis_base
 public :
 
   void associer(const Zone_VEF& );
-  void completer(const Zone_dis& );
+  void completer(const Zone_dis& ) override;
   //  void mettre_a_jour(double );
-  virtual int initialiser(double temps);
-  virtual void imposer_cond_lim(Champ_Inc&, double);
+  int initialiser(double temps) override;
+  void imposer_cond_lim(Champ_Inc&, double) override;
 
   virtual void remplir_volumes_entrelaces_Cl(const Zone_VEF& );
   void remplir_normales_facettes_Cl(const Zone_VEF& );

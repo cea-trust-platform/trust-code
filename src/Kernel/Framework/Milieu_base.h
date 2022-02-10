@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ public:
 
   Milieu_base();
   virtual void set_param(Param& param);
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual void preparer_calcul();
   virtual void verifier_coherence_champs(int& err,Nom& message);
   virtual void creer_champs_non_lus();
@@ -93,16 +93,16 @@ public:
   virtual int                a_gravite() const;
   virtual const Champ_Don_base& gravite() const;
   virtual Champ_Don_base&       gravite();
-  virtual int                associer_(Objet_U&);
+  int                associer_(Objet_U&) override;
   virtual int est_deja_associe();
-  virtual void nommer(const Nom&);
-  virtual const Nom& le_nom() const;
+  void nommer(const Nom&) override;
+  const Nom& le_nom() const override;
 
   //Methodes de l interface des champs postraitables
   //////////////////////////////////////////////////////
-  virtual void creer_champ(const Motcle& motlu);
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+  void creer_champ(const Motcle& motlu) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   /////////////////////////////////////////////////////
   virtual void update_rho_cp(double temps);
 

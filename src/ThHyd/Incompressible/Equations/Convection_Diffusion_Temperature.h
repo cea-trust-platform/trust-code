@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,32 +45,32 @@ class Convection_Diffusion_Temperature : public Convection_Diffusion_std
 public :
 
   Convection_Diffusion_Temperature();
-  void set_param(Param& titi);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  void set_param(Param& titi) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   inline void associer_fluide(const Fluide_base& );
-  inline const Champ_Inc& inconnue() const;
-  inline Champ_Inc& inconnue();
-  void discretiser();
-  const Milieu_base& milieu() const;
+  inline const Champ_Inc& inconnue() const override;
+  inline Champ_Inc& inconnue() override;
+  void discretiser() override;
+  const Milieu_base& milieu() const override;
   const Fluide_base& fluide() const;
   Fluide_base& fluide();
-  Milieu_base& milieu();
-  void associer_milieu_base(const Milieu_base& );
-  virtual int impr(Sortie& os) const;
-  virtual const Champ_Don& diffusivite_pour_transport();
-  virtual const Champ_base& diffusivite_pour_pas_de_temps();
+  Milieu_base& milieu() override;
+  void associer_milieu_base(const Milieu_base& ) override;
+  int impr(Sortie& os) const override;
+  const Champ_Don& diffusivite_pour_transport() override;
+  const Champ_base& diffusivite_pour_pas_de_temps() override;
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
-  virtual void creer_champ(const Motcle& motlu);
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
+  void creer_champ(const Motcle& motlu) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
   /////////////////////////////////////////////////////
 
-  virtual const Motcle& domaine_application() const;
+  const Motcle& domaine_application() const override;
 
-  virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
+  DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
   DoubleTab& derivee_en_temps_inco_eq_base(DoubleTab& );
-  virtual void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
+  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
 
 protected :
 

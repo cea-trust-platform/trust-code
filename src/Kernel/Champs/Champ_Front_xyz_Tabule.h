@@ -41,8 +41,8 @@ class Champ_Front_xyz_Tabule : public Champ_front_txyz
 
 public :
 
-  void mettre_a_jour(double temps);
-  double valeur_au_temps_et_au_point(double temps,int som,double x,double y, double z,int comp) const;
+  void mettre_a_jour(double temps) override;
+  double valeur_au_temps_et_au_point(double temps,int som,double x,double y, double z,int comp) const override;
 
 protected :
   Table la_table;

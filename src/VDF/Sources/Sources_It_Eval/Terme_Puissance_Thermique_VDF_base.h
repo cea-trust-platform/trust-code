@@ -34,8 +34,8 @@ class Terme_Puissance_Thermique_VDF_base : public Terme_Puissance_Thermique, pub
   Declare_base(Terme_Puissance_Thermique_VDF_base);
 public:
   Terme_Puissance_Thermique_VDF_base(const Iterateur_Source_VDF_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_VDF_base(iter_base) { }
-  int initialiser(double temps);
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
+  int initialiser(double temps) override;
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
 };
 
 #endif /* Terme_Puissance_Thermique_VDF_base_included */

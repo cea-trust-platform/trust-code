@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ class ptrParam: public Objet_U
   Declare_instanciable_sans_constructeur_ni_destructeur(ptrParam);
 public:
   ptrParam();
-  ~ptrParam();
+  ~ptrParam() override;
   ptrParam(const ptrParam&);
   const ptrParam& operator=(const ptrParam&);
   inline int non_nul() const

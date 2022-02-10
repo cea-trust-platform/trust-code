@@ -57,15 +57,15 @@ class Echange_global_impose : public Echange_impose_base
 
   Declare_instanciable(Echange_global_impose);
 public:
-  int compatible_avec_discr(const Discretisation_base& discr) const;
+  int compatible_avec_discr(const Discretisation_base& discr) const override;
 
-  virtual void completer();
-  virtual void set_temps_defaut(double temps);
-  virtual void changer_temps_futur(double temps, int i);
-  virtual int avancer(double temps);
-  virtual int reculer(double temps);
-  virtual void mettre_a_jour(double temps);
-  virtual int initialiser(double temps);
+  void completer() override;
+  void set_temps_defaut(double temps) override;
+  void changer_temps_futur(double temps, int i) override;
+  int avancer(double temps) override;
+  int reculer(double temps) override;
+  void mettre_a_jour(double temps) override;
+  int initialiser(double temps) override;
 
   inline Champ_front& derivee_phi_ext();
   inline const Champ_front& derivee_phi_ext() const;

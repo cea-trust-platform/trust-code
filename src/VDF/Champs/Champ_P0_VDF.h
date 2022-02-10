@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,14 +42,14 @@ class Champ_P0_VDF: public Champ_Inc_P0_base
 
 public :
 
-  void associer_zone_dis_base(const Zone_dis_base&);
-  const Zone_dis_base& zone_dis_base() const;
+  void associer_zone_dis_base(const Zone_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override;
   DoubleVect moyenne() const;
   double moyenne(int ) const;
   double valeur_au_bord(int face) const;
-  virtual DoubleTab& remplir_coord_noeuds(DoubleTab& ) const;
-  int imprime(Sortie& os, int nb_compo_) const;
-  double integrale_espace(int ncomp) const;
+  DoubleTab& remplir_coord_noeuds(DoubleTab& ) const override;
+  int imprime(Sortie& os, int nb_compo_) const override;
+  double integrale_espace(int ncomp) const override;
 
 private:
 

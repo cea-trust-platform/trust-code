@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,9 +60,9 @@ class Op_Diff_EF_base : public Operateur_Diff_base, public Op_EF_base
 
 public:
 
-  virtual int impr(Sortie& os) const;
-  virtual void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
-  double calculer_dt_stab() const;
+  int impr(Sortie& os) const override;
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  double calculer_dt_stab() const override;
   virtual void remplir_nu(DoubleTab&) const=0;
 
 protected:

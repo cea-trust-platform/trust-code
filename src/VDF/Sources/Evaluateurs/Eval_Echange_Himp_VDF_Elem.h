@@ -34,7 +34,7 @@ public:
   Eval_Echange_Himp_VDF_Elem() : h_(-1.) { }
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
   inline void associer_champs(const Champ_Inc& ,const Champ_Inc& ,const double );
-  inline void mettre_a_jour();
+  inline void mettre_a_jour() override;
 
 protected:
   REF(Champ_Inc) T, T_voisin;

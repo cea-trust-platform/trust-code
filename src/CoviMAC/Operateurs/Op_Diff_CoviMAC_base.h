@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,15 +58,15 @@ class Op_Diff_CoviMAC_base : public Operateur_Diff_base, public Op_Diff_Turbulen
   Declare_base(Op_Diff_CoviMAC_base);
 
 public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
 
-  void associer_diffusivite(const Champ_base& );
-  void completer();
+  void associer_diffusivite(const Champ_base& ) override;
+  void completer() override;
 
   mutable IntTab pe_ext; // tableau aux faces de bord : (indice dans op_ext, indice d'element) pour les faces de type Echange_contact
 
-  const Champ_base& diffusivite() const;
-  void mettre_a_jour(double t);
+  const Champ_base& diffusivite() const override;
+  void mettre_a_jour(double t) override;
 
   /* methodes surchargeables dans des classes derivees pour modifier nu avant de calculer les gradients dans update_nu_xwh */
   virtual int dimension_min_nu() const /* dimension minimale de nu / nu_bord par composante */
@@ -110,8 +110,8 @@ public:
   mutable IntTab phif_d, phif_e, phif_pe; //stencils
   mutable DoubleTab phif_w, phif_c, phif_pc; //ponderation amont/aval, ponderation, coefficients
 
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  virtual int impr(Sortie& os) const;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  int impr(Sortie& os) const override;
 
 protected:
   REF(Zone_CoviMAC) la_zone_poly_;

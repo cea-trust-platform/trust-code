@@ -47,8 +47,8 @@ public :
     DERIV(Champ_base)::operator=(ch);
     return this->valeur();
   }
-  inline void nommer(const Nom& );
-  inline const Nom& le_nom() const;
+  inline void nommer(const Nom& ) override;
+  inline const Nom& le_nom() const override;
   inline void fixer_nb_comp(int i);
   inline int nb_comp() const ;
   inline double changer_temps(const double& t);
@@ -89,8 +89,8 @@ public :
                                             int ncomp) const ;
 
   using Champ_Proto::valeurs;
-  inline DoubleTab& valeurs() ;
-  inline const DoubleTab& valeurs() const ;
+  inline DoubleTab& valeurs() override ;
+  inline const DoubleTab& valeurs() const override ;
 
 };
 

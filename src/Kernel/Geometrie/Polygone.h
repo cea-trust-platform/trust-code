@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,23 +53,23 @@ public :
 
 
   // Fonctions d'acces aux membres prives:
-  inline int face_sommet(int i, int j) const;
-  inline int nb_som() const;
-  inline int nb_faces(int=0) const;
-  inline int nb_som_face(int=0) const;
-  inline int est_structure() const;
-  virtual const Nom& nom_lml() const;
-  virtual int contient(const ArrOfDouble&, int ) const;
-  virtual int contient(const ArrOfInt&, int ) const;
-  inline Type_Face type_face(int=0) const;
-  virtual void reordonner() ;
-  virtual void calculer_volumes(DoubleVect& ) const;
-  void calculer_centres_gravite(DoubleTab& xp) const;
-  virtual void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const ;
+  inline int face_sommet(int i, int j) const override;
+  inline int nb_som() const override;
+  inline int nb_faces(int=0) const override;
+  inline int nb_som_face(int=0) const override;
+  inline int est_structure() const override;
+  const Nom& nom_lml() const override;
+  int contient(const ArrOfDouble&, int ) const override;
+  int contient(const ArrOfInt&, int ) const override;
+  inline Type_Face type_face(int=0) const override;
+  void reordonner() override ;
+  void calculer_volumes(DoubleVect& ) const override;
+  void calculer_centres_gravite(DoubleTab& xp) const override;
+  void calculer_un_centre_gravite(const int elem,DoubleVect& xp) const override ;
 
-  virtual int nb_type_face() const;
-  int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const;
-  int get_tab_faces_sommets_locaux(IntTab& faces_som_local,int elem) const;
+  int nb_type_face() const override;
+  int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const override;
+  int get_tab_faces_sommets_locaux(IntTab& faces_som_local,int elem) const override;
   void affecte_connectivite_numero_global(const ArrOfInt& FacesIndex,const ArrOfInt& PolygonIndex,IntTab& les_elems);
   int get_nb_som_elem_max() const;
   inline int get_nb_face_elem_max() const
@@ -77,9 +77,9 @@ public :
     return nb_face_elem_max_ ;
   } ;
 
-  int get_somme_nb_faces_elem() const;
+  int get_somme_nb_faces_elem() const override;
 
-  inline const ArrOfInt& getFacesIndex() const
+  inline const ArrOfInt& getFacesIndex() const override
   {
     return FacesIndex_;
   };
@@ -87,13 +87,13 @@ public :
   {
     return PolygonIndex_;
   };
-  inline const ArrOfInt& getElemIndex() const
+  inline const ArrOfInt& getElemIndex() const override
   {
     return PolygonIndex_;
   };
   void rebuild_index();
-  void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const;
-  void compute_virtual_index();
+  void build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const override;
+  void compute_virtual_index() override;
 private :
   ArrOfInt FacesIndex_,PolygonIndex_;  //  PolygoneIndex_[ele] numero premiere face de ele (sert sutrout en diff)
   // FaceIndex_ numerotation globale a la zone ne sert qu'a med

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,18 +50,18 @@ class Terme_Source_Solide_SWIFT_VDF : public Source_base
   Declare_instanciable(Terme_Source_Solide_SWIFT_VDF);
 
 public :
-  DoubleTab& ajouter(DoubleTab& ) const;
-  DoubleTab& calculer(DoubleTab& ) const;
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  DoubleTab& calculer(DoubleTab& ) const override;
   void init_calcul_moyenne(const Conduction& my_eqn, DoubleVect& Y, IntVect& corresp, IntVect& compt);
   void calcul_moyenne(const Conduction& my_eqn, DoubleVect& T_moy, const IntVect& corresp, const IntVect& compt) const;
   void correspondance_SWIFT_coarse();
-  void mettre_a_jour(double temps)
+  void mettre_a_jour(double temps) override
   {
     ;
   }
 
-  void associer_pb(const Probleme_base& );
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void associer_pb(const Probleme_base& ) override;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
 
 protected :
   /*   REF(Zone_VDF) la_zone_VDF; */

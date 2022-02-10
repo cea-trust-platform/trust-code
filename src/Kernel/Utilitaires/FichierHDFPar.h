@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,15 +35,15 @@ class FichierHDFPar: public FichierHDF
 {
 public:
   FichierHDFPar();
-  virtual ~FichierHDFPar();
+  ~FichierHDFPar() override;
   inline void set_collective_op(bool b)
   {
     collective_op_ = b;
   }
 
 protected:
-  virtual void prepare_file_props();
-  virtual void prepare_dataset_props();
+  void prepare_file_props() override;
+  void prepare_dataset_props() override;
 
 private:
   // Forbid copy:

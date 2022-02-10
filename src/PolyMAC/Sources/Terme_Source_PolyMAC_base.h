@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,9 +43,9 @@ class Terme_Source_PolyMAC_base : public Source_base
 public:
 
   inline Terme_Source_PolyMAC_base(const Iterateur_Source_PolyMAC_base&);
-  inline DoubleTab& ajouter(DoubleTab& ) const ;
-  inline DoubleTab& calculer(DoubleTab& ) const ;
-  void completer();
+  inline DoubleTab& ajouter(DoubleTab& ) const override ;
+  inline DoubleTab& calculer(DoubleTab& ) const override ;
+  void completer() override;
 
 protected:
 

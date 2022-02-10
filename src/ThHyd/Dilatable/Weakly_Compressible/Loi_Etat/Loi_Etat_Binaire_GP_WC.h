@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,8 +42,8 @@ class Loi_Etat_Binaire_GP_WC : public Loi_Etat_Binaire_GP_base
   Declare_instanciable(Loi_Etat_Binaire_GP_WC);
 
 public :
-  void calculer_masse_volumique();
-  double calculer_masse_volumique(double P,double Y1) const;
+  void calculer_masse_volumique() override;
+  double calculer_masse_volumique(double P,double Y1) const override;
 };
 
 #endif /* Loi_Etat_Binaire_GP_WC_included */

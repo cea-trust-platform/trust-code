@@ -45,18 +45,18 @@ public:
   DoubleVect(const DoubleVect&);
   // Pas de constructeur par copie de ArrOfDouble, voir DoubleVect(const DoubleVect&)
   ~DoubleVect() {};
-  virtual void reset();
+  void reset() override;
   virtual void detach_vect();
 
   DoubleVect& operator=(const DoubleVect&);
   DoubleVect& operator=(double);
 
   virtual void ref(const DoubleVect&);
-  virtual void ref_data(double* ptr, int new_size);
-  virtual void ref_array(ArrOfDouble&, int start = 0, int sz = -1);
+  void ref_data(double* ptr, int new_size) override;
+  void ref_array(ArrOfDouble&, int start = 0, int sz = -1) override;
 
   inline void resize(int, Array_base::Resize_Options opt = COPY_INIT);
-  virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
+  void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT) override;
   void copy(const ArrOfDouble&, Array_base::Resize_Options opt = COPY_INIT);
   void copy(const DoubleVect&, Array_base::Resize_Options opt = COPY_INIT);
 

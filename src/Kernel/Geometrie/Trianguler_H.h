@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,8 +54,8 @@ class Trianguler_H : public Triangulation_base
 
 public :
 
-  virtual void trianguler(Zone&) const;
-  virtual inline int dimension_application() const;
+  void trianguler(Zone&) const override;
+  inline int dimension_application() const override;
 };
 
 inline int Trianguler_H::dimension_application() const

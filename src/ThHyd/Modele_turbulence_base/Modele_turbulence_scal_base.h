@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,23 +79,23 @@ public:
   virtual void completer();
   virtual void associer(const Zone_dis& , const Zone_Cl_dis& );
   void a_faire(Sortie&) const;
-  virtual int sauvegarder(Sortie& ) const;
-  virtual int reprendre(Entree& );
+  int sauvegarder(Sortie& ) const override;
+  int reprendre(Entree& ) override;
   inline Convection_Diffusion_std& equation();
   inline const Convection_Diffusion_std& equation() const;
 
   //Methodes de l interface des champs postraitables
   //////////////////////////////////////////////////////
-  virtual void creer_champ(const Motcle& motlu);
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+  void creer_champ(const Motcle& motlu) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   /////////////////////////////////////////////////////
 
   int limpr_nusselt( double, double, double) const;
   virtual void imprimer(Sortie&) const;
 
   virtual void set_param(Param&);
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 protected:
 
   Champ_Fonc conductivite_turbulente_, diffusivite_turbulente_;

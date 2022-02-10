@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,56 +68,56 @@ class Navier_Stokes_std : public Equation_base
 public :
 
   Navier_Stokes_std();
-  void set_param(Param& titi);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
-  void associer_pb_base(const Probleme_base&);
+  void set_param(Param& titi) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  void associer_pb_base(const Probleme_base&) override;
   inline void associer_fluide(const Fluide_base& );
-  const Milieu_base& milieu() const;
-  Milieu_base& milieu();
+  const Milieu_base& milieu() const override;
+  Milieu_base& milieu() override;
   const Fluide_base& fluide() const;
   Fluide_base& fluide();
-  void associer_milieu_base(const Milieu_base& );
-  int nombre_d_operateurs() const;
-  int nombre_d_operateurs_tot() const;
-  const Operateur& operateur(int) const;
-  Operateur& operateur(int);
-  const Operateur& operateur_fonctionnel(int) const;
-  Operateur& operateur_fonctionnel(int);
+  void associer_milieu_base(const Milieu_base& ) override;
+  int nombre_d_operateurs() const override;
+  int nombre_d_operateurs_tot() const override;
+  const Operateur& operateur(int) const override;
+  Operateur& operateur(int) override;
+  const Operateur& operateur_fonctionnel(int) const override;
+  Operateur& operateur_fonctionnel(int) override;
   Operateur_Div& operateur_divergence();
   const Operateur_Div& operateur_divergence() const;
   Operateur_Grad& operateur_gradient();
   const Operateur_Grad& operateur_gradient() const;
-  const Champ_Inc& inconnue() const;
-  Champ_Inc& inconnue();
+  const Champ_Inc& inconnue() const override;
+  Champ_Inc& inconnue() override;
   SolveurSys& solveur_pression();
-  virtual void discretiser();
+  void discretiser() override;
   virtual void discretiser_vitesse();
-  virtual void completer();
+  void completer() override;
   Entree& lire_cond_init(Entree&) override;
-  virtual bool initTimeStep(double dt);
-  virtual void mettre_a_jour(double temps);
-  virtual void abortTimeStep();
-  virtual int impr(Sortie& os) const;
+  bool initTimeStep(double dt) override;
+  void mettre_a_jour(double temps) override;
+  void abortTimeStep() override;
+  int impr(Sortie& os) const override;
 
-  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice);
+  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice) override;
 
   /*
     interface {dimensionner,assembler}_blocs
     specificites : prend en compte le gradient de pression (en dernier)
   */
-  virtual  int has_interface_blocs() const;
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  virtual void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  int has_interface_blocs() const override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
 
-  int sauvegarder(Sortie&) const;
-  int reprendre(Entree&);
+  int sauvegarder(Sortie&) const override;
+  int reprendre(Entree&) override;
 
-  virtual DoubleTab& derivee_en_temps_inco(DoubleTab& );
-  virtual DoubleTab& corriger_derivee_expl(DoubleTab& );
-  virtual DoubleTab& corriger_derivee_impl(DoubleTab& );
+  DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
+  DoubleTab& corriger_derivee_expl(DoubleTab& ) override;
+  DoubleTab& corriger_derivee_impl(DoubleTab& ) override;
 
-  virtual int preparer_calcul();
+  int preparer_calcul() override;
 
   inline Matrice& matrice_pression();
   inline Assembleur& assembleur_pression();
@@ -136,12 +136,12 @@ public :
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
-  virtual void creer_champ(const Motcle& motlu);
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+  void creer_champ(const Motcle& motlu) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   /////////////////////////////////////////////////////
 
-  virtual const Motcle& domaine_application() const;
+  const Motcle& domaine_application() const override;
 
   virtual inline const Champ_Inc& vitesse() const;
   virtual inline Champ_Inc& vitesse();
@@ -154,7 +154,7 @@ public :
   virtual void calculer_la_pression_en_pa();
 
   virtual void calculer_pression_hydrostatique(Champ_base& pression_hydro) const;
-  virtual int verif_Cl() const;
+  int verif_Cl() const override;
 
 
   virtual const Champ_Inc& rho_la_vitesse() const;

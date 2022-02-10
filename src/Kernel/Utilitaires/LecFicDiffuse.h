@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,12 +45,12 @@ class LecFicDiffuse : public Lec_Diffuse_base
 public:
   LecFicDiffuse();
   LecFicDiffuse(const char* name, IOS_OPEN_MODE mode=ios::in);
-  int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in);
-  virtual istream& get_istream();
-  virtual const istream& get_istream() const;
+  int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in) override;
+  istream& get_istream() override;
+  const istream& get_istream() const override;
   //Entree& get_entree_master();
 protected:
-  inline Entree& get_entree_master()
+  inline Entree& get_entree_master() override
   {
     return file_;
   };

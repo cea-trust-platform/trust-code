@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,8 +38,8 @@ class Schema_Implicite_Multi_TimeStep_base : public Schema_Implicite_base
 
 public :
 
-  virtual bool initTimeStep(double dt);
-  void set_param(Param& );
+  bool initTimeStep(double dt) override;
+  void set_param(Param& ) override;
 
   ////////////////////////////////
   //                            //
@@ -47,9 +47,9 @@ public :
   //                            //
   ////////////////////////////////
 
-  int nb_valeurs_futures() const;
-  double temps_futur(int i) const;
-  double temps_defaut() const;
+  int nb_valeurs_futures() const override;
+  double temps_futur(int i) const override;
+  double temps_defaut() const override;
   inline  int nb_valeurs_temporelles_effectives() const;
 
   /////////////////////////////////////////
@@ -73,11 +73,11 @@ public :
 
   virtual int faire_un_pas_de_temps_pb_couple(Probleme_Couple&, int& ok);
 
-  bool   iterateTimeStep(bool& converged);
-  int faire_un_pas_de_temps_eqn_base(Equation_base&);
-  int mettre_a_jour();
-  int reprendre(Entree& );
-  inline void completer(void) { } ;
+  bool   iterateTimeStep(bool& converged) override;
+  int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
+  int mettre_a_jour() override;
+  int reprendre(Entree& ) override;
+  inline void completer(void) override { } ;
 
   void   Initialiser_Champs(Probleme_base&);
   void   test_stationnaire(Probleme_base&);
@@ -87,11 +87,11 @@ public :
     return residu_old_ ;
   };
 
-  void ajouter_inertie(Matrice_Base& mat_morse,DoubleTab& secmem,const Equation_base& eqn) const;
+  void ajouter_inertie(Matrice_Base& mat_morse,DoubleTab& secmem,const Equation_base& eqn) const override;
 
   //pour les schemas en temps a pas multiples
   virtual void modifier_second_membre_full_impl(const Equation_base& eqn, DoubleTab& secmem);
-  virtual void modifier_second_membre(const Equation_base& eqn, DoubleTab& secmem);
+  void modifier_second_membre(const Equation_base& eqn, DoubleTab& secmem) override;
 
 protected:
   void authorized_equation(const Equation_base& eqn);

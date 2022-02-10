@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,13 +43,13 @@ class Terme_Source_CoviMAC_base : public Source_base
 public:
 
   inline Terme_Source_CoviMAC_base(const Iterateur_Source_CoviMAC_base&);
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
-  inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-  void completer();
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void completer() override;
 
 protected:
 

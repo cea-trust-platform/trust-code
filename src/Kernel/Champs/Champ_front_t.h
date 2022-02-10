@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,10 +49,10 @@ class Champ_front_t : public Ch_front_var_instationnaire_indep
 
 public:
 
-  Champ_front_base& affecter_(const Champ_front_base& ch);
-  virtual void mettre_a_jour(double temps);
+  Champ_front_base& affecter_(const Champ_front_base& ch) override;
+  void mettre_a_jour(double temps) override;
   virtual double valeur_au_temps(double temps,int som,int comp) const;
-  inline virtual int valeur_au_temps_et_au_point_disponible() const
+  inline int valeur_au_temps_et_au_point_disponible() const override
   {
     return 1;
   };

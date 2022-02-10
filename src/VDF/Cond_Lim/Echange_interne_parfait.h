@@ -42,7 +42,7 @@ class Echange_interne_parfait  : public Echange_interne_impose
 
 public:
   // Override to have h_gap=+infinity:
-  virtual double calcul_h_imp(const double h_gap, const double invLambda) const;
+  double calcul_h_imp(const double h_gap, const double invLambda) const override;
 };
 
 

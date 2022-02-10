@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,12 +59,12 @@ class Op_Grad_VEF_P1B_Face : public Op_Grad_VEF_Face
 public:
 
   const Zone_VEF_PreP1b& zone_Vef() const;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& modifier_grad_pour_Cl(DoubleTab& ) const;
   DoubleTab& ajouter_elem(const DoubleTab& ,  DoubleTab& ) const;
   DoubleTab& ajouter_som(const DoubleTab& ,  DoubleTab& ) const;
   DoubleTab& ajouter_aretes(const DoubleTab& ,  DoubleTab& ) const;
-  int impr(Sortie& ) const ;
+  int impr(Sortie& ) const override ;
 
   static double calculer_coef_som(int elem,  const Zone_Cl_VEF& zcl,
                                   const Zone_VEF_PreP1b& zone_VEF) ;

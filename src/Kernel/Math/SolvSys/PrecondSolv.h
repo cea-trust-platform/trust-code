@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,14 +35,14 @@ class PrecondSolv : public Precond_base
   Declare_instanciable_sans_constructeur(PrecondSolv);
 public:
   PrecondSolv();
-  inline int supporte_matrice_morse_sym()
+  inline int supporte_matrice_morse_sym() override
   {
     return solveur.valeur().supporte_matrice_morse_sym();
   };
 
 protected:
-  void   prepare_(const Matrice_Base&, const DoubleVect& src);
-  int preconditionner_(const Matrice_Base&, const DoubleVect&, DoubleVect&);
+  void   prepare_(const Matrice_Base&, const DoubleVect& src) override;
+  int preconditionner_(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
 
   SolveurSys solveur;
 };

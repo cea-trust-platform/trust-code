@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,11 +33,11 @@ class Tri_EF : public Elem_EF_base
 public:
   Tri_EF();
   void calcul_vc(const ArrOfInt& ,ArrOfDouble& ,const ArrOfDouble& ,
-                 const DoubleTab& ,const Champ_Inc_base& ,int ) const;
+                 const DoubleTab& ,const Champ_Inc_base& ,int ) const override;
   void calcul_xg(DoubleVect& ,const DoubleTab& ,const int ,int& ,
-                 int& ,int& ,int& ) const;
+                 int& ,int& ,int& ) const override;
   void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-               const IntTab& ,const Zone& )  const ;
+               const IntTab& ,const Zone& )  const override ;
 };
 
 #endif

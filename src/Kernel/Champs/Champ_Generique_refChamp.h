@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,43 +43,43 @@ class Champ_Generique_refChamp : public Champ_Generique_base
 public:
 
   void initialize(const Champ_base& champ);
-  void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
-  virtual int            get_dimension() const;
-  virtual void              get_property_names(Motcles& list) const;
-  virtual const Noms        get_property(const Motcle& query) const;
-  virtual Entity            get_localisation(const int index = -1) const;
+  void set_param(Param& param) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  int            get_dimension() const override;
+  void              get_property_names(Motcles& list) const override;
+  const Noms        get_property(const Motcle& query) const override;
+  Entity            get_localisation(const int index = -1) const override;
 
-  virtual const DoubleTab&  get_ref_values() const;
-  virtual void              get_copy_values(DoubleTab&) const;
-  virtual void              get_xyz_values(const DoubleTab& coords, DoubleTab& values, ArrOfBit& validity_flag) const;
+  const DoubleTab&  get_ref_values() const override;
+  void              get_copy_values(DoubleTab&) const override;
+  void              get_xyz_values(const DoubleTab& coords, DoubleTab& values, ArrOfBit& validity_flag) const override;
 
-  virtual const Zone_Cl_dis_base&  get_ref_zcl_dis_base() const;
+  const Zone_Cl_dis_base&  get_ref_zcl_dis_base() const override;
 
-  virtual const DoubleTab&  get_ref_coordinates() const;
-  virtual void              get_copy_coordinates(DoubleTab&) const;
-  virtual const IntTab&     get_ref_connectivity(Entity index1, Entity index2) const;
-  virtual void              get_copy_connectivity(Entity index1, Entity index2, IntTab&) const;
+  const DoubleTab&  get_ref_coordinates() const override;
+  void              get_copy_coordinates(DoubleTab&) const override;
+  const IntTab&     get_ref_connectivity(Entity index1, Entity index2) const override;
+  void              get_copy_connectivity(Entity index1, Entity index2, IntTab&) const override;
 
-  virtual const Probleme_base& get_ref_pb_base() const;
+  const Probleme_base& get_ref_pb_base() const override;
   virtual const Champ_base& get_ref_champ_base() const; //renvoie la reference au champ encapsule
-  virtual void              reset();
-  virtual void completer(const Postraitement_base& post);
-  virtual void              mettre_a_jour(double temps);
+  void              reset() override;
+  void completer(const Postraitement_base& post) override;
+  void              mettre_a_jour(double temps) override;
 
   //get_champ() particulier car n utilise pas d espace de stockage
   //Actualise le champ discret si champ calcule du probleme
   //et renvoie la reference
-  virtual const Champ_base& get_champ(Champ& espace_stockage) const;
-  virtual const Champ_base& get_champ_without_evaluation(Champ& espace_stockage) const;
+  const Champ_base& get_champ(Champ& espace_stockage) const override;
+  const Champ_base& get_champ_without_evaluation(Champ& espace_stockage) const override;
 
   virtual void set_ref_champ(const Champ_base&);
 
-  double get_time() const;
-  const  Motcle            get_directive_pour_discr() const;
+  double get_time() const override;
+  const  Motcle            get_directive_pour_discr() const override;
   void set_nom_champ(const Motcle&);
   void nommer_source();
-  int get_info_type_post() const;
+  int get_info_type_post() const override;
 
 protected:
 

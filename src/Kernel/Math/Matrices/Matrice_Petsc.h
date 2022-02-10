@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@ class Matrice_Petsc : public Matrice_Base
 {
   Declare_instanciable(Matrice_Petsc);
 public:
-  virtual int ordre() const
+  int ordre() const override
   {
 #ifdef PETSCKSP_H
     PetscInt m,n;
@@ -41,7 +41,7 @@ public:
     return 0;
 #endif
   };
-  virtual int nb_lignes() const
+  int nb_lignes() const override
   {
 #ifdef PETSCKSP_H
     PetscInt m,n;
@@ -53,7 +53,7 @@ public:
     return 0;
 #endif
   }
-  virtual int nb_colonnes() const
+  int nb_colonnes() const override
   {
 #ifdef PETSCKSP_H
     PetscInt m,n;
@@ -65,25 +65,25 @@ public:
     return 0;
 #endif
   }
-  virtual void scale(const double& x)
+  void scale(const double& x) override
   {
     Cerr << "ToDo" << finl;
     Process::exit(-1);
   };
 
-  virtual DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const
+  DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const override
   {
     Cerr << "ToDo" << finl;
     Process::exit(-1);
     return r;
   }
-  virtual DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const
+  DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const override
   {
     Cerr << "ToDo" << finl;
     Process::exit(-1);
     return r;
   }
-  virtual DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const
+  DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override
   {
     Cerr << "ToDo" << finl;
     Process::exit(-1);

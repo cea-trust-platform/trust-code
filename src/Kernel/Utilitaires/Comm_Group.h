@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@ class Comm_Group : public Objet_U
   Declare_base_sans_constructeur_ni_destructeur(Comm_Group);
 public:
   Comm_Group();
-  virtual ~Comm_Group();
+  ~Comm_Group() override;
   virtual void   abort() const = 0;
 
   // COLL_SUM: somme sur tous les procs

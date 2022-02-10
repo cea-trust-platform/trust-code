@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,14 +46,14 @@ class Champ_Generique_base : public Objet_U
   Declare_base(Champ_Generique_base);
 public:
   virtual void set_param(Param& param)=0;
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual int  get_dimension() const;
   virtual double  get_time() const; //rend le temps du champ encapsule
   virtual const   Probleme_base& get_ref_pb_base() const;
   virtual const   Discretisation_base&  get_discretisation() const;
   virtual const   Motcle                get_directive_pour_discr() const;
 
-  void nommer(const Nom& nom);
+  void nommer(const Nom& nom) override;
   virtual const Nom& get_nom_post() const;
   //rend -1 si identifiant est le nom, numero de composante sinon
   static inline int composante(const Nom& nom_test,const Nom& nom, const Noms& composantes,const Noms& synonyms);

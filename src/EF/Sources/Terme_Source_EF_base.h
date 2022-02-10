@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,10 +45,10 @@ class Terme_Source_EF_base : public Source_base
 public:
 
   inline Terme_Source_EF_base(const Iterateur_Source_EF_base&);
-  inline DoubleTab& ajouter(DoubleTab& ) const ;
-  inline DoubleTab& calculer(DoubleTab& ) const ;
-  void completer();
-  inline int impr(Sortie& os) const ;
+  inline DoubleTab& ajouter(DoubleTab& ) const override ;
+  inline DoubleTab& calculer(DoubleTab& ) const override ;
+  void completer() override;
+  inline int impr(Sortie& os) const override ;
 
 protected:
 

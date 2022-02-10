@@ -17,7 +17,7 @@
       subroutine inittaillecommon(nreact,ncons)
       implicit none
       integer nreact,ncons,ii,jj
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition
@@ -44,7 +44,7 @@ C INCLUDE_FORTRAN
       integer ir,pactivite(*),contrereac
       double precision pstochio(*)
       integer ic
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition
@@ -62,7 +62,7 @@ C INCLUDE_FORTRAN
       subroutine setcwreaction(ir,rcw)
       double precision rcw
       integer ir
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition
@@ -74,7 +74,7 @@ C INCLUDE_FORTRAN
       cw(ir)=rcw
       end
       subroutine setmarqueur(marqueur)
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition
@@ -88,7 +88,7 @@ c     il faut decaler de 1 a cause du fortran....
       end
       subroutine printcommon()
       integer ir,ic
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition
@@ -133,7 +133,7 @@ c      call print_common()
       subroutine dlsodechimies(neq,y,t,tout,t_mel,itol,rtol,atol,
      1     rwork,lrw,iwork,liw)
       implicit none
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition
@@ -168,7 +168,7 @@ c      call print_common()
       double precision t, y, ydot, isto,cmin
       double precision  w1,cmin1
       dimension y(neq), ydot(neq)
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition
@@ -257,7 +257,7 @@ c     if (isto.ne.0)
       integer neq, ir,ii,ic,ia
       double precision t, y, ydot, isto
       dimension y(neq), ydot(neq)
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition
@@ -297,7 +297,7 @@ c            if (isto.ne.0)
       integer neq, ml,mu, nrowpd,ic,jc,ir,ii
       double precision t, y, pd,isto
       dimension y(neq), pd(nrowpd,neq)
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition
@@ -346,7 +346,7 @@ C INCLUDE_FORTRAN
       integer neq, ml,mu, nrowpd,ic,jc,ir,ii
       double precision t, y, pd,isto
       dimension y(neq), pd(nrowpd,neq)
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition

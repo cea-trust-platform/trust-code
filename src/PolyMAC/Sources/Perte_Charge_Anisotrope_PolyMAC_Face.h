@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ class Perte_Charge_Anisotrope_PolyMAC_Face : public Perte_Charge_PolyMAC
 
 public:
 
-  void mettre_a_jour(double temps)
+  void mettre_a_jour(double temps) override
   {
     diam_hydr->mettre_a_jour(temps);
     v.mettre_a_jour(temps);
@@ -70,9 +70,9 @@ public:
 protected:
 
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
-  virtual void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos,
-                                   double t, double norme_u, double dh, double nu, double reynolds,
-                                   double& coeff_ortho, double& coeff_long, double& u_l, DoubleVect& v_valeur) const;
+  void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos,
+                           double t, double norme_u, double dh, double nu, double reynolds,
+                           double& coeff_ortho, double& coeff_long, double& u_l, DoubleVect& v_valeur) const override;
 
 private:
 

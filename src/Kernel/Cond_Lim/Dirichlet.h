@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ public:
   virtual double val_imp(int i, int j) const;
   virtual double val_imp_au_temps(double temps, int i) const;
   virtual double val_imp_au_temps(double temps, int i, int j) const;
-  void verifie_ch_init_nb_comp();
+  void verifie_ch_init_nb_comp() override;
 };
 
 

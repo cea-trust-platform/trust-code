@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@
     inline const LIST(_TYPE_)& dernier() const ;                        \
     inline LIST(_TYPE_)& dernier();                                        \
     inline LIST(_TYPE_)& operator -=(const _TYPE_&);                        \
-    int est_egal_a(const Objet_U& ) const;                                \
+    int est_egal_a(const Objet_U& ) const override;                                \
     int contient(const _TYPE_&) const;                                \
     int contient(const char* const) const;                                \
     int rang(const _TYPE_&) const;                                        \

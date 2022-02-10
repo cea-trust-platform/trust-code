@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class PlaqThVDF : public Echange_global_impose
 
   Declare_instanciable(PlaqThVDF);
 
-  void mettre_a_jour(double );
+  void mettre_a_jour(double ) override;
 protected :
   double h;
 };

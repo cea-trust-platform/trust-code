@@ -38,7 +38,7 @@
 class Eval_Dift_VDF_Multi_inco_const : public Eval_Diff_VDF_Multi_inco_const, public Eval_Turbulence
 {
 public:
-  inline void mettre_a_jour();
+  inline void mettre_a_jour() override;
   inline void associer_diff_turb(const Champ_Fonc& );
   inline const Champ_Fonc& diffusivite_turbulente() const { return diffusivite_turbulente_.valeur(); }
 
@@ -62,7 +62,7 @@ public:
     return heq_lam + heq_turb;
   }
 
-  inline virtual double get_equivalent_distance(int boundary_index,int local_face) const
+  inline double get_equivalent_distance(int boundary_index,int local_face) const override
   {
     return equivalent_distance[boundary_index](local_face);
   }

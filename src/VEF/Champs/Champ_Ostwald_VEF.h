@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,14 +58,14 @@ public :
   inline const Champ_P1NC& mon_champs() const;
   inline void associer_champ(const Champ_P1NC&);
 
-  inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base);
+  inline void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override;
 
   void associer_eqn(const Navier_Stokes_std& );
-  const Zone_dis_base& zone_dis_base() const;
+  const Zone_dis_base& zone_dis_base() const override;
 
-  void mettre_a_jour(double temps);
-  void me_calculer(double tps);
-  int initialiser(const double& temps);
+  void mettre_a_jour(double temps) override;
+  void me_calculer(double tps) override;
+  int initialiser(const double& temps) override;
   void init_mu(DoubleTab& );
   void calculer_dscald(DoubleTab&);
 

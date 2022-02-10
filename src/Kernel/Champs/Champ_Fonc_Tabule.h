@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,25 +47,25 @@ class Champ_Fonc_Tabule : public Champ_Fonc_base
 public:
   using Champ_Fonc_base::valeurs;
 
-  inline int initialiser(const double& un_temps);
-  inline void mettre_a_jour(double un_temps);
-  inline void associer_zone_dis_base(const Zone_dis_base&);
-  inline const DoubleTab& valeurs() const;
-  inline const Zone_dis_base& zone_dis_base() const;
+  inline int initialiser(const double& un_temps) override;
+  inline void mettre_a_jour(double un_temps) override;
+  inline void associer_zone_dis_base(const Zone_dis_base&) override;
+  inline const DoubleTab& valeurs() const override;
+  inline const Zone_dis_base& zone_dis_base() const override;
   inline const Champ_Fonc& le_champ_tabule_discretise() const;
   inline Champ_Fonc& le_champ_tabule_discretise() { return le_champ_tabule_dis; }
   inline const Table& table() const { return la_table; }
   inline Table& table() { return la_table; }
-  inline DoubleTab& valeurs();
-  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const ;
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const;
-  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
-  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
+  inline DoubleTab& valeurs() override;
+  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const override ;
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
+  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
   inline Noms& noms_champs_parametre() { return noms_champs_parametre_; };
   inline Noms& noms_problemes() { return noms_pbs_; };
 
-  inline virtual double valeur_a_elem_compo(const DoubleVect& position, int le_poly,int ncomp) const ;
-  virtual Champ_base& affecter_(const Champ_base& ) ;
+  inline double valeur_a_elem_compo(const DoubleVect& position, int le_poly,int ncomp) const override ;
+  Champ_base& affecter_(const Champ_base& ) override ;
 
   // Methodes utiles pour notifier l'utilisateur suite au changement du syntaxe
   static void Warn_old_chp_fonc_syntax(const char * nom_class, const Nom& val1, const Nom& val2, int& dim, Nom& param);

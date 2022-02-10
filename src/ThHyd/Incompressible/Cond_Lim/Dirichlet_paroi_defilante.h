@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,8 +45,8 @@ class Dirichlet_paroi_defilante : public Dirichlet
 
 public :
 
-  int compatible_avec_eqn(const Equation_base&) const;
-  void completer();
+  int compatible_avec_eqn(const Equation_base&) const override;
+  void completer() override;
 };
 
 

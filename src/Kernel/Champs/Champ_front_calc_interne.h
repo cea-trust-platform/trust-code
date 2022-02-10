@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,7 @@
 //
 // File:        Champ_front_calc_interne.h
 // Directory:   $TRUST_ROOT/src/Kernel/Champs
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -43,8 +44,8 @@ class Champ_front_calc_interne : public Champ_front_calc
 public:
   Champ_front_calc_interne();
 
-  virtual void completer();
-  void mettre_a_jour(double temps);
+  void completer() override;
+  void mettre_a_jour(double temps) override;
   const IntTab& face_map() const
   {
     return face_map_;

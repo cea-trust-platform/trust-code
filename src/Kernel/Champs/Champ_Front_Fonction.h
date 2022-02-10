@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,13 +41,13 @@ class Champ_Front_Fonction : public Ch_front_var_instationnaire_dep
 {
   Declare_instanciable(Champ_Front_Fonction);
 public:
-  void mettre_a_jour(double temps);
+  void mettre_a_jour(double temps) override;
   inline Nom& nom_champ_parametre()
   {
     return nom_champ_parametre_;
   };
-  int initialiser(double temps, const Champ_Inc_base& inco);
-  Champ_front_base& affecter_(const Champ_front_base& ch);
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
+  Champ_front_base& affecter_(const Champ_front_base& ch) override;
 protected:
   Nom nom_champ_parametre_;
   Table la_table;

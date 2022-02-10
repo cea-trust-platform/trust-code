@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,8 +46,8 @@ class Source_WC_Chaleur_VEF : public Source_WC_Chaleur, public Source_Fluide_Dil
   Declare_instanciable(Source_WC_Chaleur_VEF);
 
 protected:
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
-  void compute_interpolate_gradP(DoubleTab& UgradP_face, const DoubleTab& Ptot) const;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void compute_interpolate_gradP(DoubleTab& UgradP_face, const DoubleTab& Ptot) const override;
 
 private:
   void elem_to_face(const Zone_VF& zone, const DoubleTab& grad_Ptot,DoubleTab& grad_Ptot_face) const;

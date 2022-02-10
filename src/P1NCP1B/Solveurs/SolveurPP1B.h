@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,19 +34,19 @@ class SolveurPP1B : public SolveurSys_base
   Declare_instanciable(SolveurPP1B);
 
 public :
-  virtual int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&);
-  virtual int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&,  int niter_max);
-  virtual inline void reinit()
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&,  int niter_max) override;
+  inline void reinit() override
   {
     SolveurSys_base::reinit();
     solveur_pression_.valeur().reinit();
   };
   int associer(const Assembleur_P_VEFPreP1B&, const SolveurSys&);
-  inline int solveur_direct() const
+  inline int solveur_direct() const override
   {
     return solveur_pression_.valeur().solveur_direct();
   };
-  virtual inline void fixer_schema_temps_limpr(int l)
+  inline void fixer_schema_temps_limpr(int l) override
   {
     solveur_pression_.valeur().fixer_schema_temps_limpr(l);
   }

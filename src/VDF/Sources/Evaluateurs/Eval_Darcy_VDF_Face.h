@@ -37,7 +37,7 @@ public:
   inline double& getPorosite() { return porosite; }
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
   template <typename Type_Double> void calculer_terme_source_bord(int num_face, Type_Double& source) const { calculer_terme_source(num_face,source); }
-  inline void mettre_a_jour();
+  inline void mettre_a_jour() override;
   inline void associer(const Champ_Don&);
   inline void associer(const Champ_Inc& vit) { vitesse = vit; }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,9 +91,9 @@
     operator const _TYPE_&() const;                                \
     operator _TYPE_&();                                                \
     /* methode reimplementee de O_U_Ptr : */                        \
-    const Type_info & get_info_ptr() const;                        \
+    const Type_info & get_info_ptr() const override;                        \
   protected:                                                        \
-    void set_O_U_Ptr(Objet_U *);                                \
+    void set_O_U_Ptr(Objet_U *) override;                                \
   private:                                                        \
     _TYPE_ * pointeur_;                                                \
   };                                                                \

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,17 +53,17 @@ class Sch_CN_EX_iteratif : public Sch_CN_iteratif
 
 public :
 
-  virtual void set_param(Param& titi);
-  void mettre_a_jour_dt_stab();
+  void set_param(Param& titi) override;
+  void mettre_a_jour_dt_stab() override;
 
 protected :
 
-  virtual bool iterateTimeStepOnEquation(int i,bool& converged);
+  bool iterateTimeStepOnEquation(int i,bool& converged) override;
   virtual bool iterateTimeStepOnNS(int i,bool& converged);
   virtual bool iterateTimeStepOnOther(int i,bool& converged);
 
   double omega;
-  virtual void ajuster_facsec(type_convergence cv);
+  void ajuster_facsec(type_convergence cv) override;
 
 };
 

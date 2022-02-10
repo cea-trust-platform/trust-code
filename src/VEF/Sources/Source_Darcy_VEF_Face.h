@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,9 +57,9 @@ class Source_Darcy_VEF_Face : public Terme_Source_VEF_base
 public:
 
   inline Source_Darcy_VEF_Face();
-  void associer_pb(const Probleme_base& );
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
-  void mettre_a_jour(double temps)
+  void associer_pb(const Probleme_base& ) override;
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void mettre_a_jour(double temps) override
   {
     ;
   }

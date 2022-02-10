@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ class TroisDto2D : public Interprete_geometrique_base
 {
   Declare_instanciable(TroisDto2D);
 public :
-  Entree& interpreter_(Entree&);
+  Entree& interpreter_(Entree&) override;
   void extraire_2D(const Domaine&, Domaine&, const Bord&,const Nom& , int);
 
   // OC, 28/10/2004, Modif pour pouvoir extraire un bord d'orientation quelconque.

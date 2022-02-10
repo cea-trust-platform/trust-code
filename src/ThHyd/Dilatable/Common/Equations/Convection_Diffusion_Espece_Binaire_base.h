@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,14 +40,14 @@ class Convection_Diffusion_Espece_Binaire_base : public Convection_Diffusion_Esp
   Declare_base(Convection_Diffusion_Espece_Binaire_base);
 
 public :
-  void set_param(Param& titi);
-  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) ;
-  int lire_motcle_non_standard(const Motcle&, Entree&);
-  int preparer_calcul();
-  const Champ_base& diffusivite_pour_pas_de_temps();
-  const Champ_base& vitesse_pour_transport();
-  DoubleTab& derivee_en_temps_inco(DoubleTab& );
-  virtual void completer();
+  void set_param(Param& titi) override;
+  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  int preparer_calcul() override;
+  const Champ_base& diffusivite_pour_pas_de_temps() override;
+  const Champ_base& vitesse_pour_transport() override;
+  DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
+  void completer() override;
 };
 
 #endif /* Convection_Diffusion_Espece_Binaire_base_included */

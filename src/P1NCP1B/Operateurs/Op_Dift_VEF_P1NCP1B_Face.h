@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,24 +53,24 @@ class Op_Dift_VEF_P1NCP1B_Face : public Op_Dift_VEF_base
 public:
 
   void associer(const Zone_dis& , const Zone_Cl_dis& ,
-                const Champ_Inc& );
-  void associer_diffusivite(const Champ_base& );
-  inline const Champ_base& diffusivite() const
+                const Champ_Inc& ) override;
+  void associer_diffusivite(const Champ_base& ) override;
+  inline const Champ_base& diffusivite() const override
   {
     return diffusivite_;
   };
 
   void associer_modele_turbulence(const Mod_turb_hyd_base& );
 
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   void verifier() const;
 
   void contribue_au_second_membre() const;
   void ajouter_contribution() const;
 
-  double calculer_dt_stab() const;
-  inline void remplir_nu(DoubleTab& ) const
+  double calculer_dt_stab() const override;
+  inline void remplir_nu(DoubleTab& ) const override
   {
     Cerr<<__FILE__<<":"<<(int)__LINE__<<finl;
     exit();

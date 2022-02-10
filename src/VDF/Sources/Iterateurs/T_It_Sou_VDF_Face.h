@@ -34,9 +34,9 @@
 template <class _TYPE_>
 class T_It_Sou_VDF_Face : public Iterateur_Source_VDF_base
 {
-  inline unsigned taille_memoire() const { throw; }
+  inline unsigned taille_memoire() const override { throw; }
 
-  inline int duplique() const
+  inline int duplique() const override
   {
     T_It_Sou_VDF_Face* xxx = new  T_It_Sou_VDF_Face(*this);
     if(!xxx)
@@ -51,11 +51,11 @@ public:
   inline T_It_Sou_VDF_Face() : nb_faces(-1), premiere_face_interne(-1) { }
   inline T_It_Sou_VDF_Face(const T_It_Sou_VDF_Face<_TYPE_>&);
 
-  DoubleTab& calculer(DoubleTab& ) const;
-  DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& calculer(DoubleTab& ) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
 
-  inline void completer_();
-  inline Evaluateur_Source_VDF& evaluateur();
+  inline void completer_() override;
+  inline Evaluateur_Source_VDF& evaluateur() override;
 
 protected:
   _TYPE_ evaluateur_source_face;

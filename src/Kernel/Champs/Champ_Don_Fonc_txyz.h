@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,36 +45,36 @@ class Champ_Don_Fonc_txyz : public Champ_Don_base, public Parser_Eval
   Declare_instanciable(Champ_Don_Fonc_txyz);
 
 public:
-  virtual void mettre_a_jour(double );
+  void mettre_a_jour(double ) override;
   Champ_base& affecter(const Champ_base& ch);
-  virtual Champ_base& affecter_(const Champ_base& );
+  Champ_base& affecter_(const Champ_base& ) override;
 
   DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const;
+                       DoubleVect& valeurs) const override;
 
   DoubleVect& valeur_a_elem(const DoubleVect& position,
                             DoubleVect& valeurs,
-                            int le_poly) const;
+                            int le_poly) const override;
 
   double valeur_a_elem_compo(const DoubleVect& position,
                              int le_poly,
-                             int ncomp) const;
+                             int ncomp) const override;
 
   DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const;
+                        DoubleTab& valeurs) const override;
 
   DoubleVect& valeur_aux_compo(const DoubleTab& positions,
                                DoubleVect& valeurs,
-                               int ncomp) const;
+                               int ncomp) const override;
 
   DoubleTab& valeur_aux_elems(const DoubleTab& positions,
                               const IntVect& les_polys,
-                              DoubleTab& valeurs) const;
+                              DoubleTab& valeurs) const override;
 
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
                                      const IntVect& les_polys,
                                      DoubleVect& valeurs,
-                                     int ncomp) const;
+                                     int ncomp) const override;
 
 protected:
 

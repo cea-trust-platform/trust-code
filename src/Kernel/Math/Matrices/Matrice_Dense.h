@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,18 +46,18 @@ public :
   bool is_the_same( const Matrice_Dense& other_matrix , const double& tol=1e-14 ) const;
   void build_the_transposed( Matrice_Dense& transposed ) const;
   void set_coefficient( const int& i , const int& j , const double& value );
-  Sortie& imprimer_formatte( Sortie& s ) const;
+  Sortie& imprimer_formatte( Sortie& s ) const override;
 
-  virtual int ordre() const;
-  virtual int nb_lignes() const;
-  virtual int nb_colonnes() const;
+  int ordre() const override;
+  int nb_lignes() const override;
+  int nb_colonnes() const override;
 
-  virtual DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const;
-  virtual DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const;
-  virtual DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const;
+  DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const override;
+  DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const override;
+  DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override;
 
-  virtual void scale( const double& x ) ;
-  virtual void get_stencil( IntTab& stencil ) const;
+  void scale( const double& x ) override ;
+  void get_stencil( IntTab& stencil ) const override;
 
   // Perform the matrix inversion
   void inverse();

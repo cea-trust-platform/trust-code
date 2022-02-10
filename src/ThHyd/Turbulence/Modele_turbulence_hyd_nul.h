@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,8 +29,8 @@ class Modele_turbulence_hyd_nul : public Mod_turb_hyd_base
 {
   Declare_instanciable(Modele_turbulence_hyd_nul);
 public:
-  void mettre_a_jour(double);
-  int sauvegarder(Sortie&) const;
+  void mettre_a_jour(double) override;
+  int sauvegarder(Sortie&) const override;
 protected:
 };
 

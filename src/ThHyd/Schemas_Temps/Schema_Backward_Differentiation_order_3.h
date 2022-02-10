@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,13 +45,13 @@ class Schema_Backward_Differentiation_order_3: public Schema_Backward_Differenti
 
 public :
 
-  int nb_valeurs_temporelles() const;
-  int nb_valeurs_passees() const ;
-  int nb_pas_dt_seuil() const ;
+  int nb_valeurs_temporelles() const override;
+  int nb_valeurs_passees() const override ;
+  int nb_pas_dt_seuil() const override ;
 
 protected :
 
-  void   compute_backward_differentiation_coefficients(double time_step, const DoubleTab& times) const ;
+  void   compute_backward_differentiation_coefficients(double time_step, const DoubleTab& times) const override ;
 };
 
 #endif

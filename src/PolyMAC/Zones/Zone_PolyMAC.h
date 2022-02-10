@@ -98,11 +98,11 @@ class Zone_PolyMAC : public Zone_VF
   Declare_instanciable(Zone_PolyMAC);
 
 public :
-  void typer_elem(Zone& zone_geom);
-  void discretiser();
+  void typer_elem(Zone& zone_geom) override;
+  void discretiser() override;
   void swap(int, int, int);
-  virtual void reordonner(Faces&);
-  void modifier_pour_Cl(const Conds_lim& );
+  void reordonner(Faces&) override;
+  void modifier_pour_Cl(const Conds_lim& ) override;
 
   inline const Elem_PolyMAC& type_elem() const;
   inline int nb_elem_Cl() const;
@@ -114,7 +114,7 @@ public :
   {
     return h_carre_(i);
   };
-  inline double face_normales(int,int ) const;
+  inline double face_normales(int,int ) const override;
   inline const DoubleVect& longueur_aretes() const
   {
     return longueur_aretes_;
@@ -216,7 +216,7 @@ private:
   // relatifs aux elements non standards
 
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
-  void remplir_elem_faces();
+  void remplir_elem_faces() override;
   Sortie& ecrit(Sortie& os) const;
   void creer_faces_virtuelles_non_std();
 

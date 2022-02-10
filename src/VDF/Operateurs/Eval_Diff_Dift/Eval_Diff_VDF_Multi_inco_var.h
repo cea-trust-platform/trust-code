@@ -39,9 +39,9 @@ class Eval_Diff_VDF_Multi_inco_var : public Eval_Diff_VDF
 {
 
 public:
-  inline void mettre_a_jour() { }
-  inline void associer(const Champ_base& );
-  inline const Champ_base& get_diffusivite() const { return diffusivite_ ; }
+  inline void mettre_a_jour() override { }
+  inline void associer(const Champ_base& ) override;
+  inline const Champ_base& get_diffusivite() const override { return diffusivite_ ; }
 
   // Methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const { return dt_diffusivite(i, compo); }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,27 +43,27 @@ class Comm_Group_MPI : public Comm_Group
   Declare_instanciable_sans_constructeur_ni_destructeur(Comm_Group_MPI);
 public:
   Comm_Group_MPI();
-  ~Comm_Group_MPI();
-  void abort() const;
+  ~Comm_Group_MPI() override;
+  void abort() const override;
 
-  void mp_collective_op(const double *x, double *resu, int n, Collective_Op op) const;
-  void mp_collective_op(const double *x, double *resu, const Collective_Op *op, int n) const;
-  void mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const;
-  void mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const;
+  void mp_collective_op(const double *x, double *resu, int n, Collective_Op op) const override;
+  void mp_collective_op(const double *x, double *resu, const Collective_Op *op, int n) const override;
+  void mp_collective_op(const int *x, int *resu, int n, Collective_Op op) const override;
+  void mp_collective_op(const int *x, int *resu, const Collective_Op *op, int n) const override;
 
-  void barrier(int tag) const;
+  void barrier(int tag) const override;
   void send_recv_start(const ArrOfInt& send_list,
                        const ArrOfInt& send_size,
                        const char * const * const send_buffers,
                        const ArrOfInt& recv_list,
                        const ArrOfInt& recv_size,
                        char * const * const recv_buffers,
-                       TypeHint typehint = CHAR) const;
-  void send_recv_finish() const;
-  void send(int pe, const void *buffer, int size, int tag) const; // Envoi bloquant
-  void recv(int pe, void *buffer, int size, int tag) const; // Reception bloquante
-  void broadcast(void *buffer, int size, int pe_source) const;
-  void all_to_all(const void *src_buffer, void *dest_buffer, int data_size) const;
+                       TypeHint typehint = CHAR) const override;
+  void send_recv_finish() const override;
+  void send(int pe, const void *buffer, int size, int tag) const override; // Envoi bloquant
+  void recv(int pe, void *buffer, int size, int tag) const override; // Reception bloquante
+  void broadcast(void *buffer, int size, int pe_source) const override;
+  void all_to_all(const void *src_buffer, void *dest_buffer, int data_size) const override;
 
 #ifdef MPI_
   void init_group_trio();
@@ -86,7 +86,7 @@ public:
     return mpi_comm_;
   };
 protected:
-  void init_group(const ArrOfInt& pe_list);
+  void init_group(const ArrOfInt& pe_list) override;
   void internal_collective(const int *x, int *resu, int nx, const Collective_Op *op, int nop, int level) const;
   void internal_collective(const double *x, double *resu, int nx, const Collective_Op *op, int nop, int level) const;
   int  mppartial_sum(int x) const;

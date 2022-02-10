@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,8 +44,8 @@ class Champ_Tabule_Morceaux : public Champ_Don_base
 
 public :
 
-  virtual int initialiser(const double& un_temps);
-  virtual void mettre_a_jour(double un_temps);
+  int initialiser(const double& un_temps) override;
+  void mettre_a_jour(double un_temps) override;
 
   int nb_champs_tabules()const
   {
@@ -63,9 +63,9 @@ public :
 
   DoubleTab& valeur_aux_elems(const DoubleTab& positions,
                               const IntVect& les_polys,
-                              DoubleTab& valeurs) const ;
-  virtual double valeur_a_elem_compo(const DoubleVect& position,
-                                     int le_poly, int ncomp) const;
+                              DoubleTab& valeurs) const override ;
+  double valeur_a_elem_compo(const DoubleVect& position,
+                             int le_poly, int ncomp) const override;
 
 protected:
 

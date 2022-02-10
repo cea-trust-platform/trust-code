@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,7 +64,7 @@ public :
     return face_surfaces(i);
   };
 
-  void discretiser();
+  void discretiser() override;
   void infobord();
   void info_elem_som();
   //void creer_face_voisins_virt();
@@ -140,8 +140,8 @@ public :
   inline const Joint& joint(int i) const;
   inline Joint& joint(int i);
 
-  inline Frontiere_dis_base& frontiere_dis(int );
-  inline const Frontiere_dis_base& frontiere_dis(int ) const;
+  inline Frontiere_dis_base& frontiere_dis(int ) override;
+  inline const Frontiere_dis_base& frontiere_dis(int ) const override;
 
   inline int nb_frontiere_dis() const
   {
@@ -158,17 +158,17 @@ public :
   inline DoubleVect& inverse_volumes();                        // Tableau pour optimiser le code
   inline const DoubleVect& volumes() const;
   inline const DoubleVect& inverse_volumes() const;        // Tableau pour optimiser le code
-  inline IntTab& face_voisins();
-  inline const IntTab& face_voisins() const;
+  inline IntTab& face_voisins() override;
+  inline const IntTab& face_voisins() const override;
   inline const IntTab& face_voisins_fictifs() const;
   inline void face_voisins_reel_fictif(int face,int& el0,int& elf) const;
   inline IntTab& elem_faces();
   inline const IntTab& elem_faces() const;
   inline ArrOfInt& faces_doubles();
   inline const ArrOfInt& faces_doubles() const;
-  inline IntTab& face_sommets();
-  inline const IntTab& face_sommets() const;
-  void modifier_pour_Cl(const Conds_lim&);
+  inline IntTab& face_sommets() override;
+  inline const IntTab& face_sommets() const override;
+  void modifier_pour_Cl(const Conds_lim&) override;
 
   int numero_face_local(int face, int elem) const;
   inline int numero_sommet_local(int som, int elem) const;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ class Entree_fluide_fraction_massique_imposee  : public Dirichlet_entree_fluide
   Declare_instanciable(Entree_fluide_fraction_massique_imposee);
 
 public :
-  virtual int compatible_avec_eqn(const Equation_base&) const;
+  int compatible_avec_eqn(const Equation_base&) const override;
 
 };
 

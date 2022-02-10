@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,27 +73,27 @@ class Matrice_Bloc : public Matrice_Base
   Declare_instanciable_sans_constructeur(Matrice_Bloc);
 
 public :
-  virtual int ordre( void ) const;
-  virtual int nb_lignes( void ) const;
-  virtual int nb_colonnes( void ) const;
+  int ordre( void ) const override;
+  int nb_lignes( void ) const override;
+  int nb_colonnes( void ) const override;
 
   // Methodes pour le calcul de r+=Ax codees dans les classes filles
-  virtual DoubleVect& ajouter_multvect_( const DoubleVect& x, DoubleVect& r ) const;
-  virtual DoubleVect& ajouter_multvectT_( const DoubleVect& x, DoubleVect& r ) const;
-  virtual DoubleTab& ajouter_multTab_( const DoubleTab& x, DoubleTab& r ) const;
+  DoubleVect& ajouter_multvect_( const DoubleVect& x, DoubleVect& r ) const override;
+  DoubleVect& ajouter_multvectT_( const DoubleVect& x, DoubleVect& r ) const override;
+  DoubleTab& ajouter_multTab_( const DoubleTab& x, DoubleTab& r ) const override;
 
   // multiplication par un scalaire
-  virtual void scale( const double& x );
+  void scale( const double& x ) override;
 
-  virtual void get_stencil( IntTab& stencil ) const;
+  void get_stencil( IntTab& stencil ) const override;
 
-  virtual void get_stencil_and_coefficients( IntTab&      stencil,
-                                             ArrOfDouble& coefficients ) const;
+  void get_stencil_and_coefficients( IntTab&      stencil,
+                                     ArrOfDouble& coefficients ) const override;
 
 
   // Impression
-  virtual Sortie& imprimer( Sortie& s ) const;
-  virtual Sortie& imprimer_formatte( Sortie& s ) const;
+  Sortie& imprimer( Sortie& s ) const override;
+  Sortie& imprimer_formatte( Sortie& s ) const override;
 
   // Dimensionnement
   virtual void dimensionner( int N, int M );
@@ -102,7 +102,7 @@ public :
   virtual const Matrice& get_bloc( int i, int j ) const;
   virtual Matrice& get_bloc( int i, int j );
 
-  virtual void build_stencil( void ) ;
+  void build_stencil( void ) override;
 
 public :
   // Constructeurs :

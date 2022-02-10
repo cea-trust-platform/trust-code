@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ class Champ_front_debit : public Champ_front_xyz_debit
   Declare_instanciable(Champ_front_debit);
 
 public:
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
 };
 
 #endif

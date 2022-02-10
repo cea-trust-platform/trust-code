@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ class Format_Post_Med_major : public Format_Post_Med
   Declare_instanciable_sans_constructeur(Format_Post_Med_major);
 
 protected:
-  virtual EcrMED getEcrMED() const;
+  EcrMED getEcrMED() const override;
 };
 
 #endif

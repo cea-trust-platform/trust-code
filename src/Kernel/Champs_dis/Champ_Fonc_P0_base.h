@@ -40,27 +40,27 @@ class Champ_Fonc_P0_base : public Champ_Fonc_base, public Champ_implementation_P
   Declare_base(Champ_Fonc_P0_base);
 
 protected :
-  virtual       Champ_base& le_champ(void)      ;
-  virtual const Champ_base& le_champ(void) const;
+  Champ_base& le_champ(void) override      ;
+  const Champ_base& le_champ(void) const override;
 
 public :
-  inline virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const;
-  inline virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const;
-  inline virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const;
-  inline virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const;
-  inline virtual DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const;
-  inline virtual DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const;
-  inline virtual DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const;
-  inline virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const;
-  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double ,int distant) const;
-  virtual Champ_base& affecter_(const Champ_base& ) ;
-  int fixer_nb_valeurs_nodales(int n);
-  inline void associer_zone_dis_base(const Zone_dis_base&);
-  const Zone_dis_base& zone_dis_base() const;
+  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
+  inline double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
+  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
+  inline DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const override;
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const override;
+  inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
+  inline int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double ,int distant) const override;
+  Champ_base& affecter_(const Champ_base& ) override ;
+  int fixer_nb_valeurs_nodales(int n) override;
+  inline void associer_zone_dis_base(const Zone_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override;
   double moyenne(int ) const;
   DoubleVect moyenne() const;
-  virtual int imprime(Sortie& , int ) const;
-  virtual void mettre_a_jour(double );
+  int imprime(Sortie& , int ) const override;
+  void mettre_a_jour(double ) override;
   double valeur_au_bord(int face) const;
 
 protected:

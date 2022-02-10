@@ -31,9 +31,9 @@
 template <class _TYPE_>
 class T_It_Sou_VDF_Elem : public Iterateur_Source_VDF_base
 {
-  inline unsigned taille_memoire() const { throw; }
+  inline unsigned taille_memoire() const override { throw; }
 
-  inline int duplique() const
+  inline int duplique() const override
   {
     T_It_Sou_VDF_Elem* xxx = new  T_It_Sou_VDF_Elem(*this);
     if(!xxx)
@@ -45,11 +45,11 @@ class T_It_Sou_VDF_Elem : public Iterateur_Source_VDF_base
   }
 
 public:
-  DoubleTab& calculer(DoubleTab& ) const;
-  DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& calculer(DoubleTab& ) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
 
-  inline Evaluateur_Source_VDF& evaluateur();
-  inline void completer_();
+  inline Evaluateur_Source_VDF& evaluateur() override;
+  inline void completer_() override;
 
 protected:
   _TYPE_ evaluateur_source_elem;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,38 +63,38 @@ class Format_Post_Med : public Format_Post_base
 public:
   // Methodes declarees dans la classe de base (interface commune a tous
   // les formats de postraitment de champs):
-  virtual void reset();
-  void set_param(Param& param);
-  virtual int initialize_by_default(const Nom& file_basename);
-  virtual int initialize(const Nom& file_basename, const int& format, const Nom& option_para);
-  virtual int ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post);
-  virtual int completer_post(const Domaine& dom,const int axi,
-                             const Nature_du_champ& nature,const int nb_compo,const Noms& noms_compo,
-                             const Motcle& loc_post,const Nom& le_nom_champ_post);
+  void reset() override;
+  void set_param(Param& param) override;
+  int initialize_by_default(const Nom& file_basename) override;
+  int initialize(const Nom& file_basename, const int& format, const Nom& option_para) override;
+  int ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post) override;
+  int completer_post(const Domaine& dom,const int axi,
+                     const Nature_du_champ& nature,const int nb_compo,const Noms& noms_compo,
+                     const Motcle& loc_post,const Nom& le_nom_champ_post) override;
 
-  virtual int preparer_post(const Nom& id_du_domaine,const int& est_le_premier_post,
-                            const int& reprise,
-                            const double& t_init);
-  virtual int finir(int& est_le_dernier_post);
-  virtual int ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post);
-  virtual int ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post);
-  virtual int ecrire_temps(const double temps);
+  int preparer_post(const Nom& id_du_domaine,const int& est_le_premier_post,
+                    const int& reprise,
+                    const double& t_init) override;
+  int finir(int& est_le_dernier_post) override;
+  int ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post) override;
+  int ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post) override;
+  int ecrire_temps(const double temps) override;
 
-  virtual int ecrire_champ(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
-                           int ncomp,double temps_,double temps_courant,
-                           const Nom& id_du_champ,
-                           const Nom&   id_du_domaine,
-                           const Nom&   localisation,
-                           const Nom&   nature,
-                           const DoubleTab& data);
+  int ecrire_champ(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
+                   int ncomp,double temps_,double temps_courant,
+                   const Nom& id_du_champ,
+                   const Nom&   id_du_domaine,
+                   const Nom&   localisation,
+                   const Nom&   nature,
+                   const DoubleTab& data) override;
 
-  virtual int ecrire_item_int(const Nom&   id_item,
-                              const Nom&   id_du_domaine,
-                              const Nom&   id_zone,
-                              const Nom&   localisation,
-                              const Nom&   reference,
-                              const IntVect& data,
-                              const int reference_size);
+  int ecrire_item_int(const Nom&   id_item,
+                      const Nom&   id_du_domaine,
+                      const Nom&   id_zone,
+                      const Nom&   localisation,
+                      const Nom&   reference,
+                      const IntVect& data,
+                      const int reference_size) override;
 
   Format_Post_Med();
 

@@ -37,8 +37,8 @@ class Op_Div_VDF_Elem : public Op_Div_VDF_base
   Declare_instanciable_sans_constructeur(Op_Div_VDF_Elem);
 public:
   Op_Div_VDF_Elem();
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
-  void volumique(DoubleTab& ) const;
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  void volumique(DoubleTab& ) const override;
 
 protected:
   REF(Zone_VDF) la_zone_vdf;

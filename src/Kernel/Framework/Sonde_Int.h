@@ -66,7 +66,7 @@ public :
   //int add(const double, const double);
   //int add(const double, const double, const double);
   inline SFichier& fichier();
-  inline ~Sonde_Int();
+  inline ~Sonde_Int() override;
 
 private :
 

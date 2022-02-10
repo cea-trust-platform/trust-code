@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,34 +47,34 @@ class Champ_Generique_Interpolation : public Champ_Gen_de_Champs_Gen
 {
   Declare_instanciable(Champ_Generique_Interpolation);
 public:
-  void reset();
-  void set_param(Param& param);
+  void reset() override;
+  void set_param(Param& param) override;
   //int lire_motcle_non_standard(const Motcle&, Entree&);
   virtual int     set_localisation(const Motcle& localisation, int exit_on_error = 1);
   virtual int     set_methode(const Motcle& methode, int exit_on_error = 1);
   virtual int     set_domaine(const Nom& nom_domaine, int exit_on_error = 1);
-  virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
-  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
+  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
   virtual const Champ_base&  get_champ_with_calculer_champ_post(Champ& espace_stockage) const;
 
-  virtual const DoubleTab&  get_ref_values() const;
-  virtual void              get_copy_values(DoubleTab&) const;
+  const DoubleTab&  get_ref_values() const override;
+  void              get_copy_values(DoubleTab&) const override;
   //virtual void  get_xyz_values(const DoubleTab & coords, DoubleTab & values, ArrOfBit & validity_flag) const;
 
-  virtual Entity  get_localisation(const int index = -1) const;
-  virtual const Domaine&      get_ref_domain() const;
-  virtual void get_copy_domain(Domaine&) const;
+  Entity  get_localisation(const int index = -1) const override;
+  const Domaine&      get_ref_domain() const override;
+  void get_copy_domain(Domaine&) const override;
 
-  virtual const DoubleTab&  get_ref_coordinates() const;
-  virtual void              get_copy_coordinates(DoubleTab&) const;
+  const DoubleTab&  get_ref_coordinates() const override;
+  void              get_copy_coordinates(DoubleTab&) const override;
   //virtual const IntTab&   get_ref_connectivity(Entity index1, Entity index2) const;
   //virtual void            get_copy_connectivity(Entity index1, Entity index2, IntTab &) const;
 
-  virtual const Noms        get_property(const Motcle& query) const;
-  void nommer_source();
-  void completer(const Postraitement_base& post);
-  const Zone_dis_base& get_ref_zone_dis_base() const;
-  const   Motcle            get_directive_pour_discr() const;
+  const Noms        get_property(const Motcle& query) const override;
+  void nommer_source() override;
+  void completer(const Postraitement_base& post) override;
+  const Zone_dis_base& get_ref_zone_dis_base() const override;
+  const   Motcle            get_directive_pour_discr() const override;
   void discretiser_domaine();
 
   const Noms& fixer_noms_compo(const Noms& noms);

@@ -1,4 +1,4 @@
-C INCLUDE_FORTRAN
+C INCLUDE_FORTRAN;
       integer nrmax,ncmax
       parameter(nrmax=50,ncmax=12)
 	integer nr,ncs,marqueur_espece_en_competition

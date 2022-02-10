@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,8 +45,8 @@ class LecFicDiffuse_JDD : public Lec_Diffuse_base
 public:
   LecFicDiffuse_JDD();
   LecFicDiffuse_JDD(const char* name, IOS_OPEN_MODE mode=ios::in, bool apply_verification=true);
-  int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in );
-  Entree& get_entree_master();
+  int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in ) override;
+  Entree& get_entree_master() override;
 protected:
   EChaine chaine_;
   ///! whether obsolete keywords should be checked or not. True by default.

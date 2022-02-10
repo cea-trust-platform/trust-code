@@ -145,15 +145,15 @@ public:
   // Faces ordering in an element is the same as in TRUST
   IntTab    elem_faces_;
 
-  entier dimension() const { return nodes_.dimension(1); }
-  entier nb_nodes() const { return nodes_.dimension(0); }
-  entier nb_elements() const { return elements_.dimension(0); }
-  entier nb_faces() const { return faces_.dimension(0); }
+  entier dimension() const override { return nodes_.dimension(1); }
+  entier nb_nodes() const override { return nodes_.dimension(0); }
+  entier nb_elements() const override { return elements_.dimension(0); }
+  entier nb_faces() const override { return faces_.dimension(0); }
   // Tests if the geometry contains faces description
   entier faces_ok() const { return elem_faces_.dimension(0) == elements_.dimension(0); }
   template<class TabType>
   void compute_cell_center_coordinates(TabType & coord, entier index_begin) const;
-  BigEntier compute_memory_size() const
+  BigEntier compute_memory_size() const override
   { return
       memory_size(nodes_)
       + memory_size(elements_)
@@ -222,7 +222,7 @@ public:
                                        entier merge_virtual_elements = 0);
   virtual void fill_field_from_lataDB(const LataDB & lataDB,
                                       const Field_Id & id, 
-                                      LataDeriv<LataField_base> & field) const;
+                                      LataDeriv<LataField_base> & field) const override;
 
 protected:
   // data not always filled:
@@ -260,14 +260,14 @@ public:
   ArrOfBit invalid_positions_;
   ArrOfBit invalid_connections_;
 
-  entier dimension() const { return coord_.size(); }
-  entier nb_nodes() const {
+  entier dimension() const override { return coord_.size(); }
+  entier nb_nodes() const override {
     entier n = 1, d = coord_.size(); 
     for (entier i=0; i<d; i++) 
       n *= coord_[i].size_array();
     return n; 
   }
-  entier nb_elements() const {
+  entier nb_elements() const override {
     entier n = 1, d = coord_.size(); 
     for (entier i=0; i<d; i++) 
       n *= coord_[i].size_array()-1;
@@ -277,8 +277,8 @@ public:
   //  (voir convention sur la numerotation des faces)
   //  les champs associes aux faces des differentes directions sont
   //  stockes dans les composantes du champ.
-  entier nb_faces() const { return nb_nodes(); }
-  BigEntier compute_memory_size() const
+  entier nb_faces() const override { return nb_nodes(); }
+  BigEntier compute_memory_size() const override
   { 
     BigEntier x = 0;
     const entier n = coord_.size();
@@ -308,9 +308,9 @@ public:
                                        const Domain_Id & id,
                                        const entier split_in_nparts = 1,
                                        const entier virt_layer_size = 1);
-  virtual void fill_field_from_lataDB(const LataDB & lataDB,
+  void fill_field_from_lataDB(const LataDB & lataDB,
                                       const Field_Id & id, 
-                                      LataDeriv<LataField_base> & field) const;
+                                      LataDeriv<LataField_base> & field) const override;
 
   // when loading fields, we will load elements (i,j,k) with 
   //   part_begin_ <= k < part_end_
@@ -327,6 +327,6 @@ class Field : public LataField_base
 {
 public:
   TabType data_;
-  BigEntier compute_memory_size() const { return memory_size(data_); }
+  BigEntier compute_memory_size() const override { return memory_size(data_); }
 };
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,7 +62,7 @@ public:
   {
     valeur().mettre_a_jour(un_temps);
   };
-  inline const Nom& le_nom() const
+  inline const Nom& le_nom() const override
   {
     return valeur().le_nom();
   };
@@ -86,11 +86,11 @@ public:
   {
     valeur().fixer_tstat_fin(t2);
   };
-  inline int sauvegarder(Sortie& os) const
+  inline int sauvegarder(Sortie& os) const override
   {
     return valeur().sauvegarder(os);
   };
-  inline int reprendre(Entree& is)
+  inline int reprendre(Entree& is) override
   {
     return valeur().reprendre(is);
   };

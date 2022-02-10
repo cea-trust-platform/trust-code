@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,9 +49,9 @@ public:
   Entree_Fichier_base(const char* name,IOS_OPEN_MODE mode=ios::in);
   ifstream& get_ifstream();
   void close();
-  int eof();
-  int fail();
-  int good();
+  int eof() override;
+  int fail() override;
+  int good() override;
   void precision(int pre);
   void setf(IOS_FORMAT code);
 

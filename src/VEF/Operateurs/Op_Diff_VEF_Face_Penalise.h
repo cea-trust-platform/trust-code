@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,8 +37,8 @@ public :
   /* Fonction membre calculant la diffusion penalisee.
    * Elle est surchargee par rapport a sa classe mere.
    */
-  DoubleTab& ajouter(const DoubleTab& inconnue, DoubleTab& resu) const;
-  DoubleTab& calculer(const DoubleTab& inconnue, DoubleTab& resu) const;
+  DoubleTab& ajouter(const DoubleTab& inconnue, DoubleTab& resu) const override;
+  DoubleTab& calculer(const DoubleTab& inconnue, DoubleTab& resu) const override;
 
 protected:
 

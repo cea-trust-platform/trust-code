@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,17 +60,17 @@ class Op_Diff_VEF_base : public Operateur_Diff_base, public Op_VEF_Face
 
 public:
 
-  virtual int impr(Sortie& os) const;
-  virtual void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
+  int impr(Sortie& os) const override;
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
   inline double viscA(int face_i, int face_j, int num_elem, double diffu) const;
   // Anisotrope (tensor)
   // diffusivite considered as DoubleTab (case of scalair) or ArrOfDouble (in the case multi-scalar)
   inline double viscA(int face_i, int face_j, int num_elem, DoubleTab& diffu) const;
   inline double viscA(int face_i, int face_j, int num_elem, ArrOfDouble& diffu_ci_cj_elem) const;
 
-  double calculer_dt_stab() const;
-  void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;
-  virtual Motcle get_localisation_pour_post(const Nom& option) const;
+  double calculer_dt_stab() const override;
+  void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
+  Motcle get_localisation_pour_post(const Nom& option) const override;
   virtual void remplir_nu(DoubleTab&) const;
   int phi_psi_diffuse(const Equation_base& eq) const;
 

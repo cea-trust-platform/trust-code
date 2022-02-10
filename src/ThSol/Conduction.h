@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,33 +54,33 @@ class Conduction : public Equation_base
 public:
 
   Conduction();
-  void set_param(Param&);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  void set_param(Param&) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer_solide(const Solide& );
-  void associer_milieu_base(const Milieu_base& );
-  const Milieu_base& milieu() const;
-  Milieu_base& milieu();
+  void associer_milieu_base(const Milieu_base& ) override;
+  const Milieu_base& milieu() const override;
+  Milieu_base& milieu() override;
   const Solide& solide() const;
   Solide& solide();
-  int nombre_d_operateurs() const;
-  const Operateur& operateur(int) const;
-  Operateur& operateur(int);
-  inline const Champ_Inc& inconnue() const;
-  inline Champ_Inc& inconnue();
-  void discretiser();
-  int impr(Sortie& os) const;
+  int nombre_d_operateurs() const override;
+  const Operateur& operateur(int) const override;
+  Operateur& operateur(int) override;
+  inline const Champ_Inc& inconnue() const override;
+  inline Champ_Inc& inconnue() override;
+  void discretiser() override;
+  int impr(Sortie& os) const override;
 
-  virtual const Motcle& domaine_application() const;
-  virtual void mettre_a_jour(double temps);
+  const Motcle& domaine_application() const override;
+  void mettre_a_jour(double temps) override;
   virtual const Champ_Don& diffusivite_pour_transport();
   virtual const Champ_base& diffusivite_pour_pas_de_temps();
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   //Methode creer_champ pas codee a surcharger si necessaire
-  virtual void creer_champ(const Motcle& motlu);
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+  void creer_champ(const Motcle& motlu) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   /////////////////////////////////////////////////////
 private :
 

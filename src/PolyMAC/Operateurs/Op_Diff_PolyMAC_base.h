@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,14 +58,14 @@ class Op_Diff_PolyMAC_base : public Operateur_Diff_base, public Op_Diff_Turbulen
   Declare_base(Op_Diff_PolyMAC_base);
 
 public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
 
-  double calculer_dt_stab() const;
+  double calculer_dt_stab() const override;
 
-  void associer_diffusivite(const Champ_base& );
-  void completer();
-  const Champ_base& diffusivite() const;
-  void mettre_a_jour(double t)
+  void associer_diffusivite(const Champ_base& ) override;
+  void completer() override;
+  const Champ_base& diffusivite() const override;
+  void mettre_a_jour(double t) override
   {
     Operateur_base::mettre_a_jour(t);
     nu_a_jour_ = 0;
@@ -83,8 +83,8 @@ public:
 
   inline void remplir_nu_ef(int e, DoubleTab& nu_ef) const;
 
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  virtual int impr(Sortie& os) const;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  int impr(Sortie& os) const override;
   mutable DoubleTab nu_fac_mod; //facteur multiplicatif "utilisateur" a appliquer a nu_fac
 
 protected:

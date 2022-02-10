@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,39 +52,39 @@ public:
 
   // interface Problem
 
-  virtual void initialize();
-  virtual void terminate();
+  void initialize() override;
+  void terminate() override;
 
   // interface UnsteadyProblem
 
-  virtual double presentTime() const;
-  virtual bool initTimeStep(double dt);
+  double presentTime() const override;
+  bool initTimeStep(double dt) override;
   //  virtual bool solveTimeStep();
-  virtual void validateTimeStep();
-  virtual bool isStationary() const;
-  virtual void setStationary(bool);
-  virtual void abortTimeStep();
+  void validateTimeStep() override;
+  bool isStationary() const override;
+  void setStationary(bool) override;
+  void abortTimeStep() override;
 
   // interface IterativeUnsteadyProblem
 
-  virtual bool iterateTimeStep(bool& converged);
+  bool iterateTimeStep(bool& converged) override;
 
   // interface FieldIO
 
-  virtual void getInputFieldsNames(Noms& noms) const;
-  virtual void getOutputFieldsNames(Noms& noms) const;
+  void getInputFieldsNames(Noms& noms) const override;
+  void getOutputFieldsNames(Noms& noms) const override;
 
   // interface Probleme_U
 
-  virtual int postraiter(int force=1);
-  virtual int limpr()const ;
-  virtual int lsauv() const;
-  virtual void sauver() const;
-  virtual bool updateGivenFields();
-  virtual double futureTime()const;
+  int postraiter(int force=1) override;
+  int limpr()const override ;
+  int lsauv() const override;
+  void sauver() const override;
+  bool updateGivenFields() override;
+  double futureTime()const override;
 
-  virtual REF(Field_base) findInputField(const Nom& name) const;
-  virtual REF(Champ_Generique_base) findOutputField(const Nom& name) const;
+  REF(Field_base) findInputField(const Nom& name) const override;
+  REF(Champ_Generique_base) findOutputField(const Nom& name) const override;
 
   ///////////////////////////////////////////////////////////
   //                                                       //

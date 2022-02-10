@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,11 +41,11 @@ public:
   ArrOfDouble position(const double& t, const double& t0, const ArrOfDouble& position_a_t0);
   ArrOfDouble vitesse(const double& t, const ArrOfDouble& position_a_t);
   void imprimer(const Schema_Temps_base&, const ArrOfDouble&);
-  void nommer(const Nom& un_nom)
+  void nommer(const Nom& un_nom) override
   {
     nom_ = un_nom;
   };
-  const Nom& le_nom() const
+  const Nom& le_nom() const override
   {
     return nom_;
   };

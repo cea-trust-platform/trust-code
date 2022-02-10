@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ class Op_Dift_standard_VEF_Face_Var : public Op_Dift_standard_VEF_Face
 
 public:
 
-  void associer_diffusivite(const Champ_base& ) ;
+  void associer_diffusivite(const Champ_base& ) override ;
 };
 
 

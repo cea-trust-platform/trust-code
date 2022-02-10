@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ class Champ_front_contact_fictif_VEF : public Champ_front_contact_VEF
 
 public:
 
-  void mettre_a_jour(double temps);
+  void mettre_a_jour(double temps) override;
 
 
 protected :

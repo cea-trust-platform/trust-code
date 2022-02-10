@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,9 +43,9 @@ class Entree_fluide_T_h_imposee  : public Dirichlet_entree_fluide
   Declare_instanciable(Entree_fluide_T_h_imposee);
 
 public :
-  double val_imp(int i) const;
-  double val_imp(int i,int j) const;
-  int compatible_avec_eqn(const Equation_base&) const;
+  double val_imp(int i) const override;
+  double val_imp(int i,int j) const override;
+  int compatible_avec_eqn(const Equation_base&) const override;
   inline void bascule_cond_lim_en_enthalpie();
   inline void bascule_cond_lim_en_temperature();
 

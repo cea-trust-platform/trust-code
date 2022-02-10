@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,9 +73,9 @@ class Simple : public Simpler_Base
 public :
 
   Simple();
-  virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok);
-  virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok);
-  virtual bool iterer_eqs(LIST(REF(Equation_base)) eqs, int compteur, int& ok);
+  bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok) override;
+  void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok) override;
+  bool iterer_eqs(LIST(REF(Equation_base)) eqs, int compteur, int& ok) override;
 
 protected :
 
@@ -83,7 +83,7 @@ protected :
   double alpha_,beta_;  //beta_ coefficient de relaxation pour la pression  P = P* + beta_*P'  0<beta_<=1
   int with_d_rho_dt_;
 
-  virtual Entree& lire(const Motcle&, Entree&);
+  Entree& lire(const Motcle&, Entree&) override;
   void calculer_correction_en_vitesse(const DoubleTrav& correction_en_pression, DoubleTrav& gradP, DoubleTrav& correction_en_vitesse,const Matrice_Morse& matrice, const Operateur_Grad& gradient );
 
   /* memoization de iterer_eqs */

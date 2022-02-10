@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,7 @@ public:
     return false;
   };
   virtual void set_param(Param& param);
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual int preparer_calcul();
   virtual bool initTimeStep(double dt);
   virtual void mettre_a_jour(double ) =0;
@@ -99,20 +99,20 @@ public:
   virtual void completer();
   void associer_eqn(const Equation_base& );
   virtual void associer(const Zone_dis& , const Zone_Cl_dis& );
-  virtual int reprendre(Entree& );
+  int reprendre(Entree& ) override;
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
-  virtual void creer_champ(const Motcle& motlu);
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+  void creer_champ(const Motcle& motlu) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   /////////////////////////////////////////////////////
 
   inline Champs_compris& champs_compris();
 
   virtual void imprimer(Sortie&) const;
   void a_faire(Sortie&) const;
-  virtual int sauvegarder(Sortie&) const;
+  int sauvegarder(Sortie&) const override;
 
   int limpr_ustar(double , double, double, double ) const;
   inline double get_Cmu() const;

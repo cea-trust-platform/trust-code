@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,11 +40,11 @@ public:
 
   inline Eval_Forchheimer_VEF_Face();
   inline Eval_Forchheimer_VEF_Face(const Eval_Forchheimer_VEF_Face& eval);
-  inline void mettre_a_jour( );
-  inline double calculer_terme_source_standard(int ) const;
-  inline void calculer_terme_source_standard(int , DoubleVect& ) const;
-  inline double calculer_terme_source_non_standard(int ) const;
-  inline void calculer_terme_source_non_standard(int , DoubleVect& ) const;
+  inline void mettre_a_jour( ) override;
+  inline double calculer_terme_source_standard(int ) const override;
+  inline void calculer_terme_source_standard(int , DoubleVect& ) const override;
+  inline double calculer_terme_source_non_standard(int ) const override;
+  inline void calculer_terme_source_non_standard(int , DoubleVect& ) const override;
   inline void setCf(double);
   inline void associer(const Champ_Inc&);
   Modele_Permeabilite modK;

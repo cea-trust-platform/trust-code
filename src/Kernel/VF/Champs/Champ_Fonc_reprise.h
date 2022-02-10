@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,26 +52,26 @@ class Champ_Fonc_reprise: public Champ_Fonc_base
 
 public :
 
-  inline void associer_zone_dis_base(const Zone_dis_base&);
-  const Zone_dis_base& zone_dis_base() const;
-  virtual void mettre_a_jour(double );
+  inline void associer_zone_dis_base(const Zone_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override;
+  void mettre_a_jour(double ) override;
 
   using Champ_Fonc_base::valeurs;
-  inline const DoubleTab& valeurs() const;
-  inline  DoubleTab& valeurs() ;
-  inline virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                                             const IntVect& les_polys,
-                                             DoubleTab& les_valeurs) const;
-  inline virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                                    const IntVect& les_polys,
-                                                    DoubleVect& les_valeurs,
-                                                    int ncomp) const ;
-  inline virtual DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
-  inline virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                                      DoubleVect&, int) const;
-  inline virtual DoubleTab& remplir_coord_noeuds(DoubleTab& ) const;
-  inline virtual int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
-  inline  DoubleVect& valeur_aux_compo(const DoubleTab& tab,DoubleVect& les_valeurs, int comp) const;
+  inline const DoubleTab& valeurs() const override;
+  inline  DoubleTab& valeurs() override ;
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions,
+                                     const IntVect& les_polys,
+                                     DoubleTab& les_valeurs) const override;
+  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
+                                            const IntVect& les_polys,
+                                            DoubleVect& les_valeurs,
+                                            int ncomp) const override ;
+  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
+                                              DoubleVect&, int) const override;
+  inline DoubleTab& remplir_coord_noeuds(DoubleTab& ) const override;
+  inline int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const override;
+  inline  DoubleVect& valeur_aux_compo(const DoubleTab& tab,DoubleVect& les_valeurs, int comp) const override;
 
 private:
 

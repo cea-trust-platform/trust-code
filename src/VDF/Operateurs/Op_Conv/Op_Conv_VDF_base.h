@@ -34,22 +34,22 @@ class Op_Conv_VDF_base : public Operateur_Conv_base
 
 public:
   inline Op_Conv_VDF_base( const Iterateur_VDF_base& iter_base) : iter(iter_base) { } // constructeur
-  void completer();
-  void associer_zone_cl_dis(const Zone_Cl_dis_base&);
-  void calculer_dt_local(DoubleTab&) const ; //Local time step calculation
-  void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;
-  double calculer_dt_stab() const;
+  void completer() override;
+  void associer_zone_cl_dis(const Zone_Cl_dis_base&) override;
+  void calculer_dt_local(DoubleTab&) const override ; //Local time step calculation
+  void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
+  double calculer_dt_stab() const override;
 
-  virtual int impr(Sortie& os) const;
-  virtual Motcle get_localisation_pour_post(const Nom& option) const;
+  int impr(Sortie& os) const override;
+  Motcle get_localisation_pour_post(const Nom& option) const override;
   virtual const Champ_base& vitesse() const = 0;
   virtual Champ_base& vitesse() = 0;
 
-  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const { return iter.ajouter(inco, resu); }
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const { return iter.calculer(inco, resu); }
-  inline void contribuer_a_avec(const DoubleTab& inco , Matrice_Morse& matrice) const { iter.ajouter_contribution(inco, matrice); }
-  inline void contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const { iter.ajouter_contribution_vitesse(inco, matrice); }
-  inline void contribuer_au_second_membre(DoubleTab& resu) const { iter.contribuer_au_second_membre(resu); }
+  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override { return iter.ajouter(inco, resu); }
+  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter.calculer(inco, resu); }
+  inline void contribuer_a_avec(const DoubleTab& inco , Matrice_Morse& matrice) const override { iter.ajouter_contribution(inco, matrice); }
+  inline void contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const override { iter.ajouter_contribution_vitesse(inco, matrice); }
+  inline void contribuer_au_second_membre(DoubleTab& resu) const override { iter.contribuer_au_second_membre(resu); }
   inline const Iterateur_VDF& get_iter() const { return iter; }
   inline Iterateur_VDF& get_iter() { return iter; }
 

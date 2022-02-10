@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,19 +49,19 @@ class Champ_Ostwald : public Champ_Fonc_P0_base
   Declare_instanciable(Champ_Ostwald);
 
 public :
-  virtual void mettre_a_jour(double temps);
+  void mettre_a_jour(double temps) override;
   virtual void me_calculer(double tps);
-  int initialiser(const double& temps);
+  int initialiser(const double& temps) override;
   //     virtual void associer_champ(const Champ_base& );
   inline virtual const Fluide_Ostwald& mon_fluide() const;
   inline virtual void associer_fluide(const Fluide_Ostwald&);
 
-  virtual void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base);
+  void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override;
 
-  virtual int fixer_nb_valeurs_nodales(int nb_noeuds);
-  virtual Champ_base& affecter_(const Champ_base& );
+  int fixer_nb_valeurs_nodales(int nb_noeuds) override;
+  Champ_base& affecter_(const Champ_base& ) override;
 
-  const Zone_dis_base& zone_dis_base() const;
+  const Zone_dis_base& zone_dis_base() const override;
 
 protected:
   REF(Fluide_Ostwald) mon_fluide_;  // pour obtenir K et N

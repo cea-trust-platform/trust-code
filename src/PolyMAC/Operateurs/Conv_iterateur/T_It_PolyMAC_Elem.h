@@ -49,7 +49,7 @@ template <class _TYPE_>
 class T_It_PolyMAC_Elem : public Iterateur_PolyMAC_base
 {
   //Declare_instanciable(T_It_PolyMAC_Elem(_TYPE_));
-  inline int duplique() const
+  inline int duplique() const override
   {
     T_It_PolyMAC_Elem* xxx = new  T_It_PolyMAC_Elem(*this);
     if(!xxx)
@@ -59,23 +59,23 @@ class T_It_PolyMAC_Elem : public Iterateur_PolyMAC_base
       }
     return xxx->numero();
   };
-  inline unsigned taille_memoire() const
+  inline unsigned taille_memoire() const override
   {
     throw;
   };
 public:
   inline T_It_PolyMAC_Elem() { } ;
   inline T_It_PolyMAC_Elem(const T_It_PolyMAC_Elem<_TYPE_>& );
-  inline Evaluateur_PolyMAC& evaluateur();
-  inline const Evaluateur_PolyMAC& evaluateur() const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
-  void calculer_flux_bord(const DoubleTab&) const;
-  void contribuer_au_second_membre(DoubleTab& ) const;
-  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
-  void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const;
-  inline void completer_();
-  int impr(Sortie& os) const;
+  inline Evaluateur_PolyMAC& evaluateur() override;
+  inline const Evaluateur_PolyMAC& evaluateur() const override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
+  void calculer_flux_bord(const DoubleTab&) const override;
+  void contribuer_au_second_membre(DoubleTab& ) const override;
+  void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const override;
+  void ajouter_contribution_vitesse(const DoubleTab&, Matrice_Morse& ) const override;
+  inline void completer_() override;
+  int impr(Sortie& os) const override;
   void modifier_flux() const;
 protected:
   _TYPE_ flux_evaluateur;

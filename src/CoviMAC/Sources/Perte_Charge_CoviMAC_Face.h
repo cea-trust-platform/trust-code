@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,8 +55,8 @@ class Perte_Charge_CoviMAC_Face :  public Source_base,
 
 public:
 
-  void associer_pb(const Probleme_base& );
-  void mettre_a_jour(double );
+  void associer_pb(const Probleme_base& ) override;
+  void mettre_a_jour(double ) override;
 
 protected:
 
@@ -66,7 +66,7 @@ protected:
   REF(Fluide_base) le_fluide;
   IntVect num_faces;
 
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
 
 
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,10 +45,10 @@ public :
   //                            //
   ////////////////////////////////
 
-  virtual int nb_valeurs_temporelles() const;
-  virtual int nb_valeurs_futures() const;
-  virtual double temps_futur(int i) const;
-  virtual double temps_defaut() const;
+  int nb_valeurs_temporelles() const override;
+  int nb_valeurs_futures() const override;
+  double temps_futur(int i) const override;
+  double temps_defaut() const override;
 
   /////////////////////////////////////////
   //                                     //
@@ -56,17 +56,17 @@ public :
   //                                     //
   /////////////////////////////////////////
 
-  virtual int faire_un_pas_de_temps_eqn_base(Equation_base&);
-  virtual bool iterateTimeStep(bool& converged);
+  int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
+  bool iterateTimeStep(bool& converged) override;
   //virtual void lire(const Motcle&, Entree&);
-  virtual void set_param(Param& titi);
-  virtual int mettre_a_jour();
+  void set_param(Param& titi) override;
+  int mettre_a_jour() override;
 
-  virtual bool corriger_dt_calcule(double&) const;
-  virtual void completer();
-  virtual void changer_temps_courant(const double&);
-  virtual int stop() const;
-  virtual void imprimer(Sortie&) const;
+  bool corriger_dt_calcule(double&) const override;
+  void completer() override;
+  void changer_temps_courant(const double&) override;
+  int stop() const override;
+  void imprimer(Sortie&) const override;
   /*   virtual int lsauv() const; */
 
 

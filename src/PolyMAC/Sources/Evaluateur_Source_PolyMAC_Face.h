@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ public:
 
   inline Evaluateur_Source_PolyMAC_Face();
   Evaluateur_Source_PolyMAC_Face(const Evaluateur_Source_PolyMAC_Face& );
-  void completer();
+  void completer() override;
   virtual double calculer_terme_source_bord(int ) const =0;
   virtual void calculer_terme_source_bord(int , DoubleVect&  ) const =0;
 

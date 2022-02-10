@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,15 +49,15 @@ public:
   Nom(char c);
   Nom(double );
   Nom(double le_reel, const char* format);
-  virtual ~Nom();
+  ~Nom() override;
   virtual int find(const char * n) const;
 
   operator const char*() const;
   Nom&   majuscule();
-  int est_egal_a(const Objet_U&) const;
+  int est_egal_a(const Objet_U&) const override;
   int longueur() const ;
   static int selftest();
-  const Nom& le_nom() const ;
+  const Nom& le_nom() const override;
 
   Nom& operator=(const char* const);
   Nom& operator=(const Nom&);

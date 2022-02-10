@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ class Zone_VF_inst : public Zone_VF
 
 public :
 
-  inline double face_normales(int , int ) const
+  inline double face_normales(int , int ) const override
   {
     Cerr<<"face_normales not coded in "<<que_suis_je()<<finl;
     exit();
@@ -55,7 +55,7 @@ public :
 
 private:
 
-  inline void remplir_elem_faces()
+  inline void remplir_elem_faces() override
   {
     Cerr<<"remplir_elem_faces not coded in "<<que_suis_je()<<finl;
   };

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,10 +43,10 @@ class Terme_Source_VEF_base : public Source_base
 public:
 
   inline Terme_Source_VEF_base(const Iterateur_Source_VEF_base&);
-  inline DoubleTab& ajouter(DoubleTab& ) const ;
-  inline DoubleTab& calculer(DoubleTab& ) const ;
-  void completer();
-  int initialiser(double temps);
+  inline DoubleTab& ajouter(DoubleTab& ) const override ;
+  inline DoubleTab& calculer(DoubleTab& ) const override ;
+  void completer() override;
+  int initialiser(double temps) override;
 
 
 protected:

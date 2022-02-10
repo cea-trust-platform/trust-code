@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,9 +45,9 @@ class Champ_front_Tabule : public Champ_front_instationnaire_base
 
 public:
 
-  Champ_front_base& affecter_(const Champ_front_base& ch);
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
-  void mettre_a_jour(double temps);
+  Champ_front_base& affecter_(const Champ_front_base& ch) override;
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
+  void mettre_a_jour(double temps) override;
 
 protected:
 

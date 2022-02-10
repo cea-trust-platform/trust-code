@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,15 +47,15 @@ class Champ_Gen_de_Champs_Gen : public Champ_Generique_base
   Declare_base(Champ_Gen_de_Champs_Gen);
 public:
 
-  void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  void set_param(Param& param) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual LIST(Champ_Generique)& get_set_sources();
   virtual Champ_Generique&        get_set_source();
-  virtual void   reset();
-  virtual int sauvegarder(Sortie& os) const;
-  virtual int reprendre(Entree& is);
-  virtual void completer(const Postraitement_base& post);
-  virtual void   mettre_a_jour(double temps);
+  void   reset() override;
+  int sauvegarder(Sortie& os) const override;
+  int reprendre(Entree& is) override;
+  void completer(const Postraitement_base& post) override;
+  void   mettre_a_jour(double temps) override;
 
   virtual Champ_Fonc& creer_espace_stockage(const Nature_du_champ& nature,
                                             const int& nb_comp,
@@ -64,38 +64,38 @@ public:
   virtual const Champ_Generique_base&      get_source(int i) const;
   virtual Champ_Generique_base&      set_source(int i) ;
   virtual int                      get_nb_sources() const;
-  virtual int            get_dimension() const;
-  virtual void              get_property_names(Motcles& list) const;
-  virtual double            get_time() const;
+  int            get_dimension() const override;
+  void              get_property_names(Motcles& list) const override;
+  double            get_time() const override;
 
-  virtual const Probleme_base& get_ref_pb_base() const;
-  virtual const Discretisation_base&  get_discretisation() const;
-  virtual const Motcle                      get_directive_pour_discr() const;
+  const Probleme_base& get_ref_pb_base() const override;
+  const Discretisation_base&  get_discretisation() const override;
+  const Motcle                      get_directive_pour_discr() const override;
 
-  virtual const Noms        get_property(const Motcle& query) const;
-  virtual Entity            get_localisation(const int index = -1) const;
+  const Noms        get_property(const Motcle& query) const override;
+  Entity            get_localisation(const int index = -1) const override;
 
-  virtual const DoubleTab&  get_ref_values() const;
-  virtual void              get_copy_values(DoubleTab&) const;
-  virtual void              get_xyz_values(const DoubleTab& coords, DoubleTab& values, ArrOfBit& validity_flag) const;
+  const DoubleTab&  get_ref_values() const override;
+  void              get_copy_values(DoubleTab&) const override;
+  void              get_xyz_values(const DoubleTab& coords, DoubleTab& values, ArrOfBit& validity_flag) const override;
 
-  virtual const Domaine&    get_ref_domain() const;
-  virtual void              get_copy_domain(Domaine&) const;
+  const Domaine&    get_ref_domain() const override;
+  void              get_copy_domain(Domaine&) const override;
 
-  virtual const Zone_dis_base&  get_ref_zone_dis_base() const;
-  virtual const Zone_Cl_dis_base&  get_ref_zcl_dis_base() const;
+  const Zone_dis_base&  get_ref_zone_dis_base() const override;
+  const Zone_Cl_dis_base&  get_ref_zcl_dis_base() const override;
 
-  virtual const DoubleTab&  get_ref_coordinates() const;
-  virtual void              get_copy_coordinates(DoubleTab&) const;
-  virtual const IntTab&     get_ref_connectivity(Entity index1, Entity index2) const;
-  virtual void              get_copy_connectivity(Entity index1, Entity index2, IntTab&) const;
+  const DoubleTab&  get_ref_coordinates() const override;
+  void              get_copy_coordinates(DoubleTab&) const override;
+  const IntTab&     get_ref_connectivity(Entity index1, Entity index2) const override;
+  void              get_copy_connectivity(Entity index1, Entity index2, IntTab&) const override;
 
   void nommer_sources();
   virtual void nommer_source();
-  virtual int get_info_type_post() const;
+  int get_info_type_post() const override;
 
-  virtual const Champ_Generique_base& get_champ_post(const Motcle& nom) const;
-  virtual int comprend_champ_post(const Motcle& identifiant) const;
+  const Champ_Generique_base& get_champ_post(const Motcle& nom) const override;
+  int comprend_champ_post(const Motcle& identifiant) const override;
 
   //Methode pour changer t_deb et t_fin pour des reprises de statistiques
   //ou pour les statistiques en_serie

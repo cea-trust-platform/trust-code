@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,12 +46,12 @@ class Loi_Etat_Multi_GP_QC : public Loi_Etat_Multi_GP_base
 public :
   Loi_Etat_Multi_GP_QC();
   void associer_espece(const Convection_Diffusion_Espece_Multi_QC& eq);
-  void calculer_masse_molaire(DoubleTab& M) const;
-  void calculer_tab_Cp(DoubleTab& cp) const;
-  void calculer_masse_volumique();
-  void calculer_mu_sur_Sc();
-  double calculer_masse_volumique(double,double) const;
-  double calculer_masse_volumique(double P,double T,double r) const;
+  void calculer_masse_molaire(DoubleTab& M) const override;
+  void calculer_tab_Cp(DoubleTab& cp) const override;
+  void calculer_masse_volumique() override;
+  void calculer_mu_sur_Sc() override;
+  double calculer_masse_volumique(double,double) const override;
+  double calculer_masse_volumique(double P,double T,double r) const override;
 
 protected :
   void rabot(int futur = 0);
@@ -60,7 +60,7 @@ protected :
   double Sc_,dtol_fraction_;
 
 private:
-  void calculer_mu_wilke();
+  void calculer_mu_wilke() override;
 };
 
 #endif /* Loi_Etat_Multi_GP_QC_included */

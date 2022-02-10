@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,13 +48,13 @@ class Loi_Etat_rhoT_GR_QC : public Loi_Etat_GR_base
   Declare_instanciable(Loi_Etat_rhoT_GR_QC);
 
 public :
-  void calculer_masse_volumique();
-  double calculer_temperature(double,double);
-  double calculer_H(double,double) const;
-  double Drho_DP(double,double) const;
-  double Drho_DT(double,double) const;
-  double DT_DH(double,double) const;
-  double calculer_masse_volumique(double,double) const;
+  void calculer_masse_volumique() override;
+  double calculer_temperature(double,double) override;
+  double calculer_H(double,double) const override;
+  double Drho_DP(double,double) const override;
+  double Drho_DT(double,double) const override;
+  double DT_DH(double,double) const override;
+  double calculer_masse_volumique(double,double) const override;
 
 protected :
   DoubleTab PolyRho_,PolyT_;

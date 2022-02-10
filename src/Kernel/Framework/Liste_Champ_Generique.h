@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,8 +43,8 @@ class Liste_Champ_Generique : public LIST(Champ_Generique)
   Declare_instanciable(Liste_Champ_Generique);
 
 public :
-  int reprendre(Entree& is);
-  int sauvegarder(Sortie& os) const;
+  int reprendre(Entree& is) override;
+  int sauvegarder(Sortie& os) const override;
 
   void fixer_tstat_deb(double, double );
 };

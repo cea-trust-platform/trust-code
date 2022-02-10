@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,8 +65,8 @@ public :
   // Modif CHD 07/05/03 Ajout des parametres pour un fluide semi
   // transparent on les ramene ici pour ne plus avoir a utiliser
   // de Fluide incompressible semi transparent.
-  int is_rayo_semi_transp() const;
-  int is_rayo_transp() const;
+  int is_rayo_semi_transp() const override;
+  int is_rayo_transp() const override;
   void fixer_type_rayo();
   void reset_type_rayo();
   int longueur_rayo_is_discretised();
@@ -77,13 +77,13 @@ public :
   inline Champ_Don& longueur_rayo();
   inline const Champ_Don& longeur_rayo() const;
 
-  void set_param(Param& param);
-  void verifier_coherence_champs(int& err,Nom& message);
-  bool initTimeStep(double dt);
-  void mettre_a_jour(double );
-  int initialiser(const double& temps);
-  void creer_champs_non_lus();
-  virtual void discretiser(const Probleme_base& pb, const  Discretisation_base& dis);
+  void set_param(Param& param) override;
+  void verifier_coherence_champs(int& err,Nom& message) override;
+  bool initTimeStep(double dt) override;
+  void mettre_a_jour(double ) override;
+  int initialiser(const double& temps) override;
+  void creer_champs_non_lus() override;
+  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
   virtual void set_h0_T0(double h0, double T0);
 
 protected :

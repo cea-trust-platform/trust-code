@@ -69,7 +69,7 @@ public :
   inline void fixer_periode(double);
   inline double temps() const;
   inline SFichier& fichier();
-  inline ~Sonde();
+  inline ~Sonde() override;
   inline const Nom& get_nom() const
   {
     return nom_;

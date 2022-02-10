@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,8 +63,8 @@ class Echange_externe_impose  : public Echange_impose_base
 {
 
   Declare_instanciable(Echange_externe_impose);
-  virtual int compatible_avec_discr(const Discretisation_base& ) const;
-  void verifie_ch_init_nb_comp();
+  int compatible_avec_discr(const Discretisation_base& ) const override;
+  void verifie_ch_init_nb_comp() override;
 };
 
 

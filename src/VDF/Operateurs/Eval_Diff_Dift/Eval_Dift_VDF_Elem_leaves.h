@@ -66,13 +66,13 @@ public :
 
   inline int get_ind_Fluctu_Term() const { return ind_Fluctu_Term; }
 
-  inline void associer_loipar(const Turbulence_paroi_scal& loi_paroi)
+  inline void associer_loipar(const Turbulence_paroi_scal& loi_paroi) override
   {
     Eval_Dift_VDF_const::associer_loipar(loi_paroi);
     ind_Fluctu_Term = 0;
   }
 
-  void init_ind_fluctu_term()
+  void init_ind_fluctu_term() override
   {
     ind_Fluctu_Term = 0;
     if (!loipar.non_nul()) ind_Fluctu_Term = 1;
@@ -104,13 +104,13 @@ public:
 
   inline int get_ind_Fluctu_Term() const { return ind_Fluctu_Term; }
 
-  inline void init_ind_fluctu_term()
+  inline void init_ind_fluctu_term() override
   {
     ind_Fluctu_Term = 0;
     if (!loipar.non_nul()) ind_Fluctu_Term = 1;
   }
 
-  inline virtual void associer_loipar(const Turbulence_paroi_scal& loi_paroi)
+  inline void associer_loipar(const Turbulence_paroi_scal& loi_paroi) override
   {
     Eval_Dift_VDF_var::associer_loipar(loi_paroi);
     ind_Fluctu_Term = 0;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,8 +46,8 @@ class Ch_front_var_instationnaire_dep : public Champ_front_var_instationnaire
 {
   Declare_instanciable(Ch_front_var_instationnaire_dep);
 public :
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
-  Champ_front_base& affecter_(const Champ_front_base& ch);
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
+  Champ_front_base& affecter_(const Champ_front_base& ch) override;
 
 };
 #endif

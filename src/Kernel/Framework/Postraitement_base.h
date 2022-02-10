@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,15 +45,15 @@ class Postraitement_base : public Objet_U
 public:
   Postraitement_base();
   virtual void associer_nom_et_pb_base(const Nom&, const Probleme_base&);
-  virtual const Nom& le_nom() const;
+  const Nom& le_nom() const override;
   virtual void set_param(Param& param)=0;
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual void postraiter(int forcer) = 0;
   virtual void mettre_a_jour(double temps);
   virtual void init() {};
   virtual void finir() {};
-  virtual int sauvegarder(Sortie& os) const;
-  virtual int reprendre(Entree& is);
+  int sauvegarder(Sortie& os) const override;
+  int reprendre(Entree& is) override;
   virtual void completer() = 0;
 
   enum Format { ASCII, BINAIRE };

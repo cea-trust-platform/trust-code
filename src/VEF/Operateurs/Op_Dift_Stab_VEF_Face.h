@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ class Op_Dift_Stab_VEF_Face : public Op_Dift_VEF_Face
 
 public:
 
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
 
   void ajouter_cas_scalaire(const DoubleTab& inconnue,const DoubleTab& nu,const DoubleTab& nu_turb_m, DoubleTab& resu2) const;
   void ajouter_cas_multiscalaire(const DoubleTab& inconnue,const DoubleTab& nu,const DoubleTab& nu_turb_m, DoubleTab& resu2) const;
@@ -48,9 +48,9 @@ public:
   void ajouter_contribution(const DoubleTab& transporte, Matrice_Morse& matrice) const;
   void ajouter_contribution_multi_scalaire(const DoubleTab& transporte, Matrice_Morse& matrice) const;
   void ajouter_contribution_cl(const DoubleTab& transporte, Matrice_Morse& matrice, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
 
-  void completer();
+  void completer() override;
 
 protected :
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,17 +38,17 @@ class Solv_Cholesky : public SolveurSys_base
 public :
 
   inline Solv_Cholesky();
-  inline ~Solv_Cholesky();
+  inline ~Solv_Cholesky() override;
 
-  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& );
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& ) override;
 
   inline int resoudre_systeme(const Matrice_Base& M, const DoubleVect& A,
                               DoubleVect& B,
-                              int niter_max)
+                              int niter_max) override
   {
     return resoudre_systeme(M, A,B);
   };
-  inline int solveur_direct() const
+  inline int solveur_direct() const override
   {
     return 1;
   };

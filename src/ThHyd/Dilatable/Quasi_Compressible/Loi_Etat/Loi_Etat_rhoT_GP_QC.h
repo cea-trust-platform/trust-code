@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,12 +42,12 @@ class Loi_Etat_rhoT_GP_QC : public Loi_Etat_GP_base
 
 public :
   Loi_Etat_rhoT_GP_QC();
-  void initialiser_inco_ch();
+  void initialiser_inco_ch() override;
   void initialiser_rho();
-  void calculer_masse_volumique();
-  double calculer_masse_volumique(double, double) const; // overrided
+  void calculer_masse_volumique() override;
+  double calculer_masse_volumique(double, double) const override; // overrided
   double calculer_masse_volumique(double, double, int) const;// overloaded
-  double inverser_Pth(double T, double rho); // forbidden
+  double inverser_Pth(double T, double rho) override; // forbidden
 
 protected :
   bool is_exp_;

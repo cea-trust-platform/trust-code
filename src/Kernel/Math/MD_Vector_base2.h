@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,27 +29,27 @@ class MD_Vector_base2 : public MD_Vector_base
   Declare_base_sans_constructeur(MD_Vector_base2);
 public:
   MD_Vector_base2();
-  virtual int get_nb_items_reels() const
+  int get_nb_items_reels() const override
   {
     return nb_items_reels_;
   }
-  virtual int get_nb_items_tot() const
+  int get_nb_items_tot() const override
   {
     return nb_items_tot_;
   }
-  virtual const ArrOfInt& get_items_to_compute() const
+  const ArrOfInt& get_items_to_compute() const override
   {
     return blocs_items_to_compute_;
   }
-  virtual const ArrOfInt& get_items_to_sum() const
+  const ArrOfInt& get_items_to_sum() const override
   {
     return blocs_items_to_sum_;
   }
-  virtual int nb_items_seq_tot() const
+  int nb_items_seq_tot() const override
   {
     return nb_items_seq_tot_;
   }
-  virtual int nb_items_seq_local() const
+  int nb_items_seq_local() const override
   {
     return nb_items_seq_local_;
   }

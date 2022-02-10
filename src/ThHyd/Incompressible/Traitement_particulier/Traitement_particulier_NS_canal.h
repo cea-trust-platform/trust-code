@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,12 +48,12 @@ class Traitement_particulier_NS_canal : public Traitement_particulier_NS_base
 public :
 
   Traitement_particulier_NS_canal();
-  Entree& lire(Entree& );
-  void preparer_calcul_particulier() ;
-  virtual void reprendre_stat();
-  virtual void sauver_stat() const;
-  void post_traitement_particulier();
-  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) ;
+  Entree& lire(Entree& ) override;
+  void preparer_calcul_particulier() override ;
+  void reprendre_stat() override;
+  void sauver_stat() const override;
+  void post_traitement_particulier() override;
+  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
   inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const  ;
   inline int comprend_champ(const Motcle& mot) const  ;
 

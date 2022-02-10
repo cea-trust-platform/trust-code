@@ -31,9 +31,9 @@ class Terme_Source_VDF_base : public Source_base
   Declare_base(Terme_Source_VDF_base);
 public:
   Terme_Source_VDF_base(const Iterateur_Source_VDF_base& iter_base) : iter(iter_base) { }
-  void completer();
-  inline DoubleTab& ajouter(DoubleTab& resu) const { return iter->ajouter(resu); }
-  inline DoubleTab& calculer(DoubleTab& resu) const { return iter->calculer(resu); }
+  void completer() override;
+  inline DoubleTab& ajouter(DoubleTab& resu) const override { return iter->ajouter(resu); }
+  inline DoubleTab& calculer(DoubleTab& resu) const override { return iter->calculer(resu); }
 
 protected:
   Iterateur_Source_VDF iter;

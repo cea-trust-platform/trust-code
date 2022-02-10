@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,8 +34,8 @@ class Precond_local : public Precond_base
 public :
 
 protected :
-  void   prepare_(const Matrice_Base&, const DoubleVect&);
-  int preconditionner_(const Matrice_Base&, const DoubleVect&, DoubleVect&);
+  void   prepare_(const Matrice_Base&, const DoubleVect&) override;
+  int preconditionner_(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
   int precond(const Matrice_Base&, const DoubleVect&, DoubleVect&);
 
   SolveurSys        le_precond_local_;

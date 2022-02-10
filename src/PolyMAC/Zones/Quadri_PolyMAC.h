@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ public:
   void calcul_xg(DoubleVect& ,const DoubleTab& ,const int ,int& ,
                  int& ,int& ,int& ) const;
   void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-               const IntTab& ,const Zone& )  const ;
+               const IntTab& ,const Zone& )  const override ;
 
 };
 

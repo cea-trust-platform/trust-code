@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,11 +39,11 @@
                                                                         \
   public:                                                                \
                                                                         \
-    inline Evaluateur_Source_PolyMAC& evaluateur();                                \
+    inline Evaluateur_Source_PolyMAC& evaluateur() override;                                \
                                                                         \
-    DoubleTab& calculer(DoubleTab& ) const;                                \
-    DoubleTab& ajouter(DoubleTab& ) const;                                \
-    inline void completer_();                                                \
+    DoubleTab& calculer(DoubleTab& ) const override;                                \
+    DoubleTab& ajouter(DoubleTab& ) const override;                                \
+    inline void completer_() override;                                                \
                                                                         \
   protected:                                                                \
                                                                         \

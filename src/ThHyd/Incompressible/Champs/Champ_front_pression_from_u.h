@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,8 +47,8 @@ class Champ_front_pression_from_u : public Ch_front_var_instationnaire_dep
 
 public:
 
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
-  void mettre_a_jour(double temps) ;
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
+  void mettre_a_jour(double temps) override ;
 protected:
   REF(Champ_Inc_base) ref_inco_;
   Parser_U fonction_;

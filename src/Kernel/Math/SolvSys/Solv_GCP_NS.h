@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,12 +34,12 @@ class Solv_GCP_NS : public solv_iteratif
   Declare_instanciable(Solv_GCP_NS);
 public :
 
-  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&);
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
 
   int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&,
-                       int);
-  inline void reinit();
-  inline int supporte_matrice_morse_sym()
+                       int) override;
+  inline void reinit() override;
+  inline int supporte_matrice_morse_sym() override
   {
     return 0;
   }; // Matrice_Morse_Sym non supporte

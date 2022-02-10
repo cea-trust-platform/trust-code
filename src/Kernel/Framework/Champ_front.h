@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,8 +54,8 @@ public:
   Champ_front(const Champ_front&) = default;
   inline Champ_front& operator=(const Champ_front_base& ch_base) ;
   inline Champ_front& operator=(const Champ_front& ch_base) ;
-  inline void nommer(const Nom& name) ;
-  inline const Nom& le_nom() const ;
+  inline void nommer(const Nom& name) override;
+  inline const Nom& le_nom() const override;
   inline void associer_fr_dis_base(const Frontiere_dis_base& ) ;
   inline const Frontiere_dis_base& frontiere_dis() const ;
   inline Frontiere_dis_base& frontiere_dis() ;
@@ -64,8 +64,8 @@ public:
   inline void calculer_coeffs_echange(double temps);
 
   using Champ_Proto::valeurs;
-  inline DoubleTab& valeurs() ;
-  inline const DoubleTab& valeurs() const ;
+  inline DoubleTab& valeurs() override;
+  inline const DoubleTab& valeurs() const override;
 
   inline const Noms& get_synonyms() const;
   inline void add_synonymous(const Nom& nom);

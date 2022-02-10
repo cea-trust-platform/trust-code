@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,25 +41,25 @@ class EcrFicPartageMPIIO : public SFichier
   Declare_instanciable_sans_constructeur_ni_destructeur(EcrFicPartageMPIIO);
 public:
   EcrFicPartageMPIIO();
-  ~EcrFicPartageMPIIO();
+  ~EcrFicPartageMPIIO() override;
 #ifdef MPI_
   EcrFicPartageMPIIO(const char* name,IOS_OPEN_MODE mode=ios::out);
-  int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::out);
+  int ouvrir(const char* name,IOS_OPEN_MODE mode=ios::out) override;
   void close();
   // Useless with MPIIO:
-  inline Sortie& lockfile()
+  inline Sortie& lockfile() override
   {
     return *this;
   };
-  inline Sortie& unlockfile()
+  inline Sortie& unlockfile() override
   {
     return *this;
   };
-  inline Sortie& syncfile()
+  inline Sortie& syncfile() override
   {
     return *this;
   };
-  inline Sortie& flush()
+  inline Sortie& flush() override
   {
     return *this;
   };
@@ -67,26 +67,26 @@ public:
   // Check method when using some public methods:
   void check();
 
-  Sortie& operator <<(const Separateur& ob);
-  Sortie& operator <<(const int& ob);
-  Sortie& operator <<(const unsigned& ob);
+  Sortie& operator <<(const Separateur& ob) override;
+  Sortie& operator <<(const int& ob) override;
+  Sortie& operator <<(const unsigned& ob) override;
 #ifndef INT_is_64_
-  Sortie& operator <<(const long& ob)
+  Sortie& operator <<(const long& ob) override
   {
     Cerr << "EcrFicPartageMPIIO::operator<<(...) not implemented." << finl;
     exit();
     return *this;
   };
 #endif
-  Sortie& operator <<(const float& ob);
-  Sortie& operator <<(const double& ob);
-  Sortie& operator <<(const Objet_U& ob);
-  Sortie& operator <<(const char* ob);
-  int put(const unsigned* ob, int n, int pas)
+  Sortie& operator <<(const float& ob) override;
+  Sortie& operator <<(const double& ob) override;
+  Sortie& operator <<(const Objet_U& ob) override;
+  Sortie& operator <<(const char* ob) override;
+  int put(const unsigned* ob, int n, int pas) override
   {
     return put(MPI_UNSIGNED, ob, n);
   }
-  int put(const int* ob, int n, int pas)
+  int put(const int* ob, int n, int pas) override
   {
 #ifdef INT_is_64_
     return put(MPI_LONG, ob, n);
@@ -95,18 +95,18 @@ public:
 #endif
   }
 #ifndef INT_is_64_
-  int put(const long* ob, int n, int pas)
+  int put(const long* ob, int n, int pas) override
   {
     Cerr << "EcrFicPartageMPIIO::put(...) not implemented." << finl;
     exit();
     return 1;
   };
 #endif
-  int put(const float* ob, int n, int pas)
+  int put(const float* ob, int n, int pas) override
   {
     return put(MPI_FLOAT, ob, n);
   }
-  int put(const double* ob, int n, int pas)
+  int put(const double* ob, int n, int pas) override
   {
     return put(MPI_DOUBLE, ob, n);
   }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,13 +43,13 @@ class Operateur_Grad  : public Operateur, public DERIV(Operateur_Grad_base)
   Declare_instanciable(Operateur_Grad);
 public :
 
-  inline Operateur_base& l_op_base();
-  inline const Operateur_base& l_op_base() const;
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const;
-  void typer ();
+  inline Operateur_base& l_op_base() override;
+  inline const Operateur_base& l_op_base() const override;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
+  DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const override;
+  void typer () override;
   void typer_direct(const Nom&);
-  virtual inline int op_non_nul() const;
+  inline int op_non_nul() const override;
 
 };
 

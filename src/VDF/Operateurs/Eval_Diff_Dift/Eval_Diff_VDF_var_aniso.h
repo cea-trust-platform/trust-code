@@ -36,9 +36,9 @@
 class Eval_Diff_VDF_var_aniso : public Eval_Diff_VDF
 {
 public:
-  inline void associer(const Champ_base& );
-  inline void mettre_a_jour();
-  inline const Champ_base& get_diffusivite() const;
+  inline void associer(const Champ_base& ) override;
+  inline void mettre_a_jour() override;
+  inline const Champ_base& get_diffusivite() const override;
 
   // Methods used by the flux computation in template class:
   inline double nu_1_impl(int i, int compo) const { return dt_diffusivite(i,compo); }

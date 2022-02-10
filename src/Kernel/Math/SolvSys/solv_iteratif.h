@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ public :
   solv_iteratif();
   inline void set_seuil(double s);
   inline double get_seuil() const;
-  inline int solveur_direct() const
+  inline int solveur_direct() const override
   {
     return 0;
   };

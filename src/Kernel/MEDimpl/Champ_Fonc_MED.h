@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,9 +54,9 @@ class Champ_Fonc_MED: public Champ_Fonc_base
   Declare_instanciable(Champ_Fonc_MED);
 
 public :
-  inline void associer_zone_dis_base(const Zone_dis_base&);
-  const Zone_dis_base& zone_dis_base() const;
-  virtual void mettre_a_jour(double );
+  inline void associer_zone_dis_base(const Zone_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override;
+  void mettre_a_jour(double ) override;
   /*  double valeur_au_bord(int face) const;
       DoubleVect moyenne() const;
       double moyenne(int ) const;
@@ -81,25 +81,25 @@ public :
     return nb_dt;
   }
   using Champ_Fonc_base::valeurs;
-  inline DoubleTab& valeurs();
-  inline  virtual const DoubleTab& valeurs() const;
+  inline DoubleTab& valeurs() override;
+  inline  const DoubleTab& valeurs() const override;
 
-  inline virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                                             const IntVect& les_polys,
-                                             DoubleTab& valeurs) const;
-  inline virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                                    const IntVect& les_polys,
-                                                    DoubleVect& valeurs,
-                                                    int ncomp) const ;
-  inline virtual DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
-  inline virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                                      DoubleVect&, int) const;
-  inline virtual DoubleVect&  valeur_a(const DoubleVect& position,
-                                       DoubleVect& valeurs) const ;
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions,
+                                     const IntVect& les_polys,
+                                     DoubleTab& valeurs) const override;
+  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
+                                            const IntVect& les_polys,
+                                            DoubleVect& valeurs,
+                                            int ncomp) const override ;
+  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
+                                              DoubleVect&, int) const override;
+  inline DoubleVect&  valeur_a(const DoubleVect& position,
+                               DoubleVect& valeurs) const override ;
 
-  inline virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const ;
-  inline virtual DoubleTab& remplir_coord_noeuds(DoubleTab& ) const;
-  inline virtual int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
+  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const override ;
+  inline DoubleTab& remplir_coord_noeuds(DoubleTab& ) const override;
+  inline int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const override;
   inline virtual const Champ_Fonc_base& le_champ() const;
   inline virtual Champ_Fonc_base& le_champ();
   const ArrOfDouble& get_saved_times(void) const;

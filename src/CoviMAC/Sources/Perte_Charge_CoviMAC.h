@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,18 +47,18 @@ class Perte_Charge_CoviMAC : public Source_base, public Terme_Source_Qdm
   Declare_base(Perte_Charge_CoviMAC);
 
 public:
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-  void associer_pb(const Probleme_base&);  //!< associe le_fluide et la_vitesse
-  void completer();
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void associer_pb(const Probleme_base&) override;  //!< associe le_fluide et la_vitesse
+  void completer() override;
 
 protected:
 
-  void associer_zones(const Zone_dis&,const Zone_Cl_dis&);   //!< associe la_Zone_CoviMAC et la_Zone_Cl_CoviMAC
+  void associer_zones(const Zone_dis&,const Zone_Cl_dis&) override;   //!< associe la_Zone_CoviMAC et la_Zone_Cl_CoviMAC
 
   //! Appele pour chaque face par ajouter()
   /**

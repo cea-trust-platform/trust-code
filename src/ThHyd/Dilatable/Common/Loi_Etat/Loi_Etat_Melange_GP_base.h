@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ class Loi_Etat_Melange_GP_base : public Loi_Etat_GP_base
   Declare_base(Loi_Etat_Melange_GP_base);
 
 public:
-  void associer_fluide(const Fluide_Dilatable_base&);
+  void associer_fluide(const Fluide_Dilatable_base&) override;
 
 protected:
   static constexpr double R_GAS = 8.314472;

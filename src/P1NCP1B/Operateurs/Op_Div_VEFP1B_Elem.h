@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,21 +36,21 @@ class Op_Div_VEFP1B_Elem : public Op_Div_VEF_Elem
 
 
 public:
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
   DoubleTab& ajouter_elem(const DoubleTab&,DoubleTab& ) const;
   DoubleTab& ajouter_som(const DoubleTab&, DoubleTab&, DoubleTab& ) const;
   DoubleTab& ajouter_aretes(const DoubleTab&, DoubleTab& ) const;
   void degres_liberte() const;
-  virtual void volumique(DoubleTab& ) const;
+  void volumique(DoubleTab& ) const override;
 
   // Implicite
   inline void dimensionner(FMatrice_Morse& ) const {};
-  inline void dimensionner(Matrice_Morse& ) const {};
+  inline void dimensionner(Matrice_Morse& ) const override {};
   inline void modifier_pour_Cl(FMatrice_Morse&, DoubleTab&) const {};
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const {};
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override {};
   inline void contribuer_a_avec(const DoubleTab&, FMatrice_Morse&) const {};
-  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const {};
-  inline void contribuer_au_second_membre(DoubleTab& ) const {};
+  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override {};
+  inline void contribuer_au_second_membre(DoubleTab& ) const override {};
 private:
   mutable IntVect nb_degres_liberte;
 };

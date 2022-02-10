@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,18 +43,18 @@ class Loi_Etat_Binaire_GP_base : public Loi_Etat_Melange_GP_base
   Declare_base_sans_constructeur(Loi_Etat_Binaire_GP_base);
 public:
   Loi_Etat_Binaire_GP_base();
-  void calculer_lambda();
-  void calculer_mu();
+  void calculer_lambda() override;
+  void calculer_mu() override;
   void calculer_mu_wilke();
-  void calculer_alpha();
-  void calculer_mu_sur_Sc(); // returns rho * D
-  void calculer_nu_sur_Sc(); // returns D
-  void calculer_Cp();
-  const Nom type_fluide() const;
-  double inverser_Pth(double,double);
-  virtual double calculer_masse_volumique(double P,double Y1) const;
+  void calculer_alpha() override;
+  void calculer_mu_sur_Sc() override; // returns rho * D
+  void calculer_nu_sur_Sc() override; // returns D
+  void calculer_Cp() override;
+  const Nom type_fluide() const override;
+  double inverser_Pth(double,double) override;
+  double calculer_masse_volumique(double P,double Y1) const override;
   // Methode virtuelle pure
-  virtual void calculer_masse_volumique()=0;
+  void calculer_masse_volumique() override =0;
 
 protected:
   double massmol1_,massmol2_,mu1_,mu2_,tempr_,diff_coeff_;

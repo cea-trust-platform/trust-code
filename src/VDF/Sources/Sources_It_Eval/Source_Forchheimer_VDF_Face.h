@@ -40,9 +40,9 @@ class Source_Forchheimer_VDF_Face : public Terme_Source_VDF_base
   Declare_instanciable_sans_constructeur(Source_Forchheimer_VDF_Face);
 public:
   inline Source_Forchheimer_VDF_Face();
-  void associer_pb(const Probleme_base& );
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
-  void mettre_a_jour(double temps) { /* Do nothing */ }
+  void associer_pb(const Probleme_base& ) override;
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void mettre_a_jour(double temps) override { /* Do nothing */ }
   inline Eval_Forchheimer_VDF_Face& eval() { return static_cast<Eval_Forchheimer_VDF_Face&> (iter->evaluateur()); }
 };
 

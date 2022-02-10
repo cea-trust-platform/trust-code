@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ public:
   void associer_zone(const Zone&);
   const Zone& zone() const;
   Zone& zone();
-  void nommer(const Nom&);
+  void nommer(const Nom&) override;
   void ajouter_faces(const IntTab&);
   void typer_faces(const Motcle&);
   void typer_faces(const Type_Face&);
@@ -58,7 +58,7 @@ public:
   const IntTab& les_sommets_des_faces() const;
   inline int nb_faces() const;
   inline void dimensionner(int);
-  inline const Nom& le_nom() const;
+  inline const Nom& le_nom() const override;
   void renum(const IntVect&);
   void add(const Frontiere& );
   inline int nb_faces_virt(int i) const;

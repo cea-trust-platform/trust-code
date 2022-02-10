@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,21 +49,21 @@ class Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC :  public Source_base
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_P0_CoviMAC);
 
 public:
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-  void associer_pb(const Probleme_base& ) { };
-  void mettre_a_jour(double );
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void associer_pb(const Probleme_base& ) override { };
+  void mettre_a_jour(double ) override;
 
 protected:
 
   REF(Zone_CoviMAC) la_zone_CoviMAC;
   REF(Zone_Cl_CoviMAC) la_zone_Cl_CoviMAC;
   Champ_Don himp_,Text_;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
 
 };
 

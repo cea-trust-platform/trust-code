@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,13 +98,13 @@ public:
   //
   // Methodes reimplementees :
   //
-  void associer_nom_et_pb_base(const Nom&, const Probleme_base&);
-  void postraiter(int forcer);
-  void mettre_a_jour(double temps);
-  void finir();
-  int sauvegarder(Sortie& os) const;
-  int reprendre(Entree& is);
-  void completer();
+  void associer_nom_et_pb_base(const Nom&, const Probleme_base&) override;
+  void postraiter(int forcer) override;
+  void mettre_a_jour(double temps) override;
+  void finir() override;
+  int sauvegarder(Sortie& os) const override;
+  int reprendre(Entree& is) override;
+  void completer() override;
 
   //
   // Methodes specifiques :
@@ -116,9 +116,9 @@ public:
   inline Probleme_base& probleme() { return mon_probleme.valeur(); }
   inline const Probleme_base& probleme() const { return mon_probleme.valeur(); }
 
-  void init();
-  void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  void init() override;
+  void set_param(Param& param) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int postraiter_sondes();
   int traiter_sondes();
   int postraiter_champs();

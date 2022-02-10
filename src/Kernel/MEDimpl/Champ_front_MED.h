@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,10 +32,10 @@ class Champ_front_MED : public Champ_front_txyz
   Declare_instanciable(Champ_front_MED);
 
 public:
-  Champ_front_base& affecter_(const Champ_front_base& ch);
-  virtual void mettre_a_jour(double temps);
+  Champ_front_base& affecter_(const Champ_front_base& ch) override;
+  void mettre_a_jour(double temps) override;
 
-  double valeur_au_temps_et_au_point(double temps,int som, double x,double y, double z,int comp) const;
+  double valeur_au_temps_et_au_point(double temps,int som, double x,double y, double z,int comp) const override;
 
 protected:
   void remplir_tab( DoubleTab&,double ) const;

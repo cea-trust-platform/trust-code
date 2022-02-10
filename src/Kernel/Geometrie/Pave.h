@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ class Pave : public Zone
 {
   Declare_instanciable(Pave);
 public :
-  void associer_domaine(const Domaine& );
+  void associer_domaine(const Domaine& ) override;
   inline IntVect& Nb_Noeud();
   DoubleVect Origine;
   DoubleVect Longueurs;

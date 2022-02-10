@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,15 +47,15 @@ class Loi_Etat_Multi_GP_base : public Loi_Etat_Melange_GP_base
 
 public:
   void calculer_masse_molaire();
-  void calculer_Cp();
-  void calculer_lambda();
-  void calculer_alpha();
-  void calculer_mu();
+  void calculer_Cp() override;
+  void calculer_lambda() override;
+  void calculer_alpha() override;
+  void calculer_mu() override;
 
   virtual void associer_inconnue(const Champ_Inc_base& inconnue);
-  virtual void initialiser_inco_ch();
-  virtual double calculer_masse_volumique(double,double) const;
-  virtual void calculer_masse_volumique()=0;
+  void initialiser_inco_ch() override;
+  double calculer_masse_volumique(double,double) const override;
+  void calculer_masse_volumique() override =0;
   virtual void calculer_masse_molaire(DoubleTab& M) const = 0;
   virtual void calculer_tab_Cp(DoubleTab& cp) const = 0;
   virtual void calculer_mu_wilke()=0;

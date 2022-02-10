@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ public:
   void lire(Entree&,Equation_base&,const Nom& nom_bord);
   virtual void complement(Nom&);
 
-  inline int compatible_avec_eqn(const Equation_base&) const
+  inline int compatible_avec_eqn(const Equation_base&) const override
   {
     Cerr<<"we should not be here"<<(int)__LINE__<<__FILE__ <<finl;
     exit();
@@ -76,28 +76,28 @@ class cl_timp: public Cond_lim_utilisateur_base
 {
   Declare_instanciable(cl_timp);
 public:
-  void complement(Nom& );
+  void complement(Nom& ) override;
 };
 
 class paroi_adiabatique: public Cond_lim_utilisateur_base
 {
   Declare_instanciable(paroi_adiabatique);
 public:
-  void complement(Nom& nom );
+  void complement(Nom& nom ) override;
 };
 
 class paroi_flux_impose: public Cond_lim_utilisateur_base
 {
   Declare_instanciable(paroi_flux_impose);
 public:
-  void complement(Nom& nom);
+  void complement(Nom& nom) override;
 };
 
 class paroi_contact: public Cond_lim_utilisateur_base
 {
   Declare_instanciable(paroi_contact);
 public:
-  void complement(Nom& nom);
+  void complement(Nom& nom) override;
 private:
   Nom nom_autre_pb,nom_autre_bord;
 };
@@ -106,7 +106,7 @@ class paroi_contact_fictif: public Cond_lim_utilisateur_base
 {
   Declare_instanciable(paroi_contact_fictif);
 public:
-  void complement(Nom& nom);
+  void complement(Nom& nom) override;
 private:
   Nom nom_autre_pb,nom_autre_bord;
   double conduct_fictif,ep_fictif;

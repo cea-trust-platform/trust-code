@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,10 +44,10 @@ class Sortie_libre_pression_imposee_QC : public Neumann_sortie_libre
 
 public :
   Sortie_libre_pression_imposee_QC();
-  void completer();
-  int compatible_avec_eqn(const Equation_base&) const;
-  double flux_impose(int i) const;
-  double flux_impose(int i,int j) const;
+  void completer() override;
+  int compatible_avec_eqn(const Equation_base&) const override;
+  double flux_impose(int i) const override;
+  double flux_impose(int i,int j) const override;
 
   // Methodes inlines
   inline double get_Pth() { return Pthn; }// retourne la pression thermohydraulique

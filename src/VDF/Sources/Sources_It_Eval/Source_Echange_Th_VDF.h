@@ -36,9 +36,9 @@ class Source_Echange_Th_VDF : public  Terme_Source_VDF_base
   Declare_instanciable_sans_constructeur(Source_Echange_Th_VDF);
 public:
   inline Source_Echange_Th_VDF() : Terme_Source_VDF_base(It_Sou_VDF_Elem(Eval_Echange_Himp_VDF_Elem)()), h(-1.) {}
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
-  void associer_pb(const Probleme_base&);
-  void mettre_a_jour(double temps) { /* Do nothing */ }
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_pb(const Probleme_base&) override;
+  void mettre_a_jour(double temps) override { /* Do nothing */ }
 
 private:
   REF(Probleme_base) pb_voisin;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,14 +42,14 @@ class Loi_Etat_Multi_GP_WC : public Loi_Etat_Multi_GP_base
 
 public :
   Loi_Etat_Multi_GP_WC();
-  void initialiser_inco_ch();
-  void calculer_masse_molaire(DoubleTab& M) const;
-  void calculer_tab_Cp(DoubleTab& cp) const;
-  void calculer_masse_volumique();
-  void calculer_mu_sur_Sc(); // returns rho * D
-  void calculer_nu_sur_Sc(); // returns D
-  double calculer_masse_volumique(double,double) const;
-  double calculer_masse_volumique(double P,double T,double r) const;
+  void initialiser_inco_ch() override;
+  void calculer_masse_molaire(DoubleTab& M) const override;
+  void calculer_tab_Cp(DoubleTab& cp) const override;
+  void calculer_masse_volumique() override;
+  void calculer_mu_sur_Sc() override; // returns rho * D
+  void calculer_nu_sur_Sc() override; // returns D
+  double calculer_masse_volumique(double,double) const override;
+  double calculer_masse_volumique(double P,double T,double r) const override;
 
   // Methodes inlines
   inline const Champ_Don& masse_molaire_especes() const { return molar_mass_; }
@@ -62,7 +62,7 @@ protected:
   int num_espece_;
 
 private :
-  void calculer_mu_wilke();
+  void calculer_mu_wilke() override;
   void update_Yn_values(Champ_Don& Yn, double temps) ;
 };
 

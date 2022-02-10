@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,19 +43,19 @@ class Loi_Fermeture_base : public Objet_U, public Champs_compris_interface
   Declare_base(Loi_Fermeture_base);
 public:
   // Reimplementation de Objet_U
-  void nommer(const Nom& nom)
+  void nommer(const Nom& nom) override
   {
     nom_ = nom;
   }
-  const Nom& le_nom () const
+  const Nom& le_nom () const override
   {
     return nom_;
   }
   // Implementation des methodes de Champs_compris_interface:
-  virtual void  creer_champ(const Motcle& motlu);
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
+  void  creer_champ(const Motcle& motlu) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
   virtual bool has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const;
-  virtual void get_noms_champs_postraitables(Noms& nom, Option opt=NONE) const;
+  void get_noms_champs_postraitables(Noms& nom, Option opt=NONE) const override;
   // Nouvelles methodes:
   virtual void associer_pb_base(const Probleme_base&);
   virtual void discretiser(const Discretisation_base& );

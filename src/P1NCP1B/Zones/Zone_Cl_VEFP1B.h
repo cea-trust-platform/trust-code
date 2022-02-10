@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,8 +32,8 @@ class Zone_Cl_VEFP1B : public Zone_Cl_VEF
 
 public:
 
-  void remplir_volumes_entrelaces_Cl(const Zone_VEF& );
-  virtual void  imposer_cond_lim(Champ_Inc&,double ) ;
+  void remplir_volumes_entrelaces_Cl(const Zone_VEF& ) override;
+  void  imposer_cond_lim(Champ_Inc&,double ) override ;
 };
 
 #endif

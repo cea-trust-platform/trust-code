@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,15 +43,15 @@ class EOS_Tools_VDF: public EOS_Tools_base
 {
   Declare_instanciable(EOS_Tools_VDF);
 public :
-  const DoubleTab& rho_discvit() const;
-  void associer_zones(const Zone_dis&,const Zone_Cl_dis&);
-  void divu_discvit(const DoubleTab&, DoubleTab&);
-  void secmembre_divU_Z(DoubleTab& ) const;
-  void mettre_a_jour(double temps);
-  void calculer_rho_face_np1(const DoubleTab& rho);
-  double moyenne_vol(const DoubleTab&) const ;
-  inline const DoubleTab& rho_face_n() const { return tab_rho_face; }
-  inline const DoubleTab& rho_face_np1() const { return tab_rho_face_np1; }
+  const DoubleTab& rho_discvit() const override;
+  void associer_zones(const Zone_dis&,const Zone_Cl_dis&) override;
+  void divu_discvit(const DoubleTab&, DoubleTab&) override;
+  void secmembre_divU_Z(DoubleTab& ) const override;
+  void mettre_a_jour(double temps) override;
+  void calculer_rho_face_np1(const DoubleTab& rho) override;
+  double moyenne_vol(const DoubleTab&) const override ;
+  inline const DoubleTab& rho_face_n() const override { return tab_rho_face; }
+  inline const DoubleTab& rho_face_np1() const override { return tab_rho_face_np1; }
   inline const Fluide_Dilatable_base& le_fluide() const { return le_fluide_.valeur(); }
 
 protected :

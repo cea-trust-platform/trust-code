@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,18 +57,18 @@ public:
   //
   // Methodes reimplementees
   //
-  void   associer_zone_dis_base(const Zone_dis_base&);
+  void   associer_zone_dis_base(const Zone_dis_base&) override;
   //Pour creation d une reference a Zone_Cl_VDF
   //const Zone_Cl_dis_base& associer_zone_Cl_dis_base(const Zone_Cl_dis_base&);
-  int fixer_nb_valeurs_nodales(int );
+  int fixer_nb_valeurs_nodales(int ) override;
 
-  const Zone_dis_base& zone_dis_base() const;
-  inline const Zone_VDF& zone_vdf() const;
-  Champ_base& affecter_(const Champ_base& );
+  const Zone_dis_base& zone_dis_base() const override;
+  inline const Zone_VDF& zone_vdf() const override;
+  Champ_base& affecter_(const Champ_base& ) override;
   virtual const Champ_Proto& affecter(const double x1,const double x2);
   virtual const Champ_Proto& affecter(const double x1,const double x2,const double x3);
   virtual const Champ_Proto& affecter(const DoubleTab&);
-  void verifie_valeurs_cl();
+  void verifie_valeurs_cl() override;
   int compo_normale_sortante(int ) const;
 
   inline const DoubleTab& tau_diag() const;
@@ -78,28 +78,28 @@ public:
   void dimensionner_tenseur_Grad();
   void calculer_dercov_axi(const Zone_Cl_VDF& );
   void calculer_rotationnel_ordre2_centre_element(DoubleTab& ) const;
-  int imprime(Sortie& , int ) const;
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab&, double,int distant ) const;
-  virtual void mettre_a_jour(double temps);
+  int imprime(Sortie& , int ) const override;
+  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab&, double,int distant ) const override;
+  void mettre_a_jour(double temps) override;
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position,
                                    DoubleVect& val,
-                                   int le_poly) const;
+                                   int le_poly) const override;
   inline double valeur_a_elem_compo(const DoubleVect& position,
-                                    int le_poly, int ncomp) const;
+                                    int le_poly, int ncomp) const override;
   inline DoubleTab& valeur_aux_elems(const DoubleTab& positions,
                                      const IntVect& les_polys,
-                                     DoubleTab& tab_valeurs) const;
+                                     DoubleTab& tab_valeurs) const override;
   inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
                                             const IntVect& les_polys,
                                             DoubleVect& tab_valeurs,
-                                            int ncomp) const ;
-  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
+                                            int ncomp) const override ;
+  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
   inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                              DoubleVect&, int) const;
-  inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const;
+                                              DoubleVect&, int) const override;
+  inline DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
   inline int remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                           IntVect& polys) const;
+                                           IntVect& polys) const override;
   void calculer_dscald_centre_element(DoubleTab& ) const;
 
 
@@ -120,8 +120,8 @@ private:
 
   DoubleTab tau_diag_;       // termes diagonaux du tenseur Grad
   DoubleTab tau_croises_;    // termes extradiagonaux du tenseur Grad
-  inline virtual const Champ_base& le_champ() const;
-  inline virtual Champ_base& le_champ();
+  inline const Champ_base& le_champ() const override;
+  inline Champ_base& le_champ() override;
 
 };
 

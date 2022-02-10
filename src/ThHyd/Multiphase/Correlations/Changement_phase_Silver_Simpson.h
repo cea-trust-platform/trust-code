@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,9 +36,9 @@ class Changement_phase_Silver_Simpson : public Changement_phase_base
 {
   Declare_instanciable(Changement_phase_Silver_Simpson);
 public:
-  virtual double calculer(int k, int l, const double& dh, const double *alpha, const double *T, const double p, const double *nv,
-                          const double *lambda, const double *mu, const double *rho, const double *Cp, const Saturation_base& sat,
-                          DoubleTab& dT_G, DoubleTab& da_G, double& dp_G) const;
+  double calculer(int k, int l, const double& dh, const double *alpha, const double *T, const double p, const double *nv,
+                  const double *lambda, const double *mu, const double *rho, const double *Cp, const Saturation_base& sat,
+                  DoubleTab& dT_G, DoubleTab& da_G, double& dp_G) const override;
 protected:
   double lambda_ec[2] = { 1, 1 }; //facteurs multiplicatifs d'evaporation / condensation
   double M; //masse molaire de la vapeur

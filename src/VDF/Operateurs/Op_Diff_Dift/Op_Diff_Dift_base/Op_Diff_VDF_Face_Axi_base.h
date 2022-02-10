@@ -30,15 +30,15 @@ class Op_Diff_VDF_Face_Axi_base : public Op_Diff_VDF_Face_base
 {
   Declare_base(Op_Diff_VDF_Face_Axi_base);
 public:
-  double calculer_dt_stab() const;
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  double calculer_dt_stab() const override;
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
 
-  inline void mettre_a_jour(double temps) { }
-  inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const { ajouter_contribution(inco, matrice); }
-  inline void contribuer_au_second_membre(DoubleTab& resu) const { contribue_au_second_membre(resu); }
-  inline void dimensionner(Matrice_Morse& matrice) const { Op_VDF_Face::dimensionner(la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const { Op_VDF_Face::modifier_pour_Cl( la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
+  inline void mettre_a_jour(double temps) override { }
+  inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override { ajouter_contribution(inco, matrice); }
+  inline void contribuer_au_second_membre(DoubleTab& resu) const override { contribue_au_second_membre(resu); }
+  inline void dimensionner(Matrice_Morse& matrice) const override { Op_VDF_Face::dimensionner(la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl( la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
 
 protected:
   static constexpr double deux_pi = M_PI*2.0;
@@ -55,7 +55,7 @@ protected:
   virtual double nu_mean_4_pts_(const int , const int ) const = 0;
 
 private:
-  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override;
   void ajouter_elem(const DoubleTab& , DoubleTab& ) const;
   void ajouter_elem_3D(const DoubleTab& , DoubleTab& ) const;
   void ajouter_aretes_bords(const DoubleTab& , DoubleTab& ) const;

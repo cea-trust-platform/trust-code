@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,15 +43,15 @@
   public:                                                                \
                                                                         \
     inline It_Sou_VEF_Face(_TYPE_)(const It_Sou_VEF_Face(_TYPE_)&);        \
-    inline Evaluateur_Source_VEF& evaluateur();                                \
+    inline Evaluateur_Source_VEF& evaluateur() override;                                \
                                                                         \
-    DoubleTab& calculer(DoubleTab& ) const;                                \
-    DoubleTab& ajouter(DoubleTab& ) const;                                \
-    inline void completer_();                                                \
+    DoubleTab& calculer(DoubleTab& ) const override;                                \
+    DoubleTab& ajouter(DoubleTab& ) const override;                                \
+    inline void completer_() override;                                                \
                                                                         \
   protected:                                                                \
     void remplir_volumes_cl_dirichlet();			       	\
-    int initialiser(double tps);     \
+    int initialiser(double tps) override;     \
     _TYPE_ evaluateur_source_face;                                        \
                                                                         \
     DoubleTab& ajouter_faces_standard(DoubleTab& ) const;                \

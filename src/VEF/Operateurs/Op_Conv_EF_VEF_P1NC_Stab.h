@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,19 +55,19 @@ class Op_Conv_EF_VEF_P1NC_Stab : public Op_Conv_VEF_Face
 public:
 
   //Methodes annexes
-  virtual void remplir_fluent(DoubleVect& ) const;
+  void remplir_fluent(DoubleVect& ) const override;
   int is_compressible() const;
-  void completer();
+  void completer() override;
 
   //Methodes pour l'explicite
-  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override;
 
   //Methodes pour l'implicite
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse&) const;
 
   //test
-  void         modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const;
+  void         modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
 
 private :
 

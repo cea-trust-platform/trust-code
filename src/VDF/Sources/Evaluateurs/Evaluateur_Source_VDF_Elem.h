@@ -31,7 +31,7 @@ class Evaluateur_Source_VDF_Elem : public Evaluateur_Source_VDF
 public:
   Evaluateur_Source_VDF_Elem() { }
   Evaluateur_Source_VDF_Elem(const Evaluateur_Source_VDF_Elem& );
-  void completer();
+  void completer() override;
 
 protected:
   DoubleVect volumes, porosite_vol; // porosites volumiques

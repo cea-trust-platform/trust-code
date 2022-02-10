@@ -35,10 +35,10 @@ class Op_Grad_VDF_Face : public Op_Grad_VDF_Face_base
 {
   Declare_instanciable(Op_Grad_VDF_Face);
 public:
-  int impr(Sortie& os) const;
-  void dimensionner(Matrice_Morse& ) const;
-  void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  int impr(Sortie& os) const override;
+  void dimensionner(Matrice_Morse& ) const override;
+  void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
 
 protected:
   mutable SFichier Flux_grad, Flux_grad_moment, Flux_grad_sum;

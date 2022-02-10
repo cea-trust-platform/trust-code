@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,7 +95,7 @@ class Equation_base : public Champs_compris_interface, public Objet_U
 
 public :
   // Methode surchargee de Objet_U:
-  void nommer(const Nom& nom);
+  void nommer(const Nom& nom) override;
   // MODIF ELI LAUCOIN (22/11/2007) : je rajoute un avancer et un reculer
   virtual void avancer(int i=1);
   virtual void reculer(int i=1);
@@ -112,8 +112,8 @@ public :
   virtual void associer_milieu_base(const Milieu_base&)=0;
   virtual const Milieu_base& milieu() const =0;
   virtual Milieu_base& milieu() =0;
-  virtual int sauvegarder(Sortie&) const;
-  virtual int reprendre(Entree&);
+  int sauvegarder(Sortie&) const override;
+  int reprendre(Entree&) override;
   int limpr() const;
   virtual void imprimer(Sortie& os) const;
   virtual int impr(Sortie& os) const;
@@ -155,7 +155,7 @@ public :
   Zone_dis& zone_dis();
   const Zone_dis& zone_dis() const;
   //
-  inline const Nom& le_nom() const;
+  inline const Nom& le_nom() const override;
   inline DoubleVect& get_residu()
   {
     return residu_;
@@ -233,9 +233,9 @@ public :
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
-  virtual void creer_champ(const Motcle& motlu);
-  virtual const Champ_base& get_champ(const Motcle& nom) const;
-  virtual void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const;
+  void creer_champ(const Motcle& motlu) override;
+  const Champ_base& get_champ(const Motcle& nom) const override;
+  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   /////////////////////////////////////////////////////
 
   virtual const Motcle& domaine_application() const;
@@ -295,7 +295,7 @@ protected :
   Zone_Cl_dis la_zone_Cl_dis;
   REF(Probleme_base) mon_probleme;
   virtual void set_param(Param& titi);
-  virtual int lire_motcle_non_standard(const Motcle&, Entree&);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual Entree& lire_sources(Entree&);
   virtual Entree& lire_cond_init(Entree&);
   virtual Entree& lire_cl(Entree&);

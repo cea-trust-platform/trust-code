@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ class MergeMEDfiles : public Interprete
 {
   Declare_instanciable(MergeMEDfiles);
 public :
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
 
 private:
   void mergeFields(const std::vector< std::string >& field_names,

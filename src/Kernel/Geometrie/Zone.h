@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,8 +71,8 @@ public:
   inline int nb_som_elem() const;
   inline int nb_faces_elem(int=0) const ;
   inline int sommet_elem(int , int ) const;
-  inline const Nom& le_nom() const;
-  inline void nommer(const Nom& );
+  inline const Nom& le_nom() const override;
+  inline void nommer(const Nom& ) override;
   const Domaine& domaine() const;
   Domaine& domaine();
   void fixer_premieres_faces_frontiere();

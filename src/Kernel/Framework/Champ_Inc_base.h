@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,48 +74,48 @@ public:
   //
   // Methode reimplementees
   //
-  int fixer_nb_valeurs_nodales(int );
-  double changer_temps(const double& temps);
-  void   mettre_a_jour(double temps);
-  int reprendre(Entree& ) ;
-  int sauvegarder(Sortie& ) const;
-  Champ_base& affecter_compo(const Champ_base& , int compo) ;
+  int fixer_nb_valeurs_nodales(int ) override;
+  double changer_temps(const double& temps) override;
+  void   mettre_a_jour(double temps) override;
+  int reprendre(Entree& ) override ;
+  int sauvegarder(Sortie& ) const override;
+  Champ_base& affecter_compo(const Champ_base& , int compo) override ;
   //
   // Methodes viruelles pures implementees ici
   //
-  Champ_base&      affecter_(const Champ_base& ) ;
+  Champ_base&      affecter_(const Champ_base& ) override ;
   virtual void verifie_valeurs_cl();
-  DoubleTab&       valeurs() ;
-  const DoubleTab& valeurs() const ;
+  DoubleTab&       valeurs() override ;
+  const DoubleTab& valeurs() const override ;
 
-  virtual DoubleVect& valeur_a(const DoubleVect& position,
-                               DoubleVect& valeurs) const ;
+  DoubleVect& valeur_a(const DoubleVect& position,
+                       DoubleVect& valeurs) const override ;
 
-  virtual DoubleTab&  valeur_aux(const DoubleTab& positions,
-                                 DoubleTab& valeurs) const ;
-  virtual DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                                       DoubleVect& valeurs, int ncomp) const ;
+  DoubleTab&  valeur_aux(const DoubleTab& positions,
+                         DoubleTab& valeurs) const override ;
+  DoubleVect& valeur_aux_compo(const DoubleTab& positions,
+                               DoubleVect& valeurs, int ncomp) const override ;
 
   //
   // Nouvelles methodes
   //
-  int  nb_valeurs_nodales() const;
+  int  nb_valeurs_nodales() const override;
   virtual int fixer_nb_valeurs_temporelles(int );
   virtual int nb_valeurs_temporelles() const;
   double         changer_temps_futur(const double&, int i=1);
   double         changer_temps_passe(const double&, int i=1);
   double         recuperer_temps_futur(int i=1) const;
   double         recuperer_temps_passe(int i=1) const;
-  virtual DoubleTab&              valeurs(double temps) ;
-  virtual const DoubleTab&        valeurs(double temps) const ;
+  DoubleTab&              valeurs(double temps) override ;
+  const DoubleTab&        valeurs(double temps) const override ;
   // Operateurs de conversion implicite
   operator DoubleTab& ();
   operator const DoubleTab& () const ;
 
-  virtual DoubleTab&       futur(int i=1) ;
-  virtual const DoubleTab& futur(int i=1) const ;
-  virtual DoubleTab&       passe(int i=1) ;
-  virtual const DoubleTab& passe(int i=1) const ;
+  DoubleTab&       futur(int i=1) override ;
+  const DoubleTab& futur(int i=1) const override ;
+  DoubleTab&       passe(int i=1) override ;
+  const DoubleTab& passe(int i=1) const override ;
   Champ_Inc_base&  avancer(int i=1);
   Champ_Inc_base&  reculer(int i=1);
 
@@ -123,8 +123,8 @@ public:
 
   virtual void associer_eqn(const Equation_base&);
   virtual void associer_zone_cl_dis(const Zone_Cl_dis&);
-  virtual int imprime(Sortie& , int ) const;
-  virtual int a_une_zone_dis_base() const
+  int imprime(Sortie& , int ) const override;
+  int a_une_zone_dis_base() const override
   {
     return 1;
   };
@@ -133,7 +133,7 @@ public:
   Zone_Cl_dis& zone_Cl_dis();
   // methode supprimee volontairement
   //DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&,int distant) const;
-  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& , double ,int distant) const;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& , double ,int distant) const override;
   virtual int     remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
   virtual int     remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, int) const;
   virtual DoubleTab& remplir_coord_noeuds(DoubleTab& ) const=0;
@@ -154,7 +154,7 @@ public:
 
   //utilise les conditions aux limites (au lieu de valeur_aux() dans Champ_base)
   //result n'est rempli que pour les faces de bord dont la CL impose une valeur (val_imp ou val_ext)
-  DoubleTab valeur_aux_bords() const;
+  DoubleTab valeur_aux_bords() const override;
 
   // Obsolete method: signature changed in order to generate a compiler error if old code is not removed
   virtual void creer_espace_distant(int dummy) { };

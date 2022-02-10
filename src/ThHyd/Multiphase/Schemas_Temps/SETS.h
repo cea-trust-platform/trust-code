@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,14 +42,14 @@ class SETS : public Simpler
 public :
 
   SETS();
-  virtual Entree& lire(const Motcle&, Entree&); /* mot-cle "criteres_convergence" */
-  virtual int nb_valeurs_temporelles_pression() const /* nombres de valeurs temporelles du champ de pression */
+  Entree& lire(const Motcle&, Entree&) override; /* mot-cle "criteres_convergence" */
+  int nb_valeurs_temporelles_pression() const override /* nombres de valeurs temporelles du champ de pression */
   {
     return 3; /* autant que les autres variables */
   }
 
-  virtual bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok);
-  virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok);
+  bool iterer_eqn(Equation_base& equation, const DoubleTab& inconnue, DoubleTab& result, double dt, int numero_iteration, int& ok) override;
+  void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok) override;
 
 
   /* elimination par blocs d'un systeme lineaire */
@@ -81,7 +81,7 @@ public :
   static void assembler(const std::string inco_p, const std::vector<std::string> extra_eq, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p,
                         const std::map<std::string, matrices_t>& mats, const tabs_t& sec, const DoubleTab& inco_a, Matrice_Morse& matrice, DoubleTab& secmem, int p_degen);
 
-  virtual double get_default_growth_factor() const /* taux de croissance du pas de temps */
+  double get_default_growth_factor() const override /* taux de croissance du pas de temps */
   {
     return 1.2; /* en cas de pas de temps rate, on remonte doucement */
   }
@@ -118,11 +118,11 @@ class ICE : public SETS
 {
   Declare_instanciable(ICE);
 public:
-  virtual bool est_compatible_avec_th_mono() const /* ce solveur est-il  compatible avec une resolution monolithique de la thermique ? */
+  bool est_compatible_avec_th_mono() const override /* ce solveur est-il  compatible avec une resolution monolithique de la thermique ? */
   {
     return 0; /* non: ICE est explicite en la thermique */
   }
-  virtual double get_default_facsec_max() const /* facsec_max recommande */
+  double get_default_facsec_max() const override /* facsec_max recommande */
   {
     return 1; /* SETS est semi-implicite */
   }

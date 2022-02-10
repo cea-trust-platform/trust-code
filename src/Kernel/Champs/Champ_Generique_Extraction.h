@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,18 +46,18 @@ class Champ_Generique_Extraction : public Champ_Gen_de_Champs_Gen
   Declare_instanciable_sans_constructeur(Champ_Generique_Extraction);
 public:
   Champ_Generique_Extraction();
-  void set_param(Param& param);
-  virtual Entity  get_localisation(const int index = -1) const;
-  virtual const Champ_base&  get_champ(Champ& espace_stockage) const;
-  virtual const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const;
-  virtual const Noms        get_property(const Motcle& query) const;
-  void nommer_source();
-  void completer(const Postraitement_base& post);
-  virtual const Domaine& get_ref_domain() const;
-  virtual void get_copy_domain(Domaine&) const;
-  const Zone_dis_base& get_ref_zone_dis_base() const;
+  void set_param(Param& param) override;
+  Entity  get_localisation(const int index = -1) const override;
+  const Champ_base&  get_champ(Champ& espace_stockage) const override;
+  const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
+  const Noms        get_property(const Motcle& query) const override;
+  void nommer_source() override;
+  void completer(const Postraitement_base& post) override;
+  const Domaine& get_ref_domain() const override;
+  void get_copy_domain(Domaine&) const override;
+  const Zone_dis_base& get_ref_zone_dis_base() const override;
   void discretiser_domaine();
-  const  Motcle  get_directive_pour_discr() const;
+  const  Motcle  get_directive_pour_discr() const override;
 
 protected :
 

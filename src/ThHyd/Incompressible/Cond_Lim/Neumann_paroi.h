@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,11 +43,11 @@ class Neumann_paroi : public Neumann
   Declare_instanciable(Neumann_paroi);
 
 public :
-  int compatible_avec_eqn(const Equation_base&) const;
-  void mettre_a_jour(double temps);
-  virtual double flux_impose(int i) const;
-  virtual double flux_impose(int i,int j) const;
-  void verifie_ch_init_nb_comp();
+  int compatible_avec_eqn(const Equation_base&) const override;
+  void mettre_a_jour(double temps) override;
+  double flux_impose(int i) const override;
+  double flux_impose(int i,int j) const override;
+  void verifie_ch_init_nb_comp() override;
 };
 
 #endif

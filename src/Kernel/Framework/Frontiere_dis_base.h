@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ public :
   const Frontiere& frontiere() const;
   Frontiere& frontiere();
   const Zone_dis_base& zone_dis() const;
-  const Nom& le_nom() const;
+  const Nom& le_nom() const override;
 
 protected :
 

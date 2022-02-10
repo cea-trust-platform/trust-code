@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,18 +46,18 @@ class Champ_input_P0 : public Champ_Fonc_P0_base, public Champ_Input_Proto
 
 public:
 
-  virtual void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  virtual void mettre_a_jour(double) {}
+  void associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base) override;
+  const Zone_dis_base& zone_dis_base() const override;
+  void mettre_a_jour(double) override {}
 
-  virtual void getTemplate(TrioField& afield) const;
-  virtual void setValue(const TrioField& afield);
+  void getTemplate(TrioField& afield) const override;
+  void setValue(const TrioField& afield) override;
 
 protected:
 
   // Factorisation function between several input field classes
-  virtual void set_nb_comp(int i); // calls fixer_nb_comp
-  virtual void set_name(const Nom& ); // calls nommer
+  void set_nb_comp(int i) override; // calls fixer_nb_comp
+  void set_name(const Nom& ) override; // calls nommer
   virtual const Nom& get_name() const; // calls le_nom
 
   REF(Zone_dis_base) zdb_;

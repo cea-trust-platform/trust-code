@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,14 +47,14 @@ class Ch_front_input_P1 : public Ch_front_input
 
 public:
 
-  virtual double valeur_au_temps_et_au_point(double temps,int som, double x,double y, double z,int comp) const;
-  inline virtual int valeur_au_temps_et_au_point_disponible() const
+  double valeur_au_temps_et_au_point(double temps,int som, double x,double y, double z,int comp) const override;
+  inline int valeur_au_temps_et_au_point_disponible() const override
   {
     return 1;
   };
-  void setValue(const TrioField& afield);
-  void getTemplate(TrioField& afield) const ;
-  virtual int initialiser(double temps, const Champ_Inc_base& inco);
+  void setValue(const TrioField& afield) override;
+  void getTemplate(TrioField& afield) const override ;
+  int initialiser(double temps, const Champ_Inc_base& inco) override;
 protected:
 
   Roue_ptr les_valeurs_som;

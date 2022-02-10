@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,8 +44,8 @@ class Champ_front_debit_QC : public Ch_front_var_instationnaire_indep
 
 public:
 
-  Champ_front_base& affecter_(const Champ_front_base& ch);
-  virtual void mettre_a_jour(double temps);
+  Champ_front_base& affecter_(const Champ_front_base& ch) override;
+  void mettre_a_jour(double temps) override;
 
 protected :
   int ismoyen;

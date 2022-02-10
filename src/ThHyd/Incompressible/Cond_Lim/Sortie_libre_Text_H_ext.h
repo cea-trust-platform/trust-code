@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,11 +58,11 @@ public:
 
   virtual double val_ext(int i) const;
   virtual double val_ext(int i,int j) const;
-  int compatible_avec_eqn(const Equation_base&) const;
+  int compatible_avec_eqn(const Equation_base&) const override;
   inline void bascule_cond_lim_en_enthalpie();
   inline void bascule_cond_lim_en_temperature();
-  double flux_impose(int i) const;
-  double flux_impose(int i,int j) const;
+  double flux_impose(int i) const override;
+  double flux_impose(int i,int j) const override;
 
 protected:
 

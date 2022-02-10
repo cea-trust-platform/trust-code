@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,10 +45,10 @@ class Partitionneur_Union : public Partitionneur_base
 {
   Declare_instanciable(Partitionneur_Union);
 public:
-  void set_param(Param& param) { };
-  void associer_domaine(const Domaine& dom);
+  void set_param(Param& param) override { };
+  void associer_domaine(const Domaine& dom) override;
   void initialiser(const char *filename, const char *filename_ssz);
-  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const;
+  void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
 
 protected:
   // Parametres du partitionneur

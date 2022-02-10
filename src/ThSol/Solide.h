@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,8 +39,8 @@ class Solide : public Milieu_base
 
 public:
 
-  void set_param(Param& param);
-  void verifier_coherence_champs(int& err,Nom& message);
+  void set_param(Param& param) override;
+  void verifier_coherence_champs(int& err,Nom& message) override;
 
 };
 

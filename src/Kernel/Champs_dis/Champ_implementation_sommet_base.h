@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,26 +38,26 @@ class Champ_implementation_sommet_base : public Champ_implementation_base
 {
 
 public :
-  virtual       Champ_base& le_champ(void)       =0;
-  virtual const Champ_base& le_champ(void) const =0;
+  Champ_base& le_champ(void)       override =0;
+  const Champ_base& le_champ(void) const override =0;
 
 protected :
   virtual void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp=-1) const =0;
 public :
-  inline virtual ~Champ_implementation_sommet_base() { };
+  inline ~Champ_implementation_sommet_base() override { };
 
 public :
-  virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const;
-  virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const;
-  virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const;
-  virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const;
+  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
+  double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
 
-  virtual DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const;
-  virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const;
+  DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
+  int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
 
 protected :
-  virtual DoubleTab& valeur_aux_sommets_impl(DoubleTab& result) const;
-  virtual DoubleVect& valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const;
+  DoubleTab& valeur_aux_sommets_impl(DoubleTab& result) const override;
+  DoubleVect& valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const override;
   inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
 
 };

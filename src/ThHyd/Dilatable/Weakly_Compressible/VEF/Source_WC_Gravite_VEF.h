@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,10 +46,10 @@ class Source_WC_Gravite_VEF : public Source_Gravite_Fluide_Dilatable_base,
   Declare_instanciable(Source_WC_Gravite_VEF);
 
 public:
-  DoubleTab& ajouter(DoubleTab& ) const;
+  DoubleTab& ajouter(DoubleTab& ) const override;
 
 protected :
-  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& );
+  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& ) override;
 };
 
 #endif /* Source_WC_Gravite_VEF_included */

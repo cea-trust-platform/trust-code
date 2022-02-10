@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,9 +38,9 @@ class Source_Generique_VEF: public Source_Generique_base
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& ) const;
-  virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis&);
-  Nom localisation_source();
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis&) override;
+  Nom localisation_source() override;
 
 protected:
 

@@ -34,11 +34,11 @@ class Op_Grad_VDF_base : public Operateur_Grad_base
 public:
   inline Op_Grad_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
 
-  void completer();
-  virtual int impr(Sortie& os) const;
+  void completer() override;
+  int impr(Sortie& os) const override;
 
-  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const { return iter->ajouter(inco,resu); } // ajoute la contribution du gradient a resu
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const { return iter->calculer(inco,resu); } // calcule la contribution du gradient
+  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override { return iter->ajouter(inco,resu); } // ajoute la contribution du gradient a resu
+  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter->calculer(inco,resu); } // calcule la contribution du gradient
 
 protected:
   Iterateur_VDF iter;

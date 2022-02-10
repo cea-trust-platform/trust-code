@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,40 +61,40 @@ public:
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, int nb_pas_dt, double temps,
-                         Champ_Inc& champ, const Nom& sous_type = nom_vide) const;
+                         Champ_Inc& champ, const Nom& sous_type = nom_vide) const override;
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, double temps,
-                         Champ_Fonc& champ) const;
+                         Champ_Fonc& champ) const override;
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, double temps,
-                         Champ_Don& champ) const;
+                         Champ_Don& champ) const override;
 
-  void zone_Cl_dis(Zone_dis& z, Zone_Cl_dis& zcl) const;
+  void zone_Cl_dis(Zone_dis& z, Zone_Cl_dis& zcl) const override;
 
   void proprietes_physiques_fluide_Ostwald(const Zone_dis& ,Fluide_Ostwald& ,
                                            const Navier_Stokes_std& ,
-                                           const Champ_Inc& ) const;
+                                           const Champ_Inc& ) const override;
   void vorticite(Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const;
-  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const;
-  void grad_u(const Zone_dis& ,const Zone_Cl_dis& ,const Champ_Inc& , Champ_Fonc& ) const;
-  void critere_Q(const Zone_dis& ,const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc& ) const;
-  void reynolds_maille(const Zone_dis&, const Fluide_base&, const Champ_Inc&, Champ_Fonc&) const;
-  void courant_maille(const Zone_dis&, const Schema_Temps_base&, const Champ_Inc&, Champ_Fonc&) const;
-  void taux_cisaillement(const Zone_dis&, const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc&) const;
-  void y_plus(const Zone_dis& ,const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc& ) const;
+  void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
+  void grad_u(const Zone_dis& ,const Zone_Cl_dis& ,const Champ_Inc& , Champ_Fonc& ) const override;
+  void critere_Q(const Zone_dis& ,const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc& ) const override;
+  void reynolds_maille(const Zone_dis&, const Fluide_base&, const Champ_Inc&, Champ_Fonc&) const override;
+  void courant_maille(const Zone_dis&, const Schema_Temps_base&, const Champ_Inc&, Champ_Fonc&) const override;
+  void taux_cisaillement(const Zone_dis&, const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc&) const override;
+  void y_plus(const Zone_dis& ,const Zone_Cl_dis&,const Champ_Inc&, Champ_Fonc& ) const override;
 //  virtual void t_paroi(const Zone_dis& z,const Zone_Cl_dis& zcl, const Equation_base& eqn,Champ_Fonc& ch) const;
-  void residu( const Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const;
+  void residu( const Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const override;
 
 
 private:
   void discretiser_champ_fonc_don(const Motcle& directive, const Zone_dis_base& z,
                                   Nature_du_champ nature, const Noms& noms, const Noms& unites,
                                   int nb_comp, double temps, Objet_U& champ) const;
-  void modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const;
+  void modifier_champ_tabule(const Zone_dis_base& zone_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const override;
 };
 
 #endif

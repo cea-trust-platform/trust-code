@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,37 +46,37 @@ class Energie_Multiphase : public Convection_Diffusion_std
 public :
 
   Energie_Multiphase();
-  void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle&, Entree&);
+  void set_param(Param& param) override;
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   void associer_fluide(const Fluide_base& );
-  inline const Champ_Inc& inconnue() const;
-  inline Champ_Inc& inconnue();
-  void discretiser();
-  const Milieu_base& milieu() const;
+  inline const Champ_Inc& inconnue() const override;
+  inline Champ_Inc& inconnue() override;
+  void discretiser() override;
+  const Milieu_base& milieu() const override;
   const Fluide_base& fluide() const;
   Fluide_base& fluide();
-  Milieu_base& milieu();
-  void associer_milieu_base(const Milieu_base& );
-  virtual int impr(Sortie& os) const;
-  const Champ_Don& diffusivite_pour_transport();
-  const Champ_base& diffusivite_pour_pas_de_temps();
+  Milieu_base& milieu() override;
+  void associer_milieu_base(const Milieu_base& ) override;
+  int impr(Sortie& os) const override;
+  const Champ_Don& diffusivite_pour_transport() override;
+  const Champ_base& diffusivite_pour_pas_de_temps() override;
 
-  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice);
+  void dimensionner_matrice_sans_mem(Matrice_Morse& matrice) override;
 
   /*
     interface {dimensionner,assembler}_blocs
     specificites : prend en compte l'evanescence (en dernier)
   */
-  virtual  int has_interface_blocs() const;
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  virtual void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  int has_interface_blocs() const override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
-  virtual const Motcle& domaine_application() const;
+  const Motcle& domaine_application() const override;
 
   /* champ convecte : alpha * rho * e */
   static void calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
-  virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const
+  std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const override
   {
     return { "alpha_rho_e", calculer_alpha_rho_e };
   }
@@ -87,15 +87,15 @@ public :
     return { "alpha_rho_e_conv", calculer_alpha_rho_e };
   }
 
-  virtual Champ_Inc_base& champ_convecte() const //par defaut le champ conserve
+  Champ_Inc_base& champ_convecte() const override //par defaut le champ conserve
   {
     return champ_convecte_.valeur();
   }
-  virtual int has_champ_convecte() const
+  int has_champ_convecte() const override
   {
     return champ_convecte_.non_nul();
   }
-  virtual void init_champ_convecte() const; //a appeller dans le completer() des operateurs/sources qui auront besoin de champ_convecte_
+  void init_champ_convecte() const override; //a appeller dans le completer() des operateurs/sources qui auront besoin de champ_convecte_
 
 protected :
 

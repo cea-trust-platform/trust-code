@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,14 +46,14 @@ class Traitement_particulier_NS_temperature : public Traitement_particulier_NS_b
 
 public :
 
-  inline ~Traitement_particulier_NS_temperature();
+  inline ~Traitement_particulier_NS_temperature() override;
   inline Traitement_particulier_NS_temperature();
-  Entree& lire(Entree& );
-  void preparer_calcul_particulier(void) ;
-  void post_traitement_particulier(void) ;
-  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) ;
-  inline void sauver_stat(void)  const ;
-  inline void reprendre_stat(void)  ;
+  Entree& lire(Entree& ) override;
+  void preparer_calcul_particulier(void) override ;
+  void post_traitement_particulier(void) override ;
+  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
+  inline void sauver_stat(void)  const override ;
+  inline void reprendre_stat(void) override  ;
 
 
 protected :

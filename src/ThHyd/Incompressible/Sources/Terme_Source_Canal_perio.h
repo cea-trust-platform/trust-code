@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,13 +38,13 @@ class Terme_Source_Canal_perio : public Source_base
   Declare_base(Terme_Source_Canal_perio);
 
 public:
-  virtual void associer_pb(const Probleme_base& );
-  virtual void mettre_a_jour(double temps) {}
-  virtual DoubleTab& calculer(DoubleTab& resu) const;
+  void associer_pb(const Probleme_base& ) override;
+  void mettre_a_jour(double temps) override {}
+  DoubleTab& calculer(DoubleTab& resu) const override;
 
 protected :
   Entree& lire_donnees(Entree& );
-  virtual void completer();
+  void completer() override;
 
   // This one is overridden depending on discret.
   virtual void calculer_debit(double&) const=0;

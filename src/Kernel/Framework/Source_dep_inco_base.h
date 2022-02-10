@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,9 +41,9 @@ class Source_dep_inco_base : public Source_base
 
 public:
 
-  virtual DoubleTab& ajouter(DoubleTab& resu) const ;
+  DoubleTab& ajouter(DoubleTab& resu) const override ;
   virtual DoubleTab& ajouter_(const DoubleTab& inco, DoubleTab& resu ) const =0;
-  virtual DoubleTab& calculer(DoubleTab& resu) const ;
+  DoubleTab& calculer(DoubleTab& resu) const override ;
 
 };
 

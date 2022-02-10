@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,10 +36,10 @@ class Solv_Gen : public solv_iteratif
 public :
 
   Solv_Gen();
-  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&);
+  int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
   inline  int resoudre_systeme(const Matrice_Base& M, const DoubleVect& A,
                                DoubleVect& B,
-                               int niter_max)
+                               int niter_max) override
   {
     return resoudre_systeme(M, A,B);
   };
@@ -47,7 +47,7 @@ public :
   inline const SolvElem& le_solveur_elem() const;
   inline const Precond& get_precond() const;
   inline void set_precond(const Precond&);
-  virtual void reinit();
+  void reinit() override;
 
 protected :
   int solve(const Matrice_Base& matrice,

@@ -42,12 +42,12 @@ class Source_Neutronique_VDF : public Source_Neutronique
 public:
   Source_Neutronique_VDF(const Iterateur_Source_VDF_base& iter_base) : iter(iter_base) { }
   inline Source_Neutronique_VDF();
-  inline DoubleTab& ajouter(DoubleTab& resu) const { return iter->ajouter(resu); }
-  inline DoubleTab& calculer(DoubleTab& resu) const { return iter->calculer(resu); }
-  void completer();
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& );
-  void associer_pb(const Probleme_base& );
-  virtual double calculer_Tmoyenne();
+  inline DoubleTab& ajouter(DoubleTab& resu) const override { return iter->ajouter(resu); }
+  inline DoubleTab& calculer(DoubleTab& resu) const override { return iter->calculer(resu); }
+  void completer() override;
+  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_pb(const Probleme_base& ) override;
+  double calculer_Tmoyenne() override;
 
 protected:
   Iterateur_Source_VDF iter;

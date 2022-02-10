@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,15 +43,15 @@ class Op_Ecart_type : public Operateur_Statistique_tps_base
   Declare_instanciable(Op_Ecart_type);
 
 public:
-  inline const Nom& le_nom() const
+  inline const Nom& le_nom() const override
   {
     return integrale_carre_champ.le_nom();
   };
-  inline double temps() const
+  inline double temps() const override
   {
     return integrale_carre_champ.temps();
   };
-  inline const Integrale_tps_Champ& integrale() const
+  inline const Integrale_tps_Champ& integrale() const override
   {
     return integrale_carre_champ;
   };
@@ -84,16 +84,16 @@ public:
   {
     return integrale_carre_champ.dt_integration();
   };
-  inline void mettre_a_jour(double tps);
-  inline void initialiser(double val);
-  inline void associer(const Zone_dis_base& , const Champ_Generique_base& ,double t1, double t2 );
-  inline void fixer_tstat_deb(double, double );
-  inline void fixer_tstat_fin(double );
-  inline void associer_op_stat(const Operateur_Statistique_tps_base& );
-  void completer(const Probleme_base& );
-  DoubleTab calculer_valeurs() const;
-  inline int sauvegarder(Sortie& os) const;
-  inline int reprendre(Entree& is);
+  inline void mettre_a_jour(double tps) override;
+  inline void initialiser(double val) override;
+  inline void associer(const Zone_dis_base& , const Champ_Generique_base& ,double t1, double t2 ) override;
+  inline void fixer_tstat_deb(double, double ) override;
+  inline void fixer_tstat_fin(double ) override;
+  inline void associer_op_stat(const Operateur_Statistique_tps_base& ) override;
+  void completer(const Probleme_base& ) override;
+  DoubleTab calculer_valeurs() const override;
+  inline int sauvegarder(Sortie& os) const override;
+  inline int reprendre(Entree& is) override;
 
 protected:
 

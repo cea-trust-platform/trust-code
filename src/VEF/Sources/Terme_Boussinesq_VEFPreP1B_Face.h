@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ class Terme_Boussinesq_VEFPreP1B_Face : public Terme_Boussinesq_VEF_Face
 
 public:
 
-  virtual DoubleTab& ajouter(DoubleTab& ) const ;
+  DoubleTab& ajouter(DoubleTab& ) const override ;
 };
 
 #endif

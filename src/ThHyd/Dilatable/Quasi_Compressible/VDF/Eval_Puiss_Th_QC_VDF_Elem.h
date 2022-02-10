@@ -35,7 +35,7 @@ public:
   Eval_Puiss_Th_QC_VDF_Elem() { }
   inline void associer_puissance(const Champ_Don& Q);
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& ) const;
-  inline void mettre_a_jour() { /* Do nothing */}
+  inline void mettre_a_jour() override { /* Do nothing */}
 
 protected:
   REF(Champ_Don) la_puissance;

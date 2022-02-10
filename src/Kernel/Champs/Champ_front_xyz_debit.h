@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,15 +57,15 @@ protected:
   void calculer_champ_vitesse(const Front_VF& le_bord, DoubleTab& velocity_field, DoubleTab& velocity_user, double temps);
 
 public:
-  virtual int initialiser(double tps, const Champ_Inc_base& inco);
+  int initialiser(double tps, const Champ_Inc_base& inco) override;
   virtual void update_coeff(double temps) { };
-  void mettre_a_jour(double temps);
-  void associer_fr_dis_base(const Frontiere_dis_base& fr);
+  void mettre_a_jour(double temps) override;
+  void associer_fr_dis_base(const Frontiere_dis_base& fr) override;
   void set_temps_defaut(double temps);
-  void fixer_nb_valeurs_temporelles(int nb_cases);
-  void changer_temps_futur(double temps,int i);
-  int avancer(double temps);
-  int reculer(double temps);
+  void fixer_nb_valeurs_temporelles(int nb_cases) override;
+  void changer_temps_futur(double temps,int i) override;
+  int avancer(double temps) override;
+  int reculer(double temps) override;
 
 };
 

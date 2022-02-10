@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,16 +46,16 @@ class Source_Chaleur_Fluide_Dilatable_base : public Source_base
   Declare_base(Source_Chaleur_Fluide_Dilatable_base);
 
 public:
-  void completer();
-  DoubleTab& calculer(DoubleTab& ) const;
-  virtual DoubleTab& ajouter(DoubleTab& ) const = 0;
+  void completer() override;
+  DoubleTab& calculer(DoubleTab& ) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override = 0;
 
   // Methodes inlines
-  inline void mettre_a_jour(double) { }
-  inline void associer_pb(const Probleme_base& ) { }
+  inline void mettre_a_jour(double) override { }
+  inline void associer_pb(const Probleme_base& ) override { }
 
 protected:
-  virtual void associer_zones(const Zone_dis& ,const Zone_Cl_dis& )=0;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override =0;
   REF(Fluide_Dilatable_base) le_fluide;
   DoubleVect volumes,porosites;
 };

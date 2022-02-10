@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ public:
 
   Evaluateur_Source_EF_Som();
   Evaluateur_Source_EF_Som(const Evaluateur_Source_EF_Som& );
-  void completer();
+  void completer() override;
   virtual double calculer_terme_source_standard(int ) const =0;
   virtual void calculer_terme_source_standard(int , DoubleVect&  ) const =0;
 

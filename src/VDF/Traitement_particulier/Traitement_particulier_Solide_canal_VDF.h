@@ -49,14 +49,14 @@ class Traitement_particulier_Solide_canal_VDF : public Traitement_particulier_So
 public :
 
 
-  Entree& lire(Entree& );
+  Entree& lire(Entree& ) override;
   void ecriture_fichier_moy_spat_thermo(const DoubleVect&, const DoubleVect&, const DoubleVect&);
   void ecriture_fichier_moy_temp_thermo(const DoubleVect&, const DoubleVect&, const DoubleVect&, const double&);
   void calculer_moyennes_spatiales_thermo(DoubleVect& tmoy, DoubleVect& trms,const DoubleVect& Y, IntVect& corresp, IntVect& compt);
-  void post_traitement_particulier();
+  void post_traitement_particulier() override;
   void calculer_integrales_temporelles(DoubleVect& moy_temp, const DoubleVect& moy_spat);
 
-  void init_calcul_moyenne(void);
+  void init_calcul_moyenne(void) override;
   void init_calcul_stats(void);
 
 protected :

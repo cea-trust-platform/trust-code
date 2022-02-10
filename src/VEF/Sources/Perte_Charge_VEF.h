@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,15 +47,15 @@ class Perte_Charge_VEF : public Source_base, public Terme_Source_Qdm
   Declare_base(Perte_Charge_VEF);
 
 public:
-  DoubleTab& ajouter(DoubleTab& ) const; //!< Appelle perte_charge pour chaque face ou cela est necessaire
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const ;
-  DoubleTab& calculer(DoubleTab& ) const ;
-  void associer_pb(const Probleme_base&);  //!< associe le_fluide et la_vitesse
-  void completer();
+  DoubleTab& ajouter(DoubleTab& ) const override; //!< Appelle perte_charge pour chaque face ou cela est necessaire
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
+  DoubleTab& calculer(DoubleTab& ) const override ;
+  void associer_pb(const Probleme_base&) override;  //!< associe le_fluide et la_vitesse
+  void completer() override;
 
 protected:
 
-  void associer_zones(const Zone_dis&,const Zone_Cl_dis&);   //!< associe la_zone_VEF et la_zone_Cl_VEF
+  void associer_zones(const Zone_dis&,const Zone_Cl_dis&) override;   //!< associe la_zone_VEF et la_zone_Cl_VEF
 
   //! Appele pour chaque face par ajouter()
   /**

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,10 +41,10 @@ class Echange_externe_impose_H  : public Echange_externe_impose
   Declare_instanciable(Echange_externe_impose_H);
 
 public:
-  void completer();
-  int compatible_avec_eqn(const Equation_base&) const;
-  double T_ext(int num) const;
-  double T_ext(int num,int k) const;
+  void completer() override;
+  int compatible_avec_eqn(const Equation_base&) const override;
+  double T_ext(int num) const override;
+  double T_ext(int num,int k) const override;
 
   // Methodes inlines
   // Renvoie le champ T_ext de temperature imposee a la frontiere.

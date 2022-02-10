@@ -143,7 +143,7 @@ public :
   int rang_elem_depuis(const DoubleTab&, const ArrOfInt&, ArrOfInt&) const;
   void rang_elems_sommet(ArrOfInt&, double x, double y=0, double z=0) const;
 
-  const Zone& zone() const;
+  const Zone& zone() const override;
   void associer_Zone(const Zone&);
   void construire(int reel=0);
   int construit() const;
@@ -181,12 +181,12 @@ public :
     construire(mon_pere, val, loc);
   }
   void construire(Octree* , const ArrOfInt&, const OctreeLoc&);
-  int rang_elem_loc(const OctreeLoc&, double x, double y=0, double z=0) const;
-  int rang_elem_depuis_loc(const OctreeLoc&, int prems, double x, double y=0, double z=0) const;
+  int rang_elem_loc(const OctreeLoc&, double x, double y=0, double z=0) const override;
+  int rang_elem_depuis_loc(const OctreeLoc&, int prems, double x, double y=0, double z=0) const override;
 
-  virtual Sortie& printOn(Sortie& is) const;
-  virtual Entree& readOn(Entree& is);
-  int taille() const;
+  Sortie& printOn(Sortie& is) const override;
+  Entree& readOn(Entree& is) override;
+  int taille() const override;
 protected :
   ArrOfInt num_elem;
   mutable ArrOfDouble pos; // Tableau de travail
