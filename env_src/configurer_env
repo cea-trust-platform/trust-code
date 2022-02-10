@@ -736,26 +736,29 @@ then
    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
    INSTALL_OK=1
    # list of packages already-installed/to-install in conda
-   $TRUST_ROOT/exec/python/bin/conda list > conda_list
-   if [ "$system" = "Linux" ] && [ $model = "x86_64" ]
+   $TRUST_ROOT/exec/python/bin/conda list > $TRUST_ROOT/exec/conda_list.check
+   if [ "$system" = "Linux" ] && [ $model = "x86_64" ] && [ -f $TRUST_ROOT/exec/conda_list.ref ]
    then
       # Strict check of conda packages
-      cat $TRUST_ROOT/externalpackages/Miniconda/conda_list_ref | sed "s?TRUSTR?$TRUST_ROOT?g" > conda_list.ref
-      if [ `diff conda_list.ref conda_list 1>/dev/null 2>&1; echo $?` != 0 ]
+      if [ `diff $TRUST_ROOT/exec/conda_list.ref $TRUST_ROOT/exec/conda_list.check 1>/dev/null 2>&1; echo $?` != 0 ]
       then
          echo "# The current miniconda install contains some supplementary or missing packages, we clean it..."
          INSTALL_OK=0
       else
-         rm -f conda_lis.ref
+         rm -f $TRUST_ROOT/exec/conda_list.check
       fi
+   elif [ "$system" = "Linux" ] && [ $model = "x86_64" ] && [ ! -f $TRUST_ROOT/exec/conda_list.ref ]
+   then
+      # reinstall conda if no $TRUST_ROOT/exec/conda_list.ref
+      INSTALL_OK=0
    else
       for pkg in $pkgs
       do
         pkg=`echo $pkg | awk -F= '{print $1}'` # Pour ne pas avoir le numero de version
-        [ "`grep $pkg conda_list`" = "" ] && INSTALL_OK=0
+        [ "`grep $pkg $TRUST_ROOT/exec/conda_list.check`" = "" ] && INSTALL_OK=0
       done
    fi
-   rm -f conda_list
+   rm -f $TRUST_ROOT/exec/conda_list.check
    if [ "$PYTHON_VERSION_OK" != 1 ] || [ "$PYTHON_TEST_OK" != 1 ] || [ "$INSTALL_OK" != 1 ]
    then
       INSTALL_CONDA=1
@@ -1329,6 +1332,8 @@ then
      [ $? != 0 ] && echo "Error while installing '$pkg' with pip. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
    done
 fi
+# create reference list for conda
+$TRUST_ROOT/exec/python/bin/conda list > $TRUST_ROOT/exec/conda_list.ref
 # If a package has not been correctly installed, we exit with an error
 [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep ' pip' $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 
