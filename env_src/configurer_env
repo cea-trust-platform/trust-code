@@ -823,11 +823,7 @@ then
 fi
 
 # Adding utility package 'trustutils' in PYTHONPATH
-echo "if [ \"`echo \$PYTHONPATH | grep -i IHM/TRUST_STATS_JUPYTER`\" = \"\" ]; then" >> $env
-echo "  export PYTHONPATH=\$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:\$PYTHONPATH" >> $env
-echo "  echo export PYTHONPATH=\\\$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:\\\$PYTHONPATH" >> $env
-echo "fi" >> $env
-
+echo "export PYTHONPATH=\$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:\$PYTHONPATH" >> $env
 ####################
 # Compilateurs C/C++
 ####################
