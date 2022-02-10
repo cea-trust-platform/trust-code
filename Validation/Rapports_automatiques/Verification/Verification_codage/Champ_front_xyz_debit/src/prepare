@@ -41,7 +41,7 @@ for cas in $liste
 do
   mkdir $cas
   mv $cas.data $cas
-  cp post_run propertiesGeometry.py traite_sonde.py $cas
+  cp post_run propertiesGeometry.py $cas
   sed -i "s/ENTREE/$cas/g" $cas/propertiesGeometry.py
 done
 
