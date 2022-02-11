@@ -159,6 +159,9 @@ def generate_cmake(listdirorg,sans_subdir,atelier):
 # changes from turning a kit on or off.
 SET(CMAKE_SKIP_RULE_DEPENDENCY 0 )
 
+# Tell cmake to create compile_commands.json for clang-tidy
+SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
 #OPTION(kernelonly "kernel only" OFF)
 #OPTION(microkernel "micro kernel only" OFF)
 #OPTION(microAL "micro kernel + AL" OFF)
@@ -334,7 +337,8 @@ ENDIF(NOT VISUAL)
 
 ''')
     out.write('\n\nSTRING( TOUPPER ${CMAKE_BUILD_TYPE} BUILD_CONFIG)\nstring(STRIP ${CMAKE_EXE_LINKER_FLAGS_${BUILD_CONFIG}} linker_flag )\nSET(syslib ${libs} ${linker_flag} )\n\n')
-    out.write('include_directories(${METIS_ROOT}/include ${TRUST_MED_ROOT}/include ${TRUST_MEDCOUPLING_ROOT}/include ${MPI_INCLUDE} ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include ${CUDA_INC_PATH} ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include ${TRUST_ROOT}/lib/src/LIBOSQP/include ${TRUST_ROOT}/lib/src/LIBVC/include )\n')
+    out.write('# PL: SYSTEM added to indicate thirdparty includes as system includes to avoid warnings:\n')
+    out.write('include_directories(SYSTEM ${METIS_ROOT}/include ${TRUST_MED_ROOT}/include ${TRUST_MEDCOUPLING_ROOT}/include ${MPI_INCLUDE} ${TRUST_ROOT}/lib/src/LIBAMGX/AmgXWrapper/include ${TRUST_ROOT}/lib/src/LIBAMGX/AmgX/include ${CUDA_INC_PATH} ${PETSC_ROOT}/${TRUST_ARCH}${OPT}/include ${TRUST_LATAFILTER}/include ${TRUST_ICOCOAPI}/include ${TRUST_ROOT}/lib/src/LIBOSQP/include ${TRUST_ROOT}/lib/src/LIBVC/include )\n')
     out.write('add_definitions(${ADD_CPPFLAGS})\n')
 
     out.write('''
@@ -474,6 +478,8 @@ include_directories(${TRUST_ROOT}/include/backward)
 Project(atelier)
 SET(CMAKE_SKIP_RULE_DEPENDENCY 0)
 
+# Tell cmake to create compile_commands.json for clang-tidy
+SET(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 file(GLOB srcs [A-Z|a-z]*.cpp  [A-Z|a-z]*.cxx [A-Z|a-z]*.f [A-Z|a-z]*.c [A-Z|a-z]*.h  [A-Z|a-z]*.hpp  [A-Z|a-z]*.hxx  [A-Z|a-z]*.tpp)
 if (srcs_atelier)
