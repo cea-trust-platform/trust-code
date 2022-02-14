@@ -7,7 +7,7 @@
 #ifndef SteadyProblem_included
 #define SteadyProblem_included
 
-#include <mpi.h>
+#include <comm_incl.h>
 #include <mon_main.h>
 #include <vector>
 #include <string>
