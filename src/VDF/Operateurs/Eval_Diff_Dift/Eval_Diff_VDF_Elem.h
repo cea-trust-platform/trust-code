@@ -53,7 +53,7 @@ public:
    * These static constexpr bools & Methods that will generalize the implementation almost for all operator classes. The previous MACRO methodology do not exist anymore
    * See their generic declaration later & override them in the derived class if needed to stay coherent with the previous macros
    */
-  static constexpr bool IS_MULTD = true, IS_AXI = false, IS_DEQUIV = false, IS_MODIF_DEQ = false, IS_QUASI = false, IS_ANISO = false;
+  static constexpr bool IS_MULTD = true, IS_AXI = false, IS_DEQUIV = false, IS_MODIF_DEQ = false, IS_QUASI = false, IS_ANISO = false, IS_RANS = false;
 
   /*
    * XXX XXX XXX : VERY IMPORTANT
@@ -130,7 +130,7 @@ private:
 
   inline void not_implemented_k_eps(const char * nom_funct) const
   {
-    std::cerr << "Error in : " << nom_funct << " ! Implement when Diff_K_Eps_QC follows the template architecture !" << std::endl;
+    std::cerr << "Error in : " << nom_funct << " ! This function is not yet implemented for Op_Diff_K_Eps_QC !" << std::endl;
     throw;
   }
 
@@ -140,6 +140,7 @@ private:
   inline double nu_2(const int i, int compo = 0) const { return static_cast<const DERIVED_T *>(this)->nu_2_impl(i,compo); }
   inline double compute_heq(const double d0, const int i0, const double d1, const int i1, int compo = 0) const { return static_cast<const DERIVED_T *>(this)->compute_heq_impl(d0,i0,d1,i1,compo); }
   inline double equivalent_distance (const int boundary_index, const int local_face) const { return static_cast<const DERIVED_T *>(this)->get_equivalent_distance(boundary_index,local_face); }
+  inline double dv_mvol(const int i) const { return static_cast<const DERIVED_T *>(this)->get_dv_mvol(i); }
 };
 
 #include <Eval_Diff_VDF_Elem.tpp> // templates specializations ici ;)

@@ -37,6 +37,7 @@ public:
   // These methods will be overloaded in DIFT operators
   // See Eval_Dift_VDF_const_Elem for example...
   inline int get_ind_Fluctu_Term() const { return 0; }
+  inline double get_dv_mvol(const int i) const { throw; } /* seulement pour K-Eps */
   inline virtual double get_equivalent_distance(int boundary_index,int local_face) const { return 0; }
 };
 

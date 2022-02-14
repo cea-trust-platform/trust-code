@@ -30,8 +30,6 @@
 template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Dirichlet_entree_fluide& la_cl, const int num1, Type_Double& flux) const
 {
-  if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
-
   // Olga avait mis : double dist = 2*Dist_norm_bord(face);
   // Pierre dit que :
   const double dist = Dist_norm_bord(face);
@@ -41,7 +39,10 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
     {
       const double T_imp = la_cl.val_imp(face-num1,k);
       const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
-      flux(k) = (i != -1) ? (T_imp-inco(i,k))*surface(face)*porosite(face)*nu_1(i,ori)/dist : (inco(j,k)-T_imp)*surface(face)*porosite(face)*nu_1(j,ori)/dist;
+      if (DERIVED_T::IS_QUASI)
+        flux(k) = (i != -1) ? (T_imp-inco(i,k))/dv_mvol(i)*surface(face)*porosite(face)*nu_1(i,ori)/dist : (inco(j,k)-T_imp)/dv_mvol(j)*surface(face)*porosite(face)*nu_1(j,ori)/dist;
+      else
+        flux(k) = (i != -1) ? (T_imp-inco(i,k))*surface(face)*porosite(face)*nu_1(i,ori)/dist : (inco(j,k)-T_imp)*surface(face)*porosite(face)*nu_1(j,ori)/dist;
     }
 }
 
@@ -55,8 +56,6 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& , const in
 template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Periodique& la_cl, const int , Type_Double& flux) const
 {
-  if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
-
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double d0 = la_zone->dist_face_elem0_period(face,i,la_cl.distance()), d1 = la_zone->dist_face_elem1_period(face,j,la_cl.distance());
 
@@ -64,7 +63,8 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
     {
       const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
       const double heq = compute_heq(d0,i,d1,j,ori);
-      flux(k) = heq*(inco(j,k) - inco(i,k))*surface(face)*porosite(face);
+
+      flux(k) = DERIVED_T::IS_QUASI ? heq*(inco(j,k)/dv_mvol(j) - inco(i,k)/dv_mvol(i))*surface(face)*porosite(face) : heq*(inco(j,k) - inco(i,k))*surface(face)*porosite(face);
     }
 }
 
@@ -145,20 +145,26 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
 template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& inco, const int face, Type_Double& flux) const
 {
-  if (DERIVED_T::IS_QUASI) not_implemented_k_eps(__func__);
-
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   double heq, d0 = Dist_face_elem0(face,i), d1 = Dist_face_elem1(face,j);
   for (int k = 0; k < ncomp; k++)
     {
       const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
-      if (nu_1(i,ori) == 0.0 && nu_1(j,ori) == 0.0) heq = 0.;
+      if (DERIVED_T::IS_RANS)
+        {
+          heq = compute_heq(d0,i, d1,j,ori); // pas d'assert pour k-eps !
+          flux(k) = DERIVED_T::IS_QUASI ? heq*(inco(j,k)/dv_mvol(j) - inco(i,k)/dv_mvol(i))*surface(face)*porosite(face) : heq*(inco(j,k)-inco(i,k))*surface(face)*porosite(face);
+        }
       else
         {
-          assert(nu_1(i,ori) != 0.0 && nu_1(j,ori) != 0.0);
-          heq = compute_heq(d0,i, d1,j,ori);
+          if (nu_1(i,ori) == 0.0 && nu_1(j,ori) == 0.0) heq = 0.;
+          else
+            {
+              assert(nu_1(i,ori) != 0.0 && nu_1(j,ori) != 0.0);
+              heq = compute_heq(d0,i, d1,j,ori);
+            }
+          flux(k) = heq*(inco(j,k)-inco(i,k))*surface(face)*porosite(face);
         }
-      flux(k) = heq*(inco(j,k)-inco(i,k))*surface(face)*porosite(face);
     }
 }
 
@@ -260,13 +266,21 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_faces_interne(const int face, 
   for (int k = 0; k < ncomp; k++)
     {
       const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
-      if (nu_1(i,ori) == 0.0 && nu_2(j,ori) == 0.0) heq = 0.;
+      if (DERIVED_T::IS_RANS)
+        {
+          heq = compute_heq(d0,i,d1,j,ori);
+          aii(k) = ajj(k) = heq*surface(face)*porosite(face); // On peut faire ca !
+        }
       else
         {
-          assert(nu_1(i,ori) != 0.0 && nu_2(j,ori) != 0.0);
-          heq = compute_heq(d0,i,d1,j,ori);
+          if (nu_1(i,ori) == 0.0 && nu_2(j,ori) == 0.0) heq = 0.;
+          else
+            {
+              assert(nu_1(i,ori) != 0.0 && nu_2(j,ori) != 0.0);
+              heq = compute_heq(d0,i,d1,j,ori);
+            }
+          aii(k) = ajj(k) = heq*surface(face)*porosite(face); // On peut faire ca !
         }
-      aii(k) = ajj(k) = heq*surface(face)*porosite(face); // On peut faire ca !
     }
 }
 
