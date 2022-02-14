@@ -25,9 +25,8 @@
 
 // Description: Renvoie 1 si les tableaux "v" et "a" sont de la meme taille et contiennent les memes valeurs au sens strict, sinon renvoie 0.
 // Le test est !(v[i]!=a[i])
-template <typename _TYPE_ARR_>
-typename std::enable_if< std::is_same<_TYPE_ARR_,TRUSTArray<double>>::value || std::is_same<_TYPE_ARR_,TRUSTArray<int>>::value , int>::type
-                                                                  operator==(const _TYPE_ARR_& v, const _TYPE_ARR_& a)
+template <typename _TYPE_>
+int operator==(const TRUSTArray<_TYPE_>& v, const TRUSTArray<_TYPE_>& a)
 {
   const int n = v.size_array();
   const int na = a.size_array();
@@ -38,8 +37,8 @@ typename std::enable_if< std::is_same<_TYPE_ARR_,TRUSTArray<double>>::value || s
     }
   else
     {
-      const typename _TYPE_ARR_::value_type * vv = v.addr();
-      const typename _TYPE_ARR_::value_type * av = a.addr();
+      const _TYPE_ * vv = v.addr();
+      const _TYPE_ * av = a.addr();
       for (int i = 0; i < n; i++)
         {
           if (av[i] != vv[i])
@@ -53,17 +52,17 @@ typename std::enable_if< std::is_same<_TYPE_ARR_,TRUSTArray<double>>::value || s
 }
 
 // Description: Retourne l'indice du min ou -1 si le tableau est vide
-template <typename _TYPE_ARR_> int imin_array(const _TYPE_ARR_& dx)
+template <typename _TYPE_> int imin_array(const TRUSTArray<_TYPE_>& dx)
 {
   int indice_min = -1;
   const int size = dx.size_array();
   if (size > 0)
     {
       indice_min = 0;
-      typename _TYPE_ARR_::value_type valeur_min = dx[0];
+      _TYPE_ valeur_min = dx[0];
       for (int i = 1; i < size; i++)
         {
-          const typename _TYPE_ARR_::value_type val = dx[i];
+          const _TYPE_ val = dx[i];
           if(val < valeur_min)
             {
               indice_min = i;
@@ -75,17 +74,17 @@ template <typename _TYPE_ARR_> int imin_array(const _TYPE_ARR_& dx)
 }
 
 // Description: Retourne l'indice du max ou -1 si le tableau est vide
-template <typename _TYPE_ARR_> int imax_array(const _TYPE_ARR_& dx)
+template <typename _TYPE_> int imax_array(const TRUSTArray<_TYPE_>& dx)
 {
   int indice_max = -1;
   const int size = dx.size_array();
   if (size > 0)
     {
       indice_max = 0;
-      typename _TYPE_ARR_::value_type valeur_max = dx[0];
+      _TYPE_ valeur_max = dx[0];
       for (int i = 1; i < size; i++)
         {
-          const typename _TYPE_ARR_::value_type val = dx[i];
+          const _TYPE_ val = dx[i];
           if(val > valeur_max)
             {
               indice_max = i;
@@ -98,15 +97,15 @@ template <typename _TYPE_ARR_> int imax_array(const _TYPE_ARR_& dx)
 
 // Description: Retourne la valeur minimale
 // Precondition: Le tableau doit contenir au moins une valeur
-template <typename _TYPE_ARR_>
-typename _TYPE_ARR_::value_type min_array(const _TYPE_ARR_& dx)
+template <typename _TYPE_>
+_TYPE_ min_array(const TRUSTArray<_TYPE_>& dx)
 {
   const int size = dx.size_array();
   assert(size > 0);
-  typename _TYPE_ARR_::value_type valeur_min = dx[0];
+  _TYPE_ valeur_min = dx[0];
   for (int i = 1; i < size; i++)
     {
-      const typename _TYPE_ARR_::value_type val = dx[i];
+      const _TYPE_ val = dx[i];
       if (val < valeur_min) valeur_min = val;
     }
   return valeur_min;
@@ -114,15 +113,15 @@ typename _TYPE_ARR_::value_type min_array(const _TYPE_ARR_& dx)
 
 // Description: Retourne la valeur maximale
 // Precondition: Le tableau doit contenir au moins une valeur
-template <typename _TYPE_ARR_>
-typename _TYPE_ARR_::value_type max_array(const _TYPE_ARR_& dx)
+template <typename _TYPE_>
+_TYPE_ max_array(const TRUSTArray<_TYPE_>& dx)
 {
   const int size = dx.size_array();
   assert(size > 0);
-  typename _TYPE_ARR_::value_type valeur_max = dx[0];
+  _TYPE_ valeur_max = dx[0];
   for (int i = 1; i < size; i++)
     {
-      const typename _TYPE_ARR_::value_type val = dx[i];
+      const _TYPE_ val = dx[i];
       if (val > valeur_max) valeur_max = val;
     }
   return valeur_max;
@@ -134,15 +133,15 @@ static inline int scalar_abs(int x) { return abs(x); }
 
 // Description: Retourne le max des abs(i)
 // Precondition: Le tableau doit contenir au moins une valeur
-template <typename _TYPE_ARR_>
-typename _TYPE_ARR_::value_type max_abs_array(const _TYPE_ARR_& dx)
+template <typename _TYPE_>
+_TYPE_ max_abs_array(const TRUSTArray<_TYPE_>& dx)
 {
   const int size = dx.size_array();
   assert(size > 0);
-  typename _TYPE_ARR_::value_type valeur_max = scalar_abs(dx[0]);
+  _TYPE_ valeur_max = scalar_abs(dx[0]);
   for(int i = 1; i < size; i++)
     {
-      const typename _TYPE_ARR_::value_type val = scalar_abs(dx[i]);
+      const _TYPE_ val = scalar_abs(dx[i]);
       if (val > valeur_max) valeur_max = val;
     }
   return valeur_max;
@@ -150,28 +149,27 @@ typename _TYPE_ARR_::value_type max_abs_array(const _TYPE_ARR_& dx)
 
 // Description: Retourne le min des abs(i)
 // Precondition: Le tableau doit contenir au moins une valeur
-template <typename _TYPE_ARR_>
-typename _TYPE_ARR_::value_type min_abs_array(const _TYPE_ARR_& dx)
+template <typename _TYPE_>
+_TYPE_ min_abs_array(const TRUSTArray<_TYPE_>& dx)
 {
   const int size = dx.size_array();
   assert(size > 0);
-  typename _TYPE_ARR_::value_type v = scalar_abs(dx[0]);
+  _TYPE_ v = scalar_abs(dx[0]);
   for(int i = 1; i < size; i++)
     {
-      const typename _TYPE_ARR_::value_type val = scalar_abs(dx[i]);
+      const _TYPE_ val = scalar_abs(dx[i]);
       if (val < v) v = val;
     }
   return v;
 }
 
 // Description: Produit scalaire de deux "array"  (dotproduct_array remplace operator* car le nom indique clairement  que l'on fait un produit scalaire non distribue)
-template <typename _TYPE_ARR_>
-typename std::enable_if<std::is_same<typename _TYPE_ARR_::value_type,double>::value, typename _TYPE_ARR_::value_type>::type
-dotproduct_array(const _TYPE_ARR_& dx, const _TYPE_ARR_& dy)
+template <typename _TYPE_>
+_TYPE_ dotproduct_array(const TRUSTArray<_TYPE_>& dx, const TRUSTArray<_TYPE_>& dy)
 {
   const int size = dx.size_array();
   assert(size == dy.size_array());
-  typename _TYPE_ARR_::value_type resultat = 0.;
+  _TYPE_ resultat = 0.;
   if (size > 0)
     {
       integer n = size;
@@ -181,33 +179,19 @@ dotproduct_array(const _TYPE_ARR_& dx, const _TYPE_ARR_& dy)
   return resultat;
 }
 
-template <typename _TYPE_ARR_>
-typename std::enable_if<std::is_same<typename _TYPE_ARR_::value_type,int>::value, typename _TYPE_ARR_::value_type>::type
-dotproduct_array(const _TYPE_ARR_& dx, const _TYPE_ARR_& dy)
-{
-  throw;
-}
 
 // Description: Calcul de la norme du vecteur dx (fonction blas DNRM2, soit racine carree(somme des dx[i]*dx[i]).
-template <typename _TYPE_ARR_>
-typename std::enable_if<std::is_same<typename _TYPE_ARR_::value_type,double>::value, typename _TYPE_ARR_::value_type>::type
-norme_array(const _TYPE_ARR_& dx)
+template <typename _TYPE_>
+_TYPE_ norme_array(const TRUSTArray<_TYPE_>& dx)
 {
   integer n = dx.size_array();
-  typename _TYPE_ARR_::value_type resultat = 0.;
+  _TYPE_ resultat = 0.;
   if (n > 0)
     {
       integer incx = 1;
       resultat = F77NAME(DNRM2)(&n, &dx(0), &incx);
     }
   return resultat;
-}
-
-template <typename _TYPE_ARR_>
-typename std::enable_if<std::is_same<typename _TYPE_ARR_::value_type,int>::value, typename _TYPE_ARR_::value_type>::type
-norme_array(const _TYPE_ARR_& dx)
-{
-  throw;
 }
 
 #endif /* TRUSTArray_tools_TPP_included */
