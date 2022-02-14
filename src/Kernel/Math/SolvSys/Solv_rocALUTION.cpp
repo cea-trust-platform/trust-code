@@ -22,9 +22,11 @@
 
 #include <Solv_rocALUTION.h>
 #include <Matrice_Morse.h>
+#include <Matrice_Morse_Sym.h>
 #include <DoubleVect.h>
 #include <EChaine.h>
 #include <Motcle.h>
+#include <SFichier.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION,"Solv_rocALUTION",SolveurSys_base);
 
@@ -125,13 +127,44 @@ void Solv_rocALUTION::create_solver(Entree& entree)
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)
 {
 #ifdef ROCALUTION_ROCALUTION_HPP_
+    // Build matrix
+    const Matrice_Morse& csr = ref_cast(Matrice_Morse, a);
+  int N = csr.get_tab1().size_array()-1;
+  int nnz = csr.get_coeff().size_array();
+  ArrOfInt tab1_c(csr.get_tab1()); // Passage Fortran->C
+  for (int i=0;i<tab1_c.size_array();i++)
+      tab1_c(i)--;
+  int* csr_row_ptr = (int*)tab1_c.addr();
+  ArrOfInt tab2_c(csr.get_tab2()); // Passage Fortran->C
+  for (int i=0;i<tab2_c.size_array();i++)
+      tab2_c(i)--;
+  int* csr_row_col = (int*)tab2_c.addr();
+  double* csr_val = (double*)csr.get_coeff().addr();
 
-  // Build matrix
-  const Matrice_Morse& csr = ref_cast(Matrice_Morse, a);
-  ArrOfInt tab1_(csr.get_tab1()), tab2_(csr.get_tab2());
-  ArrOfDouble coeff_(csr.get_coeff());
-  mat.SetDataPtrCSR((int**)tab1_.addr(), (int**)tab2_.addr(), (double**)coeff_.addr(), "a", coeff_.size_array(), tab1_.size_array(), tab1_.size_array());
+    // Save matrix
+    if (Process::nproc() > 1) Process::exit("Error, matrix market format is not available yet in parallel.");
+    Nom filename(Objet_U::nom_du_cas());
+    filename += "_matrix";
+    filename += ".mtx";
+    SFichier mtx(filename);
+    mtx.precision(14);
+    mtx.setf(ios::scientific);
+    int rows = csr.get_tab1().size_array()-1;
+    mtx << "%%MatrixMarket matrix coordinate real " << (sub_type(Matrice_Morse_Sym, a) ? "general" : "symmetric") << finl;
+    Cerr << "Matrix (" << rows << " lines) written into file: " << filename << finl;
+    mtx << "%%matrix" << finl;
+    mtx << rows << " " << rows << " " << csr_row_ptr[rows] << finl;
+    for (int row=0; row<rows; row++)
+        for (int j=csr_row_ptr[row]; j<csr_row_ptr[row+1]; j++)
+            mtx << row+1 << " " << csr_row_col[j]+1 << " " << csr_val[j] << finl;
 
+    mat.SetDataPtrCSR(&csr_row_ptr, &csr_row_col, &csr_val, "a", nnz, N, N);
+    Cout << "Provisoire mat.GetN()=" << mat.GetN() << finl;
+    delete csr_row_ptr;
+    delete csr_row_col;
+    delete csr_val;
+
+  mat.Info();
   // Move objects to accelerator
   mat.MoveToAccelerator();
   sol.MoveToAccelerator();
@@ -147,26 +180,37 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   CG<LocalMatrix<double>, LocalVector<double>, double> ls;
 
   // Preconditioner
-  MultiColoredSGS<LocalMatrix<double>, LocalVector<double>, double> p;
-  p.SetRelaxation(1.6); // ToDo omega
-
+  SGS<LocalMatrix<double>, LocalVector<double>, double> p;
+  //p.SetRelaxation(1.6); // ToDo omega
+  rhs.Info();
+  
   // Build rhs and initial solution:
-  assert(mat.GetN()==b.size());
-  assert(mat.GetN()==x.size());
-  DoubleVect b_(b);
-  rhs.SetDataPtr((double**)b_.addr(), "rhs", b.size_array());
-  DoubleVect x_(x);
-  sol.SetDataPtr((double**)x_.addr(), "sol", x.size_array());
-
+  assert(mat.GetN()==b.size_array());
+  assert(mat.GetN()==x.size_array());
+  double* ptr_x = x.addr();
+  sol.SetDataPtr(&ptr_x, "sol", x.size_array());
+  delete ptr_x;
+  double* ptr_b = (double*)b.addr();
+  rhs.SetDataPtr(&ptr_b, "rhs", b.size_array());
+  delete ptr_b;
   // Set solver operator
   ls.SetOperator(mat);
   ls.SetPreconditioner(p);
   ls.Build();
   ls.Verbose(2); // Verbosity output
+
+  // Tolerances:
+  double atol = 1.e-5;
+  double rtol = 1.e-5;
+  double div_tol = 1e3;
+  ls.InitTol(atol, rtol, div_tol);
+  ls.InitMaxIter(300);
   //ls.InitMinIter(20);
 
   // Print matrix info
   mat.Info();
+  ls.Print();
+  p.Print();
 
   // Start time measurement
   double tick, tack;
@@ -174,19 +218,28 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 
   // Solve A x = rhs
   ls.Solve(rhs, &sol);
+  if (ls.GetSolverStatus()==3) Process::exit("Divergence for solver.");
+  if (ls.GetSolverStatus()==4) Cout << "Maximum number of iterations reached." << finl;
 
   // Stop time measurement
   tack = rocalution_time();
   Cout << "Solver execution:" << (tack - tick) / 1e6 << " sec" << finl;
 
+  int nb_iter = ls.GetIterationCount();
   // Clear solver ?
   ls.Clear();
 
-  // Check residual again e=||Ax-rhs||
+    // Check residual again e=||Ax-rhs||
   mat.Apply(sol, &res);
   res.ScaleAdd(-1.0, rhs);
   Cout << "||Ax - rhs||_2 = " << res.Norm() << finl;
-
+  if (res.Norm()>atol)
+  {
+      Cerr << "Solution not correct !" << finl;
+      Process::exit();
+  }
+  return nb_iter;
+#else
+    return -1;
 #endif
-  return 1;
 }
