@@ -22,7 +22,7 @@ public:
 //  __Scalar__Vect(int n, __scalar__ x);
   __Scalar__Vect(const __Scalar__Vect&);
   // Pas de constructeur par copie de ArrOf__Scalar__, voir __Scalar__Vect(const __Scalar__Vect&)
-  ~__Scalar__Vect() {};
+  ~__Scalar__Vect() override {};
   void reset() override;
   virtual void detach_vect();
 

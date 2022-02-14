@@ -44,7 +44,7 @@ public:
 //  DoubleVect(int n, double x);
   DoubleVect(const DoubleVect&);
   // Pas de constructeur par copie de ArrOfDouble, voir DoubleVect(const DoubleVect&)
-  ~DoubleVect() {};
+  ~DoubleVect() override {};
   void reset() override;
   virtual void detach_vect();
 

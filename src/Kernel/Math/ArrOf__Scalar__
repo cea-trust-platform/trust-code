@@ -57,7 +57,7 @@ public:
   //
   // Destructeur
   //
-  ~ArrOf__Scalar__();
+  ~ArrOf__Scalar__() override;
   //
   // Constructeurs
   //

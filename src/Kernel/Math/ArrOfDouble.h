@@ -76,7 +76,7 @@ public:
   //
   // Destructeur
   //
-  ~ArrOfDouble();
+  ~ArrOfDouble() override;
   //
   // Constructeurs
   //

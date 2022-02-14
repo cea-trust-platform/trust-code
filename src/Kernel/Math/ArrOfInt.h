@@ -76,7 +76,7 @@ public:
   //
   // Destructeur
   //
-  ~ArrOfInt();
+  ~ArrOfInt() override;
   //
   // Constructeurs
   //

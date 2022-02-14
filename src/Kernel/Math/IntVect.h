@@ -43,7 +43,7 @@ public:
 //  IntVect(int n, int x);
   IntVect(const IntVect&);
   // Pas de constructeur par copie de ArrOfInt, voir IntVect(const IntVect&)
-  ~IntVect() {};
+  ~IntVect() override {};
   void reset() override;
   virtual void detach_vect();
 
