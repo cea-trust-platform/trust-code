@@ -23,6 +23,7 @@
 #ifndef TRUSTArray_included
 #define TRUSTArray_included
 
+#include <TRUSTIterator.h>
 #include <VTRUSTdata.h>
 #include <Array_base.h>
 #include <Double.h>
@@ -94,7 +95,13 @@ protected:
   }
 
 public:
-  typedef _TYPE_ value_type; // return int, double ou float
+//  typedef _TYPE_ value_type; // return int, double ou float
+  using value_type = _TYPE_;
+  using Iterator = TRUSTIterator<TRUSTArray<_TYPE_>>;
+
+  // Iterators
+  Iterator begin() { return Iterator(data_); }
+  Iterator end() { return Iterator(data_ + size_array_); }
 
   ~TRUSTArray()
   {
