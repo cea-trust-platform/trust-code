@@ -23,7 +23,6 @@
 #include <Champ_Inc_P1_base.h>
 #include <Domaine.h>
 #include <Zone_dis_base.h>
-#include <Scatter.h>
 
 Implemente_base(Champ_Inc_P1_base,"Champ_Inc_P1_base",Champ_Inc_base);
 

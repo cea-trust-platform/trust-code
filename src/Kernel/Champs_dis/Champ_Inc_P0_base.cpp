@@ -23,7 +23,6 @@
 #include <Champ_Inc_P0_base.h>
 #include <Domaine.h>
 #include <Zone_dis_base.h>
-#include <Scatter.h>
 #include <Frontiere_dis_base.h>
 
 Implemente_base(Champ_Inc_P0_base,"Champ_Inc_P0_base",Champ_Inc_base);

@@ -189,7 +189,7 @@ public :
   int taille() const;
 protected :
   ArrOfInt num_elem;
-  mutable ArrOfDouble pos; // Travail de travail
+  mutable ArrOfDouble pos; // Tableau de travail
 };
 
 #endif//OCTREE_INCLUS

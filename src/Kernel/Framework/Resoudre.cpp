@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Resoudre.h>
-#include <Probleme_Couple.h>
+#include <Probleme_U.h>
 #include <Debog.h>
 #include <stat_counters.h>
 #include <Catch_SIGINIT.h>

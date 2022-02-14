@@ -23,7 +23,6 @@
 #include <Champ_Fonc_P0_base.h>
 #include <Domaine.h>
 #include <Zone_dis_base.h>
-#include <Scatter.h>
 #include <Frontiere_dis_base.h>
 #include <Zone_VF.h>
 

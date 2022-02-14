@@ -23,7 +23,6 @@
 #include <Frontiere.h>
 #include <MD_Vector_tools.h>
 #include <DoubleTab.h>
-#include <Extraire_surface.h>
 
 Implemente_base(Frontiere,"Frontiere",Objet_U);
 
