@@ -124,11 +124,29 @@ void Solv_rocALUTION::create_solver(Entree& entree)
 #endif
 }
 
+// ToDo remonter dans Matrice_Morse
+// Urgent de faire une reconception d'une classe mere de Solv_Petsc et Solv_rocALUTION qui factoriser
+// les conversions de matrice...
+void MorseSymToMorseToMatrice_Morse(const Matrice_Morse_Sym& MS, Matrice_Morse& M)
+{
+  M = MS;
+  Matrice_Morse mattmp(MS);
+  M.transpose(mattmp);
+  int ordre = M.ordre();
+  for (int i=0; i<ordre; i++)
+    if (M.nb_vois(i))
+      M(i, i) = 0.;
+  M = mattmp + M;
+}
+
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)
 {
 #ifdef ROCALUTION_ROCALUTION_HPP_
+    //if (nouvelle_matrice_)
+    //{
     // Build matrix
-    const Matrice_Morse& csr = ref_cast(Matrice_Morse, a);
+    Matrice_Morse csr;
+    MorseSymToMorseToMatrice_Morse(ref_cast(Matrice_Morse_Sym,a), csr); 
   int N = csr.get_tab1().size_array()-1;
   int nnz = csr.get_coeff().size_array();
   ArrOfInt tab1_c(csr.get_tab1()); // Passage Fortran->C
@@ -144,13 +162,13 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
     // Save matrix
     if (Process::nproc() > 1) Process::exit("Error, matrix market format is not available yet in parallel.");
     Nom filename(Objet_U::nom_du_cas());
-    filename += "_matrix";
+    filename += "_trust_matrix";
     filename += ".mtx";
     SFichier mtx(filename);
     mtx.precision(14);
     mtx.setf(ios::scientific);
     int rows = csr.get_tab1().size_array()-1;
-    mtx << "%%MatrixMarket matrix coordinate real " << (sub_type(Matrice_Morse_Sym, a) ? "general" : "symmetric") << finl;
+    mtx << "%%MatrixMarket matrix coordinate real " << (sub_type(Matrice_Morse_Sym, a) ? "symmetric" : "general") << finl;
     Cerr << "Matrix (" << rows << " lines) written into file: " << filename << finl;
     mtx << "%%matrix" << finl;
     mtx << rows << " " << rows << " " << csr_row_ptr[rows] << finl;
@@ -163,8 +181,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
     delete csr_row_ptr;
     delete csr_row_col;
     delete csr_val;
-
-  mat.Info();
+ 
   // Move objects to accelerator
   mat.MoveToAccelerator();
   sol.MoveToAccelerator();
@@ -177,67 +194,95 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   res.Allocate("res", mat.GetN());
 
   // Linear Solver
-  CG<LocalMatrix<double>, LocalVector<double>, double> ls;
+  ls = new CG<LocalMatrix<double>, LocalVector<double>, double>();    
 
   // Preconditioner
-  SGS<LocalMatrix<double>, LocalVector<double>, double> p;
-  //p.SetRelaxation(1.6); // ToDo omega
-  rhs.Info();
+  p = new Jacobi<LocalMatrix<double>, LocalVector<double>, double>();
   
   // Build rhs and initial solution:
   assert(mat.GetN()==b.size_array());
   assert(mat.GetN()==x.size_array());
+  //  }
+  
   double* ptr_x = x.addr();
   sol.SetDataPtr(&ptr_x, "sol", x.size_array());
   delete ptr_x;
+  //  for (int i=0; i<sol.GetSize();i++) sol[i] = x[i]; // Non lent
   double* ptr_b = (double*)b.addr();
   rhs.SetDataPtr(&ptr_b, "rhs", b.size_array());
   delete ptr_b;
+  //for (int i=0; i<rhs.GetSize();i++) rhs[i] = b[i]; // Non lent
+  
   // Set solver operator
-  ls.SetOperator(mat);
-  ls.SetPreconditioner(p);
-  ls.Build();
-  ls.Verbose(2); // Verbosity output
+  ls->SetOperator(mat);
+  ls->SetPreconditioner(*p);
+  ls->Build();
+  ls->Verbose(2); // Verbosity output
 
   // Tolerances:
   double atol = 1.e-5;
   double rtol = 1.e-5;
   double div_tol = 1e3;
-  ls.InitTol(atol, rtol, div_tol);
-  ls.InitMaxIter(300);
-  //ls.InitMinIter(20);
+  ls->InitTol(atol, rtol, div_tol);
+  ls->InitMaxIter(300);
+  //ls->InitMinIter(20);
 
   // Print matrix info
   mat.Info();
-  ls.Print();
-  p.Print();
-
+  ls->Print();
+  p->Print();
+  
+  // Save matrix to check
+  /*
+  Nom filename2(Objet_U::nom_du_cas());
+  filename2 += "_rocalution_matrix";
+  filename2 += ".mtx";
+  mat.WriteFileMTX(filename2.getString());
+  */
+  
   // Start time measurement
   double tick, tack;
   tick = rocalution_time();
-
   // Solve A x = rhs
-  ls.Solve(rhs, &sol);
-  if (ls.GetSolverStatus()==3) Process::exit("Divergence for solver.");
-  if (ls.GetSolverStatus()==4) Cout << "Maximum number of iterations reached." << finl;
+  ls->Solve(rhs, &sol);
+  if (ls->GetSolverStatus()==3) Process::exit("Divergence for solver.");
+  if (ls->GetSolverStatus()==4) Cout << "Maximum number of iterations reached." << finl;
 
   // Stop time measurement
   tack = rocalution_time();
   Cout << "Solver execution:" << (tack - tick) / 1e6 << " sec" << finl;
 
-  int nb_iter = ls.GetIterationCount();
+  int nb_iter = ls->GetIterationCount();
   // Clear solver ?
-  ls.Clear();
+  //ls->Clear();
 
-    // Check residual again e=||Ax-rhs||
+  // Check residual e=||Ax-rhs|| with rocALUTION
   mat.Apply(sol, &res);
   res.ScaleAdd(-1.0, rhs);
-  Cout << "||Ax - rhs||_2 = " << res.Norm() << finl;
+  Cout << "rocALUTON ||Ax - rhs||_2 = " << res.Norm() << finl;
   if (res.Norm()>atol)
+  {
+      Cerr << "Solution from rocALUTION not correct !" << finl;
+      Process::exit();
+  }
+  // Recupere la solution (inutile x est mis a jour...)
+/*  sol.MoveToHost();
+  for (int i=0; i<sol.GetSize();i++)
+     x[i] = sol[i]; */
+  //double* ptr_sol = NULL;
+  //sol.LeaveDataPtr(&ptr_sol);
+  
+  // Check residual e=||Ax-rhs|| with TRUST
+  DoubleVect e(b);
+  e*=-1;
+  a.ajouter_multvect(x, e);
+  double error = e.mp_norme_vect();
+  Cout << "TRUST ||Ax - rhs||_2 = " << error << finl;
+  if (error>atol)
   {
       Cerr << "Solution not correct !" << finl;
       Process::exit();
-  }
+  }  
   return nb_iter;
 #else
     return -1;
