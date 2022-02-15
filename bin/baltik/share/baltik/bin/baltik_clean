@@ -72,7 +72,8 @@ project_test_directory="${project_directory}/build/tests"
 
 # suppression du repertoire de compilation
 rm -rf $project_build_directory
-find $project_directory -name .check_sources.ok -exec rm -f {} \;
+find $project_directory/ -name .check_sources.ok -exec rm -f {} \;
+find $project_directory/ -name .check_sources.ok_check_file -exec rm -f {} \;
 
 # suppression du makefile
 rm -rf $project_makefile

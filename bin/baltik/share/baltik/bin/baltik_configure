@@ -607,6 +607,7 @@ printf "\t@echo \"###################################\"\n"                 >> $p
 printf "\t@env project_directory=${project_directory} $BALTIK_ROOT/bin/baltik_make_Doxyfile\n"                >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
+printf "# help check_project_modularity \t: Check project modularity \n"                           >> $project_makefile
 printf "check_project_modularity :\n"                           >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# Project modularity   #\"\n"                 >> $project_makefile
