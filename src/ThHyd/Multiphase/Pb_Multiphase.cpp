@@ -276,37 +276,6 @@ int Pb_Multiphase::verifier()
   return tester_compatibilite_hydr_thermique(zone_Cl_hydr,zone_Cl_th);
 }
 
-void Pb_Multiphase::mettre_a_jour(double temps)
-{
-  // Update the name of the problem being debugged
-  Debog::set_nom_pb_actuel(le_nom());
-
-  for(int i=0; i<nombre_d_equations(); i++)
-    equation(i).inconnue().mettre_a_jour(temps);
-
-  // Update the media:
-  milieu().mettre_a_jour(temps);
-
-  // Update the equations:
-  for(int i=0; i<nombre_d_equations(); i++)
-    equation(i).mettre_a_jour(temps);
-
-  // Update the post-processing:
-  les_postraitements.mettre_a_jour(temps);
-
-  // Update the domain:
-  domaine().mettre_a_jour(temps,domaine_dis(),*this);
-
-  LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
-  while (curseur)
-    {
-      Loi_Fermeture_base& loi=curseur.valeur().valeur();
-      loi.mettre_a_jour(temps);
-      ++curseur;
-    }
-
-}
-
 void Pb_Multiphase::preparer_calcul()
 {
   Pb_Fluide_base::preparer_calcul();

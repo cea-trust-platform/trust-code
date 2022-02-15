@@ -64,6 +64,7 @@ public:
   void associer_milieu_base(const Milieu_base& ) override;
   void creer_milieu(const Noms);
   virtual Entree& lire_equations(Entree& is, Motcle& dernier_mot) override;
+  int verifier();
   virtual Entree& lire_correlations(Entree& is);
   void preparer_calcul() override;
 
