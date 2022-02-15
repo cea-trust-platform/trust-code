@@ -72,6 +72,8 @@
  Champ_Fonc_Morceaux Champ_Fonc_Morceaux Champ_Fonc_Morceaux.h
  Champ_Fonc_P0_base Champ_Fonc_P0_base Champ_Fonc_P0_base.h
  Champ_Fonc_P0_CoviMAC Champ_Fonc_P0_CoviMAC Champ_Fonc_P0_CoviMAC.h
+ Champ_Fonc_P0_CoviMAC_rot Champ_Fonc_P0_CoviMAC_rot Champ_Fonc_P0_CoviMAC_rot.h
+ Champ_Fonc_P0_CoviMAC_TC Champ_Fonc_P0_CoviMAC_TC Champ_Fonc_P0_CoviMAC_TC.h
  Champ_Fonc_P0_EF Champ_Fonc_P0_EF Champ_Fonc_P0_EF.h
  Champ_Fonc_P0_MED Champ_Fonc_P0_MED Champ_Fonc_P0_MED.h
  Champ_Fonc_P0_PolyMAC Champ_Fonc_P0_PolyMAC Champ_Fonc_P0_PolyMAC.h
@@ -418,8 +420,8 @@
  Gmres SolvElem_Gmres SolvElem_Gmres.h
  Gradient Champ_Generique_Gradient Champ_Generique_Gradient.h
  gradient_temperature_Champ_P1NC grad_T_Champ_P1NC grad_T_Champ_P1NC.h
+ grad_Champ_Face_CoviMAC grad_Champ_Face_CoviMAC grad_Champ_Face_CoviMAC.h
  grad_U_Champ_Face grad_U_Champ_Face grad_U_Champ_Face.h
- grad_U_Champ_Face_CoviMAC grad_U_Champ_Face_CoviMAC grad_U_Champ_Face_CoviMAC.h
  grad_U_Champ_Face_PolyMAC grad_U_Champ_Face_PolyMAC grad_U_Champ_Face_PolyMAC.h
  grad_U_Champ_P1NC grad_U_Champ_P1NC grad_U_Champ_P1NC.h
  Gravite_VDF_Face Terme_Gravite_VDF_Face Terme_Gravite_VDF_Face.h

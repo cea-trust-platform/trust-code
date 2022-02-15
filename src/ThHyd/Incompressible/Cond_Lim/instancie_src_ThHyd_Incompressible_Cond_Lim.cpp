@@ -19,7 +19,6 @@
 #include <Neumann_paroi_flux_nul.h>
 #include <Neumann_sortie_libre.h>
 #include <Paroi_Knudsen_non_negligeable.h>
-#include <Scalaire_impose_paroi.h>
 #include <Sortie_libre_Text_H_ext.h>
 #include <Sortie_libre_pression_imposee.h>
 #include <Sortie_libre_pression_moyenne_imposee.h>
@@ -42,9 +41,8 @@ Neumann_paroi_adiabatique inst13;verifie_pere(inst13);
 Neumann_paroi_flux_nul inst14;verifie_pere(inst14);
 Neumann_sortie_libre inst15;verifie_pere(inst15);
 Paroi_Knudsen_non_negligeable inst16;verifie_pere(inst16);
-Scalaire_impose_paroi inst17;verifie_pere(inst17);
-Sortie_libre_Text_H_ext inst18;verifie_pere(inst18);
-Sortie_libre_pression_imposee inst19;verifie_pere(inst19);
-Sortie_libre_pression_moyenne_imposee inst20;verifie_pere(inst20);
-Temperature_imposee_paroi inst21;verifie_pere(inst21);
+Sortie_libre_Text_H_ext inst17;verifie_pere(inst17);
+Sortie_libre_pression_imposee inst18;verifie_pere(inst18);
+Sortie_libre_pression_moyenne_imposee inst19;verifie_pere(inst19);
+Temperature_imposee_paroi inst20;verifie_pere(inst20);
 }
