@@ -610,6 +610,8 @@ define_modules_config
 if [ -f configure.env ]
 then
    echo "TRUST_WITHOUT_HOST=$TRUST_WITHOUT_HOST && export TRUST_WITHOUT_HOST	# Disable/enable reading of HOST file"	>> configure.env
+   [ "$TRUST_WITHOUT_HOST" = 0 ] && TRUST_DISABLE_JUPYTER=1
+   echo "TRUST_DISABLE_JUPYTER=$TRUST_DISABLE_JUPYTER && export TRUST_DISABLE_JUPYTER  # disable jupyter build`[ "$TRUST_WITHOUT_HOST" = 0 ] && echo since TRUST_WITHOUT_HOST=0`." >> configure.env
    . ./configure.env
 fi
 # ToDo: Forcer TRUST_DISABLE_CHECK_SRC=1 sur clusters ?
@@ -725,9 +727,10 @@ unset PYTHONPATH # We get a warning from Miniconda if we do not unset this varia
 # check the previous install of conda and conda packages if it exists
 model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
-pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison jupyter"
+echo TRUST_WITHOUT_HOST=$TRUST_WITHOUT_HOST
+pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter`"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
-[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0 jupyter" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
+[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0 `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
 
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
@@ -830,7 +833,7 @@ echo "export PYTHONPATH=\$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:\$PYTHONPATH
 
 # Disable autosave in jupyter
 jupyter_config=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/notebook/static/custom/custom.js
-if [ -f $jupyter_config ] && [ "`grep set_autosave_interval $jupyter_config 2>/dev/null`" = "" ]
+if [ "$TRUST_DISABLE_JUPYTER" != 1 ] && [ -f $jupyter_config ] && [ "`grep set_autosave_interval $jupyter_config 2>/dev/null`" = "" ]
 then
    echo "Disabling autosave in jupyter-notebook"
    echo "\$([IPython.events]).on(notebook_loaded.Notebook, function () {

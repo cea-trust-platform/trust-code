@@ -257,6 +257,7 @@ echo "[-with-64-bit-indices]            Build with 64 bits integer indices"
 echo "[-disable-metis]                  Disable metis library installation."
 echo "[-disable-mpi]                    Disable MPI library detection/installation and build a non-parallel version of the application."
 echo "[-disable-mpi4py]                 Disable mpi4py installation."
+echo "[-disable-jupyter]                Disable jupyter installation."
 echo "[-disable-ccache]                 Disable ccache detection/installation."
 echo "[-disable-valgrind]               Disable valgrind installation and build."
 echo "[-disable-gnuplot]                Disable gnuplot installation and build."
@@ -322,6 +323,7 @@ export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
 export TRUST_INT64=0
 export TRUST_DISABLE_MPI4PY=0
+export TRUST_DISABLE_JUPYTER=0
 export TRUST_WITHOUT_DOC=0
 export TRUST_WITHOUT_PDFLATEX=0
 export TRUST_WITHOUT_VISIT=0
@@ -435,6 +437,10 @@ do
    elif [ "${1#-disable-mpi4py}" != "$1" ]
    then
       export TRUST_DISABLE_MPI4PY=1
+
+   elif [ "${1#-disable-jupyter}" != "$1" ]
+   then
+      export TRUST_DISABLE_JUPYTER=1
 
    elif [ "${1#-openmp}" != "$1" ]
    then
@@ -558,7 +564,7 @@ echo "TRUST_WITHOUT_PDFLATEX=$TRUST_WITHOUT_PDFLATEX && export TRUST_WITHOUT_PDF
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
 echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME # Download Salome" 		>> $var
-
+echo TRUST_WITHOUT_HOST=$TRUST_WITHOUT_HOST inside configure
 if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" != "" ]
 then
     echo "export TRUST_USE_EXTERNAL_MEDCOUPLING=1" >> $var
