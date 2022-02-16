@@ -56,14 +56,15 @@ test_execution()
 	[ "$TRUST_ATELIER_CMAKE" = "0" ] && comp_old=1
 	if [ $comp_old -eq  1 ] 
 	    then
-	env PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs NO_IHM 2 depend
+        # PL: PATH set into quotes for WSL2 (some windows directories with spaces...)
+	env PATH="$BALTIK_ROOT/bin:${PATH}" Makeatelier.sccs NO_IHM 2 depend
 	cd exec_opt
 	make PROGRAM=../../test_prog_opt #LIB=
 	#$CC -o test_prog $prog_test $includes_add $librairies_add
 	status=$?
 	else
 	    rm -f exec_opt/CMakeCache.txt
-	    env OPT=_opt PATH=$BALTIK_ROOT/bin:${PATH} PROGRAM=`pwd`/../test_prog Makeatelier.sccs  -2 exe
+	    env OPT=_opt PATH="$BALTIK_ROOT/bin:${PATH}" PROGRAM=`pwd`/../test_prog Makeatelier.sccs  -2 exe
 	
 	# make PROGRAM=../../test_prog #LIB=
 	# $CC -o test_prog $prog_test $includes_add $librairies_add

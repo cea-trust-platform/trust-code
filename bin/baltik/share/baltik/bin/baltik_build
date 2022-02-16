@@ -124,7 +124,7 @@ fi
 if [ $comp_old -eq 1 ]
     then
     echo "To build exe with cmake set variable TRUST_ATELIER_CMAKE to 1"
-    env PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs NO_IHM -1 depend
+    env PATH="$BALTIK_ROOT/bin:${PATH}" Makeatelier.sccs NO_IHM -1 depend
     status=$?
 
     if [ $status != 0 ]

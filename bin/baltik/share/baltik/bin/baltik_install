@@ -95,7 +95,7 @@ export rep_dev
 includes_add="-I../../include"
 export includes_add
 add_dependencies_to_makefile $rep_dev/make.include.atelier
-env PATH=$BALTIK_ROOT/bin:${PATH} Makeatelier.sccs NO_IHM 2 depend 1>/dev/null
+env PATH="$BALTIK_ROOT/bin:${PATH}" Makeatelier.sccs NO_IHM 2 depend 1>/dev/null
 cp $rep_dev/exec_opt/Makefile $rep_dev
 rm -rf $rep_dev/exec_opt/ $rep_dev/.Fichiers_atelier.html
 
