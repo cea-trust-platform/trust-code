@@ -28,6 +28,7 @@
 #include <math.h>
 #include <blas1.h>
 #include <Objet_U.h>
+#include <cmath>
 
 # ifndef M_E
 #  define M_E                2.7182818284590452354
