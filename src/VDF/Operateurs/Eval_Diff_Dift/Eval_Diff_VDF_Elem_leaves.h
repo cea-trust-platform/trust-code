@@ -85,26 +85,6 @@ public:
   static constexpr bool IS_ANISO= true;
 };
 
-// .DESCRIPTION class Eval_DiffF22_VDF_const_Elem
-// Evaluateur VDF pour la diffusion dans l'equation de F22 (modele V2F)
-// Le champ diffuse est scalaire (Champ_P0_VDF). Le champ de diffusivite est constant.
-class Eval_DiffF22_VDF_const_Elem : public Eval_Diff_VDF_Elem<Eval_DiffF22_VDF_const_Elem>, public Eval_Diff_VDF_const
-{
-public:
-  // Overload Eval_VDF_Elem
-  static constexpr bool CALC_FLUX_FACES_ECH_EXT_IMP = false, CALC_FLUX_FACES_ECH_GLOB_IMP = false, CALC_FLUX_FACES_PAR = false,
-                        CALC_FLUX_FACES_SORTIE_LIB = true, CALC_FLUX_FACES_SYMM = true, CALC_FLUX_FACES_PERIO = false;
-
-  inline void associer_keps(const Champ_Inc& keps, const Champ_Inc& champv2)
-  {
-    KEps = keps;
-    v2 = champv2;
-  }
-
-private:
-  REF(Champ_Inc) KEps, v2;
-};
-
 /*
  * ******************************
  * CAS VECTORIEL - const/var
