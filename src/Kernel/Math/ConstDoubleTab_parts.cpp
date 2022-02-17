@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ static void init_parts(DoubleVect& vect, VECT(DoubleTab) & parts, DoubleTab *dum
         }
 
       const MD_Vector_composite& mdata = ref_cast(MD_Vector_composite, md.valeur());
-      const int n = mdata.data_.size();
+      const int n = mdata.data_.size(), un = 1;
       parts.dimensionner(n);
       for (int i = 0, j; i < n; i++)
         {
@@ -81,7 +81,7 @@ static void init_parts(DoubleVect& vect, VECT(DoubleTab) & parts, DoubleTab *dum
           shape_i[0] = md_part.valeur().get_nb_items_tot();
           DoubleTab& part = parts[i];
           // Fait pointer la zone de memoire sur le sous-tableau (pour l'instant tableau monodimensionnel)
-          part.ref_array(vect, offset * line_size, shape_i[0] * line_size * std::max(mdata.shapes_[i], 1));
+          part.ref_array(vect, offset * line_size, shape_i[0] * line_size * std::max(mdata.shapes_[i], un));
           // Change le "shape" du tableau pour mettre le nombre de lignes et de colonnes
           // (nombre total d'items inchange, donc resize autorise)
           part.resize(shape_i);
@@ -134,7 +134,7 @@ static void init_parts(IntVect& vect, VECT(IntTab) & parts, IntTab *dummy_type_p
         }
 
       const MD_Vector_composite& mdata = ref_cast(MD_Vector_composite, md.valeur());
-      const int n = mdata.data_.size();
+      const int n = mdata.data_.size(), un = 1;
       parts.dimensionner(n);
       for (int i = 0, j; i < n; i++)
         {
@@ -146,7 +146,7 @@ static void init_parts(IntVect& vect, VECT(IntTab) & parts, IntTab *dummy_type_p
           shape_i[0] = md_part.valeur().get_nb_items_tot();
           IntTab& part = parts[i];
           // Fait pointer la zone de memoire sur le sous-tableau (pour l'instant tableau monodimensionnel)
-          part.ref_array(vect, offset * line_size, shape_i[0] * line_size * std::max(mdata.shapes_[i], 1));
+          part.ref_array(vect, offset * line_size, shape_i[0] * line_size * std::max(mdata.shapes_[i], un));
           // Change le "shape" du tableau pour mettre le nombre de lignes et de colonnes
           // (nombre total d'items inchange, donc resize autorise)
           part.resize(shape_i);

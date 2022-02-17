@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -322,7 +322,8 @@ void IntVect::lit(Entree& is, int resize_and_read)
       // Int tmp;
       //for (int i=0;i<sz;i++) is >> tmp;
       // So we bufferize:
-      int buffer_size = std::min(sz,128000);
+      int sz_max = 128000;
+      int buffer_size = std::min(sz,sz_max);
       ArrOfInt tmp(buffer_size);
       while(sz>buffer_size)
         {

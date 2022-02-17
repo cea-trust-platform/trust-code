@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -306,6 +306,7 @@ int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
       ouvrir_fichier(Flux_grad_moment,"moment",impr_mom);
       SFichier Flux_grad_sum;
       ouvrir_fichier(Flux_grad_sum,"sum",impr_sum);
+      int dim_max = 3;
       Flux_grad.add_col(sch.temps_courant());
       if (impr_mom) Flux_grad_moment.add_col(sch.temps_courant());
       if (impr_sum) Flux_grad_sum.add_col(sch.temps_courant());
@@ -316,7 +317,7 @@ int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
               Flux_grad.add_col(tab_flux_bords(0, n_bord, r));
               if (impr_sum) Flux_grad_sum.add_col(tab_flux_bords(1, n_bord, r));
             }
-          if (impr_mom) for (int r = (dimension < 3 ? 2 : 0); r < std::max(dimension, 3); r++)
+          if (impr_mom) for (int r = (dimension < 3 ? 2 : 0); r < std::max(dimension, dim_max); r++)
               Flux_grad_moment.add_col(tab_flux_bords(2, n_bord, r));
         }
       Flux_grad << finl;

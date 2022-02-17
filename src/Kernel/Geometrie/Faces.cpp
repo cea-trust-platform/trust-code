@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -481,6 +481,7 @@ void Faces::typer(const Type_Face& typ)
 {
   type_face_ = typ;
   // int axi_ = 0;
+  int max_dim = 3;
   switch(typ)
     {
     case  Faces::vide_0D :
@@ -524,11 +525,11 @@ void Faces::typer(const Type_Face& typ)
      Cerr << "Add Bidim_axi or Axi in your data file." << finl;
      exit();
      } */
-  if (dimension<std::min(3,nb_som_face))
+  if (dimension<std::min(max_dim,nb_som_face))
     {
       Cerr << "You are in dimension " << dimension << finl;
       Cerr << "and the mesh contains faces with " << nb_som_face << " nodes." << finl;
-      Cerr << "and this seems to be a mesh of dimension " << std::min(3,nb_som_face) << " ..." << finl;
+      Cerr << "and this seems to be a mesh of dimension " << std::min(max_dim,nb_som_face) << " ..." << finl;
       exit();
     }
 }

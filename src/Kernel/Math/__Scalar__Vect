@@ -576,7 +576,8 @@ void __Scalar__Vect::lit(Entree & is, int resize_and_read)
      // __Scalar__ tmp;
      //for (int i=0;i<sz;i++) is >> tmp;
      // So we bufferize:
-     int buffer_size = std::min(sz,128000);
+     int sz_max = 128000;
+     int buffer_size = std::min(sz,sz_max);
      ArrOf__Scalar__ tmp(buffer_size);
      while(sz>buffer_size)
      {

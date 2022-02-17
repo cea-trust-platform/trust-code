@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -234,10 +234,12 @@ int gmres_local( const Matrice_Morse& A, const DoubleVect& b,DoubleVect& x1,doub
 
   // A present dans le jdd
   double epsGMRES=1.e-10*0;
-  int nkr=std::max(10,nb_ligne_tot/2);                         // dimension de l'espace de Krylov
+  int nkr_min = 10;
+  int nkr=std::max(nkr_min,nb_ligne_tot/2);                         // dimension de l'espace de Krylov
   //nkr=10;
   nkr=dim_espace_Krilov;
-  int nit1=std::max(20,nb_ligne_tot);
+  int nit1_min = 20;
+  int nit1=std::max(nit1_min,nb_ligne_tot);
   int nit=std::min(nb_it_max,nit1);
   double rec_min = seuil;
   double rec_max = 0.1  ;

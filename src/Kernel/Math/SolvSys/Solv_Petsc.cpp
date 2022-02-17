@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -2301,13 +2301,13 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
       while (mdc_list.size()) //remplissage recursif de champs_ -> (nom du champ, indices)
         {
           const MD_Vector_composite& mdc = *std::get<0>(mdc_list.back());
-          int idx = std::get<1>(mdc_list.back()), mult = std::get<2>(mdc_list.back());
+          int idx = std::get<1>(mdc_list.back()), mult = std::get<2>(mdc_list.back()), un = 1;
           std::string prefix = std::get<3>(mdc_list.back());
           mdc_list.pop_back();
           for (int i = 0; i < mdc.nb_parts(); i++)
             {
               const MD_Vector_base& mdb = mdc.get_desc_part(i).valeur();
-              int mult2 = mult * std::max(mdc.get_shape(i), 1), nb_seq = mdb.nb_items_seq_local() * mult2;
+              int mult2 = mult * std::max(mdc.get_shape(i), un), nb_seq = mdb.nb_items_seq_local() * mult2;
               if (sub_type(MD_Vector_composite, mdb)) //un autre MD_Vector_Composite! on le met dans la liste
                 mdc_list.push_back(std::make_tuple(&ref_cast(MD_Vector_composite, mdb), idx, mult2,
                                                    prefix + std::to_string((long long) i)));
