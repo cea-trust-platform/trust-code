@@ -36,10 +36,3 @@ if __name__ == "__main__":
             with open(f"{k}/{d}/jdd.data", "w") as file:
                 file.write(result)
 
-    with open("cavite_2D.prm.P.m", "r") as file:
-        fileprm = Template(file.read())
-    result = fileprm.safe_substitute(list_dis=" ".join(sorted(list(set(list(list_dis))))))
-
-    with open("cavite_2D.prm.P", "w") as file:
-        file.write(result)
-
