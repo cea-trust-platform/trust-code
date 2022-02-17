@@ -1,0 +1,249 @@
+Parameters {
+	Title "Convergence of Euler diffusive-implicited scheme with different GPU solvers from AmgX library"
+	Author "Pierre LEDAC"
+        VersionTrio_U 1.8.4
+        InclureData 1
+        Description "Flow calculation (laminar, permanent, 2 MPI parallel processes) with TRUST on different meshes (3D unstructured)"
+   
+   
+ 	TestCase 10x10x10 amgx_gc.data 2
+   
+ 	TestCase 10x10x10 amgx_gc_gs.data 2
+   
+ 	TestCase 10x10x10 amgx_fgmres_gs.data 2
+   
+ 	TestCase 10x10x10 petsc_gc.data 2
+   
+ 	TestCase 10x10x10 petsc_gc_ssor.data 2
+ 
+ 
+	Description "Several solvers are tested: Gradient Conjugate (GC) and FGMRES (Flexible GMRES) with GS (Gauss-Seidel) or SSOR preconditioners"
+	Description "Intriguely, convergence is much faster with GC+GC on GPU than GC+SSOR on CPU. Should implement GS for PETSc to check cause GC without preconditioner give same results on CPU and GPU"
+	Description "Conclusion: Solvers on GPU are validated and GC (or FGMRES) and GS are the optimal choice to use for a diffusive-implicited scheme. Warning: performance of GPU solvers indicated here are not relevant on this small test case and/or on a entry-level NVidia card" 
+}
+   
+Chapter 
+{
+	Title "Solver convergence with different solvers on mesh 40x10x10x10" 
+        figure 
+            { 
+        	description "Relative residual  \latex_( $\lVert Ax(n)-b \rVert / \lVert Ax(0)-b \rVert$  \latex_) during the fist time step:"
+		Width 12cm
+		include_description_curves 0
+		labelX "Iteration"
+        	labelY "Residual"
+		logy 
+	        curve {
+			file 10x10x10/amgx_gc.res
+			columns ($1) ($2)
+			legende "amgx_gc"
+			style linespoints
+		}
+	        curve {
+			file 10x10x10/amgx_gc_gs.res
+			columns ($1) ($2)
+			legende "amgx_gc_gs"
+			style linespoints
+		}
+	        curve {
+			file 10x10x10/amgx_fgmres_gs.res
+			columns ($1) ($2)
+			legende "amgx_fgmres_gs"
+			style linespoints
+		}
+	        curve {
+			file 10x10x10/petsc_gc.res
+			columns ($1) ($2)
+			legende "petsc_gc"
+			style linespoints
+		}
+	        curve {
+			file 10x10x10/petsc_gc_ssor.res
+			columns ($1) ($2)
+			legende "petsc_gc_ssor"
+			style linespoints
+		}
+	}
+}
+ 
+
+   
+Chapter 
+{
+	Title "Time convergence with different solvers on mesh 40x10x10x10" 
+        figure 
+            { 
+        	description "Relative residual  \latex_( $\lVert dI(n)/dt \rVert / \lVert dI(0)/dt \rVert$  \latex_) up to convergence:"
+		Width 12cm
+		include_description_curves 0
+		labelX "Time"
+        	labelY "Residual"
+		logy 
+	        curve {
+			file 10x10x10/amgx_gc.dt_ev
+			columns ($1) ($4)
+			legende "amgx_gc"
+			style lines
+		}
+	        curve {
+			file 10x10x10/amgx_gc_gs.dt_ev
+			columns ($1) ($4)
+			legende "amgx_gc_gs"
+			style lines
+		}
+	        curve {
+			file 10x10x10/amgx_fgmres_gs.dt_ev
+			columns ($1) ($4)
+			legende "amgx_fgmres_gs"
+			style lines
+		}
+	        curve {
+			file 10x10x10/petsc_gc.dt_ev
+			columns ($1) ($4)
+			legende "petsc_gc"
+			style lines
+		}
+	        curve {
+			file 10x10x10/petsc_gc_ssor.dt_ev
+			columns ($1) ($4)
+			legende "petsc_gc_ssor"
+			style lines
+		}
+	}
+}
+ 
+
+   
+Chapter 
+{
+	Title "Friction drag with different solvers on mesh 40x10x10x10" 
+        figure 
+            { 
+        	description "Fx(Wall) up to convergence:"
+		Width 12cm
+		include_description_curves 0
+		labelX "Time"
+        	labelY "Drag [N]"
+	        curve {
+			file 10x10x10/amgx_gc_pb_Contrainte_visqueuse.out
+			columns ($1) ($5)
+			legende "amgx_gc"
+			style lines
+		}
+	        curve {
+			file 10x10x10/amgx_gc_gs_pb_Contrainte_visqueuse.out
+			columns ($1) ($5)
+			legende "amgx_gc_gs"
+			style lines
+		}
+	        curve {
+			file 10x10x10/amgx_fgmres_gs_pb_Contrainte_visqueuse.out
+			columns ($1) ($5)
+			legende "amgx_fgmres_gs"
+			style lines
+		}
+	        curve {
+			file 10x10x10/petsc_gc_pb_Contrainte_visqueuse.out
+			columns ($1) ($5)
+			legende "petsc_gc"
+			style lines
+		}
+	        curve {
+			file 10x10x10/petsc_gc_ssor_pb_Contrainte_visqueuse.out
+			columns ($1) ($5)
+			legende "petsc_gc_ssor"
+			style lines
+		}
+	}
+}
+ 
+
+  
+Chapter 
+{
+	Title "RAM evolution for different solvers on mesh 40x10x10x10" 
+        figure 
+            { 
+        	description "RAM (MB) during calculation:"
+		Width 12cm
+		include_description_curves 0
+		labelX "Time step"
+        	labelY "RAM [MB]"
+	        curve {
+			file 10x10x10/amgx_gc.ram
+			columns ($1) ($2)
+			legende "amgx_gc"
+			style linespoints
+		}
+	        curve {
+			file 10x10x10/amgx_gc_gs.ram
+			columns ($1) ($2)
+			legende "amgx_gc_gs"
+			style linespoints
+		}
+	        curve {
+			file 10x10x10/amgx_fgmres_gs.ram
+			columns ($1) ($2)
+			legende "amgx_fgmres_gs"
+			style linespoints
+		}
+	        curve {
+			file 10x10x10/petsc_gc.ram
+			columns ($1) ($2)
+			legende "petsc_gc"
+			style linespoints
+		}
+	        curve {
+			file 10x10x10/petsc_gc_ssor.ram
+			columns ($1) ($2)
+			legende "petsc_gc_ssor"
+			style linespoints
+		}
+	}
+}
+ 
+
+Chapitre {
+        Titre "Time needed to copy and solve the linear system on GPU (during the last time step)"
+   
+        Table 
+        {                
+                Title "Mesh 40x10x10x10"
+                nb_columns 3
+                label Copy[s] | Solve[s] | Total[s]
+                line {
+                        legend "amgx_gc"
+                        file 10x10x10/amgx_gc.cpu
+                        last_line
+                     }
+                line {
+                        legend "amgx_gc_gs"
+                        file 10x10x10/amgx_gc_gs.cpu
+                        last_line
+                     }
+                line {
+                        legend "amgx_fgmres_gs"
+                        file 10x10x10/amgx_fgmres_gs.cpu
+                        last_line
+                     }
+                line {
+                        legend "petsc_gc"
+                        file 10x10x10/petsc_gc.cpu
+                        last_line
+                     }
+                line {
+                        legend "petsc_gc_ssor"
+                        file 10x10x10/petsc_gc_ssor.cpu
+                        last_line
+                     }
+	}
+ 
+        }
+
+   
+ Chapter {
+        Title "Computer performance"
+        tableau_performance {
+        }
+}
+       
