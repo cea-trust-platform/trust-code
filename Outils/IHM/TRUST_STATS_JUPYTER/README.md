@@ -48,17 +48,9 @@ Here are the steps to follow if the user wants to use the library from outside t
 
 Examples of usage can be checked from the **tests** repository.
 
-## Jupyter lab installation
+## Jupyter 
 
-Jupyter-lab can be easily installed as follows:
+More details on how to write TRUST validation form using Jupyter can be found in 
 
-      source env_TRUST.sh
+        Validation/Rapports_automatiques/README_jupyter.md    
 
-      conda install -c conda-forge jupyterlab ca-certificates=2020.10.14 conda=4.9.2 certifi=2020.6.20
-
-## Python modules needed
-
-In order to execute the Python code, the following modules are needed:
-
-- **IPython** (Display images in jupyter lab)
-- **Sphinx** (to generate documentation)

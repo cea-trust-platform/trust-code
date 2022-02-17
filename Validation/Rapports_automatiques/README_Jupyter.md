@@ -6,16 +6,20 @@ in the coming versions of TRUST.
 
 A first example (and good starting point) can be found in 
 ```sh
-        SampleForm/SampleForm.ipynb
+        SampleFormJupyter/SampleFormJupyter.ipynb
 ```
 
 To run a Jupyter validation forms, you need a specific environment:
-  - first, jupyterlab and some extra modules should be installed:
+  - first, jupyter and some extra modules should be installed. This is normally done automatically when installing TRUST. Make sure you use the TRUST's version of juptyer
 ```sh
-        conda install -c conda-forge jupyterlab ipywidgets ca-certificates=2020.10.14 conda=4.9.2 certifi=2020.6.20
+        which jupyter-notebook
 ```
 
-  - the relevant Python environment should be loaded
+  - if you intend to use MEDCoupling in the notebook, this can be directly done in the notebook using
+```sh
+        run.useMEDCoupling()
+```
+    alternatively, the relevant Python environment can be loaded with
 ```sh
         source $TRUST_ROOT/env_for_python.sh
 ```
@@ -30,5 +34,11 @@ To run a Jupyter validation forms, you need a specific environment:
 ```sh
         cd Verification/SampleFormJupyter
         Run_fiche
+```
+    This will open a browser showing you the form.
+
+  - to directly export the Jupyter notebook into a PDF file, you can do:
+```sh
+        Run_fiche -export_pdf [-not_run]
 ```
 

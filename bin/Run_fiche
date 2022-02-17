@@ -6,7 +6,8 @@ help()
    echo "Script to build a PDF report file from an automated validation test case (.prm file)." 
    echo "-help                          : This description."
    echo "-doc                           : Open the prm file documentation."
-   echo "-dest path_build               : Change the default build directory."   
+   echo "-dest path_build               : Change the default build directory."
+   echo "-export_pdf                    : Produce the PDF report direclty as 'build/rapport.pdf'. This is the default for PRM format, but not for Jupyter notebooks."
    echo "-not_run                       : Build the PDF report file without running the TRUST calculations and pre_run/post_run scripts."
    echo "-post_run                      : As -not_run except it runs the post_run scripts."
    echo "-parallel_run                  : Run/submit calculations in a parallel way. To disable this feature, add into the prm file: # DISABLE_PARALLEL_RUN #" 
@@ -54,6 +55,7 @@ options=""
 pdf=build/rapport.pdf
 save=""
 ici=`pwd`
+export_pdf=false
 # Changement par defaut, on utilise -np 2 si parallele et MPI non natif
 #if [ "`echo $MPI_ROOT | grep TRUST`" != "" ]
 if [ "`echo $MPI_ROOT`" != "" ] && [ "$TRUST_WITHOUT_HOST" = 0 ]
@@ -77,9 +79,15 @@ do
       shift
       options=$options" "$1
       pdf=$1/rapport.pdf
-      shift   
+      shift
+   elif [ "$1" = -export_pdf ]; then
+      export_pdf=true
+      shift
    elif [ "$1" = -not_run ] || [ "$1" = -post_run ] || [ "$1" = -parallel_run ] || [ "$1" = -parallel_sjob ]
    then
+      if [ "$1" = -not_run ]; then
+        not_run=1
+      fi 
       options=$options" "$1
       shift
    elif [ "$1" = -nb_pas_dt_max ]
@@ -207,23 +215,27 @@ then
       echo "There should be ONE .prm file in the src directory."
       exit -1
    fi
-   # Lancement d'une fiche jupyter
-   if [ ${prm%.ipynb} != $prm ]
-   then
-      # Verification Conda
-      if [ "`jupyter -h 2>/dev/null`" = "" ]
-      then
-         [ ! -w $TRUST_ROOT ] && echo "You don't have rights to install Jupyter under TRUST_ROOT=$TRUST_ROOT" && exit -1
-         echo "Trying to install Jupyter stuff..."
-         conda install -f -c conda-forge jupyterlab ipywidgets ca-certificates=2020.10.14 conda=4.9.2 certifi=2020.6.20
+   # Lancement d'une fiche jupyter   
+   if [ ${prm%.ipynb} != $prm ]; then
+      if $export_pdf; then
+          opt_jy=""
+          if [ "$not_run" != "1" ]; then
+              opt_jy="--execute"
+          fi
+          echo "----------------------------------------------------------------------"
+          echo "Converting Jupyter notebook into PDF: build/rapport.pdf"
+          echo "  >  jupyter nbconvert --to pdf --output $ici/build/rapport.pdf $opt_jy $prm"
+          echo "----------------------------------------------------------------------"
+          jupyter nbconvert --to pdf --output "$ici/build/rapport.pdf" $opt_jy $prm
+          exit $?
+      else
+          echo "----------------------------------------------------------------------"
+          echo "Launching Jupyter in your web browser ... hit Ctrl-C when you're done."
+          echo "  >  jupyter-notebook $prm"
+          echo "----------------------------------------------------------------------"
+          jupyter-notebook $prm
+          exit 0
       fi
-      echo "----------------------------------------------------------------------"
-      echo "Launching Jupyter in your web browser ... hit Ctrl-C when you're done."
-      echo "  >  jupyter-notebook $prm"
-      echo "----------------------------------------------------------------------"
-      source $TRUST_ROOT/env_for_python.sh
-      jupyter-notebook $prm
-      exit 0
    fi
    # Verifie la syntaxe des visu
    KO=`grep _magnitude $prm | grep -i pseudocolor`
