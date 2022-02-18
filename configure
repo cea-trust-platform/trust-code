@@ -551,7 +551,6 @@ do
 done
 echo "TRUST_DISABLE_MPIIO=$TRUST_DISABLE_MPIIO && export TRUST_DISABLE_MPIIO	# Disable/enable MPI-IO mode for writing of binary output file"	>> $var
 echo "TRUST_ENABLE_PETSC_DEBUG=$TRUST_ENABLE_PETSC_DEBUG && export TRUST_ENABLE_PETSC_DEBUG	# Disable/enable PETSc debug"	>> $var
-echo "TRUST_DISABLE_CHECK_SRC=$TRUST_DISABLE_CHECK_SRC && export TRUST_DISABLE_CHECK_SRC # No check sources before compiling"	>> $var
 echo "TRUST_DISABLE_CHECKS=$TRUST_DISABLE_CHECKS && export TRUST_DISABLE_CHECKS	# Disable/enable checks for external packages, sources, disk space and speed" >> $var
 echo "TRUST_INT64=$TRUST_INT64 && export TRUST_INT64	# Build in 64 bits integer indices." >> $var
 echo "TRUST_DISABLE_MPI4PY=$TRUST_DISABLE_MPI4PY && export TRUST_DISABLE_MPI4PY  # disable mpi4py build." >> $var

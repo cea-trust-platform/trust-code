@@ -611,11 +611,12 @@ if [ -f configure.env ]
 then
    echo "TRUST_WITHOUT_HOST=$TRUST_WITHOUT_HOST && export TRUST_WITHOUT_HOST	# Disable/enable reading of HOST file"	>> configure.env
    [ "$TRUST_WITHOUT_HOST" = 0 ] && TRUST_DISABLE_JUPYTER=1
+   # TRUST_DISABLE_CHECK_SRC=1 sur clusters (machine de production parfois lente a compiler):
+   [ "$TRUST_WITHOUT_HOST" = 0 ] && TRUST_DISABLE_CHECK_SRC=1
+   echo "TRUST_DISABLE_CHECK_SRC=$TRUST_DISABLE_CHECK_SRC && export TRUST_DISABLE_CHECK_SRC # No check sources before compiling `[ "$TRUST_WITHOUT_HOST" = 0 ] && echo since TRUST_WITHOUT_HOST=0`" >> configure.env
    echo "TRUST_DISABLE_JUPYTER=$TRUST_DISABLE_JUPYTER && export TRUST_DISABLE_JUPYTER  # disable jupyter build`[ "$TRUST_WITHOUT_HOST" = 0 ] && echo since TRUST_WITHOUT_HOST=0`." >> configure.env
    . ./configure.env
 fi
-# TRUST_DISABLE_CHECK_SRC=1 sur clusters (machine de production parfois lente a compiler):
-[ "$TRUST_WITHOUT_HOST" = 0 ] && TRUST_DISABLE_CHECK_SRC=1
 
 BATCH_SYSTEM_DETECTED=0
 for cmd in sinfo qstat bqueues
@@ -846,12 +847,10 @@ echo "export PYTHONPATH=\$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:\$PYTHONPATH
 
 # Disable autosave in jupyter
 jupyter_config=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/notebook/static/custom/custom.js
-if [ "$TRUST_DISABLE_JUPYTER" != 1 ] && [ -f $jupyter_config ] && [ "`grep set_autosave_interval $jupyter_config 2>/dev/null`" = "" ]
+if [ "$TRUST_DISABLE_JUPYTER" != 1 ] && [ -f $jupyter_config ] && [ "`grep 'Jupyter.notebook.set_autosave_interval(0)' $jupyter_config 2>/dev/null`" = "" ]
 then
    echo "Disabling autosave in jupyter-notebook"
-   echo "\$([IPython.events]).on(notebook_loaded.Notebook, function () {
-IPython.notebook.set_autosave_interval(0);
-});" >> $jupyter_config
+   echo "Jupyter.notebook.set_autosave_interval(0); // disable autosave" >> $jupyter_config
 fi
 
 ####################

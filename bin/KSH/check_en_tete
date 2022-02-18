@@ -67,7 +67,7 @@ fi
 # Retreive git status of the file in short version and look for the 'M'odified flag.
 # Pourquoi git status ?
 #if [ -f $file ] && [ -s $file ] && git status 1>/dev/null 2>&1 && (git status -s -- $file | grep -e '^[ ]*[AM][M ]' 1> /dev/null 2>&1)
-if [ -f $file ] && [ -s $file ] && (git status -s -- $file | grep -e '^[ ]*[AM][M ]' 1> /dev/null 2>&1)
+if [ -f $file ] && [ -s $file ] && (git status -s -- $file  2>/dev/null | grep -e '^[ ]*[AM][M ]' 1> /dev/null 2>&1)
 then
    tmp_file=`mktemp_`
    ###########################################

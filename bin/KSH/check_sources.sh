@@ -80,9 +80,13 @@ check_src_in_gc()
    ############
    # Source files should be tracked:
    #if [ -d $TRUST_ROOT/.git ]
-   git tag 1>/dev/null 2>&1 && pwd_=`pwd` && git status -s *.cpp *.h *.f *.c *.P 2>/dev/null | grep -v config.h | $TRUST_Awk -v dir=$pwd_ 'BEGIN {err=0}
+   git tag 1>/dev/null 2>&1
+   if [ $? = 0 ]
+   then
+      pwd_=`pwd` && git status -s *.cpp *.h *.f *.c *.P 2>/dev/null | grep -v config.h | $TRUST_Awk -v dir=$pwd_ 'BEGIN {err=0}
    !/~/ && ($1=="??") {err=1;print "\nThe file "dir"/"$2" is not staged under Git!\nStage the file with \"git add "dir"/"$2"\" or delete this file."}
    END {exit err}' || erreur 1
+   fi
 }
 
 check_recent_src()
