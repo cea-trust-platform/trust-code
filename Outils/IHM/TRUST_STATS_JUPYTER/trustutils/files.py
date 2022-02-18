@@ -337,7 +337,7 @@ class SonFile(TrustFile):
         if not len(self._entries):
             hdr = self._populateFromHeader()
         return self._ncompo
-
+    
 class SonPOINTFile(SonFile):
     def __init__(self, filePath, refPath):
         SonFile.__init__(self, filePath, refPath)
@@ -411,6 +411,9 @@ class SonSEGFile(SonFile):
 
     def getXLabel(self):
         return "Coordinate (%s)" % self._orient
+
+    def getXAxis(self):
+        return self._xaxis
 
     def _extractValues(self, fileReady, entryName):
         """ Override to handle seg entries. """

@@ -17,7 +17,7 @@ import re
 import math
 from trustutils.jupyter.filelist import FileAccumulator
 from trustutils.jupyter.run import BUILD_DIRECTORY
-mon_dictionnaire = {"x": "0", "y": "1", "z": "2"}
+mon_dictionnaire = {"x": 0, "y": 1, "z": 2}
 
 pd.set_option('display.notebook_repr_html', True)
 
@@ -308,7 +308,7 @@ class Graph:
         self.subplot.set_title(self.title)
 
         
-    def addPoint(self,data,marker="-",var="x",start=0,end=1000000000000,label="",func=None,**kwargs):
+    def addPoint(self,data,marker="-",var="x",label="",func=None,**kwargs):
         """
         
         Methode to add a curve to the plot from a point sonde.
@@ -321,10 +321,6 @@ class Graph:
             symbol of the ploted line.
         var :  str
             coordinate we want to plot.
-        start : float
-            Time start.
-        end :  float
-            Time end.
         label : str
             title of the curve .
         func : function
@@ -341,52 +337,24 @@ class Graph:
         donne =tf.SonPOINTFile(path, None) 
          
         saveFileAccumulator(data)
-        #filelist.FileAccumulator.AppendFromProbe("build/"+data)
+        
         ### On recupere le nom des variables ### 
-        self.y_label=donne.getEntries()[0] 
+        coord = mon_dictionnaire[var]
+        
+        self.y_label=donne.getEntries()[coord] 
         self.x_label=donne.getXLabel() 
-        T=[]   
-        x=[]
-        y=[]
-        z=[]
-        for i in donne.getEntries(): 
-            T.append(donne.getValues(i)[1])
-            
-        t=donne.getValues(self.y_label)[0] 
         
-        tmp=re.findall(r"[-+]?\d*\.\d+|[-+]?\d+", donne.getEntries()[0])
-        x.append(float(tmp[0]))
-        y.append(float(tmp[1]))
-        varTMP=len(y) ### Variable pour connaitre la taille du vecteur ### 
-        if len(tmp)<2:
-            z.append(tmp[2])
-        else:  
-            z.append(list(np.zeros(varTMP))[0])
+        X, Y = donne.getValues(self.y_label)
 
-        df = pd.DataFrame({"x": x, "y": y,"z":z})
-        dt = pd.DataFrame({"Time": t})
-        
-        ### Jointure interne ###
-        r=pd.merge(df.assign(key=0), dt.assign(key=0), on='key').drop('key', axis=1)
-        r=r.sort_values(by=['Time','x','y','z'])  
-        
-        for i in range(len(T)):
-            r[str(i)]=T[i]
-        
-        r=r[(r["Time"]<=end)&(r["Time"]>=start)] 
-        
-        X=np.array(r["Time"])
-        Y=np.array(r[mon_dictionnaire[var]])
-        
         if not func is None:
             Y=func(X,Y)
         
         ### On plot les données ### 
         self.subplot.plot(X,Y,marker,label=label,**kwargs)
         
-
         if not label is None:
             self.subplot.legend()
+        
         ## On ajoute des titres 
         self.subplot.set(xlabel=self.x_label,ylabel=self.y_label)
     
@@ -423,52 +391,32 @@ class Graph:
         if label=="":
             label=data.split(".")[0]
         # On plot le dernier instant 
-        if(value==None):
-            value=float(lastMoment(path)) 
         donne =tf.SonSEGFile(path, None)  
         
         saveFileAccumulator(data)
         
         # On recupere le nom des variables, leur dimension et la coordonnee que l'on veut tracer
-        coord = int(mon_dictionnaire[var])
+        coord = mon_dictionnaire[var]
         ncompo = donne.getnCompo()
-        self.y_label=donne.getEntries()[coord].split()[0]
+
+        entries = donne.getEntries()
+
+        self.y_label=entries[coord].split()[0]
         self.x_label=donne.getXLabel()
         self.start, self.end = donne.getXTremePoints()
 
-        t=donne.getValues(donne.getEntries()[0])[0]
+        t=donne.getValues(entries[0])[0]
         ## find closest value of t
-        idx = (np.abs(t - value)).argmin()
-        closest_value = t[idx]
+        if(value==None):
+            idx = -1 
+        else:
+            idx = (np.abs(t - value)).argmin()
         
-        x=[]
-        y=[]
-        z=[]
-        norm = []
-        T = []
-        diff = [0.]*3
+        X = donne.getXAxis()
 
-        for i in donne.getEntries()[coord::ncompo]:
-            tmp=re.findall(r"[-+]?\d*\.\d+|[-+]?\d+", i)
-            x.append(float(tmp[0]))
-            diff[0] = self.start[0] - float(tmp[0])
-            y.append(float(tmp[1]))
-            diff[1] = self.start[1] - float(tmp[1])
-            varTMP=len(y) ### Variable pour connaitre la taille du vecteur ###
-            if len(tmp)>2:
-                z.append(float(tmp[2]))
-                diff[2] = self.start[2] - float(tmp[2])
-            else:   
-                z.append(list(np.zeros(varTMP))[0])
-            norm.append(math.sqrt(diff[0]*diff[0] + diff[1]*diff[1] + diff[2]*diff[2]))
-            T.append(list(donne.getValues(i)[1])[idx])
-
-        orient = donne.getOrientation()
-        df = pd.DataFrame({"x": x, "y": y,"z":z,"curvi.":norm,"value":T})
-        
-        # On plot les données
-        X=np.array(df[orient])
-        Y=np.array(df["value"]) 
+        Y = []
+        for i in entries[coord::ncompo]:
+            Y.append(list(donne.getValues(i)[1])[idx])
 
         if not func is None:
             Y=func(X,Y)
