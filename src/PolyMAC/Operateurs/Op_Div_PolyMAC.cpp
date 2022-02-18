@@ -22,6 +22,7 @@
 
 #include <Op_Div_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
+#include <Champ_Face_PolyMAC.h>
 //#include <Les_Cl.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
@@ -66,117 +67,69 @@ void Op_Div_PolyMAC::associer(const Zone_dis& zone_dis,
   la_zcl_PolyMAC = zclPolyMAC;
 }
 
-DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
-{
-  Debog::verifier("div in",div);
-
-
-  Debog::verifier("vit in div",vit);
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  const DoubleVect& surface=zone_PolyMAC.face_surfaces();
-  const IntTab& face_voisins = zone_PolyMAC.face_voisins();
-  const DoubleVect& porosite_surf = zone_PolyMAC.porosite_face();
-
-
-  Debog::verifier("poro",porosite_surf);
-  Debog::verifier("surf",surface);
-
-  // L'espace virtuel du tableau div n'est pas mis a jour par l'operateur,
-  //  assert(invalide_espace_virtuel(div));
-  declare_espace_virtuel_invalide(div);
-  // calcul de flux bord
-
-  DoubleTab& tab_flux_bords = flux_bords_;
-  tab_flux_bords.resize(zone_PolyMAC.nb_faces_bord(),1);
-  tab_flux_bords=0;
-
-
-  int premiere_face_int=zone_PolyMAC.premiere_face_int();
-  int nb_faces=zone_PolyMAC.nb_faces();
-  for (int face=0; face<premiere_face_int; face++)
-    {
-
-      double flux=porosite_surf[face]*vit[face]*surface[face];
-      tab_flux_bords(face,0)+=flux;
-      int elem1=face_voisins(face,0);
-      if (elem1!=-1)
-        div(elem1)+=flux;
-      int elem2=face_voisins(face,1);
-      if (elem2!=-1)
-        div(elem2)-=flux;
-
-    }
-
-  for (int face=premiere_face_int; face<nb_faces; face++)
-    {
-      double flux=porosite_surf[face]*vit[face]*surface[face];
-      int elem1=face_voisins(face,0);
-      assert(zone_PolyMAC.oriente_normale(face,elem1)==1);
-
-      div(elem1)+=flux;
-      int elem2=face_voisins(face,1);
-
-      div(elem2)-=flux;
-    }
-  div.echange_espace_virtuel();
-
-  Debog::verifier("div out",div);
-  return div;
-}
-void Op_Div_PolyMAC::contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const
-{
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  const DoubleVect& surface=zone_PolyMAC.face_surfaces();
-  const IntTab& face_voisins = zone_PolyMAC.face_voisins();
-  const DoubleVect& porosite_surf = zone_PolyMAC.porosite_face();
-
-
-  int nb_faces=zone_PolyMAC.nb_faces();
-
-  for (int face=0; face<nb_faces; face++)
-    {
-      // flux * -1 car contribuer_a_avec renvoie  -d/dI
-      double flux=-porosite_surf[face]*surface[face];
-
-      int elem1=face_voisins(face,0);
-      if (elem1!=-1)
-        matrice(elem1,face)+=flux;
-      int elem2=face_voisins(face,1);
-      if (elem2!=-1)
-        matrice(elem2,face)-=flux;
-
-    }
-}
-
 void Op_Div_PolyMAC::dimensionner(Matrice_Morse& matrice) const
 {
+  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const IntTab& e_f = zone.elem_faces(), &fcl = ch.fcl();
+  int i, e, f, ne_tot = zone.nb_elem_tot();
 
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  int nb_faces=zone_PolyMAC.nb_faces();
-  int nb_faces_tot=zone_PolyMAC.nb_faces_tot();
-  int nb_elem_tot=zone_PolyMAC.nb_elem_tot();
-  IntTab stencyl(0,2);
-  stencyl.set_smart_resize(1);
-  const IntTab& face_voisins = zone_PolyMAC.face_voisins();
+  IntTab stencil(0,2);
+  stencil.set_smart_resize(1);
+  /* bloc (elem, faces) : faces de chaque element (vitesses calculees seulement) */
+  for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+    stencil.append_line(e, f);
+  /* bloc (faces, faces) : faces de bord a vitesse imposee seulement! */
+  for (f = 0; f < zone.premiere_face_int(); f++) if (fcl(f, 0) != 1) stencil.append_line(ne_tot + f, f);
 
-  int nb_coef=0;
-  for (int face=0; face<nb_faces; face++)
+  tableau_trier_retirer_doublons(stencil);
+  Matrix_tools::allocate_morse_matrix(get_champ("pression").valeurs().size_totale(), equation().inconnue().valeurs().size_totale(), stencil, matrice);
+}
+
+DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
+{
+  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const DoubleTab &nf = zone.face_normales();
+  const Conds_lim &cls = la_zcl_PolyMAC->les_conditions_limites();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
+  int i, e, f, ne_tot = zone.nb_elem_tot(), d, D = dimension, has_f = div.dimension_tot(0) > ne_tot;
+
+  DoubleTab& tab_flux_bords = ref_cast(DoubleTab,flux_bords_);
+  tab_flux_bords.resize(zone.nb_faces_bord(),1);
+  tab_flux_bords=0;
+
+  for (f = 0; f < zone.nb_faces(); f++)
     {
-      for (int dir=0; dir<2; dir++)
-        {
-          int elem=face_voisins(face,dir);
-          if (elem!=-1)
-            {
-              stencyl.resize(nb_coef+1,2);
-              stencyl(nb_coef,0)=elem;
-              stencyl(nb_coef,1)=face;
-              nb_coef++;
-            }
-        }
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* aux elements */
+          div(e) += (i ? -1 : 1) * fs(f) * pf(f) * vit(f);
+      if (f >= zone.premiere_face_int()) continue;
+      /* si "div" a des valeurs aux faces : bilan de masse avec la CL imposee aux faces de bord de Dirichlet */
+      if (has_f && fcl(f, 0) != 1) div(ne_tot + f) -= fs(f) * pf(f) * vit(f);
+      if (has_f && fcl(f, 0) == 3) for (d = 0; d < D; d++) div(ne_tot + f) += nf(f, d) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), d);
+      /* a toutes les faces de bord : contribution a tab_flux_bords */
+      tab_flux_bords(f) = fs(f) * pf(f) * vit(f); //flux aux bords
     }
-  tableau_trier_retirer_doublons(stencyl);
-  Matrix_tools::allocate_morse_matrix(nb_elem_tot,nb_faces_tot,stencyl,matrice);
 
+  div.echange_espace_virtuel();
+
+  return div;
+}
+
+void Op_Div_PolyMAC::contribuer_a_avec(const DoubleTab&,Matrice_Morse& mat) const
+{
+  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
+  int i, e, f, ne_tot = zone.nb_elem_tot();
+
+  for (f = 0; f < zone.nb_faces(); f++)
+    {
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* aux elements */
+          mat(e, f) += (i ? 1 : -1) * fs(f) * pf(f);
+      if (f >= zone.premiere_face_int() && fcl(f, 0) != 1) /* aux faces de bord de Dirichlet */
+        mat(ne_tot + f, f) += fs(f) * pf(f);
+    }
 }
 
 DoubleTab& Op_Div_PolyMAC::calculer(const DoubleTab& vit, DoubleTab& div) const

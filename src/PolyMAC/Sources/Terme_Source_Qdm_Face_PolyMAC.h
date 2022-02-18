@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,16 +46,21 @@ class Terme_Source_Qdm_Face_PolyMAC : public Source_base, public Terme_Source_Qd
 
 public:
 
-  void associer_pb(const Probleme_base& ) override;
-  DoubleTab& ajouter(DoubleTab& ) const override;
-  DoubleTab& calculer(DoubleTab& ) const override;
-  void mettre_a_jour(double ) override;
+  void associer_pb(const Probleme_base& );
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  void mettre_a_jour(double );
+  void check_multiphase_compatibility() const { }; //ok
 
 protected:
 
   REF(Zone_PolyMAC) la_zone_PolyMAC;
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& );
 
 };
 

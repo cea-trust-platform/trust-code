@@ -147,7 +147,7 @@ double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
 void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
 {
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
   int i, j, e, eb, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size();
   const Champ_Inc_base& cc = equation().champ_convecte();
 
@@ -159,7 +159,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
         int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
         if (i_m.first == "vitesse") /* vitesse */
           {
-            for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
+            for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl_v(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
                   for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
           }
         else for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* inconnues scalaires */
@@ -176,7 +176,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
 void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur()).fcl();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   const Champ_Inc_base& cc = equation().champ_convecte();
   const std::string& nom_cc = cc.le_nom().getString();
@@ -204,7 +204,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
               secmem(e, n) -= (i ? -1 : 1) * dv_flux(n) * vit(f, m);
         //derivees : vitesse
-        if (m_vit) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
+        if (m_vit && fcl_v(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
                 (*m_vit)(N * e + n, Mv * f + m) += (i ? -1 : 1) * dv_flux(n);
         //derivees : champ convecte
         for (auto &&d_m_i : d_cc) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)

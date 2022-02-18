@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2019, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,35 +40,32 @@ class Assembleur_P_PolyMAC : public Assembleur_base
   Declare_instanciable(Assembleur_P_PolyMAC);
 
 public:
-  void associer_zone_dis_base(const Zone_dis_base& ) override         ;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override   ;
-  const Zone_dis_base& zone_dis_base() const override                 ;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const override           ;
-  int assembler(Matrice&) override                                 ;
-  int assembler_rho_variable(Matrice&, const Champ_Don_base& rho) override;
-  int assembler_QC(const DoubleTab&, Matrice&) override            ;
-  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
-  int modifier_secmem(DoubleTab&) override                         ;
-  int modifier_solution(DoubleTab&) override                       ;
-  void completer(const Equation_base& ) override                      ;
+  void associer_zone_dis_base(const Zone_dis_base& )         ;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& )   ;
+  const Zone_dis_base& zone_dis_base() const                 ;
+  const Zone_Cl_dis_base& zone_Cl_dis_base() const           ;
+  int assembler(Matrice&)                                 ;
+  int assembler_rho_variable(Matrice&, const Champ_Don_base& rho);
+  int assembler_QC(const DoubleTab&, Matrice&)            ;
+  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u);
+  int modifier_secmem(DoubleTab&)
+    {
+      return 1;
+    }
+  /* prise en compte des variations de pression aux CLs lors du calcul d'increments de pression.
+     fac est le coefficient tel que p_final - press = fac * sol */
+  void modifier_secmem_pour_incr_p(const DoubleTab &press, const double fac, DoubleTab &incr) const;
+  int modifier_solution(DoubleTab&)                       ;
+  void completer(const Equation_base& )                      ;
   inline const Equation_base& equation() const                ;
-
-  /* corrige les vitesses pour une correction en pression donnee de type (-Cp, Cv) */
-  void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const override
-  {
-    rec.ajouter_multvect(dP, dv);
-    dv.echange_espace_virtuel();
-  }
 
 protected :
   REF(Equation_base) mon_equation                            ;
   REF(Zone_PolyMAC) la_zone_PolyMAC                                  ;
   REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC                            ;
-  DoubleTab les_coeff_pression                               ;
   int has_P_ref;
   int stencil_done;
   IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)
-  Matrice_Morse rec; //pour reconstruire les vitesses
 };
 
 inline const Equation_base& Assembleur_P_PolyMAC::equation() const

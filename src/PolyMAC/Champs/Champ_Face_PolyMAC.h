@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,35 +47,35 @@ protected :
 
 public :
 
-  void    associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override
+  void    associer_zone_dis_base(const Zone_dis_base&);
+  virtual const Zone_dis_base& zone_dis_base() const
   {
     return ref_zone_vf_.valeur();
   } ;
 
-  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
-  double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
+  virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const;
+  virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const;
+  virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const;
+  virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const;
 
-  DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
-  int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
+  virtual DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const;
+  virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const;
 
-  DoubleTab& valeur_aux_faces(DoubleTab& result) const override;
-  DoubleVect& calcul_S_barre_sans_contrib_paroi(const DoubleTab& vitesse, DoubleVect& SMA_barre) const;
-  DoubleVect& calcul_S_barre(const DoubleTab& vitesse,DoubleVect& SMA_barre) const;
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double, int distant ) const override;
+  virtual DoubleTab& valeur_aux_faces(DoubleTab& result) const;
+  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double, int distant ) const;
 
-  Champ_base& affecter_(const Champ_base& ) override;
-  int nb_valeurs_nodales() const override;
+  Champ_base& affecter_(const Champ_base& );
+  int nb_valeurs_nodales() const;
 
   const Zone_VF& zone_vf() const
   {
     return ref_zone_vf_.valeur();
   };
 
-  int fixer_nb_valeurs_nodales(int n) override;
+  virtual int fixer_nb_valeurs_nodales(int n);
 
+  void init_auxiliary_variables(); /* demande l'ajout des variables auxiliaires ( [lambda rot u] aux aretes )*/
+  
   //tableaux de correspondance lies aux CLs : fcl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
   //types de CL : 0 -> pas de CL
   //              1 -> Neumann ou Neumann_homogene
@@ -88,21 +88,9 @@ public :
     return fcl_;
   }
 
-  //integrale de la vitesse sur le bord des aretes duales -> pour calculer la vorticite
-  void init_ra() const;
-  mutable IntTab radeb, raji, rajf; //reconstruction du rotationnel par (raji, raci)[radeb(a, 0), radeb(a + 1, 0)[ (vitesses aux faces)
-  mutable DoubleTab raci, racf;     //                                + (rajf, racf)[radeb(a, 1), radeb(a + 1, 1)[ (val_imp aux faces de bord)
-
-  //interpolation aux aretes de la vitesse (dans le plan normal a chaque arete)
-  void init_va() const;
-  mutable IntTab vadeb, vaji, vajf;   //reconstruction de la vitesse par (vaji, vaci)[vadeb(a, 0), vadeb(a + 1, 0)[ (vitesses aux faces)
-  mutable DoubleTab vaci, vacf;       // + (vajf, vacf)[vadeb(a, 1), vadeb(a + 1, 1)[ (val_imp aux faces de bord) + (vaja, vaca)[vadeb(., 2)] (val_imp aux aretes)
-
   //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
   void interp_ve (const DoubleTab& inco, DoubleTab& val, bool is_vit=true) const;
   void interp_ve (const DoubleTab& inco, const IntVect&, DoubleTab& val, bool is_vit=true) const;
-  void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
-
 
 protected:
   REF(Zone_VF) ref_zone_vf_;

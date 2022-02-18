@@ -36,7 +36,8 @@
 #include <Motcle.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Zone_Cl_dis.h>
-#include <grad_U_Champ_Face_PolyMAC.h>
+#include <Operateur.h>
+#include <Op_Diff_PolyMAC_base.h>
 
 Implemente_instanciable(PolyMAC_discretisation,"PolyMAC",Discret_Thyd);
 
@@ -123,8 +124,8 @@ void PolyMAC_discretisation::discretiser_champ(
 
   // Calcul du nombre de ddl
   int nb_ddl = 0;
-  if (type.debute_par(type_elem)) nb_ddl = z.nb_elem() + zone_PolyMAC.nb_faces();
-  else if (type.debute_par(type_champ_vitesse)) nb_ddl = zone_PolyMAC.nb_faces() + (dimension < 3 ? zone_PolyMAC.nb_som() : zone_PolyMAC.zone().nb_aretes());
+  if (type.debute_par(type_elem)) nb_ddl = z.nb_elem();
+  else if (type.debute_par(type_champ_vitesse)) nb_ddl = zone_PolyMAC.nb_faces();
   else if (type.debute_par("Champ_P1_PolyMAC")) nb_ddl = zone_PolyMAC.nb_som();
   else assert(0);
 
@@ -567,40 +568,7 @@ void PolyMAC_discretisation::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl,con
 
 void PolyMAC_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
 {
-  const Champ_Face_PolyMAC& vit = ref_cast(Champ_Face_PolyMAC,ch_vitesse.valeur());
-  const Zone_PolyMAC& zone_poly=ref_cast(Zone_PolyMAC, z.valeur());
-  const Zone_Cl_PolyMAC& zone_cl_poly=ref_cast(Zone_Cl_PolyMAC, zcl.valeur());
-  ch.typer("grad_U_Champ_Face_PolyMAC");
-  grad_U_Champ_Face_PolyMAC& ch_grad_u=ref_cast(grad_U_Champ_Face_PolyMAC,ch.valeur());
-  ch_grad_u.associer_zone_dis_base(zone_poly);
-  ch_grad_u.associer_zone_Cl_dis_base(zone_cl_poly);
-  ch_grad_u.associer_champ(vit);
-  ch_grad_u.nommer("gradient_vitesse");
-  ch_grad_u.fixer_nb_comp(dimension*dimension);
-
-  if (dimension == 2)
-    {
-      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
-      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
-      ch_grad_u.fixer_nom_compo(2,"dVdX"); // dv/dx
-      ch_grad_u.fixer_nom_compo(3,"dVdY"); // dv/dy
-    }
-  else
-    {
-      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
-      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
-      ch_grad_u.fixer_nom_compo(2,"dUdZ"); // du/dz
-      ch_grad_u.fixer_nom_compo(3,"dVdX"); // dv/dx
-      ch_grad_u.fixer_nom_compo(4,"dVdY"); // dv/dy
-      ch_grad_u.fixer_nom_compo(5,"dVdZ"); // dv/dz
-      ch_grad_u.fixer_nom_compo(6,"dWdX"); // dw/dx
-      ch_grad_u.fixer_nom_compo(7,"dWdY"); // dw/dy
-      ch_grad_u.fixer_nom_compo(8,"dWdZ"); // dw/dz
-    }
-  ch_grad_u.fixer_nature_du_champ(vectoriel);
-  ch_grad_u.fixer_nb_valeurs_nodales(zone_poly.nb_elem());
-  ch_grad_u.fixer_unite("s-1");
-  ch_grad_u.changer_temps(ch_vitesse.temps());
+  abort();
 }
 
 void PolyMAC_discretisation::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const

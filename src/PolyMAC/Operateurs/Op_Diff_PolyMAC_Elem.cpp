@@ -66,8 +66,9 @@ Entree& Op_Diff_PolyMAC_Elem::readOn( Entree& is )
 void Op_Diff_PolyMAC_Elem::completer()
 {
   Op_Diff_PolyMAC_base::completer();
-  const Equation_base& eq = equation();
-  const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, eq.inconnue().valeur());
+  Equation_base& eq = equation();
+  Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, eq.inconnue().valeur());
+  ch.init_auxiliary_variables();
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();

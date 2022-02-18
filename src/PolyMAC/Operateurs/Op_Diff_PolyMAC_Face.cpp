@@ -60,9 +60,9 @@ void Op_Diff_PolyMAC_Face::completer()
 {
   Op_Diff_PolyMAC_base::completer();
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const Equation_base& eq = equation();
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, eq.inconnue().valeur());
-  zone.init_equiv();
+  Equation_base& eq = equation();
+  Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, eq.inconnue().valeur());
+  ch.init_auxiliary_variables(); /* ajout des inconnues auxiliaires (vorticites aux aretes) */
   flux_bords_.resize(zone.premiere_face_int(), dimension * ch.valeurs().line_size());
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
@@ -109,7 +109,7 @@ void Op_Diff_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
   Cerr << "Op_Diff_PolyMAC_Face::dimensionner() : ";
 
   /* bloc (faces, aretes) : rot [(lambda grad)^u]*/
-  if (!semi) for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+  if (!semi) for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
     for (a = D < 3 ? s : zone.som_arete[s].at(f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0)), n = 0; n < N; n++)
       stencil.append_line(N * f + n, N * (nf_tot + a) + n);
 
@@ -128,14 +128,14 @@ void Op_Diff_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
           Matrice33::inverse(L, iL);
           for (d = 0; d < D; d++) for (db = 0; db < D; db++) inu(0, n, d, db) = iL(d, db);
         }
-      zone.M2(&inu, 0, m2);
+      zone.M2(&inu, e, m2);
       if (D > 2) zone.W1(&nu_, e, w1); //uniquement en 3D: en 2D, matrice diagonale
 
       //bloc (aretes, faces): en parcourant les aretes de chaque face
-      for (i = 0; i < m2.dimension(1); i++) for (f = e_f(e, i), j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
+      for (i = 0; i < m2.dimension(0); i++) for (f = e_f(e, i), j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
         if ((a = D < 3 ? s : zone.som_arete[s].at(f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0))) < (D < 3 ? zone.zone().nb_som() : zone.zone().nb_aretes()))
           for (k = 0; k < m2.dimension(1); k++) if (fcl(fb = e_f(e, k), 0) < 2) for (n = 0; n < N; n++)
-            if (fcl(f, 0) == 1 || fcl(f, 0) == 2 || dabs(m2(i, k, n)) > 1e-6 * (dabs(m2(i, i, n)) + dabs(m2(k, k, n)))) //si f est de Neumann / Symetrie, alors il y a aussi une partie en ve -> dependance complete
+            if (fcl(f, 0) == 2 || dabs(m2(i, k, n)) > 1e-6 * (dabs(m2(i, i, n)) + dabs(m2(k, k, n)))) //si f est de Neumann / Symetrie, alors il y a aussi une partie en ve -> dependance complete
               stencil.append_line(N * (nf_tot + a) + n, N * fb + n);
       //bloc (aretes, aretes) : avec m1 si D = 3 (sinon, fait ensuite)
       if (D > 2) for (i = 0; i < w1.dimension(1); i++) if ((a = e_a(e, i)) < zone.zone().nb_aretes()) for (j = 0; j < w1.dimension(2); j++) for (ab = e_a(e, j), n = 0; n < N; n++)
@@ -161,16 +161,16 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
   update_nu();
   int i, j, k, e, f, fb, a, ab, s, n, N = ch.valeurs().line_size(), nf_tot = zone.nb_faces_tot(), d, db, D = dimension, N_nu = nu_.line_size(), semi = semi_impl.count(nom_inco);
-  double vecz[3] = { 0, 0, 1 };
+  double vecz[3] = { 0, 0, 1 }, v_cl[3];
   const DoubleTab &xp = zone.xp(), &xv = zone.xv(), &xs = zone.zone().domaine().coord_sommets(), &xa = D < 3 ? xs : zone.xa(), &ta = zone.ta(), &nf = zone.face_normales(),
                   &inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : ch.valeurs();
   const DoubleVect &la = zone.longueur_aretes(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces(), &ve = zone.volumes();
 
   /* bloc (faces, aretes) : rot [(lambda grad)^u]*/
-  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
     {
       a = D < 3 ? s : zone.som_arete[s].at(f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0)); //indice d'arete
-      auto vec = zone.cross(3, D, D < 3 ? vecz : &ta(a, 0), &xa(a, 0), NULL, &xv(f, 0));
+      auto vec = zone.cross(3, D, D < 3 ? vecz : &ta(a, 0), &xv(f, 0), NULL, &xa(a, 0));
       int sgn = zone.dot(&nf(f, 0), &vec[0]) > 0 ? 1 : -1; //orientation arete-face
       for (n = 0; n < N; n++) secmem(f, n) -= sgn * vf(f) / fs(f) * (D < 3 ? 1 : la(a)) * inco(nf_tot + a, n);
       if (mat && !semi) for (n = 0; n < N; n++) (*mat)(N * f + n, N * (nf_tot + a) + n) += sgn * vf(f) / fs(f) * (D < 3 ? 1 : la(a));
@@ -195,37 +195,42 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
           dL(n) = Matrice33::inverse(L, iL); //renvoie le determinant!
           for (d = 0; d < D; d++) for (db = 0; db < D; db++) inu(0, n, d, db) = iL(d, db);
         }
-      zone.M2(&inu, 0, m2);
+      zone.M2(&inu, e, m2);
       if (D > 2) zone.W1(&nu_, e, w1); //uniquement en 3D: en 2D, matrice diagonale
-      
-      
+
       //bloc (aretes, faces): en parcourant les aretes de chaque face
-      for (i = 0; i < m2.dimension(1); i++) for (f = e_f(e, i), j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
+      for (i = 0; i < m2.dimension(0); i++) for (f = e_f(e, i), j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
         if ((a = D < 3 ? s : zone.som_arete[s].at(f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0))) < (D < 3 ? zone.zone().nb_som() : zone.zone().nb_aretes()))
           {
-            auto vec = zone.cross(3, D, D < 3 ? vecz : &ta(a, 0), &xa(a, 0), NULL, &xv(f, 0));
-            int sgn = zone.dot(&xv(f, 0), &vec[0], &xp(e, 0)) > 0 ? 1 : -1; //orientation arete-face (dans le sens sortant de e)
+            auto vec = zone.cross(3, D, D < 3 ? vecz : &ta(a, 0), &xv(f, 0), NULL, &xa(a, 0));
+            int sgn = (e == f_e(f, 0) ? 1 : -1) * zone.dot(&nf(f, 0), &vec[0]) > 0 ? 1 : -1; //orientation arete-face (dans le sens sortant de e)
             for (k = 0; k < m2.dimension(1); k++) for (fb = e_f(e, k), n = 0; n < N; n++)//partie x_e -> x_f avec m2 + partie x_f -> x_a avec v_e si bord de Neumann / Symetrie
               {
-                double coeff = m2(i, k, n) + (fcl(f, 0) == 1 || fcl(f, 0) == 2 ? zone.nu_dot(&inu, 0, n, &xa(a, 0), &xv(fb, 0), &xv(f, 0), &xp(e, 0)) / ve(e) : 0);
+                double coeff = m2(i, k, n) + (fcl(f, 0) == 2 ? zone.nu_dot(&inu, 0, n, &xa(a, 0), &xv(fb, 0), &xv(f, 0), &xp(e, 0)) / ve(e) : 0);
                 if (dabs(coeff) < 1e-6 * (dabs(m2(i, i, n)) + dabs(m2(k, k, n)))) continue;
                 secmem(nf_tot + a, n) += sgn * coeff * inco(fb, n) * fs(fb) * (e == f_e(fb, 0) ? 1 : -1);
                 if (fcl(fb, 0) < 2) (*mat)(N * (nf_tot + a) + n, N * fb + n) -= sgn * coeff * fs(fb) * (e == f_e(fb, 0) ? 1 : -1);
               }
-            if (fcl(f, 0) == 3) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //si bord de Dirichlet : partie x_f -> x_a avec la vitesse donnee par la CL
-              secmem(nf_tot + a, n) += sgn * (xa(a, d) - xv(f, d)) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
+            if (fcl(f, 0) == 3) for (n = 0; n < N; n++) //si bord de Dirichlet : partie x_f -> x_a avec la vitesse donnee par la CL
+              {
+                for (d = 0; d < D; d++) v_cl[d] = ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n); //v impose
+                secmem(nf_tot + a, n) += sgn * zone.nu_dot(&inu, 0, n, &xa(a, 0), v_cl, &xv(f, 0));
+              }
           }
 
       //bloc (aretes, aretes) : avec m1 si D = 3, diagonale * surface si D = 2
-      if (D == 2 && e < zone.nb_elem()) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < 2 && (s = f_s(f, j)) >= 0; j++)
+      if (D == 2)
         {
-          auto vec = zone.cross(D, D, &xv(f, 0), &xs(s, 0), &xp(e, 0), &xp(e, 0));
-          double surf = dabs(vec[2]) / 2; //surface du triangle (e, f, s)
-          for (n = 0; n < N; n++) secmem(nf_tot + s, n) -= surf * inco(nf_tot + s, n)  / dL(n);
-          for (n = 0; n < N; n++) (*mat)(N * (nf_tot + s) + n, N * (nf_tot + s) + n) += surf / dL(n);
+          for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < 2; j++) if ((s = f_s(f, j)) < zone.nb_som())
+            {
+              auto vec = zone.cross(D, D, &xv(f, 0), &xs(s, 0), &xp(e, 0), &xp(e, 0));
+              double surf = dabs(vec[2]) / 2; //surface du triangle (e, f, s)
+              for (n = 0; n < N; n++) secmem(nf_tot + s, n) -= surf * inco(nf_tot + s, n)  / dL(n);
+              for (n = 0; n < N; n++) (*mat)(N * (nf_tot + s) + n, N * (nf_tot + s) + n) += surf / dL(n);
+            }          
         }
-      else if (D > 2) for (i = 0; i < w1.dimension(1); i++) if ((a = e_a(e, i)) < zone.zone().nb_aretes()) for (j = 0; j < w1.dimension(2); j++) for (ab = e_a(e, j), n = 0; n < N; n++)
-        if (dabs(w1(i, j, n)) > 1e-6 * (dabs(w1(i, i, n)) + dabs(w1(j, j, n))))
+      else for (i = 0; i < w1.dimension(0); i++) if ((a = e_a(e, i)) < zone.zone().nb_aretes()) for (j = 0; j < w1.dimension(1); j++)
+        for (ab = e_a(e, j), n = 0; n < N; n++) if (dabs(w1(i, j, n)) > 1e-6 * (dabs(w1(i, i, n)) + dabs(w1(j, j, n))))
           {
             secmem(nf_tot + a, n) -= w1(i, j, n) * la(ab) * inco(nf_tot + ab, n) / dL(n);
             (*mat)(N * (nf_tot + a) + n, N * (nf_tot + ab) + n) += w1(i, j, n) * la(ab) / dL(n);

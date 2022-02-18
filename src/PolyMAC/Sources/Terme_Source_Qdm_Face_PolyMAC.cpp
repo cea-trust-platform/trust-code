@@ -25,30 +25,20 @@
 #include <Zone_Cl_dis.h>
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
-#include <Neumann.h>
-#include <Neumann_homogene.h>
-#include <Neumann_sortie_libre.h>
+#include <Champ_Face_PolyMAC.h>
+#include <Op_Grad_PolyMAC_Face.h>
+#include <Equation_base.h>
+#include <Milieu_base.h>
+#include <Pb_Multiphase.h>
 
 Implemente_instanciable(Terme_Source_Qdm_Face_PolyMAC,"Source_Qdm_face_PolyMAC",Source_base);
 
-
-
-//// printOn
-//
-
-Sortie& Terme_Source_Qdm_Face_PolyMAC::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-
-//// readOn
-//
+Sortie& Terme_Source_Qdm_Face_PolyMAC::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
 Entree& Terme_Source_Qdm_Face_PolyMAC::readOn(Entree& s )
 {
   s >> la_source;
-  if (la_source->nb_comp() != dimension)
+  if (la_source->nb_comp() != equation().inconnue().valeur().nb_comp())
     {
       Cerr << "Erreur a la lecture du terme source de type " << que_suis_je() << finl;
       Cerr << "le champ source doit avoir " << dimension << " composantes" << finl;
@@ -70,41 +60,42 @@ void Terme_Source_Qdm_Face_PolyMAC::associer_zones(const Zone_dis& zone_dis,
 }
 
 
-DoubleTab& Terme_Source_Qdm_Face_PolyMAC::ajouter(DoubleTab& resu) const
+void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  const Zone_Cl_PolyMAC& zone_Cl_PolyMAC = la_zone_Cl_PolyMAC.valeur();
+  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const DoubleTab& vals = la_source->valeurs(), &rho = equation().milieu().masse_volumique().passe(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(),
+                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+  const DoubleVect& pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
+  int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
 
-  /* 1. faces de bord -> on ne contribue qu'aux faces de Neumann */
-  for (int n_bord=0; n_bord<zone_PolyMAC.nb_front_Cl(); n_bord++)
-    {
-      const Cond_lim& la_cl = zone_Cl_PolyMAC.les_conditions_limites(n_bord);
-      if (!sub_type(Neumann,la_cl.valeur()) && !sub_type(Neumann_homogene,la_cl.valeur()) && !sub_type(Neumann_val_ext,la_cl.valeur())) continue;
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      for (int f = le_bord.num_premiere_face(); f < le_bord.num_premiere_face() + le_bord.nb_faces(); f++)
-        {
-          int e = zone_PolyMAC.face_voisins(f, 0);
-          double fac = zone_PolyMAC.porosite_face(f) * zone_PolyMAC.face_surfaces(f);
-          for (int r = 0; r < dimension; r++)
-            resu(f) += fac * la_source->valeurs()(sub_type(Champ_Uniforme,la_source.valeur()) ? 0 : e, r)
-                       * (zone_PolyMAC.xv(f, r) - zone_PolyMAC.xp(e, r));
-        }
-    }
-  /* 2. faces internes -> contributions amont/aval */
-  for (int f = zone_PolyMAC.premiere_face_int(); f < zone_PolyMAC.nb_faces(); f++)
-    {
-      double fac = zone_PolyMAC.porosite_face(f) * zone_PolyMAC.face_surfaces(f);
-      for (int i = 0; i < 2; i++) for (int r = 0, e = zone_PolyMAC.face_voisins(f, i); r < dimension; r++)
-          resu(f) += fac * la_source->valeurs()(sub_type(Champ_Uniforme,la_source.valeur()) ? 0 : e, r)
-                     * (zone_PolyMAC.xv(f, r) - zone_PolyMAC.xp(e, r)) * (i ? -1 : 1);
-    }
-  return resu;
-}
+  /* contributions aux faces (par chaque voisin), aux elems */
+  DoubleTrav a_f(N), rho_f(N), val_f(N), rho_m(2);
+  for (a_f = 1, f = 0; f < zone.nb_faces(); f++) if (!fcl(f, 0)) //face interne
+      {
+        if (1)
+          {
+            for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) for (d = 0; d < D; d++)
+                  secmem(f, n) += vfd(f, i) * pf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
+          }
 
-DoubleTab& Terme_Source_Qdm_Face_PolyMAC::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
+        if (0)
+          {
+            if (alp) for (a_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) a_f(n) += vfd(f, i) / vf(f) * (*alp)(e, n);
+            for (rho_m = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) rho_m(i) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n);
+            for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
+                {
+                  double vnf = 0;
+                  for (d = 0; d < D; d++) vnf += nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
+                  int strat = (i ? 1 : -1) * (rho_m(i) - rho(!cR * e, n)) * vnf > 0;
+                  double R = alp && strat ? ((*alp)(e, n) < 1e-4 ? 1 : 0) /* min(max(1 - (*alp)(e, n) / 1e-4, 0.), 1.) */ : 0;
+                  secmem(f, n) += pf(f) * a_f(n) * vfd(f, i) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
+                }
+          }
+      }
+    else for (e = f_e(f, 0), n = 0; n < N; n++) for (d = 0; d < D; d++) //face de bord -> avec le (alpha rho) de la maille
+          secmem(f, n) += pf(f) * vf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
 }
 
 void Terme_Source_Qdm_Face_PolyMAC::mettre_a_jour(double temps)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2020, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,6 @@
 // CLASS: Op_Div_PolyMAC
 //
 //////////////////////////////////////////////////////////////////////////////
-class MAtrice_Morse;
 class Op_Div_PolyMAC : public Operateur_Div_base
 {
 
@@ -57,21 +56,19 @@ class Op_Div_PolyMAC : public Operateur_Div_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&) override;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
-  int impr(Sortie& os) const override;
-  void volumique(DoubleTab& ) const override;
+  void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&);
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  virtual int impr(Sortie& os) const;
+  void volumique(DoubleTab& ) const;
 
-  void dimensionner(Matrice_Morse& matrice) const override;
-  void contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const override;
+  void dimensionner(Matrice_Morse& matrice) const;
+  void contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const;
 
 protected:
 
   REF(Zone_PolyMAC) la_zone_PolyMAC;
   REF(Zone_Cl_PolyMAC) la_zcl_PolyMAC;
-
-  DoubleVect porosite_face;
 };
 
 #endif

@@ -12,7 +12,6 @@
 #include <Champ_P0_PolyMAC.h>
 #include <Champ_P1_PolyMAC.h>
 #include <Champ_Q1_PolyMAC.h>
-#include <grad_U_Champ_Face_PolyMAC.h>
 void instancie_src_PolyMAC_Champs() {
 Cerr << "src_PolyMAC_Champs" << finl;
 Champ_Face_PolyMAC inst1;verifie_pere(inst1);
@@ -24,5 +23,4 @@ Champ_Fonc_Tabule_P0_PolyMAC inst6;verifie_pere(inst6);
 Champ_P0_PolyMAC inst7;verifie_pere(inst7);
 Champ_P1_PolyMAC inst8;verifie_pere(inst8);
 Champ_Q1_PolyMAC inst9;verifie_pere(inst9);
-grad_U_Champ_Face_PolyMAC inst10;verifie_pere(inst10);
 }

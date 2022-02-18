@@ -20,29 +20,22 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
+#include <Echange_contact_PolyMAC.h>
+#include <Schema_Euler_Implicite.h>
+#include <Dirichlet_homogene.h>
 #include <Champ_P0_PolyMAC.h>
+#include <TRUSTTab_parts.h>
+#include <MD_Vector_base.h>
+#include <Neumann_paroi.h>
+#include <Equation_base.h>
 #include <Zone_Cl_dis.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
-#include <Dirichlet_homogene.h>
-#include <Neumann_paroi.h>
-#include <Echange_contact_PolyMAC.h>
-#include <TRUSTTab_parts.h>
-#include <Schema_Euler_Implicite.h>
 #include <array>
 
 Implemente_instanciable(Champ_P0_PolyMAC,"Champ_P0_PolyMAC",Champ_Inc_P0_base);
 
-// printOn
-
-Sortie& Champ_P0_PolyMAC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-
-// readOn
+Sortie& Champ_P0_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
 Entree& Champ_P0_PolyMAC::readOn(Entree& s)
 {
@@ -130,11 +123,26 @@ int Champ_P0_PolyMAC::imprime(Sortie& os, int ncomp) const
 
 int Champ_P0_PolyMAC::fixer_nb_valeurs_nodales(int n)
 {
-  if (n == zone_dis_base().zone().nb_elem()) //champ sans flux aux faces (ex. aiguilles)
-    creer_tableau_distribue(zone_dis_base().zone().md_vector_elements());
-  else //champ avec flux
-    creer_tableau_distribue(ref_cast(Zone_PolyMAC, zone_dis_base()).mdv_elems_faces);
+  assert (n == zone_dis_base().zone().nb_elem());
+  creer_tableau_distribue(zone_dis_base().zone().md_vector_elements());
   return n;
+}
+
+void Champ_P0_PolyMAC::init_auxiliary_variables()
+{
+  const Zone_PolyMAC& zone = ref_cast( Zone_PolyMAC,la_zone_VF.valeur());
+  const IntTab &f_e = zone.face_voisins();
+  for (int n = 0; n < nb_valeurs_temporelles(); n++)
+    {
+      DoubleTab &vals = futur(n);
+      vals.set_md_vector(MD_Vector()); //on enleve le MD_Vector...
+      vals.resize_dim0(zone.mdv_elems_faces.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
+      vals.set_md_vector(zone.mdv_elems_faces); //...et on remet le bon MD_Vector
+      /* initialisation des variables aux faces : par celle de l'elem amont */
+      for (int f = 0, ne_tot = zone.nb_elem_tot(); f < zone.nb_faces(); f++) for (int m = 0, e = f_e(f, 0); m < vals.dimension(1); m++)
+        vals(ne_tot + f, m) = vals(e, m);
+      vals.echange_espace_virtuel();
+    }
 }
 
 Champ_base& Champ_P0_PolyMAC::affecter_(const Champ_base& ch)

@@ -94,102 +94,65 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes();
-  int i, j, k, e, f, fb, n_f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), nf = zone.nb_faces(), nf_tot = zone.nb_faces_tot(),
-                              na_tot = dimension < 3 ? zone.zone().nb_som_tot() : zone.zone().nb_aretes_tot(), infoo;
-  zone.init_m2();
+  const IntTab& e_f = zone.elem_faces(), &fcl = ch.fcl();
+  const DoubleVect& pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
+  int i, j, e, f, fb, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), nf = zone.nb_faces(), nf_tot = zone.nb_faces_tot();
 
-  DoubleTrav W(e_f.dimension(1), e_f.dimension(1)), W0(e_f.dimension(1), e_f.dimension(1));
-  W.set_smart_resize(1), W0.set_smart_resize(1);
+  DoubleTrav w2; //matrice W2 (de Zone_PolyMAC) par element
+  w2.set_smart_resize(1);
+  
+  /* 1. stencil de la matrice en pression : seulement au premier passage */
+  if (!stencil_done) /* premier passage: calcul */
+    {
+      IntTrav stencil(0, 2);
+      stencil.set_smart_resize(1);
+      for (e = 0; e < ne; e++) for (stencil.append_line(e, e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* blocs "elem-elem" et "elem-face" */
+            stencil.append_line(e, ne_tot + f); //toutes les faces (sauf bord de Neumann)
+      for (e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(1); i++) /* blocs "face-elem" et "face-face" */
+            if (fcl(f = e_f(e, i), 0) == 1 && f < nf) stencil.append_line(ne_tot + f, ne_tot + f); //Neumann : ligne "dpf = 0"
+            else if (f < nf) for (stencil.append_line(ne_tot + f, e), j = 0; j < w2.dimension(1); j++) /* sinon : ligne sum w2_{ff'} (pf' - pe) */
+              if (dabs(w2(i, j, 0)) > 1e-6 * (dabs(w2(i, i, 0)) + dabs(w2(j, j, 0))))
+                  stencil.append_line(ne_tot + f, ne_tot + e_f(e, j));
+
+      tableau_trier_retirer_doublons(stencil);
+      Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, ne_tot + nf_tot, stencil, mat);
+      tab1.ref_array(mat.get_set_tab1()), tab2.ref_array(mat.get_set_tab2());
+      stencil_done = 1;
+    }
+  else /* passages suivants : recyclage */
+    {
+      mat.get_set_tab1().ref_array(tab1);
+      mat.get_set_tab2().ref_array(tab2);
+      mat.get_set_coeff().resize(tab2.size()), mat.get_set_coeff() = 0;
+      mat.set_nb_columns(ne_tot + nf_tot);
+    }
+
+  /* 2. coefficients */
+  for (e = 0; e < ne_tot; e++)
+    {
+      zone.W2(NULL, e, w2); //calcul de W2
+      double m_ee = 0, m_fe, m_ef; //coefficients (elem, elem), (elem, face) et (face, elem)
+      for (i = 0; i < w2.dimension(0); i++, m_ee += m_ef)
+        {
+          for (m_ef = 0, m_fe = 0, f = e_f(e, i), j = 0; j < w2.dimension(1); j++) if (dabs(w2(i, j, 0)) > 1e-6 * (dabs(w2(i, i, 0)) + dabs(w2(j, j, 0))))
+            {
+              fb = e_f(e, j);
+              if (fcl(f, 0) != 1) mat(ne_tot + f, ne_tot + fb) += w2(i, j, 0); //interne ou Dirichlet
+              else if (i == j) mat(ne_tot + f, ne_tot + fb) = 1; //f Neumann : ligne dpf = 0
+              m_ef += (diag.size() ? pf(fb) * vf(fb) / diag(fb) : 1) * w2(i, j, 0),  m_fe += w2(i, j, 0); //accumulation dans m_ef, m_fe
+            }
+          mat(e, ne_tot + f) -= m_ef;
+          if (fcl(f, 0) != 1) mat(ne_tot + f, e) -= m_fe; //si f non Neumann : coef (face, elem)
+        }
+      mat(e, e) += m_ee; //coeff (elem, elem)
+    }
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;
   for (int n_bord=0; n_bord<la_zone_PolyMAC->nb_front_Cl(); n_bord++)
     if (sub_type(Neumann_sortie_libre, la_zone_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
       has_P_ref=1;
-
-  /* 1. stencils de la matrice en pression et de rec : seulement au premier passage */
-  if (!stencil_done)
-    {
-      IntTrav stencil_M(0, 2), stencil_R(0, 2);
-      stencil_M.set_smart_resize(1), stencil_R.set_smart_resize(1);
-      for (e = 0; e < ne_tot; e++)
-        {
-          for (i = 0, j = zone.m2d(e), n_f = zone.m2d(e + 1) - zone.m2d(e); i < n_f; i++, j++)
-            {
-              for (k = zone.w2i(j), f = e_f(e, i); f < nf && k < zone.w2i(j + 1); k++)
-                {
-                  fb = e_f(e, zone.w2j(k));
-                  stencil_M.append_line(ne_tot + f, ne_tot + fb);
-                  if (e == f_e(f, 0)) stencil_R.append_line(f, ne_tot + fb);
-                }
-              if (fcl(f, 0) != 1 && e < ne) stencil_M.append_line(e, ne_tot + f);
-              if (fcl(f, 0) != 1 && f < nf) stencil_M.append_line(ne_tot + f, e);
-              if (e == f_e(f, 0)    && f < nf) stencil_R.append_line(f, e);
-            }
-          if (e < ne) stencil_M.append_line(e, e);
-          // if (!has_P_ref && !Process::me() && e < ne) stencil_M.append_line(0, e);
-        }
-
-      tableau_trier_retirer_doublons(stencil_M), tableau_trier_retirer_doublons(stencil_R);
-      Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, ne_tot + nf_tot, stencil_M, mat);
-      Matrix_tools::allocate_morse_matrix(nf_tot + na_tot, ne_tot + nf_tot, stencil_R, rec);
-      tab1.ref_array(mat.get_set_tab1()), tab2.ref_array(mat.get_set_tab2());
-      stencil_done = 1;
-    }
-  else //sinon, on recycle
-    {
-      mat.get_set_tab1().ref_array(tab1);
-      mat.get_set_tab2().ref_array(tab2);
-      mat.get_set_coeff().resize(tab2.size());
-      mat.set_nb_columns(ne_tot + nf_tot);
-      rec.get_set_coeff() = 0;
-    }
-
-  /* 2. remplissage des coefficients */
-  for (e = 0; e < ne_tot; e++)
-    {
-      n_f = zone.m2d(e + 1) - zone.m2d(e), W0.resize(n_f, n_f), W.resize(n_f, n_f);
-      for (i = 0, j = zone.m2d(e), W0 = 0; i < n_f; i++, j++) for (k = zone.w2i(j); k < zone.w2i(j + 1); k++) W0(i, zone.w2j(k)) = zone.w2c(k);
-      if (!diag.size()) W = W0; //pas de correction diagonale -> on prend W telle quelle
-      else //correction diagonale -> on re-inverse m2 + diag
-        {
-          //matrice m2 + correction diagonale
-          for (i = 0, j = zone.m2d(e), W = 0; i < n_f; i++, j++) for (k = zone.m2i(j); k < zone.m2i(j + 1); k++) W(i, zone.m2j(k)) = zone.m2c(k);
-          for (i = 0; i < n_f; i++) f = e_f(e, i), W(i, i) += diag(f) * zone.volumes_entrelaces_dir()(f, e != f_e(f, 0)) / zone.volumes_entrelaces(f) / ve(e);
-          //inversion par Cholesky (Lapack) + annulation des petits coeffs + remplissage a la main de la partir triangulaire inf
-          char uplo = 'U';
-          F77NAME(dpotrf)(&uplo, &n_f, W.addr(), &n_f, &infoo);
-          F77NAME(dpotri)(&uplo, &n_f, W.addr(), &n_f, &infoo);
-          for (i = 0; i < n_f; i++) for (j = i + 1; j < n_f; j++) W(i, j) = W(j, i);
-          for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++) if (W0(i, j) == 0) W(i, j) = 0;
-        }
-
-      //remplissage de la matrice en (dPe, dPf)
-      //sur les CLs de Neumann, on remplace l'equation sur dPf par dPf = 0 et on retire dPf des autres equations (pour symetrie)
-      double mee, mef, mff, rfe, rff; //a ajouter a m[e][e], m[e][f] / m[f][e], m[f][f'], r[f][e], r[f][f']
-      for (i = 0, mee = 0; i < n_f; mee += mef, i++)
-        {
-          for (f = e_f(e, i), mef = 0, rfe = 0, j = 0; f < nf && j < n_f; mef += mff, rfe += rff, j++, mff = 0, rff = 0)
-            {
-              fb = e_f(e, j), mff = fs(f) * fs(fb) * pe(e) * W(i, j) / ve(e), rff = e == f_e(f, 0) ? fs(fb) * pe(e) * W(i, j) / (ve(e) * pf(f)) : 0;
-              if (mff && fcl(f, 0) != 1 && fcl(fb, 0) != 1) mat(ne_tot + f, ne_tot + fb) += mff;
-              else if (fcl(f, 0) == 1 && f == fb) mat(ne_tot + f, ne_tot + fb) += 1;
-              if (rff) rec(f, ne_tot + fb) += rff;
-            }
-          if (fcl(f, 0) != 1 && e < ne) mat(e, ne_tot + f) -= mef;
-          if (fcl(f, 0) != 1 && f < nf) mat(ne_tot + f, e) -= mef;
-          if (e == f_e(f, 0) && f < nf) rec(f, e) -= rfe;
-        }
-      if (e < ne) mat(e, e) += mee;
-    }
-
   if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
-  // {
-  //   double coeff = mat(0, 0) / ne;
-  //   for (e = 0; e < ne; e++) mat(0, e) += coeff;
-  // }
 
   statistiques().end_count(assemblage_sys_counter_);
   Cerr << statistiques().last_time(assemblage_sys_counter_) << " s" << finl;
@@ -232,87 +195,14 @@ int Assembleur_P_PolyMAC::assembler_QC(const DoubleTab& tab_rho, Matrice& matric
   return 1;
 }
 
-int Assembleur_P_PolyMAC::modifier_secmem(DoubleTab& secmem)
+void Assembleur_P_PolyMAC::modifier_secmem_pour_incr_p(const DoubleTab &press, const double fac, DoubleTab &secmem) const
 {
-  Debog::verifier("secmem dans modifier secmem",secmem);
-
-  const Zone_PolyMAC& la_zone = la_zone_PolyMAC.valeur();
-  const Zone_Cl_PolyMAC& la_zone_cl = la_zone_Cl_PolyMAC.valeur();
-  int nb_cond_lim = la_zone_cl.nb_cond_lim();
-  const IntTab& face_voisins = la_zone.face_voisins();
-
-  // Modification du second membre :
-  int i;
-  for (i=0; i<nb_cond_lim; i++)
-    {
-      const Cond_lim_base& la_cl_base = la_zone_cl.les_conditions_limites(i).valeur();
-      const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl_base.frontiere_dis());
-      int ndeb = la_front_dis.num_premiere_face();
-      int nfin = ndeb + la_front_dis.nb_faces();
-
-
-      // GF on est passe en increment de pression
-      if ((sub_type(Neumann_sortie_libre,la_cl_base)) && (!get_resoudre_increment_pression()))
-        {
-          double Pimp, coPolyMAC;
-          const Neumann_sortie_libre& la_cl_Neumann = ref_cast(Neumann_sortie_libre, la_cl_base);
-          // const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl_base.frontiere_dis());
-          //int ndeb = la_front_dis.num_premiere_face();
-          //int nfin = ndeb + la_front_dis.nb_faces();
-          for (int num_face=ndeb; num_face<nfin; num_face++)
-            {
-              Pimp = la_cl_Neumann.flux_impose(num_face-ndeb);
-              coPolyMAC = les_coeff_pression[num_face]*Pimp;
-              secmem[face_voisins(num_face,0)] += coPolyMAC;
-            }
-        }
-      else if (sub_type(Champ_front_instationnaire_base,
-                        la_cl_base.champ_front().valeur())&&(get_resoudre_en_u()))
-        {
-          if (sub_type(Dirichlet,la_cl_base))
-            {
-              // Cas Dirichlet variable dans le temps
-              // N'est utile que pour des champs front. variables dans le temps
-              const Champ_front_instationnaire_base& le_ch_front =
-                ref_cast( Champ_front_instationnaire_base,
-                          la_cl_base.champ_front().valeur());
-              const DoubleTab& Gpt = le_ch_front.Gpoint();
-
-              for (int num_face=ndeb; num_face<nfin; num_face++)
-                {
-                  //for num_face
-                  double Stt = 0.;
-                  for (int k=0; k<dimension; k++)
-                    Stt -= Gpt(k) * la_zone.face_normales(num_face, k);
-                  secmem(face_voisins(num_face,0)) += Stt;
-                }
-            }
-        }
-      else if (sub_type(Champ_front_var_instationnaire,
-                        la_cl_base.champ_front().valeur())&&(get_resoudre_en_u()))
-        {
-          if (sub_type(Dirichlet,la_cl_base))
-            {
-              //cas instationaire et variable
-              const Champ_front_var_instationnaire& le_ch_front =
-                ref_cast( Champ_front_var_instationnaire, la_cl_base.champ_front().valeur());
-              const DoubleTab& Gpt = le_ch_front.Gpoint();
-
-              for (int num_face=ndeb; num_face<nfin; num_face++)
-                {
-                  double Stt = 0.;
-                  for (int k=0; k<dimension; k++)
-                    Stt -= Gpt(num_face - ndeb, k) *
-                           la_zone.face_normales(num_face, k);
-                  secmem(face_voisins(num_face,0)) += Stt;
-                }
-            }
-        }
-    }
-
-  secmem.echange_espace_virtuel();
-  Debog::verifier("secmem dans modifier secmem fin",secmem);
-  return 1;
+  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
+  const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
+  const IntTab& fcl = ch.fcl();  
+  for (int f = 0, ne_tot = zone.nb_elem_tot(); f < zone.premiere_face_int(); f++) if (fcl(f, 0) == 1)
+    secmem(ne_tot + f) = (ref_cast(Neumann_sortie_libre, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2)) - press(ne_tot + f)) / fac;
 }
 
 int Assembleur_P_PolyMAC::modifier_solution(DoubleTab& pression)

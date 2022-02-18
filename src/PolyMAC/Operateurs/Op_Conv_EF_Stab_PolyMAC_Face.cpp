@@ -143,7 +143,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const
   for (f = 0; f < zone.nb_faces_tot(); f++) if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 3))
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
           {
-            for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && fcl(fb, 0) < 2)
+            for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces())
                 {
                   if ((fc = zone.equiv(f, i, k)) >= 0) //equivalence : face -> face
                     for (n = 0; fcl(fc, 0) < 2 && n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * fc + m);
@@ -196,7 +196,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
           }
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           {
-            for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces() && fcl(fb, 0) < 2) //partie "faces"
+            for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces())
                 {
                   if ((fc = zone.equiv(f, i, k)) >= 0 || f_e(f, 1) < 0) for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
                       {
