@@ -342,8 +342,7 @@ class SonFile(TrustFile):
         if not len(self._entries):
             hdr = self._populateFromHeader()
         return self._ncompo
-
-
+    
 class SonPOINTFile(SonFile):
     def __init__(self, filePath, refPath):
         SonFile.__init__(self, filePath, refPath)

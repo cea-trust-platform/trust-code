@@ -353,8 +353,11 @@ class Graph:
 
         saveFileAccumulator(data)
 
-        self.y_label = donne.getEntries()[compo]
-        self.x_label = donne.getXLabel()
+        ### On recupere le nom des variables ### 
+        entries = donne.getEntries()
+
+        self.y_label=entries[compo] 
+        self.x_label=donne.getXLabel() 
 
         X, Y = donne.getValues(self.y_label)
 

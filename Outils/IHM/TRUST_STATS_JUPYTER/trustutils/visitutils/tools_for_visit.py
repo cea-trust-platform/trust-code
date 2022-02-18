@@ -116,8 +116,8 @@ def saveFile(file, field, name, active=False):
         os.chdir(path)
 
         FileAccumulator.active = True
-        if field == "Mesh":
-            FileAccumulator.AppendVisuMesh(file, name)
+        if field=="Mesh" or field=="Subset":
+            FileAccumulator.AppendVisuMesh(file,name)
         else:
             field, loc, dom = FileAccumulator.ParseDirectName(name)
             FileAccumulator.AppendVisuComplex(file, dom, field, loc)
