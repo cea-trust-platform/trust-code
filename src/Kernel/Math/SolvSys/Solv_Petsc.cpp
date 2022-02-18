@@ -1784,6 +1784,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
               PetscViewerBinaryOpen(PETSC_COMM_WORLD,rhs_filename,FILE_MODE_WRITE,&viewer);
               VecView(SecondMembrePetsc_, viewer);
               Cerr << "Save RHS into " << rhs_filename << finl;
+              PetscViewerDestroy(&viewer);
             }
         }
       if (save_matrix_ && verbose) Cout << "[Petsc] Time to write matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
