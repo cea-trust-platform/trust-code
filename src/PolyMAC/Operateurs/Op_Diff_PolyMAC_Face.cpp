@@ -134,12 +134,12 @@ void Op_Diff_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
       //bloc (aretes, faces): en parcourant les aretes de chaque face
       for (i = 0; i < m2.dimension(0); i++) for (f = e_f(e, i), j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
         if ((a = D < 3 ? s : zone.som_arete[s].at(f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0))) < (D < 3 ? zone.zone().nb_som() : zone.zone().nb_aretes()))
-          for (k = 0; k < m2.dimension(1); k++) if (fcl(fb = e_f(e, k), 0) < 2) for (n = 0; n < N; n++)
-            if (fcl(f, 0) == 2 || dabs(m2(i, k, n)) > 1e-6 * (dabs(m2(i, i, n)) + dabs(m2(k, k, n)))) //si f est de Neumann / Symetrie, alors il y a aussi une partie en ve -> dependance complete
+          for (k = 0; k < m2.dimension(1); k++) for (fb = e_f(e, k), n = 0; n < N; n++)
+            if (fcl(f, 0) == 2 || m2(i, k, n)) //si f est Symetrie, alors il y a aussi une partie en ve -> dependance complete
               stencil.append_line(N * (nf_tot + a) + n, N * fb + n);
       //bloc (aretes, aretes) : avec m1 si D = 3 (sinon, fait ensuite)
-      if (D > 2) for (i = 0; i < w1.dimension(1); i++) if ((a = e_a(e, i)) < zone.zone().nb_aretes()) for (j = 0; j < w1.dimension(2); j++) for (ab = e_a(e, j), n = 0; n < N; n++)
-        if (dabs(w1(i, j, n)) > 1e-6 * (dabs(w1(i, i, n)) + dabs(w1(j, j, n)))) stencil.append_line(N * (nf_tot + a) + n, N * (nf_tot + ab) + n);
+      if (D > 2) for (i = 0; i < w1.dimension(0); i++) if ((a = e_a(e, i)) < zone.zone().nb_aretes()) for (j = 0; j < w1.dimension(1); j++) for (ab = e_a(e, j), n = 0; n < N; n++)
+        if (w1(i, j, n)) stencil.append_line(N * (nf_tot + a) + n, N * (nf_tot + ab) + n);
     }
   if (semi || D < 3) for (s = 0; s < (D < 3 ? zone.nb_som() : zone.zone().nb_aretes()); s++) for (n = 0; n < N; n++) stencil.append_line(N * (nf_tot + s) + n, N * (nf_tot + s) + n);
 
@@ -207,9 +207,9 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             for (k = 0; k < m2.dimension(1); k++) for (fb = e_f(e, k), n = 0; n < N; n++)//partie x_e -> x_f avec m2 + partie x_f -> x_a avec v_e si bord de Neumann / Symetrie
               {
                 double coeff = m2(i, k, n) + (fcl(f, 0) == 2 ? zone.nu_dot(&inu, 0, n, &xa(a, 0), &xv(fb, 0), &xv(f, 0), &xp(e, 0)) / ve(e) : 0);
-                if (dabs(coeff) < 1e-6 * (dabs(m2(i, i, n)) + dabs(m2(k, k, n)))) continue;
+                if (!coeff) continue;
                 secmem(nf_tot + a, n) += sgn * coeff * inco(fb, n) * fs(fb) * (e == f_e(fb, 0) ? 1 : -1);
-                if (fcl(fb, 0) < 2) (*mat)(N * (nf_tot + a) + n, N * fb + n) -= sgn * coeff * fs(fb) * (e == f_e(fb, 0) ? 1 : -1);
+                (*mat)(N * (nf_tot + a) + n, N * fb + n) -= sgn * coeff * fs(fb) * (e == f_e(fb, 0) ? 1 : -1);
               }
             if (fcl(f, 0) == 3) for (n = 0; n < N; n++) //si bord de Dirichlet : partie x_f -> x_a avec la vitesse donnee par la CL
               {
@@ -230,7 +230,7 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             }          
         }
       else for (i = 0; i < w1.dimension(0); i++) if ((a = e_a(e, i)) < zone.zone().nb_aretes()) for (j = 0; j < w1.dimension(1); j++)
-        for (ab = e_a(e, j), n = 0; n < N; n++) if (dabs(w1(i, j, n)) > 1e-6 * (dabs(w1(i, i, n)) + dabs(w1(j, j, n))))
+        for (ab = e_a(e, j), n = 0; n < N; n++) if (w1(i, j, n))
           {
             secmem(nf_tot + a, n) -= w1(i, j, n) * la(ab) * inco(nf_tot + ab, n) / dL(n);
             (*mat)(N * (nf_tot + a) + n, N * (nf_tot + ab) + n) += w1(i, j, n) * la(ab) / dL(n);

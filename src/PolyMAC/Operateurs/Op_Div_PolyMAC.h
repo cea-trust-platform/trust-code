@@ -57,13 +57,22 @@ class Op_Div_PolyMAC : public Operateur_Div_base
 public:
 
   void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&);
+
+  /* interface ajouter_blocs */
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+
+  /* contrairement au cas usuel, ces methodes ne peuvent pas etre reimplementees a partir d'ajouter_blocs(),
+     car elles sont souvent appelees avec un tableau inco arbitraire */
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
+  
   virtual int impr(Sortie& os) const;
   void volumique(DoubleTab& ) const;
-
-  void dimensionner(Matrice_Morse& matrice) const;
-  void contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const;
 
 protected:
 

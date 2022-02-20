@@ -67,23 +67,82 @@ void Op_Div_PolyMAC::associer(const Zone_dis& zone_dis,
   la_zcl_PolyMAC = zclPolyMAC;
 }
 
-void Op_Div_PolyMAC::dimensionner(Matrice_Morse& matrice) const
+void Op_Div_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const IntTab& e_f = zone.elem_faces(), &fcl = ch.fcl();
-  int i, e, f, ne_tot = zone.nb_elem_tot();
+  const DoubleTab &inco = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
+  int i, j, e, f, ne_tot = zone.nb_elem_tot();
+  
+  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : NULL, *matp = matrices.count("pression") ? matrices["pression"] : NULL, matv2, matp2;
+  IntTab sten_v(0,2), sten_p(0, 2);
+  DoubleTab w2; //matrice w2 aux elements (la meme que dans Op_Grad et Assembleur_P)
+  sten_v.set_smart_resize(1), sten_p.set_smart_resize(1), w2.set_smart_resize(1);
 
-  IntTab stencil(0,2);
-  stencil.set_smart_resize(1);
-  /* bloc (elem, faces) : faces de chaque element (vitesses calculees seulement) */
-  for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-    stencil.append_line(e, f);
-  /* bloc (faces, faces) : faces de bord a vitesse imposee seulement! */
-  for (f = 0; f < zone.premiere_face_int(); f++) if (fcl(f, 0) != 1) stencil.append_line(ne_tot + f, f);
+  for (f = 0; matv && f < zone.nb_faces(); f++) /* dependance en v : divergence par elem + v = v_imp aux faces de Dirichlet */
+      if (fcl(f, 0) > 1) sten_v.append_line(ne_tot + f, f); /* v impose par CLs : contribution a l'equation v = v_imp a la paroi */
+      else for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) sten_v.append_line(e, f); /* v calcule : contribution a la divergence aux elems */
 
-  tableau_trier_retirer_doublons(stencil);
-  Matrix_tools::allocate_morse_matrix(get_champ("pression").valeurs().size_totale(), equation().inconnue().valeurs().size_totale(), stencil, matrice);
+  for (e = 0; matp && e < zone.nb_elem_tot(); e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++) /* dependance en p : equation sur p_f */
+    if (fcl(f = e_f(e, i), 0) == 1) sten_p.append_line(ne_tot + f, ne_tot + f); /* aux faces de Neumann : p_f = p_imp */
+    else if (!fcl(f, 0)) for (sten_p.append_line(ne_tot + f, e), j = 0; j < w2.dimension(1); j++) /* aux faces internes : egalite des deux gradients */
+      if (w2(i, j, 0)) sten_p.append_line(ne_tot + f, ne_tot + e_f(e, j));
+  if (matp) for (e = 0; e < zone.nb_elem(); e++) sten_p.append_line(e, e); //diagonale du vide!
+    
+  if (matv) tableau_trier_retirer_doublons(sten_v), Matrix_tools::allocate_morse_matrix(press.size_totale(), inco.size_totale(), sten_v, matv2);
+  if (matp) tableau_trier_retirer_doublons(sten_p), Matrix_tools::allocate_morse_matrix(press.size_totale(), press.size_totale(), sten_p, matp2);
+  if (matv) matv->nb_colonnes() ? *matv += matv2 : *matv = matv2;
+  if (matp) matp->nb_colonnes() ? *matp += matp2 : *matp = matp2;
+}
+
+void Op_Div_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const Conds_lim &cls = la_zcl_PolyMAC->les_conditions_limites();
+  const DoubleTab &inco = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &nf = zone.face_normales();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
+  const DoubleVect &fs = zone.face_surfaces(), &pf = zone.porosite_face();
+  int i, j, e, f, fb, ne_tot = zone.nb_elem_tot(), d, D = dimension;
+  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : NULL, *matp = matrices.count("pression") ? matrices["pression"] : NULL, matv2, matp2;
+  
+  DoubleTrav w2; //matrice w2 aux elements (la meme que dans Op_Grad et Assembleur_P)
+  w2.set_smart_resize(1);
+
+  for (f = 0; f < zone.nb_faces(); f++) /* divergence aux elements + equations aux bords */
+    {
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* divergence aux elems */
+        {
+          secmem(e) -= (i ? 1 : -1) * fs(f) * pf(f) * inco(f);
+          if (fcl(f, 0) < 2 && matv) (*matv)(e, f) += (i ? 1 : -1) * fs(f) * pf(f);
+        }
+      /* equations v = v_imp ou p = p_imp aux faces de bord */
+      if (fcl(f, 0) > 1)
+        {
+          if (fcl(f, 0) == 3) for (d = 0; d < D; d++) secmem(ne_tot + f) += nf(f, d) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), d);
+          secmem(ne_tot + f) -= fs(f) * pf(f) * inco(f);
+          if (matv) (*matv)(ne_tot + f, f) += fs(f) * pf(f);
+        }
+      else if (fcl(f, 0) == 1)
+        {
+          secmem(ne_tot + f) += ref_cast(Neumann, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), 0) - press(ne_tot + f);
+          if (matp) (*matp)(ne_tot + f, ne_tot + f) += 1;
+        }
+    }
+  
+  /* equations aux faces internes : egalite des gradients */
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++) if ((f = e_f(e, i)) < zone.nb_faces() && !fcl(f, 0))
+    {
+      double coeff_e = 0;
+      for (j = 0; j < w2.dimension(1); j++) if (w2(i, j, 0))
+        {
+          fb = e_f(e, j);
+          secmem(ne_tot + f) -= pf(f) * w2(i, j, 0) * (press(ne_tot + fb) - press(e));
+          if (matp) (*matp)(ne_tot + f, ne_tot + fb) += pf(f) * w2(i, j, 0), coeff_e += pf(f) * w2(i, j, 0);
+        }
+      if (matp) (*matp)(ne_tot + f, e) -= coeff_e;
+    }
 }
 
 DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
@@ -114,22 +173,6 @@ DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
   div.echange_espace_virtuel();
 
   return div;
-}
-
-void Op_Div_PolyMAC::contribuer_a_avec(const DoubleTab&,Matrice_Morse& mat) const
-{
-  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
-  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
-  int i, e, f, ne_tot = zone.nb_elem_tot();
-
-  for (f = 0; f < zone.nb_faces(); f++)
-    {
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* aux elements */
-          mat(e, f) += (i ? 1 : -1) * fs(f) * pf(f);
-      if (f >= zone.premiere_face_int() && fcl(f, 0) != 1) /* aux faces de bord de Dirichlet */
-        mat(ne_tot + f, f) += fs(f) * pf(f);
-    }
 }
 
 DoubleTab& Op_Div_PolyMAC::calculer(const DoubleTab& vit, DoubleTab& div) const

@@ -111,8 +111,7 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
       for (e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(1); i++) /* blocs "face-elem" et "face-face" */
             if (fcl(f = e_f(e, i), 0) == 1 && f < nf) stencil.append_line(ne_tot + f, ne_tot + f); //Neumann : ligne "dpf = 0"
             else if (f < nf) for (stencil.append_line(ne_tot + f, e), j = 0; j < w2.dimension(1); j++) /* sinon : ligne sum w2_{ff'} (pf' - pe) */
-              if (dabs(w2(i, j, 0)) > 1e-6 * (dabs(w2(i, i, 0)) + dabs(w2(j, j, 0))))
-                  stencil.append_line(ne_tot + f, ne_tot + e_f(e, j));
+              if (w2(i, j, 0)) stencil.append_line(ne_tot + f, ne_tot + e_f(e, j));
 
       tableau_trier_retirer_doublons(stencil);
       Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, ne_tot + nf_tot, stencil, mat);
@@ -134,17 +133,17 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
       double m_ee = 0, m_fe, m_ef; //coefficients (elem, elem), (elem, face) et (face, elem)
       for (i = 0; i < w2.dimension(0); i++, m_ee += m_ef)
         {
-          for (m_ef = 0, m_fe = 0, f = e_f(e, i), j = 0; j < w2.dimension(1); j++) if (dabs(w2(i, j, 0)) > 1e-6 * (dabs(w2(i, i, 0)) + dabs(w2(j, j, 0))))
+          for (m_ef = 0, m_fe = 0, f = e_f(e, i), j = 0; j < w2.dimension(1); j++) if (w2(i, j, 0))
             {
               fb = e_f(e, j);
-              if (fcl(f, 0) != 1) mat(ne_tot + f, ne_tot + fb) += w2(i, j, 0); //interne ou Dirichlet
-              else if (i == j) mat(ne_tot + f, ne_tot + fb) = 1; //f Neumann : ligne dpf = 0
+              if (f < zone.nb_faces() && fcl(f, 0) != 1) mat(ne_tot + f, ne_tot + fb) += w2(i, j, 0); //interne ou Dirichlet
+              else if (f < zone.nb_faces() && i == j) mat(ne_tot + f, ne_tot + fb) = 1; //f Neumann : ligne dpf = 0
               m_ef += (diag.size() ? pf(fb) * vf(fb) / diag(fb) : 1) * w2(i, j, 0),  m_fe += w2(i, j, 0); //accumulation dans m_ef, m_fe
             }
-          mat(e, ne_tot + f) -= m_ef;
-          if (fcl(f, 0) != 1) mat(ne_tot + f, e) -= m_fe; //si f non Neumann : coef (face, elem)
+          if (e < zone.nb_elem()) mat(e, ne_tot + f) -= m_ef;
+          if (f < zone.nb_faces() && fcl(f, 0) != 1) mat(ne_tot + f, e) -= m_fe; //si f non Neumann : coef (face, elem)
         }
-      mat(e, e) += m_ee; //coeff (elem, elem)
+      if (e < zone.nb_elem()) mat(e, e) += m_ee; //coeff (elem, elem)
     }
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0

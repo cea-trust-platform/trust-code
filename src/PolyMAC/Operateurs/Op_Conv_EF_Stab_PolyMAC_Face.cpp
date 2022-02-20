@@ -146,9 +146,9 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const
             for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++) if (fb < zone.nb_faces())
                 {
                   if ((fc = zone.equiv(f, i, k)) >= 0) //equivalence : face -> face
-                    for (n = 0; fcl(fc, 0) < 2 && n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * fc + m);
+                    for (n = 0; n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * fc + m);
                   else if (f_e(f, 1) >= 0) for (l = 0; l < e_f.dimension(1) && (fc = e_f(eb, l)) >= 0; l++) //pas d'equivalence : faces de l'elem -> face
-                      if(fcl(fc, 0) < 2 && std::abs(fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0))) > 1e-6 * ve(eb) * fs(fb)) for (n = 0; n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
+                      if(std::abs(fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0))) > 1e-6 * ve(eb) * fs(fb)) for (n = 0; n < N; n++) for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
                             stencil.append_line(N * fb + n, N * fc + m);
                 }
           }
@@ -210,7 +210,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                                     secmem(fb, n) -= fac * nf(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
                                 if (comp) secmem(fb, n) += fac * inco(fb, m); //partie v div(alpha rho v)
                                 if (!mat) continue;
-                                if (fd >= 0 && fcl(fd, 0) < 2) (*mat)(N * fb + n, N * fd + m) += fac * mult;
+                                if (fd >= 0) (*mat)(N * fb + n, N * fd + m) += fac * mult;
                                 if (comp) (*mat)(N * fb + n, N * fb + m) -= fac;
                               }
                       }
@@ -221,14 +221,14 @@ void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                                   {
                                     double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * (eb == f_e(fc, 0) ? 1 : -1) * fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0)) / (ve(e) * ve(eb) * fs(fb));
                                     secmem(fb, n) -= fac * inco(fc, m);
-                                    if (mat && fac && fcl(fc, 0) < 2) (*mat)(N * fb + n, N * fc + m) += fac;
+                                    if (mat && fac) (*mat)(N * fb + n, N * fc + m) += fac;
                                   }
                       if (comp) for (l = 0; l < e_f.dimension(1) && (fc = e_f(e, l)) >= 0; l++)
                         if (std::abs(fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(e, 0))) > 1e-6 * ve(e) * fs(fb)) for (n = 0; n < N; n++) for (m = 0; m < N; m++) if (dfac(j, n, m))
                                   {
                                     double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * (e == f_e(fc, 0) ? 1 : -1) * fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(e, 0)) / (ve(e) * ve(e) * fs(fb));
                                     secmem(fb, n) += fac * inco(fc, m);
-                                    if (mat && fac && fcl(fc, 0) < 2) (*mat)(N * fb + n, N * fc + m) -= fac;
+                                    if (mat && fac) (*mat)(N * fb + n, N * fc + m) -= fac;
                                   }
                     }
                 }

@@ -154,8 +154,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t&
         else if (semi || fcl[0](f = e_f[0](e, i), 0) > 5) for (n = 0; n < N[0]; n++) //Dirichlet ou semi-implicite -> diagonale
             stencil[0].append_line(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + f) + n);
         else for (j = 0; j < w2.dimension(1); j++) for (fb = e_f[0](e, j), n = 0; n < N[0]; n++) //cas reel
-              if (fcl[0](fb, 0) < 6 && dabs(w2(i, j, n)) > 1e-6 * (dabs(w2(i, i, n)) + dabs(w2(j, j, n))))
-                stencil[0].append_line(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + fb) + n), tpfa(f, n) &= (i == j);
+              if (fcl[0](fb, 0) < 6 && w2(i, j, n)) stencil[0].append_line(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + fb) + n), tpfa(f, n) &= (i == j);
     }
   /* problemes distants : pour les Echange_contact */
   const Echange_contact_PolyMAC *pcl;
@@ -168,8 +167,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t&
             for (n = 0; n < N[0]; n++) for (m = (N[0] == N[p]) * n; m < (N[0] == N[p] ? n + 1 : N[p]); m++)
                 stencil[p].append_line(N[0] * (ne_tot[0] + f) + n, N[p] * o_e + m); //face <-> elem : compo par compo si N[0] == N[p], tout sinon
             for (l = 0; l < w2.dimension(0); l++) if (fcl[p](fb = f_e[p](o_e, l), 0) < 6) for (n = 0; n < N[0]; n++) for (m = (N[0] == N[p]) * n; m < (N[0] == N[p] ? n + 1 : N[p]); m++)
-                    if (dabs(w2(k, l, m)) > 1e-6 * (dabs(w2(k, k, m)) + dabs(w2(l, l, m))))
-                      stencil[p].append_line(N[0] * (ne_tot[0] + f) + n, N[p] * (ne_tot[p] + o_f) + m);
+                    if (w2(k, l, m)) stencil[p].append_line(N[0] * (ne_tot[0] + f) + n, N[p] * (ne_tot[p] + o_f) + m);
           }
 
   for (i = 0; i < n_ext; i++) if (mat[i])
@@ -239,7 +237,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
           }
       //matrice : face-face
       for (i = 0; i < w2.dimension(0); i++) if (fcl[0](f = e_f[0](e, i), 0) < 6 && f < zone[0].get().nb_faces()) for (j = 0; j < w2.dimension(1); j++)
-            if (fcl[0](fb = e_f[0](e, j), 0) < 6) for (n = 0; n < N[0]; n++) if (dabs(w2(i, j, n)) > 1e-6 * (dabs(w2(i, i, n)) + dabs(w2(j, j, n))))
+            if (fcl[0](fb = e_f[0](e, j), 0) < 6) for (n = 0; n < N[0]; n++) if (w2(i, j, n))
                   (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + fb) + n) += w2(i, j, n);
     }
 
