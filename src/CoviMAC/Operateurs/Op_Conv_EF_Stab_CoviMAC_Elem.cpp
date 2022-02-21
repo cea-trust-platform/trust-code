@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -130,7 +130,7 @@ double Op_Conv_EF_Stab_CoviMAC_Elem::calculer_dt_stab() const
   const DoubleTab& vit = vitesse_->valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  int i, e, f, n, N = min(vit.line_size(), equation().inconnue().valeurs().line_size());
+  int i, e, f, n, N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
   DoubleTrav flux(N); //somme des flux pf * |f| * vf
 
   for (e = 0; e < zone.nb_elem(); e++)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -790,7 +790,7 @@ void Zone_CoviMAC::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fc
         /* elements connectes a s : a partir de som_elem (deja classes) */
         for (s_eb.clear(), n_e = 0; n_e < som_elem.get_list_size(s); n_e++) s_eb.push_back(som_elem(s, n_e));
         /* faces et leurs surfaces partielles */
-        for (s_f.clear(), surf_fs.clear(), vec_fs.clear(), se_f.resize(max(se_f.size(), n_e)), i = 0, ok = 1; i < n_e; i++) for (se_f[i].clear(), e = s_eb[i], j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+        for (s_f.clear(), surf_fs.clear(), vec_fs.clear(), se_f.resize(std::max(int(se_f.size()), n_e)), i = 0, ok = 1; i < n_e; i++) for (se_f[i].clear(), e = s_eb[i], j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
             {
               for (k = 0, sb = 0; k < f_s.dimension(1) && (sb = f_s(f, k)) >= 0; k++) if (sb == s) break;
               if (sb != s) continue; /* face de e non connectee a s -> on saute */
@@ -806,7 +806,7 @@ void Zone_CoviMAC::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fc
                     if (m == 1 || k > 0) sb = f_s(f, m ? (k + 1 < f_s.dimension(1) && f_s(f, k + 1) >= 0 ? k + 1 : 0) : k - 1); //sommet suivant (m = 1) ou precedent avec k > 0 -> facile
                     else for (n = f_s.dimension(1) - 1; (sb = f_s(f, n)) == -1; ) n--; //sommet precedent avec k = 0 -> on cherche a partir de la fin
                     auto v = cross(D, D, &xs(s, 0), &xs(sb, 0), &xv_(f, 0), &xv_(f, 0));//produit vectoriel (xs - xf)x(xsb - xf)
-                    surf_fs[l] += dabs(dot(&v[0], &nf(f, 0))) / fs(f) / 4; //surface a ajouter
+                    surf_fs[l] += std::fabs(dot(&v[0], &nf(f, 0))) / fs(f) / 4; //surface a ajouter
                     for (d = 0; d < D; d++) vec_fs[l][m][d] = (xs(s, d) + xs(sb, d)) / 2 - xv_(f, d); //vecteur face -> arete
                   }
                 }
@@ -843,7 +843,7 @@ void Zone_CoviMAC::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fc
             /* gradients par maille en fonctions des (u_eb, u_fs), flux F = Ff.u_fs + Feb.u_eb, et systeme Mf.u_fs = Feb.u_eb */
             Ff.resize(n_f, n_f, N), Feb.resize(n_f, n_eb, N), Mf.resize(N, n_f, n_f), Meb.resize(N, n_eb, n_f);
             for (Ff = 0, Feb = 0, Mf = 0, Meb = 0, i = 0; i < n_e; i++)
-              for (e = s_eb[i], M.resize(n_ef = se_f[i].size(), D), B.resize(D, n_m = max(D, n_ef)), X.resize(n_ef, D), piv.resize(n_ef), n = 0; n < N; n++)
+              for (e = s_eb[i], M.resize(n_ef = se_f[i].size(), D), B.resize(D, n_m = std::max(D, n_ef)), X.resize(n_ef, D), piv.resize(n_ef), n = 0; n < N; n++)
                 {
                   if (essai < 2) /* essais 0 et 1 : gradient consistant donne par (u_e, (u_fs)_{f v e, s})*/
                     {
@@ -912,7 +912,7 @@ void Zone_CoviMAC::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fc
         for (n = 0; n < N; n++) scale(n) = nu_dot(nu, f_e(f, 0), n, &nf(f, 0), &nf(f, 0)) / (fs(f) * vf(f)); //ordre de grandeur des coefficients
         for (j = fsten_d(f); j < fsten_d(f + 1); j++)
           {
-            for (skip = !full_stencil, n = 0; n < N; n++) skip &= dabs(phif_c(j, n)) < 1e-8 * scale(n); //que mettre ici?
+            for (skip = !full_stencil, n = 0; n < N; n++) skip &= std::fabs(phif_c(j, n)) < 1e-8 * scale(n); //que mettre ici?
             if (skip) continue;
             for (n = 0; n < N; n++) phif_c(i, n) = phif_c(j, n);
             phif_e.append_line(fsten_eb(j)), i++;

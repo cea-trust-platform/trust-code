@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -258,7 +258,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_e, f_s; //tableaux "fcl", "elem_faces", "faces_voisins"
   std::vector<std::reference_wrapper<const DoubleVect>> fs; //surfaces
   std::vector<std::reference_wrapper<const DoubleTab>> inco, nf, xp, xs, xv, diffu; //inconnues, normales aux faces, positions elems / faces / sommets
-  for (i = 0, M = 0; i < n_ext; M = max(M, N[i]), i++)
+  for (i = 0, M = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
       std::string nom_mat = i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = !semi_impl.count(nom_inco) && matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
@@ -324,7 +324,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             m_pf[ {{ som_ext_pf(i, j ? 2 : 0), som_ext_pf(i, j ? 3 : 1) }}] = {{ som_ext_pf(i, j ? 0 : 2), som_ext_pf(i, j ? 1 : 3) }};
 
         /* faces, leurs surfaces partielles */
-        for (s_pf.clear(), surf_fs.clear(), vec_fs.clear(), se_f.resize(max(se_f.size(), n_e)), i = 0; i < n_e; i++)
+        for (s_pf.clear(), surf_fs.clear(), vec_fs.clear(), se_f.resize(std::max(int(se_f.size()), n_e)), i = 0; i < n_e; i++)
           for (se_f[i].clear(), p = s_pe[i][0], e = s_pe[i][1], sp = p ? s_dist[s].at(op_ext[p]) : s, j = 0; j < e_f[p].get().dimension(1) && (f = e_f[p](e, j)) >= 0; j++)
             {
               for (k = 0, sb = 0; k < f_s[p].get().dimension(1) && (sb = f_s[p](f, k)) >= 0; k++) if (sb == sp) break;
@@ -341,7 +341,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                     if (m == 1 || k > 0) sb = f_s[p](f, m ? (k + 1 < f_s[p].get().dimension(1) && f_s[p](f, k + 1) >= 0 ? k + 1 : 0) : k - 1); //sommet suivant (m = 1) ou precedent avec k > 0 -> facile
                     else for (n = f_s[p].get().dimension(1) - 1; (sb = f_s[p](f, n)) == -1; ) n--; //sommet precedent avec k = 0 -> on cherche a partir de la fin
                     auto v = zone0.cross(D, D, &xs[p](sp, 0), &xs[p](sb, 0), &xv[p](f, 0), &xv[p](f, 0));//produit vectoriel (xs - xf)x(xsb - xf)
-                    surf_fs[l] += dabs(zone0.dot(&v[0], &nf[p](f, 0))) / fs[p](f) / 4; //surface a ajouter
+                    surf_fs[l] += std::fabs(zone0.dot(&v[0], &nf[p](f, 0))) / fs[p](f) / 4; //surface a ajouter
                     for (d = 0; d < D; d++) vec_fs[l][m][d] = (xs[p](sp, d) + xs[p](sb, d)) / 2 - xv[p](f, d); //vecteur face -> arete
                   }
                 }
@@ -357,11 +357,11 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 
         /* volumes */
         for (vol_es.resize(n_e), vol_s = 0, i = 0; i < n_e; vol_s += vol_es[i], i++) for (p = s_pe[i][0], e = s_pe[i][1], vol_es[i] = 0, j = 0; j < (int) se_f[i].size(); j++)
-            k = se_f[i][j], pb = s_pf[k][0], f = s_pf[k][1], vol_es[i] += surf_fs[k] * dabs(zone0.dot(&xp[p](e, 0), &nf[pb](f, 0), &xv[pb](f, 0))) / fs[pb](f) / D;
+            k = se_f[i][j], pb = s_pf[k][0], f = s_pf[k][1], vol_es[i] += surf_fs[k] * std::fabs(zone0.dot(&xp[p](e, 0), &nf[pb](f, 0), &xv[pb](f, 0))) / fs[pb](f) / D;
 
         /* inconnues en paroi (i_efs), aux elements (i_e). On alloues toutes les composantes si som_mix = 1, une seule sinon */
         int mix = som_mix(i_s), Nm = mix ? 1 : N[s_pe[0][0]], t_eq, t_e, t_ec; //nombre total d'equations/variables aux faces, nombre total de variables aux elements, t_ec = t_e + 1, nombres divises par Nl
-        for (n_ef = 0, i = 0; i < n_e; i++) n_ef = max(n_ef, se_f[i].size());//nombre max de faces par elem
+        for (n_ef = 0, i = 0; i < n_e; i++) n_ef = std::max(n_ef, int(se_f[i].size()));//nombre max de faces par elem
         for (i_efs.resize(n_e, n_ef, 1 + M * mix), i_efs = -1, i = 0, t_eq = 0; i < n_e; i++) for (p = s_pe[i][0], e = s_pe[i][1], j = 0; j < (int) se_f[i].size(); j++)
             {
               for (k = se_f[i][j], n = 0; n < (mix ? N[p] : 1); n++, t_eq++) i_efs(i, j, n) = t_eq; //une temperature de paroi par phase
@@ -395,7 +395,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             if (essai == 1) /* essai 1 : tentative de symmetrisation en deplacant les x_fs. Si mix = 1, on ne peut pas les deplacer independamment */
               {
                 /* systeme lineaire */
-                for (C.resize(Nm, nc = (D - 1) * n_f, nl = D * (D - 1) / 2 * t_e), Y.resize(Nm, n_m = max(nc, nl)), C = 0, Y = 0, i = 0, il = 0; i < n_e; i++)
+                for (C.resize(Nm, nc = (D - 1) * n_f, nl = D * (D - 1) / 2 * t_e), Y.resize(Nm, n_m = std::max(nc, nl)), C = 0, Y = 0, i = 0, il = 0; i < n_e; i++)
                   for (p = s_pe[i][0], e = s_pe[i][1], d = 0; d < D; d++) for (db = 0; db < d; db++, il += !mix) for (n = 0; n < N[p]; n++, il += mix) for (j = 0; j < (int) se_f[i].size(); j++)
                           {
                             k = se_f[i][j], f = s_pf[k][0] == p ? s_pf[k][1] : m_pf[s_pf[k]][1], sgn = e == f_e[p](f, 0) ? 1 : -1; //indice de face, num dans le probleme courant, amont/aval
@@ -409,7 +409,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                   piv = 0, F77NAME(dgelsy)(&nl, &nc, &un, &C(n, 0, 0), &nl, &Y(n, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
                 /* x_fs = xf + corrections */
                 for (x_fs.resize(Nm, n_f, D), n = 0; n < Nm; n++) for (i = 0; i < n_f; i++) for (p = s_pf[i][0], f = s_pf[i][1], d = 0; d < D; d++)
-                      for (x_fs(n, i, d) = xv[p](f, d), k = 0; k < D - 1; k++) x_fs(n, i, d) += min(max(Y(n, (D - 1) * i + k), 0.), 0.5) * vec_fs[i][k][d];
+                      for (x_fs(n, i, d) = xv[p](f, d), k = 0; k < D - 1; k++) x_fs(n, i, d) += std::min(std::max(Y(n, (D - 1) * i + k), 0.), 0.5) * vec_fs[i][k][d];
               }
 
             A.resize(Nm, t_eq, t_eq), B.resize(Nm, t_ec = t_e + 1, t_eq), Ff.resize(Nm, t_eq, t_eq), Fec.resize(Nm, t_eq, t_ec); //systeme A.dT_efs = B.{dT_eb, 1}, flux sortant a chaque face
@@ -429,7 +429,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                     if (essai < 2) /* essais 0 et 1 : gradient consistant */
                       {
                         /* gradient dans (e, s) -> matrice / second membre M.x = Y du systeme (grad u)_i = sum_f b_{fi} (x_fs_i - x_e), avec x_fs le pt de continuite de u_fs */
-                        C.resize(Nm, n_ef = se_f[i].size(), D), Y.resize(Nm, D, n_m = max(D, n_ef)), X.resize(Nm, n_ef, D);
+                        C.resize(Nm, n_ef = se_f[i].size(), D), Y.resize(Nm, D, n_m = std::max(D, n_ef)), X.resize(Nm, n_ef, D);
                         for (n = 0; n < Nm; n++) for (j = 0; j < n_ef; j++) for (k = se_f[i][j], pb = s_pf[k][0], f = s_pf[k][1], d = 0; d < D; d++) C(n, j, d) = (essai ? x_fs(n, k, d) : xv[pb](f, d)) - xp[p](e, d);
                         for (Y = 0, n = 0; n < Nm; n++) for (d = 0; d < D; d++) Y(n, d, d) = 1;
                         nw = -1, F77NAME(dgelsy)(&D, &n_ef, &D, &C(0, 0, 0), &D, &Y(0, 0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
@@ -522,7 +522,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                   piv = 0, F77NAME(dgelsy)(&t_eq, &t_eq, &t_ec, &A(n, 0, 0), &t_eq, &B(n, 0, 0), &t_eq, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
 
                 /* mise a jour des Tefs et convergence. Si nonlinear = 0, tout est lineaire -> pas besoin d'autres iterations */
-                for (n = 0; n < Nm; n++) for (i = 0, cv = 1; i < t_eq; i++) Tefs(n, i) += B(n, t_e, i), cv &= !nonlinear || dabs(B(n, t_e, i)) < 1e-3;
+                for (n = 0; n < Nm; n++) for (i = 0, cv = 1; i < t_eq; i++) Tefs(n, i) += B(n, t_e, i), cv &= !nonlinear || std::fabs(B(n, t_e, i)) < 1e-3;
               }
             if (!cv && essai < 2) continue; //T_efs pas converge avec flux non coercif -> on essaie de stabiliser
             else if (!cv) Cerr << "non-convergence des T_efs!" << finl, Process::exit();
