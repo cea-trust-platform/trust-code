@@ -63,8 +63,8 @@ public:
   virtual void mettre_a_jour(double temps);
   virtual void calculer_coeffs_echange(double temps);
   virtual void verifie_ch_init_nb_comp() const;
-  inline Frontiere_dis_base& frontiere_dis();
-  inline const Frontiere_dis_base& frontiere_dis() const;
+  virtual inline Frontiere_dis_base& frontiere_dis();
+  virtual inline const Frontiere_dis_base& frontiere_dis() const;
   virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;
   inline Zone_Cl_dis_base& zone_Cl_dis();
   inline const Zone_Cl_dis_base& zone_Cl_dis() const;

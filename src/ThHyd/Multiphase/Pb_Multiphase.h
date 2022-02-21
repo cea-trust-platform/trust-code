@@ -65,6 +65,8 @@ public:
   void creer_milieu(const Noms);
   virtual Entree& lire_equations(Entree& is, Motcle& dernier_mot) override;
   int verifier() override;
+  void mettre_a_jour(double temps) override;
+  void completer() override;
   virtual Entree& lire_correlations(Entree& is);
   void preparer_calcul() override;
   const Champ_base& get_champ(const Motcle& nom) const override;

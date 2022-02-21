@@ -142,7 +142,7 @@ void Champ_P0_CoviMAC::init_fcl() const
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
       int idx = sub_type(Echange_externe_impose, cls[n].valeur()) + 2 * sub_type(Echange_global_impose, cls[n].valeur())
-                + 4 * sub_type(Neumann_paroi, cls[n].valeur())      + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_sortie_libre, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
+                + 4 * (sub_type(Neumann_paroi, cls[n].valeur()))     + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_sortie_libre, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
                 + 6 * sub_type(Dirichlet, cls[n].valeur())          + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());
       if (sub_type(Echange_contact_CoviMAC, cls[n].valeur())) idx = 3;
       if (!idx) Cerr << "Champ_P0_CoviMAC : CL non codee rencontree!" << finl, Process::exit();

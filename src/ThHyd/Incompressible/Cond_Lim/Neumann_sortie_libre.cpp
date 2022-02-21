@@ -69,7 +69,7 @@ Entree& Neumann_sortie_libre::readOn(Entree& s )
 {
   //   le_champ_front.typer("Champ_front_uniforme");
   Motcle motlu;
-  Motcles les_motcles(12);
+  Motcles les_motcles(13);
   {
     les_motcles[0] = "T_ext";
     les_motcles[1] = "C_ext";
@@ -83,6 +83,7 @@ Entree& Neumann_sortie_libre::readOn(Entree& s )
     les_motcles[9] = "k_ext";
     les_motcles[10] = "tau_ext";
     les_motcles[11] = "omega_ext";
+    les_motcles[12] = "k_WIT_ext";
   }
   s >> motlu;
   int rang = les_motcles.search(motlu);

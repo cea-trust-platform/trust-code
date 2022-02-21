@@ -276,6 +276,15 @@ int Pb_Multiphase::verifier()
   return tester_compatibilite_hydr_thermique(zone_Cl_hydr,zone_Cl_th);
 }
 
+void Pb_Multiphase::mettre_a_jour(double temps)
+{
+  Probleme_base::mettre_a_jour(temps);
+  for (auto &&corr : correlations)
+    {
+      corr.second->mettre_a_jour(temps);
+    }
+}
+
 void Pb_Multiphase::preparer_calcul()
 {
   Pb_Fluide_base::preparer_calcul();
@@ -302,4 +311,14 @@ const Champ_base& Pb_Multiphase::get_champ(const Motcle& un_nom) const
   catch (Champs_compris_erreur)     {      }
   throw Champs_compris_erreur();
   return ref_champ;
+}
+
+void Pb_Multiphase::completer()
+{
+  Pb_Fluide_base::completer();
+
+  for (auto &&corr : correlations)
+    {
+      corr.second->completer();
+    }
 }

@@ -70,13 +70,12 @@ void Op_Diff_CoviMAC_base::mettre_a_jour(double t)
 void Op_Diff_CoviMAC_base::completer()
 {
   Operateur_base::completer();
-  const Equation_base& eq = equation();
-  int N_mil = eq.milieu().masse_volumique().valeurs().line_size(), N_diff = diffusivite().valeurs().line_size();
+  int N_mil = equation().milieu().masse_volumique().valeurs().line_size(), N_diff = diffusivite().valeurs().line_size();
   int N = equation().inconnue().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), N_diff);
-  if (N_nu == N_mil) nu_.resize(0, N); //isotrope
-  else if (N_nu == N_mil * D) nu_.resize(0, N, D); //diagonal
-  else if (N_nu == N_mil * D * D) nu_.resize(0, N, D, D); //complet
-  else Process::exit(Nom("Op_Diff_CoviMAC_base : diffusivity component count ") + Nom(N_nu) + "not among (" + Nom(N) + ", " + Nom(N * D) + ", " + Nom(N * D * D)  + ")!");
+  if ( (N_nu == N_mil) | (N_nu == N) ) nu_.resize(0, N); //isotrope
+  else if ( (N_nu == N_mil * D) | (N_nu == N*D) ) nu_.resize(0, N, D); //diagonal
+  else if ( (N_nu == N_mil * D * D) | (N_nu == N * D * D) ) nu_.resize(0, N, D, D); //complet
+  else Process::exit(Nom("Op_Diff_CoviMAC_base : diffusivity component count ") + Nom(N_nu) + " not among (" + Nom(N) + ", " + Nom(N * D) + ", " + Nom(N * D * D)  + ")!");
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   zone.zone().creer_tableau_elements(nu_);
 

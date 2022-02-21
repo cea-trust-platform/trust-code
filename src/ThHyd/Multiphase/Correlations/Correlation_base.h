@@ -33,6 +33,8 @@ class Correlation_base : public Objet_U, public Champs_compris_interface
 public:
   virtual Entree& lire(Entree& is); //appelle readOn, mais est publique!
   void associer_pb(const Probleme_base& pb);
+  virtual void mettre_a_jour(double temps) {} ;
+  virtual void completer() {} ;
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
