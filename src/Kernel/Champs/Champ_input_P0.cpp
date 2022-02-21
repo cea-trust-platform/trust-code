@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -115,17 +115,15 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
   Motcle type_elem = zvf.zone().type_elem()->que_suis_je();
   if (type_elem != "POLYEDRE") //cas simple -> il suffit de copier les_elems
     {
-      const IntTab& e_s = zvf.zone().les_elems();
-      afield._nodes_per_elem = e_s.dimension(1);
-      if (ma_sous_zone.non_nul())
-        {
-          const Sous_Zone& ssz=ma_sous_zone.valeur();
-          afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
-          for (int i = 0, j = 0; i < ssz.nb_elem_tot(); i++)
-            if (ssz[i] < zvf.nb_elem())
-              memcpy(afield._connectivity + j * e_s.dimension(1), &e_s(ssz[i], 0), e_s.dimension(1) * sizeof(int)), j++;
-        }
-      else affecte_int_avec_inttab(&afield._connectivity, e_s);
+      const IntTab& conn = zvf.zone().les_elems();
+      //le seul moyen qu'on a d'eviter que des polygones soient pris pour des quadrilateres est d'avoir un tableau de connectivite de largeur > 4...
+      afield._nodes_per_elem = std::max(conn.dimension(1), type_elem == "POLYGONE" ? (int) 5 : 0);
+      afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
+      for (int i = 0; i < afield._nb_elems; i++) for (int j = 0; j < afield._nodes_per_elem; j++)
+          {
+            const int e = ma_sous_zone.non_nul() ? ma_sous_zone.valeur()[i] : i; //numero de l'element
+            afield._connectivity[afield._nodes_per_elem * i + j] = j < conn.dimension(1) ? conn(e, j) : -1;
+          }
     }
   else //polyedres -> il faut reconstruire une connectivite de type MEDCoupling a la main
     {
