@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
+08/03/22 (TRUST)  Fix         : Keyword Pre_calc_pression crashed under certain circumstancies due to unitialized values
 22/02/22 (TRUST)  V&V         : Add new validation forms poiseuille_vdf & cavite_entrainee_2D
 22/02/22 (TRUST)  Fix         : It is possible to use now an implicit scheme with the VDF option traitement_coins (necessary for a Poiseuille test case for example)
 22/02/22 (TRUST)  Fix         : Coeff/flux implementations are now coherent in the VDF face diffusion operator

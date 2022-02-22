@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1001,6 +1001,13 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
   // Cerr << "On fait une modif aux calculs des gradient a cause de la loi de paroi!!!!" << finl;
   //        DoubleTrav part1_int(Objet_U::dimension), part1(Objet_U::dimension,Objet_U::dimension), part2(Objet_U::dimension,Objet_U::dimension);
   DoubleTab P(dimension,dimension);
+
+  // tau_tan could be uninitialized at this point. In such a case,
+  // we can skip the function because the value of gij won't change
+  if (tau_tan.dimension_tot(0)==0)
+    {
+      return gij;
+    }
 
   for ( int num_cl=0; num_cl<nb_cl; num_cl++)
     {
