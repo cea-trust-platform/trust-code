@@ -113,17 +113,17 @@ check_components()
                fi
             fi
 	    #[ $MODIF_TRUST_OK = 0 ] && COMPOSANT_OK=0
-            # Verification independance des sous BALTIKs
-	    MODULARITY_BALTIK_OK=1
-            # On fait le test uniquement le weekend
-	    if [ ([ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])) ]
-	    then
-               echo " "
-               echo "Call to "$TRUST_ROOT"/bin/baltik/share/baltik/bin/baltik_check_project_modularity"
-               if  [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des Composants GIT
-               then
+            # Verification independance des sous BALTIKs de TrioCFD
+            if [ $* = tuleap/Livraison ] && [ "$Composant" = triocfd ]
+            then
+	       MODULARITY_BALTIK_OK=1
+               # On fait le test uniquement le weekend
+	       if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
+	       then
+                  echo " "
+                  echo "Call to "$TRUST_ROOT"/bin/baltik/share/baltik/bin/baltik_check_project_modularity"
                   $TRUST_ROOT/bin/baltik/share/baltik/bin/baltik_check_project_modularity 1>$Modularity_log 2>&1
-                  # TODO on fait un grep sur ERROR
+                  # on fait un grep sur ERROR
                   if [ "`grep "ERROR" $Modularity_log`" != "" ]
                   then
                      cat $Modularity_log
@@ -133,9 +133,11 @@ check_components()
                   else
                      echo "  OK"
                   fi
+               else
+                 echo "No call to $TRUST_ROOT/bin/baltik/share/baltik/bin/baltik_check_project_modularity"
                fi
-            fi
-	    [ $MODULARITY_BALTIK_OK = 0 ] && COMPOSANT_OK=0
+	       [ $MODULARITY_BALTIK_OK = 0 ] && COMPOSANT_OK=0
+	    fi
 	    # Verification de Liste_fiche pour Create_light_archive.sh
 	    VERIF_LIGHT_OK=1
             if [ $* = tuleap/Livraison ] && [ "$Composant" = triocfd ]
@@ -417,22 +419,25 @@ check_components()
                            # Debut de partie a revoir !!!!
 		           #WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_\$TRUST_VERSION.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            WORKBETA=""
+                           trustversion=""
+                           [ "$Composant" == "flica5" ] && trustversion=1.8.4
+                           [ "$Composant" == "cathare3D" ] && trustversion=1.8.3
                            if  [ "${machine:0:5}" = "orcus" ]
                            then
-		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "irene-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
                            elif [ "${machine:0:10}" = "irene-ccrt" ] || [ "${machine:0:6}" = "topaze" ]
                            then
-		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
                            then
-		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:2}" = "is" ]
                            then
-		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
-		              [[ "$titania_machines" = *"$machine"* ]] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-1.8.3.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [ $TRUST_VERSION = 1.8.3 ] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              [[ "$titania_machines" = *"$machine"* ]] && WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            fi
                            if [ "$WORKBETA" != "" ]
                            then
@@ -1035,7 +1040,8 @@ fi
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
          git remote update
          git checkout .
-         git checkout master
+         #git checkout master
+         git checkout advance
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
