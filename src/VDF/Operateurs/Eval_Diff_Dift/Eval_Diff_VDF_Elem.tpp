@@ -69,6 +69,18 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face, const Dirichlet_paroi_fixe&, const int num1, Type_Double& flux ) const
+{
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
+  const double dist = Dist_norm_bord(face);
+
+  if (DERIVED_T::IS_QUASI)
+    for (int k = 0; k < ncomp; k++) flux(k) = (i != -1) ? -inco(i,k)*surface(face)*porosite(face)*nu_1(i,k)/dv_mvol(i)/dist : inco(j,k)*surface(face)*porosite(face)*nu_1(j,k)/dv_mvol(j)/dist;
+  else
+    for (int k = 0; k < ncomp; k++) flux(k) = (i != -1) ? -inco(i,k)*surface(face)*porosite(face)*nu_1(i,k)/dist : inco(j,k)*surface(face)*porosite(face)*nu_1(j,k)/dist;
+}
+
+template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, const int face , const Echange_global_impose& la_cl, const int num1, Type_Double& flux) const
 {
   if (DERIVED_T::IS_QUASI)  not_implemented_k_eps(__func__);
@@ -198,6 +210,28 @@ inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int
       const double heq = compute_heq(d0,i,d1,j,ori);
       aii(k) = ajj(k) = heq*surface(face)*porosite(face); // On peut faire ca !
     }
+}
+
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int num1, const Dirichlet_paroi_fixe&, Type_Double& aii , Type_Double& ajj) const
+{
+  assert (aii.size_array() == ajj.size_array());
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = aii.size_array();
+  const double dist = Dist_norm_bord(face);
+  if (DERIVED_T::IS_QUASI)
+    {
+      for (int k = 0; k < ncomp; k++)
+        {
+          aii(k) = (i != -1) ? surface(face)*porosite(face)*nu_1(i,k)/dv_mvol(i)/dist : 0.;
+          ajj(k) = (i != -1) ? 0. : surface(face)*porosite(face)*nu_1(j,k)/dv_mvol(j)/dist;
+        }
+    }
+  else
+    for (int k = 0; k < ncomp; k++)
+      {
+        aii(k) = (i != -1) ? surface(face)*porosite(face)*nu_1(i,k)/dist : 0.;
+        ajj(k) = (i != -1) ? 0. : surface(face)*porosite(face)*nu_1(j,k)/dist;
+      }
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
