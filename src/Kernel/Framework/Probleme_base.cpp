@@ -1857,6 +1857,8 @@ void Probleme_base::preparer_calcul()
   for(int i=0; i<nombre_d_equations(); i++)
     equation(i).preparer_calcul();
   milieu().preparer_calcul();
+  for(int i=0; i<nombre_d_equations(); i++) /* on peut maintenant remplir les champs conserves */
+    equation(i).mettre_a_jour_champs_conserves(temps);
 
   if(schema_temps().file_allocation() && EcritureLectureSpecial::Active)
     file_size_xyz();
