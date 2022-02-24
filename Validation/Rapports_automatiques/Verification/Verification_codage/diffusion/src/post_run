@@ -1,0 +1,6 @@
+#!/bin/bash
+
+resp=`tail -1 jdd_NORME_LINF.son | awk '{print $2}'`
+nup=`grep "Total number of elements" $1.err | awk '{print $6}'`
+tot=`grep "Temps total" $1.TU | awk '{printf("%f ", $NF)}' | awk '{print ($1+$2)}'`
+echo $nup $resp $tot > conv

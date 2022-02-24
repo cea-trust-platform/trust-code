@@ -1,5 +1,5 @@
 # PARALLEL OK #
-dimension 2
+dimension 3
 Pb_conduction pb
 Domaine dom
 
@@ -11,14 +11,15 @@ Lire_med family_names_from_group_names dom mesh mesh.med
 Postraiter_domaine
 {
     fichier mesh.lata
-    format lml
+    format lata
     domaine dom
 }
 
 Partition dom
 {
-    Partition_tool tranche { tranches 2 1 }
-    larg_joint 2
+    partitionneur metis { Nb_parts 4 }
+    nb_parts_tot 4
+    larg_joint 1
     zones_name DOM
 }
 End
@@ -28,29 +29,35 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC dis
+$dis dis
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-	nb_pas_dt_max 3
-    dt_max  1
-    facsec 1e30
+    dt_max  1e-2
+    dt_impr 1e-10
     seuil_statio 1e-8
+    facsec 1e8
     solveur implicite
     {
         solveur petsc cli
         {
-            -pc_type fieldsplit
-            -pc_fieldsplit_0_field b1
-            -pc_fieldsplit_1_field b0
-            -pc_fieldsplit_type schur
+            -pc_type hypre
+            -pc_hypre_type boomeramg
+            -pc_hypre_boomeramg_strong_threshold 0.8
+            -pc_hypre_boomeramg_agg_nl 4
+            -pc_hypre_boomeramg_agg_num_paths 5
+            -pc_hypre_boomeramg_max_levels 25
+            -pc_hypre_boomeramg_coarsen_type PMIS
+            -pc_hypre_boomeramg_interp_type ext+i
+            -pc_hypre_boomeramg_P_max 2
+            -pc_hypre_boomeramg_truncfactor 0.5
             -ksp_type fgmres
-            -ksp_rtol 1e-8
-            -fieldsplit_b0_ksp_max_it 10
-            -fieldsplit_b1_ksp_max_it 10
         }
+/*
+        solveur petsc cholesky { cli { -ksp_reuse_preconditioner } }
+*/
     }
 }
 
@@ -72,8 +79,8 @@ Read pb
     Conduction
     {
         diffusion { }
-        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 2.*pi*pi*sin(pi*x)*sin(pi*y) }
-        initial_conditions { temperature Champ_Uniforme 1 0 }
+        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 3.*pi*pi*sin(pi*x)*sin(pi*y)*sin(pi*z) }
+        initial_conditions { temperature Champ_Fonc_XYZ dom 1 0*sin(pi*x)*sin(pi*y)*sin(pi*z) }
         boundary_conditions
         {
             boundary paroi_temperature_imposee Champ_Front_Uniforme 1 0
@@ -87,21 +94,21 @@ Read pb
             # T_som interpolation { domaine dom localisation som source refChamp { Pb_champ pb temperature } } #
             erreur_T transformation
             {
-                methode formule expression 1 abs(Temp-sin(pi*x)*sin(pi*y)) sources
+                methode formule expression 1 abs(Temp-sin(pi*x)*sin(pi*y)*sin(pi*z)) sources
                 {
                     refChamp { pb_champ pb temperature nom_source Temp }
                 }
             }
             max_erreur_T reduction_0D
             {
-                methode max source_reference erreur_T
+                methode l2_norm source_reference erreur_T
             }
         }
 
         Probes
         {
             # temperature_diag_som            T_som periode 1e8 segment 500 0. 1. 1. 0. #
-            temperature_diag grav temperature periode 1e8 segment 500 0. 1. 1. 0.
+            temperature_diag grav temperature periode 1e8 segment 500 0. 1. 1. 1. 0. 0.
             norme_linf max_erreur_T periode 1e-7 numero_elem_sur_maitre 0
         }
         format Lata

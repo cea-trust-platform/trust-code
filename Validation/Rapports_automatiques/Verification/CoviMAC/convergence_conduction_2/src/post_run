@@ -1,5 +1,0 @@
-#!/bin/bash
-
-resp=`tail -1 cas_NORME_LINF.son | awk '{print $2}'`
-nup=`grep "Total number of elements" $1.err | awk '{print $6}'`
-echo $resp $nup > conv
