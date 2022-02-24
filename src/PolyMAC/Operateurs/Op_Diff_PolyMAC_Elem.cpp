@@ -146,8 +146,11 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t&
     {
       zone[0].get().W2(&diffu[0].get(), e, w2); //interpolation : [n_ef.nu grad T]_f = w2_{ff'} (T_f' - T_e)
       //element <-> toutes ses faces (non Dirichlet)
-      if (e < zone[0].get().nb_elem()) for (i = 0; i < w2.dimension(0); i++) if (!semi && fcl[0](f = e_f[0](e, i), 0) < 6) for (n = 0; n < N[0]; n++)
-              stencil[0].append_line(N[0] * e + n, N[0] * (ne_tot[0] + f) + n), stencil[0].append_line(N[0] * (ne_tot[0] + f) + n, N[0] * e + n);
+      for (i = 0; i < w2.dimension(0); i++) if (!semi && fcl[0](f = e_f[0](e, i), 0) < 6)
+        {
+          if (e < zone[0].get().nb_elem()) for (n = 0; n < N[0]; n++) stencil[0].append_line(N[0] * e + n, N[0] * (ne_tot[0] + f) + n);
+          if (f < zone[0].get().nb_faces()) for (n = 0; n < N[0]; n++) stencil[0].append_line(N[0] * (ne_tot[0] + f) + n, N[0] * e + n);
+        }
       //face <-> face (si les deux sont non Dirichlet)
       for (i = 0; i < w2.dimension(0); i++)
         if ((f = e_f[0](e, i)) >= zone[0].get().nb_faces()) continue; //face virtuelle -> rien

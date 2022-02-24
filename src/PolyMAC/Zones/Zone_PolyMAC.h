@@ -94,11 +94,10 @@ class Zone_PolyMAC : public Zone_VF
   Declare_instanciable(Zone_PolyMAC);
 
 public :
-  void typer_elem(Zone& zone_geom) override;
-  void discretiser() override;
-  void swap(int, int, int);
-  void reordonner(Faces&) override;
-  void modifier_pour_Cl(const Conds_lim& ) override;
+  void typer_elem(Zone& zone_geom);
+  void discretiser();
+  virtual void reordonner(Faces&);
+  void modifier_pour_Cl(const Conds_lim& );
 
   inline const Elem_PolyMAC& type_elem() const;
   inline int nb_elem_Cl() const;
@@ -110,7 +109,7 @@ public :
   {
     return h_carre_(i);
   };
-  inline double face_normales(int,int ) const override;
+  inline double face_normales(int,int ) const;
   inline const DoubleVect& longueur_aretes() const
   {
     return longueur_aretes_;
@@ -118,10 +117,6 @@ public :
   inline const DoubleTab& ta() const
   {
     return ta_;
-  };
-  inline const IntTab& arete_faces() const
-  {
-    return arete_faces_;
   };
   inline DoubleTab& face_normales();
   inline const DoubleTab& face_normales() const;
@@ -174,48 +169,8 @@ public :
   void init_equiv() const;
   mutable IntTab equiv;
 
-  //interpolations d'ordre 1 du vecteur vitesse aux elements
-  void init_ve() const;
-  mutable IntTab vedeb, veji; //reconstruction de ve par (veji, veci)[vedeb(e), vedeb(e + 1)[ (faces)
-  mutable DoubleTab veci;
-
-  //rotationnel aux faces d'un champ tangent aux aretes
-  void init_rf() const;
-  mutable IntTab rfdeb, rfji; //reconstruction du rotationnel par (rfji, rfci)[rfdeb(f), rfdeb(f + 1)[ (champ aux aretes)
-  mutable DoubleTab rfci;
-
-  //stabilisation d'une matrice de masse mimetique en un element : dans PolyMAC -> m1 ou m2
-  inline void ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const;
-  inline int W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ctr, double *spectre) const;
-
-  //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
-  void init_m2() const;
-  mutable IntTab m2d, m2i, m2j, w2i, w2j; //stockage: lignes de M_2^e dans m2i([m2d(e), m2d(e + 1)[), indices/coeffs de ces lignes dans (m2j/m2c)[m2i(i), m2i(i+1)[
-  mutable DoubleTab m2c, w2c;             //          avec le coeff diagonal en premier (facilite Echange_contact_PolyMAC)
-  void init_m2solv() const; //pour resoudre m2.v = s
-  mutable Matrice_Morse_Sym m2mat;
-  mutable SolveurSys m2solv;
-
-  //interpolation aux elements d'ordre 1 d'un champ defini par ses composantes tangentes aux aretes (ex. : la vorticite)
-  inline void init_we() const;
-  void init_we_2d() const;
-  void init_we_3d() const;
-  mutable IntTab wedeb, weji; //reconstruction de we par (weji, weci)[wedeb(e), wedeb(e + 1)[ (sommets en 2D, aretes en 3D)
-  mutable DoubleTab weci;
-
-  //matrice mimetique d'un champ aux aretes : (valeur tangente aux aretes) -> (flux a travers l'union des facettes touchant l'arete)
-  void init_m1() const;
-  void init_m1_2d() const;
-  void init_m1_3d() const;
-  mutable IntTab m1deb, m1ji; //reconstruction de m1 par (m1ji(.,0), m1ci)[m1deb(a), m1deb(a + 1)[ (sommets en 2D, aretes en 3D); m1ji(.,1) contient le numero d'element
-  mutable DoubleTab m1ci;
-
   //MD_Vectors pour Champ_P0_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
   mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
-
-  //std::map permettant de retrouver le couple (proc, item local) associe a un item virtuel pour le mdv_elem_faces
-  void init_virt_ef_map() const;
-  mutable std::map<std::array<int, 2>, int> virt_ef_map;
 
 private:
   double h_carre;			 // carre du pas du maillage
@@ -230,14 +185,11 @@ private:
   // relatifs aux elements non standards
 
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
-  void remplir_elem_faces() override;
+  void remplir_elem_faces();
   Sortie& ecrit(Sortie& os) const;
   void creer_faces_virtuelles_non_std();
 
-  mutable IntTab arete_faces_; //connectivite face -> aretes
   mutable DoubleTab ta_;       //vecteurs tangents aux aretes
-
-  double beta_; //facteur de stabilisation utilise dans M1 / M2 / W1 / W2
 };
 
 // Fonctions inline

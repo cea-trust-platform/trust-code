@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,15 +47,18 @@ class Perte_Charge_PolyMAC : public Source_base, public Terme_Source_Qdm
   Declare_base(Perte_Charge_PolyMAC);
 
 public:
-  DoubleTab& ajouter(DoubleTab& ) const override; //!< Appelle perte_charge pour chaque face ou cela est necessaire
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
-  DoubleTab& calculer(DoubleTab& ) const override ;
-  void associer_pb(const Probleme_base&) override;  //!< associe le_fluide et la_vitesse
-  void completer() override;
+  int has_interface_blocs() const
+  {
+    return 1;
+  };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  void associer_pb(const Probleme_base&);  //!< associe le_fluide et la_vitesse
+  void completer();
 
 protected:
 
-  void associer_zones(const Zone_dis&,const Zone_Cl_dis&) override;   //!< associe la_Zone_PolyMAC et la_Zone_Cl_PolyMAC
+  void associer_zones(const Zone_dis&,const Zone_Cl_dis&);   //!< associe la_Zone_PolyMAC et la_Zone_Cl_PolyMAC
 
   //! Appele pour chaque face par ajouter()
   /**

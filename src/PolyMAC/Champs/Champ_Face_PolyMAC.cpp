@@ -196,47 +196,38 @@ void Champ_Face_PolyMAC::init_fcl() const
 void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool is_vit) const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
-  const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
-  const DoubleTab& nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem();
-  const IntTab &icl = fcl();
-  int e, f, j, k, r;
+  const DoubleTab& xv = zone.xv(), &xp = zone.xp();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes();
+  const IntTab &e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  int e, f, j, r;
 
-  zone.init_ve();
   val = 0;
-  for (e = 0; e < val.dimension(0); e++) for (j = zone.vedeb(e); j < zone.vedeb(e + 1); j++)
-      if (icl(f = zone.veji(j), 0) < 2) //vitesse calculee
+  for (e = 0; e < val.dimension(0); e++) for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
         {
           const double coef = is_vit ? pf(f) / pe(e) : 1.0;
-          for (r = 0; r < dimension; r++) val(e, r) += zone.veci(j, r) * inco(f) * coef;
+          for (r = 0; r < dimension; r++) val(e, r) += fs(f) / ve(e) * (xv(f, r) - xp(e, r)) * (e == f_e(f, 0) ? 1 : -1) * inco(f) * coef;
         }
-      else if (icl(f, 0) == 3) for (k = 0; k < dimension; k++) for (r = 0; r < dimension; r++) //Dirichlet
-            {
-              const double coef = is_vit ? pf(f) / pe(e) : 1.0;
-              val(e, r) += zone.veci(j, r) * ref_cast(Dirichlet, cls[icl(f, 1)].valeur()).val_imp(icl(f, 2), k) * nf(f, k) / fs(f) * coef;
-            }
 }
 
 /* vitesse aux elements sur une liste d'elements */
 void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_polys, DoubleTab& val, bool is_vit) const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem();
+  const DoubleTab& xv = zone.xv(), &xp = zone.xp();
+  const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes();
+  const IntTab &e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int e, f, j, r;
 
-  zone.init_ve();
   for (int poly = 0; poly < les_polys.size(); poly++)
     {
       e = les_polys(poly);
       if (e!=-1)
         {
-          for (r = 0; r < dimension; r++)
-            val(e, r) = 0;
-          for (j = zone.vedeb(e); j < zone.vedeb(e + 1); j++)
+          for (r = 0; r < dimension; r++) val(e, r) = 0;
+          for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
             {
-              f = zone.veji(j);
               const double coef = is_vit ? pf(f) / pe(e) : 1.0;
-              for (r = 0; r < dimension; r++) val(e, r) += zone.veci(j, r) * inco(f) * coef;
+              for (r = 0; r < dimension; r++) val(e, r) += fs(f) / ve(e) * (xv(f, r) - xp(e, r)) * (e == f_e(f, 0) ? 1 : -1) * inco(f) * coef;
             }
         }
     }
