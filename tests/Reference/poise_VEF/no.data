@@ -72,35 +72,7 @@ Read pb
 	Navier_Stokes_standard
 	{
 		# solveur_pression petsc GCP { precond ssor { omega 1.65 } seuil 1.e-7 impr } #
-		# solveur_pression petsc cli { -ksp_type cg -pc_type sor -pc_sor_omega 1.65 -mat_type aij -ksp_norm_type UNPRECONDITIONED -ksp_atol 1.e-7 impr } #
-        	solveur_pression petsc cli
-        	{
-			-mat_type aij
-            		-pc_type fieldsplit
-			-ksp_atol 1.e-7
-			-ksp_norm_type UNPRECONDITIONED
-			-options_left	
-# fastest: 
-			-pc_fieldsplit_type multiplicative
-            		-fieldsplit_P0_ksp_type preonly
-            		-fieldsplit_P0_pc_type lu
-            		-fieldsplit_P1_ksp_type preonly
-            		-fieldsplit_P1_pc_type lu
-#
-
- #            		-pc_fieldsplit_type schur			-pc_fieldsplit_schur_factorization_type upper #
-			-pc_fieldsplit_type multiplicative 
-
-            		-fieldsplit_P0_ksp_type cg
-			-fieldsplit_P0_pc_type icc
-			-fieldsplit_P0_ksp_atol 1.e-6
-			-fieldsplit_P0_ksp_monitor_short ascii:fieldsplit0
-
-            		-fieldsplit_P1_ksp_type cg
-            		-fieldsplit_P1_pc_type icc
-			-fieldsplit_P1_ksp_rtol 1.e-5
-			-fieldsplit_P1_ksp_monitor_short ascii:fieldsplit1
-        	}
+		solveur_pression petsc cli { -ksp_type cg -pc_type icc -mat_type aij -ksp_norm_type UNPRECONDITIONED -ksp_atol 1.e-7 impr }
 		convection { amont }
 		diffusion { }
 		initial_conditions {

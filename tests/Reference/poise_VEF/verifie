@@ -1,12 +1,15 @@
 #!/bin/bash
 # Check fieldsplit
-if [ ! -f fieldsplit.TU ] || [ poise_VEF.TU -nt fieldsplit.TU ]
+if [ ! -f additive.TU ] || [ poise_VEF.TU -nt additive.TU ] || [ verifie -nt poise_VEF.TU ]
 then
-   echo "Checking fieldsplit precond:"
-   trust fieldsplit 1>fieldsplit.out 2>fieldsplit.err
-   compare_lata poise_VEF.lml fieldsplit.lml || exit -1
-   echo "poise_VEF:"
-   grep "solveurs A" poise_VEF.TU
-   echo "poise_VEF with pcfieldsplit:"
-   grep "solveurs A" fieldsplit.TU
+   echo "Checking PCFIELDSPLIT preconditioner (block solvers):"
+   for type in multiplicative additive schur no
+   do
+      trust $type 1>$type.out_err 2>&1
+      compare_lata poise_VEF.lml $type.lml 1>$type.log 2>&1 
+      [ $? != 0 ] && cat $type.log && exit -1
+      echo "poise_VEF with $type pcfieldsplit :"
+      grep "solveurs A" $type.TU
+      grep "MatMult " $type"_petsc.TU"
+   done
 fi
