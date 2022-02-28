@@ -1,3 +1,4 @@
+XX/02/22 (TRUST)  New keyword : Add impr_extremums 0|1 option for time scheme in order to print unknowns range with dt_impr period (useful to track over/undershoots caused by convection operator)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------

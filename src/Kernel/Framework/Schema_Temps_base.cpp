@@ -347,6 +347,7 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter( "diffusion_implicite",&ind_diff_impl_); // XD_ADD_P int Keyword to make the diffusive term in the Navier-Stokes equations implicit (in this case, it should be set to 1). The stability time step is then only based on the convection time step (dt=facsec*dt_convection). Thus, in some circumstances, an important gain is achieved with respect to the time step (large diffusion with respect to convection on tightened meshes). Caution: It is however recommended that the user avoids exceeding the convection time step by selecting a too large facsec value. Start with a facsec value of 1 and then increase it gradually if you wish to accelerate calculation. In addition, for a natural convection calculation with a zero initial velocity, in the first time step, the convection time is infinite and therefore dt=facsec*dt_max.
   param.ajouter( "seuil_diffusion_implicite",&seuil_diff_impl_); // XD_ADD_P double This keyword changes the default value (1e-6) of convergency criteria for the resolution by conjugate gradient used for implicit diffusion.
   param.ajouter( "impr_diffusion_implicite",&impr_diff_impl_); // XD_ADD_P int Unactivate (default) or not the printing of the convergence during the resolution of the conjugate gradient.
+  param.ajouter( "impr_extremums",&impr_extremums_); // XD_ADD_P int Print unknowns extremas
   param.ajouter( "no_error_if_not_converged_diffusion_implicite",&no_error_if_not_converged_diff_impl_); // XD_ADD_P int not_set
   param.ajouter( "no_conv_subiteration_diffusion_implicite",&no_conv_subiteration_diff_impl_); // XD_ADD_P int not_set
   param.ajouter_non_std( "dt_start",(this)); // XD attr dt_start dt_start dt_start 1 dt_start dt_min : the first iteration is based on dt_min. NL2 dt_start dt_calc : the time step at first iteration is calculated in agreement with CFL condition. NL2 dt_start dt_fixe value : the first time step is fixed by the user (recommended when resuming calculation with Crank Nicholson temporal scheme to ensure continuity). NL2 By default, the first iteration is based on dt_calc.
@@ -400,6 +401,7 @@ Sortie& Schema_Temps_base::printOn(Sortie& os) const
   os << "diffusion_implicite " << ind_diff_impl_ << finl ;
   os << "seuil_diffusion_implicite " << seuil_diff_impl_ << finl ;
   os << "impr_diffusion_implicite " << impr_diff_impl_ << finl ;
+  os << "impr_extremums " << impr_extremums_ << finl ;
   os << "niter_max_diffusion_implicite " << niter_max_diff_impl_ << finl ;
   os << "no_file_allocation " << file_allocation_ << finl ;
   os << "disable_progress " << disable_progress_ << finl ;
@@ -584,6 +586,7 @@ Schema_Temps_base::Schema_Temps_base()
   ind_diff_impl_=0 ;
   seuil_diff_impl_=1.e-6 ;
   impr_diff_impl_=0;
+  impr_extremums_=0;
   no_conv_subiteration_diff_impl_=0;
   no_error_if_not_converged_diff_impl_=0;
   niter_max_diff_impl_ = 1000; // Above 100 iterations, diffusion implicit algorithm is may be diverging

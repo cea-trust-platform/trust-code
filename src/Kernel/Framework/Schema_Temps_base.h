@@ -162,6 +162,10 @@ public :
   {
     return impr_diff_impl_;
   };        // Impression ou non de GC implicitation
+  inline int impr_extremums() const
+  {
+    return impr_extremums_;
+  };
   inline int niter_max_diffusion_implicite() const
   {
     return niter_max_diff_impl_;
@@ -401,6 +405,7 @@ protected :
   int ind_diff_impl_ ;
   double seuil_diff_impl_;
   int impr_diff_impl_;
+  int impr_extremums_;
   int niter_max_diff_impl_;
   int no_conv_subiteration_diff_impl_;
   int no_error_if_not_converged_diff_impl_;

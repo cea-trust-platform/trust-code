@@ -2501,6 +2501,15 @@ void Equation_base::imprime_residu(SFichier& fic)
           Process::exit();
         }
     }
+  // Affichage min/max
+  if (schema_temps().impr_extremums() && limpr())
+    {
+      double vmax = mp_max_vect(inconnue().valeurs());
+      double vmin = mp_min_vect(inconnue().valeurs());
+      Cout << finl << inconnue().le_nom() << " field [min/max]: ";
+      if (je_suis_maitre()) printf("[ %.2e / %.2e ]",vmin,vmax);
+      Cout << finl;
+    }
 }
 
 // Retourne l'expression du residu (de meme peut etre surcharge)
