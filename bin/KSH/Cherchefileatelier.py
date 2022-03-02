@@ -138,6 +138,9 @@ for fil in argv:
     file2=os.path.basename(fil)
     if (file2[-2:]==".h"):
         files_in.append(file2)
+    elif (file2[-4:]==".tpp"):
+        in_file=file2.replace(".tpp",".h")
+        files_in.append(in_file)
     else:
         files_cpp.append(file2)
         pass

@@ -1,7 +1,7 @@
 #!/bin/bash
 res=`mktemp_`
 dest=info_atelier.cpp
-files=`\ls $rep_dev/*.cpp $rep_dev/*.f $rep_dev/*.c $rep_dev/*.h 2>/dev/null`
+files=`\ls $rep_dev/*.cpp $rep_dev/*.f $rep_dev/*.c $rep_dev/*.h $rep_dev/*.tpp 2>/dev/null`
 echo "//////////////////////////////////////////////////////////////////////////////
 //
 // File:        info_atelier.cpp

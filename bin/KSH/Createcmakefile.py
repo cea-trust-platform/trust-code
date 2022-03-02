@@ -475,7 +475,7 @@ Project(atelier)
 SET(CMAKE_SKIP_RULE_DEPENDENCY 0)
 
 
-file(GLOB srcs [A-Z|a-z]*.cpp  [A-Z|a-z]*.cxx [A-Z|a-z]*.f [A-Z|a-z]*.c [A-Z|a-z]*.h  [A-Z|a-z]*.hpp  [A-Z|a-z]*.hxx)
+file(GLOB srcs [A-Z|a-z]*.cpp  [A-Z|a-z]*.cxx [A-Z|a-z]*.f [A-Z|a-z]*.c [A-Z|a-z]*.h  [A-Z|a-z]*.hpp  [A-Z|a-z]*.hxx  [A-Z|a-z]*.tpp)
 if (srcs_atelier)
   # set(srcs_atelier "")
 else()

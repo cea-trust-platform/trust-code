@@ -160,7 +160,7 @@ do
   sub_projects_names=$sub_projects_names" "$name
   sub_projects_paths=$sub_projects_paths" "$path
 
-  for suf in h cpp f c hxx cxx
+  for suf in h cpp f c hxx cxx tpp
     do
     test_uniq=`find  $sourcedir -follow -name "*."${suf} -exec basename {} \; | sort | uniq -d`
     if [ "${test_uniq}" != "" ]
