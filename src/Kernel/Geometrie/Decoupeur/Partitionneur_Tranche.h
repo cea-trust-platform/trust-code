@@ -24,7 +24,7 @@
 
 #include <Partitionneur_base.h>
 #include <Ref_Domaine.h>
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 
 // .DESCRIPTION
 //  Partitionneur de domaine en tranches paralleles aux directions

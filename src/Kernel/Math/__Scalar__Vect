@@ -3,7 +3,7 @@
 #ifndef __Scalar__Vect_included
 #define __Scalar__Vect_included
 
-#include <ArrOf__Scalar__.h>
+#include <TRUSTArray.h>
 #include <MD_Vector.h>
  
 // A nettoyer: les includes suivants ne sont pas necessaires a ce fichier
@@ -13,7 +13,7 @@
 #include <IntVect.h>
 #Pendif
 
-class __Scalar__Vect : public ArrOf__Scalar__
+class __Scalar__Vect : public TRUSTArray<__scalar__>
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(__Scalar__Vect);
 public:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@
 //
 
 class DoubleVect;
-class ArrOfInt;
+#include <TRUSTArray.h>
 
 void QuickSort(const DoubleVect& a,int g, int d, ArrOfInt& c);
 void trier_abs(const DoubleVect& a, ArrOfInt& c);

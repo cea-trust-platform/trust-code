@@ -26,7 +26,7 @@
 
 #include <Op_Conv_EF_base.h>
 #include <Motcle.h>
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 #include <Champ_Uniforme.h>
 //
 // .DESCRIPTION class Op_Conv_EF

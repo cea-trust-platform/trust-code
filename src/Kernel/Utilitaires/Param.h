@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,15 +23,14 @@
 
 #ifndef Param_included
 #define Param_included
-#include <ArrOfInt.h>
+
+#include <TRUSTArray.h>
 #include <Objet_a_lire.h>
 
 class Param;
 class Entree;
 class Motcle;
 class Deriv_;
-class ArrOfInt;
-class ArrOfDouble;
 class ptrParam;     // Defined below in this file
 
 // Description: cette classe permet de factoriser les readOn des Objet_U.

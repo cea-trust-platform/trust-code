@@ -25,7 +25,7 @@
 
 #include <Precond_base.h>
 #include <IntTab.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 
 class Matrice_Morse_Sym;
 class Matrice_Bloc_Sym;

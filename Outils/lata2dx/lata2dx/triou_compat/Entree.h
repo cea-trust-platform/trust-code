@@ -68,7 +68,7 @@ inline Entree& operator>>(Entree& is, entier& n)
   is.get_istream() >> n;
   return is;
 }
-class ArrOfInt;
+#include<ArrOfInt.h>
 // For Static_Int_Lists:
 inline Entree& operator>>(Entree& is, ArrOfInt& t)
 {

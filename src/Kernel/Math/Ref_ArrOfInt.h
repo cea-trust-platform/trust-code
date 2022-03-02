@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,10 +19,13 @@
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef Ref_ArrOfInt_included
 #define Ref_ArrOfInt_included
+
 #include <Ref.h>
-// Implementation dans Math/ArrOfInt.cpp
-class ArrOfInt;
+#include <TRUSTArray.h>
+
 Declare_ref(ArrOfInt);
+
 #endif

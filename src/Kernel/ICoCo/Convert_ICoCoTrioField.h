@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@
 #include <ICoCoTrioField.h>
 #include <arch.h>
 
+#include <TRUSTArray.h>
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>
@@ -39,8 +40,6 @@
 class Champ_Generique_base;
 class Domaine;
 class DoubleTab;
-class ArrOfDouble;
-class ArrOfInt;
 void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio);
 void affecte_int_avec_inttab(int** p, const ArrOfInt& trio);
 #include <ICoCoMEDDoubleField.hxx>

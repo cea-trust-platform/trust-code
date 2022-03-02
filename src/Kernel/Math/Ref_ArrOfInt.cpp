@@ -14,19 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        ArrOfDouble.cpp
+// File:        Ref_ArrOfInt.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     1
+// Version:     /main/3
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Vect_ArrOfDouble.h>
-#include <Ref_ArrOfDouble.h>
-#include <ArrOfDouble.h>
-
-Implemente_instanciable_sans_constructeur(ArrOfDouble,"ArrOfDouble",TRUSTArray<double>);
-Implemente_vect(ArrOfDouble);
-Implemente_ref(ArrOfDouble);
-
-Sortie& ArrOfDouble::printOn(Sortie& os) const { return TRUSTArray<double>::printOn(os); }
-Entree& ArrOfDouble::readOn(Entree& is) { return TRUSTArray<double>::readOn(is); }
+#include <Ref_ArrOfInt.h>
+#include <TRUSTArray.h>
+Implemente_ref(ArrOfInt);

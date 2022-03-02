@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,8 +30,7 @@
 #include <vector>
 class Objet_U;
 class DoubleTabs;
-class ArrOfInt;
-class ArrOfDouble;
+#include <TRUSTArray.h>
 class DoubleTab;
 class VECT(ArrOfInt);
 

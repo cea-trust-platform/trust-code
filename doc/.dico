@@ -8,9 +8,7 @@
  Aretes Aretes Aretes.h
  Array_base Array_base Array_base.h
  ArrOfBit ArrOfBit ArrOfBit.h
- ArrOfDouble ArrOfDouble ArrOfDouble.h
  ArrOfFloat ArrOfFloat ArrOfFloat.h
- ArrOfInt ArrOfInt ArrOfInt.h
  Asin Asin StdFunction.h
  Assembleur Assembleur Assembleur.h
  Assembleur_base Assembleur_base Assembleur_base.h

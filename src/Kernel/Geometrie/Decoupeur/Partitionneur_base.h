@@ -27,7 +27,7 @@
 #include <IntVect.h>
 
 class Domaine;
-class ArrOfInt;
+#include <TRUSTArray.h>
 class Zone;
 class Static_Int_Lists;
 class Param;

@@ -291,11 +291,14 @@ private:
 
   // Drapeau indiquant si on applique une strategie d'allocation preventive (la memoire alouee augmente d'un facteur constant si la taille devient insuffisante).
   // Si smart_resize_ == 0, alors on a toujours p_->size_ == size
-  int    smart_resize_;
+  int smart_resize_;
 
   // Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de Trio
-  Storage   storage_type_;
+  Storage storage_type_;
 };
+
+using ArrOfInt = TRUSTArray<int>;
+using ArrOfDouble = TRUSTArray<double>;
 
 /* *********************************** *
  * FONCTIONS NON MEMBRES DE TRUSTArray *

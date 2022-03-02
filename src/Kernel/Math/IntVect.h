@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,14 +27,14 @@
 #ifndef IntVect_included
 #define IntVect_included
 
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 #include <MD_Vector.h>
 
 // A nettoyer: les includes suivants ne sont pas necessaires a ce fichier
 //  mais a d'autres qui ne font pas les include
 #include <Vect.h>
 
-class IntVect : public ArrOfInt
+class IntVect : public TRUSTArray<int>
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(IntVect);
 public:

@@ -28,7 +28,7 @@
 #include <Couplage_U.h>
 #include <Ref_Champ_base.h>
 #include <Vect_Schema_Temps.h>
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 
 class Schema_Temps_base;
 class Discretisation_base;

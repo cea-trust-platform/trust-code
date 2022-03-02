@@ -32,7 +32,7 @@ class DoubleTab;
 class Motcles;
 class Format_Post_base;
 class Zone_VF;
-class ArrOfDouble;
+#include <TRUSTArray.h>
 
 // .DESCRIPTION : cet interprete permet, a la fin du calcul (apres "resoudre"),
 //  de calculer et de stocker dans un fichier lata le produit de convolution

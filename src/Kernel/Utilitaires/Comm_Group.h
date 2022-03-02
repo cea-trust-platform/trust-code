@@ -23,7 +23,7 @@
 #define Comm_Group_included
 
 #include <assert.h>
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 #include <Deriv_Comm_Group.h>
 
 // .DESCRIPTION        :

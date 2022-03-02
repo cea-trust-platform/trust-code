@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -778,8 +778,8 @@ template <class T> int compare(const Objet_U& a, const Objet_U& b, int& erreur)
 {
   if (sub_type(T, a))
     {
-      const T& a_ = ref_cast(T, a);
-      const T& b_ = ref_cast(T, b);
+      const T& a_ = static_cast<const T&> (a);
+      const T& b_ = static_cast<const T&> (b);
       if (! (a_ == b_))
         erreur = 1;
       return 1;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #define Matrix_tools_included
 
 #include <arch.h>
-
+#include <TRUSTArray.h>
 /////////////////////////////////////////////////////////////////////////////
 //
 // .NAME        : Matrix_tools
@@ -41,7 +41,6 @@ class Matrice_Base;
 class Matrice_Morse;
 class Matrice_Morse_Sym;
 class IntTab;
-class ArrOfDouble;
 class DoubleTab;
 class Matrix_tools
 {

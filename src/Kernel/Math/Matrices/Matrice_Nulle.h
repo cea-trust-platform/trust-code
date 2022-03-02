@@ -37,7 +37,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 class IntTab;
-class ArrOfDouble;
+#include <TRUSTArray.h>
 
 class Matrice_Nulle : public Matrice_Base
 {

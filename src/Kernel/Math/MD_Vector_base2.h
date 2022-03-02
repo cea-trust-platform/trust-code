@@ -22,7 +22,7 @@
 #ifndef MD_Vector_base2_included
 #define MD_Vector_base2_included
 #include <MD_Vector_base.h>
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 
 class MD_Vector_base2 : public MD_Vector_base
 {

@@ -29,7 +29,7 @@
 #include <ArrOfBit.h>
 #include <IntTab.h>
 #include <SolveurSys_base.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 
 #ifdef PETSCKSP_H
 #include <petscdm.h>

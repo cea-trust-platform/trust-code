@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,8 +23,6 @@
 
 #include <Param.h>
 #include <Parser_U.h>
-#include <ArrOfInt.h>
-#include <ArrOfDouble.h>
 
 Param::Param(const char * name):proprietaire_(name)
 {

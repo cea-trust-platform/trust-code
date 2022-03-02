@@ -34,7 +34,7 @@
 
 #include <Champ_Fonc.h>
 #include <Zone_VF_inst.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 #include <med++.h>
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_

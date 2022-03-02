@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ int gettimeofday(struct timeval *tv ,int toto)
 #include <sys/resource.h>
 #endif
 #include <stdio.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 #include <communications.h>
 
 #include <map>

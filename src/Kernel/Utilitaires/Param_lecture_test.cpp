@@ -26,7 +26,7 @@
 #include <EChaine.h>
 #include <TriouError.h>
 #include <Motcle.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 #include <Deriv_Comm_Group.h>
 #include <Comm_Group.h>
 

@@ -23,8 +23,7 @@
 #define MaillerParallel_included
 
 #include <Interprete.h>
-#include <ArrOfInt.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 class Domaine;
 
 class MaillerParallel : public Interprete

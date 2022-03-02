@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef Schema_Comm_included
 #define Schema_Comm_included
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 #include <Vect.h>
 #include <Ref_Comm_Group.h>
 

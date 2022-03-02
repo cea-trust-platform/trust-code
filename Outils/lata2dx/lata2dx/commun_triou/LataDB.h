@@ -192,7 +192,7 @@ protected:
 };
 
 class LataDataFile;
-class ArrOfInt;
+#include <TRUSTArray.h>
 class LataDB
 {
 public:

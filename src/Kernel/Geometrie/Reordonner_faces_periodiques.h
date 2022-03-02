@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,11 +24,9 @@
 #define Reordonner_faces_periodiques_included
 
 #include <Interprete_geometrique_base.h>
-
+#include <TRUSTArray.h>
 class Domaine;
-class ArrOfDouble;
 class IntTab;
-class ArrOfInt;
 class Frontiere;
 
 // .DESCRIPTION

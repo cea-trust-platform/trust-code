@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -605,7 +605,7 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
         os << " adresse : " << (long)(&(obj));
         if(sub_type(ArrOfInt,obj))
           {
-            const ArrOfInt& toto = ref_cast(ArrOfInt,obj);
+            const ArrOfInt& toto = static_cast<const ArrOfInt&>(obj);
             tmp = obj.taille_memoire() +
                   (int) ((toto.size_array()*sizeof(int))/toto.ref_count());
             os << " TAILLE ArrOfInt : " << tmp<< " octets ";
@@ -622,7 +622,7 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
           {
             if(sub_type(ArrOfDouble,obj))
               {
-                const ArrOfDouble& toto = ref_cast(ArrOfDouble,obj);
+                const ArrOfDouble& toto = static_cast<const ArrOfDouble&>(obj);
                 tmp = obj.taille_memoire() +
                       (int) ((toto.size_array()*sizeof(double))/toto.ref_count());
                 os << " TAILLE ArrOfDouble : " << tmp<< " octets ";

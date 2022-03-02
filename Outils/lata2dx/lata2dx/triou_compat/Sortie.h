@@ -34,7 +34,7 @@
 using std::cerr;
 using std::endl;
 #define Sortie std::ostream
-class ArrOfInt;
+#include<ArrOfInt.h>
 // for Static_Int_Lists
 inline Sortie& operator<<(Sortie& is, const ArrOfInt& t)
 {

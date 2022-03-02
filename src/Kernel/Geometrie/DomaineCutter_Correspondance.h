@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #ifndef DomaineCutter_Correspondance_included
 #define DomaineCutter_Correspondance_included
 
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 
 // .DESCRIPTION
 //  Classe outil contenant la correspondance entre les indices de sommets et

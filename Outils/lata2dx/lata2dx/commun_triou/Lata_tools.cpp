@@ -28,8 +28,7 @@
 *****************************************************************************/
 
 #include <Lata_tools.h>
-#include <ArrOfInt.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 #include <ArrOfFloat.h>
 #include <ArrOfBit.h>
 #include <sstream>

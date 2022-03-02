@@ -23,7 +23,7 @@
 #ifndef Calculer_Moments_included
 #define Calculer_Moments_included
 
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 #include <Interprete_geometrique_base.h>
 
 class Calculer_Moments : public Interprete_geometrique_base

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,24 +23,17 @@
 #ifndef Esp_Dist_included
 #define Esp_Dist_included
 
-#include <assert.h>
-#include <ArrOfInt.h>
 #include <Vect_Descripteur.h>
+#include <TRUSTArray.h>
+#include <assert.h>
 
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
 // .DESCRIPTION
 //    Espace distant utilise pour la gestion des tableaux distribues
 //    Cette classe permet de decrire un espace distant d'un vecteur de donnees.
 //    Elle porte un int representant le numero de processeur a qui est destine la zone decrite.
 //    La description de cet espace distant consiste en un vecteur d'entiers contenant les indices des elements a envoyer.
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
-class Esp_Dist : public ArrOfInt
+class Esp_Dist : public TRUSTArray<int>
 {
-
   Declare_instanciable_sans_constructeur(Esp_Dist);
 public:
   Esp_Dist();
@@ -49,4 +42,5 @@ private:
   int PE_voisin_;
   VECT(Descripteur) desc_ed_;
 };
-#endif
+
+#endif /* Esp_Dist_included */

@@ -24,7 +24,7 @@
 #define Loi_horaire_included
 
 #include <Champ_Fonc_t.h>
-class ArrOfDouble;
+#include <TRUSTArray.h>
 class DoubleTab;
 class Schema_Temps_base;
 

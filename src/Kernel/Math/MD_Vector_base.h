@@ -26,7 +26,7 @@
 
 class MD_Vector;
 class Echange_EV_Options;
-class ArrOfInt;
+#include <TRUSTArray.h>
 class IntVect;
 class DoubleVect;
 class Schema_Comm_Vecteurs;

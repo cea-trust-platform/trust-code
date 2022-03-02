@@ -25,7 +25,7 @@
 
 
 #include <Interprete_geometrique_base.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 class Domaine;
 
 //////////////////////////////////////////////////////////////////////////////

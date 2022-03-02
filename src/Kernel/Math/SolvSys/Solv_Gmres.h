@@ -23,8 +23,7 @@
 #ifndef Solv_Gmres_included
 #define Solv_Gmres_included
 
-#include <ArrOfInt.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 #include <solv_iteratif.h>
 #include <DoubleVects.h>
 

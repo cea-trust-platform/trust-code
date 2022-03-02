@@ -42,7 +42,7 @@
 
 class Nom;
 class Domaine;
-class ArrOfDouble;
+#include <TRUSTArray.h>
 
 class Read_MED_For_Testing_No_Verify_Option : public LireMED
 {

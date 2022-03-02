@@ -79,8 +79,7 @@ const bool mymachine_msb =  false;
 #error "Byte order is neither __BIG_ENDIAN nor __LITTLE_ENDIAN : "
 #endif
 
-class ArrOfInt;
-class ArrOfDouble;
+#include <TRUSTArray.h>
 class ArrOfFloat;
 class ArrOfBit;
 BigEntier memory_size(const ArrOfInt &);

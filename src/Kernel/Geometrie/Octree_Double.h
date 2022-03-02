@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 #ifndef Octree_Double_included
 #define Octree_Double_included
 #include <Octree_Int.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 class DoubleTab;
 
 // .DESCRIPTION : Un octree permettant de chercher dans l'espace des elements ou des points

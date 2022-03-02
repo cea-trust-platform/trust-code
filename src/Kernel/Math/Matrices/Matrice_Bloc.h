@@ -34,7 +34,7 @@
 
 #include <Matrice_Base.h>
 #include <Vect_Matrice.h>
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 
 ////////////////////////////////////////////////////////////
 //

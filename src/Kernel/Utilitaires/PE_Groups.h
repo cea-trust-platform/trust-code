@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 #ifndef PE_Groups_included
 #define PE_Groups_included
 #include <Deriv_Comm_Group.h>
-class ArrOfInt;
+#include <TRUSTArray.h>
 // .DESCRIPTION        :
 //  Cette classe regroupe des fonctions permettant la creation, la
 //  destruction et le changement du groupe de processeurs actif.

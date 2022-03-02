@@ -23,7 +23,7 @@
 #define Corriger_frontiere_periodique_included
 #include <Interprete_geometrique_base.h>
 class Domaine;
-class ArrOfDouble;
+#include <TRUSTArray.h>
 class DoubleTab;
 // .DESCRIPTION
 //  Cet interprete doit etre utilise en sequentiel (avant decoupage) si

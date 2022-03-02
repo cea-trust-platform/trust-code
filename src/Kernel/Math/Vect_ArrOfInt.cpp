@@ -14,28 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        ArrOfInt.h
+// File:        Vect_ArrOfInt.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/10
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef ArrOfInt_included
-#define ArrOfInt_included
-
+#include <Vect_ArrOfInt.h>
 #include <TRUSTArray.h>
-
-//typedef TRUSTArray<int> ArrOfInt;
-
-class ArrOfInt : public TRUSTArray<int>
-{
-  Declare_instanciable_sans_constructeur(ArrOfInt);
-public:
-  ArrOfInt() : TRUSTArray<int>() { }
-  ArrOfInt(int n) : TRUSTArray<int>(n) { }
-
-  // see https://www.linuxtopia.org/online_books/programming_books/thinking_in_c++/Chapter14_018.html
-  inline ArrOfInt& operator=(int x) { TRUSTArray<int>::operator=(x); return *this; }
-};
-
-#endif /* ArrOfInt_included */
+Implemente_vect(ArrOfInt);

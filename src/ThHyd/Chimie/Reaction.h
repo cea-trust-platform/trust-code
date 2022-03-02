@@ -24,7 +24,7 @@
 #define Reaction_included
 
 #include <List.h>
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 #include <Champ_Fonc.h>
 #include <Ref_Champ_Inc_base.h>
 class Motcles;

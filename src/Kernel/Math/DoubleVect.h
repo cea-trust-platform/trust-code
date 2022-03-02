@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 #ifndef DoubleVect_included
 #define DoubleVect_included
 
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 #include <MD_Vector.h>
 
 // A nettoyer: les includes suivants ne sont pas necessaires a ce fichier
@@ -35,7 +35,7 @@
 #include <Vect.h>
 #include <IntVect.h>
 
-class DoubleVect : public ArrOfDouble
+class DoubleVect : public TRUSTArray<double>
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(DoubleVect);
 public:

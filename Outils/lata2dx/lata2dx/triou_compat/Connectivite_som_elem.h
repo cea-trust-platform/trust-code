@@ -31,7 +31,7 @@
 #include <arch.h>
 
 class IntTab;
-class ArrOfInt;
+#include<ArrOfInt.h>
 class Static_Int_Lists;
 
 void construire_connectivite_som_elem(const entier       nb_sommets,

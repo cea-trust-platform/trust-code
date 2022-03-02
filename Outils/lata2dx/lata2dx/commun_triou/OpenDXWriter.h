@@ -29,7 +29,6 @@
 
 #ifndef OpenDXWriter_H_
 #define OpenDXWriter_H_
-#include <ArrOfInt.h>
 #include <Lata_tools.h>
 
 class Domain;

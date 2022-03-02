@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 #include <Remove_elem.h>
 #include <Scatter.h>
 #include <IntLists.h>
-#include <ArrOfInt.h>
+#include <TRUSTArray.h>
 #include <NettoieNoeuds.h>
 #include <Param.h>
 

@@ -14,28 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        ArrOfDouble.h
+// File:        Vect_ArrOfDouble.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/10
+// Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef ArrOfDouble_included
-#define ArrOfDouble_included
-
+#include <Vect_ArrOfDouble.h>
 #include <TRUSTArray.h>
-
-//typedef TRUSTArray<double> ArrOfDouble;
-
-class ArrOfDouble : public TRUSTArray<double>
-{
-  Declare_instanciable_sans_constructeur(ArrOfDouble);
-public:
-  ArrOfDouble() : TRUSTArray<double>() { }
-  ArrOfDouble(int n) : TRUSTArray<double>(n) { }
-
-  // see https://www.linuxtopia.org/online_books/programming_books/thinking_in_c++/Chapter14_018.html
-  inline ArrOfDouble& operator=(double x) { TRUSTArray<double>::operator=(x); return *this; }
-};
-
-#endif /* ArrOfDouble_included */
+Implemente_vect(ArrOfDouble);

@@ -42,7 +42,7 @@
 
 class Nom;
 class Domaine;
-class ArrOfDouble;
+#include <TRUSTArray.h>
 
 class LireMED : public Interprete_geometrique_base
 {
