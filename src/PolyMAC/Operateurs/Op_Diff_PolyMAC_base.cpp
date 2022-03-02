@@ -68,9 +68,9 @@ void Op_Diff_PolyMAC_base::mettre_a_jour(double t)
 {
   Operateur_base::mettre_a_jour(t);
   //si le champ est constant en temps, alors pas besoin de recalculer nu_ et les interpolations
-  if (t <= t_last_maj_) return;
+  if (t <= t_last_nu_) return;
   if (!nu_constant_) nu_a_jour_ = 0;
-  t_last_maj_ = t;
+  t_last_nu_ = t;
 }
 
 

@@ -89,8 +89,8 @@ protected:
   REF(Zone_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
 
-  double t_last_maj_ = -1e10; //pour detecter quand on doit recalculer nu
-
+  double t_last_nu_ = -1e10; //pour detecter quand on doit recalculer nu, les variables auxiliaires
+  
   /* diffusivite aux elems */
   void update_nu() const; //mise a jour
   mutable DoubleTab nu_;

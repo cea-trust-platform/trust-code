@@ -47,6 +47,10 @@ public:
   {
     return le_solveur_ ;
   };
+  inline const SolveurSys& solveur() const
+  {
+    return le_solveur_ ;
+  };
   inline double& seuil_generation_solveur()
   {
     return  seuil_generation_solveur_ ;

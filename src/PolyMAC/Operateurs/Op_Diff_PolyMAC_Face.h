@@ -52,6 +52,14 @@ public :
 protected :
   DoubleVect porosite_e;
   DoubleVect porosite_f;
+  
+  /* calcul / mise a jour des variables auxiliaires en semi-implicite */
+  void update_aux() const;
+  mutable double t_last_aux_ = -1e10; /* dernier temps auquel on les a calcule */
+  mutable int use_aux_;               /* les variables auxiliaires sont-elles stockees dans var_aux ? */
+  mutable Matrice_Morse mat_aux;      /* systeme a resoudre : mat.var_aux = secmem */
+  mutable DoubleTab var_aux;
+  mutable SolveurSys solv_aux; //solveur
 };
 
 #endif /* Op_Diff_PolyMAC_Face_included */
