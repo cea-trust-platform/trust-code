@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,36 +14,72 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Diametre_bulles_constant.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/18
+// File:        Navier.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Cond_Lim
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Diametre_bulles_constant_included
-#define Diametre_bulles_constant_included
-#include <Correlation_base.h>
-#include <Champ_Fonc.h>
+#include <Navier.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Diametre_bulles_constant
-//      Contient un champ de bulles de diametre constant
-//////////////////////////////////////////////////////////////////////////////
+Implemente_base(Navier,"Navier",Cond_lim_base);
 
-class Diametre_bulles_constant : public Correlation_base
+
+// Description:
+//    Ecrit le type de l'objet sur un flot de sortie.
+// Precondition:
+// Parametre: Sortie& s
+//    Signification: un flot de sortie
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: entree/sortie
+// Retour: Sortie&
+//    Signification: le flot de sortie modifie
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+Sortie& Navier::printOn(Sortie& s ) const
 {
-  Declare_instanciable(Diametre_bulles_constant);
+  return s << que_suis_je() << "\n";
+}
 
-public:
+// Description:
+//    Type le champ a la frontiere en "Champ_front_uniforme"
+//    Ne lit rien sur le flot passe en parametre
+// Precondition:
+// Parametre: Entree& s
+//    Signification: un flot d'entree
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces: NON ACCEDE
+// Retour: Entree& s
+//    Signification: le flot d'entree
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition:
+Entree& Navier::readOn(Entree& s )
+{
+  return s ;
+}
 
-  const Champ_base& get_champ(const Motcle& nom) const override;
+// Description:
+//    NE FAIT RIEN
+// Precondition:
+// Parametre:
+//    Signification:
+//    Valeurs par defaut:
+//    Contraintes:
+//    Acces:
+// Retour: int
+//    Signification: renvoie toujours 1
+//    Contraintes:
+// Exception:
+// Effets de bord:
+// Postcondition: la methode ne modifie pas l'objet
+int Navier::compatible_avec_eqn(const Equation_base& ) const
+{
+  return 1;
+}
 
-protected:
-  double d_bulle_;
-  Champ_Fonc diametres_;
-
-};
-
-#endif

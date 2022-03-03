@@ -79,7 +79,7 @@ public :
   //tableaux de correspondance lies aux CLs
   //types de CL : 0 -> pas de CL
   //              1 -> Neumann ou Neumann_homogene
-  //              2 -> Symetrie
+  //              2 -> Navier
   //              3 -> Dirichlet
   //              4 -> Dirichlet_homogene
   void init_cl() const;

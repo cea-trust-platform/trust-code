@@ -23,12 +23,8 @@
 #ifndef Echange_impose_base_included
 #define Echange_impose_base_included
 
-
-
 #include <Cond_lim_base.h>
-
-
-
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -58,8 +54,8 @@ class Echange_impose_base  : public Cond_lim_base
 
 public:
 
-  double h_imp(int num) const;
-  double h_imp(int num,int k) const;
+  virtual double h_imp(int num) const;
+  virtual double h_imp(int num,int k) const;
   virtual double T_ext(int num) const;
   virtual double T_ext(int num,int k) const;
   void mettre_a_jour(double ) override;
@@ -81,11 +77,15 @@ public:
 
   inline Champ_front& T_ext();
   inline const Champ_front& T_ext() const;
-  inline Champ_front& h_imp();
-  inline const Champ_front& h_imp() const;
+  inline virtual Champ_front& h_imp();
+  inline virtual const Champ_front& h_imp() const;
 
   int compatible_avec_eqn(const Equation_base&) const override;
   int compatible_avec_discr(const Discretisation_base& ) const override;
+
+  // Utilise dans les CAL de calcul des flux pour les lois de paroi
+  virtual void liste_faces_loi_paroi(IntTab&) {};
+
 protected :
 
   Champ_front h_imp_;
@@ -156,6 +156,5 @@ inline const Champ_front& Echange_impose_base::h_imp() const
 {
   return h_imp_;
 }
-
 
 #endif

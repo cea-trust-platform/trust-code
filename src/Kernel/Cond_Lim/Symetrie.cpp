@@ -22,7 +22,7 @@
 
 #include <Symetrie.h>
 
-Implemente_instanciable(Symetrie,"Symetrie",Cond_lim_base);
+Implemente_instanciable(Symetrie,"Symetrie",Navier);
 
 
 // Description:
@@ -64,25 +64,5 @@ Entree& Symetrie::readOn(Entree& s )
   le_champ_front.typer("Champ_front_uniforme");
   le_champ_front->fixer_nb_comp(0);
   return s ;
-}
-
-
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-int Symetrie::compatible_avec_eqn(const Equation_base& ) const
-{
-  return 1;
 }
 

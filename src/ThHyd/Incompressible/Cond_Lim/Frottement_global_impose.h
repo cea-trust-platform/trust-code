@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,36 +14,31 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Diametre_bulles_constant.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/18
+// File:        Frottement_global_impose.h
+// Directory:   $TRUST_ROOT/ThHyd/Incompressible/Cond_Lim
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Diametre_bulles_constant_included
-#define Diametre_bulles_constant_included
-#include <Correlation_base.h>
-#include <Champ_Fonc.h>
+#ifndef Frottement_global_impose_included
+#define Frottement_global_impose_included
+
+#include <Frottement_impose_base.h>
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Diametre_bulles_constant
-//      Contient un champ de bulles de diametre constant
+//    Classe Frottement_global_impose
+//    Classe de base pour des conditions aux limites de type Navier (v.n nul, v_t par contrainte
+//    imposee) dans laquelle la contrainte imposee suit un coefficient de frottement :
+//    (force subie) = - coefficient_frottement * (vitesse tangentielle)_{face}
+// .SECTION voir aussi
+//    Navier
 //////////////////////////////////////////////////////////////////////////////
-
-class Diametre_bulles_constant : public Correlation_base
+class Frottement_global_impose : public Frottement_impose_base
 {
-  Declare_instanciable(Diametre_bulles_constant);
-
-public:
-
-  const Champ_base& get_champ(const Motcle& nom) const override;
-
-protected:
-  double d_bulle_;
-  Champ_Fonc diametres_;
-
+  Declare_base(Frottement_global_impose);
 };
 
 #endif

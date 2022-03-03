@@ -20,7 +20,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Frottement_externe_impose.h>
 #include <Linear_algebra_tools_impl.h>
+#include <Frottement_global_impose.h>
 #include <Champ_implementation_P1.h>
 #include <Echange_contact_CoviMAC.h>
 #include <Connectivite_som_elem.h>
@@ -844,20 +846,26 @@ void Zone_CoviMAC::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fc
                   else for (j = 0; j < n_ef; j++) for (sgn = e == f_e(f = s_f[k = se_f[i][j]], 0) ? 1 : -1, d = 0; d < D; d++) /* essai 2 : gradient non consistant */
                         X(j, d) = surf_fs[k] / vol_es[i] * sgn * nf(f, d) / fs(f);
 
-                  /* flux et equation */
+                  /* flux et equation. Remarque : les CLs complexes des equations scalaires sont gerees directement dans Op_Diff_CoviMAC_Elem */
                   for (j = 0; j < n_ef; j++)
                     {
                       k = se_f[i][j], f = s_f[k], sgn = e == f_e(f, 0) ? 1 : -1; //face et son indice
-                      int is_dir = fbord(f) >= 0 && (is_p ? sub_type(Neumann, cls[fcl(f, 1)].valeur()) || sub_type(Neumann_homogene, cls[fcl(f, 1)].valeur())
-                                                     : sub_type(Dirichlet, cls[fcl(f, 1)].valeur()) || sub_type(Dirichlet_homogene, cls[fcl(f, 1)].valeur()));
+                      const Cond_lim_base *cl = fcl(f, 0) ? &cls[fcl(f, 1)].valeur() : NULL; //si on est sur une CL, pointeur vers celle-ci
+                      int is_dir = cl && (is_p ? sub_type(Neumann, *cl) : sub_type(Dirichlet, *cl) || sub_type(Dirichlet_homogene, *cl)); //est-elle de Dirichlet?
                       for (l = 0; l < n_ef; l++)
                         {
                           x = sgn * nu_dot(nu, e, n, &nf(f, 0), &X(l, 0)) * surf_fs[k] / fs(f); //contribution au flux
                           if (sgn > 0) Ff(k, se_f[i][l], n) += x, Feb(k, i, n) -= x; //flux amont->aval
-                          if (!is_dir) Mf(n, se_f[i][l], k) += x, Meb(n, i, k) += x; //equation sur u_fs
+                          if (!is_dir) Mf(n, se_f[i][l], k) += x, Meb(n, i, k) += x; //equation sur u_fs (sauf si CL Dirichlet)
                         }
-                      if (is_dir) Mf(n, k, k) = Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) = 1; //Dirichlet -> equation u_fs = u_b
-                      else if (fbord(f) >= 0) Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) -= surf_fs[k]; //Neumann -> ajout du flux au bord
+                      if (!cl) continue; //rien de l'autre cote
+                      else if (is_dir) Mf(n, k, k) = Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) = 1; //Dirichlet -> equation u_fs = u_b
+                      else if (is_p ? !is_dir : sub_type(Neumann, *cl)) //Neumann -> ajout du flux au bord
+                        Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) -= surf_fs[k];
+                      else if (sub_type(Frottement_global_impose, *cl)) //Frottement_global_impose -> flux =  - coeff * v_e
+                        Meb(n, i, k) -= surf_fs[k] * ref_cast(Frottement_global_impose, *cl).coefficient_frottement(fcl(f, 2), n);
+                      else if (sub_type(Frottement_externe_impose, *cl)) //Frottement_externe_impose -> flux =  - coeff * v_f
+                        Mf(n, k, k) += surf_fs[k] * ref_cast(Frottement_global_impose, *cl).coefficient_frottement(fcl(f, 2), n);
                     }
                 }
             /* resolution de Mf.u_fs = Meb.u_eb : DGELSY, au cas ou */
@@ -899,7 +907,7 @@ void Zone_CoviMAC::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab& fc
         for (n = 0; n < N; n++) scale(n) = nu_dot(nu, f_e(f, 0), n, &nf(f, 0), &nf(f, 0)) / (fs(f) * vf(f)); //ordre de grandeur des coefficients
         for (j = fsten_d(f); j < fsten_d(f + 1); j++)
           {
-            for (skip = !full_stencil, n = 0; n < N; n++) skip &= std::fabs(phif_c(j, n)) < 1e-8 * scale(n); //que mettre ici?
+            for (skip = !full_stencil && fsten_eb(j) != f_e(f, 0), n = 0; n < N; n++) skip &= std::fabs(phif_c(j, n)) < 1e-8 * scale(n); //que mettre ici?
             if (skip) continue;
             for (n = 0; n < N; n++) phif_c(i, n) = phif_c(j, n);
             phif_e.append_line(fsten_eb(j)), i++;

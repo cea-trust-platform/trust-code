@@ -39,8 +39,8 @@ class Frottement_interfacial_bulles : public Frottement_interfacial_base
   Declare_instanciable(Frottement_interfacial_bulles);
 public:
   void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                           const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                           const DoubleTab& ndv, DoubleTab& coeff) const override;
+                   const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
+                   const DoubleTab& ndv, DoubleTab& coeff) const override;
 protected:
   double r_bulle_, C_d_;
 };

@@ -14,38 +14,63 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Symetrie.h
-// Directory:   $TRUST_ROOT/src/Kernel/Cond_Lim
-// Version:     /main/12
+// File:        Frottement_impose_base.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Incompressible/Cond_Lim
+// Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Symetrie_included
-#define Symetrie_included
+#ifndef Frottement_impose_base_included
+#define Frottement_impose_base_included
 
 #include <Navier.h>
+#include <Param.h>
+#include <TRUSTTab.h>
+#include <Frontiere_dis_base.h>
+#include <Ref_Frontiere_dis_base.h>
 
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Symetrie
-//    Sur les faces de symetrie on a les proprietes suivantes:
-//      - composante normale de la vitesse nulle
-//      - composante tangentielle de la contrainte nulle
-//        (condition de glissement)
-//      - les gradients des grandeurs scalaires sont nuls
-//    Dans une equation de transport d'un scalaire (temperature, concentration,
-//    K, epsilon), la condition Symetrie met les gradients des grandeurs
-//    scalaires a 0.
-//    Dans une equation de Navier_Stokes, elle impose la composante normale
-//    de la vitesse nulle (condition de glissement)
+//    Classe Frottement_impose_base
+//    Classe de base pour des conditions aux limites de type Navier (v.n nul, v_t par contrainte
+//    imposee) dans laquelle la contrainte imposee suit un coefficient de frottement :
+//    (force subie) = - coefficient_frottement * (vitesse tangentielle)
+//    La vitesse tangentielle peut etre soit prise directement a chaque face (classe Frottement_externe_impose),
+//    soit etre prise en l'element voisin de la face (classe Frottement_global_impose)
 // .SECTION voir aussi
-//    Cond_lim_base
+//    Navier
 //////////////////////////////////////////////////////////////////////////////
-class Symetrie  : public Navier
+class Frottement_impose_base : public Navier
 {
-  Declare_instanciable(Symetrie);
+
+  Declare_base(Frottement_impose_base);
+
+public:
+
+  virtual void liste_faces_loi_paroi(IntTab&) =0;
+  void associer_fr_dis_base(const Frontiere_dis_base& fr) override {la_frontiere_dis=fr;};
+  int initialiser(double temps) override =0 ;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& zcl) override { ma_zone_cl_dis=zcl;};
+  virtual double coefficient_frottement(int i) const=0;
+  virtual double coefficient_frottement(int i,int j) const=0;
+
+
+  // fonctions de cond_lim_base qui necessitent le champ_front qu'on met a zero car on fait abstraction du champ_front
+  void completer() override {};
+  void fixer_nb_valeurs_temporelles(int nb_cases) override {};
+  inline Frontiere_dis_base& frontiere_dis() override {return la_frontiere_dis;};
+  inline const Frontiere_dis_base& frontiere_dis() const override {return la_frontiere_dis;};
+  void changer_temps_futur(double temps,int i) override {};
+  void set_temps_defaut(double temps) override {};
+  void calculer_coeffs_echange(double temps) override {};
+  void verifie_ch_init_nb_comp() const override {};
+
+
+protected:
+  REF(Frontiere_dis_base) la_frontiere_dis;
+  double mon_temps = -1e10;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,36 +14,22 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Diametre_bulles_constant.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/18
+// File:        Frottement_global_impose.cpp
+// Directory:   $TRUST_ROOT/ThHyd/Incompressible/Cond_Lim
+// Version:     /main/28
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Diametre_bulles_constant_included
-#define Diametre_bulles_constant_included
-#include <Correlation_base.h>
-#include <Champ_Fonc.h>
+#include <Frottement_global_impose.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Diametre_bulles_constant
-//      Contient un champ de bulles de diametre constant
-//////////////////////////////////////////////////////////////////////////////
+Implemente_base(Frottement_global_impose,"Frottement_global_impose",Frottement_impose_base);
 
-class Diametre_bulles_constant : public Correlation_base
+Sortie& Frottement_global_impose::printOn(Sortie& s ) const
 {
-  Declare_instanciable(Diametre_bulles_constant);
+  return s << que_suis_je() << "\n";
+}
 
-public:
-
-  const Champ_base& get_champ(const Motcle& nom) const override;
-
-protected:
-  double d_bulle_;
-  Champ_Fonc diametres_;
-
-};
-
-#endif
+Entree& Frottement_global_impose::readOn(Entree& s )
+{
+  return s;
+}

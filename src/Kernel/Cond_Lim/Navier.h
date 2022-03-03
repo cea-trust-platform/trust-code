@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,35 +14,38 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Diametre_bulles_constant.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/18
+// File:        Navier.h
+// Directory:   $TRUST_ROOT/src/Kernel/Cond_Lim
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Diametre_bulles_constant_included
-#define Diametre_bulles_constant_included
-#include <Correlation_base.h>
-#include <Champ_Fonc.h>
+#ifndef Navier_included
+#define Navier_included
+
+#include <Cond_lim_base.h>
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    classe Diametre_bulles_constant
-//      Contient un champ de bulles de diametre constant
+//    classe Navier
+//    Condition aux limites sur la vitesse de type "Navier" :
+//      - composante normale de la vitesse nulle
+//      - composante tangentielle de la vitesse libre
+//      - contrainte imposee
+//    Exemples : Symetrie (contrainte nulle), Paroi_frottante (contrainte non nulle)
+// .SECTION voir aussi
+//    Cond_lim_base
 //////////////////////////////////////////////////////////////////////////////
-
-class Diametre_bulles_constant : public Correlation_base
+class Navier  : public Cond_lim_base
 {
-  Declare_instanciable(Diametre_bulles_constant);
 
-public:
+  Declare_base(Navier);
 
-  const Champ_base& get_champ(const Motcle& nom) const override;
+public :
 
-protected:
-  double d_bulle_;
-  Champ_Fonc diametres_;
+  int compatible_avec_eqn(const Equation_base&) const override;
 
 };
 

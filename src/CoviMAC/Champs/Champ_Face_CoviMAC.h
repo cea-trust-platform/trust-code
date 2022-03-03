@@ -82,7 +82,7 @@ public :
   //tableaux de correspondance lies aux CLs : fcl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
   //types de CL : 0 -> pas de CL
   //              1 -> Neumann ou Neumann_homogene
-  //              2 -> Symetrie
+  //              2 -> Navier
   //              3 -> Dirichlet
   //              4 -> Dirichlet_homogene
   inline const IntTab& fcl() const
