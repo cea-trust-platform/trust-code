@@ -70,7 +70,7 @@ define_soumission_batch()
       qos=normal
       [ "$prod" = 1 ] && cpu=86400
    else
-      qos=normal
+      qos=test
       cpu=1800
    fi
    # ccc_mpinfo : 

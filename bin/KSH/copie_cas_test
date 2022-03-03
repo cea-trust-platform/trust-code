@@ -279,7 +279,7 @@ then
    if [ $? = 0 ]
    then
       gunzip -c $test.lml.gz > ref.lml
-      compare_lata ref.lml $test.lml
+      compare_lata ref.lml $test.lml --max_delta
       if [ $? != 0 ]
       then
          echo "Attention! La fiche de validation est modifiee et change la reference..."

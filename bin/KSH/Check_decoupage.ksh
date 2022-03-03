@@ -194,7 +194,7 @@ do
 	    [ "$cpu" = 0 ] && echo $ECHO_OPTS "OK Validite...\c" | tee -a $log 
 	    if [ -f ref.lml ] && [ -f PAR_$cas*".lml" ]
 	    then
-	       compare_lata ref.lml PAR_$cas*".lml" 1>>$log 2>&1
+	       compare_lata ref.lml PAR_$cas*".lml" --max_delta 1>>$log 2>&1
 	       err=$?
 	    else
 	       err=0

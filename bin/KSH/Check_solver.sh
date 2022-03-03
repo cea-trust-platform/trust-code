@@ -288,7 +288,7 @@ do
 	       echo "No $ref.lml or $ref.lata found !" 
 	       exit -1
 	    fi
-	    compare_lata $ref.$format $jdd.$format 1>>$output 2>&1
+	    compare_lata $ref.$format $jdd.$format --max_delta 1>>$output 2>&1
 	    OK $? $output
 	 fi
 	 [ -f gmon.out ] && gprof $exec 1>$jdd.cpu
