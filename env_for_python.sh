@@ -11,7 +11,7 @@ fi
 [ $err = 1 ] && echo "Error: cannot load env_for_python.sh. TRUST not yet installed!" && return 1
 
 # Chargement TRUST ICoCo swig
-if [ "`echo $PYTHONPATH | grep -i Outils/ICoCo/ICoCo_src/share/swig/install/lib`" = "" ]
+if [ "`echo $PYTHONPATH | grep -i Outils/ICoCo/ICoCo_src/share/swig/install/lib`" = "" ] && [ "$TRUST_DISABLE_MPI" -eq 0 ]
 then
   if [ -f $TRUST_ROOT/Outils/ICoCo/ICoCo_src/share/swig/install/lib/_trusticoco.so ]
   then
