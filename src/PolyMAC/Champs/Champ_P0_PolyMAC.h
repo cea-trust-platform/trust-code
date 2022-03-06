@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,17 +46,17 @@ class Champ_P0_PolyMAC : public Champ_Inc_P0_base
 public :
 
   const Zone_PolyMAC&        zone_PolyMAC() const;
-  void                         associer_zone_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  Champ_base& affecter_(const Champ_base& ch);
-  int                       imprime(Sortie& , int ) const;
+  void                         associer_zone_dis_base(const Zone_dis_base&) override;
+  virtual const Zone_dis_base& zone_dis_base() const override;
+  Champ_base& affecter_(const Champ_base& ch) override;
+  int                       imprime(Sortie& , int ) const override;
 
-  virtual int fixer_nb_valeurs_nodales(int n); //valeurs aux elements
+  virtual int fixer_nb_valeurs_nodales(int n) override; //valeurs aux elements
   void init_auxiliary_variables(); //pour demander en plus les inconnues auxiliaires (valeurs aux faces)
 
   /* fonctions reconstruisant de maniere plus precise le champ aux faces */
-  DoubleTab& valeur_aux_faces(DoubleTab& vals) const;
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const;
+  DoubleTab& valeur_aux_faces(DoubleTab& vals) const override;
+  inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const override;
 
   //tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
   //types de CL : 0 -> pas de CL

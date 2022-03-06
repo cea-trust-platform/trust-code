@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,23 +41,20 @@ class Op_Diff_PolyMAC_Elem : public Op_Diff_PolyMAC_base
 
 public :
   Op_Diff_PolyMAC_Elem();
-  void completer();
+  void completer() override;
+  void init_op_ext() const; //remplissage de op_ext (ne peut pas etre fait dans completer(), trop tot)
   // virtual void calculer_flux_bord(const DoubleTab& inco) const { abort(); };
 
   /* interface {dimensionner,ajouter}_blocs */
-  int has_interface_blocs() const
-  {
-    return 1;
-  };
-  double calculer_dt_stab() const;
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-  void mettre_a_jour(double t);
+  double calculer_dt_stab() const override;
+  void dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void mettre_a_jour(double t) override;
 
   /* flux paroi_interface : q_pi(e, k, l) : flux de chaleur contribuant au changement de phase k->l dans l'element e */
   const DoubleTab& q_pi() const;
 
-  void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const { };
+  void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override { };
 
 private:
   /* tableau renvoye par q_pi(), rempli lors de ajouter_blocs() */

@@ -96,9 +96,9 @@ void Op_Grad_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
   sten.set_smart_resize(1), w2.set_smart_resize(1);
   for (e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++) if ((f = e_f(e, i)) < zone.nb_faces()) /* faces reelles seulement */
         {
-          for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten.append_line(N * f + n, M * e + m); /* bloc (face, elem )*/          
+          for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten.append_line(N * f + n, M * e + m); /* bloc (face, elem )*/
           for (j = 0; j < w2.dimension(1); j++) if (fcl(fb = e_f(e, j), 0) != 1 && w2(i, j, 0)) /* bloc (face, face) */
-            for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten.append_line(N * f + n, M * (ne_tot + fb) + m);          
+              for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten.append_line(N * f + n, M * (ne_tot + fb) + m);
         }
 
   /* allocation / remplissage */
@@ -112,7 +112,7 @@ void Op_Grad_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const Zone_PolyMAC& zone = ref_zone.valeur();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const DoubleTab& vfd = zone.volumes_entrelaces_dir(), &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(),
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &pf = zone.porosite_face();
   int i, j, e, eb, f, fb, ne_tot = zone.nb_elem_tot(), n, N = secmem.line_size(), m, M = press.line_size();
 
@@ -121,19 +121,19 @@ void Op_Grad_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   w2.set_smart_resize(1);
 
   for (e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++) if ((f = e_f(e, i)) < zone.nb_faces())
-    {
-      /* taux de vide a la face (identique a celui de Masse_PolyMAC_Face) */
-      double prefac = (e == f_e(f, 0) ? 1 : -1) * pf(f) * vfd(f, e != f_e(f, 0)) / fs(f); /* ponderation pour elimner p_f si on est en TPFA */
-      for (alpha = 0, j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) alpha(n) += vfd(f, j) * (alp ? (*alp)(eb, n) : 1) / vf(f);
-      for (coeff_e = 0, j = 0; j < w2.dimension(1); j++) if (w2(i, j, 0)) for (fb = e_f(e, j), n = 0, m = 0; n < N; n++, m += (M > 1))
         {
-          double fac = alpha(n) * w2(i, j, 0) * prefac;
-          secmem(f, n) -= fac * (press(ne_tot + fb, m) - press(e, m));
-          if (mat) (*mat)(N * f + n, M * (ne_tot + fb) + m) += fac; /* bloc (face, face) */
-          coeff_e(n) += fac;
+          /* taux de vide a la face (identique a celui de Masse_PolyMAC_Face) */
+          double prefac = (e == f_e(f, 0) ? 1 : -1) * pf(f) * vfd(f, e != f_e(f, 0)) / fs(f); /* ponderation pour elimner p_f si on est en TPFA */
+          for (alpha = 0, j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) alpha(n) += vfd(f, j) * (alp ? (*alp)(eb, n) : 1) / vf(f);
+          for (coeff_e = 0, j = 0; j < w2.dimension(1); j++) if (w2(i, j, 0)) for (fb = e_f(e, j), n = 0, m = 0; n < N; n++, m += (M > 1))
+                {
+                  double fac = alpha(n) * w2(i, j, 0) * prefac;
+                  secmem(f, n) -= fac * (press(ne_tot + fb, m) - press(e, m));
+                  if (mat) (*mat)(N * f + n, M * (ne_tot + fb) + m) += fac; /* bloc (face, face) */
+                  coeff_e(n) += fac;
+                }
+          if (mat) for (n = 0, m = 0; n < N; n++, m += (M > 1)) (*mat)(N * f + n, M * e + m) -= coeff_e(n); /* bloc (face, elem) */
         }
-      if (mat) for (n = 0, m = 0; n < N; n++, m += (M > 1)) (*mat)(N * f + n, M * e + m) -= coeff_e(n); /* bloc (face, elem) */      
-    }
 }
 
 int Op_Grad_PolyMAC_Face::impr(Sortie& os) const

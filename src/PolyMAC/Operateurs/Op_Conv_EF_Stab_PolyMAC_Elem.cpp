@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,8 +27,7 @@
 #include <Schema_Temps_base.h>
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
-#include <IntLists.h>
-#include <DoubleLists.h>
+#include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Symetrie.h>
@@ -130,15 +129,15 @@ double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
   const DoubleTab& vit = vitesse_->valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  int i, e, f, n, N = min(vit.line_size(), equation().inconnue().valeurs().line_size());
+  int i, e, f, n, N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
   DoubleTrav flux(N); //somme des flux pf * |f| * vf
 
   for (e = 0; e < zone.nb_elem(); e++)
     {
       for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
-          flux(n) += pf(f) * fs(f) * max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
+          flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
 
-      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = min(dt, pe(e) * ve(e) / flux(n));
+      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = std::min(dt, pe(e) * ve(e) / flux(n));
     }
 
   return Process::mp_min(dt);
@@ -148,7 +147,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
 {
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
-  int i, j, e, eb, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size();
+  int i, j, e, eb, f, n, N = equation().inconnue().valeurs().line_size();
   const Champ_Inc_base& cc = equation().champ_convecte();
 
   for (auto &&i_m : mats) if (i_m.first == "vitesse" || (cc.derivees().count(i_m.first) && !semi_impl.count(cc.le_nom().getString())))
@@ -160,13 +159,13 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
         if (i_m.first == "vitesse") /* vitesse */
           {
             for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl_v(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
-                  for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
+                    for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
           }
         else for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* inconnues scalaires */
                 for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * eb + m);
 
         tableau_trier_retirer_doublons(stencil);
-        Matrix_tools::allocate_morse_matrix(N * ne_tot, M * (i_m.first == "vitesse" ? nf_tot : ne_tot), stencil, mat);
+        Matrix_tools::allocate_morse_matrix(equation().inconnue().valeurs().size_totale(), cc.derivees().at(i_m.first).size_totale(), stencil, mat);
         i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
       }
 }

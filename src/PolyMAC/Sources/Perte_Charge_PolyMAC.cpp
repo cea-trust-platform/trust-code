@@ -73,30 +73,30 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 
   /* contribution de chaque element ou on applique la perte de charge */
   for (i = 0; i < (pssz ? pssz->nb_elem_tot() : zone.nb_elem_tot()); i++) for (n = 0; n < N; n++)
-    {
-      int e = pssz ? (*pssz)[i] : i;
-      for (d = 0; d < D; d++) pos(d) = xp(e, d);
+      {
+        int e = pssz ? (*pssz)[i] : i;
+        for (d = 0; d < D; d++) pos(d) = xp(e, d);
 
-      /* valeurs evaluees en l'element : nu, Dh, vecteur vitesse, Re, coefficients de perte de charge isotrope et directionel + la direction */
-      double dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
-      
-      for (n = 0; n < N; n++)
-        {
-          for (ve = 0, j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) for (d = 0; d < D; d++)
-            ve(d) += fs(f) * pf(f) / (ve(e) * pe(e)) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * vit(f, n);
-          double n2_ve = zone.dot(ve.addr(), ve.addr()), n_ve = sqrt(n2_ve), nu_e = nu(!C_nu * e, n), Re = max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
-          coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
-          /* coefficient correspondant a la bonne direction */
-          C(n) = C_iso * (C_dir - C_iso) * (n_ve > 1e-8 ? std::pow(zone.dot(ve.addr(), dir.addr()) , 2) / n2_ve : 0);
-        }
+        /* valeurs evaluees en l'element : nu, Dh, vecteur vitesse, Re, coefficients de perte de charge isotrope et directionel + la direction */
+        double dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
 
-      /* contributions aux faces de e */
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces())
+        for (n = 0; n < N; n++)
           {
-            for (n = 0; n < N; n++)secmem(f, n) -= pf(f) * vfd(f, e != f_e(f, 0)) * C(n) * vit(f, n);
-            if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += pf(f) * vfd(f, e != f_e(f, 0)) * C(n);
+            for (ve = 0, j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) for (d = 0; d < D; d++)
+                ve(d) += fs(f) * pf(f) / (ve(e) * pe(e)) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * vit(f, n);
+            double n2_ve = zone.dot(ve.addr(), ve.addr()), n_ve = sqrt(n2_ve), nu_e = nu(!C_nu * e, n), Re = std::max( n_ve * dh_e / nu_e, 1e-10), C_iso, C_dir, v_dir;
+            coeffs_perte_charge(ve, pos, t, n_ve, dh_e, nu_e, Re, C_iso, C_dir, v_dir, dir);
+            /* coefficient correspondant a la bonne direction */
+            C(n) = C_iso * (C_dir - C_iso) * (n_ve > 1e-8 ? std::pow(zone.dot(ve.addr(), dir.addr()) , 2) / n2_ve : 0);
           }
-    }
+
+        /* contributions aux faces de e */
+        for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces())
+            {
+              for (n = 0; n < N; n++)secmem(f, n) -= pf(f) * vfd(f, e != f_e(f, 0)) * C(n) * vit(f, n);
+              if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += pf(f) * vfd(f, e != f_e(f, 0)) * C(n);
+            }
+      }
 }
 
 void Perte_Charge_PolyMAC::completer()

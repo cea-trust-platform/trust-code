@@ -103,7 +103,7 @@ void Champ_Face_PolyMAC::init_auxiliary_variables()
   const Zone_PolyMAC& zone = ref_cast( Zone_PolyMAC,ref_zone_vf_.valeur());
   for (int n = 0; n < nb_valeurs_temporelles(); n++)
     {
-      DoubleTab &vals = futur(n);
+      DoubleTab& vals = futur(n);
       vals.set_md_vector(MD_Vector()); //on enleve le MD_Vector...
       vals.resize_dim0(zone.mdv_faces_aretes.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
       vals.set_md_vector(zone.mdv_faces_aretes); //...et on remet le bon MD_Vector
@@ -198,15 +198,15 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes();
-  const IntTab &e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int e, f, j, r;
 
   val = 0;
   for (e = 0; e < val.dimension(0); e++) for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-        {
-          const double coef = is_vit ? pf(f) / pe(e) : 1.0;
-          for (r = 0; r < dimension; r++) val(e, r) += fs(f) / ve(e) * (xv(f, r) - xp(e, r)) * (e == f_e(f, 0) ? 1 : -1) * inco(f) * coef;
-        }
+      {
+        const double coef = is_vit ? pf(f) / pe(e) : 1.0;
+        for (r = 0; r < dimension; r++) val(e, r) += fs(f) / ve(e) * (xv(f, r) - xp(e, r)) * (e == f_e(f, 0) ? 1 : -1) * inco(f) * coef;
+      }
 }
 
 /* vitesse aux elements sur une liste d'elements */
@@ -215,7 +215,7 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_pol
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,zone_vf());
   const DoubleTab& xv = zone.xv(), &xp = zone.xp();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes();
-  const IntTab &e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
   int e, f, j, r;
 
   for (int poly = 0; poly < les_polys.size(); poly++)

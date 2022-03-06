@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,15 +57,13 @@ class Op_Diff_PolyMAC_base : public Operateur_Diff_base
   Declare_base(Op_Diff_PolyMAC_base);
 
 public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& );
+  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
 
-  void associer_diffusivite(const Champ_base& );
-  void completer();
+  void associer_diffusivite(const Champ_base& ) override;
+  void completer() override;
 
-  mutable IntTab pe_ext; // tableau aux faces de bord : (indice dans op_ext, indice d'element) pour les faces de type Echange_contact
-
-  const Champ_base& diffusivite() const;
-  virtual void mettre_a_jour(double t);
+  const Champ_base& diffusivite() const override;
+  void mettre_a_jour(double t) override;
 
   /* methodes surchargeables dans des classes derivees pour modifier nu avant de calculer les gradients dans update_nu_xwh */
   virtual int dimension_min_nu() const /* dimension minimale de nu / nu_bord par composante */
@@ -74,6 +72,24 @@ public:
   };
   virtual void modifier_nu(DoubleTab& ) const { };
 
+  /* versions etendues de dimensionner/ajouter_blocs permettant de traiter les seules variables auxiliaires */
+  virtual void dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl = {}) const = 0;
+  virtual void ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const = 0;
+
+  /* implementations de dimensionner/ajouter_blocs a partir de ces methodes */
+  int has_interface_blocs() const override
+  {
+    return 1;
+  };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override
+  {
+    dimensionner_blocs_ext(0, matrices, semi_impl);
+  }
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override
+  {
+    ajouter_blocs_ext(0, matrices, secmem, semi_impl);
+  }
+
   /* diffusivite / conductivite. Attension : stockage nu(element, composante[, dim 1[, dim 2]]) */
   inline const DoubleTab& nu() const /* aux elements */
   {
@@ -81,8 +97,8 @@ public:
     return nu_;
   }
 
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  virtual int impr(Sortie& os) const;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  int impr(Sortie& os) const override;
 
 protected:
   REF(Zone_PolyMAC) la_zone_poly_;
@@ -90,12 +106,20 @@ protected:
   REF(Champ_base) diffusivite_;
 
   double t_last_nu_ = -1e10; //pour detecter quand on doit recalculer nu, les variables auxiliaires
-  
+
   /* diffusivite aux elems */
   void update_nu() const; //mise a jour
   mutable DoubleTab nu_;
 
   mutable int nu_constant_, nu_a_jour_ = 0; //nu constant / nu a jour / phif a jour
+
+  /* gestion des variables auxiliaires en semi-implicite */
+  void update_aux(double t) const;
+  mutable double t_last_aux_ = -1e10; /* dernier temps auquel on les a calcule */
+  mutable int use_aux_;               /* les variables auxiliaires sont-elles stockees dans var_aux ? */
+  mutable Matrice_Bloc mat_aux;      /* systeme a resoudre : mat.var_aux = secmem */
+  mutable DoubleTab var_aux;
+  mutable SolveurSys solv_aux; //solveur
 
   mutable SFichier Flux, Flux_moment, Flux_sum;
 };

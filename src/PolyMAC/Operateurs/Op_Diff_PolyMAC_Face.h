@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,27 +39,20 @@ class Op_Diff_PolyMAC_Face : public Op_Diff_PolyMAC_base
   Declare_instanciable( Op_Diff_PolyMAC_Face ) ;
 
 public :
-  void completer();
-  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
-  int has_interface_blocs() const
+  void completer() override;
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { };
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  double calculer_dt_stab() const;
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-  void check_multiphase_compatibility() const {}; //ok
+  double calculer_dt_stab() const override;
+  void dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void check_multiphase_compatibility() const override {}; //ok
 protected :
   DoubleVect porosite_e;
   DoubleVect porosite_f;
-  
-  /* calcul / mise a jour des variables auxiliaires en semi-implicite */
-  void update_aux() const;
-  mutable double t_last_aux_ = -1e10; /* dernier temps auquel on les a calcule */
-  mutable int use_aux_;               /* les variables auxiliaires sont-elles stockees dans var_aux ? */
-  mutable Matrice_Morse mat_aux;      /* systeme a resoudre : mat.var_aux = secmem */
-  mutable DoubleTab var_aux;
-  mutable SolveurSys solv_aux; //solveur
+
 };
 
 #endif /* Op_Diff_PolyMAC_Face_included */

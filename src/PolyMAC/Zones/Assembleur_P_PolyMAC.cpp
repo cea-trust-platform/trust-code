@@ -100,17 +100,17 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
   DoubleTrav w2; //matrice W2 (de Zone_PolyMAC) par element
   w2.set_smart_resize(1);
-  
+
   /* 1. stencil de la matrice en pression : seulement au premier passage */
   if (!stencil_done) /* premier passage: calcul */
     {
       IntTrav stencil(0, 2);
       stencil.set_smart_resize(1);
       for (e = 0; e < ne; e++) for (stencil.append_line(e, e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* blocs "elem-elem" et "elem-face" */
-            stencil.append_line(e, ne_tot + f); //toutes les faces (sauf bord de Neumann)
+          stencil.append_line(e, ne_tot + f); //toutes les faces (sauf bord de Neumann)
       for (e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(1); i++) /* blocs "face-elem" et "face-face" */
-            if (fcl(f = e_f(e, i), 0) == 1 && f < nf) stencil.append_line(ne_tot + f, ne_tot + f); //Neumann : ligne "dpf = 0"
-            else if (f < nf) for (stencil.append_line(ne_tot + f, e), j = 0; j < w2.dimension(1); j++) /* sinon : ligne sum w2_{ff'} (pf' - pe) */
+          if (fcl(f = e_f(e, i), 0) == 1 && f < nf) stencil.append_line(ne_tot + f, ne_tot + f); //Neumann : ligne "dpf = 0"
+          else if (f < nf) for (stencil.append_line(ne_tot + f, e), j = 0; j < w2.dimension(1); j++) /* sinon : ligne sum w2_{ff'} (pf' - pe) */
               if (w2(i, j, 0)) stencil.append_line(ne_tot + f, ne_tot + e_f(e, j));
 
       tableau_trier_retirer_doublons(stencil);
@@ -134,12 +134,12 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
       for (i = 0; i < w2.dimension(0); i++, m_ee += m_ef)
         {
           for (m_ef = 0, m_fe = 0, f = e_f(e, i), j = 0; j < w2.dimension(1); j++) if (w2(i, j, 0))
-            {
-              fb = e_f(e, j);
-              if (f < zone.nb_faces() && fcl(f, 0) != 1) mat(ne_tot + f, ne_tot + fb) += w2(i, j, 0); //interne ou Dirichlet
-              else if (f < zone.nb_faces() && i == j) mat(ne_tot + f, ne_tot + fb) = 1; //f Neumann : ligne dpf = 0
-              m_ef += (diag.size() ? pf(fb) * vf(fb) / diag(fb) : 1) * w2(i, j, 0),  m_fe += w2(i, j, 0); //accumulation dans m_ef, m_fe
-            }
+              {
+                fb = e_f(e, j);
+                if (f < zone.nb_faces() && fcl(f, 0) != 1) mat(ne_tot + f, ne_tot + fb) += w2(i, j, 0); //interne ou Dirichlet
+                else if (f < zone.nb_faces() && i == j) mat(ne_tot + f, ne_tot + fb) = 1; //f Neumann : ligne dpf = 0
+                m_ef += (diag.size() ? pf(fb) * vf(fb) / diag(fb) : 1) * w2(i, j, 0),  m_fe += w2(i, j, 0); //accumulation dans m_ef, m_fe
+              }
           if (e < zone.nb_elem()) mat(e, ne_tot + f) -= m_ef;
           if (f < zone.nb_faces() && fcl(f, 0) != 1) mat(ne_tot + f, e) -= m_fe; //si f non Neumann : coef (face, elem)
         }
@@ -194,14 +194,14 @@ int Assembleur_P_PolyMAC::assembler_QC(const DoubleTab& tab_rho, Matrice& matric
   return 1;
 }
 
-void Assembleur_P_PolyMAC::modifier_secmem_pour_incr_p(const DoubleTab &press, const double fac, DoubleTab &secmem) const
+void Assembleur_P_PolyMAC::modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& secmem) const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
   const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
-  const IntTab& fcl = ch.fcl();  
+  const IntTab& fcl = ch.fcl();
   for (int f = 0, ne_tot = zone.nb_elem_tot(); f < zone.premiere_face_int(); f++) if (fcl(f, 0) == 1)
-    secmem(ne_tot + f) = (ref_cast(Neumann_sortie_libre, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2)) - press(ne_tot + f)) / fac;
+      secmem(ne_tot + f) = (ref_cast(Neumann_sortie_libre, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2)) - press(ne_tot + f)) / fac;
 }
 
 int Assembleur_P_PolyMAC::modifier_solution(DoubleTab& pression)

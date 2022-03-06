@@ -43,13 +43,13 @@ class Terme_Source_PolyMAC_base : public Source_base
 public:
 
   inline Terme_Source_PolyMAC_base(const Iterateur_Source_PolyMAC_base&);
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const { }; //rien
-  inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-  void completer();
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void completer() override;
 
 protected:
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,23 +56,23 @@ class Op_Div_PolyMAC : public Operateur_Div_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&);
+  void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&) override;
 
   /* interface ajouter_blocs */
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
   /* contrairement au cas usuel, ces methodes ne peuvent pas etre reimplementees a partir d'ajouter_blocs(),
      car elles sont souvent appelees avec un tableau inco arbitraire */
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const;
-  
-  virtual int impr(Sortie& os) const;
-  void volumique(DoubleTab& ) const;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+
+  virtual int impr(Sortie& os) const override;
+  void volumique(DoubleTab& ) const override;
 
 protected:
 

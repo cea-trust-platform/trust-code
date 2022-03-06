@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,20 +49,20 @@ class Op_Grad_PolyMAC_Face : public Operateur_Grad_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& );
-  void completer();
+  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  void completer() override;
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  virtual void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
-  int impr(Sortie& os) const;
+  int impr(Sortie& os) const override;
 
-  void check_multiphase_compatibility() const { }; //ok
+  void check_multiphase_compatibility() const override { }; //ok
 
 private:
 

@@ -59,7 +59,7 @@ public:
   virtual int modifier_secmem(DoubleTab&)=0;
   /* prise en compte des variations de pression aux CLs lors du calcul d'increments de pression.
      Utilise seulement par PolyMAC. fac est le coefficient tel que p_final - press = fac * sol */
-  virtual void modifier_secmem_pour_incr_p(const DoubleTab &press, const double fac, DoubleTab &incr) const { };
+  virtual void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const { };
   virtual int modifier_solution(DoubleTab&)=0;
 
 private:

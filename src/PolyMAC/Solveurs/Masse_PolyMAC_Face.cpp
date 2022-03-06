@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -161,11 +161,11 @@ DoubleTab& Masse_PolyMAC_Face::corriger_solution(DoubleTab& x, const DoubleTab& 
   const DoubleTab& nf = zone.face_normales();
   const DoubleVect& fs = zone.face_surfaces();
   int f, n, N = x.line_size(), d, D = dimension;
-  
+
   for (f = 0; f < zone.nb_faces_tot(); f++)
     if (fcl(f, 0) == 2 || fcl(f, 0) == 4) for (n = 0; n < N; n++) x(f, n) = incr ? -y(f, n) : 0; //Dirichlet homogene / Symetrie: on revient a 0
     else if (fcl(f, 0) == 3) for (n = 0; n < N; n++) for (x(f, n) = incr ? -y(f, n) : 0, d = 0; d < D; d++) //Dirichlet : valeur de la CL
-      x(f, n) += nf(f, d) / fs(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
+          x(f, n) += nf(f, d) / fs(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
 
   return x;
 }

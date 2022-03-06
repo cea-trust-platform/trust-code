@@ -494,7 +494,7 @@ void Zone_PolyMAC::discretiser()
   volumes_entrelaces_dir_.resize(0, 2), creer_tableau_faces(volumes_entrelaces_dir_);
   for (int f = 0, i, e; f < nb_faces(); f++)
     for (i = 0; i < 2 && (e = face_voisins_(f, i)) >= 0; volumes_entrelaces_(f) += volumes_entrelaces_dir_(f, i), i++)
-      volumes_entrelaces_dir_(f, i) = dabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0)));
+      volumes_entrelaces_dir_(f, i) = std::abs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0)));
   volumes_entrelaces_.echange_espace_virtuel(), volumes_entrelaces_dir_.echange_espace_virtuel();
 
   Zone_VF::calculer_porosites();
@@ -869,10 +869,10 @@ DoubleVect& Zone_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) 
 }
 
 /* "clamping" a 0 des coeffs petits dans M1/W1/M2/W2 */
-inline void clamp(DoubleTab &m)
+inline void clamp(DoubleTab& m)
 {
   for (int i = 0; i < m.dimension(0); i++) for (int j = 0; j < m.dimension(1); j++) for (int n = 0; n < m.dimension(2); n++)
-    if (1e6 * std::abs(m(i, j, n)) < std::abs(m(i, i, n)) + std::abs(m(j, j, n))) m(i, j, n) = 0;
+        if (1e6 * std::abs(m(i, j, n)) < std::abs(m(i, i, n)) + std::abs(m(j, j, n))) m(i, j, n) = 0;
 }
 
 //matrices locales par elements (operateurs de Hodge) permettant de faire des interpolations :
@@ -888,13 +888,13 @@ void Zone_PolyMAC::M2(const DoubleTab *nu, int e, DoubleTab& m2) const
   m2.resize(n_f, n_f, N), m2 = 0;
   DoubleTrav v_e(n_f, D), v_ef(n_f, n_f, D); //interpolations du vecteur complet : non stabilisee en e, stabilisee en (e, f)
   for (i = 0; i < n_f; i++) for (f = e_f(e, i), d = 0; d < D; d++) v_e(i, d) = (xf(f, d) - xe(e, d)) / ve(e);
-  for (i = 0; i < n_f; i++) for (f = e_f(e, i), prefac = D * beta / dabs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))), j = 0; j < n_f; j++)
+  for (i = 0; i < n_f; i++) for (f = e_f(e, i), prefac = D * beta / std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))), j = 0; j < n_f; j++)
       for (fac = prefac * ((j == i) - (e == f_e(f, 0) ? 1 : -1) * dot(&nf(f, 0), &v_e(j, 0))), d = 0; d < D; d++)
         v_ef(i, j, d) = v_e(j, d) + fac * (xf(f, d) - xe(e, d));
   //matrice!
   for (m2 = 0, i = 0; i < n_f; i++) for (j = 0; j < n_f; j++)
       if (j < i) for (n = 0; n < N; n++) m2(i, j, n) = m2(j, i, n); //sous la diagonale -> avec l'autre cote
-      else for (k = 0; k < n_f; k++) for (f = e_f(e, k), fac = dabs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
+      else for (k = 0; k < n_f; k++) for (f = e_f(e, k), fac = std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
             m2(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ef(k, i, 0), &v_ef(k, j, 0));
   clamp(m2);
 }
@@ -911,13 +911,13 @@ void Zone_PolyMAC::W2(const DoubleTab *nu, int e, DoubleTab& w2) const
   w2.resize(n_f, n_f, N), w2 = 0;
   DoubleTrav v_e(n_f, D), v_ef(n_f, n_f, D); //interpolations du vecteur complet : non stabilisee en e, stabilisee en (e, f)
   for (i = 0; i < n_f; i++) for (f = e_f(e, i), d = 0; d < D; d++) v_e(i, d) = (e == f_e(f, 0) ? 1 : -1) * nf(f, d) / ve(e);
-  for (i = 0; i < n_f; i++) for (f = e_f(e, i), prefac = D * beta * (e == f_e(f, 0) ? 1 : -1) / dabs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))), j = 0; j < n_f; j++)
+  for (i = 0; i < n_f; i++) for (f = e_f(e, i), prefac = D * beta * (e == f_e(f, 0) ? 1 : -1) / std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))), j = 0; j < n_f; j++)
       for (fac = prefac * ((j == i) - dot(&xf(f, 0), &v_e(j, 0), &xe(e, 0))), d = 0; d < D; d++)
         v_ef(i, j, d) = v_e(j, d) + fac * nf(f, d);
   //matrice!
   for (i = 0; i < n_f; i++) for (j = 0; j < n_f; j++)
       if (j < i) for (n = 0; n < N; n++) w2(i, j, n) = w2(j, i, n); //sous-diagonale -> on copie l'autre cote
-      else for (k = 0; k < n_f; k++) for (f = e_f(e, k), fac = dabs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
+      else for (k = 0; k < n_f; k++) for (f = e_f(e, k), fac = std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
             w2(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ef(k, i, 0), &v_ef(k, j, 0));
   clamp(w2);
 }
@@ -1014,8 +1014,8 @@ void Zone_PolyMAC::init_equiv() const
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
           {
-            if (dabs(dabs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6) continue; //normales colineaires?
-            for (ok = 1, d = 0; d < D; d++) ok &= dabs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
+            if (std::abs(std::abs(dot(&nf(f1, 0), &nf(f2, 0)) / (fs(f1) * fs(f2))) - 1) > 1e-6) continue; //normales colineaires?
+            for (ok = 1, d = 0; d < D; d++) ok &= std::abs((xv_(f1, d) - xp_(e1, d)) - (xv_(f2, d) - xp_(e2, d))) < 1e-12; //xv - xp identiques?
             if (!ok) continue;
             equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
           }

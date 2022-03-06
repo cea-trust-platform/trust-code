@@ -65,7 +65,7 @@ void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const DoubleTab& vals = la_source->valeurs(), &rho = equation().milieu().masse_volumique().passe(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(),
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const DoubleVect& pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
   int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;

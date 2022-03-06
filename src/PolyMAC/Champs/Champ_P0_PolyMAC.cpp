@@ -131,16 +131,16 @@ int Champ_P0_PolyMAC::fixer_nb_valeurs_nodales(int n)
 void Champ_P0_PolyMAC::init_auxiliary_variables()
 {
   const Zone_PolyMAC& zone = ref_cast( Zone_PolyMAC,la_zone_VF.valeur());
-  const IntTab &f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins();
   for (int n = 0; n < nb_valeurs_temporelles(); n++)
     {
-      DoubleTab &vals = futur(n);
+      DoubleTab& vals = futur(n);
       vals.set_md_vector(MD_Vector()); //on enleve le MD_Vector...
       vals.resize_dim0(zone.mdv_elems_faces.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
       vals.set_md_vector(zone.mdv_elems_faces); //...et on remet le bon MD_Vector
       /* initialisation des variables aux faces : par celle de l'elem amont */
       for (int f = 0, ne_tot = zone.nb_elem_tot(); f < zone.nb_faces(); f++) for (int m = 0, e = f_e(f, 0); m < vals.dimension(1); m++)
-        vals(ne_tot + f, m) = vals(e, m);
+          vals(ne_tot + f, m) = vals(e, m);
       vals.echange_espace_virtuel();
     }
 }

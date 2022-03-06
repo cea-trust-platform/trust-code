@@ -23,20 +23,31 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Linear_algebra_tools_impl.h>
 #include <Echange_contact_PolyMAC.h>
+#include <Echange_contact_PolyMAC.h>
+#include <Schema_Implicite_base.h>
 #include <Op_Diff_PolyMAC_base.h>
 #include <Check_espace_virtuel.h>
 #include <Op_Diff_PolyMAC_Face.h>
+#include <ConstDoubleTab_parts.h>
+#include <Op_Diff_PolyMAC_Face.h>
+#include <MD_Vector_composite.h>
+#include <Champ_Face_PolyMAC.h>
 #include <Champ_Don_Fonc_xyz.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Flux_parietal_base.h>
+#include <Flux_parietal_base.h>
 #include <Schema_Temps_base.h>
 #include <Champ_P0_PolyMAC.h>
+#include <Champ_P0_PolyMAC.h>
+#include <MD_Vector_tools.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <communications.h>
 #include <EcrFicPartage.h>
 #include <Probleme_base.h>
 #include <Pb_Multiphase.h>
+#include <Pb_Multiphase.h>
+#include <Simpler_Base.h>
 #include <Zone_PolyMAC.h>
 #include <Milieu_base.h>
 #include <Matrice33.h>
@@ -44,6 +55,7 @@
 #include <Vecteur3.h>
 #include <SFichier.h>
 #include <cfloat>
+#include <deque>
 
 Implemente_base(Op_Diff_PolyMAC_base,"Op_Diff_PolyMAC_base",Operateur_Diff_base);
 
@@ -78,7 +90,7 @@ void Op_Diff_PolyMAC_base::completer()
 {
   Operateur_base::completer();
   const Equation_base& eq = equation();
-  int N = eq.inconnue().valeurs().line_size(), D = dimension, N_nu = max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
+  int N = eq.inconnue().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), diffusivite().valeurs().line_size());
   if (N_nu == N) nu_.resize(0, N); //isotrope
   else if (N_nu == N * D) nu_.resize(0, N, D); //diagonal
   else if (N_nu == N * D * D) nu_.resize(0, N, D, D); //complet
@@ -263,10 +275,48 @@ void Op_Diff_PolyMAC_base::update_nu() const
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
   const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0, i = 0; n < N; n++) for (m = 0; m < mult; m++, i++)
-        nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? max((*alp)(e, n), 1e-8) : 1);
+        nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? std::max((*alp)(e, n), 1e-8) : 1);
 
   /* modification par une classe fille */
   modifier_nu(nu_);
 
   nu_a_jour_ = 1;
+}
+
+/* calcul des variables auxiliaires en semi-implicite */
+void Op_Diff_PolyMAC_base::update_aux(double t) const
+{
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  int i, j, n_ext = op_ext.size(), first_run = mat_aux.nb_lignes() == 0; /* nombre d'operateurs */
+  if (first_run) for (mat_aux.dimensionner(n_ext, n_ext), i = 0; i < n_ext; i++) for (j = 0; j < n_ext; j++)
+        mat_aux.get_bloc(i, j).typer("Matrice_Morse");
+  std::vector<const Op_Diff_PolyMAC_base *> opp_ext(n_ext);
+  for (i = 0; i < n_ext; i++) opp_ext[i] = &ref_cast(Op_Diff_PolyMAC_base, *op_ext[i]);
+  std::vector<matrices_t> lines(n_ext); /* sous forme d'arguments pour dimensionner/assembler_blocs */
+  for (i = 0; i < n_ext; i++) for (j = 0; j < n_ext; j++)
+      lines[i][nom_inco + (j == i ? "" : "_" + op_ext[j]->equation().probleme().le_nom().getString())] = &ref_cast(Matrice_Morse, mat_aux.get_bloc(i, j).valeur());
+  if (first_run) for (i = 0; i < n_ext; i++) opp_ext[i]->dimensionner_blocs_ext(1, lines[i]); //dimensionnement
+
+  /* inconnue / second membre */
+  std::deque<ConstDoubleTab_parts> v_part;
+  for (i = 0; i < n_ext; i++) v_part.emplace_back(op_ext[i]->equation().inconnue().valeurs());
+  MD_Vector_composite mdc; //MD_Vector composite : a partir de tous les seconds blocs
+  for (i = 0; i < n_ext; i++) mdc.add_part(v_part[i][1].get_md_vector(), v_part[i][1].line_size());
+  MD_Vector mdv;
+  mdv.copy(mdc);
+  DoubleTrav inco, secmem;
+  MD_Vector_tools::creer_tableau_distribue(mdv, inco), MD_Vector_tools::creer_tableau_distribue(mdv, secmem);
+  DoubleTab_parts p_inc(inco), p_sec(secmem);
+  for (i = 0; i < n_ext; i++) p_inc[i] = v_part[i][1];
+
+  /* assemblage */
+  for (i = 0; i < n_ext; i++) opp_ext[i]->ajouter_blocs_ext(1, lines[i], p_sec[i]);
+  /* passage incremente/inconnues */
+  mat_aux.ajouter_multvect(inco, secmem);
+  /* resolution */
+  if (first_run) solv_aux = ref_cast(Parametre_implicite, equation().parametre_equation().valeur()).solveur(); //on copie le solveur de l'equation
+  solv_aux.valeur().reinit();
+  solv_aux.resoudre_systeme(mat_aux, secmem, inco);
+  /* maj de var_aux / t_last_aux dans tous les operateurs */
+  for (i = 0; i < n_ext; i++) opp_ext[i]->var_aux = p_inc[i], opp_ext[i]->t_last_aux_ = t, opp_ext[i]->use_aux_ = 1;
 }

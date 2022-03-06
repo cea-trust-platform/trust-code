@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,20 +40,20 @@ class Op_Conv_EF_Stab_PolyMAC_Face : public Op_Conv_PolyMAC_base
   Declare_instanciable( Op_Conv_EF_Stab_PolyMAC_Face ) ;
 
 public :
-  void completer();
-  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const { };
-  double calculer_dt_stab() const;
+  void completer() override;
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { };
+  double calculer_dt_stab() const override;
 
   /* interface ajouter_blocs */
-  int has_interface_blocs() const
+  int has_interface_blocs() const override
   {
     return 1;
   };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
-  void check_multiphase_compatibility() const { }; //of course
-  void set_incompressible(const int flag)
+  void check_multiphase_compatibility() const override { }; //of course
+  void set_incompressible(const int flag) override
   {
     incompressible_ = flag;
   }

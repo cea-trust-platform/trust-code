@@ -350,7 +350,7 @@ class TRUSTSuite(object):
         if not os.path.exists("src"):
             raise Exception("Not a coherent validation form directory: 'src' subdirectory not found.")
         # Mimick what is done in 'prepare_gen' TRUST script:
-        subprocess.run("mkdir -p %s && cp -ar src/* %s" % (self.buildDir_, self.buildDir_), shell=True)  # Note the '*' !!
+        subprocess.run("mkdir -p %s && cp -a src/* %s" % (self.buildDir_, self.buildDir_), shell=True)  # Note the '*' !!
 
     def executeScript(self, scriptName, verbose=False):
         """ Execute scriptName if any.
