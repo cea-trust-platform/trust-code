@@ -492,7 +492,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                             for (d = 0; d < D; d++) for (n = 0; n < N[p]; n++) nv(n) += std::pow(vit(zone[p].get().nb_faces_tot() + D * e + d, n), 2);
                             for (n = 0; n < N[p]; n++) nv(n) = sqrt(nv(n));
                             //appel : on n'est implicite qu'en les temperatures
-                            corr.qp(N[p], dh(e), dh(e), &alpha(e, 0), &Tefs(0, i_efs(i, j, 0)), press(e), nv.addr(), Tefs(0, i_efs(i, j, M)), &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
+                            corr.qp(N[p], f, dh(e), dh(e), &alpha(e, 0), &Tefs(0, i_efs(i, j, 0)), press(e), nv.addr(), Tefs(0, i_efs(i, j, M)), &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
                                     qpk.addr(), NULL, NULL, NULL, dTf_qpk.addr(), dTp_qpk.addr(), qpi.addr(), NULL, NULL, NULL, dTf_qpi.addr(), dTp_qpi.addr(), nonlinear);
                             /* on ajoute qpi(k, l) a la qpk(k) (sera ensuite retire par Flux_interfacial_CoviMAC) */
                             for (k1 = 0; k1 < N[p]; k1++) for (k2 = k1 + 1; k2 < N[p]; k2++)

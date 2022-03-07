@@ -65,7 +65,7 @@ class Flux_parietal_base : public Correlation_base
 {
   Declare_base(Flux_parietal_base);
 public:
-  virtual void qp(int N, double D_h, double D_ch,
+  virtual void qp(int N, int f, double D_h, double D_ch,
                   const double *alpha, const double *T, const double p, const double *v, const double Tp,
                   const double *lambda, const double *mu, const double *rho, const double *Cp,
                   double *qpk, double *da_qpk, double *dp_qpk, double *dv_qpk, double *dTf_qpk, double *dTp_qpk,
