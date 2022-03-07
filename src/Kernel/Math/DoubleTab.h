@@ -46,7 +46,7 @@ class FDoubleTab;
 // .SECTION voir aussi
 //    DoubleVect
 //////////////////////////////////////////////////////////////////////////////
-class DoubleTab : public DoubleVect
+class DoubleTab : public TRUSTVect<double>
 {
   Declare_instanciable_sans_constructeur(DoubleTab);
 public:

@@ -281,7 +281,6 @@
  DoubleTab DoubleTab DoubleTab.h
  DoubleTabs DoubleTabs DoubleTabs.h
  DoubleTrav DoubleTrav DoubleTrav.h
- DoubleVect DoubleVect DoubleVect.h
  DoubleVects DoubleVects DoubleVects.h
  DP_Impose_Face_CoviMAC DP_Impose_CoviMAC_Face DP_Impose_CoviMAC_Face.h
  DP_Impose_Face_PolyMAC DP_Impose_PolyMAC_Face DP_Impose_PolyMAC_Face.h
@@ -455,7 +454,6 @@
  Interprete_geometrique_base Interprete_geometrique_base Interprete_geometrique_base.h
  IntTab IntTab IntTab.h
  IntTrav IntTrav IntTrav.h
- IntVect IntVect IntVect.h
  IntVects IntVects IntVects.h
  Iterateur_PolyMAC Iterateur_PolyMAC Iterateur_PolyMAC_base.h
  Iterateur_PolyMAC_base Iterateur_PolyMAC_base Iterateur_PolyMAC_base.h

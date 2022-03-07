@@ -11,7 +11,7 @@
 #endif
 
 class F__Scalar__Tab;
-class ArrOfInt;
+#include <TRUSTArray.h>
 
 //////////////////////////////////////////////////////////////////////////////
 // 
@@ -22,7 +22,7 @@ class ArrOfInt;
 // .SECTION voir aussi 
 //    __Scalar__Vect
 //////////////////////////////////////////////////////////////////////////////
-class __Scalar__Tab : public __Scalar__Vect
+class __Scalar__Tab : public TRUSTVect<__scalar__>
 {  
   Declare_instanciable_sans_constructeur(__Scalar__Tab);
 public:

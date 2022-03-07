@@ -23,6 +23,7 @@
 #define Array_base_included
 
 #include <Objet_U.h>
+class MD_Vector;
 
 // .DESCRIPTION: classe vide servant de base a tous les tableaux.
 //  (permet de passer un type generique quel que soit le sous-type du tableau
@@ -39,5 +40,6 @@ public:
   enum Storage { STANDARD, TEMP_STORAGE };
 
   inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT) { throw; } // XXX : XXX : Elie Saikali : should have it virtual .... base non-template class !!
+  inline virtual void set_md_vector(const MD_Vector&) { throw; } // XXX : XXX : Elie Saikali : should have it virtual .... base non-template class !!
 };
 #endif

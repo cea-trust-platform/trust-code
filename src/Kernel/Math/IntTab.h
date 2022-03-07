@@ -46,7 +46,7 @@ class FIntTab;
 // .SECTION voir aussi
 //    IntVect
 //////////////////////////////////////////////////////////////////////////////
-class IntTab : public IntVect
+class IntTab : public TRUSTVect<int>
 {
   Declare_instanciable_sans_constructeur(IntTab);
 public:
