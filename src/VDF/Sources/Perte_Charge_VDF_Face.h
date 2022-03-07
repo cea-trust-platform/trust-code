@@ -25,12 +25,11 @@
 #define Perte_Charge_VDF_Face_included
 
 #include <Source_dep_inco_base.h>
+#include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Fluide_base.h>
 #include <Ref_Champ_Face.h>
 #include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
-#include <IntVect.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 class Probleme_base;
 

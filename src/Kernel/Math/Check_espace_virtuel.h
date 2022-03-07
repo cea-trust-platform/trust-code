@@ -21,10 +21,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef Check_espace_virtuel_H
 #define Check_espace_virtuel_H
+#include <TRUSTVect.h>
 #include <arch.h>
 
-#include <DoubleVect.h>
-#include <IntVect.h>
 // Renvoie 1 si l'espace virtuel de v est a jour, 0 sinon
 int check_espace_virtuel_vect(const DoubleVect& v);
 int check_espace_virtuel_vect(const IntVect& v);

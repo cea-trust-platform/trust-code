@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Memoire.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 static int compteur=0;
 Memoire* Memoire::_instance = 0;

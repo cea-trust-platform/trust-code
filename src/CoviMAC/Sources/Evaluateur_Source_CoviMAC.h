@@ -29,7 +29,7 @@
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

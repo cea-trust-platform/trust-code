@@ -25,7 +25,7 @@
 
 #include <Objet_U.h>
 
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 class Matrice_Base;
 class Champ_Inc_base;
 

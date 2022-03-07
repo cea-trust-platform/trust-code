@@ -34,7 +34,7 @@
 #include <Ref_Zone_Cl_VEF.h>
 #include <Parser_U.h>
 #include <Ref_Champ_Inc_base.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 class Probleme_base;
 class Navier_Stokes_std;

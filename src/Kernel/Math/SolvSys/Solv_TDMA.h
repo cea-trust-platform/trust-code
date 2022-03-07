@@ -24,7 +24,7 @@
 #define Solv_TDMA_included
 
 #include <Objet_U.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 class Solv_TDMA
 {

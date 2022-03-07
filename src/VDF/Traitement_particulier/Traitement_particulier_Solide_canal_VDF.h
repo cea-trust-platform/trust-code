@@ -25,8 +25,7 @@
 #define Traitement_particulier_Solide_canal_VDF_included
 
 #include <Traitement_particulier_Solide_canal.h>
-#include <DoubleVect.h>
-#include <IntVect.h>
+#include <TRUSTVect.h>
 class Entree;
 
 //////////////////////////////////////////////////////////////////////////////

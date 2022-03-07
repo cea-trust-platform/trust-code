@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2015 - 2016, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 #ifndef IntTab_included
 #define IntTab_included
 
-#include <IntVect.h>
+#include <TRUSTVect.h>
 
 // Nombre maximal de dimensions d'un tableau.
 // Meme macro dans IntTab et DoubleTab, test si c'est deja defini
@@ -35,7 +35,6 @@
 #endif
 
 class FIntTab;
-#include <TRUSTArray.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

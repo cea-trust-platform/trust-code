@@ -24,10 +24,9 @@
 
 #include <Deriv.h>
 #include <Noms.h>
-#include <IntVect.h>
+#include <TRUSTVect.h>
 
 class Domaine;
-#include <TRUSTArray.h>
 class Zone;
 class Static_Int_Lists;
 class Param;

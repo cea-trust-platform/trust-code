@@ -21,11 +21,10 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef Connex_components_H_INCLU
 #define Connex_components_H_INCLU
-#include <arch.h>
 
+#include <TRUSTVect.h>
+#include <arch.h>
 class IntTab;
-#include <IntVect.h>
-#include <TRUSTArray.h>
 
 int search_connex_components_local(const IntTab& elem_faces,
                                    const IntTab& faces_elem,

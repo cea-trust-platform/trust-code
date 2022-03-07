@@ -24,7 +24,7 @@
 #define Evaluateur_Source_VDF_Elem_included
 
 #include <Evaluateur_Source_VDF.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 class Evaluateur_Source_VDF_Elem : public Evaluateur_Source_VDF
 {

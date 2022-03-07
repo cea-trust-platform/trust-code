@@ -24,7 +24,7 @@
 #define Source_base_included
 
 #include <MorEqn.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 #include <Champs_compris.h>
 #include <Champs_compris_interface.h>
 #include <Matrice_Bloc.h>

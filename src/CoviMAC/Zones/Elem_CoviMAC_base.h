@@ -23,14 +23,12 @@
 #ifndef Elem_CoviMAC_base_included
 #define Elem_CoviMAC_base_included
 
+#include <TRUSTVect.h>
 #include <IntTab.h>
-
 class Zone;
 class Zone_CoviMAC;
 class Champ_Inc_base;
 class DoubleTab;
-#include <IntVect.h>
-#include <DoubleVect.h>
 
 class Elem_CoviMAC_base : public Objet_U
 {

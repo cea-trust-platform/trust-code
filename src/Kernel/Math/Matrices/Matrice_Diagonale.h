@@ -24,7 +24,7 @@
 #define Matrice_Diagonale_included
 
 #include <Matrice_Base.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

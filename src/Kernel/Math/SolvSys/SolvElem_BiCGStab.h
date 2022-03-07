@@ -24,7 +24,7 @@
 #define SolvElem_BiCGStab_included
 
 #include <SolvElem_base.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 #include <SPV2.h>
 
 class SolvElem_BiCGStab : public SolvElem_base

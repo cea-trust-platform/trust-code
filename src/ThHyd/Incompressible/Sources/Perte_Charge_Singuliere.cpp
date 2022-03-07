@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,6 @@
 #include <Sous_Zone.h>
 #include <Octree.h>
 #include <Source_base.h>
-#include <DoubleVect.h>
 #include <DoubleTrav.h>
 #include <Param.h>
 #include <Equation_base.h>

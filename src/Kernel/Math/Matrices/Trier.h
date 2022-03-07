@@ -23,14 +23,8 @@
 #ifndef Trier_inclus
 #define Trier_inclus
 
+#include <TRUSTVect.h>
 #include <arch.h>
-//
-// .DESCRIPTION
-//
-//
-
-#include <DoubleVect.h>
-#include <TRUSTArray.h>
 
 void QuickSort(const DoubleVect& a,int g, int d, ArrOfInt& c);
 void trier_abs(const DoubleVect& a, ArrOfInt& c);

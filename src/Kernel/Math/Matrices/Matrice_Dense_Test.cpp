@@ -22,7 +22,7 @@
 
 #include <cppunit.h>
 #ifdef cppunit_
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 #include <TriouError.h>
 #include <Matrice_Dense.h>
 #include <SFichier.h>

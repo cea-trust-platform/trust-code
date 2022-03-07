@@ -26,16 +26,13 @@
 #include <petsc_for_kernel.h>
 #include <EChaine.h>
 #undef setbit // Sinon conflit de ArrOfBit.h avec Petsc
+#include <SolveurSys_base.h>
+#include <TRUSTVect.h>
 #include <ArrOfBit.h>
 #include <IntTab.h>
-#include <SolveurSys_base.h>
-#include <TRUSTArray.h>
-
 #ifdef PETSCKSP_H
 #include <petscdm.h>
 #endif
-
-#include <IntVect.h>
 class DoubleTab;
 class Matrice_Morse_Sym;
 class Matrice_Morse;

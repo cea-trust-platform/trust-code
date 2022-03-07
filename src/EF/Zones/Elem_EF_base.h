@@ -23,14 +23,12 @@
 #ifndef Elem_EF_base_included
 #define Elem_EF_base_included
 
+#include <TRUSTVect.h>
 #include <IntTab.h>
-
 class Zone;
 class Zone_EF;
 class Champ_Inc_base;
 class DoubleTab;
-#include <IntVect.h>
-#include <DoubleVect.h>
 
 class Elem_EF_base : public Objet_U
 {

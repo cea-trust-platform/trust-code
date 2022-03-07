@@ -23,15 +23,12 @@
 #ifndef Elem_VEF_base_included
 #define Elem_VEF_base_included
 
+#include <TRUSTVect.h>
 #include <IntTab.h>
-
 class Zone;
 class Zone_VEF;
 class Champ_Inc_base;
 class DoubleTab;
-#include <IntVect.h>
-#include <DoubleVect.h>
-#include <TRUSTArray.h>
 
 class Elem_VEF_base : public Objet_U
 {

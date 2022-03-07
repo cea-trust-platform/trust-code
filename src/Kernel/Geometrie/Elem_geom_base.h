@@ -23,16 +23,10 @@
 #ifndef Elem_geom_base_included
 #define Elem_geom_base_included
 
-
-
-
+#include <TRUSTVect.h>
 #include <Faces.h>
-
 class DoubleTab;
-#include <DoubleVect.h>
 class Nom;
-#include <TRUSTArray.h>
-
 
 //////////////////////////////////////////////////////////////////////////////
 //

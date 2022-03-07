@@ -28,7 +28,7 @@
 class Zone_dis_base;
 class Zone_Cl_dis_base;
 class Matrice_Morse_Sym;
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 class Champ_Don_base;
 class Matrice;
 class DoubleTab;

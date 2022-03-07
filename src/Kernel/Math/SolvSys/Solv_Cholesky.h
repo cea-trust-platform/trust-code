@@ -26,7 +26,7 @@
 #include <SolveurSys_base.h>
 #include <Matrice_Morse_Sym.h>
 
-#include <IntVect.h>
+#include <TRUSTVect.h>
 class DoubleTab;
 class Matrice_Morse_Sym;
 class Matrice_Morse;

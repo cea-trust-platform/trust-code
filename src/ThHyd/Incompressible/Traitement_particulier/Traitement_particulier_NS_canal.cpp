@@ -34,7 +34,7 @@
 #include <DoubleTrav.h>
 #include <communications.h>
 #include <Fluide_base.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 #include <Champ_Uniforme.h>
 
 Implemente_base_sans_constructeur(Traitement_particulier_NS_canal,"Traitement_particulier_NS_canal",Traitement_particulier_NS_base);

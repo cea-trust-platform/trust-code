@@ -24,7 +24,7 @@
 #define Ref_DoubleVect_included
 
 #include <Ref.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 Declare_ref(DoubleVect);
 
 #endif

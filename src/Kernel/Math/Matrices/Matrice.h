@@ -41,7 +41,7 @@
 //    Dans les commentaires des methodes A represente un objet Matrice.
 //////////////////////////////////////////////////////////////////////////////
 
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 class Matrice : public DERIV(Matrice_Base)
 {

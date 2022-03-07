@@ -19,12 +19,12 @@
 // Version:     /main/fauchet_160/2
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <MD_Vector_std.h>
-#include <DoubleVect.h>
-#include <IntVect.h>
+
 #include <Schema_Comm_Vecteurs.h>
 #include <Echange_EV_Options.h>
 #include <communications.h>
+#include <MD_Vector_std.h>
+#include <TRUSTVect.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(MD_Vector_std,"MD_Vector_std",MD_Vector_base2);

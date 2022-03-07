@@ -23,9 +23,7 @@
 #ifndef SolvElem_base_included
 #define SolvElem_base_included
 
-#include <Objet_U.h>
-#include <TRUSTArray.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 class SolvElem_base : public Objet_U
 {

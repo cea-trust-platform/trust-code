@@ -23,11 +23,9 @@
 #ifndef Solv_Gmres_included
 #define Solv_Gmres_included
 
-#include <TRUSTArray.h>
 #include <solv_iteratif.h>
 #include <DoubleVects.h>
-
-#include <IntVect.h>
+#include <TRUSTVect.h>
 class DoubleTab;
 class Matrice_Morse_Sym;
 class Matrice_Morse;

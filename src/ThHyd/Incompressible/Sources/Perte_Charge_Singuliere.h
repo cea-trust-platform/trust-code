@@ -25,15 +25,13 @@
 
 
 #include <Perte_Charge.h>
-#include <Parser_U.h>
-#include <Champ_Don.h>
 #include <Domaine_dis.h>
-
+#include <Champ_Don.h>
+#include <TRUSTVect.h>
+#include <Parser_U.h>
 class Domaine;
 class Zone_dis_base;
 class Equation_base;
-#include <IntVect.h>
-#include <DoubleVect.h>
 class Source_base;
 
 //////////////////////////////////////////////////////////////////////////////

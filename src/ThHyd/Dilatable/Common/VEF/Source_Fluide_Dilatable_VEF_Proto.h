@@ -28,7 +28,7 @@
 
 class Equation_base;
 class Zone_Cl_dis;
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 class DoubleTab;
 class Zone_dis;
 

@@ -24,8 +24,7 @@
 #define Evaluateur_Source_CoviMAC_Face_included
 
 #include <Evaluateur_Source_CoviMAC.h>
-#include <IntVect.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

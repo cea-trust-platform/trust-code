@@ -24,7 +24,7 @@
 #define SolveurSys_base_included
 
 #include <Objet_U.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 class Matrice_Base;
 
 class SolveurSys_base : public Objet_U

@@ -24,7 +24,7 @@
 #define Ref_IntVect_included
 
 #include <Ref.h>
-#include <IntVect.h>
+#include <TRUSTVect.h>
 
 Declare_ref(IntVect);
 

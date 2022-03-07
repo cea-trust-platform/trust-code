@@ -29,7 +29,7 @@
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
 
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

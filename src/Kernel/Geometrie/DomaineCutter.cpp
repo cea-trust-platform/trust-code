@@ -32,7 +32,7 @@
 #include <Sparskit.h>
 #include <Poly_geom_base.h>
 #include <Sortie_Brute.h>
-#include <IntVect.h>
+#include <TRUSTVect.h>
 #include <FichierHDFPar.h>
 #include <communications.h>
 

@@ -2,7 +2,7 @@
 #ifndef __Scalar__Tab_included
 #define __Scalar__Tab_included
 
-#include <__Scalar__Vect.h>
+#include <TRUSTVect.h>
 
 // Nombre maximal de dimensions d'un tableau.
 // Meme macro dans IntTab et DoubleTab, test si c'est deja defini
@@ -11,7 +11,6 @@
 #endif
 
 class F__Scalar__Tab;
-#include <TRUSTArray.h>
 
 //////////////////////////////////////////////////////////////////////////////
 // 

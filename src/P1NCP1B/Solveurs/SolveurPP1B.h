@@ -25,7 +25,7 @@
 
 #include <SolveurSys_base.h>
 #include <Assembleur_P_VEFPreP1B.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 class Matrice_Base;
 
 class SolveurPP1B : public SolveurSys_base

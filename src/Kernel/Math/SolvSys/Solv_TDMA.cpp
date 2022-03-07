@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <Solv_TDMA.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 
 void Solv_TDMA::resoudre(const DoubleVect& ma, const DoubleVect& mb, const DoubleVect& mc, const DoubleVect& sm, DoubleVect& vi, int M)
 {

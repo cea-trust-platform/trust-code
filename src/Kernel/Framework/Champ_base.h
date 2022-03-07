@@ -24,15 +24,14 @@
 #ifndef Champ_base_included
 #define Champ_base_included
 
-#include <Field_base.h>
-#include <Noms.h>
 #include <Champ_Proto.h>
+#include <Field_base.h>
+#include <TRUSTVect.h>
+#include <Noms.h>
 class Motcle;
 class Domaine;
 class Zone_dis_base;
-#include <DoubleVect.h>
 class Format_Post_base;
-#include <IntVect.h>
 class Frontiere_dis_base;
 class Zone_Cl_dis_base;
 

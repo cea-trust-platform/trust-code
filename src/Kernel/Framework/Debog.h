@@ -23,8 +23,7 @@
 #ifndef Debog_included
 #define Debog_included
 
-#include <DoubleVect.h>
-#include <IntVect.h>
+#include <TRUSTVect.h>
 class Champ_Inc;
 class Champ_Inc_base;
 class MD_Vector;

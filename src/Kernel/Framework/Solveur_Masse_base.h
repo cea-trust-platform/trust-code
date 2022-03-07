@@ -31,7 +31,7 @@ class Zone_dis_base;
 class Zone_Cl_dis;
 class Zone_Cl_dis_base;
 class DoubleTab;
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 class Matrice_Base;
 class Matrice_Morse;
 
