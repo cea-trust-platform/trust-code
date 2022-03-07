@@ -26,7 +26,7 @@
 #include <Interprete_geometrique_base.h>
 
 class Domaine;
-class IntVect;
+#include <IntVect.h>
 class Faces;
 //////////////////////////////////////////////////////////////////////////////
 //

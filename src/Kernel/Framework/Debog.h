@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,8 +23,8 @@
 #ifndef Debog_included
 #define Debog_included
 
-class DoubleVect;
-class IntVect;
+#include <DoubleVect.h>
+#include <IntVect.h>
 class Champ_Inc;
 class Champ_Inc_base;
 class MD_Vector;

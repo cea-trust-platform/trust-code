@@ -29,8 +29,8 @@ class Zone;
 class Zone_PolyMAC;
 class Champ_Inc_base;
 class DoubleTab;
-class IntVect;
-class DoubleVect;
+#include <IntVect.h>
+#include <DoubleVect.h>
 
 class Elem_PolyMAC_base : public Objet_U
 {

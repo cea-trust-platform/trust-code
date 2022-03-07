@@ -29,8 +29,8 @@ class Zone;
 class Zone_CoviMAC;
 class Champ_Inc_base;
 class DoubleTab;
-class IntVect;
-class DoubleVect;
+#include <IntVect.h>
+#include <DoubleVect.h>
 
 class Elem_CoviMAC_base : public Objet_U
 {

@@ -200,7 +200,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_gen(const DoubleTab& transporte,
 
   if ((btd_impl==1)&&(hourglass_impl==1)&&(centre_impl==1)) return resu;
 
-  DoubleVect& fluent_ = ref_cast(DoubleVect, fluent);
+  DoubleVect& fluent_ = static_cast<DoubleVect&> (fluent);
 
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const DoubleTab& G=la_vitesse.valeurs();
@@ -360,7 +360,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim2(const DoubleTab& trans
 
   if ((btd_impl==1)&&(hourglass_impl==1)&&(centre_impl==1)) return resu;
 
-  DoubleVect& fluent_ = ref_cast(DoubleVect, fluent);
+  DoubleVect& fluent_ = static_cast<DoubleVect&> (fluent);
 
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const DoubleTab& G=la_vitesse.valeurs();
@@ -525,7 +525,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim3_nbn8_nbdim1(const DoubleTab& trans
 
   if ((btd_impl==1)&&(hourglass_impl==1)&&(centre_impl==1)) return resu;
 
-  DoubleVect& fluent_ = ref_cast(DoubleVect, fluent);
+  DoubleVect& fluent_ = static_cast<DoubleVect&> (fluent);
 
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const DoubleTab& G=la_vitesse.valeurs();
@@ -691,7 +691,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim2(const DoubleTab& trans
 
   if ((btd_impl==1)&&(hourglass_impl==1)&&(centre_impl==1)) return resu;
 
-  DoubleVect& fluent_ = ref_cast(DoubleVect, fluent);
+  DoubleVect& fluent_ = static_cast<DoubleVect&> (fluent);
 
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const DoubleTab& G=la_vitesse.valeurs();
@@ -856,7 +856,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_dim2_nbn4_nbdim1(const DoubleTab& trans
 
   if ((btd_impl==1)&&(hourglass_impl==1)&&(centre_impl==1)) return resu;
 
-  DoubleVect& fluent_ = ref_cast(DoubleVect, fluent);
+  DoubleVect& fluent_ = static_cast<DoubleVect&> (fluent);
 
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const DoubleTab& G=la_vitesse.valeurs();

@@ -28,7 +28,7 @@
 #include <Zone_Cl_VDF.h>
 #include <Zone_VDF.h>
 
-class DoubleVect;
+#include <DoubleVect.h>
 
 class Evaluateur_Source_VDF
 {

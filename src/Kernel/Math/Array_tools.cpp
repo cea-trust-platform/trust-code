@@ -59,7 +59,7 @@ void array_trier_retirer_doublons(ArrOfInt& array)
 {
   // IntVect n'est pas traite correctement car on ne
   //  fait pas un resize() mais un resize_array().
-  assert(!sub_type(IntVect, array));
+  assert(typeid(array) != typeid(IntVect));
   const int size = array.size_array();
   if (size == 0)
     return;

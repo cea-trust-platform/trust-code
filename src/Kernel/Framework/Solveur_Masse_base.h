@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ class Zone_dis_base;
 class Zone_Cl_dis;
 class Zone_Cl_dis_base;
 class DoubleTab;
-class DoubleVect;
+#include <DoubleVect.h>
 class Matrice_Base;
 class Matrice_Morse;
 

@@ -25,7 +25,7 @@
 
 #include <Objet_U.h>
 #include <TRUSTArray.h>
-class DoubleVect;
+#include <DoubleVect.h>
 
 class SolvElem_base : public Objet_U
 {

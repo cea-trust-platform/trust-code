@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,8 @@
 #include <stat_counters.h>
 #include <communications.h>
 #include <vector>
+#include <TRUSTVect.h>
+#include <DoubleTrav.h>
 
 static Schema_Comm_Vecteurs comm;
 static MD_Vector last_md;
@@ -35,8 +37,23 @@ static int last_isdouble = -1;
 static int last_linesize = 0;
 static Echange_EV_Options last_opt;
 
+
+class MD_Vector_renumber
+{
+public:
+  // for each item in the source vector, should it be kept
+  ArrOfBit items_to_keep_;
+  // new C index of each item in the source vector to renumber.
+  //  (for items not kept, must point to a geometrically equivalent item)
+  // renum_ can be a global or a local number.
+  IntVect renum_;
+  // number of non-zero items in items_to_keep_:
+  int  nb_items_to_keep_;
+};
+
+
 template <class VECT, class TAB>
-static void creer_tableau_distribue(const MD_Vector& md, VECT& v, Array_base::Resize_Options opt)
+static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, Array_base::Resize_Options opt)
 {
   if (v.get_md_vector().non_nul())
     {
@@ -113,14 +130,12 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
       Cerr << "Error in MD_Vector_tools::creer_tableau_distribue(): MD_Vector is null" << finl;
       Process::exit();
     }
-  if (sub_type(IntVect, v))
-    {
-      ::creer_tableau_distribue<IntVect, IntTab>(md, ref_cast(IntVect, v), opt);
-    }
-  else if (sub_type(DoubleVect, v))
-    {
-      ::creer_tableau_distribue<DoubleVect, DoubleTab>(md, ref_cast(DoubleVect, v), opt);
-    }
+
+  IntVect* intV = dynamic_cast<IntVect*>(&v);
+  DoubleVect* doubleV = dynamic_cast<DoubleVect*>(&v);
+
+  if (intV) creer_tableau_distribue_<IntVect, IntTab>(md, *intV, opt);
+  else if (doubleV) creer_tableau_distribue_<DoubleVect, DoubleTab>(md, *doubleV, opt);
   else
     {
       Cerr << "Internal error in MD_Vector_tools::creer_tableau_distribue(const MD_Vector & md, Array_base & v):\n"

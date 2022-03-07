@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,13 +24,19 @@
 #include <map>
 #include <array>
 #include <ArrOfBit.h>
-#include <IntVect.h>
-class MD_Vector;
-class DoubleVect;
-class ArrOfBit;
+#include <Array_base.h>
+
 class Zone_VF;
+class ArrOfBit;
+class MD_Vector;
 class DoubleTab;
 class MD_Vector_renumber;
+
+template<typename T> class TRUSTVect;
+using IntVect = TRUSTVect<int>;
+using DoubleVect = TRUSTVect<double>;
+template<typename T> class TRUSTArray;
+using ArrOfInt = TRUSTArray<int>;
 
 //format de structure pour demander d'agrandir un MD_Vector : (proc, item sur le proc) -> item distant sur Process::me()
 typedef std::map<std::array<int, 2>, int> extra_item_t;
@@ -64,17 +70,6 @@ public:
   static MD_Vector extend(const MD_Vector& src, extra_item_t& items);
 };
 
-class MD_Vector_renumber
-{
-public:
-  // for each item in the source vector, should it be kept
-  ArrOfBit items_to_keep_;
-  // new C index of each item in the source vector to renumber.
-  //  (for items not kept, must point to a geometrically equivalent item)
-  // renum_ can be a global or a local number.
-  IntVect renum_;
-  // number of non-zero items in items_to_keep_:
-  int  nb_items_to_keep_;
-};
+
 
 #endif

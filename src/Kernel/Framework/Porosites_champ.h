@@ -35,7 +35,7 @@ public :
 };
 
 class DoubleTab;
-class DoubleVect;
+#include <DoubleVect.h>
 const DoubleTab& modif_par_porosite_si_flag(const DoubleTab& org, DoubleTab& res,int flag,const DoubleVect& porosite);
 
 #endif

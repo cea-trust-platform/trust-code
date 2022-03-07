@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1021,8 +1021,8 @@ ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
   modif_par_porosite_si_flag(inconnue,inconnue1,marq,porosite_face);
 
   //Pour des raisons pratiques
-  const DoubleVect& inconnue2 = ref_cast(DoubleVect,inconnue1);
-  DoubleVect& resu2 = ref_cast(DoubleVect,resu);
+  const DoubleVect& inconnue2 = static_cast<const DoubleVect&>(inconnue1);
+  DoubleVect& resu2 = static_cast<DoubleVect&>(resu);
   DoubleVect resu3(resu2);
   resu3=0.;
 
@@ -3216,7 +3216,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   const DoubleTab& xs=dom.les_sommets();
 
   DoubleTab inco(unknown);
-  DoubleVect& incoV=ref_cast(DoubleVect,inco);
+  DoubleVect& incoV = static_cast<DoubleVect&>(inco);
   incoV=0.;
   //   DoubleTab inco2(unknown);
   //   DoubleVect& inco2V=ref_cast(DoubleVect,inco2);
@@ -3225,9 +3225,9 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   DoubleTab tmp(inco);
 
   DoubleTab resu(unknown);
-  DoubleVect& resuV=ref_cast(DoubleVect,resu);
+  DoubleVect& resuV = static_cast<DoubleVect&>(resu);
   DoubleTab resuMat(unknown);
-  const DoubleVect& resuMatV=ref_cast(DoubleVect,resuMat);
+  const DoubleVect& resuMatV = static_cast<const DoubleVect&>(resuMat);
   DoubleTab gradientMat(dimension,dimension+2);
 
 

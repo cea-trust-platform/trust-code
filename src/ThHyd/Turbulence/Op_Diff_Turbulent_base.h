@@ -25,7 +25,7 @@
 
 #include <Ref_Turbulence_paroi.h>
 #include <Ref_Champ_Fonc.h>
-class DoubleVect;
+#include <DoubleVect.h>
 
 // .DESCRIPTION : classe Op_Diff_Turbulent_base
 //     Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.

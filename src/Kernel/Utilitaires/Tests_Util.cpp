@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ int test_Ref()
   assert(xx->size() == x.size());                //Operateur ->
   assert(yy.valeur().size() == zz->size());        //valeur()
   assert(xx == yy);                                //Operateur ==
-  (ref_cast(DoubleVect, xx))[2]=1;                        //cast
+  (static_cast<DoubleVect&>(xx))[2]=1;                        //cast
   assert (xx == x);                                //Operateur !=
   const Nom& name=xx.le_nom();                        //le_nom()
   return zz.non_nul();                                //non_nul
@@ -83,7 +83,7 @@ int test_Deriv()
   assert(xx->size() == x.size());                //Operateur ->
   assert(yy.valeur().size() == zz->size());        //valeur()
   assert(xx == yy);                                //Operateur ==
-  (ref_cast(DoubleVect, xx))[2]=1;                        //cast
+  (static_cast<DoubleVect&>(xx))[2]=1;                        //cast
   assert (xx != x);                                //Operateur !=
   const Nom& name=xx.le_nom();                        //le_nom()
   return zz.non_nul();                                //non_nul

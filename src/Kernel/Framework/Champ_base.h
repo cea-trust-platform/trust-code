@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,9 +30,9 @@
 class Motcle;
 class Domaine;
 class Zone_dis_base;
-class DoubleVect;
+#include <DoubleVect.h>
 class Format_Post_base;
-class IntVect;
+#include <IntVect.h>
 class Frontiere_dis_base;
 class Zone_Cl_dis_base;
 

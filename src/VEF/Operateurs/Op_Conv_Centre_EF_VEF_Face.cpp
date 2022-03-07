@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
 
 
   const DoubleTab& normales_facettes_Cl = zone_Cl_VEF.normales_facettes_Cl();
-  DoubleVect& fluent_ = ref_cast(DoubleVect, fluent);
+  DoubleVect& fluent_ = static_cast<DoubleVect&>(fluent);
 
   int nfac = zone.nb_faces_elem();
   int nsom = zone.nb_som_elem();

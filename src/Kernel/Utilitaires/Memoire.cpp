@@ -611,7 +611,7 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
             os << " TAILLE ArrOfInt : " << tmp<< " octets ";
             if(sub_type(IntVect,obj))
               {
-                const IntVect& titi = ref_cast(IntVect,obj);
+                const IntVect& titi = static_cast<const IntVect&> (obj);
                 tmp1 = obj.taille_memoire() +
                        (int) ((titi.size()*sizeof(int))/titi.ref_count());
                 os << " dont : " << (tmp-tmp1) << " octets virtuels ";

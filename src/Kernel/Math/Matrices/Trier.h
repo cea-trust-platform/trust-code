@@ -29,7 +29,7 @@
 //
 //
 
-class DoubleVect;
+#include <DoubleVect.h>
 #include <TRUSTArray.h>
 
 void QuickSort(const DoubleVect& a,int g, int d, ArrOfInt& c);

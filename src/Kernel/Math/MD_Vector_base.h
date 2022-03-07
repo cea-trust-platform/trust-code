@@ -26,15 +26,13 @@
 
 class MD_Vector;
 class Echange_EV_Options;
-#include <TRUSTArray.h>
-class IntVect;
-class DoubleVect;
 class Schema_Comm_Vecteurs;
 
-/////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//////////////////////////////////////////////////////////////
+template<typename T> class TRUSTVect;
+using IntVect = TRUSTVect<int>;
+using DoubleVect = TRUSTVect<double>;
+template<typename T> class TRUSTArray;
+using ArrOfInt = TRUSTArray<int>;
 
 // .DESCRIPTION
 // Classe de base des descripteurs de vecteurs distribues.

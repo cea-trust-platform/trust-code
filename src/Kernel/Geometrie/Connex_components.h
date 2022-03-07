@@ -24,7 +24,7 @@
 #include <arch.h>
 
 class IntTab;
-class IntVect;
+#include <IntVect.h>
 #include <TRUSTArray.h>
 
 int search_connex_components_local(const IntTab& elem_faces,

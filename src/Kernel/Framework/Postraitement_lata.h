@@ -28,7 +28,7 @@
 
 class Comm_Group;
 class Zone;
-class DoubleVect;
+#include <DoubleVect.h>
 class Fichier_lata;
 class DoubleTab;
 class IntTab;

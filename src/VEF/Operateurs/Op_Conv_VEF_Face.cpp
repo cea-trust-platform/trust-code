@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1175,7 +1175,7 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   int nfac = zone.nb_faces_elem();
   int nsom = zone.nb_som_elem();
   const IntTab& sommet_elem = zone.les_elems();
-  DoubleVect& fluent_ = ref_cast(DoubleVect, tab_fluent);
+  DoubleVect& fluent_ = static_cast<DoubleVect&>(tab_fluent);
 
   // On definit le tableau des sommets:(C MALOD 17/07/2007)
 

@@ -29,7 +29,7 @@
 #include <Faces.h>
 
 class DoubleTab;
-class DoubleVect;
+#include <DoubleVect.h>
 class Nom;
 #include <TRUSTArray.h>
 

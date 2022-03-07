@@ -29,8 +29,8 @@ class Zone;
 class Zone_VEF;
 class Champ_Inc_base;
 class DoubleTab;
-class IntVect;
-class DoubleVect;
+#include <IntVect.h>
+#include <DoubleVect.h>
 #include <TRUSTArray.h>
 
 class Elem_VEF_base : public Objet_U

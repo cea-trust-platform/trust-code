@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,8 +23,8 @@
 #define Check_espace_virtuel_H
 #include <arch.h>
 
-class DoubleVect;
-class IntVect;
+#include <DoubleVect.h>
+#include <IntVect.h>
 // Renvoie 1 si l'espace virtuel de v est a jour, 0 sinon
 int check_espace_virtuel_vect(const DoubleVect& v);
 int check_espace_virtuel_vect(const IntVect& v);

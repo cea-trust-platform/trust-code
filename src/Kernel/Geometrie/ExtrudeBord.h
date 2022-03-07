@@ -51,7 +51,7 @@
 
 #include <Interprete_geometrique_base.h>
 
-class DoubleVect;
+#include <DoubleVect.h>
 
 class ExtrudeBord : public Interprete_geometrique_base
 {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@
 
 class Fluide_Dilatable_base;
 class Milieu_base;
-class DoubleVect;
+#include <DoubleVect.h>
 
 void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Dilatable_base& le_fluide,int diviser=0);
 void diviser_par_rho_si_dilatable(DoubleVect& val,const Milieu_base& mil);
