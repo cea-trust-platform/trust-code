@@ -179,6 +179,7 @@ MinicondaLocChannLinux,numpy-1.20.1-py37h5a90a98_0.conda,outil,ND,BSD,,https://r
 MinicondaLocChannLinux,numpy-base-1.20.1-py37h34387ca_0.conda,outil,ND,BSD,,https://repo.anaconda.com/pkgs/main/linux-64/numpy-base-1.20.1-py37h34387ca_0.conda,
 MinicondaLocChannLinux,olefile-0.46-py37_0.conda,,ND,BSD,,https://repo.anaconda.com/pkgs/main/linux-64/olefile-0.46-py37_0.conda,
 MinicondaLocChannLinux,pandas-1.2.4-py37h2531618_0.conda,,ND,BSD-3,,https://repo.anaconda.com/pkgs/main/linux-64/pandas-1.2.4-py37h2531618_0.conda,
+MinicondaLocChannLinux,pandoc-2.12-h06a4308_0.conda,,ND,GPL-2.0,,https://repo.anaconda.com/pkgs/main/linux-64/pandoc-2.12-h06a4308_0.conda,
 MinicondaLocChannLinux,pcre-8.44-he6710b0_0.conda,outil,ND,BSD,,https://repo.anaconda.com/pkgs/main/linux-64/pcre-8.44-he6710b0_0.conda,
 MinicondaLocChannLinux,pillow-8.2.0-py37he98fc37_0.conda,,ND,LicenseRef-PIL,,https://repo.anaconda.com/pkgs/main/linux-64/pillow-8.2.0-py37he98fc37_0.conda,
 MinicondaLocChannLinux,pyqt-5.9.2-py37h05f1152_2.conda,outil,ND,BSD3,,https://repo.anaconda.com/pkgs/main/linux-64/pyqt-5.9.2-py37h05f1152_2.conda,

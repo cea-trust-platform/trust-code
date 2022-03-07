@@ -763,10 +763,10 @@ unset PYTHONPATH # We get a warning from Miniconda if we do not unset this varia
 # check the previous install of conda and conda packages if it exists
 model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
-pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter`"
+pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
-[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0 `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
-[ "$model" = arm64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter`" # internet OK sous Mac
+[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0 `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
+[ "$model" = arm64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`" # internet OK sous Mac
 
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
@@ -774,30 +774,33 @@ then
    PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==379||v==376?1:0)}'`
    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
    INSTALL_OK=1
-   # list of packages already-installed/to-install in conda
-   $TRUST_ROOT/exec/python/bin/conda list > $TRUST_ROOT/exec/conda_list.check
-   if [ "$system" = "Linux" ] && [ $model = "x86_64" ] && [ -f $TRUST_ROOT/exec/conda_list.ref ]
+   # list of packages already-installed/to-install in conda, we ignore mpi4py since installed with pip
+   $TRUST_ROOT/exec/python/bin/conda list | grep -v mpi4py > conda_list.check
+   if [ "$system" = "Linux" ] && [ $model = "x86_64" ] #&& [ -f $TRUST_ROOT/exec/conda_list.ref ]
    then
       # Strict check of conda packages
-      if [ `diff $TRUST_ROOT/exec/conda_list.ref $TRUST_ROOT/exec/conda_list.check 1>/dev/null 2>&1; echo $?` != 0 ]
+      if [ "$TRUST_DISABLE_JUPYTER" != 1 ]
+      then
+         cat $TRUST_ROOT/externalpackages/Miniconda/conda_list_ref | sed "s?TRUSTR?$TRUST_ROOT?g" | cut -f1 -d',' > conda_list.ref
+      else
+         cat $TRUST_ROOT/externalpackages/Miniconda/conda_list_ref | sed "s?TRUSTR?$TRUST_ROOT?g" | grep -v jupyter > conda_list.ref
+      fi
+
+      if [ `diff conda_list.ref conda_list.check 1>/dev/null 2>&1; echo $?` != 0 ]
       then
          echo "# The current miniconda install contains some supplementary or missing packages, we clean it..."
          INSTALL_OK=0
       else
-         rm -f $TRUST_ROOT/exec/conda_list.check
+         rm -f conda_lis.ref
       fi
-   elif [ "$system" = "Linux" ] && [ $model = "x86_64" ] && [ ! -f $TRUST_ROOT/exec/conda_list.ref ]
-   then
-      # reinstall conda if no $TRUST_ROOT/exec/conda_list.ref
-      INSTALL_OK=0
    else
       for pkg in $pkgs
       do
         pkg=`echo $pkg | awk -F= '{print $1}'` # Pour ne pas avoir le numero de version
-        [ "`grep $pkg $TRUST_ROOT/exec/conda_list.check`" = "" ] && INSTALL_OK=0
+        [ "`grep $pkg conda_list.check`" = "" ] && INSTALL_OK=0
       done
    fi
-   rm -f $TRUST_ROOT/exec/conda_list.check
+   rm -f conda_list.check
    if [ "$PYTHON_VERSION_OK" != 1 ] || [ "$PYTHON_TEST_OK" != 1 ] || [ "$INSTALL_OK" != 1 ]
    then
       INSTALL_CONDA=1
