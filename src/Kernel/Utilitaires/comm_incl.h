@@ -35,8 +35,9 @@
 // Portability for OpenMPI 1.10 which headers do not honour -Wshadow ... OpenMPI sucks.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
+#if __GNUC__ > 5
 #pragma GCC diagnostic ignored "-Wsuggest-override"
-
+#endif
 #include <mpi.h>
 
 #pragma GCC diagnostic pop
