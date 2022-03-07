@@ -87,11 +87,11 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
        [ "`$TRUST_Awk '/-i8/ {print $0}' $fic_env`" != "" ] && export FFLAGS="${FFLAGS} -i8"
        MED_INT=long
     fi
-    [ `uname -s` = Darwin ] && DARWIN_FLAGS="-DMEDFILE_BUILD_TESTS=OFF -DCMAKE_OSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)"
+    [ `uname -s` = Darwin ] && DARWIN_FLAGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)"
     echo "Setting FFLAGS=$FFLAGS and MED_INT=$MED_INT ..."
     env CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF \
         -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_MED_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE=$MED_INT \
-        -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" $DARWIN_FLAGS 
+        -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" -DMEDFILE_BUILD_TESTS=OFF $DARWIN_FLAGS
   fi
 
   $TRUST_MAKE  || exit -1
