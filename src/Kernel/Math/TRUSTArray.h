@@ -95,13 +95,12 @@ protected:
   }
 
 public:
-//  typedef _TYPE_ value_type; // return int, double ou float
-  using value_type = _TYPE_;
+  using value_type = _TYPE_; // return int, double ou float
   using Iterator = TRUSTIterator<TRUSTArray<_TYPE_>>;
 
   // Iterators
-  Iterator begin() { return Iterator(data_); }
-  Iterator end() { return Iterator(data_ + size_array_); }
+  inline Iterator begin() { return Iterator(data_); }
+  inline Iterator end() { return Iterator(data_ + size_array_); }
 
   ~TRUSTArray()
   {
@@ -152,7 +151,7 @@ public:
   // pour modifier les caracteristiques du tableau : Change le nombre d'elements du tableau
   inline void resize(int new_size, Array_base::Resize_Options opt = COPY_INIT) { resize_array(new_size, opt); }
   inline void resize_array(int new_size, Array_base::Resize_Options opt = COPY_INIT);
-  inline void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
+
 
   // Methodes de gestion de l'allocation memoire :
   // Assigne une valeur au drapeau "smart_resize" (reallocation uniquement si la taille augmente)
@@ -162,16 +161,8 @@ public:
   inline void set_mem_storage(const Storage storage);
   inline Storage get_mem_storage() const { return storage_type_; }
 
-  // Construction de tableaux qui pointent vers des donnees existantes
-  // !!! Utiliser ref_data avec precaution (attention a size_array_)
-  inline void ref_data(_TYPE_* ptr, int size);
-  inline void ref_array(TRUSTArray&, int start = 0, int sz = -1);
-
   // Operateur copie
   inline TRUSTArray& operator=(const TRUSTArray&);
-
-  // Remet le tableau dans l'etat obtenu avec le constructeur par defaut (libere la memoire mais conserve le mode d'allocation memoire actuel)
-  inline void reset() { detach_array(); }
 
   // Remplit le tableau avec la x en parametre (x est affecte a toutes les cases du tableau)
   inline TRUSTArray& operator=(_TYPE_ x)
@@ -255,7 +246,7 @@ public:
 
   inline TRUSTArray& inject_array(const TRUSTArray& source, int nb_elements = -1,  int first_element_dest = 0, int first_element_source = 0);
 
-  TRUSTArray& copy_array(const TRUSTArray& a)
+  inline TRUSTArray& copy_array(const TRUSTArray& a)
   {
     operator=(a);
     return *this;
@@ -263,6 +254,17 @@ public:
 
   inline void ordonne_array();
   inline void array_trier_retirer_doublons();
+
+  // methodes virtuelles
+
+  // Construction de tableaux qui pointent vers des donnees existantes !!! Utiliser ref_data avec precaution (attention a size_array_)
+  inline virtual void ref_data(_TYPE_* ptr, int size);
+  inline virtual void ref_array(TRUSTArray&, int start = 0, int sz = -1);
+
+  // Remet le tableau dans l'etat obtenu avec le constructeur par defaut (libere la memoire mais conserve le mode d'allocation memoire actuel)
+  inline virtual void reset() { detach_array(); }
+
+  inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
 
 protected:
   inline void attach_array(const TRUSTArray& a, int start = 0, int size = -1);

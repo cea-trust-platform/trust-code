@@ -19,6 +19,7 @@
 // Version:     /main/5
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef Array_base_included
 #define Array_base_included
 
@@ -26,8 +27,7 @@
 class MD_Vector;
 
 // .DESCRIPTION: classe vide servant de base a tous les tableaux.
-//  (permet de passer un type generique quel que soit le sous-type du tableau
-//   par exemple Domaine::creer_tableau_sommets())
+//  (permet de passer un type generique quel que soit le sous-type du tableau par exemple Domaine::creer_tableau_sommets())
 class Array_base : public Objet_U
 {
   Declare_base_sans_constructeur_ni_destructeur(Array_base);
@@ -38,8 +38,6 @@ public:
   //  COPY_INIT: copier les anciennes et initialiser les nouvelles a zero
   enum Resize_Options { NOCOPY_NOINIT = 0, COPY_NOINIT = 1, COPY_INIT = 2 };
   enum Storage { STANDARD, TEMP_STORAGE };
-
-  inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT) { throw; } // XXX : XXX : Elie Saikali : should have it virtual .... base non-template class !!
-  inline virtual void set_md_vector(const MD_Vector&) { throw; } // XXX : XXX : Elie Saikali : should have it virtual .... base non-template class !!
 };
-#endif
+
+#endif /* Array_base_included */
