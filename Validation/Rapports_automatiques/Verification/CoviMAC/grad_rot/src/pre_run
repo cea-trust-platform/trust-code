@@ -1,2 +1,0 @@
-#!/bin/bash
-trust mesh.data 1>mesh.out 2>mesh.err

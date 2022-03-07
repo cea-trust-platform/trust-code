@@ -5,7 +5,6 @@ Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
 Lire_med family_names_from_group_names dom mesh mesh.med
-__tetra__
 regroupebord dom wall { left right front back down up wall wall_dup }
 # END MESH #
 
@@ -23,7 +22,8 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-__dis__ dis
+$dis dis
+option_vdf { p_imposee_aux_faces oui }
 
 domaine surf1
 domaine surf2

@@ -1,7 +1,0 @@
-#!/bin/bash
-for dir in "PolyMAC" "CoviMAC" #"cartesian" "tetra"
-do
-    ( mkdir -p $dir; cp jdd.data $dir )
-    sed -i "s/__tetra__//;s/__dis__/$dir/" $dir/jdd.data
-    cp mesh_poly.med $dir/mesh.med
-done

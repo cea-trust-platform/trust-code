@@ -1,11 +1,42 @@
-# PARALLEL ONLY 4 #
+# PARALLEL OK #
 Dimension 3
-
 Domaine dom
 
-# BEGIN SCATTER #
+# BEGIN MESH #
+Mailler dom
+{
+	pave bloc
+	{
+		origine 0 0 0
+		longueurs 1 1 1
+		nombre_de_noeuds 21 21 21
+		}
+		{
+		bord periox	X = 0	0 <= Y <= 1	0 <= Z <= 1
+		bord periox	X = 1	0 <= Y <= 1	0 <= Z <= 1
+		bord perioy	Y = 0	0 <= X <= 1	0 <= Z <= 1
+		bord perioy	Y = 1	0 <= X <= 1	0 <= Z <= 1
+		bord perioz	Z = 0	0 <= X <= 1	0 <= Y <= 1
+		bord perioz	Z = 1	0 <= X <= 1	0 <= Y <= 1
+		}
+}
+
+Polyedriser dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
 Scatter DOM.Zones dom
-# END SCATTER #
+END SCATTER #
 
 CoviMAC  dis
 option_covimac {  }
