@@ -1542,7 +1542,7 @@ TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
    linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
 	TRUST_VERSION_GNU=`print_GNU_VERSION`
-	TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if (($1<="9.3.0" && $1>="4.8.5") || ($1<="11.1.0" && $1>"10.0.0")) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+	TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if (($1<="9.9.0" && $1>="4.8.5") || ($1<="11.1.0" && $1>"10.0.0")) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
