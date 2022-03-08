@@ -17,17 +17,21 @@ log_file=archive.log
 #
 # Check valid input
 # 
-if [ ! -f $prm ]; then
-   echo "File $prm does not exist!"
-   exit -1
-fi
 is_jupyter=false
 if [[ "$prm" == *.ipynb ]]; then
   is_jupyter=true
+  if [ ! -f $prm ] ; then
+    echo "File $prm does not exist!"
+    exit -1
+  fi
 else 
    if [[ ! "$prm" == *.prm ]]; then
       echo "Invalid parameter to archive_resultat: $prm"
       exit 
+   fi
+   if [ ! -f src/$prm ] ; then
+      echo "File $prm does not exist!"
+      exit -1
    fi
 fi
 base_prm=$(basename $prm)
