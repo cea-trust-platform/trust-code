@@ -371,7 +371,8 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
               for (k = se_f[i][j], n = 0; n < (mix ? N[p] : 1); n++, t_eq++) i_efs(i, j, n) = t_eq; //une temperature de paroi par phase
               //si face de bord d'un Pb_Multiphase (hors frontiere ouverte), une inconnue supplementaire : la Tparoi (dans ce cas, mix = 1)
               f = s_pf[k][0] == p && (e == f_e[p](s_pf[k][1], 0) || e == f_e[p](s_pf[k][1], 1)) ? s_pf[k][1] : m_pf.at(s_pf[k])[1]; //numero de face cote e
-              if (sub_type(Energie_Multiphase, op_ext[p]->equation()) && fcl[p](f, 0) && fcl[p](f, 0) != 5) i_efs(i, j, M) = t_eq++;
+              if (sub_type(Energie_Multiphase, op_ext[p]->equation()) && ref_cast(Pb_Multiphase, op_ext[p]->equation().probleme()).has_correlation("flux_parietal") && fcl[p](f, 0) && fcl[p](f, 0) != 5)
+                i_efs(i, j, M) = t_eq++;
             }
         for (i_e.resize(n_e, mix ? M : 1), i_e = -1, i = 0, t_e = 0, t_ec = 1; i < n_e; i++) for (p = s_pe[i][0], n = 0; n < (mix ? N[p] : 1); n++, t_e++, t_ec++) i_e(i, n) = t_e;
 
