@@ -776,6 +776,7 @@
  Parser_U Parser_U Parser_U.h
  Partitionneur_base Partitionneur_base Partitionneur_base.h
  Partitionneur_Fichier_Decoupage Partitionneur_Fichier_Decoupage Partitionneur_Fichier_Decoupage.h
+ Partitionneur_Fichier_MED Partitionneur_Fichier_MED Partitionneur_Fichier_MED.h
  Partitionneur_Metis Partitionneur_Metis Partitionneur_Metis.h
  Partitionneur_Parmetis Partitionneur_Parmetis Partitionneur_Parmetis.h
  Partitionneur_Partition Partitionneur_Partition Partitionneur_Partition.h
