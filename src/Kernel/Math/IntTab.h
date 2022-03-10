@@ -61,14 +61,14 @@ public:
   IntTab(int n1, int n2);
   IntTab(int n1, int n2, int n3);
   IntTab(int n1, int n2, int n3, int n4);
-  void ref(const IntVect&) override;
+  virtual void ref(const IntVect&);
   virtual void ref(const IntTab&);
-  void ref_data(int* ptr, int size) override;
-  void ref_array(ArrOfInt&, int start = 0, int sz = -1) override;
+  virtual void ref_data(int* ptr, int size);
+  virtual void ref_array(ArrOfInt&, int start = 0, int sz = -1);
   virtual void ref_tab(IntTab&, int start_line = 0, int nb_lines = -1);
-  void reset() override;
+  virtual void reset();
 
-  void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT) override;
+  virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
   void resize_dim0(int n, Array_base::Resize_Options opt = COPY_INIT);
   void resize(int n, Array_base::Resize_Options opt = COPY_INIT);
   void resize(int n1, int n2, Array_base::Resize_Options opt = COPY_INIT);
@@ -104,10 +104,10 @@ public:
   //  du type du MD_Vect associe au vecteur (calcul des cases specifiees
   //  par MD_Vect::get_items_to_compute())
 
-  void set_md_vector(const MD_Vector&) override;
-  void jump(Entree&) override;
-  void lit(Entree&, int resize_and_read=1) override;
-  void ecrit(Sortie&) const override;
+  virtual void set_md_vector(const MD_Vector&);
+  virtual void jump(Entree&);
+  virtual void lit(Entree&, int resize_and_read=1);
+  virtual void ecrit(Sortie&) const;
 
   inline void append_line(int);
   inline void append_line(int, int);

@@ -57,7 +57,7 @@ public:
   //
   // Destructeur
   //
-  ~ArrOf__Scalar__() override;
+  ~ArrOf__Scalar__();
   //
   // Constructeurs
   //
@@ -1158,7 +1158,7 @@ __scalar__ max_array(const ArrOf__Scalar__& dx)
 static inline __scalar__ scalar_abs(__scalar__ x)
 {
 #Pif("__scalar__"=="double")
-  return std::fabs(x);
+  return dabs(x);
 #Pendif
 #Pif("__scalar__"=="int")
   return abs(x);

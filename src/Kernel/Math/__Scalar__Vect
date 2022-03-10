@@ -22,19 +22,19 @@ public:
 //  __Scalar__Vect(int n, __scalar__ x);
   __Scalar__Vect(const __Scalar__Vect&);
   // Pas de constructeur par copie de ArrOf__Scalar__, voir __Scalar__Vect(const __Scalar__Vect&)
-  ~__Scalar__Vect() override {};
-  void reset() override;
+  ~__Scalar__Vect() {};
+  virtual void reset();
   virtual void detach_vect();
 
   __Scalar__Vect& operator=(const __Scalar__Vect&);
   __Scalar__Vect& operator=(__scalar__);
 
   virtual void ref(const __Scalar__Vect &);
-  void ref_data(__scalar__* ptr, int new_size) override;
-  void ref_array(ArrOf__Scalar__ &, int start = 0, int sz = -1) override;
+  virtual void ref_data(__scalar__* ptr, int new_size); 
+  virtual void ref_array(ArrOf__Scalar__ &, int start = 0, int sz = -1);
 
   inline void resize(int, Array_base::Resize_Options opt = COPY_INIT);
-  void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT) override;
+  virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
   void copy(const ArrOf__Scalar__ &, Array_base::Resize_Options opt = COPY_INIT);
   void copy(const __Scalar__Vect &, Array_base::Resize_Options opt = COPY_INIT);
 
@@ -576,8 +576,7 @@ void __Scalar__Vect::lit(Entree & is, int resize_and_read)
      // __Scalar__ tmp;
      //for (int i=0;i<sz;i++) is >> tmp;
      // So we bufferize:
-     int sz_max = 128000;
-     int buffer_size = std::min(sz,sz_max);
+     int buffer_size = min(sz,128000);
      ArrOf__Scalar__ tmp(buffer_size);
      while(sz>buffer_size)
      {
@@ -683,7 +682,7 @@ static void invalidate_data(__Scalar__Vect & resu, Mp_vect_options opt)
 #Pif (ANY_SHAPE=="any_shape")
   int line_size_vx = vx.line_size();
 #Pendif
-#Pif ("__scalar__"=="double")#Pset(ABS std::fabs)#Pelse#Pset(ABS abs)#Pendif
+#Pif ("__scalar__"=="double")#Pset(ABS fabs)#Pelse#Pset(ABS abs)#Pendif
   const MD_Vector & md = master_vect.get_md_vector();
   const int vect_size_tot = master_vect.size_totale();
 #Pif (WITH_VX=="with_vx")

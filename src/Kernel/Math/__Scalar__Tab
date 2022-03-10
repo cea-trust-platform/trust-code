@@ -48,14 +48,14 @@ public:
   __Scalar__Tab(int n1, int n2, int n3);
   __Scalar__Tab(int n1, int n2, int n3, int n4);
 #Pendif
-  void ref(const __Scalar__Vect &) override;
+  virtual void ref(const __Scalar__Vect &);
   virtual void ref(const __Scalar__Tab &);
-  void ref_data(__scalar__* ptr, int size) override;
-  void ref_array(ArrOf__Scalar__ &, int start = 0, int sz = -1) override;
+  virtual void ref_data(__scalar__* ptr, int size); 
+  virtual void ref_array(ArrOf__Scalar__ &, int start = 0, int sz = -1);
   virtual void ref_tab(__Scalar__Tab &, int start_line = 0, int nb_lines = -1);
-  void reset() override;
+  virtual void reset();
 
-  void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT) override;
+  virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
   void resize_dim0(int n, Array_base::Resize_Options opt = COPY_INIT);
   void resize(int n, Array_base::Resize_Options opt = COPY_INIT);
   void resize(int n1, int n2, Array_base::Resize_Options opt = COPY_INIT);
@@ -98,10 +98,10 @@ public:
   double max_du_u(const DoubleTab&);
 #Pendif
 
-  void set_md_vector(const MD_Vector &) override;
-  void jump(Entree &) override;
-  void lit(Entree &, int resize_and_read=1) override;
-  void ecrit(Sortie &) const override;
+  virtual void set_md_vector(const MD_Vector &);
+  virtual void jump(Entree &);
+  virtual void lit(Entree &, int resize_and_read=1);
+  virtual void ecrit(Sortie &) const;
 
   inline void append_line(__scalar__);
   inline void append_line(__scalar__, __scalar__);
@@ -959,7 +959,7 @@ void local_max_abs_tab(const __Scalar__Tab & tableau, ArrOf__Scalar__ & max_colo
     for (int i = begin_bloc; i < end_bloc; i++) {
       int k = i * lsize;
       for (int j = 0; j < lsize; j++) {
-        const __scalar__ x = std::fabs(vect[k++]);
+        const __scalar__ x = dabs(vect[k++]);
         max_colonne[j] = (x > max_colonne[j]) ? x : max_colonne[j];
       }
     }
@@ -1099,7 +1099,7 @@ int DoubleTab::decomp_LU(int n, ArrOfInt& index, DoubleTab& matLU)
       big = 0;
       for (j=0 ; j<n ; j++)
         {
-          if ((temp = std::fabs(matLU(i,j))) > big)
+          if ((temp = fabs(matLU(i,j))) > big)
             {
               big = temp;
             }
@@ -1136,7 +1136,7 @@ int DoubleTab::decomp_LU(int n, ArrOfInt& index, DoubleTab& matLU)
               sum -= matLU(i,k) * matLU(k,j);
             }
           matLU(i,j) = sum;
-          if ((dum = vv(i)*std::fabs(sum)) >= big)
+          if ((dum = vv(i)*fabs(sum)) >= big)
             {
               big = dum;
               imax = i;
@@ -1220,8 +1220,8 @@ double DoubleTab::max_du_u(const DoubleTab & u)
   const double epsilon = 1.e-8;
   double res = 0.;
   for (int n = size_array(); n; n--) {
-    double a = std::fabs(*du_ptr);
-    double b = std::fabs(*u_ptr);
+    double a = fabs(*du_ptr);
+    double b = fabs(*u_ptr);
     double c = a / (b + epsilon);
     if (b > 1.e-2 && c > res)
       res = c;

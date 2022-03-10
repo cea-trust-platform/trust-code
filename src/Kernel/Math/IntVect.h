@@ -43,19 +43,19 @@ public:
 //  IntVect(int n, int x);
   IntVect(const IntVect&);
   // Pas de constructeur par copie de ArrOfInt, voir IntVect(const IntVect&)
-  ~IntVect() override {};
-  void reset() override;
+  ~IntVect() {};
+  virtual void reset();
   virtual void detach_vect();
 
   IntVect& operator=(const IntVect&);
   IntVect& operator=(int);
 
   virtual void ref(const IntVect&);
-  void ref_data(int* ptr, int new_size) override;
-  void ref_array(ArrOfInt&, int start = 0, int sz = -1) override;
+  virtual void ref_data(int* ptr, int new_size);
+  virtual void ref_array(ArrOfInt&, int start = 0, int sz = -1);
 
   inline void resize(int, Array_base::Resize_Options opt = COPY_INIT);
-  void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT) override;
+  virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
   void copy(const ArrOfInt&, Array_base::Resize_Options opt = COPY_INIT);
   void copy(const IntVect&, Array_base::Resize_Options opt = COPY_INIT);
 

@@ -651,7 +651,7 @@ void local_max_abs_tab(const DoubleTab& tableau, ArrOfDouble& max_colonne)
           int k = i * lsize;
           for (int j = 0; j < lsize; j++)
             {
-              const double x = std::fabs(vect[k++]);
+              const double x = dabs(vect[k++]);
               max_colonne[j] = (x > max_colonne[j]) ? x : max_colonne[j];
             }
         }
@@ -793,7 +793,7 @@ int DoubleTab::decomp_LU(int n, ArrOfInt& index, DoubleTab& matLU)
       big = 0;
       for (j=0 ; j<n ; j++)
         {
-          if ((temp = std::fabs(matLU(i,j))) > big)
+          if ((temp = fabs(matLU(i,j))) > big)
             {
               big = temp;
             }
@@ -830,7 +830,7 @@ int DoubleTab::decomp_LU(int n, ArrOfInt& index, DoubleTab& matLU)
               sum -= matLU(i,k) * matLU(k,j);
             }
           matLU(i,j) = sum;
-          if ((dum = vv(i)*std::fabs(sum)) >= big)
+          if ((dum = vv(i)*fabs(sum)) >= big)
             {
               big = dum;
               imax = i;
@@ -915,8 +915,8 @@ double DoubleTab::max_du_u(const DoubleTab& u)
   double res = 0.;
   for (int n = size_array(); n; n--)
     {
-      double a = std::fabs(*du_ptr);
-      double b = std::fabs(*u_ptr);
+      double a = fabs(*du_ptr);
+      double b = fabs(*u_ptr);
       double c = a / (b + epsilon);
       if (b > 1.e-2 && c > res)
         res = c;
