@@ -28,7 +28,7 @@
 #include <Ref_Op_Ecart_type.h>
 #include <Op_Ecart_type.h>
 
-class DoubleTab;
+#include <TRUSTTab.h>
 class Postraitement_base;
 
 //

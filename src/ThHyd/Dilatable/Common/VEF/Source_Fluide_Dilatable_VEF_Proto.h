@@ -25,11 +25,10 @@
 
 #include <Ref_Zone_Cl_VEF.h>
 #include <Ref_Zone_VEF.h>
+#include <TRUSTTab.h>
 
 class Equation_base;
 class Zone_Cl_dis;
-#include <TRUSTVect.h>
-class DoubleTab;
 class Zone_dis;
 
 class Source_Fluide_Dilatable_VEF_Proto

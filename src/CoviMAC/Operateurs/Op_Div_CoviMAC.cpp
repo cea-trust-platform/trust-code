@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -90,7 +90,7 @@ DoubleTab& Op_Div_CoviMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
   int i, e, f, n, N = vit.line_size();
   assert(div.line_size() == N);
 
-  DoubleTab& tab_flux_bords = ref_cast(DoubleTab,flux_bords_);
+  DoubleTab& tab_flux_bords = static_cast<DoubleTab&>(flux_bords_);
   tab_flux_bords.resize(zone.nb_faces_bord(),1);
   tab_flux_bords=0;
 

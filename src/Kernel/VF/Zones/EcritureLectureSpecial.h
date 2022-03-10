@@ -42,7 +42,7 @@
 class Sortie;
 class Entree;
 class Zone_VF;
-class DoubleTab;
+#include <TRUSTTab.h>
 class Champ_base;
 
 class EcritureLectureSpecial : public Interprete

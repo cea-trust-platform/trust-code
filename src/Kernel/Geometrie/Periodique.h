@@ -25,12 +25,9 @@
 #define Periodique_included
 
 #include <Cond_lim_base.h>
-
-
+#include <TRUSTTab.h>
 
 class Faces;
-class IntTab;
-class DoubleTab;
 
 //////////////////////////////////////////////////////////////////////////////
 //

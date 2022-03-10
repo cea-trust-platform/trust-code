@@ -30,7 +30,7 @@
 #include <Zone_Cl_VDF.h>
 
 class Evaluateur_Source_VDF;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 class Iterateur_Source_VDF_base : public Objet_U
 {

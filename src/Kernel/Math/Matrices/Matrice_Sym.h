@@ -23,11 +23,6 @@
 #ifndef Matrice_Sym_included
 #define Matrice_Sym_included
 
-
-
-
-
-
 #ifndef DOUBLEVECT_H
 #include <TRUSTVect.h>
 #endif
@@ -39,8 +34,7 @@
 #define _DEGRE_POLY_ 5
 #define _SEUIL_GCP_ 1e-12
 
-class DoubleTab;
-class IntTab;
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

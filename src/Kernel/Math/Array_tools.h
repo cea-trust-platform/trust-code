@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <arch.h>
 #include <TRUSTArray.h>
-class IntTab;
+#include <TRUSTTab.h>
 
 // Description: Methode outil pour retirer les doublons dans un tableau.
 void array_trier_retirer_doublons(ArrOfInt& array);

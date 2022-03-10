@@ -34,7 +34,7 @@
 #include <SolveurSys.h>
 
 class Equation_base;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 class Solveur_Lineaire_Std : public  Solveur_lineaire
 {

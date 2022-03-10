@@ -344,7 +344,7 @@ void Sonde_Int::initialiser(const Zone& zone_geom)
       }
   if (sub_type(IntTab,mon_tableau.valeur()))
     {
-      const IntTab& tab_val = ref_cast(IntTab,mon_tableau.valeur());
+      const IntTab& tab_val = static_cast<const IntTab&>(mon_tableau.valeur());
       valeurs.resize(nbre_points,tab_val.dimension(1));
     }
   else
@@ -558,7 +558,7 @@ void Sonde_Int::postraiter(double un_temps)
 {
   if (sub_type(IntTab,mon_tableau.valeur()))
     {
-      const IntTab& val_tab= ref_cast(IntTab,mon_tableau.valeur());
+      const IntTab& val_tab= static_cast<const IntTab&>(mon_tableau.valeur());
       int nval = val_tab.dimension(1);
       //int i,j;
       // int nb_compo=valeurs.nb_dim();

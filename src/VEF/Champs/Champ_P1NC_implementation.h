@@ -31,7 +31,7 @@
 #include <Frontiere_dis_base.h>
 
 class Zone_VEF;
-class IntTab;
+#include <TRUSTTab.h>
 class Champ_P1NC;
 class Champ_Fonc_P1NC;
 //

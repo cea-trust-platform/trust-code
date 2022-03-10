@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -615,9 +615,10 @@ int Format_Post_Lml::ecrire_item_int_lml(const Nom&   id_item,
   //Actuellement temp_courant n est pas passe en argument
   ////os << "CHAMPMAILLE " << nom_vect << " "<< nom_topologie << " " << temps_courant << finl;
 
-  if (sub_type(IntTab,vect))
+  const IntTab* intT = dynamic_cast<const IntTab*>(&vect);
+  if (intT)
     {
-      const IntTab& tab = ref_cast(IntTab,vect);
+      const IntTab& tab = *intT;
       os.lockfile();
       os << nom_vect << tab.dimension(1) << " 1 " << " type0 " << tab.dimension(0) << finl;
       os.unlockfile();

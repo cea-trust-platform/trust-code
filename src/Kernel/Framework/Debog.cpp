@@ -680,10 +680,12 @@ void Debog_Pb::ecrire_gen(const char* const msg, const DoubleVect& arr, int num_
       if (num_deb >= 0)
         os << num_deb << finl;
       // Dump array header:
-      if (sub_type(DoubleTab, arr))
+
+      const DoubleTab* tabb = dynamic_cast<const DoubleTab*>(&arr);
+      if (tabb)
         {
           // Header for DoubleTab:
-          const DoubleTab& tab = ref_cast(DoubleTab, arr);
+          const DoubleTab& tab = *tabb;
           const int n =  tab.nb_dim();
           os << n << finl;
           // total number of lines:
@@ -892,7 +894,8 @@ void Debog_Pb::verifier_gen(const char * const msg, const DoubleVect& arr, Doubl
       return;
     }
   goto_msg(msg);
-  if (sub_type(DoubleTab, arr))
+  const DoubleTab* scalT = dynamic_cast<const DoubleTab*>(&arr);
+  if (scalT)
     {
       // read tab header
       ArrOfInt dims;
@@ -993,10 +996,12 @@ void Debog_Pb::ecrire_gen(const char* const msg, const IntVect& arr, int num_deb
       if (num_deb >= 0)
         os << num_deb << finl;
       // Dump array header:
-      if (sub_type(IntTab, arr))
+
+      const IntTab* tabb = dynamic_cast<const IntTab*>(&arr);
+      if (tabb)
         {
           // Header for DoubleTab:
-          const IntTab& tab = ref_cast(IntTab, arr);
+          const IntTab& tab = *tabb;
           const int n =  tab.nb_dim();
           os << n << finl;
           // total number of lines:
@@ -1174,7 +1179,8 @@ void Debog_Pb::verifier_gen(const char * const msg, const IntVect& arr, IntVect 
       return;
     }
   goto_msg(msg);
-  if (sub_type(IntTab, arr))
+  const IntTab* scalT = dynamic_cast<const IntTab*>(&arr);
+  if (scalT)
     {
       // read tab header
       ArrOfInt dims;

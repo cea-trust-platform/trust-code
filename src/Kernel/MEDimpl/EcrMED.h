@@ -44,7 +44,7 @@
 class Domaine;
 class Nom;
 class Noms;
-class DoubleTab;
+#include <TRUSTTab.h>
 class Champ_Inc_base;
 class Zone_dis_base;
 class Domaine;

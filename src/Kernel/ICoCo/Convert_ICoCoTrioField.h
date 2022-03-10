@@ -39,7 +39,7 @@
 
 class Champ_Generique_base;
 class Domaine;
-class DoubleTab;
+#include <TRUSTTab.h>
 void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio);
 void affecte_int_avec_inttab(int** p, const ArrOfInt& trio);
 #include <ICoCoMEDDoubleField.hxx>

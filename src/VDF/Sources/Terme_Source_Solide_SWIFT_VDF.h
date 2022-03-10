@@ -42,7 +42,7 @@
 
 class Probleme_base;
 class Conduction;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 
 class Terme_Source_Solide_SWIFT_VDF : public Source_base

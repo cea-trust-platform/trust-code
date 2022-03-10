@@ -25,7 +25,7 @@
 
 #include <TRUSTVect.h>
 #include <Faces.h>
-class DoubleTab;
+#include <TRUSTTab.h>
 class Nom;
 
 //////////////////////////////////////////////////////////////////////////////

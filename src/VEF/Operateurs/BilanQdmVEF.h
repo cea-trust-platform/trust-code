@@ -22,7 +22,7 @@
 #ifndef BilanQdmVEF_included
 #define BilanQdmVEF_included
 
-class DoubleTab;
+#include <TRUSTTab.h>
 class Zone_Cl_VEF;
 #include <TRUSTArray.h>
 

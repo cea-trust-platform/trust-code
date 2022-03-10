@@ -28,7 +28,7 @@
 #include <Source_base.h>
 
 class Zone_Cl_dis;
-class DoubleTab;
+#include <TRUSTTab.h>
 class Zone_dis;
 
 //////////////////////////////////////////////////////////////////////////////

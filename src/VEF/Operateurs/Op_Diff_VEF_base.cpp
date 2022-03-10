@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -101,7 +101,7 @@ void Op_Diff_VEF_base::associer(const Zone_dis& zone_dis,
   if(nb_dim==2)
     nb_comp = ch_transporte->valeurs().dimension(1);
 
-  (ref_cast(DoubleTab,flux_bords_)).resize(zone_VEF.nb_faces_bord(),nb_comp);
+  static_cast<DoubleTab&>(flux_bords_).resize(zone_VEF.nb_faces_bord(),nb_comp);
   flux_bords_=0.;
 }
 double Op_Diff_VEF_base::calculer_dt_stab() const

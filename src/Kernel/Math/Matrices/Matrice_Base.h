@@ -45,7 +45,7 @@
 //      int ordre() const
 //////////////////////////////////////////////////////////////////////////////
 
-class IntTab;
+#include <TRUSTTab.h>
 #include <TRUSTArray.h>
 
 class Matrice_Base : public Objet_U

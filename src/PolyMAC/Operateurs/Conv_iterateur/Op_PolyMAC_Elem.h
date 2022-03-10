@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 class Matrice_Morse;
 class Zone_PolyMAC;
 class Zone_Cl_PolyMAC;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 class Op_PolyMAC_Elem
 {

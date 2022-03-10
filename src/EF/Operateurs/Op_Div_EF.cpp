@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -91,7 +91,7 @@ DoubleTab& Op_Div_EF::ajouter(const DoubleTab& vit, DoubleTab& div) const
   const IntTab& face_sommets=zone_ef.face_sommets();
   int nb_som_face=zone_ef.nb_som_face();
   const DoubleTab& face_normales = zone_ef.face_normales();
-  DoubleTab& tab_flux_bords = ref_cast(DoubleTab,flux_bords_);
+  DoubleTab& tab_flux_bords = static_cast<DoubleTab&>(flux_bords_);
   const DoubleVect& porosite_sommet=zone_ef.porosite_sommet();
   tab_flux_bords.resize(zone_ef.nb_faces_bord(),1);
   tab_flux_bords=0;

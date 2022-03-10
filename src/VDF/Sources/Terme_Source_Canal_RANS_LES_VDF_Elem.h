@@ -38,7 +38,7 @@
 
 class Probleme_base;
 class Navier_Stokes_std;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 
 class Terme_Source_Canal_RANS_LES_VDF_Elem : public Source_base

@@ -23,7 +23,7 @@
 #define Octree_Double_included
 #include <Octree_Int.h>
 #include <TRUSTArray.h>
-class DoubleTab;
+#include <TRUSTTab.h>
 
 // .DESCRIPTION : Un octree permettant de chercher dans l'espace des elements ou des points
 //  decrits par des coordonnees reeles. Cet objet est base sur Octree_Int.

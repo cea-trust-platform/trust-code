@@ -28,7 +28,7 @@
 #include <Frontiere.h>
 
 class Zone_VEF;
-class IntTab;
+#include <TRUSTTab.h>
 
 
 class Champ_Q1NC_impl: public Champ_implementation

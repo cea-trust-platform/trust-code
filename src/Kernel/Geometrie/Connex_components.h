@@ -24,7 +24,7 @@
 
 #include <TRUSTVect.h>
 #include <arch.h>
-class IntTab;
+#include <TRUSTTab.h>
 
 int search_connex_components_local(const IntTab& elem_faces,
                                    const IntTab& faces_elem,

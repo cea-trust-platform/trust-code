@@ -28,7 +28,7 @@
 #include <Joint.h>
 
 class Joints;
-class DoubleTab;
+#include <TRUSTTab.h>
 class Zone_VF;
 class VECT(ArrOfInt);
 

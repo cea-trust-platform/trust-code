@@ -22,13 +22,11 @@
 #ifndef Format_Post_base_included
 #define Format_Post_base_included
 
-
-#include <Domaine.h>
-#include <Champ_base.h>
 #include <Ref_Zone_dis_base.h>
+#include <Champ_base.h>
+#include <TRUSTTab.h>
+#include <Domaine.h>
 
-class DoubleTab;
-class IntTab;
 class Motcle;
 class Zone_dis;
 class Param;

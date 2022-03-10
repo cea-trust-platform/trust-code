@@ -41,7 +41,7 @@
 #include <MD_Vector_tools.h>
 
 class Operateur;
-class DoubleTab;
+#include <TRUSTTab.h>
 class DoubleTrav;
 class Discretisation_base;
 class Motcle;

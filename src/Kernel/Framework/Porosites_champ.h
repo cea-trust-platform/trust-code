@@ -34,7 +34,7 @@ public :
   Entree& interpreter(Entree&) override;
 };
 
-class DoubleTab;
+#include <TRUSTTab.h>
 #include <TRUSTVect.h>
 const DoubleTab& modif_par_porosite_si_flag(const DoubleTab& org, DoubleTab& res,int flag,const DoubleVect& porosite);
 

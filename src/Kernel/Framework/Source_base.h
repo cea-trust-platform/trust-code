@@ -30,7 +30,7 @@
 #include <Matrice_Bloc.h>
 #include <Interface_blocs.h>
 
-class DoubleTab;
+#include <TRUSTTab.h>
 class DoubleTabs;
 class Probleme_base;
 class Zone_dis;

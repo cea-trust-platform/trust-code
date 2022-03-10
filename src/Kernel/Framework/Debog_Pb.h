@@ -32,7 +32,7 @@
 #include <IntVects.h>
 #include <Ref_Probleme_base.h>
 
-class DoubleTab;
+#include <TRUSTTab.h>
 
 class Debog_Pb;
 Declare_ref(Debog_Pb);

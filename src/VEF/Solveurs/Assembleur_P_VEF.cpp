@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -77,12 +77,10 @@ void Assembleur_P_VEF::calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, co
 {
   // maintenant l 'inverse du volume est un DoubleTab
   // c'est pour faire fonctionner le Piso
-
-  if (sub_type(DoubleTab,volumes_entrelaces))
+  const DoubleTab* doubleT = dynamic_cast<const DoubleTab*>(&volumes_entrelaces);
+  if (doubleT)
     {
-      calculer_inv_volume_special(inv_volumes_entrelaces, zone_Cl_VEF,ref_cast(DoubleTab, volumes_entrelaces));
-
-
+      calculer_inv_volume_special(inv_volumes_entrelaces, zone_Cl_VEF,static_cast<const DoubleTab&>(volumes_entrelaces));
       return;
     }
   int taille=volumes_entrelaces.size_totale();

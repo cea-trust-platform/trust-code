@@ -23,10 +23,8 @@
 #define Format_Post_Med_included
 
 #include <Format_Post_base.h>
+#include <TRUSTTab.h>
 #include <EcrMED.h>
-
-class DoubleTab;
-class IntTab;
 
 // .DESCRIPTION        :
 //  Classe de postraitement des champs euleriens au format med.

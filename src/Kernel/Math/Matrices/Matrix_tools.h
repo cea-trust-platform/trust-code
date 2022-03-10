@@ -23,8 +23,9 @@
 #ifndef Matrix_tools_included
 #define Matrix_tools_included
 
+#include <TRUSTTab.h>
 #include <arch.h>
-#include <TRUSTArray.h>
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // .NAME        : Matrix_tools
@@ -40,8 +41,6 @@ class Matrice;
 class Matrice_Base;
 class Matrice_Morse;
 class Matrice_Morse_Sym;
-class IntTab;
-class DoubleTab;
 class Matrix_tools
 {
 public :

@@ -27,7 +27,7 @@
 #include <Matrice_Morse_Sym.h>
 
 #include <TRUSTVect.h>
-class DoubleTab;
+#include <TRUSTTab.h>
 class Matrice_Morse_Sym;
 class Matrice_Morse;
 

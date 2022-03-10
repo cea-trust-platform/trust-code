@@ -27,7 +27,7 @@
 #include <Champ_Generique_Statistiques_base.h>
 #include <Op_Correlation.h>
 
-class DoubleTab;
+#include <TRUSTTab.h>
 class Postraitement_base;
 
 //

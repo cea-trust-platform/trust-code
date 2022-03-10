@@ -28,7 +28,7 @@
 #include <Champ_Don.h>
 //#include <Champ_Fonc_reprise.h>
 
-class DoubleTab;
+#include <TRUSTTab.h>
 
 
 //

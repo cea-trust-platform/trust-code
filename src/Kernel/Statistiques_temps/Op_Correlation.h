@@ -29,7 +29,7 @@
 #include <Ref_Integrale_tps_Champ.h>
 #include <Op_Moyenne.h>
 
-class DoubleTab;
+#include <TRUSTTab.h>
 
 // .DESCRIPTION class Op_Correlation
 //

@@ -361,7 +361,7 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
 
   // Dimensionnement du tableau des flux convectifs au bord du domaine
   // de calcul
-  DoubleTab& flux_b = ref_cast(DoubleTab,flux_bords_);
+  DoubleTab& flux_b = static_cast<DoubleTab&>(flux_bords_);
   flux_b.resize(zone_VEF.nb_faces_bord(),ncomp_ch_transporte);
   flux_b = 0.;
 

@@ -24,8 +24,6 @@
 #define Integrale_tps_produit_champs_included
 
 #include <Integrale_tps_Champ.h>
-class DoubleTab ;
-
 
 //////////////////////////////////////////////////////////////////////////////
 //

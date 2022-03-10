@@ -41,7 +41,7 @@
 class Probleme_base;
 class Navier_Stokes_std;
 class Convection_Diffusion_Temperature;
-class DoubleTab;
+#include <TRUSTTab.h>
 class Champ_Don;
 
 

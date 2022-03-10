@@ -29,7 +29,7 @@
 #include <Ref_Zone.h>
 
 class IntVects;
-class IntTab;
+#include <TRUSTTab.h>
 
 #define GaucheArriereBas 0
 #define DroitArriereBas 1

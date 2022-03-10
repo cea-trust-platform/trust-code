@@ -36,7 +36,7 @@
 //
 /////////////////////////////////////////////////////////////////////////////
 
-class IntTab;
+#include <TRUSTTab.h>
 #include <TRUSTArray.h>
 
 class Matrice_Nulle : public Matrice_Base

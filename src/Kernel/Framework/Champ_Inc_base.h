@@ -31,7 +31,7 @@
 #include <Interface_blocs.h>
 #include <Ref_Objet_U.h>
 
-class DoubleTab;
+#include <TRUSTTab.h>
 class Frontiere_dis_base;
 class MD_Vector;
 class Zone_dis;

@@ -38,7 +38,7 @@
 
 class Probleme_base;
 class Navier_Stokes_std;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 
 class Terme_Source_Rappel_T_VEF_Face : public Source_base

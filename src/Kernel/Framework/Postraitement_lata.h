@@ -23,15 +23,13 @@
 #define Postraitement_lata_included
 
 #include <Postraitement_base.h>
-#include <Motcle.h>
 #include <Parser_U.h>
+#include <TRUSTTab.h>
+#include <Motcle.h>
 
 class Comm_Group;
 class Zone;
-#include <TRUSTVect.h>
 class Fichier_lata;
-class DoubleTab;
-class IntTab;
 class Postraitement_lata_private_data;
 class Zone_dis_base;
 

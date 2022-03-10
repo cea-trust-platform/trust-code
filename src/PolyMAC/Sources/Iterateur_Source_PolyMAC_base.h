@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@
 #include <Equation_base.h>
 #include <Ref_Source_base.h>
 
-class DoubleTab;
+#include <TRUSTTab.h>
 class Evaluateur_Source_PolyMAC;
 
 class Iterateur_Source_PolyMAC_base : public Objet_U

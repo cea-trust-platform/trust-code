@@ -28,7 +28,7 @@
 #include <stat_counters.h>
 #include <communications.h>
 #include <vector>
-#include <TRUSTVect.h>
+#include <TRUSTTab.h>
 #include <DoubleTrav.h>
 
 static Schema_Comm_Vecteurs comm;
@@ -71,38 +71,21 @@ static void creer_tableau_distribue_(const MD_Vector& md, VECT& v, Array_base::R
   //  mais c'est bien ce qu'on veut...
   int sz_r = md.valeur().get_nb_items_reels();
   int err = 0;
-  if (sub_type(TAB, v))
+  TAB* vv = dynamic_cast<TAB*>(&v);
+  if (vv)
     {
-      TAB& t = ref_cast(TAB, v);
+      TAB& t = *vv;
       const int n = t.dimension_tot(0);
-      if (n == sz_r || n == 0)
-        {
-          t.resize_dim0(sz, opt);
-        }
-      else if (n == sz)
-        {
-          // ok no resize
-        }
-      else
-        {
-          err = 1;
-        }
+      if (n == sz_r || n == 0) t.resize_dim0(sz, opt);
+      else if (n == sz) { /* ok no resize */  }
+      else {  err = 1; }
     }
   else
     {
       const int n = v.size_totale();
-      if (n == sz_r || n == 0)
-        {
-          v.resize(sz, opt);
-        }
-      else if (n == sz)
-        {
-          // ok no resize
-        }
-      else
-        {
-          err = 1;
-        }
+      if (n == sz_r || n == 0) {  v.resize(sz, opt); }
+      else if (n == sz) { /* ok no resize */ }
+      else { err = 1; }
     }
   if (err)
     {

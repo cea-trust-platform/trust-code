@@ -30,7 +30,7 @@ class Zone_dis;
 class Zone_dis_base;
 class Zone_Cl_dis;
 class Zone_Cl_dis_base;
-class DoubleTab;
+#include <TRUSTTab.h>
 #include <TRUSTVect.h>
 class Matrice_Base;
 class Matrice_Morse;

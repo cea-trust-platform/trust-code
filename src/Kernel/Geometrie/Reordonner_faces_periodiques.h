@@ -26,7 +26,7 @@
 #include <Interprete_geometrique_base.h>
 #include <TRUSTArray.h>
 class Domaine;
-class IntTab;
+#include <TRUSTTab.h>
 class Frontiere;
 
 // .DESCRIPTION

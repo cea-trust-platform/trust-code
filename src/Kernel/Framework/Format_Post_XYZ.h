@@ -24,9 +24,7 @@
 
 #include <Format_Post_base.h>
 #include <EcrFicPartage.h>
-
-class DoubleTab;
-class IntTab;
+#include <TRUSTTab.h>
 
 // .DESCRIPTION        :
 //  Classe de postraitement des champs euleriens au format xyz.

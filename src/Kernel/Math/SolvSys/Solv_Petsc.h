@@ -33,7 +33,7 @@
 #ifdef PETSCKSP_H
 #include <petscdm.h>
 #endif
-class DoubleTab;
+#include <TRUSTTab.h>
 class Matrice_Morse_Sym;
 class Matrice_Morse;
 

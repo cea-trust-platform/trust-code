@@ -26,7 +26,7 @@
 #include <solv_iteratif.h>
 #include <DoubleVects.h>
 #include <TRUSTVect.h>
-class DoubleTab;
+#include <TRUSTTab.h>
 class Matrice_Morse_Sym;
 class Matrice_Morse;
 

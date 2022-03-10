@@ -30,8 +30,12 @@
 #include <vector>
 class Objet_U;
 class DoubleTabs;
-#include <TRUSTArray.h>
-class DoubleTab;
+template<typename T> class TRUSTArray;
+using ArrOfDouble = TRUSTArray<double>;
+using ArrOfInt = TRUSTArray<int>;
+template<typename T> class TRUSTTab;
+using DoubleTab = TRUSTTab<double>;
+
 class VECT(ArrOfInt);
 
 int envoyer(const int&   t, int source, int cible, int canal );

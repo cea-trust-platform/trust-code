@@ -603,34 +603,36 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
         os << "TYPE :" << obj.le_type();
         if(sub_type(Nom,obj)) os << " NOM : " << obj.le_nom() ;
         os << " adresse : " << (long)(&(obj));
-        if(sub_type(ArrOfInt,obj))
+
+        const ArrOfInt* intA = dynamic_cast<const ArrOfInt*>(&obj);
+        if(intA)
           {
-            const ArrOfInt& toto = static_cast<const ArrOfInt&>(obj);
-            tmp = obj.taille_memoire() +
-                  (int) ((toto.size_array()*sizeof(int))/toto.ref_count());
+            const ArrOfInt& toto = *intA;
+            tmp = obj.taille_memoire() + (int) ((toto.size_array()*sizeof(int))/toto.ref_count());
             os << " TAILLE ArrOfInt : " << tmp<< " octets ";
-            if(sub_type(IntVect,obj))
+
+            const IntVect* intV = dynamic_cast<const IntVect*>(&obj);
+            if(intV)
               {
-                const IntVect& titi = static_cast<const IntVect&> (obj);
-                tmp1 = obj.taille_memoire() +
-                       (int) ((titi.size()*sizeof(int))/titi.ref_count());
+                const IntVect& titi = *intV;
+                tmp1 = obj.taille_memoire() + (int) ((titi.size()*sizeof(int))/titi.ref_count());
                 os << " dont : " << (tmp-tmp1) << " octets virtuels ";
               }
             os << "\n";
           }
         else
           {
-            if(sub_type(ArrOfDouble,obj))
+            const ArrOfDouble* intAD = dynamic_cast<const ArrOfDouble*>(&obj);
+            if(intAD)
               {
-                const ArrOfDouble& toto = static_cast<const ArrOfDouble&>(obj);
-                tmp = obj.taille_memoire() +
-                      (int) ((toto.size_array()*sizeof(double))/toto.ref_count());
+                const ArrOfDouble& toto = *intAD;
+                tmp = obj.taille_memoire() + (int) ((toto.size_array()*sizeof(double))/toto.ref_count());
                 os << " TAILLE ArrOfDouble : " << tmp<< " octets ";
                 /* PL: Plante en P1Bulle donc je commente
-                   if(sub_type(DoubleVect,obj)){
-                   const DoubleVect& titi = ref_cast(DoubleVect,obj);
-                   tmp1 = obj.taille_memoire() +
-                   (int) ((titi.size()*sizeof(double))/titi.ref_count());
+                 * const DoubleVect* intVD = dynamic_cast<const DoubleVect*>(&obj);
+                   if(intVD){
+                   const DoubleVect& titi = *intVD;
+                   tmp1 = obj.taille_memoire() + (int) ((titi.size()*sizeof(double))/titi.ref_count());
                    os << " dont : " << (tmp-tmp1) << " octets virtuels ";
                    } */
                 os << "\n";

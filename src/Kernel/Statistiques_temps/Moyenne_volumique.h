@@ -28,7 +28,7 @@
 #include <Parser.h>
 
 class Convolution_function_base;
-class DoubleTab;
+#include <TRUSTTab.h>
 class Motcles;
 class Format_Post_base;
 class Zone_VF;

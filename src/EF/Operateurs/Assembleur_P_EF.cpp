@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,16 +71,16 @@ void calculer_inv_volume(DoubleTab& inv_volumes_som, const Zone_Cl_EF& zone_Cl_E
   // maintenant l 'inverse du volume est un DoubleTab
   // c'est pour faire fonctionner le Piso
 
-  if (sub_type(DoubleTab,volumes_som))
+  const DoubleTab* doubleT = dynamic_cast<const DoubleTab*>(&volumes_som);
+  if (doubleT)
     {
-      DoubleTab marqueur(ref_cast(DoubleTab,volumes_som));
+      DoubleTab marqueur(*doubleT);
       marqueur=1;
       zone_Cl_EF.equation().solv_masse().valeur().appliquer_impl(marqueur);
-      calculer_inv_volume_special(inv_volumes_som, zone_Cl_EF,ref_cast(DoubleTab, volumes_som),marqueur);
-
-
+      calculer_inv_volume_special(inv_volumes_som, zone_Cl_EF,*doubleT,marqueur);
       return;
     }
+
   DoubleTab marqueur;
   marqueur=(volumes_som);
   marqueur=1;

@@ -689,10 +689,12 @@ void Debog_Pb::ecrire_gen(const char* const msg, const ScalarVect& arr, int num_
       if (num_deb >= 0)
         os << num_deb << finl;
       // Dump array header:
-      if (sub_type(ScalarTab, arr))
+
+      const ScalarTab* tabb = dynamic_cast<const ScalarTab*>(&arr);
+      if (tabb)
         {
           // Header for DoubleTab:
-          const ScalarTab& tab = ref_cast(ScalarTab, arr);
+          const ScalarTab& tab = *tabb;
           const int n =  tab.nb_dim();
           os << n << finl;
           // total number of lines:
@@ -929,7 +931,8 @@ void Debog_Pb::verifier_gen(const char * const msg, const ScalarVect& arr, Scala
       return;
     }
   goto_msg(msg);
-  if (sub_type(ScalarTab, arr))
+  const ScalarTab* scalT = dynamic_cast<const ScalarTab*>(&arr);
+  if (scalT)
     {
       // read tab header
       ArrOfInt dims;

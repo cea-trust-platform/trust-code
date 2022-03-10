@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -128,7 +128,7 @@ int Format_Post_Lata_V1::ecrire_item_int(const Nom&   id_item,
                                          const IntVect& val,
                                          const int reference_size)
 {
-  const IntTab& data = ref_cast(IntTab,val);
+  const IntTab& data = static_cast<const IntTab&>(val);
 
   if (id_item == "FACES")
     {
@@ -151,8 +151,8 @@ int Format_Post_Lata_V1::ecrire_item_int(const Nom&   id_item,
                        format_,
                        options_para_,
                        id_du_domaine,
-                       ref_cast(IntTab,*ref_faces_sommets),
-                       ref_cast(IntTab,val),
+                       static_cast<const IntTab&>(*ref_faces_sommets),
+                       static_cast<const IntTab&>(val),
                        ref_nb_som);
 
   return 0;

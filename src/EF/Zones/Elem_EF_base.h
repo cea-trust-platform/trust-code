@@ -28,7 +28,7 @@
 class Zone;
 class Zone_EF;
 class Champ_Inc_base;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 class Elem_EF_base : public Objet_U
 {

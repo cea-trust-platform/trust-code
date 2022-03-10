@@ -33,7 +33,7 @@
 class Solveur_Implicite_Base;
 class Equation;
 class Equation_base;
-class DoubleTab;
+#include <TRUSTTab.h>
 class DoubleTrav;
 class Matrice;
 class Sources;

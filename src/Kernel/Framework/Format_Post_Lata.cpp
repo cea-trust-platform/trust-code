@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1119,7 +1119,7 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
 
   Nom filename_champ;
   int size_tot, nb_compo;
-  const IntTab& valeurs = ref_cast(IntTab,val);
+  const IntTab& valeurs = static_cast<const IntTab&>(val);
   {
     Fichier_Lata fichier_champ(basename_champ, extension_champ,
                                Fichier_Lata::ERASE, format_, options_para_);

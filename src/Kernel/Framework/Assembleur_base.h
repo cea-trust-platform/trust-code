@@ -31,7 +31,7 @@ class Matrice_Morse_Sym;
 #include <TRUSTVect.h>
 class Champ_Don_base;
 class Matrice;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 class Assembleur_base : public Objet_U
 {

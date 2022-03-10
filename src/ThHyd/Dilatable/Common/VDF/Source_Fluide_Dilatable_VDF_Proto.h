@@ -29,7 +29,7 @@
 class Equation_base;
 class Zone_Cl_dis;
 #include <TRUSTVect.h>
-class DoubleTab;
+#include <TRUSTTab.h>
 class Zone_dis;
 
 class Source_Fluide_Dilatable_VDF_Proto

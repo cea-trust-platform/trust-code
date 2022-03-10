@@ -23,10 +23,9 @@
 #define Format_Post_Lata_included
 
 #include <Format_Post_base.h>
+#include <TRUSTTab.h>
 
 class Fichier_Lata;
-class DoubleTab;
-class IntTab;
 
 // .DESCRIPTION        :
 //  Classe de postraitement des champs euleriens au format lata.

@@ -26,7 +26,7 @@
 #include <Champ_implementation.h>
 #include <Matrice.h>
 class Zone_VEF_PreP1b;
-class IntTab;
+#include <TRUSTTab.h>
 class Zone_Cl_dis_base;
 class Frontiere_dis_base;
 

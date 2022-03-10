@@ -40,7 +40,7 @@
 #include <Ref_Zone_Cl_VEF.h>
 class Probleme_base;
 class Navier_Stokes_std;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 // La classe derive de Source_base et peut etre d'un terme source
 class Terme_Source_Canal_perio_VEF_P1NC : public Terme_Source_Canal_perio

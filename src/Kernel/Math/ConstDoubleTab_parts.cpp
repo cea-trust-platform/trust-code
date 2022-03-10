@@ -28,6 +28,7 @@
 static void init_parts(DoubleVect& vect, VECT(DoubleTab) & parts, DoubleTab *dummy_type_ptr)
 {
   const MD_Vector& md = vect.get_md_vector();
+  DoubleTab* doubleT = dynamic_cast<DoubleTab*>(&vect);
   if (! md.non_nul() || !sub_type(MD_Vector_composite, md.valeur()))
     {
       // Ce n'est pas un tableau a plusieurs sous-parties, on cree juste une
@@ -35,23 +36,21 @@ static void init_parts(DoubleVect& vect, VECT(DoubleTab) & parts, DoubleTab *dum
       parts.dimensionner(1);
       DoubleTab& part = parts[0];
       // On preserve le 'shape' du tableau de depart, si c'est un DoubleTab...
-      if (sub_type(DoubleTab, vect))
-        part.ref(ref_cast(DoubleTab, vect));
-      else
-        part.ref(vect);
+
+
+      if (doubleT) part.ref(*doubleT);
+      else part.ref(vect);
     }
   else
     {
-
       ArrOfInt shape;
       const int line_size = vect.line_size();
-      if (sub_type(DoubleTab, vect))
+      if (doubleT)
         {
-          const DoubleTab& tab = ref_cast(DoubleTab, vect);
+          const DoubleTab& tab = *doubleT;
           const int n = tab.nb_dim();
           shape.resize_array(n);
-          for (int i = 0; i < n; i++)
-            shape[i] = tab.dimension_tot(i);
+          for (int i = 0; i < n; i++) shape[i] = tab.dimension_tot(i);
         }
       else
         {
@@ -93,6 +92,7 @@ static void init_parts(DoubleVect& vect, VECT(DoubleTab) & parts, DoubleTab *dum
 static void init_parts(IntVect& vect, VECT(IntTab) & parts, IntTab *dummy_type_ptr)
 {
   const MD_Vector& md = vect.get_md_vector();
+  IntTab* intT = dynamic_cast<IntTab*>(&vect);
   if (! md.non_nul() || !sub_type(MD_Vector_composite, md.valeur()))
     {
       // Ce n'est pas un tableau a plusieurs sous-parties, on cree juste une
@@ -100,19 +100,16 @@ static void init_parts(IntVect& vect, VECT(IntTab) & parts, IntTab *dummy_type_p
       parts.dimensionner(1);
       IntTab& part = parts[0];
       // On preserve le 'shape' du tableau de depart, si c'est un DoubleTab...
-      if (sub_type(IntTab, vect))
-        part.ref(ref_cast(IntTab, vect));
-      else
-        part.ref(vect);
+      if (intT) part.ref(*intT);
+      else part.ref(vect);
     }
   else
     {
-
       ArrOfInt shape;
       const int line_size = vect.line_size();
-      if (sub_type(IntTab, vect))
+      if (intT)
         {
-          const IntTab& tab = ref_cast(IntTab, vect);
+          const IntTab& tab = *intT;
           const int n = tab.nb_dim();
           shape.resize_array(n);
           for (int i = 0; i < n; i++)

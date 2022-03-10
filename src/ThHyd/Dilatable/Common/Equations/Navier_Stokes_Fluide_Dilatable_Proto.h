@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
 class Fluide_Dilatable_base;
 class Navier_Stokes_std;
 class Matrice_Morse;
-class DoubleTab;
+#include <TRUSTTab.h>
 class Sortie;
 
 //////////////////////////////////////////////////////////////////////////////

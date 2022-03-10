@@ -15,7 +15,7 @@
 #include <Champ_Inc.h>
 #include <Champ_implementation_P1.h>
 class Motcle;
-class IntTab;
+#include <TRUSTTab.h>
 
 
 //////////////////////////////////////////////////////////////////////////////

@@ -28,7 +28,7 @@
 #include <Ref_Zone.h>
 class Motcle;
 #include <TRUSTVect.h>
-class DoubleTab;
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

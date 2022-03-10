@@ -25,7 +25,7 @@
 
 #include <Champ_Fonc_t.h>
 #include <TRUSTArray.h>
-class DoubleTab;
+#include <TRUSTTab.h>
 class Schema_Temps_base;
 
 ////////////////////////////////////////////////////////////////////////////////

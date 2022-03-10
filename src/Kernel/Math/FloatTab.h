@@ -23,7 +23,7 @@
 #define FloatTab_included
 #include <ArrOfFloat.h>
 
-class DoubleTab;
+#include <TRUSTTab.h>
 
 class FloatTab : public ArrOfFloat
 {

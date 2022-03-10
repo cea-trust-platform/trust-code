@@ -24,7 +24,7 @@
 #include <Interprete_geometrique_base.h>
 class Domaine;
 #include <TRUSTArray.h>
-class DoubleTab;
+#include <TRUSTTab.h>
 // .DESCRIPTION
 //  Cet interprete doit etre utilise en sequentiel (avant decoupage) si
 //  les sommets opposes d'un bord periodique ne sont pas parfaitement alignes.

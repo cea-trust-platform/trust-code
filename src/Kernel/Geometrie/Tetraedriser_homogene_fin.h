@@ -34,12 +34,11 @@
 // Interprete
 
 #include <Triangulation_base.h>
+#include <TRUSTTab.h>
 
 class Zone;
 class Domaine;
 class Faces;
-class IntTab;
-class DoubleTab;
 
 class Tetraedriser_homogene_fin : public Triangulation_base
 {

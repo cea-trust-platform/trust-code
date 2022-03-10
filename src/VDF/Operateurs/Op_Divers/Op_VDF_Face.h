@@ -27,7 +27,7 @@
 
 class Matrice_Morse;
 class Zone_Cl_VDF;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 class Op_VDF_Face
 {

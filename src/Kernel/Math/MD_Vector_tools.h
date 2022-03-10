@@ -29,7 +29,6 @@
 class Zone_VF;
 class ArrOfBit;
 class MD_Vector;
-class DoubleTab;
 class MD_Vector_renumber;
 
 template<typename T> class TRUSTVect;
@@ -37,6 +36,8 @@ using IntVect = TRUSTVect<int>;
 using DoubleVect = TRUSTVect<double>;
 template<typename T> class TRUSTArray;
 using ArrOfInt = TRUSTArray<int>;
+template<typename T> class TRUSTTab;
+using DoubleTab = TRUSTTab<double>;
 
 //format de structure pour demander d'agrandir un MD_Vector : (proc, item sur le proc) -> item distant sur Process::me()
 typedef std::map<std::array<int, 2>, int> extra_item_t;

@@ -40,7 +40,7 @@
 #include <Ref_Zone_Cl_VDF.h>
 class Probleme_base;
 class Navier_Stokes_std;
-class DoubleTab;
+#include <TRUSTTab.h>
 
 // La classe derive de Source_base et peut etre d'un terme source
 class Terme_Source_inc_VDF_Face : public Source_base, public Terme_Source_inc

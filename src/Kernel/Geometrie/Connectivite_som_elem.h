@@ -22,7 +22,7 @@
 
 #include <arch.h>
 
-class IntTab;
+#include <TRUSTTab.h>
 #include <TRUSTArray.h>
 class Static_Int_Lists;
 

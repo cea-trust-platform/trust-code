@@ -34,7 +34,7 @@ class Equation;
 class Equation_base;
 class Motcle;
 class Param;
-class DoubleTab;
+#include <TRUSTTab.h>
 class Matrice_Base;
 class SFichier;
 
