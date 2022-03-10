@@ -23,9 +23,9 @@
 #ifndef Ref_ArrOfInt_included
 #define Ref_ArrOfInt_included
 
-#include <Ref.h>
 #include <TRUSTArray.h>
+#include <Ref.h>
 
 Declare_ref(ArrOfInt);
 
-#endif
+#endif /* Ref_ArrOfInt_included */

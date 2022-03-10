@@ -23,7 +23,9 @@
 #ifndef Ref_DoubleTab_included
 #define Ref_DoubleTab_included
 
+#include <TRUSTTab.h>
 #include <Ref.h>
-class DoubleTab;
+
 Declare_ref(DoubleTab);
-#endif
+
+#endif /* Ref_DoubleTab_included */

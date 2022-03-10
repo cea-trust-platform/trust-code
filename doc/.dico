@@ -278,7 +278,6 @@
  DomaineCutter DomaineCutter DomaineCutter.h
  Domaine_bord Domaine_bord Domaine_bord.h
  Domaine_dis Domaine_dis Domaine_dis.h
- DoubleTab DoubleTab DoubleTab.h
  DoubleTabs DoubleTabs DoubleTabs.h
  DoubleTrav DoubleTrav DoubleTrav.h
  DoubleVects DoubleVects DoubleVects.h
@@ -452,7 +451,6 @@
  Interprete Interprete Interprete.h
  Interprete_bloc Interprete_bloc Interprete_bloc.h
  Interprete_geometrique_base Interprete_geometrique_base Interprete_geometrique_base.h
- IntTab IntTab IntTab.h
  IntTrav IntTrav IntTrav.h
  IntVects IntVects IntVects.h
  Iterateur_PolyMAC Iterateur_PolyMAC Iterateur_PolyMAC_base.h

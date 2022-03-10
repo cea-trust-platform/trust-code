@@ -19,9 +19,13 @@
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef Ref_IntTab_included
 #define Ref_IntTab_included
+
+#include <TRUSTTab.h>
 #include <Ref.h>
-class IntTab;
+
 Declare_ref(IntTab);
-#endif
+
+#endif /* Ref_IntTab_included */

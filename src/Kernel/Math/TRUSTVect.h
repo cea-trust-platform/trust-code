@@ -36,9 +36,9 @@ template<typename _TYPE_>
 class TRUSTVect : public TRUSTArray<_TYPE_>
 {
 protected:
-  inline unsigned taille_memoire() const { throw; }
+  inline unsigned taille_memoire() const override { throw; }
 
-  inline int duplique() const
+  inline int duplique() const override
   {
     TRUSTVect* xxx = new  TRUSTVect(*this);
     if(!xxx)
@@ -49,7 +49,7 @@ protected:
     return xxx->numero();
   }
 
-  Sortie& printOn(Sortie& os) const
+  Sortie& printOn(Sortie& os) const override
   {
     if (TRUSTArray<_TYPE_>::nproc() > 1 && md_vector_.non_nul())
       {
@@ -62,7 +62,7 @@ protected:
 
   // Description: Lecture d'un vecteur sequentiel (comme un ArrOfDouble)
   //  Attention: appel invalide si le vecteur a un MD_Vector non nul. (pour les vecteurs paralleles, utiliser une methode de sauvegarde/reprise)
-  Entree& readOn(Entree& is)
+  Entree& readOn(Entree& is) override
   {
     if (md_vector_.non_nul())
       {
@@ -77,8 +77,7 @@ protected:
   }
 
 public:
-  using value_type = _TYPE_; // return int, double ou float
-  virtual ~TRUSTVect() { }
+  ~TRUSTVect() override { }
 
   TRUSTVect() : size_reelle_(0), line_size_(1) { }
 
@@ -139,6 +138,18 @@ public:
 
   // methodes virtuelles
 
+  inline virtual void ref(const TRUSTVect&);
+  inline virtual void echange_espace_virtuel();
+  inline virtual void set_md_vector(const MD_Vector&);
+  inline virtual void jump(Entree&);
+  inline virtual void lit(Entree&, int resize_and_read=1);
+  inline virtual void ecrit(Sortie&) const;
+  inline virtual void detach_vect() { md_vector_.detach(); }
+  inline virtual const MD_Vector& get_md_vector() const { return md_vector_; }
+  inline void resize_tab(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT) override;
+  inline void ref_data(_TYPE_* ptr, int new_size) override;
+  inline void ref_array(TRUSTArray<_TYPE_>&, int start = 0, int sz = -1) override;
+
   // Description: met l'objet dans l'etat obtenu par le constructeur par defaut.
   inline void reset() override
   {
@@ -147,19 +158,6 @@ public:
     size_reelle_ = 0;
     TRUSTArray<_TYPE_>::reset();
   }
-
-  inline void resize_tab(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT) override;
-  inline void ref_data(_TYPE_* ptr, int new_size) override;
-  inline void ref_array(TRUSTArray<_TYPE_>&, int start = 0, int sz = -1) override;
-
-  inline virtual void ref(const TRUSTVect&);
-  inline virtual void echange_espace_virtuel();
-  inline virtual const MD_Vector& get_md_vector() const { return md_vector_; }
-  inline virtual void set_md_vector(const MD_Vector&);
-  inline virtual void jump(Entree&);
-  inline virtual void lit(Entree&, int resize_and_read=1);
-  inline virtual void ecrit(Sortie&) const;
-  inline virtual void detach_vect() { md_vector_.detach(); }
 
 protected:
   inline void set_line_size_(int n);

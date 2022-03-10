@@ -22,7 +22,7 @@
 
 #include <DoubleTabs.h>
 Implemente_instanciable(DoubleTabs,"DoubleTabs",VECT(DoubleTab));
-
+Implemente_vect(DoubleTab);
 
 // Description:
 // Precondition:

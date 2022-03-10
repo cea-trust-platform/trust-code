@@ -22,11 +22,10 @@
 
 #ifndef Vect_IntTab_included
 #define Vect_IntTab_included
-//////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION  class VECT(IntTab)
-//   (implementation dans IntTab.cpp pour gagner de la place et du temps)
-//////////////////////////////////////////////////////////////////////////////
+
+#include <TRUSTTab.h>
 #include <Vect.h>
-#include <IntTab.h>
+
 Declare_vect(IntTab);
-#endif
+
+#endif /* Vect_IntTab_included */

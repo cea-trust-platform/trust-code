@@ -47,9 +47,9 @@ template <typename _TYPE_>
 class TRUSTArray : public Array_base
 {
 protected:
-  unsigned taille_memoire() const { return sizeof(TRUSTArray<_TYPE_>); }
+  unsigned taille_memoire() const override { return sizeof(TRUSTArray<_TYPE_>); }
 
-  int duplique() const
+  int duplique() const override
   {
     TRUSTArray* xxx = new  TRUSTArray(*this);
     if(!xxx)
@@ -60,7 +60,7 @@ protected:
     return xxx->numero();
   }
 
-  Sortie& printOn(Sortie& os) const
+  Sortie& printOn(Sortie& os) const override
   {
     int sz = size_array();
     os << sz << finl;
@@ -72,7 +72,7 @@ protected:
     return os;
   }
 
-  Entree& readOn(Entree& is)
+  Entree& readOn(Entree& is) override
   {
     int sz;
     is >> sz;
@@ -102,7 +102,7 @@ public:
   inline Iterator begin() { return Iterator(data_); }
   inline Iterator end() { return Iterator(data_ + size_array_); }
 
-  ~TRUSTArray()
+  ~TRUSTArray() override
   {
     detach_array();
     size_array_ = -1; // Paranoia: si size_array_==-1, c'est un zombie
@@ -259,11 +259,9 @@ public:
 
   // Construction de tableaux qui pointent vers des donnees existantes !!! Utiliser ref_data avec precaution (attention a size_array_)
   inline virtual void ref_data(_TYPE_* ptr, int size);
-  inline virtual void ref_array(TRUSTArray&, int start = 0, int sz = -1);
-
   // Remet le tableau dans l'etat obtenu avec le constructeur par defaut (libere la memoire mais conserve le mode d'allocation memoire actuel)
   inline virtual void reset() { detach_array(); }
-
+  inline virtual void ref_array(TRUSTArray&, int start = 0, int sz = -1);
   inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
 
 protected:
