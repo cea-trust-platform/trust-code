@@ -443,7 +443,7 @@ check_components()
                            then
                               echo "$Composant.tar $WORKTMP/$WORKBASE$machine/ComposantsBeta/$Composant $log@$adr --with-TRUST=$WORKBETA $liste_options $mode_option $check_option $valgrind_option" >> Run.liste
                            else
-                              echo "No check on $adr because no $TRUST_VERSION version on this host"
+                              echo "No check on $log@$adr because no $trustversion version on this host"
                            fi
                            # !!!! Fin de partie a revoir
                         else

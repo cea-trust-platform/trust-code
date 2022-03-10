@@ -1,7 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.5_beta : Changes since version 1.8.4 :
 -------------------------------------------------------------
-07/03/22 (TRUST) Add -Wsuggest-override flag to force override when redefining virtual methods (Add line "cpp_flags  : -Wno-suggest-override" into project.cfg to disable into a Baltik)
+10/03/22 (TRUST) Add -Wsuggest-override flag to force override when redefining virtual methods (Add line "cpp_flags  : -Wno-suggest-override" into project.cfg to disable into a Baltik)
 22/02/22 (TRUST) TEST_COEFF is a constexpr in the VDF diff evaluator. It can be used for debugging the coefficients of the implicit matrix and verify coherency with flux methods implementation
 22/02/22 (TRUST) The transpose of the velocity gradient is now taken into account in the VDF face diffusion operator (for const/var & lam/turb cases)
 17/02/22 (TRUST) Heaptrack tool supported to follow memory allocations: trust -heaptrack datafile

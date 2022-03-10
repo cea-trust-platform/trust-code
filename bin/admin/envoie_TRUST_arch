@@ -363,7 +363,7 @@ git pull" > $TRUST_TMP/ssh_com
 	       echo "Launching in background the update by ssh then sbatch on $log@$adr at "`date '+%H:%M:%S'`
 	    elif [ "${machine:0:8}" = jean-zay ]
 	    then
-               option="srun -p compil -A fej@cpu -t 10:00:00 -c 10 --hint=nomultithread "
+               option="srun -p compil -A fej@cpu -t 10:00:00 -c 2 "
 	       # On ne lance plus sur la frontale
 	       ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
 	       echo "Launching in background the update by ssh then sbatch on $log@$adr at "`date '+%H:%M:%S'`
