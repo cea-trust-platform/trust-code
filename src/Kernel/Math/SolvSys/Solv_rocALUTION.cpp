@@ -128,6 +128,7 @@ void Solv_rocALUTION::create_solver(Entree& entree)
         {
         case 0:
           {
+            fixer_limpr(1);
             break;
           }
         case 1:
@@ -144,17 +145,17 @@ void Solv_rocALUTION::create_solver(Entree& entree)
             Process::exit();
           }
         }
+        is >> motlu;
     }
     // Preconditioner
     p = new Jacobi<LocalMatrix<double>, LocalVector<double>, double>();
     ls->SetPreconditioner(*p);
-    ls->Verbose(2); // Verbosity output
     // Tolerances (ToDo read in data file)
     atol_ = 1.e-5;
     rtol_ = 1.e-9;
     double div_tol = 1e3;
     ls->InitTol(atol_, rtol_, div_tol);
-    ls->InitMaxIter(500);
+    //ls->InitMaxIter(500);
     //ls->InitMinIter(20);
 #endif
 }
@@ -214,6 +215,13 @@ void check(const DoubleVect& t, LocalVector<double>& r, const Nom& nom)
         Cerr << nom << " Trust " << norm_t << " rocALUTION " << norm_t << " difference " << difference << finl;
         Process::exit();
     }
+}
+double residual(const Matrice_Base& a, const DoubleVect& b, const DoubleVect& x)
+{
+    DoubleVect e(b);
+    e*=-1;
+    a.ajouter_multvect(x, e);
+    return e.mp_norme_vect();
 }
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)
 {
@@ -281,10 +289,11 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   check(x, sol, "Before ||x||");
   check(b, rhs, "Before ||b||");
   // Petit bug rocALUTION (division par 0 si rhs nul, on contourne en mettant la verbosity a 0)
-  ls->Verbose(rhs.Norm()==0 ? 0 : 2);
+  ls->Verbose(limpr() && rhs.Norm()>0 ? 2 : 0);
 
   // Solve A x = rhs
   tick = rocalution_time();
+  double res_initial =residual(a, b, x);
   ls->Solve(rhs, &sol);
 
   if (ls->GetSolverStatus()==3) Process::exit("Divergence for solver.");
@@ -293,7 +302,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   Cout << "[rocALUTION] Time to solve: " << (rocalution_time() - tick) / 1e6 << finl;
 
   int nb_iter = ls->GetIterationCount();
-  //double resnorm = ls->GetCurrentResidual();
+  //double res_final = ls->GetCurrentResidual();
 
   // Recupere la solution
   sol.MoveToHost();
@@ -302,15 +311,17 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   check(b, rhs, "After ||b||");
 
   // Check residual e=||Ax-rhs|| with TRUST
-  DoubleVect e(b);
-  e*=-1;
-  a.ajouter_multvect(x, e);
-  double error = e.mp_norme_vect();
-  if (error>atol_)
+  double res_final = residual(a, b, x);
+  if (res_final>atol_)
   {
       Cerr << "Solution not correct !" << finl;
-      Cout << "||Ax-b|| = " << error << finl;
+      Cout << "||Ax-b|| = " << res_final << finl;
       Process::exit();
+  }
+  if (limpr()>-1)
+  {
+      double residu_relatif=(res_initial>0?res_final/res_initial:res_final);
+      Cout << finl << "Final residue: " << res_final << " ( " << residu_relatif << " )"<<finl;
   }
   fixer_nouvelle_matrice(0);
   sol.Clear();
