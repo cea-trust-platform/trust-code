@@ -76,6 +76,11 @@ void Solv_rocALUTION::initialize()
 // Lecture et creation du solveur
 void Solv_rocALUTION::create_solver(Entree& entree)
 {
+  // Valeurs par defaut:
+  atol_ = 1.e-12;
+  rtol_ = 1.e-12;
+  double div_tol = 1e3;
+
 #ifdef ROCALUTION_ROCALUTION_HPP_
   lecture(entree);
   EChaine is(get_chaine_lue());
@@ -115,11 +120,13 @@ void Solv_rocALUTION::create_solver(Entree& entree)
       }
     }
   // Lecture des parametres du solver:
-  Motcles les_parametres_solveur(3);
+  Motcles les_parametres_solveur(5);
   {
     les_parametres_solveur[0] = "impr";
     les_parametres_solveur[1] = "seuil"; // Seuil absolu (atol)
-    les_parametres_solveur[2] = "precond";
+    les_parametres_solveur[2] = "atol";
+    les_parametres_solveur[3] = "rtol";
+    les_parametres_solveur[4] = "precond";
   }
   is >> motlu;
   while (motlu!=accolade_fermee)
@@ -132,11 +139,14 @@ void Solv_rocALUTION::create_solver(Entree& entree)
             break;
           }
         case 1:
-          {
-            break;
-          }
         case 2:
           {
+            is >> atol_;
+            break;
+          }
+        case 3:
+          {
+            is >> rtol_;
             break;
           }
         default:
@@ -149,11 +159,10 @@ void Solv_rocALUTION::create_solver(Entree& entree)
     }
     // Preconditioner
     p = new Jacobi<LocalMatrix<double>, LocalVector<double>, double>();
+    //p = new GS<LocalMatrix<double>, LocalVector<double>, double>();
+    //p->FlagPrecond();
     ls->SetPreconditioner(*p);
     // Tolerances (ToDo read in data file)
-    atol_ = 1.e-5;
-    rtol_ = 1.e-9;
-    double div_tol = 1e3;
     ls->InitTol(atol_, rtol_, div_tol);
     //ls->InitMaxIter(500);
     //ls->InitMinIter(20);
@@ -251,6 +260,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       Cout << "Build a rocALUTION matrix with N= " << N << " and nnz=" << nnz << finl;
       mat.AllocateCSR("a", nnz, N, N);
       mat.CopyFromCSR(tab1_c.addr(), tab2_c.addr(), csr.get_coeff().addr());
+      mat.Sort();
       Cout << "[rocALUTION] Time to build matrix :" << (rocalution_time() - tick) / 1e6 << finl;
 
       tick = rocalution_time();
