@@ -56,8 +56,8 @@ public :
 
   // je sais, je sais ... mais pas maintenant !
   void calculer_div_u_ou_div_rhou(DoubleTab& res) const override = 0;
-  bool is_thermal() override = 0;
-  bool is_generic() override = 0;
+  bool is_thermal() const override = 0;
+  bool is_generic() const override = 0;
 
   // Methodes inlines
   inline const Champ_Inc& inconnue() const override { return l_inco_ch; }

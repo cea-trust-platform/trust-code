@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ class Champ_Fonc_P0_CoviMAC_rot : public Champ_Fonc_P0_CoviMAC
 
 public:
 
-  void mettre_a_jour(double tps);
+  void mettre_a_jour(double tps) override;
   inline void associer_champ(const Champ_Face_CoviMAC& cha);
   void me_calculer_2D();
   void me_calculer_3D();

@@ -47,7 +47,7 @@ public :
   void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
   const Champ_base& diffusivite_pour_pas_de_temps() const override;
   DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
-  
+
   // Methodes inlines
   inline const Espece& espece() const { return mon_espece_; }
   inline Espece& espece() { return mon_espece_; }

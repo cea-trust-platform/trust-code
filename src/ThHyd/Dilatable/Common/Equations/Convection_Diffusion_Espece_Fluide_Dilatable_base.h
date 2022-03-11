@@ -51,7 +51,7 @@ public :
 
   // Methodes virtuelles pure
   void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override = 0;
-  const Champ_base& diffusivite_pour_pas_de_temps() override = 0;
+  const Champ_base& diffusivite_pour_pas_de_temps() const override = 0;
   DoubleTab& derivee_en_temps_inco(DoubleTab& ) override = 0;
 
   // Methodes inlines

@@ -64,30 +64,15 @@ public:
   void associer_milieu_base(const Milieu_base& ) override;
   void creer_milieu(const Noms);
   virtual Entree& lire_equations(Entree& is, Motcle& dernier_mot) override;
-  int verifier();
+  int verifier() override;
   virtual Entree& lire_correlations(Entree& is);
   void preparer_calcul() override;
 
   /* nombre de phases du probleme */
-  int nb_phases() const
-  {
-    return noms_phases_.size();
-  }
-
-  const Nom& nom_phase(int i) const
-  {
-    return noms_phases_[i];
-  }
-
-  const Noms& noms_phases() const
-  {
-    return noms_phases_;
-  }
-
-  void set_noms_phases(Noms& noms)
-  {
-    noms_phases_ = noms;
-  }
+  int nb_phases() const { return noms_phases_.size(); }
+  const Nom& nom_phase(int i) const { return noms_phases_[i]; }
+  const Noms& noms_phases() const { return noms_phases_; }
+  void set_noms_phases(Noms& noms) { noms_phases_ = noms; }
 
   QDM_Multiphase eq_qdm;
   Energie_Multiphase eq_energie;

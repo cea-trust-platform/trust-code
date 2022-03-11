@@ -50,7 +50,7 @@ public :
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
   void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override { };
-  void mettre_a_jour(double t);
+  void mettre_a_jour(double t) override;
 
   /* flux paroi_interface : q_pi(e, k, l) : flux de chaleur contribuant au changement de phase k->l dans l'element e */
   const DoubleTab& q_pi() const;
