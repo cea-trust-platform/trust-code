@@ -61,7 +61,7 @@ public:
   inline const Nom& le_nom() const override;
   void renum(const IntVect&);
   void add(const Frontiere& );
-  inline int nb_faces_virt(int i) const;
+  inline int nb_faces_virt() const;
   inline int face_virt(int i) const;
 
   inline int num_premiere_face() const;
@@ -196,7 +196,7 @@ inline Faces& Frontiere::faces()
   return les_faces;
 }
 
-inline int Frontiere::nb_faces_virt(int i) const
+inline int Frontiere::nb_faces_virt() const
 {
   return faces_virt.size_array();
 }
