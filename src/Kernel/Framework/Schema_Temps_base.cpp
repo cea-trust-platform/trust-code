@@ -31,7 +31,7 @@
 #include <communications.h>
 #include <sys/stat.h>
 #include <SFichier.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <Matrice_Morse.h> // necessaire pour visual
 #include <stat_counters.h>
 #include <cfloat>

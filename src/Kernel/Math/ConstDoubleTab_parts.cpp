@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <ConstDoubleTab_parts.h>
 #include <MD_Vector_composite.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 
 // GF je retire le template car insure se plaint
 

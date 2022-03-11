@@ -24,10 +24,10 @@
 #define Op_VDF_Face_included
 
 #include <Zone_VDF.h>
+#include <TRUSTTab.h>
 
 class Matrice_Morse;
 class Zone_Cl_VDF;
-#include <TRUSTTab.h>
 
 class Op_VDF_Face
 {

@@ -25,16 +25,10 @@
 
 
 #include <Evaluateur_Source_VEF_Face.h>
-#include <Ref_Champ_Don.h>
-#include <DoubleTab.h>
 #include <Champ_Uniforme.h>
+#include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Source_C_VEF_Face
-//
-////////////////////////////////////////////////////////////////////////////
+#include <TRUSTTab.h>
 
 class Eval_Source_C_VEF_Face : public Evaluateur_Source_VEF_Face
 {

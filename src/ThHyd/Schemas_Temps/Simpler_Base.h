@@ -26,14 +26,14 @@
 
 
 #include <Solveur_non_lineaire.h>
-#include <Matrice_Morse.h>
 #include <Ref_Schema_Temps_base.h>
-#include <Nom.h>
 #include <Parametre_implicite.h>
+#include <Matrice_Morse.h>
+#include <TRUSTTab.h>
+#include <Nom.h>
 class Solveur_Implicite_Base;
 class Equation;
 class Equation_base;
-#include <TRUSTTab.h>
 class DoubleTrav;
 class Matrice;
 class Sources;

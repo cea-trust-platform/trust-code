@@ -19,9 +19,9 @@
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <arch.h>
-#include <TRUSTArray.h>
+
 #include <TRUSTTab.h>
+#include <arch.h>
 
 // Description: Methode outil pour retirer les doublons dans un tableau.
 void array_trier_retirer_doublons(ArrOfInt& array);

@@ -24,10 +24,9 @@
 #define Reordonner_faces_periodiques_included
 
 #include <Interprete_geometrique_base.h>
-#include <TRUSTArray.h>
-class Domaine;
 #include <TRUSTTab.h>
 class Frontiere;
+class Domaine;
 
 // .DESCRIPTION
 //  Cet interprete permet de reordonner les faces d'un bord periodique selon la convention

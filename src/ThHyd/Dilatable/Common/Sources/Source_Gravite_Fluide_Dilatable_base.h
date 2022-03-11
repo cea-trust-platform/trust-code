@@ -26,9 +26,9 @@
 
 #include <Ref_Fluide_Dilatable_base.h>
 #include <Source_base.h>
+#include <TRUSTTab.h>
 
 class Zone_Cl_dis;
-#include <TRUSTTab.h>
 class Zone_dis;
 
 //////////////////////////////////////////////////////////////////////////////

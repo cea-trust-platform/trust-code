@@ -27,7 +27,7 @@
 
 #include <Ch_front_var_instationnaire_dep.h>
 #include <Champ_Input_Proto.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////////
 //

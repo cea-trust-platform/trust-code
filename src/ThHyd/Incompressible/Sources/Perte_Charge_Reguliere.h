@@ -23,11 +23,9 @@
 #ifndef Perte_Charge_Reguliere_included
 #define Perte_Charge_Reguliere_included
 
-
-
-#include <math.h>
 #include <Perte_Charge.h>
 #include <TRUSTVect.h>
+#include <math.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

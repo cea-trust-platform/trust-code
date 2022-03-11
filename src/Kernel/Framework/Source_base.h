@@ -23,14 +23,13 @@
 #ifndef Source_base_included
 #define Source_base_included
 
-#include <MorEqn.h>
-#include <TRUSTVect.h>
-#include <Champs_compris.h>
 #include <Champs_compris_interface.h>
-#include <Matrice_Bloc.h>
 #include <Interface_blocs.h>
-
+#include <Champs_compris.h>
+#include <Matrice_Bloc.h>
 #include <TRUSTTab.h>
+#include <MorEqn.h>
+
 class DoubleTabs;
 class Probleme_base;
 class Zone_dis;

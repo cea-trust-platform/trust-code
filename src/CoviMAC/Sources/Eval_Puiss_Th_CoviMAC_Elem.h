@@ -25,7 +25,7 @@
 
 #include <Evaluateur_Source_CoviMAC_Elem.h>
 #include <Ref_Champ_Don.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Don.h>
 #include <Equation_base.h>

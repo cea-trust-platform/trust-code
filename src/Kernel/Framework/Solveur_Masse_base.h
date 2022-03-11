@@ -24,17 +24,15 @@
 #ifndef Solveur_Masse_base_included
 #define Solveur_Masse_base_included
 #include <Interface_blocs.h>
+#include <TRUSTTab.h>
 #include <MorEqn.h>
 
 class Zone_dis;
 class Zone_dis_base;
 class Zone_Cl_dis;
 class Zone_Cl_dis_base;
-#include <TRUSTTab.h>
-#include <TRUSTVect.h>
 class Matrice_Base;
 class Matrice_Morse;
-
 
 //////////////////////////////////////////////////////////////////////////////
 //

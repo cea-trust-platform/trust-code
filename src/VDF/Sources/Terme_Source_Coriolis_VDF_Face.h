@@ -38,7 +38,7 @@
 #include <Terme_Source_Coriolis.h>
 #include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 class Probleme_base;
 class Navier_Stokes_std;

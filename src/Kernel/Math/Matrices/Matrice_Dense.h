@@ -26,7 +26,7 @@
 
 #include <Matrice_Base.h>
 #include <Matrice_Morse.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 class Matrice_Dense : public Matrice_Base
 {

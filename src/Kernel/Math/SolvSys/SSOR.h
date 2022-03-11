@@ -24,7 +24,7 @@
 #define SSOR_included
 
 #include <Precond_base.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <TRUSTArray.h>
 
 class Matrice_Morse_Sym;

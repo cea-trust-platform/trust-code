@@ -31,7 +31,7 @@
 #include <Ref_Probleme_base.h>
 #include <Probleme_base.h>
 #include <Vect_Parser_U.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <Champ_Inc_base.h>
 #include <List_Ref_Sous_Zone.h>
 class Motcle;

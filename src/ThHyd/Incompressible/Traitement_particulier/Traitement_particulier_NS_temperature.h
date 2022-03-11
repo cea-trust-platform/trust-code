@@ -25,7 +25,7 @@
 #define Traitement_particulier_NS_temperature_included
 
 #include <Traitement_particulier_NS_base.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <Champ_Don.h>
 #include <SFichier.h>
 

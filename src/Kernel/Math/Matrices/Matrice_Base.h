@@ -20,12 +20,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Matrice_Base_included
 #define Matrice_Base_included
-#include <DoubleTab.h>
-#include <IntTab.h>
-
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -44,9 +41,6 @@
 //      DoubleVect& multvect_(const DoubleVect&, DoubleVect& ) const
 //      int ordre() const
 //////////////////////////////////////////////////////////////////////////////
-
-#include <TRUSTTab.h>
-#include <TRUSTArray.h>
 
 class Matrice_Base : public Objet_U
 {

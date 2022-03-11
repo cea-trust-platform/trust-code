@@ -24,19 +24,18 @@
 #define Schema_Temps_base_included
 
 #include <Ref_Probleme_base.h>
-#include <math.h>
-#include <DoubleTab.h>
+#include <Interface_blocs.h>
+#include <TRUSTTab.h>
 #include <Parser_U.h>
 #include <SFichier.h>
-#include <Interface_blocs.h>
+#include <math.h>
 
-class Equation;
 class Equation_base;
-class Motcle;
-class Param;
-#include <TRUSTTab.h>
 class Matrice_Base;
 class SFichier;
+class Equation;
+class Motcle;
+class Param;
 
 //////////////////////////////////////////////////////////////////////////////
 //

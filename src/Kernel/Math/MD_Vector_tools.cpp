@@ -19,17 +19,16 @@
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <MD_Vector_tools.h>
 #include <Schema_Comm_Vecteurs.h>
 #include <MD_Vector_composite.h>
-#include <IntTab.h>
 #include <Echange_EV_Options.h>
-#include <Schema_Comm.h>
-#include <stat_counters.h>
+#include <MD_Vector_tools.h>
 #include <communications.h>
-#include <vector>
-#include <TRUSTTab.h>
+#include <stat_counters.h>
+#include <Schema_Comm.h>
 #include <DoubleTrav.h>
+#include <TRUSTTab.h>
+#include <vector>
 
 static Schema_Comm_Vecteurs comm;
 static MD_Vector last_md;

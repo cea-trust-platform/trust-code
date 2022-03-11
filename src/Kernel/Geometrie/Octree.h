@@ -20,16 +20,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Octree_included
 #define Octree_included
 
-
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <Ref_Zone.h>
 
 class IntVects;
-#include <TRUSTTab.h>
 
 #define GaucheArriereBas 0
 #define DroitArriereBas 1

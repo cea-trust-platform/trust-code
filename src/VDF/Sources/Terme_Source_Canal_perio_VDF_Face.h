@@ -35,12 +35,12 @@
 //  Terme_Source_Canal_perio
 
 #include <Terme_Source_Canal_perio.h>
-#include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Zone_VDF.h>
+#include <TRUSTTab.h>
 
 class Probleme_base;
 class Navier_Stokes_std;
-#include <TRUSTTab.h>
 
 
 // La classe derive de Source_base et peut etre d'un terme source

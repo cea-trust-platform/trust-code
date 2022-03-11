@@ -23,14 +23,13 @@
 #ifndef Op_EF_base_included
 #define Op_EF_base_included
 
-#include <DoubleTab.h>
 #include <Matrice_Morse.h>
+#include <TRUSTTab.h>
 #include <SFichier.h>
 
 //class Matrice_Morse;
 class Zone_EF;
 class Zone_Cl_EF;
-#include <TRUSTTab.h>
 class Equation_base;
 class Sortie;
 class Operateur_base;

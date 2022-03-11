@@ -24,18 +24,10 @@
 #define Eval_Puiss_Th_VEF_Face_included
 
 #include <Evaluateur_Source_VEF_Face.h>
-#include <Ref_Champ_Don.h>
-#include <DoubleTab.h>
 #include <Champ_Uniforme.h>
+#include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
-
-
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Puiss_Th_VEF_Face
-//
-////////////////////////////////////////////////////////////////////////////
+#include <TRUSTTab.h>
 
 class Eval_Puiss_Th_VEF_Face: public Evaluateur_Source_VEF_Face
 {

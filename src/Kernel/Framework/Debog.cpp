@@ -41,8 +41,7 @@
 #include <Old_Debog.h>
 #include <Matrice_Base.h>
 #include <communications.h>
-#include <DoubleTab.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 
 
 

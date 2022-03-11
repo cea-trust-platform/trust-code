@@ -25,8 +25,7 @@
 
 
 #include <Evaluateur_Source_EF.h>
-#include <TRUSTVect.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -25,7 +25,7 @@
 #define Traitement_particulier_NS_Profils_VDF_included
 
 #include <Traitement_particulier_NS_Profils.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

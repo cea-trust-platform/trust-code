@@ -33,7 +33,7 @@
 #include <Vect_ArrOfInt.h>
 #include <Motcle.h>
 #include <DerOu_.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <vector>
 // Description:
 //  Envoi de messages point-to-point synchrone entre la source et la cible.

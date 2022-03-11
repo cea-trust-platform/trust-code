@@ -23,18 +23,18 @@
 #ifndef Champ_P1NC_implementation_included
 #define Champ_P1NC_implementation_included
 
-#include <Champ_implementation.h>
-#include <Matrice_Morse_Sym.h>
-#include <SolveurSys.h>
 #include <Champ_implementation_P1.h>
-#include <Equation_base.h>
+#include <Champ_implementation.h>
 #include <Frontiere_dis_base.h>
+#include <Matrice_Morse_Sym.h>
+#include <Equation_base.h>
+#include <SolveurSys.h>
+#include <TRUSTTab.h>
 
 class Zone_VEF;
-#include <TRUSTTab.h>
 class Champ_P1NC;
 class Champ_Fonc_P1NC;
-//
+
 class Champ_P1NC_implementation: public Champ_implementation
 {
 

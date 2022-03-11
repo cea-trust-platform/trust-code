@@ -20,10 +20,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <TRUSTTab.h>
 #include <arch.h>
 
-#include <TRUSTTab.h>
-#include <TRUSTArray.h>
 class Static_Int_Lists;
 
 void construire_connectivite_som_elem(const int       nb_sommets,

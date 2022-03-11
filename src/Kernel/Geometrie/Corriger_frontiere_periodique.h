@@ -22,9 +22,8 @@
 #ifndef Corriger_frontiere_periodique_included
 #define Corriger_frontiere_periodique_included
 #include <Interprete_geometrique_base.h>
-class Domaine;
-#include <TRUSTArray.h>
 #include <TRUSTTab.h>
+class Domaine;
 // .DESCRIPTION
 //  Cet interprete doit etre utilise en sequentiel (avant decoupage) si
 //  les sommets opposes d'un bord periodique ne sont pas parfaitement alignes.

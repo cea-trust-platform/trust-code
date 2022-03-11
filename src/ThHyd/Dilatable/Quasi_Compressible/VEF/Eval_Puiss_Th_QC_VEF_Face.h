@@ -24,10 +24,10 @@
 #define Eval_Puiss_Th_QC_VEF_Face_included
 
 #include <Evaluateur_Source_VEF_Face.h>
-#include <Ref_Champ_Don.h>
-#include <DoubleTab.h>
 #include <Champ_Uniforme.h>
+#include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
+#include <TRUSTTab.h>
 
 
 

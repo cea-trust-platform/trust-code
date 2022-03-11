@@ -23,11 +23,10 @@
 #ifndef EOS_Tools_base_included
 #define EOS_Tools_base_included
 
-#include <Objet_U.h>
 #include <Ref_Fluide_Dilatable_base.h>
+#include <TRUSTTab.h>
 
 class Fluide_Dilatable_base;
-#include <TRUSTTab.h>
 class Zone_Cl_dis;
 class Zone_dis;
 

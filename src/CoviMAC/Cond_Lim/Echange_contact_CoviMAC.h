@@ -30,7 +30,7 @@ class Zone_CoviMAC;
 class Faces;
 #include <Ref_IntTab.h>
 #include <Ref_Front_VF.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <Ref_Champ_Inc.h>
 #include <MD_Vector_tools.h>
 #include <Op_Diff_CoviMAC_Elem.h>

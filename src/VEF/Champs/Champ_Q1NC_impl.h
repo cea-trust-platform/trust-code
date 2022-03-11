@@ -26,10 +26,9 @@
 #include <Champ_implementation.h>
 #include <Frontiere_dis_base.h>
 #include <Frontiere.h>
-
-class Zone_VEF;
 #include <TRUSTTab.h>
 
+class Zone_VEF;
 
 class Champ_Q1NC_impl: public Champ_implementation
 {

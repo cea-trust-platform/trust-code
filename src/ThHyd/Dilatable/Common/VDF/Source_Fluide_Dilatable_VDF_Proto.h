@@ -25,11 +25,10 @@
 
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Zone_VDF.h>
+#include <TRUSTTab.h>
 
 class Equation_base;
 class Zone_Cl_dis;
-#include <TRUSTVect.h>
-#include <TRUSTTab.h>
 class Zone_dis;
 
 class Source_Fluide_Dilatable_VDF_Proto

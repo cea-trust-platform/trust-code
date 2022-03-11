@@ -26,7 +26,7 @@
 #include <Ref_Zone_Cl_dis.h>
 #include <EOS_Tools_base.h>
 #include <Ref_Zone_VDF.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 class Fluide_Dilatable_base;
 

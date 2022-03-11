@@ -25,8 +25,8 @@
 #define Op_Conv_VEF_Face_included
 
 #include <Op_Conv_VEF_base.h>
-#include <Motcle.h>
 #include <TRUSTArray.h>
+#include <Motcle.h>
 //
 // .DESCRIPTION class Op_Conv_VEF_Face
 //

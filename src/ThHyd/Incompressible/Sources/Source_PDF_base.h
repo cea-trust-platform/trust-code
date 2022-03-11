@@ -25,10 +25,10 @@
 #define Source_PDF_base_included
 
 #include <Source_dep_inco_base.h>
-#include <Champ_Don.h>
-#include <DoubleTab.h>
-#include <PDF_model.h>
 #include <Interpolation_IBM.h>
+#include <Champ_Don.h>
+#include <PDF_model.h>
+#include <TRUSTTab.h>
 
 class Probleme_base;
 

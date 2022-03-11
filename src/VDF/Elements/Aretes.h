@@ -23,16 +23,10 @@
 #ifndef Aretes_included
 #define Aretes_included
 
-
-
-//
-// .DESCRIPTION class Aretes
-//
-
-#include <IntTab.h>
+#include <TRUSTTab.h>
 
 class Zone_VDF;
-#include <TRUSTTab.h>
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Classe Aretes : represente un ensemble d' aretes

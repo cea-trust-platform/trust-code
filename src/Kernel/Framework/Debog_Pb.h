@@ -22,17 +22,15 @@
 #ifndef Debog_Pb_included
 #define Debog_Pb_included
 
-#include <Debog.h>
-#include <TRUSTVect.h>
-#include <EFichier.h>
-#include <VectMD_Vector.h>
-#include <EcrFicCollecte.h>
-#include <Motcle.h>
-#include <Noms.h>
-#include <IntVects.h>
 #include <Ref_Probleme_base.h>
-
+#include <EcrFicCollecte.h>
+#include <VectMD_Vector.h>
+#include <EFichier.h>
 #include <TRUSTTab.h>
+#include <IntVects.h>
+#include <Motcle.h>
+#include <Debog.h>
+#include <Noms.h>
 
 class Debog_Pb;
 Declare_ref(Debog_Pb);

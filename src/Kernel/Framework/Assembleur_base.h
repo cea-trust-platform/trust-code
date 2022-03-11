@@ -23,15 +23,14 @@
 #ifndef Assembleur_base_included
 #define Assembleur_base_included
 
-#include <SolveurSys.h>
 #include <Equation_base.h>
+#include <SolveurSys.h>
+#include <TRUSTTab.h>
 class Zone_dis_base;
 class Zone_Cl_dis_base;
 class Matrice_Morse_Sym;
-#include <TRUSTVect.h>
 class Champ_Don_base;
 class Matrice;
-#include <TRUSTTab.h>
 
 class Assembleur_base : public Objet_U
 {

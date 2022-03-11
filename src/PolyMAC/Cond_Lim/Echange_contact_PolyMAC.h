@@ -29,7 +29,7 @@ class Front_VF;
 class Zone_PolyMAC;
 class Faces;
 #include <Ref_IntTab.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <Ref_Champ_Inc.h>
 #include <MD_Vector_tools.h>
 #include <vector>

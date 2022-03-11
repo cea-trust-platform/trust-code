@@ -23,15 +23,14 @@
 #ifndef Sonde_included
 #define Sonde_included
 
-#include <Ref_Champ_base.h>
-#include <Ref_Postraitement.h>
-#include <IntTab.h>
-#include <DoubleTab.h>
-#include <Motcle.h>
 #include <Ref_Operateur_Statistique_tps_base.h>
-#include <Vect_ArrOfInt.h>
-#include <SFichier.h>
 #include <Ref_Champ_Generique_base.h>
+#include <Ref_Postraitement.h>
+#include <Ref_Champ_base.h>
+#include <Vect_ArrOfInt.h>
+#include <TRUSTTab.h>
+#include <SFichier.h>
+#include <Motcle.h>
 class Zone;
 
 //////////////////////////////////////////////////////////////////////////////

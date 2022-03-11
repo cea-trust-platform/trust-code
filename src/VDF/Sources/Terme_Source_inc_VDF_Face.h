@@ -34,13 +34,13 @@
 // .SECTION voir aussi
 //  Terme_Source_inc
 
-#include <Source_base.h>
+#include <Ref_Zone_Cl_VDF.h>
 #include <Terme_Source_inc.h>
 #include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Source_base.h>
+#include <TRUSTTab.h>
 class Probleme_base;
 class Navier_Stokes_std;
-#include <TRUSTTab.h>
 
 // La classe derive de Source_base et peut etre d'un terme source
 class Terme_Source_inc_VDF_Face : public Source_base, public Terme_Source_inc

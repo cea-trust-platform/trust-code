@@ -24,7 +24,7 @@
 #define Matrice_Morse_included
 
 #include <Matrice_Base.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <algorithm>
 
 class DoubleLists;

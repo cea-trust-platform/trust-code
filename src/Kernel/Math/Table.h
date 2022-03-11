@@ -24,7 +24,7 @@
 #define Table_included
 
 #include <DoubleVects.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <Parser_U.h>
 #include <Parser_Eval.h>
 #include <vector>

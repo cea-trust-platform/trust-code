@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,10 +24,9 @@
 #ifndef Evaluateur_PolyMAC_included
 #define Evaluateur_PolyMAC_included
 
-#include <IntTab.h>
-#include <DoubleTab.h>
-#include <Ref_Zone_PolyMAC.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
+#include <Ref_Zone_PolyMAC.h>
+#include <TRUSTTab.h>
 
 //
 // .DESCRIPTION class Evaluateur_PolyMAC

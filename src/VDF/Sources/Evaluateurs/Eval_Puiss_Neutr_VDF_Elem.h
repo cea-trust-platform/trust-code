@@ -27,7 +27,7 @@
 #include <Ref_Champ_Uniforme.h>
 #include <Ref_Champ_base.h>
 #include <Ref_Champ_Don.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 class Eval_Puiss_Neutr_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {

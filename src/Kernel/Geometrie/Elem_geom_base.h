@@ -23,9 +23,8 @@
 #ifndef Elem_geom_base_included
 #define Elem_geom_base_included
 
-#include <TRUSTVect.h>
-#include <Faces.h>
 #include <TRUSTTab.h>
+#include <Faces.h>
 class Nom;
 
 //////////////////////////////////////////////////////////////////////////////

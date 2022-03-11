@@ -23,12 +23,12 @@
 #ifndef PDF_model_included
 #define PDF_model_included
 
-#include <Champ_Don.h>
-#include <Motcle.h>
-#include <Zone_VF.h>
-#include <DoubleTab.h>
-#include <Parser.h>
 #include <Vect_Parser_U.h>
+#include <Champ_Don.h>
+#include <TRUSTTab.h>
+#include <Zone_VF.h>
+#include <Parser.h>
+#include <Motcle.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // .NAME        : PDF_model

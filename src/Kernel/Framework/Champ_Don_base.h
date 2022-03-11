@@ -24,7 +24,7 @@
 #define Champ_Don_base_included
 
 #include <Champ_base.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

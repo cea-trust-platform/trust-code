@@ -23,11 +23,10 @@
 #ifndef Evaluateur_VDF_included
 #define Evaluateur_VDF_included
 
-#include <IntTab.h>
-#include <DoubleTab.h>
-#include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Zone_VDF.h>
 #include <Zone_VDF.h>
+#include <TRUSTTab.h>
 
 // .DESCRIPTION class Evaluateur_VDF
 // Classe de base des evaluateurs VDF. Cette classe n'appartient pas a la

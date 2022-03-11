@@ -28,7 +28,7 @@
 *****************************************************************************/
 
 #include <Octree_Double.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <FloatTab.h>
 
 Octree_Double::Octree_Double()

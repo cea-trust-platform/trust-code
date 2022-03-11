@@ -22,8 +22,9 @@
 
 #ifndef Changement_phase_Silver_Simpson_included
 #define Changement_phase_Silver_Simpson_included
-#include <DoubleTab.h>
+
 #include <Changement_phase_base.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

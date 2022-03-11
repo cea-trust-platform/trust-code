@@ -29,7 +29,7 @@
 
 #ifndef Octree_Int_inclus
 #define Octree_Int_inclus
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <VectArrOfInt.h>
 
 struct IntBoxData;

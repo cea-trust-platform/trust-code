@@ -32,17 +32,17 @@
 //  d'un solide issu d'un calcul SWIFT vers le champ moyen du calcul
 //  LES grossier correspondant.
 //
-#include <Source_base.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
-#include <Champ_Don.h>
-#include <Ref_Conduction.h>
 #include <Ref_Probleme_base.h>
+#include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Conduction.h>
+#include <Ref_Zone_VDF.h>
+#include <Source_base.h>
+#include <Champ_Don.h>
+#include <TRUSTTab.h>
 #include <Motcle.h>
 
 class Probleme_base;
 class Conduction;
-#include <TRUSTTab.h>
 
 
 class Terme_Source_Solide_SWIFT_VDF : public Source_base

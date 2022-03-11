@@ -27,13 +27,12 @@
 #include <EChaine.h>
 #undef setbit // Sinon conflit de ArrOfBit.h avec Petsc
 #include <SolveurSys_base.h>
-#include <TRUSTVect.h>
 #include <ArrOfBit.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #ifdef PETSCKSP_H
 #include <petscdm.h>
 #endif
-#include <TRUSTTab.h>
+
 class Matrice_Morse_Sym;
 class Matrice_Morse;
 

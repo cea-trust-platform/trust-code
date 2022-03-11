@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 
 #include <map>
 #include <set>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <stdexcept>
 
 class Matrice_Morse;

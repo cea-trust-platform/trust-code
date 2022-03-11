@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 #include <Zone_VF.h>
 #include <Champ_Uniforme.h>
 #include <Zone_CoviMAC.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 Implemente_instanciable(Champ_Fonc_Face_CoviMAC,"Champ_Fonc_Face_CoviMAC",Champ_Fonc_base) ;
 

@@ -23,16 +23,15 @@
 #ifndef Moyenne_volumique_included
 #define Moyenne_volumique_included
 
-#include <Interprete.h>
 #include <Ref_Champ_base.h>
+#include <Interprete.h>
+#include <TRUSTTab.h>
 #include <Parser.h>
 
 class Convolution_function_base;
-#include <TRUSTTab.h>
 class Motcles;
 class Format_Post_base;
 class Zone_VF;
-#include <TRUSTArray.h>
 
 // .DESCRIPTION : cet interprete permet, a la fin du calcul (apres "resoudre"),
 //  de calculer et de stocker dans un fichier lata le produit de convolution

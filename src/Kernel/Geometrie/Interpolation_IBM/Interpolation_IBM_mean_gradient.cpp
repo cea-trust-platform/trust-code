@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,11 +21,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Interpolation_IBM_mean_gradient.h>
-#include <Param.h>
-#include <DoubleTab.h>
 #include <DoubleTrav.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <Domaine.h>
+#include <Param.h>
 
 Implemente_instanciable( Interpolation_IBM_mean_gradient, "Interpolation_IBM_gradient_moyen|IBM_gradient_moyen", Interpolation_IBM_base ) ;
 // XD interpolation_ibm_mean_gradient interpolation_ibm_base ibm_gradient_moyen 1 Immersed Boundary Method (IBM): mean gradient interpolation.

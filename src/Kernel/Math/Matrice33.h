@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 #ifndef Matrice33_included
 #define Matrice33_included
 #include <assert.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 // Description: une matrice 3x3.
 //  Convention pour m(i,j): i est l'indice de ligne, j l'indice de colonne entre 0 et 2 inclus.

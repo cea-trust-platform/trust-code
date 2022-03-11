@@ -24,12 +24,12 @@
 #ifndef Traitement_particulier_Solide_base_included
 #define Traitement_particulier_Solide_base_included
 
-#include <Ref_Conduction.h>
-#include <DoubleTab.h>
-#include <Ref_Champ_base.h>
-#include <Motcle.h>
-#include <Champs_compris.h>
 #include <Champs_compris_interface.h>
+#include <Ref_Conduction.h>
+#include <Ref_Champ_base.h>
+#include <Champs_compris.h>
+#include <TRUSTTab.h>
+#include <Motcle.h>
 class Equation_base;
 
 //////////////////////////////////////////////////////////////////////////////

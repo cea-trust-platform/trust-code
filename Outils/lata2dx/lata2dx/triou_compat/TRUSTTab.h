@@ -14,16 +14,16 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        IntTab.h
+// File:        TRUSTTab.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef IntTab_included
-#define IntTab_included
+#ifndef TRUSTTab_included
+#define TRUSTTab_included
 
-#include <TRUSTTab.h>
-using IntTab = TRUSTTab<int>;
+#include <DoubleTab.h>
+#include <IntTab.h>
 
-#endif /* IntTab_included */
+#endif /* TRUSTTab_included */

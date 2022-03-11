@@ -27,7 +27,7 @@
 #include <Solveur_Masse.h>
 #include <Ref_Zone_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

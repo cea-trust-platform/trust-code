@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Matrice_Nulle.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <TRUSTArray.h>
 
 Implemente_instanciable_sans_constructeur( Matrice_Nulle, "Matrice_Nulle", Matrice_Base ) ;

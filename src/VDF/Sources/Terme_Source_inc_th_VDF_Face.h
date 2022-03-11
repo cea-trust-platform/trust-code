@@ -34,14 +34,14 @@
 // .SECTION voir aussi
 //  Terme_Source_inc
 
-#include <Source_base.h>
 #include <Terme_Source_inc_th.h>
-#include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Zone_VDF.h>
+#include <Source_base.h>
+#include <TRUSTTab.h>
 class Probleme_base;
 class Navier_Stokes_std;
 class Convection_Diffusion_Temperature;
-#include <TRUSTTab.h>
 class Champ_Don;
 
 

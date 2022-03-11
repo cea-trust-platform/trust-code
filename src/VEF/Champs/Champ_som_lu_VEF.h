@@ -24,17 +24,10 @@
 #define Champ_som_lu_VEF_included
 
 #include <Champ_Don_base.h>
-#include <Motcle.h>
-#include <IntTab.h>
-#include <Ref_Domaine.h>
 #include <Champ_som_lu.h>
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Champ_som_lu_VEF
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <Ref_Domaine.h>
+#include <TRUSTTab.h>
+#include <Motcle.h>
 
 class Champ_som_lu_VEF : public Champ_som_lu
 {

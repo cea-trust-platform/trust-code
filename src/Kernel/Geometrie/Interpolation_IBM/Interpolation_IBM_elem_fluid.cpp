@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,12 +21,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Interpolation_IBM_elem_fluid.h>
-#include <Param.h>
-#include <DoubleTab.h>
 #include <DoubleTrav.h>
-#include <Array_base.h>
+#include <TRUSTTab.h>
 #include <Domaine.h>
-#include <IntTab.h>
+#include <Param.h>
 
 Implemente_instanciable( Interpolation_IBM_elem_fluid, "Interpolation_IBM_element_fluide|IBM_element_fluide", Interpolation_IBM_base ) ;
 // XD interpolation_ibm_elem_fluid interpolation_ibm_base ibm_element_fluide 1 Immersed Boundary Method (IBM): fluid element interpolation.

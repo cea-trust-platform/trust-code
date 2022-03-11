@@ -22,8 +22,9 @@
 
 #ifndef Flux_interfacial_Coef_Constant_included
 #define Flux_interfacial_Coef_Constant_included
-#include <DoubleTab.h>
+
 #include <Flux_interfacial_base.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

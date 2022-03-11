@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #define Terme_Source_inc_th_included
 
 //
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <Ref_Champ_Don_base.h>
 #include <Ref_Navier_Stokes_std.h>
 #include <Ref_Convection_Diffusion_Temperature.h>

@@ -27,7 +27,7 @@
 #include <Evaluateur_Source_VDF_Elem.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Ref_Champ_Don.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 class Eval_Puiss_Th_QC_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {

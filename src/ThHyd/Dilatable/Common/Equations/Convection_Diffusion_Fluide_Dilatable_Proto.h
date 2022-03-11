@@ -23,13 +23,14 @@
 #ifndef Convection_Diffusion_Fluide_Dilatable_Proto_included
 #define Convection_Diffusion_Fluide_Dilatable_Proto_included
 
+#include <TRUSTTab.h>
+
 class Convection_Diffusion_Fluide_Dilatable_base;
 class Convection_Diffusion_std;
 class Fluide_Dilatable_base;
 class Probleme_base;
 class Matrice_Morse;
 class Champ_Inc;
-#include <TRUSTTab.h>
 class Sortie;
 class Entree;
 

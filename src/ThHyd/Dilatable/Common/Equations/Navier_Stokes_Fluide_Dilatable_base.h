@@ -27,9 +27,9 @@
 #include <Navier_Stokes_std.h>
 #include <Champ_Inc.h>
 #include <Champ_Don.h>
+#include <TRUSTTab.h>
 
 class Matrice_Morse;
-#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

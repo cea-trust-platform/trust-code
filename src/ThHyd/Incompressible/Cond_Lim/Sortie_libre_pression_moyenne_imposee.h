@@ -23,9 +23,8 @@
 #ifndef Sortie_libre_pression_moyenne_imposee_included
 #define Sortie_libre_pression_moyenne_imposee_included
 
-
 #include <Neumann_sortie_libre.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

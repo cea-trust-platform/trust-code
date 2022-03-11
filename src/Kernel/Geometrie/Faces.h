@@ -23,12 +23,9 @@
 #ifndef Faces_included
 #define Faces_included
 
-
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <Ref_Zone.h>
 class Motcle;
-#include <TRUSTVect.h>
-#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

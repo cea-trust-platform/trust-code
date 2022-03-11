@@ -25,7 +25,7 @@
 #define Traitement_particulier_NS_base_included
 
 #include <Ref_Navier_Stokes_std.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <Ref_Champ_base.h>
 #include <Motcle.h>
 #include <Support_Champ_Masse_Volumique.h>

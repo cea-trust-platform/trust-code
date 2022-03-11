@@ -31,15 +31,15 @@
 //  Cette classe concerne un terme source calcule en partie grace
 //  a un calcul RANS preliminaire et applique au calcul LES en cours
 //
-#include <Source_base.h>
-#include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Zone_VDF.h>
+#include <Source_base.h>
 #include <Champ_Don.h>
+#include <TRUSTTab.h>
 #include <Nom.h>
 
 class Probleme_base;
 class Navier_Stokes_std;
-#include <TRUSTTab.h>
 
 
 class Terme_Source_Canal_RANS_LES_VDF_Face : public Source_base

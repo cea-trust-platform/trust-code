@@ -25,7 +25,7 @@
 #include <Nom.h>
 #include <Scatter.h>
 #include <Motcle.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <Array_tools.h>
 #include <Static_Int_Lists.h>
 #include <Connectivite_som_elem.h>

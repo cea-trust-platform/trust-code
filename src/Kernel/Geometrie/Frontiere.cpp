@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 
 #include <Frontiere.h>
 #include <MD_Vector_tools.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 Implemente_base(Frontiere,"Frontiere",Objet_U);
 

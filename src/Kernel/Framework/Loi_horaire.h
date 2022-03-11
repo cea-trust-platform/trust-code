@@ -24,7 +24,6 @@
 #define Loi_horaire_included
 
 #include <Champ_Fonc_t.h>
-#include <TRUSTArray.h>
 #include <TRUSTTab.h>
 class Schema_Temps_base;
 

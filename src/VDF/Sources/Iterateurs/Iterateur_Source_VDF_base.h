@@ -28,9 +28,9 @@
 #include <Equation_base.h>
 #include <Ref_Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
+#include <TRUSTTab.h>
 
 class Evaluateur_Source_VDF;
-#include <TRUSTTab.h>
 
 class Iterateur_Source_VDF_base : public Objet_U
 {

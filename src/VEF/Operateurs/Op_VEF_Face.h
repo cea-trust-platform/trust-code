@@ -23,12 +23,11 @@
 #ifndef Op_VEF_Face_included
 #define Op_VEF_Face_included
 
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <SFichier.h>
 class Matrice_Morse;
 class Zone_VEF;
 class Zone_Cl_VEF;
-#include <TRUSTTab.h>
 class Equation_base;
 class Sortie;
 class Operateur_base;

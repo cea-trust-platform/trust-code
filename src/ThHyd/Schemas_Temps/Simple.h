@@ -25,7 +25,7 @@
 #define Simple_included
 
 #include <Simpler_Base.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 class Operateur_Grad ;
 

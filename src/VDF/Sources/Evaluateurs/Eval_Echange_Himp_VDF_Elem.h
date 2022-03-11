@@ -26,7 +26,7 @@
 #include <Evaluateur_Source_VDF_Elem.h>
 #include <Ref_Champ_Inc.h>
 #include <Champ_Inc.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 class Eval_Echange_Himp_VDF_Elem: public Evaluateur_Source_VDF_Elem
 {

@@ -24,11 +24,10 @@
 #define EDO_Pression_th_base_included
 
 #include <Ref_Fluide_Quasi_Compressible.h>
-#include <Objet_U.h>
+#include <TRUSTTab.h>
 
 class Fluide_Quasi_Compressible;
 class Zone_Cl_dis;
-#include <TRUSTTab.h>
 class Zone_dis;
 
 //////////////////////////////////////////////////////////////////////////////

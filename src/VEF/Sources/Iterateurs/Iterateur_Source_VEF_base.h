@@ -30,13 +30,13 @@
 // .SECTION voir aussi Objet_U
 //
 
-#include <Ref_Zone_VEF.h>
 #include <Ref_Zone_Cl_VEF.h>
-#include <Zone_Cl_VEF.h>
-#include <Equation_base.h>
 #include <Ref_Source_base.h>
-
+#include <Equation_base.h>
+#include <Ref_Zone_VEF.h>
+#include <Zone_Cl_VEF.h>
 #include <TRUSTTab.h>
+
 class Evaluateur_Source_VEF;
 
 class Iterateur_Source_VEF_base : public Objet_U

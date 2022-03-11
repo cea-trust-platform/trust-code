@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Array_tools.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 
 // Description: retire les doublons du tableau array
 //  (suppose que le tableau est trie dans l'ordre croissant)

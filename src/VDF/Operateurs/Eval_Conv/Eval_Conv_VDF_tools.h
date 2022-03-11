@@ -23,9 +23,8 @@
 #ifndef Eval_Conv_VDF_tools_included
 #define Eval_Conv_VDF_tools_included
 
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <Double.h>
-#include <IntTab.h>
 
 class Eval_Conv_VDF_tools
 {

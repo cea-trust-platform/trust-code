@@ -23,12 +23,10 @@
 #ifndef Sonde_Int_included
 #define Sonde_Int_included
 
-
 #include <Ref_Postraitement.h>
-#include <IntTab.h>
-#include <DoubleTab.h>
 #include <Ref_IntVect.h>
 #include <SFichier.h>
+#include <TRUSTTab.h>
 
 class Zone;
 

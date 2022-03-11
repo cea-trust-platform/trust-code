@@ -24,18 +24,10 @@
 #define Eval_Puiss_Th_QC_EF_included
 
 #include <Evaluateur_Source_EF_Som.h>
-#include <Ref_Champ_Don.h>
-#include <DoubleTab.h>
 #include <Champ_Uniforme.h>
+#include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
-
-
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Puiss_Th_QC_EF
-//
-////////////////////////////////////////////////////////////////////////////
+#include <TRUSTTab.h>
 
 class Eval_Puiss_Th_QC_EF: public Evaluateur_Source_EF_Som
 {

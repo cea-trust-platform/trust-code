@@ -33,9 +33,10 @@
 // .SECTION
 //////////////////////////////////////////////////////////////////////////////
 
+#include <TRUSTVect.h>
+
 class Fluide_Dilatable_base;
 class Milieu_base;
-#include <TRUSTVect.h>
 
 void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Dilatable_base& le_fluide,int diviser=0);
 void diviser_par_rho_si_dilatable(DoubleVect& val,const Milieu_base& mil);

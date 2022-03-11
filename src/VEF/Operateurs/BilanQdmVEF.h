@@ -24,7 +24,6 @@
 
 #include <TRUSTTab.h>
 class Zone_Cl_VEF;
-#include <TRUSTArray.h>
 
 class BilanQdmVEF
 {

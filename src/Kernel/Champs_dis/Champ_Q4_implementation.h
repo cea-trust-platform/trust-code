@@ -24,7 +24,7 @@
 #define Champ_Q4_implementation_included
 
 #include <Champ_implementation.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 
 //
 class Champ_Q4_implementation : public Champ_implementation

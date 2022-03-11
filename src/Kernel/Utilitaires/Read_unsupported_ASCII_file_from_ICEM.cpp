@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,14 +21,13 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Read_unsupported_ASCII_file_from_ICEM.h>
+#include <Lire_Fichier.h>
 #include <SFichierBin.h>
 #include <EFichierBin.h>
-#include <DoubleTab.h>
-#include <IntTab.h>
-#include <Motcle.h>
-#include <Lire_Fichier.h>
-#include <Objet_U.h>
 #include <Interprete.h>
+#include <TRUSTTab.h>
+#include <Objet_U.h>
+#include <Motcle.h>
 
 Implemente_instanciable(Read_unsupported_ASCII_file_from_ICEM,"Read_unsupported_ASCII_file_from_ICEM",Lire_Fichier);
 

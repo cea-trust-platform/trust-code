@@ -24,7 +24,7 @@
 #define Champ_implementation_P1_included
 
 #include <Champ_implementation_sommet_base.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 /////////////////////////////////////////////////////////////////////////////
 // .DESCRIPTION        : class Champ_implementation_P1
 //

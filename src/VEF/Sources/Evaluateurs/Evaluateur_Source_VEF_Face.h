@@ -23,10 +23,8 @@
 #ifndef Evaluateur_Source_VEF_Face_included
 #define Evaluateur_Source_VEF_Face_included
 
-
 #include <Evaluateur_Source_VEF.h>
-#include <TRUSTVect.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

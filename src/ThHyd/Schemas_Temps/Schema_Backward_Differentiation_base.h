@@ -25,7 +25,7 @@
 
 
 #include <Schema_Implicite_Multi_TimeStep_base.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 class Probleme_Couple;
 class Matrice_Base;

@@ -23,8 +23,8 @@
 #ifndef Terme_Source_Coriolis_included
 #define Terme_Source_Coriolis_included
 
-#include <TRUSTVect.h>
 #include <Ref_Navier_Stokes_std.h>
+#include <TRUSTVect.h>
 
 class Terme_Source_Coriolis
 {

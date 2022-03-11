@@ -27,7 +27,7 @@
 #include <Matrice_Diagonale.h>
 #include <Matrice_Morse.h>
 #include <Matrice_Morse_Sym.h>
-#include <IntTab.h>
+#include <TRUSTTab.h>
 #include <Array_tools.h>
 
 // conversion to morse format

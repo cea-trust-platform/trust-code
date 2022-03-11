@@ -28,9 +28,9 @@
 #define Convert_ICoCoTrioField_included
 
 #include <ICoCoTrioField.h>
+#include <TRUSTTab.h>
 #include <arch.h>
 
-#include <TRUSTArray.h>
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>
@@ -39,7 +39,6 @@
 
 class Champ_Generique_base;
 class Domaine;
-#include <TRUSTTab.h>
 void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio);
 void affecte_int_avec_inttab(int** p, const ArrOfInt& trio);
 #include <ICoCoMEDDoubleField.hxx>

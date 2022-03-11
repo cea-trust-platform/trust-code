@@ -24,7 +24,7 @@
 #define Triangle_included
 
 #include <Elem_geom_base.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

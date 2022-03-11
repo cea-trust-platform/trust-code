@@ -182,11 +182,10 @@ void split_path_filename(const char *full_name, Nom & path, Nom & filename);
 #define break_loop(index,nloops) if (index >= nloops-1) break
 
 #include <LataJournal.h>
+#include <TRUSTTab.h>
+#include <FloatTab.h>
 #include <Motcle.h>
 #include <Noms.h>
-#include <DoubleTab.h>
-#include <IntTab.h>
-#include <FloatTab.h>
 
 Motcles noms_to_motcles(const Noms & noms);
 

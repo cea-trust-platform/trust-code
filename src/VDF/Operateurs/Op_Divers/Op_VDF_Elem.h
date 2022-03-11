@@ -23,9 +23,9 @@
 #ifndef Op_VDF_Elem_included
 #define Op_VDF_Elem_included
 
+#include <TRUSTTab.h>
 class Matrice_Morse;
 class Zone_Cl_VDF;
-#include <TRUSTTab.h>
 class Zone_VDF;
 
 class Op_VDF_Elem

@@ -22,7 +22,6 @@
 #ifndef Octree_Double_included
 #define Octree_Double_included
 #include <Octree_Int.h>
-#include <TRUSTArray.h>
 #include <TRUSTTab.h>
 
 // .DESCRIPTION : Un octree permettant de chercher dans l'espace des elements ou des points

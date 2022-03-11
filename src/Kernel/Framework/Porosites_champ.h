@@ -24,7 +24,7 @@
 #define Porosites_champ_included
 
 #include <Interprete.h>
-
+#include <TRUSTTab.h>
 
 // .DESCRIPTION Porosites_champ nom_pb champ affecte le champ champ a la porosite volumique du domaine du probleme de nom_pb, puis calcule les porosites surfaciques comme moyenne harmonique
 class Porosites_champ : public Interprete
@@ -34,12 +34,6 @@ public :
   Entree& interpreter(Entree&) override;
 };
 
-#include <TRUSTTab.h>
-#include <TRUSTVect.h>
 const DoubleTab& modif_par_porosite_si_flag(const DoubleTab& org, DoubleTab& res,int flag,const DoubleVect& porosite);
 
 #endif
-
-
-
-

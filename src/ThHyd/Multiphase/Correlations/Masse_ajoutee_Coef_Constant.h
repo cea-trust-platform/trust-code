@@ -22,8 +22,9 @@
 
 #ifndef Masse_ajoutee_Coef_Constant_included
 #define Masse_ajoutee_Coef_Constant_included
-#include <DoubleTab.h>
+
 #include <Masse_ajoutee_base.h>
+#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

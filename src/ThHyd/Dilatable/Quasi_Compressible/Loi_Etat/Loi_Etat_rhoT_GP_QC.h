@@ -25,7 +25,7 @@
 
 #include <Loi_Etat_GP_base.h>
 #include <Champ_Don.h>
-#include <DoubleTab.h>
+#include <TRUSTTab.h>
 #include <Parser_U.h>
 
 /////////////////////////////////////////////////////////////////////////////

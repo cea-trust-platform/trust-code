@@ -20,26 +20,18 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Terme_Source_Rappel_T_VEF_Face_included
 #define Terme_Source_Rappel_T_VEF_Face_included
 
-
-
-//
-// .DESCRIPTION class Terme_Source_Rappel_T_VEF_Face
-//
-#include <Source_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
-#include <Parser_U.h>
 #include <Ref_Champ_Inc_base.h>
-#include <TRUSTVect.h>
+#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Zone_VEF.h>
+#include <Source_base.h>
+#include <Parser_U.h>
+#include <TRUSTTab.h>
 
 class Probleme_base;
 class Navier_Stokes_std;
-#include <TRUSTTab.h>
-
 
 class Terme_Source_Rappel_T_VEF_Face : public Source_base
 {

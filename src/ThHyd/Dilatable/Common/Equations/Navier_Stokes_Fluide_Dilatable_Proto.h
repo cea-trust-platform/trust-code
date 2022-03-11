@@ -25,11 +25,11 @@
 
 #include <Ref_IntVect.h>
 #include <Champ_Inc.h>
+#include <TRUSTTab.h>
 
 class Fluide_Dilatable_base;
 class Navier_Stokes_std;
 class Matrice_Morse;
-#include <TRUSTTab.h>
 class Sortie;
 
 //////////////////////////////////////////////////////////////////////////////
