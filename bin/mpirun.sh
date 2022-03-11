@@ -115,7 +115,7 @@ case $Mpirun in
 		      elif [ $MPI = "MPICH" ]
 		      then
 		         #$Mpirun -np $np `echo $Xterm | awk '{print $1}'` -e $gdb
-			 $Mpirun -np $np `echo $Xterm | awk '{print $1}'` -hold -e $gdb -ex run --args
+			 $Mpirun -np $np `echo $Xterm | awk '{print $1}'` -geometry 150x30 -hold -e $gdb -ex run --args
 		      fi
 		      rm -f $gdb_options $gdb
 		   else
