@@ -17,6 +17,11 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <mon_main.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
+#include <rocalution.hpp>
+#pragma GCC diagnostic pop
+using namespace rocalution;
 #include <EFichier.h>
 #ifdef linux
 #include <fenv.h>
@@ -49,6 +54,9 @@ void usage()
   Cerr << " -disable_ieee       => Disable the detection of NaNs. The detection can also be de-activated with env variable TRUST_DISABLE_FP_EXCEPT set to non zero.\n";
   Cerr << " -no_verify          => Disable the call to verifie function (from Type_Verifie) to catch outdated keywords while reading data file.\n";
   Cerr << " -disable_stop       => Disable the writing of the .stop file.\n";
+#ifdef ROCALUTION_ROCALUTION_HPP_
+  Cerr << " -disable_accelerator=> Disable the use of accelerator with rocALUTION solver\n";
+#endif
   Cerr << finl;
   Process::exit();
 }
@@ -180,6 +188,13 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
           disable_stop = 1;
           arguments_info += "-disable_stop => Disable the writing of the .stop file.\n";
         }
+#ifdef ROCALUTION_ROCALUTION_HPP_
+      else if (strcmp(argv[i], "-disable_accelerator") == 0)
+      {
+          disable_accelerator_rocalution();
+          arguments_info += "-disable_accelerator => Disable the use of accelerator with rocALUTION solver\n";
+      }
+#endif
       else if (i == 1)
         {
           // Les deux derniers tests doivent rester a la fin, inserer les arguments supplementaires avant.
