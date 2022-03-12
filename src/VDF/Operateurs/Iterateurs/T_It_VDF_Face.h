@@ -33,7 +33,7 @@
 #include <EcrFicPartage.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <SingleDouble.h>
+#include <TRUSTSingle.h>
 #include <Milieu_base.h>
 #include <TRUSTTrav.h>
 

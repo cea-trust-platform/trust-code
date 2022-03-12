@@ -25,7 +25,7 @@
 
 #include <Iterateur_Source_VDF_base.h>
 #include <Champ_Uniforme.h>
-#include <SingleDouble.h>
+#include <TRUSTSingle.h>
 #include <Zone_VDF.h>
 
 template <class _TYPE_>

@@ -14,29 +14,33 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        SingleDouble.h
+// File:        TRUSTSingle.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef SingleDouble_included
-#define SingleDouble_included
+#ifndef TRUSTSingle_included
+#define TRUSTSingle_included
 
 #include <assert.h>
 
 // .DESCRIPTION
-//  Represente un double construit comme un tableau d'elements de type double.
-class SingleDouble
+//  Represente un _TYPE_ construit comme un tableau d'elements de type _TYPE_.
+template<typename _TYPE_>
+class TRUSTSingle
 {
 public:
-  SingleDouble(int ncomp) : d_(0.0) { assert(ncomp == 1); }
+  TRUSTSingle(int ncomp) : d_(0) { assert(ncomp == 1); }
   inline int size_array() const { return 1; }
-  inline const double& operator()(int i) const { assert(i == 0); return d_; }
-  inline double& operator()(int i) { assert(i == 0); return d_; }
+  inline const _TYPE_& operator()(int i) const { assert(i == 0); return d_; }
+  inline _TYPE_& operator()(int i) { assert(i == 0); return d_; }
 
 private:
-  double d_;
+  _TYPE_ d_;
 };
 
-#endif /* SingleDouble_included */
+using SingleDouble = TRUSTSingle<double>;
+using SingleInt = TRUSTSingle<int>;
+
+#endif /* TRUSTSingle_included */

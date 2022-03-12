@@ -32,7 +32,7 @@
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <EcrFicPartage.h>
-#include <SingleDouble.h>
+#include <TRUSTSingle.h>
 #include <Milieu_base.h>
 #include <TRUSTTrav.h>
 #include <Debog.h>

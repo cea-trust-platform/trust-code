@@ -26,7 +26,7 @@
 #include <Iterateur_Source_VDF_base.h>
 #include <Dirichlet_homogene.h>
 #include <Champ_Uniforme.h>
-#include <SingleDouble.h>
+#include <TRUSTSingle.h>
 #include <Milieu_base.h>
 #include <Dirichlet.h>
 #include <Zone_VDF.h>
