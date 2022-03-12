@@ -29,7 +29,7 @@
 #include <Debog.h>
 #include <Frontiere_dis_base.h>
 #include <EcritureLectureSpecial.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Matrice_Morse.h>
 #include <Param.h>
 #include <Fluide_base.h>

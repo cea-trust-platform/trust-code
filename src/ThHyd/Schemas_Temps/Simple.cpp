@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,6 @@
 #include <Assembleur_base.h>
 #include <Statistiques.h>
 #include <Schema_Temps_base.h>
-#include <DoubleTrav.h>
 #include <Schema_Euler_Implicite.h>
 #include <Fluide_Dilatable_base.h>
 #include <Probleme_base.h>

@@ -28,7 +28,7 @@
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Zone_VF.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Champ_front_debit_massique,"Champ_front_debit_massique",Champ_front_debit);
 // XD champ_front_debit_massique front_field_base champ_front_debit_massique 0 This field is used to define a flow rate field using the density

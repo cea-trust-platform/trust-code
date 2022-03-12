@@ -23,7 +23,7 @@
 #ifndef Op_VEF_Face_included
 #define Op_VEF_Face_included
 
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 #include <SFichier.h>
 class Matrice_Morse;
 class Zone_VEF;

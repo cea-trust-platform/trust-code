@@ -19,8 +19,10 @@
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef Octree_Double_included
 #define Octree_Double_included
+
 #include <Octree_Int.h>
 #include <TRUSTTab.h>
 

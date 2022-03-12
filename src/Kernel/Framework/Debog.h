@@ -23,7 +23,7 @@
 #ifndef Debog_included
 #define Debog_included
 
-#include <TRUSTVect.h>
+#include <TRUSTTab.h>
 class Champ_Inc;
 class Champ_Inc_base;
 class MD_Vector;

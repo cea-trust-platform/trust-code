@@ -19,10 +19,10 @@
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <Check_espace_virtuel.h>
-#include <Comm_Group.h>
-#include <TRUSTVect.h>
 #include <MD_Vector_base.h>
+#include <Comm_Group.h>
 
 // Description:
 //  Verifie si le vecteur v a son espace virtuel a jour.

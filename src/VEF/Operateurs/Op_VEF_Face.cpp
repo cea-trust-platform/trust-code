@@ -38,7 +38,6 @@
 #include <SFichier.h>
 #include <Debog.h>
 #include <communications.h>
-#include <DoubleTrav.h>
 #include <Matrice_Morse_Diag.h>
 
 // Description

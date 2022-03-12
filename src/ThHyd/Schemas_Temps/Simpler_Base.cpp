@@ -20,14 +20,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
+#include <Navier_Stokes_std.h>
+#include <Assembleur_base.h>
+#include <Probleme_base.h>
 #include <Simpler_Base.h>
 #include <SChaine.h>
 #include <EChaine.h>
-#include <Navier_Stokes_std.h>
 #include <Zone_VF.h>
-#include <Assembleur_base.h>
-#include <Probleme_base.h>
 
 Implemente_base_sans_constructeur(Simpler_Base,"Simpler_Base",Solveur_non_lineaire);
 

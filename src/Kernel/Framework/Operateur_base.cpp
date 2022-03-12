@@ -30,7 +30,7 @@
 #include <Front_VF.h>
 #include <Zone_VF.h>
 #include <Matrice_Morse.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_base_sans_constructeur(Operateur_base,"Operateur_base",Objet_U);
 

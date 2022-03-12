@@ -36,7 +36,7 @@
 #include <Ref_Champ_Q1NC.h>
 #include <Milieu_base.h>
 #include <Debog.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Porosites_champ.h>

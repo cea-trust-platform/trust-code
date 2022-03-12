@@ -23,7 +23,7 @@
 #ifndef Convection_Diffusion_Fluide_Dilatable_Proto_included
 #define Convection_Diffusion_Fluide_Dilatable_Proto_included
 
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 
 class Convection_Diffusion_Fluide_Dilatable_base;
 class Convection_Diffusion_std;

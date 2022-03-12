@@ -22,7 +22,7 @@
 
 #include <Op_Conv_PolyMAC_base.h>
 #include <Debog.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Discretisation_base.h>
 #include <Champ.h>
 #include <Modifier_pour_fluide_dilatable.h>

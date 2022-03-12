@@ -25,7 +25,7 @@
 #define Traitement_particulier_NS_canal_included
 
 #include <Traitement_particulier_NS_base.h>
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 
 
 //////////////////////////////////////////////////////////////////////////////

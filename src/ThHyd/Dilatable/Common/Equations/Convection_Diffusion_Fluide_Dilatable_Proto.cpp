@@ -33,7 +33,6 @@
 #include <Solveur_Masse.h>
 #include <Matrice_Morse.h>
 #include <Zone_Cl_dis.h>
-#include <DoubleTrav.h>
 #include <Operateur.h>
 #include <Domaine.h>
 #include <Avanc.h>

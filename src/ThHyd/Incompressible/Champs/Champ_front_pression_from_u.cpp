@@ -22,7 +22,7 @@
 
 
 #include <Champ_front_pression_from_u.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Navier_Stokes_std.h>
 #include <Zone_VF.h>
 #include <Fluide_Incompressible.h>

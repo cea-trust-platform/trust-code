@@ -22,7 +22,7 @@
 
 #include <Op_Conv_PolyMAC_iterateur_base.h>
 #include <Debog.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 #include <Champ.h>

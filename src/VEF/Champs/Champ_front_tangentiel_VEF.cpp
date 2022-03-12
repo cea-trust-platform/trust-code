@@ -22,7 +22,7 @@
 
 #include <Champ_front_tangentiel_VEF.h>
 #include <Zone_VEF.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 Implemente_instanciable(Champ_front_tangentiel_VEF,"Champ_front_tangentiel_VEF",Champ_front_tangentiel);
 
 

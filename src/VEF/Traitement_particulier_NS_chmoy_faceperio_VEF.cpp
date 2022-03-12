@@ -25,7 +25,7 @@
 #include <Periodique.h>
 #include <Champ_P1NC.h>
 #include <Champ_Uniforme.h>
-#include <IntTrav.h>
+#include <TRUSTTrav.h>
 #include <Convection_Diffusion_Temperature.h>
 #include <Convection_Diffusion_Chaleur_QC.h>
 #include <Probleme_base.h>

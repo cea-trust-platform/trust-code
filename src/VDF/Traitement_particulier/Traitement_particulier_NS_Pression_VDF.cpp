@@ -24,7 +24,7 @@
 #include <Zone_Cl_VDF.h>
 #include <Navier_Stokes_std.h>
 #include <Zone_VDF.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Pression_VDF,"Traitement_particulier_NS_Pression_VDF",Traitement_particulier_NS_Pression);
 

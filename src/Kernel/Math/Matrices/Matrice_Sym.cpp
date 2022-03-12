@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Matrice_Sym.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <TRUSTTab.h>
 
 int Matrice_Sym::get_est_definie() const

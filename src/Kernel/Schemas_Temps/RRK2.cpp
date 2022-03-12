@@ -22,7 +22,7 @@
 
 #include <RRK2.h>
 #include <Equation.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(RRK2,"Runge_Kutta_Rationnel_ordre_2",Schema_Temps_base);
 

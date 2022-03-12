@@ -20,11 +20,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-
-#include <Sources.h>
-#include <TRUSTTab.h>
 #include <Matrice_Morse.h>
+#include <TRUSTTab.h>
+#include <Sources.h>
 
 Implemente_liste(Source);
 Implemente_instanciable(Sources,"Sources",LIST(Source));

@@ -24,7 +24,7 @@
 #include <Champ_front_fonc_gradient_VDF.h>
 #include <distances_VDF.h>
 #include <Paroi_Knudsen_non_negligeable.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Champ_Inc.h>
 
 Implemente_instanciable(Champ_front_fonc_gradient_VDF,"Champ_front_fonc_gradient_VDF",Champ_front_fonc_gradient);

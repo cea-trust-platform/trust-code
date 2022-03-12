@@ -27,11 +27,9 @@
 #include <Discret_Thyd.h>
 #include <Frontiere_dis_base.h>
 #include <Param.h>
-
 #include <Transport_Interfaces_base.h>
 #include <Fluide_base.h>
-#include <DoubleTrav.h>
-#include <IntTrav.h>
+#include <TRUSTTrav.h>
 #include <SFichier.h>
 #include <Zone_VF.h>
 #include <Matrice_Morse.h>

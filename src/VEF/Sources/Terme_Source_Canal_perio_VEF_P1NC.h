@@ -34,7 +34,7 @@
 #include <Terme_Source_Canal_perio.h>
 #include <Ref_Zone_Cl_VEF.h>
 #include <Ref_Zone_VEF.h>
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 class Probleme_base;
 class Navier_Stokes_std;
 

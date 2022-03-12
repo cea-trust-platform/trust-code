@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,6 @@
 #include <Ref_Turbulence_paroi_scal.h>
 #include <Schema_Comm.h>
 #include <ArrOfBit.h>
-#include <DoubleTrav.h>
 
 Implemente_instanciable(Echange_contact_VDF,"Paroi_Echange_contact_VDF",Echange_global_impose);
 

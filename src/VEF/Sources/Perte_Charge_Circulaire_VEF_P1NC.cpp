@@ -32,7 +32,7 @@
 #include <Zone_VEF.h>
 #include <Matrice_Morse.h>
 #include <Schema_Temps_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Perte_Charge_Circulaire_VEF_P1NC,"Perte_Charge_Circulaire_VEF_P1NC",Perte_Charge_VEF);
 

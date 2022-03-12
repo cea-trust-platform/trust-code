@@ -20,18 +20,16 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Champ_Inc_base_included
 #define Champ_Inc_base_included
 
-#include <Champ_base.h>
-#include <Roue.h>
-#include <MorEqn.h>
 #include <Ref_Zone_Cl_dis.h>
 #include <Interface_blocs.h>
 #include <Ref_Objet_U.h>
-
-#include <TRUSTTab.h>
+#include <Champ_base.h>
+#include <TRUSTTrav.h>
+#include <MorEqn.h>
+#include <Roue.h>
 class Frontiere_dis_base;
 class MD_Vector;
 class Zone_dis;

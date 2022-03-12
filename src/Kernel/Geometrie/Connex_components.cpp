@@ -19,8 +19,8 @@
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <Connex_components.h>
-#include <TRUSTTab.h>
 #include <communications.h>
 #include <ArrOfBit.h>
 

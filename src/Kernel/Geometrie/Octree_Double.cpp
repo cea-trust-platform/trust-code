@@ -19,8 +19,8 @@
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <Octree_Double.h>
-#include <TRUSTTab.h>
 
 Octree_Double::Octree_Double()
 {

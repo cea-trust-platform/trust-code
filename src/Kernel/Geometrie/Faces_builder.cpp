@@ -19,25 +19,25 @@
 // Version:     /main/41
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <Faces_builder.h>
-#include <IntTrav.h>
-#include <Domaine.h>
+
+#include <Connectivite_som_elem.h>
 #include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
-#include <Faces2.h>
-#include <NettoieNoeuds.h>
-#include <Connectivite_som_elem.h>
-#include <Scatter.h>
-#include <stdio.h>
+#include <MD_Vector_tools.h>
 #include <Poly_geom_base.h>
 #include <Elem_geom_base.h>
-#include <MD_Vector_tools.h>
+#include <communications.h>
+#include <NettoieNoeuds.h>
+#include <Faces_builder.h>
 #include <MD_Vector_std.h>
 #include <Schema_Comm.h>
 #include <Array_tools.h>
-#include <communications.h>
-#include <array>
+#include <Domaine.h>
+#include <Scatter.h>
+#include <Faces2.h>
+#include <stdio.h>
 #include <vector>
+#include <array>
 #include <map>
 
 Faces_builder::Faces_builder() :

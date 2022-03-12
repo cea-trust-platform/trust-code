@@ -38,7 +38,7 @@
 #include <communications.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Masse_CoviMAC_Face.h>
 #include <Milieu_base.h>
 #include <Pb_Multiphase.h>

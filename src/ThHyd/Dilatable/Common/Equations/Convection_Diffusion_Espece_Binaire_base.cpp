@@ -25,7 +25,7 @@
 #include <Fluide_Dilatable_base.h>
 #include <Op_Conv_negligeable.h>
 #include <Probleme_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_base(Convection_Diffusion_Espece_Binaire_base,"Convection_Diffusion_Espece_Binaire_base",Convection_Diffusion_Espece_Fluide_Dilatable_base);
 

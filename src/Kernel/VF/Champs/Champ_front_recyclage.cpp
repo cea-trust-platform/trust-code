@@ -23,7 +23,7 @@
 #include <Champ_front_recyclage.h>
 #include <Interprete.h>
 #include <Probleme_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Zone_VF.h>
 #include <Equation_base.h>
 #include <communications.h>

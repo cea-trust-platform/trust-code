@@ -35,7 +35,7 @@
 #include <Probleme_base.h>
 #include <SingleDouble.h>
 #include <Milieu_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 template <class _TYPE_>
 class T_It_VDF_Face : public Iterateur_VDF_base

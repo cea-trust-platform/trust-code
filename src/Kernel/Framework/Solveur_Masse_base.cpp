@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,12 +20,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <ConstDoubleTab_parts.h>
 #include <Solveur_Masse_base.h>
 #include <Equation_base.h>
 #include <Matrice_Morse.h>
-#include <DoubleTrav.h>
 #include <Debog.h>
-#include <ConstDoubleTab_parts.h>
 
 Implemente_base_sans_constructeur(Solveur_Masse_base,"Solveur_Masse_base",Objet_U);
 

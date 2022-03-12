@@ -34,7 +34,7 @@
 #include <Zone_Cl_VDF.h>
 #include <Array_tools.h>
 #include <Option_VDF.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Periodique.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>

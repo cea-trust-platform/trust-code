@@ -25,7 +25,7 @@
 #include <Motcle.h>
 #include <Champ_Don.h>
 #include <Champ_Uniforme.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Check_espace_virtuel.h>
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>

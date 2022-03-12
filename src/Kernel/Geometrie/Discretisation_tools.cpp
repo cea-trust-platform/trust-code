@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Discretisation_tools.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Champ_base.h>
 #include <Zone_VF.h>
 #include <Debog.h>

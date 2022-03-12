@@ -28,7 +28,7 @@
 #include <Check_espace_virtuel.h>
 #include <EcrFicPartage.h>
 #include <SFichier.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <communications.h>
 
 Implemente_instanciable(Op_Div_VEF_Elem,"Op_Div_VEF_P1NC",Operateur_Div_base);

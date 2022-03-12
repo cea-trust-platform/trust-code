@@ -32,7 +32,7 @@
 #include <Zone_CoviMAC.h>
 #include <Matrice_Morse.h>
 #include <Schema_Temps_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Perte_Charge_Circulaire_CoviMAC_Face,"Perte_Charge_Circulaire_Face_CoviMAC",Perte_Charge_CoviMAC);
 

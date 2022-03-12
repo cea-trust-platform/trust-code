@@ -25,7 +25,7 @@
 #include <Domaine.h>
 #include <Frontiere_dis_base.h>
 #include <Zone_VF.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Champ_front_txyz,"Champ_front_fonc_txyz",Ch_front_var_instationnaire_indep);
 // XD champ_front_fonc_txyz front_field_base champ_front_fonc_txyz 0 Boundary field which is not constant in space and in time.

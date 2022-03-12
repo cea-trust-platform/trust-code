@@ -39,7 +39,7 @@
 #include <MD_Vector_tools.h>
 #include <PE_Groups.h>
 #include <Comm_Group_MPI.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <sys/stat.h>
 #include <MD_Vector_composite.h>
 #include <vector>

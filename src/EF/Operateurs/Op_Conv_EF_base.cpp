@@ -25,7 +25,7 @@
 #include <Milieu_base.h>
 #include <Schema_Temps_base.h>
 #include <Probleme_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Discretisation_base.h>
 #include <Champ.h>
 

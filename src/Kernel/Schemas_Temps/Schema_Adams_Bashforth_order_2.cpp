@@ -23,7 +23,7 @@
 #include <Schema_Adams_Bashforth_order_2.h>
 #include <Equation.h>
 #include <Debog.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Schema_Adams_Bashforth_order_2,"Schema_Adams_Bashforth_order_2",Schema_Adams_Bashforth_base);
 

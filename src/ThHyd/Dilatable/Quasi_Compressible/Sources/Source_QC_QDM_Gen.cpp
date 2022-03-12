@@ -28,7 +28,7 @@
 #include <Champ_Uniforme.h>
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Matrice_Morse.h>
 
 Implemente_instanciable(Source_QC_QDM_Gen,"Source_QC_QDM_Gen_QC",Source_base);

@@ -25,7 +25,7 @@
 #define Champ_front_calc_interne_included
 
 #include <Champ_front_calc.h>
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -41,6 +41,7 @@
   (((this)->template line_size() == ((nb_dim_>1)?dimensions_[1]:1)*((nb_dim_>2)?dimensions_[2]:1)*((nb_dim_>3)?dimensions_[3]:1)) \
    && ((this)->template line_size() * dimension_tot_0_ == (this)->template size_array()))
 
+// .DESCRIPTION : Tableau a n entrees pour n<= 4. Repose sur un TRUSTVect avec calculs de l'indice corespondant
 template<typename _TYPE_>
 class TRUSTTab : public TRUSTVect<_TYPE_>
 {

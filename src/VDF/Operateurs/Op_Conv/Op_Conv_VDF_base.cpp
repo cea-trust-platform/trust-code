@@ -24,7 +24,7 @@
 #include <Discretisation_base.h>
 #include <Op_Conv_VDF_base.h>
 #include <Probleme_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Champ.h>
 #include <Debog.h>
 

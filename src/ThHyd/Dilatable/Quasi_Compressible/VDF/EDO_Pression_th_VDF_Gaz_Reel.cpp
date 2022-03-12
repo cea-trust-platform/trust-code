@@ -28,7 +28,7 @@
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(EDO_Pression_th_VDF_Gaz_Reel,"EDO_Pression_th_VDF_Gaz_Reel",EDO_Pression_th_VDF);
 

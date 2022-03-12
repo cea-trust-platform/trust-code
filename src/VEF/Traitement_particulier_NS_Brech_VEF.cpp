@@ -24,7 +24,7 @@
 #include <Navier_Stokes_std.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Periodique.h>
 #include <Champ_P1NC.h>
 

@@ -34,7 +34,7 @@
 #include <EcrFicPartage.h>
 #include <SingleDouble.h>
 #include <Milieu_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Debog.h>
 
 template <class _TYPE_>

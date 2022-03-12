@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_front_Tabule.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Champ_front_Tabule,"Champ_front_Tabule",Champ_front_instationnaire_base);
 // XD champ_front_tabule front_field_base champ_front_tabule 0 Constant field on the boundary, tabulated as a function of time.

@@ -25,7 +25,7 @@
 
 #include <Ref_IntVect.h>
 #include <Champ_Inc.h>
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 
 class Fluide_Dilatable_base;
 class Navier_Stokes_std;

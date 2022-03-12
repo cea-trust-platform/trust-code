@@ -20,19 +20,18 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <EcritureLectureSpecial.h>
+#include <Scalaire_impose_paroi.h>
+#include <Schema_Temps_base.h>
+#include <Champ_Inc_P0_base.h>
+#include <Neumann_val_ext.h>
+#include <MD_Vector_tools.h>
 #include <Champ_Inc_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Domaine.h>
-#include <EcritureLectureSpecial.h>
-#include <Schema_Temps_base.h>
-#include <MD_Vector_tools.h>
-#include <Zone_VF.h>
 #include <Dirichlet.h>
-#include <Neumann_val_ext.h>
-#include <Scalaire_impose_paroi.h>
-#include <DoubleTrav.h>
-#include <Champ_Inc_P0_base.h>
+#include <Domaine.h>
+#include <Zone_VF.h>
 
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
 

@@ -23,7 +23,7 @@
 #include <Schema_Explicite_Multi_TimeStep_base.h>
 #include <Equation.h>
 #include <Debog.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_base(Schema_Explicite_Multi_TimeStep_base,"Schema_Explicite_Multi_TimeStep_base",Schema_Temps_base);
 

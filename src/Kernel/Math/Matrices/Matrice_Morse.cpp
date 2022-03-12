@@ -30,8 +30,8 @@
 #include <Noms.h>
 #include <ArrOfBit.h>
 #include <Array_tools.h>
-#include <IntTrav.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
+#include <TRUSTTrav.h>
 #include <Matrix_tools.h>
 
 Implemente_instanciable_sans_constructeur(Matrice_Morse,"Matrice_Morse",Matrice_Base);

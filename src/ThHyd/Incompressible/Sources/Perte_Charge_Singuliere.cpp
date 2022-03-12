@@ -28,7 +28,6 @@
 #include <Sous_Zone.h>
 #include <Octree.h>
 #include <Source_base.h>
-#include <DoubleTrav.h>
 #include <Param.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>

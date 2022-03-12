@@ -31,7 +31,7 @@
 #include <Neumann_sortie_libre.h>
 #include <Champ_Uniforme.h>
 #include <Debog.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Modele_turbulence_scal_base.h>
 #include <Porosites_champ.h>
 #include <Discretisation_base.h>

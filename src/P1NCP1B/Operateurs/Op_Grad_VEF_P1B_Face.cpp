@@ -31,7 +31,7 @@
 #include <Schema_Temps.h>
 #include <Debog.h>
 #include <Check_espace_virtuel.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
 #include <EcrFicPartage.h>

@@ -32,7 +32,7 @@
 #include <Champ_Uniforme.h>
 #include <Matrice_Morse.h>
 #include <Navier_Stokes_std.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Neumann_sortie_libre.h>
 #include <Op_Conv_negligeable.h>
 #include <Param.h>

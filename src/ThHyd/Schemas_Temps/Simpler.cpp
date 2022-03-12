@@ -28,7 +28,7 @@
 #include <Assembleur_base.h>
 #include <Statistiques.h>
 #include <Schema_Temps_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Schema_Euler_Implicite.h>
 #include <Probleme_base.h>
 

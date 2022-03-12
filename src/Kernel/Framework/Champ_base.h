@@ -26,7 +26,7 @@
 
 #include <Champ_Proto.h>
 #include <Field_base.h>
-#include <TRUSTVect.h>
+#include <TRUSTTrav.h>
 #include <Noms.h>
 class Motcle;
 class Domaine;

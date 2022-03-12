@@ -24,7 +24,7 @@
 #include <Fluide_Quasi_Compressible.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <Probleme_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Param.h>
 
 Implemente_instanciable(Convection_Diffusion_Espece_Multi_QC,"Convection_Diffusion_Espece_Multi_QC",Convection_Diffusion_Espece_Multi_base);

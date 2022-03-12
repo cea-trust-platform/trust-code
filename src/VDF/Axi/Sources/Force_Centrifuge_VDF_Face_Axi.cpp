@@ -28,7 +28,7 @@
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Symetrie.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Equation_base.h>
 #include <Champ_Inc.h>
 

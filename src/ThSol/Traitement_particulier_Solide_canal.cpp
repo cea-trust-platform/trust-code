@@ -25,7 +25,7 @@
 #include <Champ_Uniforme.h>
 #include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
-#include <IntTrav.h>
+#include <TRUSTTrav.h>
 #include <Conduction.h>
 #include <Probleme_base.h>
 

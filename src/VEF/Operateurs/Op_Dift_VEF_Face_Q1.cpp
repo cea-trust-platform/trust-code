@@ -30,7 +30,7 @@
 #include <Echange_externe_impose.h>
 #include <Champ_Uniforme.h>
 #include <Debog.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Milieu_base.h>
 #include <Zone_Cl_VEF.h>
 

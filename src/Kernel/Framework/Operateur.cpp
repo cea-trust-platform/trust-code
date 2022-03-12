@@ -23,7 +23,7 @@
 #include <Operateur.h>
 #include <Schema_Temps_base.h>
 #include <Operateur_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Probleme_base.h>
 #include <stat_counters.h>
 

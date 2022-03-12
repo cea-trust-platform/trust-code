@@ -20,33 +20,31 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <SETS.h>
-#include <Zone_VF.h>
-#include <EChaine.h>
-#include <Debog.h>
-#include <Matrice_Bloc.h>
-#include <Assembleur_base.h>
-#include <Statistiques.h>
-#include <Schema_Temps_base.h>
-#include <DoubleTrav.h>
-#include <Dirichlet.h>
-#include <Probleme_base.h>
-#include <Pb_Multiphase.h>
-#include <QDM_Multiphase.h>
-#include <Pb_Conduction.h>
-#include <Masse_Multiphase.h>
-#include <Energie_Multiphase.h>
-#include <Neumann_val_ext.h>
-#include <MD_Vector_std.h>
-#include <MD_Vector_composite.h>
-#include <MD_Vector_tools.h>
 #include <ConstDoubleTab_parts.h>
 #include <Discretisation_base.h>
 #include <Operateur_Diff_base.h>
-
-#include <IntTrav.h>
+#include <MD_Vector_composite.h>
+#include <Energie_Multiphase.h>
+#include <Schema_Temps_base.h>
+#include <Masse_Multiphase.h>
+#include <Neumann_val_ext.h>
+#include <MD_Vector_tools.h>
+#include <Assembleur_base.h>
+#include <QDM_Multiphase.h>
+#include <Probleme_base.h>
+#include <Pb_Multiphase.h>
+#include <Pb_Conduction.h>
+#include <MD_Vector_std.h>
 #include <Matrix_tools.h>
+#include <Matrice_Bloc.h>
+#include <Statistiques.h>
+#include <TRUSTTrav.h>
+#include <Dirichlet.h>
+#include <Zone_VF.h>
+#include <EChaine.h>
 #include <Lapack.h>
+#include <Debog.h>
+#include <SETS.h>
 #include <cfloat>
 
 #ifndef NDEBUG

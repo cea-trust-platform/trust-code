@@ -25,7 +25,7 @@
 #include <Eval_Dift_VDF_var.h>
 #include <Op_Dift_VDF_base.h>
 #include <Champ_Fonc.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Motcle.h>
 
 Implemente_base(Op_Dift_VDF_base,"Op_Dift_VDF_base",Op_Diff_VDF_base);

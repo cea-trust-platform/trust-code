@@ -24,7 +24,7 @@
 #include <Zone_VEF.h>
 #include <Champ_P1NC.h>
 #include <Champ_Uniforme.h>
-#include <IntTrav.h>
+#include <TRUSTTrav.h>
 #include <SFichier.h>
 #include <EcrFicPartage.h>
 #include <Convection_Diffusion_Temperature.h>

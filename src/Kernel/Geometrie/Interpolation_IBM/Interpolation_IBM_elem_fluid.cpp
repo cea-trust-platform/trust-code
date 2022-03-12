@@ -21,8 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Interpolation_IBM_elem_fluid.h>
-#include <DoubleTrav.h>
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 #include <Domaine.h>
 #include <Param.h>
 

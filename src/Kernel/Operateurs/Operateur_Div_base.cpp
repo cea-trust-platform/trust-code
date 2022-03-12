@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Operateur_Div_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_base(Operateur_Div_base,"Operateur_Div_base",Operateur_base);
 

@@ -21,19 +21,18 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Schema_Temps_base.h>
-#include <Probleme_base.h>
-#include <Equation.h>
-#include <LecFicDiffuse.h>
 #include <EcrFicCollecte.h>
-#include <Debog.h>
-#include <stat_counters.h>
-#include <Param.h>
 #include <communications.h>
-#include <sys/stat.h>
-#include <SFichier.h>
-#include <TRUSTTab.h>
+#include <Probleme_base.h>
 #include <Matrice_Morse.h> // necessaire pour visual
 #include <stat_counters.h>
+#include <LecFicDiffuse.h>
+#include <stat_counters.h>
+#include <Equation.h>
+#include <sys/stat.h>
+#include <SFichier.h>
+#include <Param.h>
+#include <Debog.h>
 #include <cfloat>
 
 Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);

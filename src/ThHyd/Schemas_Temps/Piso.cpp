@@ -29,7 +29,7 @@
 #include <Assembleur_base.h>
 #include <Statistiques.h>
 #include <Schema_Temps_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Fluide_Dilatable_base.h>
 #include <Dirichlet.h>
 #include <Probleme_base.h>

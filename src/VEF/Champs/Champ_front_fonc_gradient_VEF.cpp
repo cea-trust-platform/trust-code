@@ -23,7 +23,7 @@
 
 #include <Champ_front_fonc_gradient_VEF.h>
 #include <Zone_VEF.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Champ_Inc.h>
 
 Implemente_instanciable(Champ_front_fonc_gradient_VEF,"Champ_front_fonc_gradient_VEF",Champ_front_fonc_gradient);

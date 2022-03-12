@@ -37,7 +37,7 @@
 #include <communications.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Op_Grad_PolyMAC_Face,"Op_Grad_PolyMAC_Face",Operateur_Grad_base);
 

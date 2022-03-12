@@ -27,7 +27,7 @@
 #include <Source_QC_QDM_Gen.h>
 #include <Matrice_Morse.h>
 #include <Milieu_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 template <typename DERIVED_T>
 class Source_Fluide_Dilatable_Face

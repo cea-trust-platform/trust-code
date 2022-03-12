@@ -24,7 +24,7 @@
 #include <Domaine.h>
 #include <Frontiere_dis_base.h>
 #include <Zone_VF.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Lecture_Table.h>
 
 Implemente_instanciable( Champ_Front_xyz_Tabule, "Champ_Front_xyz_Tabule", Champ_front_txyz ) ;

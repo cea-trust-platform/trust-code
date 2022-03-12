@@ -32,7 +32,7 @@
 #include <Dirichlet_homogene.h>
 #include <Scalaire_impose_paroi.h>
 #include <Debog.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Check_espace_virtuel.h>
 #include <Porosites_champ.h>
 #include <Modele_turbulence_scal_base.h>

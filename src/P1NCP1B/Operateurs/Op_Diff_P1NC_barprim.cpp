@@ -30,7 +30,7 @@
 #include <Champ_Don.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Fonc.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Domaine.h>
 #include <Ref_Champ_P1NC.h>
 #include <Debog.h>

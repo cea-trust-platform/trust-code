@@ -31,7 +31,7 @@
 #include <Discretisation_base.h>
 #include <Matrice_Morse.h>
 #include <Matrice_Bloc.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Interpolation_IBM_elem_fluid.h>
 #include <Interpolation_IBM_mean_gradient.h>
 #include <Interpolation_IBM_hybrid.h>

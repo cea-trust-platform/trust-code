@@ -38,7 +38,7 @@
 #include <Terme_Source_inc.h>
 #include <Ref_Zone_VDF.h>
 #include <Source_base.h>
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 class Probleme_base;
 class Navier_Stokes_std;
 

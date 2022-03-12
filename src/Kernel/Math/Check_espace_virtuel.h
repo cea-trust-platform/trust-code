@@ -19,8 +19,10 @@
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef Check_espace_virtuel_H
 #define Check_espace_virtuel_H
+
 #include <TRUSTVect.h>
 #include <arch.h>
 

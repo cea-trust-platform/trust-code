@@ -20,21 +20,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Solveur_Lineaire_Std_included
 #define Solveur_Lineaire_Std_included
 
-
-
-//
-// .DESCRIPTION class Solveur_Lineaire_Std
-//
-
 #include <Solveur_lineaire.h>
 #include <SolveurSys.h>
+#include <TRUSTTrav.h>
 
 class Equation_base;
-#include <TRUSTTab.h>
 
 class Solveur_Lineaire_Std : public  Solveur_lineaire
 {

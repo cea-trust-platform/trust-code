@@ -34,7 +34,7 @@
 #include <Frontiere_dis_base.h>
 #include <solv_iteratif.h>
 #include <Schema_Temps.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Check_espace_virtuel.h>
 #include <Assembleur_base.h>
 #include <communications.h>

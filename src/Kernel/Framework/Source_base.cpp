@@ -20,16 +20,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-#include <Source_base.h>
+#include <Schema_Temps_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Schema_Temps_base.h>
-#include <SFichier.h>
 #include <communications.h>
+#include <Source_base.h>
 #include <DoubleTabs.h>
+#include <SFichier.h>
 #include <map>
-#include <DoubleTrav.h>
 
 Implemente_base(Source_base,"Source_base",Objet_U);
 

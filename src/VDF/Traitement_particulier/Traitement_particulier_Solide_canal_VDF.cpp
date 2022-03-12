@@ -28,9 +28,7 @@
 #include <Champ_Uniforme.h>
 #include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
-#include <IntTrav.h>
 #include <Conduction.h>
-#include <DoubleTrav.h>
 #include <communications.h>
 
 Sortie& Traitement_particulier_Solide_canal_VDF::printOn(Sortie& is) const

@@ -28,7 +28,7 @@
 #include <Vecteur3.h>
 #include <Matrice33.h>
 #include <Linear_algebra_tools_impl.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Check_espace_virtuel.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>

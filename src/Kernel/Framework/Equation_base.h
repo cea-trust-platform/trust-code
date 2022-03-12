@@ -23,30 +23,29 @@
 #ifndef Equation_base_included
 #define Equation_base_included
 
-#include <Ref_Probleme_base.h>
-#include <Ref_Zone_dis.h>
-#include <Zone_Cl_dis.h>
 #include <Ref_Schema_Temps_base.h>
+#include <Parametre_equation.h>
+#include <Ref_Probleme_base.h>
+#include <MD_Vector_tools.h>
 #include <Interface_blocs.h>
 #include <Solveur_Masse.h>
-#include <Sources.h>
-#include <Parametre_equation.h>
-#include <Champs_Fonc.h>
-#include <DoubleList.h>
-#include <Ref_Objet_U.h>
-#include <Liste_Noms.h>
-#include <Parser_U.h>
 #include <Matrice_Morse.h>
+#include <Ref_Zone_dis.h>
+#include <Champs_Fonc.h>
+#include <Ref_Objet_U.h>
+#include <Zone_Cl_dis.h>
+#include <DoubleList.h>
+#include <Liste_Noms.h>
+#include <TRUSTTrav.h>
+#include <Parser_U.h>
+#include <Sources.h>
 #include <vector>
-#include <MD_Vector_tools.h>
 
-class Operateur;
-#include <TRUSTTab.h>
-class DoubleTrav;
 class Discretisation_base;
-class Motcle;
 class Milieu_base;
+class Operateur;
 class Champ_Inc;
+class Motcle;
 class Param;
 
 enum Type_modele { TURBULENCE };

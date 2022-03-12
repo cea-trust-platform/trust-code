@@ -19,6 +19,7 @@
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <Schema_Comm_Vecteurs.h>
 #include <MD_Vector_composite.h>
 #include <Echange_EV_Options.h>
@@ -26,8 +27,7 @@
 #include <communications.h>
 #include <stat_counters.h>
 #include <Schema_Comm.h>
-#include <DoubleTrav.h>
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 #include <vector>
 
 static Schema_Comm_Vecteurs comm;

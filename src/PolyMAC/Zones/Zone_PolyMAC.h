@@ -24,32 +24,28 @@
 #ifndef Zone_PolyMAC_included
 #define Zone_PolyMAC_included
 
-
-
-#include <math.h>
-#include <Zone_VF.h>
-#include <Elem_PolyMAC.h>
-#include <Domaine.h>
-#include <Static_Int_Lists.h>
-#include <IntLists.h>
-#include <Conds_lim.h>
-#include <Matrice_Morse_Sym.h>
-#include <SolveurSys.h>
-#include <DoubleTrav.h>
-#include <IntTrav.h>
-#include <Lapack.h>
-#include <array>
-
-#include <Periodique.h>
-#include <Neumann_sortie_libre.h>
-#include <Neumann_homogene.h>
-#include <Dirichlet.h>
-#include <Symetrie.h>
-#include <Echange_global_impose.h>
 #include <Champ_front_var_instationnaire.h>
+#include <Echange_global_impose.h>
+#include <Neumann_sortie_libre.h>
+#include <Matrice_Morse_Sym.h>
+#include <Static_Int_Lists.h>
+#include <Neumann_homogene.h>
+#include <Elem_PolyMAC.h>
+#include <SolveurSys.h>
+#include <Periodique.h>
+#include <Dirichlet.h>
+#include <Conds_lim.h>
+#include <TRUSTTrav.h>
+#include <IntLists.h>
+#include <Symetrie.h>
+#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Lapack.h>
 #include <vector>
-#include <map>
 #include <string>
+#include <math.h>
+#include <array>
+#include <map>
 
 #ifndef __clang__
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"

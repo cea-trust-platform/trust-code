@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,6 @@
 #include <Periodique.h>
 #include <Pb_Fluide_base.h>
 #include <Navier_Stokes_std.h>
-#include <DoubleTrav.h>
 
 Implemente_instanciable(Terme_Source_inc_VDF_Face,"inc_VDF_Face",Source_base);
 

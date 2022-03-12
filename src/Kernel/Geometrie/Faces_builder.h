@@ -23,8 +23,8 @@
 #ifndef Faces_builder_included
 #define Faces_builder_included
 
-#include <TRUSTTab.h>
 #include <Ref_IntTab.h>
+#include <TRUSTTrav.h>
 #include <Ref_Zone.h>
 class Zone;
 class Static_Int_Lists;

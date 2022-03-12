@@ -19,15 +19,14 @@
 // Version:     /main/23
 //
 //////////////////////////////////////////////////////////////////////////////
+
+#include <Schema_Implicite_base.h>
 #include <Solveur_Lineaire_Std.h>
+#include <SolveurSys_base.h>
 #include <Equation_base.h>
-#include <TRUSTTab.h>
 #include <Matrice_Morse.h>
 #include <Motcle.h>
 #include <Nom.h>
-#include <Schema_Implicite_base.h>
-#include <SolveurSys_base.h>
-#include <DoubleTrav.h>
 
 Implemente_instanciable(Solveur_Lineaire_Std,"Solveur_lineaire_std",Solveur_lineaire);
 

@@ -24,7 +24,7 @@
 #ifndef Solveur_Masse_base_included
 #define Solveur_Masse_base_included
 #include <Interface_blocs.h>
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 #include <MorEqn.h>
 
 class Zone_dis;

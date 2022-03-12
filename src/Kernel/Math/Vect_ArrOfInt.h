@@ -23,8 +23,8 @@
 #ifndef Vect_ArrOfInt_included
 #define Vect_ArrOfInt_included
 
-#include <Vect.h>
 #include <TRUSTArray.h>
+#include <Vect.h>
 
 Declare_vect(ArrOfInt);
 

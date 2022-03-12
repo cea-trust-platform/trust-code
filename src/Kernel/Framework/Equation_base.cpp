@@ -20,29 +20,28 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Equation_base.h>
-#include <Milieu_base.h>
-#include <Operateur_base.h>
+#include <Parametre_diffusion_implicite.h>
+#include <Schema_Euler_explicite.h>
+#include <Source_dep_inco_base.h>
 #include <Operateur_Conv_base.h>
 #include <Op_Conv_negligeable.h>
 #include <Operateur_Diff_base.h>
+#include <Discretisation_base.h>
+#include <Matrice_Morse_Diag.h>
+#include <Frontiere_dis_base.h>
+#include <Matrice_Morse_Sym.h>
+#include <Operateur_base.h>
+#include <Postraitement.h>
+#include <Equation_base.h>
+#include <Statistiques.h>
+#include <Milieu_base.h>
+#include <SolveurSys.h>
 #include <Operateur.h>
+#include <EChaine.h>
+#include <Zone_VF.h>
 #include <Avanc.h>
 #include <Debog.h>
-#include <Matrice_Morse_Sym.h>
-#include <Discretisation_base.h>
-#include <Frontiere_dis_base.h>
-#include <DoubleTrav.h>
-#include <Postraitement.h>
-#include <EChaine.h>
-#include <Schema_Euler_explicite.h>
-#include <Parametre_diffusion_implicite.h>
-#include <Matrice_Morse_Diag.h>
-#include <Statistiques.h>
 #include <Param.h>
-#include <Source_dep_inco_base.h>
-#include <SolveurSys.h>
-#include <Zone_VF.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;

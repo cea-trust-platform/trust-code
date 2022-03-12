@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Operateur_Grad_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_base(Operateur_Grad_base,"Operateur_Grad_base",Operateur_base);
 

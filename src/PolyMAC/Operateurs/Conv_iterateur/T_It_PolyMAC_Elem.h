@@ -36,7 +36,7 @@
 #include <Op_Conv_PolyMAC_iterateur_base.h>
 #include <EcrFicPartage.h>
 #include <communications.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -25,7 +25,7 @@
 
 #include <Echange_global_impose.h>
 #include <Ref_Champ_Inc.h>
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 #include <vector>
 #include <array>
 #include <map>

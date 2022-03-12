@@ -23,7 +23,7 @@
 #include <Check_espace_virtuel.h>
 #include <Op_Diff_VDF_base.h>
 #include <Eval_Diff_VDF.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Champ_Don.h>
 #include <Motcle.h>
 

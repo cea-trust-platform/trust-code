@@ -23,11 +23,10 @@
 #ifndef Perte_Charge_Singuliere_included
 #define Perte_Charge_Singuliere_included
 
-
 #include <Perte_Charge.h>
 #include <Domaine_dis.h>
 #include <Champ_Don.h>
-#include <TRUSTVect.h>
+#include <TRUSTTrav.h>
 #include <Parser_U.h>
 class Domaine;
 class Zone_dis_base;

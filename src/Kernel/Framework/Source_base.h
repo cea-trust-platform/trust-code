@@ -27,7 +27,7 @@
 #include <Interface_blocs.h>
 #include <Champs_compris.h>
 #include <Matrice_Bloc.h>
-#include <TRUSTTab.h>
+#include <TRUSTTrav.h>
 #include <MorEqn.h>
 
 class DoubleTabs;

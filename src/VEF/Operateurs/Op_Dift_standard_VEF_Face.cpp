@@ -28,7 +28,7 @@
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
 #include <Debog.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Op_Dift_standard_VEF_Face,"Op_Dift_VEF_P1NC_standard",Op_Dift_VEF_Face);
 

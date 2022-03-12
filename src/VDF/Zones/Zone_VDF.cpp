@@ -31,7 +31,7 @@
 #include <Neumann_sortie_libre.h>
 #include <EcrFicCollecte.h>
 #include <math.h>
-#include <IntTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Zone_VDF,"Zone_VDF",Zone_VF);
 

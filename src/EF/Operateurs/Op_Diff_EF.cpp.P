@@ -27,7 +27,7 @@
 #include <Champ_Uniforme.h>
 #include <Milieu_base.h>
 #include <Debog.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Probleme_base.h>
 #include <Neumann_paroi.h>
 #include <Neumann_sortie_libre.h>
