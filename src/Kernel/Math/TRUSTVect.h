@@ -77,7 +77,7 @@ protected:
   }
 
 public:
-  ~TRUSTVect() override { }
+  virtual ~TRUSTVect() { }
 
   TRUSTVect() : size_reelle_(0), line_size_(1) { }
 

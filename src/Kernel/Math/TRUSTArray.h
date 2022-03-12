@@ -102,7 +102,7 @@ public:
   inline Iterator begin() { return Iterator(data_); }
   inline Iterator end() { return Iterator(data_ + size_array_); }
 
-  ~TRUSTArray() override
+  virtual ~TRUSTArray()
   {
     detach_array();
     size_array_ = -1; // Paranoia: si size_array_==-1, c'est un zombie
