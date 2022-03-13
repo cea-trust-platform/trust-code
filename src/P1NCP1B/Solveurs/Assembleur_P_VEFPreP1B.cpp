@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@
 #include <Milieu_base.h>
 #include <Navier_Stokes_std.h>
 #include <Debog.h>
-#include <IntLists.h>
+#include <TRUSTLists.h>
 #include <Op_Grad_VEF_P1B_Face.h>
 #include <Op_Div_VEFP1B_Elem.h>
 #include <SFichier.h>

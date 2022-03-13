@@ -35,9 +35,9 @@
 #include <Zone_Cl_VEFP1B.h>
 #include <Matrice_Morse_Sym.h>
 #include <Matrice_Bloc.h>
+#include <TRUSTLists.h>
 #include <SolveurSys.h>
 #include <ArrOfBit.h>
-#include <IntLists.h>
 
 
 ///////////////////////////////////////////////////////////////////////////////

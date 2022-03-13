@@ -31,12 +31,12 @@
 #include <Static_Int_Lists.h>
 #include <Neumann_homogene.h>
 #include <Elem_PolyMAC.h>
+#include <TRUSTLists.h>
 #include <SolveurSys.h>
 #include <Periodique.h>
 #include <Dirichlet.h>
 #include <Conds_lim.h>
 #include <TRUSTTrav.h>
-#include <IntLists.h>
 #include <Symetrie.h>
 #include <Zone_VF.h>
 #include <Domaine.h>

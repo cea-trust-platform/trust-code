@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,27 +20,26 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_Face_PolyMAC.h>
-#include <Domaine.h>
-#include <Zone_VF.h>
-#include <Champ_Uniforme.h>
-#include <Champ_Fonc_reprise.h>
-#include <Zone_PolyMAC.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <IntLists.h>
-#include <DoubleLists.h>
-#include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Symetrie.h>
-#include <Connectivite_som_elem.h>
-#include <Matrix_tools.h>
-#include <EChaine.h>
-#include <ConstDoubleTab_parts.h>
 #include <Linear_algebra_tools_impl.h>
+#include <Connectivite_som_elem.h>
+#include <ConstDoubleTab_parts.h>
+#include <Dirichlet_homogene.h>
+#include <Champ_Fonc_reprise.h>
+#include <Champ_Face_PolyMAC.h>
+#include <Schema_Temps_base.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Schema_Temps_base.h>
+#include <Matrix_tools.h>
+#include <Zone_PolyMAC.h>
+#include <Zone_Cl_dis.h>
+#include <TRUSTLists.h>
+#include <Dirichlet.h>
+#include <Symetrie.h>
+#include <EChaine.h>
+#include <Domaine.h>
+#include <Zone_VF.h>
 #include <array>
 #include <cmath>
 

@@ -23,7 +23,7 @@
 #include <Zone_VEF_PreP1b.h>
 #include <Domaine.h>
 #include <Scatter.h>
-#include <IntLists.h>
+#include <TRUSTLists.h>
 #include <Conds_lim.h>
 #include <Periodique.h>
 #include <Debog.h>

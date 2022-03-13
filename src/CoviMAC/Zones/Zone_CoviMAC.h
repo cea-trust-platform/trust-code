@@ -32,12 +32,12 @@
 #include <Static_Int_Lists.h>
 #include <Elem_CoviMAC.h>
 #include <SolveurSys.h>
+#include <TRUSTLists.h>
 #include <Periodique.h>
 #include <TRUSTTrav.h>
 #include <Dirichlet.h>
 #include <Conds_lim.h>
 #include <Symetrie.h>
-#include <IntLists.h>
 #include <Zone_VF.h>
 #include <Domaine.h>
 #include <Lapack.h>

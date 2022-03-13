@@ -42,12 +42,10 @@
 #include <unordered_map>
 #include <Tri_PolyMAC.h>
 #include <Array_tools.h>
-#include <DoubleLists.h>
-#include <TRUSTList.h>
+#include <TRUSTLists.h>
 #include <PE_Groups.h>
 #include <Rectangle.h>
 #include <Tetraedre.h>
-#include <IntLists.h>
 #include <EFichier.h>
 #include <SFichier.h>
 #include <Hexaedre.h>

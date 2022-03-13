@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,24 +21,21 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_P1NC_implementation.h>
-#include <Champ_P1NC.h>
-#include <Champ_Fonc_P1NC.h>
-#include <Domaine.h>
-#include <LecFicDiffuse.h>
-#include <DoubleLists.h>
-#include <Periodique.h>
-#include <Debog.h>
-#include <Solv_GCP.h>
-#include <SSOR.h>
-#include <Equation_base.h>
-#include <Mod_turb_hyd_base.h>
-#include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Mod_turb_hyd_base.h>
+#include <Champ_Fonc_P1NC.h>
+#include <Equation_base.h>
 #include <distances_VEF.h>
+#include <LecFicDiffuse.h>
 #include <Matrice_Bloc.h>
-#include <IntLists.h>
-
-
+#include <TRUSTLists.h>
+#include <Champ_P1NC.h>
+#include <Periodique.h>
+#include <Solv_GCP.h>
+#include <Domaine.h>
+#include <Debog.h>
+#include <SSOR.h>
 
 static int methode_calcul_valeurs_sommets = 2 ;
 

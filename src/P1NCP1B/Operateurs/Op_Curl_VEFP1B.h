@@ -23,12 +23,12 @@
 #ifndef Op_Curl_VEFP1B_included
 #define Op_Curl_VEFP1B_included
 
+#include <Ref_Zone_Cl_VEF.h>
 #include <Operateur_base.h>
 #include <Ref_Zone_VEF.h>
+#include <TRUSTLists.h>
 #include <Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
 #include <Domaine.h>
-#include <IntLists.h>
 
 class Zone_VEF_PreP1b;
 

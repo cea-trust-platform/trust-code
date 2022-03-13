@@ -24,8 +24,7 @@
 #include <Schema_Temps_base.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
-#include <IntLists.h>
-#include <DoubleLists.h>
+#include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Neumann_paroi.h>

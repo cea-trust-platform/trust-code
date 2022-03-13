@@ -21,8 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Matrice_Morse.h>
-#include <DoubleLists.h>
-#include <IntLists.h>
 #include <Sparskit.h>
 #include <Matrice_Morse_Sym.h>
 #include <Check_espace_virtuel.h>

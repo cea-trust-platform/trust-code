@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,13 +20,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <VerifierCoin.h>
-#include <Domaine.h>
-#include <time.h>
-#include <IntLists.h>
 #include <LecFicDiffuse.h>
+#include <VerifierCoin.h>
+#include <TRUSTLists.h>
 #include <Scatter.h>
+#include <Domaine.h>
 #include <Param.h>
+#include <time.h>
 
 Implemente_instanciable(VerifierCoin,"VerifierCoin",Interprete_geometrique_base);
 int VerifierCoin::expert_only=0;

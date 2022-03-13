@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 #ifndef IntListsListe_included
 #define IntListsListe_included
 
-#include <IntLists.h>
+#include <TRUSTLists.h>
 
 class IntListsListe
 {
@@ -31,22 +31,18 @@ public :
   IntListsListe();
   Sortie& printOn(Sortie& os) const;
   Entree& readOn(Entree& is);
-  inline int size() const;
+  inline int size() const { return sz; }
   IntListsListe(int );
   const IntLists& operator[](int) const;
   IntLists& operator[](int);
   IntListsListe(const IntListsListe&);
   virtual ~IntListsListe();
   IntListsListe& operator=(const IntListsListe& );
-  // int search(const IntLists&) const;
   void dimensionner(int );
+
 protected :
   int sz;
   IntLists* data;
 };
 
-inline int IntListsListe::size() const
-{
-  return sz;
-}
-#endif
+#endif /* IntListsListe_included */

@@ -23,24 +23,10 @@
 #ifndef Matrice_Bloc_included
 #define Matrice_Bloc_included
 
-
-
-//
-// .DESCRIPTION class Matrice_Bloc
-//
-// .SECTION voir aussi
-// Matrice_Base
-
-
 #include <Matrice_Base.h>
 #include <Vect_Matrice.h>
 #include <TRUSTArray.h>
-
-////////////////////////////////////////////////////////////
-//
-// CLASS : Matrice_Bloc
-//
-////////////////////////////////////////////////////////////
+#include <TRUSTLists.h>
 
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
@@ -65,8 +51,6 @@
 /*----------------------------------------------------------------------------*/
 
 class Matrice_Morse;
-class IntLists;
-class DoubleLists;
 
 class Matrice_Bloc : public Matrice_Base
 {

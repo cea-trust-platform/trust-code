@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,42 +25,34 @@
 
 Sortie& IntListsListe::printOn(Sortie& s) const
 {
-  int i=sz;
-  while(i--)
-    data[i].printOn(s);
-  return s<<finl;
+  int i = sz;
+  while (i--) data[i].printOn(s);
+  return s << finl;
 }
-Entree& IntListsListe::readOn(Entree& s)
+
+Entree& IntListsListe::readOn(Entree& s) { return s; }
+
+IntListsListe::IntListsListe(const IntListsListe& vect) : sz(vect.sz), data(new IntLists[vect.sz])
 {
-  return s;
+  if (!data) throw_();
+  int i = sz;
+  if (i == 0) data = 0;
+  else
+    while (i--) data[i] = vect[i];
 }
-IntListsListe::IntListsListe(const IntListsListe& vect)
-  : sz(vect.sz), data(new IntLists[vect.sz])
-{
-  if(!data)
-    {
-      Cerr << "Unable to carry out allocation " << finl;
-      Process::exit();
-    }
-  int i=sz;
-  if(i==0) data=0;
-  else while(i--)
-      data[i]=vect[i];
-}
+
 IntListsListe::IntListsListe() : sz(0), data(0) {}
+
 IntListsListe::IntListsListe(int i): sz(i)
 {
   if(i==0) data=0;
   else
     {
       data= new IntLists[i];
-      if(!data)
-        {
-          Cerr << "Unable to carry out allocation" << finl;
-          Process::exit();
-        }
+      if(!data) throw_();
     }
 }
+
 IntListsListe::~IntListsListe()
 {
   if(sz)
@@ -71,62 +63,42 @@ IntListsListe::~IntListsListe()
   else
     assert (data==0) ;
 }
+
 IntListsListe& IntListsListe::operator=(const IntListsListe& vect)
 {
   sz=vect.sz;
-  if(data)
-    delete[] data;
+  if(data) delete[] data;
   if(sz)
     {
       data = new IntLists[sz];
-      if(!data)
-        {
-          Cerr << "Unable to carry out allocation " << finl;
-          Process::exit();
-        }
+      if(!data) throw_();
       int i=sz;
-      while(i--)
-        data[i]=vect[i];
+      while(i--) data[i]=vect[i];
     }
   else data=0;
   return *this;
 }
-/* int IntListsListe::search(const IntLists& t) const
-   {
-   int i=sz;
-   int retour=-1;
-   while(i--)
-   if( data[i] == t )
-   { retour=i; i=0; }
-   return retour;
-   }*/
+
 const IntLists& IntListsListe::operator[](int i) const
 {
   assert( (i>=0) && (i<sz) );
   return data[i];
 }
+
 IntLists& IntListsListe::operator[](int i)
 {
   assert( (i>=0) && (i<sz) );
   return data[i];
 }
 
-
 void IntListsListe::dimensionner(int i)
 {
-  assert(sz==0);
-  assert(data==0);
-  sz =i;
-  if(i==0)
-    data=0;
+  assert(sz == 0 && data == 0);
+  sz = i;
+  if (i == 0) data = 0;
   else
     {
       data = new IntLists [i];
-      if(!data)
-        {
-          Cerr << "Unable to carry out allocation " << finl;
-          Process::exit();
-        }
+      if(!data) throw_();
     }
 }
-

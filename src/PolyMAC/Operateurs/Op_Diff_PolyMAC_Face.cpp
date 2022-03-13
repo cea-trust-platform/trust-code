@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,20 +21,19 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_PolyMAC_Face.h>
-#include <Probleme_base.h>
-#include <Schema_Temps_base.h>
-#include <Zone_PolyMAC.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <IntLists.h>
-#include <DoubleLists.h>
-#include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
-#include <Symetrie.h>
 #include <Champ_Face_PolyMAC.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
+#include <Schema_Temps_base.h>
 #include <Mod_turb_hyd_base.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Probleme_base.h>
 #include <Synonyme_info.h>
+#include <Zone_PolyMAC.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
+#include <TRUSTLists.h>
+#include <Dirichlet.h>
+#include <Symetrie.h>
 
 Implemente_instanciable( Op_Diff_PolyMAC_Face, "Op_Diff_PolyMAC_Face|Op_Dift_PolyMAC_Face_PolyMAC", Op_Diff_PolyMAC_base ) ;
 Add_synonym(Op_Diff_PolyMAC_Face, "Op_Diff_PolyMAC_var_Face");

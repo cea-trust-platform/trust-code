@@ -28,8 +28,7 @@
 #include <Debog.h>
 #include <TRUSTList.h>
 #include <Matrice_Morse_Sym.h>
-#include <IntLists.h>
-#include <DoubleLists.h>
+#include <TRUSTLists.h>
 #include <SolveurSys.h>
 #include <Solv_GCP.h>
 #include <SSOR.h>

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,25 +19,25 @@
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <Op_Diff_PolyMAC_Elem.h>
-#include <Probleme_base.h>
-#include <Schema_Temps_base.h>
-#include <Zone_PolyMAC.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <IntLists.h>
-#include <DoubleLists.h>
-#include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Neumann_paroi.h>
+
+#include <Modele_turbulence_scal_base.h>
 #include <Echange_contact_PolyMAC.h>
 #include <Echange_externe_impose.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
+#include <Op_Diff_PolyMAC_Elem.h>
+#include <Dirichlet_homogene.h>
+#include <Schema_Temps_base.h>
 #include <Champ_P0_PolyMAC.h>
 #include <Champ_front_calc.h>
-#include <Modele_turbulence_scal_base.h>
-#include <Synonyme_info.h>
+#include <Zone_Cl_PolyMAC.h>
 #include <communications.h>
+#include <Synonyme_info.h>
+#include <Probleme_base.h>
+#include <Neumann_paroi.h>
+#include <Matrix_tools.h>
+#include <Zone_PolyMAC.h>
+#include <Array_tools.h>
+#include <TRUSTLists.h>
+#include <Dirichlet.h>
 #include <cmath>
 
 Implemente_instanciable( Op_Diff_PolyMAC_Elem          , "Op_Diff_PolyMAC_Elem|Op_Diff_PolyMAC_var_Elem"                                , Op_Diff_PolyMAC_base ) ;

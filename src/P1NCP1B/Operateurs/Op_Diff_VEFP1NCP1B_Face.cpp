@@ -35,7 +35,7 @@
 #include <Domaine.h>
 #include <Ref_Champ_P1NC.h>
 #include <Debog.h>
-#include <DoubleLists.h>
+#include <TRUSTLists.h>
 #include <Champ_front_txyz.h>
 #include <Champ_Don_lu.h>
 #include <Champ_Don_Fonc_xyz.h>

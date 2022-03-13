@@ -22,7 +22,7 @@
 
 #include <Remove_elem.h>
 #include <Scatter.h>
-#include <IntLists.h>
+#include <TRUSTLists.h>
 #include <TRUSTArray.h>
 #include <NettoieNoeuds.h>
 #include <Param.h>

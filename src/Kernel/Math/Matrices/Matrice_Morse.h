@@ -24,11 +24,10 @@
 #define Matrice_Morse_included
 
 #include <Matrice_Base.h>
+#include <TRUSTLists.h>
 #include <TRUSTTab.h>
 #include <algorithm>
 
-class DoubleLists;
-class IntLists;
 class DoubleVects;
 
 //////////////////////////////////////////////////////////////////////////////

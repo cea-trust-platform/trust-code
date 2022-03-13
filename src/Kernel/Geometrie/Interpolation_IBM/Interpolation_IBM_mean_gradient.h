@@ -23,9 +23,9 @@
 #ifndef Interpolation_IBM_mean_gradient_included
 #define Interpolation_IBM_mean_gradient_included
 
-#include <Interpolation_IBM_base.h>
 #include <Interpolation_IBM_mean_gradient_proto.h>
-#include <IntLists.h>
+#include <Interpolation_IBM_base.h>
+#include <TRUSTLists.h>
 
 /////////////////////////////////////////////////////////////////////////////
 //
