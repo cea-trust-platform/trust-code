@@ -31,7 +31,6 @@
 #include <Eval_Dift_VDF_const.h>
 #include <Eval_Diff_VDF_Elem.h>
 #include <Eval_Dift_VDF_var.h>
-#include <DoubleVects.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Eval_Dift_VDF_Elem_leaves : public Eval_Diff_VDF_Elem<Eval_Dift_VDF_Elem_leaves>,

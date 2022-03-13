@@ -27,7 +27,7 @@
 #include <Ref_Champ_Generique_base.h>
 #include <Ref_Postraitement.h>
 #include <Ref_Champ_base.h>
-#include <Vect_ArrOfInt.h>
+#include <TRUSTArrays.h>
 #include <TRUSTTab.h>
 #include <SFichier.h>
 #include <Motcle.h>

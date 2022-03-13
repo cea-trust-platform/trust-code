@@ -23,20 +23,20 @@
 #ifndef Zone_included
 #define Zone_included
 
-#include <Ref_Domaine.h>
-#include <Bords.h>
-#include <Joints.h>
-#include <Raccords.h>
-#include <Faces_Internes.h>
-#include <Elem_geom.h>
-#include <Noms.h>
 #include <Deriv_OctreeRoot.h>
+#include <Faces_Internes.h>
+#include <Ref_Domaine.h>
+#include <TRUSTArrays.h>
+#include <TRUSTList.h>
+#include <Elem_geom.h>
+#include <TRUSTTabs.h>
 #include <List_Nom.h>
-#include <DoubleTabs.h>
-#include <Vect_ArrOfInt.h>
+#include <Raccords.h>
+#include <Joints.h>
+#include <Bords.h>
+#include <Noms.h>
 
 class Motcle;
-#include <TRUSTList.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

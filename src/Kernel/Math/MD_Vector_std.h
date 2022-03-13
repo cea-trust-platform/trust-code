@@ -24,7 +24,7 @@
 #include <MD_Vector_base.h>
 #include <ArrOfBit.h>
 #include <Static_Int_Lists.h>
-#include <Vect_ArrOfInt.h>
+#include <TRUSTArrays.h>
 #include <MD_Vector_base2.h>
 
 // .DESCRIPTION

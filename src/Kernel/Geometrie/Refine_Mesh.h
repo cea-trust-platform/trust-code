@@ -24,7 +24,7 @@
 #define Refine_Mesh_included
 
 #include <Interprete_geometrique_base.h>
-#include <Vect_IntTab.h>
+#include <TRUSTTabs.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // .NAME        : Refine_Mesh

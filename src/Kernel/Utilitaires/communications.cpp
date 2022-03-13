@@ -29,8 +29,8 @@
 #include <Comm_Group.h>
 #include <PE_Groups.h>
 #include <Schema_Comm.h>
-#include <DoubleTabs.h>
-#include <Vect_ArrOfInt.h>
+#include <TRUSTTabs.h>
+#include <TRUSTArrays.h>
 #include <Motcle.h>
 #include <DerOu_.h>
 #include <TRUSTTab.h>

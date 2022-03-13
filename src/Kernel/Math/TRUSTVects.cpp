@@ -14,46 +14,20 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        DoubleTabs.h
+// File:        TRUSTVects.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/13
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef DoubleTabs_included
-#define DoubleTabs_included
-#include <TRUSTTab.h>
+#include <TRUSTVects.h>
 
+Implemente_vect(IntVect);
+Implemente_instanciable(IntVects,"IntVects",VECT(IntVect));
+Sortie& IntVects::printOn(Sortie& s) const { return VECT(IntVect)::printOn(s); }
+Entree& IntVects::readOn(Entree& s) { return VECT(IntVect)::readOn(s); }
 
-Declare_vect(DoubleTab);
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     DoubleTabs est equivalent a VECT(DoubleTab)
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
-
-class DoubleTabs : public VECT(DoubleTab)
-{
-  Declare_instanciable(DoubleTabs);
-public :
-  inline DoubleTabs(int );
-};
-
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline DoubleTabs::DoubleTabs(int i): VECT(DoubleTab)(i) {}
-#endif
+Implemente_vect(DoubleVect);
+Implemente_instanciable(DoubleVects,"DoubleVects",VECT(DoubleVect));
+Sortie& DoubleVects::printOn(Sortie& s) const { return VECT(DoubleVect)::printOn(s); }
+Entree& DoubleVects::readOn(Entree& s) { return VECT(DoubleVect)::readOn(s); }

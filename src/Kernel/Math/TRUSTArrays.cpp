@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,50 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        DoubleVects.cpp
+// File:        TRUSTArrays.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/12
+// Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <DoubleVects.h>
-
-Implemente_vect(DoubleVect);
-Implemente_instanciable(DoubleVects,"DoubleVects",VECT(DoubleVect));
-
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Sortie& DoubleVects::printOn(Sortie& s) const
-{
-  return VECT(DoubleVect)::printOn(s);
-}
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& DoubleVects::readOn(Entree& s)
-{
-  return VECT(DoubleVect)::readOn(s);
-}
+#include <TRUSTArrays.h>
+Implemente_vect(ArrOfInt);
+Implemente_vect(ArrOfDouble);

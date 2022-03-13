@@ -21,11 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Matrice_Morse_Sym.h>
-#include <Vect_ArrOfDouble.h>
 #include <Matrice_Morse.h>
 #include <Matrice_Bloc.h>
 #include <Matrix_tools.h>
-#include <Vect_IntTab.h>
+#include <TRUSTArrays.h>
+#include <TRUSTTabs.h>
 
 Implemente_instanciable_sans_constructeur(Matrice_Bloc,"Matrice_Bloc",Matrice_Base);
 

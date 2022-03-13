@@ -24,8 +24,7 @@
 #define Solv_Gmres_included
 
 #include <solv_iteratif.h>
-#include <DoubleVects.h>
-#include <TRUSTVect.h>
+#include <TRUSTVects.h>
 #include <TRUSTTab.h>
 class Matrice_Morse_Sym;
 class Matrice_Morse;

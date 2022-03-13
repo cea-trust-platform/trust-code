@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,18 +14,24 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Vect_IntTab.h
+// File:        TRUSTArrays.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/8
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Vect_IntTab_included
-#define Vect_IntTab_included
+#ifndef TRUSTArrays_included
+#define TRUSTArrays_included
 
-#include <TRUSTTab.h>
+#include <TRUSTArray.h>
 #include <Vect.h>
 
-Declare_vect(IntTab);
+/// \cond DO_NOT_DOCUMENT
+class TRUSTArrays
+{ };
+/// \endcond
 
-#endif /* Vect_IntTab_included */
+Declare_vect(ArrOfInt);
+Declare_vect(ArrOfDouble);
+
+#endif /* TRUSTArrays_included */

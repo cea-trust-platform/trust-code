@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,12 +20,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Matrice_Morse_Sym.h>
 #include <Matrice_Bloc_Sym.h>
 #include <Matrice_Base.h>
 #include <Matrix_tools.h>
-#include <Vect_IntTab.h>
-#include <Vect_ArrOfDouble.h>
-#include <Matrice_Morse_Sym.h>
+#include <TRUSTArrays.h>
+#include <TRUSTTabs.h>
 
 Implemente_instanciable_sans_constructeur(Matrice_Bloc_Sym,"Matrice_Bloc_Sym",Matrice_Bloc);
 

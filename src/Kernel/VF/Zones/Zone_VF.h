@@ -23,9 +23,9 @@
 #ifndef Zone_VF_included
 #define Zone_VF_included
 
-#include <Zone_dis.h>
 #include <Vect_Front_VF.h>
-#include <Vect_ArrOfInt.h>
+#include <TRUSTArrays.h>
+#include <Zone_dis.h>
 
 class Faces;
 class Zone_Cl_dis_base;

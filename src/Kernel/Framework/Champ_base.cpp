@@ -28,10 +28,10 @@
 #include <Probleme_base.h>
 #include <Schema_Comm.h>
 #include <Champ_base.h>
+#include <TRUSTVects.h>
 #include <Dirichlet.h>
 #include <TRUSTList.h>
 #include <Symetrie.h>
-#include <IntVects.h>
 #include <strings.h>
 #include <Zone_VF.h>
 

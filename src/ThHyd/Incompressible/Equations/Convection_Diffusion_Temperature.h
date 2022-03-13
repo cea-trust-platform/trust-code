@@ -27,8 +27,10 @@
 #include <Convection_Diffusion_std.h>
 #include <Ref_Fluide_base.h>
 #include <Champ_Fonc.h>
-#include <DoubleTabs.h>
+#include <TRUSTTabs.h>
+
 Declare_vect(RefObjU);
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -38,6 +40,7 @@ Declare_vect(RefObjU);
 // .SECTION voir aussi
 //     Conv_Diffusion_std
 //////////////////////////////////////////////////////////////////////////////
+
 class Convection_Diffusion_Temperature : public Convection_Diffusion_std
 {
   Declare_instanciable_sans_constructeur(Convection_Diffusion_Temperature);

@@ -24,8 +24,8 @@
 #define Champ_front_recyclage_included
 
 #include <Ch_front_var_instationnaire_dep.h>
-#include <DoubleTabs.h>
-#include <Vect_ArrOfInt.h>
+#include <TRUSTTabs.h>
+#include <TRUSTArrays.h>
 #include <Vect_Parser_U.h>
 #include <Noms.h>
 #include <Ref_Champ_Inc_base.h>

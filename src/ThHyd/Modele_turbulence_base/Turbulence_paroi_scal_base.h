@@ -29,7 +29,7 @@
 #include <Ref_Modele_turbulence_scal_base.h>
 #include <Champs_compris.h>
 #include <Champs_compris_interface.h>
-#include <DoubleVects.h>
+#include <TRUSTVects.h>
 
 class Zone_dis;
 class Zone_Cl_dis;

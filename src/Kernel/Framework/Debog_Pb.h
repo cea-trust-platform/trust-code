@@ -27,7 +27,7 @@
 #include <VectMD_Vector.h>
 #include <EFichier.h>
 #include <TRUSTTab.h>
-#include <IntVects.h>
+#include <TRUSTVects.h>
 #include <Motcle.h>
 #include <Debog.h>
 #include <Noms.h>

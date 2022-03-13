@@ -26,7 +26,7 @@
 #include <ArrOfBit.h>
 #include <Zone_dis_base.h>
 #include <Zone_VF.h>
-#include <DoubleTabs.h>
+#include <TRUSTTabs.h>
 #include <Domaine.h>
 #include <communications.h>
 

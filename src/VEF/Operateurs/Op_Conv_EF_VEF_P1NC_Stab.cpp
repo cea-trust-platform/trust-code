@@ -29,10 +29,10 @@
 #include <Sous_zone_VF.h>
 #include <Probleme_base.h>
 #include <ArrOfBit.h>
-#include <IntVects.h>
+#include <TRUSTVects.h>
 #include <SFichier.h>
 #include <TRUSTList.h>
-#include <DoubleTabs.h>
+#include <TRUSTTabs.h>
 #include <stat_counters.h>
 
 Implemente_instanciable(Op_Conv_EF_VEF_P1NC_Stab,"Op_Conv_EF_Stab_VEF_P1NC",Op_Conv_VEF_Face);

@@ -23,7 +23,7 @@
 #define MD_Vector_composite_included
 #include <MD_Vector_std.h>
 #include <VectMD_Vector.h>
-#include <DoubleTabs.h>
+#include <TRUSTTabs.h>
 #include <Noms.h>
 
 // .DESCRIPTION

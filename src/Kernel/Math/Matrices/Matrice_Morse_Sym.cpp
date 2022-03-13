@@ -21,9 +21,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Matrice_Morse_Sym.h>
-#include <Vect_ArrOfInt.h>
-#include <Vect_IntTab.h>
+#include <TRUSTArrays.h>
 #include <Array_tools.h>
+#include <TRUSTTabs.h>
 #include <TRUSTList.h>
 #include <comm_incl.h>
 #include <Sparskit.h>

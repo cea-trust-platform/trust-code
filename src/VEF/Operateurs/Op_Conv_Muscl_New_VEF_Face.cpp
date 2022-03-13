@@ -29,9 +29,9 @@
 #include <Sous_zone_VF.h>
 #include <Probleme_base.h>
 #include <ArrOfBit.h>
-#include <IntVects.h>
+#include <TRUSTVects.h>
 #include <SFichier.h>
-#include <DoubleTabs.h>
+#include <TRUSTTabs.h>
 #include <stat_counters.h>
 
 /*

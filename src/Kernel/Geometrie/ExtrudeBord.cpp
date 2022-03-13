@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@
 #include <Extruder_en20.h>
 #include <Scatter.h>
 #include <Param.h>
-#include <IntVects.h>
+#include <TRUSTVects.h>
 
 Implemente_instanciable_sans_constructeur(ExtrudeBord,"ExtrudeBord",Interprete_geometrique_base);
 // XD extrudebord interprete extrudebord 1 Class to generate an extruded mesh from a boundary of a tetrahedral or an hexahedral mesh. NL2 Warning: If the initial domain is a tetrahedral mesh, the boundary will be moved in the XY plane then extrusion will be applied (you should maybe use the Transformer keyword on the final domain to have the domain you really want). You can use the keyword Ecrire_Fichier_Meshtv to generate a meshtv file to visualize your initial and final meshes. NL2 This keyword can be used for example to create a periodic box extracted from a boundary of a tetrahedral or a hexaedral mesh. This periodic box may be used then to engender turbulent inlet flow condition for the main domain.NL2 Note that ExtrudeBord in VEF generates 3 or 14 tetrahedra from extruded prisms.

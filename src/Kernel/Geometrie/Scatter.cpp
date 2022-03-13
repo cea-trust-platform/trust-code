@@ -25,7 +25,7 @@
 #include <Domaine.h>
 #include <LecFicDistribueBin.h>
 #include <Statistiques.h>
-#include <DoubleTabs.h>
+#include <TRUSTTabs.h>
 #include <Connectivite_som_elem.h>
 #include <Schema_Comm.h>
 #include <Faces_builder.h>
@@ -37,7 +37,6 @@
 #include <MD_Vector_std.h>
 #include <unistd.h> // PGI
 #include <Poly_geom_base.h>
-
 #include <Entree_Brute.h>
 #include <hdf5.h>
 #include <Comm_Group_MPI.h>

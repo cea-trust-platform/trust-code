@@ -27,7 +27,7 @@
 #include <SFichierBin.h>
 #include <Array_tools.h>
 #include <Scatter.h>
-#include <Vect_ArrOfInt.h>
+#include <TRUSTArrays.h>
 #include <Sous_Zone.h>
 #include <Sparskit.h>
 #include <Poly_geom_base.h>

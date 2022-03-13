@@ -25,7 +25,7 @@
 #include <Probleme_base.h>
 #include <communications.h>
 #include <Source_base.h>
-#include <DoubleTabs.h>
+#include <TRUSTTabs.h>
 #include <SFichier.h>
 #include <map>
 

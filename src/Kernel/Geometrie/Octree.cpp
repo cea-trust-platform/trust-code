@@ -26,10 +26,10 @@
 #define NbCasesParNoeuds 512
 #endif
 
-#include <Octree.h>
+#include <TRUSTVects.h>
 #include <RTabInt.h>
 #include <Domaine.h>
-#include <IntVects.h>
+#include <Octree.h>
 
 Implemente_instanciable_sans_constructeur(OctreeRoot,"OctreeRoot",Objet_U);
 Implemente_deriv(OctreeRoot);

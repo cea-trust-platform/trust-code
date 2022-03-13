@@ -21,8 +21,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef Octree_Int_included
 #define Octree_Int_included
+
+#include <TRUSTArrays.h>
 #include <TRUSTTab.h>
-#include <Vect_ArrOfInt.h>
 
 struct IntBoxData;
 class ArrOfBit;

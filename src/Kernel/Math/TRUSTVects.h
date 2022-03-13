@@ -14,18 +14,38 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Vect_ArrOfInt.h
+// File:        TRUSTVects.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/6
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Vect_ArrOfInt_included
-#define Vect_ArrOfInt_included
+#ifndef TRUSTVects_included
+#define TRUSTVects_included
 
-#include <TRUSTArray.h>
-#include <Vect.h>
+#include <TRUSTVect.h>
 
-Declare_vect(ArrOfInt);
+/// \cond DO_NOT_DOCUMENT
+class TRUSTVects
+{ };
+/// \endcond
 
-#endif
+Declare_vect(IntVect);
+// .DESCRIPTION Un tableau (VECT) d'elements du type IntVect
+class IntVects : public VECT(IntVect)
+{
+  Declare_instanciable(IntVects);
+public :
+  IntVects(int i) : VECT(IntVect)(i) {}
+};
+
+Declare_vect(DoubleVect);
+// .DESCRIPTION Un tableau (VECT) d'elements du type DoubleVect
+class DoubleVects : public VECT(DoubleVect)
+{
+  Declare_instanciable(DoubleVects);
+public :
+  DoubleVects(int i) : VECT(DoubleVect)(i) {}
+};
+
+#endif /* TRUSTVects_included */

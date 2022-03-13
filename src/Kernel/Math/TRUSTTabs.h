@@ -14,11 +14,38 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Vect_ArrOfDouble.cpp
+// File:        TRUSTTabs.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     1
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Vect_ArrOfDouble.h>
-Implemente_vect(ArrOfDouble);
+#ifndef TRUSTTabs_included
+#define TRUSTTabs_included
+
+#include <TRUSTTab.h>
+
+/// \cond DO_NOT_DOCUMENT
+class TRUSTTabs
+{ };
+/// \endcond
+
+Declare_vect(IntTab);
+// .DESCRIPTION : IntTabs est equivalent a VECT(IntTab)
+class IntTabs : public VECT(IntTab)
+{
+  Declare_instanciable(IntTabs);
+public :
+  IntTabs(int i) : VECT(IntTab)(i) {}
+};
+
+Declare_vect(DoubleTab);
+// .DESCRIPTION : DoubleTabs est equivalent a VECT(DoubleTab)
+class DoubleTabs : public VECT(DoubleTab)
+{
+  Declare_instanciable(DoubleTabs);
+public :
+  DoubleTabs(int i) : VECT(DoubleTab)(i) {}
+};
+
+#endif /* TRUSTTabs_included */

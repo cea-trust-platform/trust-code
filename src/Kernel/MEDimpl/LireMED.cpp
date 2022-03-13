@@ -27,8 +27,8 @@
 #include <sys/stat.h>
 #include <SFichier.h>
 #include <TRUSTList.h>
-#include <Vect_IntTab.h>
-#include <Vect_ArrOfInt.h>
+#include <TRUSTTabs.h>
+#include <TRUSTArrays.h>
 #include <Polygone.h>
 #include <Polyedre.h>
 #include <Scatter.h>

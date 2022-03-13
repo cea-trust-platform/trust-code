@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,11 +14,20 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Vect_IntTab.h
+// File:        TRUSTTabs.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Math
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Vect_IntTab.h>
+#include <TRUSTTabs.h>
+
 Implemente_vect(IntTab);
+Implemente_instanciable(IntTabs,"IntTabs",VECT(IntTab));
+Sortie& IntTabs::printOn(Sortie& s) const { return VECT(IntTab)::printOn(s); }
+Entree& IntTabs::readOn(Entree& s) { return VECT(IntTab)::readOn(s); }
+
+Implemente_vect(DoubleTab);
+Implemente_instanciable(DoubleTabs,"DoubleTabs",VECT(DoubleTab));
+Sortie& DoubleTabs::printOn(Sortie& s) const { return VECT(DoubleTab)::printOn(s); }
+Entree& DoubleTabs::readOn(Entree& s) { return VECT(DoubleTab)::readOn(s); }

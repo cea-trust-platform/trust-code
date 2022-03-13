@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,21 +21,19 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Raffiner_isotrope_parallele.h>
-#include <Param.h>
 #include <LecFicDistribue.h>
-#include <Nom.h>
-#include <Domaine.h>
-#include <Scatter.h>
-#include <Statistiques.h>
-#include <SFichier.h>
 #include <EcrFicCollecte.h>
-
-#include <DoubleTabs.h>
-#include <Schema_Comm.h>
-#include <Vect_ArrOfInt.h>
-
 #include <FichierHDFPar.h>
 #include <LecFicDiffuse.h>
+#include <Statistiques.h>
+#include <TRUSTArrays.h>
+#include <Schema_Comm.h>
+#include <TRUSTTabs.h>
+#include <SFichier.h>
+#include <Domaine.h>
+#include <Scatter.h>
+#include <Param.h>
+#include <Nom.h>
 
 Implemente_instanciable( Raffiner_isotrope_parallele, "Raffiner_isotrope_parallele", Raffiner_Simplexes ) ;
 

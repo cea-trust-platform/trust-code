@@ -23,10 +23,10 @@
 #ifndef Table_included
 #define Table_included
 
-#include <DoubleVects.h>
+#include <Parser_Eval.h>
+#include <TRUSTVects.h>
 #include <TRUSTTab.h>
 #include <Parser_U.h>
-#include <Parser_Eval.h>
 #include <vector>
 
 //////////////////////////////////////////////////////////////////////////////
