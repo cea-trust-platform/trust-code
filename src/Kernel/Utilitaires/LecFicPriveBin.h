@@ -36,7 +36,7 @@ class Objet_U;
 // .SECTION voir aussi
 //////////////////////////////////////////////////////////////////////////////
 
-class LecFicPriveBin : public LecFicPriveBin
+class LecFicPriveBin : public LecFicPrive
 {
   // Un PE lit le fichier
 public:
