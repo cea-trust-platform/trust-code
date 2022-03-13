@@ -37,8 +37,19 @@ public:
   void completer() override;
   int impr(Sortie& os) const override;
 
-  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override { return iter->ajouter(inco,resu); } // ajoute la contribution du gradient a resu
   inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter->calculer(inco,resu); } // calcule la contribution du gradient
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override
+  {
+    const std::string& nom_inco = equation().inconnue().le_nom().getString();
+    const DoubleTab& inco = equation().inconnue().valeur().valeurs();
+    iter->ajouter(inco,secmem);
+  }
+
 
 protected:
   Iterateur_VDF iter;

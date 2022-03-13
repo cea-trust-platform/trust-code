@@ -36,8 +36,21 @@ public:
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
 
-  DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override = 0; // ET OUI ! ATTENTION !! VIRTUELLE PURE !!!
-
+  //virtual DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const = 0; // ET OUI ! ATTENTION !! VIRTUELLE PURE !!!
+  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& secmem) const override
+  {
+    ajouter_blocs({}, secmem, {{ "pression", inco }}); /* pour avoir le bon signe */
+    return secmem;
+  }
+  inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override
+  {
+    DoubleTab secmem(inco);
+    ajouter_blocs({{ "pression", &matrice }}, secmem);
+  }
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
   inline Zone_VDF& zone_VDF() { return la_zone_vdf.valeur(); }
   inline const Zone_VDF& zone_VDF() const { return la_zone_vdf.valeur(); }
   inline Zone_Cl_VDF& zone_Cl_VDF() { return la_zcl_vdf.valeur(); }

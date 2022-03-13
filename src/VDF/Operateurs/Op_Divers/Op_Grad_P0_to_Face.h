@@ -34,7 +34,8 @@ class Op_Grad_P0_to_Face : public Op_Grad_VDF_Face_base
 {
   Declare_instanciable(Op_Grad_P0_to_Face);
 public:
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
 };
 
 #endif /* Op_Grad_P0_to_Face_included */

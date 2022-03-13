@@ -30,8 +30,14 @@ Implemente_instanciable(Op_Grad_P0_to_Face,"Op_Grad_P0_to_Face",Op_Grad_VDF_Face
 Sortie& Op_Grad_P0_to_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 Entree& Op_Grad_P0_to_Face::readOn(Entree& s) { return s; }
 
-DoubleTab& Op_Grad_P0_to_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) const
+void Op_Grad_P0_to_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
+  return;
+}
+
+void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : equation().inconnue().valeur().valeurs();
   assert_espace_virtuel_vect(inco);
   const Zone_VDF& zvdf = la_zone_vdf.valeur();
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
@@ -53,7 +59,7 @@ DoubleTab& Op_Grad_P0_to_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) c
             {
               n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
               dist = volume_entrelaces(num_face) / face_surfaces(num_face);
-              resu(num_face) += ((inco(n1) - inco(n0)))/dist;
+              secmem(num_face) += ((inco(n1) - inco(n0)))/dist;
             }
         }
       else
@@ -70,7 +76,7 @@ DoubleTab& Op_Grad_P0_to_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) c
               n1 = face_voisins(face_opposee,0);
               if (n1==n0) n1 = face_voisins(face_opposee,1);
 
-              resu(num_face) += (inco(n1)-inco(n0)) / (xp(n1,ori)- xp(n0,ori));
+              secmem(num_face) += (inco(n1)-inco(n0)) / (xp(n1,ori)- xp(n0,ori));
             }
         }
     }
@@ -79,9 +85,8 @@ DoubleTab& Op_Grad_P0_to_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) c
   for (int num_face = zvdf.premiere_face_int(); num_face < zvdf.nb_faces(); num_face++)
     {
       n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1), ori = orientation(num_face);
-      resu(num_face) += (inco(n1)-inco(n0))/(xp(n1,ori)- xp(n0,ori));
+      secmem(num_face) += (inco(n1)-inco(n0))/(xp(n1,ori)- xp(n0,ori));
     }
 
-  resu.echange_espace_virtuel();
-  return resu;
+  secmem.echange_espace_virtuel();
 }
