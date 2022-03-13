@@ -348,8 +348,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::mettre_a_jour(double temps)
 }//fin mettre_a_jour
 
 
-
-DoubleTab& Terme_Source_Canal_RANS_LES_VDF_Elem::ajouter(DoubleTab& resu) const
+void Terme_Source_Canal_RANS_LES_VDF_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   int nb_elems = zone_VDF.nb_elem();
@@ -378,7 +377,7 @@ DoubleTab& Terme_Source_Canal_RANS_LES_VDF_Elem::ajouter(DoubleTab& resu) const
         {
           vol = volume(num_elem);
 
-          resu(num_elem) += ((U_RANS(num_elem)-umoy(num_elem))/(tau(num_elem)*dt))*vol;
+          secmem(num_elem) += ((U_RANS(num_elem)-umoy(num_elem))/(tau(num_elem)*dt))*vol;
 
           mbf2 +=((U_RANS(num_elem)-umoy(num_elem))/(tau(num_elem)*dt))*vol;
 
@@ -400,8 +399,6 @@ DoubleTab& Terme_Source_Canal_RANS_LES_VDF_Elem::ajouter(DoubleTab& resu) const
             << utemp_sum(num_elem) << " " << dt <<finl;
     }//fin if f_start
 
-
-  return resu;
 }
 
 DoubleTab& Terme_Source_Canal_RANS_LES_VDF_Elem::calculer(DoubleTab& resu) const

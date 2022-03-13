@@ -98,7 +98,7 @@ void Terme_Source_Canal_perio_VDF_Face::associer_zones(const Zone_dis& zone_dis,
   la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
-DoubleTab& Terme_Source_Canal_perio_VDF_Face::ajouter(DoubleTab& resu) const
+void Terme_Source_Canal_perio_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_VF& zone_VF = la_zone_VDF.valeur();
   const Zone_Cl_dis_base& zone_Cl_dis = la_zone_Cl_VDF.valeur();
@@ -132,7 +132,7 @@ DoubleTab& Terme_Source_Canal_perio_VDF_Face::ajouter(DoubleTab& resu) const
             {
               double vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
               ncomp = orientation(num_face);
-              resu(num_face) += s[ncomp]*vol;
+              secmem(num_face) += s[ncomp]*vol;
             }
         }
       else if ( (sub_type(Dirichlet,la_cl.valeur()))
@@ -152,10 +152,9 @@ DoubleTab& Terme_Source_Canal_perio_VDF_Face::ajouter(DoubleTab& resu) const
     {
       double vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
       ncomp = orientation(num_face);
-      resu(num_face)+= s[ncomp]*vol;
+      secmem(num_face)+= s[ncomp]*vol;
     }
 
-  return resu;
 }
 
 

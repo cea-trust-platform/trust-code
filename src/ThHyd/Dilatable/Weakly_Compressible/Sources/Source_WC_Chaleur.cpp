@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,16 @@ Entree& Source_WC_Chaleur::readOn(Entree& is)
   return is;
 }
 
+DoubleTab& Source_WC_Chaleur::ajouter(DoubleTab& resu) const
+{
+  if(has_interface_blocs())
+    {
+      ajouter_blocs({}, resu);
+      return resu;
+    }
+  return ajouter_(resu);
+}
+
 // Description:
 //    Ajoute le terme source weakly compressible
 //    d P_tot / d t = del P / del t + u.grad(P_tot)
@@ -54,7 +64,7 @@ Entree& Source_WC_Chaleur::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
-DoubleTab& Source_WC_Chaleur::ajouter(DoubleTab& resu) const
+DoubleTab& Source_WC_Chaleur::ajouter_(DoubleTab& resu) const
 {
   double dt_ = mon_equation->schema_temps().temps_courant() - mon_equation->schema_temps().temps_precedent();
   if (dt_ <= 0.) return resu; // On calcul pas ce terme source si dt<=0

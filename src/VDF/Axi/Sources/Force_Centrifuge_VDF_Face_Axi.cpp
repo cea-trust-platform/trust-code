@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,7 +79,7 @@ void Force_Centrifuge_VDF_Face_Axi::associer_zones(const Zone_dis& zone_dis,
   porosite_surf.ref(zvdf.porosite_face());
 }
 
-DoubleTab& Force_Centrifuge_VDF_Face_Axi::ajouter(DoubleTab& resu) const
+void Force_Centrifuge_VDF_Face_Axi::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_VDF& zvdf = la_zone_VDF.valeur();
   const Zone_Cl_VDF& zclvdf = la_zone_Cl_VDF.valeur();
@@ -136,12 +136,12 @@ DoubleTab& Force_Centrifuge_VDF_Face_Axi::ajouter(DoubleTab& resu) const
               if (ori == 0)
                 {
                   coef = volume_entrelaces(num_face)*porosite_surf(num_face)/xv(num_face,0);
-                  resu(num_face) += 0.5*(vit_sum(num_face)*coef);
+                  secmem(num_face) += 0.5*(vit_sum(num_face)*coef);
                 }
               else if (ori == 1)
                 {
                   coef = volume_entrelaces(num_face)*porosite_surf(num_face)/xv(num_face,0);
-                  resu(num_face) -= 0.5*(vit_sum(num_face)*coef);
+                  secmem(num_face) -= 0.5*(vit_sum(num_face)*coef);
                 }
             }
         }
@@ -168,15 +168,14 @@ DoubleTab& Force_Centrifuge_VDF_Face_Axi::ajouter(DoubleTab& resu) const
       if (ori == 0)
         {
           coef = volume_entrelaces(num_face)*porosite_surf(num_face)/xv(num_face,0);
-          resu(num_face) += 0.5*(vit_sum(num_face)*coef);
+          secmem(num_face) += 0.5*(vit_sum(num_face)*coef);
         }
       else if (ori == 1)
         {
           coef = volume_entrelaces(num_face)*porosite_surf(num_face)/xv(num_face,0);
-          resu(num_face) -= 0.5*(vit_sum(num_face)*coef);
+          secmem(num_face) -= 0.5*(vit_sum(num_face)*coef);
         }
     }
-  return resu;
 }
 
 DoubleTab& Force_Centrifuge_VDF_Face_Axi::calculer(DoubleTab& resu) const

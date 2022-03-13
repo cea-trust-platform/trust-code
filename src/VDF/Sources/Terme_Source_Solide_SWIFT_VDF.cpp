@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -294,10 +294,7 @@ void Terme_Source_Solide_SWIFT_VDF::calcul_moyenne(const Conduction& my_eqn, Dou
 
 
 
-
-
-
-DoubleTab& Terme_Source_Solide_SWIFT_VDF::ajouter(DoubleTab& resu) const
+void Terme_Source_Solide_SWIFT_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl) const
 {
 
   const Zone_dis_base& zdisbase = eq_swift->inconnue().zone_dis_base();
@@ -340,7 +337,6 @@ DoubleTab& Terme_Source_Solide_SWIFT_VDF::ajouter(DoubleTab& resu) const
       resu(num_elem) += volume(num_elem)*(Tmoy_corse(corresp_SC[corresp_swift[num_elem]])-Tmoy_swift(corresp_swift[num_elem]))/tau;
     }
 
-  return resu;
 }
 
 

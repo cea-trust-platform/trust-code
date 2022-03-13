@@ -53,6 +53,9 @@ public:
 protected:
   const DoubleTab& correct_grad_boundary(const Zone_VF& zone, DoubleTab& grad_Ptot) const;
   virtual void compute_interpolate_gradP(DoubleTab& gradP, const DoubleTab& Ptot) const = 0;
+  DoubleTab& ajouter_(DoubleTab& ) const;
+
+
 };
 
 #endif /* Source_WC_Chaleur_included */

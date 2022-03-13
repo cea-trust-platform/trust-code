@@ -38,9 +38,12 @@ class Source_Generique_VDF_Face: public Source_Generique_base
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& ) const override;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis&) override;
   Nom localisation_source() override;
+  inline int has_interface_blocs() const override { return 1; };
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+
 
 protected:
 

@@ -50,12 +50,15 @@ class Terme_Puissance_Thermique_Echange_Impose_P0_VDF :  public Source_base
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& )  const override ;
   DoubleTab& calculer(DoubleTab& ) const override ;
   void associer_pb(const Probleme_base& ) override { };
   void mettre_a_jour(double ) override;
-
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
 
 protected:
 

@@ -39,6 +39,11 @@ public:
   void associer_pb(const Probleme_base& ) override;
   void mettre_a_jour(double temps) override { }
 
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
+
 protected:
   REF(Champ_Face) la_vitesse;
   REF(Fluide_base) le_fluide;

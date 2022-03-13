@@ -94,7 +94,7 @@ void Terme_Source_inc_th_VDF_Face::associer_zones(const Zone_dis& zone_dis,
 //   calculer_cell_cent_vel(cell_cent_vel);
 // }
 
-DoubleTab& Terme_Source_inc_th_VDF_Face::ajouter(DoubleTab& resu) const
+void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const Zone_Cl_VDF& zone_Cl_VDF = la_zone_Cl_VDF.valeur();
@@ -1026,7 +1026,7 @@ DoubleTab& Terme_Source_inc_th_VDF_Face::ajouter(DoubleTab& resu) const
               inc_s=dQij_j(num0)*vol;
               inc_s=0.;
               //               resu(num_face)+= s(ncomp)*vol;
-              resu(num_face)+= inc_s;
+              secmem(num_face)+= inc_s;
             }
         }
 
@@ -1053,7 +1053,7 @@ DoubleTab& Terme_Source_inc_th_VDF_Face::ajouter(DoubleTab& resu) const
               inc_s=dQij_j(num0)*vol;
               inc_s=0.;
               //               resu(num_face)+= s(ncomp)*vol;
-              resu(num_face)+= inc_s;
+              secmem(num_face)+= inc_s;
 
             }
         }
@@ -1089,11 +1089,10 @@ DoubleTab& Terme_Source_inc_th_VDF_Face::ajouter(DoubleTab& resu) const
         }
     }
   //       inc_s=0.;
-  resu(num_face)+= inc_s;
+  secmem(num_face)+= inc_s;
   Cerr << min_inc << " " << num_e1 << " " << n_comp1 << finl;
   Cerr << max_inc << " " << num_e2 << " " << n_comp2 << finl;
-  resu.echange_espace_virtuel();
-  return resu;
+  secmem.echange_espace_virtuel();
 }
 
 DoubleTab& Terme_Source_inc_th_VDF_Face::calculer(DoubleTab& resu) const

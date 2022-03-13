@@ -26,6 +26,7 @@
 
 #include <Perte_Charge_VDF_Face.h>
 #include <Perte_Charge_Reguliere.h>
+#include <Equation_base.h>
 
 //
 // .DESCRIPTION class Perte_Charge_Reguliere_VDF_Face
@@ -44,7 +45,14 @@ class Perte_Charge_Reguliere_VDF_Face : public Perte_Charge_VDF_Face,
   Declare_instanciable(Perte_Charge_Reguliere_VDF_Face);
 
 public:
-
+  inline int has_interface_blocs() const override { return 1; };
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override
+  {
+    const std::string& nom_inco = equation().inconnue().le_nom().getString();
+    const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeur().valeurs();
+    ajouter_(inco,secmem);
+  }
   DoubleTab& ajouter_(const DoubleTab&, DoubleTab& ) const override;
   void remplir_num_faces(Nom& );
 

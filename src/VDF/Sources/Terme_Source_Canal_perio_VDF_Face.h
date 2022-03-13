@@ -50,7 +50,12 @@ class Terme_Source_Canal_perio_VDF_Face : public Terme_Source_Canal_perio
   Declare_instanciable(Terme_Source_Canal_perio_VDF_Face);
 
 public :
-  DoubleTab& ajouter(DoubleTab& ) const override;
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
 
 protected :
   REF(Zone_VDF) la_zone_VDF;

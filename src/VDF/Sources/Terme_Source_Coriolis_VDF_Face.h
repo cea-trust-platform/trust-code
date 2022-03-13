@@ -46,13 +46,19 @@ class Terme_Source_Coriolis_VDF_Face : public Source_base, public Terme_Source_C
 
 public :
   void associer_pb(const Probleme_base& ) override;
-  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& calculer(DoubleTab& ) const override;
+
   inline const DoubleVect& omega() const ;
   void mettre_a_jour(double temps) override
   {
     Terme_Source_Coriolis::mettre_a_jour(temps);
   }
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
 
 protected :
 

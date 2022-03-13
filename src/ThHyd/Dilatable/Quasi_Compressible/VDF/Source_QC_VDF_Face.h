@@ -46,54 +46,60 @@ class Acceleration_QC_VDF_Face :public Terme_Source_Acceleration_VDF_Face,  publ
 {
   Declare_instanciable(Acceleration_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override { return 1; }
 };
 
 class Source_qdm_QC_VDF_Face : public Terme_Source_Qdm_VDF_Face, public Source_Fluide_Dilatable_Face<Source_qdm_QC_VDF_Face>
 {
   Declare_instanciable(Source_qdm_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override { return 1; }
 };
 
 class Perte_Charge_Reguliere_QC_VDF_Face : public Perte_Charge_Reguliere_VDF_Face, public Source_Fluide_Dilatable_Face<Perte_Charge_Reguliere_QC_VDF_Face>
 {
   Declare_instanciable(Perte_Charge_Reguliere_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override { return 1; }
 };
 
 class Perte_Charge_Singuliere_QC_VDF_Face : public Perte_Charge_Singuliere_VDF_Face, public Source_Fluide_Dilatable_Face<Perte_Charge_Singuliere_QC_VDF_Face>
 {
   Declare_instanciable(Perte_Charge_Singuliere_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override { return 1; }
 };
 
 class Darcy_QC_VDF_Face : public Source_Darcy_VDF_Face, public Source_Fluide_Dilatable_Face<Darcy_QC_VDF_Face>
 {
   Declare_instanciable(Darcy_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override { return 1; }
 };
 
 class Forchheimer_QC_VDF_Face : public Source_Forchheimer_VDF_Face, public Source_Fluide_Dilatable_Face<Forchheimer_QC_VDF_Face>
 {
   Declare_instanciable(Forchheimer_QC_VDF_Face);
 public:
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& ajouter_mere(DoubleTab& ) const;
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override { return 1; }
 };
 
 #endif /* Source_QC_VDF_Face_included */

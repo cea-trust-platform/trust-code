@@ -47,6 +47,9 @@ class Source_QC_Chaleur : public Source_Chaleur_Fluide_Dilatable_base
 
 public:
   DoubleTab& ajouter(DoubleTab& ) const override;
+protected:
+  virtual DoubleTab& ajouter_(DoubleTab& ) const;
+
 };
 
 #endif /* Source_QC_Chaleur_included */

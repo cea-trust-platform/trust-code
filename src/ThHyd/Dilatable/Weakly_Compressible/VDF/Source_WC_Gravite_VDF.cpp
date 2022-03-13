@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,10 +38,9 @@ void Source_WC_Gravite_VDF::associer_zones(const Zone_dis& zone,const Zone_Cl_di
   associer_zones_impl(zone,zone_cl);
 }
 
-DoubleTab& Source_WC_Gravite_VDF::ajouter(DoubleTab& resu) const
+void Source_WC_Gravite_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const DoubleTab& tab_rho = ref_cast(Fluide_Weakly_Compressible,le_fluide.valeur()).rho_discvit();
-  ajouter_impl(g,0.,tab_rho,resu);
-  return resu;
+  ajouter_impl(g,0.,tab_rho,secmem);
 }
 

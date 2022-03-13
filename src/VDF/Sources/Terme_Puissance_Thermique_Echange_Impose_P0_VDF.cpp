@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,8 @@
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
 #include <Param.h>
+#include <Array_tools.h>
+#include <Matrix_tools.h>
 
 Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_P0_VDF,"terme_puissance_thermique_echange_impose_VDF_P0_VDF",Source_base);
 
@@ -89,8 +91,27 @@ void Terme_Puissance_Thermique_Echange_Impose_P0_VDF::associer_zones(const Zone_
   la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
+void Terme_Puissance_Thermique_Echange_Impose_P0_VDF::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
 
-DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_VDF::ajouter(DoubleTab& resu )  const
+  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  IntTab stencil(0, 2);
+  stencil.set_smart_resize(1);
+
+  for (int e = 0; e < zone_VDF.nb_elem(); e++)
+    stencil.append_line(e, e);
+  tableau_trier_retirer_doublons(stencil);
+  if (mat)
+    {
+      Matrix_tools::allocate_morse_matrix(zone_VDF.nb_elem_tot(), zone_VDF.nb_elem_tot(), stencil, mat2);
+      mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+    }
+
+}
+
+void Terme_Puissance_Thermique_Echange_Impose_P0_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   int nb_elem=la_zone_VDF.valeur().nb_elem();
   const Zone_VF&     zone               = la_zone_VDF.valeur();
@@ -98,25 +119,19 @@ DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_VDF::ajouter(DoubleTab& r
   const DoubleTab& himp = himp_.valeur().valeurs();
   const DoubleTab& Text = Text_.valeur().valeurs();
   const DoubleTab& T = equation().inconnue().valeurs();
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
   for (int e = 0; e < nb_elem; e++)
-    resu(e) -= volumes(e) * himp.addr()[himp.dimension(0) > 1 ? e : 0] * (T(e) - Text.addr()[Text.dimension(0) > 1 ? e : 0]);
+    {
+      if(mat) (*mat)(e, e) += volumes(e) * himp.addr()[himp.dimension(0) > 1 ? e : 0];
+      secmem(e) -= volumes(e) * himp.addr()[himp.dimension(0) > 1 ? e : 0] * (T(e) - Text.addr()[Text.dimension(0) > 1 ? e : 0]);
+    }
 
-  return resu;
 }
 DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_VDF::calculer(DoubleTab& resu) const
 {
   resu=0;
   ajouter(resu);
   return resu;
-}
-void Terme_Puissance_Thermique_Echange_Impose_P0_VDF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  int nb_elem=la_zone_VDF.valeur().nb_elem();
-  const Zone_VF&     zone               = la_zone_VDF.valeur();
-  const DoubleVect& volumes = zone.volumes();
-  const DoubleTab& himp = himp_.valeur().valeurs();
-
-  for (int e = 0; e < nb_elem; e++)
-    matrice(e, e) += volumes(e) * himp.addr()[himp.dimension(0) > 1 ? e : 0];
 }

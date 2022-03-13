@@ -1069,7 +1069,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
 
 
 
-DoubleTab& Terme_Source_Canal_RANS_LES_VDF_Face::ajouter(DoubleTab& resu) const
+void Terme_Source_Canal_RANS_LES_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   int nb_faces = zone_VDF.nb_faces();
@@ -1102,8 +1102,8 @@ DoubleTab& Terme_Source_Canal_RANS_LES_VDF_Face::ajouter(DoubleTab& resu) const
         {
           vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
 
-          resu(num_face) += ((U_RANS(num_face)-umoy(num_face))/(tau(num_face)*dt))
-                            *(U_RANS(num_face)/norm(num_face))*vol;
+          secmem(num_face) += ((U_RANS(num_face)-umoy(num_face))/(tau(num_face)*dt))
+                              *(U_RANS(num_face)/norm(num_face))*vol;
 
           //                mbf2 += (((U_RANS(num_face)-umoy(num_face))
           //                         *(U_RANS(num_face)/norm(num_face)))
@@ -1115,8 +1115,6 @@ DoubleTab& Terme_Source_Canal_RANS_LES_VDF_Face::ajouter(DoubleTab& resu) const
 
     }//fin if f_start
 
-
-  return resu;
 }
 
 DoubleTab& Terme_Source_Canal_RANS_LES_VDF_Face::calculer(DoubleTab& resu) const

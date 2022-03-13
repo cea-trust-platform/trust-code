@@ -50,7 +50,6 @@ class Terme_Source_Solide_SWIFT_VDF : public Source_base
   Declare_instanciable(Terme_Source_Solide_SWIFT_VDF);
 
 public :
-  DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& calculer(DoubleTab& ) const override;
   void init_calcul_moyenne(const Conduction& my_eqn, DoubleVect& Y, IntVect& corresp, IntVect& compt);
   void calcul_moyenne(const Conduction& my_eqn, DoubleVect& T_moy, const IntVect& corresp, const IntVect& compt) const;
@@ -59,6 +58,13 @@ public :
 
   void associer_pb(const Probleme_base& ) override;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
 
 protected :
   /*   REF(Zone_VDF) la_zone_VDF; */

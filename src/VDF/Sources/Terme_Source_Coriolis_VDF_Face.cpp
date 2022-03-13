@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,7 +98,7 @@ void Terme_Source_Coriolis_VDF_Face::associer_zones(const Zone_dis& zone_dis,
 }
 
 
-DoubleTab& Terme_Source_Coriolis_VDF_Face::ajouter(DoubleTab& resu) const
+void Terme_Source_Coriolis_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const Zone_Cl_VDF& zone_Cl_VDF = la_zone_Cl_VDF.valeur();
@@ -141,7 +141,7 @@ DoubleTab& Terme_Source_Coriolis_VDF_Face::ajouter(DoubleTab& resu) const
               if (num_elem == -1)
                 num_elem = face_voisins(num_face,1);
 
-              resu(num_face)+= la_source(num_elem,ncomp)*vol;
+              secmem(num_face)+= la_source(num_elem,ncomp)*vol;
             }
         }
 
@@ -163,8 +163,8 @@ DoubleTab& Terme_Source_Coriolis_VDF_Face::ajouter(DoubleTab& resu) const
               vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
               ncomp = orientation(num_face);
 
-              resu(num_face)+= 0.5*(la_source(face_voisins(num_face,0),ncomp)
-                                    +la_source(face_voisins(num_face,1),ncomp))*vol;
+              secmem(num_face)+= 0.5*(la_source(face_voisins(num_face,0),ncomp)
+                                      +la_source(face_voisins(num_face,1),ncomp))*vol;
             }
         }
     }
@@ -176,10 +176,9 @@ DoubleTab& Terme_Source_Coriolis_VDF_Face::ajouter(DoubleTab& resu) const
     {
       vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
       ncomp = orientation(num_face);
-      resu(num_face)+= 0.5*(la_source(face_voisins(num_face,0),ncomp)+
-                            la_source(face_voisins(num_face,1),ncomp))*vol;
+      secmem(num_face)+= 0.5*(la_source(face_voisins(num_face,0),ncomp)+
+                              la_source(face_voisins(num_face,1),ncomp))*vol;
     }
-  return resu;
 }
 
 DoubleTab& Terme_Source_Coriolis_VDF_Face::calculer(DoubleTab& resu) const

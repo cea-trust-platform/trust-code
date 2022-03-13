@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,18 @@ Entree& Source_QC_Chaleur::readOn(Entree& is)
   return is;
 }
 
+
+DoubleTab& Source_QC_Chaleur::ajouter(DoubleTab& resu) const
+{
+  if(has_interface_blocs())
+    {
+      ajouter_blocs({}, resu);
+      return resu;
+    }
+  return ajouter_(resu);
+}
+
+
 // Description:
 //    Ajoute les termes sources
 // Precondition:
@@ -52,7 +64,7 @@ Entree& Source_QC_Chaleur::readOn(Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition:
-DoubleTab& Source_QC_Chaleur::ajouter(DoubleTab& resu) const
+DoubleTab& Source_QC_Chaleur::ajouter_(DoubleTab& resu) const
 {
   double dt_= mon_equation->schema_temps().temps_courant() - mon_equation->schema_temps().temps_precedent();
 

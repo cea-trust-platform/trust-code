@@ -49,8 +49,8 @@ class Terme_Source_Canal_RANS_LES_VDF_Face : public Source_base
 public :
   ~Terme_Source_Canal_RANS_LES_VDF_Face() override;
   void associer_pb(const Probleme_base& ) override;
-  DoubleTab& ajouter(DoubleTab&) const override;
-  DoubleTab& calculer(DoubleTab&) const override;
+  DoubleTab& calculer(DoubleTab& ) const override;
+
   void init_calcul_moyenne_spat();
   void init();
   DoubleTab norme_vit(void) const;
@@ -60,6 +60,14 @@ public :
   void calculer_integrale_temporelle(DoubleVect&, const DoubleVect&);
   void ecriture_moy_spat(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&);
   void ecriture_moy_temp(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, const double&);
+
+
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
 
 protected :
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;

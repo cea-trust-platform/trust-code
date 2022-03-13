@@ -46,8 +46,12 @@ class Source_QC_Gravite_VDF : public Source_Gravite_Fluide_Dilatable_base,
   Declare_instanciable(Source_QC_Gravite_VDF);
 
 public:
-  DoubleTab& ajouter(DoubleTab& ) const override;
-
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
 protected :
   void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& ) override;
 };

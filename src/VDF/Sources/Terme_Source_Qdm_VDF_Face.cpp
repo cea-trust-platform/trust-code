@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,8 +71,7 @@ void Terme_Source_Qdm_VDF_Face::associer_zones(const Zone_dis& zone_dis,
   la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
-
-DoubleTab& Terme_Source_Qdm_VDF_Face::ajouter(DoubleTab& resu) const
+void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl) const
 {
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const Zone_Cl_VDF& zone_Cl_VDF = la_zone_Cl_VDF.valeur();
@@ -231,7 +230,6 @@ DoubleTab& Terme_Source_Qdm_VDF_Face::ajouter(DoubleTab& resu) const
 
         }
     }
-  return resu;
 }
 
 DoubleTab& Terme_Source_Qdm_VDF_Face::calculer(DoubleTab& resu) const

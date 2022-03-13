@@ -43,9 +43,14 @@ Entree& Source_dep_inco_base::readOn(Entree& s )
   return s ;
 }
 
-DoubleTab& Source_dep_inco_base::ajouter(DoubleTab& resu) const
+DoubleTab& Source_dep_inco_base::ajouter(DoubleTab& secmem) const
 {
-  return ajouter_(equation().inconnue()->valeurs(),resu);
+  if(has_interface_blocs())
+    {
+      ajouter_blocs({}, secmem);
+      return secmem;
+    }
+  return ajouter_(equation().inconnue()->valeurs(),secmem);
 }
 DoubleTab& Source_dep_inco_base::calculer(DoubleTab& resu) const
 {

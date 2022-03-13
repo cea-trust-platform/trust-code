@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,8 @@
 #include <Probleme_base.h>
 #include <Motcle.h>
 #include <Matrice_Morse.h>
+#include <Array_tools.h>
+#include <Matrix_tools.h>
 
 Implemente_instanciable(Perte_Charge_Singuliere_VDF_Face,"Perte_Charge_Singuliere_VDF_Face",Perte_Charge_VDF_Face);
 
@@ -95,57 +97,31 @@ void Perte_Charge_Singuliere_VDF_Face::remplir_num_faces(Entree& s)
 }
 
 
-void Perte_Charge_Singuliere_VDF_Face::contribuer_a_avec(const DoubleTab&, Matrice_Morse& matrice) const
+void Perte_Charge_Singuliere_VDF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
 
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
-  const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
-  const DoubleVect& porosite_surf = zone_VDF.porosite_face();
-  const DoubleTab& vit = la_vitesse->valeurs();
-  int ndeb_faces_int = zone_VDF.premiere_face_int();
-
-  int nb_faces = num_faces.size();
-  int numfa;
-  double Ck;
-  double Ud; // vitesse debitante
-
-  if (axi)
-    for (int i=0; i<nb_faces; i++)
-      {
-        /*
-          numfa = num_faces[i];
-          U = vit[numfa];
-
-          if (numfa < ndeb_faces_int)
-          Ck = -0.5*K()/la_zone_VDF->dist_norm_bord_axi(numfa);
-          else
-          Ck = -0.5*K()/la_zone_VDF->dist_norm_axi(numfa);
-
-          //resu[numfa] += Ck*U*std::fabs(U)*volumes_entrelaces[numfa]*porosite_surf[numfa];
-          */
-      }
-  else
-    for (int i=0; i<nb_faces; i++)
-      {
-        numfa = num_faces[i];
-        // U = vit[numfa];
-
-        Ud = vit[numfa]*porosite_surf[numfa];
-
-        if (numfa < ndeb_faces_int)
-          Ck = -0.5*K()/la_zone_VDF->dist_norm_bord(numfa);
-        else
-          Ck = -0.5*K()/la_zone_VDF->dist_norm(numfa);
-
-        //resu[numfa] += Ck*Ud*std::fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
-        matrice(numfa,numfa)-=Ck*porosite_surf[numfa]*std::fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
-
-      }
-
+  IntTab stencil(0, 2);
+  stencil.set_smart_resize(1);
+  for (int f = 0; f < zone_VDF.nb_faces(); f++)
+    stencil.append_line(f, f);
+  tableau_trier_retirer_doublons(stencil);
+  if (mat && axi)
+    {
+      Matrix_tools::allocate_morse_matrix(zone_VDF.nb_faces_tot(), zone_VDF.nb_faces_tot(), stencil, mat2);
+      mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+    }
 
 }
-DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter_(const DoubleTab& inco,DoubleTab& resu) const
+
+void Perte_Charge_Singuliere_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
   const DoubleVect& porosite_surf = zone_VDF.porosite_face();
@@ -167,26 +143,28 @@ DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter_(const DoubleTab& inco,Doub
           Ck = -0.5*K()/la_zone_VDF->dist_norm_bord_axi(numfa);
         else
           Ck = -0.5*K()/la_zone_VDF->dist_norm_axi(numfa);
-
-        resu[numfa] += Ck*U*std::fabs(U)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+        secmem[numfa] += Ck*U*std::fabs(U)*volumes_entrelaces[numfa]*porosite_surf[numfa];
       }
   else
     for (int i=0; i<nb_faces; i++)
       {
+
         numfa = num_faces[i];
-        U = inco[numfa]*porosite_surf[numfa];
+        // U = vit[numfa];
 
         Ud = vit[numfa]*porosite_surf[numfa];
+        U = inco[numfa]*porosite_surf[numfa];
 
         if (numfa < ndeb_faces_int)
           Ck = -0.5*K()/la_zone_VDF->dist_norm_bord(numfa);
         else
           Ck = -0.5*K()/la_zone_VDF->dist_norm(numfa);
 
-        resu[numfa] += Ck*U*std::fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+        secmem[numfa] += Ck*U*std::fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
+        if(mat) (*mat)(numfa,numfa)-=Ck*porosite_surf[numfa]*std::fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
 
       }
-  return resu;
+
 }
 
 void Perte_Charge_Singuliere_VDF_Face::mettre_a_jour(double temps)

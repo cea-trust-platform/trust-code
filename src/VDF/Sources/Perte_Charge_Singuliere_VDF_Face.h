@@ -48,7 +48,13 @@ class Perte_Charge_Singuliere_VDF_Face : public Perte_Charge_VDF_Face,
 public:
 
   DoubleTab& ajouter_(const DoubleTab&, DoubleTab& ) const override;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override
+   {
+     return 1;
+   };
+
   void remplir_num_faces(Entree& );
   void mettre_a_jour(double temps) override;
 

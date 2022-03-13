@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,7 +55,7 @@ void Terme_Boussinesq_VDF_Face::associer_zones(const Zone_dis& zone_dis,
   la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
-DoubleTab& Terme_Boussinesq_VDF_Face::ajouter(DoubleTab& resu) const
+void Terme_Boussinesq_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   const Zone_Cl_VDF& zone_Cl_VDF_hyd = la_zone_Cl_VDF.valeur();
@@ -121,7 +121,7 @@ DoubleTab& Terme_Boussinesq_VDF_Face::ajouter(DoubleTab& resu) const
                     }
                   double vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
                   int ncomp = orientation(num_face);
-                  resu(num_face)+= coef*g(ncomp)*vol;
+                  secmem(num_face)+= coef*g(ncomp)*vol;
                 }
             }
           else if (sub_type(Dirichlet,la_cl_scal.valeur()))
@@ -154,7 +154,7 @@ DoubleTab& Terme_Boussinesq_VDF_Face::ajouter(DoubleTab& resu) const
                     }
                   double vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
                   int ncomp = orientation(num_face);
-                  resu(num_face)+= coef*g(ncomp)*vol;
+                  secmem(num_face)+= coef*g(ncomp)*vol;
                 }
             }
         }
@@ -179,7 +179,7 @@ DoubleTab& Terme_Boussinesq_VDF_Face::ajouter(DoubleTab& resu) const
                 }
               int ncomp = orientation(num_face);
               double vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
-              resu(num_face) += coef*g(ncomp)*vol;
+              secmem(num_face) += coef*g(ncomp)*vol;
             }
         }
     }
@@ -206,7 +206,7 @@ DoubleTab& Terme_Boussinesq_VDF_Face::ajouter(DoubleTab& resu) const
         }
       int ncomp = orientation(num_face);
       double vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
-      resu(num_face) += coef*g(ncomp)*vol;
+      secmem(num_face) += coef*g(ncomp)*vol;
     }
-  return resu;
+
 }

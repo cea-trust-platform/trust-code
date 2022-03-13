@@ -58,14 +58,19 @@ class Force_Centrifuge_VDF_Face_Axi : public Source_base
 public:
 
   void associer_pb(const Probleme_base& ) override;
-  DoubleTab& ajouter(DoubleTab& ) const override ;
   DoubleTab& calculer(DoubleTab& ) const override ;
   void completer() override;
-
   void mettre_a_jour(double temps) override
   {
     ;
   }
+
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
 
 protected:
 

@@ -120,7 +120,7 @@ static void TSAVDF_ajouter_liste_faces(const int premiere_face, const int dernie
 //  On suppose que resu est discretise comme la vitesse en VDF.
 // Effet de bord:
 //  On met (la_source_ * rho) dans terme_source_post_
-DoubleTab& Terme_Source_Acceleration_VDF_Face::ajouter(DoubleTab& resu) const
+void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_VDF&    zone_VDF           = la_zone_VDF_.valeur();
   const Zone_Cl_VDF& zone_Cl_VDF        = la_zone_Cl_VDF_.valeur();
@@ -135,7 +135,7 @@ DoubleTab& Terme_Source_Acceleration_VDF_Face::ajouter(DoubleTab& resu) const
   // Calcul de la_source_ en fonction des champs d'acceleration et de la
   // vitesse du fluide.
   const int dim     = Objet_U::dimension;
-  const int nb_faces = resu.dimension(0);
+  const int nb_faces = secmem.dimension(0);
   DoubleTab acceleration_aux_faces(nb_faces, dim);
   calculer_la_source(acceleration_aux_faces);
 
@@ -159,7 +159,7 @@ DoubleTab& Terme_Source_Acceleration_VDF_Face::ajouter(DoubleTab& resu) const
                                  ref_rho_,
                                  acceleration_aux_faces,
                                  s_face,
-                                 resu);
+                                 secmem);
     }
 
 
@@ -176,7 +176,7 @@ DoubleTab& Terme_Source_Acceleration_VDF_Face::ajouter(DoubleTab& resu) const
                                ref_rho_,
                                acceleration_aux_faces,
                                s_face,
-                               resu);
+                               secmem);
   }
   {
     // Force la periodicite
@@ -199,14 +199,13 @@ DoubleTab& Terme_Source_Acceleration_VDF_Face::ajouter(DoubleTab& resu) const
                     fait[ind_face_associee] = 1;
                     int face = le_bord.num_face(ind_face);
                     int face_associee = le_bord.num_face(ind_face_associee);
-                    double val = 0.5*(resu(face_associee)+resu(face));
-                    resu(face)=resu(face_associee) = val;
+                    double val = 0.5*(secmem(face_associee)+secmem(face));
+                    secmem(face)=secmem(face_associee) = val;
                   }// if fait
               }// for face
           }// sub_type Perio
       }
   }
-  return resu;
 }
 
 // Description: Calcul des trois composantes du champ de vitesse fluide au centre

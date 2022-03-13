@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ Entree& Source_Generique_VDF_Face::readOn(Entree& is)
   return is;
 }
 
-DoubleTab& Source_Generique_VDF_Face::ajouter(DoubleTab& resu) const
+void Source_Generique_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   Champ espace_stockage;
   const Champ_base& champ_calc = ch_source_->get_champ(espace_stockage);
@@ -68,15 +68,14 @@ DoubleTab& Source_Generique_VDF_Face::ajouter(DoubleTab& resu) const
       else
         for (num_face=ndeb; num_face<nfin; num_face++)
           {
-            resu(num_face) += valeurs_calc(num_face)*vol_entrelaces(num_face)*poro_face(num_face);
+            secmem(num_face) += valeurs_calc(num_face)*vol_entrelaces(num_face)*poro_face(num_face);
           }
     }
 
   for (num_face=premiere_face_interne; num_face<nb_faces; num_face++)
-    resu(num_face) += valeurs_calc(num_face)*vol_entrelaces(num_face)*poro_face(num_face);
+    secmem(num_face) += valeurs_calc(num_face)*vol_entrelaces(num_face)*poro_face(num_face);
 
-  resu.echange_espace_virtuel();
-  return resu;
+  secmem.echange_espace_virtuel();
 }
 
 void Source_Generique_VDF_Face::associer_zones(const Zone_dis& zone_dis,

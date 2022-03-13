@@ -41,7 +41,7 @@ class Terme_Source_Canal_perio_VDF_P0 : public Terme_Source_Canal_perio_VDF_Face
   Declare_instanciable(Terme_Source_Canal_perio_VDF_P0);
 
 public :
-  DoubleTab& ajouter(DoubleTab& ) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
 
 protected :
   // This one is overridden from Terme_Source_Canal_perio essentially to store source

@@ -46,6 +46,13 @@ class Source_QC_Chaleur_VDF : public Source_QC_Chaleur, public Source_Fluide_Dil
   Declare_instanciable(Source_QC_Chaleur_VDF);
 protected:
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
+  inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override { ajouter_(secmem); }
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
+
 };
 
 #endif /* Source_QC_Chaleur_VDF_included */
