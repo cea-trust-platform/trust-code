@@ -25,11 +25,11 @@
 #define Op_Conv_Muscl_New_VEF_Face_included
 
 #include <Op_Conv_VEF_Face.h>
+#include <Ref_Sous_zone_VF.h>
 #include <Equation_base.h>
 #include <Matrice_Morse.h>
-#include <Ref_Sous_zone_VF.h>
 #include <DoubleTabs.h>
-#include <IntList.h>
+#include <TRUSTList.h>
 
 //
 // .DESCRIPTION class Op_Conv_Muscl_New_VEF_Face

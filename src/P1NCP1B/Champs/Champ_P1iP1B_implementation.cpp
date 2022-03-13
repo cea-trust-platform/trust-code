@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 #include <Zone_VEF_PreP1b.h>
 #include <Zone_Cl_VEFP1B.h>
 #include <Debog.h>
-#include <IntList.h>
+#include <TRUSTList.h>
 #include <Matrice_Morse_Sym.h>
 #include <IntLists.h>
 #include <DoubleLists.h>

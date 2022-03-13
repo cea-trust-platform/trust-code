@@ -28,7 +28,7 @@
 #include <Perte_Charge_Singuliere.h>
 
 class Domaine;
-class IntList;
+#include <TRUSTList.h>
 
 //
 // .DESCRIPTION class Perte_Charge_Singuliere_CoviMAC_Face

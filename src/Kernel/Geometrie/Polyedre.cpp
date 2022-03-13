@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,10 +20,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Polyedre.h>
 #include <Linear_algebra_tools_impl.h>
+#include <TRUSTList.h>
+#include <Polyedre.h>
 #include <Domaine.h>
-#include <IntList.h>
 #include <algorithm>
 
 using std::swap;

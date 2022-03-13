@@ -29,7 +29,7 @@
 #include <Op_Conv_VEF_Face.h>
 #include <Ref_Sous_zone_VF.h>
 #include <DoubleTabs.h>
-#include <IntList.h>
+#include <TRUSTList.h>
 
 //
 // .DESCRIPTION class Op_Conv_EF_VEF_P1NC_Stab

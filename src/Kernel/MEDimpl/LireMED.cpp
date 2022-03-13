@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 #include <NettoieNoeuds.h>
 #include <sys/stat.h>
 #include <SFichier.h>
-#include <IntList.h>
+#include <TRUSTList.h>
 #include <Vect_IntTab.h>
 #include <Vect_ArrOfInt.h>
 #include <Polygone.h>

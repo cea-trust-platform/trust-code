@@ -34,8 +34,8 @@
 #include <Champs_Fonc.h>
 #include <Ref_Objet_U.h>
 #include <Zone_Cl_dis.h>
-#include <DoubleList.h>
 #include <Liste_Noms.h>
+#include <TRUSTList.h>
 #include <TRUSTTrav.h>
 #include <Parser_U.h>
 #include <Sources.h>

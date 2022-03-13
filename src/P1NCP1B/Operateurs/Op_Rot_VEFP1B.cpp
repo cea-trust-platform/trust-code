@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@
 #include <Op_Div_VEFP1B_Elem.h>
 #include <Domaine.h>
 #include <Debog.h>
-#include <IntList.h>
+#include <TRUSTList.h>
 
 Implemente_instanciable(Op_Rot_VEFP1B,"Op_Rot_VEFPreP1B_P1NC",Operateur_base);
 

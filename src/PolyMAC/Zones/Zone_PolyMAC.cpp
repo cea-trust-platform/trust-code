@@ -20,59 +20,54 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Linear_algebra_tools_impl.h>
+#include <Champ_implementation_P1.h>
+#include <Connectivite_som_elem.h>
+#include <ConstDoubleTab_parts.h>
+#include <MD_Vector_composite.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Segment_PolyMAC.h>
+#include <MD_Vector_tools.h>
+#include <Quadri_PolyMAC.h>
+#include <Quadrangle_VEF.h>
+#include <Comm_Group_MPI.h>
+#include <communications.h>
+#include <Poly_geom_base.h>
+#include <Tetra_PolyMAC.h>
+#include <Hexaedre_VEF.h>
+#include <Hexa_PolyMAC.h>
+#include <Matrix_tools.h>
+#include <Statistiques.h>
 #include <Zone_PolyMAC.h>
-#include <tuple>
 #include <unordered_map>
+#include <Tri_PolyMAC.h>
+#include <Array_tools.h>
+#include <DoubleLists.h>
+#include <TRUSTList.h>
+#include <PE_Groups.h>
 #include <Rectangle.h>
+#include <Tetraedre.h>
+#include <IntLists.h>
+#include <EFichier.h>
+#include <SFichier.h>
 #include <Hexaedre.h>
 #include <Triangle.h>
 #include <Segment.h>
-#include <Tetraedre.h>
-#include <Quadrangle_VEF.h>
-#include <Hexaedre_VEF.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Tri_PolyMAC.h>
-#include <Segment_PolyMAC.h>
-#include <Tetra_PolyMAC.h>
-#include <Quadri_PolyMAC.h>
-#include <Hexa_PolyMAC.h>
 #include <Domaine.h>
 #include <Scatter.h>
-#include <EFichier.h>
-#include <SFichier.h>
-#include <IntList.h>
-#include <DoubleList.h>
-#include <Connectivite_som_elem.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
 #include <EChaine.h>
-#include <Comm_Group_MPI.h>
-#include <PE_Groups.h>
-#include <communications.h>
-#include <Statistiques.h>
-#include <MD_Vector_composite.h>
-#include <MD_Vector_tools.h>
-#include <ConstDoubleTab_parts.h>
-#include <Lapack.h>
-
 #include <LireMED.h>
+#include <Lapack.h>
 #include <EcrMED.h>
-#include <Champ_implementation_P1.h>
-#include <Linear_algebra_tools_impl.h>
-#include <IntLists.h>
-#include <DoubleLists.h>
-#include <Poly_geom_base.h>
-
 #include <unistd.h>
-
+#include <numeric>
+#include <cfloat>
 #include <vector>
+#include <tuple>
+#include <cmath>
+#include <cfenv>
 #include <set>
 #include <map>
-#include <cmath>
-#include <cfloat>
-#include <numeric>
-
-#include <cfenv>
 //#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #include <osqp/osqp.h>

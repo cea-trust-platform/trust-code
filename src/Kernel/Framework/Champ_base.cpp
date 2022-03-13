@@ -20,20 +20,20 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_base.h>
-#include <Equation_base.h>
-#include <Probleme_base.h>
-#include <Dirichlet.h>
+#include <Discretisation_base.h>
 #include <Dirichlet_homogene.h>
-#include <Symetrie.h>
-#include <strings.h>
-#include <Zone_VF.h>
 #include <Format_Post_base.h>
 #include <communications.h>
+#include <Equation_base.h>
+#include <Probleme_base.h>
 #include <Schema_Comm.h>
+#include <Champ_base.h>
+#include <Dirichlet.h>
+#include <TRUSTList.h>
+#include <Symetrie.h>
 #include <IntVects.h>
-#include <Discretisation_base.h>
-#include <IntList.h>
+#include <strings.h>
+#include <Zone_VF.h>
 
 Implemente_base_sans_constructeur(Champ_base,"Champ_base",Field_base);
 

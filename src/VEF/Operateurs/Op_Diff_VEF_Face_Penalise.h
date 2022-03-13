@@ -24,9 +24,9 @@
 #ifndef Op_Diff_VEF_Face_Penalise_included
 #define Op_Diff_VEF_Face_Penalise_included
 #include <Op_Diff_VEF_Face.h>
-#include <IntList.h>
-#include <Domaine.h>
 #include <Zone_Cl_VEF.h>
+#include <TRUSTList.h>
+#include <Domaine.h>
 
 class Op_Diff_VEF_Face_Penalise : public Op_Diff_VEF_Face
 {

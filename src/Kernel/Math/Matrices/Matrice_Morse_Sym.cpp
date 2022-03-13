@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,14 +21,13 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Matrice_Morse_Sym.h>
-#include <IntList.h>
-#include <DoubleList.h>
-#include <Sparskit.h>
-#include <comm_incl.h>
-#include <Noms.h>
 #include <Vect_ArrOfInt.h>
 #include <Vect_IntTab.h>
 #include <Array_tools.h>
+#include <TRUSTList.h>
+#include <comm_incl.h>
+#include <Sparskit.h>
+#include <Noms.h>
 
 Implemente_instanciable_sans_constructeur(Matrice_Morse_Sym,"Matrice_Morse_Sym",Matrice_Morse);
 

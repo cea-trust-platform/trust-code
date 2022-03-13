@@ -28,7 +28,7 @@
 #include <DP_Impose.h>
 
 class Domaine;
-class IntList;
+#include <TRUSTList.h>
 
 //
 // .DESCRIPTION class DP_Impose_PolyMAC_Face

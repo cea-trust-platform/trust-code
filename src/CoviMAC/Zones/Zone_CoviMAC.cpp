@@ -20,61 +20,56 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Zone_CoviMAC.h>
-#include <tuple>
-#include <unordered_map>
-#include <Rectangle.h>
-#include <Hexaedre.h>
-#include <Triangle.h>
-#include <Segment.h>
-#include <Tetraedre.h>
-#include <Quadrangle_VEF.h>
-#include <Hexaedre_VEF.h>
+#include <Linear_algebra_tools_impl.h>
+#include <Champ_implementation_P1.h>
+#include <Echange_contact_CoviMAC.h>
+#include <Connectivite_som_elem.h>
+#include <ConstDoubleTab_parts.h>
+#include <MD_Vector_composite.h>
+#include <Dirichlet_homogene.h>
+#include <MD_Vector_tools.h>
 #include <Zone_Cl_CoviMAC.h>
-#include <Tri_CoviMAC.h>
 #include <Segment_CoviMAC.h>
-#include <Tetra_CoviMAC.h>
+#include <Option_CoviMAC.h>
+#include <Comm_Group_MPI.h>
+#include <Quadrangle_VEF.h>
 #include <Quadri_CoviMAC.h>
+#include <communications.h>
+#include <Tetra_CoviMAC.h>
+#include <Statistiques.h>
+#include <Zone_CoviMAC.h>
 #include <Hexa_CoviMAC.h>
-#include <Domaine.h>
-#include <Scatter.h>
+#include <Hexaedre_VEF.h>
+#include <Matrix_tools.h>
+#include <DoubleLists.h>
+#include <Tri_CoviMAC.h>
+#include <unordered_map>
+#include <Array_tools.h>
+#include <Tetraedre.h>
+#include <Rectangle.h>
+#include <PE_Groups.h>
+#include <Hexaedre.h>
+#include <TRUSTList.h>
+#include <Triangle.h>
 #include <EFichier.h>
 #include <SFichier.h>
-#include <IntList.h>
-#include <DoubleList.h>
-#include <Connectivite_som_elem.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
+#include <IntLists.h>
+#include <Segment.h>
+#include <Domaine.h>
+#include <Scatter.h>
 #include <EChaine.h>
-#include <Comm_Group_MPI.h>
-#include <PE_Groups.h>
-#include <communications.h>
-#include <Statistiques.h>
-#include <MD_Vector_composite.h>
-#include <MD_Vector_tools.h>
-#include <ConstDoubleTab_parts.h>
-#include <Lapack.h>
-#include <Option_CoviMAC.h>
-#include <Echange_contact_CoviMAC.h>
-#include <Dirichlet_homogene.h>
-
 #include <LireMED.h>
 #include <EcrMED.h>
-#include <Champ_implementation_P1.h>
-#include <Linear_algebra_tools_impl.h>
-#include <IntLists.h>
-#include <DoubleLists.h>
-
 #include <unistd.h>
-
+#include <Lapack.h>
+#include <numeric>
 #include <vector>
+#include <cfloat>
+#include <tuple>
+#include <cmath>
+#include <cfenv>
 #include <set>
 #include <map>
-#include <cmath>
-#include <cfloat>
-#include <numeric>
-
-#include <cfenv>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #include <osqp/osqp.h>

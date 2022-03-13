@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,13 +20,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ExtrudeParoi.h>
-#include <Domaine.h>
-#include <Static_Int_Lists.h>
 #include <Connectivite_som_elem.h>
+#include <Static_Int_Lists.h>
 #include <Faces_builder.h>
-#include <IntList.h>
+#include <ExtrudeParoi.h>
 #include <Array_tools.h>
+#include <TRUSTList.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Param.h>
 

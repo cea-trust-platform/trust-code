@@ -28,7 +28,7 @@
 #include <Equation_base.h>
 #include <communications.h>
 #include <Octree.h>
-#include <IntList.h>
+#include <TRUSTList.h>
 #include <EFichier.h>
 #include <LecFicDiffuse.h>
 #include <EcrFicCollecte.h>

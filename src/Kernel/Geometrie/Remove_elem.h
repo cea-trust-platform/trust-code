@@ -23,9 +23,6 @@
 #ifndef Remove_elem_included
 #define Remove_elem_included
 
-
-
-//
 // .DESCRIPTION class Remove_elem
 // Enleve du maillage les elements specifies par l'utilisateur dans le jeu de donnees
 //
@@ -33,9 +30,9 @@
 // Interprete
 
 #include <Interprete_geometrique_base.h>
-#include <Domaine.h>
-#include <IntList.h>
+#include <TRUSTList.h>
 #include <Parser_U.h>
+#include <Domaine.h>
 
 class Zone;
 

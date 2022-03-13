@@ -31,7 +31,7 @@
 #include <ArrOfBit.h>
 #include <IntVects.h>
 #include <SFichier.h>
-#include <IntList.h>
+#include <TRUSTList.h>
 #include <DoubleTabs.h>
 #include <stat_counters.h>
 
