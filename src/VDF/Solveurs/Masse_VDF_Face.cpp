@@ -28,7 +28,7 @@
 #include <Symetrie.h>
 #include <Debog.h>
 
-Implemente_instanciable(Masse_VDF_Face,"Masse_VDF_Face",Solveur_Masse_base);
+Implemente_instanciable(Masse_VDF_Face,"Masse_VDF_Face",Masse_VDF_base);
 
 
 //     printOn()
@@ -113,15 +113,3 @@ DoubleTab& Masse_VDF_Face::appliquer_impl(DoubleTab& sm) const
   //Debog::verifier("Masse_VDF_Face::appliquer sm",sm);
   return sm;
 }
-
-//
-void Masse_VDF_Face::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
-{
-  la_zone_VDF = ref_cast(Zone_VDF, la_zone_dis_base);
-}
-
-void Masse_VDF_Face::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
-{
-  la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, la_zone_Cl_dis_base);
-}
-

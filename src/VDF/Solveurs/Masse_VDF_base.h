@@ -14,44 +14,51 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Op_Grad_VDF_base.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Divers
-// Version:     /main/9
+// File:        Masse_VDF_base.h
+// Directory:   $TRUST_ROOT/src/VDF/Solveurs
+// Version:     /main/2
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Op_Grad_VDF_base_included
-#define Op_Grad_VDF_base_included
+#ifndef Masse_VDF_base_included
+#define Masse_VDF_base_included
 
-#include <Iterateur_VDF_base.h>
-#include <Operateur_Grad.h>
 
-// .DESCRIPTION class Op_Grad_VDF_base
-// Classe de base des operateurs de gradient VDF
-class Op_Grad_VDF_base : public Operateur_Grad_base
+#include <Solveur_Masse.h>
+#include <Ref_Zone_VDF.h>
+#include <Ref_Zone_Cl_VDF.h>
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// CLASS: Masse_VDF_base
+//
+//////////////////////////////////////////////////////////////////////////////
+
+class Masse_VDF_base : public Solveur_Masse_base
 {
-  Declare_base(Op_Grad_VDF_base);
+
+  Declare_base(Masse_VDF_base);
+
 public:
-  inline Op_Grad_VDF_base(const Iterateur_VDF_base& iter_base) : iter(iter_base) { }
 
-  void completer() override;
-  int impr(Sortie& os) const override;
-
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter->calculer(inco,resu); } // calcule la contribution du gradient
+  void associer_zone_dis_base(const Zone_dis_base& ) override;
+  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
   inline int has_interface_blocs() const override
   {
     return 1;
   };
-  inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
-  inline void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override
-  {
-    const DoubleTab& inco = equation().inconnue().valeur().valeurs();
-    iter->ajouter(inco,secmem);
-  }
-
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 
 protected:
-  Iterateur_VDF iter;
+
+  REF(Zone_VDF) la_zone_VDF;
+  REF(Zone_Cl_VDF) la_zone_Cl_VDF;
 };
 
-#endif /* Op_Grad_VDF_base_included */
+#endif
+
+
+
+
+

@@ -24,9 +24,7 @@
 #define Masse_VDF_Face_included
 
 
-#include <Solveur_Masse.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Masse_VDF_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -34,22 +32,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Masse_VDF_Face : public Solveur_Masse_base
+class Masse_VDF_Face : public Masse_VDF_base
 {
 
   Declare_instanciable(Masse_VDF_Face);
 
 public:
-
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
-
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
 
-private:
-
-  REF(Zone_VDF) la_zone_VDF;
-  REF(Zone_Cl_VDF) la_zone_Cl_VDF;
 };
 
 #endif
