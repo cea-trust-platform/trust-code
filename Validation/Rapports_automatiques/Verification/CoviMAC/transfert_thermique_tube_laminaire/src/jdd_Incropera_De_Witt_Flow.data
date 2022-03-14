@@ -1,0 +1,131 @@
+# PARALLEL OK #
+system "rm -rf lata; mkdir -p lata"
+dimension 3
+pb_Multiphase pb
+
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom mesh channel.med
+# END MESH #
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    tmax 30
+    seuil_statio 1e-12
+    nb_pas_dt_max 20000
+    dt_impr 1e-10
+    max_iter_implicite 1
+    facsec 1
+    solveur sets
+    {
+        criteres_convergence { alpha 1e-5 pression 1e8 vitesse 1e8 temperature 1e8 }
+        iter_min 5
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+CoviMAC  dis
+option_covimac {  }
+
+Fluide_Incompressible eau_liquide
+Read eau_liquide
+{
+	mu  Champ_Uniforme     1 .1
+	rho Champ_Uniforme     1 1.
+	lambda Champ_Uniforme  1 1.
+        Cp Champ_Uniforme      1 100.
+        beta_th Champ_Uniforme 1 0.
+}
+
+phases pb
+{
+    liquide { eau }
+}
+
+Associate pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    correlations
+    {
+    }
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1e-3 } }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg -ksp_type fgmres }
+        convection { amont }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse  Champ_fonc_xyz dom 3 0 0 1
+            pression Champ_fonc_xyz dom 1 1e5
+        }
+        boundary_conditions
+        {
+	    wall     paroi_fixe
+            bottom   frontiere_ouverte_vitesse_imposee_sortie champ_front_uniforme 3 0 0 1
+            top      frontiere_ouverte_pression_imposee       champ_front_uniforme 1 1e5
+        }
+        sources 
+	{
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
+        convection { amont }
+        boundary_conditions
+        {
+            wall     paroi
+            bottom   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            top      frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+        }
+        sources 
+	{
+	}
+    }
+    Energie_Multiphase
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 1 20 }
+        boundary_conditions
+        {
+ 	    wall    paroi_flux_impose Champ_Front_Uniforme 1 0
+            bottom  frontiere_ouverte T_ext Champ_Front_Uniforme 1 20
+            top     frontiere_ouverte T_ext Champ_Front_Uniforme 1 20
+        }
+	sources
+	{   
+        }
+    }
+    Post_processing
+    {
+        Definition_champs
+        {
+            v_analytique_stationnaire transformation
+            {
+                methode formule expression 1 2*1.*(1-(X*X+Y*Y)/(0.05*0.05)) localisation elem source refChamp { Pb_champ pb pression }
+            }
+        }
+        probes
+        {
+            v_analytique  v_analytique_stationnaire periode 1e8 segment 50 0.0 0.0 1.9 0.05 0.0 1.9 
+            v_trust             vitesse_liquide_eau periode 1e8 segment 50 0.0 0.0 1.9 0.05 0.0 1.9
+        }
+        Format Lata
+        fields dt_post 1.
+        {
+            vitesse_liquide_eau elem
+            pression_pa elem
+        }
+    }
+}
+Solve pb
+End
