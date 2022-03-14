@@ -203,15 +203,15 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
     }
   // </IBM>
 
-
+  gradient.valeur().calculer(pression,gradP);
   if (eqnNS.has_interface_blocs()) //si l'interface blocs est disponible, on l'utilise
     {
       eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
-      matrice.ajouter_multvect(current, resu);  //pour ne pas etre en increment
+      if (eqnNS.discretisation().que_suis_je() != "VDF")
+        matrice.ajouter_multvect(current, resu);  //pour ne pas etre en increment
     }
   else //sinon, on passe par ajouter/contribuer
     {
-      gradient.valeur().calculer(pression,gradP);
       resu -= gradP;
       first_special_treatment( eqn, eqnNS, current, dt, resu );
       eqnNS.assembler_avec_inertie(matrice,current,resu);
@@ -226,8 +226,6 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //Assemblage reeffectue seulement pour algorithme Piso (avancement_crank_==0)
   Matrice& matrice_en_pression_2 = eqnNS.matrice_pression();
   SolveurSys& solveur_pression_ = eqnNS.solveur_pression();
-
-
 
   if (avancement_crank_==0)
     {
@@ -253,7 +251,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           fluide_dil.secmembre_divU_Z(secmem);
           secmem *= -1;
         }
-      else secmem = 0;
+      else   secmem = 0;
       divergence.ajouter(current,secmem);
     }
   else
@@ -261,6 +259,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   secmem *= -1;
   secmem.echange_espace_virtuel();
   Debog::verifier("Piso::iterer_NS secmem",secmem);
+
   // GF il ne faut pas modifier le scd membre le terme en du/dt au bord a deja ete pris en compte dans la resolution precedente
   //  eqnNS.assembleur_pression().valeur().modifier_secmem(secmem);
 
@@ -330,7 +329,6 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //Calcul de P* = Pn + P'
   pression += correction_en_pression;
   eqnNS.assembleur_pression().valeur().modifier_solution(pression);
-
   //Resolution du systeme D[Un]U' = -BtP'
   DoubleTrav correction_en_vitesse(current);
   calculer_correction_en_vitesse(correction_en_pression,gradP,correction_en_vitesse,matrice,gradient);
@@ -341,12 +339,10 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   Debog::verifier("Piso::iterer_NS arpes cor pression",pression);
   Debog::verifier("Piso::iterer_NS arpes cor vitesse",current);
 
-
   //Etape correcteur 2
   for (int compt=0; compt<nb_corrections_max_-1; compt++)
     {
       correction_en_vitesse.echange_espace_virtuel();
-
       //Resolution du systeme D resu = EU' + (resu2=0) pour stocker resu = D-1EU'
       DoubleTrav resu2(resu);
       int status = inverser_par_diagonale(matrice,resu2,correction_en_vitesse,resu);
@@ -400,7 +396,6 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       vitesse_norme_old = vitesse_norme;
       pression_norme_old = pression_norme;
-
       //Calcul de P** = P* + P''
       pression += correction_en_pression;
       eqnNS.assembleur_pression().valeur().modifier_solution(pression);

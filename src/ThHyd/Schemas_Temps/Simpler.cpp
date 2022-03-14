@@ -187,8 +187,14 @@ void Simpler::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pressio
   //matrice = A[Uk-1] = M/dt + CONV +DIFF
   //resu =  A[Uk-1]Uk-1 -(A[Uk-1]Uk-1-Ss) + Sv -BtPk-1
   gradient.calculer(pression,gradP);
-  resu -= gradP;
-  eqnNS.assembler_avec_inertie(matrice,current,resu);
+  if (eqnNS.has_interface_blocs()) /* si assembler_blocs est disponible */
+    eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
+  else
+    {
+      resu -= gradP;
+      eqnNS.assembler_avec_inertie(matrice,current,resu);
+    }
+
   le_solveur_.valeur().reinit();
 
   //Resolution du systeme : D[Uk-1]UPk = E[Uk-1]Uk-1 + Sv + Ss -BtPk-1 + (M/dt)Uk-1
@@ -267,5 +273,6 @@ void Simpler::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pressio
       divergence.calculer(current, secmem);
       Cerr<<" apresdiv "<<mp_max_abs_vect(secmem)<<finl;;
     }
+
 }
 

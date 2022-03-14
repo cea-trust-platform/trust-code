@@ -39,6 +39,7 @@
 #include <ConstDoubleTab_parts.h>
 #include <SETS.h>
 #include <TRUSTTrav.h>
+#include <Discretisation_base.h>
 
 Implemente_instanciable_sans_constructeur(Simple,"Simple",Simpler_Base);
 
@@ -182,6 +183,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
   DoubleTab dudt(current);
   Parametre_implicite& param = get_and_set_parametre_implicite(eqn);
 
+
   int converge=0;
   int nb_pas_dt = eqn.schema_temps().nb_pas_dt();
 
@@ -256,6 +258,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       eqn.dimensionner_matrice(matrice);
       matrice.get_set_coeff() = 0;
     }
+
   DoubleTrav resu(current);
 
   if( sub_type(Navier_Stokes_std,eqn))
@@ -272,9 +275,20 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       DoubleTrav resu_temp(current); /* residu en increments */
       if (eqn.has_interface_blocs()) /* si assembler_blocs est disponible */
         {
-          eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu_temp, { });
-          resu = resu_temp;
-          matrice.ajouter_multvect(current, resu);
+         if (eqn.discretisation().que_suis_je() != "VDF")
+            {
+              eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu_temp, { });
+              resu = resu_temp;
+              matrice.ajouter_multvect(current, resu);
+            }
+          else
+            {
+              eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu, { });
+              resu_temp = 0;
+              matrice.ajouter_multvect(current,resu_temp);
+              resu_temp -= resu;
+            }
+
         }
       else
         {
@@ -283,6 +297,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
           matrice.ajouter_multvect(current,resu_temp);
           resu_temp -= resu;
         }
+
       if (seuil_test_preliminaire_solveur>0)
         {
           double norme_b=mp_norme_vect(resu_temp);
@@ -424,8 +439,23 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
   //remplissage des matrices
   if (interface_blocs_ok)
     {
-      for (i = 0; i < eqs.size(); i++) eqs[i]->assembler_blocs_avec_inertie(mats[i], residu_parts[i], {});
-      Mglob.ajouter_multvect(inconnues, residus); //pour ne pas resoudre en increments
+      for (i = 0; i < eqs.size(); i++)
+        {
+          eqs[i]->assembler_blocs_avec_inertie(mats[i], residu_parts[i], {});
+          if (eqs[i]->discretisation().que_suis_je() == "VDF")
+            {
+              for (j = 0; j < eqs.size(); j++)
+                {
+                  Nom nom_i = eqs[j]->inconnue().le_nom();
+                  if (eqs[i]->probleme().le_nom().getString() != eqs[j]->probleme().le_nom().getString())
+                    {
+                      nom_i += Nom("_") + eqs[j]->probleme().le_nom();
+                      mats[i][nom_i.getString()]->ajouter_multvect(inconnues_parts[j], residu_parts[i]);
+                    }
+                }
+            }
+        }
+      if (eqs[0]->discretisation().que_suis_je() != "VDF")  Mglob.ajouter_multvect(inconnues, residus); //pour ne pas resoudre en increments
     }
   else for(i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
         {
@@ -537,12 +567,18 @@ void Simple::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression
      nb_comp = current.dimension(1);
   */
 
+  gradient.calculer(pression,gradP);
   //Construction de matrice et resu
   //matrice = A[Uk-1] = M/dt + CONV + DIFF
   //resu = A[Uk-1]Uk-1 -(A[Uk-1]Uk-1-Ss) + Sv + (M/dt)Uk-1 -BtPk-1
-  gradient.calculer(pression,gradP);
-  resu -= gradP;
-  eqnNS.assembler_avec_inertie(matrice,current,resu);
+  if (eqnNS.has_interface_blocs()) //si l'interface blocs est disponible, on l'utilise
+    eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
+  else //sinon, on passe par ajouter/contribuer
+    {
+      resu -= gradP;
+      eqnNS.assembler_avec_inertie(matrice,current,resu);
+    }
+
   solveur.valeur().reinit();
 
   //Resolution du systeme A[Uk-1]U* = -BtP* + Sv + Ss + (M/dt)Uk-1
@@ -602,6 +638,5 @@ void Simple::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression
 
   if (is_dilat)
     diviser_par_rho_np1_face(eqn,current);
-
 }
 
