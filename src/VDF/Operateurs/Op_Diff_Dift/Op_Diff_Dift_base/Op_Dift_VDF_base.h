@@ -31,9 +31,8 @@ class Op_Dift_VDF_base : public Op_Diff_VDF_base, public Op_Diff_Turbulent_base
   Declare_base(Op_Dift_VDF_base);
 public:
   inline Op_Dift_VDF_base(const Iterateur_VDF_base& iter_base) : Op_Diff_VDF_base(iter_base) { }
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
   void contribuer_au_second_membre(DoubleTab& ) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
 
   // Methodes utiles pour l'heritage V
   inline void associer_diffusivite_turbulente_base(const Champ_Fonc& diff_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(diff_turb); }

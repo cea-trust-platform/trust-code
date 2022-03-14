@@ -21,11 +21,94 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_VDF_Face_base.h>
+#include <Check_espace_virtuel.h>
 
 Implemente_base(Op_Diff_VDF_Face_base,"Op_Diff_VDF_Face_base",Op_Diff_VDF_base);
 
 Sortie& Op_Diff_VDF_Face_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Diff_VDF_Face_base::readOn(Entree& s ) { return s ; }
+
+
+void Op_Diff_VDF_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
+  Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), mat2);
+  mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+
+}
+
+void Op_Diff_VDF_Face_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeur().valeurs();
+
+  assert_invalide_items_non_calcules(secmem, 0.);
+  if(mat) iter.ajouter_contribution(inco, *mat);
+  iter.ajouter(inco,secmem);
+
+  if (equation().domaine_application() == Motcle("Hydraulique"))
+    // On est dans le cas des equations de Navier_Stokes
+    {
+      // Ajout du terme supplementaire en V/(R*R) dans le cas des coordonnees axisymetriques
+      if(Objet_U::bidim_axi == 1)
+        {
+          const Zone_VDF& zvdf=iter.zone();
+          const DoubleTab& xv=zvdf.xv();
+          const IntVect& ori=zvdf.orientation();
+          const IntTab& face_voisins=zvdf.face_voisins();
+          const DoubleVect& volumes_entrelaces=zvdf.volumes_entrelaces();
+          int face, nb_faces=zvdf.nb_faces();//, cst;
+          DoubleTrav diffu_tot(zvdf.nb_elem_tot());
+          double db_diffusivite;
+          Nom nom_eq=equation().que_suis_je();
+          if ((nom_eq == "Navier_Stokes_standard")||(nom_eq == "Navier_Stokes_QC")||(nom_eq == "Navier_Stokes_FT_Disc"))
+            {
+              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
+              const Champ_base& ch_diff=eval.get_diffusivite();
+              const DoubleTab& tab_diffusivite=ch_diff.valeurs();
+              if (tab_diffusivite.size() == 1)
+                diffu_tot = tab_diffusivite(0,0);
+              else
+                diffu_tot = tab_diffusivite;
+
+              for(face=0; face<nb_faces; face++)
+                if(ori(face)==0)
+                  {
+                    int elem1=face_voisins(face,0);
+                    int elem2=face_voisins(face,1);
+                    if(elem1==-1)
+                      db_diffusivite=diffu_tot(elem2);
+                    else if (elem2==-1)
+                      db_diffusivite=diffu_tot(elem1);
+                    else
+                      db_diffusivite=0.5*(diffu_tot(elem2)+diffu_tot(elem1));
+                    double r= xv(face,0);
+                    if(r>=1.e-24)
+                      {
+                        if(mat) (*mat)(face,face)+=db_diffusivite*volumes_entrelaces(face)/(r*r);
+                        secmem(face) -=inco(face)*db_diffusivite*volumes_entrelaces(face)/(r*r);
+
+                      }
+                  }
+            }
+          else if (equation().que_suis_je() == "Navier_Stokes_Interface_avec_trans_masse" ||
+                   equation().que_suis_je() == "Navier_Stokes_Interface_sans_trans_masse" ||
+                   equation().que_suis_je() == "Navier_Stokes_Front_Tracking" ||
+                   equation().que_suis_je() == "Navier_Stokes_Front_Tracking_BMOL")
+            {
+              // Voir le terme source axi dans Interfaces/VDF
+            }
+          else
+            {
+              Cerr << "Probleme dans Op_Diff_VDF_base::contribuer_a_avec  avec le type de l'equation" << finl;
+              Cerr << "on n'a pas prevu d'autre cas que Navier_Stokes_std" << finl;
+              exit();
+            }
+        }
+    }
+}
 
 double Op_Diff_VDF_Face_base::calculer_dt_stab() const { return Op_Diff_VDF_Face_base::calculer_dt_stab(iter.zone()); }
 
@@ -78,3 +161,4 @@ double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
   double dt_stab = (coef==0 ? DMAXFLOAT : 0.5/coef);
   return Process::mp_min(dt_stab);
 }
+

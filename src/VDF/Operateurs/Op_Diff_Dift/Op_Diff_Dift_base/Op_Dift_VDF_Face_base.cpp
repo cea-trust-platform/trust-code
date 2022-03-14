@@ -127,3 +127,11 @@ void Op_Dift_VDF_Face_base::calculer_borne_locale(DoubleVect& borne_visco_turb,d
       if (coef>0 && coef<borne_visco_turb(elem)) borne_visco_turb(elem) = coef;
     }
 }
+
+void Op_Dift_VDF_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
+  Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), mat2);
+  mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+}

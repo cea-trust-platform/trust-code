@@ -43,8 +43,9 @@ public:
   const Champ_base& diffusivite() const override = 0; // XXX : E Saikali : juste pour securite ...
 
   inline void associer_loipar(const Turbulence_paroi& ) { /* do nothing */ }
-  inline void dimensionner(Matrice_Morse& matrice) const override { Op_VDF_Face::dimensionner(iter.zone(), iter.zone_Cl(), matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl(iter.zone(), iter.zone_Cl(), matrice, secmem); }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
+
 };
 
 #endif /* Op_Dift_VDF_Face_base_included */

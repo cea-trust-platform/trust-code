@@ -148,3 +148,117 @@ void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, 
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(nl, nc, stencil, matrice);
 }
+
+void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+{
+  if (!op_ext_init_) init_op_ext();
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  int n_ext = op_ext.size(); //pour la thermique monolithique
+
+  std::vector<Matrice_Morse *> mat(n_ext);
+  std::vector<int> N(n_ext); //nombre de composantes par probleme de op_ext
+  for (int i = 0; i < n_ext; i++)
+    {
+      N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
+
+      std::string nom_mat = i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
+      Matrice_Morse mat2;
+      if(i==0) Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), mat2);
+      else
+        {
+          int nl = N[0] * iter.zone().nb_elem_tot();
+          int nc = N[i] * op_ext[i]->equation().zone_dis()->nb_elem_tot();
+          dimensionner_termes_croises(mat2, op_ext[i]->equation().probleme(),nl, nc);
+        }
+
+      mat[i]->nb_colonnes() ? *mat[i] += mat2 : *mat[i] = mat2;
+    }
+}
+
+void Op_Diff_VDF_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  if (!op_ext_init_) init_op_ext();
+
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  int n_ext = op_ext.size(); //pour la thermique monolithique
+  std::vector<Matrice_Morse *> mat(n_ext);
+  std::vector<const DoubleTab *> inco(n_ext); //inconnues
+
+  mat[0] = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  inco[0] = semi_impl.count(nom_inco) ? &semi_impl.at(nom_inco) : &op_ext[0]->equation().inconnue().valeur().valeurs();
+
+  if(mat[0]) iter.ajouter_contribution(*inco[0], *mat[0]);
+  iter.ajouter(*inco[0],secmem);
+
+  if (equation().domaine_application() == Motcle("Hydraulique"))
+    // On est dans le cas des equations de Navier_Stokes
+    {
+      // Ajout du terme supplementaire en V/(R*R) dans le cas des coordonnees axisymetriques
+      if(Objet_U::bidim_axi == 1)
+        {
+          const Zone_VDF& zvdf=iter.zone();
+          const DoubleTab& xv=zvdf.xv();
+          const IntVect& ori=zvdf.orientation();
+          const IntTab& face_voisins=zvdf.face_voisins();
+          const DoubleVect& volumes_entrelaces=zvdf.volumes_entrelaces();
+          int face, nb_faces=zvdf.nb_faces();//, cst;
+          DoubleTrav diffu_tot(zvdf.nb_elem_tot());
+          double db_diffusivite;
+          Nom nom_eq=equation().que_suis_je();
+          if ((nom_eq == "Navier_Stokes_standard")||(nom_eq == "Navier_Stokes_QC")||(nom_eq == "Navier_Stokes_FT_Disc"))
+            {
+              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
+              const Champ_base& ch_diff=eval.get_diffusivite();
+              const DoubleTab& tab_diffusivite=ch_diff.valeurs();
+              if (tab_diffusivite.size() == 1)
+                diffu_tot = tab_diffusivite(0,0);
+              else
+                diffu_tot = tab_diffusivite;
+
+              for(face=0; face<nb_faces; face++)
+                if(ori(face)==0)
+                  {
+                    int elem1=face_voisins(face,0);
+                    int elem2=face_voisins(face,1);
+                    if(elem1==-1)
+                      db_diffusivite=diffu_tot(elem2);
+                    else if (elem2==-1)
+                      db_diffusivite=diffu_tot(elem1);
+                    else
+                      db_diffusivite=0.5*(diffu_tot(elem2)+diffu_tot(elem1));
+                    double r= xv(face,0);
+                    if(r>=1.e-24)
+                      {
+                        if(mat[0]) (*mat[0])(face,face)+=db_diffusivite*volumes_entrelaces(face)/(r*r);
+                        secmem(face) -=(*inco[0])(face)*db_diffusivite*volumes_entrelaces(face)/(r*r);
+
+                      }
+                  }
+            }
+          else if (equation().que_suis_je() == "Navier_Stokes_Interface_avec_trans_masse" ||
+                   equation().que_suis_je() == "Navier_Stokes_Interface_sans_trans_masse" ||
+                   equation().que_suis_je() == "Navier_Stokes_Front_Tracking" ||
+                   equation().que_suis_je() == "Navier_Stokes_Front_Tracking_BMOL")
+            {
+              // Voir le terme source axi dans Interfaces/VDF
+            }
+          else
+            {
+              Cerr << "Probleme dans Op_Diff_VDF_base::contribuer_a_avec  avec le type de l'equation" << finl;
+              Cerr << "on n'a pas prevu d'autre cas que Navier_Stokes_std" << finl;
+              exit();
+            }
+        }
+    }
+
+  for (int i = 1; i < n_ext; i++)
+    {
+      std::string nom_mat = nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString();
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
+      inco[i] = semi_impl.count(nom_mat) ? &semi_impl.at(nom_mat) : &op_ext[i]->equation().inconnue().valeur().valeurs();
+      contribuer_termes_croises(*inco[i], op_ext[i]->equation().probleme(), op_ext[i]->equation().inconnue().valeurs(), *mat[i]);
+
+    }
+}
+

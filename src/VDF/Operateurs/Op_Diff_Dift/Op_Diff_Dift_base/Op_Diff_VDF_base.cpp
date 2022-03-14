@@ -20,12 +20,16 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Check_espace_virtuel.h>
 #include <Op_Diff_VDF_base.h>
 #include <Eval_Diff_VDF.h>
 #include <TRUSTTrav.h>
 #include <Champ_Don.h>
 #include <Motcle.h>
+#include <Probleme_base.h>
+#include <Echange_contact_VDF.h>
+#include <Champ_front_calc.h>
+#include <Operateur.h>
+#include <Schema_Temps_base.h>
 
 Implemente_base(Op_Diff_VDF_base,"Op_Diff_VDF_base",Operateur_Diff_base);
 
@@ -50,129 +54,6 @@ int Op_Diff_VDF_base::impr(Sortie& os) const
 void Op_Diff_VDF_base::calculer_flux_bord(const DoubleTab& inco) const
 {
   iter.valeur().calculer_flux_bord(inco);
-}
-
-// Description:
-// ajoute la contribution de la diffusion au second membre resu
-DoubleTab& Op_Diff_VDF_base::ajouter(const DoubleTab& inco,  DoubleTab& resu) const
-{
-  // on fait += sur les espaces virtuels, pas grave s'ils contiennent n'importe quoi
-  assert_invalide_items_non_calcules(resu, 0.);
-  iter.ajouter(inco,resu);
-  if (equation().domaine_application() == Motcle("Hydraulique"))
-    {
-      // On est dans le cas des equations de Navier_Stokes
-      // Ajout du terme supplementaire en V/(R*R) dans le cas des coordonnees axisymetriques
-      if(Objet_U::bidim_axi == 1)
-        {
-          const Zone_VDF& zvdf=iter.zone();
-          const DoubleTab& xv=zvdf.xv();
-          const IntVect& ori=zvdf.orientation();
-          const IntTab& face_voisins=zvdf.face_voisins();
-          const DoubleVect& volumes_entrelaces=zvdf.volumes_entrelaces();
-          int face, nb_faces=zvdf.nb_faces(); //, cst;         // unused
-          DoubleTrav diffu_tot(zvdf.nb_elem_tot());
-          double db_diffusivite;
-          Nom nom_eq=equation().que_suis_je();
-          if ((nom_eq == "Navier_Stokes_standard")||(nom_eq == "Navier_Stokes_QC")||(nom_eq == "Navier_Stokes_FT_Disc"))
-            {
-              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter->evaluateur());
-              const Champ_base& ch_diff=eval.get_diffusivite();
-              const DoubleTab& tab_diffusivite=ch_diff.valeurs();
-              if (tab_diffusivite.size() == 1)
-                diffu_tot = tab_diffusivite(0,0);
-              else
-                diffu_tot = tab_diffusivite;
-              for (face=0; face<nb_faces; face++)
-                {
-                  if(ori(face)==0)
-                    {
-                      int elem1=face_voisins(face,0);
-                      int elem2=face_voisins(face,1);
-                      if(elem1==-1)
-                        db_diffusivite=diffu_tot(elem2);
-                      else if (elem2==-1)
-                        db_diffusivite=diffu_tot(elem1);
-                      else
-                        db_diffusivite=0.5*(diffu_tot(elem2)+diffu_tot(elem1));
-                      double r= xv(face,0);
-                      if(r>=1.e-24)
-                        resu(face) -=inco(face)*db_diffusivite*volumes_entrelaces(face)/(r*r);
-                    }
-                }
-            }
-          else if (equation().que_suis_je() == "Navier_Stokes_Interface_avec_trans_masse" ||
-                   equation().que_suis_je() == "Navier_Stokes_Interface_sans_trans_masse" ||
-                   equation().que_suis_je() == "Navier_Stokes_Front_Tracking" ||
-                   equation().que_suis_je() == "Navier_Stokes_Front_Tracking_BMOL")
-            {
-              // Voir le terme source axi dans Interfaces/VDF
-            }
-          else
-            {
-              Cerr << "Probleme dans Op_Diff_VDF_base::ajouter avec le type de l'equation" << finl;
-              Cerr << "on n'a pas prevu d'autre cas que Navier_Stokes_std" << finl;
-              exit();
-            }
-        }
-    }
-  return resu;
-}
-
-//Description:
-//on assemble la matrice.
-void Op_Diff_VDF_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  iter.ajouter_contribution(inco, matrice);
-  if (equation().domaine_application() == Motcle("Hydraulique"))
-    // On est dans le cas des equations de Navier_Stokes
-    {
-      // Ajout du terme supplementaire en V/(R*R) dans le cas des coordonnees axisymetriques
-      if(Objet_U::bidim_axi == 1)
-        {
-          const Zone_VDF& zvdf=iter.zone();
-          const DoubleTab& xv=zvdf.xv();
-          const IntVect& ori=zvdf.orientation();
-          const IntTab& face_voisins=zvdf.face_voisins();
-          const DoubleVect& volumes_entrelaces=zvdf.volumes_entrelaces();
-          int face, nb_faces=zvdf.nb_faces();//, cst;
-          DoubleTrav diffu_tot(zvdf.nb_elem_tot());
-          double db_diffusivite;
-
-          if (equation().que_suis_je() == "Navier_Stokes_standard")
-            {
-              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter->evaluateur());
-              const Champ_base& ch_diff=eval.get_diffusivite();
-              const DoubleTab& tab_diffusivite=ch_diff.valeurs();
-              if (tab_diffusivite.size() == 1)
-                diffu_tot = tab_diffusivite(0,0);
-              else
-                diffu_tot = tab_diffusivite;
-            }
-          else
-            {
-              Cerr << "Probleme dans Op_Diff_VDF_base::contribuer_a_avec  avec le type de l'equation" << finl;
-              Cerr << "on n'a pas prevu d'autre cas que Navier_Stokes_std" << finl;
-              exit();
-            }
-
-          for(face=0; face<nb_faces; face++)
-            if(ori(face)==0)
-              {
-                int elem1=face_voisins(face,0);
-                int elem2=face_voisins(face,1);
-                if(elem1==-1)
-                  db_diffusivite=diffu_tot(elem2);
-                else if (elem2==-1)
-                  db_diffusivite=diffu_tot(elem1);
-                else
-                  db_diffusivite=0.5*(diffu_tot(elem2)+diffu_tot(elem1));
-                double r= xv(face,0);
-                if(r>=1.e-24)
-                  matrice(face,face)+=db_diffusivite*volumes_entrelaces(face)/(r*r);
-              }
-        }
-    }
 }
 
 //Description:
@@ -259,4 +140,33 @@ DoubleTab& Op_Diff_VDF_base::calculer(const DoubleTab& inco,  DoubleTab& resu) c
 {
   resu =0;
   return ajouter(inco, resu);
+}
+
+void Op_Diff_VDF_base::init_op_ext() const
+{
+  const Zone_VDF& zvdf = iter.zone();
+  const Zone_Cl_VDF& zclvdf = iter.zone_Cl();
+  op_ext = { this };//le premier op_ext est l'operateur local
+
+  const int& monol =  equation().schema_temps().resolution_monolithique(equation().domaine_application());
+  if(!monol)
+    {
+      op_ext_init_ = 1;
+      return;
+    }
+
+  for (int n_bord=0; n_bord<zvdf.nb_front_Cl(); n_bord++)
+    {
+      const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
+      if (sub_type(Echange_contact_VDF,la_cl.valeur()))
+        {
+          const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, la_cl.valeur());
+          const Champ_front_calc& ch=ref_cast(Champ_front_calc, cl.T_autre_pb().valeur());
+          const Equation_base& o_eqn = ch.equation();
+          const Op_Diff_VDF_base *o_diff = &ref_cast(Op_Diff_VDF_base, o_eqn.operateur(0).l_op_base());
+
+          if (std::find(op_ext.begin(), op_ext.end(), o_diff) == op_ext.end()) op_ext.push_back(o_diff);
+        }
+    }
+  op_ext_init_ = 1;
 }
