@@ -39,6 +39,17 @@ inline void eval_fluent(const double& psc,const int num1,const int num2, DoubleV
   else fluent[num1] -= psc;
 }
 
+void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse* matrice = mats.count(nom_inco) ? mats.at(nom_inco) : NULL;
+  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
+  if(matrice) iter.ajouter_contribution(inco, *matrice);
+  iter.ajouter(inco,secmem);
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////
 //
 //    Implementation de fonctions de la classe Op_Conv_VDF_base

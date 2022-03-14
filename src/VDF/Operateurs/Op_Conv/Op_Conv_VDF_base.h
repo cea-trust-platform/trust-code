@@ -44,14 +44,17 @@ public:
   Motcle get_localisation_pour_post(const Nom& option) const override;
   virtual const Champ_base& vitesse() const = 0;
   virtual Champ_base& vitesse() = 0;
-
-  inline DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override { return iter.ajouter(inco, resu); }
   inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override { return iter.calculer(inco, resu); }
-  inline void contribuer_a_avec(const DoubleTab& inco , Matrice_Morse& matrice) const override { iter.ajouter_contribution(inco, matrice); }
   inline void contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Morse& matrice) const override { iter.ajouter_contribution_vitesse(inco, matrice); }
   inline void contribuer_au_second_membre(DoubleTab& resu) const override { iter.contribuer_au_second_membre(resu); }
   inline const Iterateur_VDF& get_iter() const { return iter; }
   inline Iterateur_VDF& get_iter() { return iter; }
+
+  inline int has_interface_blocs() const override
+  {
+    return 1;
+  };
+  void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const override;
 
 protected:
   Iterateur_VDF iter;

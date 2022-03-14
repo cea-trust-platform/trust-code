@@ -43,12 +43,18 @@ class Op_Conv_Amont_VDF_Face : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_Co
   Declare_instanciable_sans_constructeur(Op_Conv_Amont_VDF_Face);
 public:
   Op_Conv_Amont_VDF_Face();
-  inline void dimensionner(Matrice_Morse& matrice) const override { dimensionner_face(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_face(matrice,secmem); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Amont_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Amont_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Amont_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Amont_VDF_Face>(); }
+  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override
+  {
+    const std::string& nom_inco = equation().inconnue().le_nom().getString();
+    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
+    dimensionner_face(mat2);
+    mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+  }
 };
 
 declare_It_VDF_Face(Eval_Centre_VDF_Face)
@@ -61,12 +67,19 @@ class Op_Conv_Centre_VDF_Face : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_C
   Declare_instanciable_sans_constructeur(Op_Conv_Centre_VDF_Face);
 public:
   Op_Conv_Centre_VDF_Face();
-  inline void dimensionner(Matrice_Morse& matrice) const override { dimensionner_face(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_face(matrice,secmem); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Centre_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Centre_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Centre_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Centre_VDF_Face>(); }
+  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override
+  {
+    const std::string& nom_inco = equation().inconnue().le_nom().getString();
+    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
+    dimensionner_face(mat2);
+    mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+  }
+
 };
 
 declare_It_VDF_Face(Eval_Centre4_VDF_Face)
@@ -111,12 +124,19 @@ class Op_Conv_Quick_VDF_Face : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_Co
   Declare_instanciable_sans_constructeur(Op_Conv_Quick_VDF_Face);
 public:
   Op_Conv_Quick_VDF_Face();
-  inline void dimensionner(Matrice_Morse& matrice) const override { dimensionner_face(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_face(matrice,secmem); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_FACE,Eval_Quick_VDF_Face>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Quick_VDF_Face>(ch_vit); }
   inline Champ_base& vitesse() override { return vitesse_impl<Eval_Quick_VDF_Face>(); }
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Quick_VDF_Face>(); }
+  inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override
+  {
+    const std::string& nom_inco = equation().inconnue().le_nom().getString();
+    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
+    dimensionner_face(mat2);
+    mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+  }
+
 };
 
 #endif /* Op_Conv_VDF_Face_leaves_included */
