@@ -769,6 +769,61 @@ void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const D
     }
 }
 
+void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  if (discretisation().que_suis_je() != "VDF")
+    {
+      Equation_base::assembler_blocs(matrices, secmem, semi_impl);
+      return;
+    }
+  const double rhoCp = le_fluide->capacite_calorifique().valeurs()(0, 0) * le_fluide->masse_volumique().valeurs()(0, 0);
+
+  /* mise a zero */
+  secmem = 0;
+  for (auto &&i_m : matrices) i_m.second->get_set_coeff() = 0;
+  matrices_t mats2;
+  for (auto &&i_m : matrices)
+    {
+      Matrice_Morse* mat2 = new Matrice_Morse;
+      *mat2=*i_m.second;
+      mats2[i_m.first] = mat2;
+    }
+
+  /* operateurs, sources, masse */
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    {
+      DoubleTab secmem_tmp(secmem);
+      secmem_tmp = 0.;
+      for (auto &&i_m : mats2)
+        mats2[i_m.first]->get_set_coeff() = 0;
+
+      operateur(i).l_op_base().ajouter_blocs(mats2, secmem_tmp, semi_impl);
+
+      if (i == 1)
+        {
+          secmem_tmp *= rhoCp;
+          for (auto &&i_m : mats2) *i_m.second *= rhoCp;
+        }
+
+      for (auto &&i_m : matrices) *i_m.second += *mats2[i_m.first];
+      secmem += secmem_tmp;
+
+    }
+
+  for (int i = 0; i < les_sources.size(); i++)
+    les_sources(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+
+  if (discretisation().que_suis_je() == "VDF")
+    {
+      const std::string& nom_inco = inconnue().le_nom().getString();
+      Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):NULL;
+      if(mat) mat->ajouter_multvect(inconnue().valeurs(), secmem);
+    }
+
+  for (auto &&i_m : mats2)
+    delete i_m.second;
+
+}
 int Convection_Diffusion_Temperature::verifier_tag_indicatrice_pena_glob()
 {
   //Les ibcs ont elles ete modifiees ?

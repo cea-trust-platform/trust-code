@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,6 +82,19 @@ void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::assembler( Matrice_Mors
 {
   Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl(*this,matrice,inco,resu);
 }
+
+void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
+{
+  Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(*this,matrices, secmem, semi_impl);
+  schema_temps().ajouter_blocs(matrices, secmem, *this);
+  if (discretisation().que_suis_je() == "VDF")
+    {
+      const std::string& nom_inco = inconnue().le_nom().getString();
+      Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+      modifier_pour_Cl(*mat,secmem);
+    }
+}
+
 
 int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::sauvegarder(Sortie& os) const
 {

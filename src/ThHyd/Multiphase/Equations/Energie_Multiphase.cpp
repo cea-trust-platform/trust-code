@@ -379,7 +379,7 @@ void Energie_Multiphase::dimensionner_blocs(matrices_t matrices, const tabs_t& s
   if (evanescence.non_nul()) evanescence.valeur().dimensionner_blocs(matrices, semi_impl);
 }
 
-void Energie_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+void Energie_Multiphase::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   Convection_Diffusion_std::assembler_blocs_avec_inertie(matrices, secmem, semi_impl);
   if (evanescence.non_nul()) evanescence.valeur().ajouter_blocs(matrices, secmem, semi_impl);

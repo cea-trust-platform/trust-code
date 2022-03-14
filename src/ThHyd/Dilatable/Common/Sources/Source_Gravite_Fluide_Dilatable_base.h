@@ -51,7 +51,9 @@ class Source_Gravite_Fluide_Dilatable_base : public Source_base
 public:
   void completer() override;
   DoubleTab& calculer(DoubleTab& ) const override ;
-  DoubleTab& ajouter(DoubleTab& ) const override = 0;
+  //Anida K. : no need for this function with interface_bloc
+  //if neither ajouter nor ajouter_blocs is coded in derived classes, the code will crash (but at runtime and not at compile time...)
+  //virtual DoubleTab& ajouter(DoubleTab& ) const = 0;
 
   // Methodes inlines
   inline void mettre_a_jour(double) override { }

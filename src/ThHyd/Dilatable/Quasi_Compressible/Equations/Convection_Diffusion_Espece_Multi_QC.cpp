@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 #include <Probleme_base.h>
 #include <TRUSTTrav.h>
 #include <Param.h>
+#include <Discretisation_base.h>
 
 Implemente_instanciable(Convection_Diffusion_Espece_Multi_QC,"Convection_Diffusion_Espece_Multi_QC",Convection_Diffusion_Espece_Multi_base);
 // XD convection_diffusion_espece_multi_QC eqn_base convection_diffusion_espece_multi_QC -1 Species conservation equation for a multi-species quasi-compressible fluid.
@@ -233,4 +234,60 @@ void Convection_Diffusion_Espece_Multi_QC::assembler( Matrice_Morse& matrice, co
     Cerr<<"vous ne pouvez pas faire d'implicite avec des fracions massiques "<<finl;
     exit();
   */
+}
+
+
+void Convection_Diffusion_Espece_Multi_QC::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
+{
+  const std::string& nom_inco = inconnue().le_nom().getString();
+  const DoubleTab& inco = inconnue().valeurs();
+  Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):NULL;
+
+  secmem=0;
+  const IntVect& tab1= mat->get_tab1();
+
+  DoubleVect& coeff=mat->get_set_coeff();
+
+  const DoubleTab& rho=get_champ("masse_volumique").valeurs();
+  operateur(0).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
+
+  int ndl=rho.dimension(0);
+  // on divise par rho chaque ligne
+  for (int som=0; som<ndl; som++)
+    {
+      double inv_rho=1/rho(som);
+      for (int k=tab1(som)-1; k<tab1(som+1)-1; k++)
+        coeff(k)*=inv_rho;
+      secmem(som)*=inv_rho;
+    }
+
+  // ajout de la convection
+  operateur(1).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
+
+  // on retire Divu1 *inco
+  DoubleTrav unite(inco),divu1(inco);
+  unite=1;
+
+  {
+    // on change temporairement la zone_cl
+    operateur(1).l_op_base().associer_zone_cl_dis(zcl_modif_.valeur());
+    operateur(1).ajouter(unite,divu1);
+    operateur(1).l_op_base().associer_zone_cl_dis(zone_Cl_dis().valeur());
+  }
+
+  for (int i=0; i<ndl; i++)
+    {
+      secmem(i)-=divu1(i)*inco(i);
+      if(mat) (*mat)(i,i)+=divu1(i);
+    }
+
+  for (int i = 0; i < sources().size(); i++)
+    sources()(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+
+  if(mat) mat->ajouter_multvect(inco,secmem);
+
+  schema_temps().ajouter_blocs(matrices, secmem, *this);
+
+  if (discretisation().que_suis_je() == "VDF")
+    modifier_pour_Cl(*mat,secmem);
 }

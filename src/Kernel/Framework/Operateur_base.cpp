@@ -31,6 +31,7 @@
 #include <Zone_VF.h>
 #include <Matrice_Morse.h>
 #include <TRUSTTrav.h>
+#include <Discretisation_base.h>
 
 Implemente_base_sans_constructeur(Operateur_base,"Operateur_base",Objet_U);
 
@@ -302,7 +303,13 @@ void Operateur_base::modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const
 DoubleTab&  Operateur_base::ajouter(const DoubleTab& inco, DoubleTab& secmem) const
 {
   /* on tente ajouter_blocs */
-  if (has_interface_blocs()) ajouter_blocs({}, secmem);
+  if (has_interface_blocs())
+    {
+      if (equation().discretisation().que_suis_je() != "VDF")
+        ajouter_blocs({}, secmem);
+      else
+        ajouter_blocs({}, secmem, {{ equation().inconnue().le_nom().getString(),inco }} ); //pour prise en compte du parametre inco (qui est pas forcement l'inco de l'equation)
+    }
   else Process::exit(que_suis_je() + " : ajouter() not coded!");
   return secmem;
 }

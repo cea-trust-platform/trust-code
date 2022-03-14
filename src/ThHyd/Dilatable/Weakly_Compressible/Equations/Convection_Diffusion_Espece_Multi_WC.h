@@ -44,6 +44,7 @@ public :
   void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
   const Champ_base& diffusivite_pour_pas_de_temps() const override;
   const Champ_base& vitesse_pour_transport() const override;
+  void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) override;
   DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
 };
 

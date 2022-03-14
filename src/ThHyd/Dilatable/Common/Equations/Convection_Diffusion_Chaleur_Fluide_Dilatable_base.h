@@ -47,6 +47,7 @@ public :
   int remplir_cl_modifiee();
   const Champ_base& diffusivite_pour_pas_de_temps() const override;
   void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& resu) override;
+  void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) override;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
   const Champ_base& vitesse_pour_transport() const override;

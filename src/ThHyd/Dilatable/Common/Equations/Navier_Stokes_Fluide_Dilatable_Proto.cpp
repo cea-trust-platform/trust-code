@@ -249,6 +249,102 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_avec_inertie_impl(const Nav
     }
 }
 
+
+void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Navier_Stokes_std& eqn, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
+{
+
+  const std::string& nom_inco = eqn.inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):NULL;
+  const DoubleTab& present = eqn.inconnue();
+
+  // ******   avant inertie   ******
+  // diffusion en div(mu grad u ) or on veut impliciter en rho * u => on divise les contributions par le rho_face associe
+  // GF on ajoute apres avoir contribuer pour avoir les bons flux bords
+  DoubleTrav rhovitesse(present);
+
+  // Op diff
+  eqn.operateur(0).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
+
+  const Fluide_Dilatable_base& fluide_dil=ref_cast(Fluide_Dilatable_base,eqn.milieu());
+  const DoubleTab& tab_rho_face_np1 = fluide_dil.rho_face_np1(), tab_rho_face_n=fluide_dil.rho_face_n();
+  const int nb_compo = present.line_size();
+  const IntVect& tab1 = mat->get_tab1(), tab2 = mat->get_tab2();
+
+  DoubleVect& coeff = mat->get_set_coeff();
+  for (int i=0; i<mat->nb_lignes(); i++)
+    for (int k=tab1(i)-1; k<tab1(i+1)-1; k++)
+      {
+        int j = tab2(k)-1;
+        double rapport = tab_rho_face_np1(j/nb_compo);
+        coeff(k) /= rapport;
+      }
+
+  rho_vitesse_impl(tab_rho_face_np1,present,rhovitesse); // rho*U
+
+  // Op conv
+  eqn.operateur(1).l_op_base().ajouter_blocs(matrices, secmem, {{nom_inco,rhovitesse}});
+
+  // sources
+  for (int i = 0; i < eqn.sources().size(); i++)
+    eqn.sources()(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+
+  // on resout en rho u on stocke donc rho u dans present
+  rho_vitesse_impl(tab_rho_face_np1,present,ref_cast_non_const(DoubleTab,present));
+  mat->ajouter_multvect(present,secmem);
+
+  DoubleTab tmp(secmem);
+  tmp = 0.0;
+  eqn.operateur_gradient().valeur().ajouter_blocs(matrices, tmp, semi_impl);
+  secmem-=tmp;
+
+  /*
+   * contribution a la matrice de l'inertie :
+   * on divisie la diagonale par rhon+1 face
+   * on ajoute l'inertie de facon standard
+   * on remultiplie la diagonale par rhon+1
+   */
+
+  // ajout de l'inertie
+//  const double dt=eqn.schema_temps().pas_de_temps();
+//  eqn.schema_temps().ajouter_blocs(matrices, secmem, eqn);
+
+  const double dt=eqn.schema_temps().pas_de_temps();
+  eqn.solv_masse().ajouter_masse(dt,*mat,0);
+
+  rho_vitesse_impl(tab_rho_face_n,eqn.inconnue().passe(),rhovitesse);
+  eqn.solv_masse().ajouter_masse(dt,secmem,rhovitesse,0);
+
+  // blocage_cl faux si dirichlet u!=0 !!!!!! manque multiplication par rho
+  for (int op=0; op< eqn.nombre_d_operateurs(); op++) eqn.operateur(op).l_op_base().modifier_pour_Cl(*mat,secmem);
+
+  /*
+   * correction finale pour les dirichlets
+   * on ne doit pas imposer un+1 mais rho_un+1 => on multiplie dons le resu par rho_face_np1
+   */
+  const Conds_lim& lescl=eqn.zone_Cl_dis().les_conditions_limites();
+  int nbcondlim=lescl.size();
+
+  for (int icl=0; icl<nbcondlim; icl++)
+    {
+      const Cond_lim_base& la_cl_base = lescl[icl].valeur();
+      if (sub_type(Dirichlet,la_cl_base))
+        {
+
+          const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl_base.frontiere_dis());
+          int ndeb = la_front_dis.num_premiere_face();
+          int nfin = ndeb + la_front_dis.nb_faces();
+          for (int num_face=ndeb; num_face<nfin; num_face++)
+            {
+              if (present.line_size()==1) secmem(num_face)*=tab_rho_face_np1(num_face);
+              else
+                for (int dir=0; dir<Objet_U::dimension; dir++) secmem(num_face,dir)*=tab_rho_face_np1(num_face);
+            }
+        }
+    }
+  secmem.echange_espace_virtuel();
+}
+
+
 void Navier_Stokes_Fluide_Dilatable_Proto::assembler_impl( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem)
 {
   Cerr << "Navier_Stokes_Fluide_Dilatable_Proto::assembler is not coded ! You should use assembler_avec_inertie !" << finl;

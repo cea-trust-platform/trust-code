@@ -33,6 +33,7 @@ class Matrice_Morse;
 class Champ_Inc;
 class Sortie;
 class Entree;
+#include <Interface_blocs.h>
 
 class Convection_Diffusion_Fluide_Dilatable_Proto
 {
@@ -51,6 +52,7 @@ protected:
   void calculer_div_rho_u_impl(DoubleTab& res, const Convection_Diffusion_Fluide_Dilatable_base& eqn ) const;
   void assembler_impl(Convection_Diffusion_Fluide_Dilatable_base& eqn,
                       Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem);
+  void assembler_blocs(Convection_Diffusion_Fluide_Dilatable_base& eqn,matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl);
 
   DoubleTab& derivee_en_temps_inco_sans_solveur_masse_impl(Convection_Diffusion_Fluide_Dilatable_base& eqn,
                                                            DoubleTab& derivee, const bool is_expl);
@@ -58,6 +60,7 @@ protected:
   virtual void calculer_div_u_ou_div_rhou(DoubleTab& res) const = 0;
   virtual bool is_thermal() const = 0;
   virtual bool is_generic() const = 0;
+
 };
 
 #endif /* Convection_Diffusion_Fluide_Dilatable_Proto_included */

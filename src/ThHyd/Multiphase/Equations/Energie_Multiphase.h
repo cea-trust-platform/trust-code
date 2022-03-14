@@ -69,7 +69,7 @@ public :
   */
   int has_interface_blocs() const override;
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) override;
   const Motcle& domaine_application() const override;
   void verifie_ch_init_nb_comp_cl(const Champ_Inc_base& ch_ref, const int& nb_comp, const Cond_lim_base& cl) const override;
 

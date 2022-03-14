@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -165,3 +165,9 @@ void Navier_Stokes_Fluide_Dilatable_base::assembler_avec_inertie( Matrice_Morse&
 {
   Navier_Stokes_Fluide_Dilatable_Proto::assembler_avec_inertie_impl(*this,mat_morse,present,secmem);
 }
+
+void Navier_Stokes_Fluide_Dilatable_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
+{
+  Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(*this, matrices, secmem, semi_impl);
+}
+

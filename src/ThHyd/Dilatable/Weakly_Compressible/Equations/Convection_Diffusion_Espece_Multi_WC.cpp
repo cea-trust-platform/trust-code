@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Probleme_base.h>
 #include <TRUSTTrav.h>
 #include <Param.h>
+#include <Discretisation_base.h>
 
 Implemente_instanciable(Convection_Diffusion_Espece_Multi_WC,"Convection_Diffusion_Espece_Multi_WC",Convection_Diffusion_Espece_Multi_base);
 // XD convection_diffusion_espece_multi_WC eqn_base convection_diffusion_espece_multi_WC -1 Species conservation equation for a multi-species weakly-compressible fluid.
@@ -84,4 +85,17 @@ DoubleTab& Convection_Diffusion_Espece_Multi_WC::derivee_en_temps_inco(DoubleTab
 void Convection_Diffusion_Espece_Multi_WC::assembler( Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
   Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl(*this,matrice,inco,resu);
+}
+
+void Convection_Diffusion_Espece_Multi_WC::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
+{
+  Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(*this,matrices, secmem, semi_impl);
+  schema_temps().ajouter_blocs(matrices, secmem, *this);
+
+  if (discretisation().que_suis_je() == "VDF")
+    {
+      const std::string& nom_inco = inconnue().le_nom().getString();
+      Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+      modifier_pour_Cl(*mat,secmem);
+    }
 }

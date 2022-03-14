@@ -82,6 +82,9 @@ public:
   const Champ_base& get_champ(const Motcle& nom) const override;
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   /////////////////////////////////////////////////////
+
+  void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
+
 private :
 
   REF(Solide) le_solide;

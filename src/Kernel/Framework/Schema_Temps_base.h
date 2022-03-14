@@ -180,6 +180,7 @@ public :
   virtual Entree& lire_periode_sauvegarde_securite_en_heures(Entree&);
   virtual Entree& lire_temps_cpu_max(Entree&);
   virtual void completer() =0;
+  inline virtual int resolution_monolithique(const Nom& nom) const { return 0; }
 
   inline double temps_init() const ;
   inline double temps_max() const ;

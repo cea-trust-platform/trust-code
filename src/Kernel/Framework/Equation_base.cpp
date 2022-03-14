@@ -834,7 +834,6 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
           operateur(i).ajouter(secmem);
     }
   les_sources.ajouter(secmem);
-
   if (calculate_time_derivative())
     {
       // Store dI/dt(n) = M-1 secmem :
@@ -860,6 +859,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
           derivee.echange_espace_virtuel();
         }
       corriger_derivee_impl(derivee);  // Solve specific implicit term for an equation (eg: pressure for Navier Stokes)
+
     }
   else if (implicite_>0)
     {
@@ -2399,7 +2399,8 @@ int Equation_base::has_interface_blocs() const
 void Equation_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   /* operateurs, masse, sources */
-  for (int op = 0; op < nombre_d_operateurs(); op++) operateur(op).l_op_base().dimensionner_blocs(matrices, semi_impl);
+  int nb = nombre_d_operateurs();
+  for (int op = 0; op < nb; op++) operateur(op).l_op_base().dimensionner_blocs(matrices, semi_impl);
   solv_masse().valeur().dimensionner_blocs(matrices);
   for (int i = 0; i < les_sources.size(); i++) les_sources(i).valeur().dimensionner_blocs(matrices, semi_impl);
 }
@@ -2414,12 +2415,19 @@ void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, cons
     operateur(i).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
   for (int i = 0; i < les_sources.size(); i++)
     les_sources(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+
 }
 
-void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
   assembler_blocs(matrices, secmem, semi_impl);
   schema_temps().ajouter_blocs(matrices, secmem, *this);
+  if (discretisation().que_suis_je() == "VDF")
+    {
+      const std::string& nom_inco = inconnue().le_nom().getString();
+      Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+      modifier_pour_Cl(*mat,secmem);
+    }
 }
 
 /* creation de champ_conserve_, cl_champ_conserve_ */

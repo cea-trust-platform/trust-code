@@ -124,7 +124,6 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
         }
     }
 
-
   eqn.zone_Cl_dis().les_conditions_limites().set_modifier_val_imp(1);
   derivee.echange_espace_virtuel();
 
@@ -324,6 +323,73 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_impl
         }
     }
 } /* END assembler_impl */
+
+void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Diffusion_Fluide_Dilatable_base& eqn,matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
+{
+  const std::string& nom_inco = eqn.inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):NULL;
+
+  Fluide_Dilatable_base& fluide_dil = eqn.fluide();
+  const DoubleTab& tab_rho = fluide_dil.masse_volumique().valeurs();
+  const int n = tab_rho.dimension(0);
+
+  Matrice_Morse mat_diff(*mat);
+  DoubleTab secmem_tmp(secmem);
+  eqn.operateur(0).l_op_base().ajouter_blocs({{nom_inco, &mat_diff}}, secmem_tmp, semi_impl);
+
+  for (int i = 0; i < eqn.sources().size(); i++)
+    eqn.sources()(i).valeur().ajouter_blocs({{nom_inco, &mat_diff}}, secmem_tmp, semi_impl);
+
+  DoubleVect& coeff_diffusif=mat_diff.get_set_coeff();
+
+  const IntVect& tab1= mat->get_tab1();
+  DoubleVect& coeff=mat->get_set_coeff();
+  coeff = 0;
+  eqn.operateur(1).l_op_base().ajouter_blocs(matrices, secmem_tmp, semi_impl);
+
+  // on calcule div(rho * u)
+  calculer_div_u_ou_div_rhou(secmem);
+
+  if (!is_thermal()) //espece
+    {
+      for (int som=0 ; som<n ; som++)
+        {
+          double inv_rho = 1. / tab_rho(som);
+          for (int k=tab1(som)-1; k<tab1(som+1)-1; k++) coeff(k)= (coeff(k)*inv_rho+coeff_diffusif(k)*inv_rho);
+
+          if(mat) (*mat)(som,som)+=secmem(som)*inv_rho;
+        }
+    }
+  else if (is_thermal() && fluide_dil.type_fluide()=="Gaz_Parfait")
+    {
+      fluide_dil.update_rho_cp(eqn.schema_temps().temps_courant());
+      const DoubleTab& rhoCp = eqn.get_champ("rho_cp_comme_T").valeurs();
+
+      for (int som=0 ; som<n ; som++)
+        {
+          double inv_rho = 1. / tab_rho(som);
+          if (!is_generic()) inv_rho = 1.;
+          double rapport = 1. / rhoCp(som);
+
+          // il faut multiplier toute la ligne de la matrice par rapport
+          for (int k=tab1(som)-1; k<tab1(som+1)-1; k++) coeff(k)= (coeff(k)*inv_rho+coeff_diffusif(k)*rapport);
+
+          // ajout de Tdiv(rhou )/rho
+          if(mat) (*mat)(som,som) += secmem(som)*inv_rho;
+        }
+    }
+  else
+    {
+      Cerr<<"The implicit algorithm is available only for perfect gas."<<finl;
+      Process::exit();
+    }
+
+  // on a la matrice approchee on recalcule le residu;
+  secmem=0;
+  derivee_en_temps_inco_sans_solveur_masse_impl(eqn,secmem,false /* implicit */);
+  if(mat) mat->ajouter_multvect(eqn.inconnue().valeurs(),secmem);
+}
+
 
 /*
  * Methodes statiques

@@ -193,7 +193,7 @@ public :
   virtual int  has_interface_blocs() const;
   virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
   virtual void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
-  virtual void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
+  virtual void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {});
 
   /* methodes auxiliaires de l'interface _blocs : champ conserve par l'equation et ses valeurs sur les CLs de type Dirichlet ou Neumann_val_ext
      par defaut, champ_conserve = coefficient_temporel * inconnue

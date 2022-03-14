@@ -46,6 +46,8 @@ public :
   int impr_impl(const Navier_Stokes_std& eqn,Sortie& os) const;
   void assembler_impl( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem);
   void assembler_avec_inertie_impl(const Navier_Stokes_std& eqn,Matrice_Morse& mat_morse,const DoubleTab& present,DoubleTab& secmem);
+  void assembler_blocs_avec_inertie(const Navier_Stokes_std& eqn, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl);
+
   DoubleTab& derivee_en_temps_inco_impl(Navier_Stokes_std&,DoubleTab& res);
   DoubleTab& rho_vitesse_impl(const DoubleTab& tab_rho,const DoubleTab& vit,DoubleTab& rhovitesse) const;
 
@@ -64,6 +66,7 @@ private:
                                 DoubleTab& secmem,DoubleTab& inc_pre,DoubleTab& vpoint );
   void correct_and_compute_u_np1(Navier_Stokes_std& eqn,const Fluide_Dilatable_base& fluide_dil,DoubleTab& rhoU,
                                  DoubleTab& Mmoins1grad,DoubleTab& inc_pre,DoubleTab& gradP,DoubleTab& vpoint);
+
 };
 
 #endif /* Navier_Stokes_Fluide_Dilatable_Proto_included */

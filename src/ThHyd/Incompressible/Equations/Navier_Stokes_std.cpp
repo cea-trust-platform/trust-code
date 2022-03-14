@@ -1020,6 +1020,7 @@ DoubleTab& Navier_Stokes_std::corriger_derivee_impl(DoubleTab& derivee)
 
       // dU/dt = M-1(F-Bt P(n+1))
       derivee -= Mmoins1gradP;
+
     }
 
   return derivee;
@@ -1185,7 +1186,6 @@ int Navier_Stokes_std::projection_a_faire()
 int Navier_Stokes_std::preparer_calcul()
 // assemblage du systeme en pression
 {
-  Cerr << "Navier_Stokes_std::preparer_calcul()" << finl;
   const double temps = schema_temps().temps_courant();
   sources().mettre_a_jour(temps);
   Equation_base::preparer_calcul();
@@ -1255,7 +1255,10 @@ int Navier_Stokes_std::preparer_calcul()
 
 
   Debog::verifier("Navier_Stokes_std::preparer_calcul, la_pression av projeter", la_pression.valeurs());
+
   int proj_fait=0;
+
+
   if (projection_a_faire())
     {
       Cerr << "Projection of initial and boundaries conditions " << finl;
@@ -1269,7 +1272,6 @@ int Navier_Stokes_std::preparer_calcul()
     }
   divergence_U.changer_temps(temps);
 
-
   // Au cas ou une cl de pression depend de u que l'on vient de modifier
   la_zone_Cl_dis->mettre_a_jour(temps);
   gradient.calculer(la_pression.valeurs(), gradient_P.valeurs());
@@ -1278,7 +1280,6 @@ int Navier_Stokes_std::preparer_calcul()
 
   // Initialisation du champ de pression (resolution de Laplacien(P)=0 avec les conditions limites en pression)
   // Permet de demarrer la resolution avec une bonne approximation de la pression (important pour le Piso ou P!=0)
-
   if  (methode_calcul_pression_initiale_!=3)
     if (!probleme().reprise_effectuee())
       {
@@ -1337,6 +1338,7 @@ int Navier_Stokes_std::preparer_calcul()
             solveur_masse.appliquer(vpoint);
             vpoint.echange_espace_virtuel();
             divergence.calculer(vpoint, secmem);
+
             secmem*=-1;
             secmem.echange_espace_virtuel();
 
@@ -1344,6 +1346,7 @@ int Navier_Stokes_std::preparer_calcul()
             solveur_pression_.resoudre_systeme(matrice_pression_.valeur(),secmem, inc_pre);
             // <IBM> Correction of pressure for Immersed Boundary Method
             Cerr << "Pressure increment computed successfully" << finl;
+
             if ((i_source_pdf_ != -1) && (correction_calcul_pression_initiale_ == 1))
               {
                 Cerr<<"(IBM) Immersed Interface: correction of initial pressure."<<finl;
@@ -1361,7 +1364,6 @@ int Navier_Stokes_std::preparer_calcul()
         divergence_U.valeurs()=0.;  // on remet les bons flux bords pour div
       }
   calculer_la_pression_en_pa();
-
 
   if (le_traitement_particulier.non_nul())
     le_traitement_particulier.preparer_calcul_particulier();
@@ -2078,7 +2080,7 @@ static void construire_matrice_implicite(Operateur_base& op,
 void Navier_Stokes_std::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Equation_base::dimensionner_matrice_sans_mem(matrice);
-  if (discretisation().que_suis_je() == "CoviMAC")
+  if (discretisation().que_suis_je() == "CoviMAC" || discretisation().que_suis_je() == "VDF")
     gradient.valeur().dimensionner_blocs({{ "vitesse", &matrice }});
 }
 
@@ -2097,7 +2099,18 @@ void Navier_Stokes_std::dimensionner_blocs(matrices_t matrices, const tabs_t& se
 void Navier_Stokes_std::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   Equation_base::assembler_blocs(matrices, secmem, semi_impl);
-  gradient.valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  if (discretisation().que_suis_je() == "VDF")
+    {
+      Matrice_Morse *mat = matrices.count("vitesse") ? matrices.at("vitesse") : NULL;
+      if(mat)
+        mat->ajouter_multvect(inconnue().valeurs(), secmem);
+      DoubleTab tmp(secmem);
+      tmp = 0.0;
+      gradient.valeur().ajouter_blocs(matrices, tmp, semi_impl);
+      secmem-=tmp;
+    }
+  else
+    gradient.valeur().ajouter_blocs(matrices, secmem, semi_impl);
 }
 
 DoubleTab& Navier_Stokes_std::derivee_en_temps_inco(DoubleTab& derivee)
