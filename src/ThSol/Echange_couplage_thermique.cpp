@@ -122,7 +122,7 @@ void Echange_couplage_thermique::get_dRho_dCp(int i, double& d_rho, double& d_Cp
 {
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
   Nom nom_pb=ma_zone_cl_dis->equation().probleme().que_suis_je();
-  const Champ_base& rho=mil.masse_volumique();
+  const Champ_base& rho=mil.masse_volumique().valeur();
   if ((nom_pb.debute_par("Probleme_Interface")|| nom_pb==Nom("Probleme_Thermo_Front_Tracking"))||!sub_type(Champ_Uniforme,rho)
       ||nom_pb==Nom("Pb_Conduction") || nom_pb.debute_par("Pb_Conduction_Combustible"))
     {

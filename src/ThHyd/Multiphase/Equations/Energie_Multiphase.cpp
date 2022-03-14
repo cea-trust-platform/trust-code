@@ -390,7 +390,7 @@ void Energie_Multiphase::calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val
 {
   const Equation_base& eqn = ref_cast(Equation_base, obj);
   const Fluide_base& fl = ref_cast(Fluide_base, eqn.milieu());
-  const Champ_base& ch_rho = fl.masse_volumique();
+  const Champ_base& ch_rho = fl.masse_volumique().valeur();
   const Champ_Inc_base& ch_alpha = ref_cast(Pb_Multiphase, eqn.probleme()).eq_masse.inconnue(),
                         &ch_en = ref_cast(Champ_Inc_base, fl.energie_interne()), //toujours un Champ_Inc
                          *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL; //pas toujours un Champ_Inc
@@ -429,7 +429,7 @@ void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val
 {
   const Equation_base& eqn = ref_cast(Equation_base, obj);
   const Fluide_base& fl = ref_cast(Fluide_base, eqn.milieu());
-  const Champ_base& ch_rho = fl.masse_volumique();
+  const Champ_base& ch_rho = fl.masse_volumique().valeur();
   const Champ_Inc_base& ch_alpha = ref_cast(Pb_Multiphase, eqn.probleme()).eq_masse.inconnue(),
                         &ch_h = ref_cast(Champ_Inc_base, fl.enthalpie()), //toujours un Champ_Inc
                          *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL; //pas toujours un Champ_Inc

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -112,7 +112,7 @@ void Traitement_particulier_NS_temperature_VEF::calcul_temperature()
   const DoubleTab& tab_temperature = mon_equation_NRJ.valeur().inconnue().valeurs();
 
   const DoubleTab& vitesse = pb.get_champ(Motcle("vitesse")).valeurs();
-  const Champ_base& rho_ = pb.milieu().masse_volumique();
+  const Champ_base& rho_ = pb.milieu().masse_volumique().valeur();
   const DoubleTab& rho = rho_.valeurs();
   int taille_rho=rho.dimension(0);
   const double temps = mon_equation->inconnue().temps();

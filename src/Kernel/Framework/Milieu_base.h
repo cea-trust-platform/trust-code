@@ -80,8 +80,8 @@ public:
   virtual void abortTimeStep();
   virtual int initialiser(const double& temps);
   virtual void associer_gravite(const Champ_Don_base& );
-  virtual const Champ_base& masse_volumique() const;
-  virtual Champ_base&       masse_volumique();
+  virtual const Champ& masse_volumique() const;
+  virtual Champ&       masse_volumique();
   virtual const Champ_Don& diffusivite() const;
   virtual Champ_Don&       diffusivite();
   virtual const Champ_Don& conductivite() const;

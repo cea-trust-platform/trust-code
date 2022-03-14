@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@ Entree& Champ_front_debit_massique::readOn(Entree& is)
 void Champ_front_debit_massique::initialiser_coefficient(const Champ_Inc_base& inco, double temps)
 {
   Champ_front_debit::initialiser_coefficient(inco, temps);
-  ch_rho = &inco.equation().milieu().masse_volumique();
+  ch_rho = &inco.equation().milieu().masse_volumique().valeur();
   if (sub_type(Champ_Uniforme, *ch_rho)) //rho constant : on calcule le coeff maintenant, puis on ne le fait plus
     update_coeff(temps), update_coeff_ = false;
   else update_coeff_ = true;

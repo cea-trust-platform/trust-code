@@ -123,8 +123,8 @@ return 1 ; \
     if (equation_divisee_par_rho())                                        \
       {                                                                        \
         const Milieu_base& milieu = la_zcl->equation().milieu();        \
-        const Champ_base& rho = milieu.masse_volumique();                \
-        if (sub_type(Champ_Uniforme,rho))                        \
+        const Champ& rho = milieu.masse_volumique();                \
+        if (sub_type(Champ_Uniforme, rho.valeur()))                        \
           coef = rho(0,0);                                                \
         else                                                                \
           {                                                                \

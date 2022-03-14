@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,7 +75,7 @@ Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
 void Loi_Etat_rhoT_GP_QC::initialiser_rho()
 {
   int isVDF = 0;
-  if (le_fluide->masse_volumique().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
+  if (le_fluide->masse_volumique().valeur().que_suis_je()=="Champ_Fonc_P0_VDF") isVDF = 1;
   // We know that mu is always stored on elems
   int nb_elems = le_fluide->viscosite_dynamique().valeurs().size();
   // The Champ_Don rho_xyz_ is evaluated on elements
@@ -94,7 +94,7 @@ void Loi_Etat_rhoT_GP_QC::initialiser_rho()
       int nb_faces =  le_fluide->masse_volumique().valeurs().size(); // rho on faces in VEF
       rho_.resize(nb_faces, 1);
 
-      Champ_base& ch_rho = le_fluide->masse_volumique();
+      Champ_base& ch_rho = le_fluide->masse_volumique().valeur();
       ch_rho.affecter_(rho_xyz_);
       DoubleTab& fld = ch_rho.valeurs();
       for (int i = 0; i < nb_faces; i++) rho_(i,0)= fld(i,0);

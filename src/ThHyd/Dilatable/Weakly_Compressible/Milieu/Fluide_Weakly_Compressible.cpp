@@ -214,7 +214,7 @@ void Fluide_Weakly_Compressible::initialiser_pth_xyz(const Probleme_base& pb)
   else
     {
       // we use rho for affecter because the field is on the faces in VEF (as rho)
-      Champ_base& ch_rho = masse_volumique();
+      Champ_base& ch_rho = masse_volumique().valeur();
       ch_rho.affecter_(Pth_xyz_);
       Pth_tab_=Pth_n_tab_=ch_rho.valeurs();
     }

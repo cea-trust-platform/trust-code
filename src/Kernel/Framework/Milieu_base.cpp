@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -557,7 +557,7 @@ int Milieu_base::initialiser(const double& temps)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-const Champ_base& Milieu_base::masse_volumique() const
+const Champ& Milieu_base::masse_volumique() const
 {
   return rho;
 }
@@ -576,7 +576,7 @@ const Champ_base& Milieu_base::masse_volumique() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-Champ_base& Milieu_base::masse_volumique()
+Champ& Milieu_base::masse_volumique()
 {
   return rho;
 }

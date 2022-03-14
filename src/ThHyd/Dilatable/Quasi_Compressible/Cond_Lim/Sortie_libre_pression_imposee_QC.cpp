@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -128,9 +128,9 @@ Entree& Sortie_libre_pression_imposee_QC::readOn(Entree& s )
 void Sortie_libre_pression_imposee_QC::completer()
 {
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-  if (sub_type(Champ_Uniforme,mil.masse_volumique()))
+  if (sub_type(Champ_Uniforme,mil.masse_volumique().valeur()))
     {
-      const Champ_Uniforme& rho=ref_cast(Champ_Uniforme,mil.masse_volumique());
+      const Champ_Uniforme& rho=ref_cast(Champ_Uniforme,mil.masse_volumique().valeur());
       d_rho = rho(0,0);
     }
   else
@@ -159,7 +159,7 @@ void Sortie_libre_pression_imposee_QC::completer()
 double Sortie_libre_pression_imposee_QC::flux_impose(int i) const
 {
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-  const Champ_base& rho=mil.masse_volumique();
+  const Champ_base& rho=mil.masse_volumique().valeur();
   double rho_;
   if (d_rho==-1) rho_ = rho(i);
   else rho_ = d_rho;
@@ -200,7 +200,7 @@ double Sortie_libre_pression_imposee_QC::flux_impose(int i) const
 double Sortie_libre_pression_imposee_QC::flux_impose(int i,int j) const
 {
   const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-  const Champ_base& rho=mil.masse_volumique();
+  const Champ_base& rho=mil.masse_volumique().valeur();
   double rho_;
 
   if (d_rho==-1) rho_ = rho(i);

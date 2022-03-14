@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,7 +68,7 @@ int Champ_front_pression_from_u::initialiser(double tps, const Champ_Inc_base& i
   const Milieu_base& mil=inco.equation().milieu();
   if (sub_type(Fluide_Incompressible,mil))
     {
-      if ((sub_type(Champ_Uniforme,mil.masse_volumique())))
+      if ((sub_type(Champ_Uniforme,mil.masse_volumique().valeur())))
         {
 
 

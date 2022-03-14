@@ -159,7 +159,7 @@ double Echange_global_impose::champ_exterieur(int i, const Champ_front& champ_ex
       Nom nom_pb=ma_zone_cl_dis->equation().probleme().que_suis_je();
       double d_Cp;
       double d_rho;
-      const Champ_base& rho=mil.masse_volumique();
+      const Champ_base& rho=mil.masse_volumique().valeur();
       if ((nom_pb.debute_par("Probleme_Interface")|| nom_pb==Nom("Probleme_Thermo_Front_Tracking"))||!sub_type(Champ_Uniforme,rho)||nom_pb==Nom("Pb_Conduction"))
         {
           // Pour le front tracking, on ne divise pas par Rho*Cp
@@ -220,7 +220,7 @@ double Echange_global_impose::champ_exterieur(int i,int j, const Champ_front& ch
       Nom nom_pb=ma_zone_cl_dis->equation().probleme().que_suis_je();
       double d_Cp;
       double d_rho;
-      const Champ_base& rho=mil.masse_volumique();
+      const Champ_base& rho=mil.masse_volumique().valeur();
       if ((nom_pb.debute_par("Probleme_Interface")|| nom_pb==Nom("Probleme_Thermo_Front_Tracking"))||!sub_type(Champ_Uniforme,rho)||nom_pb==Nom("Pb_Conduction"))
         {
           // Pour le front tracking, on ne divise pas par Rho*Cp

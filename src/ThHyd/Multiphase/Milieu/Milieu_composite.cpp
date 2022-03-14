@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -298,14 +298,14 @@ void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
   for (i = 0; i < Ni; i++) for (n = 0; n < N; n++) val(i, n) = (*split[n])(i * (split[n]->dimension(0) > 1), 0);
 
   std::vector<DoubleTab> bsplit(N);
-  for (n = 0; n < N; n++) if (mil.fluides[n].masse_volumique().a_une_zone_dis_base())
-      bsplit[n] = mil.fluides[n].masse_volumique().valeur_aux_bords();
-    else bsplit[n].resize(bval.dimension_tot(0), 1), mil.fluides[n].masse_volumique().valeur_aux(zvf.xv_bord(), bsplit[n]);
+  for (n = 0; n < N; n++) if (mil.fluides[n].masse_volumique()->a_une_zone_dis_base())
+      bsplit[n] = mil.fluides[n].masse_volumique()->valeur_aux_bords();
+    else bsplit[n].resize(bval.dimension_tot(0), 1), mil.fluides[n].masse_volumique()->valeur_aux(zvf.xv_bord(), bsplit[n]);
   for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = bsplit[n](i * (split[n]->dimension(0) > 1), 0);
 
   /* derivees */
   std::vector<const tabs_t *> split_der(N);
-  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n].masse_volumique()) ? &ref_cast(Champ_Inc_base, mil.fluides[n].masse_volumique()).derivees() : NULL;
+  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n].masse_volumique().valeur()) ? &ref_cast(Champ_Inc_base, mil.fluides[n].masse_volumique().valeur()).derivees() : NULL;
   std::set<std::string> noms_der;
   for (n = 0; n < N; n++) if (split_der[n]) for (auto &&n_d : *split_der[n]) noms_der.insert(n_d.first);
   for (auto &&nom : noms_der)

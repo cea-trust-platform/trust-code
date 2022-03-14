@@ -51,7 +51,7 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem() const
       if (!is_concentration)
         {
           const int Ccp = sub_type(Champ_Uniforme, mon_equation->milieu().capacite_calorifique().valeur());
-          const int Cr = sub_type(Champ_Uniforme, mon_equation->milieu().masse_volumique());
+          const int Cr = sub_type(Champ_Uniforme, mon_equation->milieu().masse_volumique().valeur());
           const DoubleTab& tab_Cp = mon_equation->milieu().capacite_calorifique().valeurs(), tab_r = mon_equation->milieu().masse_volumique().valeurs();
           rcp = tab_r(Cr ? 0 : elem, 0) * tab_Cp(Ccp ? 0 : elem, 0);
         }

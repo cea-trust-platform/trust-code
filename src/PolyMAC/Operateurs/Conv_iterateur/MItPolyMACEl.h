@@ -915,7 +915,7 @@ modifier_flux() ;  						\
       {                                                                        \
         DoubleTab& flux_bords=op_base->flux_bords();                        \
         const Zone_PolyMAC& la_zone_vdf=ref_cast(Zone_PolyMAC,op_base->equation().zone_dis().valeur());        \
-        const Champ_base& rho = (op_base->equation()).milieu().masse_volumique(); \
+        const Champ_base& rho = (op_base->equation()).milieu().masse_volumique().valeur(); \
         const Champ_Don& Cp = (op_base->equation()).milieu().capacite_calorifique(); \
         const IntTab& face_voisins=la_zone_vdf.face_voisins();                \
         int rho_uniforme=(sub_type(Champ_Uniforme,rho) ? 1:0); \

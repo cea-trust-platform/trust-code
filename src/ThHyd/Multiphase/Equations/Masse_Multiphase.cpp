@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -327,7 +327,7 @@ void Masse_Multiphase::associer_fluide(const Fluide_base& un_fluide)
 void Masse_Multiphase::calculer_alpha_rho(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
   const Equation_base& eqn = ref_cast(Equation_base, obj);
-  const Champ_base& ch_rho = eqn.milieu().masse_volumique();
+  const Champ_base& ch_rho = eqn.milieu().masse_volumique().valeur();
   const Champ_Inc_base& ch_alpha = eqn.inconnue(), *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL;
   const DoubleTab& alpha = ch_alpha.valeurs(), &rho = ch_rho.valeurs();
   int i, nl = val.dimension_tot(0), n, N = val.line_size(), cR = sub_type(Champ_Uniforme, ch_rho);

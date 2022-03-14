@@ -224,7 +224,7 @@ inline void T_It_VDF_Face<_TYPE_>::multiply_by_rho_if_hydraulique(DoubleTab& tab
   /* Modif B.Mathieu pour front-tracking: masse_volumique() invalide en f.t.*/
   if (nom_eqn.debute_par("Navier_Stokes") && nom_eqn!="Navier_Stokes_Melange" && nom_eqn!="Navier_Stokes_FT_Disc")
     {
-      const Champ_base& rho = la_zcl->equation().milieu().masse_volumique();
+      const Champ_base& rho = la_zcl->equation().milieu().masse_volumique().valeur();
       if (sub_type(Champ_Uniforme,rho))
         {
           const double coef = rho(0,0);

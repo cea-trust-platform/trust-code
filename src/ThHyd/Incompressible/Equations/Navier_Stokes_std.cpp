@@ -1580,7 +1580,7 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
 {
   DoubleTab& Pa=la_pression_en_pa.valeurs();
   DoubleTab& tab_pression=la_pression.valeurs();
-  const Champ_base& rho=milieu().masse_volumique();
+  const Champ_base& rho=milieu().masse_volumique().valeur();
   Pa = tab_pression;
   // On multiplie par rho si uniforme sinon deja en Pa...
   if (sub_type(Champ_Uniforme,rho))
@@ -1830,7 +1830,7 @@ void  Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hy
       Cerr<<"postprocessing of presion_hydrostatique needs gravity"<<finl;
       exit();
     }
-  const Champ_base& rho = milieu().masse_volumique();
+  const Champ_base& rho = milieu().masse_volumique().valeur();
   if (!sub_type(Champ_Uniforme,rho))
     {
       Cerr<<"postprocessing of presion_hydrostatique availabe only for incompressible flow"<<finl;

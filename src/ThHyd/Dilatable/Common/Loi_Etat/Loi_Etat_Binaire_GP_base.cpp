@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -167,7 +167,7 @@ void Loi_Etat_Binaire_GP_base::calculer_mu_sur_Sc()
    */
 
   Champ_Don& mu_sur_Sc = le_fluide->mu_sur_Schmidt();
-  const Champ_base& rho = le_fluide->masse_volumique();
+  const Champ_base& rho = le_fluide->masse_volumique().valeur();
   DoubleTab& tab_mu_sur_Sc = mu_sur_Sc.valeurs();
   const DoubleTab& tab_rho = rho.valeurs();
   const int n=tab_mu_sur_Sc.size();
