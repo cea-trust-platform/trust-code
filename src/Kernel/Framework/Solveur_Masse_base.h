@@ -108,8 +108,8 @@ public :
 protected :
   Nom name_of_coefficient_temporel_; // nom du coefficient temporelle
   int has_coefficient_temporel_;
-private:
   mutable double penalisation_;
+  mutable int prems_;
 };
 
 #endif
