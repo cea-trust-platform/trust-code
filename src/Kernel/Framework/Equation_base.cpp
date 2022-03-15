@@ -385,9 +385,9 @@ void Equation_base::ecrire_fichier_xyz() const
   for (int numero_champ_xyz=0; numero_champ_xyz<nombre_champ_xyz; numero_champ_xyz++)
     {
       Noms vide;
-      const double& dt_ecrire_fic = dt_ecrire_fic_xyz[numero_champ_xyz];
+      const double dt_ecrire_fic = dt_ecrire_fic_xyz[numero_champ_xyz];
       const Motcle& nom_champ = nom_champ_xyz[numero_champ_xyz];
-      const int& nb_bords_post = nb_bords_post_xyz[numero_champ_xyz];
+      const int nb_bords_post = nb_bords_post_xyz[numero_champ_xyz];
       const Noms& noms_bord = (nb_bords_post?noms_bord_xyz[numero_champ_xyz]:vide);
 
       REF(Champ_base) champ_a_ecrire;
@@ -646,7 +646,7 @@ Entree& Equation_base::lire_cond_init(Entree& is)
     }
   Champ_Don ch_init;
   is >> ch_init;
-  const int& nb_comp = ch_init.nb_comp();
+  const int nb_comp = ch_init.nb_comp();
   verifie_ch_init_nb_comp(inconnue(),nb_comp);
 
   //Cerr<<"inconnue().valeur().que_suis_je() = "<<inconnue().valeur().que_suis_je()<<finl;

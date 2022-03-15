@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,7 +89,7 @@ void Segment::reordonner()
   const Domaine& dom=zone.domaine();
   ArrOfInt S(2);
   int i;
-  const int& nb_elem=zone.nb_elem();
+  const int nb_elem=zone.nb_elem();
   for (int num_poly=0; num_poly<nb_elem; num_poly++)
     {
       for(i=0; i<2; i++)

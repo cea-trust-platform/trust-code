@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -305,14 +305,14 @@ void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& merge
   liste_send.set_smart_resize(1);
   liste_recv.set_smart_resize(1);
 
-  const int& moi = Process::me();
-  const int& myZoneWasMerged = mergedZones[moi];
+  const int moi = Process::me();
+  const int myZoneWasMerged = mergedZones[moi];
 
   for (int i_joint = 0; i_joint < nb_joints; i_joint++)
     {
 
-      const int& pe_voisin = joints[i_joint].PEvoisin();
-      const int& neighbourZoneWasMerged = mergedZones[pe_voisin];
+      const int pe_voisin = joints[i_joint].PEvoisin();
+      const int neighbourZoneWasMerged = mergedZones[pe_voisin];
       if(myZoneWasMerged && neighbourZoneWasMerged)
         {
           if(pe_voisin < moi)
@@ -353,7 +353,7 @@ void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& merge
     for (int i = 0; i < nb_joints; i++)
       {
         const int pe_voisin = joints[i].PEvoisin();
-        const int& neighbourZoneWasMerged = mergedZones[pe_voisin];
+        const int neighbourZoneWasMerged = mergedZones[pe_voisin];
         if( neighbourZoneWasMerged && !(myZoneWasMerged && pe_voisin<moi) )
           {
             Sortie& buffer = schema_comm.send_buffer(pe_voisin);
@@ -367,7 +367,7 @@ void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& merge
         for (int i = 0; i < nb_joints; i++)
           {
             const int pe_voisin = joints[i].PEvoisin();
-            const int& neighbourZoneWasMerged = mergedZones[pe_voisin];
+            const int neighbourZoneWasMerged = mergedZones[pe_voisin];
             if(!(neighbourZoneWasMerged && pe_voisin>moi))
               {
                 Entree& buffer = schema_comm.recv_buffer(pe_voisin);
@@ -386,7 +386,7 @@ void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& merge
         {
 
           const int pe_voisin = joints[i_joint].PEvoisin();
-          const int& neighbourZoneWasMerged = mergedZones[pe_voisin];
+          const int neighbourZoneWasMerged = mergedZones[pe_voisin];
           if(neighbourZoneWasMerged && pe_voisin>moi)
             continue;
           ArrOfInt& items_communs = dom.zone(0).faces_joint()[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
@@ -480,7 +480,7 @@ void Scatter::mergeDomains(Domaine& dom, Domaine& dom_to_add)
       dom.zones().merge();
 
       //merging common vertices and remote items
-      const int& nb_joints = dom_to_add.zone(0).nb_joints();
+      const int nb_joints = dom_to_add.zone(0).nb_joints();
       for (int i_joint = 0; i_joint < nb_joints; i_joint++)
         {
           const Joint& joint_to_add  = dom_to_add.zone(0).faces_joint()[i_joint];

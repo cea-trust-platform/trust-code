@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1390,7 +1390,7 @@ int Postraitement::postraiter_champs()
       const Noms nom_post = champ.get_property("nom");
       const Noms& unites = champ.get_property("unites");
       const Noms& noms_compo = champ.get_property("composantes");
-      const double& temps_champ = champ.get_time();
+      const double temps_champ = champ.get_time();
       int tenseur = champ.get_info_type_post();
 
       //Etape pour savoir si on doit postraiter un champ ou une de ses composantes

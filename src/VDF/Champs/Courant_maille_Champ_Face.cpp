@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ inline double valeur(const DoubleTab& champ, const int& face, const int& compo, 
 
 void Courant_maille_Champ_Face::mettre_a_jour(double tps)
 {
-  const int& nb_faces = zone_vdf().nb_faces();
+  const int nb_faces = zone_vdf().nb_faces();
   DoubleTab& co = valeurs(); // Courant de maille
   double dt = sch_->pas_de_temps();
   // Boucle sur les faces

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -524,7 +524,7 @@ void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, Dou
                     //assert(j!=(som*nb_comp+comp));
                     //if ((j>=(som*nb_comp))&&(j<(som*nb_comp+nb_comp)))
 
-                    const    double& coef_ij=la_matrice(som*nb_comp+comp,j);
+                    const    double coef_ij=la_matrice(som*nb_comp+comp,j);
                     int som2=j/nb_comp;
                     int comp2=j-som2*nb_comp;
                     secmem(som,comp)-=coef_ij*champ_inconnue(som2,comp2);
@@ -615,7 +615,7 @@ void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, Dou
                     int som2=j/nb_comp;
                     int comp2=j-som2*nb_comp;
 
-                    const    double& coef_ij=la_matrice(som*nb_comp+comp,j);
+                    const    double coef_ij=la_matrice(som*nb_comp+comp,j);
                     secmem(som,comp)+=coef_ij*champ_inconnue(som2,comp2);
 
                   }

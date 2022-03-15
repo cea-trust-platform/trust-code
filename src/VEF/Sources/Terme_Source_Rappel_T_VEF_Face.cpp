@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -184,7 +184,7 @@ DoubleTab& Terme_Source_Rappel_T_VEF_Face::ajouter(DoubleTab& resu) const
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = la_zone_Cl_VEF->volumes_entrelaces_Cl();
   const DoubleTab& xv=zone_VEF.xv() ;
-  const double& dt = mon_equation->schema_temps().pas_de_temps();
+  const double dt = mon_equation->schema_temps().pas_de_temps();
 
   const DoubleVect& volumes_autre_pb = zone_VEF_autre_pb->volumes();
 

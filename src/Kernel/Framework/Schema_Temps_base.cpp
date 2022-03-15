@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1089,7 +1089,7 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
     mp_max_abs_tab(tab_critere, residu_equation);
 
   DoubleTab tab_critere_abs(tab_critere);
-  const int& n = tab_critere_abs.dimension_tot(0);
+  const int n = tab_critere_abs.dimension_tot(0);
   if(size == 1)
     for(int i=0; i< n; i++)
       tab_critere_abs(i) = std::fabs(tab_critere_abs(i));

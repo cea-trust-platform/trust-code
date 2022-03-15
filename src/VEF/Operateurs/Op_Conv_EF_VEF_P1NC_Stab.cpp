@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -192,8 +192,8 @@ static inline double Dij(int elem,
                          int face_loc_j,
                          const DoubleTab& Kij)
 {
-  const double& kij=Kij(elem,face_loc_i,face_loc_j);
-  const double& kji=Kij(elem,face_loc_j,face_loc_i);
+  const double kij=Kij(elem,face_loc_i,face_loc_j);
+  const double kji=Kij(elem,face_loc_j,face_loc_i);
   return maximum(-kij,-kji,0);
 }
 
@@ -393,7 +393,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
                     const int elem=face_voisins(face,0);
                     assert(elem!=-1);
 
-                    const int& nb_faces_bord = elem_nb_faces_dirichlet_(elem);
+                    const int nb_faces_bord = elem_nb_faces_dirichlet_(elem);
 
                     //
                     //Calcul du coefficient ponderateur
@@ -429,7 +429,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
                                     assert(face_loc_k<nb_faces_elem);
 
                                     double& kij = Kij(elem,face_loc_i,face_loc_j);
-                                    const double& kkj = Kij(elem,face_loc_k,face_loc_j);
+                                    const double kkj = Kij(elem,face_loc_k,face_loc_j);
                                     kij+=coeff*kkj;
 
                                   }//fin du for sur "f_loc"
@@ -1105,14 +1105,14 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_Kij(const DoubleTab& transporte, 
                     assert(face_loc_j>=0);
                     assert(face_loc_j<nb_faces_elem);
                     assert(elem_faces(elem,face_loc_j)==face);
-                    const double& kjj=Kij_ancien(elem,face_loc_j,face_loc_j);
+                    const double kjj=Kij_ancien(elem,face_loc_j,face_loc_j);
                     for (int face_loc_i=0; face_loc_i<nb_faces_elem; face_loc_i++)
                       {
                         int face_i=elem_faces(elem,face_loc_i);
                         if(face_i!=face)
                           {
                             double& kii=Kij_ancien(elem,face_loc_i,face_loc_i);
-                            const double& kji=Kij_ancien(elem,face_loc_j,face_loc_i);
+                            const double kji=Kij_ancien(elem,face_loc_j,face_loc_i);
                             kii+=coeff*kji;
                             double& kij=Kij_ancien(elem,face_loc_i,face_loc_j);
                             kij+=coeff*kjj;
@@ -1122,7 +1122,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_Kij(const DoubleTab& transporte, 
                                 if(face_k!=face)
                                   {
                                     double& kik=Kij_ancien(elem,face_loc_i,face_loc_k);
-                                    const double& kjk=Kij_ancien(elem,face_loc_j,face_loc_k);
+                                    const double kjk=Kij_ancien(elem,face_loc_j,face_loc_k);
                                     double& kki=Kij_ancien(elem,face_loc_k,face_loc_i);
                                     kik+=coeff*kjk;
                                     kki+=coeff*kji;
@@ -1347,8 +1347,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
             if(face_locj!=face_loci)
               {
                 face_j0=elem_faces(elem,face_locj);
-                const double& kij=Kij_ancien(elem,face_loci,face_locj);
-                const double& kji=Kij_ancien(elem,face_locj,face_loci);
+                const double kij=Kij_ancien(elem,face_loci,face_locj);
+                const double kji=Kij_ancien(elem,face_locj,face_loci);
                 double dij=Dij(elem,face_loci,face_locj,Kij_ancien);
                 double lji=kji+dij;
                 double lij=kij+dij;
@@ -1357,8 +1357,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
 
                 for(comp0=0; comp0<nb_comp; comp0++)
                   {
-                    const double& Ti=transporte(face_i0,comp0);
-                    const double& Tj=transporte(face_j0,comp0);
+                    const double Ti=transporte(face_i0,comp0);
+                    const double Tj=transporte(face_j0,comp0);
                     double deltaij=Ti-Tj;
                     double Fij=0;
                     if(lij<=lji)
@@ -1689,14 +1689,14 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                 assert(face_loc_j>=0);
                 assert(face_loc_j<nb_faces_elem);
                 assert(elem_faces(elem,face_loc_j)==face);
-                const double& kjj=Kij(elem,face_loc_j,face_loc_j);
+                const double kjj=Kij(elem,face_loc_j,face_loc_j);
                 for (int face_loc_i=0; face_loc_i<nb_faces_elem; face_loc_i++)
                   {
                     int face_i=elem_faces(elem,face_loc_i);
                     if(face_i!=face)
                       {
                         double& kii=Kij(elem,face_loc_i,face_loc_i);
-                        const double& kji=Kij(elem,face_loc_j,face_loc_i);
+                        const double kji=Kij(elem,face_loc_j,face_loc_i);
                         kii+=coeff*kji;
                         double& kij=Kij(elem,face_loc_i,face_loc_j);
                         kij+=coeff*kjj;
@@ -1706,7 +1706,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                             if(face_k!=face)
                               {
                                 double& kik=Kij(elem,face_loc_i,face_loc_k);
-                                const double& kjk=Kij(elem,face_loc_j,face_loc_k);
+                                const double kjk=Kij(elem,face_loc_j,face_loc_k);
                                 double& kki=Kij(elem,face_loc_k,face_loc_i);
                                 kik+=coeff*kjk;
                                 kki+=coeff*kji;
@@ -1894,8 +1894,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
             if(face_locj!=face_loci)
               {
                 face_j0=elem_faces(elem0,face_locj);
-                const double& kij=Kij(elem0,face_loci,face_locj);
-                const double& kji=Kij(elem0,face_locj,face_loci);
+                const double kij=Kij(elem0,face_loci,face_locj);
+                const double kji=Kij(elem0,face_locj,face_loci);
                 double dij=Dij(elem0,face_loci,face_locj,Kij);
                 double lji=kji+dij;
                 double lij=kij+dij;
@@ -1904,8 +1904,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
 
                 for(comp0=0; comp0<nb_comp; comp0++)
                   {
-                    const double& Ti=transporte(face_i0,comp0);
-                    const double& Tj=transporte(face_j0,comp0);
+                    const double Ti=transporte(face_i0,comp0);
+                    const double Tj=transporte(face_j0,comp0);
                     double deltaij=Ti-Tj;
                     double Fij=0;
                     if(lij<=lji)

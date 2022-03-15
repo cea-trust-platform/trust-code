@@ -353,9 +353,9 @@ void Zone_VF::construire_num_fac_loc()
                 int nb_faces_elem = elem_faces_.dimension(1);
                 for (face_loc=0; face_loc<nb_faces_elem; face_loc++)
                   {
-                    const int& face_glob = elem_faces(elem,face_loc);
-                    const int& elem_voisin1 = face_voisins(face_glob,0);
-                    const int& elem_voisin2 = face_voisins(face_glob,1);
+                    const int face_glob = elem_faces(elem,face_loc);
+                    const int elem_voisin1 = face_voisins(face_glob,0);
+                    const int elem_voisin2 = face_voisins(face_glob,1);
                     if (elem_voisin1==elem2 || elem_voisin2==elem2)
                       {
                         num_fac_loc_(face,voisin) = face_loc;
@@ -645,7 +645,7 @@ void Zone_VF::remplir_face_numero_bord()
   face_numero_bord_=-1; // init for inner faces.
   Zone& lazone=zone();
   int ndeb, nfin, num_face;
-  const int& nb_bords = lazone.nb_bords();
+  const int nb_bords = lazone.nb_bords();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Bord& le_bord = lazone.bord(n_bord);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -116,7 +116,7 @@ int inverser_par_diagonale(const Matrice_Morse& matrice,const DoubleTrav& resu,c
                   int j1 = (tab2(k)-1)-i1*nb_comp;
                   t -= coeff(k)*current(i1,j1);
                 }
-              const double& diagonal_coefficient = matrice(i*nb_comp+j,i*nb_comp+j);
+              const double diagonal_coefficient = matrice(i*nb_comp+j,i*nb_comp+j);
               assert(diagonal_coefficient!=0);
               correction_en_vitesse(i,j) = t/diagonal_coefficient;
             }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -145,10 +145,10 @@ inline void inverse(const DoubleTab& mat, ArrOfDouble& x)
   int dimension = x.size_array();
   if (dimension==2)
     {
-      const double& a=mat(0,0);
-      const double& b=mat(0,1);
-      const double& c=mat(0,2);
-      const double& d=mat(0,3);
+      const double a=mat(0,0);
+      const double b=mat(0,1);
+      const double c=mat(0,2);
+      const double d=mat(0,3);
       double det=a*d-b*c;
       if (det==0)
         {
@@ -163,15 +163,15 @@ inline void inverse(const DoubleTab& mat, ArrOfDouble& x)
     }
   else if (dimension==3)
     {
-      const double& a=mat(0,0);
-      const double& b=mat(0,1);
-      const double& c=mat(0,2);
-      const double& d=mat(0,3);
-      const double& e=mat(0,4);
-      const double& f=mat(0,5);
-      const double& g=mat(0,6);
-      const double& h=mat(0,7);
-      const double& i=mat(0,8);
+      const double a=mat(0,0);
+      const double b=mat(0,1);
+      const double c=mat(0,2);
+      const double d=mat(0,3);
+      const double e=mat(0,4);
+      const double f=mat(0,5);
+      const double g=mat(0,6);
+      const double h=mat(0,7);
+      const double i=mat(0,8);
 
       double det=a*(e*i-f*h)
                  -b*(d*i-f*g)

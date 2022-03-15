@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -179,7 +179,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init()
   const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
   const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
   int nb_faces = zone_VDF.nb_faces();
-  const double& tps = mon_equation->schema_temps().temps_courant();
+  const double tps = mon_equation->schema_temps().temps_courant();
 
 
   int nb_elems = zone_VDF.nb_elem();
@@ -562,7 +562,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::ecriture_moy_spat(DoubleVect& champ_s
                                                              DoubleVect& champ_spat_z, DoubleVect& champ_spat_x_2,
                                                              DoubleVect& champ_spat_y_2, DoubleVect& champ_spat_z_2)
 {
-  const double& tps = mon_equation->schema_temps().temps_courant();
+  const double tps = mon_equation->schema_temps().temps_courant();
   Nom temps = Nom(tps);
 
   Nom nom_ficx ="moy_spat_force_x_";
@@ -593,7 +593,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::ecriture_moy_temp(DoubleVect& champ_t
                                                              DoubleVect& champ_temp_y_2, DoubleVect& champ_temp_z_2,
                                                              const double& dt)
 {
-  const double& tps = mon_equation->schema_temps().temps_courant();
+  const double tps = mon_equation->schema_temps().temps_courant();
   Nom temps = Nom(tps);
 
   Nom nom_ficx ="moy_temp_force_x_";
@@ -625,9 +625,9 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
 
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  const double& dt = mon_equation->schema_temps().pas_de_temps();
-  const double& tps = mon_equation->schema_temps().temps_courant();
-  const double& dt_min = mon_equation->schema_temps().pas_temps_min();
+  const double dt = mon_equation->schema_temps().pas_de_temps();
+  const double tps = mon_equation->schema_temps().temps_courant();
+  const double dt_min = mon_equation->schema_temps().pas_temps_min();
 
   const IntVect& orientation = zone_VDF.orientation();
   int nb_elems = zone_VDF.nb_elem();
@@ -1075,9 +1075,9 @@ DoubleTab& Terme_Source_Canal_RANS_LES_VDF_Face::ajouter(DoubleTab& resu) const
   int nb_faces = zone_VDF.nb_faces();
   const DoubleVect& porosite_surf = zone_VDF.porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
-  const double& tps = mon_equation->schema_temps().temps_courant();
-  const double& dt = mon_equation->schema_temps().pas_de_temps();
-  const double& dt_min = mon_equation->schema_temps().pas_temps_min();
+  const double tps = mon_equation->schema_temps().temps_courant();
+  const double dt = mon_equation->schema_temps().pas_de_temps();
+  const double dt_min = mon_equation->schema_temps().pas_temps_min();
 
   //  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
 

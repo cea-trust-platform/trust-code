@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -168,7 +168,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::init()
 {
   const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
   const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
-  const double& tps = mon_equation->schema_temps().temps_courant();
+  const double tps = mon_equation->schema_temps().temps_courant();
 
   int nb_elems = zone_VDF.nb_elem();
 
@@ -242,10 +242,10 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::mettre_a_jour(double temps)
   //vitesse=temperature
 
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  const double& dt = mon_equation->schema_temps().pas_de_temps();
-  const double& tps = mon_equation->schema_temps().temps_courant();
+  const double dt = mon_equation->schema_temps().pas_de_temps();
+  const double tps = mon_equation->schema_temps().temps_courant();
   int nb_elems = zone_VDF.nb_elem();
-  const double& dt_min = mon_equation->schema_temps().pas_temps_min();
+  const double dt_min = mon_equation->schema_temps().pas_temps_min();
 
   int cptbis=0;
 
@@ -354,9 +354,9 @@ DoubleTab& Terme_Source_Canal_RANS_LES_VDF_Elem::ajouter(DoubleTab& resu) const
   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
   int nb_elems = zone_VDF.nb_elem();
   const DoubleVect& volume = zone_VDF.volumes();
-  const double& tps = mon_equation->schema_temps().temps_courant();
-  const double& dt = mon_equation->schema_temps().pas_de_temps();
-  const double& dt_min = mon_equation->schema_temps().pas_temps_min();
+  const double tps = mon_equation->schema_temps().temps_courant();
+  const double dt = mon_equation->schema_temps().pas_de_temps();
+  const double dt_min = mon_equation->schema_temps().pas_temps_min();
 
   //vitesse=temperature
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();

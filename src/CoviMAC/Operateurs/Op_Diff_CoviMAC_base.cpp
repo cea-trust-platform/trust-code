@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,7 +94,7 @@ void Op_Diff_CoviMAC_base::completer()
 int Op_Diff_CoviMAC_base::impr(Sortie& os) const
 {
   const Zone& ma_zone=la_zone_poly_->zone();
-  const int& impr_mom=ma_zone.Moments_a_imprimer();
+  const int impr_mom=ma_zone.Moments_a_imprimer();
   const int impr_sum=(ma_zone.Bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(ma_zone.Bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl_poly_->equation().probleme().schema_temps();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -233,8 +233,8 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
           double res = 0;
           if (nb_nodes_per_cell == 4)
             {
-              const double& i = coord_bar[0];
-              const double& j = coord_bar[1];
+              const double i = coord_bar[0];
+              const double j = coord_bar[1];
               double unmi = 1. - i;
               double unmj = 1. - j;
 
@@ -244,9 +244,9 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
           else
             {
               assert(Objet_U::dimension == 3);
-              const double& i = coord_bar[0];
-              const double& j = coord_bar[1];
-              const double& kk = coord_bar[2];
+              const double i = coord_bar[0];
+              const double j = coord_bar[1];
+              const double kk = coord_bar[2];
               double unmi = 1. - i;
               double unmj = 1. - j;
               double unmk = 1. - kk;

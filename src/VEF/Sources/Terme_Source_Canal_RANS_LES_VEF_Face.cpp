@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -218,7 +218,7 @@ void Terme_Source_Canal_RANS_LES_VEF_Face::init()
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   int nb_faces = zone_VEF.nb_faces();
   const DoubleTab& xv = zone_VEF.xv();
-  const double& tps = mon_equation->schema_temps().temps_courant();
+  const double tps = mon_equation->schema_temps().temps_courant();
 
   double x1,x2;
   int comp1=0;
@@ -312,9 +312,9 @@ void Terme_Source_Canal_RANS_LES_VEF_Face::mettre_a_jour(double temps)
   //  const DoubleTab& xv = zone_VEF.xv();
 
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  const double& dt = mon_equation->schema_temps().pas_de_temps();
-  const double& dt_min = mon_equation->schema_temps().pas_temps_min();
-  const double& tps = mon_equation->schema_temps().temps_courant();
+  const double dt = mon_equation->schema_temps().pas_de_temps();
+  const double dt_min = mon_equation->schema_temps().pas_temps_min();
+  const double tps = mon_equation->schema_temps().temps_courant();
   int nb_faces = zone_VEF.nb_faces();
 
   static int cpt=0;
@@ -413,9 +413,9 @@ DoubleTab& Terme_Source_Canal_RANS_LES_VEF_Face::ajouter(DoubleTab& resu) const
   int nb_faces = zone_VEF.nb_faces();
   const DoubleVect& porosite_surf = zone_VEF.porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
-  const double& tps = mon_equation->schema_temps().temps_courant();
-  const double& dt = mon_equation->schema_temps().pas_de_temps();
-  const double& dt_min = mon_equation->schema_temps().pas_temps_min();
+  const double tps = mon_equation->schema_temps().temps_courant();
+  const double dt = mon_equation->schema_temps().pas_de_temps();
+  const double dt_min = mon_equation->schema_temps().pas_temps_min();
 
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
 

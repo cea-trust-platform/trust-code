@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,7 +74,7 @@ void Champ_Post_Operateur_Eqn::verification_cas_compo() const
     }
 
   // Verification de compo
-  const int& nb_compo= ref_eq_.valeur().inconnue().valeur().nb_comp();
+  const int nb_compo= ref_eq_.valeur().inconnue().valeur().nb_comp();
   if ((compo_<-1)||(compo_>nb_compo-1))
     {
       Cerr<<"Error in Champ_Post_Operateur_Eqn::verification_cas_compo()"<<finl;

@@ -534,7 +534,7 @@ void Operateur_base::ouvrir_fichier_partage(EcrFicPartage& os,const Nom& type, c
 
   const Probleme_base& pb=equation().probleme();
   const Schema_Temps_base& sch=pb.schema_temps();
-  const int& precision=sch.precision_impr();
+  const int precision=sch.precision_impr();
   Nom nomfichier(out_);
   if (type!="") nomfichier+=(Nom)"_"+type;
   nomfichier+=".face";

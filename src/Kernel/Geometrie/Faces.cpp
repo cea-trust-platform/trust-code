@@ -1010,7 +1010,7 @@ void Faces::reordonner()
         ArrOfInt S(2);
         ArrOfInt NS(2);
         int i;
-        const int& nombre_faces=nb_faces();
+        const int nombre_faces=nb_faces();
         for(int face=0; face < nombre_faces; face++)
           {
             NS=-1;
@@ -1057,7 +1057,7 @@ void Faces::reordonner()
         int i;
         double xmin, ymin, zmin;
         double xmax, ymax, zmax;
-        const int& nombre_faces=nb_faces();
+        const int nombre_faces=nb_faces();
         for(int face=0; face < nombre_faces; face++)
           {
             NS=-1;

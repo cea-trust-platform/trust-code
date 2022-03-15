@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -390,13 +390,13 @@ void Zone_VEF::discretiser()
 
 void Zone_VEF::calculer_h_carre()
 {
-  const int& nbe=nb_elem();
+  const int nbe=nb_elem();
   // Calcul de h_carre
   h_carre = 1.e30;
   h_carre_.resize(nbe);
   // Calcul des surfaces
   const DoubleVect& surfaces=face_surfaces();
-  const int& nb_faces_elem=zone().nb_faces_elem();
+  const int nb_faces_elem=zone().nb_faces_elem();
   for (int num_elem=0; num_elem<nbe; num_elem++)
     {
       double surf_max = 0;

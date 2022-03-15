@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1493,8 +1493,8 @@ bool Navier_Stokes_std::initTimeStep(double dt)
   // Verification que dt_max est correctement fixe pour un champ
   // de vitesse nul et diffusion_implicite active <=> dt_conv=INF
   const Schema_Temps_base& sch_tps = le_schema_en_temps.valeur();
-  const double& dt_max = sch_tps.pas_temps_max();
-  const int& diff_implicite = sch_tps.diffusion_implicite();
+  const double dt_max = sch_tps.pas_temps_max();
+  const int diff_implicite = sch_tps.diffusion_implicite();
   if (diff_implicite)
     {
       const DoubleTab& tab_vitesse = inconnue().valeurs();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -322,7 +322,7 @@ void Op_Diff_VEF_Face_Stab::ajouter_operateur_centre(const DoubleTab& Aij, const
           {
             facej=elem_faces(elem,facej_loc);
 
-            const double& aij=Aij(elem,facei_loc,facej_loc);
+            const double aij=Aij(elem,facei_loc,facej_loc);
 
             for (dim=0; dim<nb_comp; dim++)
               {
@@ -371,7 +371,7 @@ void Op_Diff_VEF_Face_Stab::ajouter_diffusion(const DoubleTab& Aij, const Double
           {
             facej=elem_faces(elem,facej_loc);
 
-            const double& aij=Aij(elem,facei_loc,facej_loc);
+            const double aij=Aij(elem,facei_loc,facej_loc);
 
             if (aij>0.)
               {
@@ -456,7 +456,7 @@ void Op_Diff_VEF_Face_Stab::ajouter_antidiffusion(const DoubleTab& Aij, const Do
 
             for (facej_loc=facei_loc+1; facej_loc<nb_faces_elem; facej_loc++)
               {
-                const double& aij=Aij(elem,facei_loc,facej_loc);
+                const double aij=Aij(elem,facei_loc,facej_loc);
 
                 if (aij>0.)
                   {

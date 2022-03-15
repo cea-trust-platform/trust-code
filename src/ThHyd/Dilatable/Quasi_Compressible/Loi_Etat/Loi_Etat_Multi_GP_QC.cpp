@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -146,7 +146,7 @@ void Loi_Etat_Multi_GP_QC::calculer_tab_Cp(DoubleTab& tab_Cp) const
   for (int i=0; i<liste_Y.size(); i++)
     {
       const DoubleTab& Y_i=liste_Y(i).valeur().valeurs();
-      const double& cp_i=liste_especes(i).valeur().capacite_calorifique().valeurs()(0,0);
+      const double cp_i=liste_especes(i).valeur().capacite_calorifique().valeurs()(0,0);
       assert(cp_i>0);
       for (int elem=0; elem<Y_i.size(); elem++) tab_Cp(elem,0) += Y_i(elem,0)*cp_i;
     }

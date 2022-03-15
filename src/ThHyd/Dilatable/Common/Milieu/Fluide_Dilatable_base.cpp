@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -393,7 +393,7 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
                   Process::exit();
                 }
               Sutherland& mu_suth = ref_cast(Sutherland,mu.valeur());
-              const double& mu0 = mu_suth.get_A();
+              const double mu0 = mu_suth.get_A();
               Sutherland& lambda_suth = ref_cast(Sutherland,lambda.valeur());
               double lambda0 = mu0/loi_etat_->Prandt()*Cp(0,0);
               lambda_suth.set_A(lambda0);

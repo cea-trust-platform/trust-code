@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -167,7 +167,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //resu =  A[Un]Un -(A[Un]Un-Ss) + Sv -BtPn
 
   // <IBM> Taking into account penality term for Immersed Boundary Method
-  const int& i_source_PDF = eqnNS.get_i_source_pdf();
+  const int i_source_PDF = eqnNS.get_i_source_pdf();
   if (i_source_PDF != -1)
     {
       Source_PDF_base& src = dynamic_cast<Source_PDF_base&>((eqnNS.sources())[i_source_PDF].valeur());

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,8 +67,8 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   const Champ_base& source_a = a->get_champ(espace_stockage_source_a);
   const Champ_base& source_b = b->get_champ(espace_stockage_source_b);
 
-  const int& nb_compo_a = source_a.nb_comp();
-  const int& nb_compo_b = source_b.nb_comp();
+  const int nb_compo_a = source_a.nb_comp();
+  const int nb_compo_b = source_b.nb_comp();
 
   //Pour utiliser nom_cible uniquement si a et b sont des Champ_Generique_refChamp
   //pour pouvoir reproduire le nom des variables dans le lml
@@ -205,13 +205,13 @@ void Op_Correlation::completer(const Probleme_base& Pb)
 DoubleTab Op_Correlation::calculer_valeurs() const
 {
   Integrale_tps_produit_champs correlation(integrale_tps_ab_);
-  const double& dt_ab = dt_integration_ab();
+  const double dt_ab = dt_integration_ab();
   if ( dt_ab > 0 )
     {
       // On calcule Moyenne(a'b')=Moyenne(ab)-Moyenne(a)*Moyenne(b)
       correlation.valeurs() /= dt_ab;
-      const double& dt_a = dt_integration_a();
-      const double& dt_b = dt_integration_b();
+      const double dt_a = dt_integration_a();
+      const double dt_b = dt_integration_b();
       assert(est_egal(dt_a,dt_ab));
       assert(est_egal(dt_b,dt_ab));
       correlation.ajoute_produit_tensoriel(-1/(dt_a*dt_b),integrale_tps_a_.valeur().valeur(),integrale_tps_b_.valeur().valeur());

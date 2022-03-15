@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1455,7 +1455,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           {
             const Zone& zone = sous_domaine.zone(0);
             const Joints& joints = zone.faces_joint();
-            const int& nb_joints = joints.size();
+            const int nb_joints = joints.size();
             Cerr << "  Number of nodes    : " << sous_domaine.nb_som() << finl;
             Cerr << "  Number of elements : " << zone.nb_elem() << finl;
             Cerr << "  Number of joints   : " << nb_joints << finl;
@@ -1492,7 +1492,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
             {
               const Zone& zone = sous_domaine.zone(0);
               const Joints& joints = zone.faces_joint();
-              const int& nb_joints = joints.size();
+              const int nb_joints = joints.size();
               // Resize ja:
               ja.resize_array(nnz+nb_joints+1);
               // Fortran numerotation:

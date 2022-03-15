@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -234,11 +234,11 @@ voisinage(const int& Numero_face, IntList& Voisinage) const
    * de discretisation.
    * REM: on suppose que l'on ne travaille pas sur des prismes.
    */
-  const int& nb_faces_element = zone().nb_faces_elem();
+  const int nb_faces_element = zone().nb_faces_elem();
 
   /* Les elements voisins de Numero_face */
-  const int& voisin1 = zone_vef().face_voisins(Numero_face,1);
-  const int& voisin2 = zone_vef().face_voisins(Numero_face,0);
+  const int voisin1 = zone_vef().face_voisins(Numero_face,1);
+  const int voisin2 = zone_vef().face_voisins(Numero_face,0);
 
   /* Ici, on recupere les faces de voisin*
    * que l'on injecte dans la liste Voisinage.
@@ -251,7 +251,7 @@ voisinage(const int& Numero_face, IntList& Voisinage) const
           /* On recupere le numero global de chacune des
            * faces de voisin*
            */
-          const int& numero_global_face =
+          const int numero_global_face =
             zone_vef().elem_faces(voisin1,numero_local);
 
           /* Puis on place ce numero dans la liste Voisinage. */
@@ -268,7 +268,7 @@ voisinage(const int& Numero_face, IntList& Voisinage) const
           /* On recupere le numero global de chacune des
            * faces de numero_element_*
            */
-          const int& numero_global_face =
+          const int numero_global_face =
             zone_vef().elem_faces(voisin2,numero_local);
 
           /* Puis on place ce numero dans la liste Voisinage. */
@@ -308,7 +308,7 @@ voisinage(const IntList& Ensemble_faces, IntList& Voisinage) const
        nb_elements_Ensemble_faces++)
     {
       /* Parametre interne a la boucle */
-      const int& numero_face_dans_Ensemble_faces =
+      const int numero_face_dans_Ensemble_faces =
         Ensemble_faces[nb_elements_Ensemble_faces];
 
       /* On vide la liste temporaire a chaque fois que l'on change de face */
@@ -327,7 +327,7 @@ voisinage(const IntList& Ensemble_faces, IntList& Voisinage) const
         {
           //          Cerr << "les elements " << liste_temporaire[nb_elements_liste_temporaire] << finl;
           /* Parametre interne a la deuxieme boucle */
-          const int& numero_face_dans_liste_temporaire =
+          const int numero_face_dans_liste_temporaire =
             liste_temporaire[nb_elements_liste_temporaire];
 
           /* Enfin, on stoke dans Voisinage */
@@ -361,7 +361,7 @@ signe(const int& Face1, const int& Face2) const
    * des elements constituant la zone discretisee.
    * REM: on exclut le prisme par convention.
    */
-  const int& nb_sommets_par_face = zone_vef().nb_som_face();
+  const int nb_sommets_par_face = zone_vef().nb_som_face();
 
   /* On cree une liste qui contient les sommets de la Face2 */
   IntList sommets_Face2;
@@ -401,10 +401,10 @@ coefficient_penalisation(const int& Numero_face) const
   double eta=0.;
   double coefficientpenalisation = 0.;
 
-  const int& voisin1 =
+  const int voisin1 =
     zone_vef().face_voisins(Numero_face,1);
 
-  const int& voisin2 =
+  const int voisin2 =
     zone_vef().face_voisins(Numero_face,0);
 
   if (voisin1 == -1 && voisin2 == -1)
@@ -466,7 +466,7 @@ faces_communes(const int& Face1,const int& Face2,
        nb_element_voisinage_Face2 < voisinage_Face2.size();
        nb_element_voisinage_Face2++)
     {
-      const int& numero_face_voisinage_Face2 =
+      const int numero_face_voisinage_Face2 =
         voisinage_Face2[nb_element_voisinage_Face2];
 
       if (voisinage_Face1.contient(numero_face_voisinage_Face2))
@@ -548,12 +548,12 @@ element_commun(const int& Face1,const int& Face2) const
   //  Cerr << "J'entre dans element_commun" << finl;
 
   /* Les elements voisins de Face1 */
-  const int& voisin1_Face1 = zone_vef().face_voisins(Face1,1);
-  const int& voisin2_Face1 = zone_vef().face_voisins(Face1,0);
+  const int voisin1_Face1 = zone_vef().face_voisins(Face1,1);
+  const int voisin2_Face1 = zone_vef().face_voisins(Face1,0);
 
   /* Les elements voisins de Face2 */
-  const int& voisin1_Face2 = zone_vef().face_voisins(Face2,1);
-  const int& voisin2_Face2 = zone_vef().face_voisins(Face2,0);
+  const int voisin1_Face2 = zone_vef().face_voisins(Face2,1);
+  const int voisin2_Face2 = zone_vef().face_voisins(Face2,0);
 
   /* On cherche l'element commun */
   if (voisin1_Face1 != -1)
@@ -605,7 +605,7 @@ const
       return lautre_face;
     }
 
-  const int& nb_faces_element = zone().nb_faces_elem();
+  const int nb_faces_element = zone().nb_faces_elem();
 
   for (numero_local = 0; numero_local < nb_faces_element; numero_local++)
 
@@ -613,7 +613,7 @@ const
       /* On recupere le numero global de chacune des
        * faces de Element
        */
-      const int& numero_global_face =
+      const int numero_global_face =
         zone_vef().elem_faces(elem_commun,numero_local);
 
       if ( numero_global_face != Face1 && numero_global_face != Face2)

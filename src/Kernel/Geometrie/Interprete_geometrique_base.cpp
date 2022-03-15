@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -106,7 +106,7 @@ void Interprete_geometrique_base::mettre_a_jour_sous_zone(Zone& zone, int& elem,
           || (que_suis_je()=="Trianguler_H")
           || (que_suis_je()=="VerifierCoin"))
         {
-          const int& nb_poly=sous_zone.nb_elem_tot();
+          const int nb_poly=sous_zone.nb_elem_tot();
           for (int nb_p=0; nb_p<nb_poly; nb_p++)
             {
               if (elem==sous_zone[nb_p])

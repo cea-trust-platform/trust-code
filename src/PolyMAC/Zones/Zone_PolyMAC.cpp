@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -679,7 +679,7 @@ void Zone_PolyMAC::calculer_h_carre()
   const ArrOfInt PolyIndex = is_polyedre ? ref_cast(Poly_geom_base, zone().type_elem().valeur()).getElemIndex() : ArrOfInt(0);
 
   const DoubleVect& surfaces=face_surfaces();
-  const int& nbe=nb_elem();
+  const int nbe=nb_elem();
 
   for (int num_elem=0; num_elem<nbe; num_elem++)
     {

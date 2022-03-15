@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -756,8 +756,8 @@ void Zone_EF::calculer_h_carre()
   h_carre_.resize(nb_faces());
   // Calcul des surfaces
   const DoubleVect& surfaces=face_surfaces();
-  const int& nb_faces_elem=zone().nb_faces_elem();
-  const int& nbe=nb_elem();
+  const int nb_faces_elem=zone().nb_faces_elem();
+  const int nbe=nb_elem();
   for (int num_elem=0; num_elem<nbe; num_elem++)
     {
       double surf_max = 0;

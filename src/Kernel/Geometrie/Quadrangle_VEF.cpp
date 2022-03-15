@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -323,7 +323,7 @@ void Quadrangle_VEF::reordonner()
   ArrOfInt NS(4);
   DoubleTab co(4,2);
   int num_poly;
-  const int& nb_elem=zone.nb_elem();
+  const int nb_elem=zone.nb_elem();
   for (num_poly=0; num_poly<nb_elem; num_poly++)
     {
       for(int i=0; i<4; i++)

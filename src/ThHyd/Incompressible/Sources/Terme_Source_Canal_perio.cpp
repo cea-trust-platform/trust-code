@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -357,7 +357,7 @@ ArrOfDouble Terme_Source_Canal_perio::source_convection_diffusion(double debit_e
   double heat_flux = compute_heat_flux();
 
   const Zone_VF& zone_vf = ref_cast(Zone_VF,equation().zone_dis().valeur());
-  const double& volume = zone_vf.zone().volume_total();
+  const double volume = zone_vf.zone().volume_total();
   int size = zone_vf.nb_faces();
   ArrOfDouble s(size);
   if (velocity_weighting_) // It seems this algorithm do not imply dT/dt -> 0

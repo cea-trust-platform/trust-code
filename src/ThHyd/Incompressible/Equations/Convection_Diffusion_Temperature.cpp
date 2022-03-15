@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1136,7 +1136,7 @@ DoubleTab& Convection_Diffusion_Temperature::penalisation_L2(DoubleTab& u)
   assert(ref_penalisation_L2_FTD.size() != 0);
   assert(ref_penalisation_L2_FTD.size() == tab_penalisation_L2_FTD.size());
 
-  const double& dt = schema_temps().pas_de_temps();
+  const double dt = schema_temps().pas_de_temps();
   DoubleTab u_old(u);
 
   // caclul de la fonction caracteristique globale des ibc pour le calcul de T_voisinage
@@ -1303,7 +1303,7 @@ void ouvrir_fichier_pena_th(SFichier& os, const Nom& type, const int& flag, cons
   fichier+=equation.le_nom();
   fichier+=".out";
   const Schema_Temps_base& sch=equation.probleme().schema_temps();
-  const int& precision=sch.precision_impr();
+  const int precision=sch.precision_impr();
   // On cree le fichier a la premiere impression avec l'en tete
   if (sch.nb_impr()==1 && !equation.probleme().reprise_effectuee())
     {
@@ -1347,7 +1347,7 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
       //Calcul de T_n+1 apres penalisation
       const DoubleTab& inc=inconnue().valeurs();
       const int nb_elem  = u.dimension(0);
-      const double& dt = schema_temps().pas_de_temps();
+      const double dt = schema_temps().pas_de_temps();
       DoubleTab tkp1(inc);
       for (int k = 0 ; k<nb_elem ; ++k) tkp1(k) += u(k)*dt;
 

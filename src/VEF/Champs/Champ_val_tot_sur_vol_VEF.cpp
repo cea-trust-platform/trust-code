@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,8 +49,8 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
   int size_vol = les_sous_zones.size()+1;
   vol_glob_pond.resize(size_vol);
 
-  const int& nb_faces = zvef.nb_faces();
-  const int& nb_fac_el = zvef.zone().nb_faces_elem();
+  const int nb_faces = zvef.nb_faces();
+  const int nb_fac_el = zvef.zone().nb_faces_elem();
   const IntTab& elem_faces = zvef.elem_faces();
   const DoubleVect& vol_entrelaces = zvef.volumes_entrelaces();
   const DoubleVect& vol_entrelaces_Cl =  zclvef.volumes_entrelaces_Cl();

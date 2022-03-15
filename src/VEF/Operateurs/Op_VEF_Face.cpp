@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -288,7 +288,7 @@ void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
                         int j=tab2[tab1[face*nb_comp+comp]-1+k]-1;
                         //assert(j!=(face*nb_comp+comp));
                         //if ((j>=(face*nb_comp))&&(j<(face*nb_comp+nb_comp)))
-                        const    double& coef_ij=la_matrice(face*nb_comp+comp,j);
+                        const    double coef_ij=la_matrice(face*nb_comp+comp,j);
                         int face2=j/nb_comp;
                         int comp2=j-face2*nb_comp;
                         secmem(face,comp)-=coef_ij*champ_inconnue(face2,comp2);
@@ -363,7 +363,7 @@ void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
                         int j=tab2[tab1[face*nb_comp+comp]-1+k]-1;
                         int face2=j/nb_comp;
                         int comp2=j-face2*nb_comp;
-                        const double& coef_ij=la_matrice(face*nb_comp+comp,j);
+                        const double coef_ij=la_matrice(face*nb_comp+comp,j);
                         secmem(face,comp)+=coef_ij*champ_inconnue(face2,comp2);
                       }
                   }
@@ -410,7 +410,7 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
                 is_rho_u=1;
             }
         }
-      const int& nb_faces_bords=la_zone_vef.nb_faces_bord();
+      const int nb_faces_bords=la_zone_vef.nb_faces_bord();
       for (int face=0; face<nb_faces_bords; face++)
         {
           if (cp_uniforme) Cp_=Cp(0,0);

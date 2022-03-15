@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -337,7 +337,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre(const DoubleTab& Aij, const
           {
             facej=elem_faces(elem,facej_loc);
 
-            const double& aij=Aij(elem,facei_loc,facej_loc);
+            const double aij=Aij(elem,facei_loc,facej_loc);
 
             for (dim=0; dim<nb_comp; dim++)
               {
@@ -450,7 +450,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre_vectoriel(const DoubleTab& 
 
               for (dim=0; dim<nb_comp; dim++)
                 {
-                  const double& aij=Aij_diag(elem,facei_loc,facej_loc,dim);
+                  const double aij=Aij_diag(elem,facei_loc,facej_loc,dim);
 
                   inc_i=inconnue[facei*nb_comp+dim];
                   inc_j=inconnue[facej*nb_comp+dim];
@@ -471,7 +471,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre_vectoriel(const DoubleTab& 
                 for (dim=0; dim<nb_comp; dim++)
                   for (dim2=dim+1; dim2<nb_comp; dim2++)
                     {
-                      const double& aij=aij_extradiag(elem,facei,facej,dim,dim2,nu_elem);
+                      const double aij=aij_extradiag(elem,facei,facej,dim,dim2,nu_elem);
 
                       inc_i=inconnue[facei*nb_comp+dim2];
                       inc_j=inconnue[facej*nb_comp+dim2];
@@ -511,7 +511,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_diffusion(const DoubleTab& Aij, const Double
           {
             facej=elem_faces(elem,facej_loc);
 
-            const double& aij=Aij(elem,facei_loc,facej_loc);
+            const double aij=Aij(elem,facei_loc,facej_loc);
 
             if (aij>0.)
               {
@@ -556,7 +556,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_diffusion_vectoriel(const DoubleTab& Aij, co
 
             for (dim=0; dim<nb_comp; dim++)
               {
-                const double& aij=Aij(elem,facei_loc,facej_loc,dim);
+                const double aij=Aij(elem,facei_loc,facej_loc,dim);
 
                 if (aij>0.)
                   {
@@ -621,7 +621,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_antidiffusion(const DoubleTab& Aij, const Do
 
             for (facej_loc=facei_loc+1; facej_loc<nb_faces_elem; facej_loc++)
               {
-                const double& aij=Aij(elem,facei_loc,facej_loc);
+                const double aij=Aij(elem,facei_loc,facej_loc);
 
                 if (aij>0.)
                   {
@@ -725,7 +725,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_antidiffusion_vectoriel(const DoubleTab& Aij
 
             for (facej_loc=facei_loc+1; facej_loc<nb_faces_elem; facej_loc++)
               {
-                const double& aij=Aij(elem,facei_loc,facej_loc,dim);
+                const double aij=Aij(elem,facei_loc,facej_loc,dim);
 
                 if (aij>0.)
                   {

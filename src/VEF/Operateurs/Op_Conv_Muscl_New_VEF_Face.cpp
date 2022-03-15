@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -644,9 +644,9 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                 //PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
                 //FACE_LOCI
                 //MEME REMARQUE POUR LE SCALAIRE "FLUX"
-                const double& psc_m = Kij(elem,facei_loc,facej_loc);
-                const double& psc_c = Cij(elem,fa7);
-                const double& psc_s = Sij(elem,fa7);
+                const double psc_m = Kij(elem,facei_loc,facej_loc);
+                const double psc_c = Cij(elem,fa7);
+                const double psc_s = Sij(elem,fa7);
 
                 if (psc_m>=0.)
                   face_amont=facei,dir=0;
@@ -696,9 +696,9 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                 //PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
                 //FACE_LOCI
                 //MEME REMARQUE POUR LE SCALAIRE "FLUX"
-                const double& psc_m = Kij(elem,facei_loc,facej_loc);
-                const double& psc_c = Cij(elem,fa7);
-                const double& psc_s = Sij(elem,fa7);
+                const double psc_m = Kij(elem,facei_loc,facej_loc);
+                const double psc_c = Cij(elem,fa7);
+                const double psc_s = Sij(elem,fa7);
 
                 if (psc_m>=0.)
                   face_amont=facei,dir=0;
@@ -751,10 +751,10 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                 //PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S, PSC_S2 PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
                 //FACE_LOCI
                 //MEME REMARQUE POUR LE SCALAIRE "FLUX"
-                const double& psc_c = Cij(elem,fa7);
-                const double& psc_s = Sij(elem,fa7);
-                const double& psc_s2 = Sij2(elem,fa7);
-                const double& psc_m = Kij(elem,facei_loc,facej_loc);
+                const double psc_c = Cij(elem,fa7);
+                const double psc_s = Sij(elem,fa7);
+                const double psc_s2 = Sij2(elem,fa7);
+                const double psc_m = Kij(elem,facei_loc,facej_loc);
 
                 if (psc_m>=0.)
                   face_amont=facei,dir=0;
@@ -809,10 +809,10 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                 //PRODUITS SCALAIRES PSC_M, PSC_C, PSC_S, PSC_S2 PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
                 //FACE_LOCI
                 //MEME REMARQUE POUR LE SCALAIRE "FLUX"
-                const double& psc_c = Cij(elem,fa7);
-                const double& psc_s = Sij(elem,fa7);
-                const double& psc_s2 = Sij2(elem,fa7);
-                const double& psc_m = Kij(elem,facei_loc,facej_loc);
+                const double psc_c = Cij(elem,fa7);
+                const double psc_s = Sij(elem,fa7);
+                const double psc_s2 = Sij2(elem,fa7);
+                const double psc_m = Kij(elem,facei_loc,facej_loc);
 
                 if (psc_m>=0.)
                   face_amont=facei,dir=0;
@@ -935,7 +935,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                 //PRODUIT SCALAIRE PSC_M PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
                 //FACE_LOCI
                 //MEME REMARQUE POUR LE SCALAIRE "FLUX"
-                const double& psc_m = Kij(elem,facei_loc,facej_loc);
+                const double psc_m = Kij(elem,facei_loc,facej_loc);
 
                 if (psc_m>=0.)
                   face_amont=facei,dir=0;
@@ -976,7 +976,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
               //PRODUIT SCALAIRE PSC_M PAR -1 POUR IMPLICITEMENT ReORIENTER LES NORMALES FA7 DE FACE_LOCJ VERS
               //FACE_LOCI
               //MEME REMARQUE POUR LE SCALAIRE "FLUX"
-              const double& psc_m = Kij(elem,facei_loc,facej_loc);
+              const double psc_m = Kij(elem,facei_loc,facej_loc);
 
               if (psc_m>=0.)
                 face_amont=facei,dir=0;

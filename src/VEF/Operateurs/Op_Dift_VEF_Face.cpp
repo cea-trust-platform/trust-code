@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -263,7 +263,7 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
   tab_flux_bords.resize(size_flux_bords,1);
   tab_flux_bords=0.;
 
-  const int& premiere_face_int=zone_VEF.premiere_face_int();
+  const int premiere_face_int=zone_VEF.premiere_face_int();
 
   // contient -1 si la face n'est pas periodique et numero face_assso sinon
   ArrOfInt marq( zone_VEF.nb_faces_tot());
@@ -860,7 +860,7 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
     }
 
   // Faces internes :
-  const int& premiere_face_int=zone_VEF.premiere_face_int();
+  const int premiere_face_int=zone_VEF.premiere_face_int();
   for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
       for (int kk=0; kk<2; kk++)

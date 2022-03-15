@@ -212,7 +212,7 @@ void Op_Grad_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
 int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
 {
   return 0;
-  const int& impr_mom=la_zone_polymac->zone().Moments_a_imprimer();
+  const int impr_mom=la_zone_polymac->zone().Moments_a_imprimer();
   const int impr_sum=(la_zone_polymac->zone().Bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(la_zone_polymac->zone().Bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();

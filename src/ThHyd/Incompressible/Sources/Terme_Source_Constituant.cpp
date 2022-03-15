@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ void Terme_Source_Constituant::ouvrir_fichier(const Equation_base& eq, const Nom
   os.set_col_width(wcol);
   if (sch.nb_impr()==1 && !pb.reprise_effectuee())
     {
-      const int& gnuplot_header = sch.gnuplot_header();
+      const int gnuplot_header = sch.gnuplot_header();
       os.ouvrir(nomfichier);
       SFichier& fic=os;
       fic << (Nom)"# Printing of the source term " + qsj + " of the equation "+ eq.que_suis_je() +" of the problem "+ eq.probleme().le_nom() << finl;

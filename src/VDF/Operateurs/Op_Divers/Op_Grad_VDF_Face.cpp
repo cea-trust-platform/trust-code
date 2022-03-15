@@ -170,7 +170,7 @@ void Op_Grad_VDF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& l
 
 int Op_Grad_VDF_Face::impr(Sortie& os) const
 {
-  const int& impr_mom=la_zone_vdf->zone().Moments_a_imprimer();
+  const int impr_mom=la_zone_vdf->zone().Moments_a_imprimer();
   const int impr_sum=(la_zone_vdf->zone().Bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(la_zone_vdf->zone().Bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
