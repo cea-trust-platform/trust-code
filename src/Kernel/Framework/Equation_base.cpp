@@ -45,6 +45,7 @@
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;
+extern Stat_Counter_Id source_counter_;
 
 Implemente_liste(RefObjU);
 Implemente_base_sans_constructeur(Equation_base,"Equation_base",Objet_U);
@@ -2413,9 +2414,14 @@ void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, cons
   /* operateurs, sources, masse */
   for (int i = 0; i < nombre_d_operateurs(); i++)
     operateur(i).l_op_base().ajouter_blocs(matrices, secmem, semi_impl);
+  statistiques().end_count(assemblage_sys_counter_, 0, 0);
+
+  statistiques().begin_count(source_counter_);
   for (int i = 0; i < les_sources.size(); i++)
     les_sources(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  statistiques().end_count(source_counter_);
 
+  statistiques().begin_count(assemblage_sys_counter_);
   if (discretisation().que_suis_je() == "VDF")
     {
       const std::string& nom_inco = inconnue().le_nom().getString();
@@ -2426,6 +2432,7 @@ void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, cons
 
 void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
+  statistiques().begin_count(assemblage_sys_counter_);
   assembler_blocs(matrices, secmem, semi_impl);
   schema_temps().ajouter_blocs(matrices, secmem, *this);
   if (discretisation().que_suis_je() == "VDF")
@@ -2434,6 +2441,7 @@ void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab&
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
       modifier_pour_Cl(*mat,secmem);
     }
+  statistiques().end_count(assemblage_sys_counter_);
 }
 
 /* creation de champ_conserve_, cl_champ_conserve_ */

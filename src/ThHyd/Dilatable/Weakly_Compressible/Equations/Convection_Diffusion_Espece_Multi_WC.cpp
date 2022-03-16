@@ -29,6 +29,9 @@
 #include <TRUSTTrav.h>
 #include <Param.h>
 #include <Discretisation_base.h>
+#include <Statistiques.h>
+
+extern Stat_Counter_Id assemblage_sys_counter_;
 
 Implemente_instanciable(Convection_Diffusion_Espece_Multi_WC,"Convection_Diffusion_Espece_Multi_WC",Convection_Diffusion_Espece_Multi_base);
 // XD convection_diffusion_espece_multi_WC eqn_base convection_diffusion_espece_multi_WC -1 Species conservation equation for a multi-species weakly-compressible fluid.
@@ -89,6 +92,7 @@ void Convection_Diffusion_Espece_Multi_WC::assembler( Matrice_Morse& matrice, co
 
 void Convection_Diffusion_Espece_Multi_WC::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
+  statistiques().begin_count(assemblage_sys_counter_);
   Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(*this,matrices, secmem, semi_impl);
   schema_temps().ajouter_blocs(matrices, secmem, *this);
 
@@ -98,4 +102,6 @@ void Convection_Diffusion_Espece_Multi_WC::assembler_blocs_avec_inertie(matrices
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
       modifier_pour_Cl(*mat,secmem);
     }
+  statistiques().end_count(assemblage_sys_counter_);
+
 }

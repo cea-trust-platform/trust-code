@@ -25,6 +25,9 @@
 #include <Champ_P0_VDF.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
+#include <Statistiques.h>
+
+extern Stat_Counter_Id diffusion_counter_;
 
 Implemente_base_sans_constructeur(Op_Diff_VDF_Elem_base,"Op_Diff_VDF_Elem_base",Op_Diff_VDF_base);
 
@@ -178,6 +181,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
 
 void Op_Diff_VDF_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  statistiques().begin_count(diffusion_counter_);
   if (!op_ext_init_) init_op_ext();
 
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
@@ -262,5 +266,7 @@ void Op_Diff_VDF_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
           contribuer_termes_croises(*inco[i], op_ext[i]->equation().probleme(), op_ext[i]->equation().inconnue().valeurs(), *mat[i]);
         }
     }
+  statistiques().end_count(diffusion_counter_);
+
 }
 

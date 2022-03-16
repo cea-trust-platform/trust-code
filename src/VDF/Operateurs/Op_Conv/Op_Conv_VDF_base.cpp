@@ -27,6 +27,9 @@
 #include <TRUSTTrav.h>
 #include <Champ.h>
 #include <Debog.h>
+#include <Statistiques.h>
+
+extern Stat_Counter_Id convection_counter_;
 
 Implemente_base(Op_Conv_VDF_base,"Op_Conv_VDF_base",Operateur_Conv_base);
 
@@ -41,12 +44,13 @@ inline void eval_fluent(const double& psc,const int num1,const int num2, DoubleV
 
 void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-
+  statistiques().begin_count(convection_counter_);
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse* matrice = mats.count(nom_inco) ? mats.at(nom_inco) : NULL;
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
   if(matrice) iter.ajouter_contribution(inco, *matrice);
   iter.ajouter(inco,secmem);
+  statistiques().end_count(convection_counter_);
 }
 
 

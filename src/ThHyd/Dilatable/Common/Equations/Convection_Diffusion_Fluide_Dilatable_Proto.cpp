@@ -37,6 +37,10 @@
 #include <Operateur.h>
 #include <Domaine.h>
 #include <Avanc.h>
+#include <Statistiques.h>
+
+extern Stat_Counter_Id assemblage_sys_counter_;
+extern Stat_Counter_Id source_counter_;
 
 void Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl
 (DoubleTab& Div, const Convection_Diffusion_Fluide_Dilatable_base& eqn) const
@@ -336,10 +340,14 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(Convection_Dif
   Matrice_Morse mat_diff(*mat);
   DoubleTab secmem_tmp(secmem);
   eqn.operateur(0).l_op_base().ajouter_blocs({{nom_inco, &mat_diff}}, secmem_tmp, semi_impl);
+  statistiques().end_count(assemblage_sys_counter_);
 
+  statistiques().begin_count(source_counter_);
   for (int i = 0; i < eqn.sources().size(); i++)
     eqn.sources()(i).valeur().ajouter_blocs({{nom_inco, &mat_diff}}, secmem_tmp, semi_impl);
+  statistiques().end_count(source_counter_);
 
+  statistiques().begin_count(assemblage_sys_counter_);
   DoubleVect& coeff_diffusif=mat_diff.get_set_coeff();
 
   const IntVect& tab1= mat->get_tab1();

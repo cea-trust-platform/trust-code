@@ -27,6 +27,9 @@
 #include <Champ_Fonc.h>
 #include <TRUSTTrav.h>
 #include <Motcle.h>
+#include <Statistiques.h>
+
+extern Stat_Counter_Id diffusion_counter_;
 
 Implemente_base(Op_Dift_VDF_base,"Op_Dift_VDF_base",Op_Diff_VDF_base);
 
@@ -56,6 +59,7 @@ Entree& Op_Dift_VDF_base::readOn(Entree& is) { return Op_Diff_VDF_base::readOn(i
 
 void Op_Dift_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  statistiques().begin_count(diffusion_counter_);
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
@@ -132,6 +136,8 @@ void Op_Dift_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
               }
         }
     }
+  statistiques().end_count(diffusion_counter_);
+
 }
 
 //Description:

@@ -26,7 +26,10 @@
 #include <Op_Conv_negligeable.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
+#include <Statistiques.h>
 #include <TRUSTTrav.h>
+
+extern Stat_Counter_Id assemblage_sys_counter_;
 
 Implemente_base(Convection_Diffusion_Espece_Binaire_base,"Convection_Diffusion_Espece_Binaire_base",Convection_Diffusion_Espece_Fluide_Dilatable_base);
 
@@ -117,6 +120,7 @@ void Convection_Diffusion_Espece_Binaire_base::assembler( Matrice_Morse& matrice
 
 void Convection_Diffusion_Espece_Binaire_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)
 {
+  statistiques().begin_count(assemblage_sys_counter_);
   Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(*this, matrices, secmem, semi_impl);
   schema_temps().ajouter_blocs(matrices, secmem, *this);
   if (discretisation().que_suis_je() == "VDF")
@@ -125,5 +129,6 @@ void Convection_Diffusion_Espece_Binaire_base::assembler_blocs_avec_inertie(matr
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
       modifier_pour_Cl(*mat,secmem);
     }
+  statistiques().end_count(assemblage_sys_counter_);
 
 }

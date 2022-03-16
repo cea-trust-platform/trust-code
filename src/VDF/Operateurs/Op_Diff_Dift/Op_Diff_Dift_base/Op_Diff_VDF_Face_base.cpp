@@ -22,6 +22,9 @@
 
 #include <Op_Diff_VDF_Face_base.h>
 #include <Check_espace_virtuel.h>
+#include <Statistiques.h>
+
+extern Stat_Counter_Id diffusion_counter_;
 
 Implemente_base(Op_Diff_VDF_Face_base,"Op_Diff_VDF_Face_base",Op_Diff_VDF_base);
 
@@ -40,6 +43,7 @@ void Op_Diff_VDF_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t
 
 void Op_Diff_VDF_Face_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  statistiques().begin_count(diffusion_counter_);
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeur().valeurs();
@@ -108,6 +112,8 @@ void Op_Diff_VDF_Face_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
             }
         }
     }
+  statistiques().end_count(diffusion_counter_);
+
 }
 
 double Op_Diff_VDF_Face_base::calculer_dt_stab() const { return Op_Diff_VDF_Face_base::calculer_dt_stab(iter.zone()); }

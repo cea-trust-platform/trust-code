@@ -38,6 +38,7 @@
 #include <Statistiques.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
+extern Stat_Counter_Id source_counter_;
 
 Implemente_instanciable_sans_constructeur(Convection_Diffusion_Temperature,"Convection_Diffusion_Temperature",Convection_Diffusion_std);
 Implemente_vect(RefObjU);
@@ -809,10 +810,14 @@ void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, Doub
       secmem += secmem_tmp;
 
     }
+  statistiques().end_count(assemblage_sys_counter_, 0, 0);
 
+  statistiques().begin_count(source_counter_);
   for (int i = 0; i < les_sources.size(); i++)
     les_sources(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
+  statistiques().end_count(source_counter_);
 
+  statistiques().begin_count(assemblage_sys_counter_);
   if (discretisation().que_suis_je() == "VDF")
     {
       const std::string& nom_inco = inconnue().le_nom().getString();
