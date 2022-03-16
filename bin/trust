@@ -126,8 +126,8 @@ help()
    echo "-clean                        : Clean the current directory from all the generated files by TRUST."
    echo "-search keywords              : Know the list of test cases from the data bases which contain keywords."
    echo "-copy                         : Copy the test case datafile from the TRUST database under the present directory."
-   echo "-check all|testcase|list      : Check the non regression of all the test cases or a single test case or a list of tests cases specified in a file."
-   echo "-check function|class|class::method : Check the non regression of a list of tests cases covering a function, a class or a class method."
+   echo "-check|-ctest all|testcase|list            : Check|ctest the non regression of all the test cases or a single test case or a list of tests cases specified in a file."
+   echo "-check|-ctest function|class|class::method : Check|ctest the non regression of a list of tests cases covering a function, a class or a class method."
    echo "-gdb                          : Run under gdb debugger."
    echo "-valgrind                     : Run under valgrind."
    echo "-valgrind_strict              : Run under valgrind with no suppressions."
@@ -466,8 +466,9 @@ do
       done
       cherche.ksh $option
       exit $?
-   elif [ "$1" = "-check" ]
+   elif [ "$1" = "-check" ] || [ "$1" = "-ctest" ]
    then
+      CTEST=0 && [ "$1" = "-ctest" ] && CTEST=1
       shift
       if [ "$1" = "" ]
       then
@@ -484,7 +485,7 @@ do
       elif [ -f $1 ]
       then
 	 # List of test cases in a file
-	 option=$1   
+	 option=$1
       else
 	 # Test cases covering a method::class
 	 Qui $1 || exit -1
@@ -493,8 +494,39 @@ do
       # Lorsque lance depuis ctest on desactive l'envoi de mail
       # sinon si 1000 cas tests -> 1000 mails (1 par cas test)
       nomail="" && [ "$CTEST_INTERACTIVE_DEBUG_MODE" != "" ] && nomail="-nomail"
-      echo $option | lance_test $nomail -no_timeout $binary
-      exit $?
+      if [ "$CTEST" = 1 ]
+      then
+         # Lancement parallele avec ctest:
+	 liste_ctest=`mktemp_`
+         ctest -N | sed "1,$ s/[#:]//g" > $liste_ctest
+         for test in `cat $option 2>/dev/null`
+         do
+	    # Format ctest assez particulier: 4,4,,5,6
+            n=`awk -v test=$test '($3==test) {print $2}' $liste_ctest`
+            if [ "$n" != "" ]
+            then
+               if [ "$I" = "" ]
+               then
+                  I="-I "$n","$n","
+               else
+                  I=$I","$n
+               fi
+            fi
+         done
+         rm -f $liste_ctest
+         if [ "$project_directory" = "" ]
+         then # TRUST
+            cd $TRUST_ROOT/MonoDir_mpi_opt/src || cd $TRUST_ROOT/MonoDir_mpi/src
+         else # Baltik
+            cd $project_directory/build/src/exec_opt || cd $project_directory/build/src/exec
+         fi
+         ctest -j$TRUST_NB_PHYSICAL_CORES $I
+         exit $?
+      else
+         # Lancement sequentiel classique:
+         echo $option | lance_test $nomail -no_timeout $binary
+         exit $?
+      fi
    elif [ "$1" = "-clean" ]
    then
       for ext in list lata sons son out lml dt_ev TU log stop err xyz sauv dump face out_err plan progress
