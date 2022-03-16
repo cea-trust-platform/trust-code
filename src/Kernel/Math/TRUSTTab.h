@@ -59,7 +59,7 @@ protected:
     return xxx->numero();
   }
 
-  // Description: ecriture d'un tableau sequentiel (idem que Int/DoubleVect::printOn() on ne sait pas quoi faire de pertinent pour un tableau distribue).
+  // Description: ecriture d'un tableau sequentiel (idem que TRUSTVect::printOn() on ne sait pas quoi faire de pertinent pour un tableau distribue).
   Sortie& printOn(Sortie& os) const override
   {
     assert(CHECK_LINE_SIZE);
