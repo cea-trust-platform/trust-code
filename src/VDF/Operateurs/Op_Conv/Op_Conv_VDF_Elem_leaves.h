@@ -43,7 +43,6 @@ class Op_Conv_Amont_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_Co
   Declare_instanciable_sans_constructeur(Op_Conv_Amont_VDF_Elem);
 public:
   Op_Conv_Amont_VDF_Elem();
-  inline void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const override { dimensionner_bloc_vitesse_elem(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_elem(matrice,secmem); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Amont_VDF_Elem>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Amont_VDF_Elem>(ch_vit); }
@@ -54,10 +53,12 @@ public:
   {
     const std::string& nom_inco = equation().inconnue().le_nom().getString();
     Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
-    dimensionner_elem(mat2);
+    if(nom_inco == "vitesse")
+      dimensionner_bloc_vitesse_elem(mat2);
+    else
+      dimensionner_elem(mat2);
     mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
   }
-
 
 protected:
   // Ce constructeur permet de creer des classes filles (exemple : front_tracking)
@@ -74,7 +75,6 @@ class Op_Conv_Centre_VDF_Elem : public Op_Conv_VDF_base, public Op_Conv_VDF<Op_C
   Declare_instanciable_sans_constructeur(Op_Conv_Centre_VDF_Elem);
 public:
   Op_Conv_Centre_VDF_Elem();
-  inline void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const override { dimensionner_bloc_vitesse_elem(matrice); }
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { modifier_pour_Cl_elem(matrice,secmem); }
   inline void associer(const Zone_dis& zd, const Zone_Cl_dis& zcd,const Champ_Inc& ch) override { associer_impl<Type_Operateur::Op_CONV_ELEM,Eval_Centre_VDF_Elem>(zd,zcd,ch); }
   inline void associer_vitesse(const Champ_base& ch_vit) override { associer_vitesse_impl<Eval_Centre_VDF_Elem>(ch_vit); }
@@ -84,7 +84,10 @@ public:
   {
     const std::string& nom_inco = equation().inconnue().le_nom().getString();
     Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
-    dimensionner_elem(mat2);
+    if(nom_inco == "vitesse")
+      dimensionner_bloc_vitesse_elem(mat2);
+    else
+      dimensionner_elem(mat2);
     mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
   }
 };

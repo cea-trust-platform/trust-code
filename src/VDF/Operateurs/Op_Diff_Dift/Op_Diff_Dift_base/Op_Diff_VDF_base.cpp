@@ -29,7 +29,6 @@
 #include <Echange_contact_VDF.h>
 #include <Champ_front_calc.h>
 #include <Operateur.h>
-#include <Schema_Temps_base.h>
 
 Implemente_base(Op_Diff_VDF_base,"Op_Diff_VDF_base",Operateur_Diff_base);
 
@@ -147,13 +146,6 @@ void Op_Diff_VDF_base::init_op_ext() const
   const Zone_VDF& zvdf = iter.zone();
   const Zone_Cl_VDF& zclvdf = iter.zone_Cl();
   op_ext = { this };//le premier op_ext est l'operateur local
-
-  const int& monol =  equation().schema_temps().resolution_monolithique(equation().domaine_application());
-  if(!monol)
-    {
-      op_ext_init_ = 1;
-      return;
-    }
 
   for (int n_bord=0; n_bord<zvdf.nb_front_Cl(); n_bord++)
     {

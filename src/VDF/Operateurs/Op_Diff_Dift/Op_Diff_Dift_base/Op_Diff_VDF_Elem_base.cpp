@@ -163,6 +163,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
 
       std::string nom_mat = i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
+      if(!mat[i]) continue;
       Matrice_Morse mat2;
       if(i==0) Op_VDF_Elem::dimensionner(iter.zone(), iter.zone_Cl(), mat2);
       else
@@ -171,7 +172,6 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
           int nc = N[i] * op_ext[i]->equation().zone_dis()->nb_elem_tot();
           dimensionner_termes_croises(mat2, op_ext[i]->equation().probleme(),nl, nc);
         }
-
       mat[i]->nb_colonnes() ? *mat[i] += mat2 : *mat[i] = mat2;
     }
 }
@@ -256,9 +256,11 @@ void Op_Diff_VDF_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
     {
       std::string nom_mat = nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString();
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
-      inco[i] = semi_impl.count(nom_mat) ? &semi_impl.at(nom_mat) : &op_ext[i]->equation().inconnue().valeur().valeurs();
-      contribuer_termes_croises(*inco[i], op_ext[i]->equation().probleme(), op_ext[i]->equation().inconnue().valeurs(), *mat[i]);
-
+      if(mat[i])
+        {
+          inco[i] = semi_impl.count(nom_mat) ? &semi_impl.at(nom_mat) : &op_ext[i]->equation().inconnue().valeur().valeurs();
+          contribuer_termes_croises(*inco[i], op_ext[i]->equation().probleme(), op_ext[i]->equation().inconnue().valeurs(), *mat[i]);
+        }
     }
 }
 

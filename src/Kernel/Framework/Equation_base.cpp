@@ -2416,6 +2416,12 @@ void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, cons
   for (int i = 0; i < les_sources.size(); i++)
     les_sources(i).valeur().ajouter_blocs(matrices, secmem, semi_impl);
 
+  if (discretisation().que_suis_je() == "VDF")
+    {
+      const std::string& nom_inco = inconnue().le_nom().getString();
+      Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+      if(mat) mat->ajouter_multvect(inconnue().valeurs(), secmem);
+    }
 }
 
 void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl)

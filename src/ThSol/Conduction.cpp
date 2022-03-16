@@ -508,15 +508,4 @@ void Conduction::mettre_a_jour(double temps)
     le_traitement_particulier.post_traitement_particulier();
 }
 
-void Conduction::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
-{
-  Equation_base::assembler_blocs(matrices, secmem, semi_impl);
-  if (discretisation().que_suis_je() == "VDF")
-    {
-      std::string nom_inc = inconnue().le_nom().getString();
-      Matrice_Morse *mat = matrices.count(nom_inc) ? matrices.at(nom_inc) : NULL;
-      if(mat)
-        mat->ajouter_multvect(inconnue().valeurs(), secmem);
-    }
-}
 

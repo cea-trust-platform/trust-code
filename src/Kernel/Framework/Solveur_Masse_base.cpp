@@ -29,7 +29,7 @@
 
 Implemente_base_sans_constructeur(Solveur_Masse_base,"Solveur_Masse_base",Objet_U);
 
-Solveur_Masse_base::Solveur_Masse_base() : has_coefficient_temporel_(0),penalisation_(0), prems_(0) {}
+Solveur_Masse_base::Solveur_Masse_base() : has_coefficient_temporel_(0), penalisation_flag_(1), penalisation_(0)  {}
 
 // Description:
 //    NE FAIT RIEN
@@ -185,11 +185,19 @@ DoubleTab& Solveur_Masse_base::appliquer(DoubleTab& x) const
 Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
 {
   Matrice_Morse& matmo=ref_cast(Matrice_Morse, matrice);
+  if (has_interface_blocs())
+    {
+      penalisation_flag_ = penalisation;
+      DoubleTrav inco(equation().inconnue().valeurs());
+      ajouter_blocs({{ equation().inconnue().le_nom().getString(), &matmo }}, inco, dt, {}, 0); //on tente ajouter_blocs()
+      return matrice;
+    }
+
   DoubleTrav diag(equation().inconnue().valeurs());
   const int sz = equation().inconnue().valeurs().dimension_tot(0) * diag.line_size();
   diag=1.;
   appliquer(diag); // M-1
-  prems_=0;
+  int prems=0;
   if(penalisation)
     {
       if (penalisation_==0)
@@ -199,27 +207,19 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice
             penal=std::max(penal, matmo(i,i));
           penal=mp_max(penal);
           penalisation_=(mp_max_vect(diag)/dt + penal)*1.e3;
-          prems_=1;
+          prems=1;
         }
     }
   else
     penalisation_=0;
-
-  if (has_interface_blocs())
-    {
-      DoubleTrav inco(equation().inconnue().valeurs());
-      ajouter_blocs({{ equation().inconnue().le_nom().getString(), &matmo }}, inco, dt, {}, 0); //on tente ajouter_blocs()
-      return matrice;
-    }
-
   for(int i=0; i<sz; i++)
     {
       if (diag.addr()[i]==0)
         {
-          if(prems_)
+          if(prems)
             {
               matmo(i,i)+=penalisation_;
-              prems_=0;
+              prems=0;
             }
           matmo(i,i)+=penalisation_/dt;
         }
@@ -232,6 +232,14 @@ Matrice_Base& Solveur_Masse_base::ajouter_masse(double dt, Matrice_Base& matrice
 // Add M*y/dt to x
 DoubleTab& Solveur_Masse_base::ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation) const
 {
+  if (has_interface_blocs())
+    {
+      penalisation_flag_ = penalisation;
+      const std::string& nom_inco = equation().inconnue().le_nom().getString();
+      ajouter_blocs({}, x, dt, {{nom_inco,y}}, 0); //on tente ajouter_blocs()
+      return x;
+    }
+
   int sz=y.size();
   DoubleTab diag;
   diag.copy(equation().inconnue().valeurs(), Array_base::NOCOPY_NOINIT);
@@ -244,13 +252,6 @@ DoubleTab& Solveur_Masse_base::ajouter_masse(double dt, DoubleTab& x, const Doub
     }
   else
     penalisation_=1;
-
-  if (has_interface_blocs())
-    {
-      const std::string& nom_inco = equation().inconnue().le_nom().getString();
-      ajouter_blocs({}, x, dt, {{nom_inco,y}}, 0); //on tente ajouter_blocs()
-      return x;
-    }
 
   for(int i=0; i<sz; i++)
     {

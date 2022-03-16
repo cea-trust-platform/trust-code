@@ -54,6 +54,8 @@ protected:
 
   REF(Zone_VDF) la_zone_VDF;
   REF(Zone_Cl_VDF) la_zone_Cl_VDF;
+  mutable double penalisation_matrice_;
+  mutable double penalisation_secmem_;
 };
 
 #endif

@@ -105,11 +105,13 @@ public :
   // qui est appelee par la methode preparer_calcul des equations
   // L'implementation par defaut ne fait rien
   virtual void preparer_calcul(void);
+
 protected :
   Nom name_of_coefficient_temporel_; // nom du coefficient temporelle
   int has_coefficient_temporel_;
+  mutable int penalisation_flag_;
+private:
   mutable double penalisation_;
-  mutable int prems_;
 };
 
 #endif

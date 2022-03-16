@@ -167,6 +167,13 @@ void Perte_Charge_Singuliere_VDF_Face::ajouter_blocs(matrices_t matrices, Double
 
 }
 
+DoubleTab& Perte_Charge_Singuliere_VDF_Face::ajouter_(const DoubleTab& inco, DoubleTab& resu) const
+{
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  ajouter_blocs({}, resu, {{nom_inco, inco}});
+  return resu;
+}
+
 void Perte_Charge_Singuliere_VDF_Face::mettre_a_jour(double temps)
 {
   Perte_Charge_VDF_Face::mettre_a_jour(temps);

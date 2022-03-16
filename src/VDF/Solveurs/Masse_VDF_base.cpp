@@ -30,7 +30,8 @@
 #include <Equation_base.h>
 #include <DoubleTrav.h>
 
-Implemente_base(Masse_VDF_base,"Masse_VDF_base",Solveur_Masse_base);
+Implemente_base_sans_constructeur(Masse_VDF_base,"Masse_VDF_base",Solveur_Masse_base);
+Masse_VDF_base::Masse_VDF_base() : penalisation_matrice_(0),penalisation_secmem_(0) {}
 
 
 //     printOn()
@@ -82,25 +83,48 @@ void Masse_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
   DoubleTrav diag(inco);
 
   const int sz = equation().inconnue().valeurs().dimension_tot(0) * diag.line_size();
-  diag=1.;
+  diag = 1.;
   appliquer(diag); // M-1
-
-  for(int i=0; i<sz; i++)
+  int prems = 0;
+  if (penalisation_flag_)
     {
-      if(diag.addr()[i])
+      if (mat && penalisation_matrice_ == 0)
         {
-          if(mat) (*mat)(i,i)+=1./(diag.addr()[i]*dt); // M/dt
-          secmem.addr()[i]+=1./(diag.addr()[i]*dt)*passe.addr()[i];
+          double penal = 0;
+          for (int i = 0; i < sz; i++)
+            penal = std::max(penal, (*mat)(i, i));
+          penal = mp_max(penal);
+          penalisation_matrice_ = (mp_max_vect(diag) / dt + penal) * 1.e3;
+          prems = 1;
+        }
+      if (penalisation_secmem_ == 0)
+        penalisation_secmem_ = mp_max_vect(diag) * 1.e3;
+    }
+  else
+    {
+      penalisation_matrice_ = 0;
+      penalisation_secmem_ = 1;
+    }
+
+  for (int i = 0; i < sz; i++)
+    {
+      if (diag.addr()[i])
+        {
+          if (mat)
+            (*mat)(i, i) += 1. / (diag.addr()[i] * dt); // M/dt
+          secmem.addr()[i] += 1. / (diag.addr()[i] * dt) * passe.addr()[i];
         }
       else
         {
-          if(prems_)
+          if (prems)
             {
-              (*mat)(i,i)+=penalisation_;
-              prems_=0;
+              if (mat)
+                (*mat)(i, i) += penalisation_matrice_;
+              prems = 0;
             }
-          if(mat) (*mat)(i,i)+=penalisation_/dt;
-          secmem.addr()[i]=penalisation_*passe.addr()[i];
+          if (mat)
+            (*mat)(i, i) += penalisation_matrice_ / dt;
+          secmem.addr()[i] = penalisation_secmem_ * passe.addr()[i];
         }
     }
 }

@@ -2101,9 +2101,6 @@ void Navier_Stokes_std::assembler_blocs(matrices_t matrices, DoubleTab& secmem, 
   Equation_base::assembler_blocs(matrices, secmem, semi_impl);
   if (discretisation().que_suis_je() == "VDF")
     {
-      Matrice_Morse *mat = matrices.count("vitesse") ? matrices.at("vitesse") : NULL;
-      if(mat)
-        mat->ajouter_multvect(inconnue().valeurs(), secmem);
       DoubleTab tmp(secmem);
       tmp = 0.0;
       gradient.valeur().ajouter_blocs(matrices, tmp, semi_impl);

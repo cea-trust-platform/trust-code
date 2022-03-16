@@ -305,12 +305,8 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Na
    */
 
   // ajout de l'inertie
-//  const double dt=eqn.schema_temps().pas_de_temps();
-//  eqn.schema_temps().ajouter_blocs(matrices, secmem, eqn);
-
   const double dt=eqn.schema_temps().pas_de_temps();
   eqn.solv_masse().ajouter_masse(dt,*mat,0);
-
   rho_vitesse_impl(tab_rho_face_n,eqn.inconnue().passe(),rhovitesse);
   eqn.solv_masse().ajouter_masse(dt,secmem,rhovitesse,0);
 
