@@ -49,7 +49,7 @@ private :
   void initialize();
   LocalMatrix<double> mat;
   IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double>* ls;
-  Preconditioner<LocalMatrix<double>, LocalVector<double>, double>* p;
+  Solver<LocalMatrix<double>, LocalVector<double>, double>* p;
   double atol_, rtol_;
 };
 
