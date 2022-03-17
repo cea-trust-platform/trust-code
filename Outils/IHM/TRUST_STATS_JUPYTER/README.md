@@ -18,7 +18,7 @@ This code is a part of the open source TRUST platform (CEA DES/ISAS/DM2S/STMF/LG
 
 It provides a python library for TRUST users to
 - Run validation files via jupyter lab and generate automatically a well documented report
-- Post process the son files (probes) and plot the instantaneous/fluctuation evolution, time/space correlations, time/space energy spectra, ...
+- Post-process the .son files (probes) and plot the instantaneous/fluctuation evolution, time/space correlations, time/space energy spectra, ...
 
 ## Authors
 
@@ -52,5 +52,5 @@ Examples of usage can be checked from the **tests** repository.
 
 More details on how to write TRUST validation form using Jupyter can be found in 
 
-        Validation/Rapports_automatiques/README_jupyter.md    
+        Validation/Rapports_automatiques/README_Jupyter.md
 

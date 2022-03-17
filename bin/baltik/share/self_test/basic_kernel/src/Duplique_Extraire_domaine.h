@@ -29,7 +29,7 @@ class Duplique_Extraire_domaine : public Interprete
 {
   Declare_instanciable(Duplique_Extraire_domaine);
 public :
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
 };
 
 #endif

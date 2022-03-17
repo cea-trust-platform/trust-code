@@ -24,7 +24,7 @@ class Ecrire_fic_lml : public Interprete
 {
   Declare_instanciable(Ecrire_fic_lml);
 public :
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
 protected:
   Nom toto; //Modif pour test_atelier
 };

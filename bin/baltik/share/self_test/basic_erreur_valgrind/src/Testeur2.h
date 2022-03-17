@@ -19,7 +19,7 @@ class Testeur2 : public Interprete
 
 public :
 
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
  
 };
 

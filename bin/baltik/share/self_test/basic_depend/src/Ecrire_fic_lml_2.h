@@ -24,7 +24,7 @@ class Ecrire_fic_lml_2 : public Ecrire_fic_lml
 {
   Declare_instanciable(Ecrire_fic_lml_2);
 public :
-  Entree& interpreter(Entree&);
+  Entree& interpreter(Entree&) override;
 
 };
 #endif

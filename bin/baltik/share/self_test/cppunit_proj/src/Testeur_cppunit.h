@@ -39,7 +39,7 @@ class Testeur_cppunit : public Interprete
   Declare_instanciable( Testeur_cppunit ) ;
 
 public :
-  Entree& interpreter(Entree& is);
+  Entree& interpreter(Entree& is) override;
 protected :
 
 };
