@@ -47,7 +47,7 @@ void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const t
   statistiques().begin_count(convection_counter_);
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse* matrice = mats.count(nom_inco) ? mats.at(nom_inco) : NULL;
-  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
+  const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs());
   if(matrice) iter.ajouter_contribution(inco, *matrice);
   iter.ajouter(inco,secmem);
   statistiques().end_count(convection_counter_);

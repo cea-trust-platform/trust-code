@@ -267,7 +267,8 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
 {
   statistiques().begin_count(gradient_counter_);
   Matrice_Morse *mat = matrices.count("pression") ? matrices.at("pression") : NULL;
-  const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs();
+  const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs());
+
   assert_espace_virtuel_vect(inco);
 
   const Zone_VDF& zvdf = la_zone_vdf.valeur();

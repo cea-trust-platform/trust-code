@@ -44,7 +44,7 @@ public:
   }
   inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override
   {
-    DoubleTab secmem(inco);
+    DoubleTab secmem(equation().inconnue().valeurs()); // pour etre dimensione avec nb_faces
     ajouter_blocs({{ "pression", &matrice }}, secmem);
   }
   inline int has_interface_blocs() const override
