@@ -70,7 +70,7 @@ Solv_rocALUTION::~Solv_rocALUTION() {
 
 void Solv_rocALUTION::initialize()
 {
-    ls = nullptr; p = nullptr;
+    ls = nullptr; p = nullptr; write_system_ = false;
 }
 
 double lit_double(Entree& is, const Motcle& motcle)
@@ -135,13 +135,14 @@ void Solv_rocALUTION::create_solver(Entree& entree)
     }
   // Lecture des parametres du solver:
   // precond name { [ omega double } [ level int ] } [impr] [seuil|atol double] [rtol double] }
-  Motcles les_parametres_solveur(5);
+  Motcles les_parametres_solveur(6);
   {
     les_parametres_solveur[0] = "impr";
     les_parametres_solveur[1] = "seuil"; // Seuil absolu (atol)
     les_parametres_solveur[2] = "atol";
     les_parametres_solveur[3] = "rtol";
     les_parametres_solveur[4] = "precond";
+    les_parametres_solveur[5] = "write_system";
   }
   is >> motlu;
   while (motlu!=accolade_fermee)
@@ -248,6 +249,9 @@ void Solv_rocALUTION::create_solver(Entree& entree)
                 }
                 break;
             }
+            case 5:
+                write_system_ = true;
+                break;
             default:
             {
                 Cerr << solver << " keyword not recognized for solver:" << finl << les_parametres_solveur << finl;
@@ -353,7 +357,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       Matrice_Morse csr;
       MorseSymToMorseToMatrice_Morse(ref_cast(Matrice_Morse_Sym, a), csr);
       // Save TRUST matrix to check:
-      //write_matrix(a);
+      if (write_system_) write_matrix(a);
 
       int N = csr.get_tab1().size_array() - 1;
       ArrOfInt tab1_c(N+1); // Passage Fortran->C
@@ -396,7 +400,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       Cout << "[rocALUTION] Time to build solver on device :" << (rocalution_time() - tick) / 1e6 << finl;
 
       // Save rocALUTION matrix to check
-      write_matrix(mat);
+      if (write_system_) write_matrix(mat);
   }
   int N = mat.GetN();
   assert(N==b.size_array());
@@ -409,7 +413,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   sol.CopyFromData(x.addr());
   rhs.Allocate("rhs", N);
   rhs.CopyFromData(b.addr());
-  write_vectors(rhs, sol); // Provisoire debug
+    if (write_system_) write_vectors(rhs, sol); // Provisoire debug
   sol.MoveToAccelerator();
   rhs.MoveToAccelerator();
 
