@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,13 +41,13 @@ public:
 protected :
 #ifdef PETSCKSP_H
 #ifdef PETSC_HAVE_CUDA
-  virtual void Create_objects(const Matrice_Morse&);
-  virtual void Update_matrix(Mat&, const Matrice_Morse&);
-  virtual bool check_stencil(const Matrice_Morse&);
-  virtual int solve(ArrOfDouble& residual);
+  void Create_objects(const Matrice_Morse&) override;
+  void Update_matrix(Mat&, const Matrice_Morse&) override;
+  bool check_stencil(const Matrice_Morse&) override;
+  int solve(ArrOfDouble& residual) override;
   int nbiter(ArrOfDouble& residual);
   void initialize();
-  virtual void finalize()
+  void finalize() override
   {
     if (amgx_initialized_)
       {
