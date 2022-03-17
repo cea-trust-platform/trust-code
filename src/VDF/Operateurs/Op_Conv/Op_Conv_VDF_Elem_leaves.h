@@ -51,13 +51,13 @@ public:
 
   inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override
   {
-    const std::string& nom_inco = equation().inconnue().le_nom().getString();
-    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
-    if(nom_inco == "vitesse")
-      dimensionner_bloc_vitesse_elem(mat2);
-    else
-      dimensionner_elem(mat2);
-    mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+    for (auto &&i_m : mats)
+      {
+        Matrice_Morse mat;
+        if (i_m.first == "vitesse") dimensionner_bloc_vitesse_elem(mat);
+        else dimensionner_elem(mat);
+        i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
+      }
   }
 
 protected:
@@ -82,13 +82,13 @@ public:
   inline const Champ_base& vitesse() const override { return vitesse_impl<Eval_Centre_VDF_Elem>(); }
   inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override
   {
-    const std::string& nom_inco = equation().inconnue().le_nom().getString();
-    Matrice_Morse *mat = mats.count(nom_inco) ? mats.at(nom_inco) : NULL, mat2;
-    if(nom_inco == "vitesse")
-      dimensionner_bloc_vitesse_elem(mat2);
-    else
-      dimensionner_elem(mat2);
-    mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
+    for (auto &&i_m : mats)
+      {
+        Matrice_Morse mat;
+        if (i_m.first == "vitesse") dimensionner_bloc_vitesse_elem(mat);
+        else dimensionner_elem(mat);
+        i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
+      }
   }
 };
 
