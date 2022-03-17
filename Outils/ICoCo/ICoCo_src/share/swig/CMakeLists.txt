@@ -12,6 +12,7 @@ set(TRUST_ROOT $ENV{TRUST_ROOT})
 set(MEDCOUPLING_DIR $ENV{TRUST_MEDCOUPLING_ROOT})
 
 add_definitions(-Wno-error)
+add_definitions(-Wno-suggest-override)
 add_definitions(-Wno-shadow)
 
 set(CMAKE_CXX_COMPILER  $ENV{TRUST_CC})
