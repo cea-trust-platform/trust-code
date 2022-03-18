@@ -262,6 +262,7 @@ echo "[-force_provided_mpich]           Use the provided MPICH `awk -F= '/defaul
 echo "[-force_latest_mpich]             Download and use the MPICH `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version."
 echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
 echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version (default with -cuda)."
+echo "[-force_system_mpi]               Use the system-provided MPI library."
 echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
 echo "[-cuda]                           Activate the CUDA support into several libraries for GPU computing (experimental)."
 echo "[-openmp]                         Enable OpenMP support (use of threaded BLAS like Mkl or OpenBlas and build PETSc with OpenMP support."
@@ -438,6 +439,10 @@ do
    elif [ "${1#-force_provided_mpich}" != "$1" ]
    then
       export TRUST_FORCE_PROVIDED_MPICH=1
+
+   elif [ "${1#-force_system_mpi}" != "$1" ]
+   then
+      export TRUST_FORCE_SYSTEM_MPI=1
    
    elif [ "${1#-enable-petsc-debug}" != "$1" ]
    then

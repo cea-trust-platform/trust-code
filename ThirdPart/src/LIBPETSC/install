@@ -559,7 +559,7 @@ do
    echo "Configuring PETSc..."
    # Hack provisoire sur aarch64, python de conda fait planter le configure:
    [ "`uname -m`" = aarch64 ] && PATH=/usr/bin:$PATH
-   LIBS="" && [ `uname -s` = Darwin ] && LIBS="--LIBS="\"`$TRUST_Awk '/SYSLIBS =/ {gsub("SYSLIBS =","",$0);print $0}' $fic_env`\"
+   LIBS="" && [ `uname -s` = Darwin ] && LIBS=--LIBS=`$TRUST_Awk '/SYSLIBS =/ {gsub("SYSLIBS =","",$0);print $0}' $fic_env`
    export TMPDIR=$TRUST_TMP # Par defaut, les fichiers temporaires de PETSC sont sous /tmp, cela peut probleme si pas de droit d'execution donnes
    ./configure --help 1>../configure.help 2>&1
    # Tous les paquets sont recuperes sur ftp://ftp.mcs.anl.gov/pub/petsc/externalpackages
@@ -571,7 +571,7 @@ do
    --with-debugging=$debug --with-errorchecking=1 \
    --COPTFLAGS="$COPTFLAGS" --CXXOPTFLAGS="$CXXOPTFLAGS" --FOPTFLAGS="$FOPTFLAGS" \
    --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=C++11 \
-   $LIBS \
+   "$LIBS" \
    --with-clean=1 \
    --with-ssl=0 \
    --with-gmsh=0 --with-gmsh-exec=/bin/ls \

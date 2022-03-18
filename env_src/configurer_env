@@ -496,7 +496,7 @@ then
         TRUST_NB_PROCS=1
       fi
    elif [ `uname -s` = "Darwin" ]; then
-     TRUST_NB_PROCS=$(sysctl -n hw.ncpu)
+     TRUST_NB_PROCS=$(sysctl -n hw.perflevel0.logicalcpu)
    fi
    echo $TRUST_NB_PROCS
    exit 0
@@ -1030,7 +1030,7 @@ do
    [ "`$cmd --help 2>&1 1>/dev/null;echo $?`" = 0 ] && BATCH_SYSTEM_DETECTED=1 && break
 done
 # Par defaut (aucun TRUST_FORCE specifie) alors hors clusters et Cuda, FORCE_PROVIDED_MPICH car plus pratique pour VisIt, tests de NR plus rapides, valgrind error-free:
-if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ]
+if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ] && [ "$TRUST_FORCE_SYSTEM_MPI" != 1 ]
 then
    if [ "$BATCH_SYSTEM_DETECTED" = 0 ] && [ "$TRUST_WITHOUT_HOST" = 1 ]
    then
@@ -1355,7 +1355,7 @@ else
    if [ "$MPI_LIB" != "" ]
    then
       m="# Path to MPI libraries directory";e="MPI_LIB=\"$MPI_LIB\" && export MPI_LIB"; ecrit $m"|"$e"|"$env
-      MPI_LIB="-L\$(MPI_LIB)"
+      MPI_LIB="-L$MPI_LIB"
    fi
    m="# Path to mpirun command"; e="Mpirun=\"$Mpirun\" && export Mpirun"; ecrit $m"|"$e"|"$env
    m="# COMM variable"; e="COMM=\"$COMM\" && export COMM"; ecrit $m"|"$e"|"$env
@@ -1627,7 +1627,7 @@ case $TRUST_ARCH_CC in
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
 	CppFlags="-O3 -fPIC $ArmFlags $AoccFlags -std=c++11 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
-	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter" #  -Wno-infinite-recursion"
+	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter -Wsuggest-override" #  -Wno-infinite-recursion"
 	# GF pas convaincu des erreurs trouvees
 	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
 	CppFlags=$CppFlags" -Wno-tautological-compare -Werror"
