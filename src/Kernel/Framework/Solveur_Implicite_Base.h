@@ -20,22 +20,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Solveur_Implicite_Base_included
 #define Solveur_Implicite_Base_included
 
-
-
-//
-// .DESCRIPTION class Solveur_Implicite_Base
-//
-
-#include <Objet_U.h>
 #include <List_Ref_Equation_base.h>
+#include <TRUSTTabs_forward.h>
+#include <Objet_U.h>
 #include <Double.h>
 
 class Equation_base;
-#include <TRUSTTab.h>
 
 class Solveur_Implicite_Base : public  Objet_U
 {
@@ -60,10 +53,6 @@ public :
   {
     return DMAXFLOAT; /* par defaut pas de limite : on est en implicite */
   }
-
-protected :
-
 };
 
 #endif
-

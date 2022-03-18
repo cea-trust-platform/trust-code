@@ -35,15 +35,10 @@ class Octree_Int
 public:
   void   build(const int dimension, const IntTab& elements_boxes);
   int search_elements(int x, int y, int z, int& floor_elements_index) const;
-  int search_elements_box(int xmin, int ymin, int zmin,
-                          int xmax, int ymax, int zmax,
-                          ArrOfInt& elements) const;
+  int search_elements_box(int xmin, int ymin, int zmin, int xmax, int ymax, int zmax, ArrOfInt& elements) const;
   void   reset();
 
-  inline const ArrOfInt& floor_elements() const
-  {
-    return floor_elements_;
-  };
+  inline const ArrOfInt& floor_elements() const { return floor_elements_; }
 
   // Le plus grand int autorise pour les coordonnees (du type 2^n - 1)
   static const int coord_max_;
@@ -57,14 +52,9 @@ protected:
                                const int level,
                                VECT(ArrOfInt) & tmp_elem_flags);
   int build_octree_floor(const ArrOfInt& elements_list);
-
   int search_octree_floor(int x_pos, int y_pos, int z_pos) const;
-  void   search_elements_box_floor(IntBoxData& boxdata,
-                                   int octree_floor_id) const;
-  void   search_elements_box_recursively(IntBoxData& boxdata,
-                                         int octree_id,
-                                         int cx, int cy, int cz,
-                                         int half_width) const;
+  void search_elements_box_floor(IntBoxData& boxdata, int octree_floor_id) const;
+  void search_elements_box_recursively(IntBoxData& boxdata, int octree_id, int cx, int cy, int cz, int half_width) const;
 
   // Un octree peut etre soit vide, soit subdivise en nb_octrees autres octrees,
   // soit un octree_floor contenant une liste d'elements.

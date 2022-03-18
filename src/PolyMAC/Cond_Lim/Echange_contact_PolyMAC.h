@@ -23,30 +23,23 @@
 #ifndef Echange_contact_PolyMAC_included
 #define Echange_contact_PolyMAC_included
 
-
 #include <Echange_externe_impose.h>
-class Front_VF;
-class Zone_PolyMAC;
-class Faces;
-#include <Ref_IntTab.h>
-#include <TRUSTTab.h>
-#include <Ref_Champ_Inc.h>
+#include <TRUSTTabs_forward.h>
 #include <MD_Vector_tools.h>
+#include <Ref_Champ_Inc.h>
+#include <Ref_IntTab.h>
 #include <vector>
 
-////////////////////////////////////////////////////////////////
+class Zone_PolyMAC;
+class Front_VF;
+class Faces;
 
-//
 //  .DESCRIPTION classe : Echange_contact_PolyMAC
 //  Outre le champ_front representant la temperature de paroi,
 //  cette classe possede un autre champ_front avec autant de valeurs
 //  temporelles qui represente la temperature dans l'autre probleme.
-
-////////////////////////////////////////////////////////////////
-
 class Echange_contact_PolyMAC  : public Echange_externe_impose
 {
-
   Declare_instanciable(Echange_contact_PolyMAC);
 public :
   void completer() override;
@@ -55,20 +48,13 @@ public :
   void update_coeffs();
   void update_delta() const;
   void mettre_a_jour(double ) override;
-  inline Champ_front& T_autre_pb()
-  {
-    return T_autre_pb_;
-  };
-  inline const Champ_front& T_autre_pb() const
-  {
-    return T_autre_pb_;
-  };
-  inline const Nom& nom_autre_pb() const
-  {
-    return nom_autre_pb_;
-  };
+  inline Champ_front& T_autre_pb() { return T_autre_pb_; }
+  inline const Champ_front& T_autre_pb() const { return T_autre_pb_; }
+  inline const Nom& nom_autre_pb() const { return nom_autre_pb_; }
+
   //item(i, j) : indice du j-ieme item dont on a besoin pour la face i de la frontiere
   mutable IntTab item;
+
   //coeff(i, j) : coefficient de la face, puis coefficient de item(i, j - 1) (element, puis autres faces) dans la formule du flux a la face
   //delta(i, j, 0/1) -> idem pour la correction non-lineaire de Le Potier
   mutable DoubleTab coeff, delta_int, delta;
@@ -80,4 +66,5 @@ protected :
   Champ_front T_autre_pb_;
   Nom nom_autre_pb_;
 };
+
 #endif

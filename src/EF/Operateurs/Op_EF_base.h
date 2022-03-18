@@ -23,8 +23,8 @@
 #ifndef Op_EF_base_included
 #define Op_EF_base_included
 
+#include <TRUSTTabs_forward.h>
 #include <Matrice_Morse.h>
-#include <TRUSTTab.h>
 #include <SFichier.h>
 
 //class Matrice_Morse;

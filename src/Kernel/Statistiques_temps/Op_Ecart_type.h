@@ -20,28 +20,17 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Ecart_type_included
 #define Op_Ecart_type_included
-#include <Ref_Op_Moyenne.h>
+
 #include <Ref_Integrale_tps_Champ.h>
+#include <TRUSTTabs_forward.h>
+#include <Ref_Op_Moyenne.h>
 #include <Op_Moyenne.h>
-
-#include <TRUSTTab.h>
-
-
-//
-// .DESCRIPTION class Op_Ecart_type
-//
-// .SECTION voir aussi
-//
-
 
 class Op_Ecart_type : public Operateur_Statistique_tps_base
 {
-
   Declare_instanciable(Op_Ecart_type);
-
 public:
   inline const Nom& le_nom() const override
   {

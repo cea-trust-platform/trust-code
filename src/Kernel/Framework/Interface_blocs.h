@@ -23,10 +23,10 @@
 #ifndef Interface_blocs_included
 #define Interface_blocs_included
 
+#include <TRUSTTabs_forward.h>
+#include <stdexcept>
 #include <map>
 #include <set>
-#include <TRUSTTab.h>
-#include <stdexcept>
 
 class Matrice_Morse;
 

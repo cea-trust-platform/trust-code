@@ -19,8 +19,10 @@
 // Version:     /main/3
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef MD_Vector_base2_included
 #define MD_Vector_base2_included
+
 #include <MD_Vector_base.h>
 #include <TRUSTArray.h>
 
@@ -29,30 +31,12 @@ class MD_Vector_base2 : public MD_Vector_base
   Declare_base_sans_constructeur(MD_Vector_base2);
 public:
   MD_Vector_base2();
-  int get_nb_items_reels() const override
-  {
-    return nb_items_reels_;
-  }
-  int get_nb_items_tot() const override
-  {
-    return nb_items_tot_;
-  }
-  const ArrOfInt& get_items_to_compute() const override
-  {
-    return blocs_items_to_compute_;
-  }
-  const ArrOfInt& get_items_to_sum() const override
-  {
-    return blocs_items_to_sum_;
-  }
-  int nb_items_seq_tot() const override
-  {
-    return nb_items_seq_tot_;
-  }
-  int nb_items_seq_local() const override
-  {
-    return nb_items_seq_local_;
-  }
+  int get_nb_items_reels() const override { return nb_items_reels_; }
+  int get_nb_items_tot() const override { return nb_items_tot_; }
+  const ArrOfInt& get_items_to_compute() const override { return blocs_items_to_compute_; }
+  const ArrOfInt& get_items_to_sum() const override { return blocs_items_to_sum_; }
+  int nb_items_seq_tot() const override { return nb_items_seq_tot_; }
+  int nb_items_seq_local() const override { return nb_items_seq_local_; }
 
   static inline void append_item_to_blocs(ArrOfInt& blocs, int item);
 

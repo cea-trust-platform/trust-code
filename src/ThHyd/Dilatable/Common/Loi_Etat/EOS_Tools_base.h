@@ -24,7 +24,7 @@
 #define EOS_Tools_base_included
 
 #include <Ref_Fluide_Dilatable_base.h>
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 
 class Fluide_Dilatable_base;
 class Zone_Cl_dis;

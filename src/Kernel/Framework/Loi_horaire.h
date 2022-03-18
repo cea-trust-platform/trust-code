@@ -23,8 +23,8 @@
 #ifndef Loi_horaire_included
 #define Loi_horaire_included
 
+#include <TRUSTTabs_forward.h>
 #include <Champ_Fonc_t.h>
-#include <TRUSTTab.h>
 class Schema_Temps_base;
 
 ////////////////////////////////////////////////////////////////////////////////

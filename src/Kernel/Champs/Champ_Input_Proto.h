@@ -23,9 +23,9 @@
 #ifndef Champ_Input_Proto_included
 #define Champ_Input_Proto_included
 
-#include <ICoCoTrioField.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Probleme_base.h>
-#include <TRUSTTab.h>
+#include <ICoCoTrioField.h>
 #include <Ref_Sous_Zone.h>
 
 using ICoCo::TrioField;

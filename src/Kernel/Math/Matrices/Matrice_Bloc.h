@@ -23,9 +23,9 @@
 #ifndef Matrice_Bloc_included
 #define Matrice_Bloc_included
 
+#include <TRUSTTabs_forward.h>
 #include <Matrice_Base.h>
 #include <Vect_Matrice.h>
-#include <TRUSTArray.h>
 #include <TRUSTLists.h>
 
 /*----------------------------------------------------------------------------*/
@@ -70,10 +70,7 @@ public :
   void scale( const double& x ) override;
 
   void get_stencil( IntTab& stencil ) const override;
-
-  void get_stencil_and_coefficients( IntTab&      stencil,
-                                     ArrOfDouble& coefficients ) const override;
-
+  void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
   // Impression
   Sortie& imprimer( Sortie& s ) const override;
@@ -98,28 +95,13 @@ public :
   int nb_bloc_colonnes(void ) const;           // retourne M_
 
   // Remplissage par une matrice morse symetrique
-  void remplir( const IntLists&    voisins,
-                const DoubleLists& valeurs,
-                const DoubleVect&  terme_diag,
-                const int       i,
-                const int       n );
+  void remplir(const IntLists& voisins, const DoubleLists& valeurs, const DoubleVect& terme_diag, const int i, const int n);
 
   // // Remplissage par une matrice morse
-  void remplir( const IntLists&    voisins,
-                const DoubleLists& valeurs,
-                const int       i,
-                const int       n,
-                const int       j,
-                const int       m );
+  void remplir(const IntLists& voisins, const DoubleLists& valeurs, const int i, const int n, const int j, const int m);
 
   // Remplissage par une matrice morse symetrique ou non
-  void remplir( const IntLists&    voisins,
-                const DoubleLists& valeurs,
-                const DoubleVect&  terme_diag,
-                const int       i,
-                const int       n,
-                const int       j,
-                const int       m );
+  void remplir(const IntLists& voisins, const DoubleLists& valeurs, const DoubleVect& terme_diag, const int i, const int n, const int j, const int m);
 
   // // Conversion vers une Matrice_Morse
   void BlocToMatMorse( Matrice_Morse& matrix ) const;
@@ -136,11 +118,7 @@ protected :
   int M_;                       // 2eme dim de A
   int nb_blocs_;                   // nb total des blocs de A (= N_ * M_)
 
-
   ArrOfInt offsets_;
-
-
 };
-
 
 #endif

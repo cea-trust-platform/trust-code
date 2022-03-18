@@ -24,7 +24,8 @@
 #define Sch_CN_iteratif_included
 
 #include <Schema_Temps_base.h>
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION

@@ -23,9 +23,9 @@
 #ifndef PDF_model_included
 #define PDF_model_included
 
+#include <TRUSTTabs_forward.h>
 #include <Vect_Parser_U.h>
 #include <Champ_Don.h>
-#include <TRUSTTab.h>
 #include <Zone_VF.h>
 #include <Parser.h>
 #include <Motcle.h>
@@ -42,16 +42,12 @@
 
 class PDF_model : public Objet_U
 {
-
   Declare_instanciable(PDF_model) ;
-
 public :
   double get_vitesse_imposee(ArrOfDouble&,int);
   void affecter_vitesse_imposee(Zone_VF&, const DoubleTab&);
-  double eta() const
-  {
-    return eta_;
-  }
+  double eta() const { return eta_; }
+
 protected :
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   Champ_Don vitesse_imposee_lu_;

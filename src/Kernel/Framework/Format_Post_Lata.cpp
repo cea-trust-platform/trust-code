@@ -292,16 +292,13 @@ int Format_Post_Lata::ecrire_entete(double temps_courant,int reprise,const int& 
   return 1;
 }
 
-int Format_Post_Lata::completer_post(const Domaine& dom,const int is_axi,
-                                     const Nature_du_champ& nature,const int nb_compo,const Noms& noms_compo,
-                                     const Motcle& loc_post,const Nom& le_nom_champ_post)
+int Format_Post_Lata::completer_post(const Domaine& dom, const int is_axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post,
+                                     const Nom& le_nom_champ_post)
 {
   return 1;
 }
 
-int Format_Post_Lata::preparer_post(const Nom& id_du_domaine,const int& est_le_premier_post,
-                                    const int& reprise,
-                                    const double& t_init)
+int Format_Post_Lata::preparer_post(const Nom& id_du_domaine, const int& est_le_premier_post, const int& reprise, const double& t_init)
 {
   return 1;
 }
@@ -319,12 +316,7 @@ int Format_Post_Lata::preparer_post(const Nom& id_du_domaine,const int& est_le_p
 //   est ecrit au debut du premier bloc et a la fin du dernier et le nombre est
 //   la taille du tableau multiplie par le nombre de blocs (on suppose que tous
 //   les blocs sont identiques)).
-int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier,
-                                      const DoubleTab& tab,
-                                      int& nb_colonnes,
-                                      const Options_Para& option,
-                                      const int bloc_number,
-                                      const int nb_blocs)
+int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option, const int bloc_number, const int nb_blocs)
 {
   int line_size = 1;
   int nb_lignes = tab.dimension(0);
@@ -414,12 +406,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier,
 //  On renvoie dans nb_colonnes la somme des dimension(i) pour i>0.
 // Valeur de retour: somme des dimension(0) ecrits (selon que tous les
 //  processeurs ecrivent sur le meme fichier ou pas).
-int Format_Post_Lata::write_inttab(Fichier_Lata& fichier,
-                                   int decalage,
-                                   int decalage_partiel,
-                                   const IntTab& tab,
-                                   int& nb_colonnes,
-                                   const Options_Para& option)
+int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option)
 {
   assert(decalage_partiel>=decalage);
   assert((decalage==0)||(decalage==1));
@@ -996,13 +983,8 @@ int Format_Post_Lata::ecrire_temps(const double temps)
 
 // Description:
 //  voir Format_Post_base::ecrire_champ
-int Format_Post_Lata::ecrire_champ(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
-                                   int ncomp,double temps,double temps_courant,
-                                   const Nom& id_du_champ,
-                                   const Nom& id_du_domaine,
-                                   const Nom& localisation,
-                                   const Nom&   nature,
-                                   const DoubleTab& valeurs)
+int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps, double temps_courant, const Nom& id_du_champ, const Nom& id_du_domaine,
+                                   const Nom& localisation, const Nom& nature, const DoubleTab& valeurs)
 {
 
   // recup de lata_v1

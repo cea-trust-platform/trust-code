@@ -23,25 +23,15 @@
 #ifndef Evaluateur_Source_PolyMAC_included
 #define Evaluateur_Source_PolyMAC_included
 
-
-#include <Ref_Zone_PolyMAC.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
-#include <Zone_PolyMAC.h>
+#include <TRUSTTabs_forward.h>
+#include <Ref_Zone_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
-
-#include <TRUSTVect.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Evaluateur_Source_PolyMAC
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <Zone_PolyMAC.h>
 
 class Evaluateur_Source_PolyMAC
 {
-
 public:
-
   inline Evaluateur_Source_PolyMAC();
   inline virtual ~Evaluateur_Source_PolyMAC() {};
   inline Evaluateur_Source_PolyMAC(const Evaluateur_Source_PolyMAC& );
@@ -52,27 +42,19 @@ public:
   virtual void calculer_terme_source(int , DoubleVect&  ) const =0;
 
 protected:
-
   REF(Zone_PolyMAC) la_zone;
   REF(Zone_Cl_PolyMAC) la_zcl;
-
 };
-
-//
-//   Fonctions inline de Evaluateur_Source_PolyMAC
-//
 
 inline Evaluateur_Source_PolyMAC::Evaluateur_Source_PolyMAC() {}
 
 inline Evaluateur_Source_PolyMAC::Evaluateur_Source_PolyMAC(const Evaluateur_Source_PolyMAC& eval)
   : la_zone(eval.la_zone),la_zcl(eval.la_zcl) {}
 
-
-inline void Evaluateur_Source_PolyMAC::associer_zones(const Zone_dis_base& zone_vdf,
-                                                      const Zone_Cl_dis_base& zone_cl_vdf)
+inline void Evaluateur_Source_PolyMAC::associer_zones(const Zone_dis_base& zone_vdf, const Zone_Cl_dis_base& zone_cl_vdf)
 {
-  la_zone = ref_cast(Zone_PolyMAC,zone_vdf);
-  la_zcl = ref_cast(Zone_Cl_PolyMAC,zone_cl_vdf);
+  la_zone = ref_cast(Zone_PolyMAC, zone_vdf);
+  la_zcl = ref_cast(Zone_Cl_PolyMAC, zone_cl_vdf);
   completer();
 }
 

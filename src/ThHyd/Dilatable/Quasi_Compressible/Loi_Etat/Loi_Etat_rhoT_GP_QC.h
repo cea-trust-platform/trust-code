@@ -23,9 +23,9 @@
 #ifndef Loi_Etat_rhoT_GP_QC_included
 #define Loi_Etat_rhoT_GP_QC_included
 
+#include <TRUSTTabs_forward.h>
 #include <Loi_Etat_GP_base.h>
 #include <Champ_Don.h>
-#include <TRUSTTab.h>
 #include <Parser_U.h>
 
 /////////////////////////////////////////////////////////////////////////////

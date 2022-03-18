@@ -23,8 +23,10 @@
 #ifndef EcritureLectureSpecial_included
 #define EcritureLectureSpecial_included
 
+#include <TRUSTTabs_forward.h>
 #include <Interprete.h>
 #include <Motcle.h>
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -42,7 +44,6 @@
 class Sortie;
 class Entree;
 class Zone_VF;
-#include <TRUSTTab.h>
 class Champ_base;
 
 class EcritureLectureSpecial : public Interprete

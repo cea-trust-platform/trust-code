@@ -24,8 +24,8 @@
 #ifndef Simple_included
 #define Simple_included
 
+#include <TRUSTTabs_forward.h>
 #include <Simpler_Base.h>
-#include <TRUSTTrav.h>
 
 class Operateur_Grad ;
 

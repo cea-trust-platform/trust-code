@@ -24,8 +24,8 @@
 #define Echange_contact_VDF_included
 
 #include <Echange_global_impose.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Champ_Inc.h>
-#include <TRUSTTrav.h>
 #include <vector>
 #include <array>
 #include <map>

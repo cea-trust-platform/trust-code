@@ -45,31 +45,22 @@ public:
 
   int fixer_nb_valeurs_nodales(int);
 
-  inline double fonction_forme_2D(double x, double y, int le_poly,
-                                  int face, const IntTab& sommet_poly,
-                                  const DoubleTab& coord) const
+  inline double fonction_forme_2D(double x, double y, int le_poly, int face, const IntTab& sommet_poly, const DoubleTab& coord) const
   {
     return 1 - 2 * coord_barycentrique_P1_triangle(sommet_poly, coord, x, y, le_poly, face);
   }
 
-  inline double fonction_forme_3D(double x, double y, double z,
-                                  int le_poly, int face,
-                                  const IntTab& sommet_poly,
-                                  const DoubleTab& coord) const
+  inline double fonction_forme_3D(double x, double y, double z, int le_poly, int face, const IntTab& sommet_poly, const DoubleTab& coord) const
   {
     return 1 - 3 * coord_barycentrique_P1_tetraedre(sommet_poly, coord, x, y, z, le_poly, face);
   }
 
-  inline double coord_barycentrique(const IntTab& sommet_poly, const DoubleTab& coord,
-                                    double x, double y,
-                                    int le_poly, int face) const
+  inline double coord_barycentrique(const IntTab& sommet_poly, const DoubleTab& coord, double x, double y, int le_poly, int face) const
   {
     return coord_barycentrique_P1_triangle(sommet_poly, coord, x, y, le_poly, face);
   }
 
-  inline double coord_barycentrique(const IntTab& sommet_poly, const DoubleTab& coord,
-                                    double x, double y, double z,
-                                    int le_poly, int face) const
+  inline double coord_barycentrique(const IntTab& sommet_poly, const DoubleTab& coord, double x, double y, double z, int le_poly, int face) const
   {
     return coord_barycentrique_P1_tetraedre(sommet_poly, coord, x, y, z, le_poly, face);
   }
@@ -150,14 +141,10 @@ protected :
   SolveurSys  solveur_L2;
   Matrice_Morse_Sym MatP1NC2P1_H1;
   SolveurSys  solveur_H1;
-  virtual const Zone_VEF& zone_vef() const=0;
-  friend DoubleTab& valeur_P1_L2(Champ_P1NC& ,
-                                 const Domaine&);
-  friend DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC& ,
-                                 const Domaine&);
-  friend DoubleTab& valeur_P1_H1(const Champ_P1NC& ,
-                                 const Domaine& ,
-                                 DoubleTab& );
+  virtual const Zone_VEF& zone_vef() const =0;
+  friend DoubleTab& valeur_P1_L2(Champ_P1NC&, const Domaine&);
+  friend DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC&, const Domaine&);
+  friend DoubleTab& valeur_P1_H1(const Champ_P1NC&, const Domaine&, DoubleTab&);
   DoubleTab ch_som_;
   DoubleVect ch_som_vect_;
   int filtrer_L2_deja_appele_;
@@ -165,12 +152,11 @@ protected :
   //////////////////////////////////////////////////////////
   // Membres rajoutes
   //////////////////////////////////////////////////////////
-  friend int construire_MatP1NC2P1_L2(Champ_P1NC&,const Domaine&);
-  friend int construire_MatP1NC2P1_H1(Champ_P1NC&,const Domaine&,double&);
+  friend int construire_MatP1NC2P1_L2(Champ_P1NC&, const Domaine&);
+  friend int construire_MatP1NC2P1_H1(Champ_P1NC&, const Domaine&, double&);
 
-  friend int construire_secmem_L2(Champ_P1NC&,const Domaine&,DoubleTab&);
-  friend int construire_secmem_H1(Champ_P1NC&,const Domaine&,DoubleTab&,
-                                  const double&);
+  friend int construire_secmem_L2(Champ_P1NC&, const Domaine&, DoubleTab&);
+  friend int construire_secmem_H1(Champ_P1NC&, const Domaine&, DoubleTab&, const double&);
 
   Matrice_Morse_Sym MatP1NC2P1_L2_H1;
   SolveurSys solveur_L2_H1;

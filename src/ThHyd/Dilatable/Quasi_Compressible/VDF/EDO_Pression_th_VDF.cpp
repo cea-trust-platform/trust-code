@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,16 +20,17 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <EDO_Pression_th_VDF.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
 #include <Sortie_libre_pression_imposee_QC.h>
-#include <Debog.h>
 #include <Convection_Diffusion_Temperature.h>
-#include <Champ_Face.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <Check_espace_virtuel.h>
+#include <EDO_Pression_th_VDF.h>
 #include <communications.h>
+#include <Zone_Cl_VDF.h>
+#include <Champ_Face.h>
+#include <Zone_VDF.h>
+#include <TRUSTTab.h>
+#include <Debog.h>
 
 Implemente_base_sans_constructeur(EDO_Pression_th_VDF,"EDO_Pression_th_VDF",EDO_Pression_th_base);
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,13 +26,11 @@
 #include <Champ_Uniforme.h>
 #include <Schema_Euler_Implicite.h>
 #include <Milieu_base.h>
-
 #include <Zone_PolyMAC.h>
 #include <Equation_base.h>
 #include <Champ_P0_PolyMAC.h>
 #include <Operateur.h>
 #include <Op_Diff_PolyMAC_Elem.h>
-
 #include <cmath>
 
 Implemente_instanciable(Echange_contact_PolyMAC,"Paroi_Echange_contact_PolyMAC",Echange_externe_impose);

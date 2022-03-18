@@ -24,7 +24,7 @@
 #define Reordonner_faces_periodiques_included
 
 #include <Interprete_geometrique_base.h>
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 class Frontiere;
 class Domaine;
 
@@ -35,24 +35,10 @@ class Domaine;
 class Reordonner_faces_periodiques : public Interprete_geometrique_base
 {
 public:
-  static int reordonner_faces_periodiques(const Domaine& domaine,
-                                          IntTab& faces,
-                                          const ArrOfDouble& direction_perio,
-                                          const double epsilon);
-
-  static void renum_som_perio(const Domaine&,
-                              const Noms& liste_bords_periodiques,
-                              ArrOfInt& renum_som_perio,
-                              const int calculer_espace_virtuel);
-
-  static int check_faces_periodiques(const Frontiere& frontiere,
-                                     ArrOfDouble& vecteur_delta,
-                                     ArrOfDouble& erreur,
-                                     const int verbose = 0);
-
-  static void chercher_direction_perio(ArrOfDouble& direction_perio,
-                                       const Domaine& dom,
-                                       const Nom& bord);
-
+  static int reordonner_faces_periodiques(const Domaine& domaine, IntTab& faces, const ArrOfDouble& direction_perio, const double epsilon);
+  static int check_faces_periodiques(const Frontiere& frontiere, ArrOfDouble& vecteur_delta, ArrOfDouble& erreur, const int verbose = 0);
+  static void renum_som_perio(const Domaine&, const Noms& liste_bords_periodiques, ArrOfInt& renum_som_perio, const int calculer_espace_virtuel);
+  static void chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine& dom, const Nom& bord);
 };
+
 #endif

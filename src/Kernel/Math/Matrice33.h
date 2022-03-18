@@ -21,8 +21,9 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef Matrice33_included
 #define Matrice33_included
+
+#include <TRUSTTabs_forward.h>
 #include <assert.h>
-#include <TRUSTTab.h>
 
 // Description: une matrice 3x3.
 //  Convention pour m(i,j): i est l'indice de ligne, j l'indice de colonne entre 0 et 2 inclus.
@@ -45,14 +46,14 @@ public:
     m[2][1] = m21;
     m[2][2] = m22;
   }
-  double        operator()(int i, int j) const
+  double operator()(int i, int j) const
   {
-    assert(i>=0 && i<3 && j>=0 && j<3);
+    assert(i >= 0 && i < 3 && j >= 0 && j < 3);
     return m[i][j];
   }
-  double&       operator()(int i, int j)
+  double& operator()(int i, int j)
   {
-    assert(i>=0 && i<3 && j>=0 && j<3);
+    assert(i >= 0 && i < 3 && j >= 0 && j < 3);
     return m[i][j];
   }
   inline double norme_Linfini();

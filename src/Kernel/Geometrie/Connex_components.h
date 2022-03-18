@@ -22,14 +22,12 @@
 #ifndef Connex_components_H_INCLU
 #define Connex_components_H_INCLU
 
-#include <TRUSTTab.h>
+#include <Connectivite_som_elem.h>
+#include <TRUSTTabs_forward.h>
 #include <arch.h>
 
-int search_connex_components_local(const IntTab& elem_faces,
-                                   const IntTab& faces_elem,
-                                   IntVect& num_compo);
-
+int search_connex_components_local(const IntTab& elem_faces, const IntTab& faces_elem, IntVect& num_compo);
 int compute_graph_connex_components(const IntTab& graph, ArrOfInt& connex_components);
-
 int compute_global_connex_components(IntVect& num_compo, int nb_local_components);
+
 #endif

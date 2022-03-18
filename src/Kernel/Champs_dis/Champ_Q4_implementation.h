@@ -26,31 +26,19 @@
 #include <Champ_implementation.h>
 #include <TRUSTTab.h>
 
-//
 class Champ_Q4_implementation : public Champ_implementation
 {
-
 public:
 
-  DoubleVect& valeur_a_elem(const DoubleVect& position,
-                            DoubleVect& val,
-                            int le_poly) const override;
-  double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly, int ncomp) const override;
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override ;
+  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
+  double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
   DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
-  DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                       DoubleVect&, int) const override;
+  DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
-  int remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                    IntVect& polys) const override;
-  int imprime_Q4(Sortie& , int ) const;
+  int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
+  int imprime_Q4(Sortie&, int) const;
 };
 
 // Description:
@@ -108,9 +96,7 @@ public:
 // Exception: erreur de calcul, coordonnee barycentrique invalide
 // Effets de bord:
 // Postcondition:
-inline double coord_barycentrique(const IntTab& polys,
-                                  const DoubleTab& coord,
-                                  double x, double y, int le_poly, int i)
+inline double coord_barycentrique(const IntTab& polys, const DoubleTab& coord, double x, double y, int le_poly, int i)
 {
   int som0,som1,som2;
   int nb_som_elem = polys.dimension(1);
@@ -302,10 +288,7 @@ inline double coord_barycentrique(const IntTab& polys,
 // Exception: erreur de calcul, coordonnee barycentrique invalide
 // Effets de bord:
 // Postcondition:
-inline double coord_barycentrique(const IntTab& polys,
-                                  const DoubleTab& coord,
-                                  double x, double y, double z,
-                                  int le_poly, int i)
+inline double coord_barycentrique(const IntTab& polys, const DoubleTab& coord, double x, double y, double z, int le_poly, int i)
 {
   int som0,som1,som2,som3;
   int nb_som_elem = polys.dimension(1);

@@ -23,38 +23,18 @@
 #ifndef Evaluateur_Source_CoviMAC_Elem_included
 #define Evaluateur_Source_CoviMAC_Elem_included
 
-
 #include <Evaluateur_Source_CoviMAC.h>
-#include <TRUSTVect.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Evaluateur_Source_CoviMAC_Elem
-//
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <TRUSTTabs_forward.h>
 
 class Evaluateur_Source_CoviMAC_Elem : public Evaluateur_Source_CoviMAC
 {
-
 public:
-
-  inline Evaluateur_Source_CoviMAC_Elem();
+  Evaluateur_Source_CoviMAC_Elem() { }
   Evaluateur_Source_CoviMAC_Elem(const Evaluateur_Source_CoviMAC_Elem& );
   void completer() override;
 
 protected:
-
-  DoubleVect volumes;
-  DoubleVect porosite_vol;     // porosites volumiques
-
+  DoubleVect volumes, porosite_vol;     // porosites volumiques
 };
-
-//
-//   Fonctions inline de Evaluateur_Source_CoviMAC
-//
-
-inline Evaluateur_Source_CoviMAC_Elem::Evaluateur_Source_CoviMAC_Elem() {}
-
 
 #endif

@@ -41,6 +41,7 @@
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Masse_ajoutee_base.h>
+#include <TRUSTTab.h>
 
 Implemente_instanciable(Masse_CoviMAC_Face,"Masse_CoviMAC_Face",Solveur_Masse_base);
 

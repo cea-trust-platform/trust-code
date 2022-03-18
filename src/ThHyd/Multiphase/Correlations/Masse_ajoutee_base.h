@@ -23,8 +23,8 @@
 #ifndef Masse_ajoutee_base_included
 #define Masse_ajoutee_base_included
 
+#include <TRUSTTabs_forward.h>
 #include <Correlation_base.h>
-#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

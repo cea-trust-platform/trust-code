@@ -22,6 +22,7 @@
 
 #include <Connex_components.h>
 #include <communications.h>
+#include <TRUSTTab.h>
 #include <ArrOfBit.h>
 
 // Description: Calcul des ensembles connexes par faces d'elements
@@ -45,9 +46,7 @@
 //  jusqu'a size_tot() y compris les elements virtuels. Les numeros de composantes
 //  sont locaux a ce processeur.
 // Valeur de retour: N, nombre de composantes connexes locales.
-int search_connex_components_local(const IntTab& elem_faces,
-                                   const IntTab& faces_elem,
-                                   IntVect& num_compo)
+int search_connex_components_local(const IntTab& elem_faces, const IntTab& faces_elem, IntVect& num_compo)
 {
   const int nbelem = num_compo.size_totale();
   const int nb_voisins = elem_faces.dimension(1);

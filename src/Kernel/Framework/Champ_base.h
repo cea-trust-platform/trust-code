@@ -24,9 +24,9 @@
 #ifndef Champ_base_included
 #define Champ_base_included
 
+#include <TRUSTTabs_forward.h>
 #include <Champ_Proto.h>
 #include <Field_base.h>
-#include <TRUSTTrav.h>
 #include <Noms.h>
 class Motcle;
 class Domaine;
@@ -70,85 +70,61 @@ public:
     return -1;
   };
 
-  double          temps() const;
-  virtual double  changer_temps(const double& t);
+  double temps() const;
+  virtual double changer_temps(const double& t);
 
   // Attention, il faut avoir fixe nb_comp et nature_du_champ avant
   // de fixer le nb_valeurs_nodales.
-  virtual int          fixer_nb_valeurs_nodales(int n);
+  virtual int fixer_nb_valeurs_nodales(int n);
   // Par defaut, ces deux methodes provoquent une erreur. L'appel
   // est invalide sauf si le champ possede une Zone_dis
-  virtual void                 associer_zone_dis_base(const Zone_dis_base&);
+  virtual void associer_zone_dis_base(const Zone_dis_base&);
   virtual const Zone_dis_base& zone_dis_base() const;
-  virtual int a_une_zone_dis_base() const
-  {
-    return 0;
-  }; // Par defaut, on ne sait pas si une zone_dis_base sera definie
+  virtual int a_une_zone_dis_base() const { return 0; } // Par defaut, on ne sait pas si une zone_dis_base sera definie
 
-  virtual void         mettre_a_jour(double );
-  virtual void         abortTimeStep();
-  virtual Champ_base&  affecter_(const Champ_base& ) =0;
-  Champ_base&          affecter(const Champ_base& );
-  void                             affecter_erreur();
-  virtual Champ_base&  affecter_compo(const Champ_base&, int compo ) =0;
-  virtual int       imprime(Sortie& , int ) const =0;
+  virtual void mettre_a_jour(double);
+  virtual void abortTimeStep();
+  virtual Champ_base& affecter_(const Champ_base&) =0;
+  Champ_base& affecter(const Champ_base&);
+  void affecter_erreur();
+  virtual Champ_base& affecter_compo(const Champ_base&, int compo) =0;
+  virtual int imprime(Sortie&, int) const =0;
   // methode supprime pour eviter confusion avec  trace(const Frontiere_dis_base&, DoubleTab&,,double)
   //DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&,int distant) const;
-  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& , double,int distant ) const;
+  virtual DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const;
 
-  virtual DoubleVect&  valeur_a(const DoubleVect& position,
-                                DoubleVect& valeurs) const ;
-  virtual DoubleVect&  valeur_a_elem(const DoubleVect& position,
-                                     DoubleVect& valeurs,
-                                     int le_poly) const ;
-  virtual double       valeur_a_compo(const DoubleVect& position,
-                                      int ncomp) const ;
-  virtual double       valeur_a_elem_compo(const DoubleVect& position,
-                                           int le_poly,int ncomp) const ;
+  virtual DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const;
+  virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const;
+  virtual double valeur_a_compo(const DoubleVect& position, int ncomp) const;
+  virtual double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const;
 
-  virtual DoubleTab&   valeur_aux(const DoubleTab& positions,
-                                  DoubleTab& valeurs) const ;
-  virtual DoubleTab&  valeur_aux_centres_de_gravite(const DoubleTab& positions,
-                                                    DoubleTab& valeurs) const ;
-  virtual DoubleVect&  valeur_aux_compo(const DoubleTab& positions,
-                                        DoubleVect& valeurs,
-                                        int ncomp) const ;
-  virtual DoubleTab&   valeur_aux_elems(const DoubleTab& positions,
-                                        const IntVect& les_polys,
-                                        DoubleTab& valeurs) const ;
-  virtual DoubleVect&  valeur_aux_elems_compo(const DoubleTab& positions,
-                                              const IntVect& les_polys,
-                                              DoubleVect& valeurs,
-                                              int ncomp) const ;
-  virtual DoubleTab&   valeur_aux_elems_smooth(const DoubleTab& positions,
-                                               const IntVect& les_polys,
-                                               DoubleTab& valeurs);
-  virtual DoubleVect&  valeur_aux_elems_compo_smooth(const DoubleTab& positions,
-                                                     const IntVect& les_polys,
-                                                     DoubleVect& valeurs,
-                                                     int ncomp);
+  virtual DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const;
+  virtual DoubleTab& valeur_aux_centres_de_gravite(const DoubleTab& positions, DoubleTab& valeurs) const;
+  virtual DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const;
+  virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
+  virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;
+  virtual DoubleTab& valeur_aux_elems_smooth(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs);
+  virtual DoubleVect& valeur_aux_elems_compo_smooth(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp);
   virtual DoubleVect& valeur_a_sommet(int, const Domaine&, DoubleVect&) const;
-  virtual double      valeur_a_sommet_compo(int, int, int) const;
-  virtual DoubleTab&  valeur_aux_sommets(const Domaine&, DoubleTab&) const;
-  virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                               DoubleVect&, int) const;
+  virtual double valeur_a_sommet_compo(int, int, int) const;
+  virtual DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
+  virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const;
 
   /* ces methodes ne s'appliquent que si a_une_zone_dis_base() */
   virtual DoubleTab& valeur_aux_faces(DoubleTab& result) const;
   virtual DoubleTab valeur_aux_bords() const;
 
-  int calculer_valeurs_som_post(DoubleTab& valeurs,int nbsom,Nom& nom_post,const Domaine& dom) const ;
-  int calculer_valeurs_som_compo_post(DoubleTab& valeurs,int ncomp,int nbsom,Nom& nom_post,const Domaine& dom,int appliquer_cl=0) const ;
-  int calculer_valeurs_elem_post(DoubleTab& valeurs,int nbelem,Nom& nom_post,const Domaine& dom) const ;
-  int calculer_valeurs_elem_compo_post(DoubleTab& valeurs,int ncomp,int nbelem,Nom& nom_post,const Domaine& dom) const ;
-  void corriger_unite_nom_compo() ;
-  virtual int completer_post_champ(const Domaine& dom,const int axi,const Nom& loc_post,
-                                   const Nom& le_nom_champ_post,Format_Post_base& format) const;
+  int calculer_valeurs_som_post(DoubleTab& valeurs, int nbsom, Nom& nom_post, const Domaine& dom) const;
+  int calculer_valeurs_som_compo_post(DoubleTab& valeurs, int ncomp, int nbsom, Nom& nom_post, const Domaine& dom, int appliquer_cl = 0) const;
+  int calculer_valeurs_elem_post(DoubleTab& valeurs, int nbelem, Nom& nom_post, const Domaine& dom) const;
+  int calculer_valeurs_elem_compo_post(DoubleTab& valeurs, int ncomp, int nbelem, Nom& nom_post, const Domaine& dom) const;
+  void corriger_unite_nom_compo();
+  virtual int completer_post_champ(const Domaine& dom, const int axi, const Nom& loc_post, const Nom& le_nom_champ_post, Format_Post_base& format) const;
   virtual void completer(const Zone_Cl_dis_base& zcl);
 
 protected:
 
-  double temps_ ;
+  double temps_;
 };
 
 #endif

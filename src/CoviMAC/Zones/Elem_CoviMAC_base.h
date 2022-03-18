@@ -23,27 +23,16 @@
 #ifndef Elem_CoviMAC_base_included
 #define Elem_CoviMAC_base_included
 
-#include <TRUSTTab.h>
-class Zone;
-class Zone_CoviMAC;
+#include <TRUSTTabs_forward.h>
+#include <Objet_U.h>
 class Champ_Inc_base;
+class Zone;
 
-class Elem_CoviMAC_base : public Objet_U
+class Elem_CoviMAC_base: public Objet_U
 {
-
   Declare_base(Elem_CoviMAC_base);
-
 public:
-
-  // fonctions publiques :
-
-  virtual void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-                       const IntTab& ,const Zone& )  const =0;
-protected:
+  virtual void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Zone&) const =0;
 };
 
-
 #endif
-
-
-

@@ -40,28 +40,20 @@ class Terme_Source_Acceleration : public Source_base
 public:
 
   Terme_Source_Acceleration();
-  void         associer_pb(const Probleme_base& ) override;
-  DoubleTab&   calculer(DoubleTab& ) const override;
-  int       a_pour_Champ_Fonc(const Motcle& mot,
-                              REF(Champ_base) & ch_ref) const override;
-  inline const Champ_Don& champ_vitesse() const
-  {
-    return champ_vitesse_;
-  };
-  inline const Champ_Don& omega() const
-  {
-    return omega_;
-  };
+  void associer_pb(const Probleme_base&) override;
+  DoubleTab& calculer(DoubleTab&) const override;
+  int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const override;
+  inline const Champ_Don& champ_vitesse() const { return champ_vitesse_; }
+  inline const Champ_Don& omega() const { return omega_; }
 
 protected:
-  virtual void                      lire_data(Entree& s);
-  virtual const Champ_Fonc_base&    get_terme_source_post() const;
-  virtual Champ_Fonc&               get_set_terme_source_post() const;
-  virtual const DoubleTab&          calculer_vitesse_faces(DoubleTab& stockage) const = 0;
-  const DoubleTab&                  calculer_la_source(DoubleTab& src_faces) const;
+  virtual void lire_data(Entree& s);
+  virtual const Champ_Fonc_base& get_terme_source_post() const;
+  virtual Champ_Fonc& get_set_terme_source_post() const;
+  virtual const DoubleTab& calculer_vitesse_faces(DoubleTab& stockage) const = 0;
+  const DoubleTab& calculer_la_source(DoubleTab& src_faces) const;
   virtual const Navier_Stokes_std& get_eq_hydraulique() const;
-
-  void                 mettre_a_jour(double temps) override;
+  void mettre_a_jour(double temps) override;
 
 
 private:

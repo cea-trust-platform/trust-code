@@ -45,13 +45,9 @@
  *
  * (MODIF OC 12/2004)
  */
-//
-// .SECTION voir aussi
-// Interprete
 
 #include <Interprete_geometrique_base.h>
-
-#include <TRUSTVect.h>
+#include <TRUSTTabs_forward.h>
 
 class ExtrudeBord : public Interprete_geometrique_base
 {

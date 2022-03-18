@@ -29,123 +29,79 @@
 
 class Champ_Inc_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Elem_VEF
-//
-//////////////////////////////////////////////////////////////////////////////
 Declare_deriv(Elem_VEF_base);
-class Elem_VEF : public DERIV(Elem_VEF_base)
+class Elem_VEF: public DERIV(Elem_VEF_base)
 {
   Declare_instanciable(Elem_VEF);
-
 public:
 
-  inline Elem_VEF& operator = (const Elem_VEF_base& );
-  void typer(Nom );
+  inline Elem_VEF& operator =(const Elem_VEF_base&);
+  void typer(Nom);
   inline int nb_facette() const;
-  inline void creer_facette_normales(const Zone&  ,DoubleTab&,
-                                     const IntVect& ) const;
-  inline void creer_normales_facettes_Cl(DoubleTab& ,int ,int ,
-                                         const DoubleTab& ,const DoubleVect& , const Zone& ) const;
-  inline void modif_volumes_entrelaces(int ,int ,const Zone_VEF& ,
-                                       DoubleVect& ,int  ) const;
-  inline void modif_volumes_entrelaces_faces_joints(int ,int ,const Zone_VEF& ,
-                                                    DoubleVect& ,int  ) const;
-  inline void modif_normales_facettes_Cl(DoubleTab& ,int ,int ,
-                                         int ,int ,int ,int ) const;
-  inline void calcul_vc(const ArrOfInt& ,ArrOfDouble& ,const ArrOfDouble& ,
-                        const DoubleTab& ,const Champ_Inc_base& ,int, const DoubleVect& ) const;
-  inline void calcul_xg(DoubleVect& ,const DoubleTab& ,const int ,int& ,
-                        int& ,int& ,int& ) const;
-  inline void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-                      const IntTab& ,const Zone& )  const ;
+  inline void creer_facette_normales(const Zone&, DoubleTab&, const IntVect&) const;
+  inline void creer_normales_facettes_Cl(DoubleTab&, int, int, const DoubleTab&, const DoubleVect&, const Zone&) const;
+  inline void modif_volumes_entrelaces(int, int, const Zone_VEF&, DoubleVect&, int) const;
+  inline void modif_volumes_entrelaces_faces_joints(int, int, const Zone_VEF&, DoubleVect&, int) const;
+  inline void modif_normales_facettes_Cl(DoubleTab&, int, int, int, int, int, int) const;
+  inline void calcul_vc(const ArrOfInt&, ArrOfDouble&, const ArrOfDouble&, const DoubleTab&, const Champ_Inc_base&, int, const DoubleVect&) const;
+  inline void calcul_xg(DoubleVect&, const DoubleTab&, const int, int&, int&, int&, int&) const;
+  inline void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Zone&) const;
 
 };
-
 
 //
 //  Fonctions inline de la classe Elem_VEF
 //
 
-
-inline Elem_VEF& Elem_VEF::operator = (const Elem_VEF_base& elem_base)
+inline Elem_VEF& Elem_VEF::operator =(const Elem_VEF_base& elem_base)
 {
   DERIV(Elem_VEF_base)::operator=(elem_base);
   return *this;
 }
-
 
 inline int Elem_VEF::nb_facette() const
 {
   return valeur().nb_facette();
 }
 
-inline void Elem_VEF::normale(int num_face,DoubleTab& Face_normales,
-                              const IntTab& Face_sommets,
-                              const IntTab& Face_voisins,
-                              const IntTab& elem_faces,
-                              const Zone& zone_geom)  const
+inline void Elem_VEF::normale(int num_face, DoubleTab& Face_normales, const IntTab& Face_sommets, const IntTab& Face_voisins, const IntTab& elem_faces, const Zone& zone_geom) const
 {
-  valeur().normale(num_face,Face_normales,Face_sommets,Face_voisins,
-                   elem_faces,zone_geom);
+  valeur().normale(num_face, Face_normales, Face_sommets, Face_voisins, elem_faces, zone_geom);
 }
 
-
-
-inline void Elem_VEF::creer_facette_normales(const Zone& zone_geom ,
-                                             DoubleTab& facette_normales,
-                                             const IntVect& rang_elem) const
+inline void Elem_VEF::creer_facette_normales(const Zone& zone_geom, DoubleTab& facette_normales, const IntVect& rang_elem) const
 {
-  valeur().creer_facette_normales(zone_geom,facette_normales,rang_elem);
+  valeur().creer_facette_normales(zone_geom, facette_normales, rang_elem);
 }
 
-inline void Elem_VEF::creer_normales_facettes_Cl(DoubleTab& norm_fa7_cl,
-                                                 int fa7 , int num_elem,
-                                                 const DoubleTab& x,
-                                                 const DoubleVect& xg,
-                                                 const Zone& zone_geom) const
+inline void Elem_VEF::creer_normales_facettes_Cl(DoubleTab& norm_fa7_cl, int fa7, int num_elem, const DoubleTab& x, const DoubleVect& xg, const Zone& zone_geom) const
 {
-  valeur().creer_normales_facettes_Cl(norm_fa7_cl,fa7,num_elem,x,xg,zone_geom);
+  valeur().creer_normales_facettes_Cl(norm_fa7_cl, fa7, num_elem, x, xg, zone_geom);
 }
 
-inline void Elem_VEF::modif_volumes_entrelaces(int j,int elem ,
-                                               const Zone_VEF& la_zone_VEF,
-                                               DoubleVect& vol_ent_cl,int type_cl ) const
+inline void Elem_VEF::modif_volumes_entrelaces(int j, int elem, const Zone_VEF& la_zone_VEF, DoubleVect& vol_ent_cl, int type_cl) const
 {
-  valeur().modif_volumes_entrelaces(j,elem,la_zone_VEF,vol_ent_cl,type_cl);
+  valeur().modif_volumes_entrelaces(j, elem, la_zone_VEF, vol_ent_cl, type_cl);
 }
 
-inline void Elem_VEF::modif_volumes_entrelaces_faces_joints(int j,int elem ,
-                                                            const Zone_VEF& la_zone_VEF,
-                                                            DoubleVect& vol_ent_cl,int type_cl ) const
+inline void Elem_VEF::modif_volumes_entrelaces_faces_joints(int j, int elem, const Zone_VEF& la_zone_VEF, DoubleVect& vol_ent_cl, int type_cl) const
 {
-  valeur().modif_volumes_entrelaces_faces_joints(j,elem,la_zone_VEF,vol_ent_cl,type_cl);
+  valeur().modif_volumes_entrelaces_faces_joints(j, elem, la_zone_VEF, vol_ent_cl, type_cl);
 }
 
-inline void Elem_VEF::modif_normales_facettes_Cl(DoubleTab& norm_fa7_cl,
-                                                 int fa7,int num_elem,
-                                                 int idirichlet,int n1,int n2,int n3) const
+inline void Elem_VEF::modif_normales_facettes_Cl(DoubleTab& norm_fa7_cl, int fa7, int num_elem, int idirichlet, int n1, int n2, int n3) const
 {
-  valeur().modif_normales_facettes_Cl(norm_fa7_cl,fa7,
-                                      num_elem,idirichlet,n1,n2,n3);
+  valeur().modif_normales_facettes_Cl(norm_fa7_cl, fa7, num_elem, idirichlet, n1, n2, n3);
 }
 
-inline void Elem_VEF::calcul_vc(const ArrOfInt& face,ArrOfDouble& vc,
-                                const ArrOfDouble& vs,
-                                const DoubleTab& vsom,const Champ_Inc_base& vitesse,
-                                int type_cl, const DoubleVect& porosite_face) const
+inline void Elem_VEF::calcul_vc(const ArrOfInt& face, ArrOfDouble& vc, const ArrOfDouble& vs, const DoubleTab& vsom, const Champ_Inc_base& vitesse, int type_cl, const DoubleVect& porosite_face) const
 {
-  valeur().calcul_vc(face,vc,vs,vsom,vitesse,type_cl,porosite_face);
+  valeur().calcul_vc(face, vc, vs, vsom, vitesse, type_cl, porosite_face);
 }
 
-inline void Elem_VEF::calcul_xg(DoubleVect& xg,const DoubleTab& x,
-                                const int type_elem_Cl,int& idirichlet,
-                                int& n1,int& n2,int& n3) const
+inline void Elem_VEF::calcul_xg(DoubleVect& xg, const DoubleTab& x, const int type_elem_Cl, int& idirichlet, int& n1, int& n2, int& n3) const
 {
-  valeur().calcul_xg(xg,x,type_elem_Cl,idirichlet,n1,n2,n3);
+  valeur().calcul_xg(xg, x, type_elem_Cl, idirichlet, n1, n2, n3);
 }
-
 
 #endif
-

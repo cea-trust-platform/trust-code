@@ -23,131 +23,76 @@
 #ifndef Matrix_tools_included
 #define Matrix_tools_included
 
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 #include <arch.h>
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// .NAME        : Matrix_tools
-// .HEADER      : linalg linalg/src/Kernel/Math/Matrices
-// .LIBRARY     : liblinalg
-// .DESCRIPTION : class Matrix_tools
-//
-// <Description of class Matrix_tools>
-//
-/////////////////////////////////////////////////////////////////////////////
 
 class Matrice;
 class Matrice_Base;
 class Matrice_Morse;
 class Matrice_Morse_Sym;
+
 class Matrix_tools
 {
 public :
   // conversion to morse format
-  static void convert_to_morse_matrix( const Matrice_Base& in,
-                                       Matrice_Morse&      out );
+  static void convert_to_morse_matrix(const Matrice_Base& in, Matrice_Morse& out);
 
   // conversion to symetric morse format
-  static void convert_to_symmetric_morse_matrix( const Matrice_Base& in,
-                                                 Matrice_Morse_Sym&  out );
+  static void convert_to_symmetric_morse_matrix(const Matrice_Base& in, Matrice_Morse_Sym& out);
 
   // checking stencil
-  static bool is_normalized_stencil( const IntTab& stencil );
+  static bool is_normalized_stencil(const IntTab& stencil);
 
   // checking symmetric stencil
-  static bool is_normalized_symmetric_stencil( const IntTab& stencil );
+  static bool is_normalized_symmetric_stencil(const IntTab& stencil);
 
   // building morse matrices by creating new matrix (from given stencil)
   // so we need to specify is the stencil is to attach or not to the matrix
-  static void allocate_morse_matrix( const int&  nb_lines,
-                                     const int&  nb_columns,
-                                     const IntTab&  stencil,
-                                     Matrice_Morse& matrix,
-                                     const bool& attach_stencil_to_matrix=false);
+  static void allocate_morse_matrix(const int& nb_lines, const int& nb_columns, const IntTab& stencil, Matrice_Morse& matrix, const bool& attach_stencil_to_matrix = false);
 
-  static void build_morse_matrix( const int&      nb_lines,
-                                  const int&      nb_columns,
-                                  const IntTab&      stencil,
-                                  const ArrOfDouble& coefficients,
-                                  Matrice_Morse&     matrix );
+  static void build_morse_matrix(const int& nb_lines, const int& nb_columns, const IntTab& stencil, const ArrOfDouble& coefficients, Matrice_Morse& matrix);
 
 // building symmetric morse matrices
-  static void allocate_symmetric_morse_matrix( const int&      order,
-                                               const IntTab&      stencil,
-                                               Matrice_Morse_Sym& matrix );
+  static void allocate_symmetric_morse_matrix(const int& order, const IntTab& stencil, Matrice_Morse_Sym& matrix);
 
-  static void build_symmetric_morse_matrix( const int&      order,
-                                            const IntTab&      stencil,
-                                            const ArrOfDouble& coefficients,
-                                            Matrice_Morse_Sym& matrix );
+  static void build_symmetric_morse_matrix(const int& order, const IntTab& stencil, const ArrOfDouble& coefficients, Matrice_Morse_Sym& matrix);
 
   // allocation for scaled addition
-  static void allocate_for_scaled_addition( const Matrice& A,
-                                            const Matrice& B,
-                                            Matrice&       C );
+  static void allocate_for_scaled_addition(const Matrice& A, const Matrice& B, Matrice& C);
 
-  static void allocate_for_symmetric_scaled_addition( const Matrice& A,
-                                                      const Matrice& B,
-                                                      Matrice&       C );
+  static void allocate_for_symmetric_scaled_addition(const Matrice& A, const Matrice& B, Matrice& C);
 
   // scaled addition
-  static void add_scaled_matrices( const Matrice& A,
-                                   const double&  alpha,
-                                   const Matrice& B,
-                                   const double&  beta,
-                                   Matrice&       C );
+  static void add_scaled_matrices(const Matrice& A, const double& alpha, const Matrice& B, const double& beta, Matrice& C);
 
-  static void add_symmetric_scaled_matrices( const Matrice& A,
-                                             const double&  alpha,
-                                             const Matrice& B,
-                                             const double&  beta,
-                                             Matrice&       C );
+  static void add_symmetric_scaled_matrices(const Matrice& A, const double& alpha, const Matrice& B, const double& beta, Matrice& C);
 
   // stencil analysis
-  static bool is_null_stencil( const IntTab& stencil );
+  static bool is_null_stencil(const IntTab& stencil);
 
-  static bool is_diagonal_stencil( const int& nb_lines,
-                                   const int& nb_columns,
-                                   const IntTab& stencil );
+  static bool is_diagonal_stencil(const int& nb_lines, const int& nb_columns, const IntTab& stencil);
 
   // allocation from stencil specification
-  static void allocate_from_stencil( const int& nb_lines,
-                                     const int& nb_columns,
-                                     const IntTab& stencil,
-                                     Matrice&      matrix,
-                                     const bool& attach_stencil_to_matrix=false);
+  static void allocate_from_stencil(const int& nb_lines, const int& nb_columns, const IntTab& stencil, Matrice& matrix, const bool& attach_stencil_to_matrix = false);
 
   // extending a matrix's stencil
-  static void extend_matrix_stencil( const IntTab& stencil,
-                                     Matrice&      matrix,
-                                     const bool& attach_stencil_to_matrix=false );
-
+  static void extend_matrix_stencil(const IntTab& stencil, Matrice& matrix, const bool& attach_stencil_to_matrix = false);
 
   // diagonal matrix times a square morse matrix 'mat'
   // if inverse then the 1/diag is used
   // this can be seen as a left multiplication
-  static void matdiag_mult_matmorse( const DoubleTab& diag,
-                                     Matrice_Morse& mat,
-                                     const bool& inverse );
+  static void matdiag_mult_matmorse(const DoubleTab& diag, Matrice_Morse& mat, const bool& inverse);
 
   //right multiplication version of matdiag_mult_matmorse
-  static void matmorse_mult_matdiag( const DoubleTab& diag,
-                                     Matrice_Morse& mat,
-                                     const bool& inverse );
-
+  static void matmorse_mult_matdiag(const DoubleTab& diag, Matrice_Morse& mat, const bool& inverse);
 
   // uniform diagonal matrix (i.e. same coefficient on the diag) times a square morse matrix 'mat'
   // if inverse then the 1/diag is used
   // this can be seen as a left multiplication
-  static void uniform_matdiag_mult_matmorse( const double& diag,
-                                             Matrice_Morse& mat,
-                                             const bool& inverse );
+  static void uniform_matdiag_mult_matmorse(const double& diag, Matrice_Morse& mat, const bool& inverse);
 
   //right multiplication version of uniform_matdiag_mult_matmorse
-  static void matmorse_mult_uniform_matdiag( const double& diag,
-                                             Matrice_Morse& mat,
-                                             const bool& inverse );
+  static void matmorse_mult_uniform_matdiag(const double& diag, Matrice_Morse& mat, const bool& inverse);
 
   //add empty rows/columns to matrix
   static void extend_matrix(Matrice_Morse& mat, int nl, int nc);

@@ -23,8 +23,8 @@
 #ifndef Ref_IntVect_included
 #define Ref_IntVect_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref.h>
-#include <TRUSTVect.h>
 
 Declare_ref(IntVect);
 

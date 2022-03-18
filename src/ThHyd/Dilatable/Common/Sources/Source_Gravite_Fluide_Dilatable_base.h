@@ -25,8 +25,8 @@
 #define Source_Gravite_Fluide_Dilatable_base_included
 
 #include <Ref_Fluide_Dilatable_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Source_base.h>
-#include <TRUSTTab.h>
 
 class Zone_Cl_dis;
 class Zone_dis;

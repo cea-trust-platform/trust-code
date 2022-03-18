@@ -24,7 +24,7 @@
 #define Sortie_libre_pression_moyenne_imposee_included
 
 #include <Neumann_sortie_libre.h>
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -23,9 +23,6 @@
 #ifndef Read_MED_For_Testing_No_Verify_Option_included
 #define Read_MED_For_Testing_No_Verify_Option_included
 
-
-
-
 ///////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
@@ -38,11 +35,12 @@
 //
 //
 ///////////////////////////////////////////////////////////////////////////
+
+#include <TRUSTTabs_forward.h>
 #include <LireMED.h>
 
 class Nom;
 class Domaine;
-#include <TRUSTArray.h>
 
 class Read_MED_For_Testing_No_Verify_Option : public LireMED
 {

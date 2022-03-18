@@ -47,18 +47,18 @@ public:
 
   // Pour utiliser ces accesseurs, il faut avoir initialise
   // les structures au prealable avec set_xxx.
-  int           nb_items_reels() const;
+  int nb_items_reels() const;
   const ArrOfInt& items_communs() const;
   const ArrOfInt& items_distants() const;
-  int           nb_items_virtuels() const;
-  const IntTab&    renum_items_communs() const;
+  int nb_items_virtuels() const;
+  const IntTab& renum_items_communs() const;
 
   // Methodes d'initialisation des structures
-  void       set_nb_items_reels(int n);
+  void set_nb_items_reels(int n);
   ArrOfInt& set_items_communs();
   ArrOfInt& set_items_distants();
-  void       set_nb_items_virtuels(int n);
-  IntTab&    set_renum_items_communs();
+  void set_nb_items_virtuels(int n);
+  IntTab& set_renum_items_communs();
 
 private:
   // Nombre d'items reels (permet de construire un tableau distribue)

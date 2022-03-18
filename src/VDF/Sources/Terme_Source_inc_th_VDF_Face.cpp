@@ -34,6 +34,7 @@
 #include <Convection_Diffusion_Temperature.h>
 #include <Navier_Stokes_std.h>
 #include <Fluide_base.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Terme_Source_inc_th_VDF_Face,"inc_th_VDF_P0_VDF",Source_base);
 

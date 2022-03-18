@@ -34,10 +34,7 @@ public:
   void associer_eqn(const Navier_Stokes_std&) ;
   inline const DoubleVect& omega() const;
   inline const Navier_Stokes_std& eq_hydraulique() const;
-  void mettre_a_jour(double temps)
-  {
-    ;
-  }
+  void mettre_a_jour(double temps) { }
 
 protected :
   DoubleVect omega_;

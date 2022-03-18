@@ -20,43 +20,26 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Perte_Charge_VDF_Face_included
 #define Perte_Charge_VDF_Face_included
 
 #include <Source_dep_inco_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Fluide_base.h>
 #include <Ref_Champ_Face.h>
 #include <Ref_Zone_VDF.h>
-#include <TRUSTVect.h>
 
 class Probleme_base;
 
-//
-// .DESCRIPTION class Perte_Charge_VDF_Face
-//
-
-//
-// .SECTION voir aussi Source_base
-//
-//
-
 class Perte_Charge_VDF_Face : public Source_dep_inco_base
 {
-
   Declare_base(Perte_Charge_VDF_Face);
-
 public:
-
   void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double temps) override
-  {
-    ;
-  }
+  void mettre_a_jour(double temps) override { }
 
 protected:
-
   REF(Champ_Face) la_vitesse;
   REF(Fluide_base) le_fluide;
   REF(Zone_VDF) la_zone_VDF;
@@ -64,7 +47,6 @@ protected:
   IntVect num_faces;
   DoubleVect corr_front_ss;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
-
 };
 
-#endif
+#endif /* Perte_Charge_VDF_Face_included */

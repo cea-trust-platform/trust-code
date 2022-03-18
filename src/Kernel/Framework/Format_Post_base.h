@@ -22,9 +22,9 @@
 #ifndef Format_Post_base_included
 #define Format_Post_base_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_dis_base.h>
 #include <Champ_base.h>
-#include <TRUSTTab.h>
 #include <Domaine.h>
 
 class Motcle;
@@ -114,18 +114,13 @@ public:
   virtual int initialize_by_default(const Nom& file_basename);
   virtual int initialize(const Nom& file_basename, const int& format, const Nom& option_para);
   virtual int modify_file_basename(const Nom file_basename, const int a_faire, const double tinit);
-  virtual int ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post);
-  virtual int completer_post(const Domaine& dom,const int axi,
-                             const Nature_du_champ& nature,const int nb_compo,const Noms& noms_compo,
-                             const Motcle& loc_post,const Nom& le_nom_champ_post);
+  virtual int ecrire_entete(double temps_courant, int reprise, const int& est_le_premier_post);
+  virtual int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post);
 
-  virtual int preparer_post(const Nom& id_du_domaine,const int& est_le_premier_post,
-                            const int& reprise,
-                            const double& t_init);
+  virtual int preparer_post(const Nom& id_du_domaine, const int& est_le_premier_post, const int& reprise, const double& t_init);
   virtual int test_coherence(const int& champs, const int& stat, const double& dt_ch, const double dt_stat);
 
-  virtual int init_ecriture(double temps_courant,double temps_post,int est_le_premier_postraitement_pour_nom_fich_,
-                            const Domaine& domaine);
+  virtual int init_ecriture(double temps_courant, double temps_post, int est_le_premier_postraitement_pour_nom_fich_, const Domaine& domaine);
 
   virtual int finir_ecriture(double temps_courant);
   virtual int finir(int& est_le_dernier_post);
@@ -134,44 +129,19 @@ public:
   virtual int ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post);
   virtual int ecrire_temps(const double temps);
 
-  virtual int ecrire_champ(const Domaine& domaine, const Noms& unite_,const Noms& noms_compo,
-                           int ncomp,double temps_,double temps_courant,
-                           const Nom&   id_du_champ,
-                           const Nom&   id_du_domaine,
-                           const Nom&   localisation,
-                           const Nom&    nature ,
-                           const DoubleTab& data);
+  virtual int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, double temps_courant, const Nom& id_du_champ, const Nom& id_du_domaine,
+                           const Nom& localisation, const Nom& nature, const DoubleTab& data);
 
-  virtual int ecrire_champ2(const Domaine& domaine, const Noms& unite_,const Noms& noms_compo,
-                            int ncomp,double temps_,double temps_courant,
-                            const Nom&   id_du_champ,
-                            const Nom&   id_du_domaine,
-                            const Nom&   localisation,
-                            const Nom&    nature ,
-                            const DoubleTab& data,
-                            const DoubleTab& coord);
+  virtual int ecrire_champ2(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, double temps_courant, const Nom& id_du_champ, const Nom& id_du_domaine,
+                            const Nom& localisation, const Nom& nature, const DoubleTab& data, const DoubleTab& coord);
 
-  virtual int ecrire_item_int(const Nom&   id_item,
-                              const Nom&   id_du_domaine,
-                              const Nom& id_zone,
-                              const Nom&   localisation,
-                              const Nom&   reference,
-                              const IntVect& data,
-                              const int reference_size);
+  virtual int ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_zone, const Nom& localisation, const Nom& reference, const IntVect& data, const int reference_size);
 
   //Methode qui postraite les valeurs d un champ discret a un instant donne
-  void postraiter_debug_valeurs_un_instant(const Nom& nom_fich,
-                                           const Domaine& dom,
-                                           const Zone_dis_base& zone_dis,
-                                           double temps_champ, double temps_courant,
-                                           const Nom& id_champ_post,const Nature_du_champ& nature_champ,
-                                           const Noms& noms_compos,const Noms& unites,const Motcle& loc_post,
-                                           const DoubleTab& data,
-                                           int ncomp=-1,
-                                           int axi=0,
-                                           int champ=1,int stat=0,double dt_ch=1.,double dt_stat=1.,int reprise=0,
-                                           int est_le_premier_post=1, int est_le_dernier_post=1,
-                                           double t_init=0.,double temps_post=-2);
+  void postraiter_debug_valeurs_un_instant(const Nom& nom_fich, const Domaine& dom, const Zone_dis_base& zone_dis, double temps_champ, double temps_courant, const Nom& id_champ_post,
+                                           const Nature_du_champ& nature_champ, const Noms& noms_compos, const Noms& unites, const Motcle& loc_post, const DoubleTab& data, int ncomp = -1, int axi = 0,
+                                           int champ = 1, int stat = 0, double dt_ch = 1., double dt_stat = 1., int reprise = 0, int est_le_premier_post = 1, int est_le_dernier_post = 1,
+                                           double t_init = 0., double temps_post = -2);
 
 
   //Actuellement on commente ces methodes car pas decrites dans l interface commune

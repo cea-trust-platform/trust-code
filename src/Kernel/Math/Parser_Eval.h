@@ -23,63 +23,40 @@
 #ifndef Parser_Eval_included
 #define Parser_Eval_included
 
+#include <TRUSTTabs_forward.h>
 #include <Vect_Parser_U.h>
 #include <TRUSTTabs.h>
-#include <TRUSTTab.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-//
 // .DESCRIPTION
 //    Classe Parser_Eval
 //    Cette classe a pour fonction d evaleur les valeurs prises par une fonction analytique.
 //    La fonction peut dependre de l espace (x, y, z), du temps (t) et d'un champ parametre (val).
-// .SECTION voir aussi
-//    Classe non instanciable.
-//////////////////////////////////////////////////////////////////////////////////////////////////
 class Parser_Eval
 {
-
 public :
-
-  inline VECT(Parser_U)& fonction()
-  {
-    return fonction_;
-  };
-  Parser_U& parser(int i)
-  {
-    return fonction_[i];
-  };
-  Parser_U& parser(int i) const
-  {
-    return fonction_[i];
-  };
+  inline VECT(Parser_U)& fonction() { return fonction_;  }
+  Parser_U& parser(int i) { return fonction_[i]; }
+  Parser_U& parser(int i) const { return fonction_[i]; }
 
   //Cas d une fonction a evaluer qui depend de l espace
-  //
   void eval_fct(const DoubleVect& positions,DoubleVect& val) const;
   void eval_fct(const DoubleTab& positions,DoubleTab& val) const;
   void eval_fct(const DoubleTab& positions,DoubleVect& val,const int& ncomp) const;
 
   //Cas d une fonction a evaluer qui depend de l espace et du temps
-  //
   void eval_fct(const DoubleVect& positions,const double& tps,DoubleVect& val) const;
   void eval_fct(const DoubleTab& positions,const double& tps,DoubleTab& val) const;
   void eval_fct(const DoubleTab& positions,const double& tps,DoubleVect& val,const int& ncomp) const;
 
   //Cas d une fonction a evaluer qui depend de l espace, du temps et des valeurs d un champ inconnu
-  //
   void eval_fct(const DoubleTab& positions,const double& tps,const DoubleTab& val_param,DoubleTab& val) const;
   void eval_fct(const DoubleTab& positions,const double& tps,const DoubleTab& val_param,DoubleVect& val,const int& ncomp) const;
 
   // Fonction generale qui depend de plusieurs champs inconnus
-  //
   void eval_fct(const DoubleTabs& variables, DoubleTab& val) const;
 
-
 protected :
-
   mutable VECT(Parser_U) fonction_;
 };
 
-
-#endif
+#endif /* Parser_Eval_included */

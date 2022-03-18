@@ -27,6 +27,7 @@
 #include <Schema_Temps_base.h>
 #include <Probleme_base.h>
 #include <Dirichlet.h>
+#include <TRUSTTrav.h>
 #include <Zone_VF.h>
 #include <Domaine.h>
 #include <Debog.h>

@@ -31,6 +31,7 @@
 #include <Periodique.h>
 #include <Pb_Fluide_base.h>
 #include <Navier_Stokes_std.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Terme_Source_inc_VDF_Face,"inc_VDF_Face",Source_base);
 

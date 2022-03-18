@@ -36,8 +36,8 @@
 //     Assembleur_base
 //////////////////////////////////////////////////////////////////////////////
 
+#include <TRUSTTabs_forward.h>
 class Assembleur_base;
-#include <TRUSTTab.h>
 class Equation_base;
 class Matrice;
 class Zone_dis_base;

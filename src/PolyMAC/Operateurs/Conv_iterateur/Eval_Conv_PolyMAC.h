@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,30 +20,17 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Eval_Conv_PolyMAC_included
 #define Eval_Conv_PolyMAC_included
 
-#include <Evaluateur_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC.h>
+#include <Evaluateur_PolyMAC.h>
 
 class Champ_Inc_base;
 
-//
-// .DESCRIPTION class Eval_Conv_PolyMAC
-//
-// classe de base des evaluateurs de convection PolyMAC
-
-//
-// .SECTION voir aussi Evaluateur_PolyMAC
-//
-
-
 class Eval_Conv_PolyMAC : public Evaluateur_PolyMAC
 {
-
 public:
-
   inline Eval_Conv_PolyMAC();
   inline Eval_Conv_PolyMAC(const Eval_Conv_PolyMAC&);
   void associer(const Champ_Face_PolyMAC& );
@@ -52,10 +39,8 @@ public:
   Champ_Inc_base& vitesse();
 
 protected:
-
   REF(Champ_Face_PolyMAC) vitesse_;
   DoubleTab dt_vitesse;
-
 };
 
 //
@@ -71,7 +56,5 @@ inline Eval_Conv_PolyMAC::Eval_Conv_PolyMAC(const Eval_Conv_PolyMAC& eval)
 {
   dt_vitesse.ref(eval.dt_vitesse);
 }
-
-
 
 #endif

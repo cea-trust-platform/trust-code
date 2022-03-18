@@ -22,7 +22,6 @@
 
 #include <Convert_ICoCoTrioField.h>
 #include <ICoCoTrioField.h>
-
 #include <ICoCoMEDDoubleField.hxx>
 #include <Domaine.h>
 #include <Champ_Generique_base.h>

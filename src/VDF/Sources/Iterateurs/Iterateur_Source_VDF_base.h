@@ -23,12 +23,12 @@
 #ifndef Iterateur_Source_VDF_base_included
 #define Iterateur_Source_VDF_base_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref_Source_base.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Equation_base.h>
 #include <Ref_Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
-#include <TRUSTTab.h>
 
 class Evaluateur_Source_VDF;
 

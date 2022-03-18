@@ -38,10 +38,7 @@
 #include <ConstDoubleTab_parts.h>
 #include <Frontiere_dis_base.h>
 
-DoubleVect& Champ_P1iP1B_implementation::
-valeur_a_elem(const DoubleVect& position,
-              DoubleVect& val,
-              int le_poly) const
+DoubleVect& Champ_P1iP1B_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
 {
   int dimension=Objet_U::dimension;
   DoubleTab vals(1,1);
@@ -58,9 +55,7 @@ valeur_a_elem(const DoubleVect& position,
   return val;
 }
 
-double Champ_P1iP1B_implementation::
-valeur_a_elem_compo(const DoubleVect& position,
-                    int le_poly, int ncomp) const
+double Champ_P1iP1B_implementation::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
 {
   double val=0;
   int dimension=Objet_U::dimension;
@@ -83,10 +78,7 @@ valeur_a_elem_compo(const DoubleVect& position,
 // Recupere un tableau positions contenant des coordonnees de points
 // contenus dans les elements ranges dans le tableau les_polys
 // Renvoie le tableau val contenant les valeurs du champ aux points
-DoubleTab& Champ_P1iP1B_implementation::
-valeur_aux_elems(const DoubleTab& positions,
-                 const IntVect& les_polys,
-                 DoubleTab& val) const
+DoubleTab& Champ_P1iP1B_implementation::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
 {
   int som;
   double xs,ys,zs=0;
@@ -164,10 +156,7 @@ valeur_aux_elems(const DoubleTab& positions,
 }
 
 // Idem que valeur_aux_elems mais pour une composante d'un champ vecteur
-DoubleVect& Champ_P1iP1B_implementation::
-valeur_aux_elems_compo(const DoubleTab& positions,
-                       const IntVect& les_polys,
-                       DoubleVect& val,int ncomp) const
+DoubleVect& Champ_P1iP1B_implementation::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {
   Cerr << "Champ_P1iP1B_implementation::valeur_aux_elems_compo non code." << finl;
   // Factoriser le code avec la methode valeur_aux_elems()
@@ -178,9 +167,7 @@ valeur_aux_elems_compo(const DoubleTab& positions,
 
 // Recupere un domaine
 // Renvoie un tableau contenant les valeurs du champ aux sommets du domaine
-DoubleTab& Champ_P1iP1B_implementation::
-valeur_aux_sommets(const Domaine& dom,
-                   DoubleTab& val) const
+DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
 {
   const Zone_VEF_PreP1b& zvef = zone_vef();
   int nb_compo_=le_champ().nb_comp();
@@ -232,8 +219,7 @@ valeur_aux_sommets_compo(const Domaine& dom,
   return val;
 }
 
-DoubleTab& Champ_P1iP1B_implementation::
-remplir_coord_noeuds(DoubleTab& coord) const
+DoubleTab& Champ_P1iP1B_implementation::remplir_coord_noeuds(DoubleTab& coord) const
 {
   const Zone_VEF_PreP1b& zvef=zone_vef();
   const Zone& la_zone=zvef.zone();
@@ -327,8 +313,8 @@ void assembler(const Zone_VEF_PreP1b& zone_VEF, Matrice& matrice)
   //Cerr << "Matrice P1";MatPoisson.imprimer(Cerr);
 }
 
-static double coeff=4./5.;
-static double coeff_inv=1/coeff;
+static double coeff = 4. / 5.;
+static double coeff_inv = 1 / coeff;
 double second_membre(const Zone_VEF_PreP1b& zone_VEF, ArrOfDouble& Pa, DoubleVect& secmem)
 {
   int nb_arete_tot = zone_VEF.zone().nb_aretes_tot();

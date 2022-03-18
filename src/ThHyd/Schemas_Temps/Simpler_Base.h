@@ -23,11 +23,11 @@
 #ifndef Simpler_Base_included
 #define Simpler_Base_included
 
-#include <Solveur_non_lineaire.h>
 #include <Ref_Schema_Temps_base.h>
+#include <Solveur_non_lineaire.h>
 #include <Parametre_implicite.h>
+#include <TRUSTTabs_forward.h>
 #include <Matrice_Morse.h>
-#include <TRUSTTrav.h>
 #include <Nom.h>
 
 class Solveur_Implicite_Base;

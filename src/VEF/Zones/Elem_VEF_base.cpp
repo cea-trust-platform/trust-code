@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,18 +22,7 @@
 
 #include <Elem_VEF_base.h>
 
-
 Implemente_base(Elem_VEF_base,"Elem_VEF_base",Objet_U);
 
-// printOn et readOn
-
-Sortie& Elem_VEF_base::printOn(Sortie& s ) const
-{
-  return s;
-}
-
-Entree& Elem_VEF_base::readOn(Entree& is )
-{
-  return is;
-}
-
+Sortie& Elem_VEF_base::printOn(Sortie& s ) const { return s; }
+Entree& Elem_VEF_base::readOn(Entree& is ) { return is; }

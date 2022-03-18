@@ -24,21 +24,19 @@
 #ifndef Terme_Source_Canal_RANS_LES_VDF_Elem_included
 #define Terme_Source_Canal_RANS_LES_VDF_Elem_included
 
-
-
 //
 // .DESCRIPTION class Terme_Source_Canal_RANS_LES_VDF_Elem
 //  Cette classe concerne un terme source calcule en partie grace
 //  a un calcul RANS preliminaire et applique au calcul LES en cours
 //
-#include <Source_base.h>
-#include <Ref_Zone_VDF.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Zone_VDF.h>
+#include <Source_base.h>
 #include <Champ_Don.h>
 
 class Probleme_base;
 class Navier_Stokes_std;
-#include <TRUSTTab.h>
 
 
 class Terme_Source_Canal_RANS_LES_VDF_Elem : public Source_base

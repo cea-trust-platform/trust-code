@@ -24,6 +24,7 @@
 #define Operateur_negligeable_included
 
 #include <TRUSTTab.h>
+
 class Zone_dis;
 class Zone_Cl_dis;
 class Champ_Inc;
@@ -52,10 +53,7 @@ public :
   inline void mettre_a_jour(double );
 
 protected :
-
-  inline void associer(const Zone_dis&,
-                       const Zone_Cl_dis&,
-                       const Champ_Inc& ) ;
+  inline void associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc&);
 };
 
 
@@ -157,9 +155,7 @@ inline void Operateur_negligeable::mettre_a_jour(double )
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline void Operateur_negligeable::associer(const Zone_dis&,
-                                            const Zone_Cl_dis&,
-                                            const Champ_Inc& )
+inline void Operateur_negligeable::associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc&)
 {
 }
 #endif

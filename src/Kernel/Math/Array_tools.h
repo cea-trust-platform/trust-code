@@ -20,7 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 #include <arch.h>
 
 // Description: Methode outil pour retirer les doublons dans un tableau.

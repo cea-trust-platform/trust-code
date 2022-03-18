@@ -24,7 +24,7 @@
 #define Changement_phase_Silver_Simpson_included
 
 #include <Changement_phase_base.h>
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

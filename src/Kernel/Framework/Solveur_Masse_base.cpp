@@ -24,6 +24,7 @@
 #include <Solveur_Masse_base.h>
 #include <Equation_base.h>
 #include <Matrice_Morse.h>
+#include <TRUSTTrav.h>
 #include <Debog.h>
 
 Implemente_base_sans_constructeur(Solveur_Masse_base,"Solveur_Masse_base",Objet_U);

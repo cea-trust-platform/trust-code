@@ -22,6 +22,7 @@
 
 #include <Schema_Adams_Bashforth_base.h>
 #include <Probleme_base.h>
+#include <TRUSTTrav.h>
 #include <Equation.h>
 #include <Debog.h>
 

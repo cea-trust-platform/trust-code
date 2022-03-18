@@ -23,19 +23,12 @@
 #ifndef Iterateur_Source_EF_base_included
 #define Iterateur_Source_EF_base_included
 
-
-//
-// .DESCRIPTION class Iterateur_Source_EF_base
-//
-// .SECTION voir aussi Objet_U
-//
-
-#include <Ref_Zone_EF.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_EF.h>
-#include <Zone_Cl_EF.h>
 #include <Equation_base.h>
+#include <Ref_Zone_EF.h>
+#include <Zone_Cl_EF.h>
 
-#include <TRUSTTab.h>
 class Evaluateur_Source_EF;
 
 class Iterateur_Source_EF_base : public Objet_U

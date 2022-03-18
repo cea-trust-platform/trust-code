@@ -35,47 +35,34 @@ class Champ_Q1NC_impl: public Champ_implementation
 
 public:
 
-  ~Champ_Q1NC_impl() override {}
-  inline double fonction_forme_2D(double x, double y, int le_poly,
-                                  int face);
+  ~Champ_Q1NC_impl() override { }
+  inline double fonction_forme_2D(double x, double y, int le_poly, int face);
 
   inline static double fonction_forme_2D_normalise(double x, double y, int face);
 
-  inline double fonction_forme_3D(double x, double y, double z,
-                                  int le_poly, int face);
+  inline double fonction_forme_3D(double x, double y, double z, int le_poly, int face);
   inline static double fonction_forme_3D_normalise(double x, double y, double z, int face);
 
   static DoubleTab& Derivee_fonction_forme_2D_normalise(double u, double v, DoubleTab& DF);
 
   static DoubleTab& Derivee_fonction_forme_3D_normalise(double u, double v, double w, DoubleTab& DF);
 
-  DoubleVect& valeur_a_elem(const DoubleVect& position,
-                            DoubleVect& val,
-                            int le_poly) const override;
-  double calcule_valeur_a_elem_compo(double xs, double ys, double zs,
-                                     int le_poly, int ncomp) const;
-  double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly, int ncomp) const override;
+  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
+  double calcule_valeur_a_elem_compo(double xs, double ys, double zs, int le_poly, int ncomp) const;
+  double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
   double valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const;
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override ;
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
   DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
-  DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                       DoubleVect&, int) const override;
+  DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
-  int remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                    IntVect& polys) const override;
+  int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
   void transforme_coord2D();
   void transforme_coord3D();
 
-protected :
-  virtual const Zone_VEF& zone_vef() const=0;
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
+protected:
+  virtual const Zone_VEF& zone_vef() const =0;
+  inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
   //  virtual void dimensionner_array() = 0;
   //  DoubleVect dummy;
   DoubleTab tab_param;

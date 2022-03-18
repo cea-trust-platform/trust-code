@@ -33,6 +33,7 @@
 #include <Ref_Turbulence_paroi_scal.h>
 #include <Schema_Comm.h>
 #include <ArrOfBit.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable(Echange_contact_VDF,"Paroi_Echange_contact_VDF",Echange_global_impose);
 

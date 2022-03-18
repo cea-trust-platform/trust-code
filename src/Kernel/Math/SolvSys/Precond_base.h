@@ -23,9 +23,9 @@
 #ifndef Precond_base_included
 #define Precond_base_included
 
+#include <TRUSTTabs_forward.h>
 #include <Objet_U.h>
 
-#include <TRUSTVect.h>
 class Matrice_Base;
 class Champ_Inc_base;
 
@@ -44,15 +44,10 @@ public:
   void   prepare(const Matrice_Base&, const DoubleVect& src);
 
   virtual int supporte_matrice_morse_sym();
-  Init_Status    get_status()
-  {
-    return status_;
-  };
+  Init_Status get_status() { return status_; }
   // Call this to know if "src" must have an updated virtual space before calling preconditionner
-  virtual int get_flag_updated_input() const
-  {
-    return 1;
-  }
+  virtual int get_flag_updated_input() const { return 1; }
+
 protected:
   // implementations of preconditionner_ must take care of echange_ev_solution_ and update
   //  the virtual space if needed.

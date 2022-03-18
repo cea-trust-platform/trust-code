@@ -23,6 +23,7 @@
 #ifndef Frottement_interfacial_base_included
 #define Frottement_interfacial_base_included
 
+#include <TRUSTTabs_forward.h>
 #include <Correlation_base.h>
 #include <TRUSTTab.h>
 

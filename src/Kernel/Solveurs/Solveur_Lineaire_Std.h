@@ -23,9 +23,9 @@
 #ifndef Solveur_Lineaire_Std_included
 #define Solveur_Lineaire_Std_included
 
+#include <TRUSTTabs_forward.h>
 #include <Solveur_lineaire.h>
 #include <SolveurSys.h>
-#include <TRUSTTrav.h>
 
 class Equation_base;
 

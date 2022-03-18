@@ -22,6 +22,7 @@
 
 #ifndef Matrice_Base_included
 #define Matrice_Base_included
+
 #include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -71,17 +72,15 @@ public :
 
   friend DoubleVect operator*(const Matrice_Base&, const DoubleVect&);
 
-  virtual void scale( const double& x ) =0;
+  virtual void scale(const double& x) =0;
 
-  virtual void get_stencil( IntTab& stencil ) const;
+  virtual void get_stencil(IntTab& stencil) const;
 
-  virtual void get_symmetric_stencil( IntTab& stencil ) const;
+  virtual void get_symmetric_stencil(IntTab& stencil) const;
 
-  virtual void get_stencil_and_coefficients( IntTab&      stencil,
-                                             ArrOfDouble& coefficients ) const;
+  virtual void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const;
 
-  virtual void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
-                                                       ArrOfDouble& coefficients ) const;
+  virtual void get_symmetric_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const;
 
   int get_stencil_size( void ) const ;
   virtual void build_stencil( void );

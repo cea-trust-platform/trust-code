@@ -20,7 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef DomaineCutter_Correspondance_included
 #define DomaineCutter_Correspondance_included
 

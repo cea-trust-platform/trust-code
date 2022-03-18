@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,6 @@ Entree& Source_Gravite_Fluide_Dilatable_base::readOn(Entree& is) { return is; }
 
 void Source_Gravite_Fluide_Dilatable_base::completer()
 {
-  Cerr<<"Source_Gravite_Fluide_Dilatable_base::completer()"<<finl;
   Source_base::completer();
   le_fluide = ref_cast(Fluide_Dilatable_base,mon_equation->milieu());
   g = le_fluide->gravite().valeurs();

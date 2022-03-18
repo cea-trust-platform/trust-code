@@ -20,33 +20,23 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Conv_EF_included
 #define Op_Conv_EF_included
 
+#include <TRUSTTabs_forward.h>
 #include <Op_Conv_EF_base.h>
-#include <Motcle.h>
-#include <TRUSTArray.h>
 #include <Champ_Uniforme.h>
-//
+#include <Motcle.h>
+
 // .DESCRIPTION class Op_Conv_EF
-//
 //  Cette classe represente l'operateur de convection associe a une equation de
 //  transport d'un scalaire.
 //  La discretisation est EF
 //  Le champ convecte est scalaire ou vecteur de type Champ_P1NC
 //  Le schema de convection est du type Decentre ou Centre
-
-//
-// .SECTION voir aussi
-// Operateur_Conv_base
-
-
 class Op_Conv_EF : public Op_Conv_EF_base
 {
-
   Declare_instanciable(Op_Conv_EF);
-
 public:
 
   DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override;
@@ -63,21 +53,15 @@ public:
   void contribue_au_second_membre(DoubleTab& ) const;
   void ajouter_contribution_sous_cond(const DoubleTab& transporte, Matrice_Morse& matrice,int btd_impl,int hourglass_impl,int centre_impl ) const;
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
-
   void ajouter_contribution_a_la_diffusion(const DoubleTab&, Matrice_Morse& ) const;
   void contribue_au_second_membre_a_la_diffusion(DoubleTab& resu) const;
 
-
-
-  DoubleTab& ajouter_sous_cond(const DoubleTab& transporte,
-                               DoubleTab& resu,int btd_impl,int hourglass_impl,int centre_impl) const;
+  DoubleTab& ajouter_sous_cond(const DoubleTab& transporte, DoubleTab& resu,int btd_impl,int hourglass_impl,int centre_impl) const;
   virtual double coefficient_btd() const;
   void completer() override;
-  double get_btd() const
-  {
-    return btd_;
-  }
+  double get_btd() const { return btd_; }
   const Champ_base& get_champ(const Motcle& nom) const override;
+
 protected:
   double hourglass;
   int hourglass_impl_,btd_impl_,centre_impl_; // flag pour savoir si les termes sont implicites
@@ -112,35 +96,28 @@ protected:
 // Description:
 // on dimensionne notre matrice au moyen de la methode dimensionner de la classe
 // Op_EF_base.
-
 inline  void Op_Conv_EF::dimensionner(Matrice_Morse& matrice) const
 {
   Op_EF_base::dimensionner(la_zone_EF.valeur(),la_zcl_EF.valeur(), matrice);
 }
 
-
 // Description:
 // On modifie le second membre et la matrice dans le cas des
 // conditions de dirichlet.
-
 inline void Op_Conv_EF::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
   Op_EF_base::modifier_pour_Cl(la_zone_EF.valeur(),la_zcl_EF.valeur(), matrice, secmem);
 }
 
-
 //Description:
 //on assemble la matrice des inconnues implicite.
-
-inline void Op_Conv_EF::contribuer_a_avec(const DoubleTab& inco,
-                                          Matrice_Morse& matrice) const
+inline void Op_Conv_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   ajouter_contribution(inco, matrice);
 }
 
 //Description:
 //on ajoute la contribution du second membre.
-
 inline void Op_Conv_EF::contribuer_au_second_membre(DoubleTab& resu) const
 {
   contribue_au_second_membre(resu);

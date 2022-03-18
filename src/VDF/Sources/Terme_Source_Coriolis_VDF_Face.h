@@ -20,11 +20,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Terme_Source_Coriolis_VDF_Face_included
 #define Terme_Source_Coriolis_VDF_Face_included
-
-
 
 //
 // .DESCRIPTION class Terme_Source_Coriolis_VDF_Face
@@ -38,7 +35,7 @@
 #include <Terme_Source_Coriolis.h>
 #include <Ref_Zone_VDF.h>
 #include <Ref_Zone_Cl_VDF.h>
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 
 class Probleme_base;
 class Navier_Stokes_std;

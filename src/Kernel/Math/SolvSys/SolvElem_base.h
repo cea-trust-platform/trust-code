@@ -23,19 +23,15 @@
 #ifndef SolvElem_base_included
 #define SolvElem_base_included
 
-#include <TRUSTVect.h>
+#include <TRUSTTabs_forward.h>
+#include <Objet_U.h>
 
 class SolvElem_base : public Objet_U
 {
   Declare_base(SolvElem_base);
 public :
 
-  virtual void iteration(int n,
-                         const DoubleVect& secmem,
-                         DoubleVect& solution,
-                         ArrOfInt& ipar,
-                         ArrOfDouble& fpar,
-                         ArrOfDouble& w) =0;
+  virtual void iteration(int n, const DoubleVect& secmem, DoubleVect& solution, ArrOfInt& ipar, ArrOfDouble& fpar, ArrOfDouble& w) =0;
   virtual ArrOfDouble& dimensionne_wks(int n, ArrOfDouble& w) =0;
 };
 #endif

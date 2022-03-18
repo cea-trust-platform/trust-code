@@ -28,8 +28,8 @@
 
 
 #include <Elem_PolyMAC_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Deriv.h>
-#include <TRUSTTab.h>
 
 class Champ_Inc_base;
 
@@ -39,41 +39,28 @@ class Champ_Inc_base;
 //
 //////////////////////////////////////////////////////////////////////////////
 Declare_deriv(Elem_PolyMAC_base);
-class Elem_PolyMAC : public DERIV(Elem_PolyMAC_base)
+class Elem_PolyMAC: public DERIV(Elem_PolyMAC_base)
 {
   Declare_instanciable(Elem_PolyMAC);
 
 public:
 
-  inline Elem_PolyMAC& operator = (const Elem_PolyMAC_base& );
-  void typer(Nom );
-  inline void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-                      const IntTab& ,const Zone& )  const ;
+  inline Elem_PolyMAC& operator =(const Elem_PolyMAC_base&);
+  void typer(Nom);
+  inline void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Zone&) const;
 
 };
 
 
-//
-//  Fonctions inline de la classe Elem_PolyMAC
-//
-
-
-inline Elem_PolyMAC& Elem_PolyMAC::operator = (const Elem_PolyMAC_base& elem_base)
+inline Elem_PolyMAC& Elem_PolyMAC::operator =(const Elem_PolyMAC_base& elem_base)
 {
   DERIV(Elem_PolyMAC_base)::operator=(elem_base);
   return *this;
 }
 
-
-
-inline void Elem_PolyMAC::normale(int num_face,DoubleTab& Face_normales,
-                                  const IntTab& Face_sommets,
-                                  const IntTab& Face_voisins,
-                                  const IntTab& elem_faces,
-                                  const Zone& zone_geom)  const
+inline void Elem_PolyMAC::normale(int num_face, DoubleTab& Face_normales, const IntTab& Face_sommets, const IntTab& Face_voisins, const IntTab& elem_faces, const Zone& zone_geom) const
 {
-  valeur().normale(num_face,Face_normales,Face_sommets,Face_voisins,
-                   elem_faces,zone_geom);
+  valeur().normale(num_face, Face_normales, Face_sommets, Face_voisins, elem_faces, zone_geom);
 }
 
 

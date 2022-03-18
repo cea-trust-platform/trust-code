@@ -26,6 +26,7 @@
 #include <ExtrudeParoi.h>
 #include <Array_tools.h>
 #include <TRUSTList.h>
+#include <TRUSTTab.h>
 #include <Domaine.h>
 #include <Scatter.h>
 #include <Param.h>

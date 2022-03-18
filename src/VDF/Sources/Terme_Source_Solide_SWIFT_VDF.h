@@ -33,12 +33,12 @@
 //  LES grossier correspondant.
 //
 #include <Ref_Probleme_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Conduction.h>
 #include <Ref_Zone_VDF.h>
 #include <Source_base.h>
 #include <Champ_Don.h>
-#include <TRUSTTab.h>
 #include <Motcle.h>
 
 class Probleme_base;
@@ -55,10 +55,7 @@ public :
   void init_calcul_moyenne(const Conduction& my_eqn, DoubleVect& Y, IntVect& corresp, IntVect& compt);
   void calcul_moyenne(const Conduction& my_eqn, DoubleVect& T_moy, const IntVect& corresp, const IntVect& compt) const;
   void correspondance_SWIFT_coarse();
-  void mettre_a_jour(double temps) override
-  {
-    ;
-  }
+  void mettre_a_jour(double temps) override { }
 
   void associer_pb(const Probleme_base& ) override;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;

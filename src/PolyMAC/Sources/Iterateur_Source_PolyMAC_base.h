@@ -23,20 +23,13 @@
 #ifndef Iterateur_Source_PolyMAC_base_included
 #define Iterateur_Source_PolyMAC_base_included
 
-
-//
-// .DESCRIPTION class Iterateur_Source_PolyMAC_base
-//
-// .SECTION voir aussi Objet_U
-//
-
-#include <Ref_Zone_PolyMAC.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
+#include <TRUSTTabs_forward.h>
+#include <Ref_Zone_PolyMAC.h>
+#include <Ref_Source_base.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Equation_base.h>
-#include <Ref_Source_base.h>
 
-#include <TRUSTTab.h>
 class Evaluateur_Source_PolyMAC;
 
 class Iterateur_Source_PolyMAC_base : public Objet_U

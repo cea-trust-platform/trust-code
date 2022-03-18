@@ -22,7 +22,7 @@
 #ifndef BilanQdmVEF_included
 #define BilanQdmVEF_included
 
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 class Zone_Cl_VEF;
 
 class BilanQdmVEF

@@ -24,34 +24,21 @@
 #define Evaluateur_Source_CoviMAC_Face_included
 
 #include <Evaluateur_Source_CoviMAC.h>
-#include <TRUSTVect.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Evaluateur_Source_CoviMAC_Face
-//
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <TRUSTTabs_forward.h>
 
 class Evaluateur_Source_CoviMAC_Face : public Evaluateur_Source_CoviMAC
 {
-
 public:
 
-  inline Evaluateur_Source_CoviMAC_Face();
+  inline Evaluateur_Source_CoviMAC_Face() { }
   Evaluateur_Source_CoviMAC_Face(const Evaluateur_Source_CoviMAC_Face& );
   void completer() override;
   virtual double calculer_terme_source_bord(int ) const =0;
   virtual void calculer_terme_source_bord(int , DoubleVect&  ) const =0;
 
 protected:
-
   IntVect orientation;           // orientations des faces
-  DoubleVect volumes_entrelaces;
-  DoubleVect porosite_surf;          // porosites surfaciques
-
+  DoubleVect volumes_entrelaces, porosite_surf;          // porosites surfaciques
 };
 
-inline Evaluateur_Source_CoviMAC_Face::Evaluateur_Source_CoviMAC_Face()
-{}
 #endif

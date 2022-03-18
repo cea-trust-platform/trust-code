@@ -23,7 +23,7 @@
 #ifndef Ref_ArrOfInt_included
 #define Ref_ArrOfInt_included
 
-#include <TRUSTArray.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref.h>
 
 Declare_ref(ArrOfInt);

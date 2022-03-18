@@ -14,21 +14,29 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        ListeDoubleVect.h
+// File:        TRUSTTabs_forward.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/6
+// Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef ListeDoubleVect_included
-#define ListeDoubleVect_included
+#ifndef TRUSTTabs_forward_included
+#define TRUSTTabs_forward_included
 
-#include <TRUSTVect.h>
-#include <List.h>
+template <typename _TYPE_> class TRUSTArray;
+using ArrOfInt = TRUSTArray<int>;
+using ArrOfDouble = TRUSTArray<double>;
 
-Declare_liste(DoubleVect);
+template<typename _TYPE_> class TRUSTVect;
+using IntVect = TRUSTVect<int>;
+using DoubleVect = TRUSTVect<double>;
 
-class ListeDoubleVect : public LIST(DoubleVect)
-{ };
+template<typename _TYPE_> class TRUSTTab;
+using IntTab = TRUSTTab<int>;
+using DoubleTab = TRUSTTab<double>;
 
-#endif
+template<typename _TYPE_> class TRUSTTrav;
+using IntTrav = TRUSTTrav<int>;
+using DoubleTrav = TRUSTTrav<double>;
+
+#endif /* TRUSTTabs_forward_included */

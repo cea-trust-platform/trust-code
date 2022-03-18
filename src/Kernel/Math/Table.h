@@ -23,9 +23,9 @@
 #ifndef Table_included
 #define Table_included
 
+#include <TRUSTTabs_forward.h>
 #include <Parser_Eval.h>
 #include <TRUSTVects.h>
-#include <TRUSTTab.h>
 #include <Parser_U.h>
 #include <vector>
 

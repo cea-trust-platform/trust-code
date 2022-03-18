@@ -24,7 +24,7 @@
 #define Evaluateur_Source_VEF_Face_included
 
 #include <Evaluateur_Source_VEF.h>
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

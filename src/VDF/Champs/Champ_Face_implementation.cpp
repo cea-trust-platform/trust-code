@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,10 +25,9 @@
 #include <Zone_VDF.h>
 #include <LecFicDiffuse.h>
 #include <Frontiere_dis_base.h>
+#include <TRUSTTab.h>
 
-DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& positions,
-                                                       const IntVect& les_polys,
-                                                       DoubleTab& val) const
+DoubleTab& Champ_Face_implementation::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
 {
   const Champ_base& cha=le_champ();
   int nb_compo_=cha.nb_comp();
@@ -118,10 +117,7 @@ double Champ_Face_implementation::interpolation(const double val1, const double 
     return val1 + psi * (val2-val1) ;
 }
 
-DoubleVect& Champ_Face_implementation::valeur_aux_elems_compo(const DoubleTab& positions,
-                                                              const IntVect& les_polys,
-                                                              DoubleVect& val,
-                                                              int ncomp) const
+DoubleVect& Champ_Face_implementation::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {
   const Champ_base& cha = le_champ();
   int nb_compo_ = cha.nb_comp();
@@ -166,9 +162,7 @@ DoubleVect& Champ_Face_implementation::valeur_aux_elems_compo(const DoubleTab& p
   return val;
 }
 
-DoubleVect& Champ_Face_implementation::valeur_a_elem(const DoubleVect& position,
-                                                     DoubleVect& val,
-                                                     int le_poly) const
+DoubleVect& Champ_Face_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const
 {
   const Zone_VDF& zone_VDF = zone_vdf();
   const Zone& zone_geom = zone();
@@ -212,8 +206,7 @@ DoubleVect& Champ_Face_implementation::valeur_a_elem(const DoubleVect& position,
 }
 
 
-double Champ_Face_implementation::valeur_a_elem_compo(const DoubleVect& position,
-                                                      int le_poly,int ncomp) const
+double Champ_Face_implementation::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
 {
   const Zone_VDF& zone_VDF = zone_vdf();
   const Zone& zone_geom = zone();
@@ -254,8 +247,7 @@ double Champ_Face_implementation::valeur_a_elem_compo(const DoubleVect& position
   return val;
 }
 
-DoubleTab& Champ_Face_implementation::valeur_aux_sommets(const Domaine& dom,
-                                                         DoubleTab& ch_som) const
+DoubleTab& Champ_Face_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const
 {
   //  const Champ_base& cha_tmp=le_champ();
   //  const DoubleTab& ch_tmp = cha_tmp.valeurs();

@@ -63,6 +63,7 @@ class Domaine;
 //       const Zone_dis_base& zone_dis_base() const
 //       DoubleTab& remplir_coord_noeuds(DoubleTab& ) const
 //////////////////////////////////////////////////////////////////////////////
+
 class Champ_Inc_base : public Champ_base, public MorEqn
 {
   Declare_base_sans_constructeur(Champ_Inc_base);
@@ -72,80 +73,74 @@ public:
   //
   // Methode reimplementees
   //
-  int fixer_nb_valeurs_nodales(int ) override;
+  int fixer_nb_valeurs_nodales(int) override;
   double changer_temps(const double& temps) override;
-  void   mettre_a_jour(double temps) override;
-  int reprendre(Entree& ) override ;
-  int sauvegarder(Sortie& ) const override;
-  Champ_base& affecter_compo(const Champ_base& , int compo) override ;
+  void mettre_a_jour(double temps) override;
+  int reprendre(Entree&) override;
+  int sauvegarder(Sortie&) const override;
+  Champ_base& affecter_compo(const Champ_base&, int compo) override;
   //
   // Methodes viruelles pures implementees ici
   //
-  Champ_base&      affecter_(const Champ_base& ) override ;
+  Champ_base& affecter_(const Champ_base&) override;
   virtual void verifie_valeurs_cl();
-  DoubleTab&       valeurs() override ;
-  const DoubleTab& valeurs() const override ;
+  DoubleTab& valeurs() override;
+  const DoubleTab& valeurs() const override;
 
-  DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const override ;
-
-  DoubleTab&  valeur_aux(const DoubleTab& positions,
-                         DoubleTab& valeurs) const override ;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const override ;
+  DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override;
+  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
+  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override;
 
   //
   // Nouvelles methodes
   //
-  int  nb_valeurs_nodales() const override;
-  virtual int fixer_nb_valeurs_temporelles(int );
+  int nb_valeurs_nodales() const override;
+  virtual int fixer_nb_valeurs_temporelles(int);
   virtual int nb_valeurs_temporelles() const;
-  double         changer_temps_futur(const double&, int i=1);
-  double         changer_temps_passe(const double&, int i=1);
-  double         recuperer_temps_futur(int i=1) const;
-  double         recuperer_temps_passe(int i=1) const;
-  DoubleTab&              valeurs(double temps) override ;
-  const DoubleTab&        valeurs(double temps) const override ;
+  double changer_temps_futur(const double&, int i = 1);
+  double changer_temps_passe(const double&, int i = 1);
+  double recuperer_temps_futur(int i = 1) const;
+  double recuperer_temps_passe(int i = 1) const;
+  DoubleTab& valeurs(double temps) override;
+  const DoubleTab& valeurs(double temps) const override;
   // Operateurs de conversion implicite
   operator DoubleTab& ();
-  operator const DoubleTab& () const ;
+  operator const DoubleTab& () const;
 
-  DoubleTab&       futur(int i=1) override ;
-  const DoubleTab& futur(int i=1) const override ;
-  DoubleTab&       passe(int i=1) override ;
-  const DoubleTab& passe(int i=1) const override ;
-  Champ_Inc_base&  avancer(int i=1);
-  Champ_Inc_base&  reculer(int i=1);
+  DoubleTab& futur(int i = 1) override;
+  const DoubleTab& futur(int i = 1) const override;
+  DoubleTab& passe(int i = 1) override;
+  const DoubleTab& passe(int i = 1) const override;
+  Champ_Inc_base& avancer(int i = 1);
+  Champ_Inc_base& reculer(int i = 1);
 
-  int lire_donnees(Entree& ) ;
+  int lire_donnees(Entree&);
 
   virtual void associer_eqn(const Equation_base&);
   virtual void associer_zone_cl_dis(const Zone_Cl_dis&);
-  int imprime(Sortie& , int ) const override;
+  int imprime(Sortie&, int) const override;
   int a_une_zone_dis_base() const override
   {
     return 1;
-  };
+  }
+  ;
 
   const Zone_Cl_dis& zone_Cl_dis() const;
   Zone_Cl_dis& zone_Cl_dis();
   // methode supprimee volontairement
   //DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&,int distant) const;
-  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& , double ,int distant) const override;
-  virtual int     remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
-  virtual int     remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, int) const;
-  virtual DoubleTab& remplir_coord_noeuds(DoubleTab& ) const=0;
-  virtual DoubleTab& remplir_coord_noeuds_compo(DoubleTab&, int ) const;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
+  virtual int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
+  virtual int remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, int) const;
+  virtual DoubleTab& remplir_coord_noeuds(DoubleTab&) const =0;
+  virtual DoubleTab& remplir_coord_noeuds_compo(DoubleTab&, int) const;
 
   virtual double integrale_espace(int ncomp) const;
   const Domaine& domaine() const;
 
   //derivees du champ en les inconnues :
   //renvoie les derivees calcules par fonc_calc_ si champ_calcule, deriv[nom de l'inco] = 1 si vraie inconnue
-  const tabs_t& derivees() const
-  {
-    return deriv_;
-  }
+  const tabs_t& derivees() const { return deriv_; }
 
   //champ dependant d'autres Champ_Inc : reglage de la fonciton de calcul, initialisation de val_bord_
   void init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc);
@@ -155,13 +150,13 @@ public:
   DoubleTab valeur_aux_bords() const override;
 
   // Obsolete method: signature changed in order to generate a compiler error if old code is not removed
-  virtual void creer_espace_distant(int dummy) { };
+  virtual void creer_espace_distant(int dummy) { }
+
 protected:
   // Par defaut on initialise les valeurs a zero
-  virtual void creer_tableau_distribue(const MD_Vector&,
-                                       Array_base::Resize_Options = Array_base::COPY_INIT);
+  virtual void creer_tableau_distribue(const MD_Vector&, Array_base::Resize_Options = Array_base::COPY_INIT);
 
-  Roue_ptr les_valeurs ;
+  Roue_ptr les_valeurs;
   REF(Zone_Cl_dis) ma_zone_cl_dis;
 
   /* pour les champs dependant d'autres Champ_Inc */

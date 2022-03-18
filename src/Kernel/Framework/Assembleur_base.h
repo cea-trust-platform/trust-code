@@ -23,45 +23,44 @@
 #ifndef Assembleur_base_included
 #define Assembleur_base_included
 
+#include <TRUSTTabs_forward.h>
 #include <Equation_base.h>
 #include <SolveurSys.h>
-#include <TRUSTTab.h>
-class Zone_dis_base;
-class Zone_Cl_dis_base;
+
 class Matrice_Morse_Sym;
+class Zone_Cl_dis_base;
 class Champ_Don_base;
+class Zone_dis_base;
 class Matrice;
 
 class Assembleur_base : public Objet_U
 {
-
   Declare_base(Assembleur_base);
-
 public:
-  int set_resoudre_increment_pression(int flag)               ;
-  int get_resoudre_increment_pression() const                    ;
-  int set_resoudre_en_u(int flag)                             ;
-  int get_resoudre_en_u() const                                  ;
-  virtual int assembler(Matrice&)=0                              ;
-  inline virtual int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u)
+  int set_resoudre_increment_pression(int flag);
+  int get_resoudre_increment_pression() const;
+  int set_resoudre_en_u(int flag);
+  int get_resoudre_en_u() const;
+  virtual int assembler(Matrice&)=0;
+  inline virtual int assembler_mat(Matrice&, const DoubleVect&, int incr_pression, int resoudre_en_u)
   {
-    Cerr<<"assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) must be overloaded by "<<que_suis_je()<<finl;
+    Cerr << "assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) must be overloaded by " << que_suis_je() << finl;
     exit();
     return 1;
-  };
-  virtual int assembler_rho_variable(Matrice&,
-                                     const Champ_Don_base& rho) ;
-  virtual int assembler_QC(const DoubleTab&, Matrice&)           ;
-  virtual void completer(const Equation_base& ) =0                  ;
-  virtual void associer_zone_dis_base(const Zone_dis_base&) =0      ;
+  }
+
+  virtual int assembler_rho_variable(Matrice&, const Champ_Don_base& rho);
+  virtual int assembler_QC(const DoubleTab&, Matrice&);
+  virtual void completer(const Equation_base&) =0;
+  virtual void associer_zone_dis_base(const Zone_dis_base&) =0;
   virtual void associer_zone_cl_dis_base(const Zone_Cl_dis_base&) =0;
-  virtual const Zone_dis_base& zone_dis_base() const =0             ;
-  virtual const Zone_Cl_dis_base& zone_Cl_dis_base() const =0       ;
-  virtual int modifier_secmem(DoubleTab&)=0                      ;
-  virtual int modifier_solution(DoubleTab&)=0                    ;
+  virtual const Zone_dis_base& zone_dis_base() const =0;
+  virtual const Zone_Cl_dis_base& zone_Cl_dis_base() const =0;
+  virtual int modifier_secmem(DoubleTab&)=0;
+  virtual int modifier_solution(DoubleTab&)=0;
   virtual void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const
   {
-    Cerr<<"corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) must be overloaded by "<<que_suis_je()<<finl;
+    Cerr << "corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) must be overloaded by " << que_suis_je() << finl;
     exit();
   }
 

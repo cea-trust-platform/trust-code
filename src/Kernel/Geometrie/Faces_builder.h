@@ -38,47 +38,22 @@ class Faces_builder
 public:
   Faces_builder();
   void reset();
-  void creer_faces_reeles(Zone& zone,
-                          const Static_Int_Lists& connect_som_elem,
-                          Faces&   les_faces,
-                          IntTab& elem_faces);
+  void creer_faces_reeles(Zone& zone, const Static_Int_Lists& connect_som_elem, Faces& les_faces, IntTab& elem_faces);
 
-  static int chercher_face_element(const IntTab&    les_elements,
-                                   const IntTab&    faces_element_reference,
-                                   const ArrOfInt& une_face,
-                                   const int     elem);
+  static int chercher_face_element(const IntTab& les_elements, const IntTab& faces_element_reference, const ArrOfInt& une_face, const int elem);
 
 private:
-  static int ajouter_une_face(const ArrOfInt& une_face,
-                              const int elem0,
-                              const int elem1,
-                              IntTab& faces_sommets,
-                              IntTab& faces_voisins);
+  static int ajouter_une_face(const ArrOfInt& une_face, const int elem0, const int elem1, IntTab& faces_sommets, IntTab& faces_voisins);
 
-  void check_erreur_faces(const char * message,
-                          const ArrOfInt& liste_faces) const;
+  int chercher_face_element(const ArrOfInt& une_face, const int elem) const;
 
-  int chercher_face_element(const ArrOfInt& une_face,
-                            const int     elem) const;
+  void check_erreur_faces(const char *message, const ArrOfInt& liste_faces) const;
+  void creer_faces_frontiere(const int nb_voisins_attendus, Frontiere& frontiere, IntTab& faces_sommets, IntTab& faces_voisins, IntTab& elem_faces) const;
+  void creer_faces_internes(IntTab& faces_sommets, IntTab& elem_faces, IntTab& faces_voisins) const;
 
-  void creer_faces_frontiere(const int nb_voisins_attendus,
-                             Frontiere& frontiere,
-                             IntTab& faces_sommets,
-                             IntTab& faces_voisins,
-                             IntTab& elem_faces) const;
-  void creer_faces_internes(IntTab& faces_sommets,
-                            IntTab& elem_faces,
-                            IntTab& faces_voisins) const;
-
-  const IntTab&            les_elements() const
-  {
-    return *les_elements_ptr_;
-  };
-  const Static_Int_Lists& connectivite_som_elem() const
-  {
-    return *connectivite_som_elem_ptr_;
-  };
-  const IntTab&            faces_element_reference(int elem) const; // redonne les faces pour un element, dans le cas des polyhedres cela depend du numero de l'element.
+  const IntTab& les_elements() const { return *les_elements_ptr_; }
+  const Static_Int_Lists& connectivite_som_elem() const { return *connectivite_som_elem_ptr_; }
+  const IntTab& faces_element_reference(int elem) const; // redonne les faces pour un element, dans le cas des polyhedres cela depend du numero de l'element.
 
 
   // Tous les membres suivants sont initialises dans creer_faces_reeles:

@@ -33,26 +33,22 @@ class Zone_VDF;
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Aretes : public Objet_U
+class Aretes: public Objet_U
 {
-
   Declare_instanciable(Aretes);
-
 public:
 
   inline Aretes(int n);
-  void affecter(int&, int, int, int,
-                int, int, int, int, const ArrOfInt&);
+  void affecter(int&, int, int, int, int, int, int, int, const ArrOfInt&);
   inline IntTab& faces();
-  void dimensionner(int );
+  void dimensionner(int);
   void trier(int&, int&, int&, int&);
-  void trier_pour_debog(int&, int&, int&, int&,const DoubleTab&);
+  void trier_pour_debog(int&, int&, int&, int&, const DoubleTab&);
   void calculer_centre_de_gravite(Zone_VDF& zone);
 
-private :
+private:
   IntTab faces_;
-  IntVect type1_;
-  IntVect type2_;
+  IntVect type1_, type2_;
   void swap(int, int);
 
 };

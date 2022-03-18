@@ -39,6 +39,7 @@
 #include <Debog.h>
 #include <communications.h>
 #include <Matrice_Morse_Diag.h>
+#include <TRUSTTrav.h>
 
 // Description
 // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de

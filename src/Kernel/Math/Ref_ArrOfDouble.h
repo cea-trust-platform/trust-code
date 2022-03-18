@@ -23,8 +23,8 @@
 #ifndef Ref_ArrOfDouble_included
 #define Ref_ArrOfDouble_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref.h>
-#include <TRUSTArray.h>
 
 Declare_ref(ArrOfDouble);
 

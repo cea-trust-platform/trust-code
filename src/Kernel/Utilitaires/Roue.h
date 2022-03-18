@@ -22,7 +22,8 @@
 
 #ifndef Roue_included
 #define Roue_included
-#include <TRUSTTab.h>
+
+#include <TRUSTTabs_forward.h>
 class Roue;
 
 //////////////////////////////////////////////////////////////////////////////

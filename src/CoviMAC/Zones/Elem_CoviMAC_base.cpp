@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,18 +22,6 @@
 
 #include <Elem_CoviMAC_base.h>
 
-
 Implemente_base(Elem_CoviMAC_base,"Elem_CoviMAC_base",Objet_U);
-
-// printOn et readOn
-
-Sortie& Elem_CoviMAC_base::printOn(Sortie& s ) const
-{
-  return s;
-}
-
-Entree& Elem_CoviMAC_base::readOn(Entree& is )
-{
-  return is;
-}
-
+Sortie& Elem_CoviMAC_base::printOn(Sortie& s ) const { return s; }
+Entree& Elem_CoviMAC_base::readOn(Entree& is ) { return is; }

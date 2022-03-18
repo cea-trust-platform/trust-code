@@ -29,6 +29,7 @@
 #include <Schema_Comm.h>
 #include <Champ_base.h>
 #include <TRUSTVects.h>
+#include <TRUSTTrav.h>
 #include <Dirichlet.h>
 #include <TRUSTList.h>
 #include <Symetrie.h>

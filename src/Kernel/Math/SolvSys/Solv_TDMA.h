@@ -23,19 +23,18 @@
 #ifndef Solv_TDMA_included
 #define Solv_TDMA_included
 
-#include <Objet_U.h>
-#include <TRUSTVect.h>
+#include <TRUSTTabs_forward.h>
 
 class Solv_TDMA
 {
 public :
 
-  static void resoudre(        const DoubleVect& ma, //la diagonale principale
-                               const DoubleVect& mb, //la sous-diagonale
-                               const DoubleVect& mc, //la sur-diagonale
-                               const DoubleVect& sm, //second membre
-                               DoubleVect& vi, //vecteur solution
-                               int M); //taille de la diagonale (taille du systeme)
+  static void resoudre(const DoubleVect& ma, //la diagonale principale
+                       const DoubleVect& mb, //la sous-diagonale
+                       const DoubleVect& mc, //la sur-diagonale
+                       const DoubleVect& sm, //second membre
+                       DoubleVect& vi, //vecteur solution
+                       int M); //taille de la diagonale (taille du systeme)
 };
 
 

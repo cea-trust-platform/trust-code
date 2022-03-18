@@ -24,11 +24,12 @@
 #define Champ_P1iP1B_implementation_included
 
 #include <Champ_implementation.h>
-#include <Matrice.h>
-class Zone_VEF_PreP1b;
 #include <TRUSTTab.h>
-class Zone_Cl_dis_base;
+#include <Matrice.h>
+
 class Frontiere_dis_base;
+class Zone_Cl_dis_base;
+class Zone_VEF_PreP1b;
 
 class Champ_P1iP1B_implementation : public Champ_implementation
 {
@@ -36,53 +37,42 @@ class Champ_P1iP1B_implementation : public Champ_implementation
 public:
   Champ_P1iP1B_implementation()
   {
-    temps_filtrage_=-DMAXFLOAT;
-    adresse_champ_filtre_=NULL;
-    Condition_Neumann_imposee_=0;
-  };
-  DoubleVect& valeur_a_elem(const DoubleVect& position,
-                            DoubleVect& val,
-                            int le_poly) const override;
+    temps_filtrage_ = -DMAXFLOAT;
+    adresse_champ_filtre_ = NULL;
+    Condition_Neumann_imposee_ = 0;
+  }
 
-  double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly, int ncomp) const override;
+  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override;
 
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override;
+  double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
 
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override ;
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
+
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
 
   DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
 
-  DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                       DoubleVect&, int) const override;
+  DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
 
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
 
-  int remplir_coord_noeuds_et_polys(DoubleTab& positions,
-                                    IntVect& polys) const override ;
+  int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
   int imprime_P1B(Sortie&, int) const;
   DoubleTab& filtrage(const Zone_VEF_PreP1b&, const Champ_base&) const;        // Methode pour filtrer le champ
-  const DoubleTab& champ_filtre() const
-  {
-    return champ_filtre_;
-  };
+  const DoubleTab& champ_filtre() const { return champ_filtre_; }
+
   int Condition_Neumann_imposee_;        // Drapeau pour savoir s'il y'a des CL de Neumann (influe sur le filtrage)
 
-protected :
+protected:
 
   mutable DoubleTab champ_filtre_;                // Contient les valeurs du champ filtre
   mutable Matrice matrice_filtrage_;                // Contient la matrice necessaire au filtrage (evite d'avoir a la recalculer)
   mutable double temps_filtrage_;                // Temps du dernier filtrage         (va servir a ne pas refiltrer inutilement)
-  mutable const double* adresse_champ_filtre_;        // Adresse du champ filtre        (va servir a ne pas refiltrer inutilement)
+  mutable const double *adresse_champ_filtre_;        // Adresse du champ filtre        (va servir a ne pas refiltrer inutilement)
 
   void completer(const Zone_Cl_dis_base& zcl);
 
-  virtual const Zone_VEF_PreP1b& zone_vef() const=0;
-  DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
+  virtual const Zone_VEF_PreP1b& zone_vef() const =0;
+  DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
 };
 #endif

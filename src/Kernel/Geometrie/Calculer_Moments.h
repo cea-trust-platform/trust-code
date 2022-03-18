@@ -23,20 +23,16 @@
 #ifndef Calculer_Moments_included
 #define Calculer_Moments_included
 
-#include <TRUSTArray.h>
 #include <Interprete_geometrique_base.h>
+#include <TRUSTArray.h>
 
 class Calculer_Moments : public Interprete_geometrique_base
 {
-
   Declare_instanciable(Calculer_Moments);
-
 public:
-  inline const ArrOfDouble& centre_de_gravite() const
-  {
-    return c;
-  };
+  inline const ArrOfDouble& centre_de_gravite() const { return c; }
   Entree& interpreter_(Entree&) override;
+
 private:
   ArrOfDouble c;
 };

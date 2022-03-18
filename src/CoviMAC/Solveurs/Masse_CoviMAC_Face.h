@@ -24,16 +24,10 @@
 #define Masse_CoviMAC_Face_included
 
 
-#include <Solveur_Masse.h>
-#include <Ref_Zone_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
-#include <TRUSTTab.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Masse_CoviMAC_Face
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <TRUSTTabs_forward.h>
+#include <Ref_Zone_CoviMAC.h>
+#include <Solveur_Masse.h>
 
 class Masse_CoviMAC_Face : public Solveur_Masse_base
 {
@@ -53,7 +47,7 @@ public:
   int has_interface_blocs() const override
   {
     return 1;
-  };
+  }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 

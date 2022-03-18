@@ -23,11 +23,9 @@
 #ifndef Solv_Cholesky_included
 #define Solv_Cholesky_included
 
-#include <SolveurSys_base.h>
 #include <Matrice_Morse_Sym.h>
-
-#include <TRUSTVect.h>
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
+#include <SolveurSys_base.h>
 class Matrice_Morse_Sym;
 class Matrice_Morse;
 
@@ -42,18 +40,12 @@ public :
 
   int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& ) override;
 
-  inline int resoudre_systeme(const Matrice_Base& M, const DoubleVect& A,
-                              DoubleVect& B,
-                              int niter_max) override
+  inline int resoudre_systeme(const Matrice_Base& M, const DoubleVect& A, DoubleVect& B, int niter_max) override
   {
-    return resoudre_systeme(M, A,B);
-  };
-  inline int solveur_direct() const override
-  {
-    return 1;
-  };
+    return resoudre_systeme(M, A, B);
+  }
+  inline int solveur_direct() const override { return 1; }
 protected :
-
   int Cholesky(const Matrice_Morse_Sym&, const DoubleVect&, DoubleVect& );
   int Fact_Cholesky(const Matrice_Morse_Sym&, const int ); // met a jour matrice_bande_factorisee_fortran_
   int largeur_de_bande_;

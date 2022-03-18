@@ -19,11 +19,11 @@
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef FloatTab_included
 #define FloatTab_included
-#include <ArrOfFloat.h>
 
-#include <TRUSTTab.h>
+#include <ArrOfFloat.h>
 
 class FloatTab : public ArrOfFloat
 {

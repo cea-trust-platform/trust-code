@@ -23,10 +23,8 @@
 #ifndef Terme_Source_inc_included
 #define Terme_Source_inc_included
 
-//
-#include <TRUSTTab.h>
-#include <Ref_Champ_Don_base.h>
 #include <Ref_Navier_Stokes_std.h>
+#include <Ref_Champ_Don_base.h>
 
 class Probleme_base;
 class Zone_VF;

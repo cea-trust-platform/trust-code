@@ -22,9 +22,9 @@
 #ifndef Partitionneur_base_included
 #define Partitionneur_base_included
 
+#include <TRUSTTabs_forward.h>
 #include <Deriv.h>
 #include <Noms.h>
-#include <TRUSTVect.h>
 
 class Domaine;
 class Zone;
@@ -65,34 +65,13 @@ public:
   virtual void construire_partition(IntVect& elem_part, int& nb_parts_tot) const = 0;
 
   static void corriger_elem0_sur_proc0(IntVect& elem_part);
-  static int calculer_graphe_connexions_periodiques(const Zone& zone,
-                                                    const Noms& liste_bords_periodiques,
-                                                    const Static_Int_Lists& som_elem,
-                                                    const int my_offset,
-                                                    Static_Int_Lists& graph);
-  static int corriger_bords_avec_graphe(const Static_Int_Lists& graph_elements_perio,
-                                        const Static_Int_Lists& som_elem,
-                                        const Domaine& domaine,
-                                        const Noms& liste_bords_perio,
-                                        IntVect& elem_part);
-  static void corriger_bords_avec_liste(const Domaine& dom,
-                                        const Noms& liste_bords_periodiques,
-                                        const int my_offset,
-                                        IntVect& elem_part);
+  static int calculer_graphe_connexions_periodiques(const Zone& zone, const Noms& liste_bords_periodiques, const Static_Int_Lists& som_elem, const int my_offset, Static_Int_Lists& graph);
+  static int corriger_bords_avec_graphe(const Static_Int_Lists& graph_elements_perio, const Static_Int_Lists& som_elem, const Domaine& domaine, const Noms& liste_bords_perio, IntVect& elem_part);
+  static void corriger_bords_avec_liste(const Domaine& dom, const Noms& liste_bords_periodiques, const int my_offset, IntVect& elem_part);
+  static int corriger_sommets_bord(const Domaine& domaine, const Noms& liste_bords_perio, const ArrOfInt& renum_som_perio, const Static_Int_Lists& som_elem, IntVect& elem_part);
+  static int corriger_multiperiodique(const Domaine& domaine, const Noms& liste_bords_perio, const ArrOfInt& renum_som_perio, const Static_Int_Lists& som_elem, IntVect& elem_part);
 
-  static int corriger_sommets_bord(const Domaine& domaine,
-                                   const Noms& liste_bords_perio,
-                                   const ArrOfInt& renum_som_perio,
-                                   const Static_Int_Lists& som_elem,
-                                   IntVect& elem_part);
-
-  static int corriger_multiperiodique(const Domaine& domaine,
-                                      const Noms& liste_bords_perio,
-                                      const ArrOfInt& renum_som_perio,
-                                      const Static_Int_Lists& som_elem,
-                                      IntVect& elem_part);
 protected:
-
   Noms liste_bords_periodiques_;
 };
 

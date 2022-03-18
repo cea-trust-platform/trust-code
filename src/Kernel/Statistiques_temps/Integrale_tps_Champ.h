@@ -23,61 +23,28 @@
 #ifndef Integrale_tps_Champ_included
 #define Integrale_tps_Champ_included
 
-
-#include <Champ_Fonc.h>
-#include <Ref_Champ_base.h>
 #include <Ref_Champ_Generique_base.h>
 #include <Champ_Generique_base.h>
+#include <TRUSTTabs_forward.h>
+#include <Ref_Champ_base.h>
+#include <Champ_Fonc.h>
 
-#include <TRUSTTab.h>
 class Zone_dis_base;
-
-//.DESCRIPTION class Integrale_tps_Champ
-//
 
 class Integrale_tps_Champ : public Champ_Fonc
 {
   Declare_instanciable(Integrale_tps_Champ);
-
 public:
-
-  inline const REF(Champ_Generique_base)& le_champ()         const
-  {
-    return mon_champ;
-  };
-  inline double temps_integrale()                const
-  {
-    return tps_integrale;
-  }; // le temps courant de l'integrale
-  inline double t_debut()                         const
-  {
-    return t_debut_;
-  };        // le temps de debut d'integration
-  inline double t_fin()                         const
-  {
-    return t_fin_;
-  };           //  le temps de fin d'integration
-  inline double dt_integration()                 const
-  {
-    return dt_integr_calcul;
-  };// la duree d'integration deja effectuee
-  inline void fixer_t_debut(double t)
-  {
-    t_debut_ = t;
-  };                // Fixe le temps de debut d'integration
-  inline void fixer_t_fin(double t)
-  {
-    t_fin_ = t;
-  };                // Fixe le temps de fin d'integration
-  inline void fixer_dt_integr(double t)
-  {
-    dt_integr_calcul= t;
-  };// Fixe la valeur de tps_integrale
-  inline void fixer_tps_integrale(double t)
-  {
-    tps_integrale = t;
-  };        // Fixe le temps courant de l'integrale (derniere date a laquelle on a mis l'integrale a jour)
-  inline void associer(const Champ_base&, int, double, double);
+  inline const REF(Champ_Generique_base)& le_champ() const { return mon_champ; }
+  inline double temps_integrale() const { return tps_integrale; } // le temps courant de l'integrale
+  inline double t_debut() const { return t_debut_; } // le temps de debut d'integration
+  inline double t_fin() const { return t_fin_; } //  le temps de fin d'integration
+  inline double dt_integration() const { return dt_integr_calcul; } // la duree d'integration deja effectuee
+  inline void fixer_t_debut(double t) { t_debut_ = t; } // Fixe le temps de debut d'integration
+  inline void fixer_t_fin(double t) { t_fin_ = t; } // Fixe le temps de fin d'integration
+  inline void fixer_dt_integr(double t) { dt_integr_calcul = t; }
+  inline void fixer_tps_integrale(double t) { tps_integrale = t; } // Fixe le temps courant de l'integrale (derniere date a laquelle on a mis l'integrale a jour)
+  inline void associer(const Champ_base&, int, double, double) { }
   inline void associer(const Champ_Generique_base&, int, double, double);
   virtual inline void mettre_a_jour(double );
   virtual void mettre_a_jour_integrale();
@@ -91,17 +58,6 @@ protected :
   double tps_integrale;
   double dt_integr_calcul;
 };
-
-///////////////////////////////////////////////////////////////////
-//
-//     Fonctions inline de la classe Integrale_tps_Champ
-//
-///////////////////////////////////////////////////////////////////
-
-inline void Integrale_tps_Champ::associer(const Champ_base& le_ch, int n, double t0, double t1)
-{
-
-}
 
 inline void Integrale_tps_Champ::associer(const Champ_Generique_base& le_ch, int n, double t0, double t1)
 {
@@ -120,4 +76,5 @@ inline void Integrale_tps_Champ::mettre_a_jour(double )
   double le_temps = mon_champ->get_time();
   changer_temps(le_temps);
 }
+
 #endif

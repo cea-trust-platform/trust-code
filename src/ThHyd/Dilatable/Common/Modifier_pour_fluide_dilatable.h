@@ -33,8 +33,7 @@
 // .SECTION
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TRUSTVect.h>
-
+#include <TRUSTTabs_forward.h>
 class Fluide_Dilatable_base;
 class Milieu_base;
 

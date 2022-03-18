@@ -20,13 +20,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
-#include <Param.h>
+#include <TRUSTArray.h>
 #include <Parser_U.h>
+#include <Param.h>
 
-Param::Param(const char * name):proprietaire_(name)
-{
-}
+Param::Param(const char * name):proprietaire_(name) { }
 
 // Description:
 // Read the is input with the parameters (defined with the Param object) inside: { ... }

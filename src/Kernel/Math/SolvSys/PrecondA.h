@@ -23,7 +23,7 @@
 #ifndef PrecondA_included
 #define PrecondA_included
 
-#include <TRUSTArray.h>
+#include <TRUSTTabs_forward.h>
 #include <Precond.h>
 
 class Matrice_Morse_Sym;
@@ -34,21 +34,14 @@ class PrecondA : public Precond_base
   Declare_instanciable_sans_constructeur(PrecondA);
 public:
   PrecondA();
-  int supporte_matrice_morse_sym() override
-  {
-    return 0;
-  }; // Matrice_Morse_Sym non supporte
+  int supporte_matrice_morse_sym() override { return 0; } // Matrice_Morse_Sym non supporte
 
 protected:
   int preconditionner_(const Matrice_Base&, const DoubleVect& src, DoubleVect& solution) override;
-  void   prepare_(const Matrice_Base&, const DoubleVect& src) override;
+  void prepare_(const Matrice_Base&, const DoubleVect& src) override;
 
-  Precond le_precond_0;
-  Precond le_precond_1;
-  Precond le_precond_a;
-  double alpha_0;
-  double alpha_1;
-  double alpha_a;
+  Precond le_precond_0, le_precond_1, le_precond_a;
+  double alpha_0, alpha_1, alpha_a;
 };
 
 #endif

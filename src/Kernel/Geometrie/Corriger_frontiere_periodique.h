@@ -21,9 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef Corriger_frontiere_periodique_included
 #define Corriger_frontiere_periodique_included
+
 #include <Interprete_geometrique_base.h>
-#include <TRUSTTab.h>
+#include <Connectivite_som_elem.h>
 class Domaine;
+
 // .DESCRIPTION
 //  Cet interprete doit etre utilise en sequentiel (avant decoupage) si
 //  les sommets opposes d'un bord periodique ne sont pas parfaitement alignes.
@@ -34,9 +36,7 @@ class Corriger_frontiere_periodique : public Interprete_geometrique_base
   Declare_instanciable(Corriger_frontiere_periodique);
 public:
   Entree& interpreter_(Entree& is) override;
-  static void corriger_coordonnees_sommets_perio(Domaine& dom,
-                                                 const Nom& nom_bord,
-                                                 const ArrOfDouble& vecteur_perio,
-                                                 const Nom& nom_fichier_post);
+  static void corriger_coordonnees_sommets_perio(Domaine& dom, const Nom& nom_bord, const ArrOfDouble& vecteur_perio, const Nom& nom_fichier_post);
 };
+
 #endif

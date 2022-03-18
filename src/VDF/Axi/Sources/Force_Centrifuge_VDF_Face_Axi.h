@@ -24,11 +24,11 @@
 #ifndef Force_Centrifuge_VDF_Face_Axi_included
 #define Force_Centrifuge_VDF_Face_Axi_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Champ_Face.h>
 #include <Ref_Zone_VDF.h>
 #include <Source_base.h>
-#include <TRUSTTab.h>
 
 
 //

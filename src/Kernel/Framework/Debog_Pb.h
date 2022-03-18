@@ -22,12 +22,12 @@
 #ifndef Debog_Pb_included
 #define Debog_Pb_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref_Probleme_base.h>
 #include <EcrFicCollecte.h>
 #include <VectMD_Vector.h>
-#include <EFichier.h>
-#include <TRUSTTab.h>
 #include <TRUSTVects.h>
+#include <EFichier.h>
 #include <Motcle.h>
 #include <Debog.h>
 #include <Noms.h>
@@ -39,14 +39,13 @@ class Debog_Pb : public Objet_U
 {
   Declare_instanciable(Debog_Pb);
 public:
-  void verifier(const char* const msg, double, double *refvalue = 0);
-  void verifier(const char* const msg, const DoubleVect&, DoubleVect *refvalue = 0);
-  void verifier(const char* const msg, int, int *refvalue = 0);
-  void verifier(const char* const msg, const IntVect&, IntVect *refvalue = 0);
+  void verifier(const char *const msg, double, double *refvalue = 0);
+  void verifier(const char *const msg, const DoubleVect&, DoubleVect *refvalue = 0);
+  void verifier(const char *const msg, int, int *refvalue = 0);
+  void verifier(const char *const msg, const IntVect&, IntVect *refvalue = 0);
   void set_nom_pb_actuel(const Nom& nom);
-  void verifier_matrice(const char * const msg, const Matrice_Base&,
-                        const MD_Vector& md_lignes, const MD_Vector& md_colonnes);
-  void verifier_Mat_elems(const char* const msg, const Matrice_Base& la_matrice);
+  void verifier_matrice(const char *const msg, const Matrice_Base&, const MD_Vector& md_lignes, const MD_Vector& md_colonnes);
+  void verifier_Mat_elems(const char *const msg, const Matrice_Base& la_matrice);
 
   static REF(Debog_Pb)& get_debog_instance()
   {
@@ -55,14 +54,11 @@ public:
 protected:
   Debog_Pb(const Debog_Pb&);
 
-  int test_ignore_msg(const char* const msg);
-  void goto_msg(const char * const msg);
+  int test_ignore_msg(const char *const msg);
+  void goto_msg(const char *const msg);
   void write_geometry_data();
   void register_item(const MD_Vector& md, const Nom& id);
-  void add_renum_item(const DoubleTab& coord_ref,
-                      const DoubleTab& coord_par,
-                      const MD_Vector& md,
-                      const Nom& id);
+  void add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord_par, const MD_Vector& md, const Nom& id);
   void read_geometry_data();
   void ecrire_partie(const DoubleVect& arr);
   void ecrire_partie(const IntVect& arr);

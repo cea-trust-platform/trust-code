@@ -24,25 +24,16 @@
 #define Evaluateur_Source_CoviMAC_included
 
 
-#include <Ref_Zone_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
-#include <Zone_CoviMAC.h>
+#include <TRUSTTabs_forward.h>
+#include <Ref_Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
-
-#include <TRUSTVect.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Evaluateur_Source_CoviMAC
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <Zone_CoviMAC.h>
 
 class Evaluateur_Source_CoviMAC
 {
-
 public:
-
-  inline Evaluateur_Source_CoviMAC();
+  Evaluateur_Source_CoviMAC() { }
   inline virtual ~Evaluateur_Source_CoviMAC() {};
   inline Evaluateur_Source_CoviMAC(const Evaluateur_Source_CoviMAC& );
   inline void associer_zones(const Zone_dis_base&,const Zone_Cl_dis_base&);
@@ -52,17 +43,9 @@ public:
   virtual void calculer_terme_source(int , DoubleVect&  ) const =0;
 
 protected:
-
   REF(Zone_CoviMAC) la_zone;
   REF(Zone_Cl_CoviMAC) la_zcl;
-
 };
-
-//
-//   Fonctions inline de Evaluateur_Source_CoviMAC
-//
-
-inline Evaluateur_Source_CoviMAC::Evaluateur_Source_CoviMAC() {}
 
 inline Evaluateur_Source_CoviMAC::Evaluateur_Source_CoviMAC(const Evaluateur_Source_CoviMAC& eval)
   : la_zone(eval.la_zone),la_zcl(eval.la_zcl) {}

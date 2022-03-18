@@ -23,32 +23,23 @@
 #ifndef EcrMED_included
 #define EcrMED_included
 
-
-
-
-///////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-// Classe EcrMED
-//    Ecr un fichier MED
-//    Structure du jeu de donnee (en dimension 2) :
-//    EcrMED dom medfile
-// .SECTION voir aussi
-//
-//
-///////////////////////////////////////////////////////////////////////////
-#include <Interprete.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_dis_base.h>
+#include <Interprete.h>
 #include <med++.h>
 
 class Domaine;
 class Nom;
 class Noms;
-#include <TRUSTTab.h>
 class Champ_Inc_base;
 class Zone_dis_base;
 class Domaine;
 
+// .DESCRIPTION
+// Classe EcrMED
+//    Ecr un fichier MED
+//    Structure du jeu de donnee (en dimension 2) :
+//    EcrMED dom medfile
 class EcrMED : public Interprete
 {
   Declare_instanciable_sans_constructeur(EcrMED);
@@ -85,4 +76,5 @@ private:
   ///! False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)
   bool major_mode;
 };
-#endif
+
+#endif /* EcrMED_included */

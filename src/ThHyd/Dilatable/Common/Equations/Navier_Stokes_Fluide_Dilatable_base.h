@@ -24,10 +24,10 @@
 #define Navier_Stokes_Fluide_Dilatable_base_included
 
 #include <Navier_Stokes_Fluide_Dilatable_Proto.h>
+#include <TRUSTTabs_forward.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Inc.h>
 #include <Champ_Don.h>
-#include <TRUSTTab.h>
 
 class Matrice_Morse;
 

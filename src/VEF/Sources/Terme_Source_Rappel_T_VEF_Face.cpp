@@ -29,7 +29,7 @@
 #include <Schema_Temps_base.h>
 #include <EFichier.h>
 #include <Interprete.h>
-
+#include <TRUSTTab.h>
 
 Implemente_instanciable(Terme_Source_Rappel_T_VEF_Face,"Source_Rappel_T_VEF_P1NC",Source_base);
 

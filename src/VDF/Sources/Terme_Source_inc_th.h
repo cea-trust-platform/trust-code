@@ -23,11 +23,9 @@
 #ifndef Terme_Source_inc_th_included
 #define Terme_Source_inc_th_included
 
-//
-#include <TRUSTTab.h>
-#include <Ref_Champ_Don_base.h>
-#include <Ref_Navier_Stokes_std.h>
 #include <Ref_Convection_Diffusion_Temperature.h>
+#include <Ref_Navier_Stokes_std.h>
+#include <Ref_Champ_Don_base.h>
 #include <Ref_Champ_Don.h>
 
 class Probleme_base;

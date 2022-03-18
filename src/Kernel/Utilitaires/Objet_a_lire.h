@@ -23,30 +23,21 @@
 
 #ifndef Objet_a_lire_included
 #define Objet_a_lire_included
-#include <Objet_U.h>
-#include <List_Nom.h>
 #include <TRUSTArray.h>
+#include <List_Nom.h>
 #include <ptrParam.h>
+#include <Objet_U.h>
 
 class Param;
 class Objet_a_lire :public Objet_U
 {
   Declare_instanciable(Objet_a_lire);
 public:
-  enum Type { INTEGER = 0,
-              DOUBLE  = 1,
-              OBJECT  = 2,
-              FLAG    = 3,
-              NON_STD = 4,
-              DERIV   = 5,
-              ArrOfInt_size_imp = 6,
-              ArrOfDouble_size_imp = 7,
-              PARAM = 8
+  enum Type { INTEGER = 0, DOUBLE = 1, OBJECT = 2, FLAG = 3, NON_STD = 4, DERIV = 5, ArrOfInt_size_imp = 6,
+              ArrOfDouble_size_imp = 7, PARAM = 8
             };
 
-  enum Nature { OPTIONAL = 0,
-                REQUIRED = 1
-              };
+  enum Nature { OPTIONAL = 0, REQUIRED = 1 };
 
   void set_entier(int*);
   void set_double(double*);

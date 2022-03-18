@@ -23,8 +23,7 @@
 #ifndef Champ_implementation_base_included
 #define Champ_implementation_base_included
 
-#include <TRUSTTab.h>
-
+#include <TRUSTTabs_forward.h>
 class Domaine;
 class Zone;
 class Zone_VF;
@@ -40,32 +39,27 @@ class Champ_base;
 class Champ_implementation_base
 {
 
-public :
-  inline virtual ~Champ_implementation_base() { };
+public:
+  inline virtual ~Champ_implementation_base() { }
 
-public :
-  virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const                                =0;
-  virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const                                     =0;
-  virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const                       =0;
+public:
+  virtual DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const =0;
+  virtual double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const =0;
+  virtual DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const =0;
   virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const =0;
-
-  virtual DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const                      =0;
-  virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const =0;
-
-protected :
-  virtual DoubleTab& valeur_aux_sommets_impl(DoubleTab& result) const =0;
-  virtual DoubleVect& valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const =0;
-
-  virtual       Champ_base& le_champ(void)       =0;
-  virtual const Champ_base& le_champ(void) const =0;
-
-public :
   virtual DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const;
   virtual DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const;
+  virtual DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const =0;
+  virtual int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const =0;
 
-protected :
-  const Zone_VF& get_zone_dis(void)  const;
-  const Zone&    get_zone_geom(void) const;
+protected:
+  virtual DoubleTab& valeur_aux_sommets_impl(DoubleTab& result) const =0;
+  virtual DoubleVect& valeur_aux_sommets_compo_impl(DoubleVect& result, int ncomp) const =0;
+  const Zone_VF& get_zone_dis(void) const;
+  const Zone& get_zone_geom(void) const;
+
+  virtual Champ_base& le_champ(void) =0;
+  virtual const Champ_base& le_champ(void) const =0;
 
 };
 

@@ -48,17 +48,15 @@ public :
   inline int face_sommet1(int i) const;
   inline int face_sommet2(int i) const;
   inline int nb_som() const override;
-  inline int nb_faces(int=0) const override;
-  inline int nb_som_face(int=0) const override;
+  inline int nb_faces(int = 0) const override;
+  inline int nb_som_face(int = 0) const override;
   inline int est_structure() const override;
   const Nom& nom_lml() const override;
-  int contient(const ArrOfDouble&, int ) const override;
-  int contient(const ArrOfInt&, int ) const override;
-  inline Type_Face type_face(int=0) const override;
-  void calculer_volumes(DoubleVect& ) const override;
-  void calculer_normales(const IntTab& faces_sommets ,
-                         DoubleTab& face_normales) const override;
-
+  int contient(const ArrOfDouble&, int) const override;
+  int contient(const ArrOfInt&, int) const override;
+  inline Type_Face type_face(int = 0) const override;
+  void calculer_volumes(DoubleVect&) const override;
+  void calculer_normales(const IntTab& faces_sommets, DoubleTab& face_normales) const override;
   int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const override;
 };
 

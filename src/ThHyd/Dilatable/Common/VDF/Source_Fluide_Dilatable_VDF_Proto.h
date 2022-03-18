@@ -23,9 +23,9 @@
 #ifndef Source_Fluide_Dilatable_VDF_Proto_included
 #define Source_Fluide_Dilatable_VDF_Proto_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Zone_VDF.h>
-#include <TRUSTTab.h>
 
 class Equation_base;
 class Zone_Cl_dis;

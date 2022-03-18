@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,9 +21,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_som_lu_VEF.h>
-#include <Domaine.h>
 #include <Interprete.h>
 #include <EFichier.h>
+#include <TRUSTTab.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Champ_som_lu_VEF,"Champ_som_lu_VEF",Champ_som_lu);
 

@@ -21,9 +21,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Sortie_libre_pression_moyenne_imposee.h>
-#include <Champ_Uniforme.h>
 #include <Navier_Stokes_std.h>
+#include <Champ_Uniforme.h>
 #include <Milieu_base.h>
+#include <TRUSTTab.h>
 #include <Zone_VF.h>
 
 Implemente_instanciable_sans_constructeur(Sortie_libre_pression_moyenne_imposee,"Frontiere_ouverte_pression_moyenne_imposee",Neumann_sortie_libre);

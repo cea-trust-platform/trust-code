@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,9 +19,11 @@
 // Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <Partitionneur_Tranche.h>
-#include <Domaine.h>
+
 #include <Reordonner_faces_periodiques.h>
+#include <Partitionneur_Tranche.h>
+#include <TRUSTArray.h>
+#include <Domaine.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Tranche,"Partitionneur_Tranche",Partitionneur_base);

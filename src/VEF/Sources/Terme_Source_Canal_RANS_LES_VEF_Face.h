@@ -23,11 +23,11 @@
 #ifndef Terme_Source_Canal_RANS_LES_VEF_Face_included
 #define Terme_Source_Canal_RANS_LES_VEF_Face_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VEF.h>
 #include <Ref_Zone_VEF.h>
 #include <Source_base.h>
 #include <Champ_Don.h>
-#include <TRUSTTab.h>
 
 class Probleme_base;
 class Navier_Stokes_std;

@@ -48,8 +48,7 @@ struct OctreeLoc
 {
   double xmin, xmax, ymin, ymax, zmin, zmax;
   void construire(const OctreeLoc& loc, int  i);
-  void construire(const OctreeLoc& loc, int  i,
-                  double xmil, double ymil, double zmil);
+  void construire(const OctreeLoc& loc, int i, double xmil, double ymil, double zmil);
   int direction(double x, double y, double z) const;
 };
 class OctreeRoot;
@@ -85,15 +84,9 @@ public :
   virtual Entree& readOn(Entree& is);
 protected :
   void detruire();
-  void ranger_elem_1D(ArrOfInt&, int , int, int, const DoubleTab&,
-                      const IntTab&, ArrOfInt&, IntVects&,
-                      double );
-  void ranger_elem_2D(ArrOfInt&, int , int, int, const DoubleTab&,
-                      const IntTab&,ArrOfInt&, IntVects&,
-                      double ,double );
-  void ranger_elem_3D(ArrOfInt&, int , int, int, const DoubleTab&,
-                      const IntTab&,ArrOfInt&, IntVects&,
-                      double, double, double);
+  void ranger_elem_1D(ArrOfInt&, int, int, int, const DoubleTab&, const IntTab&, ArrOfInt&, IntVects&, double);
+  void ranger_elem_2D(ArrOfInt&, int, int, int, const DoubleTab&, const IntTab&, ArrOfInt&, IntVects&, double, double);
+  void ranger_elem_3D(ArrOfInt&, int, int, int, const DoubleTab&, const IntTab&, ArrOfInt&, IntVects&, double, double, double);
   double get_epsilon() const;
   Octree** les_octrees;
   Octree* pere;
@@ -171,8 +164,7 @@ class OctreeFloor : public Octree
 
 public :
 
-  OctreeFloor(Octree* mon_pere, const ArrOfInt& val,
-              const OctreeLoc& loc)
+  OctreeFloor(Octree *mon_pere, const ArrOfInt& val, const OctreeLoc& loc)
   {
     pos.resize_array(Objet_U::dimension);
     construire(mon_pere, val, loc);

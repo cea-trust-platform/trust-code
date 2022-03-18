@@ -20,15 +20,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Champ_Generique_Ecart_Type_included
 #define Champ_Generique_Ecart_Type_included
 
 #include <Champ_Generique_Statistiques_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Op_Ecart_type.h>
 #include <Op_Ecart_type.h>
 
-#include <TRUSTTab.h>
 class Postraitement_base;
 
 //

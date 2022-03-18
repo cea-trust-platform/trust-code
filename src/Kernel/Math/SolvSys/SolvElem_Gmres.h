@@ -27,34 +27,24 @@
 #include <TRUSTVect.h>
 #include <SPV2.h>
 
-class SolvElem_Gmres : public SolvElem_base
+class SolvElem_Gmres: public SolvElem_base
 {
   Declare_instanciable(SolvElem_Gmres);
-public :
+public:
 
-  inline void iteration(int n,
-                        const DoubleVect& secmem,
-                        DoubleVect& solution,
-                        ArrOfInt& ipar,
-                        ArrOfDouble& fpar,
-                        ArrOfDouble& w) override;
+  inline void iteration(int n, const DoubleVect& secmem, DoubleVect& solution, ArrOfInt& ipar, ArrOfDouble& fpar, ArrOfDouble& w) override;
   inline ArrOfDouble& dimensionne_wks(int n, ArrOfDouble& w) override;
 };
 
-inline void SolvElem_Gmres::iteration(int n,
-                                      const DoubleVect& secmem,
-                                      DoubleVect& solution,
-                                      ArrOfInt& ipar,
-                                      ArrOfDouble& fpar,
-                                      ArrOfDouble& w)
+inline void SolvElem_Gmres::iteration(int n, const DoubleVect& secmem, DoubleVect& solution, ArrOfInt& ipar, ArrOfDouble& fpar, ArrOfDouble& w)
 {
-  F77NAME(GMRESV2)(&n,secmem.addr(),solution.addr(),ipar.addr(),fpar.addr(),w.addr());
+  F77NAME(GMRESV2)(&n, secmem.addr(), solution.addr(), ipar.addr(), fpar.addr(), w.addr());
 }
 
-inline ArrOfDouble& SolvElem_Gmres::dimensionne_wks(int n,ArrOfDouble& w)
+inline ArrOfDouble& SolvElem_Gmres::dimensionne_wks(int n, ArrOfDouble& w)
 {
-  int m=10;
-  w.resize_array(((n+3)*(m+2))+((m+1)*m/2));
+  int m = 10;
+  w.resize_array(((n + 3) * (m + 2)) + ((m + 1) * m / 2));
   return w;
 }
 

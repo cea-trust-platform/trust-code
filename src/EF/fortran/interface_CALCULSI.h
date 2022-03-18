@@ -22,8 +22,8 @@
 #ifndef interface_CALCULSI_included
 #define interface_CALCULSI_included
 
+#include <TRUSTTabs_forward.h>
 #include <assert.h>
-#include <TRUSTArray.h>
 class Nom;
 class Sortie;
 class Param;

@@ -25,22 +25,14 @@
 #define Op_Correlation_included
 
 #include <Integrale_tps_produit_champs.h>
-#include <Ref_Op_Moyenne.h>
 #include <Ref_Integrale_tps_Champ.h>
+#include <TRUSTTabs_forward.h>
+#include <Ref_Op_Moyenne.h>
 #include <Op_Moyenne.h>
-
-#include <TRUSTTab.h>
-
-// .DESCRIPTION class Op_Correlation
-//
-// .SECTION voir aussi
-//
 
 class Op_Correlation : public Operateur_Statistique_tps_base
 {
-
   Declare_instanciable(Op_Correlation);
-
 public:
   inline const Nom& le_nom() const override
   {
@@ -167,9 +159,6 @@ inline void Op_Correlation::associer(const Zone_dis_base& une_zdis, const Champ_
   integrale_tps_ab_.associer_zone_dis_base(une_zdis);
   integrale_tps_ab_.associer(le_champ_a,le_champ_b,1,1,t1,t2);
 }
-
-
-
 
 inline int Op_Correlation::sauvegarder(Sortie& os) const
 {

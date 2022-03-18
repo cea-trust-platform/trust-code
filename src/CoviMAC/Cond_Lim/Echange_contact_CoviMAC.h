@@ -23,18 +23,18 @@
 #ifndef Echange_contact_CoviMAC_included
 #define Echange_contact_CoviMAC_included
 
-
 #include <Echange_externe_impose.h>
-class Front_VF;
-class Zone_CoviMAC;
-class Faces;
-#include <Ref_IntTab.h>
-#include <Ref_Front_VF.h>
-#include <TRUSTTab.h>
-#include <Ref_Champ_Inc.h>
-#include <MD_Vector_tools.h>
 #include <Op_Diff_CoviMAC_Elem.h>
+#include <TRUSTTabs_forward.h>
+#include <MD_Vector_tools.h>
+#include <Ref_Champ_Inc.h>
+#include <Ref_Front_VF.h>
+#include <Ref_IntTab.h>
 #include <vector>
+
+class Zone_CoviMAC;
+class Front_VF;
+class Faces;
 
 ////////////////////////////////////////////////////////////////
 

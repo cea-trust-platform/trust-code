@@ -30,12 +30,12 @@
 // .SECTION voir aussi Objet_U
 //
 
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VEF.h>
 #include <Ref_Source_base.h>
 #include <Equation_base.h>
 #include <Ref_Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
-#include <TRUSTTab.h>
 
 class Evaluateur_Source_VEF;
 

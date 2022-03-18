@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,22 +24,13 @@
 
 Implemente_instanciable_sans_constructeur(Esp_Dist,"Esp_Dist",ArrOfInt);
 
+// Description:
+//    Constructeur par defaut
+Esp_Dist::Esp_Dist() : PE_voisin_(-1) { }
 
 // Description:
 //    Lecture d'un espace distant dans un flot d'entree.
 //    Un espace distant est represente par son tableau d'indices et le processus voisin concerne.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Esp_Dist::readOn(Entree& is)
 {
   ArrOfInt::readOn(is);
@@ -48,22 +39,9 @@ Entree& Esp_Dist::readOn(Entree& is)
   return is;
 }
 
-
 // Description:
 //    Ecriture d'un espace distant sur un flot de sortie
 //    Un espace distant est represente par son tableau d'indices et le processus voisin concerne.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Sortie& Esp_Dist::printOn(Sortie& os) const
 {
   ArrOfInt::printOn(os);
@@ -71,24 +49,3 @@ Sortie& Esp_Dist::printOn(Sortie& os) const
   os << desc_ed_;
   return os;
 }
-
-
-// Description:
-//    Constructeur par defaut
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Esp_Dist::Esp_Dist()
-{
-  PE_voisin_ = -1;
-}
-

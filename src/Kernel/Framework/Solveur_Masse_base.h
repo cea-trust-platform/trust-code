@@ -20,11 +20,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Solveur_Masse_base_included
 #define Solveur_Masse_base_included
+
+#include <TRUSTTabs_forward.h>
 #include <Interface_blocs.h>
-#include <TRUSTTrav.h>
 #include <MorEqn.h>
 
 class Zone_dis;

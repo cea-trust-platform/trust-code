@@ -23,9 +23,9 @@
 #ifndef Moyenne_volumique_included
 #define Moyenne_volumique_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref_Champ_base.h>
 #include <Interprete.h>
-#include <TRUSTTab.h>
 #include <Parser.h>
 
 class Convolution_function_base;
@@ -41,47 +41,27 @@ class Zone_VF;
 //   Moyenne_volumique moy;
 //   is >> moy; // lecture de la fonction filtre
 //   moy.calculer_convolution_champ_elem/face(...)
-class Moyenne_volumique : public Interprete
+class Moyenne_volumique: public Interprete
 {
-
   Declare_instanciable(Moyenne_volumique);
 
 public:
   Entree& interpreter(Entree&) override;
 
-  virtual void calculer_convolution_champ_elem(const Zone_VF& zone_source,
-                                               const DoubleTab& champ_source,
-                                               const DoubleTab& coords_to_compute,
-                                               DoubleTab& resu) const;
+  virtual void calculer_convolution_champ_elem(const Zone_VF& zone_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
 
-  virtual void calculer_convolution_champ_face(const Zone_VF& zone_source,
-                                               const DoubleTab& champ_source,
-                                               const DoubleTab& coords_to_compute,
-                                               DoubleTab& resu) const;
+  virtual void calculer_convolution_champ_face(const Zone_VF& zone_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
 
   virtual void eval_filtre(const DoubleTab& coords, ArrOfDouble& result) const;
-  double box_size() const
-  {
-    return box_size_;
-  }
+  double box_size() const { return box_size_;  }
 
 protected:
-  void traiter_champs(const Motcles& noms_champs,
-                      const Nom& nom_pb, const Nom& nom_dom,
-                      const DoubleTab& coords,
-                      Format_Post_base& post,
-                      double temps,
-                      const Motcle& localisation);
+  void traiter_champs(const Motcles& noms_champs, const Nom& nom_pb, const Nom& nom_dom, const DoubleTab& coords, Format_Post_base& post, double temps, const Motcle& localisation);
 
-  int get_champ(const Nom& nom_pb,
-                const Nom& nom_champ,
-                REF(Champ_base) & ref_champ);
+  int get_champ(const Nom& nom_pb, const Nom& nom_champ,
+                REF(Champ_base) &ref_champ);
 
-
-  virtual void calculer_convolution(const Zone_VF& zone_source,
-                                    const DoubleTab& champ_source,
-                                    const DoubleTab& coords_to_compute,
-                                    DoubleTab& resu) const;
+  virtual void calculer_convolution(const Zone_VF& zone_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
 
   enum Type { ERROR, BOITE, CHAPEAU, GAUSSIENNE, PARSER, QUADRA };
   // Si type_ != parser, il faut renseigner l_, sinon il faut renseigner expression_parser_
@@ -90,12 +70,8 @@ protected:
   double l_;
   // box_size_ doit toujours etre rempli (demi-cote d'un cube contenant le support du filtre)
   double box_size_;
-  Nom    expression_parser_;
+  Nom expression_parser_;
   mutable Parser parser_;
 };
 
-
 #endif
-
-
-

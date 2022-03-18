@@ -23,38 +23,18 @@
 #ifndef Evaluateur_Source_PolyMAC_Elem_included
 #define Evaluateur_Source_PolyMAC_Elem_included
 
-
 #include <Evaluateur_Source_PolyMAC.h>
-#include <TRUSTVect.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Evaluateur_Source_PolyMAC_Elem
-//
-//
-//////////////////////////////////////////////////////////////////////////////
+#include <TRUSTTabs_forward.h>
 
 class Evaluateur_Source_PolyMAC_Elem : public Evaluateur_Source_PolyMAC
 {
-
 public:
-
-  inline Evaluateur_Source_PolyMAC_Elem();
+  inline Evaluateur_Source_PolyMAC_Elem() { }
   Evaluateur_Source_PolyMAC_Elem(const Evaluateur_Source_PolyMAC_Elem& );
   void completer() override;
 
 protected:
-
-  DoubleVect volumes;
-  DoubleVect porosite_vol;     // porosites volumiques
-
+  DoubleVect volumes, porosite_vol;     // porosites volumiques
 };
-
-//
-//   Fonctions inline de Evaluateur_Source_PolyMAC
-//
-
-inline Evaluateur_Source_PolyMAC_Elem::Evaluateur_Source_PolyMAC_Elem() {}
-
 
 #endif

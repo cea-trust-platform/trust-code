@@ -25,7 +25,7 @@
 #define Matrice_included
 
 #include <Deriv_Matrice_Base.h>
-
+#include <TRUSTTabs_forward.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -41,20 +41,13 @@
 //    Dans les commentaires des methodes A represente un objet Matrice.
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TRUSTVect.h>
-
 class Matrice : public DERIV(Matrice_Base)
 {
-
   Declare_instanciable(Matrice);
-
 public:
   Matrice(const Matrice&) = default;
   Matrice& operator=( const Matrice& matrix ) ;
   Matrice& operator=( const Matrice_Base& matrix ) ;
-
-protected :
-
 };
 
 DoubleVect operator*(const Matrice&, const DoubleVect&);

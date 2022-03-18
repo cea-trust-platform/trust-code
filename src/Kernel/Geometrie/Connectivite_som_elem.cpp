@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <Connectivite_som_elem.h>
 #include <Static_Int_Lists.h>
+#include <TRUSTTabs.h>
 
 // Description: construction de la structure som_elem pour la zone donnee
 //  On cree pour chaque sommet i la liste des elements adjacents a ce sommet

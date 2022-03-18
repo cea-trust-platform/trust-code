@@ -23,70 +23,40 @@
 #ifndef Matrice_Nulle_included
 #define Matrice_Nulle_included
 
+#include <TRUSTTabs_forward.h>
 #include <Matrice_Base.h>
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// .NAME        : Matrice_Nulle
-// .HEADER      : linalg linalg/src/Kernel/Math/Matrices
-// .LIBRARY     : liblinalg
-// .DESCRIPTION : class Matrice_Nulle
-//
-// <Description of class Matrice_Nulle>
-//
-/////////////////////////////////////////////////////////////////////////////
-
-#include <TRUSTTab.h>
-#include <TRUSTArray.h>
 
 class Matrice_Nulle : public Matrice_Base
 {
-
   Declare_instanciable_sans_constructeur( Matrice_Nulle ) ;
-
 public :
   int ordre( ) const override;
   int nb_lignes( ) const override;
   int nb_colonnes( ) const override;
 
-  DoubleVect& ajouter_multvect_(const DoubleVect& x,
-                                DoubleVect&       r) const override;
+  DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const override;
+  DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const override;
+  DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override;
 
-  DoubleVect& ajouter_multvectT_(const DoubleVect& x,
-                                 DoubleVect&       r) const override;
-
-  DoubleTab& ajouter_multTab_(const DoubleTab& x,
-                              DoubleTab&       r) const override;
-
-  void scale( const double& x ) override;
-
-  void get_stencil( IntTab& stencil ) const override;
-
-  void get_symmetric_stencil( IntTab& stencil ) const override;
-
-  void get_stencil_and_coefficients( IntTab&      stencil,
-                                     ArrOfDouble& coefficients ) const override;
-
-  void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
-                                               ArrOfDouble& coefficients ) const override;
+  void scale(const double& x) override;
+  void get_stencil(IntTab& stencil) const override;
+  void get_symmetric_stencil(IntTab& stencil) const override;
+  void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
+  void get_symmetric_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
 public:
-  Matrice_Nulle( void );
-  Matrice_Nulle( int order );
-  Matrice_Nulle( int nb_lines,
-                 int nb_columns );
+  Matrice_Nulle(void);
+  Matrice_Nulle(int order);
+  Matrice_Nulle(int nb_lines, int nb_columns);
 
-  void dimensionner( int order );
-  void dimensionner( int nb_lines,
-                     int nb_columns );
+  void dimensionner(int order);
+  void dimensionner(int nb_lines, int nb_columns);
 
-  double coeff( int i,
-                int j ) const;
+  double coeff(int i, int j) const;
 
 protected :
   int nb_lines_;
   int nb_columns_;
-
 };
 
 #endif /* Matrice_Nulle_included */

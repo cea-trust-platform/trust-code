@@ -23,7 +23,7 @@
 #ifndef Elem_geom_base_included
 #define Elem_geom_base_included
 
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 #include <Faces.h>
 class Nom;
 
@@ -55,11 +55,8 @@ class Nom;
 //////////////////////////////////////////////////////////////////////////////
 class Elem_geom_base  : public Objet_U
 {
-
   Declare_base(Elem_geom_base);
-
 public:
-
   virtual void creer_faces_elem(Faces& ,int ,Type_Face ) const;
   inline void creer_faces_elem(Faces& ,int ) const;
   virtual int face_sommet(int i, int j) const=0;
@@ -78,12 +75,10 @@ public:
   virtual void reordonner() ;
   virtual void calculer_volumes(DoubleVect& ) const =0;
   virtual void calculer_normales(const IntTab& faces_sommets , DoubleTab& face_normales) const;
-
   virtual int get_tab_faces_sommets_locaux(IntTab& faces_som_local) const;
   virtual void get_tab_aretes_sommets_locaux(IntTab& aretes_som_local) const;
 
 protected:
-
   REF(Zone) ma_zone;
 };
 

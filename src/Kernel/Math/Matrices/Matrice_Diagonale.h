@@ -23,8 +23,8 @@
 #ifndef Matrice_Diagonale_included
 #define Matrice_Diagonale_included
 
+#include <TRUSTTabs_forward.h>
 #include <Matrice_Base.h>
-#include <TRUSTVect.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -34,47 +34,39 @@
 // .SECTION voir aussi
 //    Matrice_Base
 //////////////////////////////////////////////////////////////////////////////
+
 class Matrice_Diagonale : public Matrice_Base
 {
-
   Declare_instanciable_sans_constructeur(Matrice_Diagonale);
-
 public :
   int ordre( void ) const override;
   int nb_lignes( void ) const override;
   int nb_colonnes( void ) const override;
 
-  DoubleVect& ajouter_multvect_( const DoubleVect& x, DoubleVect& r ) const override;
-  DoubleVect& ajouter_multvectT_( const DoubleVect& x, DoubleVect& r ) const override;
-  DoubleTab& ajouter_multTab_( const DoubleTab& x, DoubleTab& r ) const override;
+  DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const override;
+  DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const override;
+  DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& r) const override;
 
-  void scale( const double& x ) override;
+  void scale(const double& x) override;
+  void get_stencil(IntTab& stencil) const override;
+  void get_symmetric_stencil(IntTab& stencil) const override;
+  void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
+  void get_symmetric_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
-  void get_stencil( IntTab& stencil ) const override;
-
-  void get_symmetric_stencil( IntTab& stencil ) const override;
-
-  void get_stencil_and_coefficients( IntTab&      stencil,
-                                     ArrOfDouble& coefficients ) const override;
-
-  void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
-                                               ArrOfDouble& coefficients ) const override;
-public :
-  Matrice_Diagonale( void );
-  Matrice_Diagonale( int size );
+  Matrice_Diagonale(void);
+  Matrice_Diagonale(int size);
   Matrice_Diagonale(const DoubleVect& coefficients);
 
-  DoubleVect& get_coefficients( void );
-  const DoubleVect& get_coefficients( void ) const;
+  DoubleVect& get_coefficients(void);
+  const DoubleVect& get_coefficients(void) const;
 
-  void dimensionner( int size );
+  void dimensionner(int size);
 
-  double  coeff( int i, int j ) const;
-  double& coeff( int i, int j );
+  double coeff(int i, int j) const;
+  double& coeff(int i, int j);
 
 protected :
   DoubleVect coefficients_;
-
 };
 
 #endif

@@ -23,9 +23,9 @@
 #ifndef Changement_phase_base_included
 #define Changement_phase_base_included
 
+#include <TRUSTTabs_forward.h>
 #include <Correlation_base.h>
 #include <Saturation_base.h>
-#include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

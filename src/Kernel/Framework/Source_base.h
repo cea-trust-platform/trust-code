@@ -24,10 +24,10 @@
 #define Source_base_included
 
 #include <Champs_compris_interface.h>
+#include <TRUSTTabs_forward.h>
 #include <Interface_blocs.h>
 #include <Champs_compris.h>
 #include <Matrice_Bloc.h>
-#include <TRUSTTrav.h>
 #include <MorEqn.h>
 
 class DoubleTabs;

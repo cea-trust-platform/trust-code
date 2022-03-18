@@ -23,12 +23,12 @@
 #ifndef Scatter_included
 #define Scatter_included
 
-#include <Interprete.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Domaine.h>
+#include <Interprete.h>
 #include <Joint.h>
 
 class Joints;
-#include <TRUSTTab.h>
 class Zone_VF;
 class VECT(ArrOfInt);
 
@@ -37,14 +37,11 @@ class Scatter : public Interprete
   Declare_instanciable_sans_constructeur(Scatter);
 public:
   Scatter();
-  Entree&         interpreter(Entree&) override;
-  virtual void    lire_domaine(Nom&, Noms& liste_bords_periodiques);
-  Domaine&        domaine();
+  Entree& interpreter(Entree&) override;
+  virtual void lire_domaine(Nom&, Noms& liste_bords_periodiques);
+  Domaine& domaine();
 
-  static int Chercher_Correspondance(const DoubleTab& sommets1,
-                                     const DoubleTab& sommets2,
-                                     ArrOfInt& correspondance,
-                                     const double epsilon);
+  static int Chercher_Correspondance(const DoubleTab& sommets1, const DoubleTab& sommets2, ArrOfInt& correspondance, const double epsilon);
   static void construire_correspondance_sommets_par_coordonnees(Domaine& dom);
   static void construire_correspondance_aretes_par_coordonnees(Zone_VF& zvf);
   static void construire_correspondance_items_par_coordonnees(Joints& joints, const Joint::Type_Item type_item, const DoubleTab& coord_items);
@@ -66,15 +63,10 @@ public:
   static void calculer_espace_distant_aretes(Zone& zone, const int nb_aretes_reelles, const IntTab& elem_aretes);
 
   static void calculer_espace_distant_elements(Domaine& dom);
-  static void corriger_espace_distant_elements_perio(Domaine& dom,
-                                                     const Noms& liste_bords_periodiques);
+  static void corriger_espace_distant_elements_perio(Domaine& dom, const Noms& liste_bords_periodiques);
 
-  static void calculer_espace_distant_sommets(Domaine& dom,
-                                              const Noms& liste_bords_periodiques);
-  static void construire_espace_virtuel_traduction(const MD_Vector& md_indice,
-                                                   const MD_Vector& md_valeur,
-                                                   IntTab& tableau,
-                                                   const int error_is_fatal = 1);
+  static void calculer_espace_distant_sommets(Domaine& dom, const Noms& liste_bords_periodiques);
+  static void construire_espace_virtuel_traduction(const MD_Vector& md_indice, const MD_Vector& md_valeur, IntTab& tableau, const int error_is_fatal = 1);
 
   static void reordonner_faces_de_joint(Domaine& dom);
   static void ajouter_joints(Zone& zone, ArrOfInt& pe_voisins);

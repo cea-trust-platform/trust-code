@@ -23,8 +23,8 @@
 #define Postraitement_lata_included
 
 #include <Postraitement_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Parser_U.h>
-#include <TRUSTTab.h>
 #include <Motcle.h>
 
 class Comm_Group;
@@ -65,36 +65,16 @@ public:
   enum Format { ASCII, BINAIRE };
   enum Type_Champ { CHAMP=0, STATISTIQUE=1 };
 
-  static void ecrire_entete(const Nom& basename,
-                            const Nom& discretisation,
-                            Format format = ASCII,
-                            const Comm_Group * comm_group = 0);
-  static void ecrire_temps(const Nom& basename,
-                           const double temps,
-                           Format format = ASCII,
-                           const Comm_Group * comm_group = 0);
-  static void ecrire_zone(const Nom& basename,
-                          const Zone&,
-                          Format format = ASCII,
-                          const Comm_Group * comm_group = 0,
-                          const Zone_dis_base * la_zone_dis = 0);
+  static void ecrire_entete(const Nom& basename, const Nom& discretisation, Format format = ASCII, const Comm_Group *comm_group = 0);
+  static void ecrire_temps(const Nom& basename, const double temps, Format format = ASCII, const Comm_Group *comm_group = 0);
+  static void ecrire_zone(const Nom& basename, const Zone&, Format format = ASCII, const Comm_Group *comm_group = 0, const Zone_dis_base *la_zone_dis = 0);
 
-  static void ecrire_champ(const Nom&         basename,
-                           const Nom&         nom_du_champ,
-                           Type_Champ         type,
-                           char               type_char,
-                           const Nom&         nom_domaine,
-                           const Nom&         nom_probleme,
-                           double             temps,
-                           Localisation       localisation,
-                           const DoubleTab& data,
-                           Format             format = ASCII,
-                           const Comm_Group * comm_group = 0);
+  static void ecrire_champ(const Nom& basename, const Nom& nom_du_champ, Type_Champ type, char type_char, const Nom& nom_domaine, const Nom& nom_probleme, double temps, Localisation localisation,
+                           const DoubleTab& data, Format format = ASCII, const Comm_Group *comm_group = 0);
 
   static const Nom& extension_lata();
-  static const char * remove_path(const char * filename);
-  static int finir_lata(const Nom& basename,
-                        const Comm_Group * comm_group = 0);
+  static const char* remove_path(const char *filename);
+  static int finir_lata(const Nom& basename, const Comm_Group *comm_group = 0);
 protected:
   void lire_format(Entree&);
   void lire_champs(Entree& is);

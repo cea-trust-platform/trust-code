@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,7 @@
 #include <Interprete_bloc.h>
 #include <Param.h>
 #include <TriouError.h>
+#include <TRUSTArray.h>
 
 Implemente_instanciable(Execute_parallel,"Execute_parallel",Interprete);
 

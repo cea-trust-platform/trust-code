@@ -24,10 +24,11 @@
 #define Extruder_en3_included
 
 #include <Interprete_geometrique_base.h>
+#include <TRUSTTabs_forward.h>
 
 class Domaine;
-#include <TRUSTVect.h>
 class Faces;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION

@@ -23,9 +23,9 @@
 #ifndef Navier_Stokes_Fluide_Dilatable_Proto_included
 #define Navier_Stokes_Fluide_Dilatable_Proto_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref_IntVect.h>
 #include <Champ_Inc.h>
-#include <TRUSTTrav.h>
 
 class Fluide_Dilatable_base;
 class Navier_Stokes_std;

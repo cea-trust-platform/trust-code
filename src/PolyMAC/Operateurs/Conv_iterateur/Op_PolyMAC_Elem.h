@@ -23,10 +23,10 @@
 #ifndef Op_PolyMAC_Elem_included
 #define Op_PolyMAC_Elem_included
 
+#include <TRUSTTabs_forward.h>
 class Matrice_Morse;
 class Zone_PolyMAC;
 class Zone_Cl_PolyMAC;
-#include <TRUSTTab.h>
 
 class Op_PolyMAC_Elem
 {
@@ -38,6 +38,3 @@ public :
 };
 
 #endif
-
-
-

@@ -25,7 +25,7 @@
 
 
 #include <Interprete_geometrique_base.h>
-#include <TRUSTArray.h>
+#include <TRUSTTabs_forward.h>
 class Domaine;
 
 //////////////////////////////////////////////////////////////////////////////

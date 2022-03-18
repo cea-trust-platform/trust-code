@@ -19,7 +19,10 @@
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <TRUSTArray.h>
+
+#ifndef Convection_tools_included
+#define Convection_tools_included
+
 #include <Double.h>
 
 //////////////////////////////////////////////////////////////
@@ -37,3 +40,4 @@ double chakravarthy(double grad1, double grad2);
 
 double superbee(double grad1, double grad2);
 
+#endif /* Convection_tools_included */

@@ -24,7 +24,7 @@
 #define Masse_ajoutee_Coef_Constant_included
 
 #include <Masse_ajoutee_base.h>
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

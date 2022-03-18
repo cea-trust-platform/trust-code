@@ -23,18 +23,10 @@
 #ifndef Matrice_Sym_included
 #define Matrice_Sym_included
 
-#ifndef DOUBLEVECT_H
-#include <TRUSTVect.h>
-#endif
-#ifndef INTVECT_H
-#endif
-#ifndef INT_H
-#endif
-
 #define _DEGRE_POLY_ 5
 #define _SEUIL_GCP_ 1e-12
 
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -61,25 +53,17 @@
 //                           double=_OMEGA_SSOR_ ) const;
 //      DoubleVect& multvect(const DoubleVect&, DoubleVect& resu) const [protegee]
 //////////////////////////////////////////////////////////////////////////////
+
 class Matrice_Sym
 {
-
 public :
   virtual ~Matrice_Sym() {};
   Matrice_Sym():est_definie_(0) {}
 
   int get_est_definie() const;
   void set_est_definie(int);
-
-  void unsymmetrize_stencil( const int& nb_lines,
-                             const IntTab& symmetric_stencil,
-                             IntTab&       stencil ) const;
-
-  void unsymmetrize_stencil_and_coefficients( const int&      nb_lines,
-                                              const IntTab&      symmetric_stencil,
-                                              const ArrOfDouble& symmetric_coefficients,
-                                              IntTab&            stencil,
-                                              ArrOfDouble&       coefficients ) const;
+  void unsymmetrize_stencil(const int& nb_lines, const IntTab& symmetric_stencil, IntTab& stencil) const;
+  void unsymmetrize_stencil_and_coefficients(const int& nb_lines, const IntTab& symmetric_stencil, const ArrOfDouble& symmetric_coefficients, IntTab& stencil, ArrOfDouble& coefficients) const;
 
 protected :
   virtual DoubleTab& ajouter_multTab_(const DoubleTab&, DoubleTab& ) const=0 ;
@@ -88,7 +72,6 @@ protected :
 
 private :
   int est_definie_;
-
 };
 
 #endif

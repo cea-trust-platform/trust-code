@@ -23,27 +23,18 @@
 #ifndef Elem_PolyMAC_base_included
 #define Elem_PolyMAC_base_included
 
-#include <TRUSTTab.h>
-class Zone;
-class Zone_PolyMAC;
+#include <TRUSTTabs_forward.h>
+#include <Objet_U.h>
+
 class Champ_Inc_base;
+class Zone_PolyMAC;
+class Zone;
 
-class Elem_PolyMAC_base : public Objet_U
+class Elem_PolyMAC_base: public Objet_U
 {
-
   Declare_base(Elem_PolyMAC_base);
-
 public:
-
-  // fonctions publiques :
-
-  virtual void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-                       const IntTab& ,const Zone& )  const =0;
-protected:
+  virtual void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Zone&) const =0;
 };
 
-
 #endif
-
-
-

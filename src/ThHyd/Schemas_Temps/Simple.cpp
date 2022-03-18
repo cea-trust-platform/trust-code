@@ -38,6 +38,7 @@
 #include <MD_Vector_tools.h>
 #include <ConstDoubleTab_parts.h>
 #include <SETS.h>
+#include <TRUSTTrav.h>
 
 Implemente_instanciable_sans_constructeur(Simple,"Simple",Simpler_Base);
 

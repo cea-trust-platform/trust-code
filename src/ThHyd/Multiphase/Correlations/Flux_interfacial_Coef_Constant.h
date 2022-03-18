@@ -24,6 +24,7 @@
 #define Flux_interfacial_Coef_Constant_included
 
 #include <Flux_interfacial_base.h>
+#include <TRUSTTabs_forward.h>
 #include <TRUSTTab.h>
 
 //////////////////////////////////////////////////////////////////////////////

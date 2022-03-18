@@ -20,13 +20,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Traitement_particulier_NS_canal_included
 #define Traitement_particulier_NS_canal_included
 
 #include <Traitement_particulier_NS_base.h>
-#include <TRUSTTrav.h>
-
+#include <TRUSTTabs_forward.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -41,10 +39,10 @@
 //      Navier_Stokes_Turbulent, Traitement_particulier_base,
 //      Traitement_particulier_VDF
 //////////////////////////////////////////////////////////////////////////////
+
 class Traitement_particulier_NS_canal : public Traitement_particulier_NS_base
 {
   Declare_base_sans_constructeur(Traitement_particulier_NS_canal);
-
 public :
 
   Traitement_particulier_NS_canal();
@@ -53,18 +51,16 @@ public :
   void reprendre_stat() override;
   void sauver_stat() const override;
   void post_traitement_particulier() override;
-  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
-  inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const  ;
-  inline int comprend_champ(const Motcle& mot) const  ;
+  inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override { }
+  inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const { return 0 ; }
+  inline int comprend_champ(const Motcle& mot) const { return 0 ; }
 
 protected :
-
-  //void init_calcul_stats(void);
-  void reprendre_stat_canal(DoubleTab&, const Nom& );
-  void sauver_stat_canal(const DoubleTab&, const Nom& ) const;
-  virtual void remplir_Y(DoubleVect&,  DoubleVect&, int& ) const = 0;
-  virtual void remplir_Tab_recap(IntTab& ) const;
-  void remplir_reordonne_Y_tot(const DoubleVect&,  DoubleVect&) const;
+  void reprendre_stat_canal(DoubleTab&, const Nom&);
+  void sauver_stat_canal(const DoubleTab&, const Nom&) const;
+  virtual void remplir_Y(DoubleVect&, DoubleVect&, int&) const = 0;
+  virtual void remplir_Tab_recap(IntTab&) const;
+  void remplir_reordonne_Y_tot(const DoubleVect&, DoubleVect&) const;
   virtual void calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab&) const = 0;
   virtual void calculer_moyenne_spatiale_nut(DoubleTab&) const = 0;
   virtual void calculer_moyenne_spatiale_Temp(DoubleTab&) const = 0;
@@ -72,42 +68,22 @@ protected :
   void ecriture_fichiers_moy_vitesse_rho_mu(const DoubleTab&, const Nom&, const double&, const int&) const;
   void ecriture_fichiers_moy_nut(const DoubleTab&, const Nom&, const double&, const int&) const;
   void ecriture_fichiers_moy_Temp(const DoubleTab&, const Nom&, const double&, const int&) const;
-
   void ecriture_fichiers_moy_vitesse_rho_mu_old(const DoubleTab&, const Nom&, const double&, const int&) const;
   void ecriture_fichiers_moy_Temp_old(const DoubleTab&, const Nom&, const double&, const int&) const;
 
-  int     Ny,Nval,Nphase;
-  DoubleTab  val_moy_tot,val_moy_temp,val_moy_phase;
-  DoubleVect Y,Y_tot;
-  DoubleVect compt,compt_tot;
-  IntVect    Nb_ech_phase;     // nombre d'echantillons par phase
-  IntTab     Tab_recap;
-  double     w,freq;
-  int             ind_phase;
-
-  int    oui_profil_nu_t,oui_profil_Temp,oui_repr,oui_pulse;
-  double temps_deb,temps_fin,debut_phase;
-  double dt_impr_moy_spat,dt_impr_moy_temp;
-  Nom    fich_repr;
+  int Ny, Nval, Nphase;
+  DoubleTab val_moy_tot, val_moy_temp, val_moy_phase;
+  DoubleVect Y, Y_tot, compt, compt_tot;
+  IntVect Nb_ech_phase;     // nombre d'echantillons par phase
+  IntTab Tab_recap;
+  double w, freq;
+  int ind_phase, oui_profil_nu_t, oui_profil_Temp, oui_repr, oui_pulse;
+  double temps_deb, temps_fin, debut_phase, dt_impr_moy_spat, dt_impr_moy_temp;
+  Nom fich_repr;
 
   REF(Champ_base) Temp;
 
-  DoubleVect uv_moy_temp,wv_moy_temp,uw_moy_temp,u2_moy_temp,v2_moy_temp,w2_moy_temp,nu_t_temp;
+  DoubleVect uv_moy_temp, wv_moy_temp, uw_moy_temp, u2_moy_temp, v2_moy_temp, w2_moy_temp, nu_t_temp;
 };
-#endif
 
-
-inline int Traitement_particulier_NS_canal::a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const
-{
-  return 0 ;
-}
-
-inline int Traitement_particulier_NS_canal::comprend_champ(const Motcle& mot) const
-{
-  return 0 ;
-}
-
-inline void Traitement_particulier_NS_canal::en_cours_de_resolution(int i, DoubleTab& a, DoubleTab& b,double c)
-{
-  ;
-}
+#endif /* Traitement_particulier_NS_canal_included */

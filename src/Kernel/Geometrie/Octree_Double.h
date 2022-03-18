@@ -43,44 +43,28 @@ class Octree_Double
 {
 public:
   Octree_Double();
-  void   reset();
-  void   build_elements(const DoubleTab& coords, const IntTab& elements,
-                        const double epsilon, const int include_virtual);
-  void   build_nodes(const DoubleTab& coords, const int include_virtual, const double epsilon = 0.);
+  void reset();
+  void build_elements(const DoubleTab& coords, const IntTab& elements, const double epsilon, const int include_virtual);
+  void build_nodes(const DoubleTab& coords, const int include_virtual, const double epsilon = 0.);
   int search_elements(double x, double y, double z, int& index) const;
-  int search_elements_box(double xmin, double ymin, double zmin,
-                          double xmax, double ymax, double zmax,
-                          ArrOfInt& elements) const;
-  static int search_nodes_close_to(double x, double y, double z,
-                                   const DoubleTab& coords, ArrOfInt& node_list,
-                                   double epsilon);
-  int search_elements_box(const ArrOfDouble& center, const double radius,
-                          ArrOfInt& elements) const;
-  static int search_nodes_close_to(const ArrOfDouble& point,
-                                   const DoubleTab& coords, ArrOfInt& node_list,
-                                   double epsilon);
+  int search_elements_box(double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, ArrOfInt& elements) const;
+  static int search_nodes_close_to(double x, double y, double z, const DoubleTab& coords, ArrOfInt& node_list, double epsilon);
+  int search_elements_box(const ArrOfDouble& center, const double radius, ArrOfInt& elements) const;
+  static int search_nodes_close_to(const ArrOfDouble& point, const DoubleTab& coords, ArrOfInt& node_list, double epsilon);
   int dimension() const
   {
     assert(dim_ > 0);
     return dim_;
   }
-  inline const ArrOfInt& floor_elements() const
-  {
-    return octree_int_.floor_elements();
-  };
+  inline const ArrOfInt& floor_elements() const  { return octree_int_.floor_elements(); }
 protected:
   inline int integer_position(double x, int direction, int& ix) const;
-  inline int integer_position_clip(double xmin, double xmax,
-                                   int& x0, int& x1,
-                                   int direction) const;
-  void compute_origin_factors(const DoubleTab& coords,
-                              const double epsilon,
-                              const int include_virtual);
+  inline int integer_position_clip(double xmin, double xmax, int& x0, int& x1, int direction) const;
+  void compute_origin_factors(const DoubleTab& coords, const double epsilon, const int include_virtual);
 
   Octree_Int octree_int_;
   // Ces deux tableaux sont toujours de taille 3 par commodite
-  ArrOfDouble origin_;
-  ArrOfDouble factor_;
+  ArrOfDouble origin_, factor_;
   int dim_;
 };
 #endif

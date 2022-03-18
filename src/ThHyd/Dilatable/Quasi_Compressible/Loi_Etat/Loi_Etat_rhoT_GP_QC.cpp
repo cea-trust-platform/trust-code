@@ -22,6 +22,7 @@
 
 #include <Fluide_Dilatable_base.h>
 #include <Loi_Etat_rhoT_GP_QC.h>
+#include <TRUSTTab.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur( Loi_Etat_rhoT_GP_QC, "Loi_Etat_rhoT_Gaz_Parfait_QC", Loi_Etat_GP_base ) ;

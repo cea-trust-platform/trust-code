@@ -33,49 +33,27 @@
 
 class Champ_Inc_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Elem_CoviMAC
-//
-//////////////////////////////////////////////////////////////////////////////
 Declare_deriv(Elem_CoviMAC_base);
-class Elem_CoviMAC : public DERIV(Elem_CoviMAC_base)
+
+class Elem_CoviMAC: public DERIV(Elem_CoviMAC_base)
 {
   Declare_instanciable(Elem_CoviMAC);
-
 public:
-
-  inline Elem_CoviMAC& operator = (const Elem_CoviMAC_base& );
-  void typer(Nom );
-  inline void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-                      const IntTab& ,const Zone& )  const ;
-
+  inline Elem_CoviMAC& operator =(const Elem_CoviMAC_base&);
+  void typer(Nom);
+  inline void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Zone&) const;
 };
 
 
-//
-//  Fonctions inline de la classe Elem_CoviMAC
-//
-
-
-inline Elem_CoviMAC& Elem_CoviMAC::operator = (const Elem_CoviMAC_base& elem_base)
+inline Elem_CoviMAC& Elem_CoviMAC::operator =(const Elem_CoviMAC_base& elem_base)
 {
   DERIV(Elem_CoviMAC_base)::operator=(elem_base);
   return *this;
 }
 
-
-
-inline void Elem_CoviMAC::normale(int num_face,DoubleTab& Face_normales,
-                                  const IntTab& Face_sommets,
-                                  const IntTab& Face_voisins,
-                                  const IntTab& elem_faces,
-                                  const Zone& zone_geom)  const
+inline void Elem_CoviMAC::normale(int num_face, DoubleTab& Face_normales, const IntTab& Face_sommets, const IntTab& Face_voisins, const IntTab& elem_faces, const Zone& zone_geom) const
 {
-  valeur().normale(num_face,Face_normales,Face_sommets,Face_voisins,
-                   elem_faces,zone_geom);
+  valeur().normale(num_face, Face_normales, Face_sommets, Face_voisins, elem_faces, zone_geom);
 }
 
-
 #endif
-

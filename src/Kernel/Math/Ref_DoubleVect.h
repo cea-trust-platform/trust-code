@@ -23,8 +23,8 @@
 #ifndef Ref_DoubleVect_included
 #define Ref_DoubleVect_included
 
-#include <Ref.h>
 #include <TRUSTVect.h>
+#include <Ref.h>
 Declare_ref(DoubleVect);
 
-#endif
+#endif /* Ref_DoubleVect_included */

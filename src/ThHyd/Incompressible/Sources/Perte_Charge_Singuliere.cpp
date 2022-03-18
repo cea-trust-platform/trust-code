@@ -36,6 +36,7 @@
 #include <Discretisation_base.h>
 #include <EChaine.h>
 #include <Pb_Multiphase.h>
+#include <TRUSTTrav.h>
 
 extern void convert_to(const char *s, double& ob);
 

@@ -23,15 +23,12 @@
 #ifndef Champ_Fonc_Morceaux_included
 #define Champ_Fonc_Morceaux_included
 
-
-
-
 #include <Champ_Don_base.h>
 #include <Ref_Domaine.h>
 #include <Ref_Probleme_base.h>
 #include <Probleme_base.h>
 #include <Vect_Parser_U.h>
-#include <TRUSTTab.h>
+#include <TRUSTTabs_forward.h>
 #include <Champ_Inc_base.h>
 #include <List_Ref_Sous_Zone.h>
 class Motcle;
@@ -45,33 +42,23 @@ class Motcle;
 // .SECTION voir aussi
 //     Champ_Don_base
 //////////////////////////////////////////////////////////////////////////////
-class Champ_Fonc_Morceaux : public Champ_Don_base
+
+class Champ_Fonc_Morceaux: public Champ_Don_base
 {
 
   Declare_instanciable(Champ_Fonc_Morceaux);
 
-public :
+public:
   Champ_base& affecter_(const Champ_base& ch) override;
-  DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const override;
-  DoubleVect& valeur_a_elem(const DoubleVect& position,
-                            DoubleVect& valeurs,
-                            int le_poly) const override ;
-  double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly,int ncomp) const override;
+  DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override;
+  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const override;
+  double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
 
-  DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const override;
+  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
+  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override;
 
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override ;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override;
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
 
   const REF(Domaine)& domaine() const;
   REF(Domaine)& domaine();
@@ -80,15 +67,15 @@ public :
   void mettre_a_jour(double temps) override;
   int initialiser(const double& temps) override;
 
-protected :
+protected:
 
   LIST(REF(Sous_Zone)) les_sous_zones;
   REF(Domaine) mon_domaine;
   REF(Probleme_base) ref_pb;
 
   Nom nom_champ_parametre_; /* nom du champ dont les fonctions ont parametres */
-  VECT(Parser_U) parser;    /* vecteur de tous les parsers */
-  IntTab parser_idx;        /* parser_idx(i, j) : parser a appeller pour calculer la composante j du champ a la maille i */
+  VECT(Parser_U) parser; /* vecteur de tous les parsers */
+  IntTab parser_idx; /* parser_idx(i, j) : parser a appeller pour calculer la composante j du champ a la maille i */
 
 };
 

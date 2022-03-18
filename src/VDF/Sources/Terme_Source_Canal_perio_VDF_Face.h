@@ -35,9 +35,9 @@
 //  Terme_Source_Canal_perio
 
 #include <Terme_Source_Canal_perio.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Zone_VDF.h>
-#include <TRUSTTab.h>
 
 class Probleme_base;
 class Navier_Stokes_std;

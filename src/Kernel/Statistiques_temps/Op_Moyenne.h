@@ -20,24 +20,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Op_Moyenne_included
 #define Op_Moyenne_included
 
 #include <Operateur_Statistique_tps.h>
+#include <TRUSTTabs_forward.h>
 #include <Champ_Don.h>
-//#include <Champ_Fonc_reprise.h>
-
-#include <TRUSTTab.h>
-
-
-//
-// .DESCRIPTION class Op_Moyenne
-//
-
-// .SECTION voir aussi
-//
-
 
 class Op_Moyenne : public Operateur_Statistique_tps_base
 {
@@ -154,4 +142,3 @@ inline void Op_Moyenne::fixer_tstat_fin(double tps)
 }
 
 #endif
-

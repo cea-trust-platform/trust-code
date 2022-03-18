@@ -23,8 +23,8 @@
 #define Partitionneur_Tranche_included
 
 #include <Partitionneur_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Ref_Domaine.h>
-#include <TRUSTArray.h>
 
 // .DESCRIPTION
 //  Partitionneur de domaine en tranches paralleles aux directions
@@ -37,9 +37,7 @@ public:
   void associer_domaine(const Domaine& domaine) override;
   void initialiser(const ArrOfInt& nb_tranches);
   void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
-  static void chercher_direction_perio(const Zone& zone,
-                                       const Noms& liste_bords_perio,
-                                       ArrOfInt& directions_perio);
+  static void chercher_direction_perio(const Zone& zone, const Noms& liste_bords_perio, ArrOfInt& directions_perio);
 
 private:
   // Parametres du partitionneur

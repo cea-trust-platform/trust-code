@@ -20,14 +20,13 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Champ_Generique_Correlation_included
 #define Champ_Generique_Correlation_included
 
 #include <Champ_Generique_Statistiques_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Op_Correlation.h>
 
-#include <TRUSTTab.h>
 class Postraitement_base;
 
 //

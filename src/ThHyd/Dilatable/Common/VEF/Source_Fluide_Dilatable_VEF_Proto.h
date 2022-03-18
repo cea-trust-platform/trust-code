@@ -23,9 +23,9 @@
 #ifndef Source_Fluide_Dilatable_VEF_Proto_included
 #define Source_Fluide_Dilatable_VEF_Proto_included
 
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VEF.h>
 #include <Ref_Zone_VEF.h>
-#include <TRUSTTab.h>
 
 class Equation_base;
 class Zone_Cl_dis;
@@ -36,9 +36,7 @@ class Source_Fluide_Dilatable_VEF_Proto
 protected:
   void associer_zones_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl);
   void associer_volume_porosite_impl(const Zone_dis& zone, DoubleVect& volumes, DoubleVect& porosites);
-  void ajouter_impl(const Equation_base& eqn, const DoubleVect& g,
-                    const int dimension, const double rho_m,
-                    const DoubleTab& tab_rho, DoubleTab& resu) const;
+  void ajouter_impl(const Equation_base& eqn, const DoubleVect& g, const int dimension, const double rho_m, const DoubleTab& tab_rho, DoubleTab& resu) const;
 
   REF(Zone_VEF) la_zone;
   REF(Zone_Cl_VEF) la_zone_Cl;

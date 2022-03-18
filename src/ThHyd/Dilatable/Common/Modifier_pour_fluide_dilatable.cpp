@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,8 +22,8 @@
 
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Fluide_Dilatable_base.h>
+#include <TRUSTVect.h>
 #include <Zone_VF.h>
-//#include <Debog.h>
 
 static void multiplier_ou_diviser(DoubleVect& x, const DoubleVect& y, int diviser)
 {

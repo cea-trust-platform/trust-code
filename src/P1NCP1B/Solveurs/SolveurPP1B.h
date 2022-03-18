@@ -23,33 +23,28 @@
 #ifndef SolveurPP1B_included
 #define SolveurPP1B_included
 
-#include <SolveurSys_base.h>
 #include <Assembleur_P_VEFPreP1B.h>
-#include <TRUSTVect.h>
+#include <TRUSTTabs_forward.h>
+#include <SolveurSys_base.h>
 class Matrice_Base;
 
 class SolveurPP1B : public SolveurSys_base
 {
-
   Declare_instanciable(SolveurPP1B);
-
 public :
   int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
   int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&,  int niter_max) override;
+
   inline void reinit() override
   {
     SolveurSys_base::reinit();
     solveur_pression_.valeur().reinit();
-  };
-  int associer(const Assembleur_P_VEFPreP1B&, const SolveurSys&);
-  inline int solveur_direct() const override
-  {
-    return solveur_pression_.valeur().solveur_direct();
-  };
-  inline void fixer_schema_temps_limpr(int l) override
-  {
-    solveur_pression_.valeur().fixer_schema_temps_limpr(l);
   }
+
+  int associer(const Assembleur_P_VEFPreP1B&, const SolveurSys&);
+  inline int solveur_direct() const override { return solveur_pression_.valeur().solveur_direct(); }
+  inline void fixer_schema_temps_limpr(int l) override { solveur_pression_.valeur().fixer_schema_temps_limpr(l); }
+
 protected :
   SolveurSys solveur_pression_;
   Assembleur_P_VEFPreP1B assembleur_pression_;

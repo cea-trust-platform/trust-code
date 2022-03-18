@@ -27,33 +27,23 @@
 #include <TRUSTVect.h>
 #include <SPV2.h>
 
-class SolvElem_BiCGStab : public SolvElem_base
+class SolvElem_BiCGStab: public SolvElem_base
 {
   Declare_instanciable(SolvElem_BiCGStab);
-public :
+public:
 
-  inline void iteration(int n,
-                        const DoubleVect& secmem,
-                        DoubleVect& solution,
-                        ArrOfInt& ipar,
-                        ArrOfDouble& fpar,
-                        ArrOfDouble& w) override;
+  inline void iteration(int n, const DoubleVect& secmem, DoubleVect& solution, ArrOfInt& ipar, ArrOfDouble& fpar, ArrOfDouble& w) override;
   inline ArrOfDouble& dimensionne_wks(int n, ArrOfDouble& w) override;
 };
 
-inline void SolvElem_BiCGStab::iteration(int n,
-                                         const DoubleVect& secmem,
-                                         DoubleVect& solution,
-                                         ArrOfInt& ipar,
-                                         ArrOfDouble& fpar,
-                                         ArrOfDouble& w)
+inline void SolvElem_BiCGStab::iteration(int n, const DoubleVect& secmem, DoubleVect& solution, ArrOfInt& ipar, ArrOfDouble& fpar, ArrOfDouble& w)
 {
-  F77NAME(BCGSTABV2)(&n,secmem.addr(),solution.addr(),ipar.addr(),fpar.addr(),w.addr());
+  F77NAME(BCGSTABV2)(&n, secmem.addr(), solution.addr(), ipar.addr(), fpar.addr(), w.addr());
 }
 
-inline ArrOfDouble& SolvElem_BiCGStab::dimensionne_wks(int n,ArrOfDouble& w)
+inline ArrOfDouble& SolvElem_BiCGStab::dimensionne_wks(int n, ArrOfDouble& w)
 {
-  w.resize_array(8*n);
+  w.resize_array(8 * n);
   return w;
 }
 

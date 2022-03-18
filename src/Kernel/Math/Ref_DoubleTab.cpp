@@ -14,11 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Ref_ArrOfInt.cpp
+// File:        Ref_DoubleTab.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Math
 // Version:     /main/3
 //
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Ref_DoubleTab.h>
+#include <TRUSTTab.h>
 Implemente_ref(DoubleTab);

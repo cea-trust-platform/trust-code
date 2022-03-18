@@ -20,9 +20,9 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Entree_complete.h>
 #include <Objet_a_lire.h>
 #include <Param.h>
-#include <Entree_complete.h>
 
 Implemente_instanciable_sans_constructeur(Objet_a_lire,"Objet_a_lire",Objet_U);
 Implemente_liste(Objet_a_lire);

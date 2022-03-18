@@ -20,11 +20,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Param_included
 #define Param_included
 
-#include <TRUSTArray.h>
+#include <TRUSTTabs_forward.h>
 #include <Objet_a_lire.h>
 
 class Param;
@@ -43,9 +42,7 @@ class ptrParam;     // Defined below in this file
 class Param
 {
 public:
-  enum Nature { OPTIONAL = 0,
-                REQUIRED = 1
-              };
+  enum Nature { OPTIONAL = 0, REQUIRED = 1 };
   Param(const char *);
   // ajout d'argument
   void ajouter(const char *,int* ,Param::Nature nat = Param::OPTIONAL);//int opt=1);
@@ -64,34 +61,20 @@ public:
   Param& dictionnaire_param(const char *, int);
 
   // ajout type (pour eli)
-  inline void ajouter_int(const char * c,int* val,Param::Nature nat = Param::OPTIONAL)
-  {
-    ajouter(c,val,nat);
-  };
-  inline void ajouter_double(const char * c,double* val,Param::Nature nat = Param::OPTIONAL)
-  {
-    ajouter(c,val,nat);
-  } ;
-  inline void ajouter_objet(const char *c , Objet_U* obj,Param::Nature nat = Param::OPTIONAL)
-  {
-    ajouter(c,obj,nat);
-  }  ;
+  inline void ajouter_int(const char * c,int* val,Param::Nature nat = Param::OPTIONAL) { ajouter(c,val,nat); }
+  inline void ajouter_double(const char * c,double* val,Param::Nature nat = Param::OPTIONAL) { ajouter(c,val,nat); }
+  inline void ajouter_objet(const char *c , Objet_U* obj,Param::Nature nat = Param::OPTIONAL) { ajouter(c,obj,nat); }
 
   int lire_avec_accolades_depuis(Entree& is);
   int lire_sans_accolade(Entree& is);
-  inline int lire_avec_accolades(Entree& is)
-  {
-    return lire_avec_accolades_depuis(is);
-  } ;
+  inline int lire_avec_accolades(Entree& is) { return lire_avec_accolades_depuis(is); }
   //int verifier_avant_ajout(const char*);
 
   int read(Entree& is,int with_acco=1);
   void print(Sortie& s) const;
 
-  inline const LIST(Nom)& get_list_mots_lus() const
-  {
-    return list_parametre_lu_ ;
-  };
+  inline const LIST(Nom)& get_list_mots_lus() const { return list_parametre_lu_ ; }
+
   double get_value(const Nom& mot_lu) const;
   int check();
 protected:

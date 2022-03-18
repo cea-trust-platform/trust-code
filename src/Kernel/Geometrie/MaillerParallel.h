@@ -22,8 +22,8 @@
 #ifndef MaillerParallel_included
 #define MaillerParallel_included
 
+#include <TRUSTTabs_forward.h>
 #include <Interprete.h>
-#include <TRUSTArray.h>
 class Domaine;
 
 class MaillerParallel : public Interprete
@@ -32,9 +32,6 @@ class MaillerParallel : public Interprete
 public:
   Entree& interpreter(Entree& is) override;
   //static void construire_domaine(Domaine & domaine, const int numproc);
-
-protected:
-
 };
 
 #endif

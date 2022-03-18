@@ -31,11 +31,11 @@
 //  Cette classe concerne un terme source calcule en partie grace
 //  a un calcul RANS preliminaire et applique au calcul LES en cours
 //
+#include <TRUSTTabs_forward.h>
 #include <Ref_Zone_Cl_VDF.h>
 #include <Ref_Zone_VDF.h>
 #include <Source_base.h>
 #include <Champ_Don.h>
-#include <TRUSTTab.h>
 #include <Nom.h>
 
 class Probleme_base;
@@ -49,21 +49,17 @@ class Terme_Source_Canal_RANS_LES_VDF_Face : public Source_base
 public :
   ~Terme_Source_Canal_RANS_LES_VDF_Face() override;
   void associer_pb(const Probleme_base& ) override;
-  DoubleTab& ajouter(DoubleTab& ) const override;
-  DoubleTab& calculer(DoubleTab& ) const override;
+  DoubleTab& ajouter(DoubleTab&) const override;
+  DoubleTab& calculer(DoubleTab&) const override;
   void init_calcul_moyenne_spat();
   void init();
   DoubleTab norme_vit(void) const;
   void mettre_a_jour(double) override;
 
-  void moy_spat(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&,
-                DoubleVect&, DoubleVect&, DoubleVect&);
+  void moy_spat(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&);
   void calculer_integrale_temporelle(DoubleVect&, const DoubleVect&);
-  void ecriture_moy_spat(DoubleVect&, DoubleVect&, DoubleVect&,
-                         DoubleVect&, DoubleVect&, DoubleVect&);
-  void ecriture_moy_temp(DoubleVect&, DoubleVect&, DoubleVect&,
-                         DoubleVect&, DoubleVect&, DoubleVect&,
-                         const double&);
+  void ecriture_moy_spat(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&);
+  void ecriture_moy_temp(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, const double&);
 
 protected :
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;

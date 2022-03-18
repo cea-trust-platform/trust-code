@@ -23,11 +23,12 @@
 #ifndef Trier_inclus
 #define Trier_inclus
 
-#include <TRUSTVect.h>
+#include <TRUSTTabs_forward.h>
 #include <arch.h>
 
 void QuickSort(const DoubleVect& a,int g, int d, ArrOfInt& c);
 void trier_abs(const DoubleVect& a, ArrOfInt& c);
 void trier(const DoubleVect& a, ArrOfInt& c);
 void essai();
+
 #endif

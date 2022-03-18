@@ -92,9 +92,7 @@ public:
   const Comm_Group& get_group() const;
 
   const Schema_Comm& operator= (const Schema_Comm&);
-  void set_send_recv_pe_list(const ArrOfInt& send_pe_list,
-                             const ArrOfInt& recv_pe_list,
-                             const int     me_to_me = 0);
+  void set_send_recv_pe_list(const ArrOfInt& send_pe_list, const ArrOfInt& recv_pe_list, const int me_to_me = 0);
 
   void begin_comm() const;                 // Statut passe a WRITING
   // Autorise si status_ == WRITING:
@@ -108,10 +106,8 @@ public:
   const ArrOfInt& get_send_pe_list() const;
   const ArrOfInt& get_recv_pe_list() const;
 
-  void set_all_to_allv_flag(int x)
-  {
-    use_all_to_allv_ = x;
-  }
+  void set_all_to_allv_flag(int x) { use_all_to_allv_ = x; }
+
 protected:
   void echange_taille(const ArrOfInt& send_size, ArrOfInt& recv_size) const;
   void echange_messages(const ArrOfInt& send_size, const ArrOfInt& recv_size) const;
@@ -139,7 +135,7 @@ private:
   // des membres statiques appele automatiquement a la fin de l'execution
   // pour liberer la memoire).
   static InOutCommBuffers buffers_;
-  static int              n_buffers_;
+  static int n_buffers_;
 };
 
 class Schema_Comm_statique : public Schema_Comm

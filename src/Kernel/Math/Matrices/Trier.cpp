@@ -20,6 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <TRUSTVect.h>
 #include <Trier.h>
 
 void QuickSort(const DoubleVect& a,int g, int d, ArrOfInt& c)
@@ -98,5 +99,3 @@ void essai()
   for ( i=0; i<5; i++) Cerr << a[c[i]] << " ";
   Cerr << finl;
 }
-
-

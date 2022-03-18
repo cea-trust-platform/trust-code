@@ -25,18 +25,12 @@
 
 #include <Champ_implementation_sommet_base.h>
 #include <TRUSTTab.h>
-/////////////////////////////////////////////////////////////////////////////
-// .DESCRIPTION        : class Champ_implementation_P1
-//
-// Decrire ici la classe Champ_implementation_P1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Champ_implementation_P1 : public Champ_implementation_sommet_base
 {
 
 protected :
-  Champ_base& le_champ(void)       override =0;
+  Champ_base& le_champ(void) override =0;
   const Champ_base& le_champ(void) const override =0;
 
 public :
@@ -56,9 +50,7 @@ extern double coord_barycentrique_P1(const IntTab& polys, const DoubleTab& coord
 // coord_barycentrique_P1_rectangle
 // coord_barycentrique_P1_tetraedre
 // coord_barycentrique_P1_hexaedre
-inline double coord_barycentrique_P1_triangle(const IntTab& polys,
-                                              const DoubleTab& coord,
-                                              double x, double y, int le_poly, int i)
+inline double coord_barycentrique_P1_triangle(const IntTab& polys, const DoubleTab& coord, double x, double y, int le_poly, int i)
 {
   assert(polys.dimension(1)==3);
   int som0 ,som1,som2;
@@ -175,10 +167,7 @@ inline double coord_barycentrique_P1_rectangle(const IntTab& polys,
   return coord_bary;
 }
 
-inline double coord_barycentrique_P1_tetraedre(const IntTab& polys,
-                                               const DoubleTab& coord,
-                                               double x, double y, double z,
-                                               int le_poly, int i)
+inline double coord_barycentrique_P1_tetraedre(const IntTab& polys, const DoubleTab& coord, double x, double y, double z, int le_poly, int i)
 {
   int som0,som1,som2,som3;
   assert(polys.dimension(1)==4);

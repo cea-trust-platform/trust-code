@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,14 +20,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_Input_Proto.h>
-#include <Probleme_base.h>
-#include <Domaine.h>
-#include <Schema_Temps_base.h>
-#include <Interprete.h>
-#include <ICoCoExceptions.h>
 #include <Convert_ICoCoTrioField.h>
-
+#include <Champ_Input_Proto.h>
+#include <Schema_Temps_base.h>
+#include <ICoCoExceptions.h>
+#include <Probleme_base.h>
+#include <Interprete.h>
+#include <TRUSTTab.h>
+#include <Domaine.h>
 
 using ICoCo::WrongArgument;
 

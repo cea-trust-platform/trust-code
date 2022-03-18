@@ -25,7 +25,7 @@
 #define Traitement_particulier_Solide_canal_VDF_included
 
 #include <Traitement_particulier_Solide_canal.h>
-#include <TRUSTTrav.h>
+#include <TRUSTTabs_forward.h>
 class Entree;
 
 //////////////////////////////////////////////////////////////////////////////

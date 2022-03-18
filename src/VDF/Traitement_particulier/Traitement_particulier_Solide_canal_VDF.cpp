@@ -21,15 +21,16 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Traitement_particulier_Solide_canal_VDF.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
-#include <Champ_Face.h>
-#include <Probleme_base.h>
-#include <Champ_Uniforme.h>
 #include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
-#include <Conduction.h>
 #include <communications.h>
+#include <Champ_Uniforme.h>
+#include <Probleme_base.h>
+#include <Zone_Cl_VDF.h>
+#include <Champ_Face.h>
+#include <Conduction.h>
+#include <TRUSTTrav.h>
+#include <Zone_VDF.h>
 
 Sortie& Traitement_particulier_Solide_canal_VDF::printOn(Sortie& is) const
 {

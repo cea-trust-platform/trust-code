@@ -84,18 +84,11 @@ public :
   inline DoubleTab& valeurs() override;
   inline  const DoubleTab& valeurs() const override;
 
-  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleTab& valeurs) const override;
-  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                            const IntVect& les_polys,
-                                            DoubleVect& valeurs,
-                                            int ncomp) const override ;
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
+  inline DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
   inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
-  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
-                                              DoubleVect&, int) const override;
-  inline DoubleVect&  valeur_a(const DoubleVect& position,
-                               DoubleVect& valeurs) const override ;
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
+  inline DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override;
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const override ;
   inline DoubleTab& remplir_coord_noeuds(DoubleTab& ) const override;
@@ -151,14 +144,11 @@ inline const DoubleTab& Champ_Fonc_MED::valeurs() const
   return le_champ().valeurs();
 }
 
-inline DoubleTab& Champ_Fonc_MED::valeur_aux_elems(const DoubleTab& positions,
-                                                   const IntVect& les_polys,
-                                                   DoubleTab& tab_valeurs) const
+inline DoubleTab& Champ_Fonc_MED::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const
 {
   return le_champ().valeur_aux_elems(positions, les_polys, tab_valeurs);
 }
-inline DoubleVect&  Champ_Fonc_MED::valeur_a(const DoubleVect& position,
-                                             DoubleVect& tab_valeurs) const
+inline DoubleVect& Champ_Fonc_MED::valeur_a(const DoubleVect& position, DoubleVect& tab_valeurs) const
 {
   const Zone& zone=zonebidon_inst.zone();
   IntVect le_poly(1);

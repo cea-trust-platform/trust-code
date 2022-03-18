@@ -19,10 +19,13 @@
 // Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef PE_Groups_included
 #define PE_Groups_included
+
+#include <TRUSTTabs_forward.h>
 #include <Deriv_Comm_Group.h>
-#include <TRUSTArray.h>
+
 // .DESCRIPTION        :
 //  Cette classe regroupe des fonctions permettant la creation, la
 //  destruction et le changement du groupe de processeurs actif.
@@ -34,20 +37,20 @@ class PE_Groups
 {
 public:
   inline static const Comm_Group& current_group();
-  static void         create_group(const ArrOfInt& liste_pe, DERIV(Comm_Group) & group, int force_Comm_Group_NoParallel=0);
-  static int       enter_group(const Comm_Group& group);
-  static void         exit_group();
+  static void create_group(const ArrOfInt& liste_pe, DERIV(Comm_Group) &group, int force_Comm_Group_NoParallel = 0);
+  static int enter_group(const Comm_Group& group);
+  static void exit_group();
   static const int& get_nb_groups();
-  static int       rank_translate(int rank, const Comm_Group& group,
-                                  const Comm_Group& dest_group = current_group());
+  static int rank_translate(int rank, const Comm_Group& group, const Comm_Group& dest_group = current_group());
   static const Comm_Group& groupe_TRUST();
 
-  static void         initialize(const Comm_Group& groupe_trio_u);
-  static void         finalize();
+  static void initialize(const Comm_Group& groupe_trio_u);
+  static void finalize();
+
 private:
   static int check_current_group();
   // This pointer always points to the last element of the "groups" vector in the .cpp file
-  static const Comm_Group * current_group_;
+  static const Comm_Group *current_group_;
 };
 
 // Description: renvoie une reference au groupe de processeurs actif courant

@@ -25,9 +25,9 @@
 #define Champ_Generique_Moyenne_included
 
 #include <Champ_Generique_Statistiques_base.h>
+#include <TRUSTTabs_forward.h>
 #include <Op_Moyenne.h>
 
-#include <TRUSTTab.h>
 class Postraitement_base;
 
 //

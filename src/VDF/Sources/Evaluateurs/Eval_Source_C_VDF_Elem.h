@@ -27,7 +27,6 @@
 #include <Champ_Uniforme.h>
 #include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
-#include <TRUSTTab.h>
 
 class Eval_Source_C_VDF_Elem : public Evaluateur_Source_VDF_Elem
 {

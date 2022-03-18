@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@
 #include <Equation_base.h>
 #include <Zone_Cl_VEF.h>
 #include <Periodique.h>
+#include <TRUSTTab.h>
 #include <Zone_VEF.h>
 #include <Symetrie.h>
 

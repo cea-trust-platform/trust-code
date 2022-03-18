@@ -23,7 +23,7 @@
 #ifndef Check_espace_virtuel_H
 #define Check_espace_virtuel_H
 
-#include <TRUSTVect.h>
+#include <TRUSTTabs_forward.h>
 #include <arch.h>
 
 // Renvoie 1 si l'espace virtuel de v est a jour, 0 sinon
