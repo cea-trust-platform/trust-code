@@ -314,7 +314,10 @@ DoubleVect& Champ_Face_CoviMAC::valeur_aux_elems_compo(const DoubleTab& position
   int nf_tot = zone.nb_faces_tot(), D = dimension, N = valeurs().line_size();
   assert(val.size() == polys.size());
 
-  for (int p = 0, e; p < polys.size(); p++) val(p) = (e = polys(p)) < 0 ? 0. : valeurs().addr()[N * (nf_tot + D * e) + ncomp];
+  DoubleTab vfe(valeurs());
+  update_ve(vfe);
+
+  for (int p = 0, e; p < polys.size(); p++) val(p) = (e = polys(p)) < 0 ? 0. : vfe.addr()[N * (nf_tot + D * polys(p)) + ncomp];
 
   return val;
 }
