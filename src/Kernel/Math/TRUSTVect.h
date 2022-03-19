@@ -110,20 +110,23 @@ public:
   inline void operator*=(const TRUSTVect& v) { operator_multiply(*this, v); }
   inline void operator*= (const _TYPE_ x) { operator_multiply(*this, x); }
 
-  /********************** */
-  // FIXME : PAS POUR INT
-  inline void operator/=(const TRUSTVect& v) { operator_divide(*this, v); }
+  inline void operator/=(const TRUSTVect<double>& v) { operator_divide(*this, v); }
+  inline void operator/=(const TRUSTVect<int>& v) = delete; // forbidden
   inline void operator/= (const _TYPE_ x) { operator_divide(*this, x); }
+
   // Options par defaut choisies pour compatibilite avec la version precedente. Attention: il y avait un echange_espace_virtuel avant, ce n'est pas strictement equivalent
   inline void abs(Mp_vect_options opt = VECT_ALL_ITEMS) { operator_abs(*this, opt); }
   inline void carre(Mp_vect_options opt = VECT_ALL_ITEMS) { carre(*this, opt); }
   inline void racine_carree(Mp_vect_options opt = VECT_ALL_ITEMS) { racine_carree_(*this, opt); }
-  inline void ajoute(double alpha, const TRUSTVect& y, Mp_vect_options opt = VECT_ALL_ITEMS);// x+=alpha*y
-  inline void ajoute_sans_ech_esp_virt(double alpha, const TRUSTVect& y, Mp_vect_options opt = VECT_REAL_ITEMS) { ajoute_alpha_v(*this, alpha, y, opt); } // x+=alpha*y sans echange_espace_virtuel
-  inline void ajoute_produit_scalaire(double alpha, const TRUSTVect& x, const TRUSTVect& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_produit_scalaire(*this, alpha, x, y, opt); } // z+=alpha*x*y;
-  inline void ajoute_carre(double alpha, const TRUSTVect& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_carre_(*this, alpha, y, opt); }
-  // FIXME : PAS POUR INT
-  /********************** */
+  inline void ajoute(double alpha, const TRUSTVect<double>& y, Mp_vect_options opt = VECT_ALL_ITEMS);
+  inline void ajoute_sans_ech_esp_virt(double alpha, const TRUSTVect<double>& y, Mp_vect_options opt = VECT_REAL_ITEMS) { ajoute_alpha_v(*this, alpha, y, opt); } // x+=alpha*y sans echange_espace_virtuel
+  inline void ajoute_produit_scalaire(double alpha, const TRUSTVect<double>& x, const TRUSTVect<double>& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_produit_scalaire(*this, alpha, x, y, opt); } // z+=alpha*x*y;
+  inline void ajoute_carre(double alpha, const TRUSTVect<double>& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_carre_(*this, alpha, y, opt); }
+
+  inline void ajoute(int alpha, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... a voir si besoin
+  inline void ajoute_sans_ech_esp_virt(int alpha, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_REAL_ITEMS) = delete; // forbidden ... a voir si besoin
+  inline void ajoute_produit_scalaire(int alpha, const TRUSTVect<int>& x, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... a voir si besoin
+  inline void ajoute_carre(int alpha, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... a voir si besoin
 
   // par defaut: min et max sur items reels (compat. 1.5.6):
   inline _TYPE_ local_max_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return local_max_vect_(*this, opt); }
@@ -134,7 +137,7 @@ public:
   inline _TYPE_ mp_min_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return mp_min_vect_(*this, opt); }
   inline _TYPE_ mp_max_abs_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return mp_max_abs_vect_(*this, opt); }
   inline _TYPE_ mp_min_abs_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return mp_min_abs_vect_(*this, opt); }
-  inline _TYPE_ mp_norme_vect() const { return mp_norme_vect(*this); } // FIXME : PAS POUR INT
+  inline _TYPE_ mp_norme_vect() const { return mp_norme_vect(*this); }
 
   // methodes virtuelles
 

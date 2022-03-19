@@ -27,20 +27,6 @@
 #include <TRUSTVect.h>
 #include <math.h>
 
-// TODO : FIXME : constexpr !
-#ifndef MAXDIM_TAB
-#define MAXDIM_TAB 4
-#endif
-
-// Verifie la coherence entre size_array(), line_size() et les dimensions du tableau
-#if MAXDIM_TAB != 4
-#error Mettre a jour le code pour MAXDIM_TAB pour CHECK_LINE_SIZE
-#endif
-
-#define CHECK_LINE_SIZE                                                        \
-  (((this)->template line_size() == ((nb_dim_>1)?dimensions_[1]:1)*((nb_dim_>2)?dimensions_[2]:1)*((nb_dim_>3)?dimensions_[3]:1)) \
-   && ((this)->template line_size() * dimension_tot_0_ == (this)->template size_array()))
-
 // .DESCRIPTION : Tableau a n entrees pour n<= 4. Repose sur un TRUSTVect avec calculs de l'indice corespondant
 template<typename _TYPE_>
 class TRUSTTab : public TRUSTVect<_TYPE_>
@@ -62,7 +48,7 @@ protected:
   // Description: ecriture d'un tableau sequentiel (idem que TRUSTVect::printOn() on ne sait pas quoi faire de pertinent pour un tableau distribue).
   Sortie& printOn(Sortie& os) const override
   {
-    assert(CHECK_LINE_SIZE);
+    assert(verifie_LINE_SIZE());
     if (TRUSTVect<_TYPE_>::nproc() > 1 && TRUSTVect<_TYPE_>::get_md_vector().non_nul())
       {
         Cerr << "Error in TRUSTTab::printOn: try to print a parallel vector" << finl;
@@ -122,7 +108,7 @@ protected:
         Cerr << "Error in TRUSTTab::readOn: wrong size_array " << (this)->template size_array() << ", expected " << dimension_tot_0_ * l_size << finl;
         Process::exit();
       }
-    assert(CHECK_LINE_SIZE);
+    assert(verifie_LINE_SIZE());
     return is;
   }
 
@@ -237,15 +223,12 @@ public:
   inline _TYPE_& operator()(int i1, int i2, int i3, int i4);
   inline const _TYPE_& operator()(int i1, int i2, int i3, int i4) const ;
 
-  // ------------------------------------------------------
-  // TODO : FIXME : juste pour double
+  // Juste pour TRUSTTab<double>
   inline void ajoute_produit_tensoriel(double alpha, const TRUSTTab<double>&, const TRUSTTab<double>&); // z+=alpha*x*y;
   inline void resoud_LU(int, TRUSTArray<int>&, const TRUSTArray<double>&, TRUSTArray<double>&);
   inline int inverse_LU(const TRUSTArray<double>&, TRUSTArray<double>&);
   inline int decomp_LU(int, TRUSTArray<int>&, TRUSTTab<double>&);
   inline double max_du_u(const TRUSTTab<double>&);
-  // TODO : FIXME : juste pour double
-  // ------------------------------------------------------
 
   // methodes virtuelles
   inline virtual void ref(const TRUSTTab&);
@@ -261,6 +244,7 @@ public:
   inline void resize_tab(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT) override;
 
 private:
+  static constexpr int MAXDIM_TAB = 4;
   // Nombre de dimensions du tableau (nb_dim_>=1)
   int nb_dim_;
 
@@ -270,6 +254,21 @@ private:
   // Dimension totale (nombre de lignes du tableau) = nb lignes reeles + nb lignes virtuelles
   // Les dimensions dimension_tot(i>=1) sont implicitement egales a dimension(i)
   int dimension_tot_0_;
+
+  inline void verifie_MAXDIM_TAB() const
+  {
+    if (MAXDIM_TAB != 4)
+      {
+        Cerr << "Mettre a jour le code pour MAXDIM_TAB pour CHECK_LINE_SIZE" << finl;
+        throw;
+      }
+  }
+
+  inline bool verifie_LINE_SIZE() const
+  {
+    return (((this)->template line_size() == ((nb_dim_ > 1) ? dimensions_[1] : 1) * ((nb_dim_ > 2) ? dimensions_[2] : 1) * ((nb_dim_ > 3) ? dimensions_[3] : 1))
+            && ((this)->template line_size() * dimension_tot_0_ == (this)->template size_array()));
+  }
 
   inline void init_dimensions(int * tab)
   {

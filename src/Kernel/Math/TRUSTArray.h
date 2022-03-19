@@ -152,7 +152,6 @@ public:
   inline void resize(int new_size, Array_base::Resize_Options opt = COPY_INIT) { resize_array(new_size, opt); }
   inline void resize_array(int new_size, Array_base::Resize_Options opt = COPY_INIT);
 
-
   // Methodes de gestion de l'allocation memoire :
   // Assigne une valeur au drapeau "smart_resize" (reallocation uniquement si la taille augmente)
   inline void set_smart_resize(int flag);

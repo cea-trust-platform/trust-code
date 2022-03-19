@@ -227,7 +227,7 @@ inline void TRUSTTab<_TYPE_>::ref(const TRUSTVect<_TYPE_>& v)
   else dimensions_[0] = -1;
 
   dimension_tot_0_ = (this)->template size_array() / l;
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 // Description: fait pointer le tableau sur le tableau t en recuperant la structure parallele. Attention, on fige le tableau qui ne pourra plus etre resize
@@ -238,7 +238,7 @@ inline void TRUSTTab<_TYPE_>::ref(const TRUSTTab& src)
   nb_dim_ = src.nb_dim_;
   for (int i = 0; i < MAXDIM_TAB; i++) dimensions_[i] = src.dimensions_[i];
   dimension_tot_0_ = src.dimension_tot_0_;
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 // Description: identique a DoubleVect::ref_data()
@@ -249,7 +249,7 @@ inline void TRUSTTab<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
   assert(!(this)->template get_md_vector().non_nul() && (this)->template size_reelle() == (this)->template size_array());
   nb_dim_ = 1;
   dimensions_[0] = dimension_tot_0_ = new_size;
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 // Description: identique a TRUSTVect::ref_array() (cree un tableau monodimensionnel sans structure parallele)
@@ -261,7 +261,7 @@ inline void TRUSTTab<_TYPE_>::ref_array(TRUSTArray<_TYPE_>& src, int start, int 
   assert(!(this)->template get_md_vector().non_nul() && (this)->template size_reelle() == (this)->template size_array());
   nb_dim_ = 1;
   dimensions_[0] = dimension_tot_0_ = (this)->template size_array(); // pas sz qui peut valoir -1
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 // Description: fait pointer le tableau sur une sous-partie du tableau t definie par la valeur du premier indice et ne nombre de "lignes" du tableau
@@ -280,7 +280,7 @@ inline void TRUSTTab<_TYPE_>::ref_tab(TRUSTTab<_TYPE_>& t, int start_line, int n
   dimension_tot_0_ = nb_lines;
   dimensions_[0] = nb_lines;
   for (int i = 1; i < MAXDIM_TAB; i++) dimensions_[i] = t.dimensions_[i];
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 // Description: met le tableau dans l'etat obtenu par le constructeur par defaut
@@ -291,7 +291,7 @@ inline void TRUSTTab<_TYPE_>::reset()
   dimensions_[0] = 0;
   dimension_tot_0_ = 0;
   TRUSTVect<_TYPE_>::reset();
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 // Description: methode virtuelle qui force le tableau a changer de taille. Change aussi nb_dim_ a 1. Equivalent a TRUSTTab::resize(n, opt)
@@ -299,7 +299,7 @@ template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::resize_tab(int n, Array_base::Resize_Options opt)
 {
   resize(n, opt);
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 // Description: change la dimension[0] du tableau en conservant les autres.
@@ -311,7 +311,7 @@ inline void TRUSTTab<_TYPE_>::resize_dim0(int n, Array_base::Resize_Options opt)
   assert(dimension_tot_0_ * (this)->template line_size() == (this)->template size_array());
   TRUSTVect<_TYPE_>::resize_vect_(n * (this)->template line_size(), opt);
   dimensions_[0] = dimension_tot_0_ = n;
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 template<typename _TYPE_>
@@ -322,7 +322,7 @@ inline void TRUSTTab<_TYPE_>::resize(int n, Array_base::Resize_Options opt)
   TRUSTVect<_TYPE_>::resize_vect_(n, opt);
   nb_dim_ = 1;
   dimensions_[0] = dimension_tot_0_ = n;
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 template<typename _TYPE_>
@@ -342,7 +342,7 @@ inline void TRUSTTab<_TYPE_>::resize(int n, int n2, Array_base::Resize_Options o
   nb_dim_ = 2;
   dimensions_[0] = dimension_tot_0_ = n;
   dimensions_[1] = n2;
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 template<typename _TYPE_>
@@ -363,7 +363,7 @@ inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, Array_base::Resize_O
   dimensions_[0] = dimension_tot_0_ = n;
   dimensions_[1] = n2;
   dimensions_[2] = n3;
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 template<typename _TYPE_>
@@ -385,7 +385,7 @@ inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, int n4, Array_base::
   dimensions_[1] = n2;
   dimensions_[2] = n3;
   dimensions_[3] = n4;
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 // Description: redimensionne le tableau (nb_dim_ sera egal a tailles.size_array() et dimension(i) a tailles[i].
@@ -415,7 +415,7 @@ inline void TRUSTTab<_TYPE_>::resize(const TRUSTArray<int>& tailles, Array_base:
   dimension_tot_0_ = dimensions_[0];
   (this)->template set_line_size_(l_size);
   (this)->template resize_vect_(dimensions_[0] * l_size, opt);
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
 }
 
 // Description: copie la structure et les valeurs du tableau src
@@ -453,7 +453,7 @@ inline TRUSTTab<_TYPE_>& TRUSTTab<_TYPE_>::operator=(const TRUSTVect<_TYPE_>& sr
   else dimensions_[0] = -1;
 
   dimension_tot_0_ = (this)->template size_array() / l;
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
   return *this;
 }
 
@@ -473,7 +473,7 @@ inline void TRUSTTab<_TYPE_>::copy(const TRUSTTab<_TYPE_>& src, Array_base::Resi
       nb_dim_ = src.nb_dim_;
       for (int i = 0; i < MAXDIM_TAB; i++) dimensions_[i] = src.dimensions_[i];
       dimension_tot_0_ = src.dimension_tot_0_;
-      assert(CHECK_LINE_SIZE);
+      assert(verifie_LINE_SIZE());
     }
 }
 
@@ -481,9 +481,7 @@ template<typename _TYPE_>
 inline _TYPE_& TRUSTTab<_TYPE_>::operator()(const TRUSTArray<int>& indice)
 {
   assert(indice.size_array() == nb_dim_);
-#if MAXDIM_TAB != 4
-#error Mettre a jour le code pour MAXDIM_TAB ici
-#endif
+  verifie_MAXDIM_TAB();
   switch(nb_dim_)
     {
     case 1:
@@ -501,9 +499,7 @@ template<typename _TYPE_>
 inline _TYPE_ TRUSTTab<_TYPE_>::operator()(const TRUSTArray<int>& indice) const
 {
   assert(indice.size_array() == nb_dim_);
-#if MAXDIM_TAB != 4
-#error Mettre a jour le code pour MAXDIM_TAB ici
-#endif
+  verifie_MAXDIM_TAB();
   switch(nb_dim_)
     {
     case 1:
@@ -529,7 +525,7 @@ inline void TRUSTTab<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
       dim0 = md_vector.valeur().get_nb_items_reels();
     }
   dimensions_[0] = dim0;
-  assert(CHECK_LINE_SIZE);
+  assert(verifie_LINE_SIZE());
   // a appeler meme pour un md_vector nul (pour remettre size_reelle_):
   TRUSTVect<_TYPE_>::set_md_vector(md_vector);
 }
@@ -591,7 +587,7 @@ inline void TRUSTTab<_TYPE_>::lit(Entree& is, int resize_and_read)
 }
 
 // ------------------------------------------------------
-// TODO : FIXME : juste pour double
+// Juste pour double
 
 // Description: Quelqu'un veut-il expliquer ce que fait cette methode ?
 template<typename _TYPE_>

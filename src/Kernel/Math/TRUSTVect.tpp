@@ -54,7 +54,7 @@ inline int TRUSTVect<_TYPE_>::size() const
 }
 
 template<typename _TYPE_>
-inline void TRUSTVect<_TYPE_>::ajoute(double alpha, const TRUSTVect<_TYPE_>& y, Mp_vect_options opt)
+inline void TRUSTVect<_TYPE_>::ajoute(double alpha, const TRUSTVect<double>& y, Mp_vect_options opt)
 {
   ajoute_alpha_v(*this, alpha, y, opt);
   if (opt == VECT_ALL_ITEMS) echange_espace_virtuel();

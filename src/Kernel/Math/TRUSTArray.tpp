@@ -368,14 +368,10 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
     }
   else
     {
-      // Cas particulier ou on attache un tableau de taille nulle:
-      //  en theorie, c'est pareil qu'un tableau de taille non nulle, MAIS
-      //  dans les operateurs (ex:Op_Dift_VDF_Face_Axi), une ref est construite
-      //  avant que le tableau ne prenne sa taille definitive. Donc, pour ne pas
-      //  empecher le resize, il ne faut pas attacher le tableau s'il n'a pas
-      //  encore la bonne taille. Solution propre: reecrire les operateurs pour
-      //  qu'ils ne prennent pas une ref avant que le tableau ne soit valide
-      //  et faire p_ = m.p_ dans tous les cas.
+      // Cas particulier ou on attache un tableau de taille nulle: en theorie, c'est pareil qu'un tableau de taille non nulle, MAIS
+      //  dans les operateurs (ex:Op_Dift_VDF_Face_Axi), une ref est construite avant que le tableau ne prenne sa taille definitive. Donc, pour ne pas
+      //  empecher le resize, il ne faut pas attacher le tableau s'il n'a pas encore la bonne taille. Solution propre: reecrire les operateurs pour
+      //  qu'ils ne prennent pas une ref avant que le tableau ne soit valide et faire p_ = m.p_ dans tous les cas.
       // Process::Journal() << "Warning TRUSTArray::attach_array(m), m.size_array()==0, on n attache pas le tableau" << finl;
     }
 }
@@ -397,65 +393,23 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
 // Parametre: nb
 //  Signification: nombre de cases a initialiser.
 //  Contrainte:    (nb==0) ou (0 < nb <= memory_size_ - first)
-template <>
-inline void TRUSTArray<double>::fill_default_value(Array_base::Resize_Options opt, int first, int nb)
+template <typename _TYPE_>
+inline void TRUSTArray<_TYPE_>::fill_default_value(Array_base::Resize_Options opt, int first, int nb)
 {
   assert((nb == 0) || (first >= 0 && first < memory_size_));
   assert((nb == 0) || (nb > 0 && nb <= memory_size_ - first));
-  double * data = data_;
+  _TYPE_ * data = data_;
   assert(data!=0 || nb==0);
   data += first;
   if (opt != COPY_INIT)
     {
-      // On initialise uniquement en mode debug
-#ifndef NDEBUG
-      // B.M. L'utilisation de NAN n'est pas possible car elle provoque une erreur
-      // dans double & operator[] a cause de assert(...DMAXFLOAT). Du coup il est
-      // impossible de mettre une valeur dans le tableau autrement qu'avec append_array()
-#if 0
-      // Ceci represente un NAN. N'importe quelle operation avec ca fait encore un NAN.
-      // Si c'est pas portable, on peut remplacer par DMAX_FLOAT sur les autres machines.
-      // Attention, il faut long long car sinon warning sur gcc 4.1 et i686
-      static const unsigned long long VALEUR_INVALIDE = 0x7ff7ffffffffffffULL;
-      /* static const double VALEUR_INVALIDE = DMAXFLOAT;    */
-
-      // On utilise "memcpy" et non "=" car "=" peut provoquer une exception si la copie passe par le fpu.
-      for (int i = 0; i < nb; i++) memcpy(data + i, & VALEUR_INVALIDE, sizeof(_TYPE_INTERN_));
-#else
-      // Alternative acceptable... ?
-      for (int i = 0; i < nb; i++) data[i] = DMAXFLOAT*0.999;
-#endif
+#ifndef NDEBUG // On initialise uniquement en mode debug
+      static const _TYPE_  INVALIDE_ = (std::is_same<_TYPE_,double>::value) ? DMAXFLOAT*0.999 : INT_MIN;
+      for (int i = 0; i < nb; i++) data[i] = INVALIDE_;
 #endif
     }
-  else
-    {
-      // Comportement pour les tableaux normaux : compatibilite avec la
-      // version precedente : on initialise avec 0.
-      for (int i = 0; i < nb; i++) data[i] = (double) 0;
-    }
-}
-
-template <>
-inline void TRUSTArray<int>::fill_default_value(Array_base::Resize_Options opt, int first, int nb)
-{
-  assert((nb == 0) || (first >= 0 && first < memory_size_));
-  assert((nb == 0) || (nb > 0 && nb <= memory_size_ - first));
-  int * data = data_;
-  assert(data!=0 || nb==0);
-  data += first;
-  if (opt != COPY_INIT)
-    {
-      // On initialise uniquement en mode debug
-#ifndef NDEBUG
-      static const int INT_INVALIDE = INT_MIN;
-      for (int i = 0; i < nb; i++) data[i] = INT_INVALIDE;
-#endif
-    }
-  else
-    {
-      // Comportement pour les tableaux normaux : compatibilite avec la version precedente : on initialise avec 0.
-      for (int i = 0; i < nb; i++) data[i] = (int) 0;
-    }
+  else // Comportement pour les tableaux normaux : compatibilite avec la version precedente : on initialise avec 0.
+    for (int i = 0; i < nb; i++) data[i] = (_TYPE_) 0;
 }
 
 // Description: methode protegee de changement de taille, appelable par les classes derivees
