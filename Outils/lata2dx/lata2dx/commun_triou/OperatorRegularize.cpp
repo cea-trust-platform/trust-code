@@ -126,9 +126,6 @@ void build_geometry_(OperatorRegularize & op,
   }
   int i;
   op.renum_nodes_.resize_array(nsom);
-  int nb_som_ijk = 1;
-  for (i = 0; i < dim; i++) 
-    nb_som_ijk *= nb_som_dir[i];
   IntTab ijk_indexes;
   ijk_indexes.resize(nsom, dim);
   for (i = 0; i < nsom; i++) {

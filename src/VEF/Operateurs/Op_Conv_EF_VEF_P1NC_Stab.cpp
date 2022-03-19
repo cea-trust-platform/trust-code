@@ -1202,7 +1202,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
 
   int face_i0, face_j0, elem, comp0;
   const int nb_faces0 = transporte.dimension(0);
-  double sigma_fijd=0., sigma_fija=0.;
 
   ArrOfDouble pplusi(nb_comp);
   ArrOfDouble qplusi(nb_comp);
@@ -1388,8 +1387,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                               }
 
                             assert(Fij*dij>=0);
-                            sigma_fijd+=dij;
-                            sigma_fija+=Fij;
                             Fij-=dij;
                             Fij*=deltaij;
                           }
@@ -1745,9 +1742,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
   //   Calcul de resu
   //
 
-  double sigma_fijd=0;
-  double sigma_fija=0;
-
   ArrOfDouble pplusi(nb_comp);
   ArrOfDouble qplusi(nb_comp);
   ArrOfDouble pmoinsi(nb_comp);
@@ -1934,8 +1928,6 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                                 Fij=minimum(limiteur(R)*dij,lji);
                               }
                             assert(Fij*dij>=0);
-                            sigma_fijd+=dij;
-                            sigma_fija+=Fij;
                             Fij-=dij;
                             Fij*=deltaij;
                           }

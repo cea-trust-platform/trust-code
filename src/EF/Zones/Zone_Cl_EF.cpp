@@ -294,13 +294,14 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                   for (int d=0; d<dimension; d++)
                     prod+=face_normales(face,d)*n[d];
 
-                  double v=0,s=0;
+                  double s=0;
+                  // double v = 0;
 
                   for (int d=0; d<dimension; d++)
                     {
                       t1[d]=face_normales(face,d)-n[d]*prod;
                       s+=face_normales(face,d)*face_normales(face,d);
-                      v+=t1[d]*n[d];
+                      // v+=t1[d]*n[d];
                     }
 
                   //Cerr<<" vv"<< v<<" "<<norme_array(t1)<<" "<<norm_n<<finl;

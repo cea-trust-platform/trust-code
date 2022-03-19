@@ -426,11 +426,11 @@ void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
   double x2,y2,z2;
   double x3,y3,z3;
   double volume;
-  double volume_global;
+  // double volume_global;
   int s1,s2,s3,s4;
   int som0,som1,som2,som3,som4,som5,som6,som7;
 
-  volume_global =0;
+  // volume_global =0;
 
   int size_tot = zone.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
@@ -559,7 +559,7 @@ void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
         }
 
       volumes[num_poly] = volume;
-      volume_global += volumes[num_poly];
+      // volume_global += volumes[num_poly];
     }
 
   // Cerr << "volumes " << volumes  << finl;

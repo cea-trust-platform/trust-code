@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -150,7 +150,6 @@ void Zone_Cl_VEF::completer(const Zone_dis& une_zone_dis)
 // volumes_entrelaces_Cl_
 void Zone_Cl_VEF::remplir_volumes_entrelaces_Cl(const Zone_VEF& la_zone_VEF)
 {
-  const DoubleVect& volumes = la_zone_VEF.volumes();
   const DoubleVect& volumes_entrelaces = la_zone_VEF.volumes_entrelaces();
   const IntVect& rang_elem = la_zone_VEF.rang_elem_non_std();
 
@@ -213,15 +212,6 @@ void Zone_Cl_VEF::remplir_volumes_entrelaces_Cl(const Zone_VEF& la_zone_VEF)
             }
         }
     }
-  {
-    double sum_std=0, sum_cl=0, sum_tetra=0;
-    for(int i=0; i<volumes_entrelaces.size_array(); i++)
-      sum_std +=volumes_entrelaces(i);
-    for(int i=0; i<volumes_entrelaces_Cl_.size_array(); i++)
-      sum_cl +=volumes_entrelaces_Cl_[i];
-    for(int i=0; i<la_zone_VEF.nb_elem(); i++)
-      sum_tetra +=volumes(i);
-  }
 }
 
 // Description:

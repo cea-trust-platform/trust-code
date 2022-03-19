@@ -130,17 +130,14 @@ void iterer_eqn_expl(Equation_base& eqn,int nb_iter,double dt,DoubleTab& current
   if (dt>dt_stab*n_sous_ite) n_sous_ite=n_sous_ite+1.;
   double dt_calc = dt/n_sous_ite;
   assert(dt_calc<=dt_stab);
-  double test = 0;
   for (double i=0; i<n_sous_ite; i=i+1.)
     {
       eqn.derivee_en_temps_inco(dudt);
       dudt *= dt_calc;
-      test += dt_calc;
       current += dudt;
       eqn.valider_iteration();
     }
   Cout <<"It is solved with " << n_sous_ite << " explicit sub-iterations."<<finl;
-  assert(est_egal(test,dt));
   converge=1;
 }
 
