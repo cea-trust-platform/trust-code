@@ -19,6 +19,7 @@
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <MD_Vector_composite.h>
 #include <Array_tools.h>
 #include <Param.h>
@@ -26,23 +27,6 @@
 implemente_vect_no_obj(MD_Vector)
 
 Implemente_instanciable(MD_Vector_composite,"MD_Vector_composite",MD_Vector_base2);
-
-#if 0
-// .DESCRIPTION
-//  Metadata for a distributed vector built as a subset of another vector
-class MD_Vector_subset : public MD_Vector_std
-{
-  eeclare_instanciable(MD_Vector_subset)
-public:
-  virtual void build(const ArrOfBit& selection, const MD_Vector_Ptr& src);
-  virtual void copy_vector_to_subset(const DoubleVect& src, DoubleVect& dest) const;
-  virtual void copy_subset_to_vector(const DoubleVect& src, DoubleVect& dest) const;
-  // The metadata of the source vector
-  MD_Vector_Ptr src_data_;
-  // The subset selection (size = src_data_.valeur().get_nb_items_tot())
-  ArrOfBit selection_;
-};
-#endif
 
 // Description: method used to dump/restore a descriptor in a file
 //  Each process writes a different descriptor. See MD_Vector_tools::dump_vector_with_md()
@@ -57,8 +41,6 @@ Sortie& MD_Vector_composite::printOn(Sortie& os) const
       os << md.que_suis_je() << finl;
       os << md << finl;
     }
-
-
 
   os << "{" << finl;
   os << "global_md" << finl << global_md_ << finl;
@@ -339,13 +321,11 @@ void MD_Vector_composite::add_part(const MD_Vector& part, int shape, Nom name)
   if (sub_type(MD_Vector_std, part.valeur()))
     append_global_md(global_md_, ref_cast(MD_Vector_std, part.valeur()), offset, multiplier);
   else if (sub_type(MD_Vector_composite, part.valeur()))
-    {
-      append_global_md(global_md_, ref_cast(MD_Vector_composite, part.valeur()).global_md_, offset, multiplier);
-    }
+    append_global_md(global_md_, ref_cast(MD_Vector_composite, part.valeur()).global_md_, offset, multiplier);
   else
     {
       Cerr << "Internal error in MD_Vector_composite::add_part: unknown part type " << part.valeur().que_suis_je() << finl;
-      exit();
+      Process::exit();
     }
 }
 
@@ -364,7 +344,6 @@ void MD_Vector_composite::process_recv_data(const Echange_EV_Options& opt, Schem
   global_md_.process_recv_data(opt, comm, v);
 }
 
-
 void MD_Vector_composite::initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, IntVect& v) const
 {
   global_md_.initialize_comm(opt, comm, v);
@@ -379,4 +358,3 @@ void MD_Vector_composite::process_recv_data(const Echange_EV_Options& opt, Schem
 {
   global_md_.process_recv_data(opt, comm, v);
 }
-

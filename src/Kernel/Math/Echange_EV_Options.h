@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,40 +19,33 @@
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef Echange_EV_Options_included
 #define Echange_EV_Options_included
 
 class Echange_EV_Options
 {
 public:
-  // SYNC is the default: the owner of the shared value sends the
-  //  value to other processors
+  // SYNC is the default: the owner of the shared value sends the value to other processors
   // SUM: the owner of a shared value receives values from other processors
   //  that own the same value (either item_commun or in virtual space)
   //  and computes the sum. The user might want to SYNCHRONIZE afterwards
-  // MAX: same as SUM, but the owner computes the max for all processors
-  //  that share the data
+  // MAX: same as SUM, but the owner computes the max for all processors that share the data
   // MAXCOL1: only meaningful for arrays with line_size > 1. For each shared "line"
   //  of the multidimensionnal array, take the processor for which the first value on the line
   //  is the highest and copy the whole line to the processor that owns the item.
   enum Operation { SYNC, SUM, MAX, MINCOL1 };
   enum Items_Communs { ITEMS_COMMUNS_YES, ITEMS_COMMUNS_NO };
   enum Items_Virtuels { ITEMS_VIRTUELS_YES, ITEMS_VIRTUELS_NO };
+
   Echange_EV_Options(Operation op = SYNC,
                      Items_Communs items_communs = ITEMS_COMMUNS_YES,
                      Items_Virtuels items_virtuels = ITEMS_VIRTUELS_YES);
-  Operation get_op() const
-  {
-    return op_;
-  }
-  Items_Communs get_items_communs() const
-  {
-    return items_communs_;
-  }
-  Items_Virtuels get_items_virtuels() const
-  {
-    return items_virtuels_;
-  }
+
+  Operation get_op() const { return op_; }
+  Items_Communs get_items_communs() const { return items_communs_; }
+  Items_Virtuels get_items_virtuels() const { return items_virtuels_; }
+
   int operator==(const Echange_EV_Options& x) const
   {
     return op_==x.op_ && items_communs_==x.items_communs_ && items_virtuels_==x.items_virtuels_;
@@ -65,5 +58,6 @@ protected:
 };
 
 extern const Echange_EV_Options& echange_ev_opt_default;
+
 #endif
 

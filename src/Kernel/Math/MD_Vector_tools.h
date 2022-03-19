@@ -21,23 +21,16 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef MD_Vector_tools_included
 #define MD_Vector_tools_included
-#include <map>
-#include <array>
-#include <ArrOfBit.h>
+
+#include <TRUSTTabs_forward.h>
 #include <Array_base.h>
+#include <ArrOfBit.h>
+#include <array>
+#include <map>
 
-class Zone_VF;
-class ArrOfBit;
-class MD_Vector;
 class MD_Vector_renumber;
-
-template<typename T> class TRUSTVect;
-using IntVect = TRUSTVect<int>;
-using DoubleVect = TRUSTVect<double>;
-template<typename T> class TRUSTArray;
-using ArrOfInt = TRUSTArray<int>;
-template<typename T> class TRUSTTab;
-using DoubleTab = TRUSTTab<double>;
+class MD_Vector;
+class Zone_VF;
 
 //format de structure pour demander d'agrandir un MD_Vector : (proc, item sur le proc) -> item distant sur Process::me()
 typedef std::map<std::array<int, 2>, int> extra_item_t;
@@ -70,7 +63,5 @@ public:
   //etend les espaces distants de src pour contenir items et renseigne leurs nouveaux numeros dedans
   static MD_Vector extend(const MD_Vector& src, extra_item_t& items);
 };
-
-
 
 #endif

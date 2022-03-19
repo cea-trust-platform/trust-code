@@ -22,17 +22,13 @@
 
 #ifndef MD_Vector_base_included
 #define MD_Vector_base_included
+
+#include <TRUSTTabs_forward.h>
 #include <Objet_U.h>
 
-class MD_Vector;
-class Echange_EV_Options;
 class Schema_Comm_Vecteurs;
-
-template<typename T> class TRUSTVect;
-using IntVect = TRUSTVect<int>;
-using DoubleVect = TRUSTVect<double>;
-template<typename T> class TRUSTArray;
-using ArrOfInt = TRUSTArray<int>;
+class Echange_EV_Options;
+class MD_Vector;
 
 // .DESCRIPTION
 // Classe de base des descripteurs de vecteurs distribues.
@@ -43,8 +39,9 @@ class MD_Vector_base : public Objet_U
 public:
   MD_Vector_base() : ref_count_(0) {};
   // attention, ne pas copier le ref_count_ !
-  MD_Vector_base(const MD_Vector_base& ) : Objet_U(),ref_count_(0) {};
-  ~MD_Vector_base() override {};
+  MD_Vector_base(const MD_Vector_base& ) : Objet_U(), ref_count_(0) {};
+  ~MD_Vector_base() override { }
+
   virtual int get_nb_items_reels() const = 0;
   virtual int get_nb_items_tot() const = 0;
   virtual void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, DoubleVect&) const = 0;
@@ -55,8 +52,9 @@ public:
   virtual void process_recv_data(const Echange_EV_Options& opt, Schema_Comm_Vecteurs&, IntVect&) const = 0;
   virtual const ArrOfInt& get_items_to_compute() const = 0;
   virtual const ArrOfInt& get_items_to_sum() const = 0;
-  virtual int           nb_items_seq_tot() const = 0;
-  virtual int           nb_items_seq_local() const = 0;
+  virtual int nb_items_seq_tot() const = 0;
+  virtual int nb_items_seq_local() const = 0;
+
 private:
   // Cette classe a le droit de modifier ref_count_:
   friend class MD_Vector;

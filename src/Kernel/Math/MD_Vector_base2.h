@@ -71,22 +71,19 @@ public:
 };
 
 // Description: methode outil pour ajouter un item a un tableau du genre "blocs" contenant
-//  des series de blocs... alonge le bloc precedent ou commence un nouveau bloc si l'item
-//  n'est pas contigu avec le bloc precedent.
+//  des series de blocs... alonge le bloc precedent ou commence un nouveau bloc si l'item n'est pas contigu avec le bloc precedent.
 void MD_Vector_base2::append_item_to_blocs(ArrOfInt& blocs, int item)
 {
   int n = blocs.size_array();
-  assert(n%2 == 0); // le tableau contient des blocs, donc un nombre pair d'elements
-  assert(n == 0 || item >= blocs[n-1]); // les items doivent etre ajoutes dans l'ordre croissant
-  if (n == 0 || blocs[n-1] != item)
+  assert(n % 2 == 0); // le tableau contient des blocs, donc un nombre pair d'elements
+  assert(n == 0 || item >= blocs[n - 1]); // les items doivent etre ajoutes dans l'ordre croissant
+  if (n == 0 || blocs[n - 1] != item)
     {
       // nouveau bloc
       blocs.append_array(item);
-      blocs.append_array(item+1);
+      blocs.append_array(item + 1);
     }
-  else
-    {
-      blocs[n-1] = item + 1;
-    }
+  else blocs[n - 1] = item + 1;
 }
-#endif
+
+#endif /* MD_Vector_base2_included */

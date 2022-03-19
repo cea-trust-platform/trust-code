@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ enum Mp_vect_options { VECT_SEQUENTIAL_ITEMS, VECT_REAL_ITEMS, VECT_ALL_ITEMS };
 class MD_Vector
 {
 public:
-  MD_Vector() : ptr_(0) {};
+  MD_Vector() : ptr_(0) { }
   inline MD_Vector(const MD_Vector&);
   inline ~MD_Vector();
   inline MD_Vector& operator=(const MD_Vector&);
@@ -60,18 +60,18 @@ public:
 
   void copy(const MD_Vector_base&);
 
-  int non_nul() const
-  {
-    return (ptr_ != 0);
-  }
+  int non_nul() const { return (ptr_ != 0); }
+
   const MD_Vector_base& valeur() const
   {
     assert(ptr_);
     return *ptr_;
   }
+
   inline void detach();
   int operator==(const MD_Vector&) const;
   int operator!=(const MD_Vector&) const;
+
 private:
   void detach_();
   void attach_(const MD_Vector&);
@@ -92,8 +92,7 @@ inline MD_Vector::MD_Vector(const MD_Vector& src) :
 //  Si le compteur est nul, detruit l'objet.
 inline void MD_Vector::detach()
 {
-  if (ptr_)
-    detach_();
+  if (ptr_) detach_();
 }
 
 // Description: Detache le pointeur et attache au meme objet que src,
@@ -102,10 +101,8 @@ inline void MD_Vector::attach(const MD_Vector& src)
 {
   if (this == &src)
     return; // sinon a.attach(a) risque de detruire le pointeur !
-  if (ptr_)
-    detach_();
-  if (src.ptr_)
-    attach_(src);
+  if (ptr_) detach_();
+  if (src.ptr_) attach_(src);
 }
 
 // Description: idem que attach(src)
@@ -119,8 +116,7 @@ inline MD_Vector& MD_Vector::operator=(const MD_Vector& src)
 //  inline pour ne pas penaliser les tableaux non distribues.
 inline MD_Vector::~MD_Vector()
 {
-  if (ptr_)
-    detach_();
+  if (ptr_) detach_();
 }
 
 #endif

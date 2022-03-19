@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,8 +19,9 @@
 // Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <MD_Vector.h>
+
 #include <MD_Vector_base.h>
+#include <MD_Vector.h>
 
 Implemente_deriv(MD_Vector_base);
 Implemente_base_sans_constructeur_ni_destructeur(MD_Vector_base,"MD_Vector_base",Objet_U);
@@ -81,30 +82,3 @@ int MD_Vector::operator!=(const MD_Vector& md) const
   // B.M.: je code exactement ce qui est dit au dessus (des fois que == change un jour...)
   return !operator==(md);
 }
-
-#if 0
-// Je ne publie pas cette methode pour l'instant, il y a des chances
-// qu'elle soit peu utile en fait (pour les maillages dynamiques, on sera
-// sans doute oblige de garder une copie non const du MD_Vector de toutes
-// facon a cote du maillage.
-
-// Description: construction d'un MD_Vector en attachant le pointeur
-//  porte par un DERIV(MD_Vector_base). Cette methode est un peu optimisee
-//  par rapport a la methode copy car elle evite de creer un copie
-//  supplementaire de l'objet MD_Vector_base.
-//  Attention, l'objet deriv passe en parametre est detruit en sortie:
-//  l'utilisateur perd la propriete de l'objet !
-void MD_Vector::attach_detach(DERIV(MD_Vector_base) & src)
-{
-  detach();
-  if (src.non_nul())
-    {
-      const MD_Vector_base& obj = src.valeur();
-      assert(obj.ref_count_ == 0);
-      assert(obj.
-             ptr_->ref_count_ = 1;
-             ptr_ = &(src.valeur());
-             // non, pas detach ! ne pas detruire la zone de memoire. src.detach();
-    }
-}
-#endif

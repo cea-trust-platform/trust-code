@@ -55,16 +55,21 @@ public:
   Schema_Comm_Vecteurs();
   ~Schema_Comm_Vecteurs();
   void begin_init();
-  inline void add_send_area_int(int pe, int size);
-  inline void add_send_area_double(int pe, int size);
-  inline void add_recv_area_int(int pe, int size);
-  inline void add_recv_area_double(int pe, int size);
+
+  template <typename _TYPE_>
+  inline void add_send_area_template(int pe, int size);
+
+  template <typename _TYPE_>
+  inline void add_recv_area_template(int pe, int size);
+
+  template <typename _TYPE_>
+  inline TRUSTArray<_TYPE_>& get_next_area_template(int pe, int array_size);
+
   void end_init();
   void begin_comm();
   void exchange();
   void end_comm();
-  inline ArrOfInt& get_next_area_int(int pe, int array_size);
-  inline ArrOfDouble& get_next_area_double(int pe, int array_size);
+
 protected:
   inline void add(int pe, int size, ArrOfInt& procs, ArrOfInt& buf_sizes, int align_size);
   int check_buffers_full() const;
@@ -140,22 +145,26 @@ inline void Schema_Comm_Vecteurs::add(int pe, int size, ArrOfInt& procs, ArrOfIn
   x = ((x+align_size-1)&(~(align_size-1))) + size; // Padding before block
 }
 
-inline void Schema_Comm_Vecteurs::add_send_area_int(int pe, int size)
+template<>
+inline void Schema_Comm_Vecteurs::add_send_area_template<int>(int pe, int size)
 {
   add(pe, BLOCSIZE_INT(size), send_procs_, send_buf_sizes_, sizeof(int));
 }
 
-inline void Schema_Comm_Vecteurs::add_send_area_double(int pe, int size)
+template<>
+inline void Schema_Comm_Vecteurs::add_send_area_template<double>(int pe, int size)
 {
   add(pe, BLOCSIZE_DOUBLE(size), send_procs_, send_buf_sizes_, sizeof(double));
 }
 
-inline void Schema_Comm_Vecteurs::add_recv_area_int(int pe, int size)
+template<>
+inline void Schema_Comm_Vecteurs::add_recv_area_template<int>(int pe, int size)
 {
   add(pe, BLOCSIZE_INT(size), recv_procs_, recv_buf_sizes_, sizeof(int));
 }
 
-inline void Schema_Comm_Vecteurs::add_recv_area_double(int pe, int size)
+template<>
+inline void Schema_Comm_Vecteurs::add_recv_area_template<double>(int pe, int size)
 {
   add(pe, BLOCSIZE_DOUBLE(size), recv_procs_, recv_buf_sizes_, sizeof(double));
 }
@@ -165,7 +174,8 @@ inline void Schema_Comm_Vecteurs::add_recv_area_double(int pe, int size)
 //  Attention:
 //  Le tableau renvoye est une reference a un tableau interne qui n'est valide que
 //  jusqu'au prochain appel a une methode get_next_xxx.
-inline ArrOfInt& Schema_Comm_Vecteurs::get_next_area_int(int pe, int size)
+template<>
+inline ArrOfInt& Schema_Comm_Vecteurs::get_next_area_template<int>(int pe, int size)
 {
   ALIGN_SIZE(sdata_.buf_pointers_[pe], sizeof(int));
   assert(check_next_area(pe, BLOCSIZE_INT(size)));
@@ -176,7 +186,8 @@ inline ArrOfInt& Schema_Comm_Vecteurs::get_next_area_int(int pe, int size)
   return tmp_area_int_;
 }
 
-inline ArrOfDouble& Schema_Comm_Vecteurs::get_next_area_double(int pe, int size)
+template<>
+inline ArrOfDouble& Schema_Comm_Vecteurs::get_next_area_template<double>(int pe, int size)
 {
   ALIGN_SIZE(sdata_.buf_pointers_[pe], sizeof(double));
   assert(check_next_area(pe, BLOCSIZE_DOUBLE(size)));
@@ -186,7 +197,6 @@ inline ArrOfDouble& Schema_Comm_Vecteurs::get_next_area_double(int pe, int size)
   tmp_area_double_.ref_data(bufptr, size);
   return tmp_area_double_;
 }
-
 
 #undef BLOCSIZE_INT
 #undef BLOCSIZE_DOUBLE

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,14 +19,8 @@
 // Version:     /main/1
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #include <MD_Vector_base.h>
 
-Entree& MD_Vector_base::readOn(Entree& is)
-{
-  return is;
-}
-
-Sortie& MD_Vector_base::printOn(Sortie& os) const
-{
-  return os;
-}
+Entree& MD_Vector_base::readOn(Entree& is) { return is; }
+Sortie& MD_Vector_base::printOn(Sortie& os) const { return os; }
