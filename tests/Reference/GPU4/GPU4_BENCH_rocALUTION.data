@@ -78,7 +78,7 @@ Read pb
 {
     Navier_Stokes_Standard
     {
-        solveur_pression gcp { precond ssor { omega 1.6 } seuil 1.e-5 impr }
+        solveur_pression rocALUTION gcp { precond jacobi { } seuil 1.e-5 impr }
         convection { muscl }
         diffusion  {  }
         initial_conditions {  vitesse Champ_Uniforme 3  0. 0. 0. }

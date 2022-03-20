@@ -1,0 +1,25 @@
+#!/bin/bash
+# Teste rapidement tous les preconds rocALUTION implementes qui fonctionnent (du plus rapide au plus lent sur le cas GPU4)
+
+check()
+{
+   echo "======"
+   echo "$1 :"
+   trust $1 1>$1.out_err 2>&1 || echo "Error!"
+   grep "Dont solveurs Ax=B" $1.TU
+   grep "Iterations / solveur" $1.TU
+   if [ -f $1.lml ]
+   then
+      compare_lata $base.lml $1.lml --seuil 1.e-4 --max_delta 1>/dev/null 2>&1
+      [ $? != 0 ] && echo "Ecarts!"
+   fi
+}
+base=$1 && [ "$1" = "" ] && base=GPU4
+p="ILU"			&& sed "1,$ s?jacobi {?$p { level 0?" $base.data > $base_$p.data && check $base_$p
+p="Jacobi"		&& sed "1,$ s?jacobi {?$p {?" $base.data > $base_$p.data && check $base_$p
+p="UA-AMG"		&& sed "1,$ s?jacobi {?$p {?" $base.data > $base_$p.data && check $base_$p
+p="MultiColoredSGS" 	&& sed "1,$ s?jacobi {?$p { omega 1?" $base.data > $base_$p.data && check $base_$p
+p="SA-AMG"		&& sed "1,$ s?jacobi {?$p {?" $base.data > $base_$p.data && check $base_$p
+p="C-AMG"		&& sed "1,$ s?jacobi {?$p {?" $base.data > $base_$p.data && check $base_$p
+p="ILUT"  		&& sed "1,$ s?jacobi {?$p {?" $base.data > $base_$p.data && check $base_$p
+

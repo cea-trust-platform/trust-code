@@ -50,6 +50,8 @@ private :
   LocalMatrix<double> mat;
   IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double>* ls;
   Solver<LocalMatrix<double>, LocalVector<double>, double>* p;
+  IterativeLinearSolver<LocalMatrix<float>, LocalVector<float>, float>* sp_ls;
+  Solver<LocalMatrix<float>, LocalVector<float>, float>* sp_p;
   double atol_, rtol_;
   bool write_system_;
 };
