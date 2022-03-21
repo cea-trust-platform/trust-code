@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -103,7 +103,7 @@ Entree& Neumann_sortie_libre::readOn(Entree& s )
 //il faut le specifier explicitement sinon inconnue() rend
 //la vitesse
 
-void Neumann_sortie_libre::verifie_ch_init_nb_comp()
+void Neumann_sortie_libre::verifie_ch_init_nb_comp() const
 {
   if (le_champ_front.non_nul())
     {
@@ -112,11 +112,11 @@ void Neumann_sortie_libre::verifie_ch_init_nb_comp()
 
       if ((que_suis_je()=="Frontiere_ouverte") || (que_suis_je()=="Frontiere_ouverte_rayo_semi_transp")
           || (que_suis_je()=="Frontiere_Ouverte_Rayo_transp") || (que_suis_je()=="Sortie_libre_temperature_imposee_H"))
-        eq.verifie_ch_init_nb_comp(eq.inconnue(),nb_comp, this);
+        eq.verifie_ch_init_nb_comp_cl(eq.inconnue(),nb_comp, *this);
       else
         {
           const Navier_Stokes_std& eq_ns = ref_cast(Navier_Stokes_std,eq);
-          eq.verifie_ch_init_nb_comp(eq_ns.pression(),nb_comp, this);
+          eq.verifie_ch_init_nb_comp_cl(eq_ns.pression(),nb_comp, *this);
 
         }
     }

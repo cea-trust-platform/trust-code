@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -303,18 +303,18 @@ int Energie_Multiphase::impr(Sortie& os) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Energie_Multiphase::verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int& nb_comp, const Cond_lim_base *cl) const
+void Energie_Multiphase::verifie_ch_init_nb_comp_cl(const Champ_Inc_base& ch_ref, const int& nb_comp, const Cond_lim_base& cl) const
 {
   //si on verifie une CL de type
-  if (cl && ref_cast(Pb_Multiphase, probleme()).has_correlation("flux_parietal")
-      && (sub_type(Neumann_paroi, *cl) || sub_type(Scalaire_impose_paroi, *cl) || sub_type(Echange_global_impose, *cl)))
+  if (ref_cast(Pb_Multiphase, probleme()).has_correlation("flux_parietal")
+      && (sub_type(Neumann_paroi, cl) || sub_type(Scalaire_impose_paroi, cl) || sub_type(Echange_global_impose, cl)))
     {
       if (nb_comp == 1) return; //OK
       Cerr << "Energie_Multiphase : when using a Flux_parietal correlation, only one wall temperature/heat flux "
-           << "can be specified at the boundary " << cl->le_nom() << " . Please provide 1 component instead of " << nb_comp << "!" << finl;
+           << "can be specified at the boundary " << cl.le_nom() << " . Please provide 1 component instead of " << nb_comp << "!" << finl;
       Process::exit();
     }
-  else Convection_Diffusion_std::verifie_ch_init_nb_comp(ch_ref, nb_comp, cl); //traitement normal
+  else Convection_Diffusion_std::verifie_ch_init_nb_comp(ch_ref, nb_comp); //traitement normal
 }
 
 

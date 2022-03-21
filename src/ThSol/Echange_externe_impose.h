@@ -23,14 +23,8 @@
 #ifndef Echange_externe_impose_included
 #define Echange_externe_impose_included
 
-
-
-
 #include <Echange_impose_base.h>
 #include <Ref_Milieu_base.h>
-
-
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -64,7 +58,7 @@ class Echange_externe_impose  : public Echange_impose_base
 
   Declare_instanciable(Echange_externe_impose);
   int compatible_avec_discr(const Discretisation_base& ) const override;
-  void verifie_ch_init_nb_comp() override;
+  void verifie_ch_init_nb_comp() const override;
 };
 
 

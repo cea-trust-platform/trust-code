@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -219,7 +219,7 @@ void Cond_lim_base::calculer_coeffs_echange(double temps)
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Cond_lim_base::verifie_ch_init_nb_comp()
+void Cond_lim_base::verifie_ch_init_nb_comp() const
 {
 
 }

@@ -47,7 +47,7 @@ public :
   void mettre_a_jour(double temps) override;
   double flux_impose(int i) const override;
   double flux_impose(int i,int j) const override;
-  void verifie_ch_init_nb_comp() override;
+  void verifie_ch_init_nb_comp() const override;
 };
 
 #endif

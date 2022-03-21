@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,7 +62,7 @@ public:
   virtual int initialiser(double temps);
   virtual void mettre_a_jour(double temps);
   virtual void calculer_coeffs_echange(double temps);
-  virtual void verifie_ch_init_nb_comp();
+  virtual void verifie_ch_init_nb_comp() const;
   inline Frontiere_dis_base& frontiere_dis();
   inline const Frontiere_dis_base& frontiere_dis() const;
   virtual void associer_fr_dis_base(const Frontiere_dis_base& ) ;

@@ -62,7 +62,7 @@ public:
   int compatible_avec_eqn(const Equation_base&) const override;
   int initialiser(double temps) override;
   void associer_fr_dis_base(const Frontiere_dis_base& ) override ;
-  void verifie_ch_init_nb_comp() override;
+  void verifie_ch_init_nb_comp() const override;
 
   void fixer_nb_valeurs_temporelles (int nb_cases) override;
   void mettre_a_jour(double temps) override;

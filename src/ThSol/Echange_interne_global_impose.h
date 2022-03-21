@@ -46,7 +46,7 @@ class Echange_interne_global_impose  : public Echange_global_impose
 public:
   void completer() override;
   virtual void init();   // != initialiser()
-  void verifie_ch_init_nb_comp() override;
+  void verifie_ch_init_nb_comp() const override;
 
 
   const DoubleVect surface_gap() const

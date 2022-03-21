@@ -96,7 +96,7 @@ void Echange_interne_global_impose::init()
 
 // Override to skip verification - we know we will always be dealing with temperature, and we define ourselves the T_ext with
 // a Champ_front_calc_interne.
-void Echange_interne_global_impose::verifie_ch_init_nb_comp()
+void Echange_interne_global_impose::verifie_ch_init_nb_comp() const
 {
 }
 

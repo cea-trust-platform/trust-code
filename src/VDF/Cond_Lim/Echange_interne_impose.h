@@ -51,7 +51,7 @@ public:
 
   virtual void init();
 
-  void verifie_ch_init_nb_comp() override;
+  void verifie_ch_init_nb_comp() const override;
 
   // Overriden in Echange_interne_parfait to have h_gap=+infinity:
   virtual double calcul_h_imp(const double h_gap, const double invLambda) const;

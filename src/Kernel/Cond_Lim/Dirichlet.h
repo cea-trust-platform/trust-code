@@ -53,7 +53,7 @@ public:
   virtual double val_imp(int i, int j) const;
   virtual double val_imp_au_temps(double temps, int i) const;
   virtual double val_imp_au_temps(double temps, int i, int j) const;
-  void verifie_ch_init_nb_comp() override;
+  void verifie_ch_init_nb_comp() const override;
 };
 
 

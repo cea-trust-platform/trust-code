@@ -52,7 +52,7 @@ class Echange_contact_CoviMAC  : public Echange_externe_impose
 public :
   int initialiser(double temps) override;
   void mettre_a_jour(double temps) override { }; //non utilise
-  void verifie_ch_init_nb_comp() override { }; //pas de contrainte sur les composantes de chaque cote
+  void verifie_ch_init_nb_comp() const override { }; //pas de contrainte sur les composantes de chaque cote
 
   REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
   int i_fvf, i_o_fvf;  //indices de frontiere de chaque cote
