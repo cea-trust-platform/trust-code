@@ -632,7 +632,15 @@ if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" !
 then
    if [ "$BATCH_SYSTEM_DETECTED" = 0 ] && [ "$TRUST_WITHOUT_HOST" = 1 ]
    then
-      TRUST_FORCE_PROVIDED_MPICH=1 && [ "$TRUST_USE_CUDA" = 1 ] && TRUST_FORCE_LATEST_OPENMPI=1 # OpenMPI Cuda-Aware
+      if [ "$TRUST_USE_CUDA" = 1 ]
+      then
+         export TRUST_FORCE_LATEST_OPENMPI=1 # OpenMPI Cuda-Aware
+      elif [ "`grep 'Fedora release 3[4-8]' /etc/fedora-release 2>/dev/null`" != "" ]
+      then
+         export TRUST_FORCE_LATEST_MPICH=1
+      else
+         export TRUST_FORCE_PROVIDED_MPICH=1
+      fi
    fi
 fi
 

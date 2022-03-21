@@ -3562,10 +3562,13 @@ do
       fi
    fi
    echo " "
+   other_dest=""
+   other_dest=`[ "$Composant" = "triocfd" ] && echo $triocfd_project_leader`
+   other_dest=`[ "$Composant" = "cathare3D" ] && echo $cathare3D_project_leader`
    if [ $validation_composant = 1 ]
    then
       echo "Release criterion: $Composant OK"
-      [ $nb_total != $tot_total ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL `[ "$Composant" = "triocfd" ] && echo $triocfd_project_leader`
+      [ $nb_total != $tot_total ] && cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL $other_dest
    else
       echo "Release criterion: $Composant KO"
       if [[ "$ComposantsGit" = *"$Composant"* ]] # Test si Composant est dans la liste des composants GIT
@@ -3578,9 +3581,9 @@ do
       then
          if [ $tot_cible != 0 ]
 	 then
-	    cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL `[ "$Composant" = "triocfd" ] && echo $triocfd_project_leader`
+	    cat tmp.log | mail_ -s\"[lance_test_nuit] Cible portability KO on Baltik $Composant\" $TRUST_MAIL $other_dest
 	 else
-	    cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL `[ "$Composant" = "triocfd" ] && echo $triocfd_project_leader`
+	    cat tmp.log | mail_ -s\"[lance_test_nuit] Portability KO on Baltik $Composant\" $TRUST_MAIL $other_dest
 	 fi
       fi
    fi
