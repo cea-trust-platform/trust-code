@@ -21,6 +21,7 @@ from trustutils.jupyter.run import BUILD_DIRECTORY
 mon_dictionnaire = {"x": 0, "y": 1, "z": 2}
 
 pd.set_option("display.notebook_repr_html", True)
+pd.set_option("display.max_rows", None)
 
 
 def saveFileAccumulator(data):
