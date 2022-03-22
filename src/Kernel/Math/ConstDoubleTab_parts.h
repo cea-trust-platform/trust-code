@@ -19,6 +19,7 @@
 // Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef ConstDoubleTab_parts_included
 #define ConstDoubleTab_parts_included
 
@@ -31,24 +32,28 @@
 class ConstDoubleTab_parts
 {
 public:
-  ConstDoubleTab_parts() {};
+  ConstDoubleTab_parts() {}
   ConstDoubleTab_parts(const DoubleVect&);
   void initialize(const DoubleVect&);
   void reset();
-  const DoubleTab& operator[](int i) const
-  {
-    return parts_[i];
-  }
-  int size() const
-  {
-    return parts_.size();
-  }
+  const DoubleTab& operator[](int i) const { return parts_[i]; }
+  int size() const { return parts_.size(); }
 private:
-  // Interdit (voir commentaires dans .cpp)
-  ConstDoubleTab_parts& operator=(const ConstDoubleTab_parts&);
-  ConstDoubleTab_parts(const ConstDoubleTab_parts&);
-  // parts_[i] is initialized by adopter() to point to a sub_part of
-  //  the source array.
+
+  // Description:
+  // ATTENTION: les operateurs suivants sont interdits !
+  // Si une classe contient ceci:
+  //  class Toto {
+  //    DoubleVect x;
+  //    ConstDoubleTab_parts x_parts; // pointe sur x
+  //  };
+  // Alors l'operateur= et le constructeur par copie devraient faire pointer la classe x_parts sur la copie de x. Ce n'est pas possible avec un
+  // constructeur par defaut qui appellerait les methodes ci-dessous.
+  // Donc pour empecher une erreur, j'interdit ces methodes !
+  // (note: probleme identique avec les REF, mais en general on n'a aucun interet a mettre une REF qui pointe a l'interieur de la classe...)
+  ConstDoubleTab_parts& operator=(const ConstDoubleTab_parts&) = delete;
+  ConstDoubleTab_parts(const ConstDoubleTab_parts&) = delete;
+  // parts_[i] is initialized by adopter() to point to a sub_part of the source array.
   VECT(DoubleTab) parts_;
 };
 
@@ -59,28 +64,14 @@ public:
   DoubleTab_parts(DoubleVect&);
   void initialize(DoubleVect&);
   void reset();
-  // operator[] est non const sinon on pourrait contourner le
-  // l'attribut const d'une classe...
-  DoubleTab& operator[](int i)
-  {
-    return parts_[i];
-  }
+  // operator[] est non const sinon on pourrait contourner le l'attribut const d'une classe...
+  DoubleTab& operator[](int i) { return parts_[i]; }
   // En revanche, on a toujours le doit d'avoir la version const:
-  const DoubleTab& operator[](int i) const
-  {
-    return parts_[i];
-  }
-  int size() const
-  {
-    return parts_.size();
-  }
+  const DoubleTab& operator[](int i) const { return parts_[i]; }
+  int size() const { return parts_.size(); }
 private:
-  // Interdit (voir commentaires dans .cpp)
-  //  note: ca serait interdit meme si le parametre n'est pas const !!!
-  DoubleTab_parts& operator=(const DoubleTab_parts&);
-  DoubleTab_parts(const DoubleTab_parts&);
-  // parts_[i] is initialized by adopter() to point to a sub_part of
-  //  the source array.
+  DoubleTab_parts& operator=(const DoubleTab_parts&) = delete;
+  DoubleTab_parts(const DoubleTab_parts&) = delete;
   VECT(DoubleTab) parts_;
 };
 
@@ -91,20 +82,11 @@ public:
   ConstIntTab_parts(const IntVect&);
   void initialize(const IntVect&);
   void reset();
-  const IntTab& operator[](int i) const
-  {
-    return parts_[i];
-  }
-  int size() const
-  {
-    return parts_.size();
-  }
+  const IntTab& operator[](int i) const { return parts_[i]; }
+  int size() const { return parts_.size(); }
 private:
-  // Interdit (voir commentaires dans .cpp)
-  ConstIntTab_parts& operator=(const ConstIntTab_parts&);
-  ConstIntTab_parts(const ConstIntTab_parts&);
-  // parts_[i] is initialized by adopter() to point to a sub_part of
-  //  the source array.
+  ConstIntTab_parts& operator=(const ConstIntTab_parts&) = delete;
+  ConstIntTab_parts(const ConstIntTab_parts&) = delete;
   VECT(IntTab) parts_;
 };
 
@@ -115,29 +97,15 @@ public:
   IntTab_parts(IntVect&);
   void initialize(IntVect&);
   void reset();
-  // operator[] est non const sinon on pourrait contourner le
-  // l'attribut const d'une classe...
-  IntTab& operator[](int i)
-  {
-    return parts_[i];
-  }
+  // operator[] est non const sinon on pourrait contourner le l'attribut const d'une classe...
+  IntTab& operator[](int i) { return parts_[i]; }
   // En revanche, on a toujours le doit d'avoir la version const:
-  const IntTab& operator[](int i) const
-  {
-    return parts_[i];
-  }
-  int size() const
-  {
-    return parts_.size();
-  }
+  const IntTab& operator[](int i) const { return parts_[i]; }
+  int size() const { return parts_.size(); }
 private:
-  // Interdit (voir commentaires dans .cpp)
-  //  note: ca serait interdit meme si le parametre n'est pas const !!!
-  IntTab_parts& operator=(const IntTab_parts&);
-  IntTab_parts(const IntTab_parts&);
-  // parts_[i] is initialized by adopter() to point to a sub_part of
-  //  the source array.
+  IntTab_parts& operator=(const IntTab_parts&) = delete;
+  IntTab_parts(const IntTab_parts&) = delete;
   VECT(IntTab) parts_;
 };
 
-#endif
+#endif /* ConstDoubleTab_parts_included */

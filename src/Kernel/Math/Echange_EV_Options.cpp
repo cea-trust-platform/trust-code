@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,12 +22,8 @@
 
 #include <Echange_EV_Options.h>
 
-Echange_EV_Options::Echange_EV_Options(Operation op,
-                                       Items_Communs items_communs,
-                                       Items_Virtuels items_virtuels) :
-  op_(op), items_communs_(items_communs), items_virtuels_(items_virtuels)
-{
-}
+Echange_EV_Options::Echange_EV_Options(Operation op, Items_Communs items_communs, Items_Virtuels items_virtuels) :
+  op_(op), items_communs_(items_communs), items_virtuels_(items_virtuels) { }
 
 // Instance of the default options used in the default parameters of echange_espace_virtuel() :
 const Echange_EV_Options& echange_ev_opt_default = Echange_EV_Options();

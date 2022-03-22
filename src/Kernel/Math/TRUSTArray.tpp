@@ -45,7 +45,6 @@ template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::resize_array(int new_size, Array_base::Resize_Options opt)
 {
   // Si le tableau change de taille, il doit etre du type TRUSTArray
-  // XXX : Elie & Adrien : on fait comme ca... a voir si ca marche quand ArrOfXXX deviennent de typedef ...
   assert(new_size == size_array_ || std::string(typeid(*this).name()).find("TRUSTArray") != std::string::npos );
   resize_array_(new_size, opt);
 }

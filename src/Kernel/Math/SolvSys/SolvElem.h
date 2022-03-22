@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,23 +43,13 @@ class SolvElem : public DERIV(SolvElem_base)
   Declare_instanciable(SolvElem);
 
 public:
-  inline void iteration(int n,
-                        const DoubleVect& secmem,
-                        DoubleVect& solution,
-                        ArrOfInt& ipar,
-                        ArrOfDouble& fpar,
-                        ArrOfDouble& w);
-  inline ArrOfDouble& dimensionne_wks(int n, ArrOfDouble& w);
+  inline void iteration(int n, const DoubleVect &secmem, DoubleVect &solution, ArrOfInt &ipar, ArrOfDouble &fpar, ArrOfDouble &w);
+  inline ArrOfDouble& dimensionne_wks(int n, ArrOfDouble &w);
 };
 
-inline void SolvElem::iteration(int n,
-                                const DoubleVect& secmem,
-                                DoubleVect& solution,
-                                ArrOfInt& ipar,
-                                ArrOfDouble& fpar,
-                                ArrOfDouble& w)
+inline void SolvElem::iteration(int n, const DoubleVect& secmem, DoubleVect& solution, ArrOfInt& ipar, ArrOfDouble& fpar, ArrOfDouble& w)
 {
-  valeur().iteration(n,secmem,solution,ipar,fpar,w);
+  valeur().iteration(n, secmem, solution, ipar, fpar, w);
 }
 
 inline ArrOfDouble& SolvElem::dimensionne_wks(int n,ArrOfDouble& w)

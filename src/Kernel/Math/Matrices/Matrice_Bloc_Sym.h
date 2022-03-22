@@ -79,9 +79,9 @@ public:
   Sortie& imprimer_formatte(Sortie& s) const override;
 
   //Multiplications
-  DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& y) const override ;
-  DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& y) const override ;
-  DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& y) const override ;
+  DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& y) const override;
+  DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& y) const override;
+  DoubleTab& ajouter_multTab_(const DoubleTab& x, DoubleTab& y) const override;
 
   //Conversions:
   void BlocSymToMatMorseSym(Matrice_Morse_Sym& mat) const;
@@ -90,25 +90,19 @@ public:
   void dimensionner(int N, int M) override; // dimensionnement de blocs_
 
   // Acces aux blocs: renvoie le bloc Aij avec A(N,M)
-  const Matrice& get_bloc(int i, int j) const override ; // (0<=i<N , i<=j<M)
+  const Matrice& get_bloc(int i, int j) const override; // (0<=i<N , i<=j<M)
   Matrice& get_bloc(int i, int j) override;
 
-  void get_stencil( IntTab& stencil ) const override;
+  void get_stencil(IntTab& stencil) const override;
 
-  void get_symmetric_stencil( IntTab& stencil ) const override;
+  void get_symmetric_stencil(IntTab& stencil) const override;
 
-  void get_stencil_and_coefficients( IntTab&      stencil,
-                                     ArrOfDouble& coefficients ) const override;
+  void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
-  void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
-                                               ArrOfDouble& coefficients ) const override;
+  void get_symmetric_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
-public :
-  bool check_symmetric_block_matrix_structure( void ) const;
-  void assert_check_symmetric_block_matrix_structure( void ) const;
-
-protected:
-
+  bool check_symmetric_block_matrix_structure(void) const;
+  void assert_check_symmetric_block_matrix_structure(void) const;
 };
 
 #endif

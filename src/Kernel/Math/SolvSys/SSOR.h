@@ -53,7 +53,7 @@ public:
 
 protected:
   int preconditionner_(const Matrice_Base&, const DoubleVect& secmem, DoubleVect& solution) override;
-  void   prepare_(const Matrice_Base&, const DoubleVect& secmem) override;
+  void prepare_(const Matrice_Base&, const DoubleVect& secmem) override;
 
   void ssor(const Matrice_Morse_Sym&, DoubleVect&);
   void ssor(const Matrice_Bloc_Sym&, DoubleVect&);

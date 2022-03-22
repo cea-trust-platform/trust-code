@@ -23,7 +23,6 @@
 #ifndef SolveurSys_included
 #define SolveurSys_included
 
-
 //
 // .DESCRIPTION class SolveurSys
 //  Un SolveurSys represente n'importe qu'elle classe
@@ -41,31 +40,15 @@ class SolveurSys : public DERIV(SolveurSys_base)
 {
   Declare_instanciable(SolveurSys);
 public:
-  int resoudre_systeme(const Matrice_Base& matrice,
-                       const DoubleVect& secmem,
-                       DoubleVect& solution);
+  int resoudre_systeme(const Matrice_Base &matrice, const DoubleVect &secmem, DoubleVect &solution);
+  int resoudre_systeme(const Matrice_Base &matrice, const DoubleVect &secmem, DoubleVect &solution, int niter_max);
 
+  inline int supporte_matrice_morse_sym() { return valeur().supporte_matrice_morse_sym(); }
+  inline const Nom& le_nom() const override { return nom_; }
+  inline void nommer(const Nom& nom) override { nom_ = nom; }
 
-
-  int resoudre_systeme(const Matrice_Base& matrice,
-                       const DoubleVect& secmem,
-                       DoubleVect& solution,
-                       int niter_max);
-
-
-  inline int supporte_matrice_morse_sym()
-  {
-    return valeur().supporte_matrice_morse_sym();
-  };
-  inline const Nom& le_nom() const override
-  {
-    return nom_;
-  };
-  inline void nommer(const Nom& nom) override
-  {
-    nom_ = nom;
-  };
 private:
   Nom nom_;
 };
-#endif
+
+#endif /* SolveurSys_included */

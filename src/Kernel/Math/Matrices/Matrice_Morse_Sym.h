@@ -67,15 +67,13 @@ public :
   Matrice_Morse_Sym& operator *=(double );
   void scale( const double& x ) override;
 
-  void get_stencil( IntTab& stencil ) const override;
+  void get_stencil(IntTab& stencil) const override;
 
-  void get_symmetric_stencil( IntTab& stencil ) const override;
+  void get_symmetric_stencil(IntTab& stencil) const override;
 
-  void get_stencil_and_coefficients( IntTab&      stencil,
-                                     ArrOfDouble& coefficients ) const override;
+  void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
-  void get_symmetric_stencil_and_coefficients( IntTab&      stencil,
-                                               ArrOfDouble& coefficients ) const override;
+  void get_symmetric_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
   Matrice_Morse_Sym  operator -() const;
 
@@ -90,30 +88,12 @@ public :
   Sortie& imprimer_formatte(Sortie& s) const override;
   void compacte(int elim_coeff_nul=0);
   void renumerote() const;                       // Creation d'une matrice renumerotee pour reduire la largeur de bande
-  Matrice& matrice_renumerotee()
-  {
-    return matrice_renumerotee_;
-  };// Renvoie la matrice renumerotee
-  Matrice& matrice_renumerotee() const
-  {
-    return matrice_renumerotee_;
-  };// Renvoie la matrice renumerotee
-  inline ArrOfInt& permutation()
-  {
-    return permutation_;
-  };
-  inline ArrOfInt& permutation_inverse()
-  {
-    return permutation_inverse_;
-  };
-  inline ArrOfInt& permutation() const
-  {
-    return permutation_;
-  };
-  inline ArrOfInt& permutation_inverse() const
-  {
-    return permutation_inverse_;
-  };
+  Matrice& matrice_renumerotee() { return matrice_renumerotee_; }// Renvoie la matrice renumerotee
+  Matrice& matrice_renumerotee() const { return matrice_renumerotee_; }// Renvoie la matrice renumerotee
+  inline ArrOfInt& permutation() { return permutation_; }
+  inline ArrOfInt& permutation_inverse() { return permutation_inverse_; }
+  inline ArrOfInt& permutation() const { return permutation_; }
+  inline ArrOfInt& permutation_inverse() const { return permutation_inverse_; }
 
   bool check_symmetric_morse_matrix_structure( void ) const;
   bool check_sorted_symmetric_morse_matrix_structure( void ) const;
@@ -121,10 +101,7 @@ public :
   void assert_check_sorted_symmetric_morse_matrix_structure( void ) const;
 
 private :
-  int isLU() const
-  {
-    return 0;
-  };
+  int isLU() const { return 0; }
   mutable ArrOfInt permutation_;
   mutable ArrOfInt permutation_inverse_;
   mutable Matrice matrice_renumerotee_;

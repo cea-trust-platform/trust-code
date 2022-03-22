@@ -23,35 +23,28 @@
 #ifndef Precond_local_included
 #define Precond_local_included
 
-#include <Precond_base.h>
-#include <SolveurSys.h>
 #include <Matrice_Morse_Sym.h>
 #include <Ref_Matrice_Base.h>
+#include <Precond_base.h>
+#include <SolveurSys.h>
 
 class Precond_local : public Precond_base
 {
   Declare_instanciable(Precond_local);
-public :
 
 protected :
-  void   prepare_(const Matrice_Base&, const DoubleVect&) override;
+  void prepare_(const Matrice_Base&, const DoubleVect&) override;
   int preconditionner_(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
   int precond(const Matrice_Base&, const DoubleVect&, DoubleVect&);
 
-  SolveurSys        le_precond_local_;
+  SolveurSys le_precond_local_;
   Matrice_Morse_Sym la_matrice_locale_;
   Matrice_Morse_Sym matrice_de_travail_;
 
   REF(Matrice_Base) matrice_a_resoudre_;
 
-  void res_syst_loc_simple(const Matrice_Morse_Sym& mat,
-                           const DoubleVect& secmem,
-                           DoubleVect& solution,
-                           const Champ_Inc_base& champ);
-  void res_syst_loc_hybride(const Matrice_Morse_Sym& mat,
-                            const DoubleVect& secmem,
-                            DoubleVect& solution,
-                            const Champ_Inc_base& champ);
+  void res_syst_loc_simple(const Matrice_Morse_Sym& mat, const DoubleVect& secmem, DoubleVect& solution, const Champ_Inc_base& champ);
+  void res_syst_loc_hybride(const Matrice_Morse_Sym& mat, const DoubleVect& secmem, DoubleVect& solution, const Champ_Inc_base& champ);
 };
 
-#endif
+#endif /* Precond_local_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,69 +21,30 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef Matrice_SuperMorse_included
 #define Matrice_SuperMorse_included
+
 #include <Matrice_Base.h>
+
 // .DESCRIPTION: Matrice avec un stockage encore plus creux que Matrice_Morse:
 //  On stocke uniquement les lignes non vides (economie sur la taille de tab1_,
 //  tab2_ et coeff_ restent identiques)
 class Matrice_SuperMorse
 {
-
 public :
+  const int& tab1(int i) const { return tab1_[i]; } // i de 0 a n
+  int& tab1(int i) { return tab1_[i]; }
+  const int& tab2(int i) const { return tab2_[i]; } // i de 0 a nnz-1
+  int& tab2(int i) { return tab2_[i]; }
+  const double& coeff(int i) const { return coeff_[i]; } // i de 0 a nnz-1
+  double& coeff(int i) { return coeff_[i]; }
 
+  ArrOfInt& get_set_tab1( void ) { return tab1_ ; }
+  ArrOfInt& get_set_tab2( void ) { return tab2_ ; }
+  ArrOfDouble& get_set_coeff( void ) { return coeff_ ; }
 
-  const int& tab1(int i) const
-  {
-    return tab1_[i]; // i de 0 a n
-  }
-  int& tab1(int i)
-  {
-    return tab1_[i];
-  }
-  const int& tab2(int i) const
-  {
-    return tab2_[i]; // i de 0 a nnz-1
-  }
-  int& tab2(int i)
-  {
-    return tab2_[i];
-  }
-  const double& coeff(int i) const
-  {
-    return coeff_[i]; // i de 0 a nnz-1
-  }
-  double& coeff(int i)
-  {
-    return coeff_[i];
-  }
+  const ArrOfInt& get_tab1( void ) const { return tab1_ ; }
+  const ArrOfInt& get_tab2( void ) const { return tab2_ ; }
+  const ArrOfDouble& get_coeff( void ) const { return coeff_ ; }
 
-  ArrOfInt& get_set_tab1( void )
-  {
-    return tab1_ ;
-  }
-  ArrOfInt& get_set_tab2( void )
-  {
-    return tab2_ ;
-  }
-  ArrOfDouble& get_set_coeff( void )
-  {
-    return coeff_ ;
-  }
-
-  const ArrOfInt& get_tab1( void ) const
-  {
-    return tab1_ ;
-  }
-  const ArrOfInt& get_tab2( void ) const
-  {
-    return tab2_ ;
-  }
-  const ArrOfDouble& get_coeff( void ) const
-  {
-    return coeff_ ;
-  }
-
-
-public:
   double ajouter_mult_vect_et_prodscal(const DoubleVect& x, DoubleVect& resu) const;
   // Tableau contenant les indices des lignes non vides (indices fortran)
   ArrOfInt lignes_non_vides_;
@@ -91,9 +52,8 @@ public:
 
 
 protected :
-  ArrOfInt tab1_;
-  ArrOfInt tab2_;
+  ArrOfInt tab1_, tab2_;
   ArrOfDouble coeff_;
-
 };
+
 #endif

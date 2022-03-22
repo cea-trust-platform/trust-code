@@ -33,8 +33,8 @@ class ILU : public Precond_base
 {
   Declare_instanciable(ILU);
 public:
-  inline int a_un_interet();
-  inline int type_precond();
+  inline int a_un_interet() { return 1; }
+  inline int type_precond() { return precond_; }
 protected:
   void   prepare_(const Matrice_Base&, const DoubleVect&) override;
   int preconditionner_(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
@@ -53,18 +53,4 @@ protected:
   Matrice_Morse MLOC;
 };
 
-
-
-inline int ILU::a_un_interet()
-{
-  return 1;
-}
-
-inline int ILU::type_precond()
-{
-  return precond_;
-}
-
-
-
-#endif
+#endif /* ILU_included */

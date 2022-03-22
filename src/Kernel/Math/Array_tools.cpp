@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Array_tools.h>
-#include <TRUSTTab.h>
 
 // Description: retire les doublons du tableau array
 //  (suppose que le tableau est trie dans l'ordre croissant)
@@ -491,38 +490,4 @@ void calculer_renum_sans_doublons(const IntTab& tab, ArrOfInt& renum, ArrOfInt& 
   renum_inverse.set_smart_resize(1); // pas de reallocation
   renum_inverse.resize_array(count+1);
   // FIN MODIF ELI LAUCOIN 31/01/2012
-}
-
-void array_smart_allocate(ArrOfInt& array, const int n)
-{
-  array.set_smart_resize(1);
-  // get memory for the requested size
-  array.resize_array(n, Array_base::NOCOPY_NOINIT);
-  // and set actual size to zero
-  array.resize_array(0);
-}
-
-void array_smart_allocate(ArrOfDouble& array, const int n)
-{
-  array.set_smart_resize(1);
-  // get memory for the requested size
-  array.resize_array(n, Array_base::NOCOPY_NOINIT);
-  // and set actual size to zero
-  array.resize_array(0);
-}
-
-void append_array_to_array(ArrOfInt& dest, const ArrOfInt& src)
-{
-  const int n1 = dest.size_array();
-  const int n2 = src.size_array();
-  dest.resize_array(n1+n2);
-  dest.inject_array(src, n2 /* nb elem */, n1 /* dest index */, 0 /* src index */);
-}
-
-void append_array_to_array(ArrOfDouble& dest, const ArrOfDouble& src)
-{
-  const int n1 = dest.size_array();
-  const int n2 = src.size_array();
-  dest.resize_array(n1+n2);
-  dest.inject_array(src, n2 /* nb elem */, n1 /* dest index */, 0 /* src index */);
 }

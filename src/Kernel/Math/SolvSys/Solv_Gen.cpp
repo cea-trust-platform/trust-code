@@ -152,12 +152,7 @@ Entree& Solv_Gen::readOn(Entree& is )
   return is;
 }
 
-
-
-
-int Solv_Gen::resoudre_systeme(const Matrice_Base& la_matrice,
-                               const DoubleVect& secmem,
-                               DoubleVect& solution)
+int Solv_Gen::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVect& secmem, DoubleVect& solution)
 {
 
   // On definit tout nos vecteurs et leur dimension respective et nos constantes
@@ -217,10 +212,7 @@ int Solv_Gen::resoudre_systeme(const Matrice_Base& la_matrice,
     }
 }
 
-int Solv_Gen::solve(const Matrice_Base& matrice,
-                    const Matrice_Base& mat_loc,
-                    const DoubleVect& secmem,
-                    DoubleVect& solution)
+int Solv_Gen::solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, const DoubleVect& secmem, DoubleVect& solution)
 {
   // n : la taille du systeme lineaire
   int n = secmem.size();
@@ -453,5 +445,3 @@ int Solv_Gen::solve(const Matrice_Base& matrice,
     }
   return niter;
 }
-
-

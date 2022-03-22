@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,6 @@
 #ifndef Precond_included
 #define Precond_included
 
-
 //
 // .DESCRIPTION class Precond
 //  Un Precond represente n'importe qu'elle classe
@@ -40,25 +39,16 @@ Declare_deriv(Precond_base);
 class Precond : public DERIV(Precond_base)
 {
   Declare_instanciable(Precond);
-
 public:
-  inline int preconditionner(const Matrice_Base&, const DoubleVect&,
-                             DoubleVect& );
-  inline int supporte_matrice_morse_sym()
-  {
-    return valeur().supporte_matrice_morse_sym();
-  };
+  inline int preconditionner(const Matrice_Base&, const DoubleVect&, DoubleVect&);
+  inline int supporte_matrice_morse_sym() { return valeur().supporte_matrice_morse_sym(); }
 };
 
-inline int Precond::preconditionner(const Matrice_Base& matrice,
-                                    const DoubleVect& secmem,
-                                    DoubleVect& solution)
+inline int Precond::preconditionner(const Matrice_Base& matrice, const DoubleVect& secmem, DoubleVect& solution)
 {
-  // B.M. pour ne pas modifier le comportement d'origine, debrancher le champ si on passe
-  // par cette methode:
+  // B.M. pour ne pas modifier le comportement d'origine, debrancher le champ si on passe par cette methode:
   Precond_base& p = valeur();
   return p.preconditionner(matrice,secmem,solution);
 }
 
-
-#endif
+#endif /* Precond_included */

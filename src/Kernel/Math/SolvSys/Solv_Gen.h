@@ -34,50 +34,24 @@ class Solv_Gen : public solv_iteratif
 {
   Declare_instanciable_sans_constructeur(Solv_Gen);
 public :
-
   Solv_Gen();
   int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
-  inline  int resoudre_systeme(const Matrice_Base& M, const DoubleVect& A,
-                               DoubleVect& B,
-                               int niter_max) override
+  inline int resoudre_systeme(const Matrice_Base& M, const DoubleVect& A, DoubleVect& B, int niter_max) override
   {
-    return resoudre_systeme(M, A,B);
-  };
-  inline SolvElem& le_solveur_elem() ;
-  inline const SolvElem& le_solveur_elem() const;
-  inline const Precond& get_precond() const;
-  inline void set_precond(const Precond&);
+    return resoudre_systeme(M, A, B);
+  }
+  inline SolvElem& le_solveur_elem() { return le_solveur_elem_; }
+  inline const SolvElem& le_solveur_elem() const { return le_solveur_elem_; }
+  inline const Precond& get_precond() const { return le_precond_; }
+  inline void set_precond(const Precond& pre ) { le_precond_ = pre; }
   void reinit() override;
 
 protected :
-  int solve(const Matrice_Base& matrice,
-            const Matrice_Base& mat_loc,
-            const DoubleVect& secmem,
-            DoubleVect& solution);
-  Precond le_precond_;
-  int nb_it_max_;
-  int nb_it_max_flag ;
-  int force_ ;
+  int solve(const Matrice_Base& matrice, const Matrice_Base& mat_loc, const DoubleVect& secmem, DoubleVect& solution);
 
+  Precond le_precond_;
   SolvElem le_solveur_elem_;
+  int nb_it_max_, nb_it_max_flag, force_;
 };
 
-inline void Solv_Gen::set_precond(const Precond& pre)
-{
-  le_precond_ = pre;
-}
-
-inline const Precond& Solv_Gen::get_precond() const
-{
-  return le_precond_;
-}
-
-inline SolvElem&  Solv_Gen::le_solveur_elem()
-{
-  return le_solveur_elem_;
-}
-inline const SolvElem&  Solv_Gen::le_solveur_elem() const
-{
-  return le_solveur_elem_;
-}
-#endif
+#endif /* Solv_Gen_included */

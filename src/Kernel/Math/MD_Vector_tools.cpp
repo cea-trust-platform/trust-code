@@ -127,15 +127,13 @@ void MD_Vector_tools::creer_tableau_distribue(const MD_Vector& md, Array_base& v
     }
 }
 
-
-template <class VType>
-void echange_espace_virtuel_(const MD_Vector& md, VType& v, int is_double, const Echange_EV_Options& opt = echange_ev_opt_default)
+template <typename _TYPE_>
+void echange_espace_virtuel_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, const Echange_EV_Options& opt = echange_ev_opt_default)
 {
   const MD_Vector_base& mdv = md.valeur();
+  const int is_double = (std::is_same<_TYPE_,double>::value) ? 1 : 0;
 
-  if (md == last_md && v.line_size() == last_linesize && last_isdouble == is_double && last_opt == opt)
-    {
-    }
+  if (md == last_md && v.line_size() == last_linesize && last_isdouble == is_double &&  last_opt == opt) { /* Do nothing si double et pas 1er passage */ }
   else
     {
       last_md = md;
@@ -153,26 +151,26 @@ void echange_espace_virtuel_(const MD_Vector& md, VType& v, int is_double, const
   comm.end_comm();
 }
 
-template <class VType>
-void echange_espace_virtuel1_(const MD_Vector& md, VType& v, int is_double, MD_Vector_tools::Operations_echange opt)
+template<typename _TYPE_>
+void echange_espace_virtuel1_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, MD_Vector_tools::Operations_echange opt)
 {
   switch(opt)
     {
     case MD_Vector_tools::ECHANGE_EV:
-      echange_espace_virtuel_(md, v, is_double, echange_ev_opt_default);
+      echange_espace_virtuel_(md, v, echange_ev_opt_default);
       break;
     case MD_Vector_tools::EV_SOMME:
-      echange_espace_virtuel_(md, v, is_double, Echange_EV_Options(Echange_EV_Options::SUM));
+      echange_espace_virtuel_(md, v, Echange_EV_Options(Echange_EV_Options::SUM));
       break;
     case MD_Vector_tools::EV_SOMME_ECHANGE:
-      echange_espace_virtuel_(md, v, is_double, Echange_EV_Options(Echange_EV_Options::SUM));
-      echange_espace_virtuel_(md, v, is_double, echange_ev_opt_default);
+      echange_espace_virtuel_(md, v, Echange_EV_Options(Echange_EV_Options::SUM));
+      echange_espace_virtuel_(md, v, echange_ev_opt_default);
       break;
     case MD_Vector_tools::EV_MAX:
-      echange_espace_virtuel_(md, v, is_double, Echange_EV_Options(Echange_EV_Options::MAX));
+      echange_espace_virtuel_(md, v, Echange_EV_Options(Echange_EV_Options::MAX));
       break;
     case MD_Vector_tools::EV_MINCOL1:
-      echange_espace_virtuel_(md, v, is_double, Echange_EV_Options(Echange_EV_Options::MINCOL1));
+      echange_espace_virtuel_(md, v, Echange_EV_Options(Echange_EV_Options::MINCOL1));
       break;
     default:
       Cerr << "echange_espace_virtuel1_ operation not implemented" << finl;
@@ -180,57 +178,29 @@ void echange_espace_virtuel1_(const MD_Vector& md, VType& v, int is_double, MD_V
     }
 }
 
-void MD_Vector_tools::echange_espace_virtuel(IntVect& v, Operations_echange opt)
+template<typename _TYPE_>
+inline void call_echange_espace_virtuel(TRUSTVect<_TYPE_>& v, MD_Vector_tools::Operations_echange opt)
 {
   if (v.get_md_vector().non_nul())
     {
       statistiques().begin_count(echange_vect_counter_);
-      echange_espace_virtuel1_(v.get_md_vector(), v, 0, opt);
+      echange_espace_virtuel1_(v.get_md_vector(), v, opt);
       statistiques().end_count(echange_vect_counter_);
     }
-#ifndef NDEBUG
-  else
-    {
-      //Cerr << "Warning: A call to ::echange_espace_virtuel() is done on a non-distributed vector." << finl;
-      //Process::exit();
-    }
-#endif
+  //else Cerr << "Warning: A call to ::echange_espace_virtuel() is done on a non-distributed vector." << finl; /Process::exit();
 }
 
-void MD_Vector_tools::echange_espace_virtuel(DoubleVect& v, Operations_echange opt)
-{
-  if (v.get_md_vector().non_nul())
-    {
-      statistiques().begin_count(echange_vect_counter_);
-      echange_espace_virtuel1_(v.get_md_vector(), v, 1 /* double */, opt);
-      statistiques().end_count(echange_vect_counter_);
-    }
-#ifndef NDEBUG
-  else
-    {
-      //Cerr << "Warning: A call to ::echange_espace_virtuel() is done on a non-distributed vector." << finl;
-      //Process::exit();
-    }
-#endif
-}
-// static inline void -> inline void car sinon erreur sur AIX:
-// Static declarations are not considered for a function call if the function is not qualified
-inline void setflag(ArrOfInt& flags, int i)
-{
-  flags[i] = 1;
-}
-inline void clearflag(ArrOfInt& flags, int i)
-{
-  flags[i] = 0;
-}
+void MD_Vector_tools::echange_espace_virtuel(IntVect& v, Operations_echange opt) { call_echange_espace_virtuel<int>(v,opt); }
+void MD_Vector_tools::echange_espace_virtuel(DoubleVect& v, Operations_echange opt) { call_echange_espace_virtuel<double>(v,opt); }
+
+inline void setflag(ArrOfInt& flags, int i) { flags[i] = 1; }
+inline void clearflag(ArrOfInt& flags, int i) { flags[i] = 0; }
+inline void clearflag(ArrOfBit& flags, int i) { flags.clearbit(i); }
+
 inline void setflag(ArrOfBit& flags, int i)
 {
   // On a initialise le tableau a 1 par defaut dans get_sequential_items_flags()
   assert(flags[i] == 1);
-}
-inline void clearflag(ArrOfBit& flags, int i)
-{
-  flags.clearbit(i);
 }
 
 template <class FlagsType>

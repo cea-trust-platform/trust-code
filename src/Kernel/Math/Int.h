@@ -23,18 +23,12 @@
 #ifndef INT_H
 #define INT_H
 
-
 #ifndef _MATH_INCLUDED
 #include <math.h>
 #endif
 #include <arch.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    fonctions utiles sur les int
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+// .DESCRIPTION : fonctions utiles sur les int
 
 // Description: sorts x and y in ascending order
 inline void sort_values(int& x, int& y)
@@ -47,5 +41,4 @@ inline void sort_values(int& x, int& y)
     }
 }
 
-#endif
-
+#endif /* INT_H */

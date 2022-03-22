@@ -29,30 +29,13 @@ class solv_iteratif : public SolveurSys_base
 {
   Declare_base_sans_constructeur(solv_iteratif);
 public :
-
   solv_iteratif();
-  inline void set_seuil(double s);
-  inline double get_seuil() const;
-  inline int solveur_direct() const override
-  {
-    return 0;
-  };
+  inline void set_seuil(double s) { seuil_ = s; }
+  inline double get_seuil() const { return seuil_; }
+  inline int solveur_direct() const override { return 0; }
 
 protected :
-
   double seuil_;
 };
 
-
-inline void solv_iteratif::set_seuil(double s)
-{
-  seuil_=s;
-}
-
-inline double solv_iteratif::get_seuil() const
-{
-  return seuil_;
-}
-
-#endif
-
+#endif /* solv_iteratif_included */

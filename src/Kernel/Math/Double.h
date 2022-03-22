@@ -23,8 +23,6 @@
 #ifndef DOUBLE_H
 #define DOUBLE_H
 
-
-
 #include <math.h>
 #include <blas1.h>
 #include <Objet_U.h>
@@ -76,45 +74,10 @@
 #  define DMINFLOAT        1e-30
 # endif
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    fonctions utiles sur les double
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
+// .DESCRIPTION : fonctions utiles sur les double
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline double carre(double x)
-{
-  return x*x;
-}
+inline double carre(double x) { return x*x; }
 
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline double* prodvect(const double* a, const double* b, double* resu)
 {
   resu[0]=a[1]*b[2]-a[2]*b[1];
@@ -123,40 +86,8 @@ inline double* prodvect(const double* a, const double* b, double* resu)
   return(resu);
 }
 
+inline double determinant(double a[2], double b[2]) { return (a[0]*b[1]-a[1]*b[0]); }
 
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline double determinant(double a[2], double b[2])
-{
-  return (a[0]*b[1]-a[1]*b[0]);
-}
-
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline double norme(int n, const double* const a)
 {
   const integer un=1;
@@ -164,151 +95,40 @@ inline double norme(int n, const double* const a)
   return F77NAME(DNRM2)(&m, a, &un);
 }
 
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline int est_egal(double x1, double x2, double eps)
 {
   double somme = std::fabs(x1)+std::fabs(x2);
   return ( (somme < eps) || (std::fabs(x1-x2) < eps * somme) );
 }
 
-inline int est_egal(double x1, double x2)
-{
-  return est_egal(x1,x2,Objet_U::precision_geom);
-}
+inline int est_egal(double x1, double x2) { return est_egal(x1,x2,Objet_U::precision_geom); }
 
+inline int est_different(double x1, double x2, double eps) { return !est_egal(x1,x2,eps); }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline int est_different(double x1, double x2, double eps)
-{
-  return !est_egal(x1,x2,eps);
-}
+inline int est_different(double x1, double x2) { return !est_egal(x1,x2); }
 
-inline int est_different(double x1, double x2)
-{
-  return !est_egal(x1,x2);
-}
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline int inf_ou_egal(double x1, double x2, double eps)
 {
   double somme=std::fabs(x1)+std::fabs(x2);
   return ( (somme < eps) || (x1 < x2 + eps * somme));
 }
 
-inline int inf_ou_egal(double x1, double x2)
-{
-  return inf_ou_egal(x1,x2,Objet_U::precision_geom);
-}
+inline int inf_ou_egal(double x1, double x2) { return inf_ou_egal(x1,x2,Objet_U::precision_geom); }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline int inf_strict(double x1, double x2, double eps)
 {
   double somme=std::fabs(x1)+std::fabs(x2);
   return ( (somme > eps) && (x1 < x2 - eps * somme) );
 }
 
-inline int inf_strict(double x1, double x2)
-{
-  return inf_strict(x1,x2,Objet_U::precision_geom);
-}
+inline int inf_strict(double x1, double x2) { return inf_strict(x1,x2,Objet_U::precision_geom); }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline int sup_strict(double x1, double x2, double eps)
-{
-  return !inf_ou_egal(x1,x2,eps);
-}
+inline int sup_strict(double x1, double x2, double eps) { return !inf_ou_egal(x1,x2,eps); }
 
-inline int sup_strict(double x1, double x2)
-{
-  return sup_strict(x1,x2,Objet_U::precision_geom);
-}
+inline int sup_strict(double x1, double x2) { return sup_strict(x1,x2,Objet_U::precision_geom); }
 
+inline int sup_ou_egal(double x1, double x2, double eps) { return !inf_strict(x1,x2,eps); }
 
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline int sup_ou_egal(double x1, double x2, double eps)
-{
-  return !inf_strict(x1,x2,eps);
-}
+inline int sup_ou_egal(double x1, double x2) { return sup_ou_egal(x1,x2,Objet_U::precision_geom); }
 
-inline int sup_ou_egal(double x1, double x2)
-{
-  return sup_ou_egal(x1,x2,Objet_U::precision_geom);
-}
-
-#endif
-
-
-
+#endif /* DOUBLE_H */

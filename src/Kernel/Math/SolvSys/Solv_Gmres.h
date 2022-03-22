@@ -37,21 +37,17 @@ public :
 
   Solv_Gmres();
   int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& ) override;
-  inline  int resoudre_systeme(const Matrice_Base& M, const DoubleVect& A,
-                               DoubleVect& B,
-                               int niter_max) override
+  inline int resoudre_systeme(const Matrice_Base& M, const DoubleVect& A, DoubleVect& B, int niter_max) override
   {
-    return resoudre_systeme(M, A,B);
-  };
+    return resoudre_systeme(M, A, B);
+  }
 
 protected :
-
   int Gmres(const Matrice_Morse&, const DoubleVect&, DoubleVect& );
-  int is_local_gmres,precond_diag;
+
   VECT(DoubleVect) v; //espcace Krilov
-  int nb_it_max_;
-  int controle_residu_;
-  int dim_espace_Krilov_;
+  int is_local_gmres,precond_diag;
+  int nb_it_max_, controle_residu_, dim_espace_Krilov_;
 };
 
-#endif
+#endif /* Solv_Gmres_included */

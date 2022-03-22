@@ -23,8 +23,8 @@
 #ifndef DescStructure_included
 #define DescStructure_included
 
-#include <assert.h>
 #include <Objet_U.h>
+#include <assert.h>
 #include <Vect.h>
 
 class Esp_Virt;
@@ -33,17 +33,10 @@ class Esp_Dist;
 Declare_vect(Esp_Virt);
 Declare_vect(Esp_Dist);
 
-//////////////////////////////////////////////////////////////////////////////
-//
 // .DESCRIPTION Sert a relire ancinne structure parallele
-// .SECTION voir aussi
-//////////////////////////////////////////////////////////////////////////////
 class DescStructure : public Objet_U
 {
   Declare_instanciable(DescStructure);
-public:
-
-
-private:
 };
+
 #endif

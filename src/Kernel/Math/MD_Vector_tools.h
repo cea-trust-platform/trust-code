@@ -19,6 +19,7 @@
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef MD_Vector_tools_included
 #define MD_Vector_tools_included
 
@@ -53,15 +54,12 @@ public:
   static int get_sequential_items_flags(const MD_Vector&, ArrOfBit& flags, int line_size = 1);
   static int get_sequential_items_flags(const MD_Vector&, ArrOfInt& flags, int line_size = 1);
   static void compute_sequential_items_index(const MD_Vector&, MD_Vector_renumber&, int line_size = 1);
-
   static void creer_md_vect_renum(const IntVect& renum, MD_Vector& md_vect);
   static void creer_md_vect_renum_auto(IntVect& flags_renum, MD_Vector& md_vect);
-
-
   static void dump_vector_with_md(const DoubleVect&, Sortie&);
   static void restore_vector_with_md(DoubleVect&, Entree&);
   //etend les espaces distants de src pour contenir items et renseigne leurs nouveaux numeros dedans
   static MD_Vector extend(const MD_Vector& src, extra_item_t& items);
 };
 
-#endif
+#endif /* MD_Vector_tools_included */

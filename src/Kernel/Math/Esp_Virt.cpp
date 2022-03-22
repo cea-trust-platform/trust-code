@@ -24,22 +24,9 @@
 
 Implemente_instanciable_sans_constructeur(Esp_Virt,"Esp_Virt",Objet_U);
 
-
 // Description:
 //    Lecture d'un espace virtuel dans un flot d'entree
 //    Un espace virtuel est represente par ses 3 attributs PE_voisin_, deb_ et nb_
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& Esp_Virt::readOn(Entree& is)
 {
   is >> PE_voisin_;
@@ -47,22 +34,9 @@ Entree& Esp_Virt::readOn(Entree& is)
   return is;
 }
 
-
 // Description:
 //    Ecriture d'un espace virtuel sur un flot de sortie
 //    Un espace virtuel est represente par ses 3 attributs PE_voisin_, deb_ et nb_
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Sortie& Esp_Virt::printOn(Sortie& os) const
 {
   os << PE_voisin_ << finl;
@@ -70,24 +44,11 @@ Sortie& Esp_Virt::printOn(Sortie& os) const
   return os;
 }
 
-
 // Description:
 // Precondition:
 //    Constructeur par defaut.
 //    Tous les attributs sont fixes a -1
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Esp_Virt::Esp_Virt()
 {
   PE_voisin_ = -1;
 }
-

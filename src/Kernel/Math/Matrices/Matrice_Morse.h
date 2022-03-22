@@ -95,25 +95,13 @@ public :
   // ordre retourne n si n==m
   int ordre() const override;
 
-  int nb_lignes() const override
-  {
-    return tab1_.size()-1; // nb_lignes retourne n
-  }
-  int nb_colonnes() const override
-  {
-    return m_; // nb_colonnes retourne m
-  }
-  int nb_coeff() const
-  {
-    return coeff_.size(); // nb_coeff retourne nnz
-  }
+  int nb_lignes() const override { return tab1_.size()-1; } // nb_lignes retourne n
+  int nb_colonnes() const override { return m_; } // nb_colonnes retourne m
+  int nb_coeff() const { return coeff_.size(); } // nb_coeff retourne nnz
 
   void set_nb_columns( const int );
   void set_symmetric( const int );
-  int get_symmetric( ) const
-  {
-    return symetrique_;
-  }
+  int get_symmetric( ) const { return symetrique_; }
 
   IntVect& get_set_tab1( void )
   {
@@ -125,23 +113,11 @@ public :
     is_stencil_up_to_date_ = false ;
     return tab2_ ;
   }
-  DoubleVect& get_set_coeff( void )
-  {
-    return coeff_ ;
-  }
+  DoubleVect& get_set_coeff( void ) { return coeff_ ; }
 
-  const IntVect& get_tab1( void ) const
-  {
-    return tab1_ ;
-  }
-  const IntVect& get_tab2( void ) const
-  {
-    return tab2_ ;
-  }
-  const DoubleVect& get_coeff( void ) const
-  {
-    return coeff_ ;
-  }
+  const IntVect& get_tab1( void ) const { return tab1_ ; }
+  const IntVect& get_tab2( void ) const { return tab2_ ; }
+  const DoubleVect& get_coeff( void ) const { return coeff_ ; }
 
   int nb_vois(int i) const
   {
@@ -158,14 +134,8 @@ public :
   // Ne pas supprimer ces deux methodes coef(i,j) qui bien qu'elles fassent la meme chose que les
   // deux precedents sont utilisees tres souvent par OVAP:
   // Access to coefficients do not modify the stencil so we can leave these two access functions
-  inline double coef(int i, int j) const
-  {
-    return operator()(i,j);
-  };
-  inline double& coef(int i,int j)
-  {
-    return operator()(i,j);
-  };
+  inline double coef(int i, int j) const { return operator()(i,j); }
+  inline double& coef(int i,int j) { return operator()(i,j); }
 
   Matrice_Morse& operator=(const Matrice_Morse& );
   friend Matrice_Morse operator +(const Matrice_Morse&, const Matrice_Morse& );
@@ -175,8 +145,7 @@ public :
 
   void get_stencil( IntTab& stencil ) const override;
 
-  void get_stencil_and_coefficients( IntTab&      stencil,
-                                     ArrOfDouble& coefficients ) const override;
+  void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;
 
   Matrice_Morse& operator /=(double );
   Matrice_Morse& operator *=(const DoubleVect& );

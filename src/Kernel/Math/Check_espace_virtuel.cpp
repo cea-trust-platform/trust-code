@@ -22,15 +22,9 @@
 
 #include <Check_espace_virtuel.h>
 #include <MD_Vector_base.h>
-#include <Comm_Group.h>
-#include <TRUSTVect.h>
 
-// Description:
-//  Verifie si le vecteur v a son espace virtuel a jour.
-//  Cette fonction doit etre appelee simultanement par tous
-//  les processeurs qui partagent le vecteur.
-//  (pour cela, on cree une copie qu'on echange, puis on
-//   compare a l'original).
+// Description: Verifie si le vecteur v a son espace virtuel a jour. Cette fonction doit etre appelee simultanement par tous les processeurs qui partagent le vecteur.
+//  (pour cela, on cree une copie qu'on echange, puis on compare a l'original).
 int check_espace_virtuel_vect(const DoubleVect& v)
 {
   // On fait une copie:
@@ -64,121 +58,12 @@ int check_espace_virtuel_vect(const IntVect& v)
   return 1;
 }
 
-template <class V, class X>
-void remplir_items_non_calcules_(V& v, X valeur)
-{
-  if (v.get_md_vector().non_nul())
-    {
-      const ArrOfInt& blocs = v.get_md_vector().valeur().get_items_to_compute();
-
-      const int sz = blocs.size_array() / 2;
-      const int line_size = v.line_size();
-      int j = 0;
-      // Ne pas passer par operator[], sinon plantage si la valeur actuelle est invalide
-      X *ptr = v.addr();
-      for (int i = 0; i < sz; i++)
-        {
-          // remplir les elements jusqu'au debut du bloc:
-          const int j_fin = blocs[i*2] * line_size;
-          assert(j >= 0 && j_fin <= v.size_array());
-          for (; j < j_fin; j++)
-            ptr[j] = valeur;
-          // Sauter a la fin du bloc
-          j = blocs[i*2+1] * line_size;
-        }
-      // Remplir les elements entre la fin du dernier bloc et la fin du vecteur
-      const int j_fin = v.size_array();
-      for (; j < j_fin; j++)
-        ptr[j] = valeur;
-    }
-}
-
-// Description:
-//  Remplit les "items non calcules" du tableau avec une valeur
-//  invalide. Ce sont tous les items qui ne sont pas repertories
-//  dans v.get_md_vector().valeurs().get_items_to_compute().
-//  (items non calcules par les operations par defaut sur les vecteurs,
-//   en general ce sont les items virtuels)
-//  Il est conseille d'appliquer cette methode
-//  a la fin des fonctions qui ne renvoient pas un espace
-//  virtuel a jour avec declare_espace_virtuel_invalide(...))
-//  de sorte a provoquer une erreur si l'espace virtuel est utilise.
-void remplir_items_non_calcules(DoubleVect& v, double valeur)
-{
-  remplir_items_non_calcules_(v, valeur);
-}
-
-void remplir_items_non_calcules(IntVect& v, int valeur)
-{
-  remplir_items_non_calcules_(v, valeur);
-}
-
-// Description: en mode comm_check_enabled(), verifie si l'espace virtuel
-//  du vecteur est a jour, si ce n'est pas le cas, exit().
-//  Ce test n'est fait qu'en mode comm_check_enabled() car il necessite des communications.
-void assert_espace_virtuel_vect(const DoubleVect& v)
-{
-  if (Comm_Group::check_enabled())
-    {
-      if (! check_espace_virtuel_vect(v))
-        {
-          Cerr << "Fatal error in assert_espace_virtuel_vect: virtual space of this vector is not up to date." << finl;
-          Process::barrier();
-          Process::exit();
-        }
-    }
-}
-
-void assert_espace_virtuel_vect(const IntVect& v)
-{
-  if (Comm_Group::check_enabled())
-    {
-      if (! check_espace_virtuel_vect(v))
-        {
-          Cerr << "Fatal error in assert_espace_virtuel_vect: virtual space of this vector is not up to date." << finl;
-          Process::barrier();
-          Process::exit();
-        }
-    }
-}
-
 // Description: Appelle remplir_items_non_calcules() si on est en
 //  mode comm_check_enabled() ou en mode debug (NDEBUG non defini)
 //  La "valeur" par defaut est censee provoquer une erreur si on
 //  essaye de l'utiliser.
 void assert_invalide_items_non_calcules(DoubleVect& v, double valeur)
 {
-#ifdef NDEBUG
-  if (Comm_Group::check_enabled())
-    remplir_items_non_calcules(v, valeur);
-#else
-  remplir_items_non_calcules(v, valeur);
-#endif
-}
-
-// Description: When compiled without NDEBUG or when running with check_enabled flag,
-//  fills all "not computed" items with an invalid value (ie, items that are not VECT_REAL_ITEMS,
-//  usually, these are the virtual items).
-//  You should call this method whenever you compute some field values but you don't compute
-//  or update the virtual space.
-void declare_espace_virtuel_invalide(DoubleVect& v)
-{
-  // La valeur choisie doit provoquer une erreur si on verifie les espaces virtuels
-  //  (donc prendre quelque chose de non trivial)
-  // mais ne doit pas empecher de faire un calcul avec cette valeur
-  //  (ne pas prendre DMAXFLOAT ou quelque chose de trop grand qui produirait une erreur)
-  const double valeur = -98765.4321;
-#ifdef NDEBUG
-  if (Comm_Group::check_enabled())
-    remplir_items_non_calcules(v, valeur);
-#else
-  remplir_items_non_calcules(v, valeur);
-#endif
-}
-
-void declare_espace_virtuel_invalide(IntVect& v)
-{
-  const int valeur = -1999999999;
 #ifdef NDEBUG
   if (Comm_Group::check_enabled())
     remplir_items_non_calcules(v, valeur);

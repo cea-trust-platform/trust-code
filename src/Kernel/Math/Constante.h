@@ -22,56 +22,30 @@
 
 #ifndef Constante_included
 #define Constante_included
-/////////////////////////////////////////////////////////////////////////=
-/////
-//
-// .DESCRIPTION
-//    Definit une constante dans le jeu de donnees
-// .SECTION voir aussi
-/////////////////////////////////////////////////////////////////////////=
-/////
+
 #include <Objet_U.h>
 #include <Nom.h>
 class Entree;
 
+// .DESCRIPTION
+//    Definit une constante dans le jeu de donnees
 class Constante :  public Objet_U
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(Constante);
-
 public:
   Constante()
   {
     value = 0.;
     nom_ = "neant";
   }
-  ~Constante() override
-  {
-  }
-  Constante(const Constante& v): Objet_U(v)
-  {
-    value =v.value;
-    nom_ = v.nom_;
-  }
-  inline void nommer(const Nom& name ) override
-  {
-    nom_ = name ;
-  }
-  const Nom& le_nom() const override
-  {
-    return nom_;
-  }
-  double getValue()
-  {
-    return value;
-  }
-  const double& getValue() const
-  {
-    return value;
-  }
-  void setValue(double x)
-  {
-    value = x;
-  }
+
+  ~Constante() override { }
+  Constante(const Constante& v): Objet_U(v) { value =v.value; nom_ = v.nom_; }
+  inline void nommer(const Nom& name ) override { nom_ = name ; }
+  const Nom& le_nom() const override { return nom_; }
+  double getValue() { return value; }
+  const double& getValue() const { return value; }
+  void setValue(double x) { value = x; }
   int reprendre(Entree&) override;
 
 private:
@@ -79,5 +53,4 @@ private:
   double value;
 };
 
-
-#endif
+#endif /* Constante_included */

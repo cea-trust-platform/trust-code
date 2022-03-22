@@ -20,7 +20,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <TRUSTTabs_forward.h>
+#ifndef Array_tools_included
+#define Array_tools_included
+
+#include <TRUSTTab.h>
 #include <arch.h>
 
 // Description: Methode outil pour retirer les doublons dans un tableau.
@@ -49,11 +52,20 @@ void tableau_trier_retirer_doublons(IntTab& tab);
 void calculer_renum_sans_doublons(const IntTab& tab, ArrOfInt& renum, ArrOfInt& items_a_garder);
 
 // Description: Set the smart_resize flag, preallocates memory for the given size, and resize to zero
-void array_smart_allocate(ArrOfInt& array, const int allocate_size);
-void array_smart_allocate(ArrOfDouble& array, const int allocate_size);
+template<typename _TYPE_>
+inline void array_smart_allocate(TRUSTArray<_TYPE_>& array, const int n)
+{
+  array.set_smart_resize(1);
+  array.resize_array(n, Array_base::NOCOPY_NOINIT); // get memory for the requested size
+  array.resize_array(0); // and set actual size to zero
+}
 
-// Description: Increase size of "dest" array and copy "src" at the end of "dest"
-void append_array_to_array(ArrOfInt& dest, const ArrOfInt& src);
+template<typename _TYPE_>
+inline void append_array_to_array(TRUSTArray<_TYPE_>& dest, const TRUSTArray<_TYPE_>& src)
+{
+  const int n1 = dest.size_array(), n2 = src.size_array();
+  dest.resize_array(n1+n2);
+  dest.inject_array(src, n2 /* nb elem */, n1 /* dest index */, 0 /* src index */);
+}
 
-// Description: Increase size of "dest" array and copy "src" at the end of "dest"
-void append_array_to_array(ArrOfDouble& dest, const ArrOfDouble& src);
+#endif /* Array_tools_included */

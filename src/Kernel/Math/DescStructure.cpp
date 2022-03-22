@@ -35,18 +35,6 @@ Implemente_vect(Esp_Dist);
 //    identificateur, d'un vecteur d'espaces virtuels,
 //    d'un vecteur d'espaces distants et d'un descripteur de
 //    structure interne
-// Precondition:
-// Parametre: Entree& is
-//    Signification: le flot d'entree a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Entree& DescStructure::readOn(Entree& is)
 {
 //  VectEsp_Virt virt_data_;
@@ -69,29 +57,10 @@ Entree& DescStructure::readOn(Entree& is)
   return is;
 }
 
-
-// Description:
-//    Ecriture d'un descripteur de structure
-//    Un descripteur de structure est constitue d'un
-//    identificateur, d'un vecteur d'espaces virtuels,
-//    d'un vecteur d'espaces distants et d'un descripteur de
-//    structure interne
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: le flot de sortie a utiliser
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+// Description: Pas utilise
 Sortie& DescStructure::printOn(Sortie& os) const
 {
   Cerr<<"DescStructure::printOn no more used" <<finl;
   exit();
   return os;
 }
-

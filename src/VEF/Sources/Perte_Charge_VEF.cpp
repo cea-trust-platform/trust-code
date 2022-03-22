@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -169,7 +169,7 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
 
   // To ensure that nu_valeur will not be zero
   // and not have a division by zero for the calculation of Reynolds
-  assert_espace_virtuel_vect(nu);
+  assert_espace_virtuel_vect(nu->valeurs());
 
   for (int face=0; face<max_faces; face++)
     {
