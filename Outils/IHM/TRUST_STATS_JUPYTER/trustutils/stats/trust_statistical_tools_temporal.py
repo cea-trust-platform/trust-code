@@ -17,18 +17,18 @@ The main class is TemporalPostProcessing. Using this package allows the followin
 """
 
 from .trust_statistical_tools_base import StatisticalPostProcessing
-from scipy import interpolate, signal, optimize 
+from scipy import interpolate, signal, optimize
 import numpy as np
 
-class TemporalPostProcessing(StatisticalPostProcessing):
 
+class TemporalPostProcessing(StatisticalPostProcessing):
     def __init__(self):
         pass
 
     def __del__(self):
         pass
 
-    def plot(self,x1,y1,label1="",linestyle1="-",linewidth1=0.5,**kwargs):
+    def plot(self, x1, y1, label1="", linestyle1="-", linewidth1=0.5, **kwargs):
         """
         
         Method to plot one are multiple data. Calls the StatisticalPostProcessing plot.
@@ -78,9 +78,9 @@ class TemporalPostProcessing(StatisticalPostProcessing):
             )
 
         """
-        StatisticalPostProcessing._plot(self,x1,y1,label1=label1,linestyle1=linestyle1,linewidth1=linewidth1,**kwargs)
-    
-    def instantaneousValues(self,sonFiles,x ,y ,z=None,component="X"):
+        StatisticalPostProcessing._plot(self, x1, y1, label1=label1, linestyle1=linestyle1, linewidth1=linewidth1, **kwargs)
+
+    def instantaneousValues(self, sonFiles, x, y, z=None, component="X"):
         """
 
         Get fields (time, velocities, ...)
@@ -114,10 +114,10 @@ class TemporalPostProcessing(StatisticalPostProcessing):
 
 
         """
-        X, Y, label = StatisticalPostProcessing._getInstantaneous(self,sonFiles ,x ,y ,z,component)
-        return(X,Y,label)
-    
-    def getdtValues(self, sonFiles, entry="dt"): 
+        X, Y, label = StatisticalPostProcessing._getInstantaneous(self, sonFiles, x, y, z, component)
+        return (X, Y, label)
+
+    def getdtValues(self, sonFiles, entry="dt"):
         """
 
         This method plots the data found in the FILE.dt_ev
@@ -146,10 +146,10 @@ class TemporalPostProcessing(StatisticalPostProcessing):
 
 
         """
-        X, Y = StatisticalPostProcessing._getTimeStepEvolution(self,sonFiles,entry)
-        return(X,Y)
+        X, Y = StatisticalPostProcessing._getTimeStepEvolution(self, sonFiles, entry)
+        return (X, Y)
 
-    def temporalFluctuations(self,sonFiles ,x ,y ,z=None, startTime = None,component = "X"):
+    def temporalFluctuations(self, sonFiles, x, y, z=None, startTime=None, component="X"):
         """
 
         Method that computes fluctuation of a signal
@@ -186,10 +186,10 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalFluctuations_example.py
 
         """
-        X, Y, label = StatisticalPostProcessing._getFluctuation(self,sonFiles ,x ,y , z, startTime, component)
-        return(X,Y,label)
+        X, Y, label = StatisticalPostProcessing._getFluctuation(self, sonFiles, x, y, z, startTime, component)
+        return (X, Y, label)
 
-    def temporalAverageWindows(self, sonFiles, x ,y ,z=None, component = "X",startTime = None, endTime = None, window = 1,mode = None):
+    def temporalAverageWindows(self, sonFiles, x, y, z=None, component="X", startTime=None, endTime=None, window=1, mode=None):
         """
 
         Window averaging, statistical convergence, etc.
@@ -234,10 +234,10 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalAverageWindows_example.py
 
         """
-        X, Y, label = StatisticalPostProcessing._getAverageWindows(self,sonFiles,x ,y ,z, component, startTime, endTime , window, mode)
-        return(X, Y,label)
+        X, Y, label = StatisticalPostProcessing._getAverageWindows(self, sonFiles, x, y, z, component, startTime, endTime, window, mode)
+        return (X, Y, label)
 
-    def temporalSegmentSpatialMean(self, sonFiles, component = "X"):
+    def temporalSegmentSpatialMean(self, sonFiles, component="X"):
         """
 
         Performs the temporal spatial average on a segment.
@@ -261,13 +261,13 @@ class TemporalPostProcessing(StatisticalPostProcessing):
 
         .. literalinclude:: ../../tests/stats/trust_statistical_examples/Temporal/temporalSegmentSpatialMean_example.py
 
-        """  
-        X, Y, label = StatisticalPostProcessing._getSegmentSpatialMean(self,sonFiles,component)
-        return(X,Y,label)
+        """
+        X, Y, label = StatisticalPostProcessing._getSegmentSpatialMean(self, sonFiles, component)
+        return (X, Y, label)
 
-    def temporalAutoCorrelation(self, sonFiles, x ,y ,z=None, digit = 5,
-                                component = "X", startTime = None, max_lag = None, 
-                                fit = False, mode = "autocorrelation"):
+    def temporalAutoCorrelation(
+        self, sonFiles, x, y, z=None, digit=5, component="X", startTime=None, max_lag=None, fit=False, mode="autocorrelation",
+    ):
         """
 
         Performs temporal autocorrelation on signal.
@@ -322,19 +322,18 @@ class TemporalPostProcessing(StatisticalPostProcessing):
         """
 
         res = []
-        X, Y, label = StatisticalPostProcessing._getTemporalAutocorrelation(self,sonFiles,x ,y , z, component, startTime, max_lag)
-        if "autocorrelation" in mode: 
-            res = res + [X, Y,label]
+        X, Y, label = StatisticalPostProcessing._getTemporalAutocorrelation(self, sonFiles, x, y, z, component, startTime, max_lag)
+        if "autocorrelation" in mode:
+            res = res + [X, Y, label]
         if fit:
-            Xfit, Yfit = StatisticalPostProcessing._fitParabola(self,X,Y,digit)
-            res = res + [Xfit,Yfit]
+            Xfit, Yfit = StatisticalPostProcessing._fitParabola(self, X, Y, digit)
+            res = res + [Xfit, Yfit]
         if "fft" in mode:
-            Xfft, Yfft = StatisticalPostProcessing._computeFFT(self,X,Y)
-            res = res + [Xfft, Yfft,"Fourier transform of autocorrelation"]
-        return(res)
+            Xfft, Yfft = StatisticalPostProcessing._computeFFT(self, X, Y)
+            res = res + [Xfft, Yfft, "Fourier transform of autocorrelation"]
+        return res
 
-
-    def energySpectrum(self, sonFiles,x ,y ,z=None, component = "X",startTime = None,hanning=False,fft=False):
+    def energySpectrum(self, sonFiles, x, y, z=None, component="X", startTime=None, hanning=False, fft=False):
         """
 
         Computes the temporal energy spectrum using the Welch method.
@@ -370,12 +369,11 @@ class TemporalPostProcessing(StatisticalPostProcessing):
  
         """
         if hanning:
-            X, Y, label, ts, han = StatisticalPostProcessing._getTemporalWelch(self,sonFiles,x ,y ,z, component ,startTime,hanning=True)
+            X, Y, label, ts, han = StatisticalPostProcessing._getTemporalWelch(self, sonFiles, x, y, z, component, startTime, hanning=True)
             if fft:
-                xFFT, yFFT = StatisticalPostProcessing._computeFFT(self,ts,han)
-                return(X,Y,label,ts,han,xFFT, yFFT)
-            return(X,Y,label,ts,han)
-        X, Y, label = StatisticalPostProcessing._getTemporalWelch(self,sonFiles,x ,y ,z, component ,startTime)
+                xFFT, yFFT = StatisticalPostProcessing._computeFFT(self, ts, han)
+                return (X, Y, label, ts, han, xFFT, yFFT)
+            return (X, Y, label, ts, han)
+        X, Y, label = StatisticalPostProcessing._getTemporalWelch(self, sonFiles, x, y, z, component, startTime)
 
-        return(X,Y,label)
-        
+        return (X, Y, label)

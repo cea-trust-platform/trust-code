@@ -1,7 +1,8 @@
 import numpy as np
 
+
 class TrustFile(object):
-    _COMPO_NAMES = ["X", "Y", "Z","4","5","6","7","8","9"]
+    _COMPO_NAMES = ["X", "Y", "Z", "4", "5", "6", "7", "8", "9"]
     """ Parsing and value extraction from a Trust file. Assumption: all valid (=completly written) line
     of data terminate with a new line char """
 
@@ -21,13 +22,13 @@ class TrustFile(object):
         self._reset()
 
     def _reset(self):
-        self._entries = {}                # key = entry_name, val=col_index (or component numb for segs)
-        self._taxis = TrustFile._VOID_ARR # time axis values
-        self._yvalues = TrustFile._VOID_ARR           # a np.array, col index is in _entries
-        self._lastIndex = {}              # position of the last fetched data in the yvalues arrays. key=entry_name, vals=index
-        self._lastSeek = 0                # position of the last fetched data in the file
-        self._data = ""                   # last chunk of read data
-        self._ncols = 0                   # numb of cols in the data
+        self._entries = {}  # key = entry_name, val=col_index (or component numb for segs)
+        self._taxis = TrustFile._VOID_ARR  # time axis values
+        self._yvalues = TrustFile._VOID_ARR  # a np.array, col index is in _entries
+        self._lastIndex = {}  # position of the last fetched data in the yvalues arrays. key=entry_name, vals=index
+        self._lastSeek = 0  # position of the last fetched data in the file
+        self._data = ""  # last chunk of read data
+        self._ncols = 0  # numb of cols in the data
 
     def isLogY(self):
         return False
@@ -68,10 +69,10 @@ class TrustFile(object):
     def _getValuesInternal(self):
         """ @return False if file is not ready """
         status = self._queryAndUpdateStatus(update=True)
-#    print "getValues stat", status, " ", self._filePath
+        #    print "getValues stat", status, " ", self._filePath
         if status == "invalid":
             return False
-        if not len(self._entries):   # if there's been a reset()
+        if not len(self._entries):  # if there's been a reset()
             hdr = self._populateFromHeader()
             self._reloadEntries(hdr=hdr)
         # Try to retreive values only if entries are OK:
@@ -129,7 +130,7 @@ class TrustFile(object):
         Use numpy.loadtxt for efficiency. """
         self._yvalues = self._readOn()
         if self._yvalues.shape[0]:
-            self._taxis = self._yvalues[:,0]
+            self._taxis = self._yvalues[:, 0]
         else:
             self._taxis = TrustFile._VOID_ARR
 
@@ -137,7 +138,7 @@ class TrustFile(object):
         """ Complete the internal array with the newly read values """
         lines = self._readOn()
         if lines.shape[0]:
-            self._taxis = np.append(self._taxis, lines[:,0])
+            self._taxis = np.append(self._taxis, lines[:, 0])
             if self._yvalues.shape[0]:
                 self._yvalues = np.vstack([self._yvalues, lines])
             else:
@@ -152,6 +153,7 @@ class TrustFile(object):
                     "same"   : if the file has not changed
         """
         import os
+
         try:
             ret = "invalid"
             if self._refPath is not None:
@@ -166,7 +168,8 @@ class TrustFile(object):
                     self._reset()
             siz = os.stat(self._filePath).st_size
             if ret == "reset":
-                if update:     self._lastSize = siz
+                if update:
+                    self._lastSize = siz
                 return ret
             if siz < self._lastSize:
                 if update:
@@ -205,7 +208,7 @@ class TrustFile(object):
         if len(arrPy[i:]) == 0:
             return remainData, npArr
         arrData = " ".join(arrPy[i:])
-        arrData = np.fromstring(arrData, dtype=np.float64, sep=' ')
+        arrData = np.fromstring(arrData, dtype=np.float64, sep=" ")
         if arrData.shape[0] % self._ncols:
             raise Exception("Misformatted file: the line below has an invalid numb of cols:\n%s" % a)
         npArr = arrData.reshape((-1, self._ncols))
@@ -243,25 +246,25 @@ class TrustFile(object):
             return None
         return ret
 
-class SonFile(TrustFile):
 
+class SonFile(TrustFile):
     def __init__(self, filePath, refPath):
         TrustFile.__init__(self, filePath, refPath)
         self._reset()
 
     def _reset(self):
         TrustFile._reset(self)
-        self._dim = -1                       # Space dimension of the points
-        self._ncompo = -1                    # Numb of components of the field
-        self._points = TrustFile._VOID_ARR   # The points themselves
-        self._field = ""    # Field name (VITESSE, etc ...)
+        self._dim = -1  # Space dimension of the points
+        self._ncompo = -1  # Numb of components of the field
+        self._points = TrustFile._VOID_ARR  # The points themselves
+        self._field = ""  # Field name (VITESSE, etc ...)
 
     @classmethod
     def BuildFromHeader(cls, filePath, refPath):
         """ Build either a SonPOINTFile or SonSEGFile depending on the header
         """
         try:
-            hdr = TrustFile._ReadHeader(filePath,5)
+            hdr = TrustFile._ReadHeader(filePath, 5)
             if hdr is None:
                 return None
             typ = hdr[3][1]
@@ -278,24 +281,26 @@ class SonFile(TrustFile):
 
     def _populateFromHeader(self, hdr=None):
         if hdr is None:
-            hdr = TrustFile._ReadHeader(self._filePath,5)
+            hdr = TrustFile._ReadHeader(self._filePath, 5)
         try:
             # Field name:
             self._field = hdr[2][1]
             # Points:
             dim = 1
             if len(hdr[1]) > 2:
-                if hdr[1][3] == "y=": dim += 1
+                if hdr[1][3] == "y=":
+                    dim += 1
                 if len(hdr[1]) > 5:
-                    if hdr[1][5] == "z=": dim += 1
+                    if hdr[1][5] == "z=":
+                        dim += 1
             self._dim = dim
             # Store point coords:
-            if (len(hdr[1])-1) % 2 or ((len(hdr[1])-1)//2) % dim:
+            if (len(hdr[1]) - 1) % 2 or ((len(hdr[1]) - 1) // 2) % dim:
                 return None
-            npoints = (len(hdr[1])-1)//2//dim
+            npoints = (len(hdr[1]) - 1) // 2 // dim
             pts = []
             for i in range(npoints):
-                pt = [float(a) for a in hdr[1][2+i*2*dim:2+(i+1)*2*dim:2]]
+                pt = [float(a) for a in hdr[1][2 + i * 2 * dim : 2 + (i + 1) * 2 * dim : 2]]
                 pts.append(pt)
             # And finally number of components:
             if (len(hdr[4]) - 1) % npoints:
@@ -316,7 +321,7 @@ class SonFile(TrustFile):
     def _reloadEntries(self, hdr=None):
         if hdr is None:
             hdr = TrustFile._ReadHeader(self._filePath, 5)
-        #self._entries[hdr[1][0]] = 0  # do not take time
+        # self._entries[hdr[1][0]] = 0  # do not take time
         col = 1
         for p in self._points:
             sp = self._displayPoint(p)
@@ -328,7 +333,7 @@ class SonFile(TrustFile):
                 self._entries[e] = col
                 col += 1
         # Reset last index:
-        self._lastIndex = dict( list(zip(list(self._entries.keys()), [-1] * len(self._entries))) )
+        self._lastIndex = dict(list(zip(list(self._entries.keys()), [-1] * len(self._entries))))
 
     def getnCompo(self):
         status = self._queryAndUpdateStatus(update=False)
@@ -337,7 +342,8 @@ class SonFile(TrustFile):
         if not len(self._entries):
             hdr = self._populateFromHeader()
         return self._ncompo
-    
+
+
 class SonPOINTFile(SonFile):
     def __init__(self, filePath, refPath):
         SonFile.__init__(self, filePath, refPath)
@@ -345,10 +351,12 @@ class SonPOINTFile(SonFile):
     def getXLabel(self):
         return "Time"
 
+
 class SonSEGFile(SonFile):
     """ For a segment file, getNewValues() will return None, None everytime the last line has changed.
      Hence by default the API of a seg file return  """
-    def __init__(self,filePath, refPath):
+
+    def __init__(self, filePath, refPath):
         SonFile.__init__(self, filePath, refPath)
         self._reset()
 
@@ -356,7 +364,7 @@ class SonSEGFile(SonFile):
         SonFile._reset(self)
         self._start = []
         self._end = []
-        self._orient = ""                  #  "x", "y", "z"  or "curvi."
+        self._orient = ""  #  "x", "y", "z"  or "curvi."
         self._xaxis = TrustFile._VOID_ARR  # X axis for seg plots
         self._segentries = {}
 
@@ -364,8 +372,8 @@ class SonSEGFile(SonFile):
         hdr = SonFile._populateFromHeader(self, hdr)
         if not hdr is None:
             l = [0.0] * (2 * self._dim)
-            l2 = [float(hdr[3][i]) for i in range(2,2+2*self._dim)]
-            start, end = l2[:self._dim], l2[self._dim:]
+            l2 = [float(hdr[3][i]) for i in range(2, 2 + 2 * self._dim)]
+            start, end = l2[: self._dim], l2[self._dim :]
             self.setXTremePoints(start, end)
             self._computeXAxis()
             return hdr
@@ -375,7 +383,7 @@ class SonSEGFile(SonFile):
     def _computeCurvilinear(self):
         """ Compute curvilinear distances """
         d = self._points[1:] - self._points[:-1]
-        dist = np.sqrt(np.sum(d*d, axis=1))
+        dist = np.sqrt(np.sum(d * d, axis=1))
         curvi = np.zeros((self._points.shape[0],), dtype=np.float64)
         curvi[1:] = np.cumsum(dist)
         return curvi
@@ -389,10 +397,14 @@ class SonSEGFile(SonFile):
 
     def setXTremePoints(self, start, end):
         x1, x2 = start[0], end[0]
-        if self._dim > 1:   y1, y2 = start[1], end[1]
-        else:               y1, y2 = 0.0, 0.0
-        if self._dim > 2:   z1, z2 = start[2], end[2]
-        else:               z1, z2 = 0.0, 0.0
+        if self._dim > 1:
+            y1, y2 = start[1], end[1]
+        else:
+            y1, y2 = 0.0, 0.0
+        if self._dim > 2:
+            z1, z2 = start[2], end[2]
+        else:
+            z1, z2 = 0.0, 0.0
         if x1 == x2 and y1 == y2:
             self._orient = "z"
         elif x1 == x2 and z1 == z2:
@@ -402,7 +414,7 @@ class SonSEGFile(SonFile):
         else:
             self._orient = "curvi."
         self._start, self._end = start, end
-    
+
     def getXTremePoints(self):
         return self._start, self._end
 
@@ -439,7 +451,7 @@ class SonSEGFile(SonFile):
         else:
             col = self._segentries[entryName]
             self._lastIndex[entryName] = 1  # 1, no more new data available
-            x, y = self._xaxis, self._yvalues[-1, 1+col::self._ncompo]
+            x, y = self._xaxis, self._yvalues[-1, 1 + col :: self._ncompo]
             return x, y
 
     def _extractNewValuesSeg(self, fileReady, entryName):
@@ -451,7 +463,7 @@ class SonSEGFile(SonFile):
             if not alreadyFetched:
                 x, y = None, None
             else:
-                x, y = TrustFile._VOID_ARR, TrustFile._VOID_ARR   # Nothing has changed
+                x, y = TrustFile._VOID_ARR, TrustFile._VOID_ARR  # Nothing has changed
             return x, y
 
     def getEntriesSeg(self):
@@ -470,7 +482,7 @@ class SonSEGFile(SonFile):
 
     def getLastTime(self):
         if self._yvalues.shape[0]:
-            return self._yvalues[-1,0]
+            return self._yvalues[-1, 0]
         else:
             return 0.0
 
@@ -485,81 +497,80 @@ class SonSEGFile(SonFile):
             else:
                 e = "%s_%s (SEG [%s] -> [%s])" % (self._field, SonFile._COMPO_NAMES[cnum], start, end)
             self._segentries[e] = cnum
-            self._lastIndex[e] = 0     # 0, new data available, not fetched yet
+            self._lastIndex[e] = 0  # 0, new data available, not fetched yet
 
     def _completeValues(self):
         SonFile._completeValues(self)
         for s in list(self._segentries.keys()):
-            self._lastIndex[s] = 0     # 0, new data available, not fetched yet
+            self._lastIndex[s] = 0  # 0, new data available, not fetched yet
 
 
 class OutFile(TrustFile):
-
     def __init__(self, filePath, refPath):
         TrustFile.__init__(self, filePath, refPath)
         self._reset()
 
     def _reset(self):
         TrustFile._reset(self)
-        self._dim = -1                       # Space dimension of the points
-        self._ncompo = -1                    # Numb of components of the field
-        self._field = ""    # Field name (VITESSE, etc ...)
-
+        self._dim = -1  # Space dimension of the points
+        self._ncompo = -1  # Numb of components of the field
+        self._field = ""  # Field name (VITESSE, etc ...)
 
     def getXLabel(self):
         return "Time"
+
     def _populateFromHeader(self, hdr=None):
         if hdr is None:
-            hdr = TrustFile._ReadHeader(self._filePath,4)
+            hdr = TrustFile._ReadHeader(self._filePath, 4)
         try:
 
             # print "uuuuuuuuuu",hdr
             # Field name:
-            self._fied="Unknown"
-            for x in  hdr[1]:
-                if x.find("Integral")> -1:
+            self._fied = "Unknown"
+            for x in hdr[1]:
+                if x.find("Integral") > -1:
                     self._field = x.split("=")[-1]
-            nb_co=len(hdr[2])-1
+            nb_co = len(hdr[2]) - 1
             # print "uu",nb_co
-            dim=1
-            lg=len(hdr[3])
-            if (lg >1):
+            dim = 1
+            lg = len(hdr[3])
+            if lg > 1:
                 # dim=(len(hdr[3])-1)/nb_co soucis avec perio
-                if (hdr[3][3]=='Fx'):
-                    dim=2
+                if hdr[3][3] == "Fx":
+                    dim = 2
                 else:
-                    assert(hdr[3][3]=='Fz')
-                    dim=3
+                    assert hdr[3][3] == "Fz"
+                    dim = 3
 
-            #if (self._field=="Integral(P*ndS)"):
+            # if (self._field=="Integral(P*ndS)"):
             #  print "pb fichier pression"
             #  nb_co-=1
             # nb_co-=1 # on a total par erreur dans les label
             # print "yyyyyyyyyy",(len(hdr[3])-1)/dim, nb_co
             # print "dim",dim,nb_co
-            if dim==0:
-                dim=1
-            self._dim=dim
-            self._ncols = dim*(nb_co)+1
+            if dim == 0:
+                dim = 1
+            self._dim = dim
+            self._ncols = dim * (nb_co) + 1
             # self._ncols = len(hdr[4])
 
-            #self._entries["Time"]=0
-            col=1
-            xold=None
+            # self._entries["Time"]=0
+            col = 1
+            xold = None
             for c in range(nb_co):
-                x=hdr[2][c+1]
+                x = hdr[2][c + 1]
                 # dans le cas periodique le nom du bord est double
-                if x==xold:
-                    x+="_bis"
-                xold=x
-                if dim==1:
-                    self._entries[self._field+" "+x]=col
-                    col+=1
+                if x == xold:
+                    x += "_bis"
+                xold = x
+                if dim == 1:
+                    self._entries[self._field + " " + x] = col
+                    col += 1
                 else:
                     for i in range(self._dim):
                         # print"uuu", i,x
-                        self._entries[self._field+" "+x+OutFile._COMPO_NAMES[i]]=col
-                        col+=1
+                        self._entries[self._field + " " + x + OutFile._COMPO_NAMES[i]] = col
+                        col += 1
             # print "uuu",self._entries
             return hdr
         except:
@@ -571,29 +582,31 @@ class OutFile(TrustFile):
         if hdr is None:
             self._populateFromHeader(hdr)
             # print "uuuuuuuuuuuu"
-            #1/0
+            # 1/0
 
-        self._lastIndex = dict( list(zip(list(self._entries.keys()), [-1] * len(self._entries))) )
+        self._lastIndex = dict(list(zip(list(self._entries.keys()), [-1] * len(self._entries))))
 
 
 class CSVFile(TrustFile):
-    def __init__(self,filePath, nbclos,refPath=None):
+    def __init__(self, filePath, nbclos, refPath=None):
         TrustFile.__init__(self, filePath, refPath)
         self._ncols = nbclos
         self._ncols_sa = nbclos
+
     def reset(self):
         print("reset")
         pass
+
     def getXLabel(self):
         return "??"
 
     def _populateFromHeader(self, hdr=None):
-        self._ncols =  self._ncols_sa
-        if (hdr is None):
-            h1=[]
+        self._ncols = self._ncols_sa
+        if hdr is None:
+            h1 = []
             for i in range(self._ncols):
-                h1.append("c%d"%i)
-            hdr=[h1]
+                h1.append("c%d" % i)
+            hdr = [h1]
 
         for i, col in enumerate(hdr[0]):
             self._entries[col] = i
@@ -603,16 +616,15 @@ class CSVFile(TrustFile):
 
         if hdr is None:
             print("euh...;")
-            1/0
+            1 / 0
         # Adrien ???
-        self._lastIndex = dict( list(zip(list(self._entries.keys()), [-1] * len(self._entries))) )
+        self._lastIndex = dict(list(zip(list(self._entries.keys()), [-1] * len(self._entries))))
         # print "QQ",self._lastIndex
         # print "uuu",self._entries.keys()
 
 
-
 class DTEVFile(TrustFile):
-    def __init__(self,filePath, refPath):
+    def __init__(self, filePath, refPath):
         TrustFile.__init__(self, filePath, refPath)
 
     def isLogY(self):
@@ -623,7 +635,7 @@ class DTEVFile(TrustFile):
 
     def _populateFromHeader(self, hdr=None):
         if hdr is None:
-            hdr = TrustFile._ReadHeader(self._filePath,2)
+            hdr = TrustFile._ReadHeader(self._filePath, 2)
         self._ncols = len(hdr[0])
         return hdr
 
@@ -631,7 +643,8 @@ class DTEVFile(TrustFile):
         if len(hdr[0]) >= 6:
             for i, col in enumerate(hdr[0]):
                 self._entries[col] = i
-        self._lastIndex = dict( list(zip(list(self._entries.keys()), [-1] * len(self._entries))) )
+        self._lastIndex = dict(list(zip(list(self._entries.keys()), [-1] * len(self._entries))))
+
 
 def BuildFromPath(pth, ref_path):
     """ Object factory. """
