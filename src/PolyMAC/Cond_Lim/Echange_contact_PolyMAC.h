@@ -50,6 +50,7 @@ public :
   REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
   int i_fvf, i_o_fvf;  //indices de frontiere de chaque cote
   REF(Op_Diff_PolyMAC_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
+  mutable int o_idx = -1; //indice de l'autre operateur dans le tableau op_ext de Op_Diff_PolyMAC_Elem (a remplir par celui-ci)
 
   /* faces de l'autre cote de la frontiere */
   void init_f_dist() const; //initialisation de f_dist

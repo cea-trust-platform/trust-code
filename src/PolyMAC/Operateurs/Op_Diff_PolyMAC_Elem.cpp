@@ -90,6 +90,7 @@ void Op_Diff_PolyMAC_Elem::init_op_ext() const
       {
         const Op_Diff_PolyMAC_Elem *o_op = &ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).o_diff.valeur();
         if (std::find(op_ext.begin(), op_ext.end(), o_op) == op_ext.end()) op_ext.push_back(o_op);
+        ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).o_idx = std::find(op_ext.begin(), op_ext.end(), o_op) - op_ext.begin();
       }
 }
 
@@ -198,13 +199,13 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
 {
   init_op_ext();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  int i, j, e, f, fb, n, M, n_ext = op_ext.size(), semi = semi_impl.count(nom_inco);
+  int i, j, k1, k2, e, f, fb, n, M, n_ext = op_ext.size(), semi = semi_impl.count(nom_inco), d, D = dimension;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes
   std::vector<std::reference_wrapper<const Zone_PolyMAC>> zone; //zones
   std::vector<std::reference_wrapper<const Conds_lim>> cls; //conditions aux limites
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_e, f_s; //tableaux "fcl", "elem_faces", "faces_voisins"
-  std::vector<std::reference_wrapper<const DoubleVect>> fs; //surfaces
+  std::vector<std::reference_wrapper<const DoubleVect>> fs, pf, pe, ve; //surfaces
   std::vector<std::reference_wrapper<const DoubleTab>> inco, xp, xv, diffu, v_aux; //inconnues, normales aux faces, positions elems / faces / sommets
   std::deque<ConstDoubleTab_parts> v_part; //blocs de chaque inconnue
   std::vector<const Flux_parietal_base *> corr; //correlations de flux parietal (si elles existent)
@@ -216,6 +217,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
       f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces())), f_s.push_back(std::ref(zone[i].get().face_sommets()));
       fs.push_back(std::ref(zone[i].get().face_surfaces()));
       xp.push_back(std::ref(zone[i].get().xp())), xv.push_back(std::ref(zone[i].get().xv()));
+      pe.push_back(std::ref(zone[i].get().porosite_elem())), pf.push_back(std::ref(zone[i].get().porosite_face())), ve.push_back(std::ref(zone[i].get().volumes()));
       cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_Elem, *op_ext[i]).nu());
       const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, op_ext[i]->equation().inconnue().valeur());
@@ -269,7 +271,33 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   for (f = 0; f < zone[0].get().nb_faces(); f++)
     if (!aux_only && semi && mat[0]) for (n = 0; n < N[0]; n++) (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + f) + n)++; //semi-implicite : T_f^+ = T_f^-
     else if (fcl[0](f, 0) == 0) continue; //face interne -> rien
-    else if (corr[0]) abort(); //ha ha
+    else if (corr[0]) //Pb_Multiphase avec flux parietal -> on ne traite (pour le moment) que Dirichlet et Echange_contact
+      {
+        if (fcl[0](f, 0) != 3 && fcl[0](f, 0) < 6) abort();
+        const Echange_contact_PolyMAC *ech = fcl[0](f, 0) == 3 ? &ref_cast(Echange_contact_PolyMAC, cls[0].get()[fcl[0](f, 1)].valeur()) : NULL;
+        int o_p = ech ? ech->o_idx : -1, o_f = ech ? ech->f_dist(fcl[0](f, 2)) : -1;
+        const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
+        const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = zone[0].get().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
+                         &vit = pbm.eq_qdm.inconnue().passe(), &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
+                          &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
+        DoubleTrav qpk(N[0]), dTf_qpk(N[0], N[0]), dTp_qpk(N[0]), qpi(N[0], N[0]), dTf_qpi(N[0], N[0], N[0]), dTp_qpi(N[0], N[0]), v(N[0], D), nv(N[0]);
+        for (e = f_e[0](f, 0), i = 0; i < e_f[0].get().dimension(1) && (fb = e_f[0](e, i)) >= 0; i++) for (d = 0; d < D; d++) for (n = 0; n < N[0]; n++)
+              v(n, d) += fs[0](fb) * (xv[0](fb, d) - xp[0](e, d)) * pf[0](fb) * (e == f_e[0](fb, 0) ? 1 : -1) * vit(fb, n) / (pe[0](e) * ve[0](e));
+        for (n = 0; n < N[0]; n++) for (d = 0; d < D; d++) nv(n) += v(n, d) * v(n, d);
+        for (n = 0; n < N[0]; n++) nv(n) = sqrt(nv(n));
+        double Tp = ech ? v_aux[o_p](o_f, 0) : fcl[0](f, 0) == 6 ? ref_cast(Dirichlet, cls[0].get()[fcl[0](f, 1)].valeur()).val_imp(fcl[0](f, 2), 0) : 0;
+        //appel : on n'est implicite qu'en les temperatures
+        corr[0]->qp(N[0], f, dh(e), dh(e), &alpha(e, 0), &v_aux[0](f, 0), press(e), nv.addr(), Tp, &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
+                    qpk.addr(), NULL, NULL, NULL, dTf_qpk.addr(), dTp_qpk.addr(), qpi.addr(), NULL, NULL, NULL, dTf_qpi.addr(), dTp_qpi.addr(), j);
+        /* on ajoute qpi(k, l) a la qpk(k) (sera ensuite retire par Flux_interfacial_PolyMAC) */
+        for (k1 = 0; k1 < N[0]; k1++) for (k2 = k1 + 1; k2 < N[0]; k2++)
+            for (qpk(k1) += qpi(k1, k2), dTp_qpk(k1) += dTp_qpi(k1, k2), n = 0; n < N[0]; n++) dTf_qpk(k1, n) += dTf_qpi(k1, k2, n);
+        for (n = 0; n < N[0]; n++) secmem(!aux_only * ne_tot[0] + f, n) += fs[0](f) * qpk(n);//second membre
+        if (mat[0]) for (k1 = 0; k1 < N[0]; k1++) for (k2 = 0; k2 < N[0]; k2++) //derivees en Tfluide
+              (*mat[0])(N[0] * (!aux_only * ne_tot[0] + f) + k1, N[0] * (!aux_only * ne_tot[0] + f) + k2) -= fs[0](f) * dTf_qpk(k1, k2);
+        if (ech && mat[o_p]) for (n = 0; n < N[0]; n++) /* derivees en Tparoi (si Echange_contact) */
+            (*mat[o_p])(N[0] * (!aux_only * ne_tot[0] + f) + n, !aux_only * ne_tot[o_p] + o_f) -= fs[0](f) * dTp_qpk(n);
+      }
     else if (fcl[0](f, 0) > 5) for (n = 0; n < N[0]; n++) //Dirichlet : T_f^+ = T_b
         {
           secmem(!aux_only * ne_tot[0] + f, n) += (fcl[0](f, 0) == 6 ? ref_cast(Dirichlet, cls[0].get()[fcl[0](f, 1)].valeur()).val_imp(fcl[0](f, 2), n) : 0) - v_aux[0](f, n);
@@ -278,8 +306,30 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
     else if (fcl[0](f, 0) == 3) //Echange_contact
       {
         const Echange_contact_PolyMAC& ech = ref_cast(Echange_contact_PolyMAC, cls[0].get()[fcl[0](f, 1)].valeur());
-        int o_p = std::find(op_ext.begin(), op_ext.end(), &ech.o_diff.valeur()) - op_ext.begin(), o_f = ech.f_dist(fcl[0](f, 2)), o_e = f_e[o_p](o_f, 0); //autre pb/face/elem
-        if (corr[o_p] || N[o_p] != N[0]) abort(); //ha ha
+        int o_p = ech.o_idx, o_f = ech.f_dist(fcl[0](f, 2)), o_e = f_e[o_p](o_f, 0); //autre pb/face/elem
+        if (corr[o_p] || N[o_p] != N[0]) /* correlation de l'autre cote */
+          {
+            const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[o_p]->equation().probleme());
+            const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = zone[0].get().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
+                             &vit = pbm.eq_qdm.inconnue().passe(), &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
+                              &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
+            DoubleTrav qpk(N[o_p]), dTf_qpk(N[o_p], N[o_p]), dTp_qpk(N[o_p]), qpi(N[o_p], N[o_p]), dTf_qpi(N[o_p], N[o_p], N[o_p]), dTp_qpi(N[o_p], N[o_p]), v(N[o_p], D), nv(N[o_p]);
+            for (i = 0; i < e_f[o_p].get().dimension(1) && (fb = e_f[o_p](o_e, i)) >= 0; i++) for (d = 0; d < D; d++) for (n = 0; n < N[o_p]; n++)
+                  v(n, d) += fs[o_p](fb) * (xv[o_p](fb, d) - xp[o_p](e, d)) * pf[o_p](fb) * (e == f_e[o_p](fb, 0) ? 1 : -1) * vit(fb, n) / (pe[o_p](e) * ve[o_p](e));
+            for (n = 0; n < N[o_p]; n++) for (d = 0; d < D; d++) nv(n) += v(n, d) * v(n, d);
+            for (n = 0; n < N[o_p]; n++) nv(n) = sqrt(nv(n));
+            //appel : on n'est implicite qu'en les temperatures
+            corr[o_p]->qp(N[o_p], o_f, dh(o_e), dh(o_e), &alpha(o_e, 0), &v_aux[o_p](o_f, 0), press(e), nv.addr(), v_aux[0](f, 0), &lambda(o_e, 0), &mu(o_e, 0), &rho(o_e, 0), &Cp(o_e, 0),
+                          qpk.addr(), NULL, NULL, NULL, dTf_qpk.addr(), dTp_qpk.addr(), qpi.addr(), NULL, NULL, NULL, dTf_qpi.addr(), dTp_qpi.addr(), j);
+            /* on ajoute qpi(k, l) a qpk(k) (sera ensuite retire par Flux_interfacial_PolyMAC) */
+            for (k1 = 0; k1 < N[0]; k1++) for (k2 = k1 + 1; k2 < N[0]; k2++)
+                for (qpk(k1) += qpi(k1, k2), dTp_qpk(k1) += dTp_qpi(k1, k2), n = 0; n < N[0]; n++) dTf_qpk(k1, n) += dTf_qpi(k1, k2, n);
+            for (n = 0; n < N[o_p]; n++) secmem(!aux_only * ne_tot[0] + f, 0) -= fs[0](f) * qpk(n);//second membre
+            if (mat[o_p]) for (k1 = 0; k1 < N[o_p]; k1++) for (k2 = 0; k2 < N[o_p]; k2++) //derivees en Tfluide
+                  (*mat[o_p])(!aux_only * ne_tot[0] + f, N[o_p] * (!aux_only * ne_tot[o_p] + o_f) + k2) += fs[0](f) * dTf_qpk(k1, k2);
+            if (mat[0]) for (n = 0; n < N[o_p]; n++) /* derivees en Tparoi */
+                (*mat[0])(!aux_only * ne_tot[0] + f, !aux_only * ne_tot[0] + f) += fs[0](f) * dTp_qpk(n);
+          }
         if (ech.invh_paroi) for (n = 0; n < N[0]; n++)/* resistance de la paroi -> ajout du h(T'-T) */
             {
               secmem(!aux_only * ne_tot[0] + f, n) -= fs[0](f) / ech.invh_paroi * (v_aux[0](f, n) - v_aux[o_p](o_f, n)); //second membre
@@ -297,8 +347,14 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
       }
     else if (fcl[0](f, 0) == 4) for (n = 0; n < N[0]; n++) //Neumann
         secmem(!aux_only * ne_tot[0] + f, n) -= fs[0](f) * ref_cast(Neumann, cls[0].get()[fcl[0](f, 1)].valeur()).flux_impose(fcl[0](f, 2), n);
-    else if (fcl[0](f, 0) && fcl[0](f, 0) < 3) abort(); //Echange_global_impose
-
+    else if (fcl[0](f, 0) && fcl[0](f, 0) < 3) for (e = f_e[0](f, 0), n = 0; n < N[0]; n++) //Echange_global_impose
+        {
+          const Echange_impose_base& ech = ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur());
+          double h = ech.h_imp(fcl[0](f, 2), n), T = ech.T_ext(fcl[0](f, 2), n);
+          secmem(!aux_only * ne_tot[0] + f, n) -= fs[0](f) * h * ((fcl[0](f, 0) == 1 ? v_aux[0](f, n) : inco[0](e, n)) - T);
+          if (mat[0] && fcl[0](f, 0) == 1) (*mat[0])(N[0] * (!aux_only * ne_tot[0] + f) + n, N[0] * (!aux_only * ne_tot[0] + f) + n) += h * fs[0](f);
+          if (mat[0] && fcl[0](f, 0) == 2 && !aux_only) (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * e + n) += h * fs[0](f);
+        }
   q_pi_a_jour_ = 1; //on peut maintenant demander q_pi
 }
 
