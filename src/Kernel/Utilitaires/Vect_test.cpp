@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ class VectTest: public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE_END();
 
 public:
-  void setUp()
+  void setUp() override
   {
     // init2();
   };
@@ -64,7 +64,7 @@ public:
   double double1;
   int flag1;
 
-  void tearDown()
+  void tearDown() override
   {
     //Cerr<<"ICI" <<finl;;
   } ;
