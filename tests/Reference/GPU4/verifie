@@ -1,0 +1,10 @@
+#!/bin/bash
+[ "$PAR_F" = 0 ] && exit 0
+echo "Verification parallelisme sans rocALUTION..."
+make_PAR.data GPU4 1>/dev/null 2>&1
+NP=$?
+sed -i "1,$ s?rocalution??g" PAR_GPU4.data
+sed -i "1,$ s?jacobi { }?ssor { omega 1.6 }?g" PAR_GPU4.data
+trust PAR_GPU4 $NP 1>PAR_GPU4.out_err 2>&1 || exit -1
+[ ! -f ref.lml ] && gunzip -c GPU4.lml.gz > ref.lml
+compare_lata ref.lml PAR_GPU4.lml || exit -1
