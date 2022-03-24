@@ -46,28 +46,18 @@
 #include <vector>
 
 Implemente_instanciable( Op_Conv_EF_Stab_CoviMAC_Elem, "Op_Conv_EF_Stab_CoviMAC_Elem_CoviMAC", Op_Conv_CoviMAC_base ) ;
-Implemente_instanciable( Op_Conv_Amont_CoviMAC_Elem, "Op_Conv_Amont_CoviMAC_Elem_CoviMAC", Op_Conv_EF_Stab_CoviMAC_Elem ) ;
-Implemente_instanciable( Op_Conv_Centre_CoviMAC_Elem, "Op_Conv_Centre_CoviMAC_Elem_CoviMAC", Op_Conv_EF_Stab_CoviMAC_Elem ) ;
+Implemente_instanciable_sans_constructeur(Op_Conv_Amont_CoviMAC_Elem, "Op_Conv_Amont_CoviMAC_Elem_CoviMAC", Op_Conv_EF_Stab_CoviMAC_Elem);
+Implemente_instanciable_sans_constructeur(Op_Conv_Centre_CoviMAC_Elem, "Op_Conv_Centre_CoviMAC_Elem_CoviMAC", Op_Conv_EF_Stab_CoviMAC_Elem);
 
+Op_Conv_Amont_CoviMAC_Elem::Op_Conv_Amont_CoviMAC_Elem() { alpha = 1.0; }
+Op_Conv_Centre_CoviMAC_Elem::Op_Conv_Centre_CoviMAC_Elem() { alpha = 0.0; }
 
 // XD Op_Conv_EF_Stab_CoviMAC_Elem interprete Op_Conv_EF_Stab_CoviMAC_Elem 1 Class Op_Conv_EF_Stab_CoviMAC_Elem
-Sortie& Op_Conv_EF_Stab_CoviMAC_Elem::printOn( Sortie& os ) const
-{
-  Op_Conv_CoviMAC_base::printOn( os );
-  return os;
-}
-
-Sortie& Op_Conv_Amont_CoviMAC_Elem::printOn( Sortie& os ) const
-{
-  Op_Conv_CoviMAC_base::printOn( os );
-  return os;
-}
-
-Sortie& Op_Conv_Centre_CoviMAC_Elem::printOn( Sortie& os ) const
-{
-  Op_Conv_CoviMAC_base::printOn( os );
-  return os;
-}
+Sortie& Op_Conv_EF_Stab_CoviMAC_Elem::printOn(Sortie& os) const { return Op_Conv_CoviMAC_base::printOn(os); }
+Sortie& Op_Conv_Amont_CoviMAC_Elem::printOn(Sortie& os) const { return Op_Conv_CoviMAC_base::printOn(os); }
+Sortie& Op_Conv_Centre_CoviMAC_Elem::printOn(Sortie& os) const { return Op_Conv_CoviMAC_base::printOn(os); }
+Entree& Op_Conv_Amont_CoviMAC_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_CoviMAC_Elem::readOn(is); }
+Entree& Op_Conv_Centre_CoviMAC_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_CoviMAC_Elem::readOn(is); }
 
 Entree& Op_Conv_EF_Stab_CoviMAC_Elem::readOn( Entree& is )
 {
@@ -96,18 +86,6 @@ Entree& Op_Conv_EF_Stab_CoviMAC_Elem::readOn( Entree& is )
   return is;
 }
 
-Entree& Op_Conv_Amont_CoviMAC_Elem::readOn( Entree& is )
-{
-  alpha = 1;
-  return Op_Conv_EF_Stab_CoviMAC_Elem::readOn( is );
-}
-
-Entree& Op_Conv_Centre_CoviMAC_Elem::readOn( Entree& is )
-{
-
-  alpha = 0;
-  return Op_Conv_EF_Stab_CoviMAC_Elem::readOn( is );
-}
 
 void Op_Conv_EF_Stab_CoviMAC_Elem::preparer_calcul()
 {

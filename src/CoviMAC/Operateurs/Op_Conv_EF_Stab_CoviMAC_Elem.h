@@ -58,7 +58,7 @@ public :
 
   void mettre_a_jour(double temps) override;
 
-  double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
+  double alpha = -1e8; //alpha = 0 -> centre, alpha = 1 -> amont
 protected :
 
   /* si operateur de convection de Masse_Multiphase */

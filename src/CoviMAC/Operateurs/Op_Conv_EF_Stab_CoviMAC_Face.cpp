@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,27 +39,18 @@
 #include <Masse_ajoutee_base.h>
 
 Implemente_instanciable( Op_Conv_EF_Stab_CoviMAC_Face, "Op_Conv_EF_Stab_CoviMAC_Face_CoviMAC", Op_Conv_CoviMAC_base ) ;
-Implemente_instanciable( Op_Conv_Amont_CoviMAC_Face, "Op_Conv_Amont_CoviMAC_Face_CoviMAC", Op_Conv_EF_Stab_CoviMAC_Face ) ;
-Implemente_instanciable( Op_Conv_Centre_CoviMAC_Face, "Op_Conv_Centre_CoviMAC_Face_CoviMAC", Op_Conv_EF_Stab_CoviMAC_Face ) ;
+Implemente_instanciable_sans_constructeur(Op_Conv_Amont_CoviMAC_Face, "Op_Conv_Amont_CoviMAC_Face_CoviMAC", Op_Conv_EF_Stab_CoviMAC_Face);
+Implemente_instanciable_sans_constructeur(Op_Conv_Centre_CoviMAC_Face, "Op_Conv_Centre_CoviMAC_Face_CoviMAC", Op_Conv_EF_Stab_CoviMAC_Face);
+
+Op_Conv_Amont_CoviMAC_Face::Op_Conv_Amont_CoviMAC_Face() { alpha = 1.0; }
+Op_Conv_Centre_CoviMAC_Face::Op_Conv_Centre_CoviMAC_Face() { alpha = 0.0; }
 
 // XD Op_Conv_EF_Stab_CoviMAC_Face interprete Op_Conv_EF_Stab_CoviMAC_Face 1 Class Op_Conv_EF_Stab_CoviMAC_Face
-Sortie& Op_Conv_EF_Stab_CoviMAC_Face::printOn( Sortie& os ) const
-{
-  Op_Conv_CoviMAC_base::printOn( os );
-  return os;
-}
-
-Sortie& Op_Conv_Amont_CoviMAC_Face::printOn( Sortie& os ) const
-{
-  Op_Conv_CoviMAC_base::printOn( os );
-  return os;
-}
-
-Sortie& Op_Conv_Centre_CoviMAC_Face::printOn( Sortie& os ) const
-{
-  Op_Conv_CoviMAC_base::printOn( os );
-  return os;
-}
+Sortie& Op_Conv_EF_Stab_CoviMAC_Face::printOn(Sortie& os) const { return Op_Conv_CoviMAC_base::printOn(os); }
+Sortie& Op_Conv_Amont_CoviMAC_Face::printOn(Sortie& os) const { return Op_Conv_CoviMAC_base::printOn(os); }
+Sortie& Op_Conv_Centre_CoviMAC_Face::printOn(Sortie& os) const { return Op_Conv_CoviMAC_base::printOn(os); }
+Entree& Op_Conv_Amont_CoviMAC_Face::readOn(Entree& is) { return Op_Conv_CoviMAC_base::readOn(is); }
+Entree& Op_Conv_Centre_CoviMAC_Face::readOn(Entree& is) { return Op_Conv_CoviMAC_base::readOn(is); }
 
 Entree& Op_Conv_EF_Stab_CoviMAC_Face::readOn( Entree& is )
 {
@@ -67,20 +58,6 @@ Entree& Op_Conv_EF_Stab_CoviMAC_Face::readOn( Entree& is )
   Param param(que_suis_je());
   param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
   param.lire_avec_accolades_depuis(is);
-  return is;
-}
-
-Entree& Op_Conv_Amont_CoviMAC_Face::readOn( Entree& is )
-{
-  Op_Conv_CoviMAC_base::readOn( is );
-  alpha = 1;
-  return is;
-}
-
-Entree& Op_Conv_Centre_CoviMAC_Face::readOn( Entree& is )
-{
-  Op_Conv_CoviMAC_base::readOn( is );
-  alpha = 0;
   return is;
 }
 

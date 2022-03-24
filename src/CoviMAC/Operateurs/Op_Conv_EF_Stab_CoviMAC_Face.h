@@ -59,7 +59,7 @@ public :
   }
 
 protected :
-  double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
+  double alpha = -1e8; //alpha = 0 -> centre, alpha = 1 -> amont
   DoubleVect porosite_f, porosite_e; //pour F5
 };
 
