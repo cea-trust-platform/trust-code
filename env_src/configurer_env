@@ -628,7 +628,7 @@ fi
 arch=`uname -s`
 case $arch in
    Linux) TRUST_ARCH=linux
-	TRUST_EDITOR="nedit kedit xemacs xedit emacs gedit"
+	TRUST_EDITOR="gedit nedit kate kedit xemacs xedit emacs"
 	# On met Intel en 1er/GNU car plus rapide que GNU
 	cuda="" && [ "$TRUST_USE_CUDA" = 1 ] && cuda="cuda-" # Uniquement si on demande Cuda, recherche en priorite des wrappers pour les compilateurs GNU
 	TRUST_CC_BASE=" crayCC  nvc++     FCC icpc  armclang++ "$cuda"g++      g++"
@@ -2045,7 +2045,10 @@ done
 tmp=`mktemp_`
 cp -f make.$TRUST_ARCH_CC"_opt" $tmp
 echo $ECHO_OPTS "1,$ s?-DNDEBUG??g\nw"  | ed $tmp 1>/dev/null 2>&1
-echo $ECHO_OPTS "1,$ s?-O3?-g -O3?g\nw" | ed $tmp 1>/dev/null 2>&1
+# PL: Ajout sur GNU semi_opt de -fsanitize=address : https://www.osc.edu/resources/getting_started/howto/howto_use_address_sanitizer
+# Non affreusement lent a l'execution
+# fsan="" && [ "$GNU_VERSION" != "" ] && fsan=-fsanitize=address
+echo $ECHO_OPTS "1,$ s?-O3?-g -O3 $fsan?g\nw" | ed $tmp 1>/dev/null 2>&1
 suffixe4=$TRUST_ARCH_CC"_semi_opt"
 update_file $tmp make.$suffixe4
 
