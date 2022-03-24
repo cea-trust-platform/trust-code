@@ -9,7 +9,7 @@ define_modules_config()
    echo "source /etc/profile" >> $env
    #
    # Load modules
-   module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.1.0 rocm/rocm craype-accel-amd-gfx908"
+   module="craype-x86-rome craype-network-ofi PrgEnv-cray/8.1.0 rocm/rocm craype-accel-amd-gfx908 libfabric"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
@@ -32,8 +32,8 @@ define_soumission_batch()
    [ "$gpu"  = 1 ] && soumission=1
    # http://www.idris.fr/eng/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm-eng.html Une seule partition gpu_p13
    project=""
-   queue=MI100
-   #qos=qos_cpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_cpu-dev && cpu=120
+   queue=CINES
+   #qos=qos_cpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_cpu-dev && cpu=120 
    cpu=6000
    [ "`id | grep fej`" != "" ] && project="fej@cpu"
    ntasks=128 # number of cores max
