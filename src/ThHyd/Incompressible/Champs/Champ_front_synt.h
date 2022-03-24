@@ -45,6 +45,7 @@ class Champ_front_synt : public Ch_front_var_instationnaire_dep
 
   const double amp = 1.452762113;
   const double pi=2.*acos(0.);
+  const double Cmu=0.09;
 
 public:
 
@@ -58,11 +59,14 @@ protected :
   DoubleVect moyenne;
   DoubleVect dir_fluct;
 
-  double lenghtScale; //echelle integrale espace
   int nbModes;
-  double turbKinEn; //energie cinetique turbulente
+  double lenghtScale; // echelle integrale en espace
+  double timeScale; // echelle integrale en temps
+  double turbKinEn; // energie cinetique turbulente (k)
+  double turbDissRate; // taux de dissipation turbulente (epsilon)
   double p;
-  double timeScale;//echelle integralte temps
+  double ratioCutoffWavenumber; // au lieu de prendre kappa_mesh comme plus grand nombre d'onde, on prend kappa_mesh/ratioCutoffWavenumber (ratioCutoffWavenumber>1 permet de mieux discretiser les fluctuations => aspect plus lisse)
+  double temps_d_avant_;
 };
 
 #endif
