@@ -26,9 +26,9 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
+	nb_pas_dt_max 3
     tmax 30
     seuil_statio 1e-12
-    nb_pas_dt_max 20000
     dt_impr 1e-10
     max_iter_implicite 1
     facsec 1
@@ -141,7 +141,7 @@ Read pb
             t_analytique_z t_analytique_stationnaire periode 1e8 segment 100 0.0 0.0 0.0 0.0  0.0 2.0
             t_trust_z        temperature_liquide_eau periode 1e8 segment 100 0.0 0.0 0.0 0.0  0.0 2.0
         }
-        Format lata
+        Format lml
         fields dt_post 1.
         {
             vitesse_liquide_eau elem

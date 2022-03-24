@@ -1,5 +1,4 @@
-# PARALLEL OK #
-system "rm -rf lata; mkdir -p lata"
+# PARALLEL OK 4 #
 dimension 3
 pb_Multiphase pb
 
@@ -8,6 +7,20 @@ Domaine dom
 # BEGIN MESH #
 Lire_med family_names_from_group_names dom mesh channel.med
 # END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
 
 Schema_euler_implicite sch
 Read sch
@@ -119,7 +132,7 @@ Read pb
             v_analytique  v_analytique_stationnaire periode 1e8 segment 50 0.0 0.0 1.9 0.05 0.0 1.9 
             v_trust             vitesse_liquide_eau periode 1e8 segment 50 0.0 0.0 1.9 0.05 0.0 1.9
         }
-        Format Lata
+        Format lata
         fields dt_post 1.
         {
             vitesse_liquide_eau elem
