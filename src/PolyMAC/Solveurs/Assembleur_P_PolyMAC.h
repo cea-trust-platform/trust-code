@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Assembleur_P_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Zones
+// Directory:   $TRUST_ROOT/src/PolyMAC/Solveurs
 // Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -48,6 +48,8 @@ public:
   int assembler_rho_variable(Matrice&, const Champ_Don_base& rho) override;
   int assembler_QC(const DoubleTab&, Matrice&) override;
   int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
+  void dimensionner_continuite(matrices_t matrices) const override;
+  void assembler_continuite(matrices_t matrices, DoubleTab& secmem) const override;
   int modifier_secmem(DoubleTab&) override
   {
     return 1;

@@ -38,6 +38,8 @@
 #include <Matrice_Morse_Sym.h>
 #include <Matrix_tools.h>
 
+#include <Pb_Multiphase.h>
+
 Implemente_instanciable(Assembleur_P_CoviMAC,"Assembleur_P_CoviMAC",Assembleur_base);
 
 Sortie& Assembleur_P_CoviMAC::printOn(Sortie& s ) const
@@ -157,4 +159,27 @@ void Assembleur_P_CoviMAC::completer(const Equation_base& Eqn)
 {
   mon_equation=Eqn;
   stencil_done = 0;
+}
+
+/* equation sum_k alpha_k = 1 en Pb_Multiphase */
+void Assembleur_P_CoviMAC::dimensionner_continuite(matrices_t matrices) const
+{
+  int e, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), ne_tot = la_zone_CoviMAC->nb_elem_tot();
+  IntTrav stencil(0, 2);
+  stencil.set_smart_resize(1);
+  for (e = 0; e < la_zone_CoviMAC->nb_elem(); e++) for (n = 0; n < N; n++) stencil.append_line(e, N * e + n);
+  Matrix_tools::allocate_morse_matrix(ne_tot, N * ne_tot, stencil, *matrices.at("alpha"));
+}
+
+void Assembleur_P_CoviMAC::assembler_continuite(matrices_t matrices, DoubleTab& secmem) const
+{
+  const DoubleTab& alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeurs();
+  Matrice_Morse& mat = *matrices.at("alpha");
+  const DoubleVect& ve = la_zone_CoviMAC->volumes(), &pe = la_zone_CoviMAC->porosite_elem();
+  int e, n, N = alpha.line_size();
+  /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
+  for (e = 0; e < la_zone_CoviMAC->nb_elem(); e++)
+    for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * alpha(e, n);
+  /* matrice */
+  for (e = 0; e < la_zone_CoviMAC->nb_elem(); e++) for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e);
 }

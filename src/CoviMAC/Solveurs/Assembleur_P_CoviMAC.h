@@ -53,6 +53,8 @@ public:
   int modifier_solution(DoubleTab&) override                       ;
   void completer(const Equation_base& ) override                      ;
   inline const Equation_base& equation() const                ;
+  void dimensionner_continuite(matrices_t matrices) const override;
+  void assembler_continuite(matrices_t matrices, DoubleTab& secmem) const override;
 
 protected :
   REF(Equation_base) mon_equation                            ;

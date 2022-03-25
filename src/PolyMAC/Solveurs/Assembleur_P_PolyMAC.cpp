@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Assembleur_P_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Zones
+// Directory:   $TRUST_ROOT/src/PolyMAC/Solveurs
 // Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -39,6 +39,8 @@
 #include <Matrice_Morse_Sym.h>
 #include <Matrix_tools.h>
 #include <Statistiques.h>
+
+#include <Pb_Multiphase.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 
@@ -164,7 +166,7 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 // Precondition:
 // Parametre: DoubleTab& tab_rho
 //    Signification: mass volumique
-//    Valeurs par dPolyMACaut:
+//    Valeurs par defaut:
 //    Contraintes: reference constante
 //    Acces: lecture
 // Retour: int
@@ -192,6 +194,76 @@ int Assembleur_P_PolyMAC::assembler_QC(const DoubleTab& tab_rho, Matrice& matric
 
   Cerr << "Fin de l'assemblage de la matrice de pression" << finl;
   return 1;
+}
+
+/* equations sum_k alpha_k = 1, [grad p]_{fe} = [grad p]_{fe'} en Pb_Multiphase */
+void Assembleur_P_PolyMAC::dimensionner_continuite(matrices_t matrices) const
+{
+  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  int i, j, e, f, fb, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &e_f = zone.elem_faces();
+  IntTrav sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
+  DoubleTrav w2;
+  sten_a.set_smart_resize(1), sten_p.set_smart_resize(1), sten_v.set_smart_resize(1), w2.set_smart_resize(1);
+  /* equations sum alpha_k = 1 */
+  for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) sten_a.append_line(e, N * e + n);
+  /* equations sur les p_f : continuite du gradient si interne, p = p_f si Neumann, sum_k alpha_k v_k = sum_k alpha_k v_k,imp si Dirichlet */
+  for (e = 0; e < zone.nb_elem_tot(); e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
+      if ((f = e_f(e, i)) >= zone.nb_faces()) continue; //faces virtuelles
+      else if (!fcl(f, 0)) for (sten_p.append_line(ne_tot + f, e), j = 0; j < w2.dimension(1); j++) //face interne
+          {
+            if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) < 2) sten_p.append_line(ne_tot + f, ne_tot + fb);
+          }
+      else if (fcl(f, 0) == 1) sten_p.append_line(ne_tot + f, e); //Neumann
+      else for (n = 0; n < N; n++) sten_v.append_line(ne_tot + f, N * f + n); //Dirichlet
+
+  Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, N * ne_tot, sten_a, *matrices.at("alpha"));
+  Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, ne_tot + nf_tot, sten_p, *matrices.at("pression"));
+  Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, equation().inconnue()->valeurs().size_totale(), sten_v, *matrices.at("vitesse"));
+}
+
+void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& secmem) const
+{
+  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+  const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
+  const DoubleTab& alpha = pb.eq_masse.inconnue().valeurs(), &press = pb.eq_qdm.pression().valeurs(), &vit = pb.eq_qdm.inconnue().valeurs(),
+                   &alpha_rho = pb.eq_masse.champ_conserve().passe(), &nf = zone.face_normales();
+  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &e_f = zone.elem_faces();
+  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
+  int i, j, e, f, fb, n, N = alpha.line_size(), ne_tot = zone.nb_elem_tot(), d, D = dimension;
+  Matrice_Morse& mat_a = *matrices.at("alpha"), &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
+  DoubleTrav w2;
+  double ar_tot;
+  w2.set_smart_resize(1);
+
+  /* equations sum alpha_k = 1 */
+  /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
+  for (e = 0; e < zone.nb_elem(); e++)
+    for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * alpha(e, n);
+  /* matrice */
+  for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) mat_a(e, N * e + n) = -pe(e) * ve(e);
+
+  /* equations sur les p_f : continuite du gradient si interne, p = p_f si Neumann, sum_k alpha_k v_k = sum_k alpha_k v_k,imp si Dirichlet */
+  mat_p.get_set_coeff() = 0, mat_a.get_set_coeff() = 0;
+  for (e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
+      if ((f = e_f(e, i)) >= zone.nb_faces()) continue; //faces virtuelles
+      else if (!fcl(f, 0)) //face interne
+        {
+          for (j = 0; j < w2.dimension(1); j++) secmem(ne_tot + f) -= w2(i, j, 0) * (press(ne_tot + e_f(e, j), 0) - press(e, 0)); //second membre
+          for (mat_p(ne_tot + f, e) -= w2(i, j, 0), j = 0; j < w2.dimension(1); j++) //matrice (sauf bords de Meumann)
+            if (fcl(fb = e_f(e, j), 0) != 1) secmem(ne_tot + f, ne_tot + fb) += w2(i, j, 0);
+        }
+      else if (fcl(f, 0) == 1) //Neumann -> egalite p_f = p_imp
+        mat_p(ne_tot + f, ne_tot + f) = 1, secmem(ne_tot + f) = ref_cast(Neumann, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2)) - press(ne_tot + f);
+      else  //Dirichlet -> egalite flux_tot_imp - flux_tot = 0
+        {
+          for (ar_tot = 0, n = 0; n < N; n++) ar_tot += alpha_rho(e, n);
+          for (n = 0; n < N; n++) secmem(ne_tot + f) += fs(f) * alpha_rho(e, n) / ar_tot * vit(f, n);
+          if (fcl(f, 0) == 3) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //contrib de la valeur imposee: Dirichlet non homogene seulement
+                secmem(ne_tot + f) -= alpha_rho(e, n) * nf(f, d) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
+          for (n = 0; n < N; n++)  mat_v(ne_tot + f, N * f + n) -= fs(f) * alpha_rho(e, n) / ar_tot;
+        }
 }
 
 void Assembleur_P_PolyMAC::modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& secmem) const

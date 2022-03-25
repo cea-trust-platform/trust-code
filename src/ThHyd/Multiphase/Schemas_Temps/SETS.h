@@ -69,17 +69,15 @@ public :
 
   /* assemblage d'un systeme en inco_p a partir des expressions d.{inco} : A_p[inco].d{inco_p} + b_p[inco] */
   //entree : - inco_p -> l'inconnue principale
-  //         - extra_eq -> noms d'equations supplementaires a utiliser, en plus de l'equation sum_k alpha_k = 1 (utilisee par defaut)
   //         - A_p, b_p -> expressions des autres inconnues calculees par eliminer()
-  //         - mats, sec -> systeme lineaire contenant les equations de extra_eqs
-  //         - inco_a -> valeur actuelle de l'inconnue "alpha" (necessaire pour assembler l'esuation sum_k a_k = 1)
+  //         - mats, sec -> systeme lineaire contenant une equation sur inco_p (second membre dans sec[inco_p], jacobienne dans mats[inco_p])
   //
   //sortie : systeme matrice.d{inco_p} = secmem
   //
   //contraintes : toutes les autres inconnues doivent etre exprimees dans A_p / b_p
 
-  static void assembler(const std::string inco_p, const std::vector<std::string> extra_eq, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p,
-                        const std::map<std::string, matrices_t>& mats, const tabs_t& sec, const DoubleTab& inco_a, Matrice_Morse& matrice, DoubleTab& secmem, int p_degen);
+  static void assembler(const std::string inco_p, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p, const std::map<std::string, matrices_t>& mats, const tabs_t& sec,
+                        Matrice_Morse& matrice, DoubleTab& secmem, int p_degen);
 
   double get_default_growth_factor() const override /* taux de croissance du pas de temps */
   {

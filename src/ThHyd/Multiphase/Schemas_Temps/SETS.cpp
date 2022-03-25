@@ -35,6 +35,7 @@
 #include <Matrix_tools.h>
 #include <Matrice_Bloc.h>
 #include <Statistiques.h>
+#include <Array_tools.h>
 #include <TRUSTTrav.h>
 #include <Dirichlet.h>
 #include <Zone_VF.h>
@@ -108,19 +109,21 @@ Entree& ICE::readOn(Entree& is )
   return is;
 }
 
-static inline double corriger_incr_alpha(const DoubleTab& alpha, DoubleTab& incr)
+static inline double corriger_incr_alpha(const DoubleTab& alpha, DoubleTab& incr, double& err_a_sum)
 {
   int i, n, N = alpha.line_size();
   double a_sum, corr_max = 0;
   DoubleTrav n_a(N);
-  for (i = 0; i < alpha.dimension_tot(0); i++)
+  for (i = 0, err_a_sum = 0; i < alpha.dimension_tot(0); i++)
     {
       for (n = 0; n < N; n++) n_a(n) = alpha(i, n) + incr(i, n);
       for (a_sum = 0, n = 0; n < N; n++) n_a(n) = std::max(n_a(n), 0.), a_sum += n_a(n);
+      err_a_sum = std::max(err_a_sum, std::abs(a_sum - 1));
       if (a_sum) for (n = 0; n < N; n++) n_a(n) /= a_sum;
       else for (n = 0; n < N; n++) n_a(n) = 1. / N;
       for (n = 0; n < N; n++) corr_max = std::max(corr_max, std::fabs(alpha(i, n) + incr(i, n) - n_a(n))), incr(i, n) = n_a(n) - alpha(i, n);
     }
+  err_a_sum = Process::mp_max(err_a_sum);
   return Process::mp_max(corr_max);
 }
 
@@ -197,31 +200,31 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
 void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
                      double dt,Matrice_Morse& matrice_unused,double seuil_resol,DoubleTrav& secmem_unused,int nb_ite,int& cv, int& ok)
 {
-  int i, j, &it = iteration;
   Pb_Multiphase& pb = *(Pb_Multiphase *) &ref_cast(Pb_Multiphase, eqn.probleme());
+  int i, j, &it = iteration, n_eq = pb.nombre_d_equations();
   QDM_Multiphase& eq_qdm = ref_cast(QDM_Multiphase, eqn);
-  double t = eqn.schema_temps().temps_courant();
+  double t = eqn.schema_temps().temps_courant(), err_a_sum = 0;
 
   std::vector<Equation_base *> eq_list; //ordres des equations
-  for (i = 0; i < pb.nombre_d_equations(); i++) eq_list.push_back(&pb.equation(i));
+  for (i = 0; i < n_eq; i++) eq_list.push_back(&pb.equation(i));
   std::map<std::string, Equation_base *> eqs; //eqs[inconnue] = equation
   std::vector<std::string> noms; //ordre des inconnues : le meme que les equations, puis la pression
-  for (i = 0; i < pb.nombre_d_equations(); i++) noms.push_back(eq_list[i]->inconnue().le_nom().getString()), eqs[noms[i]] = eq_list[i];
+  for (i = 0; i < n_eq; i++) noms.push_back(eq_list[i]->inconnue().le_nom().getString()), eqs[noms[i]] = eq_list[i];
   noms.push_back("pression"); //pas d'equation associee a la pression!
 
   std::map<std::string, Champ_Inc_base *> inco; //tous les Champ_Inc
-  for (auto &n_eq : eqs) inco[n_eq.first] = &n_eq.second->inconnue().valeur();
+  for (auto &i_eq : eqs) inco[i_eq.first] = &i_eq.second->inconnue().valeur();
   inco["pression"] = &eq_qdm.pression().valeur();
   //initialisation du Newton avec les valeurs presentes (stockees dans passe() en implicite), dimensionnement de incr / sec
   pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
 
   /* valeurs semi-implicites : inconnues (alpha, v, T, ..) et champs conserves (alpha_rho, alpha_rho_e, ..) */
   tabs_t semi_impl;
-  for (auto &&n_eq : eqs) if (n_eq.second != &eq_qdm)
+  for (auto &&i_eq : eqs) if (i_eq.second != &eq_qdm)
       {
-        semi_impl[n_eq.first] = n_eq.second->inconnue().passe();
-        semi_impl[n_eq.second->champ_conserve().le_nom().getString()] = n_eq.second->champ_conserve().passe();
-        semi_impl[n_eq.second->champ_convecte().le_nom().getString()]  =n_eq.second->champ_convecte().passe();
+        semi_impl[i_eq.first] = i_eq.second->inconnue().passe();
+        if (i_eq.second->has_champ_conserve()) semi_impl[i_eq.second->champ_conserve().le_nom().getString()] = i_eq.second->champ_conserve().passe();
+        if (i_eq.second->has_champ_convecte()) semi_impl[i_eq.second->champ_convecte().le_nom().getString()] = i_eq.second->champ_convecte().passe();
       }
   //en SETS, on remplace la valeur passee de v par celle donnee par une etape de prediction
   if (sets_ && !first_call_)
@@ -246,10 +249,11 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //premier passage : dimensionnement de mat_semi_impl, remplissage de p_degen_
   if (!mat_semi_impl.nb_lignes())
     {
-      mat_semi_impl.dimensionner(eq_list.size(), inco.size());
-      for (i = 0; i < (int) eq_list.size(); i++) for (j = 0; j < (int) inco.size(); j++)
+      mat_semi_impl.dimensionner(n_eq + 1, n_eq + 1);//derniere ligne -> continuite
+      for (i = 0; i <= n_eq; i++) for (j = 0; j <= n_eq; j++)
           mat_semi_impl.get_bloc(i, j).typer("Matrice_Morse"), mats[noms[i]][noms[j]] = &ref_cast(Matrice_Morse, mat_semi_impl.get_bloc(i, j).valeur());
-      for (auto &&n_eq : eqs) n_eq.second->dimensionner_blocs(mats[n_eq.first], semi_impl); //option semi-implicite
+      for (auto &&i_eq : eqs) i_eq.second->dimensionner_blocs(mats[i_eq.first], semi_impl); //option semi-implicite
+      eq_qdm.assembleur_pression()->dimensionner_continuite(mats["pression"]);
 
       /* si incompressible sans CLs de pression imposee, alors la pression est degeneree */
       p_degen = sub_type(Fluide_base, eq_qdm.milieu());
@@ -273,7 +277,10 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       /* remplissage par assembler_blocs */
       //equation d'energie en premier pour pouvoir utiliser q_pi dans d'autres equations
       eqs["temperature"]->assembler_blocs_avec_inertie(mats["temperature"], sec["temperature"], semi_impl);
+      //les autres
       for (auto &n_e : eqs) if (n_e.first != "temperature") n_e.second->assembler_blocs_avec_inertie(mats[n_e.first], sec[n_e.first], semi_impl);
+      //equation de continuite sum_k alpha_k = 1
+      eq_qdm.assembleur_pression()->assembler_continuite(mats["pression"], sec["pression"]);
 
       /* expression des autres inconnues (x) en fonction de p : vitesse, puis temperature / pression */
       tabs_t b_p;
@@ -285,7 +292,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       /* assemblage du systeme en pression */
       DoubleTrav secmem_pression;
-      assembler("pression", {}, A_p, b_p, mats, sec, inco["alpha"]->valeurs(), matrice_pression, secmem_pression, p_degen);
+      assembler("pression", A_p, b_p, mats, sec, matrice_pression, secmem_pression, p_degen);
 
       /* resolution : seulement si l'erreur en alpha (dans secmem_pression) depasse un seuil */
       if (mp_max_abs_vect(secmem_pression) > 1e-16)
@@ -323,7 +330,10 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       if (!Process::me()) fprintf(stderr, "\n");
 
       /* convergence? */
-      cv = (corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"]) < crit_conv["alpha"]);
+      cv = corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"], err_a_sum) < crit_conv["alpha"];
+      if (err_a_sum > crit_conv["alpha"])
+        Process::exit(que_suis_je() + ": pressure solver inaccuracy detected! The equation sum_k alpha_k = 1 is respected with a precision of "
+                      + Nom(err_a_sum) + " ,\nwhile the requested accuracy on alpha_k is " + Nom(crit_conv["alpha"]) + " . Please increase the accuracy of your pressure solver!");
       for (i = 0 ; i < pb.nombre_d_equations(); i++) if (pb.equation(i).positive_unkown()==1)
           {
             std::string nom_inco = pb.equation(i).inconnue().le_nom().getString() ;
@@ -506,7 +516,7 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
                       }
 
             /* factorisation et resolution */
-            DoubleTrav D_back = D;
+            // DoubleTrav D_back = D;
             F77NAME(dgetrf)(&nb, &nb, &D(0, 0), &nb, &piv(0), &infoo);
             F77NAME(dgetrs)(&trans, &nb, &nc, &D(0, 0), &nb, &piv(0), &S(0, 0), &nb, &infoo);
 
@@ -520,47 +530,42 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
     }
 }
 
-void SETS::assembler(const std::string inco_p, const std::vector<std::string> extra_eq, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p,
-                     const std::map<std::string, matrices_t>& mats, const tabs_t& sec, const DoubleTab& inco_a, Matrice_Morse& P, DoubleTab& secmem, int p_degen)
+void SETS::assembler(const std::string inco_p, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p,
+                     const std::map<std::string, matrices_t>& mats, const tabs_t& sec, Matrice_Morse& P, DoubleTab& secmem, int p_degen)
 {
-  int i, ib, j, na = inco_a.dimension_tot(0), m, M = inco_a.line_size();
+  secmem = sec.at(inco_p);
+  int i, ib, j, k, l, np = secmem.dimension_tot(0), m, M = secmem.line_size();
   const int *deb, *fin; //bornes pour chercher des indices avec lower_bound()
-  if (extra_eq.size()) Cerr << "SETS::assembler() : extra_eq pas encore code!" << finl, Process::exit();
-  const Matrice_Morse& A = A_p.at("alpha");
 
   /* calc(i) = 1 si on doit remplir les lignes [N * i, (N + 1) * i[ de la matrice */
-  ArrOfBit calc(na);
-  if (inco_a.get_md_vector().non_nul()) MD_Vector_tools::get_sequential_items_flags(inco_a.get_md_vector(), calc);
+  ArrOfBit calc(np);
+  if (secmem.get_md_vector().non_nul()) MD_Vector_tools::get_sequential_items_flags(secmem.get_md_vector(), calc);
   else calc = 1;
 
   if (!P.nb_colonnes()) //dimensionnement au premier passage
     {
       IntTrav stencil(0, 2);
       stencil.set_smart_resize(1);
-      std::set<int> idx;
-      for (i = 0; i < na; i++) if (calc[i]) //chaque
+      for (auto &&n_m : mats.at(inco_p)) if (n_m.second && n_m.second->nb_colonnes())
           {
-            if (p_degen && !Process::me() && i == 0) for (j = 0; j < sec.at(inco_p).size_totale(); j++) idx.insert(j);
-            else for (idx.clear(), m = 0, ib = M * i; m < M; m++, ib++) for (j = A.get_tab1()(ib) - 1; j < A.get_tab1()(ib + 1) - 1; j++)
-                  idx.insert(A.get_tab2()(j) - 1);
-            for (auto && col : idx) stencil.append_line(i, col);
+            const Matrice_Morse& Mp = *n_m.second, &Ap = A_p.at(n_m.first);
+            for (i = 0; i < np; i++) if (calc[i]) for (ib = M * i, m = 0; m < M; m++, ib++) for (j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
+                    for (k = Mp.get_tab2()(j) - 1, l = Ap.get_tab1()(k) - 1; l < Ap.get_tab1()(k + 1) - 1; l++)
+                      stencil.append_line(ib, Ap.get_tab2()(l) - 1);
           }
-      Matrix_tools::allocate_morse_matrix(na, sec.at(inco_p).size_totale(), stencil, P);
+      tableau_trier_retirer_doublons(stencil);
+      Matrix_tools::allocate_morse_matrix(secmem.size_totale(), secmem.size_totale(), stencil, P);
     }
 
-  /* matrice */
-  for (P.get_set_coeff() = 0, i = 0; i < na; i++) if (calc[i])
-      for (m = 0, ib = M * i, deb = P.get_tab2().addr() + P.get_tab1()(i) - 1, fin = P.get_tab2().addr() + P.get_tab1()(i + 1) - 1; m < M; m++, ib++)
-        for (j = A.get_tab1()(ib) - 1; j < A.get_tab1()(ib + 1) - 1; j++)
-          P.get_set_coeff()(std::lower_bound(deb, fin, A.get_tab2()(j)) - &P.get_tab2()(0)) += A.get_coeff()(j);
-  double diag = P.get_coeff()(0);
-  if (p_degen && !Process::me()) for (i = 0; i < P.get_tab1()(1) - 1; i++) P.get_set_coeff()(i) += diag; //de-degeneration de la matrice
-
-  /* second membre : meme structure que inco_a, mais une seule composante */
-  if (inco_a.get_md_vector().non_nul()) MD_Vector_tools::creer_tableau_distribue(inco_a.get_md_vector(), secmem, Array_base::NOCOPY_NOINIT);
-  else secmem.resize(inco_a.dimension_tot(0));
-
-  const DoubleTab& b = b_p.at("alpha");
-  for (i = 0; i < na; i++) if (calc[i]) for (secmem(i) = 1, m = 0; m < M; m++)
-        secmem(i) -= b(i, m) + inco_a(i, m);
+  /* remplissage de P / secmem */
+  P.get_set_coeff() = 0;
+  for (auto &&n_m : mats.at(inco_p)) if (n_m.second && n_m.second->nb_colonnes())
+      {
+        const Matrice_Morse& Mp = *n_m.second, &Ap = A_p.at(n_m.first);
+        const DoubleTab& bp = b_p.at(n_m.first);
+        for (i = 0; i < np; i++) if (calc[i]) for (ib = M * i, m = 0; m < M; m++, ib++)
+              for (deb = P.get_tab2().addr() + P.get_tab1()(ib) - 1, fin = P.get_tab2().addr() + P.get_tab1()(ib + 1) - 1, j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
+                for (k = Mp.get_tab2()(j) - 1, secmem(i, m) -= Mp.get_coeff()(j) * bp.addr()[k], l = Ap.get_tab1()(k) - 1; l < Ap.get_tab1()(k + 1) - 1; l++)
+                  P.get_set_coeff()(std::lower_bound(deb, fin, Ap.get_tab2()(l)) - P.get_tab2().addr()) += Mp.get_coeff()(j) * Ap.get_coeff()(l);
+      }
 }

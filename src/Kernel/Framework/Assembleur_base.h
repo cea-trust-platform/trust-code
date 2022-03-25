@@ -62,6 +62,17 @@ public:
   virtual void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const { };
   virtual int modifier_solution(DoubleTab&)=0;
 
+  /* dimensionnement / assemblage de l'equation de continuite sum_k alpha_k = 1 en Pb_continuite */
+  /* meme interface que dimensionner/assembler_blocs dans Equation_base */
+  virtual void dimensionner_continuite(matrices_t matrices) const
+  {
+    Process::exit(Nom("dimensionner_continuite(...) must be overloaded by ") + que_suis_je());
+  }
+  virtual void assembler_continuite(matrices_t matrices, DoubleTab& secmem) const
+  {
+    Process::exit(Nom("assembler_continuite(...) must be overloaded by ") + que_suis_je());
+  };
+
 private:
   // Drapeau, indique si le solveur resout un increment de pression ou
   // la pression.
