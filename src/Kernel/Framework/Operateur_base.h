@@ -111,6 +111,9 @@ public :
   virtual int systeme_invariant() const;
   virtual void ajouter_contribution_explicite_au_second_membre
   (const Champ_Inc_base& inconnue, DoubleTab& derivee) const;
+  const Champ_Inc& mon_inconnue() const { return le_champ_inco.valeur(); }
+  bool has_champ_inco() const { return le_champ_inco.non_nul(); }
+
 
   void ouvrir_fichier(SFichier& os,const Nom&, const int& flag=1) const;
   void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const int& flag=1) const;
