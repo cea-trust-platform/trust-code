@@ -35,21 +35,15 @@ class SSOR : public Precond_base
 public:
   SSOR();
 
-  double get_omega()
-  {
-    return omega_;
-  };
+  double get_omega() { return omega_; }
   void   set_omega(double x)
   {
     omega_ = x;
     reinit(REINIT_COEFF);
-  };
+  }
 
   // SSOR does not use the virtual space of the input vector:
-  int get_flag_updated_input() const override
-  {
-    return 0;
-  }
+  int get_flag_updated_input() const override { return 0; }
 
 protected:
   int preconditionner_(const Matrice_Base&, const DoubleVect& secmem, DoubleVect& solution) override;
@@ -59,12 +53,9 @@ protected:
   void ssor(const Matrice_Bloc_Sym&, DoubleVect&);
 
   double omega_;
-  int algo_fortran_;
-
-  int avec_assert_;
+  int algo_fortran_, avec_assert_;
   // Membres initialises par la methode prepare()
-  // Drapeaux des items a traiter (meme structure que le second membre)
-  //  (traitement des items communs si algo_items_communs_)
+  // Drapeaux des items a traiter (meme structure que le second membre) (traitement des items communs si algo_items_communs_)
   IntTab items_a_traiter_;
   // pour chaque partie du vecteur, y a-t-il des items communs ?
   int algo_items_communs_;
@@ -74,4 +65,5 @@ protected:
   // Precalcul de omega divise par le coefficient diagonal de la matrice
   ArrOfDouble omega_diag_;
 };
-#endif
+
+#endif /* SSOR_included */
