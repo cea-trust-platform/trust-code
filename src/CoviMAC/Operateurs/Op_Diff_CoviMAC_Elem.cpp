@@ -391,7 +391,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             if (type_f[i] != 4 && type_f[i] != 5) for (n = 0; n < (mix ? n12[0] : 1); n++) i_eq_cont(i, n) = k, k++;
           }
         //si inconnues de paroi de Pb_Multiphase : equations dues aux correlations de flux (dans ce cas mix = 1)
-        if (mix) for (i_eq_pbm.resize(t_eq), i_eq_pbm = -1, i = 0; i < n_e; i++) for (j = 0; j < (int) se_f[i].size(); j++)
+        if (mix) for (i_eq_pbm.resize(t_eq), i_eq_pbm = -1, i = 0; i < n_e; i++) for (p = s_pe[i][0], j = 0; j < (int) se_f[i].size(); j++)
               if (i_efs(i, j, M) >= 0) for (n = 0; n < N[p]; n++) i_eq_pbm(i_efs(i, j, n)) = k, k++;
         assert(k == t_eq); //a-ton bien autant d'equations que d'inconnues?
 
@@ -418,7 +418,7 @@ void Op_Diff_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
               }
 
             A.resize(Nm, t_eq, t_eq), B.resize(Nm, t_ec = t_e + 1, t_eq), Ff.resize(Nm, t_eq, t_eq), Fec.resize(Nm, t_eq, t_ec); //systeme A.dT_efs = B.{dT_eb, 1}, flux sortant a chaque face
-            if (q_pi_.dimension(0)) Qf.resize(n_e, t_eq, M, M), Qec.resize(n_e, t_ec, M, M); //si Pb_Multiphase : flux paroi-interface
+            if (mix) Qf.resize(n_e, t_eq, M, M), Qec.resize(n_e, t_ec, M, M); //si Pb_Multiphase : flux paroi-interface
             /* debut du Newton sur les T_efs : initialisation aux temperatures de mailles */
             for (Tefs.resize(Nm, t_eq), i = 0; i < n_e; i++) for (p = s_pe[i][0], e = s_pe[i][1], j = 0; j < (int) se_f[i].size(); j++)
                 {
