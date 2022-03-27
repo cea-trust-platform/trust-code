@@ -116,7 +116,7 @@ public:
 
   // Options par defaut choisies pour compatibilite avec la version precedente. Attention: il y avait un echange_espace_virtuel avant, ce n'est pas strictement equivalent
   inline void abs(Mp_vect_options opt = VECT_ALL_ITEMS) { operator_abs(*this, opt); }
-  inline void carre(Mp_vect_options opt = VECT_ALL_ITEMS) { carre(*this, opt); }
+  inline void carre(Mp_vect_options opt = VECT_ALL_ITEMS) { carre_(*this, opt); }
   inline void racine_carree(Mp_vect_options opt = VECT_ALL_ITEMS) { racine_carree_(*this, opt); }
   inline void ajoute(double alpha, const TRUSTVect<double>& y, Mp_vect_options opt = VECT_ALL_ITEMS);
   inline void ajoute_sans_ech_esp_virt(double alpha, const TRUSTVect<double>& y, Mp_vect_options opt = VECT_REAL_ITEMS) { ajoute_alpha_v(*this, alpha, y, opt); } // x+=alpha*y sans echange_espace_virtuel
@@ -137,7 +137,7 @@ public:
   inline _TYPE_ mp_min_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return mp_min_vect_(*this, opt); }
   inline _TYPE_ mp_max_abs_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return mp_max_abs_vect_(*this, opt); }
   inline _TYPE_ mp_min_abs_vect(Mp_vect_options opt = VECT_REAL_ITEMS) const { return mp_min_abs_vect_(*this, opt); }
-  inline _TYPE_ mp_norme_vect() const { return mp_norme_vect(*this); }
+  inline _TYPE_ mp_norme_vect() const { return mp_norme_vect_(*this); }
 
   // methodes virtuelles
 

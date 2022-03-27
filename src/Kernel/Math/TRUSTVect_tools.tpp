@@ -436,6 +436,12 @@ inline double mp_norme_vect(const TRUSTVect<double>& vx)
   return x;
 }
 
+template<typename _TYPE_>
+inline _TYPE_ mp_norme_vect_(const TRUSTVect<_TYPE_>& vx)
+{
+  return mp_norme_vect(vx);
+}
+
 inline int mp_moyenne_vect(const TRUSTVect<int>& x) = delete; // forbidden
 
 inline double mp_moyenne_vect(const TRUSTVect<double>& x)
@@ -713,6 +719,13 @@ inline void carre(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
   operator_vect_single_generic<_TYPE_,TYPE_OPERATOR_SINGLE::CARRE_>(resu,0. /* inutile */,opt);
 }
+
+template <typename _TYPE_>
+inline void carre_(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
+{
+  carre(resu,opt);
+}
+
 // FIN code pour operateurs vect/vect ou vect/scalair
 // ==================================================================================================================================
 
