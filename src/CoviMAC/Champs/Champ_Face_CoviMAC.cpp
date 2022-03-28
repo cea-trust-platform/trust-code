@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -89,7 +89,8 @@ int Champ_Face_CoviMAC::fixer_nb_valeurs_nodales(int n)
   // Probleme: nb_comp vaut dimension mais on ne veut qu'une dimension !!!
   // HACK :
   int old_nb_compo = nb_compo_;
-  nb_compo_ /= dimension;
+  if(nb_compo_ != 1) nb_compo_ /= dimension;
+
 
   /* variables : valeurs normales aux faces, puis valeurs aux elements par blocs -> pour que line_size() marche */
   creer_tableau_distribue(zone.mdv_ch_face);
