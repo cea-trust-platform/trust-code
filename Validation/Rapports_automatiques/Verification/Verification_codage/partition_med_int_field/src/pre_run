@@ -1,0 +1,5 @@
+#!/bin/bash
+source $TRUST_MEDCOUPLING_ROOT/env.sh
+python creationMesh.py
+
+trust domaine.data 1>domaine.out 2>domaine.err
