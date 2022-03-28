@@ -153,12 +153,19 @@ void Op_Diff_CoviMAC_Elem::init_som_ext() const
   for (auto &&s_op_sb : s_dist_full) if ((s = s_op_sb.first) < zone.nb_som())
       {
         //elements
-        for (i = 0; i < zone.som_elem.get_list_size(s); i++) s_pe.insert({{ 0, zone.som_elem(s, i) }}); //cote local
+        for (i = 0; i < zone.som_elem.get_list_size(s); i++)
+          {
+            std::array<int, 2> arr = { 0, zone.som_elem(s, i) };
+            s_pe.insert({arr}); //cote local
+          }
         for (auto &&op_sb : s_op_sb.second) //cotes distants
           {
             const Zone_CoviMAC& o_zone = ref_cast(Zone_CoviMAC, op_sb.first->equation().zone_dis().valeur());
             for (iop = std::find(op_ext.begin(), op_ext.end(), op_sb.first) - op_ext.begin(), i = 0; i < o_zone.som_elem.get_list_size(op_sb.second); i++)
-              s_pe.insert({{ iop, o_zone.som_elem(op_sb.second, i) }});
+              {
+                std::array<int, 2> arr = { iop, o_zone.som_elem(op_sb.second, i) };
+                s_pe.insert({arr});
+              }
           }
         //faces : celles des elements de s_pe
         for (auto && iop_e : s_pe) for (iop = iop_e[0], e = iop_e[1], s_l = iop ? s_op_sb.second.at(op_ext[iop]) : s, i = 0; i < e_f[iop].get().dimension(1) && (f = e_f[iop](e, i)) >= 0; i++)
@@ -167,7 +174,8 @@ void Op_Diff_CoviMAC_Elem::init_som_ext() const
               if (!ok || fcl[iop](f, 0) != 3) continue; //face ne touchant pas le sommet ou non Echange_contact
               const Echange_contact_CoviMAC& cl = ref_cast(Echange_contact_CoviMAC, op_ext[iop]->equation().zone_Cl_dis()->les_conditions_limites()[fcl[iop](f, 1)].valeur());
               int o_iop = std::find(op_ext.begin(), op_ext.end(), &cl.o_diff.valeur()) - op_ext.begin(), o_f = cl.f_dist(fcl[iop](f, 2)); //operateur / face de l'autre cote
-              s_pf.insert({{ iop < o_iop ? iop : o_iop, iop < o_iop ? f : o_f, iop < o_iop ? o_iop : iop, iop < o_iop ? o_f : f}}); //stocke dans l'ordre
+              std::array<int, 4> arr = { iop < o_iop ? iop : o_iop, iop < o_iop ? f : o_f, iop < o_iop ? o_iop : iop, iop < o_iop ? o_f : f};
+              s_pf.insert({arr}); //stocke dans l'ordre
             }
         int mix = 0; //melange-t-on les composantes autour de ce sommet? oui si une equation Energie_Multiphase avec correlation de flux parietal est presente autour
         for (auto &&pe : s_pe) som_ext_pe.append_line(pe[0], pe[1]), mix |= sub_type(Energie_Multiphase, op_ext[pe[0]]->equation()) && ref_cast(Pb_Multiphase, op_ext[pe[0]]->equation().probleme()).has_correlation("flux_parietal");
