@@ -38,7 +38,7 @@ class my_first_class : public Interprete_geometrique_base
   Declare_instanciable( my_first_class ) ;
 
 public :
-  virtual Entree& interpreter_(Entree&);
+  Entree& interpreter_(Entree&) override;
 protected :
 
 };
