@@ -74,6 +74,7 @@ then
    [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8
    [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27
    [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27
+   [ "`grep 'Fedora release 3[6-8]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora31 && version=3_2_1
    [ "`grep 'release [7]' /etc/redhat-release 2>/dev/null`" != "" ]             && os=rhel7      # NB: Le binaire rhel7 ne marche pas sur Redhat 8 (xml2cmake error)
 
    version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
