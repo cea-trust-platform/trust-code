@@ -8,12 +8,12 @@ class Constituant_Avec_Vitesse : public Constituant
 {
   Declare_instanciable(Constituant_Avec_Vitesse);
 public :
-  int   initialiser(const double& temps);
-  void  set_param(Param& param);
-  void  mettre_a_jour(double temps);
+  int   initialiser(const double& temps) override;
+  void  set_param(Param& param) override;
+  void  mettre_a_jour(double temps) override;
   const Champ_Don& vit_convection_constituant() const;
   const Champ_base& vitesse_pour_transport() ;
-  virtual void discretiser(const Probleme_base& pb, const Discretisation_base& dis);
+  void discretiser(const Probleme_base& pb, const Discretisation_base& dis) override;
 protected :
   Champ_Don C;
 private :

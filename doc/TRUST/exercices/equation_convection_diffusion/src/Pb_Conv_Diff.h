@@ -9,10 +9,10 @@ class Pb_Conv_Diff : public Probleme_base
 {
   Declare_instanciable(Pb_Conv_Diff);
 public:
-  int nombre_d_equations() const;
-  const Equation_base& equation(int i) const ;
-  Equation_base& equation(int i);        
-  void associer_milieu_base(const Milieu_base& un_milieu);
+  int nombre_d_equations() const override;
+  const Equation_base& equation(int i) const override;
+  Equation_base& equation(int i) override;
+  void associer_milieu_base(const Milieu_base& un_milieu) override;
 protected:
   Eq_Conv_Diff eq_conv_diff;
 };
