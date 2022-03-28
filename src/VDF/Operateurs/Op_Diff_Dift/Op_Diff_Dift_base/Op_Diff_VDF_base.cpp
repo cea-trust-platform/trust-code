@@ -76,7 +76,7 @@ DoubleTab& Op_Diff_VDF_base::ajouter(const DoubleTab& inco,  DoubleTab& resu) co
           Nom nom_eq=equation().que_suis_je();
           if ((nom_eq == "Navier_Stokes_standard")||(nom_eq == "Navier_Stokes_QC")||(nom_eq == "Navier_Stokes_FT_Disc"))
             {
-              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
+              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter->evaluateur());
               const Champ_base& ch_diff=eval.get_diffusivite();
               const DoubleTab& tab_diffusivite=ch_diff.valeurs();
               if (tab_diffusivite.size() == 1)
@@ -141,7 +141,7 @@ void Op_Diff_VDF_base::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
 
           if (equation().que_suis_je() == "Navier_Stokes_standard")
             {
-              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
+              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter->evaluateur());
               const Champ_base& ch_diff=eval.get_diffusivite();
               const DoubleTab& tab_diffusivite=ch_diff.valeurs();
               if (tab_diffusivite.size() == 1)
@@ -199,7 +199,7 @@ void Op_Diff_VDF_base::contribuer_au_second_membre(DoubleTab& resu) const
 
           if (equation().que_suis_je() == "Navier_Stokes_standard")
             {
-              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
+              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter->evaluateur());
               const Champ_base& ch_diff=eval.get_diffusivite();
               const DoubleTab& tab_diffusivite=ch_diff.valeurs();
               if (tab_diffusivite.size() == 1)

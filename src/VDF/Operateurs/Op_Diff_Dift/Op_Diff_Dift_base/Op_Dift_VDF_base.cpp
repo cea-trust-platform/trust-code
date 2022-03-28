@@ -75,14 +75,14 @@ DoubleTab& Op_Dift_VDF_base::ajouter(const DoubleTab& inco,  DoubleTab& resu) co
           const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
           if (sub_type(Mod_turb_hyd_base,modele_turbulence.valeur()))
             {
-              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
+              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter->evaluateur());
               const Champ_base& ch=eval.get_diffusivite();
               const DoubleVect& tab_diffusivite=ch.valeurs();
               int size=diffu_tot.size_totale();
               if (tab_diffusivite.size() == 1)
                 {
                   db_diffusivite = tab_diffusivite[0];
-                  const Eval_Dift_VDF_const& eval_dift = dynamic_cast<const Eval_Dift_VDF_const&> (eval);
+                  const Eval_Dift_VDF_const& eval_dift = static_cast<const Eval_Dift_VDF_const&> (eval);
                   const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
                   const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
                   for (int i=0; i<size; i++)
@@ -90,7 +90,7 @@ DoubleTab& Op_Dift_VDF_base::ajouter(const DoubleTab& inco,  DoubleTab& resu) co
                 }
               else
                 {
-                  const Eval_Dift_VDF_var& eval_dift = dynamic_cast<const Eval_Dift_VDF_var&> (eval);
+                  const Eval_Dift_VDF_var& eval_dift = static_cast<const Eval_Dift_VDF_var&> (eval);
                   const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
                   const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
                   for (int i=0; i<size; i++)
@@ -149,13 +149,13 @@ void Op_Dift_VDF_base::contribuer_a_avec(const DoubleTab& inco,
           double db_diffusivite;
           if (equation().que_suis_je() == "Navier_Stokes_Turbulent")
             {
-              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
+              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter->evaluateur());
               const Champ_base& ch=eval.get_diffusivite();
               const DoubleVect& tab_diffusivite=ch.valeurs();
               if (tab_diffusivite.size() == 1)
                 {
                   db_diffusivite = tab_diffusivite[0];
-                  const Eval_Dift_VDF_const& eval_dift = dynamic_cast<const Eval_Dift_VDF_const&> (eval);
+                  const Eval_Dift_VDF_const& eval_dift = static_cast<const Eval_Dift_VDF_const&> (eval);
                   const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
                   const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
                   for (int i=0; i<diffusivite_turb.size(); i++)
@@ -163,7 +163,7 @@ void Op_Dift_VDF_base::contribuer_a_avec(const DoubleTab& inco,
                 }
               else
                 {
-                  const Eval_Dift_VDF_var& eval_dift = dynamic_cast<const Eval_Dift_VDF_var&> (eval);
+                  const Eval_Dift_VDF_var& eval_dift = static_cast<const Eval_Dift_VDF_var&> (eval);
                   const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
                   const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
                   for (int i=0; i<diffusivite_turb.size(); i++)
@@ -217,13 +217,13 @@ void Op_Dift_VDF_base::contribuer_au_second_membre(DoubleTab& resu) const
           double db_diffusivite;
           if (equation().que_suis_je() == "Navier_Stokes_Turbulent")
             {
-              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter.evaluateur());
+              const Eval_Diff_VDF& eval=dynamic_cast<const Eval_Diff_VDF&> (iter->evaluateur());
               const Champ_base& ch=eval.get_diffusivite();
               const DoubleVect& tab_diffusivite=ch.valeurs();
               if (tab_diffusivite.size() == 1)
                 {
                   db_diffusivite = tab_diffusivite[0];
-                  const Eval_Dift_VDF_const& eval_dift = dynamic_cast<const Eval_Dift_VDF_const&> (eval);
+                  const Eval_Dift_VDF_const& eval_dift = static_cast<const Eval_Dift_VDF_const&> (eval);
                   const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
                   const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
                   for (int i=0; i<diffusivite_turb.size(); i++)
@@ -231,7 +231,7 @@ void Op_Dift_VDF_base::contribuer_au_second_membre(DoubleTab& resu) const
                 }
               else
                 {
-                  const Eval_Dift_VDF_var& eval_dift = dynamic_cast<const Eval_Dift_VDF_var&> (eval);
+                  const Eval_Dift_VDF_var& eval_dift = static_cast<const Eval_Dift_VDF_var&> (eval);
                   const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
                   const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
                   for (int i=0; i<diffusivite_turb.size(); i++)
