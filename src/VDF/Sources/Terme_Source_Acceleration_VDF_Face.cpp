@@ -227,7 +227,7 @@ const DoubleTab& Terme_Source_Acceleration_VDF_Face::calculer_vitesse_faces(
   const IntTab&      faces_voisins = zone_VDF.face_voisins();
   const DoubleVect& volumes       = zone_VDF.volumes();  // volumes des elements
   const IntTab&      elem_faces    = zone_VDF.elem_faces();
-  const DoubleTab&   v_faces  = get_eq_hydraulique().inconnue();
+  const DoubleTab&   v_faces  = get_eq_hydraulique().inconnue()->valeurs();
   const int       dim      = Objet_U::dimension;
   const int       nb_faces = v_faces.dimension(0);
   v_faces_stockage.resize(nb_faces, dim);

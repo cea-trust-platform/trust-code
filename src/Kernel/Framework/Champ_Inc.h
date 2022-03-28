@@ -20,7 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Champ_Inc_included
 #define Champ_Inc_included
 
@@ -42,7 +41,6 @@
 
 Declare_deriv(Champ_Inc_base);
 
-
 class Champ_Inc : public DERIV(Champ_Inc_base), public Champ_Proto
 {
   Declare_instanciable(Champ_Inc);
@@ -51,28 +49,28 @@ public:
   // Methodes reimplementees (Champ_Proto)
   //
   using Champ_Proto::valeurs;
-  DoubleTab&       valeurs() override ;
-  const DoubleTab& valeurs() const override ;
-  int           reprendre(Entree& ) override ;
-  int           sauvegarder(Sortie& ) const override;
+  DoubleTab& valeurs() override;
+  const DoubleTab& valeurs() const override;
+  int reprendre(Entree&) override;
+  int sauvegarder(Sortie&) const override;
   //
   // Nouvelles methodes
   //
-  int fixer_nb_valeurs_temporelles(int );
+  int fixer_nb_valeurs_temporelles(int);
   int nb_valeurs_temporelles() const;
-  int fixer_nb_valeurs_nodales(int );
-  int nb_valeurs_nodales() const ;
-  const Zone_dis_base& associer_zone_dis_base(const Zone_dis_base&) ;
+  int fixer_nb_valeurs_nodales(int);
+  int nb_valeurs_nodales() const;
+  const Zone_dis_base& associer_zone_dis_base(const Zone_dis_base&);
   const Zone_dis_base& zone_dis_base() const;
-  double           changer_temps(const double& );
-  double           temps() const;
-  DoubleTab&       futur(int i=1) override ;
-  const DoubleTab& futur(int i=1) const override ;
-  DoubleTab&       passe(int i=1) override ;
-  const DoubleTab& passe(int i=1) const override ;
-  Champ_Inc_base&  avancer(int i=1);
-  Champ_Inc_base&  reculer(int i=1);
-  int lire_donnees(Entree& ) ;
+  double changer_temps(const double&);
+  double temps() const;
+  DoubleTab& futur(int i = 1) override;
+  const DoubleTab& futur(int i = 1) const override;
+  DoubleTab& passe(int i = 1) override;
+  const DoubleTab& passe(int i = 1) const override;
+  Champ_Inc_base& avancer(int i = 1);
+  Champ_Inc_base& reculer(int i = 1);
+  int lire_donnees(Entree&);
 
   double integrale_espace(int ) const;
   void mettre_a_jour(double temps);
@@ -81,8 +79,8 @@ public:
   //DoubleTab& trace(const Frontiere_dis_base&, DoubleTab& ,int distant) const;
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double ,int distant) const;
   // Operateur de conversion implicite
-  operator DoubleTab& ();
-  operator const DoubleTab& () const ;
+  operator DoubleTab& () = delete;
+  operator const DoubleTab& () const = delete;
 };
 
 #endif

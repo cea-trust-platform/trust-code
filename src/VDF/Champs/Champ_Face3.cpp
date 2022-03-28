@@ -639,12 +639,12 @@ void Champ_Face::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF
                   if ( dimension == 2 )
                     {
                       ori = orientation(num_face);
-                      norm_v=norm_2D_vit(vit,elem,ori,zone_VDF,val0);
+                      norm_v=norm_2D_vit(vit.valeurs(),elem,ori,zone_VDF,val0);
                     }
                   else if ( dimension == 3)
                     {
                       ori = orientation(num_face);
-                      norm_v=norm_3D_vit(vit,elem,ori,zone_VDF,val1,val2);
+                      norm_v=norm_3D_vit(vit.valeurs(),elem,ori,zone_VDF,val1,val2);
                     } // dim 3
 
                   if ( axi )

@@ -1029,52 +1029,6 @@ double Champ_Inc_base::integrale_espace(int ncomp) const
 }
 
 // Description:
-//    Operateur de cast d'un champ en un Tableau de Double.
-//    Renvoie le tableau des valeurs du champ.
-//    Ex:
-//        Champ_Inc_base un_champ;
-//        DoubleTab un_tableau;
-//
-//        un_tableau = (DoubleTab) un_champ;
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Champ_Inc_base::operator DoubleTab& ()
-{
-  return les_valeurs->valeurs();
-}
-
-// Description:
-//    Operateur de cast d'un champ en un Tableau de Double.
-//    Renvoie le tableau des valeurs du champ.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Champ_Inc_base::operator const DoubleTab& () const
-{
-  return les_valeurs->valeurs();
-}
-
-// Description:
 //    Fixe le temps du champ.
 // Precondition:
 // Parametre: double& t

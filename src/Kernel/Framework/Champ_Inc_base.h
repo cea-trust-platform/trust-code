@@ -104,8 +104,8 @@ public:
   DoubleTab& valeurs(double temps) override;
   const DoubleTab& valeurs(double temps) const override;
   // Operateurs de conversion implicite
-  operator DoubleTab& ();
-  operator const DoubleTab& () const;
+  operator DoubleTab& () = delete;
+  operator const DoubleTab& () const = delete;
 
   DoubleTab& futur(int i = 1) override;
   const DoubleTab& futur(int i = 1) const override;
@@ -119,11 +119,7 @@ public:
   virtual void associer_eqn(const Equation_base&);
   virtual void associer_zone_cl_dis(const Zone_Cl_dis&);
   int imprime(Sortie&, int) const override;
-  int a_une_zone_dis_base() const override
-  {
-    return 1;
-  }
-  ;
+  int a_une_zone_dis_base() const override { return 1; }
 
   const Zone_Cl_dis& zone_Cl_dis() const;
   Zone_Cl_dis& zone_Cl_dis();

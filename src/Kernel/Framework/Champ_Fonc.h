@@ -23,11 +23,7 @@
 #ifndef Champ_Fonc_included
 #define Champ_Fonc_included
 
-
-
-
 #include <Champ_Fonc_base.h>
-
 
 Declare_deriv(Champ_Fonc_base);
 
@@ -45,12 +41,8 @@ Declare_deriv(Champ_Fonc_base);
 //////////////////////////////////////////////////////////////////////////////
 class Champ_Fonc : public DERIV(Champ_Fonc_base), public Champ_Proto
 {
-
   Declare_instanciable(Champ_Fonc);
-
 public :
-
-//  inline Champ_Fonc(const Champ_Fonc_base& ) ;
   Champ_Fonc(const Champ_Fonc&) = default;
   inline Champ_Fonc& operator=(const Champ_Fonc_base& ) ;
   inline Champ_Fonc& operator=(const Champ_Fonc& ) ;
@@ -59,8 +51,8 @@ public :
   using Champ_Proto::valeurs;
   inline DoubleTab& valeurs() override ;
   inline const DoubleTab& valeurs() const override ;
-  inline operator DoubleTab& () ;
-  inline operator const DoubleTab& () const ;
+  inline operator DoubleTab& () = delete ;
+  inline operator const DoubleTab& () const  = delete;
   inline double temps() const ;
   inline double changer_temps(const double& t) ;
   inline void mettre_a_jour(double un_temps) ;
@@ -68,15 +60,10 @@ public :
   inline void associer_zone_dis_base(const Zone_dis_base&) ;
   inline const Zone_dis_base& zone_dis_base() const ;
   inline int reprendre(Entree& ) override ;
-  inline int sauvegarder(Sortie& ) const override;
-  inline DoubleVect& valeur_a_elem(const DoubleVect& position,
-                                   DoubleVect& les_valeurs,
-                                   int le_poly) const ;
-  inline virtual double valeur_a_elem_compo(const DoubleVect& position,
-                                            int le_poly,int ncomp) const ;
-  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleTab& les_valeurs) const;
+  inline int sauvegarder(Sortie&) const override;
+  inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& les_valeurs, int le_poly) const;
+  inline virtual double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const;
+  inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& les_valeurs) const;
   inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
   inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
                                               DoubleVect&, int) const;
@@ -85,28 +72,6 @@ public :
     valeur().nommer(nom);
   };
 };
-
-// Description:
-//    Constructeur par copie d'un Champ_Fonc_base
-//    Simple appel au constructeur DERIV(Champ_Fonc_base)(x)
-// Precondition:
-// Parametre: Champ_Fonc_base& x
-//    Signification: le champ a copier
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-/*
-inline Champ_Fonc::Champ_Fonc(const Champ_Fonc_base& x)
-
- : DERIV(Champ_Fonc_base)(x) {}
-*/
-
 
 // Description:
 //    Appel a l'objet sous-jacent
@@ -128,7 +93,6 @@ inline void Champ_Fonc::fixer_nb_valeurs_nodales(int n)
   valeur().fixer_nb_valeurs_nodales(n);
 }
 
-
 // Description:
 //    Appel a l'objet sous-jacent
 //    Renvoie le nombre de degres de liberte par composante
@@ -149,7 +113,6 @@ inline int Champ_Fonc::nb_valeurs_nodales() const
   return valeur().nb_valeurs_nodales();
 }
 
-
 // Description:
 //    Appel a l'objet sous-jacent
 //    Renvoie le tableau des valeurs du champ
@@ -169,7 +132,6 @@ inline DoubleTab& Champ_Fonc::valeurs()
 {
   return valeur().valeurs();
 }
-
 
 // Description:
 //    Appel a l'objet sous-jacent
@@ -192,50 +154,6 @@ inline const DoubleTab& Champ_Fonc::valeurs() const
   return valeur().valeurs();
 }
 
-
-// Description:
-//    Operateur de cast d'un Champ_Fonc en un DoubleTab&
-//    Renvoie le tableau des valeurs du champ
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Champ_Fonc::operator DoubleTab& ()
-{
-  return valeur().valeurs();
-}
-
-
-// Description:
-//    Operateur de cast d'un Champ_Fonc en un DoubleTab&
-//    Renvoie le tableau des valeurs du champ
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline Champ_Fonc::operator const DoubleTab& () const
-{
-  return valeur().valeurs();
-}
-
-
 // Description:
 //    Appel a l'objet sous-jacent
 //    Renvoie le temps courant du champ
@@ -255,7 +173,6 @@ inline double Champ_Fonc::temps() const
 {
   return valeur().temps();
 }
-
 
 // Description:
 //    Appel a l'objet sous-jacent
@@ -277,7 +194,6 @@ inline double Champ_Fonc::changer_temps(const double& t)
   return valeur().changer_temps(t);
 }
 
-
 // Description:
 //    Appel a l'objet sous-jacent
 //    Associe une zone discretisee au champ.
@@ -297,7 +213,6 @@ inline void Champ_Fonc::associer_zone_dis_base(const Zone_dis_base& zone_dis)
 {
   valeur().associer_zone_dis_base(zone_dis);
 }
-
 
 // Description:
 //    Appel a l'objet sous-jacent
@@ -319,48 +234,24 @@ inline const Zone_dis_base& Champ_Fonc::zone_dis_base() const
   return valeur().zone_dis_base();
 }
 
-
 // Description:
 //    Appel a l'objet sous-jacent
 //    Effectue une mise a jour en temps
 // Precondition:
 // Parametre: double temps
 //    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline void Champ_Fonc::mettre_a_jour(double un_temps)
 {
   valeur().mettre_a_jour(un_temps);
 }
 
-
 // Description:
 //    Appel a l'objet sous-jacent
 //    Initilialise le champ (si il y lieu)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline int Champ_Fonc::initialiser(const double& un_temps)
 {
   return valeur().initialiser(un_temps);
 }
-
 
 // Description:
 //    Operateur d'affectation d'un Champ_Fonc_base dans
@@ -404,7 +295,6 @@ inline Champ_Fonc& Champ_Fonc::operator=(const Champ_Fonc& ch_fonc)
   return *this;
 }
 
-
 // Description:
 //    Appel a l'objet sous-jacent
 //    Postraite au format lml.
@@ -430,7 +320,6 @@ inline int Champ_Fonc::reprendre(Entree& fich)
   return valeur().reprendre(fich);
 }
 
-
 // Description:
 //    Appel a l'objet sous-jacent
 //    Effectue une sauvegarde sur un flot de sortie
@@ -451,21 +340,15 @@ inline int Champ_Fonc::sauvegarder(Sortie& fich) const
   return valeur().sauvegarder(fich);
 }
 
-
-inline DoubleVect& Champ_Fonc::valeur_a_elem(const DoubleVect& position,
-                                             DoubleVect& les_valeurs,
-                                             int le_poly) const
+inline DoubleVect& Champ_Fonc::valeur_a_elem(const DoubleVect& position, DoubleVect& les_valeurs, int le_poly) const
 {
   return valeur().valeur_a_elem(position, les_valeurs, le_poly);
 }
-inline  double Champ_Fonc::valeur_a_elem_compo(const DoubleVect& position,
-                                               int le_poly,int ncomp) const
+inline double Champ_Fonc::valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const
 {
   return valeur().valeur_a_elem_compo(position, le_poly, ncomp);
 }
-inline DoubleTab& Champ_Fonc::valeur_aux_elems(const DoubleTab& positions,
-                                               const IntVect& les_polys,
-                                               DoubleTab& les_valeurs) const
+inline DoubleTab& Champ_Fonc::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& les_valeurs) const
 {
   return valeur().valeur_aux_elems(positions, les_polys, les_valeurs);
 }
@@ -473,8 +356,7 @@ inline DoubleTab& Champ_Fonc::valeur_aux_sommets(const Domaine& dom, DoubleTab& 
 {
   return valeur().valeur_aux_sommets(dom, les_valeurs);
 }
-inline DoubleVect& Champ_Fonc::valeur_aux_sommets_compo(const Domaine& dom,
-                                                        DoubleVect& les_valeurs, int compo) const
+inline DoubleVect& Champ_Fonc::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& les_valeurs, int compo) const
 {
   return valeur().valeur_aux_sommets_compo(dom, les_valeurs, compo);
 }

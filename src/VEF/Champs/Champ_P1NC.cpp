@@ -642,7 +642,7 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
 
                       dist = distance_2D(num_face,elem,zone_VEF);
                       dist *= 3./2.;// pour se ramener a distance paroi / milieu de num[0]-num[1]
-                      norm_v=norm_2D_vit1_lp(vit,num_face,num[0],num[1],zone_VEF,val1,val2);
+                      norm_v=norm_2D_vit1_lp(vit.valeurs(),num_face,num[0],num[1],zone_VEF,val1,val2);
 
                     } // dim 2
                   else if (dimension == 3)
@@ -658,7 +658,7 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
 
                       dist = distance_3D(num_face,elem,zone_VEF);
                       dist *= 4./3.; // pour se ramener a distance paroi / milieu de num[0]-num[1]-num[2]
-                      norm_v=norm_3D_vit1_lp(vit, num_face, num[0], num[1], num[2], zone_VEF, val1, val2, val3);
+                      norm_v=norm_3D_vit1_lp(vit.valeurs(), num_face, num[0], num[1], num[2], zone_VEF, val1, val2, val3);
 
                     }// dim 3
 

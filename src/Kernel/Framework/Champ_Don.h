@@ -52,8 +52,8 @@ public :
   using Champ_Proto::valeurs;
   inline DoubleTab& valeurs() override;
   inline const DoubleTab& valeurs() const override;
-  inline operator DoubleTab& ();
-  inline operator const DoubleTab& () const ;
+  inline operator DoubleTab& () = delete;
+  inline operator const DoubleTab& () const = delete;
   inline int fixer_nb_valeurs_nodales(int );
   inline int nb_valeurs_nodales() const;
   inline int nb_comp() const;
@@ -100,47 +100,6 @@ inline DoubleTab& Champ_Don::valeurs()
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
 inline const DoubleTab& Champ_Don::valeurs() const
-{
-  return valeur().valeurs();
-}
-
-// Description:
-//    Operateur de cast d'un Champ_Don en un DoubleTab&,
-//    cast et renvoie le tableau des valeurs.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Champ_Don::operator DoubleTab& ()
-{
-  return valeur().valeurs();
-}
-
-// Description:
-//    Operateur de cast d'un Champ_Don en un DoubleTab&,
-//    cast et renvoie le tableau des valeurs.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline Champ_Don::operator const DoubleTab& () const
 {
   return valeur().valeurs();
 }
@@ -247,8 +206,7 @@ inline Champ_base& Champ_Don::affecter_(const Champ_base& ch)
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline Champ_base& Champ_Don::affecter_compo(const Champ_base& ch,
-                                             int compo)
+inline Champ_base& Champ_Don::affecter_compo(const Champ_base& ch, int compo)
 {
   return valeur().affecter_compo(ch, compo);
 }
@@ -258,15 +216,6 @@ inline Champ_base& Champ_Don::affecter_compo(const Champ_base& ch,
 // Precondition:
 // Parametre: double temps
 //    Signification: le temps de mise a jour
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline void Champ_Don::mettre_a_jour(double temps)
 {
   valeur().mettre_a_jour(temps);
@@ -275,18 +224,6 @@ inline void Champ_Don::mettre_a_jour(double temps)
 // Description:
 //    Appel a l'objet sous-jacent
 //    Provoque l'initialisation du champ si necessaire
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline int Champ_Don::initialiser(const double& temps)
 {
   return valeur().initialiser(temps);

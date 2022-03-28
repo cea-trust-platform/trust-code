@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -204,7 +204,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   Cerr<<" Pour l'instant on bloque"<<finl;
   assert(0);
   exit();
-  const DoubleTab& tab_vit = ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).vitesse();
+  const DoubleTab& tab_vit = ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).vitesse()->valeurs();
   const DoubleTab& tempn = le_fluide_->inco_chaleur().passe();        //passe
   const DoubleTab& tab_rho = le_fluide_->masse_volumique().valeurs();    //actuel
 

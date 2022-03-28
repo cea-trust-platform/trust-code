@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -264,49 +264,6 @@ DoubleTab& Champ_Inc::valeurs()
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
 const DoubleTab& Champ_Inc::valeurs() const
-{
-  return valeur().valeurs();
-}
-
-// Description:
-//    Appel a l'objet sous-jacent
-//    Operateur de cast d'un Champ_Inc en un DoubleTab&
-//    Renvoie le tableau des valeurs au temps courant
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs au temps courant
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Champ_Inc::operator DoubleTab& ()
-{
-  return valeur().valeurs();
-}
-
-// Description:
-//    Appel a l'objet sous-jacent
-//    Operateur de cast d'un Champ_Inc en un DoubleTab&
-//    Renvoie le tableau des valeurs au temps courant
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs au temps courant
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Champ_Inc::operator const DoubleTab& () const
 {
   return valeur().valeurs();
 }

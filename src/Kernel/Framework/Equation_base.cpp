@@ -2164,7 +2164,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
         {
           for (int i = 0; i < size_s; i++)
             if (marq(i))
-              ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(inconnue(), resu);
+              ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(inconnue()->valeurs(), resu);
         }
       // Since 1.6.8 returns dI/dt:
       solution/=dt;
