@@ -11,6 +11,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Champs\
 	-I$(TRUST_ROOT)/src/CoviMAC/Cond_Lim\
 	-I$(TRUST_ROOT)/src/CoviMAC/Champs\
 	-I$(TRUST_ROOT)/src/CoviMAC/Operateurs\

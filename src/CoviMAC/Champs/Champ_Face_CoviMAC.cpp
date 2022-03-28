@@ -40,6 +40,7 @@
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>
+#include <Champ_Fonc_reprise.h>
 #include <array>
 #include <cmath>
 
@@ -98,24 +99,31 @@ int Champ_Face_CoviMAC::fixer_nb_valeurs_nodales(int n)
   return n;
 }
 
-
 Champ_base& Champ_Face_CoviMAC::affecter_(const Champ_base& ch)
 {
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC,ref_zone_vf_.valeur());
   const DoubleVect& fs = zone.face_surfaces();
   const DoubleTab& nf = zone.face_normales(), &xv = zone.xv();
   DoubleTab& val = valeurs(), eval;
-  int f, n, N = val.line_size(), d, D = dimension, unif = sub_type(Champ_Uniforme, ch);
 
-  if (unif) eval = ch.valeurs();
-  else eval.resize(val.dimension_tot(0), N * D), ch.valeur_aux(xv,eval);
+  if (sub_type(Champ_Fonc_reprise, ch))
+    {
+      for (int num_face=0; num_face<zone.nb_faces(); num_face++)
+        val(num_face) = ch.valeurs()[num_face];
+    }
+  else
+    {
+      int f, n, N = val.line_size(), d, D = dimension, unif = sub_type(Champ_Uniforme, ch);
 
-  for (f = 0; f < zone.nb_faces_tot(); f++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
-        val(f, n) += eval(unif ? 0 : f, N * d + n) * nf(f, d) / fs(f);
-  update_ve(val);
-  //copie dans toutes les cases
-  valeurs().echange_espace_virtuel();
-  for(int i=1; i<les_valeurs->nb_cases(); i++) les_valeurs[i].valeurs() = valeurs();
+      if (unif) eval = ch.valeurs();
+      else eval.resize(val.dimension_tot(0), N * D), ch.valeur_aux(xv,eval);
+      for (f = 0; f < zone.nb_faces_tot(); f++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+            val(f, n) += eval(unif ? 0 : f, N * d + n) * nf(f, d) / fs(f);
+      update_ve(val);
+      //copie dans toutes les cases
+      valeurs().echange_espace_virtuel();
+      for(int i=1; i<les_valeurs->nb_cases(); i++) les_valeurs[i].valeurs() = valeurs();
+    }
   return *this;
 }
 
