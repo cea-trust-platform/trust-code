@@ -53,17 +53,13 @@ public:
   void completer() override;
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  int has_interface_blocs() const override { return 1; };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 
   int impr(Sortie& os) const override;
 
-  /* poids de l'amont/aval dans les equations a chaque face : l'appel provoque le calcul du gradient */
-  const DoubleTab& mu_f(int full_stencil = 0) const;
+  void update_grad(int full_stencil = 0) const;
 
   /* public pour utilisation par Assembleur_P_CoviMAC : [grad p]_f */
   mutable IntTab fgrad_d, fgrad_e;
@@ -74,7 +70,6 @@ public:
 private:
 
   mutable double last_gradp_; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
-  mutable DoubleTab mu_f_; //il faut appeller mu_f() pour forcer la mise a jour du gradient
   REF(Zone_CoviMAC) ref_zone;
   REF(Zone_Cl_CoviMAC) ref_zcl;
 };

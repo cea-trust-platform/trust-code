@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,7 +84,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &dh_e = zone.diametre_hydraulique_elem();
-  const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f(),
+  const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = zone.volumes_entrelaces_dir(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
                     &press = ref_cast(QDM_Multiphase, equation()).pression().passe(),
                      &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
@@ -103,18 +103,18 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
       {
         for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, sigma_l = 0, dv = dv_min, ddv = 0, c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
           {
-            for (n = 0; n < N; n++) a_l(n)   += mu_f(f, n, c) * alpha(e, n);
-            for (n = 0; n < N; n++) p_l(n)   += mu_f(f, n, c) * press(e, n * (Np > 1));
-            for (n = 0; n < N; n++) T_l(n)   += mu_f(f, n, c) * temp(e, n);
-            for (n = 0; n < N; n++) rho_l(n) += mu_f(f, n, c) * rho(!cR * e, n);
-            for (n = 0; n < N; n++) mu_l(n)  += mu_f(f, n, c) * mu(!cM * e, n);
+            for (n = 0; n < N; n++) a_l(n)   += vfd(f, c) / vf(f) * alpha(e, n);
+            for (n = 0; n < N; n++) p_l(n)   += vfd(f, c) / vf(f) * press(e, n * (Np > 1));
+            for (n = 0; n < N; n++) T_l(n)   += vfd(f, c) / vf(f) * temp(e, n);
+            for (n = 0; n < N; n++) rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
+            for (n = 0; n < N; n++) mu_l(n)  += vfd(f, c) / vf(f) * mu(!cM * e, n);
             for (n = 0; n < N; n++) for (k = 0; k < N; k++) if (milc.has_saturation(n,k))
                   {
                     Saturation_base& sat = milc.get_saturation(n, k);
-                    sigma_l(n,k) += mu_f(f, n, c) * sat.sigma_(temp(e,n),press(e,n * (Np > 1)));
+                    sigma_l(n,k) += vfd(f, c) / vf(f) * sat.sigma_(temp(e,n),press(e,n * (Np > 1)));
                   }
 
-            for (n = 0; n < N; n++) dh += mu_f(f, n, c) * alpha(e, n) * dh_e(e);
+            for (n = 0; n < N; n++) dh += vfd(f, c) / vf(f) * alpha(e, n) * dh_e(e);
             for (k = 0; k < N; k++) for (l = 0; l < N; l++)
                 {
                   double dv_c = ch.v_norm(pvit, pvit, e, f, k, l, NULL, &ddv_c(0));

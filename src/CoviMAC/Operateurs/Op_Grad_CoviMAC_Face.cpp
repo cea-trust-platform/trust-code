@@ -85,30 +85,19 @@ void Op_Grad_CoviMAC_Face::completer()
   last_gradp_ = -DBL_MAX;
 }
 
-const DoubleTab& Op_Grad_CoviMAC_Face::mu_f(int full_stencil) const
+void Op_Grad_CoviMAC_Face::update_grad(int full_stencil) const
 {
   const Zone_CoviMAC& zone = ref_zone.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const DoubleTab& press = le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), &vfd = zone.volumes_entrelaces_dir(),
+  const DoubleTab& press = le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const IntTab& f_e = zone.face_voisins();
-  int i, e, f, n, nf_tot = zone.nb_faces_tot(), N = ch.valeurs().line_size(), m, M = press.line_size();
-  double t_past = equation().inconnue().valeur().recuperer_temps_passe(), sum;
-  if (!full_stencil && (alp ? (last_gradp_ >= t_past) : (last_gradp_ != -DBL_MAX))) return mu_f_; //deja calcule a ce temps -> rien a faire
+  const int M = press.line_size();
+  double t_past = equation().inconnue().valeur().recuperer_temps_passe();
+  if (!full_stencil && (alp ? (last_gradp_ >= t_past) : (last_gradp_ != -DBL_MAX))) return; //deja calcule a ce temps -> rien a faire
 
   /* gradient */
   zone.fgrad(M, 1, ref_zcl->les_conditions_limites(), ch.fcl(), NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
-
-  /* mu_f_ : poids de l'amont/aval */
-  for (mu_f_.resize(nf_tot, N, 2), f = 0; f < nf_tot; f++) for (n = 0, m = 0; n < N; n++, m += (M > 1))
-      {
-        for (sum = 0, i = 0; i < 2; i++) sum += (mu_f_(f, n, i) = (e = f_e(f, i)) >= 0 ? vfd(f, i) : 0);
-        for (i = 0; i < 2; i++) mu_f_(f, n, i) /= sum;
-      }
-
   last_gradp_ = t_past;
-
-  return mu_f_;
 }
 
 void Op_Grad_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
@@ -120,7 +109,7 @@ void Op_Grad_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
   const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes();
   int i, j, e, eb, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = ch.valeurs().line_size(),
                       m, M = (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
-  zone.init_ve(), mu_f(sub_type(Pb_Multiphase, equation().probleme())); //provoque le calcul du gradient
+  zone.init_ve(), update_grad(sub_type(Pb_Multiphase, equation().probleme())); //provoque le calcul du gradient
 
   IntTrav sten_p(0, 2), sten_v(0, 2); //stencils (NS, pression), (NS, vitesse)
   sten_p.set_smart_resize(1), sten_v.set_smart_resize(1);
@@ -174,12 +163,12 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
   const Conds_lim& cls = ref_zcl->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
-  const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(),
-                   &press = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()), &mu = mu_f(),
+  const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(),
+                   &press = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()),
                     *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &pe = zone.porosite_elem(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pe = zone.porosite_elem(), &pf = zone.porosite_face();
   int i, j, e, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = secmem.line_size(), m, M = press.line_size();
-
+  update_grad();
   const std::string& nom_inc = ch.le_nom().getString();
   Matrice_Morse *mat_p = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : NULL,
                  *mat_v = !semi_impl.count(nom_inc) && matrices.count(nom_inc) ? matrices.at(nom_inc) : NULL;
@@ -204,7 +193,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   std::vector<std::map<int, double>> dgf_pe(N), dgf_gb(N); //dependance de [grad p]_f en les pressions aux elements, en les grad p aux faces de bord
   for (f = 0; f < zone.nb_faces_tot(); f++)
     {
-      for (alpha = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++) alpha(n) += mu(f, n, i) * (alp ? (*alp)(e, n) : 1);
+      for (alpha = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++) alpha(n) += vfd(f, i) * (alp ? (*alp)(e, n) : 1);
 
       /* |f| grad p */
       for (gf = 0, i = fgrad_d(f); i < fgrad_d(f + 1); i++)
@@ -219,7 +208,7 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
       /* face -> vf(f) * phi grad p */
       if (fcl(f, 0) < 2) for (n = 0, m = 0; n < N; n++, m += (M > 1))
           {
-            double fac = alpha(n) * pf(f) * vf(f);
+            double fac = alpha(n) * pf(f);
             secmem(f, n) -= fac * gf(n);
             if (f < zone.nb_faces()) for (auto &&i_c : dgf_pe[n]) (*mat_p)(N * f + n, M * i_c.first + m) += fac * i_c.second;
             for (auto &&i_c : dgf_gb[n]) dgp_gb[N * f + n][M * i_c.first + m] += fac * i_c.second;

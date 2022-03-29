@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,10 +74,9 @@ double Op_Diff_CoviMAC_Face::calculer_dt_stab() const
 {
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur()).fcl();
-  const DoubleTab& nf = zone.face_normales(),
-                   &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f(), /* poids amont/aval aux faces */
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
-                     *a_r = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL); /* produit alpha * rho */
+  const DoubleTab& nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
+                    *a_r = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL); /* produit alpha * rho */
   const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
   update_nu();
 
@@ -89,7 +88,7 @@ double Op_Diff_CoviMAC_Face::calculer_dt_stab() const
       for (flux = 0, vol = pe(e) * ve(e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
           {
             flux(n) += zone.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
-            if (fcl(f, 0) < 2) vol(n) = std::min(vol(n), pf(f) * vf(f) / mu_f(f, n, e != f_e(f, 0))); //cf. Op_Conv_EF_Stab_CoviMAC_Face.cpp
+            if (fcl(f, 0) < 2) vol(n) = std::min(vol(n), pf(f) * vf(f) / vfd(f, e != f_e(f, 0)) * vf(f)); //cf. Op_Conv_EF_Stab_CoviMAC_Face.cpp
           }
       for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 0.25) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
           dt = std::min(dt, vol(n) * (a_r ? (*a_r)(e, n) : 1) / flux(n));
@@ -166,8 +165,7 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
   const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pf = porosite_f, &pe = porosite_e;
-  const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(),
-                   &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f();
+  const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir();
   int i, j, i_f, c, e_s, f_s, k, e, f, fb, fc, n, N = inco.line_size(), d, D = dimension, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), sgn;
 
   update_phif();
@@ -183,7 +181,7 @@ void Op_Diff_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
               int tpfa = 1;
               for (k = phif_d(fb); k < phif_d(fb + 1); k++) if ((e_s = phif_e(k)) < ne_tot && e_s != f_e(fb, 0) && e_s != f_e(fb, 1)) tpfa = 0;
               double df_sur_d = tpfa && fcl(fb, 0) ? std::max(std::fabs(zone.dot(&xv(fb, 0), &nf(fb, 0), &xv(f, 0)) / zone.dot(&xv(fb, 0), &nf(fb, 0), &xp(e, 0))) , 1.) : 1;
-              for (c = (e != f_e(fb, 0)), n = 0; n < N; n++) coeff(n) = mu_f(f, n, i) * vf(f) / ve(e) * fs(fb) * (c ? 1 : -1) / df_sur_d; /* prefacteur diff elem -> diff face */
+              for (c = (e != f_e(fb, 0)), n = 0; n < N; n++) coeff(n) = vfd(f, i) / ve(e) * fs(fb) * (c ? 1 : -1) / df_sur_d; /* prefacteur diff elem -> diff face */
               for (k = phif_d(fb); k < phif_d(fb + 1); k++)
                 {
                   for (n = 0; n < N; n++) fac(n) = coeff(n) * phif_c(k, n);

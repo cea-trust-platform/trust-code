@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -90,11 +90,10 @@ void Perte_Charge_Singuliere_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   //const DoubleVect& volumes_entrelaces = zone_CoviMAC.volumes_entrelaces();
-  const DoubleVect& pf = zone.porosite_face(), &fs = zone.face_surfaces();
+  const DoubleVect& pf = zone.porosite_face(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-  const DoubleTab& vit = la_vitesse->valeurs(), &nf = zone.face_normales(),
-                   *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL,
-                    &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f();
+  const DoubleTab& vit = la_vitesse->valeurs(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(),
+                   *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL;
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur()).fcl();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
@@ -103,7 +102,7 @@ void Perte_Charge_Singuliere_CoviMAC_Face::ajouter_blocs(matrices_t matrices, Do
   for (i = 0; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone.nb_faces() && fcl(f, 0) < 2)
       {
         double fac = (direction_perte_charge() < 0 ? fs(f) : std::fabs(nf(f,direction_perte_charge()))) * pf(f) * K();
-        if (pbm) for (aar_f = 0, j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) aar_f(n) += mu_f(f, n, j) * (*a_r)(e, n) * (*alpha)(e, n);
+        if (pbm) for (aar_f = 0, j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) aar_f(n) += vfd(f, j) / vf(f) * (*a_r)(e, n) * (*alpha)(e, n);
         else aar_f = 1;
         for (n = 0; n < N; n++)  secmem(f, n) -= 0.5 * fac * aar_f(n) * vit(f, n) * std::fabs(vit(f, n));
         if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += fac * aar_f(n) * std::fabs(vit(f, n));

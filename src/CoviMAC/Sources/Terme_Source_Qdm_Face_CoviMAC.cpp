@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ void Terme_Source_Qdm_Face_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab
 {
   const Zone_CoviMAC& zone = la_zone_CoviMAC.valeur();
   const Champ_Face_CoviMAC& ch = ref_cast(Champ_Face_CoviMAC, equation().inconnue().valeur());
-  const DoubleTab& vals = la_source->valeurs(), &mu_f = ref_cast(Op_Grad_CoviMAC_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur()).mu_f(),
+  const DoubleTab& vals = la_source->valeurs(), &vfd = zone.volumes_entrelaces_dir(),
                    &rho = equation().milieu().masse_volumique().passe(), &nf = zone.face_normales(),
                     *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
@@ -93,12 +93,12 @@ void Terme_Source_Qdm_Face_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab
         if (1)
           {
             for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) for (d = 0; d < D; d++)
-                  secmem(f, n) += mu_f(f, n, i) * vf(f) * pf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
+                  secmem(f, n) += vfd(f, i) * pf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
           }
 
         if (0)
           {
-            if (alp) for (a_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) a_f(n) += mu_f(f, n, i) * (*alp)(e, n);
+            if (alp) for (a_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) a_f(n) += vfd(f, i) / vf(f) * (*alp)(e, n);
             for (rho_m = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) rho_m(i) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n);
             for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
                 {
@@ -106,7 +106,7 @@ void Terme_Source_Qdm_Face_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab
                   for (d = 0; d < D; d++) vnf += nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
                   int strat = (i ? 1 : -1) * (rho_m(i) - rho(!cR * e, n)) * vnf > 0;
                   double R = alp && strat ? ((*alp)(e, n) < 1e-4 ? 1 : 0) /* min(max(1 - (*alp)(e, n) / 1e-4, 0.), 1.) */ : 0;
-                  secmem(f, n) += vf(f) * pf(f) * a_f(n) * mu_f(f, n, i) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
+                  secmem(f, n) += vfd(f, i) * pf(f) * a_f(n) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
                   // Cerr << "f " << f << " i " << i << " n " << n << " a " << (*alp)(e, n) << " r " << rho(!cR * e, n) << " R " << R << finl;
                 }
           }
