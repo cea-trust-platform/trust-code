@@ -1393,7 +1393,12 @@ then
    do
      echo "Installing $pkg ..."
      env MPICC=$TRUST_cc $TRUST_ROOT/exec/python/bin/pip install $TRUST_ROOT/externalpackages/pip/$pkg*.gz 1>$TRUST_ROOT/exec/conda_python.log 2>&1
-     [ $? != 0 ] && echo "Error while installing '$pkg' with pip. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
+     if [ $? != 0 ]
+     then
+        echo "Error while installing '$pkg' with pip. see $TRUST_ROOT/exec/conda_python.log"
+        echo "Contact TRUST support or run ./configure by adding: -disable-$pkg"
+        exit -1
+     fi   
    done
 fi
 # create reference list for conda
