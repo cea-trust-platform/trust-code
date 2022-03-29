@@ -25,12 +25,12 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Array_base.h>
-#include <ArrOfBit.h>
 #include <array>
 #include <map>
 
 class MD_Vector_renumber;
 class MD_Vector;
+class ArrOfBit;
 class Zone_VF;
 
 //format de structure pour demander d'agrandir un MD_Vector : (proc, item sur le proc) -> item distant sur Process::me()

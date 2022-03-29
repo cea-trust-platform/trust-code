@@ -29,6 +29,7 @@
 #include <set>
 
 class Matrice_Morse;
+class Objet_U;
 
 //types de l'interface {dimensionner,ajouter}_blocs
 //derivees d'un DoubleTab par rapport a plusieurs inconues : deriv[nom_inco] = tableau
