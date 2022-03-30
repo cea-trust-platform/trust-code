@@ -401,7 +401,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   DoubleTab xsom(nsom,dimension);
 
   // Dimensionnement du tableau des flux convectifs au bord du domaine de calcul
-  DoubleTab& flux_b = static_cast<DoubleTab&>(flux_bords_);
+  DoubleTab& flux_b = flux_bords_;
   int nb_faces_bord=zone_VEF.nb_faces_bord();
   flux_b.resize(nb_faces_bord,ncomp_ch_transporte);
   flux_b = 0.;
@@ -1175,7 +1175,7 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   int nfac = zone.nb_faces_elem();
   int nsom = zone.nb_som_elem();
   const IntTab& sommet_elem = zone.les_elems();
-  DoubleVect& fluent_ = static_cast<DoubleVect&>(tab_fluent);
+  DoubleVect& fluent_ = tab_fluent;
 
   // On definit le tableau des sommets:(C MALOD 17/07/2007)
 

@@ -192,8 +192,8 @@ void Op_Diff_VEF_Face_Stab::modifie_pour_Cl(const DoubleTab& inconnue, DoubleTab
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
 
-  const DoubleVect& inconnueVect=static_cast<const DoubleVect&>(inconnue);
-  DoubleVect& resuVect=static_cast<DoubleVect&>(resu);
+  const DoubleVect& inconnueVect = inconnue;
+  DoubleVect& resuVect = resu;
 
   const int nb_bords=les_cl.size();
 
@@ -299,8 +299,8 @@ void Op_Diff_VEF_Face_Stab::ajouter_operateur_centre(const DoubleTab& Aij, const
   int nb_comp=1;
   if(resuTab.nb_dim()==2) nb_comp=resuTab.dimension(1);
 
-  const DoubleVect& inconnue=static_cast<const DoubleVect&>(inconnueTab);
-  DoubleVect& resu=static_cast<DoubleVect&>(resuTab);
+  const DoubleVect& inconnue = inconnueTab;
+  DoubleVect& resu = resuTab;
 
   int elem=0;
   int facei_loc=0,facei=0;
@@ -347,8 +347,8 @@ void Op_Diff_VEF_Face_Stab::ajouter_diffusion(const DoubleTab& Aij, const Double
   int nb_comp=1;
   if(resuTab.nb_dim()==2) nb_comp=resuTab.dimension(1);
 
-  const DoubleVect& inconnue=static_cast<const DoubleVect&>(inconnueTab);
-  DoubleVect& resu=static_cast<DoubleVect&>(resuTab);
+  const DoubleVect& inconnue= inconnueTab;
+  DoubleVect& resu= resuTab;
 
   int elem=0;
   int facei_loc=0,facei=0;
@@ -402,9 +402,8 @@ void Op_Diff_VEF_Face_Stab::ajouter_antidiffusion(const DoubleTab& Aij, const Do
   int nb_comp=1;
   if(resuTab.nb_dim()==2) nb_comp=resuTab.dimension(1);
 
-
-  const DoubleVect& inconnue=static_cast<const DoubleVect&>(inconnueTab);
-  DoubleVect& resu=static_cast<DoubleVect&>(resuTab);
+  const DoubleVect& inconnue = inconnueTab;
+  DoubleVect& resu = resuTab;
 
   const DoubleTab& xv=zone_VEF.xv();
   DoubleTab rij(Objet_U::dimension);
@@ -671,7 +670,7 @@ void Op_Diff_VEF_Face_Stab::calculer_min(const DoubleTab& inconnueTab, int& dim,
   double inc_i=0.;
   double inc_j=0.;
 
-  const DoubleVect& inconnue=static_cast<const DoubleVect&>(inconnueTab);
+  const DoubleVect& inconnue= inconnueTab;
 
   assert(Minima.nb_dim()==1);
   assert(Minima.dimension(0)==nb_faces_tot);
@@ -759,7 +758,7 @@ void Op_Diff_VEF_Face_Stab::calculer_max(const DoubleTab& inconnueTab, int& dim,
   double inc_i=0.;
   double inc_j=0.;
 
-  const DoubleVect& inconnue=static_cast<const DoubleVect&>(inconnueTab);
+  const DoubleVect& inconnue = inconnueTab;
 
   assert(Maxima.nb_dim()==1);
   assert(Maxima.dimension(0)==nb_faces_tot);

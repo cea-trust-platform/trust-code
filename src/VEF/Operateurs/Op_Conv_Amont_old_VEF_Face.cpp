@@ -127,7 +127,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
   const DoubleTab& normales_facettes_Cl = zone_Cl_VEF.normales_facettes_Cl();
-  DoubleVect& fluent_ = static_cast<DoubleVect&>(fluent);
+  DoubleVect& fluent_ = fluent;
   int nfac = zone.nb_faces_elem();
   int nsom = zone.nb_som_elem();
   int nb_som_facette = zone.type_elem().nb_som_face();
@@ -318,7 +318,7 @@ DoubleTab& Op_Conv_Amont_old_VEF_Face::ajouter(const DoubleTab& transporte,
 
   // Dimensionnement du tableau des flux convectifs au bord du domaine
   // de calcul
-  DoubleTab& flux_b = static_cast<DoubleTab&>(flux_bords_);
+  DoubleTab& flux_b = flux_bords_;
   flux_b.resize(zone_VEF.nb_faces_bord(),ncomp_ch_transporte);
   flux_b = 0.;
 

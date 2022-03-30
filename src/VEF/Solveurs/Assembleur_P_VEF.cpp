@@ -80,7 +80,7 @@ void Assembleur_P_VEF::calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, co
   const DoubleTab* doubleT = dynamic_cast<const DoubleTab*>(&volumes_entrelaces);
   if (doubleT)
     {
-      calculer_inv_volume_special(inv_volumes_entrelaces, zone_Cl_VEF,static_cast<const DoubleTab&>(volumes_entrelaces));
+      calculer_inv_volume_special(inv_volumes_entrelaces, zone_Cl_VEF,*doubleT);
       return;
     }
   int taille=volumes_entrelaces.size_totale();

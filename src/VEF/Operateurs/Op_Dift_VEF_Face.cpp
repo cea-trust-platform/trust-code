@@ -540,7 +540,7 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   assert(nbr_comp>1);
 
   // On dimensionne et initialise le tableau des bilans de flux:
-  static_cast<DoubleTab&>(tab_flux_bords).resize(zone_VEF.nb_faces_bord(),nbr_comp);
+  tab_flux_bords.resize(zone_VEF.nb_faces_bord(),nbr_comp);
   tab_flux_bords=0.;
 
   // Construction du tableau grad_ si necessaire
@@ -1690,7 +1690,7 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
 
 
 
-      DoubleTab& grad=static_cast<DoubleTab&>(grad_);
+      DoubleTab& grad = grad_;
       grad=0.;
 
       //      const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();

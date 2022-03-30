@@ -103,7 +103,7 @@ DoubleTab& Op_Conv_Muscl_old_VEF_Face::ajouter(const DoubleTab& transporte,
   int nsom = zone.nb_som_elem();
   int nb_som_facette = zone.type_elem().nb_som_face();
   double inverse_nb_som_facette=1./nb_som_facette;
-  DoubleVect& fluent_ = static_cast<DoubleVect&>(fluent);
+  DoubleVect& fluent_ = fluent;
   DoubleTab& vecteur_face_facette = ref_cast_non_const(Zone_VEF,zone_VEF).vecteur_face_facette();
 
   // Pour le traitement de la convection on distingue les polyedres
@@ -381,7 +381,7 @@ DoubleTab& Op_Conv_Muscl_old_VEF_Face::ajouter(const DoubleTab& transporte,
 
   // Dimensionnement du tableau des flux convectifs au bord du domaine
   // de calcul
-  DoubleTab& flux_b = static_cast<DoubleTab&>(flux_bords_);
+  DoubleTab& flux_b = flux_bords_;
   flux_b.resize(zone_VEF.nb_faces_bord(),ncomp_ch_transporte);
   flux_b = 0.;
 

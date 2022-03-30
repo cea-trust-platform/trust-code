@@ -86,7 +86,7 @@ DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
   declare_espace_virtuel_invalide(div);
   // calcul de flux bord
 
-  DoubleTab& tab_flux_bords = static_cast<DoubleTab&>(flux_bords_);
+  DoubleTab& tab_flux_bords = flux_bords_;
   tab_flux_bords.resize(zone_PolyMAC.nb_faces_bord(),1);
   tab_flux_bords=0;
 

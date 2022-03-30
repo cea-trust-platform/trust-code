@@ -127,7 +127,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
   assert(nb_faces_elem==(dimension+1));
   {
     // calcul de la CFL.
-    DoubleVect& fluent_ =static_cast<DoubleVect&>(fluent);
+    DoubleVect& fluent_ = fluent;
     double psc;
     // On remet a zero le tableau qui sert pour
     // le calcul du pas de temps de stabilite

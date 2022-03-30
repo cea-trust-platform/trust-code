@@ -199,7 +199,7 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
   int nfac = zone.nb_faces_elem();
   int nsom = zone.nb_som_elem();
   int nb_som_facette = zone.type_elem().nb_som_face();
-  DoubleVect& fluent_ = static_cast<DoubleVect&>(fluent);
+  DoubleVect& fluent_ = fluent;
 
   // Pour le traitement de la convection on distingue les polyedres
   // standard qui ne "voient" pas les conditions aux limites et les
@@ -829,7 +829,7 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
 
   // Dimensionnement du tableau des flux convectifs au bord du domaine
   // de calcul
-  DoubleTab& flux_b = static_cast<DoubleTab&>(flux_bords_);
+  DoubleTab& flux_b = flux_bords_;
   flux_b.resize(zone_VEF.nb_faces_bord(),ncomp_ch_transporte);
   flux_b = 0.;
 

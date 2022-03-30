@@ -915,7 +915,7 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
         liste_sommets.set_smart_resize(1);
         // On prend tous les sommets des faces de joint:
         const IntTab& som_faces = joint_dest.faces().les_sommets();
-        liste_sommets = static_cast<ArrOfInt>(som_faces);
+        liste_sommets = som_faces;
         // on ajoute les sommets du joint d'origine pour
         // les sommets isoles
         const ArrOfInt& som_isoles = boundaries_src[boundary].joint_item(Joint::SOMMET).items_communs();

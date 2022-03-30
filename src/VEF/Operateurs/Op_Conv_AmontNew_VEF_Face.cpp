@@ -82,7 +82,7 @@ static inline void convbis(const double& psc,const int num1,const int num2,
 
 DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, DoubleTab& resu) const
 {
-  DoubleVect& fluent_ = static_cast<DoubleVect&>(fluent);
+  DoubleVect& fluent_ = fluent;
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
@@ -475,7 +475,7 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
 
   // Dimensionnement du tableau des flux convectifs au bord du domaine
   // de calcul
-  DoubleTab& flux_b = static_cast<DoubleTab&>(flux_bords_);
+  DoubleTab& flux_b = flux_bords_;
   flux_b.resize(zone_VEF.nb_faces_bord(),ncomp_ch_transporte);
   flux_b = 0.;
 

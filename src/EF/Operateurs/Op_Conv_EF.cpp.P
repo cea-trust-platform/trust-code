@@ -203,7 +203,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_gen(const DoubleTab& transporte,
 
     if ((btd_impl==1)&&(hourglass_impl==1)&&(centre_impl==1)) return resu;
 
-    DoubleVect& fluent_ = static_cast<DoubleVect&> (fluent);
+    DoubleVect& fluent_ = fluent;
 
     const Champ_Inc_base& la_vitesse=vitesse_.valeur();
     const DoubleTab& G=la_vitesse.valeurs();

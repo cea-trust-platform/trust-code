@@ -278,7 +278,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::reinit_conv_pour_Cl(const DoubleTab& transporte,c
   int n_bord=0, num1=0, num2=0, ind_face=0,facei=0, dim=0;
   double psc=0.;
 
-  const DoubleVect& transporteV=static_cast<const DoubleVect&>(transporte);
+  const DoubleVect& transporteV= transporte;
 
   //Boucle pour dimensionner la liste "faces"
   for (n_bord=0; n_bord<nb_bord; n_bord++)
@@ -654,8 +654,8 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
   int elem=0,type_elem=0, facei=0,facei_loc=0, ligne=0, dim=0;
   double coeff=0., signe=0., div=0.;
 
-  const DoubleVect& transporteV=static_cast<const DoubleVect&>(transporte);
-  DoubleVect& resuV=static_cast<DoubleVect&>(resu);
+  const DoubleVect& transporteV = transporte;
+  DoubleVect& resuV = resu;
 
   double (*formule)(int);
   if (!volumes_etendus_)
@@ -707,7 +707,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
 #ifndef NDEBUG
   const IntTab& face_voisins = zone_VEF.face_voisins();
 #endif
-  const DoubleVect& transporteV=static_cast<const DoubleVect&>(transporte);
+  const DoubleVect& transporteV=transporte;
   const DoubleTab& face_normales=zone_VEF.face_normales();
   const int nb_bord = zone_Cl_VEF.nb_cond_lim();
   const int nb_comp=transporte.line_size();
@@ -768,8 +768,8 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& Kij, const D
   const int nb_comp=transporte.line_size();
   int elem=0,facei=0,facei_loc=0, facej=0,facej_loc=0, ligne=0,colonne=0, dim=0;
   double kij=0.,kji=0.,delta=0.;
-  const DoubleVect& transporteV=static_cast<const DoubleVect&>(transporte);
-  DoubleVect& resuV=static_cast<DoubleVect&>(resu);
+  const DoubleVect& transporteV = transporte;
+  DoubleVect& resuV = resu;
 
   for (elem=0; elem<nb_elem_tot; elem++)
     for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
@@ -807,8 +807,8 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& Kij, const DoubleTa
   int elem=0, facei=0,facei_loc=0, facej=0,facej_loc=0, ligne=0,colonne=0, dim=0;
   double dij=0., delta=0., coeffij=0.,coeffji=0.;
 
-  const DoubleVect& transporteV=static_cast<const DoubleVect&>(transporte);
-  DoubleVect& resuV=static_cast<DoubleVect&>(resu);
+  const DoubleVect& transporteV = transporte;
+  DoubleVect& resuV = resu;
 
   for (elem=0; elem<nb_elem_tot; elem++)
     for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
@@ -861,8 +861,8 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& Kij, const Doub
   P_plus=0., P_moins=0.;
   Q_plus=0., Q_moins=0.;
 
-  const DoubleVect& transporteV=static_cast<const DoubleVect&>(transporte);
-  DoubleVect& resuV=static_cast<DoubleVect&>(resu);
+  const DoubleVect& transporteV = transporte;
+  DoubleVect& resuV = resu;
   const IntTab& num_fac_loc = zone_VEF.get_num_fac_loc();
   for (elem=0; elem<nb_elem_tot; elem++)
     for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
@@ -1564,7 +1564,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::mettre_a_jour_pour_periodicite(DoubleTab& resu) c
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const int nb_bord = zone_Cl_VEF.nb_cond_lim();
   const int nb_comp = (resu.nb_dim()==1) ? 1 : resu.dimension(1);
-  DoubleVect& resuV=static_cast<DoubleVect&>(resu);
+  DoubleVect& resuV = resu;
   int ligne=0,ligneAss=0,facei=0,faceiAss=0, ind_face=0;
   int num1=0,num2=0, ind_face_associee=0, dim=0;
 
@@ -1960,7 +1960,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
           //const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
-          DoubleVect& fluent_ = static_cast<DoubleVect&>(fluent);
+          DoubleVect& fluent_ = fluent;
 
           for (num_face=num1; num_face<num2; num_face++)
             {
@@ -2630,7 +2630,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
   ArrOfDouble Q_plus(nb_comp),Q_moins(nb_comp);
   P_plus=0., P_moins=0., Q_plus=0., Q_moins=0.;
 
-  const DoubleVect& transporteV=static_cast<const DoubleVect&>(transporte);
+  const DoubleVect& transporteV = transporte;
   const IntTab& num_fac_loc = zone_VEF.get_num_fac_loc();
   for (elem=0; elem<nb_elem_tot; elem++)
     for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
@@ -2844,16 +2844,16 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_implicite() const
   const DoubleTab& tab_vitesse=vitesse_.valeur().valeurs();
 
   DoubleTab tab_test(unknown);
-  DoubleVect& test2=static_cast<DoubleVect&>(tab_test);
-  test2=0.;
+  DoubleVect& test2 = tab_test;
+  test2 = 0.;
 
   DoubleTab resuExp(unknown);
-  DoubleVect& resu2Exp=static_cast<DoubleVect&>(resuExp);
-  resu2Exp=0.;
+  DoubleVect& resu2Exp = resuExp;
+  resu2Exp = 0.;
 
   DoubleTab resuImp(unknown);
-  DoubleVect& resu2Imp=static_cast<DoubleVect&>(resuImp);
-  resu2Imp=0.;
+  DoubleVect& resu2Imp = resuImp;
+  resu2Imp = 0.;
 
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const int nb_faces_elem = zone_VEF.zone().nb_faces_elem();

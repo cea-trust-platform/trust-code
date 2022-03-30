@@ -1348,7 +1348,7 @@ precond :
         break;
       case 1:
         Cout << "     ** No convergence after " << maxits << " iterations **" << finl;
-        static_cast<DoubleVect&>(toto)=Resini;
+        toto=Resini;
         if( lf<50)
           {
             lf +=5;

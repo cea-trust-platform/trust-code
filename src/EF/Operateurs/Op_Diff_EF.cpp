@@ -154,7 +154,7 @@ void Op_Diff_EF::associer(const Zone_dis& zone_dis,
 
   int N = 1;
 
-  static_cast<DoubleTab&>(flux_bords).resize(zone_EF.nb_faces_bord(),N);
+  flux_bords.resize(zone_EF.nb_faces_bord(),N);
   flux_bords=0.;
 }
 */
