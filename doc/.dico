@@ -99,6 +99,7 @@
  Champ_Fonc_reprise Champ_Fonc_reprise Champ_Fonc_reprise.h
  Champ_Fonc_t Champ_Fonc_t Champ_Fonc_t.h
  Champ_Fonc_Tabule Champ_Fonc_Tabule Champ_Fonc_Tabule.h
+ Champ_Fonc_Tabule_Morceaux|Champ_Tabule_Morceaux Champ_Fonc_Tabule_Morceaux Champ_Fonc_Tabule_Morceaux.h
  Champ_Fonc_Tabule_P0_CoviMAC Champ_Fonc_Tabule_P0_CoviMAC Champ_Fonc_Tabule_P0_CoviMAC.h
  Champ_Fonc_Tabule_P0_EF Champ_Fonc_Tabule_P0_EF Champ_Fonc_Tabule_P0_EF.h
  Champ_Fonc_Tabule_P0_PolyMAC Champ_Fonc_Tabule_P0_PolyMAC Champ_Fonc_Tabule_P0_PolyMAC.h
@@ -184,7 +185,6 @@
  Champ_som_lu Champ_som_lu Champ_som_lu.h
  Champ_som_lu_VDF Champ_som_lu_VDF Champ_som_lu_VDF.h
  Champ_som_lu_VEF Champ_som_lu_VEF Champ_som_lu_VEF.h
- Champ_Tabule_Morceaux Champ_Tabule_Morceaux Champ_Tabule_Morceaux.h
  Champ_Tabule_Temps Champ_Tabule_Temps Champ_Tabule_Temps.h
  Champ_Uniforme Champ_Uniforme Champ_Uniforme.h
  Champ_Uniforme_inst Champ_Uniforme_inst Champ_Uniforme_inst.h
