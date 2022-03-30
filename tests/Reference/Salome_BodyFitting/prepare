@@ -1,0 +1,22 @@
+#!/bin/bash
+salome info 2>/dev/null
+if [ $? = 0 ]
+then
+   script=`ls *.py 2>/dev/null`
+   echo "Building MED mesh with Salome $script ..."
+   SSL=1
+   if [ $SSL = 0 ]
+   then
+      # -w 1 : shutdown servers when leaving python: 
+      salome -w1 -t $script
+   else
+      # SALOME SESSION LESS pour accelerer le lancement (sera le mode par defaut dans 9.9)
+      # https://www.salome-platform.org/?faq=2-what-is-salome-server-less-ssl
+      source `type -p salome | xargs dirname`/env_launch.sh
+      SALOME_EMB_SERVANT=1 python $script || exit -1
+   fi
+else
+   # Salome non trouve, on quitte:
+   sed -i "1,$ s?# PARALLEL OK #?fin?g" Salome_BodyFitting.data 
+fi
+exit 0
