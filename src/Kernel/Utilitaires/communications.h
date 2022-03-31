@@ -23,50 +23,46 @@
 #ifndef communications_H
 #define communications_H
 
-
 // .DESCRIPTION Methodes de communications
 // Voir la documentation de envoyer_() dans communications.cpp
+
+#include <TRUSTTabs_forward.h>
 #include <Vect.h>
 #include <vector>
-class Objet_U;
-class DoubleTabs;
-template<typename T> class TRUSTArray;
-using ArrOfDouble = TRUSTArray<double>;
-using ArrOfInt = TRUSTArray<int>;
-template<typename T> class TRUSTTab;
-using DoubleTab = TRUSTTab<double>;
 
 class VECT(ArrOfInt);
+class DoubleTabs;
+class Objet_U;
 
-int envoyer(const int&   t, int source, int cible, int canal );
-int envoyer(const long&     t, int source, int cible, int canal );
-int envoyer(const float&    t, int source, int cible, int canal );
-int envoyer(const double&   t, int source, int cible, int canal );
-int envoyer(const Objet_U& t, int source, int cible, int canal );
+int envoyer(const int& t, int source, int cible, int canal);
+int envoyer(const long& t, int source, int cible, int canal);
+int envoyer(const float& t, int source, int cible, int canal);
+int envoyer(const double& t, int source, int cible, int canal);
+int envoyer(const Objet_U& t, int source, int cible, int canal);
 
-int envoyer(const int&   t, int cible, int canal );
-int envoyer(const long&     t, int cible, int canal );
-int envoyer(const float&    t, int cible, int canal );
-int envoyer(const double&   t, int cible, int canal );
-int envoyer(const Objet_U& t, int cible, int canal );
+int envoyer(const int& t, int cible, int canal);
+int envoyer(const long& t, int cible, int canal);
+int envoyer(const float& t, int cible, int canal);
+int envoyer(const double& t, int cible, int canal);
+int envoyer(const Objet_U& t, int cible, int canal);
 
-int recevoir(int& t, int source, int cible, int canal );
-int recevoir(long&     t, int source, int cible, int canal );
-int recevoir(float&    t, int source, int cible, int canal );
-int recevoir(double&   t, int source, int cible, int canal );
-int recevoir(Objet_U& t, int source, int cible, int canal );
+int recevoir(int& t, int source, int cible, int canal);
+int recevoir(long& t, int source, int cible, int canal);
+int recevoir(float& t, int source, int cible, int canal);
+int recevoir(double& t, int source, int cible, int canal);
+int recevoir(Objet_U& t, int source, int cible, int canal);
 
-int recevoir(int& t, int source, int canal );
-int recevoir(long&     t, int source, int canal );
-int recevoir(float&    t, int source, int canal );
-int recevoir(double&   t, int source, int canal );
-int recevoir(Objet_U& t, int source, int canal );
+int recevoir(int& t, int source, int canal);
+int recevoir(long& t, int source, int canal);
+int recevoir(float& t, int source, int canal);
+int recevoir(double& t, int source, int canal);
+int recevoir(Objet_U& t, int source, int canal);
 
 int envoyer_broadcast(int& t, int source);
-int envoyer_broadcast(long&     t, int source);
-int envoyer_broadcast(long long&     t, int source);
-int envoyer_broadcast(float&    t, int source);
-int envoyer_broadcast(double&   t, int source);
+int envoyer_broadcast(long& t, int source);
+int envoyer_broadcast(long long& t, int source);
+int envoyer_broadcast(float& t, int source);
+int envoyer_broadcast(double& t, int source);
 int envoyer_broadcast(Objet_U& t, int source);
 
 int mppartial_sum(int i);
@@ -82,11 +78,11 @@ void mp_min_for_each_item(ArrOfInt&);
 void mp_min_for_each_item(ArrOfDouble&);
 
 int envoyer_all_to_all(const DoubleTabs& src, DoubleTabs& dest);
-int envoyer_all_to_all(const VECT(ArrOfInt) & src, VECT(ArrOfInt) & dest);
+int envoyer_all_to_all(const VECT(ArrOfInt) &src, VECT(ArrOfInt) &dest);
 int envoyer_all_to_all(const ArrOfInt& src, ArrOfInt& dest);
 int envoyer_all_to_all(const ArrOfDouble& src, ArrOfDouble& dest);
 int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest);
-void   envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest);
+void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest);
 
 int reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list);
 
