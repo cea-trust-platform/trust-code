@@ -1114,6 +1114,7 @@ void Probleme_base::sauver() const
     }
   Debog::set_nom_pb_actuel(le_nom());
   statistiques().end_count(sauvegarde_counter_, bytes);
+  Cout << "[IO] " << statistiques().last_time(sauvegarde_counter_) << " s to write save file." << finl;
 }
 
 // Description:
@@ -2124,5 +2125,6 @@ void Probleme_base::sauver_xyz(int verbose) const
   (ficsauv_.valeur()).flush();
   (ficsauv_.valeur()).syncfile();
   ficsauv_.detach();
+  Cout << "[IO] " << statistiques().last_time(sauvegarde_counter_) << " s to write xyz file." << finl;
   statistiques().end_count(sauvegarde_counter_, bytes);
 }
