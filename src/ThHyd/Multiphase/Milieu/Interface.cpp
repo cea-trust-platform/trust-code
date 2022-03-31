@@ -14,84 +14,28 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Saturation_base.cpp
+// File:        Interface.cpp
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/18
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Saturation_base.h>
-Implemente_base(Saturation_base, "Saturation_base", Interface_base);
-// XD saturation_base objet_u saturation_base -1 fluide-gas interface with phase change (used in pb_multiphase)
+#include <Interface.h>
 
-void Saturation_base::set_param(Param& param)
+Implemente_deriv(Interface_base);
+Implemente_instanciable(Interface,"Interface",DERIV(Interface_base));
+
+Sortie& Interface::printOn(Sortie& os) const
 {
-  Interface_base::set_param(param);
-  param.ajouter("P_ref", &P_ref_);
-  param.ajouter("T_ref", &T_ref_);
+  return DERIV(Interface_base)::printOn(os);
 }
 
-Sortie& Saturation_base::printOn(Sortie& os) const
+Entree& Interface::readOn(Entree& is)
 {
-  return os;
-}
-
-Entree& Saturation_base::readOn(Entree& is)
-{
-  Param param(que_suis_je());
-  set_param(param);
-  param.lire_avec_accolades_depuis(is);
+  Nom nom;
+  is >> nom;
+  DERIV(Interface_base)::typer(nom);
   return is;
 }
 
-double Saturation_base::get_Pref() const
-{
-  return P_ref_;
-}
-
-double Saturation_base::Tsat(const double Pi) const
-{
-  const double P = P_ref_ > 0 ? P_ref_ : Pi;
-  return Tsat_(P);
-}
-double Saturation_base::dP_Tsat(const double P) const
-{
-  return P_ref_ > 0 ? 0 : dP_Tsat_(P);
-}
-double Saturation_base::Psat(const double Ti) const
-{
-  const double T = T_ref_ > 0 ? T_ref_ : Ti;
-  return Psat_(T);
-}
-double Saturation_base::dT_Psat(const double T) const
-{
-  return T_ref_ > 0 ? 0 : dT_Psat_(T);
-}
-double Saturation_base::Lvap(const double Pi) const
-{
-  const double P = P_ref_ > 0 ? P_ref_ : Pi;
-  return Lvap_(P);
-}
-double Saturation_base::dP_Lvap(const double P) const
-{
-  return P_ref_ > 0 ? 0 : dP_Lvap_(P);
-}
-
-double Saturation_base::Hls(const double Pi) const
-{
-  const double P = P_ref_ > 0 ? P_ref_ : Pi;
-  return Hls_(P);
-}
-double Saturation_base::dP_Hls(const double P) const
-{
-  return P_ref_ > 0 ? 0 : dP_Hls_(P);
-}
-double Saturation_base::Hvs(const double Pi) const
-{
-  const double P = P_ref_ > 0 ? P_ref_ : Pi;
-  return Hvs_(P);
-}
-double Saturation_base::dP_Hvs(const double P) const
-{
-  return P_ref_ > 0 ? 0 : dP_Hvs_(P);
-}
+Declare_ref(Interface_base);

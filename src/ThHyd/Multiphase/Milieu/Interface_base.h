@@ -14,40 +14,31 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Saturation.h
+// File:        Interface_base.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/11
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Saturation_included
-#define Saturation_included
+#ifndef Interface_base_included
+#define Interface_base_included
+#include <Param.h>
+#include <Ref_Pb_Multiphase.h>
 
-
-#include <Deriv.h>
-#include <Saturation_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe Saturation
-//     Un objet Saturation peut referencer n'importe quel objet
-//     derivant de Saturation_base.
-// .SECTION voir aussi
-//     Saturation_base
-//////////////////////////////////////////////////////////////////////////////
-
-class Saturation_base;
-
-Declare_deriv(Saturation_base);
-
-class Saturation : public DERIV(Saturation_base)
+class Interface_base : public Objet_U
 {
-  Declare_instanciable(Saturation);
-
+  Declare_base(Interface_base);
 public:
-  void associer_pb_multiphase(const Pb_Multiphase& pb);
 
+  virtual void set_param(Param& param);
+
+  double   sigma(const double T, const double P) const;
+
+  virtual double   sigma_(const double T, const double P) const = 0;
+
+protected:
+  double sigma__ = -1;
+  REF(Pb_Multiphase) pb_multi;
 };
 
 #endif

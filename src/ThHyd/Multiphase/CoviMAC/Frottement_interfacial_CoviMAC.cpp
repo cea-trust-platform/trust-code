@@ -29,7 +29,7 @@
 #include <Champ_Uniforme.h>
 #include <Frottement_interfacial_base.h>
 #include <Milieu_composite.h>
-#include <Saturation_base.h>
+#include <Interface_base.h>
 
 Implemente_instanciable(Frottement_interfacial_CoviMAC,"Frottement_interfacial_Face_CoviMAC", Source_base);
 
@@ -108,7 +108,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
             for (n = 0; n < N; n++) mu_l(n)  += vfd(f, c) / vf(f) * mu(!cM * e, n);
             for (n = 0; n < N; n++) for (k = 0; k < N; k++) if (milc.has_saturation(n,k))
                   {
-                    Saturation_base& sat = milc.get_saturation(n, k);
+                    Interface_base& sat = milc.get_interface(n, k);
                     sigma_l(n,k) += vfd(f, c) / vf(f) * sat.sigma_(temp(e,n),press(e,n * (Np > 1)));
                   }
 
@@ -144,9 +144,9 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
       for (n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
       for (n = 0; n < N; n++)
         {
-          for (k = 0; k < N; k++) if(milc.has_saturation(n, k))
+          for (k = 0; k < N; k++) if(milc.has_interface(n, k))
               {
-                Saturation_base& sat = milc.get_saturation(n, k);
+                Interface_base& sat = milc.get_interface(n, k);
                 sigma_l(n,k) = sat.sigma_(temp(e,n), press(e,n * (Np > 1)));
               }
         }

@@ -54,32 +54,34 @@ Entree& Milieu_composite::readOn(Entree& is)
       else Process::exit("not found!");
     }
 
-  // saturation
+  // interfaces
   int N = fluides.size();
   for (int n = 0; n < N; n++)
     {
-      std::vector<Saturation_base *> satn;
+      std::vector<Interface_base *> inter;
       for (int m = 0; m < N; m++)
         {
           const std::string espn = especes[n].first, espm = especes[m].first;
           const int pn = especes[n].second, pm = especes[m].second;
-          mot = Nom((std::string("saturation_") + especes[n].first));
-          if (espn == espm && pn != pm && Interprete::objet_existant(mot))
+          Nom mot_inter = Nom((std::string("interface_") + especes[n].first + "_" + especes[m].first)), // "Interface_[...]_[...]"
+              mot_sat   = Nom((std::string("saturation_") + especes[n].first)); //"Saturation_[...]"
+          if (espn == espm && pn != pm && (Interprete::objet_existant(mot_inter) || Interprete::objet_existant(mot_sat)))
             {
-              Cerr << "Saturation between fluid " << n << " : " << fluides[n].le_nom() << " and " << m << " : " << fluides[m].le_nom() << finl;
+              Cerr << "Interface between fluid " << n << " : " << fluides[n].le_nom() << " and " << m << " : " << fluides[m].le_nom() << finl;
               phases_melange[especes[n].first].insert(n), phases_melange[especes[n].first].insert(m);
-              satn.push_back(&ref_cast(Saturation_base, Interprete::objet(mot)));
-              if (satn.back()->get_Pref() > 0) // pour loi en e = e0 + cp * (T - T0)
+              inter.push_back(&ref_cast(Interface_base, Interprete::objet(Interprete::objet_existant(mot_sat) ? mot_sat : mot_inter)));
+              const Saturation_base *sat = sub_type(Saturation_base, *inter.back()) ? &ref_cast(Saturation_base, *inter.back()) : NULL;
+              if (sat && sat->get_Pref() > 0) // pour loi en e = e0 + cp * (T - T0)
                 {
-                  const double hn = pn ? satn.back()->Hvs(satn.back()->get_Pref()) : satn.back()->Hls(satn.back()->get_Pref()),
-                               hm = pm ? satn.back()->Hvs(satn.back()->get_Pref()) : satn.back()->Hls(satn.back()->get_Pref()),
-                               T0 = satn.back()->Tsat(satn.back()->get_Pref());
+                  const double hn = pn ? sat->Hvs(sat->get_Pref()) : sat->Hls(sat->get_Pref()),
+                               hm = pm ? sat->Hvs(sat->get_Pref()) : sat->Hls(sat->get_Pref()),
+                               T0 = sat->Tsat(sat->get_Pref());
                   fluides[n].set_h0_T0(hn, T0), fluides[m].set_h0_T0(hm, T0);
                 }
             }
-          else satn.push_back(NULL);
+          else inter.push_back(NULL);
         }
-      tab_saturation.push_back(satn);
+      tab_interface.push_back(inter);
     }
   return is;
 }
@@ -92,15 +94,26 @@ std::pair<std::string, int> Milieu_composite::check_fluid_name(const Nom& name)
   return std::make_pair(espece.getString(), phase);
 }
 
+bool Milieu_composite::has_interface(int k, int l) const
+{
+  if (tab_interface[k][l]) return true;
+  return false;
+}
+
+Interface_base& Milieu_composite::get_interface(int k, int l) const
+{
+  return *(tab_interface[k][l]);
+}
+
 bool Milieu_composite::has_saturation(int k, int l) const
 {
-  if (tab_saturation[k][l]) return true;
+  if (tab_interface[k][l] && sub_type(Saturation_base, *tab_interface[k][l])) return true;
   return false;
 }
 
 Saturation_base& Milieu_composite::get_saturation(int k, int l) const
 {
-  return *(tab_saturation[k][l]);
+  return ref_cast(Saturation_base, *(tab_interface[k][l]));
 }
 
 Sortie& Milieu_composite::printOn(Sortie& os) const

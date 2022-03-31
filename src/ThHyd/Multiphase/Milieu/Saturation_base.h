@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,12 +23,14 @@
 #ifndef Saturation_base_included
 #define Saturation_base_included
 #include <Param.h>
-#include <Ref_Pb_Multiphase.h>
+#include <Interface_base.h>
 
-class Saturation_base : public Objet_U
+class Saturation_base : public Interface_base
 {
   Declare_base(Saturation_base);
 public:
+
+  void set_param(Param& param) override;
 
   double    Tsat(const double P) const;
   double dP_Tsat(const double P) const;
@@ -40,7 +42,6 @@ public:
   double  dP_Hls(const double P) const;
   double     Hvs(const double P) const;
   double  dP_Hvs(const double P) const;
-  double   sigma(const double T, const double P) const;
 
   virtual double    Tsat_(const double P) const = 0;
   virtual double dP_Tsat_(const double P) const = 0;
@@ -52,13 +53,10 @@ public:
   virtual double  dP_Hls_(const double P) const = 0;
   virtual double     Hvs_(const double P) const = 0;
   virtual double  dP_Hvs_(const double P) const = 0;
-  virtual double   sigma_(const double T, const double P) const = 0;
   double get_Pref() const;
 
 protected:
   double P_ref_ = -1, T_ref_ = -1;
-  double sigma__ = -1;
-  REF(Pb_Multiphase) pb_multi;
 };
 
 #endif

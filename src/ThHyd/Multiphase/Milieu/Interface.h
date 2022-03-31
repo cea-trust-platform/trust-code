@@ -14,65 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Milieu_composite.h
+// File:        Interface.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/12
+// Version:     /main/11
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Milieu_composite_included
-#define Milieu_composite_included
+#ifndef Interface_included
+#define Interface_included
 
-#include <List_Fluide_base.h>
-#include <Interface.h>
-#include <Saturation_base.h>
-#include <vector>
-#include <set>
+
+#include <Deriv.h>
+#include <Interface_base.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    Classe Milieu_composite
-//    Cette classe represente un fluide reel ainsi que
-//    ses proprietes:
-//        - viscosite cinematique, (mu)
-//        - viscosite dynamique,   (nu)
-//        - masse volumique,       (rho)
-//        - diffusivite,           (alpha)
-//        - conductivite,          (lambda)
-//        - capacite calorifique,  (Cp)
-//        - dilatabilite thermique du constituant (beta_co)
+//     classe Interface
+//     Un objet Interface peut referencer n'importe quel objet
+//     derivant de Interface_base.
 // .SECTION voir aussi
-//     Milieu_base
+//     Interface_base
 //////////////////////////////////////////////////////////////////////////////
-class Milieu_composite: public Fluide_base
+
+class Interface_base;
+
+Declare_deriv(Interface_base);
+
+class Interface : public DERIV(Interface_base)
 {
-  Declare_instanciable(Milieu_composite);
-public :
-  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
-  void mettre_a_jour(double temps) override;
-  int initialiser(const double temps) override;
-  void associer_equation(const Equation_base* eqn) const override;
-  bool has_interface(int k, int l) const;
-  Interface_base& get_interface(int k, int l) const;
-  bool has_saturation(int k, int l) const;
-  Saturation_base& get_saturation(int k, int l) const;
-  void abortTimeStep() override;
-  bool initTimeStep(double dt) override;
+  Declare_instanciable(Interface);
 
-  int check_unknown_range() const override;
+public:
+  void associer_pb_multiphase(const Pb_Multiphase& pb);
 
-  LIST(Fluide_base) fluides;
-
-protected :
-  Champ_Fonc rho_m, h_m;
-  void mettre_a_jour_tabs();
-  static void calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
-  static void calculer_energie_interne(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
-  static void calculer_enthalpie(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
-  std::pair<std::string, int> check_fluid_name(const Nom& name);
-  std::vector<std::vector<Interface_base *>> tab_interface;
-  std::map<std::string, std::set<int>> phases_melange;
 };
 
 #endif
