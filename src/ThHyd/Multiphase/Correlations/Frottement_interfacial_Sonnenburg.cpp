@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ Entree& Frottement_interfacial_Sonnenburg::readOn(Entree& is)
 
 void Frottement_interfacial_Sonnenburg::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                                                     const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                                                    const DoubleTab& ndv, DoubleTab& coeff) const
+                                                    const DoubleTab& ndv, int e, DoubleTab& coeff) const
 {
   coeff = 0;
   if (alpha(n_l) < 1e-8 || alpha(n_g) < 1e-8) return;

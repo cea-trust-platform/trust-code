@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ Entree& Frottement_interfacial_Weber::readOn(Entree& is)
 
 void Frottement_interfacial_Weber::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                                                const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                                               const DoubleTab& ndv, DoubleTab& coeff) const
+                                               const DoubleTab& ndv, int e, DoubleTab& coeff) const
 {
   double Db = We_c * sigma(n_l, n_g) / (rho(n_l) * ndv(n_l, n_g) * ndv(n_l, n_g)),					//diametre des bulles
          Reb = rho(n_l) * ndv(n_l, n_g) * Db / mu(n_l), 											//Reynolds associe a une bulle

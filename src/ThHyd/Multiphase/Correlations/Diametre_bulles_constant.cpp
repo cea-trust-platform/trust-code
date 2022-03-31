@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,18 +40,19 @@ Entree& Diametre_bulles_constant::readOn(Entree& is)
   param.lire_avec_accolades_depuis(is);
 
   Pb_Multiphase& pb = ref_cast(Pb_Multiphase, pb_.valeur());
+  int N = pb.nb_phases();
   const Discret_Thyd& dis=ref_cast(Discret_Thyd,pb.discretisation());
-  Noms noms(1), unites(1);
+  Noms noms(N), unites(N);
   noms[0] = "diametre_bulles";
   unites[0] = "m";
   Motcle typeChamp = "champ_elem" ;
   const Zone_dis& z = ref_cast(Zone_dis, pb.domaine_dis().zone_dis(0));
-  dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, 1, 0, diametres_);
+  dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, N, 0, diametres_);
 
   champs_compris_.ajoute_champ(diametres_);
 
   DoubleTab& tab_diametres = diametres_->valeurs();
-  for (int i = 0 ; i < tab_diametres.dimension_tot(0) ; i++) tab_diametres(i, 0) = d_bulle_;
+  for (int i = 0 ; i < tab_diametres.dimension_tot(0) ; i++) for (int n = 1 ; n <N ; n++) tab_diametres(i, n) = d_bulle_;
 
   return is;
 }
