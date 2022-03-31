@@ -520,6 +520,7 @@
  Masse_Multiphase Masse_Multiphase Masse_Multiphase.h
  Masse_PolyMAC_Elem Masse_PolyMAC_Elem Masse_PolyMAC_Elem.h
  Masse_PolyMAC_Face Masse_PolyMAC_Face Masse_PolyMAC_Face.h
+ Masse_VDF_base Masse_VDF_base Masse_VDF_base.h
  Masse_VDF_Face Masse_VDF_Face Masse_VDF_Face.h
  Masse_VDF_P0_VDF Masse_VDF_Elem Masse_VDF_Elem.h
  Masse_VEF_P1NC Masse_VEF_P1NC Masse_VEF_P1NC.h

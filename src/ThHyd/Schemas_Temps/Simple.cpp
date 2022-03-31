@@ -215,6 +215,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
         iterer_eqn_expl(eqn,nb_iter,dt,current,dudt,converge,no_qdm_);
       else
         iterer_eqn_expl_diffusion_implicite(eqn,nb_iter,dt,current,dudt,converge,no_qdm_,param.seuil_diffusion_implicite());
+
       return (converge==1);
     }
 
@@ -363,8 +364,9 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       else
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
     }
-  if (ok && eqn.has_interface_blocs()) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
 
+  bool turbulence_hyd = eqn.que_suis_je().finit_par("_Turbulent") || eqn.que_suis_je().debute_par("Transport_K");
+  if (ok && eqn.has_interface_blocs() && !turbulence_hyd) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
   solveur->reinit();
   return (ok && converge==1);
 }

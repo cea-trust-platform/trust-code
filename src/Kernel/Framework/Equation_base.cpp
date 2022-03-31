@@ -2272,6 +2272,7 @@ void Equation_base::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
             matrice += mat2;  // this only works if the matrix has been given its overall size first
         }
       isInit = isInit || (matrice.nb_colonnes() != 0);
+
     }
 
   //  ... then the mass solver ...
@@ -2434,6 +2435,7 @@ void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab&
 {
   statistiques().begin_count(assemblage_sys_counter_);
   assembler_blocs(matrices, secmem, semi_impl);
+  solv_masse().valeur().set_penalisation_flag(0);
   schema_temps().ajouter_blocs(matrices, secmem, *this);
   if (discretisation().que_suis_je() == "VDF")
     {

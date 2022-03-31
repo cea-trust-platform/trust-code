@@ -106,6 +106,9 @@ public :
   // L'implementation par defaut ne fait rien
   virtual void preparer_calcul(void);
 
+  inline void set_penalisation_flag(int pen) { penalisation_flag_ = pen;  }
+
+
 protected :
   Nom name_of_coefficient_temporel_; // nom du coefficient temporelle
   int has_coefficient_temporel_;
