@@ -497,7 +497,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(27);
+      Motcles les_parametres_solveur(28);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil"; // Seuil absolu (atol)
@@ -526,6 +526,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[24] = "allow_realloc";
         les_parametres_solveur[25] = "clean_matrix";
         les_parametres_solveur[26] = "save_matrix_mtx_format";
+        les_parametres_solveur[27] = "reuse_precond";
       }
       option_double omega("omega",amgx_ ? 0.9 : 1.5);
       option_int    level("level",1);
@@ -714,8 +715,6 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 8:
               {
                 is >> controle_residu_;
-                Cerr << "Option controle_residu not implemented yet." << finl;
-                exit();
                 break;
               }
             case 9:
@@ -902,6 +901,9 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 25:
               is >> flag;
               clean_matrix_ = (bool)flag;
+              break;
+            case 27:
+              set_reuse_preconditioner(true);
               break;
             default:
               {
@@ -1577,7 +1579,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   // Si on utilise un solver petsc on le signale pour les stats finales
   statistiques().begin_count(solv_sys_petsc_counter_);
   statistiques().end_count(solv_sys_petsc_counter_,1,1);
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();
   if (nouvelle_matrice())
     {
       matrice_symetrique_ = 1;      // On suppose que la matrice est symetrique
@@ -1651,7 +1653,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                << finl;
           exit();
         }
-      if (verbose) Cout << "[Petsc] Time to convert matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+      if (verbose) Cout << "[Petsc] Time to convert matrix: " << Statistiques::get_time_now() - start << finl;
 
       // Verification stockage de la matrice
       check_aij(matrice_morse_intermediaire);
@@ -1683,7 +1685,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                << " unknowns per PETSc process ) " << (nouveau_stencil_ ? "New stencil." : "Same stencil.") << finl;
         }
     }
-  start = std::clock();
+  start = Statistiques::get_time_now();
   // Assemblage du second membre et de la solution
   // ToDo calculer ix au moment de item_to_keep_
   int size=secmem.size_array();
@@ -1705,7 +1707,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   VecAssemblyEnd(SecondMembrePetsc_);
   VecAssemblyBegin(SolutionPetsc_);
   VecAssemblyEnd(SolutionPetsc_);
-  if (verbose) Cout << "[Petsc] Time to update vectors: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  if (verbose) Cout << "[Petsc] Time to update vectors: " << Statistiques::get_time_now() - start << finl;
 
 //  VecView(SecondMembrePetsc_,PETSC_VIEWER_STDOUT_WORLD);
 //  VecView(SolutionPetsc_,PETSC_VIEWER_STDOUT_WORLD);
@@ -1714,7 +1716,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   // if the matrix has changed...
   if (nouvelle_matrice())
     {
-      start = std::clock();
+      start = Statistiques::get_time_now();
       if (save_matrix_==1)
         SaveObjectsToFile();
       else if (save_matrix_==2)
@@ -1787,7 +1789,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
               PetscViewerDestroy(&viewer);
             }
         }
-      if (save_matrix_ && verbose) Cout << "[Petsc] Time to write matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+      if (save_matrix_ && verbose) Cout << "[Petsc] Time to write matrix: " << Statistiques::get_time_now() - start << finl;
     }
   //////////////////////////
   // Solve the linear system
@@ -1804,7 +1806,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     }
 
   // Recuperation de la solution
-  start = std::clock();
+  start = Statistiques::get_time_now();
   // ToDo un seul VecGetValues comme VecSetValues
   if (different_partition_)
     {
@@ -1828,9 +1830,9 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     }
   solution.echange_espace_virtuel();
   fixer_nouvelle_matrice(0);
-  if (verbose) Cout << finl << "[Petsc] Time to update solution: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  if (verbose) Cout << finl << "[Petsc] Time to update solution: " << Statistiques::get_time_now() - start << finl;
   // Calcul du vrai residu sur matrice initiale sur GPU:
-  if (amgx_ || gpu_)
+  if (amgx_ || gpu_ || controle_residu_)
     {
       DoubleVect test(secmem);
       test*=-1;
@@ -1858,7 +1860,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
 #ifdef PETSCKSP_H
 int Solv_Petsc::solve(ArrOfDouble& residu)
 {
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();
   // Affichage par MyKSPMonitor
   if (!solveur_direct_)
     {
@@ -1875,8 +1877,14 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
   if (enable_ksp_view())
     KSPView(SolveurPetsc_, PETSC_VIEWER_STDOUT_WORLD);
   // Keep precond ?
+  PetscBool flg;
+  PetscOptionsHasName(PETSC_NULL,option_prefix_,"-ksp_reuse_preconditioner",&flg);
+  if (flg) set_reuse_preconditioner(true);
   if (nouvelle_matrice_)
-    KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool)reuse_preconditioner()); // Default PETSC_FALSE
+    {
+      KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool) reuse_preconditioner()); // Default PETSC_FALSE
+      if (reuse_preconditioner()) Cout << "Matrix has changed but reusing previous preconditioner..." << finl;
+    }
   else
     KSPSetReusePreconditioner(SolveurPetsc_, PETSC_TRUE);
   // Solve
@@ -1928,7 +1936,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
           VecNorm(SecondMembrePetsc_, NORM_2, &residu[nbiter]);
         }
     }
-  if (verbose) Cout << "[Petsc] Time to solve system: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  if (verbose) Cout << "[Petsc] Time to solve system: " << Statistiques::get_time_now() - start << finl;
   return Reason < 0 ? (int)Reason : nbiter;
 }
 #endif
@@ -2291,9 +2299,9 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
   /*************************************/
   /* Mise en place du preconditionneur */
   /*************************************/
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();
   KSPSetUp(SolveurPetsc_);
-  if (verbose) Cout << "[Petsc] Time to setup solver: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  if (verbose) Cout << "[Petsc] Time to setup solver: " << Statistiques::get_time_now() - start << finl;
 }
 
 void Solv_Petsc::Create_vectors(const DoubleVect& b)
@@ -2437,7 +2445,7 @@ int Solv_Petsc::compute_nb_rows_petsc(int nb_rows_tot)
 // Creation d'une matrice Petsc depuis une matrice Matrice_Morse
 void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matrice_Morse& mat_morse)
 {
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();
   // Recuperation des donnees
   bool journal = nb_rows_tot_ < 20 ? true : false;
   journal = false;
@@ -2606,7 +2614,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   if (ignore_new_nonzero_)
     MatSetOption(MatricePetsc, MAT_USE_HASH_TABLE, PETSC_TRUE);
 
-  if (verbose) Cout << "[Petsc] Time to create the matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  if (verbose) Cout << "[Petsc] Time to create the matrix: " << Statistiques::get_time_now() - start << finl;
 
   // Fill the matrix
   Solv_Petsc::Update_matrix(MatricePetsc, mat_morse);
@@ -2614,7 +2622,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
 
 void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
 {
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();
   bool journal = nb_rows_tot_ < 20 ? true : false;
   journal = false;
 
@@ -2706,13 +2714,13 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
       MatGetInfo(MatricePetsc,MAT_GLOBAL_MAX,&info);
       Cerr << "Max memory used by matrix on a MPI rank: " << (int)(info.memory/1024/1024) << " MB" << finl;
     }*/
-  if (verbose) Cout << "[Petsc] Time to fill the matrix: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  if (verbose) Cout << "[Petsc] Time to fill the matrix: " << Statistiques::get_time_now() - start << finl;
 }
 
 bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
 {
   // Est ce un nouveau stencil ?
-  std::clock_t start = std::clock();
+  double start = Statistiques::get_time_now();
   int new_stencil=0;
   if (rebuild_matrix_ || read_matrix_ || !mataij_)
     new_stencil = 1;
@@ -2787,7 +2795,7 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
       if (Process::nproc()>1) MatDestroy(&localA);
       new_stencil = mp_max(new_stencil);
     }
-  if (verbose) Cout << "[Petsc] Time to check stencil: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
+  if (verbose) Cout << "[Petsc] Time to check stencil: " << Statistiques::get_time_now() - start << finl;
   return new_stencil;
 }
 #endif

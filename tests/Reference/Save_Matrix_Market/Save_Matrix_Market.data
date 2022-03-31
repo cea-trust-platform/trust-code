@@ -60,7 +60,11 @@ Read sch
     facsec 50
     facsec_max 300
     max_iter_implicite 50
-    Solveur Implicite { solveur petsc gmres { precond diag { } seuil 1.e-5 save_matrix_mtx_format } }
+    # Reuse_precond to reduce precondionner cost by increasing the solver stuff (more iterations). Not interesting yet. #
+    # Possible interest with Newton methods with a criteria to rebuild preconditioner when necessary #
+    # Aster code is using GMRES/MUMPS BLR single-precision precond and rebuild last one when Newton iterations increases: very efficient according to the team #
+    Solveur Implicite { solveur petsc gmres { precond block_jacobi_ilu { } reuse_precond impr seuil 1.e-9 save_matrix_mtx_format } }
+    impr_extremums 1 # To check the range of unknowns #
 }
 
 Fluide_Incompressible air
