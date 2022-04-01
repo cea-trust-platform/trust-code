@@ -290,7 +290,7 @@ inline _TYPE_ mp_min_abs_vect(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt = 
 }
 
 template<typename _TYPE_>
-inline _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy)
+inline _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_SEQUENTIAL_ITEMS)
 {
   _TYPE_ sum = 0;
   // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
@@ -303,10 +303,10 @@ inline _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_
   // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
-  if (VECT_SEQUENTIAL_ITEMS != VECT_ALL_ITEMS && md.non_nul())
+  if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
-      assert(VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS || VECT_SEQUENTIAL_ITEMS == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
@@ -347,7 +347,7 @@ inline _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_
 enum class TYPE_OPERATION_VECT_BIS { CARRE_ , SOMME_ };
 
 template <typename _TYPE_, TYPE_OPERATION_VECT_BIS _TYPE_OP_ >
-inline _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx)
+inline _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_options opt)
 {
   static constexpr bool IS_CARRE = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::CARRE_), IS_SOMME = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SOMME_);
 
@@ -362,10 +362,10 @@ inline _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx)
   // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
   int nblocs_left = 1, one_bloc[2];
   const int *bloc_ptr;
-  if (VECT_SEQUENTIAL_ITEMS != VECT_ALL_ITEMS && md.non_nul())
+  if (opt != VECT_ALL_ITEMS && md.non_nul())
     {
-      assert(VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS || VECT_SEQUENTIAL_ITEMS == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (VECT_SEQUENTIAL_ITEMS == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
       assert(items_blocs.size_array() % 2 == 0);
       nblocs_left = items_blocs.size_array() >> 1;
       bloc_ptr = items_blocs.addr();
@@ -404,9 +404,9 @@ inline _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx)
 }
 
 template<typename _TYPE_>
-inline _TYPE_ local_carre_norme_vect(const TRUSTVect<_TYPE_>& vx)
+inline _TYPE_ local_carre_norme_vect(const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_SEQUENTIAL_ITEMS)
 {
-  return local_operations_vect_bis_generic<_TYPE_,TYPE_OPERATION_VECT_BIS::CARRE_>(vx);
+  return local_operations_vect_bis_generic<_TYPE_,TYPE_OPERATION_VECT_BIS::CARRE_>(vx,opt);
 }
 
 template<typename _TYPE_>
@@ -416,9 +416,9 @@ inline _TYPE_ mp_carre_norme_vect(const TRUSTVect<_TYPE_>& vx)
 }
 
 template<typename _TYPE_>
-inline _TYPE_ local_somme_vect(const TRUSTVect<_TYPE_>& vx)
+inline _TYPE_ local_somme_vect(const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_SEQUENTIAL_ITEMS)
 {
-  return local_operations_vect_bis_generic<_TYPE_,TYPE_OPERATION_VECT_BIS::SOMME_>(vx);
+  return local_operations_vect_bis_generic<_TYPE_,TYPE_OPERATION_VECT_BIS::SOMME_>(vx,opt);
 }
 
 template<typename _TYPE_>
