@@ -308,14 +308,6 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
         }
       eqn.solv_masse().corriger_solution(incr["vitesse"], incr["vitesse"], 1); //pour CoviMAC : sert a corriger ve
 
-      /* convergence? */
-      cv = (corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"]) < crit_conv["alpha"]);
-      for (i = 0 ; i < pb.nombre_d_equations(); i++) if (pb.equation(i).positive_unkown()==1)
-          {
-            std::string nom_inco = pb.equation(i).inconnue().le_nom().getString() ;
-            cv &= (unknown_positivation(inco[nom_inco]->valeurs(), incr[nom_inco]) < crit_conv[nom_inco]);
-          }
-      for (auto && n_v : incr) if (crit_conv.count(n_v.first)) cv &= mp_max_abs_vect(n_v.second) < crit_conv.at(n_v.first);
 
       if (!Process::me())
 #ifndef INT_is_64_
@@ -329,6 +321,15 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           if (!Process::me()) fprintf(stderr, " %11g", x);
         }
       if (!Process::me()) fprintf(stderr, "\n");
+
+      /* convergence? */
+      cv = (corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"]) < crit_conv["alpha"]);
+      for (i = 0 ; i < pb.nombre_d_equations(); i++) if (pb.equation(i).positive_unkown()==1)
+          {
+            std::string nom_inco = pb.equation(i).inconnue().le_nom().getString() ;
+            cv &= (unknown_positivation(inco[nom_inco]->valeurs(), incr[nom_inco]) < crit_conv[nom_inco]);
+          }
+      for (auto && n_v : incr) if (crit_conv.count(n_v.first)) cv &= mp_max_abs_vect(n_v.second) < crit_conv.at(n_v.first);
 
       /* mises a jour : inconnues -> milieu -> champs/conserves -> sources */
       for (auto && n_i : inco) n_i.second->valeurs() += incr[n_i.first];
