@@ -622,28 +622,6 @@ then
    . ./configure.env
 fi
 
-BATCH_SYSTEM_DETECTED=0
-for cmd in sinfo qstat bqueues
-do
-   [ "`$cmd --help 2>&1 1>/dev/null;echo $?`" = 0 ] && BATCH_SYSTEM_DETECTED=1 && break
-done
-# Par defaut (aucun TRUST_FORCE specifie) alors hors clusters et Cuda, FORCE_PROVIDED_MPICH car plus pratique pour VisIt, tests de NR plus rapides, valgrind error-free:
-if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ]
-then
-   if [ "$BATCH_SYSTEM_DETECTED" = 0 ] && [ "$TRUST_WITHOUT_HOST" = 1 ]
-   then
-      if [ "$TRUST_USE_CUDA" = 1 ]
-      then
-         export TRUST_FORCE_LATEST_OPENMPI=1 # OpenMPI Cuda-Aware
-      elif [ "`grep 'Fedora release 3[4-8]' /etc/fedora-release 2>/dev/null`" != "" ]
-      then
-         export TRUST_FORCE_LATEST_MPICH=1
-      else
-         export TRUST_FORCE_PROVIDED_MPICH=1
-      fi
-   fi
-fi
-
 #######################
 # Quelle architecture ?
 #######################
@@ -905,6 +883,7 @@ m="# Path to C compiler";e="`cherche_file TRUST_cc_BASE $TRUST_cc_BASE`";configu
 TRUST_ARCH_CC="$TRUST_ARCH"_`echo $TRUST_CC_BASE | awk -F/ '{print $NF}'`
 m="# Machine-compiler architecture";e="TRUST_ARCH_CC=$TRUST_ARCH_CC && export TRUST_ARCH_CC";ecrit $m"|"$e"|"$env
 m="# Path to Fortran compiler";e="`cherche_file TRUST_F77_BASE $TRUST_F77_BASE`";ecrit $m"|"$e"|"$env;eval $e
+TRUST_VERSION_GNU=`print_GNU_VERSION`
 ####################################################
 # Verification que les compilateurs ont ete trouves.
 ####################################################
@@ -1043,6 +1022,27 @@ fi
 #############
 # Debut MPI #
 #############
+BATCH_SYSTEM_DETECTED=0
+for cmd in sinfo qstat bqueues
+do
+   [ "`$cmd --help 2>&1 1>/dev/null;echo $?`" = 0 ] && BATCH_SYSTEM_DETECTED=1 && break
+done
+# Par defaut (aucun TRUST_FORCE specifie) alors hors clusters et Cuda, FORCE_PROVIDED_MPICH car plus pratique pour VisIt, tests de NR plus rapides, valgrind error-free:
+if [ "$TRUST_FORCE_PROVIDED_OPENMPI" != 1 ] && [ "$TRUST_FORCE_LATEST_OPENMPI" != 1 ] && [ "$TRUST_FORCE_PROVIDED_MPICH" != 1 ] && [ "$TRUST_FORCE_LATEST_MPICH" != 1 ]
+then
+   if [ "$BATCH_SYSTEM_DETECTED" = 0 ] && [ "$TRUST_WITHOUT_HOST" = 1 ]
+   then
+      if [ "$TRUST_USE_CUDA" = 1 ]
+      then
+         export TRUST_FORCE_LATEST_OPENMPI=1 # OpenMPI Cuda-Aware
+      elif [ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="11.0.0") print -force_latest_mpich}'`" != "" ]
+      then
+         export TRUST_FORCE_LATEST_MPICH=1
+      else
+         export TRUST_FORCE_PROVIDED_MPICH=1
+      fi
+   fi
+fi
 COMLIBS=""
 MPI_ROOT=""
 MPI_INCLUDE="\$TRUST_ROOT/lib/src/LIBMPI/no_mpi"
@@ -1575,7 +1575,6 @@ OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
    linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
-	TRUST_VERSION_GNU=`print_GNU_VERSION`
 	TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if (($1<="9.9.0" && $1>="4.8.5") || ($1<="12.0.1" && $1>"10.0.0")) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0

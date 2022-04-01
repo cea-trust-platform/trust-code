@@ -1,4 +1,5 @@
-XX/XX/22 (TRUST)  Portabilty  : Fedora 36 and GNU compilers 12.0.1 are supported
+01/04/22 (TRUST)  Portability : Ubuntu 22 supported (VisIt issues though)
+01/04/22 (TRUST)  Portabilty  : Fedora 36 and GNU compilers 12.0.1 are supported
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------

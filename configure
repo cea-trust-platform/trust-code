@@ -5,6 +5,11 @@
 for variable in "project_directory `env | grep -Ev 'PATH|OLDPWD|PWD' | grep TRUST | cut -d'=' -f 1`" ; do unset $variable ; done
 TRUST_ROOT_SA=$TRUST_ROOT
 
+if [ ! -f /usr/bin/g++ ]
+then
+   [ "`grep -i ubuntu /etc/issue`" != "" ] && echo "Try: sudo apt-get install -y g++ gfortran make libglu1-mesa-dev libegl1-mesa-dev libx11-dev texlive texlive-latex-extra" && exit -1
+fi
+
 [ "`id -u 2>/dev/null`" = 0 ] && echo "It is not recommended to configure and install TRUST as root." && exit
 
 # Fedora
