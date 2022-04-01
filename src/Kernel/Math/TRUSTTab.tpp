@@ -143,12 +143,12 @@ inline int TRUSTTab<_TYPE_>::dimension_tot(int i) const
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a)
 {
-  assert((this)->template line_size() == 1);
-  assert(dimension_tot_0_ * (this)->template line_size() == (this)->template size_array());
+  assert(TRUSTVect<_TYPE_>::line_size() == 1);
+  assert(dimension_tot_0_ * TRUSTVect<_TYPE_>::line_size() == TRUSTVect<_TYPE_>::size_array());
   const int n = dimension_tot_0_;
   dimensions_[0] = ++dimension_tot_0_;
   TRUSTVect<_TYPE_>::resize_vect_(n+1, Array_base::COPY_NOINIT);
-  _TYPE_ * ptr = (this)->template addr() + n;
+  _TYPE_ * ptr = TRUSTVect<_TYPE_>::addr() + n;
   ptr[0] = a;
 }
 
@@ -157,12 +157,12 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a)
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b)
 {
-  assert((this)->template line_size() == 2);
-  assert(dimension_tot_0_ * (this)->template line_size() == (this)->template size_array());
+  assert(TRUSTVect<_TYPE_>::line_size() == 2);
+  assert(dimension_tot_0_ * TRUSTVect<_TYPE_>::line_size() == TRUSTVect<_TYPE_>::size_array());
   const int n = dimension_tot_0_ * 2;
   dimensions_[0] = ++dimension_tot_0_;
   TRUSTVect<_TYPE_>::resize_vect_(n+2, Array_base::COPY_NOINIT);
-  _TYPE_ * ptr = (this)->template addr() + n;
+  _TYPE_ * ptr = TRUSTVect<_TYPE_>::addr() + n;
   ptr[0] = a;
   ptr[1] = b;
 }
@@ -171,12 +171,12 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b)
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c)
 {
-  assert((this)->template line_size() == 3);
-  assert(dimension_tot_0_  * (this)->template line_size() == (this)->template size_array());
+  assert(TRUSTVect<_TYPE_>::line_size() == 3);
+  assert(dimension_tot_0_  * TRUSTVect<_TYPE_>::line_size() == TRUSTVect<_TYPE_>::size_array());
   const int n = dimension_tot_0_ * 3;
   dimensions_[0] = ++dimension_tot_0_;
   TRUSTVect<_TYPE_>::resize_vect_(n+3, Array_base::COPY_NOINIT);
-  _TYPE_ * ptr = (this)->template addr() + n;
+  _TYPE_ * ptr = TRUSTVect<_TYPE_>::addr() + n;
   ptr[0] = a;
   ptr[1] = b;
   ptr[2] = c;
@@ -186,12 +186,12 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c)
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c, _TYPE_ d)
 {
-  assert((this)->template line_size() == 4);
-  assert(dimension_tot_0_  * (this)->template line_size() == (this)->template size_array());
+  assert(TRUSTVect<_TYPE_>::line_size() == 4);
+  assert(dimension_tot_0_  * TRUSTVect<_TYPE_>::line_size() == TRUSTVect<_TYPE_>::size_array());
   const int n = dimension_tot_0_ * 4;
   dimensions_[0] = ++dimension_tot_0_;
   TRUSTVect<_TYPE_>::resize_vect_(n+4, Array_base::COPY_NOINIT);
-  _TYPE_ * ptr = (this)->template addr() + n;
+  _TYPE_ * ptr = TRUSTVect<_TYPE_>::addr() + n;
   ptr[0] = a;
   ptr[1] = b;
   ptr[2] = c;
@@ -226,7 +226,7 @@ inline void TRUSTTab<_TYPE_>::ref(const TRUSTVect<_TYPE_>& v)
     }
   else dimensions_[0] = -1;
 
-  dimension_tot_0_ = (this)->template size_array() / l;
+  dimension_tot_0_ = TRUSTVect<_TYPE_>::size_array() / l;
   assert(verifie_LINE_SIZE());
 }
 
@@ -246,7 +246,7 @@ template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
 {
   TRUSTVect<_TYPE_>::ref_data(ptr, new_size);
-  assert(!(this)->template get_md_vector().non_nul() && (this)->template size_reelle() == (this)->template size_array());
+  assert(!TRUSTVect<_TYPE_>::get_md_vector().non_nul() && TRUSTVect<_TYPE_>::size_reelle() == TRUSTVect<_TYPE_>::size_array());
   nb_dim_ = 1;
   dimensions_[0] = dimension_tot_0_ = new_size;
   assert(verifie_LINE_SIZE());
@@ -258,9 +258,9 @@ template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::ref_array(TRUSTArray<_TYPE_>& src, int start, int sz)
 {
   TRUSTVect<_TYPE_>::ref_array(src, start, sz);
-  assert(!(this)->template get_md_vector().non_nul() && (this)->template size_reelle() == (this)->template size_array());
+  assert(!TRUSTVect<_TYPE_>::get_md_vector().non_nul() && TRUSTVect<_TYPE_>::size_reelle() == TRUSTVect<_TYPE_>::size_array());
   nb_dim_ = 1;
-  dimensions_[0] = dimension_tot_0_ = (this)->template size_array(); // pas sz qui peut valoir -1
+  dimensions_[0] = dimension_tot_0_ = TRUSTVect<_TYPE_>::size_array(); // pas sz qui peut valoir -1
   assert(verifie_LINE_SIZE());
 }
 
@@ -274,8 +274,8 @@ inline void TRUSTTab<_TYPE_>::ref_tab(TRUSTTab<_TYPE_>& t, int start_line, int n
   assert(start_line >= 0 && nb_lines >= 0 && start_line + nb_lines <= t.dimension_tot_0_);
   const int l_size = t.line_size();
   TRUSTVect<_TYPE_>::ref_array(t, start_line * l_size, nb_lines * l_size);
-  assert(!(this)->template get_md_vector().non_nul() && (this)->template size_reelle() == (this)->template size_array());
-  (this)->template set_line_size_(l_size);
+  assert(!TRUSTVect<_TYPE_>::get_md_vector().non_nul() && TRUSTVect<_TYPE_>::size_reelle() == TRUSTVect<_TYPE_>::size_array());
+  TRUSTVect<_TYPE_>::set_line_size_(l_size);
   nb_dim_ = t.nb_dim_;
   dimension_tot_0_ = nb_lines;
   dimensions_[0] = nb_lines;
@@ -308,8 +308,8 @@ template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::resize_dim0(int n, Array_base::Resize_Options opt)
 {
   assert(n >= 0);
-  assert(dimension_tot_0_ * (this)->template line_size() == (this)->template size_array());
-  TRUSTVect<_TYPE_>::resize_vect_(n * (this)->template line_size(), opt);
+  assert(dimension_tot_0_ * TRUSTVect<_TYPE_>::line_size() == TRUSTVect<_TYPE_>::size_array());
+  TRUSTVect<_TYPE_>::resize_vect_(n * TRUSTVect<_TYPE_>::line_size(), opt);
   dimensions_[0] = dimension_tot_0_ = n;
   assert(verifie_LINE_SIZE());
 }
@@ -318,7 +318,7 @@ template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::resize(int n, Array_base::Resize_Options opt)
 {
   assert(n >= 0);
-  (this)->template set_line_size_(1);
+  TRUSTVect<_TYPE_>::set_line_size_(1);
   TRUSTVect<_TYPE_>::resize_vect_(n, opt);
   nb_dim_ = 1;
   dimensions_[0] = dimension_tot_0_ = n;
@@ -329,7 +329,7 @@ template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::resize(int n, int n2, Array_base::Resize_Options opt)
 {
   assert(n >= 0 && n2 >= 0);
-  (this)->template set_line_size_(n2);
+  TRUSTVect<_TYPE_>::set_line_size_(n2);
   int new_size = n * n2;
 
   if (std::is_same<_TYPE_,int>::value && new_size < 0)
@@ -349,7 +349,7 @@ template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, Array_base::Resize_Options opt)
 {
   assert(n >= 0 && n2 >= 0 && n3 >= 0);
-  (this)->template set_line_size_(n2 * n3);
+  TRUSTVect<_TYPE_>::set_line_size_(n2 * n3);
   int new_size = n * n2 * n3;
 
   if (std::is_same<_TYPE_,int>::value && new_size < 0)
@@ -370,7 +370,7 @@ template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, int n4, Array_base::Resize_Options opt)
 {
   assert(n >= 0 && n2 >= 0 && n3 >= 0 && n4 >= 0);
-  (this)->template set_line_size_(n2 * n3 * n4);
+  TRUSTVect<_TYPE_>::set_line_size_(n2 * n3 * n4);
   int new_size = n * n2 * n3 * n4;
 
   if (std::is_same<_TYPE_,int>::value && new_size<0)
@@ -413,8 +413,8 @@ inline void TRUSTTab<_TYPE_>::resize(const TRUSTArray<int>& tailles, Array_base:
         }
     }
   dimension_tot_0_ = dimensions_[0];
-  (this)->template set_line_size_(l_size);
-  (this)->template resize_vect_(dimensions_[0] * l_size, opt);
+  TRUSTVect<_TYPE_>::set_line_size_(l_size);
+  TRUSTVect<_TYPE_>::resize_vect_(dimensions_[0] * l_size, opt);
   assert(verifie_LINE_SIZE());
 }
 
@@ -452,7 +452,7 @@ inline TRUSTTab<_TYPE_>& TRUSTTab<_TYPE_>::operator=(const TRUSTVect<_TYPE_>& sr
     }
   else dimensions_[0] = -1;
 
-  dimension_tot_0_ = (this)->template size_array() / l;
+  dimension_tot_0_ = TRUSTVect<_TYPE_>::size_array() / l;
   assert(verifie_LINE_SIZE());
   return *this;
 }
@@ -560,7 +560,7 @@ inline void TRUSTTab<_TYPE_>::lit(Entree& is, int resize_and_read)
 
   if (ok)
     {
-      if ((this)->template size_reelle_ok() && dimension(0) != tmp[0]) ok = 0;
+      if (TRUSTVect<_TYPE_>::size_reelle_ok() && dimension(0) != tmp[0]) ok = 0;
       for (int i = 1; i < nb_dim_; i++)
         if (dimension(i) != tmp[i]) ok = 0;
     }
@@ -575,7 +575,7 @@ inline void TRUSTTab<_TYPE_>::lit(Entree& is, int resize_and_read)
 
   if (resize_and_read)
     {
-      if ((this)->template size_array() == 0 && (!(this)->template get_md_vector().non_nul())) resize(tmp, Array_base::NOCOPY_NOINIT);
+      if (TRUSTVect<_TYPE_>::size_array() == 0 && (!TRUSTVect<_TYPE_>::get_md_vector().non_nul())) resize(tmp, Array_base::NOCOPY_NOINIT);
       else if (!ok)
         {
           // Si on cherche a relire un tableau de taille inconnue, le tableau doit etre reset() a l'entree. On n'aura pas la structure parallele du tableau !
@@ -747,12 +747,12 @@ inline void TRUSTTab<_TYPE_>::resoud_LU(int n, TRUSTArray<int>& index, const TRU
 template<typename _TYPE_>
 inline double TRUSTTab<_TYPE_>::max_du_u(const TRUSTTab<double>& u)
 {
-  assert((this)->template size_array() == u.size_array());
-  const double *du_ptr = (this)->template addr();
+  assert(TRUSTVect<_TYPE_>::size_array() == u.size_array());
+  const double *du_ptr = TRUSTVect<_TYPE_>::addr();
   const double *u_ptr = u.addr();
   const double epsilon = 1.e-8;
   double res = 0.;
-  for (int n = (this)->template size_array(); n; n--)
+  for (int n = TRUSTVect<_TYPE_>::size_array(); n; n--)
     {
       double a = std::fabs(*du_ptr), b = std::fabs(*u_ptr), c = a / (b + epsilon);
       if (b > 1.e-2 && c > res) res = c;

@@ -58,10 +58,10 @@ protected:
     assert(dimensions_[0] == dimension_tot_0_);
     if (nb_dim_ > 0) os.put(dimensions_, nb_dim_, nb_dim_);
 
-    const int sz = (this)->template size_array();
+    const int sz = TRUSTVect<_TYPE_>::size_array();
     os << sz << finl;
-    const int l_size = (this)->template line_size();
-    const _TYPE_ *data = (this)->template addr();
+    const int l_size = TRUSTVect<_TYPE_>::line_size();
+    const _TYPE_ *data = TRUSTVect<_TYPE_>::addr();
 
     if (sz > 0)  os.put(data, sz, l_size);
     return os;
@@ -102,10 +102,10 @@ protected:
       }
     dimension_tot_0_ = dimensions_[0];
     TRUSTVect<_TYPE_>::readOn(is);
-    (this)->template set_line_size_(l_size);
-    if (dimension_tot_0_ * l_size != (this)->template size_array())
+    TRUSTVect<_TYPE_>::set_line_size_(l_size);
+    if (dimension_tot_0_ * l_size != TRUSTVect<_TYPE_>::size_array())
       {
-        Cerr << "Error in TRUSTTab::readOn: wrong size_array " << (this)->template size_array() << ", expected " << dimension_tot_0_ * l_size << finl;
+        Cerr << "Error in TRUSTTab::readOn: wrong size_array " << TRUSTVect<_TYPE_>::size_array() << ", expected " << dimension_tot_0_ * l_size << finl;
         Process::exit();
       }
     assert(verifie_LINE_SIZE());
@@ -137,7 +137,7 @@ public:
     init_dimensions(dimensions_);
     dimensions_[0]=n1;
     dimensions_[1]=n2;
-    (this)->template set_line_size_(n2);
+    TRUSTVect<_TYPE_>::set_line_size_(n2);
   }
 #endif
 
@@ -158,7 +158,7 @@ public:
     init_dimensions(dimensions_);
     dimensions_[0]=n1;
     dimensions_[1]=n2;
-    (this)->template set_line_size_(n2);
+    TRUSTVect<_TYPE_>::set_line_size_(n2);
   }
 
   TRUSTTab(int n1, int n2, int n3) : TRUSTVect<_TYPE_>(n1*n2*n3), nb_dim_(3), dimension_tot_0_(n1)
@@ -173,7 +173,7 @@ public:
     dimensions_[0]=n1;
     dimensions_[1]=n2;
     dimensions_[2]=n3;
-    (this)->template set_line_size_(n2*n3);
+    TRUSTVect<_TYPE_>::set_line_size_(n2*n3);
   }
 
   TRUSTTab(int n1, int n2, int n3, int n4) : TRUSTVect<_TYPE_>(n1*n2*n3*n4), nb_dim_(4), dimension_tot_0_(n1)
@@ -189,7 +189,7 @@ public:
     dimensions_[1]=n2;
     dimensions_[2]=n3;
     dimensions_[3]=n4;
-    (this)->template set_line_size_(n2*n3*n4);
+    TRUSTVect<_TYPE_>::set_line_size_(n2*n3*n4);
   }
 
   inline void resize_dim0(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT);
@@ -266,8 +266,8 @@ private:
 
   inline bool verifie_LINE_SIZE() const
   {
-    return (((this)->template line_size() == ((nb_dim_ > 1) ? dimensions_[1] : 1) * ((nb_dim_ > 2) ? dimensions_[2] : 1) * ((nb_dim_ > 3) ? dimensions_[3] : 1))
-            && ((this)->template line_size() * dimension_tot_0_ == (this)->template size_array()));
+    return ((TRUSTVect<_TYPE_>::line_size() == ((nb_dim_ > 1) ? dimensions_[1] : 1) * ((nb_dim_ > 2) ? dimensions_[2] : 1) * ((nb_dim_ > 3) ? dimensions_[3] : 1))
+            && (TRUSTVect<_TYPE_>::line_size() * dimension_tot_0_ == TRUSTVect<_TYPE_>::size_array()));
   }
 
   inline void init_dimensions(int * tab)

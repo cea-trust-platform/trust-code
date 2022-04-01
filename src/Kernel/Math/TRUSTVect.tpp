@@ -35,7 +35,7 @@ inline int TRUSTVect<_TYPE_>::size_reelle() const
   // Si cet assert plante, c'est que l'appel a ete declare invalide par le MD_Vect associe a ce vecteur.
   assert(size_reelle_ >= 0);
   // Si cet assert plante, c'est que le tableau a ete redimensionne avec resize_array() au lieu de resize(). (invalide pour un Vect ou un Tab).
-  assert((this)->template size_array() == size_reelle_ || md_vector_.non_nul());
+  assert(TRUSTArray<_TYPE_>::size_array() == size_reelle_ || md_vector_.non_nul());
   return size_reelle_;
 }
 
@@ -64,14 +64,14 @@ inline void TRUSTVect<_TYPE_>::ajoute(double alpha, const TRUSTVect<double>& y, 
 template<typename _TYPE_>
 inline int TRUSTVect<_TYPE_>::size_totale() const
 {
-  return (this)->template size_array();
+  return TRUSTArray<_TYPE_>::size_array();
 }
 
 template<typename _TYPE_>
 inline int TRUSTVect<_TYPE_>::line_size() const
 {
   // Si line_size_ est nulle, size_array doit etre nul aussi
-  assert(line_size_ > 0 || (this)->template size_array() == 0);
+  assert(line_size_ > 0 || TRUSTArray<_TYPE_>::size_array() == 0);
   return line_size_;
 }
 
@@ -95,7 +95,7 @@ template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::resize(int n, Array_base::Resize_Options opt)
 {
   // Verifie que l'objet est bien du type DoubleVect
-  assert(n == (this)->template size_array() || std::string(typeid(*this).name()).find("TRUSTVect") != std::string::npos);
+  assert(n == TRUSTArray<_TYPE_>::size_array() || std::string(typeid(*this).name()).find("TRUSTVect") != std::string::npos);
   resize_vect_(n, opt);
 }
 
@@ -115,7 +115,7 @@ inline void TRUSTVect<_TYPE_>::resize_vect_(int n, Array_base::Resize_Options op
       Process::exit();
     }
   assert(n == 0 || (n > 0 && line_size_ > 0 && n % line_size_ == 0));
-  (this)->template resize_array_(n, opt);
+  TRUSTArray<_TYPE_>::resize_array_(n, opt);
   size_reelle_ = n;
   // ne pas mettre line_size_ a 1 ici, voir DoubleTab::resize_dim0()
 }
@@ -152,8 +152,8 @@ inline void TRUSTVect<_TYPE_>::ref(const TRUSTVect& v)
 {
   if (&v != this)
     {
-      (this)->template detach_array();
-      (this)->template attach_array(v);
+      TRUSTArray<_TYPE_>::detach_array();
+      TRUSTArray<_TYPE_>::attach_array(v);
       md_vector_ = v.md_vector_;
       size_reelle_ = v.size_reelle_;
       line_size_ = v.line_size_;
@@ -181,7 +181,7 @@ inline void TRUSTVect<_TYPE_>::copy(const TRUSTVect& v, Array_base::Resize_Optio
   if (&v != this)
     {
       // Interdiction de resizer si l'objet est d'un type derive de DoubleVect (sinon mauvaise dimension(0) !)
-      assert(v.size_array() == (this)->template size_array() || std::string(typeid(*this).name()).find("TRUSTVect") != std::string::npos);
+      assert(v.size_array() == TRUSTArray<_TYPE_>::size_array() || std::string(typeid(*this).name()).find("TRUSTVect") != std::string::npos);
       copy_(v, opt);
     }
 }
@@ -194,8 +194,8 @@ inline void TRUSTVect<_TYPE_>::copy_(const TRUSTVect& v, Array_base::Resize_Opti
   // Si le vecteur a deja une structure parallele, la copie n'est autorisee que si
   // le vecteur source a la meme structure. Si ce n'est pas le cas, utiliser inject_array() pour copier uniquement les valeurs, ou faire d'abord reset() si on veut ecraser la structure.
   assert((!md_vector_.non_nul()) || (md_vector_ == v.md_vector_));
-  (this)->template resize_array_(v.size_array(), Array_base::NOCOPY_NOINIT);
-  if (opt != Array_base::NOCOPY_NOINIT) (this)->template inject_array(v);
+  TRUSTArray<_TYPE_>::resize_array_(v.size_array(), Array_base::NOCOPY_NOINIT);
+  if (opt != Array_base::NOCOPY_NOINIT) TRUSTArray<_TYPE_>::inject_array(v);
   md_vector_ = v.md_vector_; // Pour le cas ou md_vector_ est nul et pas v.md_vector_
   size_reelle_ = v.size_reelle_;
   line_size_ = v.line_size_;
@@ -225,7 +225,7 @@ inline void TRUSTVect<_TYPE_>::ref_array(TRUSTArray<_TYPE_>& m, int start, int n
 {
   md_vector_.detach();
   TRUSTArray<_TYPE_>::ref_array(m, start, new_size);
-  size_reelle_ = (this)->template size_array(); // pas size qui peut valoir -1
+  size_reelle_ = TRUSTArray<_TYPE_>::size_array(); // pas size qui peut valoir -1
   line_size_ = 1;
 }
 
@@ -235,7 +235,7 @@ inline void TRUSTVect<_TYPE_>::ref_array(TRUSTArray<_TYPE_>& m, int start, int n
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
 {
-  int size_r = (this)->template size_array();
+  int size_r = TRUSTArray<_TYPE_>::size_array();
   if (md_vector.non_nul())
     {
       size_r = md_vector.valeur().get_nb_items_reels();
@@ -243,11 +243,11 @@ inline void TRUSTVect<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
       else size_r = -1; // Cas particulier ou la size_reelle ne veut rien dire
 
       int size_tot = md_vector.valeur().get_nb_items_tot() * line_size_;
-      if (size_tot != (this)->template size_array())
+      if (size_tot != TRUSTArray<_TYPE_>::size_array())
         {
           Cerr << "Internal error in TRUSTVect::set_md_vector(): wrong array size\n"
                << " Needed size = " << md_vector.valeur().get_nb_items_tot() << " x " << line_size_
-               << "\n Actual size = " << (this)->template size_array() << finl;
+               << "\n Actual size = " << TRUSTArray<_TYPE_>::size_array() << finl;
           Process::exit();
         }
       if (line_size_ == 0)
@@ -289,15 +289,15 @@ inline void TRUSTVect<_TYPE_>::lit(Entree& is, int resize_and_read)
   is >> sz;
   if (resize_and_read)
     {
-      if ((this)->template size_array() == 0 && (!get_md_vector().non_nul()))
+      if (TRUSTArray<_TYPE_>::size_array() == 0 && (!get_md_vector().non_nul()))
         resize(sz, Array_base::NOCOPY_NOINIT);
-      else if (sz != (this)->template size_array())
+      else if (sz != TRUSTArray<_TYPE_>::size_array())
         {
           // Si on cherche a relire un tableau de taille inconnue, le tableau doit etre reset() a l'entree. On n'aura pas la structure parallele du tableau !
           Cerr << "Error in TRUSTVect::lit(Entree & is): array has already a structure with incorrect size" << finl;
           Process::exit();
         }
-      is.get((this)->template addr(), sz);
+      is.get(TRUSTArray<_TYPE_>::addr(), sz);
     }
   else
     {

@@ -39,7 +39,7 @@ public:
   TRUSTTabFT(int i, int j)
   {
     TRUSTTab<_TYPE_>::set_smart_resize(1);
-    (this)->template resize(i, j);
+    TRUSTTab<_TYPE_>::resize(i, j);
   }
 
   TRUSTTabFT(const TRUSTTab<_TYPE_>& x)
@@ -80,7 +80,7 @@ public:
   TRUSTArrayFT(int n)
   {
     TRUSTArray<_TYPE_>::set_smart_resize(1);
-    (this)->template resize_array(n);
+    TRUSTArray<_TYPE_>::resize_array(n);
   }
 
   TRUSTArrayFT& operator=(_TYPE_ i)

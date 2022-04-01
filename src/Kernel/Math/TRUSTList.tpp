@@ -84,7 +84,7 @@ inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::add(_TYPE_ value_to_add)
   if (value_to_add < min_data) min_data = value_to_add;
   if (value_to_add > max_data) max_data = value_to_add;
 
-  if (this->template est_vide())
+  if (TRUSTListElem<_TYPE_>::est_vide())
     {
       this->data = value_to_add;
       this->suivant_ = 0;
@@ -92,7 +92,7 @@ inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::add(_TYPE_ value_to_add)
     }
   else
     {
-      if (this->template est_dernier())
+      if (TRUSTListElem<_TYPE_>::est_dernier())
         {
           TRUSTListElem<_TYPE_> *next = new TRUSTListElem<_TYPE_>(value_to_add);
           this->suivant_ = next;
@@ -111,7 +111,7 @@ inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::add(_TYPE_ value_to_add)
 template<typename _TYPE_>
 inline int TRUSTList<_TYPE_>::size() const
 {
-  if (this->template est_vide()) return 0;
+  if (TRUSTListElem<_TYPE_>::est_vide()) return 0;
   int i = 0;
   TRUSTList_Curseur<_TYPE_> curseur(*this);
   while (curseur)
@@ -134,7 +134,7 @@ inline TRUSTList<_TYPE_>& TRUSTList<_TYPE_>::add_if_not(_TYPE_ x)
 template<typename _TYPE_>
 inline int TRUSTList<_TYPE_>::contient(_TYPE_ x) const
 {
-  if (this->template est_vide() || x > max_data || x < min_data) return 0;
+  if (TRUSTListElem<_TYPE_>::est_vide() || x > max_data || x < min_data) return 0;
 
   TRUSTList_Curseur<_TYPE_> curseur(*this);
   while (curseur)
@@ -149,7 +149,7 @@ inline int TRUSTList<_TYPE_>::contient(_TYPE_ x) const
 template<typename _TYPE_>
 inline int TRUSTList<_TYPE_>::rang(_TYPE_ x) const
 {
-  if (this->template est_vide() || x > max_data || x < min_data) return -1;
+  if (TRUSTListElem<_TYPE_>::est_vide() || x > max_data || x < min_data) return -1;
 
   int compteur = 0;
   TRUSTList_Curseur<_TYPE_> curseur(*this);
@@ -207,7 +207,7 @@ int operator ==(const TRUSTList<_TYPE_>& list1, const TRUSTList<_TYPE_>& list2)
 template<typename _TYPE_>
 inline void TRUSTList<_TYPE_>::suppr(_TYPE_ obj)
 {
-  if (this->template valeur() == obj)
+  if (TRUSTListElem<_TYPE_>::valeur() == obj)
     {
       if (this->suivant_)
         {
@@ -267,7 +267,7 @@ inline void TRUSTList<_TYPE_>::calcule_min_max()
 template<typename _TYPE_>
 inline void TRUSTList<_TYPE_>::vide()
 {
-  if (!this->template est_vide())
+  if (!TRUSTListElem<_TYPE_>::est_vide())
     if (this->suivant_) delete this->suivant_;
   this->suivant_ = this;
   dernier_ = this;
