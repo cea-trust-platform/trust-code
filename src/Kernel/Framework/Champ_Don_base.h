@@ -37,90 +37,37 @@
 // .SECTION voir aussi
 //     Champ_base Champ_Don Champ_Fonc
 //////////////////////////////////////////////////////////////////////////////
+
 class Champ_Don_base : public Champ_base
 {
   Declare_base(Champ_Don_base);
 public:
   using Champ_Proto::valeurs;
+
+  void mettre_a_jour(double temps) override;
+  void dimensionner(int, int);
+  int imprime(Sortie&, int) const override;
+  int fixer_nb_valeurs_nodales(int nb_noeuds) override;
+  int reprendre(Entree&) override;
+  int sauvegarder(Sortie&) const override;
+
   DoubleTab& valeurs() override;
   const DoubleTab& valeurs() const override;
-  inline operator DoubleTab& ();
-  inline operator const DoubleTab& () const ;
-  int fixer_nb_valeurs_nodales(int nb_noeuds) override;
-  inline int nb_valeurs_nodales() const override;
-  void dimensionner(int ,int);
-  int imprime(Sortie& , int ) const override;
-  Champ_base& affecter_(const Champ_base& ) override;
-  Champ_base& affecter_compo(const Champ_base& ,int ) override;
-  void mettre_a_jour(double temps) override;
+
+  Champ_base& affecter_(const Champ_base&) override;
+  Champ_base& affecter_compo(const Champ_base&, int) override;
+
   virtual int initialiser(const double temps);
-  int reprendre(Entree& ) override;
-  int sauvegarder(Sortie& ) const override;
+
+  // Description: Renvoie le nombre de degre de liberte par composante: le nombre de noeuds.
+  inline int nb_valeurs_nodales() const override { return valeurs_.dimension(0); }
+
+  // forbidden
+  operator DoubleTab& () = delete;
+  operator const DoubleTab& () const = delete;
 
 protected :
-
   DoubleTab valeurs_;
 };
 
-// Description:
-//    Operateur de cast d'un champ donne en un tableau de valeurs.
-//    Renvoie le tableau des valeurs
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-inline Champ_Don_base::operator DoubleTab& ()
-{
-  return valeurs_;
-}
-
-// Description:
-//    Operateur de cast d'un champ donne en un tableau de valeurs.
-//    Renvoie le tableau des valeurs
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline Champ_Don_base::operator const DoubleTab& () const
-{
-  return valeurs_;
-}
-
-// Description:
-//    Renvoie le nombre de degre de liberte par composante:
-//    le nombre de noeuds.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de degre de liberte par composante
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline int Champ_Don_base::nb_valeurs_nodales() const
-{
-  return valeurs_.dimension(0);
-}
-
-#endif
+#endif /* Champ_Don_base_included */

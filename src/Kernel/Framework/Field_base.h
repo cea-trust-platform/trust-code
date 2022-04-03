@@ -46,101 +46,46 @@ enum Nature_du_champ { scalaire, multi_scalaire, vectoriel };
 class Field_base : public Objet_U
 {
   Declare_base_sans_constructeur(Field_base);
-
 public:
   Field_base();
-  Field_base(const Field_base& other) =default;
+  Field_base(const Field_base& other) = default;
 
   // Methods reimplemented from Objet_U
-  void            nommer(const Nom& ) override;
-  const Nom&      le_nom() const override;
+  void nommer(const Nom&) override;
+  const Nom& le_nom() const override;
 
   // Synonyms management
-  inline const Noms& get_synonyms() const;
-  inline void        add_synonymous(const Nom& nom);
+  inline const Noms& get_synonyms() const { return noms_synonymes_; }
+  inline void add_synonymous(const Nom& nom) { noms_synonymes_.add(nom); }
 
   // Component management
-  inline int              nb_comp() const ;
-  virtual void            fixer_nb_comp(int i);
+  inline int nb_comp() const { return nb_compo_ ; } // Renvoie le nombre de composantes du champ.
+  virtual void fixer_nb_comp(int i);
 
-  const Noms&             noms_compo() const ;
-  const Nom&              nom_compo(int ) const ;
-  const Nom&              nom_compo() const ;
-  virtual const Noms&     fixer_noms_compo(const Noms& ) ;
-  virtual const Nom&      fixer_nom_compo(int, const Nom& ) ;
-  virtual const Nom&      fixer_nom_compo(const Nom& ) ;
+  const Noms& noms_compo() const;
+  const Nom& nom_compo(int) const;
+  const Nom& nom_compo() const;
+  virtual const Noms& fixer_noms_compo(const Noms&);
+  virtual const Nom& fixer_nom_compo(int, const Nom&);
+  virtual const Nom& fixer_nom_compo(const Nom&);
 
   // Physical unit management
-  const Noms&             unites() const ;
-  const Nom&              unite() const ;
-  const Nom&              unite(int ) const ;
-  virtual const Noms&     fixer_unites(const Noms& );
-  virtual const Nom&      fixer_unite(const Nom& );
-  virtual const Nom&      fixer_unite(int i, const Nom&);
+  const Noms& unites() const;
+  const Nom& unite() const;
+  const Nom& unite(int) const;
+  virtual const Noms& fixer_unites(const Noms&);
+  virtual const Nom& fixer_unite(const Nom&);
+  virtual const Nom& fixer_unite(int i, const Nom&);
 
   // Field nature management
-  inline Nature_du_champ  nature_du_champ() const ;
+  inline Nature_du_champ nature_du_champ() const { return nature_; } // Renvoie la nature d'un champ (scalaire, multiscalaire, vectoriel).
   virtual Nature_du_champ fixer_nature_du_champ(Nature_du_champ nat);
 
-
 protected:
-  Nom nom_ ;
-  Noms noms_synonymes_;
-  Noms noms_compo_;
-  Noms unite_;
-  int nb_compo_ ;
+  Nom nom_;
+  Noms noms_synonymes_, noms_compo_, unite_;
+  int nb_compo_;
   Nature_du_champ nature_;
 };
 
-inline const Noms& Field_base::get_synonyms() const
-{
-  return noms_synonymes_;
-}
-
-inline void Field_base::add_synonymous(const Nom& nom)
-{
-  noms_synonymes_.add(nom);
-}
-
-// Description:
-//    Renvoie le nombre de composantes du champ.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de composantes du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline int Field_base::nb_comp() const
-{
-  return nb_compo_ ;
-}
-
-// Description:
-//    Renvoie la nature d'un champ (scalaire, multiscalaire, vectoriel).
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Nature_du_champ
-//    Signification: la nature du champ
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-inline Nature_du_champ Field_base::nature_du_champ() const
-{
-  return nature_;
-}
-
-
-#endif
-
-
+#endif /* Field_base_included */
