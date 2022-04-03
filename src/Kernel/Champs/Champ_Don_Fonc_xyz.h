@@ -23,63 +23,18 @@
 #ifndef Champ_Don_Fonc_xyz_included
 #define Champ_Don_Fonc_xyz_included
 
-#include <Champ_Don_base.h>
-#include <Ref_Domaine.h>
-#include <Vect_Parser_U.h>
-#include <Parser_Eval.h>
+#include <TRUSTChamp_Don_generique.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
 // .DESCRIPTION
 //     class Champ_Don_Fonc_xyz
 //     Cette classe represente un champ de donnees fonction
 //     des variables d'espaces x,y,z. La fonction est fournie
 //        directement dans le jeu de donnees sous la forme d'une expression
 //        mathematique contenant les variables x,y,z (en minuscules)
-//         .......................
-// .SECTION voir aussi
-//     Champ_Don_base
-//////////////////////////////////////////////////////////////////////////////
-class Champ_Don_Fonc_xyz : public Champ_Don_base, public Parser_Eval
+// .SECTION voir aussi : Champ_Don_base
+class Champ_Don_Fonc_xyz : public TRUSTChamp_Don_generique<Champ_Don_Type::XYZ>
 {
-
   Declare_instanciable(Champ_Don_Fonc_xyz);
-
-public:
-
-  Champ_base& affecter(const Champ_base& ch);
-  Champ_base& affecter_(const Champ_base& ) override;
-  DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const override;
-  double       valeur_a_compo(const DoubleVect& position,
-                              int ncomp) const override ;
-  DoubleVect& valeur_a_elem(const DoubleVect& position,
-                            DoubleVect& valeurs,
-                            int le_poly) const override ;
-  double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly,int ncomp) const override;
-
-  DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const override;
-
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override ;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override;
-
-protected:
-
-  REF(Domaine) mon_domaine;
-
-private :
-
-
 };
 
-#endif
-
+#endif /* Champ_Don_Fonc_xyz_included */
