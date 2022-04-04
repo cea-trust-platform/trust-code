@@ -133,7 +133,7 @@ void Op_Grad_CoviMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
           }
 
       /* face -> vf(f) * phi grad p */
-      if (fcl(f, 0) < 2) for (n = 0, m = 0; n < N; n++, m += (M > 1)) for (auto &c : dfgpf[n]) dgp_pb[N * f + n].insert(M * c + m);
+      if (fcl(f, 0) < 2 && f < zone.nb_faces()) for (n = 0, m = 0; n < N; n++, m += (M > 1)) for (auto &c : dfgpf[n]) dgp_pb[N * f + n].insert(M * c + m);
       /* elems amont/aval -> ve(e) * phi grad p */
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (d = 0; d < D; d++)
             if (fs(f) * std::fabs(xv(f, d) - xp(e, d)) > 1e-6 * ve(e)) for (n = 0, m = 0; n < N; n++, m += (M > 1)) for (auto &c : dfgpf[n])
@@ -204,11 +204,11 @@ void Op_Grad_CoviMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
           }
 
       /* face -> vf(f) * phi grad p */
-      if (fcl(f, 0) < 2) for (n = 0, m = 0; n < N; n++, m += (M > 1))
+      if (fcl(f, 0) < 2 && f < zone.nb_faces()) for (n = 0, m = 0; n < N; n++, m += (M > 1))
           {
             double fac = alpha(n) * pf(f);
             secmem(f, n) -= fac * gf(n);
-            if (f < zone.nb_faces()) for (auto &&i_c : dgf_pe[n]) (*mat_p)(N * f + n, M * i_c.first + m) += fac * i_c.second;
+            for (auto &&i_c : dgf_pe[n]) (*mat_p)(N * f + n, M * i_c.first + m) += fac * i_c.second;
             for (auto &&i_c : dgf_gb[n]) dgp_gb[N * f + n][M * i_c.first + m] += fac * i_c.second;
           }
       /* elems amont/aval -> ve(e) * phi grad p */
