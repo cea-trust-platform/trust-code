@@ -32,13 +32,32 @@ do
          echo "s?include/$ff\.h?$dir/$ff\.h?g" >> .tmp$num
          if [ ! -L $file ] || [ "`ls -la $file | $TRUST_Awk '{print $NF}'`" != "../$dir/$file" ]
          then
-            ln -sf ../$dir/$file $file 2>/dev/null        
+            ln -sf ../$dir/$file $file 2>/dev/null
+         fi
+      done
+   fi
+   lh=`cd $TRUST_ROOT/$dir;ls *.tpp 2>/dev/null`
+   if [ ${#lh} != 0 ]
+   then
+      [ "`cat .tmp$num | wc -l`" -gt 900 ] && num=1
+      for file in $lh
+      do
+         ff=${file%.tpp}
+         echo "s?include/$ff\.tpp?$dir/$ff\.tpp?g" >> .tmp$num
+         if [ ! -L $file ] || [ "`ls -la $file | $TRUST_Awk '{print $NF}'`" != "../$dir/$file" ]
+         then
+            ln -sf ../$dir/$file $file 2>/dev/null
          fi
       done
    fi
 done
 # Supprime les liens inutiles
 for file in `find . -name '*'.h -print`
+do
+   [ ! -f $file ] && rm -f $file
+done
+# Supprime les liens inutiles
+for file in `find . -name '*'.tpp -print`
 do
    [ ! -f $file ] && rm -f $file
 done
