@@ -44,6 +44,9 @@
 #include <Debog.h>
 #include <SETS.h>
 
+#include <TablePrinter.h>
+using bprinter::TablePrinter;
+
 #ifndef NDEBUG
 template class std::map<std::string, matrices_t>;
 template class std::map<std::string, Matrice_Morse>;
@@ -265,11 +268,12 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   tabs_t incr, sec; //increments / seconds membres associes
   for (auto &&n_i : inco) incr[n_i.first] = sec[n_i.first] = n_i.second->valeurs();
 
+  TablePrinter tp(&get_Cerr().get_ostream());
   if (!Process::me())
     {
-      fprintf(stderr, "Increments for semi-implicit method :\n  it");
-      for (auto &&n_i : inco) fprintf(stderr, " %11s", n_i.first.c_str());
-      fprintf(stderr, "\n");
+      tp.AddColumn("it", 5);
+      for (auto &&n_i : inco) tp.AddColumn(n_i.first, std::max(12, (int) n_i.first.length()));
+      tp.PrintHeader();
     }
 
   for (it = 0, cv = 0; it < iter_min_ || (!cv && it < iter_max_); it++)
@@ -316,18 +320,12 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       eqn.solv_masse().corriger_solution(incr["vitesse"], incr["vitesse"], 1); //pour CoviMAC : sert a corriger ve
 
 
-      if (!Process::me())
-#ifndef INT_is_64_
-        fprintf(stderr, "%4d", it + 1);
-#else
-        fprintf(stderr, "%4ld", it + 1);
-#endif
+      if (!Process::me()) tp << it + 1;
       for (auto &&n_v : incr)
         {
           double vm = mp_min_vect(n_v.second), vM = mp_max_vect(n_v.second), x = std::fabs(vM) > std::fabs(vm) ? vM : vm;
-          if (!Process::me()) fprintf(stderr, " %11g", x);
+          if (!Process::me()) tp << x;
         }
-      if (!Process::me()) fprintf(stderr, "\n");
 
       /* convergence? */
       cv = corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"], err_a_sum) < crit_conv["alpha"];
@@ -349,7 +347,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
     }
 
-//ha ha ha
+  //ha ha ha
   if (ok && cv)
     {
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
@@ -362,6 +360,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       eq_qdm.pression_pa().futur() = eq_qdm.pression_pa().valeurs() = inco["pression"]->passe();
       ok = 0;
     }
+  if (!Process::me()) tp.PrintFooter();
   return;
 }
 
