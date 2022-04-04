@@ -23,61 +23,18 @@
 #ifndef Champ_Don_lu_included
 #define Champ_Don_lu_included
 
+#include <TRUSTChamp_Don_generique.h>
 
-
-
-#include <Champ_Don_base.h>
-#include <Ref_Domaine.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     class Champ_Don_lu
-//     Cette classe represente un champ de donnees que l'on lit
-//     dans un fichier avec les conventions suivantes:
-//      - n valeurs du champ sont donnees dans le fichier
-//        n doit etre egal au nombre d'elements du maillage
+// .DESCRIPTION : class Champ_Don_lu
+//     Cette classe represente un champ de donnees que l'on lit dans un fichier avec les conventions suivantes:
+//      - n valeurs du champ sont donnees dans le fichier (n doit etre egal au nombre d'elements du maillage)
 //      - le format du fichier est le suivant:
 //         n
-//         .......................
 //         xi yi (zi) ui (vi) (wi)
-//         .......................
-// .SECTION voir aussi
-//     Champ_Don_base
-//////////////////////////////////////////////////////////////////////////////
-class Champ_Don_lu : public Champ_Don_base
+// .SECTION voir aussi : Champ_Don_base
+class Champ_Don_lu : public TRUSTChamp_Don_generique<Champ_Don_Type::LU>
 {
-
   Declare_instanciable(Champ_Don_lu);
-
-public:
-
-  Champ_base& affecter(const Champ_base& ch);
-  DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const override;
-  DoubleVect& valeur_a_elem(const DoubleVect& position,
-                            DoubleVect& valeurs,
-                            int le_poly) const override ;
-  double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly,int ncomp) const override;
-
-  DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const override;
-
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override ;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override;
-
-protected:
-
-  REF(Domaine) mon_domaine;
 };
 
-#endif
-
+#endif /* Champ_Don_lu_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,72 +25,34 @@
 #include <LecFicDiffuse.h>
 #include <Interprete.h>
 
-Implemente_instanciable(Champ_Don_lu,"Champ_Don_lu",Champ_Don_base);
+Implemente_instanciable(Champ_Don_lu,"Champ_Don_lu",TRUSTChamp_Don_generique<Champ_Don_Type::LU>);
 
-// Description:
-//    Imprime les valeurs du champ sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& Champ_Don_lu::printOn(Sortie& os) const
-{
-  const DoubleTab& tab=valeurs();
-  os << tab.size() << " ";
-  for(int i=0; i<tab.size(); i++)
-    os << tab(0,i);
-  return os;
-}
+Sortie& Champ_Don_lu::printOn(Sortie& os) const { return TRUSTChamp_Don_generique::printOn(os); }
 
-
-// Description:
-//    Lit le champ sur un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception: impossible d'ouvrir le fichier
-// Exception: pas de valeur pour l'element lu
-// Effets de bord:
-// Postcondition: le champ est initialise avec les donnees lues
 Entree& Champ_Don_lu::readOn(Entree& is)
 {
   int dim;
   Motcle motlu;
   Nom nom;
   is >> nom;
-  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
-  Domaine& domaine=mon_domaine.valeur();
+
+  Domaine& domaine = interprete_get_domaine(nom);
   const Zone& ma_zone = domaine.zone(0);
   int nb_elems = ma_zone.nb_elem();
-  dim=lire_dimension(is,que_suis_je());
+  dim = lire_dimension(is, que_suis_je());
 
-  dimensionner(nb_elems,dim);
+  dimensionner(nb_elems, dim);
   domaine.creer_tableau_elements(valeurs());
 
   is >> nom;
   LecFicDiffuse fic(nom);
   Cerr << "Open and read the file : " << nom << finl;
 
-  int nb_val_lues=0;
+  int nb_val_lues = 0;
   Nom chaine;
   fic >> chaine;
-  int star_ccm=0;
-  // Est ce un fichier .csv de STAR-CCM  avec en tete:
-  // "champ1 unite" "champ2 unite" ....  "X" "Y" "Z"
+  int star_ccm = 0;
+  // Est ce un fichier .csv de STAR-CCM  avec en tete: "champ1 unite" "champ2 unite" ....  "X" "Y" "Z"
   if (chaine.debute_par("\""))
     {
       star_ccm=1;
@@ -105,7 +67,7 @@ Entree& Champ_Don_lu::readOn(Entree& is)
       if (chaine!="\"X\"")
         {
           Cerr << "Error in the file. There must be one field with " << dim  << " components." << finl;
-          exit();
+          Process::exit();
         }
       fic >> chaine; // "Y"
       fic >> chaine; // "Z"
@@ -132,10 +94,9 @@ Entree& Champ_Don_lu::readOn(Entree& is)
           else
             {
               Nom l;
-              if (line==nb_lines)
-                l="N";
-              else
-                l=(Nom)line;
+              if (line==nb_lines) l="N";
+              else l=(Nom)line;
+
               Cerr << "x["<<l<<"] y["<<l<<"] ";
               if (dimension==3) Cerr << "z["<<l<<"] ";
               for (int k=0; k<dim; k++)
@@ -182,8 +143,7 @@ Entree& Champ_Don_lu::readOn(Entree& is)
       elem2=ma_zone.chercher_elements(x,y,z);
       if ((elem2!=-1) && (elem2<nb_elems))
         {
-          for (int k=0; k<dim; k++)
-            mes_val(elem2,k) = val_lu[k];
+          for (int k=0; k<dim; k++) mes_val(elem2,k) = val_lu[k];
           compteur[elem2] += 1;
         }
     }
@@ -195,327 +155,10 @@ Entree& Champ_Don_lu::readOn(Entree& is)
         Cerr << "Error when using Champ_Don_lu keyword:" << finl;
         Cerr << "There is no value found for the cell number " << num_elem << finl;
         Cerr << "Check your mesh and/or the file " << nom << finl;
-        exit();
+        Process::exit();
       }
 
   mes_val.echange_espace_virtuel();
 
   return is;
-}
-
-
-// Description:
-//    Provoque une erreur: cela n'a pas de sens
-//    de vouloir effectuer une affectation avec un Champ_Don_lu.
-// Precondition:
-// Parametre: Champ_base&
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour: Champ_base&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Champ_base& Champ_Don_lu::affecter(const Champ_base& )
-{
-  Champ_base::affecter_erreur();
-  return *this;
-}
-
-
-// Description:
-//    Renvoie la valeur du champ au point specifie
-//    par ses coordonnees.
-// Precondition:
-// Parametre: DoubleVect& positions
-//    Signification: les coordonnees du point de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& valeurs
-//    Signification: la valeur du champ au point specifie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleVect&
-//    Signification: la valeur du champ au point specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleVect& Champ_Don_lu::valeur_a(const DoubleVect& positions,
-                                   DoubleVect& tab_valeurs) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect le_poly(1);
-  la_zone.chercher_elements(positions,le_poly);
-  return valeur_a_elem(positions,tab_valeurs,le_poly(0));
-}
-
-
-// Description:
-//    Renvoie la valeur du champ au point specifie
-//    par ses coordonnees, en indiquant que ce point est
-//    situe dans un element specifie.
-// Precondition:
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& val
-//    Signification: la valeur du champ au point specifie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: int le_poly
-//    Signification: l'element dans lequel est situe le point de calcul
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleVect&
-//    Signification: la valeur du champ au point specifie
-//    Contraintes:
-// Exception: taille du tableau des valeurs incorrecte
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleVect& Champ_Don_lu::valeur_a_elem(const DoubleVect&,
-                                        DoubleVect& val,
-                                        int le_poly) const
-{
-  if (val.size() != nb_compo_)
-    {
-      Cerr << "Error TRUST in Champ_Don_lu::valeur_a()" << finl;
-      Cerr << "The DoubleVect val doesn't have the correct size" << finl;
-      exit();
-    }
-
-  const DoubleTab& ch = valeurs();
-  for (int k=0; k<nb_compo_; k++)
-    val(k) = ch(le_poly,k);
-
-  return val;
-}
-
-
-// Description:
-//    Renvoie la valeur d'une composante du champ au point specifie
-//    par ses coordonnees, en indiquant que ce point est
-//    situe dans un element specifie.
-// Precondition:
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int le_poly
-//    Signification: l'element dans lequel est situe le point de calcul
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: la valeur de la composante du champ specifiee au
-//                   point specifie
-//    Contraintes:
-// Exception: l'index de la composante du champ specifie est plus grand
-//            que le nombre de composante du champ
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-double Champ_Don_lu::valeur_a_elem_compo(const DoubleVect& ,
-                                         int le_poly,int ncomp) const
-{
-  if (ncomp >= nb_compo_)
-    {
-      Cerr << "Error TRUST in Champ_Don_lu::valeur_a()" << finl;
-      Cerr << "the integer ncomp is upper than the number of field components" << finl;
-      exit();
-    }
-
-  return valeurs()(le_poly,ncomp);
-}
-
-
-// Description:
-//    Renvoie les valeurs du champ aux points specifies
-//    par leurs coordonnees.
-// Precondition:
-// Parametre: DoubleTab& positions
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& valeurs
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleTab& Champ_Don_lu::valeur_aux(const DoubleTab& positions,
-                                    DoubleTab& tab_valeurs) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect les_polys(la_zone.nb_elem());
-  la_zone.chercher_elements(positions,les_polys);
-  return valeur_aux_elems(positions,les_polys,tab_valeurs);
-}
-
-
-// Description:
-//    Renvoie les valeurs d'une composante du champ aux points specifies
-//    par leurs coordonnees.
-// Precondition:
-// Parametre: DoubleVect& positions
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& valeurs
-//    Signification: le tableau des valeurs de la composante du champ
-//                   aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleVect&
-//    Signification: le tableau des valeurs de la composante du champ
-//                   aux points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleVect& Champ_Don_lu::valeur_aux_compo(const DoubleTab& positions,
-                                           DoubleVect& tab_valeurs,
-                                           int ncomp) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect les_polys(la_zone.nb_elem());
-  la_zone.chercher_elements(positions,les_polys);
-  return valeur_aux_elems_compo(positions,les_polys,tab_valeurs,ncomp);
-}
-
-
-// Description:
-//    Renvoie les valeurs du champ aux points specifies
-//    par leurs coordonnees, en indiquant que les points de
-//    calculs sont situes dans les elements indiques.
-// Precondition: le nombre de valeurs demandes doit etre
-//               egal aux nombre d'elements specifies
-// Precondition: la dernier dimension du tableau des valeurs
-//               doit etre egal au nombre de composante du champ
-// Parametre: DoubleTab&
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: IntVect& les_polys
-//    Signification: le tableau des elements dans lesquels sont
-//                   situes les points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& val
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Contraintes:
-// Exception: le tableau des valeurs a plus de 2 entrees (rang du tableau > 2)
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleTab& Champ_Don_lu::valeur_aux_elems(const DoubleTab& ,
-                                          const IntVect& les_polys,
-                                          DoubleTab& val) const
-{
-  if (val.nb_dim() > 2)
-    {
-      Cerr << "Error TRUST in Champ_Don_lu::valeur_aux_elems()" << finl;
-      Cerr << "The DoubleTab val don't have 2 entries" << finl;
-      exit();
-    }
-
-  int p;
-  const DoubleTab& ch = valeurs();
-  val = 0.;
-
-  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-    if ((p = les_polys(rang_poly)) != -1)
-      for(int n = 0; n < nb_compo_; n++)
-        val(rang_poly, n) = ch(p, n);
-
-  return val;
-}
-
-
-// Description:
-//    Renvoie les valeurs d'une composante du champ aux points specifies
-//    par leurs coordonnees, en indiquant que les points de
-//    calculs sont situes dans les elements indiques.
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: IntVect& les_polys
-//    Signification: le tableau des elements dans lesquels sont
-//                   situes les points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& val
-//    Signification: le tableau des valeurs de la composante du champ
-//                   aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleVect&
-//    Signification: le tableau des valeurs de la composante du champ
-//                   aux points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleVect& Champ_Don_lu::valeur_aux_elems_compo(const DoubleTab& ,
-                                                 const IntVect& les_polys,
-                                                 DoubleVect& val,
-                                                 int ncomp) const
-{
-  assert(val.size() == les_polys.size());
-  int le_poly;
-
-  const DoubleTab& ch = valeurs();
-
-  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-    {
-      le_poly=les_polys(rang_poly);
-      if (le_poly == -1)
-        val(rang_poly) = 0;
-      else
-        val(rang_poly) = ch(le_poly,ncomp);
-    }
-  return val;
 }

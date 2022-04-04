@@ -32,13 +32,38 @@ Sortie& TRUSTChamp_Don_generique<_TYPE_>::printOn(Sortie& os) const
   return os;
 }
 
+template <Champ_Don_Type _TYPE_>
+void TRUSTChamp_Don_generique<_TYPE_>::mettre_a_jour_positions(DoubleTab& positions)
+{
+  double x, y, z;
+  const int nb_elems = mon_domaine->zone(0).nb_elem();
+  const IntTab& les_Polys = mon_domaine->zone(0).les_elems();
+  for (int num_elem = 0; num_elem < nb_elems; num_elem++)
+    {
+      x = y = z = 0;
+      int nb_som = 0;
+      for (int s = 0, num_som; s < les_Polys.dimension(1); s++)
+        if ((num_som = les_Polys(num_elem, s)) >= 0)
+          {
+            x += mon_domaine->coord(num_som, 0);
+            y += mon_domaine->coord(num_som, 1);
+            if (dimension > 2) z += mon_domaine->coord(num_som, 2);
+            nb_som++;
+          }
+      positions(num_elem, 0) = x / nb_som;
+      positions(num_elem, 1) = y / nb_som;
+      if (dimension > 2) positions(num_elem, 2) = z / nb_som;
+    }
+}
+
 // Description: Renvoie la valeur du champ au point specifie par ses coordonnees.
 // Parametre: DoubleVect& x
 //    Signification: les coordonnees du point de calcul
 // Parametre: DoubleVect& val
 //    Signification: la valeur du champ au point specifie
-template <Champ_Don_Type _TYPE_>
-DoubleVect& TRUSTChamp_Don_generique<_TYPE_>::valeur_a(const DoubleVect& x, DoubleVect& val) const
+template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
+enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val) const
 {
   static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
   if (val.size() != nb_compo_)
@@ -52,11 +77,21 @@ DoubleVect& TRUSTChamp_Don_generique<_TYPE_>::valeur_a(const DoubleVect& x, Doub
   return val;
 }
 
+template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
+enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val) const
+{
+  const Zone& la_zone = mon_domaine->zone(0);
+  IntVect le_poly(1);
+  la_zone.chercher_elements(x,le_poly);
+  return valeur_a_elem(x,val,le_poly(0));
+}
+
 template <Champ_Don_Type _TYPE_>
 double TRUSTChamp_Don_generique<_TYPE_>::valeur_a_compo(const DoubleVect& x, int ncomp) const
 {
-  static constexpr bool IS_TXYZ = (_TYPE_ == Champ_Don_Type::TXYZ);
-  if (IS_TXYZ) return Champ_Don_base::valeur_a_compo(x, ncomp); // appel simple !
+  static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
+  if (!IS_XYZ) return Champ_Don_base::valeur_a_compo(x, ncomp); // appel simple si TXYZ ou LU !
 
   if (ncomp > nb_compo_)
     {
@@ -83,11 +118,29 @@ double TRUSTChamp_Don_generique<_TYPE_>::valeur_a_compo(const DoubleVect& x, int
 // Parametre: DoubleVect& val
 //    Signification: la valeur du champ au point specifie
 // Parametre: int le_poly
-//    Signification: l'element dans lequel est situe le point de calcul (inutile)
-template <Champ_Don_Type _TYPE_>
-DoubleVect& TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem(const DoubleVect& x, DoubleVect& val, int ) const
+//    Signification: l'element dans lequel est situe le point de calcul
+template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
+enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_(const DoubleVect& x, DoubleVect& val, int ) const
 {
   return valeur_a(x,val);
+}
+
+template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
+enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_(const DoubleVect& , DoubleVect& val, int le_poly) const
+{
+  if (val.size() != nb_compo_)
+    {
+      Cerr << "Error TRUST in TRUSTChamp_Don_generique<LU>::valeur_a_elem_()" << finl;
+      Cerr << "The DoubleVect val doesn't have the correct size" << finl;
+      Process::exit();
+    }
+
+  const DoubleTab& ch = valeurs();
+  for (int k = 0; k < nb_compo_; k++) val(k) = ch(le_poly, k);
+
+  return val;
 }
 
 // Description:
@@ -96,37 +149,35 @@ DoubleVect& TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem(const DoubleVect& x,
 // Parametre: DoubleVect&
 //    Signification: les coordonnees du point de calcul
 // Parametre: int le_poly
-//    Signification: l'element dans lequel est situe le point de calcul (inutile)
+//    Signification: l'element dans lequel est situe le point de calcul
 // Parametre: int ncomp
 //    Signification: l'index de la composante du champ a calculer
 template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
-enable_if_t<T == Champ_Don_Type::XYZ, double>
-TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int , int ncomp) const
+enable_if_t<T != Champ_Don_Type::TXYZ, double> /* XYZ ou LU */
+TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int le_poly, int ncomp) const
 {
+  static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
   if (ncomp > nb_compo_)
     {
-      Cerr << "Error TRUST in TRUSTChamp_Don_generique<XYZ>::valeur_a_elem_compo()" << finl;
+      Cerr << "Error TRUST in TRUSTChamp_Don_generique<XYZ|LU>::valeur_a_elem_compo()" << finl;
       Cerr << "the integer ncomp is upper than the number of field components !" << finl;
       Process::exit();
     }
-  return valeur_a_compo(x,ncomp);
+  return IS_XYZ ? valeur_a_compo(x,ncomp) : valeurs()(le_poly,ncomp) /* LU */;
 }
 
 template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
 enable_if_t<T == Champ_Don_Type::TXYZ, double>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int , int ncomp) const
 {
-  double val;
   DoubleTab positions(1,dimension);
   DoubleVect val_fct(1);
-  double tps = temps();
   positions(0,0) = x(0);
   positions(0,1) = x(1);
-  if (dimension>2)
-    positions(0,2) = x(2);
+  if (dimension>2) positions(0,2) = x(2);
 
-  eval_fct(positions,tps,val_fct,ncomp);
-  val = val_fct(0);
+  eval_fct(positions,temps(),val_fct,ncomp);
+  double val = val_fct(0);
 
   return val;
 }
@@ -166,6 +217,16 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val
   return val;
 }
 
+template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
+enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val) const
+{
+  const Zone& la_zone = mon_domaine->zone(0);
+  IntVect les_polys(la_zone.nb_elem());
+  la_zone.chercher_elements(x,les_polys);
+  return valeur_aux_elems(x,les_polys,val);
+}
+
 // Description:
 //    Renvoie les valeurs d'une composante du champ aux points specifies par leurs coordonnees.
 // Parametre: DoubleVect& x
@@ -174,12 +235,23 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val
 //    Signification: le tableau des valeurs de la composante du champ aux points specifies
 // Parametre: int ncomp
 //    Signification: l'index de la composante du champ a calculer
-template <Champ_Don_Type _TYPE_>
-DoubleVect& TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo(const DoubleTab& x, DoubleVect& val, int ncomp) const
+template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
+enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo_(const DoubleTab& x, DoubleVect& val, int ncomp) const
 {
   static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
   IS_XYZ ? eval_fct(x,val,ncomp) : eval_fct(x,temps(),val,ncomp);
   return val;
+}
+
+template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
+enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo_(const DoubleTab& x, DoubleVect& val, int ncomp) const
+{
+  const Zone& la_zone = mon_domaine->zone(0);
+  IntVect les_polys(la_zone.nb_elem());
+  la_zone.chercher_elements(x,les_polys);
+  return valeur_aux_elems_compo(x,les_polys,val,ncomp);
 }
 
 // Description:
@@ -193,10 +265,33 @@ DoubleVect& TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo(const DoubleTab& 
 //    Signification: le tableau des elements dans lesquels sont situes les points de calcul (inutile)
 // Parametre: DoubleTab& val
 //    Signification: le tableau des valeurs du champ aux points specifies
-template <Champ_Don_Type _TYPE_>
-DoubleTab& TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems(const DoubleTab& x, const IntVect&, DoubleTab& val) const
+template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
+enable_if_t<T != Champ_Don_Type::LU, DoubleTab&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_(const DoubleTab& x, const IntVect&, DoubleTab& val) const
 {
   return valeur_aux(x, val);
+}
+
+template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
+enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_(const DoubleTab&, const IntVect& les_polys, DoubleTab& val) const
+{
+  if (val.nb_dim() > 2)
+    {
+      Cerr << "Error TRUST in TRUSTChamp_Don_generique<LU>::valeur_aux_elems_()" << finl;
+      Cerr << "The DoubleTab val don't have 2 entries !" << finl;
+      Process::exit();
+    }
+
+  int p;
+  const DoubleTab& ch = valeurs();
+  val = 0.;
+
+  for (int rang_poly = 0; rang_poly < les_polys.size(); rang_poly++)
+    if ((p = les_polys(rang_poly)) != -1)
+      for (int n = 0; n < nb_compo_; n++) val(rang_poly, n) = ch(p, n);
+
+  return val;
 }
 
 // Description:
@@ -205,40 +300,32 @@ DoubleTab& TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems(const DoubleTab& x
 // Parametre: DoubleTab& x
 //    Signification: le tableau des coordonnees des points de calcul
 // Parametre: IntVect& les_polys
-//    Signification: le tableau des elements dans lesquels sont situes les points de calcul (inutile)
+//    Signification: le tableau des elements dans lesquels sont situes les points de calcul
 // Parametre: DoubleVect& val
 //    Signification: le tableau des valeurs de la composante du champ aux points specifies
 // Parametre: int ncomp
 //    Signification: l'index de la composante du champ a calculer
-template <Champ_Don_Type _TYPE_>
-DoubleVect& TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_compo(const DoubleTab& x, const IntVect&, DoubleVect& val, int ncomp) const
+template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
+enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_compo_(const DoubleTab& x, const IntVect&, DoubleVect& val, int ncomp) const
 {
   return valeur_aux_compo(x, val, ncomp);
 }
 
-// methode protected
-template <Champ_Don_Type _TYPE_>
-void TRUSTChamp_Don_generique<_TYPE_>::mettre_a_jour_positions(DoubleTab& positions)
+template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
+enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
+TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_compo_(const DoubleTab& , const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {
-  double x, y, z;
-  const int nb_elems = mon_domaine->zone(0).nb_elem();
-  const IntTab& les_Polys = mon_domaine->zone(0).les_elems();
-  for (int num_elem = 0; num_elem < nb_elems; num_elem++)
+  assert(val.size() == les_polys.size());
+  const DoubleTab& ch = valeurs();
+
+  for (int rang_poly = 0; rang_poly < les_polys.size(); rang_poly++)
     {
-      x = y = z = 0;
-      int nb_som = 0;
-      for (int s = 0, num_som; s < les_Polys.dimension(1); s++)
-        if ((num_som = les_Polys(num_elem, s)) >= 0)
-          {
-            x += mon_domaine->coord(num_som, 0);
-            y += mon_domaine->coord(num_som, 1);
-            if (dimension > 2) z += mon_domaine->coord(num_som, 2);
-            nb_som++;
-          }
-      positions(num_elem, 0) = x / nb_som;
-      positions(num_elem, 1) = y / nb_som;
-      if (dimension > 2) positions(num_elem, 2) = z / nb_som;
+      int le_poly = les_polys(rang_poly);
+      if (le_poly == -1) val(rang_poly) = 0;
+      else val(rang_poly) = ch(le_poly, ncomp);
     }
+  return val;
 }
 
 #endif /* TRUSTChamp_Don_generique_TPP_included */

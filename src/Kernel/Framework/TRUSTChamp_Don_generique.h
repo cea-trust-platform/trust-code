@@ -29,7 +29,7 @@
 #include <Parser_Eval.h>
 #include <Domaine.h>
 
-enum class Champ_Don_Type { XYZ , TXYZ };
+enum class Champ_Don_Type { XYZ , TXYZ , LU };
 template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
 
 template <Champ_Don_Type _TYPE_>
@@ -54,16 +54,25 @@ public:
 
   Champ_base& affecter_(const Champ_base& ch) override
   {
+    static constexpr bool IS_LU = (_TYPE_ == Champ_Don_Type::LU);
+    if (IS_LU) return Champ_Don_base::affecter_(ch); // throw
+
     if (sub_type(Champ_Uniforme, ch)) valeurs() = ch.valeurs()(0, 0);
     else valeurs() = ch.valeurs();
     return *this;
   }
 
-  DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override;
+  DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override
+  {
+    return valeur_a_<_TYPE_>(position,valeurs);
+  }
 
   double valeur_a_compo(const DoubleVect& position, int ncomp) const override;
 
-  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const override;
+  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const override
+  {
+    return valeur_a_elem_<_TYPE_>(position,valeurs,le_poly);
+  }
 
   double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override
   {
@@ -75,18 +84,39 @@ public:
     return valeur_aux_<_TYPE_>(positions,valeurs);
   }
 
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override;
+  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override
+  {
+    return valeur_aux_compo_<_TYPE_>(positions,valeurs,ncomp);
+  }
 
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override
+  {
+    return valeur_aux_elems_<_TYPE_>(positions,les_polys,valeurs);
+  }
 
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override
+  {
+    return valeur_aux_elems_compo_<_TYPE_>(positions,les_polys,valeurs,ncomp);
+  }
 
 protected:
   REF(Domaine) mon_domaine;
   void mettre_a_jour_positions(DoubleTab& );
 
 private:
-  template <Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::XYZ, double>
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
+  valeur_a_(const DoubleVect& position, DoubleVect& valeurs) const;
+
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
+  valeur_a_(const DoubleVect& position, DoubleVect& valeurs) const;
+
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
+  valeur_a_elem_(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const;
+
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
+  valeur_a_elem_(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const;
+
+  template <Champ_Don_Type T = _TYPE_> enable_if_t<T != Champ_Don_Type::TXYZ, double>
   valeur_a_elem_compo_(const DoubleVect& position, int le_poly, int ncomp) const;
 
   template <Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::TXYZ, double>
@@ -97,6 +127,27 @@ private:
 
   template <Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::TXYZ, DoubleTab&>
   valeur_aux_(const DoubleTab& positions, DoubleTab& valeurs) const;
+
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
+  valeur_aux_(const DoubleTab& positions, DoubleTab& valeurs) const;
+
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
+  valeur_aux_compo_(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const;
+
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
+  valeur_aux_compo_(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const;
+
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T != Champ_Don_Type::LU, DoubleTab&>
+  valeur_aux_elems_(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
+
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
+  valeur_aux_elems_(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
+
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
+  valeur_aux_elems_compo_(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;
+
+  template<Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
+  valeur_aux_elems_compo_(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;
 };
 
 #include <TRUSTChamp_Don_generique.tpp>
