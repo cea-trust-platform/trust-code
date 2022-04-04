@@ -98,7 +98,7 @@ inline Turbulence_paroi_scal& Turbulence_paroi_scal::operator=(const Turbulence_
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: int
+// Retour:
 //    Signification: code de retour propage
 //    Contraintes:
 // Exception:

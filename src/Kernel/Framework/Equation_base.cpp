@@ -374,7 +374,7 @@ int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: Entree&
+// Retour:
 //    Signification: le flot d'entree modifie
 //    Contraintes:
 // Exception:

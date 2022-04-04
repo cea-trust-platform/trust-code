@@ -489,7 +489,7 @@ void Mod_turb_hyd_base::get_noms_champs_postraitables(Noms& nom,Option opt) cons
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: int
+// Retour:
 //    Signification: renvoie toujours 1
 //    Contraintes:
 // Exception:
@@ -587,7 +587,7 @@ int Mod_turb_hyd_base::reprendre(Entree& is)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: int
+// Retour:
 //    Signification:
 //    Contraintes:
 // Exception:

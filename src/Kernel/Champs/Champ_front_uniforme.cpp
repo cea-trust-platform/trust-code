@@ -109,7 +109,7 @@ Champ_front_base& Champ_front_uniforme::affecter_(const Champ_front_base& ch)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: DoubleTab&
+// Retour:
 //    Signification: le tableau des valeurs du champ
 //    Contraintes:
 // Exception:

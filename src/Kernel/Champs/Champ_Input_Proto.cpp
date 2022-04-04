@@ -45,7 +45,7 @@ using ICoCo::WrongArgument;
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces: entree/sortie
-// Retour: Entree&
+// Retour:
 //    Signification: le flot d'entre modifie
 //    Contraintes:
 // Exception: pas d'accolade ouvrante en debut de format

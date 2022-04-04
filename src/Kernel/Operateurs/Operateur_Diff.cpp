@@ -239,7 +239,7 @@ const Champ_base& Operateur_Diff::diffusivite() const
 //    Valeurs par defaut:
 //    Contraintes: reference constante
 //    Acces: entree
-// Retour: Champ_Don&
+// Retour:
 //    Signification: le champ representant la diffusivite
 //    Contraintes:
 // Exception:

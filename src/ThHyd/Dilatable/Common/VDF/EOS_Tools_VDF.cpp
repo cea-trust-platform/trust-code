@@ -144,7 +144,7 @@ const DoubleTab& EOS_Tools_VDF::rho_discvit() const
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: DoubleTab&
+// Retour:
 //    Signification: div(u) discretise par face
 //    Contraintes:
 // Exception:
@@ -183,7 +183,7 @@ void EOS_Tools_VDF::divu_discvit(const DoubleTab& secmem1, DoubleTab& secmem2)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: DoubleTab&
+// Retour:
 //    Signification: rho discretise par face
 //    Contraintes:
 // Exception:

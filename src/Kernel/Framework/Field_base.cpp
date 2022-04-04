@@ -87,7 +87,7 @@ void Field_base::nommer(const Nom& name)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: void
+// Retour:
 // Exception:
 // Effets de bord:
 // Postcondition: la nature du champ peut changer, il peut devenir vectoriel

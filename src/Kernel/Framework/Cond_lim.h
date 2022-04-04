@@ -247,7 +247,7 @@ inline void Cond_lim::completer()
 //    Valeurs par defaut:
 //    Contraintes: reference constante
 //    Acces: entree
-// Retour: int
+// Retour: 
 //    Signification: 1 si compatible 0 sinon.
 //    Contraintes:
 // Exception:

@@ -58,7 +58,7 @@ Entree& EOS_Tools_VEF::readOn(Entree& is)
 //    Valeurs par defaut:
 //    Contraintes: reference constante
 //    Acces: entree
-// Retour: double
+// Retour:
 //    Signification:
 //    Contraintes:
 // Exception:
@@ -184,7 +184,7 @@ void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: DoubleTab&
+// Retour:
 //    Signification: rho discretise par face
 //    Contraintes:
 // Exception:

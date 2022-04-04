@@ -503,20 +503,6 @@ inline const DoubleTab& Domaine::coord_sommets() const
 }
 
 // Description:
-//    Renvoie le nombre de sommets du domaine.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: le nombre de sommets du domaine
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-// Description:
 //    Fixe epsilon,
 //    Si 2 points d'un domaine sont separes d'une distance
 //    inferieure ou egale a epsilon ils sont consideres egaux.

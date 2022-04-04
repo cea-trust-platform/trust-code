@@ -77,7 +77,7 @@ Entree& Cond_lim::readOn(Entree& s )
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces: entree
-// Retour: Cond_lim&
+// Retour:
 //    Signification:
 //    Contraintes:
 // Exception:

@@ -78,7 +78,7 @@ Entree& Assembleur::readOn(Entree& is)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: int
+// Retour:
 //    Signification:
 //    Contraintes:
 // Exception:
@@ -138,7 +138,7 @@ int Assembleur::assembler_QC(const DoubleTab& rho, Matrice& mat)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: int
+// Retour:
 //    Signification:
 //    Contraintes:
 // Exception:
@@ -158,7 +158,7 @@ void Assembleur::associer_zone_dis_base(const Zone_dis_base& zdis)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: int
+// Retour:
 //    Signification:
 //    Contraintes:
 // Exception:

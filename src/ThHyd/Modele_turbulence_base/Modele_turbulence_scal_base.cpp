@@ -281,7 +281,7 @@ int Modele_turbulence_scal_base::sauvegarder(Sortie& os) const
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: int
+// Retour:
 //    Signification:
 //    Contraintes:
 // Exception:
@@ -417,7 +417,7 @@ int Modele_turbulence_scal_base::limpr_nusselt(double temps_courant, double temp
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: int
+// Retour:
 //    Signification: renvoie toujours 1
 //    Contraintes:
 // Exception:

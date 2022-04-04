@@ -99,20 +99,6 @@ Entree& Raccord_distant_homogene::readOn(Entree& s)
   return s;
 }
 
-// Description:
-//    Constructeur
-// Precondition:
-// Parametre: Aucun
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Aucun
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Raccord_distant_homogene::Raccord_distant_homogene() : est_initialise_(0),e_(0)
 {}
 

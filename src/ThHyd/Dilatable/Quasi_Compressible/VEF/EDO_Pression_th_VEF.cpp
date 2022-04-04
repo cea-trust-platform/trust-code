@@ -61,7 +61,7 @@ Entree& EDO_Pression_th_VEF::readOn(Entree& is)
 //    Valeurs par defaut:
 //    Contraintes: reference constante
 //    Acces: entree
-// Retour: double
+// Retour:
 //    Signification:
 //    Contraintes:
 // Exception:

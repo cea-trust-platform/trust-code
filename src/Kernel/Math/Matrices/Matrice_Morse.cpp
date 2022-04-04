@@ -2258,7 +2258,7 @@ int Matrice_Morse_test()
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: void
+// Retour:
 //    Signification:
 //    Contraintes:
 // Exception:

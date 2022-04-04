@@ -308,7 +308,7 @@ void main_pilote_icoco_2(Probleme_U& pb_to_solve)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces: entree/sortie
-// Retour: Entree&
+// Retour:
 //    Signification: le flot d'entree modifie
 //    Contraintes:
 // Exception:

@@ -124,7 +124,7 @@ inline int Turbulence_paroi::init_lois_paroi()
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: int
+// Retour:
 //    Signification: code de retour propage
 //    Contraintes:
 // Exception:
@@ -145,7 +145,7 @@ inline void Turbulence_paroi::imprimer_ustar(Sortie& os) const
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour: int
+// Retour:
 //    Signification: code de retour propage
 //    Contraintes:
 // Exception:
@@ -160,18 +160,6 @@ inline void Turbulence_paroi::imprimer_ustar_mean_only(Sortie& os, int boundarie
 // Description:
 //    Appel a l'objet sous-jacent.
 //    Imprime la premiere ligne du fichier ***ustar_mean_only.out
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: int
-//    Signification: code de retour propage
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 inline void Turbulence_paroi::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_ ) const
 {
   valeur().imprimer_premiere_ligne_ustar(boundaries_, boundaries_list, nom_fichier_);
