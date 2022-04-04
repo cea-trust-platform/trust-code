@@ -216,7 +216,48 @@ namespace ICoCo
 
   TrioField& TrioField::operator=(const TrioField& NewField)
   {
-    throw ICoCo::NotImplemented("_", "TrioField::(assignment operator)");
+    // why ? throw ICoCo::NotImplemented("_", "TrioField::(assignment operator)");
+
+    clear();
+
+    _type=NewField._type;
+    _mesh_dim=NewField._mesh_dim;
+    _space_dim=NewField._space_dim;
+    _nbnodes=NewField._nbnodes;
+    _nodes_per_elem=NewField._nodes_per_elem;
+    _nb_elems=NewField._nb_elems;
+    _itnumber=NewField._itnumber;
+    _time1=NewField._time1;
+    _time2=NewField._time2;
+    _nb_field_components=NewField._nb_field_components;
+
+    if (!NewField._connectivity)
+      _connectivity=0;
+    else
+      {
+        _connectivity=new int[_nodes_per_elem*_nb_elems];
+        memcpy( _connectivity,NewField._connectivity,_nodes_per_elem*_nb_elems*sizeof(int));
+      }
+
+    if (!NewField._coords)
+      _coords=0;
+    else
+      {
+        _coords=new double[_nbnodes*_space_dim];
+        memcpy( _coords,NewField._coords,_nbnodes*_space_dim*sizeof(double));
+      }
+
+    //Copie des valeurs du champ
+    _has_field_ownership=NewField._has_field_ownership;
+    if (_has_field_ownership)
+      {
+        _field=new double[nb_values()*_nb_field_components];
+        memcpy(_field,NewField._field,nb_values()*_nb_field_components*sizeof(double));
+      }
+    else
+      _field=NewField._field;
+
+    return(*this);
   }
 
 }  // end namespace ICoCo
