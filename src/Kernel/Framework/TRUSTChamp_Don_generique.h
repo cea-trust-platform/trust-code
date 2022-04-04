@@ -38,6 +38,8 @@ class TRUSTChamp_Don_generique : public Champ_Don_base, public Parser_Eval
 public:
 
   Sortie& printOn(Sortie& os) const override;
+  void mettre_a_jour(double) override;
+  double valeur_a_compo(const DoubleVect& position, int ncomp) const override;
 
   Domaine& interprete_get_domaine(const Nom& nom)
   {
@@ -64,34 +66,32 @@ public:
 
   DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override
   {
-    return valeur_a_<_TYPE_>(position,valeurs);
+    return valeur_a_<_TYPE_>(position, valeurs);
   }
-
-  double valeur_a_compo(const DoubleVect& position, int ncomp) const override;
 
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const override
   {
-    return valeur_a_elem_<_TYPE_>(position,valeurs,le_poly);
+    return valeur_a_elem_<_TYPE_>(position, valeurs, le_poly);
   }
 
   double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override
   {
-    return valeur_a_elem_compo_<_TYPE_>(position,le_poly,ncomp);
+    return valeur_a_elem_compo_<_TYPE_>(position, le_poly, ncomp);
   }
 
   DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override
   {
-    return valeur_aux_<_TYPE_>(positions,valeurs);
+    return valeur_aux_<_TYPE_>(positions, valeurs);
   }
 
   DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override
   {
-    return valeur_aux_compo_<_TYPE_>(positions,valeurs,ncomp);
+    return valeur_aux_compo_<_TYPE_>(positions, valeurs, ncomp);
   }
 
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override
   {
-    return valeur_aux_elems_<_TYPE_>(positions,les_polys,valeurs);
+    return valeur_aux_elems_<_TYPE_>(positions, les_polys, valeurs);
   }
 
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override
@@ -104,6 +104,9 @@ protected:
   void mettre_a_jour_positions(DoubleTab& );
 
 private:
+  /*
+   * SFINAE template functions : can not be implemented directly on overrided functions ==> methodes internes ;-)
+   */
   template<Champ_Don_Type T = _TYPE_> enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
   valeur_a_(const DoubleVect& position, DoubleVect& valeurs) const;
 
@@ -122,10 +125,7 @@ private:
   template <Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::TXYZ, double>
   valeur_a_elem_compo_(const DoubleVect& position, int le_poly, int ncomp) const;
 
-  template <Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::XYZ, DoubleTab&>
-  valeur_aux_(const DoubleTab& positions, DoubleTab& valeurs) const;
-
-  template <Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::TXYZ, DoubleTab&>
+  template <Champ_Don_Type T = _TYPE_> enable_if_t<T != Champ_Don_Type::LU, DoubleTab&>
   valeur_aux_(const DoubleTab& positions, DoubleTab& valeurs) const;
 
   template<Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
@@ -149,6 +149,12 @@ private:
   template<Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
   valeur_aux_elems_compo_(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;
 };
+
+inline void erreur_champ_(const char *nom_methode)
+{
+  Cerr << "Error in TRUSTChamp_Don_generique<_TYPE_> !!! Method " << nom_methode << finl;
+  Process::exit();
+}
 
 #include <TRUSTChamp_Don_generique.tpp>
 

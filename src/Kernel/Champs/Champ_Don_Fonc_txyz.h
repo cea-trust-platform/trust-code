@@ -35,8 +35,6 @@
 class Champ_Don_Fonc_txyz : public TRUSTChamp_Don_generique<Champ_Don_Type::TXYZ>
 {
   Declare_instanciable(Champ_Don_Fonc_txyz);
-public:
-  void mettre_a_jour(double) override;
 };
 
 #endif /* Champ_Don_Fonc_txyz_included */

@@ -33,6 +33,43 @@ Sortie& TRUSTChamp_Don_generique<_TYPE_>::printOn(Sortie& os) const
 }
 
 template <Champ_Don_Type _TYPE_>
+void TRUSTChamp_Don_generique<_TYPE_>::mettre_a_jour(double t)
+{
+  static constexpr bool IS_TXYZ = (_TYPE_ == Champ_Don_Type::TXYZ);
+
+  if (!IS_TXYZ) /* XYZ ou LU */
+    Champ_Don_base::mettre_a_jour(t);
+  else
+    {
+      changer_temps(t);
+      int nb_elems = mon_domaine->zone(0).nb_elem();
+      DoubleTab& mes_val = valeurs();
+      DoubleTab positions(nb_elems, dimension);
+      mettre_a_jour_positions(positions);
+      eval_fct(positions, temps(), mes_val);
+      mes_val.echange_espace_virtuel();
+    }
+}
+
+template <Champ_Don_Type _TYPE_>
+double TRUSTChamp_Don_generique<_TYPE_>::valeur_a_compo(const DoubleVect& x, int ncomp) const
+{
+  static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
+  if (!IS_XYZ) return Champ_Don_base::valeur_a_compo(x, ncomp); // appel simple si TXYZ ou LU !
+
+  if (ncomp > nb_compo_) erreur_champ_(__func__); // asking ncomp > nb_compo_ ?????
+
+  DoubleTab positions(1, dimension);
+  DoubleTab val_fct(1);
+  positions(0, 0) = x(0);
+  positions(0, 1) = x(1);
+  if (dimension > 2) positions(0, 2) = x(2);
+
+  eval_fct(positions, val_fct, ncomp);
+  return val_fct(0);
+}
+
+template <Champ_Don_Type _TYPE_>
 void TRUSTChamp_Don_generique<_TYPE_>::mettre_a_jour_positions(DoubleTab& positions)
 {
   double x, y, z;
@@ -66,12 +103,7 @@ enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val) const
 {
   static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
-  if (val.size() != nb_compo_)
-    {
-      Cerr << "Error TRUST in TRUSTChamp_Don_generique<_TYPE_>::valeur_a()" << finl;
-      Cerr << "The DoubleVect val doesn't have the correct size !" << finl;
-      Process::exit();
-    }
+  if (val.size() != nb_compo_) erreur_champ_(__func__); // DoubleVect val doesn't have the correct size
 
   IS_XYZ ? eval_fct(x,val) : eval_fct(x,temps(),val);
   return val;
@@ -85,29 +117,6 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val
   IntVect le_poly(1);
   la_zone.chercher_elements(x,le_poly);
   return valeur_a_elem(x,val,le_poly(0));
-}
-
-template <Champ_Don_Type _TYPE_>
-double TRUSTChamp_Don_generique<_TYPE_>::valeur_a_compo(const DoubleVect& x, int ncomp) const
-{
-  static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
-  if (!IS_XYZ) return Champ_Don_base::valeur_a_compo(x, ncomp); // appel simple si TXYZ ou LU !
-
-  if (ncomp > nb_compo_)
-    {
-      Cerr << "Error TRUST in TRUSTChamp_Don_generique<XYZ>::valeur_a_compo()" << finl;
-      Cerr << "the integer ncomp is upper than the number of field components !" << finl;
-      Process::exit();
-    }
-
-  DoubleTab positions(1, dimension);
-  DoubleTab val_fct(1);
-  positions(0, 0) = x(0);
-  positions(0, 1) = x(1);
-  if (dimension > 2) positions(0, 2) = x(2);
-
-  eval_fct(positions, val_fct, ncomp);
-  return val_fct(0);
 }
 
 // Description:
@@ -130,12 +139,7 @@ template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
 enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_(const DoubleVect& , DoubleVect& val, int le_poly) const
 {
-  if (val.size() != nb_compo_)
-    {
-      Cerr << "Error TRUST in TRUSTChamp_Don_generique<LU>::valeur_a_elem_()" << finl;
-      Cerr << "The DoubleVect val doesn't have the correct size" << finl;
-      Process::exit();
-    }
+  if (val.size() != nb_compo_) erreur_champ_(__func__); // DoubleVect val doesn't have the correct size
 
   const DoubleTab& ch = valeurs();
   for (int k = 0; k < nb_compo_; k++) val(k) = ch(le_poly, k);
@@ -157,12 +161,8 @@ enable_if_t<T != Champ_Don_Type::TXYZ, double> /* XYZ ou LU */
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int le_poly, int ncomp) const
 {
   static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
-  if (ncomp > nb_compo_)
-    {
-      Cerr << "Error TRUST in TRUSTChamp_Don_generique<XYZ|LU>::valeur_a_elem_compo()" << finl;
-      Cerr << "the integer ncomp is upper than the number of field components !" << finl;
-      Process::exit();
-    }
+  if (ncomp > nb_compo_) erreur_champ_(__func__); // asking ncomp > nb_compo_ ?????
+
   return IS_XYZ ? valeur_a_compo(x,ncomp) : valeurs()(le_poly,ncomp) /* LU */;
 }
 
@@ -188,32 +188,16 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int 
 // Parametre: DoubleTab& val
 //    Signification: le tableau des valeurs du champ aux points specifies
 template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
-enable_if_t<T == Champ_Don_Type::XYZ, DoubleTab&>
+enable_if_t<T != Champ_Don_Type::LU, DoubleTab&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val) const
 {
-  if (val.nb_dim() > 2)
-    {
-      Cerr << "Error TRUST in TRUSTChamp_Don_generique<XYZ>::valeur_aux()" << finl;
-      Cerr << "The DoubleTab val has more than 2 entries" << finl;
-      Process::exit();
-    }
-  eval_fct(x,val);
-  return val;
-}
+  static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
 
-template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
-enable_if_t<T == Champ_Don_Type::TXYZ, DoubleTab&>
-TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val) const
-{
   if (val.nb_dim() == 1) assert(nb_compo_ == 1);
   else if (val.nb_dim() == 2) assert(val.dimension(1) == nb_compo_);
-  else
-    {
-      Cerr << "Error TRUST in TRUSTChamp_Don_generique<TXYZ>::valeur_aux()" << finl;
-      Cerr << "The DoubleTab val has more than 2 entries" << finl;
-      Process::exit();
-    }
-  eval_fct(x,temps(),val);
+  else erreur_champ_(__func__); // DoubleTab val has more than 2 entries !
+
+  IS_XYZ ? eval_fct(x,val) : eval_fct(x,temps(),val);
   return val;
 }
 
@@ -276,12 +260,7 @@ template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
 enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_(const DoubleTab&, const IntVect& les_polys, DoubleTab& val) const
 {
-  if (val.nb_dim() > 2)
-    {
-      Cerr << "Error TRUST in TRUSTChamp_Don_generique<LU>::valeur_aux_elems_()" << finl;
-      Cerr << "The DoubleTab val don't have 2 entries !" << finl;
-      Process::exit();
-    }
+  if (val.nb_dim() > 2) erreur_champ_(__func__); // DoubleTab val don't have 2 entries
 
   int p;
   const DoubleTab& ch = valeurs();

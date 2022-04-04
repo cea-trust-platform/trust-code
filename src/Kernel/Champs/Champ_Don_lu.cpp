@@ -20,10 +20,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_Don_lu.h>
-#include <Domaine.h>
 #include <LecFicDiffuse.h>
-#include <Interprete.h>
+#include <Champ_Don_lu.h>
 
 Implemente_instanciable(Champ_Don_lu,"Champ_Don_lu",TRUSTChamp_Don_generique<Champ_Don_Type::LU>);
 

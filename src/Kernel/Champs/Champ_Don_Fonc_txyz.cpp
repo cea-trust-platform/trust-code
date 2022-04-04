@@ -106,14 +106,3 @@ Entree& Champ_Don_Fonc_txyz::readOn(Entree& is)
 
   return is;
 }
-
-void Champ_Don_Fonc_txyz::mettre_a_jour(double t)
-{
-  changer_temps(t);
-  int nb_elems = mon_domaine->zone(0).nb_elem();
-  DoubleTab& mes_val = valeurs();
-  DoubleTab positions(nb_elems,dimension);
-  mettre_a_jour_positions(positions);
-  eval_fct(positions,temps(),mes_val);
-  mes_val.echange_espace_virtuel();
-}
