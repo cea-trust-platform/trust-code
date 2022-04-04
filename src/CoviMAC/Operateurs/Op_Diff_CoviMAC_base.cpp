@@ -70,8 +70,8 @@ void Op_Diff_CoviMAC_base::mettre_a_jour(double t)
 void Op_Diff_CoviMAC_base::completer()
 {
   Operateur_base::completer();
-  int N_mil = equation().milieu().masse_volumique().valeurs().line_size(), N_diff = diffusivite().valeurs().line_size();
-  int N = equation().inconnue().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), N_diff);
+  int N = equation().inconnue().valeurs().line_size(), N_mil = equation().milieu().masse_volumique().non_nul() ? equation().milieu().masse_volumique().valeurs().line_size() : N;
+  int N_diff = diffusivite().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), N_diff);
   if ( (N_nu == N_mil) | (N_nu == N) ) nu_.resize(0, N); //isotrope
   else if ( (N_nu == N_mil * D) | (N_nu == N*D) ) nu_.resize(0, N, D); //diagonal
   else if ( (N_nu == N_mil * D * D) | (N_nu == N * D * D) ) nu_.resize(0, N, D, D); //complet
@@ -246,7 +246,7 @@ void Op_Diff_CoviMAC_base::update_nu() const
   const Zone_CoviMAC& zone = la_zone_poly_.valeur();
   const DoubleTab& nu_src = diffusivite().valeurs();
   int e, i, m, n, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
-  int N_mil = equation().milieu().masse_volumique().valeurs().line_size(), N = equation().inconnue().valeurs().line_size(),
+  int N = equation().inconnue().valeurs().line_size(), N_mil = equation().milieu().masse_volumique().non_nul() ? equation().milieu().masse_volumique().valeurs().line_size() : N,
       N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N;
   assert(N_nu % N == 0);
 
