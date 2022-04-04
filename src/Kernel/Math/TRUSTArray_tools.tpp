@@ -189,7 +189,7 @@ _TYPE_ norme_array(const TRUSTArray<_TYPE_>& dx)
   if (n > 0)
     {
       integer incx = 1;
-      resultat = F77NAME(DNRM2)(&n, &dx(0), &incx);
+      resultat = F77NAME(DNRM2)(&n, &dx[0], &incx);
     }
   return resultat;
 }

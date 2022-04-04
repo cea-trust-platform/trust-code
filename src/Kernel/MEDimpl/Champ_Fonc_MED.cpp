@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -256,7 +256,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
     }
   if (last_time_only_)
     {
-      un_temps=temps_sauv_(temps_sauv_.size_array()-1);
+      un_temps=temps_sauv_[temps_sauv_.size_array()-1];
       Cout << "The resumption time is "<<un_temps<<finl;
     }
   // FIN MODIF ELI LAUCOIN (06/03/2012)
@@ -272,7 +272,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
         {
           fdec >> dec;
           for (int i = 0; i < dec.size_array(); i++)
-            if (dec(i) == Process::me()) filter.append_array(i + 1);//les indices commencent a 1
+            if (dec[i] == Process::me()) filter.append_array(i + 1);//les indices commencent a 1
           if (field_size != dec.size_array())
             Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between 'decoup' file and field!" << finl, Process::exit();
         }
@@ -338,8 +338,8 @@ void Champ_Fonc_MED::lire(double t, int given_it)
           // dt ?
           // t temps courant pour lequel on veut remplir le champ
           // last_time_only_ specifie dans le jeu de donnees ou non
-          double tmax = temps_sauv_(nb_dt - 1);
-          double dt = temps_sauv_(nb_dt - 1);
+          double tmax = temps_sauv_[nb_dt - 1];
+          double dt = temps_sauv_[nb_dt - 1];
           if (((nb_dt == 1) && (!est_egal(dt, t))) || ((last_time_only_ == 1) && (!est_egal(tmax, t))))
             {
               Cout << "We assume that the field " << fieldName.c_str() << " is stationary." << finl;

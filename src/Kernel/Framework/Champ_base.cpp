@@ -685,7 +685,7 @@ inline void add_sommets_communs(const Domaine& dom, DoubleTab& les_valeurs, IntT
       int size_sommets_communs = sommets_communs.size_array();
       for (int j=0; j<size_sommets_communs; j++)
         {
-          int sommet = sommets_communs(j);
+          int sommet = sommets_communs[j];
           // Si ce sommet commun appartient a la liste des sommets Dirichlet:
           if ( compteur(sommet)>0)
             {
@@ -885,14 +885,14 @@ int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom&
                               }
                             if(dimension==2)
                               {
-                                normale(0)=-delta(0,1);
-                                normale(1)=delta(0,0);
+                                normale[0]=-delta(0,1);
+                                normale[1]=delta(0,0);
                               }
                             else if(dimension==3)
                               {
-                                normale(0)=delta(0,1)*delta(1,2) - delta(0,2)*delta(1,1);
-                                normale(1)=delta(0,2)*delta(1,0) - delta(0,0)*delta(1,2);
-                                normale(2)=delta(0,0)*delta(1,1) - delta(0,1)*delta(1,0);
+                                normale[0]=delta(0,1)*delta(1,2) - delta(0,2)*delta(1,1);
+                                normale[1]=delta(0,2)*delta(1,0) - delta(0,0)*delta(1,2);
+                                normale[2]=delta(0,0)*delta(1,1) - delta(0,1)*delta(1,0);
                               }
                             else
                               {
@@ -907,9 +907,9 @@ int Champ_base::calculer_valeurs_som_post(DoubleTab& les_valeurs,int nb_som,Nom&
                                   {
                                     double psc=0;
                                     for(int k=0; k< dimension; k++)
-                                      psc+=normale(k)*les_valeurs(sommet,k);
+                                      psc+=normale[k]*les_valeurs(sommet,k);
                                     for(int compo=0; compo<nb_compo_; compo++)
-                                      les_valeurs(sommet, compo) -= psc*normale(compo);
+                                      les_valeurs(sommet, compo) -= psc*normale[compo];
                                   }
                               }
                           }

@@ -162,9 +162,9 @@ ArrOfDouble Source_PDF_base::get_tuvw_local() const
 {
   assert(Objet_U::dimension==3);
   ArrOfDouble tuvw(dimension) ;
-  tuvw(0) = 1.0 / modele_lu_.eta_;
-  tuvw(1) = 1.0 / modele_lu_.eta_;
-  tuvw(2) = 1.0 / modele_lu_.eta_;
+  tuvw[0] = 1.0 / modele_lu_.eta_;
+  tuvw[1] = 1.0 / modele_lu_.eta_;
+  tuvw[2] = 1.0 / modele_lu_.eta_;
   return tuvw ;
 }
 

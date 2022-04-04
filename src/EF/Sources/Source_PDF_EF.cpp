@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -167,7 +167,7 @@ void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, c
         {
           for (int j = 0; j < dim; j++)
             {
-              x(j) = points(i,j);
+              x[j] = points(i,j);
             }
           for (int j = 0; j < dim; j++)
             {
@@ -178,7 +178,7 @@ void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, c
         {
           for (int j = 0; j < dim; j++)
             {
-              x(j) = coords(i,j);
+              x[j] = coords(i,j);
             }
           for (int j = 0; j < dim; j++)
             {
@@ -263,9 +263,9 @@ DoubleVect Source_PDF_EF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const Doubl
   ArrOfDouble sum_dir_loc(dimension) ;
   for (int i=0; i<dimension; i++)
     {
-      sum_dir_loc(i)=0.;
+      sum_dir_loc[i]=0.;
       for (int k=0; k<dimension; k++)
-        sum_dir_loc(i)+=rotation(num_elem,3*i+k);
+        sum_dir_loc[i]+=rotation(num_elem,3*i+k);
     }
 
   DoubleVect diag_coef(dimension);
@@ -273,7 +273,7 @@ DoubleVect Source_PDF_EF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const Doubl
     {
       diag_coef(comp) = 0. ;
       for (int k=0; k<dimension; k++)
-        diag_coef(comp)+=tuvw(k)*sum_dir_loc(k)*rotation(num_elem,3*k+comp);
+        diag_coef(comp)+=tuvw[k]*sum_dir_loc[k]*rotation(num_elem,3*k+comp);
     }
 
   return diag_coef ;
@@ -318,7 +318,7 @@ DoubleTab Source_PDF_EF::compute_coeff_elem() const
             {
               int som_glob=elems(num_elem,s);
               for (int comp=0; comp<dimension; comp++)
-                vitesse_elem(comp)+=vitesse(som_glob,comp);
+                vitesse_elem[comp]+=vitesse(som_glob,comp);
             }
           val_coeff = fonct_coeff(rho_m(num_elem), aire(num_elem), dt) ;
           val_diag_coef = diag_coeff_elem(vitesse_elem, rotation, num_elem) ;
@@ -372,7 +372,7 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
             {
               int som_glob=elems(num_elem,s);
               for (int comp=0; comp<dimension; comp++)
-                vitesse_elem(comp)+=vitesse(som_glob,comp);
+                vitesse_elem[comp]+=vitesse(som_glob,comp);
             }
           val_coeff = fonct_coeff(rho_m(num_elem), aire(num_elem), dt) ;
           val_diag_coef = diag_coeff_elem(vitesse_elem, rotation, num_elem) ;
@@ -500,33 +500,33 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, co
         {
           if (i_traitement_special == 0)
             {
-              tuvw(0) =  1.0 / modele_lu_.eta_;
-              tuvw(1) =  1.0 / modele_lu_.eta_;
-              tuvw(2) =  1.0 / modele_lu_.eta_;
+              tuvw[0] =  1.0 / modele_lu_.eta_;
+              tuvw[1] =  1.0 / modele_lu_.eta_;
+              tuvw[2] =  1.0 / modele_lu_.eta_;
             }
           else if (i_traitement_special == 1) //terme temps en rho v
             {
-              tuvw(0) =  1.0;
-              tuvw(1) =  1.0;
-              tuvw(2) =  1.0;
+              tuvw[0] =  1.0;
+              tuvw[1] =  1.0;
+              tuvw[2] =  1.0;
             }
           else if (i_traitement_special == 101) //terme temps en v
             {
-              tuvw(0) =  1.0 / rho_m(num_elem);
-              tuvw(1) =  1.0 / rho_m(num_elem);
-              tuvw(2) =  1.0 / rho_m(num_elem);
+              tuvw[0] =  1.0 / rho_m(num_elem);
+              tuvw[1] =  1.0 / rho_m(num_elem);
+              tuvw[2] =  1.0 / rho_m(num_elem);
             }
           else if (i_traitement_special == 2)
             {
-              tuvw(0) =  1.0 + 1.0 / modele_lu_.eta_;
-              tuvw(1) =  1.0 + 1.0 / modele_lu_.eta_;
-              tuvw(2) =  1.0 + 1.0 / modele_lu_.eta_;
+              tuvw[0] =  1.0 + 1.0 / modele_lu_.eta_;
+              tuvw[1] =  1.0 + 1.0 / modele_lu_.eta_;
+              tuvw[2] =  1.0 + 1.0 / modele_lu_.eta_;
             }
           else if (i_traitement_special == 102)
             {
-              tuvw(0) =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
-              tuvw(1) =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
-              tuvw(2) =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
+              tuvw[0] =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
+              tuvw[1] =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
+              tuvw[2] =  1.0 / rho_m(num_elem) + 1.0 / modele_lu_.eta_;
             }
           else
             {
@@ -541,7 +541,7 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, co
                   double coeff_im=0;
                   for(int k=0; k<ncomp; k++)
                     {
-                      coeff_im+=rotation(num_elem,3*k+comp)*tuvw(k)*rotation(num_elem,3*k+c);
+                      coeff_im+=rotation(num_elem,3*k+comp)*tuvw[k]*rotation(num_elem,3*k+c);
                     }
                   tijvj+=coeff_im ;
                 }
@@ -594,9 +594,9 @@ void  Source_PDF_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat
     {
       if (aire(num_elem)>0.)
         {
-          tuvw(0) = 1.0 / modele_lu_.eta_;
-          tuvw(1) = 1.0 / modele_lu_.eta_;
-          tuvw(2) = 1.0 / modele_lu_.eta_;
+          tuvw[0] = 1.0 / modele_lu_.eta_;
+          tuvw[1] = 1.0 / modele_lu_.eta_;
+          tuvw[2] = 1.0 / modele_lu_.eta_;
 
           for (int comp=0; comp<ncomp; comp++)
             {
@@ -611,7 +611,7 @@ void  Source_PDF_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat
                           double coeff_im=0;
                           for (int k=0; k<3; k++)
                             {
-                              coeff_im+=rotation(num_elem,3*k+comp)*tuvw(k)*rotation(num_elem,3*k+comp2);
+                              coeff_im+=rotation(num_elem,3*k+comp)*tuvw[k]*rotation(num_elem,3*k+comp2);
                             }
                           int c1=s1*ncomp+comp;
 
@@ -703,7 +703,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
           d1 = sqrt(d1);
           d2 = sqrt(d2);
           double inv_d = 1.0 / (d1 + d2);
-          cells(0) = int(fluid_elems(i));
+          cells[0] = int(fluid_elems(i));
           champ_vitesse_inconnue.value_interpolation(xf,cells, val_vitesse_inconnue, vf);
           for (int j = 0; j < nb_comp; j++)
             {
@@ -775,14 +775,14 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
                             {
                               double vpf = vitesse_imposee_mod(num_som,j);
                               double vf = vitesse_inconnue(num_som,j);
-                              mean_grad(j) += (vf - vpf)/d1;
+                              mean_grad[j] += (vf - vpf)/d1;
                             }
                         }
                     }
                   for (int j = 0; j < nb_comp; j++)
                     {
-                      mean_grad(j) /= taille;
-                      vitesse_imposee_calculee(i,j) += mean_grad(j)*d2;
+                      mean_grad[j] /= taille;
+                      vitesse_imposee_calculee(i,j) += mean_grad[j]*d2;
                     }
                 }
             }
@@ -830,7 +830,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
           d1 = sqrt(d1);
           d2 = sqrt(d2);
           double inv_d = 1.0 / (d1 + d2);
-          cells(0) = int(fluid_elems(i));
+          cells[0] = int(fluid_elems(i));
           champ_vitesse_inconnue.value_interpolation(xf,cells, vitesse_inconnue, vf);
           for (int j = 0; j < nb_comp; j++)
             {
@@ -874,14 +874,14 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
                             {
                               double vpf = vitesse_imposee_mod(num_som,j);
                               double vjf = vitesse_inconnue(num_som,j);
-                              mean_grad(j) += (vjf - vpf)/d1;
+                              mean_grad[j] += (vjf - vpf)/d1;
                             }
                         }
                     }
                   for (int j = 0; j < nb_comp; j++)
                     {
-                      mean_grad(j) /= taille;
-                      vitesse_imposee_calculee(i,j) += mean_grad(j)*d2;
+                      mean_grad[j] /= taille;
+                      vitesse_imposee_calculee(i,j) += mean_grad[j]*d2;
                     }
                 }
             }

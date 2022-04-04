@@ -173,12 +173,12 @@ int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
   som3 = zone.sommet_elem(ielem,3);
   som4 = zone.sommet_elem(ielem,4);
   som5 = zone.sommet_elem(ielem,5);
-  if( ( est_egal(dom.coord(som0,0),pos(0)) && est_egal(dom.coord(som0,1),pos(1)) && est_egal(dom.coord(som0,2),pos(2)) )
-      || (est_egal(dom.coord(som1,0),pos(0)) && est_egal(dom.coord(som1,1),pos(1)) && est_egal(dom.coord(som1,2),pos(2)))
-      || (est_egal(dom.coord(som2,0),pos(0)) && est_egal(dom.coord(som2,1),pos(1)) && est_egal(dom.coord(som2,2),pos(2)))
-      || (est_egal(dom.coord(som3,0),pos(0)) && est_egal(dom.coord(som3,1),pos(1)) && est_egal(dom.coord(som3,2),pos(2)))
-      || (est_egal(dom.coord(som4,0),pos(0)) && est_egal(dom.coord(som4,1),pos(1)) && est_egal(dom.coord(som4,2),pos(2)))
-      || (est_egal(dom.coord(som5,0),pos(0)) && est_egal(dom.coord(som5,1),pos(1)) && est_egal(dom.coord(som5,2),pos(2)))
+  if( ( est_egal(dom.coord(som0,0),pos[0]) && est_egal(dom.coord(som0,1),pos[1]) && est_egal(dom.coord(som0,2),pos[2]) )
+      || (est_egal(dom.coord(som1,0),pos[0]) && est_egal(dom.coord(som1,1),pos[1]) && est_egal(dom.coord(som1,2),pos[2]))
+      || (est_egal(dom.coord(som2,0),pos[0]) && est_egal(dom.coord(som2,1),pos[1]) && est_egal(dom.coord(som2,2),pos[2]))
+      || (est_egal(dom.coord(som3,0),pos[0]) && est_egal(dom.coord(som3,1),pos[1]) && est_egal(dom.coord(som3,2),pos[2]))
+      || (est_egal(dom.coord(som4,0),pos[0]) && est_egal(dom.coord(som4,1),pos[1]) && est_egal(dom.coord(som4,2),pos[2]))
+      || (est_egal(dom.coord(som5,0),pos[0]) && est_egal(dom.coord(som5,1),pos[1]) && est_egal(dom.coord(som5,2),pos[2]))
     )
     return 1;
 

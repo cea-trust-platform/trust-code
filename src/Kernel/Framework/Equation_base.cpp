@@ -1844,7 +1844,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
     {
       if (sub_type(Source_dep_inco_base, sources()(i).valeur()))
         {
-          marq(i) = 1;
+          marq[i] = 1;
           marq_tot = 1;
         }
     }
@@ -1906,7 +1906,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           DoubleTrav toto(secmem);
           statistiques().end_count(diffusion_implicite_counter_,0,0);
           for (int i = 0; i < size_s; i++)
-            if (marq(i))
+            if (marq[i])
               sources()(i).ajouter(toto);
           statistiques().begin_count(diffusion_implicite_counter_);
           solv_masse().appliquer(toto);
@@ -1981,7 +1981,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           diag.dimensionne_diag(n);
           operateur(0).l_op_base().contribuer_a_avec(inconnue().valeurs(), diag);
           for (int i = 0; i < size_s; i++)
-            if (marq(i))
+            if (marq[i])
               sources()(i).valeur().contribuer_a_avec(inconnue().valeurs(), diag);
           // La diagonale est proportionnelle au volume de controle....
           // Il faut appliquer le solveur_masse
@@ -2006,7 +2006,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       if (marq_tot)
         {
           for (int i = 0; i < size_s; i++)
-            if (marq(i))
+            if (marq[i])
               ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(p, phiB);
         }
       statistiques().begin_count(diffusion_implicite_counter_);
@@ -2033,7 +2033,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       if (marq_tot)
         {
           for (int i = 0; i < size_s; i++)
-            if (marq(i))
+            if (marq[i])
               ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(solution, resu);
         }
       statistiques().begin_count(diffusion_implicite_counter_);
@@ -2088,7 +2088,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
             if (marq_tot)
               {
                 for (int i = 0; i < size_s; i++)
-                  if (marq(i))
+                  if (marq[i])
                     ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(p, resu);
               }
             statistiques().begin_count(diffusion_implicite_counter_);
@@ -2163,7 +2163,7 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
       if (marq_tot)
         {
           for (int i = 0; i < size_s; i++)
-            if (marq(i))
+            if (marq[i])
               ref_cast(Source_dep_inco_base, sources()(i).valeur()).ajouter_(inconnue()->valeurs(), resu);
         }
       // Since 1.6.8 returns dI/dt:

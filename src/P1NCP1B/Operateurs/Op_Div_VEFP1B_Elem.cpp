@@ -466,9 +466,9 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& d
               double signej=1.;
               if (face_voisins(facej,0) != elem)
                 signej=-1.;
-              int arete = renum_arete_perio(chercher_arete(elem, somi, somj,
-                                                           elem_aretes, aretes_som));
-              if(ok_arete(arete))
+              int arete = renum_arete_perio[chercher_arete(elem, somi, somj,
+                                                           elem_aretes, aretes_som)];
+              if(ok_arete[arete])
                 {
                   int niinij=0;
                   for(int ksom=0; ksom<4; ksom++)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -132,7 +132,7 @@ DoubleTab& Terme_Source_Canal_perio_VDF_Face::ajouter(DoubleTab& resu) const
             {
               double vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
               ncomp = orientation(num_face);
-              resu(num_face) += s(ncomp)*vol;
+              resu(num_face) += s[ncomp]*vol;
             }
         }
       else if ( (sub_type(Dirichlet,la_cl.valeur()))
@@ -152,7 +152,7 @@ DoubleTab& Terme_Source_Canal_perio_VDF_Face::ajouter(DoubleTab& resu) const
     {
       double vol = volumes_entrelaces(num_face)*porosite_surf(num_face);
       ncomp = orientation(num_face);
-      resu(num_face)+= s(ncomp)*vol;
+      resu(num_face)+= s[ncomp]*vol;
     }
 
   return resu;

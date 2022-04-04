@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -204,11 +204,11 @@ DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
             fait = 0;
             for (int ind_face=0; ind_face<nb_faces_bord; ind_face++)
               {
-                if (fait(ind_face) == 0)
+                if (fait[ind_face] == 0)
                   {
                     int ind_face_associee = la_cl_perio.face_associee(ind_face);
-                    fait(ind_face) = 1;
-                    fait(ind_face_associee) = 1;
+                    fait[ind_face] = 1;
+                    fait[ind_face_associee] = 1;
                     int face = le_bord.num_face(ind_face);
                     int face_associee = le_bord.num_face(ind_face_associee);
                     for (int comp=0; comp<nb_comp; comp++)

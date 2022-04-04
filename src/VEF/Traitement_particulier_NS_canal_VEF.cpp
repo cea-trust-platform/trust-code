@@ -108,7 +108,7 @@ void Traitement_particulier_NS_canal_VEF::remplir_Y(DoubleVect& tabY,  DoubleVec
 
   for (num_face=0; num_face<nb_faces; num_face++)
     {
-      int c = (faces_doubles(num_face)==1) ? 1 : 2 ;
+      int c = (faces_doubles[num_face]==1) ? 1 : 2 ;
       y = xv(num_face,1);
       trouve = 0;
 
@@ -169,7 +169,7 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_vitesse_rho_
 
   for (num_face=0; num_face<nb_faces; num_face++)
     {
-      c = (faces_doubles(num_face)==1) ? 0.5 : 1. ;
+      c = (faces_doubles[num_face]==1) ? 0.5 : 1. ;
 
       y=xv(num_face,1);
 
@@ -242,7 +242,7 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_nut(DoubleTa
 
   for (num_face=0; num_face<nb_faces; num_face++)
     {
-      c = (faces_doubles(num_face)==1) ? 0.5 : 1. ;
+      c = (faces_doubles[num_face]==1) ? 0.5 : 1. ;
 
       y=xv(num_face,1);
 
@@ -279,7 +279,7 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_Temp(DoubleT
 
   for (num_face=0; num_face<nb_faces; num_face++)
     {
-      c = (faces_doubles(num_face)==1) ? 0.5 : 1. ;
+      c = (faces_doubles[num_face]==1) ? 0.5 : 1. ;
 
       y=xv(num_face,1);
 

@@ -866,7 +866,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
 
                     if (i_som>-1)
                       {
-                        const int i_som_local = liste_inverse_sommets(i_som);
+                        const int i_som_local = liste_inverse_sommets[i_som];
                         if(i_som_local>0)
                           {
                             // Le sommet est-il sur un joint ?
@@ -1039,7 +1039,7 @@ void calculer_elements_voisins_bords(const Domaine& dom,
                   if (elems_voisins.size_array()==0) Process::exit();
                 }
               drap=1;
-              if (elem_part(elems_voisins[1])==1)
+              if (elem_part[elems_voisins[1]]==1)
                 elems_voisins[0]=elems_voisins[1];
               if (permissif==0)
                 Process::exit();
@@ -1683,7 +1683,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
               recevoir(tmp_edge_cut, proc, 0, proc+2008);
 
               for(int i_part=0; i_part<nb_parties_; i_part++)
-                EdgeCut(i_part) += tmp_edge_cut(i_part);
+                EdgeCut(i_part) += tmp_edge_cut[i_part];
 
             }
 

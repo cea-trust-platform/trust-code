@@ -135,7 +135,7 @@ inline void multiplie(const DoubleTab& matrice, ArrOfDouble& vecteur)
   int dimension = vecteur.size_array();
   for (int i=0; i<dimension; i++)
     for (int j=0; j<dimension; j++)
-      vecteur(i) += matrice(0,i*dimension+j) * x(j);
+      vecteur[i] += matrice(0,i*dimension+j) * x[j];
 }
 
 // Produit Inverse(Matrice)*Vecteur dans des tableaux
@@ -156,10 +156,10 @@ inline void inverse(const DoubleTab& mat, ArrOfDouble& x)
           Cerr << mat << finl;
           Process::exit();
         }
-      double y0=(d*x(0)-b*x(1))/det;
-      double y1=(-c*x(0)+a*x(1))/det;
-      x(0)=y0;
-      x(1)=y1;
+      double y0=(d*x[0]-b*x[1])/det;
+      double y1=(-c*x[0]+a*x[1])/det;
+      x[0]=y0;
+      x[1]=y1;
     }
   else if (dimension==3)
     {
@@ -182,18 +182,18 @@ inline void inverse(const DoubleTab& mat, ArrOfDouble& x)
           Cerr << mat << finl;
           Process::exit();
         }
-      double y0=((e*i-f*h)*x(0)
-                 +(c*h-b*i)*x(1)
-                 +(b*f-c*e)*x(2))/det;
-      double y1=((f*g-d*i)*x(0)
-                 +(a*i-c*g)*x(1)
-                 +(c*d-a*f)*x(2))/det;
-      double y2=((d*h-e*g)*x(0)
-                 +(b*g-a*h)*x(1)
-                 +(a*e-b*d)*x(2))/det;
-      x(0)=y0;
-      x(1)=y1;
-      x(2)=y2;
+      double y0=((e*i-f*h)*x[0]
+                 +(c*h-b*i)*x[1]
+                 +(b*f-c*e)*x[2])/det;
+      double y1=((f*g-d*i)*x[0]
+                 +(a*i-c*g)*x[1]
+                 +(c*d-a*f)*x[2])/det;
+      double y2=((d*h-e*g)*x[0]
+                 +(b*g-a*h)*x[1]
+                 +(a*e-b*d)*x[2])/det;
+      x[0]=y0;
+      x[1]=y1;
+      x[2]=y2;
     }
   else
     {
@@ -276,7 +276,7 @@ void Loi_horaire::verifier_derivee(const double& t)
       int n=err_t.size_array();
       for (int i=0; i<n; i++)
         {
-          double seuil=std::fabs(seuil_t(i));
+          double seuil=std::fabs(seuil_t[i]);
           if (!est_egal(seuil,0) && std::fabs(err_t(i))>seuil)
             {
               if (Process::je_suis_maitre())
@@ -371,7 +371,7 @@ void Loi_horaire::imprimer(const Schema_Temps_base& sch, const ArrOfDouble& coor
       for (int i=0; i<dimension; i++)
         fic << " " << position_.valeurs()(0,i);        // xG(t)
       for (int i=0; i<dimension; i++)
-        fic << " " << coord_barycentre(i);                 // Barycentre des noeuds de l'interface
+        fic << " " << coord_barycentre[i];                 // Barycentre des noeuds de l'interface
       fic << finl;
       // Fermeture du fichier
       fic.close();
@@ -390,12 +390,12 @@ void Loi_horaire::tester(const Schema_Temps_base& sch)
           mat(0,i*dim+j)=(i>j?1+i+j:-2*j);
       ArrOfDouble vect(dim);
       for (int i=0; i<dim; i++)
-        vect(i)=i;
+        vect[i]=i;
       ArrOfDouble tmp(vect);
       multiplie(mat,vect);
       inverse(mat,vect);
       for (int i=0; i<dim; i++)
-        if (!est_egal(tmp(i),vect(i)))
+        if (!est_egal(tmp[i],vect[i]))
           {
             Cerr << "Loi_horaire::inverse is not validated for dim=" << dim << finl;
             Cerr << "A=" << mat << finl;
@@ -421,13 +421,13 @@ void Loi_horaire::tester(const Schema_Temps_base& sch)
   double eps=1e-8;
   double dt=eps*t;
   ArrOfDouble pos(dimension);
-  pos(0)=dimension*2;
-  pos(1)=dimension*3;
-  if (dimension==3) pos(2)=-dimension;
+  pos[0]=dimension*2;
+  pos[1]=dimension*3;
+  if (dimension==3) pos[2]=-dimension;
   // Verification que position(t,t,pos)=pos
   ArrOfDouble tmp(position(t,t,pos));
   for (int i=0; i<dimension; i++)
-    if (!est_egal(tmp(i),pos(i)))
+    if (!est_egal(tmp[i],pos[i]))
       {
         Cerr << "Loi_horaire::position is not validated for pos=position(t,t,pos):" << finl;
         Cerr << pos << finl;
@@ -444,7 +444,7 @@ void Loi_horaire::tester(const Schema_Temps_base& sch)
   relative_error-=tmp;
   relative_error/=(norme_array(tmp)!=0?norme_array(tmp):1);
   for (int i=0; i<dimension; i++)
-    if (!est_egal(relative_error(i),0,0.001))
+    if (!est_egal(relative_error[i],0,0.001))
       {
         Cerr << "Loi_horaire::position is not validated for velocity(t,pos):" << finl;
         Cerr << "t=" << t << finl;

@@ -111,7 +111,7 @@ void find_adjacent_elements(const Static_Int_Lists& som_elem,
 {
   int nb_som_to_find = sommets_to_find.size_array();
   // on retire les sommets valant -1 (cas ou plusieurs types de faces)
-  while (sommets_to_find(nb_som_to_find-1)==-1) nb_som_to_find--;
+  while (sommets_to_find[nb_som_to_find-1]==-1) nb_som_to_find--;
   if (nb_som_to_find == 0)
     {
       elements.resize_array(0);

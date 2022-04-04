@@ -120,10 +120,10 @@ void Eval_Conv_VDF_tools::qcentre2_impl(const double& psc, const int num0, const
   Type_Double T0(ncomp), T1(ncomp);
   for (k=0; k<ncomp; k++)
     {
-      T0(k) = transporte(num0,k);
-      T1(k) = transporte(num1,k);
+      T0[k] = transporte(num0,k);
+      T1[k] = transporte(num1,k);
     }
-  for (k=0; k<ncomp; k++) flux(k) =0.5 * (T0(k) + T1(k)) * psc ;
+  for (k=0; k<ncomp; k++) flux[k] =0.5 * (T0[k] + T1[k]) * psc ;
 }
 
 template <typename Type_Double>
@@ -134,14 +134,14 @@ void Eval_Conv_VDF_tools::qcentre4_impl(const int ori,const double dx, const dou
   Type_Double T0(ncomp), T0_0(ncomp), T1(ncomp), T1_1(ncomp);
   for (k=0; k<ncomp; k++)
     {
-      T0(k) = transporte(num0,k);
-      T0_0(k) = transporte(num0_0,k);
-      T1(k) = transporte(num1,k);
-      T1_1(k) = transporte(num1_1,k);
+      T0[k] = transporte(num0,k);
+      T0_0[k] = transporte(num0_0,k);
+      T1[k] = transporte(num1,k);
+      T1_1[k] = transporte(num1_1,k);
     }
   const double g1 = -dx*dx*(dx/2+dxav)/(4*(dx+dxam+dxav)*(dx+dxam)*dxam), g2 = (dx+2*dxam)*(dx+2*dxav)/(8*dxam*(dx+dxav));
   const double g3 = (dx+2*dxam)*(dx+2*dxav)/(8*dxav*(dx+dxam)), g4 = -dx*dx*(dx/2+dxam)/(4*(dx+dxam+dxav)*dxav*(dx+dxav));
-  for (k=0; k<ncomp; k++) flux(k) =( g1*T0_0(k) + g2*T0(k) + g3*T1(k) + g4*T1_1(k) ) * psc ;
+  for (k=0; k<ncomp; k++) flux[k] =( g1*T0_0[k] + g2*T0[k] + g3*T1[k] + g4*T1_1[k] ) * psc ;
 }
 
 template <typename Type_Double>
@@ -170,10 +170,10 @@ void Eval_Conv_VDF_tools::quick_fram_impl(const int ori,const double dx, const d
           trans_amont = T1;
           curv = ( (T1_1 - T1)/dxam1 - (T1 - T0)/dx )/dm1;
         }
-      flux(k) = 0.5*(T0+T1) - 0.125*(dx*dx)*curv;
+      flux[k] = 0.5*(T0+T1) - 0.125*(dx*dx)*curv;
       // On applique le filtre Fram:
       fr = ( num0_0 != -1 && num1_1 != -1 ) ? Fram(T0_0,T0,T1,T1_1) : 1.;
-      flux(k) = ((1.-fr)*flux(k) + fr*trans_amont)*psc;
+      flux[k] = ((1.-fr)*flux[k] + fr*trans_amont)*psc;
     }
 }
 

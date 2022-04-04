@@ -798,7 +798,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
               int max_som_face=0;
               for (int i=0; i<nface; i++)
                 {
-                  int nb_som_face=index(i+1)-index(i);
+                  int nb_som_face=index[i+1]-index[i];
                   if  (nb_som_face>max_som_face) max_som_face=nb_som_face;
                 }
               all_faces_bord.resize(nface,max_som_face);
@@ -806,9 +806,9 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
 
               for (int i=0; i<nface; i++)
                 {
-                  int nb_som_face=index(i+1)-index(i);
+                  int nb_som_face=index[i+1]-index[i];
                   for (int j=0; j<nb_som_face; j++)
-                    all_faces_bord(i,j)=connectivite(index(i)+j-1);
+                    all_faces_bord(i,j)=connectivite[index[i]+j-1];
 
                 }
               if (ret != 0)
@@ -1064,7 +1064,7 @@ int verifier_modifier_type_elem(Nom& type_elem,const IntTab& les_elems,const Dou
 
                   double npos=sommets(les_elems(elem,s),dir);
                   int trouve=0;
-                  for (int i=0; i<n; i++) if (est_egal(npos,pos(i))) trouve=1;
+                  for (int i=0; i<n; i++) if (est_egal(npos,pos[i])) trouve=1;
 
                   if (trouve==0)
                     {
@@ -1076,7 +1076,7 @@ int verifier_modifier_type_elem(Nom& type_elem,const IntTab& les_elems,const Dou
 
                       else
                         {
-                          pos(n)=npos;
+                          pos[n]=npos;
                           n++;
                         }
                     }
@@ -1415,20 +1415,20 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           int node=0;
           for (int i = 0; i < ncells; i++)
             {
-              PolyhedronIndex(i) = face; // Index des polyedres
+              PolyhedronIndex[i] = face; // Index des polyedres
 
               int index = connIndex[i] + 1;
               int nb_som = connIndex[i + 1] - index;
               for (int j = 0; j < nb_som; j++)
                 {
                   if (j==0 || conn[index + j]<0)
-                    FacesIndex(face++) = node; // Index des faces:
+                    FacesIndex[face++] = node; // Index des faces:
                   if (conn[index + j]>=0)
-                    Nodes(node++) = conn[index + j]; // Index local des sommets de la face
+                    Nodes[node++] = conn[index + j]; // Index local des sommets de la face
                 }
             }
-          FacesIndex(nfaces) = node;
-          PolyhedronIndex(ncells) = face;
+          FacesIndex[nfaces] = node;
+          PolyhedronIndex[ncells] = face;
           ref_cast(Polyedre,type_ele.valeur()).affecte_connectivite_numero_global(Nodes, FacesIndex, PolyhedronIndex, les_elems2);
         }
       else if (sub_type(Polygone, type_ele.valeur()))
@@ -1439,14 +1439,14 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           int face=0;
           for (int i = 0; i < ncells; i++)
             {
-              PolygonIndex(i) = face;   // Index des polygones
+              PolygonIndex[i] = face;   // Index des polygones
 
               int index = connIndex[i] + 1;
               int nb_som = connIndex[i + 1] - index;
               for (int j = 0; j < nb_som; j++)
-                FacesIndex(face++) = conn[index + j];
+                FacesIndex[face++] = conn[index + j];
             }
-          PolygonIndex(ncells) = face;
+          PolygonIndex[ncells] = face;
           ref_cast(Polygone,type_ele.valeur()).affecte_connectivite_numero_global(FacesIndex, PolygonIndex, les_elems2);
         }
       else // Tous les autres types
@@ -1848,7 +1848,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           IntTab sommprov(nfacebord,nsomfa);
           for (int j=0; j<nfacebord; j++)
             {
-              if (familles[typef](j)==indice_bord)
+              if (familles[typef][j]==indice_bord)
                 {
 
                   for (int k=0; k<nsomfa; k++)

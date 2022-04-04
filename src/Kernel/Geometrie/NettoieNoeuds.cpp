@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -121,14 +121,14 @@ void NettoieNoeuds::nettoie(Domaine& dom)
   {
     //int i;
     for (int i=0; i<nb_som_init ; i++)
-      renum_som_old2new(i)=-1;
+      renum_som_old2new[i]=-1;
 
     for (int i=0; i<nb_elem ; i++)
       for (int j=0; j< nb_som_elem; j++)
         {
           // GF dans le cas ou on a des polyedres
           if (les_elems(i,j)==-1) break;
-          int& tmp=renum_som_old2new(les_elems(i,j));
+          int& tmp=renum_som_old2new[les_elems(i,j)];
           assert (tmp < compteur);
           if(tmp==-1)
             tmp=compteur++;
@@ -147,7 +147,7 @@ void NettoieNoeuds::nettoie(Domaine& dom)
             {
               // dans le cas ou l'on a des polygones
               if (faces_sommets(i,j)==-1) break;
-              int& tmp=renum_som_old2new(faces_sommets(i,j));
+              int& tmp=renum_som_old2new[faces_sommets(i,j)];
               assert (tmp < compteur);
               if(tmp==-1)
                 tmp=compteur++;
@@ -162,8 +162,8 @@ void NettoieNoeuds::nettoie(Domaine& dom)
       {
         int j;
         for (int i=0; i<nb_som_init ; i++)
-          if((j=renum_som_old2new(i))!=-1)
-            renum_som_new2old(j)=i;
+          if((j=renum_som_old2new[i])!=-1)
+            renum_som_new2old[j]=i;
       }
       {
         int i, j;
@@ -172,7 +172,7 @@ void NettoieNoeuds::nettoie(Domaine& dom)
         for (i=0; i<nb_som_new ; i++)
           for (j=0; j<dimension ; j++)
             {
-              new_coord(i,j)=coord_sommets(renum_som_new2old(i),j);
+              new_coord(i,j)=coord_sommets(renum_som_new2old[i],j);
             }
         coord_sommets=new_coord;
 
@@ -181,7 +181,7 @@ void NettoieNoeuds::nettoie(Domaine& dom)
             {
               int num_som=les_elems(i,j);
               if (num_som!=-1)
-                les_elems(i,j)=renum_som_old2new(num_som);
+                les_elems(i,j)=renum_som_old2new[num_som];
               else
                 les_elems(i,j)=-1;
             }
@@ -205,7 +205,7 @@ void NettoieNoeuds::nettoie(Domaine& dom)
                   int som=old_faces_sommets(i,j);
                   if (som!=-1)
                     faces_sommets(i,j)=
-                      renum_som_old2new(som);
+                      renum_som_old2new[som];
                   else
                     faces_sommets(i,j)=som;
                 }
@@ -227,7 +227,7 @@ void NettoieNoeuds::nettoie(Domaine& dom)
             for(int i=0; i<nb_faces; i++)
               for(int j=0; j<nb_som_face; j++)
                 faces_sommets(i,j)=
-                  renum_som_old2new(old_faces_sommets(i,j));
+                  renum_som_old2new[old_faces_sommets(i,j)];
             ++curseur;
           }
       }
@@ -245,7 +245,7 @@ void NettoieNoeuds::nettoie(Domaine& dom)
             for(int i=0; i<nb_faces; i++)
               for(int j=0; j<nb_som_face; j++)
                 faces_sommets(i,j)=
-                  renum_som_old2new(old_faces_sommets(i,j));
+                  renum_som_old2new[old_faces_sommets(i,j)];
             ++curseur;
           }
       }

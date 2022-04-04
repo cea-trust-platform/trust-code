@@ -387,10 +387,10 @@ corriger_div_pour_Cl(DoubleTab& div ) const
             ArrOfInt fait(le_bord.nb_faces());
             for (int face=num1; face<num2; face++)
               {
-                if(!fait(face-num1))
+                if(!fait[face-num1])
                   {
                     int face_associee=num1+la_cl_perio.face_associee(face-num1);
-                    fait(face-num1)=(fait(face_associee-num1)=1);
+                    fait[face-num1]=(fait[face_associee-num1]=1);
                     for (int comp=0; comp<dimension; comp++)
                       {
                         div(face,comp)+= div(face_associee,comp);

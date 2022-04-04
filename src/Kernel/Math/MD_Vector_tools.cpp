@@ -691,7 +691,7 @@ MD_Vector MD_Vector_tools::extend(const MD_Vector& src, extra_item_t& items)
 
   for (i = 0; i < mds->pe_voisins_.size_array(); i++)
     {
-      p = mds->pe_voisins_(i);
+      p = mds->pe_voisins_[i];
       for (j = 0; j < mds->items_to_send_.get_list_size(i); j++) map[p][0].push_back(mds->items_to_send_(i, j));
       for (j = 0; j < mds->items_to_recv_.get_list_size(i); j++) map[p][1].push_back(mds->items_to_recv_(i, j));
       for (j = 0; j < mds->blocs_to_recv_.get_list_size(i); j++) map[p][2].push_back(mds->blocs_to_recv_(i, j));
@@ -707,7 +707,7 @@ MD_Vector MD_Vector_tools::extend(const MD_Vector& src, extra_item_t& items)
   VECT(ArrOfInt) items_to_send(map.size()), items_to_recv(map.size()), blocs_to_recv(map.size());
   for (p = 0, i = 0; p < Process::nproc(); nb_items_tot += nrecv[p],  p++) if (map.count(p))
       {
-        pe_voisins(i) = p;
+        pe_voisins[i] = p;
         items_to_send[i].resize(map[p][0].size()), std::copy(map[p][0].begin(), map[p][0].end(), items_to_send[i].addr());
         items_to_recv[i].resize(map[p][1].size()), std::copy(map[p][1].begin(), map[p][1].end(), items_to_recv[i].addr());
         blocs_to_recv[i].resize(map[p][2].size()), std::copy(map[p][2].begin(), map[p][2].end(), blocs_to_recv[i].addr());

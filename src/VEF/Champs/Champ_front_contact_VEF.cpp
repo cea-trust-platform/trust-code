@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -817,7 +817,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
   inv_connect_bords=-1;
   for (i=0; i<nb_faces; i++)
     {
-      inv_connect_bords(connect_bords(i))=i;
+      inv_connect_bords[connect_bords(i)]=i;
     }
   if (min_array(inv_connect_bords) < 0)
     {

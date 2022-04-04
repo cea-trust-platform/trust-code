@@ -600,15 +600,15 @@ inline int reordonne(int i0,int i1,int i2,int i3,DoubleTab& coord,IntTab& elem,i
     // ArrOfDouble prod_v(3);
     int op=0,i=1;
     // prod_v=O1^O2
-    prod_v(0)=v(op,1)*v(i,2)-v(op,2)*v(i,1);
-    prod_v(1)=v(op,2)*v(i,0)-v(op,0)*v(i,2);
-    prod_v(2)=v(op,0)*v(i,1)-v(op,1)*v(i,0);
+    prod_v[0]=v(op,1)*v(i,2)-v(op,2)*v(i,1);
+    prod_v[1]=v(op,2)*v(i,0)-v(op,0)*v(i,2);
+    prod_v[2]=v(op,0)*v(i,1)-v(op,1)*v(i,0);
     // ArrOfDouble dist(8);
     dist=0;
     for (int j=0; j<8; j++)
       {
         for (int dir=0; dir<3; dir++)
-          dist(j)+=prod_v(dir)*(coord(elem(num_poly,j),dir)-coord(s[0],dir));
+          dist[j]+=prod_v[dir]*(coord(elem(num_poly,j),dir)-coord(s[0],dir));
       }
     //Cerr<<"ici "<<i0 <<" i1 " <<i1<<" i2 "<<i2 << " i3 "<<i3 <<" "<<dist<<finl;
     // sommet le plus proche du plan
@@ -617,10 +617,10 @@ inline int reordonne(int i0,int i1,int i2,int i3,DoubleTab& coord,IntTab& elem,i
     for (int j=0; j<8; j++)
       {
         if ((j!=i0)&&(j!=i1)&&(j!=i2))
-          if (std::fabs(dist(j))<min_dist)
+          if (std::fabs(dist[j])<min_dist)
             {
               s_plan=j;
-              min_dist=std::fabs(dist(j));
+              min_dist=std::fabs(dist[j]);
             }
       }
     if (s_plan!=i3)
@@ -773,7 +773,7 @@ void Hexaedre_VEF::reordonner()
       permutations+=reordonne(0,1,2,3,coord,elem,num_poly,0, v,prod_, prod_v, dist, prod_v2);
       permutations+=reordonne(4,5,6,7,coord,elem,num_poly,0, v,prod_, prod_v, dist, prod_v2);
       for (int i=0; i<8; i++)
-        sa(i)=elem(num_poly,i);
+        sa[i]=elem(num_poly,i);
       // on teste les 8 possibilites
       int j;
       int n=0;
@@ -783,7 +783,7 @@ void Hexaedre_VEF::reordonner()
           // Cerr<<" debut test "<<j<<finl;
           int test=1;
           for (int i=4; i<8; i++)
-            elem(num_poly,i)=sa(perm(j,i-4)+4);
+            elem(num_poly,i)=sa[perm(j,i-4)+4];
           // on regarde si les 6 plans sont valides
           permutations=0;
           permutations+=reordonne(2,0,3,1,coord,elem,num_poly,test, v,prod_, prod_v, dist, prod_v2);
@@ -811,7 +811,7 @@ void Hexaedre_VEF::reordonner()
           Cerr << "Failure of the algorithm in Hexaedre_VEF::reordonner" << finl;
           Cerr << "Here is the connectivity element-node of the cell " << num_poly << " that raises problem:" << finl;
           for (int i=0; i<8; i++)
-            Cerr << sa(i) << " ";
+            Cerr << sa[i] << " ";
           Cerr << finl;
           exit();
         }
@@ -821,7 +821,7 @@ void Hexaedre_VEF::reordonner()
           Cerr<<"many permutations possibles"<<finl;
           Cerr << "Here is the connectivity element-node of the cell " << num_poly << " that raises problem:" << finl;
           for (int i=0; i<8; i++)
-            Cerr << sa(i) << " ";
+            Cerr << sa[i] << " ";
           Cerr << finl;
           Cerr << "Here is the new connectivity element-node of the cell " << num_poly << " that raises problem:" << finl;
           for (int i=0; i<8; i++)
@@ -831,7 +831,7 @@ void Hexaedre_VEF::reordonner()
         }
       {
         for (int i=4; i<8; i++)
-          elem(num_poly,i)=sa(perm(perm_valid,i-4)+4);
+          elem(num_poly,i)=sa[perm(perm_valid,i-4)+4];
 
         if(perm_valid!=0)
           Cerr<<" we carried out the permutation "<<perm_valid<<" on the element "<<num_poly<<finl;

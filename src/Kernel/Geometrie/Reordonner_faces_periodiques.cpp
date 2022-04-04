@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -183,8 +183,8 @@ int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& do
             }
           int f0 = (facteur > 0.) ? i_face : i_face2;
           int f1 = (facteur > 0.) ? i_face2: i_face;
-          renum_faces(f0) = count;
-          renum_faces(f1) = count + nb_faces / 2;
+          renum_faces[f0] = count;
+          renum_faces[f1] = count + nb_faces / 2;
           count++;
         }
       else
@@ -200,7 +200,7 @@ int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& do
   const IntTab oldfaces(faces);
   for (int i = 0; i < nb_faces; i++)
     {
-      const int new_i = renum_faces(i);
+      const int new_i = renum_faces[i];
       for (int j = 0; j < nb_som_faces; j++)
         faces(new_i, j) = oldfaces(i, j);
     }

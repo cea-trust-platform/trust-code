@@ -240,7 +240,7 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
           for (int j = 0; j < nbfaces; j++)
             {
               int face_de_joint = indices_faces_joint(j, 1);
-              marq(face_de_joint) = -1;
+              marq[face_de_joint] = -1;
             }
         }
     }
@@ -263,7 +263,7 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
           int deb=fr.num_premiere_face();
           int fin=deb+fr.nb_faces();
           for (int f=deb; f<fin; f++)
-            face_bord_int(f)=1;
+            face_bord_int[f]=1;
         }
 
     }
@@ -280,7 +280,7 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
 
       if (val0!=val1)
         {
-          if (((val0*val1==0)&&(val0+val1==1))||((val0==1)&&(face_bord_int(fac)==1))||((val1==1)&&(face_bord_int(fac)==1)))
+          if (((val0*val1==0)&&(val0+val1==1))||((val0==1)&&(face_bord_int[fac]==1))||((val1==1)&&(face_bord_int[fac]==1)))
             //if (zone_test.chercher_elements(xv(fac,0),xv(fac,1),xv(fac,2))==0)
             {
               condition_faces.setVar(X,xv(fac,0));
@@ -289,9 +289,9 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
                 condition_faces.setVar(Z,xv(fac,2));
               double res=condition_faces.eval();
               if (std::fabs(res)>1e-5)
-                if (marq(fac)!=-1)  // pas un joint, ou on est le proprietaire
+                if (marq[fac]!=-1)  // pas un joint, ou on est le proprietaire
                   {
-                    marq(fac)=1;
+                    marq[fac]=1;
                     nb_t++;
                   }
             }
@@ -309,14 +309,14 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
   ArrOfDouble normal(dimension);
   ArrOfDouble normal_b(3);
   for (int fac=0; fac<nb_faces; fac++)
-    if (marq(fac)==1)
+    if (marq[fac]==1)
       {
         int el1=face_voisin(fac,0);
         if (el1==-1)  el1=face_voisin(fac,1);
         if (marq_elem(el1)!=1)
           el1=face_voisin(fac,1);
         for (int i=0; i<dimension; i++)
-          normal(i)=xv(fac,i)-xp(el1,i);
+          normal[i]=xv(fac,i)-xp(el1,i);
         for (int s=0; s<nb_sommet_face; s++)
           les_elems(nb,s)=face_sommets(fac,s);
         // on calcule la normale
@@ -326,9 +326,9 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
               {
                 for (int i=0; i<3; i++)
                   {
-                    point0b(i)=coord(les_elems(nb,0),i);
-                    point1b(i)=coord(les_elems(nb,1),i);
-                    point2b(i)=coord(les_elems(nb,2),i);
+                    point0b[i]=coord(les_elems(nb,0),i);
+                    point1b[i]=coord(les_elems(nb,1),i);
+                    point2b[i]=coord(les_elems(nb,2),i);
                   }
                 calcul_normal(point0b,point1b,point2b,normal_b);
                 if (dotproduct_array(normal,normal_b)<0)
@@ -343,9 +343,9 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
                 for (int i=0; i<nb_sommet_face; i++)
                   {
 
-                    point0b(i)=coord(les_elems(nb,1),i)-coord(les_elems(nb,0),i);
+                    point0b[i]=coord(les_elems(nb,1),i)-coord(les_elems(nb,0),i);
                   }
-                double produit=normal(0)*point0b(1)-normal(1)*point0b(0);
+                double produit=normal[0]*point0b[1]-normal[1]*point0b[0];
                 if (produit<0)
                   {
                     // si normal a l'envers on inverse les deux sommets

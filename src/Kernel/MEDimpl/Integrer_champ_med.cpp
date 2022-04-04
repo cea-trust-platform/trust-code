@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,10 +68,10 @@ Entree& Integrer_champ_med::readOn(Entree& is)
 void calcul_normal_norme(const ArrOfDouble& org,const ArrOfDouble& point1, const ArrOfDouble& point2,ArrOfDouble& normal);
 double calcul_surface_triangle(const ArrOfDouble& origine,const ArrOfDouble& point1, const ArrOfDouble& point2)
 {
-  double normal0=(point1(1)-origine(1))*(point2(2)-origine(2))-((point2(1)-origine(1))*(point1(2)-origine(2)));
+  double normal0=(point1[1]-origine[1])*(point2[2]-origine[2])-((point2[1]-origine[1])*(point1[2]-origine[2]));
 
-  double normal1=(point1(2)-origine(2))*(point2(0)-origine(0))-((point2(2)-origine(2))*(point1(0)-origine(0)));
-  double normal2=(point1(0)-origine(0))*(point2(1)-origine(1))-((point2(0)-origine(0))*(point1(1)-origine(1)));
+  double normal1=(point1[2]-origine[2])*(point2[0]-origine[0])-((point2[2]-origine[2])*(point1[0]-origine[0]));
+  double normal2=(point1[0]-origine[0])*(point2[1]-origine[1])-((point2[0]-origine[0])*(point1[1]-origine[1]));
   double res=normal0*normal0+ normal1*normal1 + normal2*normal2 ;
 
   return sqrt(res)/2.;
@@ -79,22 +79,22 @@ double calcul_surface_triangle(const ArrOfDouble& origine,const ArrOfDouble& poi
 
 double  portion_surface_elem(const ArrOfDouble& pointA,const ArrOfDouble& pointB, const ArrOfDouble& pointC,const double& z)
 {
-  if (z<=pointA(2)) return 0;
-  if (z>pointC(2)) return calcul_surface_triangle(pointA,pointB,pointC);
+  if (z<=pointA[2]) return 0;
+  if (z>pointC[2]) return calcul_surface_triangle(pointA,pointB,pointC);
   ArrOfDouble pointD(3);
   // le point D est sur AC a hauteur de B.
-  pointD(2)=pointB(2);
-  double lambda=(pointB(2)-pointA(2))/(pointC(2)-pointA(2));
+  pointD[2]=pointB[2];
+  double lambda=(pointB[2]-pointA[2])/(pointC[2]-pointA[2]);
   for (int i=0; i<2; i++)
-    pointD(i)=pointA(i)+lambda*(pointC(i)-pointA(i));
-  if (z<=pointB(2))
+    pointD[i]=pointA[i]+lambda*(pointC[i]-pointA[i]);
+  if (z<=pointB[2])
     {
       // on calcul la surface du triangle inferieur
       // et on prend la proportion...
       double surf_inf=calcul_surface_triangle(pointA,pointB,pointD);
       double rap=1;
-      if (pointB(2)!=pointA(2))
-        rap=(z-pointA(2))/(pointB(2)-pointA(2));
+      if (pointB[2]!=pointA[2])
+        rap=(z-pointA[2])/(pointB[2]-pointA[2]);
       return surf_inf*rap*rap;
     }
   else
@@ -103,7 +103,7 @@ double  portion_surface_elem(const ArrOfDouble& pointA,const ArrOfDouble& pointB
       // et on prend la proportion...
       // et on retire a la surface totale
       double surf_sup=calcul_surface_triangle(pointB,pointD,pointC);
-      double rap=(z-pointC(2))/(pointB(2)-pointC(2));
+      double rap=(z-pointC[2])/(pointB[2]-pointC[2]);
       double surf_tot=calcul_surface_triangle(pointA,pointB,pointC);
       return surf_tot-surf_sup*rap*rap;
     }
@@ -197,7 +197,7 @@ Entree& Integrer_champ_med::interpreter(Entree& is)
       zmax=DMAXFLOAT/2.;
       zmin=-zmax;
       dz=(zmax-zmin);
-      pos(0)=0;
+      pos[0]=0;
 
     }
   //if (nom_methode=="integrale_en_z")
@@ -231,23 +231,23 @@ Entree& Integrer_champ_med::interpreter(Entree& is)
 
         for (int i=0; i<3; i++)
           {
-            point0(i)=coord(les_elems(elem,0),i);
-            point1(i)=coord(les_elems(elem,1),i);
-            point2(i)=coord(les_elems(elem,2),i);
+            point0[i]=coord(les_elems(elem,0),i);
+            point1[i]=coord(les_elems(elem,1),i);
+            point2[i]=coord(les_elems(elem,2),i);
           }
         calcul_normal_norme(point0,point1,  point2, normal);
         for (int i=0; i<3; i++)
           {
-            point0(i)=coord(les_elems_mod(elem,0),i);
-            point1(i)=coord(les_elems_mod(elem,1),i);
-            point2(i)=coord(les_elems_mod(elem,2),i);
+            point0[i]=coord(les_elems_mod(elem,0),i);
+            point1[i]=coord(les_elems_mod(elem,1),i);
+            point2[i]=coord(les_elems_mod(elem,2),i);
           }
         for (int tranche=0; tranche<nb_tranche; tranche++)
           {
 
             double zminl=(zmin)+(zmax-zmin)/nb_tranche*tranche;
             double zmaxl=zminl+dz;
-            pos(tranche)=(zminl+zmaxl)/2.;
+            pos[tranche]=(zminl+zmaxl)/2.;
             double z0=coord(les_elems_mod(elem,0),2);
             if (z0<=zmaxl)
               {
@@ -261,9 +261,9 @@ Entree& Integrer_champ_med::interpreter(Entree& is)
                     double prod_scal=0;
 
                     for (int i=0; i<3; i++)
-                      prod_scal+=valeurs(elem,i)*normal(i);
-                    res(tranche)+=portion*prod_scal;
-                    surface(tranche)+=portion;
+                      prod_scal+=valeurs(elem,i)*normal[i];
+                    res[tranche]+=portion*prod_scal;
+                    surface[tranche]+=portion;
                   }
               }
 
@@ -275,16 +275,16 @@ Entree& Integrer_champ_med::interpreter(Entree& is)
   SFichier so(nom_fichier);
   for (int nb=0; nb<nb_tranche; nb++)
     {
-      trace+=res(nb);
-      if (surface(nb)!=0)
-        res(nb)/=surface(nb);
+      trace+=res[nb];
+      if (surface[nb]!=0)
+        res[nb]/=surface[nb];
       else assert(res(nb)==0);
     }
   Cout<<"# overall balance "<<trace<<finl;
   so<<"# bilan global "<<trace<<finl;
   so<<"# position, valeur moyenne, surface, flux"<<finl;
   for (int nb=0; nb<nb_tranche; nb++)
-    so << pos(nb)<<" "<<res(nb)<<" "<<surface(nb)<<" "<<res(nb)*surface(nb)<<finl;
+    so << pos[nb]<<" "<<res[nb]<<" "<<surface[nb]<<" "<<res[nb]*surface[nb]<<finl;
 
   return is;
 

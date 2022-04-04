@@ -168,9 +168,9 @@ void Extruder_en3::extruder(Domaine& dom, const IntVect& num)
       int oldnbsom = zone.nb_som();
       IntTab& les_elems=zone.les_elems();
       int oldsz=les_elems.dimension(0);
-      double dx = direction_(0)/NZ_;
-      double dy = direction_(1)/NZ_;
-      double dz = direction_(2)/NZ_;
+      double dx = direction_[0]/NZ_;
+      double dy = direction_[1]/NZ_;
+      double dz = direction_[2]/NZ_;
 
       Faces les_faces;
       {

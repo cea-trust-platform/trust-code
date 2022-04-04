@@ -527,24 +527,24 @@ int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
   for (int som=0; som<nb_som; som++)
     {
       // Periodic nodes:
-      node(0)=som;
-      node(1)=renum_som_perio(som);
-      if (node(0)!=node(1))
+      node[0]=som;
+      node[1]=renum_som_perio[som];
+      if (node[0]!=node[1])
         {
           // Loop on each element surrounding the nodes
           IntLists part(2);
           for (int i=0; i<2; i++)
             {
-              for (int i_elem=0; i_elem<som_elem.get_list_size(node(i)); i_elem++)
+              for (int i_elem=0; i_elem<som_elem.get_list_size(node[i]); i_elem++)
                 {
-                  int elem = som_elem(node(i),i_elem);
+                  int elem = som_elem(node[i],i_elem);
                   part[i].add_if_not(elem_part[elem]);
                 }
             }
           // Check if same number:
           if (part[0].size()!=part[1].size())
             {
-              Cerr << "Warning: Not the same number of parts around the periodic nodes " << node(0) << " and " << node(1) << " !" << finl;
+              Cerr << "Warning: Not the same number of parts around the periodic nodes " << node[0] << " and " << node[1] << " !" << finl;
               Cerr << "We try to fix:" << finl;
               int smaller = ( part[0].size() < part[1].size() ? 0 : 1);
               int bigger  = 1 - smaller;
@@ -555,9 +555,9 @@ int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
                   if (!part[smaller].contient(i_part))
                     {
                       // i_part -> first_part on all elements surrounding the node with more parts:
-                      for (int i_elem=0; i_elem<som_elem.get_list_size(node(bigger)); i_elem++)
+                      for (int i_elem=0; i_elem<som_elem.get_list_size(node[bigger]); i_elem++)
                         {
-                          int elem = som_elem(node(bigger),i_elem);
+                          int elem = som_elem(node[bigger],i_elem);
                           if (elem_part[elem] == i_part)
                             {
                               elem_part[elem] = first_part;
@@ -577,7 +577,7 @@ int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
                   if (!part[1].contient(i_part))
                     {
                       // Implement an algorithm as just above ?
-                      Cerr << "Warning: different parts around the periodic nodes " << node(0) << " and " << node(1) << " !" << finl;
+                      Cerr << "Warning: different parts around the periodic nodes " << node[0] << " and " << node[1] << " !" << finl;
                       //for (int j=0;j<2;j++)
                       //   for (int k=0;k<part[j].size();k++)
                       //      Cerr << "node " << j << " part " << part[j][k] << finl;
@@ -590,9 +590,9 @@ int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
                             {
                               // Choice between i_part and j_part:
                               // We take i_part arbitrary so j_part -> i_part
-                              for (int i_elem=0; i_elem<som_elem.get_list_size(node(1)); i_elem++)
+                              for (int i_elem=0; i_elem<som_elem.get_list_size(node[1]); i_elem++)
                                 {
-                                  int elem = som_elem(node(1),i_elem);
+                                  int elem = som_elem(node[1],i_elem);
                                   if (elem_part[elem] == j_part)
                                     {
                                       elem_part[elem] = i_part;

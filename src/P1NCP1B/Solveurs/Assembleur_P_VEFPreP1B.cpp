@@ -429,12 +429,12 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
       // b n'a pas forcement son espace virtuel a jour
       int nb_aretes=la_zone.zone().nb_aretes();
       for(int i=0; i<nb_aretes; i++)
-        if(!ok_arete(i) && b(npa+i)!=0.) // Les aretes superflues ont une valeur nulle
+        if(!ok_arete[i] && b(npa+i)!=0.) // Les aretes superflues ont une valeur nulle
           {
             Cerr << "Pb div Aretes, la pression sur l'arete " << i << " (qui est superflue) n'est pas nulle." << finl;
             Process::exit();
           }
-        else if ( (renum_arete_perio(i)!=i) && b(npa+i)!=0.) // Les aretes periodiques ont une valeur nulle
+        else if ( (renum_arete_perio[i]!=i) && b(npa+i)!=0.) // Les aretes periodiques ont une valeur nulle
           {
             Cerr << "Pb div Aretes Perio, la pression sur l'arete " << i << " (qui est periodique) n'est pas nulle." << finl;
             Process::exit();
@@ -716,7 +716,7 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
               pression(npa+i)=0;
               Process::exit();
             }
-          else if ( (renum_arete_perio(i)!=i) && pression(npa+i)!=0.)
+          else if ( (renum_arete_perio[i]!=i) && pression(npa+i)!=0.)
             {
               Cerr << "Pb pression arete superflue periodique, P(" << npa+i << ")=" << pression(npa+i) << finl;
               pression(npa+i)=0;

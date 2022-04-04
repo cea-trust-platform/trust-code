@@ -136,9 +136,9 @@ int Rectangle::reordonner_elem()
       NS=-1;
       for(i=0; i<4; i++)
         {
-          S(i) = elem(num_poly,i);
+          S[i] = elem(num_poly,i);
           for(j=0; j<2; j++)
-            co(i,j) = dom.coord(S(i), j);
+            co(i,j) = dom.coord(S[i], j);
         }
 
       xmin=std::min(co(0, 0), co(1, 0));
@@ -148,16 +148,16 @@ int Rectangle::reordonner_elem()
 
       for(i=0; i<4; i++)
         if ( est_egal(co(i, 0),xmin) && est_egal(co(i, 1),ymin))
-          NS(0)=S(i);
+          NS[0]=S[i];
       for(i=0; i<4; i++)
         if ( !est_egal(co(i, 0),xmin) && est_egal(co(i, 1),ymin))
-          NS(1)=S(i);
+          NS[1]=S[i];
       for(i=0; i<4; i++)
         if ( est_egal(co(i, 0),xmin) && !est_egal(co(i, 1),ymin))
-          NS(2)=S(i);
+          NS[2]=S[i];
       for(i=0; i<4; i++)
         if ( !est_egal(co(i, 0),xmin) && !est_egal(co(i, 1),ymin))
-          NS(3)=S(i);
+          NS[3]=S[i];
 
       // Si un sommet vaut -1, ce n'est pas un Rectangle !
       if (min_array(NS)==-1)
@@ -167,7 +167,7 @@ int Rectangle::reordonner_elem()
         }
       // Sinon on remplit elem
       for(i=0; i<4; i++)
-        elem(num_poly, i)=NS(i);
+        elem(num_poly, i)=NS[i];
     }
   return 0;
 }

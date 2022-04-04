@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,10 +74,10 @@ Entree& Extraire_plan::readOn(Entree& is)
 
 void calcul_normal(const ArrOfDouble& origine,const ArrOfDouble& point1, const ArrOfDouble& point2,ArrOfDouble& normal)
 {
-  normal(0)=(point1(1)-origine(1))*(point2(2)-origine(2))-((point2(1)-origine(1))*(point1(2)-origine(2)));
+  normal[0]=(point1[1]-origine[1])*(point2[2]-origine[2])-((point2[1]-origine[1])*(point1[2]-origine[2]));
 
-  normal(1)=(point1(2)-origine(2))*(point2(0)-origine(0))-((point2(2)-origine(2))*(point1(0)-origine(0)));
-  normal(2)=(point1(0)-origine(0))*(point2(1)-origine(1))-((point2(0)-origine(0))*(point1(1)-origine(1)));
+  normal[1]=(point1[2]-origine[2])*(point2[0]-origine[0])-((point2[2]-origine[2])*(point1[0]-origine[0]));
+  normal[2]=(point1[0]-origine[0])*(point2[1]-origine[1])-((point2[0]-origine[0])*(point1[1]-origine[1]));
 }
 
 void calcul_normal_norme(const ArrOfDouble& org,const ArrOfDouble& point1, const ArrOfDouble& point2,ArrOfDouble& normal)
@@ -136,9 +136,9 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       point3.resize_array(3);
       for (int dir=0; dir<3; dir++)
         if (triangle)
-          point3(dir)=(point1(dir)+point2(dir))/2.;
+          point3[dir]=(point1[dir]+point2[dir])/2.;
         else
-          point3(dir)=point1(dir)+point2(dir)-origine(dir);
+          point3[dir]=point1[dir]+point2[dir]-origine[dir];
     }
 
 
@@ -151,7 +151,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
 
       double dx=0;
       for (int dir=0; dir<3; dir++)
-        dx+=normal(dir)*origine(dir);
+        dx+=normal[dir]*origine[dir];
       Noms axes(3);
       axes[0]="x";
       axes[1]="y";
@@ -161,8 +161,8 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       out << " { domaine "<<nom_dom <<" probleme "<<nom_pb <<finl;
       out<<" condition_elements (" <<-dx ;
       for (int dir=0; dir<3; dir++)
-        if (normal(dir))
-          out<<"+"<<axes[dir]<<"*("<<normal(dir)<<")";
+        if (normal[dir])
+          out<<"+"<<axes[dir]<<"*("<<normal[dir]<<")";
       if (inverse_condition_element)
         out<<")_ge_0"<<finl;
       else
@@ -188,10 +188,10 @@ Entree& Extraire_plan::interpreter_(Entree& is)
               out<<"((";
               for (int dir=0; dir<3; dir++)
                 {
-                  dxbis+=normal2(dir)*D(dir);
-                  ref+=normal2(dir)*A(dir);
-                  if (normal2(dir))
-                    out << axes[dir]<<"*("<< normal2(dir)<<")+";
+                  dxbis+=normal2[dir]*D[dir];
+                  ref+=normal2[dir]*A[dir];
+                  if (normal2[dir])
+                    out << axes[dir]<<"*("<< normal2[dir]<<")+";
                 }
               out<<"("<<-ref<<"))";
               //Cout<<"INFO " << dx-ref<<finl;
@@ -264,10 +264,10 @@ Entree& Extraire_plan::interpreter_(Entree& is)
 
     for (int dir=0; dir<3; dir++)
       {
-        somm_hexa(0,dir)=origine(dir);
-        somm_hexa(1,dir)=point1(dir);
-        somm_hexa(2,dir)=point2(dir);
-        somm_hexa(3,dir)=point3(dir);
+        somm_hexa(0,dir)=origine[dir];
+        somm_hexa(1,dir)=point1[dir];
+        somm_hexa(2,dir)=point2[dir];
+        somm_hexa(3,dir)=point3[dir];
         for (int t=0; t<nb_som; t++)
           somm_hexa(t+nb_som,dir)=somm_hexa(t,dir);
       }
@@ -278,8 +278,8 @@ Entree& Extraire_plan::interpreter_(Entree& is)
     for (int t=0; t<nb_som; t++)
       for (int dir=0; dir<3; dir++)
         {
-          somm_hexa(t,dir)=somm_hexa(t,dir)-d_epaisseur*normal(dir);
-          somm_hexa(nb_som+t,dir)=somm_hexa(nb_som+t,dir)+d_epaisseur*normal(dir);
+          somm_hexa(t,dir)=somm_hexa(t,dir)-d_epaisseur*normal[dir];
+          somm_hexa(nb_som+t,dir)=somm_hexa(nb_som+t,dir)+d_epaisseur*normal[dir];
         }
     IntTab& elem_test=zone_test.les_elems();
     elem_test.resize(1,nb_som*2);
@@ -311,7 +311,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
           for (int j = 0; j < nb_faces_j; j++)
             {
               int face_de_joint = indices_faces_joint(j, 1);
-              marq(face_de_joint) = -1;
+              marq[face_de_joint] = -1;
             }
         }
     }
@@ -320,10 +320,10 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   for (int fac=0; fac<nbfaces; fac++)
     {
       if (zone_test.chercher_elements(xv(fac,0),xv(fac,1),xv(fac,2))==0)
-        if (marq(fac)!=-1)
+        if (marq[fac]!=-1)
           {
             // tester si item_commun....
-            marq(fac)=1;
+            marq[fac]=1;
             nb_t++;
           }
     }
@@ -334,7 +334,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   const IntTab& face_sommets=zone_vf.face_sommets();
   int nb=0;
   for (int fac=0; fac<nbfaces; fac++)
-    if (marq(fac)==1)
+    if (marq[fac]==1)
       {
         Cerr<<fac <<" ";
         for (int s=0; s<3; s++)
@@ -343,9 +343,9 @@ Entree& Extraire_plan::interpreter_(Entree& is)
         ArrOfDouble normal_b(3);
         for (int i=0; i<3; i++)
           {
-            point0b(i)=coord(les_elems(nb,0),i);
-            point1b(i)=coord(les_elems(nb,1),i);
-            point2b(i)=coord(les_elems(nb,2),i);
+            point0b[i]=coord(les_elems(nb,0),i);
+            point1b[i]=coord(les_elems(nb,1),i);
+            point2b[i]=coord(les_elems(nb,2),i);
           }
         calcul_normal(point0b,point1b,point2b,normal_b);
         if (dotproduct_array(normal,normal_b)<0)

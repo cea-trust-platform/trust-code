@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -292,7 +292,7 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
         }
       // remplissage de tmp_mat_virt_
       {
-        tmp_mat_virt_.get_set_tab1()(0) = 1;
+        tmp_mat_virt_.get_set_tab1()[0] = 1;
         int i_ligne_dest = 0;
         int dest_index = 0;
         for (int i_ligne = 0; i_ligne < nb_lignes_mat; i_ligne++)
@@ -301,7 +301,7 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
             if (count > 0)
               {
                 tmp_mat_virt_.lignes_non_vides_[i_ligne_dest] = i_ligne + 1; // indice fortran
-                tmp_mat_virt_.get_set_tab1()(i_ligne_dest) = dest_index + 1; // index fortran
+                tmp_mat_virt_.get_set_tab1()[i_ligne_dest] = dest_index + 1; // index fortran
                 i_ligne_dest++;
                 int src_index = mat_virt.get_tab1()(i_ligne) - 1; // fortran->c
                 for (int i = 0; i < count; i++, src_index++, dest_index++)
@@ -312,12 +312,12 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
                     int rj = renum_[j];
                     // on stocke dans tmp_mat_virt des indices de colonnes relatifs au vecteur complet
                     // (pas seulement la partie virtuelle)
-                    tmp_mat_virt_.get_set_tab2()(dest_index) = rj + 1; // indice fortran
+                    tmp_mat_virt_.get_set_tab2()[dest_index] = rj + 1; // indice fortran
                   }
               }
           }
         // Fin de la derniere ligne:
-        tmp_mat_virt_.get_set_tab1()(i_ligne_dest) = dest_index + 1; // index fortran
+        tmp_mat_virt_.get_set_tab1()[i_ligne_dest] = dest_index + 1; // index fortran
       }
       reinit_ = 1;
     }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -572,10 +572,10 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
               som2 = les_sommets(element, 2);
               som3 = les_sommets(element, 3);
 
-              psc(0) = som_pscal(som0,som1,som2,som3,zone);
-              psc(1) = som_pscal(som1,som0,som2,som3,zone);
-              psc(2) = som_pscal(som2,som0,som1,som3,zone);
-              psc(3) = som_pscal(som3,som0,som1,som2,zone);
+              psc[0] = som_pscal(som0,som1,som2,som3,zone);
+              psc[1] = som_pscal(som1,som0,som2,som3,zone);
+              psc[2] = som_pscal(som2,som0,som1,som3,zone);
+              psc[3] = som_pscal(som3,som0,som1,som2,zone);
 
               const int indice_min = imin_array(psc);
               if(indice_min==0)
@@ -607,11 +607,11 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
                   som_3=som2;
                 }
 
-              dist(0)=distance_sommets(som_0,som_1,zone);
-              dist(1)=distance_sommets(som_0,som_2,zone);
-              dist(2)=distance_sommets(som_0,som_3,zone);
+              dist[0]=distance_sommets(som_0,som_1,zone);
+              dist[1]=distance_sommets(som_0,som_2,zone);
+              dist[2]=distance_sommets(som_0,som_3,zone);
 
-              dist_tot=dist(0)+dist(1)+dist(2);
+              dist_tot=dist[0]+dist[1]+dist[2];
 
               dist_min=min_array(dist);
               dist_max=max_array(dist);
@@ -651,7 +651,7 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
           {
             som_0 = les_sommets(element, som1);
             som_1 = dom.get_renum_som_perio(som_0);
-            longueur_filtre_sommet(som_1) = std::max(longueur_filtre(element), longueur_filtre_sommet(som_1));
+            longueur_filtre_sommet[som_1] = std::max(longueur_filtre(element), longueur_filtre_sommet[som_1]);
           }
 
       longueur_filtre=-1.;
@@ -661,7 +661,7 @@ DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& me
           {
             som_0 = les_sommets(element, som1);
             som_1 = dom.get_renum_som_perio(som_0);
-            longueur_filtre(element) = std::max (longueur_filtre(element), longueur_filtre_sommet(som_1));
+            longueur_filtre(element) = std::max (longueur_filtre(element), longueur_filtre_sommet[som_1]);
           }
     }
 
@@ -701,9 +701,9 @@ double som_pscal(const int som0, const int som1, const int som2, const int som3,
 
   for(int i=0 ; i<Objet_U::dimension ; i++)
     {
-      v1(i)=xs(som1,i)-xs(som0,i);
-      v2(i)=xs(som2,i)-xs(som0,i);
-      v3(i)=xs(som3,i)-xs(som0,i);
+      v1[i]=xs(som1,i)-xs(som0,i);
+      v2[i]=xs(som2,i)-xs(som0,i);
+      v3[i]=xs(som3,i)-xs(som0,i);
     }
 
   n1=norme_array(v1);

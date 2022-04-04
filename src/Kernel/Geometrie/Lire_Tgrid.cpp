@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -551,24 +551,24 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                   for (int j=0; j<nb_som_face; j++)
                     {
                       fic >> motlu;
-                      som(j)=htoi(motlu)-1;
+                      som[j]=htoi(motlu)-1;
                     }
                   // Pour les hexaedres a cause de la numerotation TRUST, on inverse les sommets 2 et 3
                   if (nb_som_face==4)
                     {
-                      int tmp2=som(2);
-                      som(2)=som(3);
-                      som(3)=tmp2;
+                      int tmp2=som[2];
+                      som[2]=som[3];
+                      som[3]=tmp2;
                     }
                   fic >> motlu;        // premier element voisin de la face (nul si frontiere)
-                  elem(0)=htoi(motlu)-1;
+                  elem[0]=htoi(motlu)-1;
                   fic >> motlu;        // deuxieme element voisin de la face (nul si frontiere)
                   // Debut Rajout Cyril MALOD : 15-06-2006
                   Nom tmp2=motlu;
                   if (tmp2!=motlu.prefix("))"))
                     {
                       tmp2=motlu.prefix("))");
-                      elem(1)=htoi(tmp2)-1;
+                      elem[1]=htoi(tmp2)-1;
                       compteur=1; // Ce compteur sert a ne pas lire le "motlu" suivant
                     }
                   else
@@ -576,12 +576,12 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                       if (tmp2!=motlu.prefix(")"))
                         {
                           tmp2=motlu.prefix(")");
-                          elem(1)=htoi(motlu)-1;
+                          elem[1]=htoi(motlu)-1;
                           compteur=-1; // Ce compteur sert a lire le "motlu" suivant
                         }
                       else
                         {
-                          elem(1)=htoi(motlu)-1;
+                          elem[1]=htoi(motlu)-1;
                           compteur=0; // Ce compteur sert a lire le "motlu" suivant
                         }
                     }
@@ -591,7 +591,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                   // Premier passage, on verifie bien qu'on lit une frontiere
                   if (i==0)
                     {
-                      if (elem(0)<0 || elem(1)<0)
+                      if (elem[0]<0 || elem[1]<0)
                         {
                           // C'est bien une frontiere donc on dimensionne le necessaire
                           type=3;
@@ -620,18 +620,18 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                   // Les faces internes sont lues mais pas stockees, les faces frontieres sont stockees
                   if (type!=2)
                     for (int j=0; j<nb_som_face; j++)
-                      nouveau_bord->faces().sommet(i,j)=som(j);
+                      nouveau_bord->faces().sommet(i,j)=som[j];
 
                   // On construit le tableau les_elems a partir des faces lues
                   for (int i2=0; i2<2; i2++)
                     {
-                      if (elem(i2)>=0) // On ne traite pas les elements -1 voisins des faces frontieres
+                      if (elem[i2]>=0) // On ne traite pas les elements -1 voisins des faces frontieres
                         {
                           // Premier remplissage de elem(i)
-                          if (nb_som_lu_elem(elem(i2))==0)
+                          if (nb_som_lu_elem[elem[i2]]==0)
                             {
                               for (int j=0; j<nb_som_face; j++)
-                                les_elems(elem(i2),nb_som_lu_elem(elem(i2))++)=som(j);
+                                les_elems(elem[i2],nb_som_lu_elem[elem[i2]]++)=som[j];
                             }
                           else
                             {
@@ -640,9 +640,9 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                                 {
                                   // On ajoute le sommet s'il n'est pas deja dans les_elems
                                   int k=0,trouve=0;
-                                  while (k<nb_som_lu_elem(elem(i2)) && trouve==0)
+                                  while (k<nb_som_lu_elem[elem[i2]] && trouve==0)
                                     {
-                                      if (les_elems(elem(i2),k)==som(j))
+                                      if (les_elems(elem[i2],k)==som[j])
                                         {
                                           face_opposee=0;
                                           trouve=1;
@@ -652,12 +652,12 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                                     }
                                   // On ne complete que pour les tetraedres ou les triangles
                                   if ((trouve==0 && nb_som_face==3) || (trouve==0 && nb_som_face==2 && type_elements==1))
-                                    les_elems(elem(i2),nb_som_lu_elem(elem(i2))++)=som(j);
+                                    les_elems(elem[i2],nb_som_lu_elem[elem[i2]]++)=som[j];
 
                                   assert(elem(i2)<nb_elem);
-                                  if (nb_som_lu_elem(elem(i2))>nb_som_elem)
+                                  if (nb_som_lu_elem[elem[i2]]>nb_som_elem)
                                     {
-                                      Cerr << "Problem on reading the element " << elem(i2) << finl;
+                                      Cerr << "Problem on reading the element " << elem[i2] << finl;
                                       Cerr << "There is more than " << nb_som_elem << " nodes !" << finl;
                                       Cerr << "Check that the read file contains only tetrahedra or triangles" << finl;
                                       Cerr << "or contact TRUST support." << finl;
@@ -668,7 +668,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                               if ((nb_som_face==4 && face_opposee==1) || (nb_som_face==2 && face_opposee==1 && type_elements==3))
                                 {
                                   for (int j=0; j<nb_som_face; j++)
-                                    les_elems(elem(i2),nb_som_lu_elem(elem(i2))++)=som(j);
+                                    les_elems(elem[i2],nb_som_lu_elem[elem[i2]]++)=som[j];
                                 }
                             }
                         }

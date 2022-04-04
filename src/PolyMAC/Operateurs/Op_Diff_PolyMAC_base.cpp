@@ -201,7 +201,7 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
       const ArrOfDouble& c_grav=ma_zone.cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
+          xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
   int k,face;
   int nb_front_Cl=la_zone_poly_->nb_front_Cl();

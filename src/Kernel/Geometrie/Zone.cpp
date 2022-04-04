@@ -1473,7 +1473,7 @@ void Zone::calculer_mon_centre_de_gravite(ArrOfDouble& c)
   for (int i=0; i<nb_elem(); i++)
     for (int j=0; j<dimension; j++)
       {
-        c(j)+=xp(i,j)*volumes(i);
+        c[j]+=xp(i,j)*volumes(i);
         volume+=volumes(i);
       }
   // Cas de Zone vide:

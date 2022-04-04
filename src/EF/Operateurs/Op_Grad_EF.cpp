@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -177,14 +177,14 @@ void ajouter_bord(DoubleTab& resu,const Zone_EF& zone_EF,const  Zone_Cl_EF& zone
 
                       for (int i=0; i<nbnn; i++)
                         {
-                          num(i)=face_sommets(face,filter(i));
+                          num[i]=face_sommets(face,filter[i]);
                         }
 
                       for (int i=0; i<nbnn; i++)
                         {
                           for (int d=0; d<Objet_U::dimension; d++)
-                            xl(d,i)=coord(num(i),d);
-                          poro(i)=porosite_sommet(num(i));
+                            xl(d,i)=coord(num[i],d);
+                          poro(i)=porosite_sommet[num[i]];
                         }
 
                       ip=1;
@@ -197,7 +197,7 @@ void ajouter_bord(DoubleTab& resu,const Zone_EF& zone_EF,const  Zone_Cl_EF& zone
 
                           for (int d=0; d<Objet_U::dimension; d++)
                             {
-                              int som=num((i));
+                              int som=num[(i)];
                               resu(som,d)+=si(i)*cnorm(d)*val_imp;
                             }
                         }
@@ -404,7 +404,7 @@ int Op_Grad_EF::impr(Sortie& os) const
               fluxy_s += flux_bords_(face,1) ;
 
               // Calcul du moment exerce par le fluide sur le bord (OM/\F)
-              if (impr_mom) moment_z+=flux_bords_(face,1)*c_grav(0)-flux_bords_(face,0)*c_grav(1);
+              if (impr_mom) moment_z+=flux_bords_(face,1)*c_grav[0]-flux_bords_(face,0)*c_grav[1];
 
               if (zone_EF.zone().Bords_a_imprimer_sum().contient(le_bord.le_nom()))
                 {
@@ -427,9 +427,9 @@ int Op_Grad_EF::impr(Sortie& os) const
               fluxz_s += flux_bords_(face,2) ;
 
               // Calcul du moment exerce par le fluide sur le bord (OM/\F)
-              moment_x+=flux_bords_(face,2)*c_grav(1)-flux_bords_(face,1)*c_grav(2);
-              moment_y+=flux_bords_(face,0)*c_grav(2)-flux_bords_(face,2)*c_grav(0);
-              moment_z+=flux_bords_(face,1)*c_grav(0)-flux_bords_(face,0)*c_grav(1);
+              moment_x+=flux_bords_(face,2)*c_grav[1]-flux_bords_(face,1)*c_grav[2];
+              moment_y+=flux_bords_(face,0)*c_grav[2]-flux_bords_(face,2)*c_grav[0];
+              moment_z+=flux_bords_(face,1)*c_grav[0]-flux_bords_(face,0)*c_grav[1];
               if (zone_EF.zone().Bords_a_imprimer_sum().contient(le_bord.le_nom()))
                 {
                   fluxx_sum_s += flux_bords_(face,0) ;

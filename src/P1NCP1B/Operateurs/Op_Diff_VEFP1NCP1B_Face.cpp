@@ -2263,7 +2263,7 @@ remplir_nu_p1(const DoubleTab& nu_elem,DoubleTab& nu_p1) const
             {
               som=dom.get_renum_som_perio(som);
               nu_p1(som) += nu;
-              nb_elem_per_som(som)++;
+              nb_elem_per_som[som]++;
             }
         }
     }

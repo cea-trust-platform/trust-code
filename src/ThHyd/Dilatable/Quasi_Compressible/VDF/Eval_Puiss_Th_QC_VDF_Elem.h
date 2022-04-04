@@ -51,7 +51,7 @@ template <typename Type_Double>
 void Eval_Puiss_Th_QC_VDF_Elem::calculer_terme_source(const int num_elem, Type_Double& source) const
 {
   const int k = (puissance.size_array() == 1) ? 0 : num_elem, size = source.size_array();
-  for (int i = 0; i < size; i++) source(i) = puissance(k, i) * volumes(num_elem) * porosite_vol(num_elem);
+  for (int i = 0; i < size; i++) source[i] = puissance(k, i) * volumes(num_elem) * porosite_vol(num_elem);
 }
 
 #endif /* Eval_Puiss_Th_QC_VDF_Elem_included */

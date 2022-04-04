@@ -1069,7 +1069,7 @@ void Op_Conv_EF::ajouter_contribution_sous_cond(const DoubleTab& transporte, Mat
           {
             int glob=elems(elem,i1);
             for (int b=0; b<dimension; b++)
-              G_e(b)+=G(glob,b);
+              G_e[b]+=G(glob,b);
           }
         G_e/=nb_som_elem;
 
@@ -1115,7 +1115,7 @@ void Op_Conv_EF::ajouter_contribution_sous_cond(const DoubleTab& transporte, Mat
               {
                 double cb=0;
                 for (int b=0; b<dimension; b++)
-                  cb+=G_e(b)*bij(elem,i1,b);
+                  cb+=G_e[b]*bij(elem,i1,b);
                 cb*=(f*pond2);
                 for (int i2=0; i2<nb_som_elem; i2++)
                   {
@@ -1125,7 +1125,7 @@ void Op_Conv_EF::ajouter_contribution_sous_cond(const DoubleTab& transporte, Mat
                     if (centre_impl==1)
                       {
                         for (int b=0; b<dimension; b++)
-                          ca+=G_e(b)*bij(elem,i2,b);
+                          ca+=G_e[b]*bij(elem,i2,b);
                         double pond=IPhi_thilde(elem,i1)/volumes(elem);
 
                         ca*=pond;
@@ -1134,7 +1134,7 @@ void Op_Conv_EF::ajouter_contribution_sous_cond(const DoubleTab& transporte, Mat
                     if ((btd_impl==1)&&(type_op==amont))
                       {
                         for (int c=0; c<dimension; c++)
-                          cc+=G_e(c)*bij(elem,i2,c);
+                          cc+=G_e[c]*bij(elem,i2,c);
                         cc*=cb;
                       }
                     //resu(glob)-=cc*cb*transp_loc(i2,0);
@@ -1207,7 +1207,7 @@ double Op_Conv_EF::calculer_dt_stab() const
           {
             int glob=elems(elem,i1);
             for (int b=0; b<dimension; b++)
-              G_e(b)+=G(glob,b);
+              G_e[b]+=G(glob,b);
           }
         G_e/=nb_som_elem;
         //if (transport_rhou) 	G_e/=rho_elem(elem);
@@ -1227,8 +1227,8 @@ double Op_Conv_EF::calculer_dt_stab() const
 
             ml2+=dx2;
             //double p=G_e(d)*G_e(d)/dx2;
-            ml+=G_e(d)*G_e(d)/dx2;
-            vx[d]=G_e(d)*G_e(d);
+            ml+=G_e[d]*G_e[d]/dx2;
+            vx[d]=G_e[d]*G_e[d];
           }
 
         double diffu=(is_not_lambda_unif?valeurs_diffusivite(elem):valeurs_diffusivite(0));

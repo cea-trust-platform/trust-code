@@ -982,7 +982,7 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
               // if (marq_front_nodes(io)==0)         continue;
               for (int ns=nio+1; ns<norg; ns++)
                 {
-                  int s=liste_sommets_org(ns);
+                  int s=liste_sommets_org[ns];
                   if (s==io)
                     continue;
                   //  if (marq_front_nodes(s)==0) continue;
@@ -996,7 +996,7 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
                     {
                       for (int ne=0; ne<incident_cells.size_array(); ne++)
                         {
-                          int elem=incident_cells(ne);
+                          int elem=incident_cells[ne];
                           int nb_nodes_per_cells=nodes_of_cells_src.dimension(1);
                           int local0=-1,local1=-1;
                           for (int i=0; i<nb_nodes_per_cells; i++)

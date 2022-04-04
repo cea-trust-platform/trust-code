@@ -491,24 +491,24 @@ Entree& Sonde::readOn(Entree& is)
             les_positions_sondes_initiales_.resize(nbre_points,dimension);
 
             for (; i<dimension; i++)
-              is >> origine(i);
+              is >> origine[i];
             for (i=0; i<dimension; i++)
-              is >> extremite1(i);
+              is >> extremite1[i];
             for (i=0; i<dimension; i++)
-              is >> extremite2(i);
+              is >> extremite2[i];
             for (i=0; i<dimension; i++)
-              is >> extremite3(i);
+              is >> extremite3[i];
             for (i=0; i<dimension; i++)
-              dx1(i)=(extremite1(i)-origine(i))/(nbre_points1-1);
+              dx1[i]=(extremite1[i]-origine[i])/(nbre_points1-1);
             for (i=0; i<dimension; i++)
-              dx2(i)=(extremite2(i)-origine(i))/(nbre_points2-1);
+              dx2[i]=(extremite2[i]-origine[i])/(nbre_points2-1);
             for (i=0; i<dimension; i++)
-              dx3(i)=(extremite3(i)-origine(i))/(nbre_points3-1);
+              dx3[i]=(extremite3[i]-origine[i])/(nbre_points3-1);
             for (i=0; i<nbre_points1; i++)
               for (j=0; j<nbre_points2; j++)
                 for (int m=0; m<nbre_points3; m++)
                   for (k=0; k<dimension; k++)
-                    les_positions_sondes_initiales_(i+j*nbre_points1+m*nbre_points1*nbre_points2,k)=origine(k)+i*dx1(k)+j*dx2(k)+m*dx3(k);
+                    les_positions_sondes_initiales_(i+j*nbre_points1+m*nbre_points1*nbre_points2,k)=origine[k]+i*dx1[k]+j*dx2[k]+m*dx3[k];
             break;
           }
         case 8:
@@ -782,10 +782,10 @@ void Sonde::initialiser()
   // Check if some probes are outside the domain:
   ArrOfDouble tmp(nbre_points_tot);
   for (int i=0; i<nbre_points_tot; i++)
-    tmp(i) = elem_[i];
+    tmp[i] = elem_[i];
   mp_max_for_each_item(tmp);
   for (int i=0; i<nbre_points_tot; i++)
-    if (tmp(i)==-1)
+    if (tmp[i]==-1)
       Cerr << "WARNING: The point number " << i+1 << " of the probe named " << nom_ << " is outside the computational domain " << zone_geom.domaine().le_nom() << finl;
 
   // Probes may be moved to cog, face, vertex:
@@ -990,7 +990,7 @@ void Sonde::initialiser()
         {
           int size=0;
           for (int el=0; el<nbre_points_tot; el++)
-            if (prop[el]==p&&!doublon(el)) size++;
+            if (prop[el]==p&&!doublon[el]) size++;
           participant[p].resize_array(size);
           participant[p]=-1;
           int pos=0;
@@ -1022,7 +1022,7 @@ void Sonde::initialiser()
   les_positions_=les_positions_sondes_;
   for (int el=0; el<prop.size(); el++)
     {
-      if (!doublon(el))
+      if (!doublon[el])
         {
           if (prop(el) == me())
             {

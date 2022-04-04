@@ -70,7 +70,7 @@ int Ch_front_input_uniforme::initialiser(double temps, const Champ_Inc_base& inc
         val=0;
       else
         for (int c=0; c<nbcomp; c++)
-          val(0,c)=initial_value_(c);
+          val(0,c)=initial_value_[c];
     }
   return 1;
 }

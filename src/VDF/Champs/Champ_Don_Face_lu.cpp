@@ -35,7 +35,7 @@ int meme_point(const ArrOfInt& x, const DoubleTab& tab, int rang_tab)
   assert(tab.dimension(1) == dime);
   int k;
   for (k=0; k<dime; k++)
-    if (std::fabs(x(k)-tab(rang_tab,k)) >= 1.e-12)
+    if (std::fabs(x[k]-tab(rang_tab,k)) >= 1.e-12)
       break;
   return (k == dime);
 }

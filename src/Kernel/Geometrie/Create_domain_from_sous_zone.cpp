@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -141,7 +141,7 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
   ArrOfInt rev_ssz(domaine_org.zone(0).nb_elem());
   rev_ssz = -1;
   for (int i = 0; i < nb_poly; i++)
-    rev_ssz(ssz[i]) = i;
+    rev_ssz[ssz[i]] = i;
 
   Nom jdd(" "), jdd_par(" ");
   int ecr_jdd = 0;

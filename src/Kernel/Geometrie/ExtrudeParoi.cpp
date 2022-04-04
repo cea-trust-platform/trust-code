@@ -64,9 +64,9 @@ Sortie& ExtrudeParoi::printOn(Sortie& os) const
 
 void calcul_normal2(const ArrOfDouble& pt0, const ArrOfDouble& pt1, const ArrOfDouble& pt2, ArrOfDouble& normal)
 {
-  normal(0)=(pt1(1)-pt0(1))*(pt2(2)-pt0(2))-((pt2(1)-pt0(1))*(pt1(2)-pt0(2)));
-  normal(1)=(pt1(2)-pt0(2))*(pt2(0)-pt0(0))-((pt2(2)-pt0(2))*(pt1(0)-pt0(0)));
-  normal(2)=(pt1(0)-pt0(0))*(pt2(1)-pt0(1))-((pt2(0)-pt0(0))*(pt1(1)-pt0(1)));
+  normal[0]=(pt1[1]-pt0[1])*(pt2[2]-pt0[2])-((pt2[1]-pt0[1])*(pt1[2]-pt0[2]));
+  normal[1]=(pt1[2]-pt0[2])*(pt2[0]-pt0[0])-((pt2[2]-pt0[2])*(pt1[0]-pt0[0]));
+  normal[2]=(pt1[0]-pt0[0])*(pt2[1]-pt0[1])-((pt2[0]-pt0[0])*(pt1[1]-pt0[1]));
 }
 
 void calcul_normal_norme2(const ArrOfDouble& pt0, const ArrOfDouble& pt1, const ArrOfDouble& pt2, ArrOfDouble& normal)
@@ -308,7 +308,7 @@ void ExtrudeParoi::extrude(Domaine& dom)
                 {
                   int som=som_face[k];
                   dmin_som(som) = std::min(dmin_som(som),std::fabs(dist_paroi));
-                  for(int j=0; j<3; j++) normale_som(som,j) += normale(j);
+                  for(int j=0; j<3; j++) normale_som(som,j) += normale[j];
                 }
             }
 
@@ -387,19 +387,19 @@ void ExtrudeParoi::extrude(Domaine& dom)
                   if((som_arete_bord(j,0)==som0) && (som_arete_bord(j,1)==som1))
                     {
                       som_arete_bord(j,2)=som2;
-                      corresp_bord(j)=num_front;
+                      corresp_bord[j]=num_front;
                       break;
                     }
                   if((som_arete_bord(j,0)==som0) && (som_arete_bord(j,1)==som2))
                     {
                       som_arete_bord(j,2)=som1;
-                      corresp_bord(j)=num_front;
+                      corresp_bord[j]=num_front;
                       break;
                     }
                   if((som_arete_bord(j,0)==som1) && (som_arete_bord(j,1)==som2))
                     {
                       som_arete_bord(j,2)=som0;
-                      corresp_bord(j)=num_front;
+                      corresp_bord[j]=num_front;
                       break;
                     }
                 }
@@ -447,8 +447,8 @@ void ExtrudeParoi::extrude(Domaine& dom)
 
           for(int j=0; j<3; j++)
             {
-              normale_som(s1,j) -= psc1*n_proj(j);
-              normale_som(s2,j) -= psc2*n_proj(j);
+              normale_som(s1,j) -= psc1*n_proj[j];
+              normale_som(s2,j) -= psc2*n_proj[j];
             }
         }
     }
@@ -604,14 +604,14 @@ void ExtrudeParoi::extrude(Domaine& dom)
             int nbf2=0;
 
             for (int i=0; i<nba_bord; i++)
-              if(corresp_bord(i)==num_front) nbf2++;
+              if(corresp_bord[i]==num_front) nbf2++;
 
             som_front2.resize(nbf+2*nb_couche*nbf2,3);
 
             int compt2=nbf;
 
             for (int i=0; i<nba_bord; i++)
-              if(corresp_bord(i)==num_front)
+              if(corresp_bord[i]==num_front)
                 {
                   int s1=som_arete_bord(i,0);
                   int s2=som_arete_bord(i,1);

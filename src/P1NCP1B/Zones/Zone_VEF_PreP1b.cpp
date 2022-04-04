@@ -207,12 +207,12 @@ static int next(int S,
   int nb_som=contenu.size_array();
   int i=S+1;
   while(i<nb_som)
-    if(contenu(i)==1)
+    if(contenu[i]==1)
       return i;
     else i++;
   i=0;
   while(i<S)
-    if(contenu(i)==1)
+    if(contenu[i]==1)
       return i;
     else i++;
   return -1;
@@ -318,7 +318,7 @@ void exemple_champ_non_homogene(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& tab)
     {
       tab(nb_elem_tot+nb_som_tot+I)=(1.1+xa(I,0))*(1.1+2*xa(I,1))*(1.1+3*xa(I,2));
       // On applique la periodicite:
-      tab(nb_elem_tot+nb_som_tot+I)=tab(nb_elem_tot+nb_som_tot+renum_arete_perio(I));
+      tab(nb_elem_tot+nb_som_tot+I)=tab[nb_elem_tot+nb_som_tot+renum_arete_perio[I]];
       // On verifie ok_arete au passage
       assert(ok_arete(I)==ok_arete(renum_arete_perio(I)));
     }
@@ -349,7 +349,7 @@ void Zone_VEF_PreP1b::construire_ok_arete()
 
     for (int i = 0; i < nb_aretes; i++)
       {
-        if (renum_arete_perio(i) == i)
+        if (renum_arete_perio[i] == i)
           {
             aretes_som2(i, 0) = dom.get_renum_som_perio(aretes_som(i,0));
             aretes_som2(i, 1) = dom.get_renum_som_perio(aretes_som(i,1));
@@ -392,7 +392,7 @@ void Zone_VEF_PreP1b::construire_ok_arete()
   // en comptant les sommets reels non periodiques dont le contenu vaut 0
   int nombre_aretes_superflues_prevues_sur_la_zone=0;
   for (int i=0; i<nb_som_reel; i++)
-    if (i==dom.get_renum_som_perio(i) && contenu(i)==0)
+    if (i==dom.get_renum_som_perio(i) && contenu[i]==0)
       nombre_aretes_superflues_prevues_sur_la_zone++;
 
   ok_arete = -1;
@@ -409,21 +409,21 @@ void Zone_VEF_PreP1b::construire_ok_arete()
           S0=dom.get_renum_som_perio(aretes_som(Aroot,0));
           S1=dom.get_renum_som_perio(aretes_som(Aroot,1));
         }
-      while (Aroot<nb_aretes && contenu(S0)!=0 && contenu(S1)!=0);
+      while (Aroot<nb_aretes && contenu[S0]!=0 && contenu[S1]!=0);
 
       assert(Aroot<nb_aretes);
 
-      Aroot=renum_arete_perio(Aroot);
+      Aroot=renum_arete_perio[Aroot];
 
       ok_arete(Aroot)=0; // lockee
-      if (!contenu(S0))
+      if (!contenu[S0])
         {
-          contenu(S0)=1;
+          contenu[S0]=1;
           Sroot=S0;
         }
-      else if (!contenu(S1))
+      else if (!contenu[S1])
         {
-          contenu(S1)=1;
+          contenu[S1]=1;
           Sroot=S1;
         }
 
@@ -433,7 +433,7 @@ void Zone_VEF_PreP1b::construire_ok_arete()
           const int nb_aretes_voisines = som_aretes.get_list_size(Sroot);
           for(int i=0; i<nb_aretes_voisines; i++)
             {
-              int A=renum_arete_perio(som_aretes(Sroot,i));
+              int A=renum_arete_perio[som_aretes(Sroot,i)];
               if(ok_arete(A)==-1)
                 {
                   int S=dom.get_renum_som_perio(aretes_som(A,0));
@@ -441,10 +441,10 @@ void Zone_VEF_PreP1b::construire_ok_arete()
                     {
                       S=dom.get_renum_som_perio(aretes_som(A,1));
                     }
-                  if(!contenu(S))
+                  if(!contenu[S])
                     {
                       ok_arete(A)=0; // lockee
-                      contenu(S)=1;
+                      contenu[S]=1;
                     }
                   else
                     {
@@ -452,15 +452,15 @@ void Zone_VEF_PreP1b::construire_ok_arete()
                     }
                 }
             }
-          contenu(Sroot)=2;
+          contenu[Sroot]=2;
         }
       while((Sroot=next(Sroot, contenu))!=-1);
 
       // Correction pour des tableaux ok_arete et contenu pour la periodicite
       for(int i=0; i<nb_aretes; i++)
-        ok_arete(i)=ok_arete(renum_arete_perio(i));
+        ok_arete(i)=ok_arete[renum_arete_perio[i]];
       for(int i=0; i<nb_som_reel; i++)
-        contenu(i)=contenu(dom.get_renum_som_perio(i));
+        contenu[i]=contenu[dom.get_renum_som_perio(i)];
     }
 
   // Mise a jour des parties virtuelles du tableau ok_arete
@@ -511,7 +511,7 @@ void Zone_VEF_PreP1b::construire_renum_arete_perio(const Conds_lim& conds_lim)
   // Initialisation de renum_arete_perio
   renum_arete_perio.resize_array(nb_aretes_tot);
   for (int i=0; i<nb_aretes_tot; i++)
-    renum_arete_perio(i)=i;
+    renum_arete_perio[i]=i;
 
   const IntTab& elem_aretes=zone().elem_aretes();
   ArrOfInt aretes1(6);
@@ -545,14 +545,14 @@ void Zone_VEF_PreP1b::construire_renum_arete_perio(const Conds_lim& conds_lim)
 
                 for(int j=0; j<6; j++)
                   {
-                    aretes1(j)=elem_aretes(elem1,j);
-                    aretes2(j)=elem_aretes(elem2,j);
+                    aretes1[j]=elem_aretes(elem1,j);
+                    aretes2[j]=elem_aretes(elem2,j);
                   }
 
                 for(int j1=0; j1<6; j1++)
                   {
-                    int ar1=aretes1(j1);
-                    int& ar1_perio = renum_arete_perio(ar1);
+                    int ar1=aretes1[j1];
+                    int& ar1_perio = renum_arete_perio[ar1];
                     // On verifie que l'arete appartient a la face (ok==2)
                     int som11=aretes_som(ar1, 0);
                     int som12=aretes_som(ar1, 1);
@@ -568,8 +568,8 @@ void Zone_VEF_PreP1b::construire_renum_arete_perio(const Conds_lim& conds_lim)
                         int s12=dom.get_renum_som_perio(som12);
                         for(int j2=0; j2<6; j2++)
                           {
-                            int ar2=aretes2(j2);
-                            int& ar2_perio = renum_arete_perio(ar2);
+                            int ar2=aretes2[j2];
+                            int& ar2_perio = renum_arete_perio[ar2];
                             int som21=aretes_som(ar2, 0);
                             int som22=aretes_som(ar2, 1);
                             ok=0;
@@ -629,7 +629,7 @@ void Zone_VEF_PreP1b::construire_renum_arete_perio(const Conds_lim& conds_lim)
       creer_tableau_aretes(tmp, Array_base::NOCOPY_NOINIT);
       const int n = tmp.size_array();
       for (int i=0; i<n; i++)
-        tmp[i] = renum_arete_perio(i);
+        tmp[i] = renum_arete_perio[i];
       Debog::verifier_indices_items("renum_arete_perio",tmp.get_md_vector(),tmp);
     }
   /*
@@ -691,7 +691,7 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
   sommet_relie_arete_superflue=0;
   for (int i=0; i<nb_som_reel; i++) // Si i est un sommet periodique:
     if (dom.get_renum_som_perio(i)!=i) // il suffit de faire la verification sur le sommet dom.get_renum_som_perio(i)
-      sommet_relie_arete_superflue(i)=1; // donc on ne verifie pas i
+      sommet_relie_arete_superflue[i]=1; // donc on ne verifie pas i
 
   double nombre_aretes_reelles_superflues=0;
   // On parcourt toutes les aretes mais on ne regarde que les sommets reels
@@ -704,21 +704,21 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
           int S0=aretes_som(i,0);
           if (S0<nb_som_reel)
             {
-              sommet_relie_arete_superflue(S0)=1;
-              sommet_relie_arete_superflue(dom.get_renum_som_perio(S0))=1;
+              sommet_relie_arete_superflue[S0]=1;
+              sommet_relie_arete_superflue[dom.get_renum_som_perio(S0)]=1;
             }
           int S1=aretes_som(i,1);
           if (S1<nb_som_reel)
             {
-              sommet_relie_arete_superflue(S1)=1;
-              sommet_relie_arete_superflue(dom.get_renum_som_perio(S1))=1;
+              sommet_relie_arete_superflue[S1]=1;
+              sommet_relie_arete_superflue[dom.get_renum_som_perio(S1)]=1;
             }
-          if (renum_arete_perio(i)==i) // Pour ne compter les aretes periodiques qu'une fois
+          if (renum_arete_perio[i]==i) // Pour ne compter les aretes periodiques qu'une fois
             {
               if (nb_aretes_tot<nb_aretes_pour_verbose)
                 {
-                  if (renum_arete_perio(i)==i) Cerr << "[" << Process::me() << "] Arete " << i << " superflue non perio: " << S0 << " " << S1 << finl;
-                  else Cerr << "[" << Process::me() << "] Arete " << i << " superflue perio: " << S0 << " " << S1 << " Periodique avec " << renum_arete_perio(i) << finl;
+                  if (renum_arete_perio[i]==i) Cerr << "[" << Process::me() << "] Arete " << i << " superflue non perio: " << S0 << " " << S1 << finl;
+                  else Cerr << "[" << Process::me() << "] Arete " << i << " superflue perio: " << S0 << " " << S1 << " Periodique avec " << renum_arete_perio[i] << finl;
                 }
               int aretes_superflues_communes=1;
               // Si l'arete superflue est commune on en tient compte
@@ -726,7 +726,7 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
                 {
                   int nb_aretes_sur_le_joint = dom.zone(0).faces_joint()(j).joint_item(Joint::ARETE).items_communs().size_array();
                   for (int k=0; k<nb_aretes_sur_le_joint; k++)
-                    if (dom.zone(0).faces_joint()(j).joint_item(Joint::ARETE).items_communs()(k)==i) aretes_superflues_communes++;
+                    if (dom.zone(0).faces_joint()(j).joint_item(Joint::ARETE).items_communs()[k]==i) aretes_superflues_communes++;
                 }
               // On compte les aretes reelles superflues
               if (i<nb_aretes_reelles)
@@ -739,7 +739,7 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
     {
       Cerr << finl << "[" << Process::me() << "] Il y'a au moins un sommet qui n'est pas relie a une arete superflue :" << finl;
       for (int i=0; i<sommet_relie_arete_superflue.size_array(); i++)
-        if (sommet_relie_arete_superflue(i)==0) Cerr << "Sommet " << i << finl;
+        if (sommet_relie_arete_superflue[i]==0) Cerr << "Sommet " << i << finl;
       Process::exit();
     }
   Cerr << "[" << Process::me() << "] Verification que chaque sommet non periodique est bien relie a au moins une arete superflue: OK!" << finl;
@@ -752,7 +752,7 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
         // On tient compte des sommets communs
         for (int j=0; j<dom.zone(0).faces_joint().size(); j++)
           for (int k=0; k<dom.zone(0).faces_joint()(j).joint_item(Joint::SOMMET).items_communs().size_array(); k++)
-            if (dom.zone(0).faces_joint()(j).joint_item(Joint::SOMMET).items_communs()(k)==i) sommets_communs++;
+            if (dom.zone(0).faces_joint()(j).joint_item(Joint::SOMMET).items_communs()[k]==i) sommets_communs++;
         nb_sommets_non_periodiques+=1./sommets_communs;
       }
   double total_nombre_aretes_superflues=mp_sum(nombre_aretes_reelles_superflues);
@@ -766,7 +766,7 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
   int nb_aretes_perio_superflues=0;
   for (int i=0; i<nb_aretes_tot; i++)
     {
-      if (renum_arete_perio(i)!=i)
+      if (renum_arete_perio[i]!=i)
         {
           nb_aretes_periodiques++;
           assert(ok_arete(i)==ok_arete(renum_arete_perio(i)));

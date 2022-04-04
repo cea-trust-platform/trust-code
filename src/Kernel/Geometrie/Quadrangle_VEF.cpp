@@ -152,10 +152,10 @@ int Quadrangle_VEF::contient(const ArrOfDouble& pos, int element) const
   int som3 = zone.sommet_elem(element,3);
   // On regarde tout d'abord si le point cherche n'est pas un des
   // sommets du quadrangle
-  if( (est_egal(dom.coord(som0,0),pos(0)) && est_egal(dom.coord(som0,1),pos(1)))
-      || (est_egal(dom.coord(som1,0),pos(0)) && est_egal(dom.coord(som1,1),pos(1)))
-      || (est_egal(dom.coord(som2,0),pos(0)) && est_egal(dom.coord(som2,1),pos(1)))
-      || (est_egal(dom.coord(som3,0),pos(0)) && est_egal(dom.coord(som3,1),pos(1))) )
+  if( (est_egal(dom.coord(som0,0),pos[0]) && est_egal(dom.coord(som0,1),pos[1]))
+      || (est_egal(dom.coord(som1,0),pos[0]) && est_egal(dom.coord(som1,1),pos[1]))
+      || (est_egal(dom.coord(som2,0),pos[0]) && est_egal(dom.coord(som2,1),pos[1]))
+      || (est_egal(dom.coord(som3,0),pos[0]) && est_egal(dom.coord(som3,1),pos[1])) )
     return 1;
   double prod,p0,p1,p2,p3;
   // Calcul de prod = 01 vectoriel 02 selon z
@@ -328,7 +328,7 @@ void Quadrangle_VEF::reordonner()
     {
       for(int i=0; i<4; i++)
         {
-          S(i) = elem(num_poly,i);
+          S[i] = elem(num_poly,i);
         }
 
       // adaptation de Hexaedre_VEF ::reordonne

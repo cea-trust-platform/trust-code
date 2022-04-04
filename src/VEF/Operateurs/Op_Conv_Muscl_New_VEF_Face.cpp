@@ -376,17 +376,17 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
       itypcl=(rang==-1)?0:zone_Cl_VEF.type_elem_Cl(rang);
 
       for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
-        face(facei_loc)=elem_faces(elem,facei_loc);
+        face[facei_loc]=elem_faces(elem,facei_loc);
 
       vs=0.;
       for (dim=0; dim<Objet_U::dimension; dim++)
         for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
-          vs(dim)+=velocity(face(facei_loc),dim);
+          vs[dim]+=velocity(face[facei_loc],dim);
 
       vsom=0;
       for (dim=0; dim<Objet_U::dimension; dim++)
         for (facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
-          vsom(facei_loc,dim)=vs(dim)-Objet_U::dimension*velocity(face(facei_loc),dim);
+          vsom(facei_loc,dim)=vs[dim]-Objet_U::dimension*velocity(face[facei_loc],dim);
 
       vc=0.;
       zone_VEF.type_elem().valeur().calcul_vc(face,vc,vs,vsom,(*this).vitesse(),itypcl,porosite_face);
@@ -409,7 +409,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
 
                 Cij(elem,fa7)=0.;
                 for (dim=0; dim<Objet_U::dimension; dim++)
-                  Cij(elem,fa7)+=vc(dim)*facette_normales(elem,fa7,dim);
+                  Cij(elem,fa7)+=vc[dim]*facette_normales(elem,fa7,dim);
 
                 Sij(elem,fa7)=0.;
                 for (dim=0; dim<Objet_U::dimension; dim++)
@@ -431,7 +431,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
 
                 Cij(elem,fa7)=0.;
                 for (dim=0; dim<Objet_U::dimension; dim++)
-                  Cij(elem,fa7)+=vc(dim)*facette_normales_Cl(rang,fa7,dim);
+                  Cij(elem,fa7)+=vc[dim]*facette_normales_Cl(rang,fa7,dim);
 
                 Sij(elem,fa7)=0.;
                 for (dim=0; dim<Objet_U::dimension; dim++)
@@ -456,7 +456,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
 
                 Cij(elem,fa7)=0.;
                 for (dim=0; dim<Objet_U::dimension; dim++)
-                  Cij(elem,fa7)+=vc(dim)*facette_normales(elem,fa7,dim);
+                  Cij(elem,fa7)+=vc[dim]*facette_normales(elem,fa7,dim);
 
                 Sij(elem,fa7)=0.;
                 for (dim=0; dim<Objet_U::dimension; dim++)
@@ -482,7 +482,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
 
                 Cij(elem,fa7)=0.;
                 for (dim=0; dim<Objet_U::dimension; dim++)
-                  Cij(elem,fa7)+=vc(dim)*facette_normales_Cl(rang,fa7,dim);
+                  Cij(elem,fa7)+=vc[dim]*facette_normales_Cl(rang,fa7,dim);
 
                 Sij(elem,fa7)=0.;
                 for (dim=0; dim<Objet_U::dimension; dim++)
@@ -1773,8 +1773,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& Kij, const
                 // if (fij>=0.) R=(P_plus(dim)==0.)?0.:Q_plus(dim)/(P_plus(dim)+DMINFLOAT);
                 // else R=(P_moins(dim)==0.)?0.:Q_moins(dim)/(P_moins(dim)+DMINFLOAT);
 
-                if (fij>=0.) R=(std::fabs(P_plus(dim))<DMINFLOAT)?0.:Q_plus(dim)/P_plus(dim);
-                else R=(std::fabs(P_moins(dim))<DMINFLOAT)?0.:Q_moins(dim)/P_moins(dim);
+                if (fij>=0.) R=(std::fabs(P_plus[dim])<DMINFLOAT)?0.:Q_plus[dim]/P_plus[dim];
+                else R=(std::fabs(P_moins[dim])<DMINFLOAT)?0.:Q_moins[dim]/P_moins[dim];
 
 
                 R=(*limiteur_)(R);
@@ -1796,8 +1796,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& Kij, const
                 // if (fji<=0.) R=(P_moins(dim)==0.)?0.:Q_moins(dim)/(P_moins(dim)+DMINFLOAT);
                 // else R=(P_plus(dim)==0.)?0.:Q_plus(dim)/(P_plus(dim)+DMINFLOAT);
 
-                if (fji<=0.) R=(std::fabs(P_moins(dim))<DMINFLOAT)?0.:Q_moins(dim)/P_moins(dim);
-                else R=(std::fabs(P_plus(dim))<DMINFLOAT)?0.:Q_plus(dim)/P_plus(dim);
+                if (fji<=0.) R=(std::fabs(P_moins[dim])<DMINFLOAT)?0.:Q_moins[dim]/P_moins[dim];
+                else R=(std::fabs(P_plus[dim])<DMINFLOAT)?0.:Q_plus[dim]/P_plus[dim];
 
 
                 R=(*limiteur_)(R);
@@ -1909,8 +1909,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
                     // Ri=(Pi_plus(dim)==0.)?0.:Qi_plus(dim)/(Pi_plus(dim)+DMINFLOAT);
                     // Rj=(Pj_moins(dim)==0.)?0.:Qj_moins(dim)/(Pj_moins(dim)+DMINFLOAT);//car fji=-fij
 
-                    Ri=(std::fabs(Pi_plus(dim))<DMINFLOAT)?0.:Qi_plus(dim)/Pi_plus(dim);
-                    Rj=(std::fabs(Pj_moins(dim))<DMINFLOAT)?0.:Qj_moins(dim)/Pj_moins(dim);//car fji=-fij
+                    Ri=(std::fabs(Pi_plus[dim])<DMINFLOAT)?0.:Qi_plus[dim]/Pi_plus[dim];
+                    Rj=(std::fabs(Pj_moins[dim])<DMINFLOAT)?0.:Qj_moins[dim]/Pj_moins[dim];//car fji=-fij
                   }
                 else
                   {
@@ -1920,8 +1920,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
                     // Ri=(Pi_moins(dim)==0.)?0.:Qi_moins(dim)/(Pi_moins(dim)+DMINFLOAT);
                     // Rj=(Pj_plus(dim)==0.)?0.:Qj_plus(dim)/(Pj_plus(dim)+DMINFLOAT);//car fji=-fij
 
-                    Ri=(std::fabs(Pi_moins(dim))<DMINFLOAT)?0.:Qi_moins(dim)/Pi_moins(dim);
-                    Rj=(std::fabs(Pj_plus(dim))<DMINFLOAT)?0.:Qj_plus(dim)/Pj_plus(dim);//car fji=-fij
+                    Ri=(std::fabs(Pi_moins[dim])<DMINFLOAT)?0.:Qi_moins[dim]/Pi_moins[dim];
+                    Rj=(std::fabs(Pj_plus[dim])<DMINFLOAT)?0.:Qj_plus[dim]/Pj_plus[dim];//car fji=-fij
                   }
 
                 if (is_dirichlet_faces_(facej)) Rj=DMAXFLOAT;//on n'a pas besoin de prendre le min quand il y a une face de Dirichlet
@@ -1943,8 +1943,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
                     // Rj=(Pj_moins(dim)==0.)?0.:Qj_moins(dim)/(Pj_moins(dim)+DMINFLOAT);
                     // Ri=(Pi_plus(dim)==0.)?0.:Qi_plus(dim)/(Pi_plus(dim)+DMINFLOAT);
 
-                    Rj=(std::fabs(Pj_moins(dim))<DMINFLOAT)?0.:Qj_moins(dim)/Pj_moins(dim);
-                    Ri=(std::fabs(Pi_plus(dim))<DMINFLOAT)?0.:Qi_plus(dim)/Pi_plus(dim);
+                    Rj=(std::fabs(Pj_moins[dim])<DMINFLOAT)?0.:Qj_moins[dim]/Pj_moins[dim];
+                    Ri=(std::fabs(Pi_plus[dim])<DMINFLOAT)?0.:Qi_plus[dim]/Pi_plus[dim];
                   }
                 else
                   {
@@ -1954,8 +1954,8 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
                     // Rj=(Pj_plus(dim)==0.)?0.:Qj_plus(dim)/(Pj_plus(dim)+DMINFLOAT);
                     // Ri=(Pi_moins(dim)==0.)?0.:Qi_moins(dim)/(Pi_moins(dim)+DMINFLOAT);
 
-                    Rj=(std::fabs(Pj_plus(dim))<DMINFLOAT)?0.:Qj_plus(dim)/Pj_plus(dim);
-                    Ri=(std::fabs(Pi_moins(dim))<DMINFLOAT)?0.:Qi_moins(dim)/Pi_moins(dim);
+                    Rj=(std::fabs(Pj_plus[dim])<DMINFLOAT)?0.:Qj_plus[dim]/Pj_plus[dim];
+                    Ri=(std::fabs(Pi_moins[dim])<DMINFLOAT)?0.:Qi_moins[dim]/Pi_moins[dim];
                   }
 
                 if (is_dirichlet_faces_(facei)) Ri=DMAXFLOAT;//on n'a pas besoin de prendre le min quand il y a une face de Dirichlet
@@ -2082,13 +2082,13 @@ Op_Conv_Muscl_New_VEF_Face::calculer_senseur_v1(const DoubleTab& Kij, const Doub
                   // Codage optimise:
                   if (kik<0)
                     {
-                      if (fik_low>0) Q_plus(dim)+=fik_low;
-                      else       Q_moins(dim)+=fik_low;
+                      if (fik_low>0) Q_plus[dim]+=fik_low;
+                      else       Q_moins[dim]+=fik_low;
                     }
                   else
                     {
-                      if (fik_high>0) P_plus(dim)+=fik_high;
-                      else       P_moins(dim)+=fik_high;
+                      if (fik_high>0) P_plus[dim]+=fik_high;
+                      else       P_moins[dim]+=fik_high;
                     }
                   assert(P_plus(dim)>=0);
                   assert(Q_plus(dim)>=0);

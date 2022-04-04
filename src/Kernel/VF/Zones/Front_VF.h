@@ -78,7 +78,7 @@ inline int Front_VF::num_face(const int& ind_face) const
   if (ind_face<nb_faces())                 // Face de bord reelle
     return num_premiere_face()+ind_face;
   else                                        // Face de bord virtuelle
-    return frontiere().get_faces_virt()(ind_face-nb_faces());
+    return frontiere().get_faces_virt()[ind_face-nb_faces()];
 }
 
 inline int Front_VF::num_local_face(const int& ind_global_face) const
@@ -91,7 +91,7 @@ inline int Front_VF::num_local_face(const int& ind_global_face) const
     {
       for (int i=0; i<frontiere().get_faces_virt().size_array(); i++)
         {
-          if (frontiere().get_faces_virt()(i)==ind_global_face)
+          if (frontiere().get_faces_virt()[i]==ind_global_face)
             return i+nb_faces();
         }
     }

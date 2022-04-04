@@ -1799,8 +1799,8 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   int nbiter = solve(residu);
   if (limpr()>-1)
     {
-      double residu_relatif=(residu(0)>0?residu(nbiter)/residu(0):residu(nbiter));
-      Cout << finl << "Final residue: " << residu(nbiter) << " ( " << residu_relatif << " )"<<finl;
+      double residu_relatif=(residu[0]>0?residu[nbiter]/residu[0]:residu[nbiter]);
+      Cout << finl << "Final residue: " << residu[nbiter] << " ( " << residu_relatif << " )"<<finl;
     }
 
   // Recuperation de la solution
@@ -1841,10 +1841,10 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       if (nbiter>0 && Process::je_suis_maitre())
         {
           double precision_machine=1.e-12;
-          if (residu(0)>0 && residu(nbiter)/residu(0)>precision_machine && vrai_residu>10*residu(nbiter))
+          if (residu[0]>0 && residu[nbiter]/residu[0]>precision_machine && vrai_residu>10*residu[nbiter])
             {
               Cerr << "Error, computed solution x is false !" << finl;
-              Cerr << "True residual (" << vrai_residu << ") is much higher than convergence residual (" << residu(nbiter) << ") !" << finl;
+              Cerr << "True residual (" << vrai_residu << ") is much higher than convergence residual (" << residu[nbiter] << ") !" << finl;
               Process::exit();
             }
         }
@@ -1914,18 +1914,18 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
       if (solveur_direct_ || type_ksp_ == KSPIBCGS)
         {
           // Calcul de residu(0)=||B||
-          VecNorm(SecondMembrePetsc_, NORM_2, &residu(0));
+          VecNorm(SecondMembrePetsc_, NORM_2, &residu[0]);
           // On l'affiche pour les solveurs directs (pour les autres TRUST s'en occupe):
-          if (solveur_direct_) MyKSPMonitor(SolveurPetsc_, 0, residu(0), 0);
+          if (solveur_direct_) MyKSPMonitor(SolveurPetsc_, 0, residu[0], 0);
         }
       // Idem: l'historique du residu est mal evalue pour certains solveurs:
       // donc on le calcul a la derniere iteration:
-      if (residu(0) > 0 && (solveur_direct_ || type_ksp_ == KSPIBCGS))
+      if (residu[0] > 0 && (solveur_direct_ || type_ksp_ == KSPIBCGS))
         {
           // Calcul de residu(nbiter)=||Ax-B||
           VecScale(SecondMembrePetsc_, -1);
           MatMultAdd(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_, SecondMembrePetsc_);
-          VecNorm(SecondMembrePetsc_, NORM_2, &residu(nbiter));
+          VecNorm(SecondMembrePetsc_, NORM_2, &residu[nbiter]);
         }
     }
   if (verbose) Cout << "[Petsc] Time to solve system: " << (std::clock() - start) / (double) CLOCKS_PER_SEC << finl;
@@ -2334,7 +2334,7 @@ void Solv_Petsc::Create_vectors(const DoubleVect& b)
       // Create the Scatter context to gather from the global solution to the local solution
       ArrOfInt from(nb_rows_);
       for (int i=0; i<nb_rows_; i++)
-        from(i)=decalage_local_global_+i; // Global indices in SolutionPetsc_
+        from[i]=decalage_local_global_+i; // Global indices in SolutionPetsc_
       IS fromis;
       ISCreateGeneral(PETSC_COMM_WORLD, from.size_array(), from.addr(), PETSC_COPY_VALUES, &fromis);
       VecScatterCreate(SolutionPetsc_, fromis, LocalSolutionPetsc_, NULL, &VecScatter_);
@@ -2488,15 +2488,15 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
     {
       if (items_to_keep_[i])
         {
-          nnz(cpt) = tab1(i + 1) - tab1(i); // Nombre d'elements non nuls sur la ligne i
-          for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
+          nnz[cpt] = tab1[i + 1] - tab1[i]; // Nombre d'elements non nuls sur la ligne i
+          for (int k = tab1[i] - 1; k < tab1[i + 1] - 1; k++)
             {
-              int colonne_locale = tab2(k) - 1;
+              int colonne_locale = tab2[k] - 1;
               int colonne_globale = renum_array[colonne_locale];
               if (colonne_globale >= premiere_colonne_globale && colonne_globale < derniere_colonne_globale)
-                d_nnz(cpt)++;
+                d_nnz[cpt]++;
               else
-                o_nnz(cpt)++;
+                o_nnz[cpt]++;
             }
           cpt++;
         }
@@ -2584,15 +2584,15 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
       if (verbose)
         {
           ArrOfDouble nonzeros(2); // Pas ArrOfInt car nonzeros peut depasser 2^32 facilement
-          nonzeros(0) = 0;
-          nonzeros(1) = mat_morse.nb_coeff();
-          for (int i=0; i<nonzeros(1); i++)
+          nonzeros[0] = 0;
+          nonzeros[1] = mat_morse.nb_coeff();
+          for (int i=0; i<nonzeros[1]; i++)
             if (mat_morse.get_coeff()(i)!=0)
-              nonzeros(0)+=1;
+              nonzeros[0]+=1;
           mp_sum_for_each_item(nonzeros);
           if (nonzeros[1] > 0)
             {
-              double ratio = 1 - (double) nonzeros(0) / (double) nonzeros(1);
+              double ratio = 1 - (double) nonzeros[0] / (double) nonzeros[1];
               if (ratio > 0.2) Cout << "Warning! Trust matrix contains a lot of useless stored zeros: " << (int) (ratio * 100) << "% (" << nonzeros[0] << "/" << nonzeros[1] << ")" << finl;
             }
           int zero_discarded = nonzeros[1] - nonzeros[0];
@@ -2634,7 +2634,7 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
   for (int i = 0; i < tab1.size_array() - 1; i++)
     if (items_to_keep_[i])
       {
-        nnz(cpt) = tab1(i + 1) - tab1(i); // Nombre d'elements non nuls sur la ligne i
+        nnz[cpt] = tab1[i + 1] - tab1[i]; // Nombre d'elements non nuls sur la ligne i
         cpt++;
       }
   int size = (nb_rows_ == 0 ? 0 : max_array(nnz)); // Test sur nb_rows si nul (cas proc vide) car sinon max_array plante
@@ -2648,10 +2648,10 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
         {
           int ligne_globale = cpt + decalage_local_global_;
           int ncol = 0;
-          for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
+          for (int k = tab1[i] - 1; k < tab1[i + 1] - 1; k++)
             {
-              coeff_[ncol] = coeff(k);
-              tab2_[ncol] = renum_array[tab2(k) - 1];
+              coeff_[ncol] = coeff[k];
+              tab2_[ncol] = renum_array[tab2[k] - 1];
               ncol++;
             }
           assert(ncol == nnz(cpt));
@@ -2745,8 +2745,8 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
           if (items_to_keep_[i])
             {
               int nnz_row = 0;
-              for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
-                if (coeff(k) != 0) nnz_row++;
+              for (int k = tab1[i] - 1; k < tab1[i + 1] - 1; k++)
+                if (coeff[k] != 0) nnz_row++;
               if (nnz_row != rowOffsets[RowLocal + 1] - rowOffsets[RowLocal])
                 {
                   Journal() << "Provisoire: Number of non-zero will change from " << rowOffsets[RowLocal + 1] - rowOffsets[RowLocal] << " to " << nnz_row << " on row " << RowLocal << finl;
@@ -2755,12 +2755,12 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
                 }
               else
                 {
-                  for (int k = tab1(i) - 1; k < tab1(i + 1) - 1; k++)
+                  for (int k = tab1[i] - 1; k < tab1[i + 1] - 1; k++)
                     {
-                      if (coeff(k) != 0)
+                      if (coeff[k] != 0)
                         {
                           bool found = false;
-                          int col = renum_array[tab2(k) - 1];
+                          int col = renum_array[tab2[k] - 1];
                           // Boucle pour voir si le coeff est sur le GPU:
                           int RowGlobal = decalage_local_global_+RowLocal;
                           for (int kk = rowOffsets[RowLocal]; kk < rowOffsets[RowLocal + 1]; kk++)

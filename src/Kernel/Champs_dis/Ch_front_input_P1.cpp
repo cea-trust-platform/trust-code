@@ -98,7 +98,7 @@ int  Ch_front_input_P1::initialiser(double temps, const Champ_Inc_base& inco)
       for (int i=0; i<les_valeurs_som->nb_cases(); i++)
         for (int j=0; j<ntot; j++)
           for (int c=0; c<nb_comp(); c++)
-            les_valeurs_som[i].valeurs()(j,c)=initial_value_(c);
+            les_valeurs_som[i].valeurs()(j,c)=initial_value_[c];
     }
   ;
   return 1;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -586,13 +586,13 @@ void Echange_contact_Correlation_VEF::init()
               ArrOfDouble v02(dimension);
               for (int idim=0; idim<dimension; idim++)
                 {
-                  v01(idim) = coord_som(s1,idim)-coord_som(s0,idim);
-                  v02(idim) = coord_som(s2,idim)-coord_som(s0,idim);
+                  v01[idim] = coord_som(s1,idim)-coord_som(s0,idim);
+                  v02[idim] = coord_som(s2,idim)-coord_som(s0,idim);
                 }
               ArrOfDouble normale(dimension);
-              normale(0) = v01(1)*v02(2)-v01(2)*v02(1);
-              normale(1) = -v01(0)*v02(2)+v01(2)*v02(0);
-              normale(2) = v01(0)*v02(1)-v01(1)*v02(0);
+              normale[0] = v01[1]*v02[2]-v01[2]*v02[1];
+              normale[1] = -v01[0]*v02[2]+v01[2]*v02[0];
+              normale[2] = v01[0]*v02[1]-v01[1]*v02[0];
 
               for(int j=0; j<nb_faces_bord; j++)
                 {
@@ -602,7 +602,7 @@ void Echange_contact_Correlation_VEF::init()
                       double pscal = 0.;
                       for (int idim=0; idim<dimension; idim++)
                         {
-                          pscal += normale(idim)*(coord_som(sj_0,idim)-coord_som(s0,idim));
+                          pscal += normale[idim]*(coord_som(sj_0,idim)-coord_som(s0,idim));
                         }
                       if (std::fabs(pscal) < precision)
                         {

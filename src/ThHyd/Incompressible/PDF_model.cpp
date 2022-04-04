@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -117,7 +117,7 @@ void PDF_model::affecter_vitesse_imposee(Zone_VF& la_zone, const DoubleTab& coor
         {
           for (int j = 0; j < dim; j++)
             {
-              x(j) = coords(i,j);
+              x[j] = coords(i,j);
             }
           for (int j = 0; j < dim; j++)
             {
@@ -137,7 +137,7 @@ double PDF_model::get_vitesse_imposee(ArrOfDouble& x,int comp)
   int dim = Objet_U::dimension;
   for (int i = 0; i < dim; i++)
     {
-      parsers_[comp].setVar(i,x(i));
+      parsers_[comp].setVar(i,x[i]);
     }
   return parsers_[comp].eval();
 }

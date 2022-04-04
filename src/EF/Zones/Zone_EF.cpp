@@ -662,11 +662,11 @@ void Zone_EF::calculer_Bij(DoubleTab& bij)
       for (int elem=0; elem<nbelem; elem++)
         {
           for (int i=0; i<nbnn; i++)
-            num(i)=les_elems(elem,filter(i));
+            num[i]=les_elems(elem,filter[i]);
           for (int i=0; i<nbnn; i++)
             for (int d=0; d<dimension; d++)
               {
-                xl(d,i)=coord(num(i),d);
+                xl(d,i)=coord(num[i],d);
               }
           num+=1;
           ip=0;
@@ -685,8 +685,8 @@ void Zone_EF::calculer_Bij(DoubleTab& bij)
             {
               for (int d=0; d<dimension; d++)
                 {
-                  bij(elem,filter(i),d)=bijl(d,(i));
-                  IPhi_(elem,filter(i))=iphi(i);
+                  bij(elem,filter[i],d)=bijl(d,(i));
+                  IPhi_(elem,filter[i])=iphi(i);
                 }
             }
           ip=1;
@@ -700,8 +700,8 @@ void Zone_EF::calculer_Bij(DoubleTab& bij)
             {
               for (int d=0; d<dimension; d++)
                 {
-                  Bij_thilde_(elem,filter(i),d)=bijl(d,(i));
-                  IPhi_thilde_(elem,filter(i))=iphi(i);
+                  Bij_thilde_(elem,filter[i],d)=bijl(d,(i));
+                  IPhi_thilde_(elem,filter[i])=iphi(i);
                 }
 
             }

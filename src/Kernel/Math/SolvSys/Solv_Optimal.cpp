@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -114,10 +114,10 @@ int test_solveur(SolveurSys& solveur,  const Matrice_Base& matrice , const Doubl
       list_solveur>>newsolveur;
       solution=solution_ref;
       test_un_solveur(newsolveur, matrice, secmem ,solution, nmax, temps, seuil_verification);
-      if (temps(dernier)<best_time)
+      if (temps[dernier]<best_time)
         {
           solveur=newsolveur;
-          best_time=temps(dernier);
+          best_time=temps[dernier];
           numero_best=numero;
         }
       list_solveur>>motlu;
@@ -258,7 +258,7 @@ Entree& Test_solveur::interpreter(Entree& is)
       int numero_best=test_solveur(solveur,  matrice , secmem , solution  , -10, temps,list_solveur,seuil_verification);
       Cout <<"------------------------------------------------"<<finl;
       Cout <<"Best solver : number "<<numero_best<<" "<<solveur<<finl;
-      Cout <<"Best CPU time = "<<temps(0)<<finl;
+      Cout <<"Best CPU time = "<<temps[0]<<finl;
       Cout <<"------------------------------------------------"<<finl;
     }
   return is;
@@ -339,7 +339,7 @@ void Solv_Optimal::prepare_resol(const Matrice_Base& matrice, const DoubleVect& 
       int numero_best=test_solveur(le_solveur_,  matrice , secmem , solution  , nmax, temps,list_solveur,seuil_);
       Cout <<"------------------------------------------------"<<finl;
       Cout <<"Best solver : number "<<numero_best<<" "<<le_solveur_<<finl;
-      Cout <<"Best CPU time = "<<temps(0)<<finl;
+      Cout <<"Best CPU time = "<<temps[0]<<finl;
       Cout <<"------------------------------------------------"<<finl;
       if (je_suis_maitre())
         {

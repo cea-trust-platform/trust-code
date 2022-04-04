@@ -574,7 +574,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
           int size_elem_list = elem_list_par_pos.size_array();
 
           if (size_elem_list==0)
-            elem_list(ind_face) = -1;
+            elem_list[ind_face] = -1;
           else
             {
               DoubleTrav coord_elems(size_elem_list,dimension);
@@ -582,7 +582,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
               // Fill a list elems and coordinates of the elems
               for (int ind_elem=0; ind_elem<size_elem_list; ind_elem++)
                 {
-                  int elem = elem_list_par_pos(ind_elem);
+                  int elem = elem_list_par_pos[ind_elem];
                   elems.add_if_not(elem);
                   for (int dir=0; dir<dimension; dir++)
                     coord_elems(ind_elem,dir) = xp(elem,dir);
@@ -616,7 +616,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
                   // Find a unic remote elem:
                   elem_identifie = Zone::identifie_item_unique(elems,coord_elems,remote_point);
                 }
-              elem_list(ind_face) = (elem_identifie < nb_elem_zone1 ? elem_identifie : -1);
+              elem_list[ind_face] = (elem_identifie < nb_elem_zone1 ? elem_identifie : -1);
             }
         }
 
@@ -632,7 +632,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
       // Loop on local faces on the process pe:
       for (int face = 0; face < nb_faces_on_pe; face++)
         {
-          const int elem = elem_list(face);
+          const int elem = elem_list[face];
           if (elem < 0 || elem >= nb_elem_zone1)
             {
               // This coordinate is not on this processor...
@@ -1252,11 +1252,11 @@ void Champ_front_recyclage::lire_fichier_format3(DoubleTab& moyenne,
       // Looking for (x2,y2[,z2]) into (x1,y1[,z1])
       while (compteur<Nbfaces)
         {
-          x1 = fich_geom_buffer(compteur*(dimension+1)+1);
-          y1 = fich_geom_buffer(compteur*(dimension+1)+2);
+          x1 = fich_geom_buffer[compteur*(dimension+1)+1];
+          y1 = fich_geom_buffer[compteur*(dimension+1)+2];
           if (dimension==3)
             {
-              z1 = fich_geom_buffer(compteur*(dimension+1)+3);
+              z1 = fich_geom_buffer[compteur*(dimension+1)+3];
               if(abs(ndir)==1 && (est_egal(y1,y2,eps)) && (est_egal(z1,z2,eps))) trouve=1;
               if(abs(ndir)==2 && (est_egal(x1,x2,eps)) && (est_egal(z1,z2,eps))) trouve=1;
               if(abs(ndir)==3 && (est_egal(x1,x2,eps)) && (est_egal(y1,y2,eps))) trouve=1;
@@ -1268,9 +1268,9 @@ void Champ_front_recyclage::lire_fichier_format3(DoubleTab& moyenne,
             }
           if (trouve)
             {
-              moyenne(num_face2_loc,0) = fich_Umoy_buffer(compteur*(dimension+1)+1);
-              moyenne(num_face2_loc,1) = fich_Umoy_buffer(compteur*(dimension+1)+2);
-              if (dimension==3) moyenne(num_face2_loc,2) = fich_Umoy_buffer(compteur*(dimension+1)+3);
+              moyenne(num_face2_loc,0) = fich_Umoy_buffer[compteur*(dimension+1)+1];
+              moyenne(num_face2_loc,1) = fich_Umoy_buffer[compteur*(dimension+1)+2];
+              if (dimension==3) moyenne(num_face2_loc,2) = fich_Umoy_buffer[compteur*(dimension+1)+3];
               break;
             }
           compteur++;
@@ -1287,13 +1287,13 @@ void Champ_front_recyclage::lire_fichier_format3(DoubleTab& moyenne,
 
       if (dimension==3)
         {
-          fic <<" num_face1 " << fich_geom_buffer(compteur*(dimension+1))  << " " << x1 << " " << y1 << " " << z1 << finl;
+          fic <<" num_face1 " << fich_geom_buffer[compteur*(dimension+1)]  << " " << x1 << " " << y1 << " " << z1 << finl;
           fic <<" num_face2 " << num_face2  << " " << x2 << " " << y2 << " " << z2 << finl;
           fic <<" "  << finl;
         }
       else
         {
-          fic <<" num_face1 " << fich_geom_buffer(compteur*(dimension+1))  << " " << x1 << " " << y1  << finl;
+          fic <<" num_face1 " << fich_geom_buffer[compteur*(dimension+1)]  << " " << x1 << " " << y1  << finl;
           fic <<" num_face2 " << num_face2  << " " << x2 << " " << y2  << finl;
           fic <<" "  << finl;
         }

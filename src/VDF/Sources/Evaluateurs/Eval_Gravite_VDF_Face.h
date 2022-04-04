@@ -52,7 +52,7 @@ template <typename Type_Double>
 void Eval_Gravite_VDF_Face::calculer_terme_source(const int num_face, Type_Double& source) const
 {
   const int size = source.size_array();
-  for (int i = 0; i < size; i++) source(i) = g(orientation(num_face))*volumes_entrelaces(num_face)*porosite_surf(num_face);
+  for (int i = 0; i < size; i++) source[i] = g(orientation(num_face))*volumes_entrelaces(num_face)*porosite_surf(num_face);
 }
 
 #endif /* Eval_Gravite_VDF_Face_included */

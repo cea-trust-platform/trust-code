@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -215,14 +215,14 @@ static double trait_part_calculer_ec_faces(const int         face_debut,
       // Calcul de la vitesse d'entrainement
       if (repere_mobile_)
         {
-          ve(0)=translation(0);
-          ve(1)=translation(1);
+          ve[0]=translation[0];
+          ve[1]=translation[1];
           if (Objet_U::dimension==3)
             {
-              ve(2)=translation(2);
-              ve(0)+=rotation(1)*xv(face,2)-rotation(2)*xv(face,1);
-              ve(1)+=rotation(2)*xv(face,0)-rotation(0)*xv(face,2);
-              ve(2)+=rotation(0)*xv(face,1)-rotation(1)*xv(face,0);
+              ve[2]=translation[2];
+              ve[0]+=rotation[1]*xv(face,2)-rotation[2]*xv(face,1);
+              ve[1]+=rotation[2]*xv(face,0)-rotation[0]*xv(face,2);
+              ve[2]+=rotation[0]*xv(face,1)-rotation[1]*xv(face,0);
             }
         }
       else
@@ -251,14 +251,14 @@ static double trait_part_calculer_ec_faces(const int         face_debut,
           for (int i = 0; i < dim; i++)
             {
               const double v_i = vitesse(face, i);
-              v2 += (v_i + ve(i)) * (v_i + ve(i));
+              v2 += (v_i + ve[i]) * (v_i + ve[i]);
             }
           // En VEF, cela est incorrect, il faudrait les volumes etendus:
           volume = volumes_entrelaces(face);
         }
       const int k = (masse_volumique.dimension(0)==1) ? 0 : face;
       rho = masse_volumique(k, 0);
-      double contribution = (faces_doubles(face)==1) ? 0.5 : 1 ;
+      double contribution = (faces_doubles[face]==1) ? 0.5 : 1 ;
       ec += contribution * 0.5 * v2 * volume * rho;
     }
   return ec;

@@ -1089,10 +1089,10 @@ inline void Eval_centre_PolyMAC_Elem::coeffs_face(int face,int, const Periodique
   qcentre(psc,i,j,i0_0,j1_1,face,inconnue->valeurs(),flux);
   if (psc > 0)
     for (k=0; k<aii.size(); k++)
-      aii(k) = -flux(k);
+      aii(k) = -flux[k];
   else
     for (k=0; k<ajj.size(); k++)
-      ajj(k) = -flux(k);
+      ajj(k) = -flux[k];
 }
 
 //// secmem_face avec Periodique
@@ -1158,10 +1158,10 @@ inline void Eval_centre_PolyMAC_Elem::coeffs_faces_interne(int face, DoubleVect&
   qcentre(psc,i,j,i0_0,j1_1,face,inconnue->valeurs(),flux);
   if (psc > 0)
     for (k=0; k<aii.size(); k++)
-      aii(k) = -flux(k);
+      aii(k) = -flux[k];
   else
     for (k=0; k<ajj.size(); k++)
-      ajj(k) = -flux(k);
+      ajj(k) = -flux[k];
   /*     } */
 }
 
@@ -1246,10 +1246,10 @@ inline void Eval_centre_PolyMAC_Elem::qcentre(const double& psc, const int num0,
 
   for (k=0; k<ncomp; k++)
     {
-      T0(k) = transporte(num0,k);
-      T0_0(k) = transporte(num0_0,k);
-      T1(k) = transporte(num1,k);
-      T1_1(k) = transporte(num1_1,k);
+      T0[k] = transporte(num0,k);
+      T0_0[k] = transporte(num0_0,k);
+      T1[k] = transporte(num1,k);
+      T1_1[k] = transporte(num1_1,k);
     }
 
   //double g1 = -dx*dx*(dx/2+dxav)/(4*(dx+dxam+dxav)*(dx+dxam)*dxam);
@@ -1259,7 +1259,7 @@ inline void Eval_centre_PolyMAC_Elem::qcentre(const double& psc, const int num0,
 
   for (k=0; k<ncomp; k++)
     {
-      flux(k) =0.5*(  T0(k) + T1(k))   *   psc ;
+      flux[k] =0.5*(  T0[k] + T1[k])   *   psc ;
     }
 
   // On applique le filtre Fram4:

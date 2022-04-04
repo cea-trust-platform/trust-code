@@ -340,7 +340,7 @@ void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
                 //ArrOfDouble somme(nb_coeff_ligne);
                 for (int k=0; k<nb_coeff_ligne; k++)
                   {
-                    somme(k)=0;
+                    somme[k]=0;
                     int j=tab2[tab1[face*nb_comp]-1+k]-1;
 
                     // le coeff j doit exister sur les nb_comp lignes
@@ -489,7 +489,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       const ArrOfDouble& c_grav=la_zone_vef.zone().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<Objet_U::dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
+          xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
 
   // On parcours les frontieres pour sommer les flux par frontiere dans le tableau flux_bord

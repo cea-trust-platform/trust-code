@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -241,9 +241,9 @@ void  Chimie::mettre_a_jour(double temps)
           for (int i=0; i<nbr; i++)
             {
               Reaction& reaction=reactions_[i];
-              marq_contre(nbrtot++)=i+1;
+              marq_contre[nbrtot++]=i+1;
               if (reaction.contre_reaction_>0)
-                marq_contre(nbrtot++)=-(i+1);
+                marq_contre[nbrtot++]=-(i+1);
 
               if ((reaction.beta_!=0)||(reaction.Ea_!=0)||((reaction.c_r_Ea_!=0)&&(reaction.contre_reaction_>0)))
                 {
@@ -262,7 +262,7 @@ void  Chimie::mettre_a_jour(double temps)
           F77NAME(SETMARQUEUR)(&marqueur_espece_en_competition_micro_melange_);
           for (int i=0; i<nbrtot; i++)
             {
-              int ir=marq_contre(i);
+              int ir=marq_contre[i];
               int ir2=ir;
               if (ir<0) ir2=-ir2;
               ir2-=1;
@@ -280,7 +280,7 @@ void  Chimie::mettre_a_jour(double temps)
               for (int ic=0; ic<nbc; ic++)
                 {
                   if (pstochio[ic]>0)
-                    pactivite(ic)=(int)reaction.coeff_activite_[ic];
+                    pactivite[ic]=(int)reaction.coeff_activite_[ic];
                 }
               int ii=i+1;
               int avec_contre_reaction=(reaction.contre_reaction_>0);
@@ -354,19 +354,19 @@ void  Chimie::mettre_a_jour(double temps)
               // recuperation des valeurs initiales
               for (int i=0; i<nbc; i++)
                 {
-                  C(i)=liste_C_[i].valeur().valeurs()(elem);
+                  C[i]=liste_C_[i].valeur().valeurs()(elem);
 
                 }
               for (int i=0; i<nbc; i++)
                 {
-                  if (C(i)<0)
+                  if (C[i]<0)
                     {
-                      if (C(i)<-1e-5)
+                      if (C[i]<-1e-5)
                         {
-                          Cerr<<" on rabote C_"<<i<<" dans la maille "<<elem<<" dans la chimie !!!!!! "<<C(i)<<finl;
+                          Cerr<<" on rabote C_"<<i<<" dans la maille "<<elem<<" dans la chimie !!!!!! "<<C[i]<<finl;
                           exit();
                         }
-                      C(i)=0;
+                      C[i]=0;
                     }
                 }
               int init=1;
@@ -381,7 +381,7 @@ void  Chimie::mettre_a_jour(double temps)
               F77NAME(DLSODECHIMIES)(&nbc, C.addr(),&t, &tout,&tau_melange, &itol, &rtol, &atol, rwork.addr(), &lrw, iwork.addr(), &liw);
               // mise a jour des inconnues
               for (int i=0; i<liste_C_.size(); i++)
-                liste_C_[i].valeur().valeurs()(elem)=C(i);
+                liste_C_[i].valeur().valeurs()(elem)=C[i];
             }
           for (int i=0; i<liste_C_.size(); i++)
             liste_C_[i].valeur().valeurs().echange_espace_virtuel();
@@ -399,7 +399,7 @@ void  Chimie::mettre_a_jour(double temps)
           if (nb_sous_pas_de_temps_reaction>nb_sous_pas_de_temps_reaction_max)
             nb_sous_pas_de_temps_reaction_max=nb_sous_pas_de_temps_reaction;
           if (reaction.contre_reaction_<=0)
-            marq_directe(nbr_directe++)=i;
+            marq_directe[nbr_directe++]=i;
 
           if ((reaction.beta_!=0)||(reaction.Ea_!=0)||((reaction.c_r_Ea_!=0)&&(reaction.contre_reaction_>0)))
             {
@@ -425,20 +425,20 @@ void  Chimie::mettre_a_jour(double temps)
           // recuperation des valeurs initiales
           for (int i=0; i<nbc; i++)
             {
-              C(i)=liste_C_[i].valeur().valeurs()(elem);
+              C[i]=liste_C_[i].valeur().valeurs()(elem);
             }
           for (int n=0; n<nb_sous_pas_de_temps_reaction_max; n++)
             {
               // rabotage eventuel
               for (int i=0; i<nbc; i++)
-                if (C(i)<0)
+                if (C[i]<0)
                   {
-                    if (C(i)<-1e-5)
+                    if (C[i]<-1e-5)
                       {
-                        Cerr<<" on rabote C_"<<i<<" dans la maille "<<elem<<" dans la chimie !!!!!! "<<C(i)<<finl;
+                        Cerr<<" on rabote C_"<<i<<" dans la maille "<<elem<<" dans la chimie !!!!!! "<<C[i]<<finl;
                         exit();
                       }
-                    C(i)=0;
+                    C[i]=0;
                   }
               // calcul des proportions initiales des reactions non equilibre
 
@@ -460,7 +460,7 @@ void  Chimie::mettre_a_jour(double temps)
                         }
                     }
                   // on utilise proportion_directe pour ne pas avoir la limitation par la securite
-                  proportion_eq(i)=proportion_directe;
+                  proportion_eq[i]=proportion_directe;
 
 
                 }
@@ -474,16 +474,16 @@ void  Chimie::mettre_a_jour(double temps)
                       Reaction& reaction=reactions_[marq_directe[i]];
                       assert(reaction.contre_reaction_<=0);
                       if (reaction.coeff_Y_[c]>0.)
-                        St+=proportion_eq(i)*reaction.coeff_stoechio_[c];
+                        St+=proportion_eq[i]*reaction.coeff_stoechio_[c];
                     }
 
                   double rapport=St/(securite);
                   //  Cerr<< c<<" ici0b "<< rapport <<" st "<<St<<" "<<C(c)<<finl;
 
-                  if (rapport>C(c))
+                  if (rapport>C[c])
                     {
                       // on risque de trop consommer .... on limite.
-                      Cerr<< c<<" limite ici0 "<< rapport <<" st "<<St<<" "<<C(c)<<" "<<C(c)/rapport<<finl;
+                      Cerr<< c<<" limite ici0 "<< rapport <<" st "<<St<<" "<<C[c]<<" "<<C[c]/rapport<<finl;
                       // exit();
                       for (int i=0; i<nbr_directe; i++)
                         {
@@ -491,7 +491,7 @@ void  Chimie::mettre_a_jour(double temps)
                           assert(reaction.contre_reaction_<=0);
 
                           if (reaction.coeff_Y_[c]>0.)
-                            proportion_eq(i)*=C(c)/rapport;
+                            proportion_eq[i]*=C[c]/rapport;
 
                         }
                     }
@@ -505,12 +505,12 @@ void  Chimie::mettre_a_jour(double temps)
                       Reaction& reaction=reactions_[marq_directe[i]];
                       assert(reaction.contre_reaction_<=0);
                       if (reaction.coeff_Y_[c]!=0.)
-                        St+=proportion_eq(i)*reaction.coeff_stoechio_[c];
+                        St+=proportion_eq[i]*reaction.coeff_stoechio_[c];
                     }
 
                   // Cerr<<C(c)<<" "<< c<< " la  st "<<St<<" ";
                   //assert(St<=(C(c)*securite));
-                  C(c)-=St;
+                  C[c]-=St;
                   assert(C(c)>=0);
                   // Cerr<< C(c)<<finl;
 
@@ -529,14 +529,14 @@ void  Chimie::mettre_a_jour(double temps)
                       for (int i=0; i<nbc; i++)
                         if (reaction.coeff_Y_[i]!=0.) // c'est un reactif ou un produit
                           {
-                            C(i)=C(i)-proportion*reaction.coeff_stoechio_[i];
+                            C[i]=C[i]-proportion*reaction.coeff_stoechio_[i];
                           }
                     }
                 }
             }
           // reaction.reagir(liste_C_,dt_chimie);
           for (int i=0; i<liste_C_.size(); i++)
-            liste_C_[i].valeur().valeurs()(elem)=C(i);
+            liste_C_[i].valeur().valeurs()(elem)=C[i];
 
         }
 

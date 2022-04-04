@@ -1015,24 +1015,24 @@ void Faces::reordonner()
           {
             NS=-1;
             for(i=0; i<2; i++)
-              S(i) = sommet(face, i);
+              S[i] = sommet(face, i);
             assert( S(0) >=0 );
             assert( S(1) >=0 );
-            if (dom.coord(S(0), 0) > dom.coord(S(1), 0))
+            if (dom.coord(S[0], 0) > dom.coord(S[1], 0))
               {
-                NS(0)=S(1);
-                NS(1)=S(0);
+                NS[0]=S[1];
+                NS[1]=S[0];
               }
             else
               {
-                NS(0)=S(0);
-                NS(1)=S(1);
+                NS[0]=S[0];
+                NS[1]=S[1];
               }
 
             for(i=0; i<2; i++)
               {
                 assert(NS(i)!=-1);
-                sommet(face, i)=NS(i);
+                sommet(face, i)=NS[i];
               }
           }
         break;
@@ -1063,17 +1063,17 @@ void Faces::reordonner()
             NS=-1;
             for(i=0; i<4; i++)
               {
-                S(i) = sommet(face, i);
+                S[i] = sommet(face, i);
                 assert( S(i) >=0 );
               }
             if (1)
               {
                 // adaptation de Hexaedre_VEF::reordonne
                 const DoubleTab& coord=dom.les_sommets();
-                int s0=S(0);
-                int s1=S(1);
-                int s2=S(2);
-                int s3=S(3);
+                int s0=S[0];
+                int s1=S[1];
+                int s2=S[2];
+                int s3=S[3];
                 double x03=coord(s3,0)-coord(s0,0);
                 double y03=coord(s3,1)-coord(s0,1);
                 double z03=coord(s3,2)-coord(s0,2);
@@ -1104,8 +1104,8 @@ void Faces::reordonner()
                 if (psA*psC>0)
                   {
                     // inversion des sommets 2 et 3
-                    sommet(face,2)=S(3);
-                    sommet(face,3)=S(2);
+                    sommet(face,2)=S[3];
+                    sommet(face,3)=S[2];
                     Cerr << "Permutation of local nodes 2 and 3 on the face " <<face<<finl;
 
                   }
@@ -1113,69 +1113,69 @@ void Faces::reordonner()
             else
               {
 
-                xmin=std::min(dom.coord(S(0), 0), dom.coord(S(1), 0));
-                xmin=std::min(xmin, dom.coord(S(2), 0));
-                xmax=std::max(dom.coord(S(0), 0), dom.coord(S(1), 0));
-                xmax=std::max(xmax, dom.coord(S(2), 0));
-                ymin=std::min(dom.coord(S(0), 1), dom.coord(S(1), 1));
-                ymin=std::min(ymin, dom.coord(S(2), 1));
-                ymax=std::max(dom.coord(S(0), 1), dom.coord(S(1), 1));
-                ymax=std::max(ymax, dom.coord(S(2), 1));
-                zmin=std::min(dom.coord(S(0), 2), dom.coord(S(1), 2));
-                zmin=std::min(zmin, dom.coord(S(2), 2));
-                zmax=std::max(dom.coord(S(0), 2), dom.coord(S(1), 2));
-                zmax=std::max(zmax, dom.coord(S(2), 2));
+                xmin=std::min(dom.coord(S[0], 0), dom.coord(S[1], 0));
+                xmin=std::min(xmin, dom.coord(S[2], 0));
+                xmax=std::max(dom.coord(S[0], 0), dom.coord(S[1], 0));
+                xmax=std::max(xmax, dom.coord(S[2], 0));
+                ymin=std::min(dom.coord(S[0], 1), dom.coord(S[1], 1));
+                ymin=std::min(ymin, dom.coord(S[2], 1));
+                ymax=std::max(dom.coord(S[0], 1), dom.coord(S[1], 1));
+                ymax=std::max(ymax, dom.coord(S[2], 1));
+                zmin=std::min(dom.coord(S[0], 2), dom.coord(S[1], 2));
+                zmin=std::min(zmin, dom.coord(S[2], 2));
+                zmax=std::max(dom.coord(S[0], 2), dom.coord(S[1], 2));
+                zmax=std::max(zmax, dom.coord(S[2], 2));
 
                 if(est_egal(zmin, zmax))
                   {
                     for(i=0; i<4; i++)
-                      if ( est_egal(dom.coord(S(i), 0),xmin) && est_egal(dom.coord(S(i), 1),ymin))
-                        NS(0)=S(i);
+                      if ( est_egal(dom.coord(S[i], 0),xmin) && est_egal(dom.coord(S[i], 1),ymin))
+                        NS[0]=S[i];
                     for(i=0; i<4; i++)
-                      if ( !est_egal(dom.coord(S(i), 0),xmin) && est_egal(dom.coord(S(i), 1),ymin))
-                        NS(1)=S(i);
+                      if ( !est_egal(dom.coord(S[i], 0),xmin) && est_egal(dom.coord(S[i], 1),ymin))
+                        NS[1]=S[i];
                     for(i=0; i<4; i++)
-                      if ( est_egal(dom.coord(S(i), 0),xmin) && !est_egal(dom.coord(S(i), 1),ymin))
-                        NS(2)=S(i);
+                      if ( est_egal(dom.coord(S[i], 0),xmin) && !est_egal(dom.coord(S[i], 1),ymin))
+                        NS[2]=S[i];
                     for(i=0; i<4; i++)
-                      if ( !est_egal(dom.coord(S(i), 0),xmin) && !est_egal(dom.coord(S(i), 1),ymin))
-                        NS(3)=S(i);
+                      if ( !est_egal(dom.coord(S[i], 0),xmin) && !est_egal(dom.coord(S[i], 1),ymin))
+                        NS[3]=S[i];
                   }
                 if(est_egal(ymin, ymax))
                   {
                     for(i=0; i<4; i++)
-                      if ( est_egal(dom.coord(S(i), 0),xmin) && est_egal(dom.coord(S(i), 2),zmin))
-                        NS(0)=S(i);
+                      if ( est_egal(dom.coord(S[i], 0),xmin) && est_egal(dom.coord(S[i], 2),zmin))
+                        NS[0]=S[i];
                     for(i=0; i<4; i++)
-                      if ( !est_egal(dom.coord(S(i), 0),xmin) && est_egal(dom.coord(S(i), 2),zmin))
-                        NS(1)=S(i);
+                      if ( !est_egal(dom.coord(S[i], 0),xmin) && est_egal(dom.coord(S[i], 2),zmin))
+                        NS[1]=S[i];
                     for(i=0; i<4; i++)
-                      if ( est_egal(dom.coord(S(i), 0),xmin) && !est_egal(dom.coord(S(i), 2),zmin))
-                        NS(2)=S(i);
+                      if ( est_egal(dom.coord(S[i], 0),xmin) && !est_egal(dom.coord(S[i], 2),zmin))
+                        NS[2]=S[i];
                     for(i=0; i<4; i++)
-                      if ( !est_egal(dom.coord(S(i), 0),xmin) && !est_egal(dom.coord(S(i), 2),zmin))
-                        NS(3)=S(i);
+                      if ( !est_egal(dom.coord(S[i], 0),xmin) && !est_egal(dom.coord(S[i], 2),zmin))
+                        NS[3]=S[i];
                   }
                 if(est_egal(xmin, xmax))
                   {
                     for(i=0; i<4; i++)
-                      if ( est_egal(dom.coord(S(i), 1),ymin) && est_egal(dom.coord(S(i), 2),zmin))
-                        NS(0)=S(i);
+                      if ( est_egal(dom.coord(S[i], 1),ymin) && est_egal(dom.coord(S[i], 2),zmin))
+                        NS[0]=S[i];
                     for(i=0; i<4; i++)
-                      if ( !est_egal(dom.coord(S(i), 1),ymin) && est_egal(dom.coord(S(i), 2),zmin))
-                        NS(1)=S(i);
+                      if ( !est_egal(dom.coord(S[i], 1),ymin) && est_egal(dom.coord(S[i], 2),zmin))
+                        NS[1]=S[i];
                     for(i=0; i<4; i++)
-                      if ( est_egal(dom.coord(S(i), 1),ymin) && !est_egal(dom.coord(S(i), 2),zmin))
-                        NS(2)=S(i);
+                      if ( est_egal(dom.coord(S[i], 1),ymin) && !est_egal(dom.coord(S[i], 2),zmin))
+                        NS[2]=S[i];
                     for(i=0; i<4; i++)
-                      if ( !est_egal(dom.coord(S(i), 1),ymin) && !est_egal(dom.coord(S(i), 2),zmin))
-                        NS(3)=S(i);
+                      if ( !est_egal(dom.coord(S[i], 1),ymin) && !est_egal(dom.coord(S[i], 2),zmin))
+                        NS[3]=S[i];
                   }
 
                 for(i=0; i<4; i++)
                   {
                     assert(NS(i)!=-1);
-                    sommet(face, i)=NS(i);
+                    sommet(face, i)=NS[i];
                   }
               }
           }

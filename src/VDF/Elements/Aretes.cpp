@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2018, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,10 +59,10 @@ void Aretes::affecter(int& numero_a, int dir, int type, int nb_face,
                       int f1, int f2, int f3, int f4, const ArrOfInt& est_une_plaque)
 {
   int nb_plaques = 0;
-  nb_plaques += f1>=0 ? est_une_plaque(f1) : 0;
-  nb_plaques += f2>=0 ? est_une_plaque(f2) : 0;
-  nb_plaques += f3>=0 ? est_une_plaque(f3) : 0;
-  nb_plaques += f4>=0 ? est_une_plaque(f4) : 0;
+  nb_plaques += f1>=0 ? est_une_plaque[f1] : 0;
+  nb_plaques += f2>=0 ? est_une_plaque[f2] : 0;
+  nb_plaques += f3>=0 ? est_une_plaque[f3] : 0;
+  nb_plaques += f4>=0 ? est_une_plaque[f4] : 0;
   int coin = -1 ;
   int bord = 0 ;
   if (type>0)
@@ -426,27 +426,27 @@ void Aretes::trier_pour_debog(int& nb_aretes_coin, int& nb_aretes_bord,
               exit();
             }
           int ref=faces_(arete,0);
-          for (int i=0; i<dimension; i++) XVref(i)=xv(ref,i);
+          for (int i=0; i<dimension; i++) XVref[i]=xv(ref,i);
           int marq=-1;
           int ref2;
           for (int arete2=arete; arete2<fin; arete2++)
             {
               ref2=faces_(arete2,0);
-              for (int i=0; i<dimension; i++) XVref2(i)=xv(ref2,i);
+              for (int i=0; i<dimension; i++) XVref2[i]=xv(ref2,i);
               int test=-1;
               //              int testsa=-1;
               if (dimension==2)
                 {
-                  if (sup_strict(XVref2(1),XVref(1))) test=1;
-                  else if ((XVref2(1)==XVref(1))&&(sup_strict(XVref2(0),XVref(0)))) test=0;
+                  if (sup_strict(XVref2[1],XVref[1])) test=1;
+                  else if ((XVref2[1]==XVref[1])&&(sup_strict(XVref2[0],XVref[0]))) test=0;
                 }
               else if (dimension==3)
                 {
-                  if (XVref2(2)>XVref(2)) test=2;
-                  else if  (XVref2(2)==XVref(2))
+                  if (XVref2[2]>XVref[2]) test=2;
+                  else if  (XVref2[2]==XVref[2])
                     {
-                      if (XVref2(1)>XVref(1)) test=1;
-                      else if ((XVref2(1)==XVref(1))&&(XVref2(0)>XVref(0))) test=0;
+                      if (XVref2[1]>XVref[1]) test=1;
+                      else if ((XVref2[1]==XVref[1])&&(XVref2[0]>XVref[0])) test=0;
                     }
                 }
               if (test!=-1)

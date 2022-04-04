@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ DoubleVect& Champ_implementation_sommet_base::valeur_a_elem(const DoubleVect& po
   positions = position;
   DoubleTab resu(1, nb_components);
   ArrOfInt polys(1);
-  polys(0) = poly;
+  polys[0] = poly;
   value_interpolation(positions,polys,values,resu);
   for (int j=0; j<nb_components; j++)
     result(j) = resu(j, 0) ;
@@ -54,7 +54,7 @@ double Champ_implementation_sommet_base::valeur_a_elem_compo(const DoubleVect& p
   positions = position;
   DoubleTab resu(1, 1);
   ArrOfInt polys(1);
-  polys(0) = poly;
+  polys[0] = poly;
   value_interpolation(positions,polys,values,resu,ncomp);
   return resu(0, 0);
 }

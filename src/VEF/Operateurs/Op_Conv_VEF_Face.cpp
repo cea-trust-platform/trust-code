@@ -179,7 +179,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                     {
                       int num_face = le_bord.num_face(ind_face);
                       int elem = face_voisins(num_face,0);
-                      traitement_pres_bord_(elem)=1;
+                      traitement_pres_bord_[elem]=1;
                     }
                 }
             }
@@ -201,19 +201,19 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                     for (int som=0; som<size; som++)
                       {
                         int face = le_bord.num_face(ind_face);
-                        est_un_sommet_de_bord_(zone_VEF.face_sommets(face,som))=1;
+                        est_un_sommet_de_bord_[zone_VEF.face_sommets(face,som)]=1;
                       }
                 }
             }
           for (int elem=0; elem<nb_elem_tot; elem++)
             {
               if (rang_elem_non_std(elem)!=-1)
-                traitement_pres_bord_(elem)=1;
+                traitement_pres_bord_[elem]=1;
               else
                 {
                   for (int n_som=0; n_som<nsom; n_som++)
-                    if (est_un_sommet_de_bord_(les_elems(elem,n_som)))
-                      traitement_pres_bord_(elem)=1;
+                    if (est_un_sommet_de_bord_[les_elems(elem,n_som)])
+                      traitement_pres_bord_[elem]=1;
                 }
             }
         }
@@ -230,7 +230,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               for (int ind_face=0; ind_face<nb_faces_tot; ind_face++)
                 {
                   int num_face = le_bord.num_face(ind_face);
-                  est_une_face_de_dirichlet_(num_face) = 1;
+                  est_une_face_de_dirichlet_[num_face] = 1;
                 }
             }
         }
@@ -378,7 +378,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           elem1=face_voisins(fac,0);
           elem2=face_voisins(fac,1);
           int minmod_pres_du_bord = 0;
-          if (ordre==3 && (traitement_pres_bord_(elem1) || traitement_pres_bord_(elem2))) minmod_pres_du_bord = 1;
+          if (ordre==3 && (traitement_pres_bord_[elem1] || traitement_pres_bord_[elem2])) minmod_pres_du_bord = 1;
           for (comp0=0; comp0<ncomp_ch_transporte; comp0++)
             for (i=0; i<dimension; i++)
               {
@@ -439,18 +439,18 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           for (face_adj=0; face_adj<nfac; face_adj++)
             {
               int face_ = elem_faces(poly,face_adj);
-              face(face_adj)= face_;
+              face[face_adj]= face_;
               if (face_<nb_faces_) contrib=1; // Une face reelle sur l'element virtuel
             }
           //
           if (contrib)
             {
-              int calcul_flux_en_un_point = (ordre != 3) && (ordre==1 || traitement_pres_bord_(poly));
+              int calcul_flux_en_un_point = (ordre != 3) && (ordre==1 || traitement_pres_bord_[poly]);
               for (j=0; j<dimension; j++)
                 {
-                  vs(j) = vitesse_face_absolue(face(0),j)*porosite_face(face(0));
+                  vs[j] = vitesse_face_absolue(face[0],j)*porosite_face[face[0]];
                   for (i=1; i<nfac; i++)
-                    vs(j)+= vitesse_face_absolue(face(i),j)*porosite_face(face(i));
+                    vs[j]+= vitesse_face_absolue(face[i],j)*porosite_face[face[i]];
                 }
               // calcul de la vitesse aux sommets des polyedres
               // On va utliser les fonctions de forme implementees dans la classe Champs_P1_impl ou Champs_Q1_impl
@@ -458,7 +458,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 {
                   for (i=0; i<nsom; i++)
                     for (j=0; j<dimension; j++)
-                      vsom(i,j) = (vs(j) - dimension*vitesse_face_absolue(face(i),j)*porosite_face(face(i)));
+                      vsom(i,j) = (vs[j] - dimension*vitesse_face_absolue(face[i],j)*porosite_face[face[i]]);
                 }
               else
                 {
@@ -499,8 +499,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               // Boucle sur les facettes du polyedre non standard:
               for (fa7=0; fa7<nfa7; fa7++)
                 {
-                  num10 = face(KEL(0,fa7));
-                  num20 = face(KEL(1,fa7));
+                  num10 = face[KEL(0,fa7)];
+                  num20 = face[KEL(1,fa7)];
                   // normales aux facettes
                   if (rang==-1)
                     for (i=0; i<dimension; i++)
@@ -534,7 +534,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   // auquel cas la fa7 coincide avec la face num1 ou num2 -> C est au centre de la face
                   int appliquer_cl_dirichlet=0;
                   if (option_appliquer_cl_dirichlet)
-                    if (est_une_face_de_dirichlet_(num10) || est_une_face_de_dirichlet_(num20))
+                    if (est_une_face_de_dirichlet_[num10] || est_une_face_de_dirichlet_[num20])
                       {
                         appliquer_cl_dirichlet = 1;
                         psc_m = psc_c;
@@ -882,13 +882,13 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
 
       // calcul des numeros des faces du polyedre
       for (face_adj=0; face_adj<nfac; face_adj++)
-        face(face_adj)= elem_faces(poly,face_adj);
+        face[face_adj]= elem_faces(poly,face_adj);
 
       for (j=0; j<dimension; j++)
         {
-          vs(j) = vitesse_face_absolue(face(0),j)*porosite_face(face(0));
+          vs[j] = vitesse_face_absolue(face[0],j)*porosite_face[face[0]];
           for (i=1; i<nfac; i++)
-            vs(j)+= vitesse_face_absolue(face(i),j)*porosite_face(face(i));
+            vs[j]+= vitesse_face_absolue(face[i],j)*porosite_face[face[i]];
         }
       // calcul de la vitesse aux sommets des polyedres
       // On va utliser les fonctions de forme implementees dans la classe Champs_P1_impl ou Champs_Q1_impl
@@ -896,7 +896,7 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
         {
           for (i=0; i<nsom; i++)
             for (j=0; j<dimension; j++)
-              vsom(i,j) = (vs(j) - dimension*vitesse_face_absolue(face(i),j)*porosite_face(face(i)));
+              vsom(i,j) = (vs[j] - dimension*vitesse_face_absolue(face[i],j)*porosite_face[face[i]]);
         }
       else
         {
@@ -921,15 +921,15 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
               vsom(i,j)/=porosite_poly;
           for (j=0; j<dimension; j++)
             {
-              vs(j)/= porosite_elem(poly);
-              vc(j)/=porosite_elem(poly);
+              vs[j]/= porosite_elem(poly);
+              vc[j]/=porosite_elem(poly);
             }
         }
       // Boucle sur les facettes du polyedre non standard:
       for (fa7=0; fa7<nfa7; fa7++)
         {
-          num10 = face(KEL(0,fa7));
-          num20 = face(KEL(1,fa7));
+          num10 = face[KEL(0,fa7)];
+          num20 = face[KEL(1,fa7)];
           // normales aux facettes
           if (rang==-1)
             {
@@ -1234,13 +1234,13 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
 
       // calcul des numeros des faces du polyedre
       for (face_adj=0; face_adj<nfac; face_adj++)
-        face(face_adj)= elem_faces(poly,face_adj);
+        face[face_adj]= elem_faces(poly,face_adj);
 
       for (j=0; j<dimension; j++)
         {
-          vs(j) = vitesse_face_absolue(face(0),j)*porosite_face(face(0));
+          vs[j] = vitesse_face_absolue(face[0],j)*porosite_face[face[0]];
           for (i=1; i<nfac; i++)
-            vs(j)+= vitesse_face_absolue(face(i),j)*porosite_face(face(i));
+            vs[j]+= vitesse_face_absolue(face[i],j)*porosite_face[face[i]];
         }
       // calcul de la vitesse aux sommets des polyedres
       // On va utliser les fonctions de forme implementees dans la classe Champs_P1_impl ou Champs_Q1_impl
@@ -1248,7 +1248,7 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
         {
           for (i=0; i<nsom; i++)
             for (j=0; j<dimension; j++)
-              vsom(i,j) = (vs(j) - dimension*vitesse_face_absolue(face(i),j)*porosite_face(face(i)));
+              vsom(i,j) = (vs[j] - dimension*vitesse_face_absolue(face[i],j)*porosite_face[face[i]]);
         }
       else
         {
@@ -1272,15 +1272,15 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
               vsom(i,j)/=porosite_poly;
           for (j=0; j<dimension; j++)
             {
-              vs(j)/= porosite_poly;
-              vc(j)/=porosite_poly;
+              vs[j]/= porosite_poly;
+              vc[j]/=porosite_poly;
             }
         }
       // Boucle sur les facettes du polyedre non standard:
       for (fa7=0; fa7<nfa7; fa7++)
         {
-          num1 = face(KEL(0,fa7));
-          num2 = face(KEL(1,fa7));
+          num1 = face[KEL(0,fa7)];
+          num2 = face[KEL(1,fa7)];
           // normales aux facettes
           if (rang==-1)
             {

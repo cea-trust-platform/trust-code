@@ -50,7 +50,7 @@ void Eval_Puiss_Neutr_VDF_Elem::calculer_terme_source(const int num_elem, Type_D
 {
   const int size = source.size_array();
   assert(size == 1);
-  for (int i = 0; i < size; i++) source(i) = rep(num_elem)*puissance*volumes(num_elem)*porosite_vol(num_elem);
+  for (int i = 0; i < size; i++) source[i] = rep(num_elem)*puissance*volumes(num_elem)*porosite_vol(num_elem);
 }
 
 #endif /* Eval_Puiss_Neutr_VDF_Elem_included */

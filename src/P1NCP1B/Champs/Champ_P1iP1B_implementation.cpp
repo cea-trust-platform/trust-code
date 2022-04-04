@@ -282,7 +282,7 @@ void assembler(const Zone_VEF_PreP1b& zone_VEF, Matrice& matrice)
   // On parcourt toutes les aretes non periodiques:
   for(int arete=0; arete<nb_arete_tot; arete++)
     {
-      if (renum_arete_perio(arete)==arete)
+      if (renum_arete_perio[arete]==arete)
         {
           int som1=dom.get_renum_som_perio(aretes_som(arete, 0));
           int som2=dom.get_renum_som_perio(aretes_som(arete, 1));
@@ -325,9 +325,9 @@ double second_membre(const Zone_VEF_PreP1b& zone_VEF, ArrOfDouble& Pa, DoubleVec
   // On parcourt toutes les aretes non periodiques
   for(int arete=0; arete<nb_arete_tot; arete++)
     {
-      if (renum_arete_perio(arete)==arete)
+      if (renum_arete_perio[arete]==arete)
         {
-          double x=Pa(arete);
+          double x=Pa[arete];
           int som1=dom.get_renum_som_perio(aretes_som(arete, 0));
           int som2=dom.get_renum_som_perio(aretes_som(arete, 1));
           secmem(som1)+=x;
@@ -408,7 +408,7 @@ void corriger(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& champ_filtre_, Matrice
       const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
       for(int arete=0; arete<nb_arete; arete++)
         {
-          if(!ok_arete(arete) && Pa(arete)!=0)
+          if(!ok_arete[arete] && Pa(arete)!=0)
             {
               Cerr << "Pa(arete_superflue)!=0 dans Champ_P1iP1B_implementation::corriger" << finl;
               Cerr << "Contacter le support TRUST." << finl;

@@ -62,7 +62,7 @@ ArrOfDouble Terme_Source_Canal_perio_VDF_P0::source_convection_diffusion(double 
       // Source = -Sum(imposed_heat_flux)/Volume
       // Loop on the faces
       for (int num_elem = 0; num_elem < size; num_elem++)
-        s(num_elem) = -heat_flux/volume;
+        s[num_elem] = -heat_flux/volume;
     }
   return s;
 }
@@ -78,7 +78,7 @@ DoubleTab& Terme_Source_Canal_perio_VDF_P0::ajouter(DoubleTab& resu) const
   for (int num_elem = 0; num_elem < nb_elem; num_elem++)
     {
       double vol = volumes(num_elem);
-      resu(num_elem)+= s(num_elem)*vol;
+      resu(num_elem)+= s[num_elem]*vol;
     }
 
   return resu;

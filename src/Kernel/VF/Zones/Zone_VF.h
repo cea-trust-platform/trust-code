@@ -772,7 +772,7 @@ inline const ArrOfInt& Zone_VF::ind_faces_virt_bord() const
 // Description: renvoie 1 si face est une face virtuelle de bord, 0 sinon
 inline int Zone_VF::est_une_face_virt_bord(int face) const
 {
-  if (face<nb_faces() || ind_faces_virt_bord()(face-nb_faces())==-1)
+  if (face<nb_faces() || ind_faces_virt_bord()[face-nb_faces()]==-1)
     return 0;
   else
     return 1;

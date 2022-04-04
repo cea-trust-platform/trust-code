@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -181,9 +181,9 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
         {
           if ((val0==1)||(val1==1))
             {
-              if (marq(fac)!=-1) //pas un joint
+              if (marq[fac]!=-1) //pas un joint
                 {
-                  marq(fac)=1;
+                  marq[fac]=1;
                   nb_t++;
                 }
             }
@@ -223,7 +223,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
 
   nb=0;
   for (int fac=0; fac<nb_faces; fac++)
-    if (marq(fac)==1)
+    if (marq[fac]==1)
       {
         for (int s=0; s<nb_som_face; s++)
           indfaces(nb,s)=face_sommets(fac,s);

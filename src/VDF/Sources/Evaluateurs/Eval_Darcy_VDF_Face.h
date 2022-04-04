@@ -78,13 +78,13 @@ inline void Eval_Darcy_VDF_Face::mettre_a_jour()
           double vol = 0;
           if (elem1!=-1)
             {
-              db_diffusivite(fac) += val_diff(elem1)*volumes(elem1);
-              vol += volumes(elem1);
+              db_diffusivite(fac) += val_diff(elem1)*volumes[elem1];
+              vol += volumes[elem1];
             }
           if (elem2!=-1)
             {
-              db_diffusivite(fac) += val_diff(elem2)*volumes(elem2);
-              vol += volumes(elem2);
+              db_diffusivite(fac) += val_diff(elem2)*volumes[elem2];
+              vol += volumes[elem2];
             }
           db_diffusivite(fac) /= vol;
         }
@@ -95,7 +95,7 @@ template <typename Type_Double>
 void Eval_Darcy_VDF_Face::calculer_terme_source(const int num_face, Type_Double& source) const
 {
   const int size = source.size_array();
-  for (int i = 0; i < size; i++) source(i) = -db_diffusivite(num_face)/modK->getK(porosite)*volumes_entrelaces(num_face)*porosite_surf(num_face)*(vitesse->valeurs())(num_face,i); // -mu.vol.psi.U/K
+  for (int i = 0; i < size; i++) source[i] = -db_diffusivite(num_face)/modK->getK(porosite)*volumes_entrelaces(num_face)*porosite_surf(num_face)*(vitesse->valeurs())(num_face,i); // -mu.vol.psi.U/K
 }
 
 #endif /* Eval_Darcy_VDF_Face_included */

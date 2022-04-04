@@ -75,7 +75,7 @@ void Polygone::rebuild_index()
         nbf--;
       PolygonIndex_OK[ele+1]= PolygonIndex_OK[ele]+nbf;
     }
-  ArrOfInt FacesIndex_OK(PolygonIndex_OK(nb_elem));
+  ArrOfInt FacesIndex_OK(PolygonIndex_OK[nb_elem]);
   int f=0;
   for (int ele=0; ele<nb_elem; ele++)
     {
@@ -102,10 +102,10 @@ void Polygone::build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_pa
 
   for (int i = 0; i < elems_sous_part.size_array(); i++)
     {
-      int e = elems_sous_part(i);
-      for (int f = PolygonIndex_(e); f < PolygonIndex_(e + 1); f++)
+      int e = elems_sous_part[i];
+      for (int f = PolygonIndex_[e]; f < PolygonIndex_[e + 1]; f++)
         {
-          Fi.append_array(les_elems(e, f - PolygonIndex_(e)));
+          Fi.append_array(les_elems(e, f - PolygonIndex_[e]));
         }
       Pi.append_array(Fi.size_array());
     }
@@ -378,7 +378,7 @@ int Polygone::get_tab_faces_sommets_locaux(IntTab& faces_som_local,int ele) cons
   faces_som_local=-1;
   // on cherche les faces de l'elt
 
-  int nb_face=PolygonIndex_(ele+1)-PolygonIndex_(ele);
+  int nb_face=PolygonIndex_[ele+1]-PolygonIndex_[ele];
   /*
    les elems pas remplis
     int nb_face2=get_nb_som_elem_max();
@@ -426,14 +426,14 @@ void Polygone::affecte_connectivite_numero_global(const ArrOfInt& FacesIndex,con
   for (int ele=0; ele<nelem; ele++)
     {
       prov.vide();
-      int nbf=PolygonIndex(ele+1)-PolygonIndex(ele);
+      int nbf=PolygonIndex[ele+1]-PolygonIndex[ele];
       if (nbf>nb_face_elem_max_) nb_face_elem_max_=nbf;
-      for (int f=PolygonIndex(ele); f<PolygonIndex(ele+1); f++)
+      for (int f=PolygonIndex[ele]; f<PolygonIndex[ele+1]; f++)
         {
           //Cerr<<" ici "<<ele << " " <<f <<" "<<FacesIndex(f+1)-FacesIndex(f)<<finl;
           //for (int s=FacesIndex(f); s<FacesIndex(f+1); s++)
           {
-            prov.add_if_not(FacesIndex(f));
+            prov.add_if_not(FacesIndex[f]);
           }
         }
       int nbsom=prov.size();
@@ -446,11 +446,11 @@ void Polygone::affecte_connectivite_numero_global(const ArrOfInt& FacesIndex,con
   for (int ele=0; ele<nelem; ele++)
     {
       prov.vide();
-      for (int f=PolygonIndex(ele); f<PolygonIndex(ele+1); f++)
+      for (int f=PolygonIndex[ele]; f<PolygonIndex[ele+1]; f++)
         {
           //for (int s=FacesIndex(f); s<FacesIndex(f+1); s++)
           {
-            prov.add_if_not(FacesIndex(f));
+            prov.add_if_not(FacesIndex[f]);
           }
         }
       int nbsom=prov.size();
@@ -519,12 +519,12 @@ void Polygone::calculer_centres_gravite(DoubleTab& xp) const
             }
           double airel = aire_triangle(pos);
           for (int d=0; d<dimension; d++)
-            xpl(d)+=airel*(pos(0,d)+pos(1,d)+pos(2,d));
+            xpl[d]+=airel*(pos(0,d)+pos(1,d)+pos(2,d));
           aire+=airel;
         }
       aire*=3.;
       for (int d=0; d<dimension; d++)
-        xp(num_poly,d)=xpl(d)/(aire);
+        xp(num_poly,d)=xpl[d]/(aire);
     }
 }
 
@@ -558,12 +558,12 @@ void Polygone::calculer_un_centre_gravite(const int num_poly,DoubleVect& xp) con
           }
         double airel = aire_triangle(pos);
         for (int d=0; d<dimension; d++)
-          xpl(d)+=airel*(pos(0,d)+pos(1,d)+pos(2,d));
+          xpl[d]+=airel*(pos(0,d)+pos(1,d)+pos(2,d));
         aire+=airel;
       }
     aire*=3.;
     for (int d=0; d<dimension; d++)
-      xp(d)=xpl(d)/(aire);
+      xp(d)=xpl[d]/(aire);
   }
 }
 

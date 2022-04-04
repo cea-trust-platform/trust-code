@@ -690,7 +690,7 @@ inline int TRUSTTab<_TYPE_>::decomp_LU(int n, TRUSTArray<int>& index, TRUSTTab<d
           sum = matLU(i,j);
           for (k=0 ; k<j ; k++) sum -= matLU(i,k) * matLU(k,j);
           matLU(i,j) = sum;
-          if ((dum = vv(i)*std::fabs(sum)) >= big)
+          if ((dum = vv[i]*std::fabs(sum)) >= big)
             {
               big = dum;
               imax = i;
@@ -705,10 +705,10 @@ inline int TRUSTTab<_TYPE_>::decomp_LU(int n, TRUSTArray<int>& index, TRUSTTab<d
               matLU(imax,k) = matLU(j,k);
               matLU(j,k) = dum;
             }
-          vv(imax) = vv(j);
+          vv[imax] = vv[j];
         }
 
-      index(j) = imax;
+      index[j] = imax;
       dum = 1./matLU(j,j);
       for (i=j+1 ; i<n ; i++) matLU(i,j) *= dum;
     }
@@ -724,21 +724,21 @@ inline void TRUSTTab<_TYPE_>::resoud_LU(int n, TRUSTArray<int>& index, const TRU
   solution = b;
   for (i=0 ; i<n ; i++)
     {
-      ip = index(i);
-      sum = solution(ip);
-      solution(ip) = solution(i);
+      ip = index[i];
+      sum = solution[ip];
+      solution[ip] = solution[i];
       if (ii!=-1)
-        for (j=ii ; j<i ; j++) sum -= (*this)(i,j)*solution(j);
+        for (j=ii ; j<i ; j++) sum -= (*this)(i,j)*solution[j];
       else if (sum) ii =i;
 
-      solution(i) = sum;
+      solution[i] = sum;
     }
 
   for (i=n-1 ; i>=0 ; i--)
     {
-      sum = solution(i);
-      for (j=i+1 ; j<n ; j++) sum -= (*this)(i,j)*solution(j);
-      solution(i) = sum/(*this)(i,i);
+      sum = solution[i];
+      for (j=i+1 ; j<n ; j++) sum -= (*this)(i,j)*solution[j];
+      solution[i] = sum/(*this)(i,i);
     }
 }
 

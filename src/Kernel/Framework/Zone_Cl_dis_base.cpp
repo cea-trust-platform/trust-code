@@ -436,7 +436,7 @@ const Cond_lim_base& Zone_Cl_dis_base::condition_limite_de_la_face_virtuelle(int
       const Frontiere& fr=les_conditions_limites(i).frontiere_dis().frontiere();
       const ArrOfInt& faces_virt=fr.get_faces_virt();
       for (int j=0; j<faces_virt.size_array(); j++)
-        if (face_globale==faces_virt(j))
+        if (face_globale==faces_virt[j])
           {
             face_locale=fr.nb_faces()+j;
             return les_conditions_limites(i).valeur();

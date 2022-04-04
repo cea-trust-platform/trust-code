@@ -375,8 +375,8 @@ ArrOfDouble Terme_Source_Canal_perio::source_convection_diffusion(double debit_e
             velocity = vitesse(num_face,direction_ecoulement_);
           else // Cas general
             for (int i=0; i<dimension; i++)
-              velocity += vitesse(num_face,i) * dir_source_(i);
-          s(num_face)=-velocity*heat_flux/(volume*debit_e/surface_bord_);
+              velocity += vitesse(num_face,i) * dir_source_[i];
+          s[num_face]=-velocity*heat_flux/(volume*debit_e/surface_bord_);
         }
     }
   else
@@ -385,7 +385,7 @@ ArrOfDouble Terme_Source_Canal_perio::source_convection_diffusion(double debit_e
       // Source = -Sum(imposed_heat_flux)/Volume
       // Loop on the faces
       for (int num_face=0; num_face<size; num_face++)
-        s(num_face)=-heat_flux/volume;
+        s[num_face]=-heat_flux/volume;
     }
   return s;
 }
@@ -527,10 +527,10 @@ ArrOfDouble Terme_Source_Canal_perio::source() const
   s.resize(dimension);
   s = 0.;
   if (direction_ecoulement_>=0) // Ecoulement selon un axe
-    s(direction_ecoulement_) = source_;
+    s[direction_ecoulement_] = source_;
   else // Cas general
     for (int i=0; i<dimension; i++)
-      s(i) = source_ * dir_source_(i);
+      s[i] = source_ * dir_source_[i];
   return s;
 }
 

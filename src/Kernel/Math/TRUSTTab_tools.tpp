@@ -54,7 +54,7 @@ inline void mp_carre_norme_tab(const TRUSTTab<double>& tableau, TRUSTArray<doubl
 inline void mp_norme_tab(const TRUSTTab<double>& tableau, TRUSTArray<double>& norme_colonne)
 {
   mp_carre_norme_tab(tableau,norme_colonne);
-  for (int c=0; c<norme_colonne.size_array(); c++) norme_colonne(c) = sqrt(norme_colonne(c));
+  for (int c=0; c<norme_colonne.size_array(); c++) norme_colonne[c] = sqrt(norme_colonne[c]);
 }
 
 inline void local_max_abs_tab(const TRUSTTab<double>& tableau, TRUSTArray<double>& max_colonne)

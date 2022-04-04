@@ -55,7 +55,7 @@ Entree& Champ_input_P0::readOn(Entree& is)
       int nb_elem_tot=valeurs_.dimension_tot(0);
       for (int ele=0; ele< nb_elem_tot; ele++)
         for (int c=0; c<nb_compo_; c++)
-          valeurs_(ele,c)=initial_value_(c);
+          valeurs_(ele,c)=initial_value_[c];
     }
 
   if (ma_sous_zone.non_nul())

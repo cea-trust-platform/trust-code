@@ -88,7 +88,7 @@ void create_listb_from_domaine2(const Domaine& dom1, const Domaine& dom2,const N
 
               for (i=0; i<nb_som_face; i++)
                 for (j=0; j<Objet_U::dimension; j++)
-                  xg1(j)+=xs1(sommets_face1(face1,i),j);  // centre de gravite de la face1 (non divise par nb_som_face)
+                  xg1[j]+=xs1(sommets_face1(face1,i),j);  // centre de gravite de la face1 (non divise par nb_som_face)
 
               // recherche de la face de dom2 correspondante
 
@@ -101,11 +101,11 @@ void create_listb_from_domaine2(const Domaine& dom1, const Domaine& dom2,const N
 
                   for (i=0; i<nb_som_face; i++)
                     for (j=0; j<Objet_U::dimension; j++)
-                      xg2(j)+=xs2(sommets_face2(face2,i),j);  //centre de gravite de la face2 (non divise par nb_som_face)
+                      xg2[j]+=xs2(sommets_face2(face2,i),j);  //centre de gravite de la face2 (non divise par nb_som_face)
 
                   double dist=0.;
 
-                  for (j=0; j<Objet_U::dimension; j++) dist+=(xg2(j)-xg1(j))*(xg2(j)-xg1(j));
+                  for (j=0; j<Objet_U::dimension; j++) dist+=(xg2[j]-xg1[j])*(xg2[j]-xg1[j]);
 
                   if(dist<dist_min)
                     {
@@ -193,13 +193,13 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
 
               for (i=0; i<nb_som_face; i++)
                 for (j=0; j<Objet_U::dimension; j++)
-                  xg1(j)+=xs1(sommets_face1(face1,i),j);  // centre de gravite de la face1 (non divise par nb_som_face)
+                  xg1[j]+=xs1(sommets_face1(face1,i),j);  // centre de gravite de la face1 (non divise par nb_som_face)
               xg1/=nb_som_face;
-              parser.setVar("x",xg1(0));
+              parser.setVar("x",xg1[0]);
 
-              parser.setVar("y",xg1(1));
+              parser.setVar("y",xg1[1]);
               if (Objet_U::dimension==3)
-                parser.setVar("z",xg1(2));
+                parser.setVar("z",xg1[2]);
               double res=parser.eval();
               int face_min=(int)(res+0.5);
               nb=std::max(nb,face_min);
@@ -337,17 +337,17 @@ void create_listb_geom(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
                   for (int i=0; i<nb_som_face; i++)
                     for (int j=0; j<3; j++)
                       {
-                        coord_min(j) = std::min(coord_min(j),xs(sommets_face(face,i),j));
-                        coord_max(j) = std::max(coord_max(j),xs(sommets_face(face,i),j));
+                        coord_min[j] = std::min(coord_min[j],xs(sommets_face(face,i),j));
+                        coord_max[j] = std::max(coord_max[j],xs(sommets_face(face,i),j));
                       }
                 }
 
               Nom expr="0.+";
 
-              if(coord_min(0)==coord_max(0)) // plan x=cste
+              if(coord_min[0]==coord_max[0]) // plan x=cste
                 {
-                  double dy=(coord_max(1)-coord_min(1))/nb1;
-                  double dz=(coord_max(2)-coord_min(2))/nb2;
+                  double dy=(coord_max[1]-coord_min[1])/nb1;
+                  double dz=(coord_max[2]-coord_min[2])/nb2;
 
                   for (int j=1; j<nb1; j++)
                     {
@@ -366,10 +366,10 @@ void create_listb_geom(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
                       expr+=")+";
                     }
                 }
-              else if (coord_min(1)==coord_max(1)) // plan y=cste
+              else if (coord_min[1]==coord_max[1]) // plan y=cste
                 {
-                  double dx=(coord_max(0)-coord_min(0))/nb1;
-                  double dz=(coord_max(2)-coord_min(2))/nb2;
+                  double dx=(coord_max[0]-coord_min[0])/nb1;
+                  double dz=(coord_max[2]-coord_min[2])/nb2;
 
                   for (int i=1; i<nb1; i++)
                     {
@@ -388,10 +388,10 @@ void create_listb_geom(const Domaine& dom1,const Noms& nomdec,const ArrOfInt& nb
                       expr+=")+";
                     }
                 }
-              else if (coord_min(2)==coord_max(2)) // plan z=cste
+              else if (coord_min[2]==coord_max[2]) // plan z=cste
                 {
-                  double dx=(coord_max(0)-coord_min(0))/nb1;
-                  double dy=(coord_max(1)-coord_min(1))/nb2;
+                  double dx=(coord_max[0]-coord_min[0])/nb1;
+                  double dy=(coord_max[1]-coord_min[1])/nb2;
 
                   for (int i=1; i<nb1; i++)
                     {

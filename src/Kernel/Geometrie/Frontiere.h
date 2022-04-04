@@ -202,7 +202,7 @@ inline int Frontiere::nb_faces_virt() const
 }
 inline int Frontiere::face_virt(int i) const
 {
-  return faces_virt(i);
+  return faces_virt[i];
 }
 
 inline int Frontiere::num_premiere_face() const

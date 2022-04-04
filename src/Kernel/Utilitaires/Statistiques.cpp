@@ -569,37 +569,37 @@ static void print_stat(Sortie& perfs,
     {
       ArrOfDouble tmp(3);
       // Min
-      tmp(0)=time;
-      tmp(1)=nb;
-      tmp(2)=quantity;
+      tmp[0]=time;
+      tmp[1]=nb;
+      tmp[2]=quantity;
       mp_min_for_each_item(tmp);
-      double min_time = tmp(0);
-      double min_nb = tmp(1);
-      double min_quantity = tmp(2);
+      double min_time = tmp[0];
+      double min_nb = tmp[1];
+      double min_quantity = tmp[2];
 
       // Max
-      tmp(0)=time;
-      tmp(1)=nb;
-      tmp(2)=quantity;
+      tmp[0]=time;
+      tmp[1]=nb;
+      tmp[2]=quantity;
       mp_max_for_each_item(tmp);
-      double max_time = tmp(0);
-      double max_nb = tmp(1);
-      double max_quantity = tmp(2);
+      double max_time = tmp[0];
+      double max_nb = tmp[1];
+      double max_quantity = tmp[2];
 
       // Average
       tmp.resize(5);
-      tmp(0)=time;
-      tmp(1)=nb;
-      tmp(2)=quantity;
-      tmp(3)=avg_time_per_step;
-      tmp(4)=var_time_per_step;
+      tmp[0]=time;
+      tmp[1]=nb;
+      tmp[2]=quantity;
+      tmp[3]=avg_time_per_step;
+      tmp[4]=var_time_per_step;
       mp_sum_for_each_item(tmp);
 
-      double avg_time = tmp(0) / Process::nproc();
-      double avg_nb = tmp(1) / Process::nproc();
-      double avg_quantity = tmp(2) / Process::nproc();
-      double avg_avg_time_ps = tmp(3) / Process::nproc();
-      double avg_var_time_ps = tmp(4)/ Process::nproc();
+      double avg_time = tmp[0] / Process::nproc();
+      double avg_nb = tmp[1] / Process::nproc();
+      double avg_quantity = tmp[2] / Process::nproc();
+      double avg_avg_time_ps = tmp[3] / Process::nproc();
+      double avg_var_time_ps = tmp[4]/ Process::nproc();
 
       if (Process::je_suis_maitre())
         {
@@ -1382,31 +1382,31 @@ void Stat_Results::compute_min_max_avg()
   const int nproc = Process::nproc();
   ArrOfDouble tmp(3);
   // Min
-  tmp(0)=time;
-  tmp(1)=count;
-  tmp(2)=quantity;
+  tmp[0]=time;
+  tmp[1]=count;
+  tmp[2]=quantity;
   mp_min_for_each_item(tmp);
-  min_time = tmp(0);
-  min_count = tmp(1);
-  min_quantity = tmp(2);
+  min_time = tmp[0];
+  min_count = tmp[1];
+  min_quantity = tmp[2];
 
   // Max
-  tmp(0)=time;
-  tmp(1)=count;
-  tmp(2)=quantity;
+  tmp[0]=time;
+  tmp[1]=count;
+  tmp[2]=quantity;
   mp_max_for_each_item(tmp);
-  max_time = tmp(0);
-  max_count = tmp(1);
-  max_quantity = tmp(2);
+  max_time = tmp[0];
+  max_count = tmp[1];
+  max_quantity = tmp[2];
 
   // Average
-  tmp(0)=time;
-  tmp(1)=count;
-  tmp(2)=quantity;
+  tmp[0]=time;
+  tmp[1]=count;
+  tmp[2]=quantity;
   mp_sum_for_each_item(tmp);
-  avg_time = tmp(0) / nproc;
-  avg_count = tmp(1) / nproc;
-  avg_quantity = tmp(2) / nproc;
+  avg_time = tmp[0] / nproc;
+  avg_count = tmp[1] / nproc;
+  avg_quantity = tmp[2] / nproc;
 }
 
 

@@ -33,7 +33,7 @@ Entree& Ch_input_uniforme::readOn(Entree& is)
   sous_zone_ok=false;
   read(is);
   valeurs().resize(1, nb_compo_);
-  if (initial_value_.size_array()) for (int i = 0; i < nb_compo_; i++) valeurs()(0, i) = initial_value_(i);
+  if (initial_value_.size_array()) for (int i = 0; i < nb_compo_; i++) valeurs()(0, i) = initial_value_[i];
   mon_pb->addInputField(*this);
   return is;
 }

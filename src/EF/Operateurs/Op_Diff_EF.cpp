@@ -113,7 +113,7 @@ void remplir_marqueur_sommet_neumann(ArrOfInt& marqueur,const Zone_EF& zone_EF,c
               for (int i1=0; i1<nb_som_face; i1++)
                 {
                   int glob2=face_sommets(face,i1);
-                  marqueur(glob2)=1;
+                  marqueur[glob2]=1;
 
                 }
             }
@@ -296,7 +296,7 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim3_nbn_8(const DoubleTab& tab_inconnu
             {
               int glob=elems(elem,i1);
               for (int yy=0; yy<N; yy++) pr[yy]=0;
-              int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+              int transpose = (marqueur_neuman[glob] == 1 || N == 1) ? 0 : transpose_;
               for (int i2=0; i2<nb_som_elem; i2++)
                 {
                   int glob2=elems(elem,i2);
@@ -464,7 +464,7 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_dim2_nbn_4(const DoubleTab& tab_inconnu
             {
               int glob=elems(elem,i1);
               for (int yy=0; yy<N; yy++) pr[yy]=0;
-              int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+              int transpose = (marqueur_neuman[glob] == 1 || N == 1) ? 0 : transpose_;
               for (int i2=0; i2<nb_som_elem; i2++)
                 {
                   int glob2=elems(elem,i2);
@@ -705,7 +705,7 @@ DoubleTab& Op_Diff_EF::ajouter_vectoriel_gen(const DoubleTab& tab_inconnue, Doub
             {
               int glob=elems(elem,i1);
               for (int yy=0; yy<N; yy++) pr[yy]=0;
-              int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+              int transpose = (marqueur_neuman[glob] == 1 || N == 1) ? 0 : transpose_;
               for (int i2=0; i2<nb_som_elem; i2++)
                 {
                   int glob2=elems(elem,i2);
@@ -773,7 +773,7 @@ DoubleTab& Op_Diff_EF::ajouter_new(const DoubleTab& tab_inconnue, DoubleTab& res
         for (int i1=0; i1<nb_som_elem; i1++)
           {
             int glob=elems(elem,i1);
-            int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+            int transpose = (marqueur_neuman[glob] == 1 || N == 1) ? 0 : transpose_;
             for (int i2=0; i2<nb_som_elem; i2++)
               {
                 int glob2=elems(elem,i2);
@@ -863,7 +863,7 @@ void Op_Diff_EF::ajouter_contribution(const DoubleTab& transporte, Matrice_Morse
           {
             int glob=elems(elem,i1);
 
-            int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+            int transpose = (marqueur_neuman[glob] == 1 || N == 1) ? 0 : transpose_;
             if (glob<nb_som)
               for (int i2=0; i2<nb_som_elem; i2++)
                 {
@@ -918,7 +918,7 @@ void Op_Diff_EF::ajouter_contribution_new(const DoubleTab& transporte, Matrice_M
           {
             int glob=elems(elem,i1);
 
-            int transpose = (marqueur_neuman(glob) == 1 || N == 1) ? 0 : transpose_;
+            int transpose = (marqueur_neuman[glob] == 1 || N == 1) ? 0 : transpose_;
             if (glob<nb_som)
               for (int i2=0; i2<nb_som_elem; i2++)
                 {

@@ -167,10 +167,10 @@ void Op_Diff_P1NC_barprim::calculer_divergence(const DoubleTab& grad,
             ArrOfInt fait(le_bord.nb_faces());
             for (face=num1; face<num2; face++)
               {
-                if(!fait(face-num1))
+                if(!fait[face-num1])
                   {
                     int face_associee=num1+la_cl_perio.face_associee(face-num1);
-                    fait(face-num1)=(fait(face_associee-num1)=1);
+                    fait[face-num1]=(fait[face_associee-num1]=1);
                     for (comp=0; comp<dimension; comp++)
                       resu(face_associee,comp) =
                         (resu(face,comp)+= resu(face_associee,comp));

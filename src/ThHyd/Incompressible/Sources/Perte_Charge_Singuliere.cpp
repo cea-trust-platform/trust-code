@@ -302,7 +302,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
           // Loop on elements on the volume domain
           for (int ind_elem=0; ind_elem<nb_elem_vol; ind_elem++)
             {
-              int elem = elem_list_vol(ind_elem);
+              int elem = elem_list_vol[ind_elem];
               // Loop on faces of each element on the volume domain
               for (int j=0, numfa; j < nfe && (numfa = elem_faces(elem,j)) >= 0; j++)
                 {

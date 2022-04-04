@@ -160,7 +160,7 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
 
   for (int num_face=0; num_face<prem_face_std; num_face++)
     {
-      face_marq = faces_doubles(num_face);
+      face_marq = faces_doubles[num_face];
       double contrib_double = double(face_marq);
       vol_glob_pond(0) += (1.-0.5*contrib_double)*vol_entrelaces_Cl(num_face)*por_face(num_face);
     }
@@ -180,7 +180,7 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
           for (int ind_face=num1; ind_face<num2; ind_face++)
             {
               face = le_bord.num_face(ind_face);
-              face_marq = faces_doubles(face);
+              face_marq = faces_doubles[face];
               double contrib_double = double(face_marq);
               vol_glob_pond(0) -= (1.-0.5*contrib_double)*vol_entrelaces_Cl(face)*por_face(face);
             }
@@ -189,7 +189,7 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
 
   for (int num_face=prem_face_std; num_face<nb_faces; num_face++)
     {
-      face_marq = faces_doubles(num_face);
+      face_marq = faces_doubles[num_face];
       double contrib_double = double(face_marq);
       vol_glob_pond(0) += (1.-0.5*contrib_double)*vol_entrelaces(num_face)*por_face(num_face);
     }

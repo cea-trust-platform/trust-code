@@ -94,8 +94,8 @@ DoubleTab& T_It_Sou_VDF_Elem<_TYPE_>::ajouter_(const int ncomp, DoubleTab& resu)
       evaluateur_source_elem.calculer_terme_source(num_elem, source);
       for (int k=0; k<ncomp; k++)
         {
-          resu(num_elem,k) += source(k);
-          bilan(k) += source(k);
+          resu(num_elem,k) += source[k];
+          bilan(k) += source[k];
         }
     }
   return resu;

@@ -459,7 +459,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
       const ArrOfDouble& c_grav=la_zone_EF.zone().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<Objet_U::dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
+          xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
 
   // On parcours les frontieres pour sommer les flux par frontiere dans le tableau flux_bord
@@ -560,7 +560,7 @@ int Op_EF_base::elem_contribue(const int& elem) const
 {
   if (marqueur_elem_.size_array()==0)
     return 1;
-  else if (marqueur_elem_(elem)==1)
+  else if (marqueur_elem_[elem]==1)
     return 0;
   return 1;
 }
@@ -574,7 +574,7 @@ void  Op_EF_base::marque_elem(const Equation_base& eqn)
       marqueur_elem_.resize_array(ntot);
       for (int n=0; n<ntot; n++)
         if (marq(n)>0)
-          marqueur_elem_(n)=1;
+          marqueur_elem_[n]=1;
     }
   catch  (Champs_compris_erreur)
     {

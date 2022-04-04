@@ -53,9 +53,9 @@ public :
 
   inline void setDirection(double lx, double ly, double lz)
   {
-    direction_(0)=lx;
-    direction_(1)=ly;
-    direction_(2)=lz;
+    direction_[0]=lx;
+    direction_[1]=ly;
+    direction_[2]=lz;
   };
   inline void setNbTranches(int n)
   {

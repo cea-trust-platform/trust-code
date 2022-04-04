@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,7 +98,7 @@ void Zone_Cl_VEFP1B::imposer_cond_lim(Champ_Inc& ch,double temps)
                         {
                           int som_glob = faces(face,som);
                           pression(nps+som_glob) += P_imp*face_surf;
-                          surf_loc(som_glob) += face_surf;
+                          surf_loc[som_glob] += face_surf;
                         }
                     }
                 }
@@ -119,7 +119,7 @@ void Zone_Cl_VEFP1B::imposer_cond_lim(Champ_Inc& ch,double temps)
                       for(int som=0; som<nbsf; som++)
                         {
                           int som_glob = faces(face,som);
-                          double& surf = surf_loc(som_glob);
+                          double& surf = surf_loc[som_glob];
                           if (surf>0)
                             {
                               pression(nps+som_glob) /= surf;

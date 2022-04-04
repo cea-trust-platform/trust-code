@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -119,10 +119,10 @@ void Ch_front_input::buildSommetsFaces() const
       for (int s=0; s<faces.dimension(1); s++)
         {
           int som=faces(f,s);
-          if (som >= 0 && marqueur(som)==-1)
+          if (som >= 0 && marqueur[som]==-1)
             {
 
-              marqueur(som)=ntot;
+              marqueur[som]=ntot;
               for (int dir=0; dir<dimension; dir++)
                 {
                   sommets(ntot,dir)=sommets_org(som,dir);
@@ -137,7 +137,7 @@ void Ch_front_input::buildSommetsFaces() const
   // on refait les faces
   for (int f=0; f<faces.dimension(0); f++)
     for (int s=0; s<faces.dimension(1); s++)
-      faces(f,s) = faces_org(f, s) >= 0 ? marqueur(faces_org(f,s)) : -1;
+      faces(f,s) = faces_org(f, s) >= 0 ? marqueur[faces_org(f,s)] : -1;
 
 }
 

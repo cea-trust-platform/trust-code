@@ -160,9 +160,9 @@ DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_bords(const int ncomp, Doubl
             evaluateur_source_face.calculer_terme_source_bord(num_face,source);
             for (int k = 0; k < ncomp; k++)
               {
-                resu(num_face,k) += source(k);
+                resu(num_face,k) += source[k];
                 double contribution = (faces_doubles(num_face)==1) ? 0.5 : 1 ;
-                bilan(k) += contribution * coef(num_face) * source(k);
+                bilan(k) += contribution * coef(num_face) * source[k];
               }
           }
     }
@@ -179,9 +179,9 @@ DoubleTab& T_It_Sou_VDF_Face<_TYPE_>::ajouter_faces_internes(const int ncomp, Do
       evaluateur_source_face.calculer_terme_source(num_face,source);
       for (int k=0; k<ncomp; k++)
         {
-          resu(num_face,k) += source(k);
+          resu(num_face,k) += source[k];
           double contribution = (faces_doubles(num_face)==1) ? 0.5 : 1 ;
-          bilan(k) += contribution * coef(num_face) * source(k);
+          bilan(k) += contribution * coef(num_face) * source[k];
         }
     }
   return resu;

@@ -141,9 +141,9 @@ void Extruder_en20::extruder(Domaine& dom)
       int oldnbsom = zone.nb_som();
       IntTab& les_elems=zone.les_elems();
       int oldsz=les_elems.dimension(0);
-      double dx = direction(0)/NZ;
-      double dy = direction(1)/NZ;
-      double dz = direction(2)/NZ;
+      double dx = direction[0]/NZ;
+      double dy = direction[1]/NZ;
+      double dz = direction[2]/NZ;
 
       Faces les_faces;
       //zone.creer_faces(les_faces);

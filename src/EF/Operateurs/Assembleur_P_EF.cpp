@@ -373,7 +373,7 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
       int nb_voisin=som_elem.get_list_size(num_som);
       //      if (type_sommet(num_som)==0) ???
 
-      if (type_sommet(num_som)==1)
+      if (type_sommet[num_som]==1)
         for (int i2=0; i2<nb_voisin; i2++)
           {
             elem2 =  som_elem(num_som,i2);
@@ -394,12 +394,12 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
                 for (int comp=0; comp<dimension; comp++)
                   {
                     //		      grad_n+=Bthilde(elem2,s2,comp)*face_normales(face,comp);
-                    grad(comp)=Bthilde(elem2,s2,comp);
+                    grad[comp]=Bthilde(elem2,s2,comp);
                   }
                 //	  grad_n/=(la_zone.surface(face)*la_zone.surface(face));
                 zone_Cl_EF.modifie_gradient(grad_mod,grad,num_som);
                 for (int dir=0; dir<dimension; dir++)
-                  val-=Bthilde(elem1,s1,dir)*grad_mod(dir)*inv_volumes_som(num_som,dir);
+                  val-=Bthilde(elem1,s1,dir)*grad_mod[dir]*inv_volumes_som(num_som,dir);
                 // val-=Bthilde(elem1,s1,dir)*face_normales(face,dir)*grad_n*inv_volumes_som(num_som,dir);
                 // 	  val=0;
 // 		  for (int dir=0;dir<dimension;dir++)

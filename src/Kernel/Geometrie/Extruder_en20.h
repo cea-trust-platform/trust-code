@@ -50,9 +50,9 @@ public :
   Entree& interpreter_(Entree&) override;
   inline void setDirection(double lx, double ly, double lz)
   {
-    direction(0)=lx;
-    direction(1)=ly;
-    direction(2)=lz;
+    direction[0]=lx;
+    direction[1]=ly;
+    direction[2]=lz;
   };
   inline void setNbTranches(int n)
   {

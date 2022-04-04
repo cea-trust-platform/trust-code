@@ -163,8 +163,8 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
       for (int i=0; i<nb_elem_autre_pb; i++)
         {
           assert(corresp_fin_gros(i)>0);
-          nb_fin(corresp_fin_gros(i))++;
-          vol_fin_tot(corresp_fin_gros(i)) += volumes(i);
+          nb_fin[corresp_fin_gros[i]]++;
+          vol_fin_tot[corresp_fin_gros[i]] += volumes(i);
         }
     }
 
@@ -233,7 +233,7 @@ DoubleTab& Terme_Source_Rappel_T_VEF_Face::ajouter(DoubleTab& resu) const
       val_elem=0.;
       for (int i=0; i<nb_elem_autre_pb; i++)
         {
-          val_elem(corresp_fin_gros(i)) += valeurs(i,0)*volumes_autre_pb(i)/vol_fin_tot(corresp_fin_gros(i)) ; ///nb_fin(corresp_fin_gros(i));
+          val_elem[corresp_fin_gros[i]] += valeurs(i,0)*volumes_autre_pb(i)/vol_fin_tot[corresp_fin_gros[i]] ; ///nb_fin(corresp_fin_gros(i));
         }
 
 
@@ -241,14 +241,14 @@ DoubleTab& Terme_Source_Rappel_T_VEF_Face::ajouter(DoubleTab& resu) const
         {
           vol = volumes_entrelaces_Cl(num_face);
 
-          force = val_elem(face_voisins(num_face,0));
+          force = val_elem[face_voisins(num_face,0)];
           resu(num_face) += (force-temperature(num_face))/(alpha_tau*dt)*vol;
         }
       for(int num_face = ndeb ; num_face<premiere_face_std ; num_face++)
         {
           vol = volumes_entrelaces_Cl(num_face);
 
-          force = 0.5*(val_elem(face_voisins(num_face,0))+val_elem(face_voisins(num_face,1)));
+          force = 0.5*(val_elem[face_voisins(num_face,0)]+val_elem[face_voisins(num_face,1)]);
           if ((force!=0.))//&& (force-temperature(num_face)>0.))
             resu(num_face) += (force-temperature(num_face))/(alpha_tau*dt)*vol;
         }
@@ -257,10 +257,10 @@ DoubleTab& Terme_Source_Rappel_T_VEF_Face::ajouter(DoubleTab& resu) const
         {
           vol = volumes_entrelaces(num_face);
 
-          if ((val_elem(face_voisins(num_face,0)) !=0.) && (val_elem(face_voisins(num_face,1)) !=0.))
-            force = 0.5*(val_elem(face_voisins(num_face,0))+val_elem(face_voisins(num_face,1)));
+          if ((val_elem[face_voisins(num_face,0)] !=0.) && (val_elem[face_voisins(num_face,1)] !=0.))
+            force = 0.5*(val_elem[face_voisins(num_face,0)]+val_elem[face_voisins(num_face,1)]);
           else
-            force = val_elem(face_voisins(num_face,0))+val_elem(face_voisins(num_face,1));
+            force = val_elem[face_voisins(num_face,0)]+val_elem[face_voisins(num_face,1)];
           if ((force!=0.))//&& (force-temperature(num_face)>0.))
             {
               //Cout << "force = " << force << finl;

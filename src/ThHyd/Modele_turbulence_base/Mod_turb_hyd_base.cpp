@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -672,8 +672,8 @@ void Mod_turb_hyd_base::limiter_viscosite_turbulente()
     {
       // PL: optimization to avoid 2 mp_sum instead 1:
       ArrOfInt tmp(2);
-      tmp(0)=compt;
-      tmp(1)=size;
+      tmp[0]=compt;
+      tmp[1]=size;
       mp_sum_for_each_item(tmp);
       /*      compt=mp_sum(compt);
             size=mp_sum(size); */

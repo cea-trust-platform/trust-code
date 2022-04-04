@@ -286,7 +286,7 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
               fac_asso = la_cl_perio.face_associee(ind_face);
               fac_asso = le_bord.num_face(fac_asso);
               num_face = le_bord.num_face(ind_face);
-              marq(num_face)=fac_asso;
+              marq[num_face]=fac_asso;
               for (int kk=0; kk<2; kk++)
                 {
                   int elem = face_voisins(num_face,kk);
@@ -398,8 +398,8 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
 
                               resu(j)+=correction;
 
-                              if (marq(j)!=-1)
-                                resu(marq(j))+=correction;
+                              if (marq[j]!=-1)
+                                resu[marq[j]]+=correction;
                               // la face num_face n'est pas periodique  mar(num_face)==-1
                               // flux_bord n'est necessaire que sur les faces reelles
                               if(j==num_face && j<size_flux_bords)
@@ -703,7 +703,7 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
               fac_asso = la_cl_perio.face_associee(ind_face);
               fac_asso = le_bord.num_face(fac_asso);
               num_face = le_bord.num_face(ind_face);
-              marq(num_face)=fac_asso;
+              marq[num_face]=fac_asso;
               for (int kk=0; kk<2; kk++)
                 {
                   int elem = face_voisins(num_face,kk);
@@ -810,8 +810,8 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
 
                                   resu(j,nc)+=correction;
 
-                                  if (marq(j)!=-1)
-                                    resu(marq(j),nc)+=correction;
+                                  if (marq[j]!=-1)
+                                    resu(marq[j],nc)+=correction;
                                   // la face num_face n'est pas periodique  mar(num_face)==-1
                                   // flux_bord n'est necessaire que sur les faces reelles
                                   if(j==num_face && j<size_flux_bords)

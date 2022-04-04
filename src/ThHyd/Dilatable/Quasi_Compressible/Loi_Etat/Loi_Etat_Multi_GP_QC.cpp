@@ -112,16 +112,16 @@ void Loi_Etat_Multi_GP_QC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) 
         }
       for (int elem=0; elem<size; elem++)
         {
-          numer_M(elem) += Y_i(elem,0);
-          inv_M(elem) += Y_i(elem,0)/M_i;
+          numer_M[elem] += Y_i(elem,0);
+          inv_M[elem] += Y_i(elem,0)/M_i;
         }
     }
 
   assert(liste_Y(0).valeur().valeurs().size()==size);
 
   for (int elem=0; elem<size; elem++)
-    if (inv_M(elem)>1.e-8)
-      tab_masse_mol_mel(elem,0) = numer_M(elem) / inv_M(elem);
+    if (inv_M[elem]>1.e-8)
+      tab_masse_mol_mel(elem,0) = numer_M[elem] / inv_M[elem];
 }
 
 // Description:

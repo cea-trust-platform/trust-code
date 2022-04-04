@@ -90,7 +90,7 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double tem
       double hm = (h0 * vol0 + h1 * vol1) / (vol0 + vol1);
       double htextm = (h0 * text0 * vol0 + h1 * text1 * vol1) / (vol0 + vol1);
 
-      double c = (zone.faces_doubles()(num_face)==1) ? 0.5 : 1 ;
+      double c = (zone.faces_doubles()[num_face]==1) ? 0.5 : 1 ;
       bilan()(0) -= c * (hm*T(num_face)-htextm) * vol;
 
     }

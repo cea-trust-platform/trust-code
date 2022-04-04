@@ -292,7 +292,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
           for (int ind_face=num1; ind_face<num2; ind_face++)
             {
               face = le_bord.num_face(ind_face);
-              if (ind_face-nb_faces_bord>=0) virtfait(face-nb_faces)=1;
+              if (ind_face-nb_faces_bord>=0) virtfait[face-nb_faces]=1;
               int elem1=face_voisins(face,0);
               int elem2=face_voisins(face,1);
               double volume=zone_VEF.volumes(elem1);
@@ -311,7 +311,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
         for (int ind_face=num1; ind_face<num2; ind_face++)
           {
             face = le_bord.num_face(ind_face);
-            if (ind_face-nb_faces_bord>=0) virtfait(face-nb_faces)=1;
+            if (ind_face-nb_faces_bord>=0) virtfait[face-nb_faces]=1;
             int elem1=face_voisins(face,0);
             int elem2=face_voisins(face,1);
             double volume=zone_VEF.volumes(elem1);
@@ -1173,13 +1173,13 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
                 if (fait(ind_face) == 0)
                   {
                     fait(ind_face) = 1;
-                    if (ind_face-nb_faces_bord>=0) virtfait(face-nb_faces)=1;
+                    if (ind_face-nb_faces_bord>=0) virtfait[face-nb_faces]=1;
                     face_associee=la_cl_perio.face_associee(ind_face);
                     fait(face_associee) = 1;
                     if (ind_face-nb_faces_bord>=0)
                       {
                         face_associee = le_bord.num_face(face_associee);
-                        virtfait(face_associee-nb_faces)=1;
+                        virtfait[face_associee-nb_faces]=1;
                       }
 
                     for(int isom=0; isom<Objet_U::dimension; isom++)
@@ -1198,7 +1198,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
             for (ind_face=num1; ind_face<num2; ind_face++)
               {
                 face = le_bord.num_face(ind_face);
-                if (ind_face-nb_faces_bord>=0) virtfait(face-nb_faces)=1;
+                if (ind_face-nb_faces_bord>=0) virtfait[face-nb_faces]=1;
                 for(int isom=0; isom<Objet_U::dimension; isom++)
                   {
                     int som=face_sommets(face,isom);

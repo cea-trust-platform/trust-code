@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -104,14 +104,14 @@ int Champ_front_fonc_pois_tube::initialiser(double temps, const Champ_Inc_base& 
       for( k=0; k<nbsf; k++)
         {
           for ( i=0; i<dim; i++)
-            loc_local(i)+=domaine.coord(faces.sommet(fac,k),i);
+            loc_local[i]+=domaine.coord(faces.sommet(fac,k),i);
         }
       loc_local /= double(nbsf);
 
       loc_local -= R_loc ;
 
       double ray = 0. ;
-      for ( i=0; i<dim; i++) ray += (loc_local(i)*loc_local(i)) ;
+      for ( i=0; i<dim; i++) ray += (loc_local[i]*loc_local[i]) ;
 
       ray = sqrt(ray) ;
 
@@ -124,7 +124,7 @@ int Champ_front_fonc_pois_tube::initialiser(double temps, const Champ_Inc_base& 
       for ( i=0; i<dim; i++)
         for ( j=0; j<dim; j++)
           {
-            double dummy =  ( loc_local(j) * double(R_loc_mult(j)) / R_tube );
+            double dummy =  ( loc_local[j] * double(R_loc_mult(j)) / R_tube );
             tab(fac,i) *=  ( 1. + 1.25 * dummy ) ;
           }
     }

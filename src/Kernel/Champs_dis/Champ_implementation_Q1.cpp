@@ -145,10 +145,10 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
   resu = 0;
   for (int ic=0; ic<cells.size_array(); ic++)
     {
-      int cell = cells(ic);
+      int cell = cells[ic];
       if (cell<0) continue;
       for (int k = 0; k < Objet_U::dimension; k++)
-        position(k) = positions(ic, k);
+        position[k] = positions(ic, k);
 
       if (nb_nodes_per_cell == 4)
         {
@@ -159,7 +159,7 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
                 cell3D(0, 2 * i) = les_elems(cell, i);
               calcul_plan_hexa(coeff_plan, d, 0, cell3D, nodes, 0);
               double A = d;
-              for (int i = 0; i < Objet_U::dimension; i++) A += coeff_plan[i] * position(i);
+              for (int i = 0; i < Objet_U::dimension; i++) A += coeff_plan[i] * position[i];
               if (std::fabs(A) > std::fabs(d) * 1e-5)
                 {
                   Cerr << "Error point not in the plane " << finl;
@@ -173,10 +173,10 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
 
                 calcul_plan_quadra(coeff_plan, d, cell, les_elems, nodes, dir);
                 double A = d;
-                for (int i = 0; i < Objet_U::dimension; i++) A += coeff_plan[i] * position(i);
+                for (int i = 0; i < Objet_U::dimension; i++) A += coeff_plan[i] * position[i];
                 calcul_plan_quadra(coeff_plan, d, cell, les_elems, nodes, dir + 2);
                 double B = d;
-                for (int i = 0; i < Objet_U::dimension; i++) B += coeff_plan[i] * position(i);
+                for (int i = 0; i < Objet_U::dimension; i++) B += coeff_plan[i] * position[i];
                 assert(inf_ou_egal((A * B), 0, 1e-10));
                 coord_bar[dir] = A / (A - B);
               }
@@ -189,10 +189,10 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
 
               calcul_plan_hexa(coeff_plan, d, cell, les_elems, nodes, dir);
               double A = d;
-              for (int i = 0; i < 3; i++) A += coeff_plan[i] * position(i);
+              for (int i = 0; i < 3; i++) A += coeff_plan[i] * position[i];
               calcul_plan_hexa(coeff_plan, d, cell, les_elems, nodes, dir + 3);
               double B = d;
-              for (int i = 0; i < 3; i++) B += coeff_plan[i] * position(i);
+              for (int i = 0; i < 3; i++) B += coeff_plan[i] * position[i];
               assert(inf_ou_egal((A * B), 0, 1e-10));
               coord_bar[dir] = A / (A - B);
             }
@@ -207,7 +207,7 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
               for (int j = 0; j < nb_nodes_per_cell; j++)
                 {
                   int node = les_elems(cell, j);
-                  val(j) = values(node, ncomp);
+                  val[j] = values(node, ncomp);
                 }
             }
           else
@@ -217,7 +217,7 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
                   for (int j = 0; j < nb_nodes_per_cell; j++)
                     {
                       int node = les_elems(cell, j);
-                      val(j) = values(node);
+                      val[j] = values(node);
                     }
                 }
               else
@@ -226,7 +226,7 @@ void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, co
                   for (int j = 0; j < nb_nodes_per_cell; j++)
                     {
                       int node = les_elems(cell, j);
-                      val(j) = values(node, k);
+                      val[j] = values(node, k);
                     }
                 }
             }
@@ -302,7 +302,7 @@ double Champ_implementation_Q1::form_function(const ArrOfDouble& position, int c
           double dist=0;
           for (int j=0; j<Objet_U::dimension; j++)
             {
-              double dx=(nodes(som,j)-position(j));
+              double dx=(nodes(som,j)-position[j]);
               dist+=dx*dx;
             }
           if (dist<l)

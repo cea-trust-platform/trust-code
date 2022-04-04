@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -270,21 +270,21 @@ void Reaction::reagir(VECT(REF(Champ_Inc_base))& liste_C,double deltat) const
         {
           if (coeff_Y_[i]!=0.) // c'est un reactif ou un produit
             {
-              C(i)=liste_C[i].valeur().valeurs()(elem);
-              if (C(i)<0)
+              C[i]=liste_C[i].valeur().valeurs()(elem);
+              if (C[i]<0)
                 {
 
-                  if (C(i)<-1e-5)
+                  if (C[i]<-1e-5)
                     {
-                      Cerr<<" on rabote C_"<<i<<" dans la maille "<<elem<<" dans la chimie !!!!!! "<<C(i)<<finl;
+                      Cerr<<" on rabote C_"<<i<<" dans la maille "<<elem<<" dans la chimie !!!!!! "<<C[i]<<finl;
 
                       exit();
                     }
-                  C(i)=0;
+                  C[i]=0;
                 }
             }
           else
-            C(i)=0;
+            C[i]=0;
         }
 
       // calcul du taux de reaction implicite
@@ -296,7 +296,7 @@ void Reaction::reagir(VECT(REF(Champ_Inc_base))& liste_C,double deltat) const
           {
             DoubleTab& C_i = liste_C[i].valeur().valeurs(); // kg/kg
             //    C_i(elem)-=proportion*coeff_stoechio_[i];
-            C_i(elem)=C0(i)-proportion*coeff_stoechio_[i];
+            C_i(elem)=C0[i]-proportion*coeff_stoechio_[i];
           }
     }
 
@@ -342,12 +342,12 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
         {
           if (coeff_Y_[i]>0.) // c'est un reactif gazeux => produit par son activite
             {
-              produit_activite*=pow(C(i),coeff_activite_[i]);
+              produit_activite*=pow(C[i],coeff_activite_[i]);
             }
           else if (contre_reaction_>0)
             if (coeff_Y_[i]<0.)
               {
-                produit_contre*=pow(C(i),coeff_activite_[i]);
+                produit_contre*=pow(C[i],coeff_activite_[i]);
               }
         } // mol/kg a ce stade
 
@@ -370,8 +370,8 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
               {
                 if (coeff_Y_[i]>0.) // c'est un reactif
                   {
-                    if (proportion > C(i)/coeff_stoechio_[i]*securite) Cerr<<" on limite" <<finl;
-                    proportion=std::min(proportion,C(i)/coeff_stoechio_[i]*securite);
+                    if (proportion > C[i]/coeff_stoechio_[i]*securite) Cerr<<" on limite" <<finl;
+                    proportion=std::min(proportion,C[i]/coeff_stoechio_[i]*securite);
                   }
               }
           else
@@ -380,7 +380,7 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
                 if (coeff_Y_[i]<0.) // c'est un reactif car on est dans le cas contre treaction
                   {
                     // on prend le max car proportion et Y_i(elem)/coeff_Y_[i] sont negatifs
-                    proportion=std::max(proportion,C(i)/coeff_stoechio_[i]*securite);
+                    proportion=std::max(proportion,C[i]/coeff_stoechio_[i]*securite);
                   }
               }
         }
@@ -396,24 +396,24 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
                 double pond=-1;
                 if (coeff_Y_[i]>0)
                   {
-                    if (C(i)>0)
-                      pond=proportion_directe*coeff_stoechio_[i]/C(i);
+                    if (C[i]>0)
+                      pond=proportion_directe*coeff_stoechio_[i]/C[i];
                     else
                       pond=0;
                   }
                 else
                   {
-                    if ((contre_reaction_>0)&&(C(i)>0))
-                      pond=-proportion_inverse*coeff_stoechio_[i]/C(i);
+                    if ((contre_reaction_>0)&&(C[i]>0))
+                      pond=-proportion_inverse*coeff_stoechio_[i]/C[i];
                     else
                       pond=0;
                   }
                 if (pond<0)
                   exit();
                 //pond=0;
-                double nc=((C0(i)-proportion*coeff_stoechio_[i]/2.+pond/2.*C(i))/(1.+pond/2.)-C(i));
+                double nc=((C0[i]-proportion*coeff_stoechio_[i]/2.+pond/2.*C[i])/(1.+pond/2.)-C[i]);
                 double dc=std::fabs(nc);
-                C(i)+=nc;
+                C[i]+=nc;
                 if (dc>dmax)
                   dmax=dc;
                 //Cerr<<ite<<" i "<< i<< " "<<C(i)-C0(i)<<" dc"<< dmax <<finl;
@@ -421,8 +421,8 @@ double Reaction::calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDoub
           }
         else
           {
-            double nc=C0(i)-proportion*coeff_stoechio_[i]/2.-C(i);
-            C(i)+=nc;
+            double nc=C0[i]-proportion*coeff_stoechio_[i]/2.-C[i];
+            C[i]+=nc;
             double dc=std::fabs(nc);
             if (dc>dmax)
               dmax=dc;

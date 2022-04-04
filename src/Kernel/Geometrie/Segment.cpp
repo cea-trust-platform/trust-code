@@ -93,17 +93,17 @@ void Segment::reordonner()
   for (int num_poly=0; num_poly<nb_elem; num_poly++)
     {
       for(i=0; i<2; i++)
-        S(i) = elem(num_poly,i);
+        S[i] = elem(num_poly,i);
 
-      if(sup_strict(dom.coord(S(0), 0),dom.coord(S(1), 0)))
+      if(sup_strict(dom.coord(S[0], 0),dom.coord(S[1], 0)))
         {
-          int tmp=S(0);
-          S(0)=S(1);
-          S(1)=tmp;
+          int tmp=S[0];
+          S[0]=S[1];
+          S[1]=tmp;
         }
 
       for(i=0; i<2; i++)
-        elem(num_poly, i)=S(i);
+        elem(num_poly, i)=S[i];
     }
 }
 
@@ -169,7 +169,7 @@ int Segment::contient(const ArrOfDouble& pos, int element ) const
   for (int d=0; d<dimension; d++)
     {
       double O1 = dom.coord(elem(element,1), d) - dom.coord(elem(element,0), d);
-      double OM = pos(d) - dom.coord(elem(element,0), d);
+      double OM = pos[d] - dom.coord(elem(element,0), d);
       if (!est_egal(O1,0))
         {
           double a = OM/O1;

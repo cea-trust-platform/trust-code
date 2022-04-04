@@ -95,14 +95,14 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
         {
           double vol = volumes_entrelaces_Cl(num_face)*porosite_face(num_face);
           for (int i=0; i<dimension; i++)
-            resu(num_face,i)+= s(i)*vol;
+            resu(num_face,i)+= s[i]*vol;
         }
       int nb_faces = zone_VF.nb_faces();
       for (int num_face = premiere_face_std; num_face<nb_faces; num_face++)
         {
           double vol = volumes_entrelaces(num_face)*porosite_face(num_face);
           for (int i=0; i<dimension; i++)
-            resu(num_face,i)+= s(i)*vol;
+            resu(num_face,i)+= s[i]*vol;
         }
     }
   else
@@ -113,17 +113,17 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
       for (int num_face = 0 ; num_face<premiere_face_std; num_face++)
         {
           double vol = volumes_entrelaces_Cl(num_face)*porosite_face(num_face);
-          double contrib = s(num_face)*vol;
+          double contrib = s[num_face]*vol;
           resu(num_face)+= contrib;
-          bilan_(0)+= contrib*(1-0.5*fd(num_face));
+          bilan_(0)+= contrib*(1-0.5*fd[num_face]);
         }
       int nb_faces = zone_VF.nb_faces();
       for (int num_face = premiere_face_std; num_face<nb_faces; num_face++)
         {
           double vol = volumes_entrelaces(num_face)*porosite_face(num_face);
-          double contrib = s(num_face)*vol;
+          double contrib = s[num_face]*vol;
           resu(num_face)+= contrib;
-          bilan_(0)+= contrib*(1-0.5*fd(num_face));
+          bilan_(0)+= contrib*(1-0.5*fd[num_face]);
         }
     }
   return resu;

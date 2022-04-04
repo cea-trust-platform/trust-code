@@ -294,7 +294,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
               if (n>=0)
                 espace_valeurs(i,j) = val_temp(n,j);
             }
-        else espace_valeurs(i, ncomp) = val_temp(renumerotation_maillage_[i]);
+        else espace_valeurs(i, ncomp) = val_temp[renumerotation_maillage_[i]];
 
       espace_valeurs.echange_espace_virtuel();
       return espace_stockage.valeur();

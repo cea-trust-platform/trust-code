@@ -129,18 +129,18 @@ void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
 
       Vecteur3 vraixg(0,0,0);
 
-      for (int f=PolyhedronIndex_(num_poly); f<PolyhedronIndex_(num_poly+1); f++)
+      for (int f=PolyhedronIndex_[num_poly]; f<PolyhedronIndex_[num_poly+1]; f++)
         {
-          int somm_loc3=Nodes_(FacesIndex_(f+1)-1);
+          int somm_loc3=Nodes_[FacesIndex_[f+1]-1];
           int n3=elem(num_poly,somm_loc3);
           Vecteur3 S3(coord(n3,0),coord(n3,1),coord(n3,2));
           Vecteur3 S3sa(S3);
           S3+=  moinsS0;
-          for (int s=FacesIndex_(f); s<FacesIndex_(f+1)-2; s++)
+          for (int s=FacesIndex_[f]; s<FacesIndex_[f+1]-2; s++)
             {
-              int somm_loc1=Nodes_(s);
+              int somm_loc1=Nodes_[s];
               int n1=elem(num_poly,somm_loc1);
-              int somm_loc2=Nodes_(s+1);
+              int somm_loc2=Nodes_[s+1];
               int n2=elem(num_poly,somm_loc2);
               Vecteur3 S1(coord(n1,0),coord(n1,1),coord(n1,2));
               Vecteur3 S2(coord(n2,0),coord(n2,1),coord(n2,2));
@@ -264,7 +264,7 @@ int Polyedre::contient(const ArrOfDouble& pos, int num_poly ) const
   const Zone& zone=ma_zone.valeur();
   const IntTab& elem=zone.les_elems();
   const DoubleTab& coord=zone.domaine().coord_sommets();
-  Vecteur3 P(pos(0),pos(1),pos(2));
+  Vecteur3 P(pos[0],pos[1],pos[2]);
   Vecteur3 xg(0,0,0);
   int nb_som_max=elem.dimension(1);
   int nb_som_reel;
@@ -278,18 +278,18 @@ int Polyedre::contient(const ArrOfDouble& pos, int num_poly ) const
     }
   xg*=1./nb_som_reel;
 
-  for (int f=PolyhedronIndex_(num_poly); f<PolyhedronIndex_(num_poly+1); f++)
+  for (int f=PolyhedronIndex_[num_poly]; f<PolyhedronIndex_[num_poly+1]; f++)
     {
       Vecteur3 n(0,0,0);
-      int somm_loc3=Nodes_(FacesIndex_(f+1)-1);
+      int somm_loc3=Nodes_[FacesIndex_[f+1]-1];
       int n3=elem(num_poly,somm_loc3);
       Vecteur3 moinsS3(-coord(n3,0),-coord(n3,1),-coord(n3,2));
 
-      for (int s=FacesIndex_(f); s<FacesIndex_(f+1)-2; s++)
+      for (int s=FacesIndex_[f]; s<FacesIndex_[f+1]-2; s++)
         {
-          int somm_loc1=Nodes_(s);
+          int somm_loc1=Nodes_[s];
           int n1=elem(num_poly,somm_loc1);
-          int somm_loc2=Nodes_(s+1);
+          int somm_loc2=Nodes_[s+1];
           int n2=elem(num_poly,somm_loc2);
           Vecteur3 S1(coord(n1,0),coord(n1,1),coord(n1,2));
           Vecteur3 S2(coord(n2,0),coord(n2,1),coord(n2,2));
@@ -391,17 +391,17 @@ void Polyedre::calculer_volumes(DoubleVect& volumes) const
       xg*=1./nb_som_reel;
       Vecteur3 moinsS0(xg);
       moinsS0*=-1;
-      for (int f=PolyhedronIndex_(num_poly); f<PolyhedronIndex_(num_poly+1); f++)
+      for (int f=PolyhedronIndex_[num_poly]; f<PolyhedronIndex_[num_poly+1]; f++)
         {
-          int somm_loc3=Nodes_(FacesIndex_(f+1)-1);
+          int somm_loc3=Nodes_[FacesIndex_[f+1]-1];
           int n3=elem(num_poly,somm_loc3);
           Vecteur3 S3(coord(n3,0),coord(n3,1),coord(n3,2));
           S3+=  moinsS0;
-          for (int s=FacesIndex_(f); s<FacesIndex_(f+1)-2; s++)
+          for (int s=FacesIndex_[f]; s<FacesIndex_[f+1]-2; s++)
             {
-              int somm_loc1=Nodes_(s);
+              int somm_loc1=Nodes_[s];
               int n1=elem(num_poly,somm_loc1);
-              int somm_loc2=Nodes_(s+1);
+              int somm_loc2=Nodes_[s+1];
               int n2=elem(num_poly,somm_loc2);
               Vecteur3 S1(coord(n1,0),coord(n1,1),coord(n1,2));
               Vecteur3 S2(coord(n2,0),coord(n2,1),coord(n2,2));
@@ -443,12 +443,12 @@ int Polyedre::get_tab_faces_sommets_locaux(IntTab& faces_som_local,int ele) cons
   if (ele == 0 && PolyhedronIndex_.size_array() == 1) return 1; //pas d'elements!
   // on cherche les faces de l'elt
   int fl=0;
-  for (int f=PolyhedronIndex_(ele); f<PolyhedronIndex_(ele+1); f++)
+  for (int f=PolyhedronIndex_[ele]; f<PolyhedronIndex_[ele+1]; f++)
     {
       int sl=0;
-      for (int s=FacesIndex_(f); s<FacesIndex_(f+1); s++)
+      for (int s=FacesIndex_[f]; s<FacesIndex_[f+1]; s++)
         {
-          int somm_loc=Nodes_(s);
+          int somm_loc=Nodes_[s];
           faces_som_local(fl,sl)=somm_loc;
           sl++;
         }
@@ -473,16 +473,16 @@ void Polyedre::affecte_connectivite_numero_global(const ArrOfInt& Nodes,const Ar
   for (int ele=0; ele<nelem; ele++)
     {
       prov.vide();
-      int nbf=PolyhedronIndex(ele+1)-PolyhedronIndex(ele);
+      int nbf=PolyhedronIndex[ele+1]-PolyhedronIndex[ele];
       if (nbf>nb_face_elem_max_) nb_face_elem_max_=nbf;
-      for (int f=PolyhedronIndex(ele); f<PolyhedronIndex(ele+1); f++)
+      for (int f=PolyhedronIndex[ele]; f<PolyhedronIndex[ele+1]; f++)
         {
           //Cerr<<" ici "<<ele << " " <<f <<" "<<FacesIndex(f+1)-FacesIndex(f)<<finl;
-          int nbs=FacesIndex(f+1)-FacesIndex(f);
+          int nbs=FacesIndex[f+1]-FacesIndex[f];
           if (nbs>nb_som_face_max_) nb_som_face_max_=nbs;
-          for (int s=FacesIndex(f); s<FacesIndex(f+1); s++)
+          for (int s=FacesIndex[f]; s<FacesIndex[f+1]; s++)
             {
-              prov.add_if_not(Nodes(s));
+              prov.add_if_not(Nodes[s]);
             }
         }
       int nbsom=prov.size();
@@ -495,11 +495,11 @@ void Polyedre::affecte_connectivite_numero_global(const ArrOfInt& Nodes,const Ar
   for (int ele=0; ele<nelem; ele++)
     {
       prov.vide();
-      for (int f=PolyhedronIndex(ele); f<PolyhedronIndex(ele+1); f++)
+      for (int f=PolyhedronIndex[ele]; f<PolyhedronIndex[ele+1]; f++)
         {
-          for (int s=FacesIndex(f); s<FacesIndex(f+1); s++)
+          for (int s=FacesIndex[f]; s<FacesIndex[f+1]; s++)
             {
-              prov.add_if_not(Nodes(s));
+              prov.add_if_not(Nodes[s]);
             }
         }
       int nbsom=prov.size();
@@ -528,15 +528,15 @@ void Polyedre::affecte_connectivite_numero_global(const ArrOfInt& Nodes,const Ar
     Nodes_=-2;
     for (int ele=0; ele<nelem; ele++)
       {
-        for (int f=PolyhedronIndex(ele); f<PolyhedronIndex(ele+1); f++)
+        for (int f=PolyhedronIndex[ele]; f<PolyhedronIndex[ele+1]; f++)
           {
-            for (int s=FacesIndex(f); s<FacesIndex(f+1); s++)
+            for (int s=FacesIndex[f]; s<FacesIndex[f+1]; s++)
               {
-                int somm_glob=Nodes(s);
+                int somm_glob=Nodes[s];
                 for (int sl=0; sl<nb_som_elem_max_; sl++)
                   if (les_elems(ele,sl)==somm_glob)
                     {
-                      Nodes_(s)=sl;
+                      Nodes_[s]=sl;
                       break;
                     }
               }
@@ -552,12 +552,12 @@ void Polyedre::remplir_Nodes_glob(ArrOfInt& Nodes_glob,const IntTab& les_elems) 
   int nelem=les_elems.dimension_tot(0);
   for (int ele=0; ele<nelem; ele++)
     {
-      for (int f=PolyhedronIndex_(ele); f<PolyhedronIndex_(ele+1); f++)
+      for (int f=PolyhedronIndex_[ele]; f<PolyhedronIndex_[ele+1]; f++)
         {
-          for (int s=FacesIndex_(f); s<FacesIndex_(f+1); s++)
+          for (int s=FacesIndex_[f]; s<FacesIndex_[f+1]; s++)
             {
-              int somm_loc=Nodes_(s);
-              Nodes_glob(s)=les_elems(ele,somm_loc);
+              int somm_loc=Nodes_[s];
+              Nodes_glob[s]=les_elems(ele,somm_loc);
             }
         }
     }
@@ -622,24 +622,24 @@ void Polyedre::ajouter_elements(const Elem_geom_base& type_elem, const IntTab& n
   int new_s=0;
   for (int el=0; el<nb_new_elem; el++)
     {
-      PolyhedronIndex_(nb_old_elem+el+1)=PolyhedronIndex_(nb_old_elem+el)+nb_face_new_elem;
+      PolyhedronIndex_[nb_old_elem+el+1]=PolyhedronIndex_[nb_old_elem+el]+nb_face_new_elem;
       for (int f=0; f<nb_face_new_elem; f++)
         {
           int nb_som_face_this_elem=0;
           for (int s=0; s<nb_som_face_new_elem; s++)
             if (faces_som_local(f,s)!=-1)
               {
-                Nodes_(old_nodes_index+new_s++)=faces_som_local(f,s);
+                Nodes_[old_nodes_index+new_s++]=faces_som_local(f,s);
                 nb_som_face_this_elem++;
               }
           if (nb_som_face_this_elem==4)
             {
               // on inverse 3 et 4 en cas de quadrangle
               int last=old_nodes_index+new_s-1;
-              swap(Nodes_(last),Nodes_(last-1));
+              swap(Nodes_[last],Nodes_[last-1]);
             }
-          FacesIndex_(old_faces_index+(el*nb_face_new_elem)+f)=
-            FacesIndex_(old_faces_index+(el*nb_face_new_elem)+f-1)+nb_som_face_this_elem;
+          FacesIndex_[old_faces_index+(el*nb_face_new_elem)+f]=
+            FacesIndex_[old_faces_index+(el*nb_face_new_elem)+f-1]+nb_som_face_this_elem;
 
         }
     }
@@ -658,10 +658,10 @@ void Polyedre::build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_pa
 
   for (int i = 0; i < elems_sous_part.size_array(); i++)
     {
-      int e = elems_sous_part(i);
-      for (int f = PolyhedronIndex_(e); f < PolyhedronIndex_(e + 1); f++)
+      int e = elems_sous_part[i];
+      for (int f = PolyhedronIndex_[e]; f < PolyhedronIndex_[e + 1]; f++)
         {
-          for (int s = FacesIndex_(f); s < FacesIndex_(f + 1); s++) N.append_array(Nodes_(s));
+          for (int s = FacesIndex_[f]; s < FacesIndex_[f + 1]; s++) N.append_array(Nodes_[s]);
           Fi.append_array(N.size_array());
         }
       Pi.append_array(Fi.size_array() - 1);
@@ -705,12 +705,12 @@ void Polyedre::compute_virtual_index()
               // Cerr <<" INFO " << ele<< " k" <<k << " l "<< l<< " iiii "<<faces_som(ele,k,l)<<finl;
             }
         }
-      PolyhedronIndex_(ele+1)=PolyhedronIndex_(ele)+nbf;
+      PolyhedronIndex_[ele+1]=PolyhedronIndex_[ele]+nbf;
     }
-  FacesIndex_.resize(PolyhedronIndex_(nb_elem_tot)+1);
+  FacesIndex_.resize(PolyhedronIndex_[nb_elem_tot]+1);
   int nbs_old=Nodes_.size_array();
   Nodes_.resize(nbs_old+nbs);
-  int nbft=PolyhedronIndex_(nb_elem);
+  int nbft=PolyhedronIndex_[nb_elem];
   nbs=nbs_old;
 
 
@@ -723,13 +723,13 @@ void Polyedre::compute_virtual_index()
             {
               if (faces_som(ele,k,l)!=-1)
                 {
-                  Nodes_(nbs)=faces_som(ele,k,l);
+                  Nodes_[nbs]=faces_som(ele,k,l);
                   nbs++;
                 }
             }
           if (faces_som(ele,k,0)!=-1)
             {
-              FacesIndex_(nbft+1)=nbs;
+              FacesIndex_[nbft+1]=nbs;
               nbft++;
             }
 

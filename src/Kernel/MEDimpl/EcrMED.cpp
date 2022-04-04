@@ -346,16 +346,16 @@ int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,med_idt fid,const
       else
         {
           ArrOfInt index(nface+1);
-          index(0)=1;
+          index[0]=1;
           int nb_som_max=all_faces_bord.dimension(1);
           for (int f=0; f<nface; f++)
             {
               int nb_som=nb_som_max-1;
               while (all_faces_bord(f,nb_som)==0) nb_som--;
-              index(f+1)=index(f)+nb_som+1;
+              index[f+1]=index[f]+nb_som+1;
             }
 
-          ArrOfInt conn(index(nface)-1);
+          ArrOfInt conn(index[nface]-1);
           int c=0;
           for (int f=0; f<nface; f++)
             {
@@ -363,7 +363,7 @@ int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,med_idt fid,const
                 {
                   int s2=all_faces_bord(f,s);
                   if (s2==0) break;
-                  conn(c++)=s2;
+                  conn[c++]=s2;
                 }
             }
           assert(c==(index(nface)-1));
@@ -906,7 +906,7 @@ void creer_all_faces_bord(const Domaine& dom,Noms& type_face,VECT(IntTab)& all_f
       for(int j=0; j<nb_fac; j++)
         {
           int nb_som_face=les_sommets_des_faces.dimension(1);
-          familles[ref](cpt[ref])=-(i+1);
+          familles[ref][cpt[ref]]=-(i+1);
           for(int k=0; k<nb_som_face; k++)
             all_faces_bord[ref](cpt[ref], k)=les_sommets_des_faces(j, k);
           cpt[ref]++;
@@ -1012,16 +1012,16 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
           for (int i = 0; i < ncells; i++)
             {
               int size = 0;
-              for (int face = PolyhedronIndex(i); face < PolyhedronIndex(i + 1); face++)
-                size += FacesIndex(face + 1) - FacesIndex(face) + 1;
+              for (int face = PolyhedronIndex[i]; face < PolyhedronIndex[i + 1]; face++)
+                size += FacesIndex[face + 1] - FacesIndex[face] + 1;
               size--; // No -1 at the end of the cell
               ArrOfInt cell_def(size);
               size = 0;
-              for (int face = PolyhedronIndex(i); face < PolyhedronIndex(i + 1); face++)
+              for (int face = PolyhedronIndex[i]; face < PolyhedronIndex[i + 1]; face++)
                 {
-                  for (int node = FacesIndex(face); node < FacesIndex(face + 1); node++)
+                  for (int node = FacesIndex[face]; node < FacesIndex[face + 1]; node++)
                     {
-                      cell_def[size] = Nodes_glob(node) - 1; // Numerotation Fortran -> C++
+                      cell_def[size] = Nodes_glob[node] - 1; // Numerotation Fortran -> C++
                       size++;
                     }
                   if (size < cell_def.size_array())
@@ -1134,7 +1134,7 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
           for (int j = 0; j < nb_type_face; j++)
             for (int i = 0; i < familles[j].size_array(); i++)
               {
-                int family_id = familles[j](i);
+                int family_id = familles[j][i];
                 family_array->setIJ(renum_boundary_cell->getIJ(face, 0), 0, family_id);
                 face++;
               }

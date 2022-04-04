@@ -137,28 +137,28 @@ void Tetra_CoviMAC::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
     case 1: // le tetraedre a une Face de Dirichlet : KEL3
       {
         for (comp=0; comp<3; comp++)
-          vc[comp] = vitesse(Face[3],comp)*porosite_face(Face[3]);
+          vc[comp] = vitesse(Face[3],comp)*porosite_face[Face[3]];
         break;
       }
 
     case 2: // le tetraedre a une Face de Dirichlet : KEL2
       {
         for (comp=0; comp<3; comp++)
-          vc[comp] = vitesse(Face[2],comp)*porosite_face(Face[2]);
+          vc[comp] = vitesse(Face[2],comp)*porosite_face[Face[2]];
         break;
       }
 
     case 4: // le tetraedre a une Face de Dirichlet : KEL1
       {
         for (comp=0; comp<3; comp++)
-          vc[comp] = vitesse(Face[1],comp)*porosite_face(Face[1]);
+          vc[comp] = vitesse(Face[1],comp)*porosite_face[Face[1]];
         break;
       }
 
     case 8: // le tetraedre a une Face de Dirichlet : KEL0
       {
         for (comp=0; comp<3; comp++)
-          vc[comp] = vitesse(Face[0],comp)*porosite_face(Face[0]);
+          vc[comp] = vitesse(Face[0],comp)*porosite_face[Face[0]];
         break;
       }
 

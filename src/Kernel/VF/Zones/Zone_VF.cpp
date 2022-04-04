@@ -527,7 +527,7 @@ void Zone_VF::marquer_faces_double_contrib(const Conds_lim& conds_lim)
 
           for (int face=ndeb; face<nfin; face++)
             {
-              faces_doubles_(face)=1;
+              faces_doubles_[face]=1;
             }
         }
     }
@@ -549,7 +549,7 @@ void Zone_VF::marquer_faces_double_contrib(const Conds_lim& conds_lim)
           // En effet, la numerotation des faces de joint n'est plus continue desormais !
           // joint.num_premiere_face() retourne -1 desormais pour detecter les anciens codages.
           int face_de_joint = indices_faces_joint(j, 1);
-          faces_doubles_(face_de_joint) = 1;
+          faces_doubles_[face_de_joint] = 1;
         }
     }
 }

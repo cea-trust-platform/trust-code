@@ -62,7 +62,7 @@ template <typename Type_Double>
 void Eval_Dirac_VDF_Elem::calculer_terme_source(const int num_elem, Type_Double& source) const
 {
   const int size = source.size_array(), test = ma_zone.valeur().type_elem().contient(le_point,num_elem);
-  for (int i = 0; i < size; i++) source(i) = (test == 1) ? nb_dirac*puissance : 0.;
+  for (int i = 0; i < size; i++) source[i] = (test == 1) ? nb_dirac*puissance : 0.;
 }
 
 #endif /* Eval_Dirac_VDF_Elem_included */

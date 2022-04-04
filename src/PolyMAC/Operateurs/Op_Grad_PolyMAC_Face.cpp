@@ -235,7 +235,7 @@ int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
       const ArrOfDouble& c_grav=zpolymac.zone().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
+          xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
 
   flux_bords_.resize(zpolymac.nb_faces_bord(),dimension);

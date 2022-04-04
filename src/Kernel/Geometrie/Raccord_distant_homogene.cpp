@@ -361,7 +361,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
             }
 
           //remplissage des tableaux
-          Recep(ind_face)=proc;
+          Recep[ind_face]=proc;
           racc_vois[proc].append_array(ind_face2);
         }
     }
@@ -383,7 +383,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
       for (int d=0 ; d<sz ; d++)
         {
           Envoi(ind,0) = p;
-          Envoi(ind,1) = facteur(d);
+          Envoi(ind,1) = facteur[d];
           ind++;
         }
     }

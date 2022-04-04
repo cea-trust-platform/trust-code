@@ -140,7 +140,7 @@ inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, ArrOfDouble& d
   double DSiSj=0;
   for (int k=0; k<dimension; k++)
     for (int l=0; l<dimension; l++)
-      DSiSj += diffu_ci_cj_elem(k*dimension+l)*face_normales(i,k)*face_normales(j,l);
+      DSiSj += diffu_ci_cj_elem[k*dimension+l]*face_normales(i,k)*face_normales(j,l);
 
   if ( (face_voisins(i,0) == face_voisins(j,0)) ||
        (face_voisins(i,1) == face_voisins(j,1)) )

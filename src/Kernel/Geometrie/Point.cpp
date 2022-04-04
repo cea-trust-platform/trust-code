@@ -150,7 +150,7 @@ int Point::contient(const ArrOfDouble& pos, int element ) const
       for (int d=0; (d<3)&&(ok==1); d++)
         {
           double ps = dom.coord(elem(element,s), d);
-          double pv=pos(d);
+          double pv=pos[d];
           //Cerr<<ps<<" "<<pv<<finl;
           if( !est_egal(ps,pv)) ok=0;
         }

@@ -144,10 +144,10 @@ void Loi_Etat_Multi_GP_WC::calculer_masse_molaire(DoubleTab& tab_masse_mol_mel) 
     {
       const DoubleTab& Y_i = (i == num_espece_ -1) ? Yn : liste_Y(i)->valeurs();
       const double M_i = masse_molaire_especes()->valeurs()(0,i);
-      for (int elem=0; elem<size; elem++) inv_M(elem) += Y_i(elem,0)/M_i;
+      for (int elem=0; elem<size; elem++) inv_M[elem] += Y_i(elem,0)/M_i;
     }
 
-  for (int elem=0; elem<size; elem++) tab_masse_mol_mel(elem,0) = 1.0 / inv_M(elem);
+  for (int elem=0; elem<size; elem++) tab_masse_mol_mel(elem,0) = 1.0 / inv_M[elem];
 }
 
 // Description:

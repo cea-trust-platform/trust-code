@@ -147,7 +147,7 @@ void Ch_front_Vortex::sauvegarder_vortex()
       for (int i=0; i<nbvortex; i++)
         {
           fic << xvort(i) << " " << yvort(i) << " " << zvort(i) << " " << tvort(i) << " " ;
-          fic << svort(i) << " " << fvort(i) << " " << gamma(i) << " " << sigma(i) << finl;
+          fic << svort(i) << " " << fvort[i] << " " << gamma(i) << " " << sigma(i) << finl;
         }
     }
 }
@@ -187,7 +187,7 @@ void Ch_front_Vortex::reprendre_vortex()
       for (int i=0; i<nbvortex; i++)
         {
           fic >> xvort(i) >> yvort(i) >> zvort(i) >> tvort(i);
-          fic >> svort(i) >> fvort(i) >> gamma(i) >> sigma(i);
+          fic >> svort(i) >> fvort[i] >> gamma(i) >> sigma(i);
         }
 
       Cerr << " resumed made " << finl;
@@ -617,7 +617,7 @@ void Ch_front_Vortex::mettre_a_jour(double tps)
         }
       gamma(i)     = alpha * sqrt(k(face)) * svort(i);
       sigma(i)     = pow(C_mu,0.75) * pow(k(face),1.5) / eps(face);
-      fvort(i)     = face ;
+      fvort[i]     = face ;
     }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -812,7 +812,7 @@ void Ch_front_Vortex::mettre_a_jour(double tps)
 
   for (int i=0; i<nb_vortex; i++)
     {
-      int face = fvort(i);
+      int face = fvort[i];
 
       x = xvort(i) + dt * ( v(face)*t1x + w(face)*t2x ); // Les deplacements des vortex ne s'operent
       yter = yvort(i) + dt * ( v(face)*t1y + w(face)*t2y ); // que dans le plan d'entree. D'ou les composantes

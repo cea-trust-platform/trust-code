@@ -977,9 +977,9 @@ ArrOfDouble& Matrice_Morse::ajouter_multvect_(const ArrOfDouble& x,ArrOfDouble& 
       for (int k=tab1_(i)-1; k<tab1_(i+1)-1; k++)
         {
           int j=tab2_(k)-1;
-          if (est_reel_pas_com(j)) t += coeff_(k)*x(j);
+          if (est_reel_pas_com[j]) t += coeff_(k)*x[j];
         }
-      resu(i) += t ;
+      resu[i] += t ;
     }
   return resu;
 }
@@ -1082,11 +1082,11 @@ ArrOfDouble& Matrice_Morse::ajouter_multvectT_(const ArrOfDouble& x,ArrOfDouble&
   assert(nb_colonnes()==resu.size_array());
   for(int i=0; i<n; i++)
     {
-      if (est_reel_pas_com(i))
+      if (est_reel_pas_com[i])
         {
-          double xi = x(i);
+          double xi = x[i];
           for (int k=tab1_(i)-1; k<tab1_(i+1)-1; k++)
-            resu(tab2_(k)-1) += coeff_(k) * xi;
+            resu[tab2_(k)-1] += coeff_(k) * xi;
         }
     }
   return resu;

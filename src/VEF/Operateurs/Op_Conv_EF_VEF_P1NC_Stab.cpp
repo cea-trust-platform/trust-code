@@ -822,8 +822,8 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& Kij, const DoubleTa
             dij=Dij(elem,facei_loc,facej_loc,Kij);
             assert(dij>=0);
 
-            coeffij=alpha_tab(facei)*dij;
-            coeffji=alpha_tab(facej)*dij;
+            coeffij=alpha_tab[facei]*dij;
+            coeffji=alpha_tab[facej]*dij;
 
             for (dim=0; dim<nb_comp; dim++)
               {
@@ -910,8 +910,8 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& Kij, const Doub
                       // if (delta>=0.) R = (P_plus(dim)==0.) ? 0. : Q_plus(dim)/(P_plus(dim)+DMINFLOAT);
                       // else R = (P_moins(dim)==0.) ? 0. : Q_moins(dim)/(P_moins(dim)+DMINFLOAT);
 
-                      if (delta>=0.) R = (std::fabs(P_plus(dim))<DMINFLOAT) ? 0. : Q_plus(dim)/P_plus(dim);
-                      else R = (std::fabs(P_moins(dim))<DMINFLOAT) ? 0. : Q_moins(dim)/P_moins(dim);
+                      if (delta>=0.) R = (std::fabs(P_plus[dim])<DMINFLOAT) ? 0. : Q_plus[dim]/P_plus[dim];
+                      else R = (std::fabs(P_moins[dim])<DMINFLOAT) ? 0. : Q_moins[dim]/P_moins[dim];
 
 
                       limit=limiteur(R);
@@ -922,8 +922,8 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& Kij, const Doub
                       assert(daij>=0);
                       assert(daij<=lji);
 
-                      coeffij=alpha_tab(face_amont)*beta(face_amont)*daij;
-                      coeffji=alpha_tab(face_aval)*beta(face_aval)*daij;
+                      coeffij=alpha_tab[face_amont]*beta[face_amont]*daij;
+                      coeffji=alpha_tab[face_aval]*beta[face_aval]*daij;
 
                       //Calcul de resu
                       resuV[colonne]+=coeffij*coeff*delta;
@@ -980,13 +980,13 @@ Op_Conv_EF_VEF_P1NC_Stab::calculer_senseur(const DoubleTab& Kij, const DoubleVec
                   double tmp = kik*deltaki;
                   if (kik>0)
                     {
-                      if (tmp>0) Q_plus(dim)+=tmp;
-                      else       Q_moins(dim)+=tmp;
+                      if (tmp>0) Q_plus[dim]+=tmp;
+                      else       Q_moins[dim]+=tmp;
                     }
                   else
                     {
-                      if (tmp>0) P_plus(dim)+=tmp;
-                      else       P_moins(dim)+=tmp;
+                      if (tmp>0) P_plus[dim]+=tmp;
+                      else       P_moins[dim]+=tmp;
                     }
                   assert(P_plus(dim)>=0);
                   assert(Q_plus(dim)>=0);
@@ -1273,10 +1273,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                           min_dT=dT ;
                         }
 
-                      pplusi(comp0) +=min_K*min_dT;
-                      pmoinsi(comp0)+=min_K*max_dT;
-                      qplusi(comp0) +=max_K*max_dT;
-                      qmoinsi(comp0)+=max_K*min_dT;
+                      pplusi[comp0] +=min_K*min_dT;
+                      pmoinsi[comp0]+=min_K*max_dT;
+                      qplusi[comp0] +=max_K*max_dT;
+                      qmoinsi[comp0]+=max_K*min_dT;
                     }
                 }
             }
@@ -1334,10 +1334,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                               min_dT=dT ;
                             }
 
-                          pplusi(comp0) +=min_K*min_dT;
-                          pmoinsi(comp0)+=min_K*max_dT;
-                          qplusi(comp0) +=max_K*max_dT;
-                          qmoinsi(comp0)+=max_K*min_dT;
+                          pplusi[comp0] +=min_K*min_dT;
+                          pmoinsi[comp0]+=min_K*max_dT;
+                          qplusi[comp0] +=max_K*max_dT;
+                          qmoinsi[comp0]+=max_K*min_dT;
                         }
                     }
                 }
@@ -1369,15 +1369,15 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
                           {
                             if(Ti >= Tj)
                               {
-                                if(pplusi(comp0))
+                                if(pplusi[comp0])
                                   {
-                                    double R=qplusi(comp0)/pplusi(comp0);
+                                    double R=qplusi[comp0]/pplusi[comp0];
                                     Fij=minimum(limiteur(R)*dij,lji);
                                   }
                               }
-                            else if(pmoinsi(comp0))
+                            else if(pmoinsi[comp0])
                               {
-                                double R=qmoinsi(comp0)/pmoinsi(comp0);
+                                double R=qmoinsi[comp0]/pmoinsi[comp0];
                                 Fij=minimum(limiteur(R)*dij,lji);
                               }
 
@@ -1818,10 +1818,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                           min_dT=dT ;
                         }
 
-                      pplusi(comp0) +=min_K*min_dT;
-                      pmoinsi(comp0)+=min_K*max_dT;
-                      qplusi(comp0) +=max_K*max_dT;
-                      qmoinsi(comp0)+=max_K*min_dT;
+                      pplusi[comp0] +=min_K*min_dT;
+                      pmoinsi[comp0]+=min_K*max_dT;
+                      qplusi[comp0] +=max_K*max_dT;
+                      qmoinsi[comp0]+=max_K*min_dT;
                     }
                 }
             }
@@ -1879,10 +1879,10 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                               min_dT=dT ;
                             }
 
-                          pplusi(comp0) +=min_K*min_dT;
-                          pmoinsi(comp0)+=min_K*max_dT;
-                          qplusi(comp0) +=max_K*max_dT;
-                          qmoinsi(comp0)+=max_K*min_dT;
+                          pplusi[comp0] +=min_K*min_dT;
+                          pmoinsi[comp0]+=min_K*max_dT;
+                          qplusi[comp0] +=max_K*max_dT;
+                          qmoinsi[comp0]+=max_K*min_dT;
                         }
                     }
                 }
@@ -1916,15 +1916,15 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
                           {
                             if(Ti >= Tj)
                               {
-                                if(pplusi(comp0))
+                                if(pplusi[comp0])
                                   {
-                                    double R=qplusi(comp0)/pplusi(comp0);
+                                    double R=qplusi[comp0]/pplusi[comp0];
                                     Fij=minimum(limiteur(R)*dij,lji);
                                   }
                               }
-                            else if(pmoinsi(comp0))
+                            else if(pmoinsi[comp0])
                               {
-                                double R=qmoinsi(comp0)/pmoinsi(comp0);
+                                double R=qmoinsi[comp0]/pmoinsi[comp0];
                                 Fij=minimum(limiteur(R)*dij,lji);
                               }
                             assert(Fij*dij>=0);
@@ -2146,8 +2146,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
           for (int face=0; face<nb_faces; face++)
             {
               int la_face=ssz.les_faces()[face];
-              beta(la_face) = 1.;
-              alpha_tab(la_face) = alpha_ssz(i);
+              beta[la_face] = 1.;
+              alpha_tab[la_face] = alpha_ssz(i);
             }
         }
     }
@@ -2181,8 +2181,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
       for (int face=0; face<nb_faces; face++)
         {
           int la_face=ssz.les_faces()[face];
-          beta(la_face) = 0.;
-          alpha_tab(la_face) = 1.;
+          beta[la_face] = 0.;
+          alpha_tab[la_face] = 1.;
         }
     }
 
@@ -2376,8 +2376,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_diffusion(const DoubleTab& K
             dij=Dij(elem,facei_loc,facej_loc,Kij);
             assert(dij>=0);
 
-            coeffij=alpha_tab(facei)*dij;
-            coeffji=alpha_tab(facej)*dij;
+            coeffij=alpha_tab[facei]*dij;
+            coeffji=alpha_tab[facej]*dij;
 
             for (dim=0; dim<nb_comp; dim++)
               {
@@ -2444,8 +2444,8 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_diffusion(const DoubleTab& K
                             dij=Dij(elem,facei_loc,facej_loc,Kij);
                             assert(dij>=0);
 
-                            coeffij=alpha_tab(faceToComplete)*dij;
-                            coeffji=alpha_tab(facej)*dij;
+                            coeffij=alpha_tab[faceToComplete]*dij;
+                            coeffji=alpha_tab[facej]*dij;
 
                             for (dim=0; dim<nb_comp; dim++)
                               {
@@ -2675,15 +2675,15 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
                       // if (delta>=0.) R=(P_plus(dim)==0.) ? 0. : Q_plus(dim)/(P_plus(dim)+DMINFLOAT);
                       // else  R=(P_moins(dim)==0.) ? 0. : Q_moins(dim)/(P_moins(dim)+DMINFLOAT);
 
-                      if (delta>=0.) R=(std::fabs(P_plus(dim))<DMINFLOAT) ? 0. : Q_plus(dim)/P_plus(dim);
-                      else  R=(std::fabs(P_moins(dim))<DMINFLOAT) ? 0. : Q_moins(dim)/P_moins(dim);
+                      if (delta>=0.) R=(std::fabs(P_plus[dim])<DMINFLOAT) ? 0. : Q_plus[dim]/P_plus[dim];
+                      else  R=(std::fabs(P_moins[dim])<DMINFLOAT) ? 0. : Q_moins[dim]/P_moins[dim];
 
 
                       daij=minimum(limiteur(R)*dij,lji);
                       assert(daij>=0);
                       assert(daij<=lji);
-                      coeffij=alpha_tab(face_amont)*beta(face_amont)*daij;
-                      coeffji=alpha_tab(face_aval)*beta(face_aval)*daij;
+                      coeffij=alpha_tab[face_amont]*beta[face_amont]*daij;
+                      coeffji=alpha_tab[face_aval]*beta[face_aval]*daij;
 
                       //Calcul de la matrice
                       matrice(ligne,ligne)-=coeffij*coeff;
@@ -2780,13 +2780,13 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
                                   // if (delta>=0.) R=(P_plus(dim)==0.) ? 0. : Q_plus(dim)/(P_plus(dim)+DMINFLOAT);
                                   // else  R=(P_moins(dim)==0.) ? 0. : Q_moins(dim)/(P_moins(dim)+DMINFLOAT);
 
-                                  if (delta>=0.) R=(std::fabs(P_plus(dim))<DMINFLOAT) ? 0. : Q_plus(dim)/P_plus(dim);
-                                  else  R=(std::fabs(P_moins(dim))<DMINFLOAT) ? 0. : Q_moins(dim)/P_moins(dim);
+                                  if (delta>=0.) R=(std::fabs(P_plus[dim])<DMINFLOAT) ? 0. : Q_plus[dim]/P_plus[dim];
+                                  else  R=(std::fabs(P_moins[dim])<DMINFLOAT) ? 0. : Q_moins[dim]/P_moins[dim];
 
                                   daij=minimum(limiteur(R)*dij,lji);
                                   assert(daij>=0);
                                   assert(daij<=lji);
-                                  coeffij=alpha_tab(face_amont)*beta(face_amont)*daij;
+                                  coeffij=alpha_tab[face_amont]*beta[face_amont]*daij;
 
                                   //Calcul de la matrice
                                   matrice(ligne,ligne)-=coeffij*coeff;
@@ -2815,13 +2815,13 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
                                   // if (delta>=0.) R=(Pj_plus(dim)==0.) ? 0. : Qj_plus(dim)/(Pj_plus(dim)+DMINFLOAT);
                                   // else  R=(Pj_moins(dim)==0.) ? 0. : Qj_moins(dim)/(Pj_moins(dim)+DMINFLOAT);
 
-                                  if (delta>=0.) R=(std::fabs(Pj_plus(dim))<DMINFLOAT) ? 0. : Qj_plus(dim)/Pj_plus(dim);
-                                  else  R=(std::fabs(Pj_moins(dim))<DMINFLOAT) ? 0. : Qj_moins(dim)/Pj_moins(dim);
+                                  if (delta>=0.) R=(std::fabs(Pj_plus[dim])<DMINFLOAT) ? 0. : Qj_plus[dim]/Pj_plus[dim];
+                                  else  R=(std::fabs(Pj_moins[dim])<DMINFLOAT) ? 0. : Qj_moins[dim]/Pj_moins[dim];
 
                                   daij=minimum(limiteur(R)*dij,lij);
                                   assert(daij>=0);
                                   assert(daij<=lij);
-                                  coeffij=alpha_tab(face_aval)*beta(face_aval)*daij;
+                                  coeffij=alpha_tab[face_aval]*beta[face_aval]*daij;
 
                                   //Calcul de la matrice
                                   matrice(colonne,colonne)-=coeffij*coeff;

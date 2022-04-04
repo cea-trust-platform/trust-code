@@ -74,7 +74,7 @@ static void init_parts(DoubleVect& vect, VECT(DoubleTab) & parts, DoubleTab *dum
         {
           ArrOfInt shape_i;
           if (mdata.shapes_[i] == 0) shape_i = shape; //si mdata.shapes_[i] > 0, alors la sous-partie a une dimension mineure en plus
-          else for (shape_i.resize(shape.size_array() + 1), shape_i(1) = mdata.shapes_[i], j = 1; j < shape.size_array(); j++) shape_i(j + 1) = shape(j);
+          else for (shape_i.resize(shape.size_array() + 1), shape_i[1] = mdata.shapes_[i], j = 1; j < shape.size_array(); j++) shape_i[j + 1] = shape[j];
           const int offset = mdata.parts_offsets_[i];
           const MD_Vector& md_part = mdata.data_[i];
           shape_i[0] = md_part.valeur().get_nb_items_tot();
@@ -137,7 +137,7 @@ static void init_parts(IntVect& vect, VECT(IntTab) & parts, IntTab *dummy_type_p
         {
           ArrOfInt shape_i;
           if (mdata.shapes_[i] == 0) shape_i = shape; //si mdata.shapes_[i] > 0, alors la sous-partie a une dimension mineure en plus
-          else for (shape_i.resize(shape.size_array() + 1), shape_i(1) = mdata.shapes_[i], j = 1; j < shape.size_array(); j++) shape_i(j + 1) = shape(j);
+          else for (shape_i.resize(shape.size_array() + 1), shape_i[1] = mdata.shapes_[i], j = 1; j < shape.size_array(); j++) shape_i[j + 1] = shape[j];
           const int offset = mdata.parts_offsets_[i];
           const MD_Vector& md_part = mdata.data_[i];
           shape_i[0] = md_part.valeur().get_nb_items_tot();

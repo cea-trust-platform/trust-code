@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -161,12 +161,12 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
   // Construction de renum_som3D2D
   ArrOfInt renum_som3D2D(nb_som3D);
   for (int i=0; i<nb_som3D ; i++)
-    renum_som3D2D(i)=-1;
+    renum_som3D2D[i]=-1;
   int compteur=0;
   for (int i=0; i<nb_faces3D; i++)
     for (int j=0; j<nb_som_fac3D; j++)
       {
-        int& tmp=renum_som3D2D(les_faces3D(i,j));
+        int& tmp=renum_som3D2D[les_faces3D(i,j)];
         if(tmp==-1)
           tmp=compteur++;
       }
@@ -178,8 +178,8 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
   for (int i=0; i<nb_som3D ; i++)
     {
       int j;
-      if((j=renum_som3D2D(i))!=-1)
-        renum_som2D3D(j)=i;
+      if((j=renum_som3D2D[i])!=-1)
+        renum_som2D3D[j]=i;
     }
   coord_sommets2D.resize(nb_som2D,2);
   if (coupe_==2) coord_sommets2D.resize(nb_som2D,3);
@@ -279,9 +279,9 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
       // pour cela changement de repere du repere 3D vers le repere (A;I;J)
       for(int i=0; i<nb_som2D; i++)
         {
-          double x = coord_sommets3D(renum_som2D3D(i),0);
-          double y = coord_sommets3D(renum_som2D3D(i),1);
-          double z = coord_sommets3D(renum_som2D3D(i),2);
+          double x = coord_sommets3D(renum_som2D3D[i],0);
+          double y = coord_sommets3D(renum_som2D3D[i],1);
+          double z = coord_sommets3D(renum_som2D3D[i],2);
           if (coupe_==0)
             {
               coord_sommets2D(i,0) = -scalI + x*Ix + y*Iy + z*Iz;
@@ -339,7 +339,7 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
         }
       for(int i=0; i<nb_som2D; i++)
         for(int j=0; j<2; j++)
-          coord_sommets2D(i,j)=coord_sommets3D(renum_som2D3D(i),dir[j]);
+          coord_sommets2D(i,j)=coord_sommets3D(renum_som2D3D[i],dir[j]);
     }
 
   zone2D.associer_domaine(dom2D);
@@ -349,7 +349,7 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
   for (int i=0; i< nb_faces3D; i++)
     for (int j=0; j< nb_som_fac3D; j++)
       {
-        les_elems2D(i,j)=renum_som3D2D(les_elems2D(i,j));
+        les_elems2D(i,j)=renum_som3D2D[les_elems2D(i,j)];
       }
 
   dimension=2;
@@ -387,7 +387,7 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
                 int tmpbis;
                 for(int i=0; i<nb_som_fac3D; i++)
                   {
-                    tmpbis=renum_som3D2D(faces_sommets(face,i));
+                    tmpbis=renum_som3D2D[faces_sommets(face,i)];
                     if (tmpbis!=-1)
                       {
                         ok++;
@@ -497,7 +497,7 @@ void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& b
                 int tmp;
                 for(int i=0; i<nb_som_fac3D; i++)
                   {
-                    tmp=renum_som3D2D(faces_sommets(face,i));
+                    tmp=renum_som3D2D[faces_sommets(face,i)];
                     if (tmp!=-1)
                       {
                         ok++;

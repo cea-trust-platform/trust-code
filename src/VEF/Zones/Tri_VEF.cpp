@@ -410,8 +410,8 @@ void Tri_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
 
     case 1: // le triangle a une Face de Dirichlet :la Face 2
       {
-        vc[0]= vitesse(Face[2],0)*porosite_face(Face[2]);
-        vc[1]= vitesse(Face[2],1)*porosite_face(Face[2]);
+        vc[0]= vitesse(Face[2],0)*porosite_face[Face[2]];
+        vc[1]= vitesse(Face[2],1)*porosite_face[Face[2]];
         //vc[0]= vitesse(Face[2],0);
         //vc[1]= vitesse(Face[2],1);
         break;
@@ -419,8 +419,8 @@ void Tri_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
 
     case 2: // le triangle a une Face de Dirichlet :la Face 1
       {
-        vc[0]= vitesse(Face[1],0)*porosite_face(Face[1]);
-        vc[1]= vitesse(Face[1],1)*porosite_face(Face[1]);
+        vc[0]= vitesse(Face[1],0)*porosite_face[Face[1]];
+        vc[1]= vitesse(Face[1],1)*porosite_face[Face[1]];
         //vc[0]= vitesse(Face[1],0);
         //vc[1]= vitesse(Face[1],1);
         break;
@@ -428,8 +428,8 @@ void Tri_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
 
     case 4: // le triangle a une Face de Dirichlet :la Face 0
       {
-        vc[0]= vitesse(Face[0],0)*porosite_face(Face[0]);
-        vc[1]= vitesse(Face[0],1)*porosite_face(Face[0]);
+        vc[0]= vitesse(Face[0],0)*porosite_face[Face[0]];
+        vc[1]= vitesse(Face[0],1)*porosite_face[Face[0]];
         // vc[0]= vitesse(Face[0],0);
         //vc[1]= vitesse(Face[0],1);
         break;

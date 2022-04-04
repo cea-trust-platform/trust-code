@@ -146,7 +146,7 @@ void construit_connectivite_sommet(int type_cl,Static_Int_Lists& som_face_bord,c
       for (int som=0; som<nb_som_face; som++)
         {
           int sommet=face_sommets(face,som);
-          is_sommet_sur_bord(sommet)++;
+          is_sommet_sur_bord[sommet]++;
         }
     }
 
@@ -164,7 +164,7 @@ void construit_connectivite_sommet(int type_cl,Static_Int_Lists& som_face_bord,c
       for (int som=0; som<nb_som_face; som++)
         {
           int sommet=face_sommets(face,som);
-          int n=(is_sommet_sur_bord(sommet))++;
+          int n=(is_sommet_sur_bord[sommet])++;
           som_face_bord.set_value(sommet,n,face);
 
         }
@@ -201,10 +201,10 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
 //	Si on a Dirichlet_paroi_fixe_iso_Genepi2 on ne prend pas en compte le 0 pour la moyenne
                   if (!sub_type(Dirichlet_paroi_fixe_iso_Genepi2,la_cl))
                     titi(som)++;
-                  if ((type_sommet_(som)!=1)&& (type_sommet_(som)!=3))
-                    type_sommet_(som)=2;
+                  if ((type_sommet_[som]!=1)&& (type_sommet_[som]!=3))
+                    type_sommet_[som]=2;
                   else
-                    type_sommet_(som)=3;
+                    type_sommet_[som]=3;
                 }
             }
         }
@@ -216,10 +216,10 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
               for (int s=0; s<nb_som_face; s++)
                 {
                   int som=faces_sommets(face,s);
-                  if (type_sommet_(som)<=1)
-                    type_sommet_(som)=1;
+                  if (type_sommet_[som]<=1)
+                    type_sommet_[som]=1;
                   else
-                    type_sommet_(som)=3;
+                    type_sommet_[som]=3;
                 }
             }
         }
@@ -231,8 +231,8 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
               for (int s=0; s<nb_som_face; s++)
                 {
                   int som=faces_sommets(face,s);
-                  if (type_sommet_(som)<0)
-                    type_sommet_(som)=0;
+                  if (type_sommet_[som]<0)
+                    type_sommet_[som]=0;
                 }
             }
         }
@@ -245,10 +245,10 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
   // si on a un dirichet on stocke 2*nb participant + 1 si sommet aussi de sym
   for (int som=0; som<nb_som_tot; som++)
     {
-      if (type_sommet_(som)>1)
+      if (type_sommet_[som]>1)
         {
           //assert(titi(som)>0);
-          type_sommet_(som)+=2*(titi(som));
+          type_sommet_[som]+=2*(titi(som));
         }
     }
   // On cree la connectivite sommet -> face de bord symetrie
@@ -277,14 +277,14 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                 {
                   int face=sommet_face_symetrie(som,f);
                   for (int d=0; d<dimension; d++)
-                    n(d)+=face_normales(face,d);
+                    n[d]+=face_normales(face,d);
                 }
               n/=nbf;
 
               double norm_n=norme_array(n);
               n/=norm_n;
               for (int d=0; d<dimension; d++)
-                normales_symetrie_.valeur().valeurs()(som,d)=n(d);
+                normales_symetrie_.valeur().valeurs()(som,d)=n[d];
               //	    Cerr<<som<<" on doit annuler une premiere direction "<<n(0) << " " <<n(1)<<" "<<n(dimension==3?2:1)<<finl;
 
               for (int f=0; f<nbf; f++)
@@ -292,15 +292,15 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                   int face=sommet_face_symetrie(som,f);
                   double prod=0;
                   for (int d=0; d<dimension; d++)
-                    prod+=face_normales(face,d)*n(d);
+                    prod+=face_normales(face,d)*n[d];
 
                   double v=0,s=0;
 
                   for (int d=0; d<dimension; d++)
                     {
-                      t1(d)=face_normales(face,d)-n(d)*prod;
+                      t1[d]=face_normales(face,d)-n[d]*prod;
                       s+=face_normales(face,d)*face_normales(face,d);
-                      v+=t1(d)*n(d);
+                      v+=t1[d]*n[d];
                     }
 
                   //Cerr<<" vv"<< v<<" "<<norme_array(t1)<<" "<<norm_n<<finl;
@@ -316,7 +316,7 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                       //	    Cerr<<som<<" on doit annuler une deuxieme direction "<<t1(0) << " " <<t1(1)<<" "<<t1(dimension==3?2:1)<<finl;
                       f=nbf;
                       for (int d=0; d<dimension; d++)
-                        normales_symetrie_bis_.valeur().valeurs()(som,d)=t1(d);
+                        normales_symetrie_bis_.valeur().valeurs()(som,d)=t1[d];
                       //assert(v==0);
                     }
 
@@ -327,14 +327,14 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                   double prod=0,prod1=0,s=0;
                   for (int d=0; d<dimension; d++)
                     {
-                      prod+=face_normales(face,d)*n(d);
+                      prod+=face_normales(face,d)*n[d];
 
-                      prod1+=face_normales(face,d)*t1(d);
+                      prod1+=face_normales(face,d)*t1[d];
                       s+=face_normales(face,d)*face_normales(face,d);
 
                     }
                   for (int d=0; d<dimension; d++)
-                    t2(d)=face_normales(face,d)-n(d)*prod-t1(d)*prod1;
+                    t2[d]=face_normales(face,d)-n[d]*prod-t1[d]*prod1;
 
                   if (norme_array(t2)>(1e-4*sqrt(s)))
                     {
@@ -342,14 +342,14 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                       if (std::fabs(min_array(t2))>max_array(t2))
                         t2*=-1;
                       t2/=norme_array(t2);
-                      Cerr<<face<<" "<<nbf<<" sommet "<<som<<" "<<norme_array(t2)/s<<" on doit annuler une troiseme direction"<<t2(0) << " " <<t2(1)<<" "<<t2(2)<<finl;
-                      Cerr<<som<<" "<<t1(0) << " " <<t1(1)<<" "<<t1(2)<<finl;
-                      Cerr<<som<<" "<<n(0) << " " <<n(1)<<" "<<n(2)<<finl;
+                      Cerr<<face<<" "<<nbf<<" sommet "<<som<<" "<<norme_array(t2)/s<<" on doit annuler une troiseme direction"<<t2[0] << " " <<t2[1]<<" "<<t2[2]<<finl;
+                      Cerr<<som<<" "<<t1[0] << " " <<t1[1]<<" "<<t1[2]<<finl;
+                      Cerr<<som<<" "<<n[0] << " " <<n[1]<<" "<<n[2]<<finl;
                       f=nbf;
                       if (!normales_symetrie_ter_.non_nul())
                         equation().probleme().discretisation().discretiser_champ("CHAMP_SOMMETS",la_zone_EF,"normales_nodales_bis","1",dimension,0., normales_symetrie_ter_);
                       for (int d=0; d<dimension; d++)
-                        normales_symetrie_ter_.valeur().valeurs()(som,d)=t2(d);
+                        normales_symetrie_ter_.valeur().valeurs()(som,d)=t2[d];
                       //exit();
                     }
                 }
@@ -378,7 +378,7 @@ void Zone_Cl_EF::imposer_symetrie(DoubleTab& values,int tous_les_sommets_sym) co
   int dirmax=2;
   if (normales_symetrie_ter_.non_nul()) dirmax=3;
   for (int som=0; som<nb_som_tot; som++)
-    if (( type_sommet_(som)==1)|| ( tous_les_sommets_sym&&(type_sommet_(som)%2==1)))
+    if (( type_sommet_[som]==1)|| ( tous_les_sommets_sym&&(type_sommet_[som]%2==1)))
       {
         for (int dir=0; dir<dirmax; dir++)
           {
@@ -422,7 +422,7 @@ void Zone_Cl_EF::imposer_symetrie_partiellement(DoubleTab& values,const Noms& a_
               for (int s=0; s<nb_som_face; s++)
                 {
                   int som=faces_sommets(face,s);
-                  type_sommet_bis(som)=3;
+                  type_sommet_bis[som]=3;
                 }
             }
         }
@@ -445,7 +445,7 @@ void Zone_Cl_EF::imposer_symetrie_partiellement(DoubleTab& values,const Noms& a_
               for (int s=0; s<nb_som_face; s++)
                 {
                   int som=faces_sommets(face,s);
-                  if ( type_sommet_bis(som)==1)  //|| ( tous_les_sommets_sym&&(type_sommet_(som)%2==1)))
+                  if ( type_sommet_bis[som]==1)  //|| ( tous_les_sommets_sym&&(type_sommet_(som)%2==1)))
                     {
                       for (int dir=0; dir<dirmax; dir++)
                         {
@@ -464,7 +464,7 @@ void Zone_Cl_EF::imposer_symetrie_partiellement(DoubleTab& values,const Noms& a_
 }
 void Zone_Cl_EF::modifie_gradient(ArrOfDouble& grad_mod, const ArrOfDouble& grad, int som) const
 {
-  if (type_sommet_(som)!=1) return;
+  if (type_sommet_[som]!=1) return;
   assert(grad_mod.size_array()==dimension);
 
 
@@ -479,9 +479,9 @@ void Zone_Cl_EF::modifie_gradient(ArrOfDouble& grad_mod, const ArrOfDouble& grad
       const DoubleTab& nn=(dir==0?n:(dir==1?n_bis:normales_symetrie_ter_.valeur().valeurs()));
       double prod=0;
       for (int d=0; d<dimension; d++)
-        prod+=grad(d)*nn(som,d);
+        prod+=grad[d]*nn(som,d);
       for (int d=0; d<dimension; d++)
-        grad_mod(d)+=prod*nn(som,d);
+        grad_mod[d]+=prod*nn(som,d);
     }
 
 }
@@ -508,12 +508,12 @@ void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, Dou
   int dirmax=2;
   if (normales_symetrie_ter_.non_nul()) dirmax=3;
   for (int som=0; som<nb_som; som++)
-    if ( type_sommet_(som)==1)
+    if ( type_sommet_[som]==1)
       {
         for (int dir=0; dir<dirmax; dir++)
           {
             const DoubleTab& nn=(dir==0?n:(dir==1?n_bis:normales_symetrie_ter_.valeur().valeurs()));
-            for (int d=0; d<dimension; d++) normale(d)=nn(som,d);
+            for (int d=0; d<dimension; d++) normale[d]=nn(som,d);
             // On commence par recalculer secmem=secmem-A *present pour pouvoir modifier A (on en profite pour projeter)
             int nb_coeff_ligne=tab1[som*nb_comp+1] - tab1[som*nb_comp];
             for (int k=0; k<nb_coeff_ligne; k++)
@@ -574,7 +574,7 @@ void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, Dou
                   {
 
                     for (int comp=0; comp<nb_comp; comp++)
-                      if (std::fabs(normale(comp))>1e-5)
+                      if (std::fabs(normale[comp])>1e-5)
                         {
                           int j=tab2[tab1[som*nb_comp+comp]-1+k]-1;
                           if (j!=(som*nb_comp+comp))
@@ -594,7 +594,7 @@ void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, Dou
 
                   int j=tab2[tab1[som*nb_comp]-1+k]-1;
                   for (int comp=0; comp<nb_comp; comp++)
-                    somme(k)+=la_matrice(som*nb_comp+comp,j)*normale[comp];
+                    somme[k]+=la_matrice(som*nb_comp+comp,j)*normale[comp];
                 }
               // on retire somme ni
               for (int k=0; k<nb_coeff_ligne; k++)
@@ -603,7 +603,7 @@ void  Zone_Cl_EF::imposer_symetrie_matrice_secmem(Matrice_Morse& la_matrice, Dou
                   int j=tab2[tab1[som*nb_comp]-1+k]-1;
                   for (int comp=0; comp<nb_comp; comp++)
                     if ((j<(som*nb_comp))||(j>=(som*nb_comp+nb_comp)))
-                      la_matrice(som*nb_comp+comp,j)-=(somme(k))*normale[comp];
+                      la_matrice(som*nb_comp+comp,j)-=(somme[k])*normale[comp];
                 }
             }
             // Finalement on recalule secmem=secmem+A*champ_inconnue (A a ete beaucoup modiife)
@@ -714,7 +714,7 @@ void Zone_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
                     {
                       int som=faces_sommets(face,s);
                       assert(type_sommet_(som)>=4);
-                      double coef=1./(type_sommet_(som)/2-1);
+                      double coef=1./(type_sommet_[som]/2-1);
                       //Cerr<<"iciPB "<<coef<<finl;
                       double x,y,z=0;
                       x=coords(som,0);
@@ -737,7 +737,7 @@ void Zone_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
                   {
                     int som=faces_sommets(face,s);
                     assert(type_sommet_(som)>=4);
-                    double coef=1./(type_sommet_(som)/2-1);
+                    double coef=1./(type_sommet_[som]/2-1);
                     //Cerr<<"iciPB "<<coef<<finl;
                     if (nb_comp == 1)
                       ch_tab[som]+=coef*la_cl_diri.val_imp_au_temps(temps,ind_face);

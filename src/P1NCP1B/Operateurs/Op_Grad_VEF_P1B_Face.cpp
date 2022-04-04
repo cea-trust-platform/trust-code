@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -240,10 +240,10 @@ modifier_grad_pour_Cl(DoubleTab& grad ) const
             ArrOfInt fait(le_bord.nb_faces());
             for (int face=num1; face<num2; face++)
               {
-                if(!fait(face-num1))
+                if(!fait[face-num1])
                   {
                     int face_associee=num1+la_cl_perio.face_associee(face-num1);
-                    fait(face-num1)=(fait(face_associee-num1)=1);
+                    fait[face-num1]=(fait[face_associee-num1]=1);
                     for (int comp=0; comp<dimension; comp++)
                       grad(face_associee,comp) =
                         (grad(face,comp)+= grad(face_associee,comp));
@@ -461,8 +461,8 @@ ajouter_aretes(const DoubleTab& pre,
                 signej=-1.;
               int arete = chercher_arete(elem, somi, somj,
                                          elem_aretes, aretes_som);
-              arete=renum_arete_perio(arete);
-              if(ok_arete(arete))
+              arete=renum_arete_perio[arete];
+              if(ok_arete[arete])
                 {
                   double pa=pre(npa+arete);
                   int niinij=0;
@@ -523,7 +523,7 @@ ajouter_aretes(const DoubleTab& pre,
                         int somj=face_sommets(face,j);
                         int arete=chercher_arete(elem, somi, somj,
                                                  elem_aretes, aretes_som);
-                        arete=renum_arete_perio(arete);
+                        arete=renum_arete_perio[arete];
                         for (int comp=0; comp<dimension; comp++)
                           grad(face,comp)-= porosite_face(face)*0*
                                             face_normales(face,comp)*pre(npa+arete);
@@ -673,7 +673,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
       const ArrOfDouble& c_grav=la_zone_vef->zone().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
+          xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
   flux_bords_.resize(zone_VEF.nb_faces_bord(),dimension);
   flux_bords_ = 0.;

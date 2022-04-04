@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -101,9 +101,9 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
   double tiers=0.333333333333333;
   if(dimension==2)
     {
-      Poids(0)=0.225;
-      Poids(1)=Poids(2)=Poids(3)=0.125939180544827;
-      Poids(4)=Poids(5)=Poids(6)=0.132394152788506;
+      Poids[0]=0.225;
+      Poids[1]=Poids[2]=Poids[3]=0.125939180544827;
+      Poids[4]=Poids[5]=Poids[6]=0.132394152788506;
 
       coord_bary(0,0)=coord_bary(0,1)=coord_bary(0,2)=tiers;
 
@@ -123,11 +123,11 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
     }
   else if(dimension==3)
     {
-      Poids(0)=0.030283678097089;
-      Poids(1)=Poids(2)=Poids(3)=Poids(4)=0.006026785714286;
-      Poids(5)=Poids(6)=Poids(7)=Poids(8)=0.011645249086029;
-      Poids(9)=Poids(10)=Poids(11)=
-                           Poids(12)=Poids(13)=Poids(14)=0.010949141561386;
+      Poids[0]=0.030283678097089;
+      Poids[1]=Poids[2]=Poids[3]=Poids[4]=0.006026785714286;
+      Poids[5]=Poids[6]=Poids[7]=Poids[8]=0.011645249086029;
+      Poids[9]=Poids[10]=Poids[11]=
+                           Poids[12]=Poids[13]=Poids[14]=0.010949141561386;
       // Pour que la somme soit 1.
       Poids*=6;
 
@@ -194,21 +194,21 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
       //On remplit la matrice de changement d'element  :
       const int som_glob = elem_sommets(elem,0);
       for (int dim=0; dim<dimension; dim++)
-        a0(dim)=coord_sommets(som_glob,dim);
+        a0[dim]=coord_sommets(som_glob,dim);
 
       const int som_glob1 = elem_sommets(elem,1);
       for (int dim=0; dim<dimension; dim++)
-        a0a1(dim)=coord_sommets(som_glob1,dim)-a0(dim);
+        a0a1[dim]=coord_sommets(som_glob1,dim)-a0[dim];
 
       const int som_glob2 = elem_sommets(elem,2);
       for (int dim=0; dim<dimension; dim++)
-        a0a2(dim)=coord_sommets(som_glob2,dim)-a0(dim);
+        a0a2[dim]=coord_sommets(som_glob2,dim)-a0[dim];
 
       if(dimension == 3)
         {
           const int som_glob3 = elem_sommets(elem,3);
           for (int dim=0; dim<dimension; dim++)
-            a0a3(dim)=coord_sommets(som_glob3,dim)-a0(dim);
+            a0a3[dim]=coord_sommets(som_glob3,dim)-a0[dim];
         }
 
       //On remplit les_positions :
@@ -217,9 +217,9 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
           for (int pt=0; pt<nbpts; pt++)
             {
               for (int dim=0; dim<dimension; dim++)
-                les_positions(pt,dim)=a0(dim)
-                                      +coord_bary(pt,1)* a0a1(dim)
-                                      +coord_bary(pt,2)* a0a2(dim);
+                les_positions(pt,dim)=a0[dim]
+                                      +coord_bary(pt,1)* a0a1[dim]
+                                      +coord_bary(pt,2)* a0a2[dim];
             }
         }
       else if(dimension == 3)
@@ -227,10 +227,10 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
           for (int pt=0; pt<nbpts; pt++)
             {
               for (int dim=0; dim<dimension; dim++)
-                les_positions(pt,dim)=a0(dim)
-                                      +coord_bary(pt,1)* a0a1(dim)
-                                      +coord_bary(pt,2)* a0a2(dim)
-                                      +coord_bary(pt,3)* a0a3(dim);
+                les_positions(pt,dim)=a0[dim]
+                                      +coord_bary(pt,1)* a0a1[dim]
+                                      +coord_bary(pt,2)* a0a2[dim]
+                                      +coord_bary(pt,3)* a0a3[dim];
             }
         }
       else
@@ -256,10 +256,10 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
             {
               for (int dim=0; dim<dimension; dim++)
                 {
-                  double contrib=Poids(pt)*volume
+                  double contrib=Poids[pt]*volume
                                  *valeurs_source(pt,dim)*valeurs_Psi(pt,dim);
                   resu(num_face, dim)+=contrib;
-                  somme(dim)+=contrib;
+                  somme[dim]+=contrib;
 
                   for (int fdiri=0; fdiri<nb_face_diri; fdiri++)
                     {

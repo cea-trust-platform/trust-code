@@ -191,7 +191,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
       const DoubleTab& xgrav = zvdf.xv();
       const ArrOfDouble& c_grav=zvdf.zone().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
-        for (int i=0; i<dimension; i++) xgr(num_face,i)=xgrav(num_face,i)-c_grav(i);
+        for (int i=0; i<dimension; i++) xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
 
   flux_bords_.resize(zvdf.nb_faces_bord(),dimension);

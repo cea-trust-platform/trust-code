@@ -124,7 +124,7 @@ static void dump_lata(const Domaine& dom)
       {
         const int nt1 = t1.size_array();
         for (int i = 0; i < nt1; i++)
-          data(t1[i]) += 1;
+          data[t1[i]] += 1;
       }
       Postraitement_lata::ecrire_champ(nom_fichier_lata,
                                        Nom("partition") + Nom(zone.joint(ij).PEvoisin()),
@@ -1947,7 +1947,7 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
     for (int i=0; i<nb_som_faces; i++)
       {
         int Si = sommet(face,i);
-        som_faces(face*nb_som_faces+i)=Si;
+        som_faces[face*nb_som_faces+i]=Si;
         for (int j=i; j<nb_som_faces; j++)
           {
             int Sj = sommet(face,j);
@@ -1957,7 +1957,7 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
             dom.zone(0).chercher_aretes(positions,aretes);
             // Si on trouve une arete dont le centre coincide avec le point C
             // et dont les sommets sont identiques a Si et Sj, on ajoute l'arete a la liste
-            if (aretes(0)>=0 && arete_de_sommets_Si_et_Sj(Si, Sj, aretes[0], aretes_som))
+            if (aretes[0]>=0 && arete_de_sommets_Si_et_Sj(Si, Sj, aretes[0], aretes_som))
               {
                 compteur++;
                 liste_aretes.append_array(aretes[0]);
@@ -1988,14 +1988,14 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
     for (int j = i; j < n; j++)
       {
         // Calcul du point C entre 2 sommets Si et Sj
-        int Si = som_isoles(i);
-        int Sj = som_isoles(j);
+        int Si = som_isoles[i];
+        int Sj = som_isoles[j];
         for (int comp=0; comp<Objet_U::dimension; comp++)
           positions(0,comp)=0.5*(coord(Si,comp)+coord(Sj,comp));
         dom.zone(0).chercher_aretes(positions,aretes);
         // Si on trouve une arete dont le centre coincide avec le point C
         // et dont les sommets sont identiques a Si et Sj, on ajoute l'arete a la liste
-        if (aretes(0)>=0 && arete_de_sommets_Si_et_Sj(Si, Sj, aretes[0], aretes_som))
+        if (aretes[0]>=0 && arete_de_sommets_Si_et_Sj(Si, Sj, aretes[0], aretes_som))
           {
             compteur++;
             liste_aretes.append_array(aretes[0]);

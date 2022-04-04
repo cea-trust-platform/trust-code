@@ -60,7 +60,7 @@ template <typename Type_Double>
 void Eval_Echange_Himp_VDF_Elem::calculer_terme_source(const int num_elem, Type_Double& source) const
 {
   const int size = source.size_array();
-  for (int i = 0; i < size; i++) source(i) = h_*(Tvois(num_elem,i)-Tcourant(num_elem,i)) * volumes(num_elem)*porosite_vol(num_elem);
+  for (int i = 0; i < size; i++) source[i] = h_*(Tvois(num_elem,i)-Tcourant(num_elem,i)) * volumes(num_elem)*porosite_vol(num_elem);
 }
 
 #endif /* Eval_Echange_Himp_VDF_Elem_included */

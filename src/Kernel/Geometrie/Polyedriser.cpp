@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -187,22 +187,22 @@ void Polyedriser::polyedriser(Zone& zone) const
       int node = 0;
       for (int e = 0; e < nb_elems; e++)
         {
-          Pi(e) = face; // Index des polyedres
+          Pi[e] = face; // Index des polyedres
 
           for(int f=0; f<6; f++)
             {
-              Fi(face) = face*4; // Index des faces:
+              Fi[face] = face*4; // Index des faces:
               for(int s=0; s<4; s++)
                 {
                   int som_loc = faces_sommets_poly[f][s];
-                  N(node) = elements(e, som_loc);
+                  N[node] = elements(e, som_loc);
                   node++;
                 }
               face++;
             }
         }
-      Fi(nb_elems*6) = node;
-      Pi(nb_elems) = face;
+      Fi[nb_elems*6] = node;
+      Pi[nb_elems] = face;
       p.affecte_connectivite_numero_global(N, Fi, Pi, zone.les_elems());
     }
   else

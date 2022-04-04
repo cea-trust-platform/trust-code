@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -124,10 +124,10 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
   resu = 0;
   for (int ic=0; ic<cells.size_array(); ic++)
     {
-      int cell = cells(ic);
+      int cell = cells[ic];
       if (cell<0) continue;
       for (int k=0; k<Objet_U::dimension; k++)
-        position(k) = positions(ic,k);
+        position[k] = positions(ic,k);
 
       assert(cell >= 0);
       assert(cell < les_elems.dimension_tot(0));

@@ -558,20 +558,20 @@ void Octree::ranger_elem_1D(ArrOfInt& ok, int elem, int i, int nb_som_elem, cons
       assert(sommet>=0);
       if(coord(sommet,0)<xmil)
         {
-          if(!ok(GaucheArriereBas))
+          if(!ok[GaucheArriereBas])
             {
               SousTab[GaucheArriereBas][compteur[GaucheArriereBas]]=i;
               compteur[GaucheArriereBas]++;
-              ok(GaucheArriereBas)=1;
+              ok[GaucheArriereBas]=1;
             }
         }
       else
         {
-          if(!ok(DroitArriereBas))
+          if(!ok[DroitArriereBas])
             {
               SousTab[DroitArriereBas][compteur[DroitArriereBas]]=i;
               compteur[DroitArriereBas]++;
-              ok(DroitArriereBas)=1;
+              ok[DroitArriereBas]=1;
             }
         }
     }
@@ -583,20 +583,20 @@ inline void range2D(double x, double y, double xmil, double ymil,
     {
       if(y<ymil)
         {
-          if(!ok(GaucheArriereBas))
+          if(!ok[GaucheArriereBas])
             {
               SousTab[GaucheArriereBas][compteur[GaucheArriereBas]]=i;
               compteur[GaucheArriereBas]++;
-              ok(GaucheArriereBas)=1;
+              ok[GaucheArriereBas]=1;
             }
         }
       else
         {
-          if(!ok(GaucheAvantBas))
+          if(!ok[GaucheAvantBas])
             {
               SousTab[GaucheAvantBas][compteur[GaucheAvantBas]]=i;
               compteur[GaucheAvantBas]++;
-              ok(GaucheAvantBas)=1;
+              ok[GaucheAvantBas]=1;
             }
         }
     }
@@ -604,20 +604,20 @@ inline void range2D(double x, double y, double xmil, double ymil,
     {
       if(y<ymil)
         {
-          if(!ok(DroitArriereBas))
+          if(!ok[DroitArriereBas])
             {
               SousTab[DroitArriereBas][compteur[DroitArriereBas]]=i;
               compteur[DroitArriereBas]++;
-              ok(DroitArriereBas)=1;
+              ok[DroitArriereBas]=1;
             }
         }
       else
         {
-          if(!ok(DroitAvantBas))
+          if(!ok[DroitAvantBas])
             {
               SousTab[DroitAvantBas][compteur[DroitAvantBas]]=i;
               compteur[DroitAvantBas]++;
-              ok(DroitAvantBas)=1;
+              ok[DroitAvantBas]=1;
             }
         }
     }
@@ -632,20 +632,20 @@ inline void range3D(double x, double y, double z,
         {
           if(z<zmil)
             {
-              if(!ok(GaucheArriereBas))
+              if(!ok[GaucheArriereBas])
                 {
                   SousTab[GaucheArriereBas][compteur[GaucheArriereBas]]=i;
                   compteur[GaucheArriereBas]++;
-                  ok(GaucheArriereBas)=1;
+                  ok[GaucheArriereBas]=1;
                 }
             }
           else
             {
-              if(!ok(GaucheArriereHaut))
+              if(!ok[GaucheArriereHaut])
                 {
                   SousTab[GaucheArriereHaut][compteur[GaucheArriereHaut]]=i;
                   compteur[GaucheArriereHaut]++;
-                  ok(GaucheArriereHaut)=1;
+                  ok[GaucheArriereHaut]=1;
                 }
             }
         }
@@ -653,20 +653,20 @@ inline void range3D(double x, double y, double z,
         {
           if(z<zmil)
             {
-              if(!ok(GaucheAvantBas))
+              if(!ok[GaucheAvantBas])
                 {
                   SousTab[GaucheAvantBas][compteur[GaucheAvantBas]]=i;
                   compteur[GaucheAvantBas]++;
-                  ok(GaucheAvantBas)=1;
+                  ok[GaucheAvantBas]=1;
                 }
             }
           else
             {
-              if(!ok(GaucheAvantHaut))
+              if(!ok[GaucheAvantHaut])
                 {
                   SousTab[GaucheAvantHaut][compteur[GaucheAvantHaut]]=i;
                   compteur[GaucheAvantHaut]++;
-                  ok(GaucheAvantHaut)=1;
+                  ok[GaucheAvantHaut]=1;
                 }
             }
         }
@@ -677,20 +677,20 @@ inline void range3D(double x, double y, double z,
         {
           if(z<zmil)
             {
-              if(!ok(DroitArriereBas))
+              if(!ok[DroitArriereBas])
                 {
                   SousTab[DroitArriereBas][compteur[DroitArriereBas]]=i;
                   compteur[DroitArriereBas]++;
-                  ok(DroitArriereBas)=1;
+                  ok[DroitArriereBas]=1;
                 }
             }
           else
             {
-              if(!ok(DroitArriereHaut))
+              if(!ok[DroitArriereHaut])
                 {
                   SousTab[DroitArriereHaut][compteur[DroitArriereHaut]]=i;
                   compteur[DroitArriereHaut]++;
-                  ok(DroitArriereHaut)=1;
+                  ok[DroitArriereHaut]=1;
                 }
             }
         }
@@ -698,20 +698,20 @@ inline void range3D(double x, double y, double z,
         {
           if(z<zmil)
             {
-              if(!ok(DroitAvantBas))
+              if(!ok[DroitAvantBas])
                 {
                   SousTab[DroitAvantBas][compteur[DroitAvantBas]]=i;
                   compteur[DroitAvantBas]++;
-                  ok(DroitAvantBas)=1;
+                  ok[DroitAvantBas]=1;
                 }
             }
           else
             {
-              if(!ok(DroitAvantHaut))
+              if(!ok[DroitAvantHaut])
                 {
                   SousTab[DroitAvantHaut][compteur[DroitAvantHaut]]=i;
                   compteur[DroitAvantHaut]++;
-                  ok(DroitAvantHaut)=1;
+                  ok[DroitAvantHaut]=1;
                 }
             }
         }
@@ -849,7 +849,7 @@ void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
       ArrOfInt ok(nb_octrees);
       for(int elem=0; elem<nb_elem; elem++)
         {
-          i=Tab(elem);
+          i=Tab[elem];
           ok=0;
           switch(Objet_U::dimension)
             {
@@ -1084,7 +1084,7 @@ void OctreeRoot::construire(int reel_prec)
 
   ArrOfInt SousTab(nb_elem);
   for(int i=0; i<nb_elem; i++)
-    SousTab(i)=i;
+    SousTab[i]=i;
   Octree::construire(Octree::nombre_d_octrees(), SousTab, loc);
   Cerr << "Construction of the OctreeRoot OK " << finl;
 }
@@ -1346,7 +1346,7 @@ int OctreeRoot::rang_sommet(const DoubleTab& positions, ArrOfInt& sommets) const
           assert(0);
           exit();
         }
-      sommets(i)=rang_sommet(x,y,z);
+      sommets[i]=rang_sommet(x,y,z);
     }
   return 1;
 }
@@ -1400,7 +1400,7 @@ int OctreeRoot::rang_arete(const DoubleTab& positions, ArrOfInt& aretes) const
           Cerr << "Error in OctreeRoot::rang_arete" << finl;
           exit();
         }
-      aretes(i)=rang_arete(x,y,z);
+      aretes[i]=rang_arete(x,y,z);
     }
   return 1;
 }
@@ -1450,7 +1450,7 @@ int OctreeRoot::rang_elem(const DoubleTab& positions, ArrOfInt& elems) const
           assert(0);
           exit();
         }
-      elems(i)=rang_elem(x,y,z);
+      elems[i]=rang_elem(x,y,z);
     }
   return 1;
 }
@@ -1506,7 +1506,7 @@ int OctreeRoot::rang_elem_depuis(const DoubleTab& positions, const ArrOfInt& pre
           assert(0);
           exit();
         }
-      elems(i)=rang_elem_depuis(prems(i),x,y,z);
+      elems[i]=rang_elem_depuis(prems[i],x,y,z);
     }
   return 1;
 }
@@ -1632,15 +1632,15 @@ int OctreeFloor::rang_elem_loc(const OctreeLoc& loc, double x, double y, double 
   int sz=num_elem.size_array();
   int element=-1;
   const Elem_geom& elemgeom=zone().type_elem();
-  pos(0)=x;
-  if(Objet_U::dimension>1) pos(1)=y;
-  if(Objet_U::dimension>2) pos(2)=z;
+  pos[0]=x;
+  if(Objet_U::dimension>1) pos[1]=y;
+  if(Objet_U::dimension>2) pos[2]=z;
   for (int ielem = 0; ielem < sz; ielem++)
     {
 
-      if(elemgeom.contient(pos,num_elem(ielem)))
+      if(elemgeom.contient(pos,num_elem[ielem]))
         {
-          element=num_elem(ielem);
+          element=num_elem[ielem];
           break;
         }
       else
@@ -1689,16 +1689,16 @@ int OctreeFloor::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x,
   int sz=num_elem.size_array();
   int element=-1;
   const Elem_geom& elemgeom=zone().type_elem();
-  pos(0)=x;
-  if(Objet_U::dimension>1) pos(1)=y;
-  if(Objet_U::dimension>2) pos(2)=z;
+  pos[0]=x;
+  if(Objet_U::dimension>1) pos[1]=y;
+  if(Objet_U::dimension>2) pos[2]=z;
   int trouve=0;
   int ielem=0;
   while((ielem < sz) && (trouve==0))
     {
-      if(elemgeom.contient(pos,num_elem(ielem)))
+      if(elemgeom.contient(pos,num_elem[ielem]))
         {
-          element=num_elem(ielem);
+          element=num_elem[ielem];
           if(element >= prems)
             trouve=1;
           else

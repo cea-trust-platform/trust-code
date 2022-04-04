@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -126,7 +126,7 @@ Entree& Sous_Zone::readOn(Entree& is)
   int nb_pol_possible=lazone.nb_elem_tot();
   les_polys_possibles_.resize_array(nb_pol_possible);
   for (int i=0; i<nb_pol_possible; i++)
-    les_polys_possibles_(i)=i;
+    les_polys_possibles_[i]=i;
 
   Motcle motlu;
   is >>  motlu;
@@ -147,7 +147,7 @@ Entree& Sous_Zone::readOn(Entree& is)
       les_polys_possibles_.resize_array(nb_pol_possible);
 
       for (int i=0; i<nb_pol_possible; i++)
-        les_polys_possibles_(i)=ssz(i);
+        les_polys_possibles_[i]=ssz(i);
       is>>motlu;
     }
   int rang = les_mots.search(motlu);
@@ -959,7 +959,7 @@ Entree& Sous_Zone::readOn(Entree& is)
                 break;
               }
           if (!trouve)
-            les_polys_possibles_(compt++)=poly_i;
+            les_polys_possibles_[compt++]=poly_i;
         }
       // on rajoute ces polys a la fin
       int old_size=les_polys_.size();
@@ -967,7 +967,7 @@ Entree& Sous_Zone::readOn(Entree& is)
       Journal()<<les_polys_<<finl;
 
       for (int i=0; i<compt; i++)
-        les_polys_(old_size+i)=les_polys_possibles_(i);
+        les_polys_(old_size+i)=les_polys_possibles_[i];
 
 
       is >>motlu;

@@ -74,7 +74,7 @@ public :
   };
   inline double Scalaire0(int i) const
   {
-    return Scalaire0_(i);
+    return Scalaire0_[i];
   };
   inline const Champ_Don& beta() const
   {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -139,11 +139,11 @@ void histogramme_angle(const Domaine& dom , Sortie& out,  int nb_histo )
       double teta=largest_angle(coords);
 
       int test=(int)(teta/180*nb_histo);
-      histo(test)++;
+      histo[test]++;
       if (test==nb_histo)
         Cerr << "Error, the mesh cell " << elem << " is flat. Fix your mesh." << finl;
     }
-  if (histo(nb_histo)>0)
+  if (histo[nb_histo]>0)
     Process::exit();
   int nb_elem_tot=(int)Process::mp_sum(nb_elem);
   if (nb_elem_tot>0)
@@ -151,13 +151,13 @@ void histogramme_angle(const Domaine& dom , Sortie& out,  int nb_histo )
       double obtuse_cells_proportion=0;
       for (int h=0; h<nb_histo; h++)
         {
-          histo(h)=Process::mp_sum(histo(h));
+          histo[h]=Process::mp_sum(histo[h]);
           // Pas d'angles en dessous de 60 forcement
           if (180/nb_histo*h>=60)
             {
-              obtuse_cells_proportion=histo(h)*100./nb_elem_tot;
+              obtuse_cells_proportion=histo[h]*100./nb_elem_tot;
               int angle=180/nb_histo*h;
-              out <<"Between "<<angle<<" degrees and " << 180/nb_histo*(h+1)<<" degrees : "<<histo(h)<<" elements ( "<<obtuse_cells_proportion<< " %)"<<finl;
+              out <<"Between "<<angle<<" degrees and " << 180/nb_histo*(h+1)<<" degrees : "<<histo[h]<<" elements ( "<<obtuse_cells_proportion<< " %)"<<finl;
             }
         }
       // Criteria used on the last bin (170-180 degrees)
