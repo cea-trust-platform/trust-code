@@ -130,6 +130,13 @@ int Champ_P0_CoviMAC::imprime(Sortie& os, int ncomp) const
   return 1;
 }
 
+inline void Champ_P0_CoviMAC::mettre_a_jour(double tps)
+{
+  if (temps()!=tps) grad_a_jour = 0 ;
+  Champ_Inc_P0_base::mettre_a_jour(tps);
+}
+
+
 //utilitaires pour CL
 void Champ_P0_CoviMAC::init_fcl() const
 {
@@ -161,3 +168,12 @@ void Champ_P0_CoviMAC::init_grad(int full_stencil) const
   zone.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
 }
 
+void Champ_P0_CoviMAC::calc_grad(int full_stencil) const
+{
+  if (grad_a_jour) return;
+  const IntTab&             f_cl = fcl();
+  const Zone_CoviMAC&       zone = ref_cast(Zone_CoviMAC, la_zone_VF.valeur());
+  const Conds_lim&           cls = zone_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
+  zone.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
+  grad_a_jour = 1;
+}

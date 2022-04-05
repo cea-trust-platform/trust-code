@@ -68,6 +68,8 @@ public :
   mutable IntTab fgrad_d, fgrad_e;             // Tables used in zone_CoviMAC::fgrad
   mutable DoubleTab fgrad_w;
   void init_grad(int full_stencil) const;      // Call to initialise the tables ; no updates necessary
+  void calc_grad(int full_stencil) const;      // Call to calculate the tables ; updates necessary
+  void mettre_a_jour(double tps) override ;
 
 protected :
 
@@ -76,6 +78,7 @@ protected :
   void init_fcl() const;
   mutable IntTab fcl_;
   mutable int fcl_init_ = 0;
+  mutable int grad_a_jour = 0;
 };
 
 #endif
