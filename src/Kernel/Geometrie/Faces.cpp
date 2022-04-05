@@ -1016,8 +1016,8 @@ void Faces::reordonner()
             NS=-1;
             for(i=0; i<2; i++)
               S[i] = sommet(face, i);
-            assert( S(0) >=0 );
-            assert( S(1) >=0 );
+            assert( S[0] >=0 );
+            assert( S[1] >=0 );
             if (dom.coord(S[0], 0) > dom.coord(S[1], 0))
               {
                 NS[0]=S[1];
@@ -1031,7 +1031,7 @@ void Faces::reordonner()
 
             for(i=0; i<2; i++)
               {
-                assert(NS(i)!=-1);
+                assert(NS[i]!=-1);
                 sommet(face, i)=NS[i];
               }
           }
@@ -1064,7 +1064,7 @@ void Faces::reordonner()
             for(i=0; i<4; i++)
               {
                 S[i] = sommet(face, i);
-                assert( S(i) >=0 );
+                assert( S[i] >=0 );
               }
             if (1)
               {
@@ -1174,7 +1174,7 @@ void Faces::reordonner()
 
                 for(i=0; i<4; i++)
                   {
-                    assert(NS(i)!=-1);
+                    assert(NS[i]!=-1);
                     sommet(face, i)=NS[i];
                   }
               }

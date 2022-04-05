@@ -366,7 +366,7 @@ int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,med_idt fid,const
                   conn[c++]=s2;
                 }
             }
-          assert(c==(index(nface)-1));
+          assert(c==(index[nface]-1));
           med_int *med_index=convert_int_med_int(index);
           med_int *med_conn=convert_int_med_int(conn);
           med_int *med_familles=convert_int_med_int(familles);

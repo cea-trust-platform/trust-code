@@ -2090,10 +2090,10 @@ Op_Conv_Muscl_New_VEF_Face::calculer_senseur_v1(const DoubleTab& Kij, const Doub
                       if (fik_high>0) P_plus[dim]+=fik_high;
                       else       P_moins[dim]+=fik_high;
                     }
-                  assert(P_plus(dim)>=0);
-                  assert(Q_plus(dim)>=0);
-                  assert(P_moins(dim)<=0);
-                  assert(Q_moins(dim)<=0);
+                  assert(P_plus[dim]>=0);
+                  assert(Q_plus[dim]>=0);
+                  assert(P_moins[dim]<=0);
+                  assert(Q_moins[dim]<=0);
                 }//fin du for sur "dim"
               //
               //Fin du calcul des variables intermediaires

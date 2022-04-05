@@ -278,7 +278,7 @@ Entree& Integrer_champ_med::interpreter(Entree& is)
       trace+=res[nb];
       if (surface[nb]!=0)
         res[nb]/=surface[nb];
-      else assert(res(nb)==0);
+      else assert(res[nb]==0);
     }
   Cout<<"# overall balance "<<trace<<finl;
   so<<"# bilan global "<<trace<<finl;

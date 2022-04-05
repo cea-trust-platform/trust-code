@@ -320,7 +320,7 @@ void exemple_champ_non_homogene(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& tab)
       // On applique la periodicite:
       tab(nb_elem_tot+nb_som_tot+I)=tab[nb_elem_tot+nb_som_tot+renum_arete_perio[I]];
       // On verifie ok_arete au passage
-      assert(ok_arete(I)==ok_arete(renum_arete_perio(I)));
+      assert(ok_arete(I)==ok_arete(renum_arete_perio[I]));
     }
   tab.echange_espace_virtuel();
 }
@@ -769,7 +769,7 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
       if (renum_arete_perio[i]!=i)
         {
           nb_aretes_periodiques++;
-          assert(ok_arete(i)==ok_arete(renum_arete_perio(i)));
+          assert(ok_arete(i)==ok_arete(renum_arete_perio[i]));
           if (!ok_arete(i))
             nb_aretes_perio_superflues++;
         }

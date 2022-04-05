@@ -162,7 +162,7 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
       zone.chercher_elements(xp_autre_pb, corresp_fin_gros);
       for (int i=0; i<nb_elem_autre_pb; i++)
         {
-          assert(corresp_fin_gros(i)>0);
+          assert(corresp_fin_gros[i]>0);
           nb_fin[corresp_fin_gros[i]]++;
           vol_fin_tot[corresp_fin_gros[i]] += volumes(i);
         }

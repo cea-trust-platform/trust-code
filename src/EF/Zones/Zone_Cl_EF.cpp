@@ -471,7 +471,7 @@ void Zone_Cl_EF::modifie_gradient(ArrOfDouble& grad_mod, const ArrOfDouble& grad
   const DoubleTab& n =normales_symetrie_.valeur().valeurs();
   const DoubleTab& n_bis =normales_symetrie_bis_.valeur().valeurs();
 
-  assert ( type_sommet_(som)>=1);
+  assert ( type_sommet_[som]>=1);
   int dirmax=2;
   if (normales_symetrie_ter_.non_nul()) dirmax=3;
   for (int dir=0; dir<dirmax; dir++)
@@ -670,7 +670,7 @@ void Zone_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
               for (int s=0; s<nb_som_face; s++)
                 {
                   int som=faces_sommets(face,s);
-                  assert(type_sommet_(som)>=2);
+                  assert(type_sommet_[som]>=2);
 
 
                   if (nb_comp == 1)
@@ -713,7 +713,7 @@ void Zone_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
                   for (int s=0; s<nb_som_face; s++)
                     {
                       int som=faces_sommets(face,s);
-                      assert(type_sommet_(som)>=4);
+                      assert(type_sommet_[som]>=4);
                       double coef=1./(type_sommet_[som]/2-1);
                       //Cerr<<"iciPB "<<coef<<finl;
                       double x,y,z=0;
@@ -736,7 +736,7 @@ void Zone_Cl_EF::imposer_cond_lim(Champ_Inc& ch, double temps)
                 for (int s=0; s<nb_som_face; s++)
                   {
                     int som=faces_sommets(face,s);
-                    assert(type_sommet_(som)>=4);
+                    assert(type_sommet_[som]>=4);
                     double coef=1./(type_sommet_[som]/2-1);
                     //Cerr<<"iciPB "<<coef<<finl;
                     if (nb_comp == 1)

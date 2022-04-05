@@ -83,7 +83,7 @@ void Polygone::rebuild_index()
 
         FacesIndex_OK[f++]= les_elems(ele,ss);
     }
-  assert(f==PolygonIndex_OK(nb_elem));
+  assert(f==PolygonIndex_OK[nb_elem]);
 
   FacesIndex_=FacesIndex_OK;
   PolygonIndex_=PolygonIndex_OK;

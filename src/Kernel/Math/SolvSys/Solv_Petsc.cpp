@@ -2654,7 +2654,7 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
               tab2_[ncol] = renum_array[tab2[k] - 1];
               ncol++;
             }
-          assert(ncol == nnz(cpt));
+          assert(ncol == nnz[cpt]);
           if (journal)
             {
               Journal() << ligne_globale << " ";

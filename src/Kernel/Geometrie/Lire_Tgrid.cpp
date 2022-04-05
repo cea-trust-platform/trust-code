@@ -654,7 +654,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                                   if ((trouve==0 && nb_som_face==3) || (trouve==0 && nb_som_face==2 && type_elements==1))
                                     les_elems(elem[i2],nb_som_lu_elem[elem[i2]]++)=som[j];
 
-                                  assert(elem(i2)<nb_elem);
+                                  assert(elem[i2]<nb_elem);
                                   if (nb_som_lu_elem[elem[i2]]>nb_som_elem)
                                     {
                                       Cerr << "Problem on reading the element " << elem[i2] << finl;

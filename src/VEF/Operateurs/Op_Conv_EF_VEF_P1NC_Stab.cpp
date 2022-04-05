@@ -988,10 +988,10 @@ Op_Conv_EF_VEF_P1NC_Stab::calculer_senseur(const DoubleTab& Kij, const DoubleVec
                       if (tmp>0) P_plus[dim]+=tmp;
                       else       P_moins[dim]+=tmp;
                     }
-                  assert(P_plus(dim)>=0);
-                  assert(Q_plus(dim)>=0);
-                  assert(P_moins(dim)<=0);
-                  assert(Q_moins(dim)<=0);
+                  assert(P_plus[dim]>=0);
+                  assert(Q_plus[dim]>=0);
+                  assert(P_moins[dim]<=0);
+                  assert(Q_moins[dim]<=0);
                 }//fin du for sur "dim"
               //
               //Fin du calcul des variables intermediaires

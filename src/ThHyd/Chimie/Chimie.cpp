@@ -511,7 +511,7 @@ void  Chimie::mettre_a_jour(double temps)
                   // Cerr<<C(c)<<" "<< c<< " la  st "<<St<<" ";
                   //assert(St<=(C(c)*securite));
                   C[c]-=St;
-                  assert(C(c)>=0);
+                  assert(C[c]>=0);
                   // Cerr<< C(c)<<finl;
 
                 }
