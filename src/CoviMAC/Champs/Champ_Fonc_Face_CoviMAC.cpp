@@ -80,7 +80,7 @@ int Champ_Fonc_Face_CoviMAC::fixer_nb_valeurs_nodales(int n)
     }
   else
     {
-      assert(n == zone.nb_faces() + dimension * zone.nb_elem());
+      assert(n == zone.nb_faces_tot() + dimension * zone.nb_elem());
 
       // Probleme: nb_comp vaut dimension*dimension*nb_phases mais on ne veut que dimension*nb_phases !!!
       // HACK :

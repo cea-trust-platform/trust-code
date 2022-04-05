@@ -247,8 +247,6 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   else semi_impl["vitesse"] = eq_qdm.inconnue().passe();
   eqn.solv_masse().corriger_solution(current, current, 0); //pour CoviMAC : vf -> ve
 
-  first_call_ = 0;
-
   //premier passage : dimensionnement de mat_semi_impl, remplissage de p_degen_
   if (!mat_semi_impl.nb_lignes())
     {
@@ -353,6 +351,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
       for (auto && n_i : inco) n_i.second->futur() = n_i.second->valeurs();
       eq_qdm.pression().futur() = eq_qdm.pression().valeurs(), eq_qdm.pression_pa().futur() = eq_qdm.pression_pa().valeurs();
+      first_call_ = 0;
     }
   else
     {

@@ -65,7 +65,7 @@ Entree& Milieu_composite::readOn(Entree& is)
           const int pn = especes[n].second, pm = especes[m].second;
           Nom mot_inter = Nom((std::string("interface_") + especes[n].first + "_" + especes[m].first)), // "Interface_[...]_[...]"
               mot_sat   = Nom((std::string("saturation_") + especes[n].first)); //"Saturation_[...]"
-          if (espn == espm && pn != pm && (Interprete::objet_existant(mot_inter) || Interprete::objet_existant(mot_sat)))
+          if ( pn != pm && (Interprete::objet_existant(mot_inter) || (espn == espm &&Interprete::objet_existant(mot_sat))))
             {
               Cerr << "Interface between fluid " << n << " : " << fluides[n].le_nom() << " and " << m << " : " << fluides[m].le_nom() << finl;
               phases_melange[especes[n].first].insert(n), phases_melange[especes[n].first].insert(m);
