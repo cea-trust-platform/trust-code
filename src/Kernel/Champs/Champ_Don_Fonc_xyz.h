@@ -31,7 +31,7 @@
 //     des variables d'espaces x,y,z. La fonction est fournie
 //        directement dans le jeu de donnees sous la forme d'une expression
 //        mathematique contenant les variables x,y,z (en minuscules)
-// .SECTION voir aussi : Champ_Don_base
+// .SECTION voir aussi : TRUSTChamp_Don_generique
 class Champ_Don_Fonc_xyz : public TRUSTChamp_Don_generique<Champ_Don_Type::XYZ>
 {
   Declare_instanciable(Champ_Don_Fonc_xyz);

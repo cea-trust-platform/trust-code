@@ -31,7 +31,7 @@
 //      - le format du fichier est le suivant:
 //         n
 //         xi yi (zi) ui (vi) (wi)
-// .SECTION voir aussi : Champ_Don_base
+// .SECTION voir aussi : TRUSTChamp_Don_generique
 class Champ_Don_lu : public TRUSTChamp_Don_generique<Champ_Don_Type::LU>
 {
   Declare_instanciable(Champ_Don_lu);

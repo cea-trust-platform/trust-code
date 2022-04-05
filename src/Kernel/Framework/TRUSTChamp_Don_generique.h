@@ -30,7 +30,6 @@
 #include <Domaine.h>
 
 enum class Champ_Don_Type { XYZ , TXYZ , LU };
-template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
 
 template <Champ_Don_Type _TYPE_>
 class TRUSTChamp_Don_generique : public Champ_Don_base, public Parser_Eval
@@ -149,12 +148,6 @@ private:
   template<Champ_Don_Type T = _TYPE_> enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
   valeur_aux_elems_compo_(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;
 };
-
-inline void erreur_champ_(const char *nom_methode)
-{
-  Cerr << "Error in TRUSTChamp_Don_generique<_TYPE_> !!! Method " << nom_methode << finl;
-  Process::exit();
-}
 
 #include <TRUSTChamp_Don_generique.tpp>
 

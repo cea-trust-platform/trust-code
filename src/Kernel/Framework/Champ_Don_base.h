@@ -38,6 +38,8 @@
 //     Champ_base Champ_Don Champ_Fonc
 //////////////////////////////////////////////////////////////////////////////
 
+template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
+
 class Champ_Don_base : public Champ_base
 {
   Declare_base(Champ_Don_base);
@@ -69,5 +71,17 @@ public:
 protected :
   DoubleTab valeurs_;
 };
+
+inline void erreur_champ_(const char *nom_methode)
+{
+  Cerr << "TRUST Error !!! Verify the method " << nom_methode << " !!!" << finl;
+  Process::exit();
+}
+
+inline void not_implemented_champ_(const char *nom_methode)
+{
+  Cerr << "TRUST Error !!! The method " << nom_methode << " is not implemented !!!" << finl;
+  Process::exit();
+}
 
 #endif /* Champ_Don_base_included */

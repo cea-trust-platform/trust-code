@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,62 +22,23 @@
 
 #include <Champ_Fonc_Fonction_txyz_Morceaux.h>
 #include <Champ_Fonc_Tabule.h>
-#include <Champ_Uniforme.h>
-#include <Sous_Zone.h>
-#include <Domaine.h>
-#include <Interprete.h>
-#include <Vect_Parser_U.h>
 
-Implemente_instanciable(Champ_Fonc_Fonction_txyz_Morceaux,"Champ_Fonc_Fonction_txyz_Morceaux",Champ_Don_base);
+Implemente_instanciable(Champ_Fonc_Fonction_txyz_Morceaux,"Champ_Fonc_Fonction_txyz_Morceaux",TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TXYZ>);
 // XD champ_fonc_fonction_txyz_morceaux champ_don_base champ_fonc_fonction_txyz_morceaux 0 Field defined by analytical functions in each sub-zone. It makes possible the definition of a field that depends on the time and the space.
 // XD   attr problem_name ref_Pb_base problem_name 0 Name of the problem.
 // XD   attr inco chaine inco 0 Name of the field (for example: temperature).
 // XD   attr nb_comp int nb_comp 0 Number of field components.
 // XD   attr data bloc_lecture data 0 { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i } By default, the value val_def is assigned to the field. It takes the sous_zone_i identifier Sous_Zone (sub_area) type object function, val_i. Sous_Zone (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_fonction_txyz_morceaux type object.
 
-// Description:
-//    Imprime les valeurs du champs sur un flot de sortie
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& Champ_Fonc_Fonction_txyz_Morceaux::printOn(Sortie& os) const
-{
-  return os << valeurs();
-}
-
+Sortie& Champ_Fonc_Fonction_txyz_Morceaux::printOn(Sortie& os) const { return os << valeurs(); }
 
 // Description:
-//    Lit les valeurs du champ uniforme par morceaux
-//    a partir d'un flot d'entree.
-//    On lit le nom du domaine (nom_domaine) le nombre de
-//    composantes du champ (nb_comp) la valeur par defaut
+//    Lit les valeurs du champ uniforme par morceaux a partir d'un flot d'entree.
+//    On lit le nom du domaine (nom_domaine) le nombre de composantes du champ (nb_comp) la valeur par defaut
 //    du champ ainsi que les valeurs sur les sous zones.
 //    Format:
-//     Champ_Fonc_Fonction_txyz_Morceaux nom_domaine nb_comp
-//     { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i }
-// Precondition: pour utiliser un objet de type Champ_Fonc_Fonction_txyz_Morceaux
-//               il faut avoir defini des objets de type Sous_Zone
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le champ d'entree modifie
-//    Contraintes:
-// Exception: accolade ouvrante attendue
-// Exception: mot clef "defaut" attendu
-// Effets de bord:
-// Postcondition:
+//     Champ_Fonc_Fonction_txyz_Morceaux pb champ nb_comp { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i }
+// Precondition: pour utiliser un objet de type Champ_Fonc_Fonction_txyz_Morceaux il faut avoir defini des objets de type Sous_Zone
 Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
 {
   int dim;
@@ -85,16 +46,17 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
   Nom nom;
   int k, poly;
   is >> nom;
+
   ref_pb = ref_cast(Probleme_base, Interprete::objet(nom));
   mon_domaine = ref_pb.valeur().domaine();
-  Domaine& le_domaine=mon_domaine.valeur();
+  Domaine& le_domaine = mon_domaine.valeur();
 
   Nom val1, val2;
   is >> val1;
   is >> val2;
   Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction_txyz_Morceaux", val1, val2, dim, nom_champ_parametre_);
 
-  dim=lire_dimension(dim,que_suis_je());
+  dim = lire_dimension(dim, que_suis_je());
   fixer_nb_comp(dim);
   parser_idx.resize(0, dim);
   le_domaine.creer_tableau_elements(parser_idx);
@@ -102,15 +64,15 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
   le_domaine.creer_tableau_elements(valeurs_);
 
   is >> nom;
-  motlu=nom;
-  if(motlu != Motcle("{") )
+  motlu = nom;
+  if (motlu != Motcle("{"))
     {
       Cerr << "Error while reading a " << que_suis_je() << finl;
       Cerr << "We expected a { instead of " << nom << finl;
       exit();
     }
   is >> motlu;
-  if(motlu != Motcle("defaut") )
+  if (motlu != Motcle("defaut"))
     {
       Cerr << "Error while reading a " << que_suis_je() << finl;
       Cerr << "We expected defaut instead of " << nom << finl;
@@ -118,7 +80,7 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
     }
 
   /* parsers par defaut */
-  for(k=0; k< dim; k++)
+  for (k = 0; k < dim; k++)
     {
       Parser_U psr;
       Nom tmp;
@@ -127,17 +89,18 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
       psr.setString(tmp);
       psr.addVar("val"), psr.addVar("t"), psr.addVar("x"), psr.addVar("y"), psr.addVar("z");
       psr.parseString();
-      for (poly=0; poly<le_domaine.zone(0).nb_elem_tot(); poly++) parser_idx(poly, k) = parser.size();
+      for (poly = 0; poly < le_domaine.zone(0).nb_elem_tot(); poly++)
+        parser_idx(poly, k) = parser.size();
       parser.add(psr);
     }
 
   Nom nom_zone;
   is >> nom_zone;
-  while (nom_zone != Nom("}") )
+  while (nom_zone != Nom("}"))
     {
-      REF(Sous_Zone) refssz=les_sous_zones.add(le_domaine.ss_zone(nom_zone));
+      REF(Sous_Zone) refssz = les_sous_zones.add(le_domaine.ss_zone(nom_zone));
       Sous_Zone& ssz = refssz.valeur();
-      for( k=0; k< dim; k++)
+      for (k = 0; k < dim; k++)
         {
           Parser_U psr;
           Nom tmp;
@@ -146,461 +109,11 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
           psr.setString(tmp);
           psr.addVar("val"), psr.addVar("t"), psr.addVar("x"), psr.addVar("y"), psr.addVar("z");
           psr.parseString();
-          for (poly=0; poly < ssz.nb_elem_tot(); poly++) parser_idx(ssz(poly), k) = parser.size();
+          for (poly = 0; poly < ssz.nb_elem_tot(); poly++)
+            parser_idx(ssz(poly), k) = parser.size();
           parser.add(psr);
         }
       is >> nom_zone;
     }
   return is;
 }
-
-// Description:
-//    Renvoie une reference sur le domaine associe.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: REF(Domaine)&
-//    Signification: reference sur le domaine associe
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-const REF(Domaine)& Champ_Fonc_Fonction_txyz_Morceaux::domaine() const
-{
-  return mon_domaine;
-}
-
-// Description:
-//    Renvoie une reference sur le domaine associe.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: REF(Domaine)&
-//    Signification: reference sur le domaine associe
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-REF(Domaine)& Champ_Fonc_Fonction_txyz_Morceaux::domaine()
-{
-  return mon_domaine;
-}
-
-// Description:
-//    Renvoie la liste des sous_zones associees.
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: LIST(REF(Sous_Zone))&
-//    Signification: la liste des sous_zones associees
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-const LIST(REF(Sous_Zone))& Champ_Fonc_Fonction_txyz_Morceaux::sous_zones() const
-{
-  return les_sous_zones;
-}
-
-// Description:
-//    Renvoie la liste des sous_zones associees.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: LIST(REF(Sous_Zone))&
-//    Signification: la liste des sous_zones associees
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-LIST(REF(Sous_Zone))& Champ_Fonc_Fonction_txyz_Morceaux::sous_zones()
-{
-  return les_sous_zones;
-}
-
-
-// Description:
-//    NE FAIT RIEN
-// Precondition:
-// Parametre: mp_base& ch
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: NON ACCEDE
-// Retour: Champ_base&
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Champ_base& Champ_Fonc_Fonction_txyz_Morceaux::affecter_(const Champ_base& ch)
-{
-  Cerr<<__FILE__<<(int)__LINE__<<" not coded" <<finl;
-  exit();
-  return (*this);
-}
-
-
-// Description:
-//    Renvoie la valeur du champ au point specifie
-//    par ses coordonnees.
-// Precondition:
-// Parametre: DoubleVect& positions
-//    Signification: les coordonnees du point de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& valeurs
-//    Signification: la valeur du champ au point specifie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleVect&
-//    Signification: la valeur du champ au point specifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleVect& Champ_Fonc_Fonction_txyz_Morceaux::valeur_a(const DoubleVect& positions,
-                                                        DoubleVect& tab_valeurs) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect le_poly(1);
-  la_zone.chercher_elements(positions,le_poly);
-  return valeur_a_elem(positions,tab_valeurs,le_poly[0]);
-}
-
-
-// Description:
-//    Renvoie la valeur du champ au point specifie
-//    par ses coordonnees, en indiquant que ce point est
-//    situe dans un element specifie.
-// Precondition:
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& val
-//    Signification: la valeur du champ au point specifie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: int le_poly
-//    Signification: l'element dans lequel est situe le point de calcul
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleVect&
-//    Signification: la valeur du champ au point specifie
-//    Contraintes:
-// Exception: tableau stockant la valeur du champ de taille incorrecte
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleVect& Champ_Fonc_Fonction_txyz_Morceaux::valeur_a_elem(const DoubleVect& ,
-                                                             DoubleVect& val,
-                                                             int le_poly) const
-{
-  if (val.size() != nb_compo_)
-    {
-      Cerr << "Error TRUST in Champ_Fonc_Fonction_txyz_Morceaux::valeur_a_elem()" << finl;
-      Cerr << "The DoubleVect val doesn't have the correct size" << finl;
-      exit();
-    }
-
-  const DoubleTab& ch = valeurs();
-
-  if (nb_compo_ == 1)
-    val(0) = ch(le_poly,0);
-  else
-    for (int k=0; k<nb_compo_; k++)
-      val(k) = ch(le_poly,k);
-
-  return val;
-}
-
-
-// Description:
-//    Renvoie la valeur d'une composante du champ au point specifie
-//    par ses coordonnees, en indiquant que ce point est
-//    situe dans un element specifie.
-// Precondition:
-// Parametre: DoubleVect&
-//    Signification: les coordonnees du point de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: int le_poly
-//    Signification: l'element dans lequel est situe le point de calcul
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: double
-//    Signification: la valeur de la composante du champ specifiee au
-//                   point specifie
-//    Contraintes:
-// Exception: index de la composante du champ a calculer trop grand
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-double Champ_Fonc_Fonction_txyz_Morceaux::valeur_a_elem_compo(const DoubleVect& ,
-                                                              int le_poly,
-                                                              int ncomp) const
-{
-  double val;
-  if (ncomp > nb_compo_)
-    {
-      Cerr << "Error TRUST in Champ_Fonc_Fonction_txyz_Morceaux::valeur_a_elem_compo()" << finl;
-      Cerr << "the integer ncomp is upper than the number of field components" << finl;
-      exit();
-    }
-
-  const DoubleTab& ch = valeurs();
-
-  if (nb_compo_ == 1)
-    val = ch(le_poly,0);
-  else
-    val = ch(le_poly,ncomp);
-
-  return val;
-}
-
-
-// Description:
-//    Renvoie les valeurs du champ aux points specifies
-//    par leurs coordonnees.
-// Precondition:
-// Parametre: DoubleTab& positions
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& valeurs
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleTab& Champ_Fonc_Fonction_txyz_Morceaux::valeur_aux(const DoubleTab& positions,
-                                                         DoubleTab& tab_valeurs) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect les_polys(la_zone.nb_elem());
-  la_zone.chercher_elements(positions,les_polys);
-  return valeur_aux_elems(positions,les_polys,tab_valeurs);
-}
-
-
-// Description:
-//    Renvoie les valeurs d'une composante du champ aux points specifies
-//    par leurs coordonnees.
-// Precondition:
-// Parametre: DoubleTab& positions
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& valeurs
-//    Signification: le tableau des valeurs de la composante du champ
-//                   aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleVect&
-//    Signification: le tableau des valeurs de la composante du champ
-//                   aux points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleVect& Champ_Fonc_Fonction_txyz_Morceaux::valeur_aux_compo(const DoubleTab& positions,
-                                                                DoubleVect& tab_valeurs, int ncomp) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect les_polys(la_zone.nb_elem());
-  la_zone.chercher_elements(positions,les_polys);
-  return valeur_aux_elems_compo(positions,les_polys,tab_valeurs,ncomp);
-}
-
-
-// Description:
-//    Renvoie les valeurs du champ aux points specifies
-//    par leurs coordonnees, en indiquant que les points de
-//    calculs sont situes dans les elements indiques.
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: IntVect& les_polys
-//    Signification: le tableau des elements dans lesquels sont
-//                   situes les points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleTab& val
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: DoubleTab&
-//    Signification: le tableau des valeurs du champ aux points specifies
-//    Contraintes:
-// Exception: le tableau des valeurs a plus de 2 entrees (rang > 2)
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleTab& Champ_Fonc_Fonction_txyz_Morceaux::valeur_aux_elems(const DoubleTab& ,
-                                                               const IntVect& les_polys,
-                                                               DoubleTab& val) const
-{
-  if (val.nb_dim() == 2)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(val.dimension(1) == nb_compo_);
-    }
-  else
-    {
-      Cerr << "Error TRUST in Champ_Fonc_Fonction_txyz_Morceaux::valeur_aux_elems()" << finl;
-      Cerr << "The DoubleTab val don't have 2 entries" << finl;
-      exit();
-    }
-
-  const DoubleTab& ch = valeurs();
-  val = 0.;
-  int p;
-
-  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-    if ((p = les_polys(rang_poly)) != -1)
-      for(int n = 0; n < nb_compo_; n++)
-        val(rang_poly, n) = ch(p, n);
-
-  return val;
-}
-
-
-// Description:
-//    Renvoie les valeurs d'une composante du champ aux points specifies
-//    par leurs coordonnees, en indiquant que les points de
-//    calculs sont situes dans les elements indiques.
-// Precondition:
-// Parametre: DoubleTab&
-//    Signification: le tableau des coordonnees des points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: IntVect& les_polys
-//    Signification: le tableau des elements dans lesquels sont
-//                   situes les points de calcul
-//    Valeurs par defaut:
-//    Contraintes: reference constante
-//    Acces: entree
-// Parametre: DoubleVect& val
-//    Signification: le tableau des valeurs de la composante du champ
-//                   aux points specifies
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Parametre: int ncomp
-//    Signification: l'index de la composante du champ a calculer
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: DoubleVect&
-//    Signification: le tableau des valeurs de la composante du champ
-//                   aux points specifies
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-DoubleVect& Champ_Fonc_Fonction_txyz_Morceaux::
-valeur_aux_elems_compo(const DoubleTab&,
-                       const IntVect& les_polys,
-                       DoubleVect& val,
-                       int ncomp) const
-{
-  assert(val.size() == les_polys.size());
-  int le_poly;
-
-  const DoubleTab& ch = valeurs();
-
-  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-    {
-      le_poly=les_polys(rang_poly);
-      if (le_poly == -1)
-        val(rang_poly) = 0;
-      else
-        val(rang_poly) = ch(le_poly,ncomp);
-    }
-  return val;
-}
-
-void Champ_Fonc_Fonction_txyz_Morceaux::mettre_a_jour(double time)
-{
-  Domaine& le_domaine=mon_domaine.valeur();
-  const IntTab& les_elems=le_domaine.zone(0).les_elems();
-  const int nb_som_elem = le_domaine.zone(0).nb_som_elem();
-
-  const Champ_base& ch=ref_pb.valeur().get_champ(nom_champ_parametre_);
-
-  DoubleTab& tab = valeurs();
-
-  for (int i = 0; i < le_domaine.zone(0).nb_elem_tot(); i++)
-    {
-      /* xs : coordonnees du poly par barycentre des sommets -> pas top */
-      double xs[3] = { 0, };
-      int nb_som = 0, s, r;
-      for (int j = 0; j < nb_som_elem && (s = les_elems(i, j)) >= 0; j++)
-        for (r = 0, nb_som++; r < dimension; r++) xs[r] += le_domaine.coord(s, r);
-      for (r = 0; r < dimension; r++) xs[r] /= nb_som;
-
-      /* calcul de chaque composante */
-      double val = ch.valeurs().addr()[i];
-      for (int k = 0; k < tab.dimension(1); k++)
-        {
-          Parser_U& psr = parser(parser_idx(i, k));
-          psr.setVar("x", xs[0]);
-          psr.setVar("y", xs[1]);
-          psr.setVar("z", xs[2]);
-          psr.setVar("t", time);
-          psr.setVar("val", val);
-          tab(i, k) = psr.eval();
-        }
-    }
-}
-
-int Champ_Fonc_Fonction_txyz_Morceaux::initialiser(const double time)
-{
-  mettre_a_jour(time);
-  return 1;
-}
-
-
