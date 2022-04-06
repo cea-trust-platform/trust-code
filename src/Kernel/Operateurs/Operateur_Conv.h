@@ -108,7 +108,7 @@ inline const Operateur_base& Operateur_Conv::l_op_base() const
 //    Valeurs par defaut:
 //    Contraintes: reference constante
 //    Acces: entree
-// Retour: 
+// Retour:
 //    Signification: le champ inconnue representant la vitesse transportante
 //    Contraintes:
 // Exception:
