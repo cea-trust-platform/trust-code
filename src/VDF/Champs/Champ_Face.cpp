@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_Face.h>
-#include <math.h>
 #include <Champ_Uniforme_Morceaux.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Don_lu.h>
@@ -33,8 +32,6 @@
 #include <Dirichlet_entree_fluide.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
-#include <Champ_front_var_instationnaire.h>
-#include <Champ_front_instationnaire_base.h>
 
 Implemente_instanciable(Champ_Face,"Champ_Face",Champ_Inc_base);
 

@@ -25,7 +25,6 @@
 #include <Param.h>
 #include <Matrice_Bloc_Sym.h>
 #include <Sparskit.h>
-#include <Check_espace_virtuel.h>
 #include <MD_Vector_base.h>
 #include <MD_Vector_tools.h>
 #include <communications.h>

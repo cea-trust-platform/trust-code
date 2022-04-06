@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,17 +22,18 @@
 #include <Partitionneur_Parmetis.h>
 #include <Domaine.h>
 #include <Static_Int_Lists.h>
-#include <Connectivite_som_elem.h>
+#include <parmetis++.h>
 #include <Param.h>
+
+#include <communications.h>
 #include <Poly_geom_base.h>
 #include <Matrix_tools.h>
 #include <Matrice_Morse.h>
 #include <Array_tools.h>
 #include <Comm_Group_MPI.h>
-#include <communications.h>
+
 #include <Domain_Graph.h>
 #include <MD_Vector_tools.h>
-#include <parmetis++.h>
 
 inline void not_implemented(const Nom& chaine)
 {

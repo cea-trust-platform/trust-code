@@ -28,11 +28,7 @@
 #include <Ref_Champ_P1NC.h>
 #include <Ref_Zone_VEF_PreP1b.h>
 #include <Ref_Zone_Cl_VEFP1B.h>
-#include <Ref_Champ_Uniforme.h>
-#include <Ref_Turbulence_paroi_base.h>
 #include <Ref_Mod_turb_hyd_base.h>
-#include <Ref_Modele_turbulence_scal_base.h>
-#include <Matrice_Morse.h>
 #include <Zone_VEF_PreP1b.h>
 #include <Zone_Cl_VEFP1B.h>
 #include <Matrice_Morse_Sym.h>

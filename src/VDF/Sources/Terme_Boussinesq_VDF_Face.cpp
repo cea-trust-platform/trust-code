@@ -28,8 +28,6 @@
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
 #include <Convection_Diffusion_Concentration.h>
-#include <Convection_Diffusion_Temperature.h>
-#include <Navier_Stokes_std.h>
 #include <Synonyme_info.h>
 
 Implemente_instanciable(Terme_Boussinesq_VDF_Face,"Boussinesq_VDF_Face",Terme_Boussinesq_base);

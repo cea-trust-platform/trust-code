@@ -20,22 +20,16 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Masse_CoviMAC_Elem.h>
-#include <Zone_Cl_CoviMAC.h>
-#include <Zone_CoviMAC.h>
-#include <Debog.h>
-#include <Champ_P0_CoviMAC.h>
-#include <Equation_base.h>
-#include <Conds_lim.h>
-#include <Neumann_paroi.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <Operateur.h>
 #include <Op_Diff_negligeable.h>
 #include <Echange_impose_base.h>
+#include <Masse_CoviMAC_Elem.h>
+#include <Zone_Cl_CoviMAC.h>
 #include <TRUSTTab_parts.h>
-#include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
+#include <Equation_base.h>
+#include <Zone_CoviMAC.h>
+#include <Matrix_tools.h>
+#include <Operateur.h>
 
 Implemente_instanciable(Masse_CoviMAC_Elem,"Masse_CoviMAC_Elem",Solveur_Masse_base);
 

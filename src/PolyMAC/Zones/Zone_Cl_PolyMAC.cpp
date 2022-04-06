@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,16 +22,12 @@
 
 #include <Zone_Cl_PolyMAC.h>
 #include <Zone_PolyMAC.h>
-#include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Symetrie.h>
 #include <Periodique.h>
-#include <Neumann.h>
-#include <Neumann_homogene.h>
 #include <Dirichlet_entree_fluide.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
-#include <Domaine.h>
 #include <Equation_base.h>
 #include <Champ_Inc_P0_base.h>
 #include <Champ_front_softanalytique.h>

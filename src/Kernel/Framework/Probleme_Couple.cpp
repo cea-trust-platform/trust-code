@@ -23,15 +23,11 @@
 #include <Probleme_Couple.h>
 #include <Zone_VF.h>
 #include <TRUSTTabs.h>
-#include <LecFicDistribue.h>
-#include <Debog.h>
 #include <Postraitement.h>
 #include <Milieu_base.h>
 #include <Equation_base.h>
 #include <Schema_Euler_Implicite.h>
 #include <List_List_Nom.h>
-#include <sys/stat.h>
-#include <communications.h>
 #include <EcrFicCollecte.h>
 
 Implemente_instanciable(Probleme_Couple,"Probleme_Couple",Couplage_U);

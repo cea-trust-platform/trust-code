@@ -23,11 +23,9 @@
 #include <Champ_front_contact_VEF.h>
 #include <Probleme_base.h>
 #include <Mod_turb_hyd_base.h>
-#include <Convection_Diffusion_Temperature.h>
 #include <Modele_turbulence_scal_base.h>
 #include <Raccord_distant_homogene.h>
 #include <Champ_Uniforme.h>
-#include <Fluide_Incompressible.h>
 #include <distances_VEF.h>
 #include <Interprete.h>
 #include <Pb_Conduction.h>

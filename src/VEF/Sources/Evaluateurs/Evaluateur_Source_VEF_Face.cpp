@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,6 @@
 
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
 
 Evaluateur_Source_VEF_Face::Evaluateur_Source_VEF_Face(const Evaluateur_Source_VEF_Face& eval)
   : Evaluateur_Source_VEF(eval)

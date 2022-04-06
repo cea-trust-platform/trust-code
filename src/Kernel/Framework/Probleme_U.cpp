@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,9 +23,7 @@
 #include <Probleme_U.h>
 #include <stat_counters.h>
 #include <ICoCoExceptions.h>
-#include <sys/stat.h>
 #include <Ch_front_input_uniforme.h>
-#include <Ch_front_input.h>
 #include <Ch_input_uniforme.h>
 #include <Champ_input_P0.h>
 
@@ -33,8 +31,7 @@
 #include <vt_user.h>
 #endif
 
-#include <Domaine.h>
-#include <Zone.h>
+
 #include <Champ_Generique_base.h>
 #include <Convert_ICoCoTrioField.h>
 

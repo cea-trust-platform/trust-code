@@ -24,16 +24,11 @@
 #define Champ_Fonc_P0_CoviMAC_TC_included
 
 
-#include <Champ_Fonc_Face_CoviMAC.h>
 #include <Champ_Fonc_P0_CoviMAC.h>
 #include <Champ_Fonc.h>
-#include <Ref_Champ_Fonc_P0_CoviMAC.h>
-#include <Ref_Zone_Cl_CoviMAC.h>
 #include <Ref_Champ_Face_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
-#include <Champ_Fonc.h>
 #include <Ref_Champ_Fonc.h>
-#include <Motcle.h>
 
 //
 //.DESCRIPTION  class grad_Champ_Face_CoviMAC_TC for the calculation of the shear rate (taux de cisaillement)

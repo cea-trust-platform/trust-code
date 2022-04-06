@@ -23,11 +23,11 @@
 #include <Simple.h>
 #include <Navier_Stokes_std.h>
 #include <EChaine.h>
-#include <Debog.h>
+
 #include <Matrice_Bloc.h>
 #include <Matrice_Morse_Sym.h>
-#include <Matrice_Nulle.h>
-#include <Matrix_tools.h>
+
+
 #include <Assembleur_base.h>
 #include <Statistiques.h>
 #include <Schema_Temps_base.h>

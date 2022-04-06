@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_Fonc_Tabule_P0_VDF.h>
-#include <Champ_Inc.h>
 #include <Table.h>
 #include <Zone_VF.h>
 

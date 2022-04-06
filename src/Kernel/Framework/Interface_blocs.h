@@ -26,7 +26,6 @@
 #include <TRUSTTabs_forward.h>
 #include <stdexcept>
 #include <map>
-#include <set>
 
 class Matrice_Morse;
 class Objet_U;

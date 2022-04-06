@@ -25,7 +25,7 @@
 
 #include <Op_Dift_VDF_Face_base.h>
 #include <Ref_Mod_turb_hyd_base.h>
-#include <Ref_Champ_Uniforme.h>
+
 #include <Ref_Champ_Face.h>
 
 class Op_Dift_VDF_Face_Axi_base : public Op_Dift_VDF_Face_base

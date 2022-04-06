@@ -29,6 +29,7 @@
 #include <Probleme_base.h>
 #include <Op_Diff_EF.h>
 #include <Motcle.h>
+#include <Entree.h>
 #include <Debog.h>
 
 enum class AJOUTE_COND { GEN , D3_81 , D3_82 , D2_41 , D2_42 };

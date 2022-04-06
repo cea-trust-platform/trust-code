@@ -29,9 +29,8 @@
 #include <Champ_base.h>
 #include <Ref_Champ_Uniforme.h>
 #include <Equation_base.h>
-#include <Matrice_Morse.h>
 #include <SolveurSys.h>
-//#include <Solv_GCP.h>
+
 
 class Zone_VEF_PreP1b;
 

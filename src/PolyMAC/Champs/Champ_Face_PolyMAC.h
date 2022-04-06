@@ -26,7 +26,6 @@
 #include <Champ_Inc_base.h>
 #include <Zone_VF.h>
 #include <Ref_Zone_VF.h>
-#include <Matrice_Morse.h>
 #include <SolveurSys.h>
 
 /////////////////////////////////////////////////////////////////////////////

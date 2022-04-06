@@ -24,7 +24,6 @@
 #include <Champ_Uniforme.h>
 #include <Champ_Don.h>
 #include <Sous_Zone.h>
-#include <Zone_VDF.h>
 #include <Parser.h>
 
 void Eval_Puiss_Neutr_VDF_Elem::associer_champs(const Champ_Don& Q)

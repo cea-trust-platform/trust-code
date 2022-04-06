@@ -22,7 +22,6 @@
 #include <interface_CALCULBIJ.h>
 #include <arch_fort.h>
 #include <LecFicDiffuse.h>
-#include <Double.h>
 #include <Param.h>
 extern "C" {
 #ifdef F77_Majuscule

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,6 @@
 #include <Motcle.h>
 #include <Zone_VF.h>
 #include <Linear_algebra_tools.h>
-#include <Parser_U.h>
 #include <EChaine.h>
 
 Implemente_instanciable(Boundary_field_inward,"Boundary_field_inward",Champ_front_normal);

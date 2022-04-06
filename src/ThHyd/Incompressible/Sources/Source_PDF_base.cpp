@@ -24,13 +24,12 @@
 #include <Zone_Cl_dis.h>
 
 #include <Equation_base.h>
-#include <Debog.h>
+
 #include <Param.h>
 #include <Champ.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
 #include <SFichier.h>
-#include <Interpolation_IBM_base.h>
 
 
 Implemente_base(Source_PDF_base,"Source_PDF_base",Source_dep_inco_base);

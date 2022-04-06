@@ -25,7 +25,6 @@
 
 #include <Op_Grad_VDF_Face_base.h>
 #include <Matrice_Morse.h>
-#include <Zone_VDF.h>
 #include <SFichier.h>
 
 // .DESCRIPTION class Op_Grad_VDF_Face

@@ -25,16 +25,10 @@
 #define Op_Diff_VEFP1NCP1B_Face_included
 
 #include <Operateur_Diff_base.h>
-#include <Ref_Champ_Uniforme.h>
-#include <Ref_Champ_Inc.h>
-#include <Ref_Zone_VEF_PreP1b.h>
-#include <Ref_Zone_Cl_VEFP1B.h>
 #include <Matrice_Morse.h>
 #include <Op_Diff_VEF_Face.h>
 #include <Zone_VEF_PreP1b.h>
 #include <Zone_Cl_VEFP1B.h>
-#include <Matrice_Morse_Sym.h>
-#include <Matrice_Bloc.h>
 #include <TRUSTLists.h>
 #include <SolveurSys.h>
 #include <ArrOfBit.h>

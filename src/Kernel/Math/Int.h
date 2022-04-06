@@ -26,7 +26,7 @@
 #ifndef _MATH_INCLUDED
 #include <math.h>
 #endif
-#include <arch.h>
+
 
 // .DESCRIPTION : fonctions utiles sur les int
 

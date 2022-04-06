@@ -27,7 +27,6 @@
 #include <Discret_Thyd.h>
 #include <Avanc.h>
 #include <Debog.h>
-#include <LecFicDistribue.h>
 #include <Matrice_Morse_Sym.h>
 #include <Champ_Uniforme.h>
 #include <Op_Conv_ALE.h>
@@ -35,11 +34,9 @@
 #include <solv_iteratif.h>
 #include <Schema_Temps.h>
 #include <TRUSTTrav.h>
-#include <Check_espace_virtuel.h>
 #include <Assembleur_base.h>
 #include <communications.h>
 #include <Transport_Interfaces_base.h>
-#include <Ensemble_Lagrange_base.h>
 #include <SFichier.h>
 #include <Param.h>
 #include <MD_Vector_std.h>

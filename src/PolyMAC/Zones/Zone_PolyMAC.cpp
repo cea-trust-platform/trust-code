@@ -39,7 +39,6 @@
 #include <Matrix_tools.h>
 #include <Statistiques.h>
 #include <Zone_PolyMAC.h>
-#include <unordered_map>
 #include <Tri_PolyMAC.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
@@ -54,9 +53,7 @@
 #include <Domaine.h>
 #include <Scatter.h>
 #include <EChaine.h>
-#include <LireMED.h>
 #include <Lapack.h>
-#include <EcrMED.h>
 #include <unistd.h>
 #include <numeric>
 #include <cfloat>

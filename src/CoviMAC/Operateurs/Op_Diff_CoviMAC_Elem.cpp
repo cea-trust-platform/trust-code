@@ -21,20 +21,16 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <Op_Diff_CoviMAC_Elem.h>
 #include <Pb_Multiphase.h>
-#include <Schema_Temps_base.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
-#include <TRUSTLists.h>
+
 #include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
 #include <Neumann_paroi.h>
 #include <Echange_contact_CoviMAC.h>
 #include <Echange_externe_impose.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <Champ_P0_CoviMAC.h>
-#include <Champ_front_calc.h>
-#include <Modele_turbulence_scal_base.h>
 #include <Synonyme_info.h>
 #include <communications.h>
 #include <MD_Vector_base.h>

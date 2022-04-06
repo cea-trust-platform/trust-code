@@ -33,7 +33,7 @@
 #include <Discretisation_base.h>
 #include <Champ.h>
 #include <Check_espace_virtuel.h>
-#include <Debog.h>
+
 #include <Echange_externe_impose.h>
 
 Implemente_base(Op_Diff_VEF_base,"Op_Diff_VEF_base",Operateur_Diff_base);

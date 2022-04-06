@@ -23,7 +23,7 @@
 #include <Op_Diff_VEF_Face_Stab.h>
 #include <Champ_P1NC.h>
 #include <Champ_Q1NC.h>
-#include <Champ_Uniforme.h>
+
 #include <Periodique.h>
 #include <Symetrie.h>
 #include <Neumann_paroi.h>
@@ -32,15 +32,15 @@
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Neumann_homogene.h>
-#include <Ref_Champ_P1NC.h>
-#include <Ref_Champ_Q1NC.h>
+
+
 #include <Milieu_base.h>
-#include <Debog.h>
+
 #include <TRUSTTrav.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Porosites_champ.h>
-#include <Check_espace_virtuel.h>
+
 #include <SFichier.h>
 #include <ArrOfBit.h>
 #include <Schema_Temps_base.h>

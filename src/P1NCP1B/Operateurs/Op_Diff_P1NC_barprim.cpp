@@ -25,15 +25,15 @@
 #include <Zone_dis.h>
 #include <Zone_Cl_dis.h>
 #include <Champ_Inc.h>
-#include <math.h>
+
 #include <Champ_P1NC.h>
-#include <Champ_Don.h>
+
 #include <Champ_Uniforme.h>
-#include <Champ_Fonc.h>
+
 #include <TRUSTTrav.h>
 #include <Domaine.h>
 #include <Ref_Champ_P1NC.h>
-#include <Debog.h>
+
 #include <TRUSTLists.h>
 #include <Periodique.h>
 #include <EFichier.h>

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,6 @@
 #include <Zone_VF.h>
 #include <Champ.h>
 #include <Champ_Don.h>
-#include <Champ_Uniforme.h>
 #include <Discretisation_base.h>
 
 // Generalisation pour les VEF

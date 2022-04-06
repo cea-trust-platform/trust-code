@@ -22,14 +22,10 @@
 
 #include <Terme_Source_Qdm_Face_CoviMAC.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Don_Fonc_xyz.h>
-#include <Champ_Don_Fonc_txyz.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
-#include <Op_Grad_CoviMAC_Face.h>
-#include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Pb_Multiphase.h>
 

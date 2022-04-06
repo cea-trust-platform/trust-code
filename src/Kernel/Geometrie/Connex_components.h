@@ -22,6 +22,7 @@
 #ifndef Connex_components_H_INCLU
 #define Connex_components_H_INCLU
 
+
 #include <Connectivite_som_elem.h>
 #include <TRUSTTabs_forward.h>
 #include <arch.h>

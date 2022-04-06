@@ -24,12 +24,12 @@
 #include <Domaine.h>
 //#include <EcrMED.h>
 #include <EFichierBin.h>
-#include <List_Nom.h>
+
 #include <EChaine.h>
-#include <Motcle.h>
-#include <communications.h>
+
+
 #include <PE_Groups.h>
-#include <Lire_Fichier.h>
+
 #include <SFichier.h>
 
 #include <LataFilter.h>

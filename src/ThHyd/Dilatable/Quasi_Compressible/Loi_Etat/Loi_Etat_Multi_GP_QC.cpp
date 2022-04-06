@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Loi_Etat_Multi_GP_QC.h>
-#include <Champ_Fonc_Tabule.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Champ_Inc_base.h>

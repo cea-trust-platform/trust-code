@@ -25,7 +25,6 @@
 
 #include <Comm_Group.h>
 #include <TRUSTVect.h>
-#include <arch.h>
 
 // Renvoie 1 si l'espace virtuel de v est a jour, 0 sinon
 int check_espace_virtuel_vect(const DoubleVect& v);

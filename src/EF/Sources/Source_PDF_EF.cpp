@@ -20,7 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_Uniforme.h>
+#include <Source_PDF_EF.h>
 #include <Domaine.h>
 #include <Zone_EF.h>
 #include <Zone_Cl_EF.h>
@@ -36,9 +36,8 @@
 #include <Interpolation_IBM_mean_gradient.h>
 #include <Interpolation_IBM_hybrid.h>
 #include <Dirichlet.h>
-#include <Symetrie.h>
 #include <SFichier.h>
-#include <Source_PDF_EF.h>
+
 
 #include <Op_Conv_EF.h>
 
@@ -919,7 +918,7 @@ void Source_PDF_EF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab
       const Cond_lim_base& la_cl_base = la_zone_cl.les_conditions_limites(ij).valeur();
       const Front_VF& le_bord = ref_cast(Front_VF,la_zone_cl.les_conditions_limites(ij).frontiere_dis());
       int nfaces = le_bord.nb_faces_tot();
-      if sub_type(Dirichlet,la_cl_base)
+      if (sub_type(Dirichlet,la_cl_base))
         {
           for (int ind_face=0; ind_face < nfaces; ind_face++)
             {
@@ -980,7 +979,7 @@ void Source_PDF_EF::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pre
       const Cond_lim_base& la_cl_base = la_zone_cl.les_conditions_limites(ij).valeur();
       const Front_VF& le_bord = ref_cast(Front_VF,la_zone_cl.les_conditions_limites(ij).frontiere_dis());
       int nfaces = le_bord.nb_faces_tot();
-      if sub_type(Dirichlet,la_cl_base)
+      if (sub_type(Dirichlet,la_cl_base))
         {
           for (int ind_face=0; ind_face < nfaces; ind_face++)
             {

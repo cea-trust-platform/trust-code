@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,11 +22,11 @@
 
 #include <Op_Diff_RotRot.h>
 #include <Zone_Cl_VEF.h>
-#include <Front_VF.h>
+
 #include <Zone_dis.h>
 #include <Zone_Cl_dis.h>
 #include <Matrice_Morse_Sym.h>
-#include <Debog.h>
+
 #include <SFichier.h>
 #include <LecFicDistribueBin.h>
 #include <Champ_Uniforme.h>

@@ -29,7 +29,7 @@
 #include <Eval_Diff_VDF_const.h>
 #include <Eval_Diff_VDF_Elem.h>
 #include <Eval_Diff_VDF_var.h>
-#include <Ref_Champ_Inc.h>
+
 
 /// \cond DO_NOT_DOCUMENT
 class Eval_Diff_VDF_Elem_leaves: public Eval_Diff_VDF_Elem<Eval_Diff_VDF_Elem_leaves>,

@@ -41,7 +41,6 @@
 #include <Hexa_CoviMAC.h>
 #include <Hexaedre_VEF.h>
 #include <Matrix_tools.h>
-#include <unordered_map>
 #include <Tri_CoviMAC.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
@@ -56,16 +55,11 @@
 #include <Domaine.h>
 #include <Scatter.h>
 #include <EChaine.h>
-#include <LireMED.h>
-#include <EcrMED.h>
-#include <unistd.h>
 #include <Lapack.h>
 #include <numeric>
 #include <vector>
-#include <cfloat>
 #include <tuple>
 #include <cmath>
-#include <cfenv>
 #include <set>
 #include <map>
 #pragma GCC diagnostic push

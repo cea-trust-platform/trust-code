@@ -22,22 +22,16 @@
 
 #include <Zone_Cl_CoviMAC.h>
 #include <Zone_CoviMAC.h>
-#include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
 #include <Symetrie.h>
 #include <Periodique.h>
-#include <Neumann.h>
-#include <Neumann_homogene.h>
 #include <Dirichlet_entree_fluide.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
-#include <Domaine.h>
 #include <Equation_base.h>
 #include <Champ_Inc_P0_base.h>
 #include <Champ_front_softanalytique.h>
 #include <Probleme_base.h>
 #include <Discretisation_base.h>
-#include <Matrice_Morse.h>
 #include <Champ_Face_CoviMAC.h>
 #include <Debog.h>
 #include <TRUSTTab_parts.h>

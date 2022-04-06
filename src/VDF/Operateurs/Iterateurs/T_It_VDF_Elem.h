@@ -23,19 +23,13 @@
 #ifndef T_It_VDF_Elem_included
 #define T_It_VDF_Elem_included
 
-#include <Operateur_Diff_base.h>
 #include <Schema_Temps_base.h>
 #include <Op_Conv_VDF_base.h>
-#include <Champ_Uniforme.h>
-#include <Operateur_base.h>
-#include <communications.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <EcrFicPartage.h>
-#include <TRUSTSingle.h>
 #include <Milieu_base.h>
 #include <TRUSTTrav.h>
-#include <Debog.h>
 
 template <class _TYPE_>
 class T_It_VDF_Elem : public Iterateur_VDF_base

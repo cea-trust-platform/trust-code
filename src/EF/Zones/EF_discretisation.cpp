@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,9 +38,9 @@
 #include <Quadri_EF.h>
 #include <Hexa_EF.h>
 #include <Champ_Uniforme.h>
-#include <DescStructure.h>
+
 #include <Champ_Inc.h>
-#include <Schema_Temps.h>
+
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
 #include <Zone_Cl_EF.h>

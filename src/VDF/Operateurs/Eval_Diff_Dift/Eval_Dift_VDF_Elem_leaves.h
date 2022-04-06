@@ -23,10 +23,8 @@
 #ifndef Eval_Dift_VDF_Elem_leaves_included
 #define Eval_Dift_VDF_Elem_leaves_included
 
-#include <Ref_Modele_turbulence_scal_base.h>
 #include <Eval_Dift_VDF_Multi_inco_const.h>
 #include <Eval_Dift_VDF_Multi_inco_var.h>
-#include <Ref_Turbulence_paroi_scal.h>
 #include <Turbulence_paroi_scal.h>
 #include <Eval_Dift_VDF_const.h>
 #include <Eval_Diff_VDF_Elem.h>

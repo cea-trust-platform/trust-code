@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Polyedre_PolyMAC.h>
-#include <Polyedre.h>
 #include <Domaine.h>
 #include <Zone_PolyMAC.h>
 #include <Linear_algebra_tools_impl.h>

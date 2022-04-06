@@ -23,7 +23,6 @@
 #define interface_INITGAUSS_included
 
 #include <TRUSTTabs_forward.h>
-#include <assert.h>
 class Nom;
 class Sortie;
 class Param;

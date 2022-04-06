@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,14 +26,11 @@
 #include <Periodique.h>
 #include <Zone_VEF_PreP1b.h>
 #include <Sortie_libre_pression_imposee_QC.h>
-#include <Debog.h>
-#include <Navier_Stokes_std.h>
-#include <Schema_Temps_base.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <Porosites_champ.h>
 #include <Zone_VEF.h>
 #include <Champ_P1NC.h>
-#include <Check_espace_virtuel.h>
+
 Implemente_base_sans_constructeur(EDO_Pression_th_VEF,"EDO_Pression_th_VEF",EDO_Pression_th_base);
 
 EDO_Pression_th_VEF::EDO_Pression_th_VEF() : M0(-1.) { }

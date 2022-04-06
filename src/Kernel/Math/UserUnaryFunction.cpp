@@ -22,7 +22,6 @@
 #include <UserUnaryFunction.h>
 // il faut include LecFicDiffuse.h pour la definition du label AVEC_PARSER
 #include <LecFicDiffuse.h>
-#include <verif_cast.h>
 
 Implemente_instanciable(UserUnaryFunction,"UserUnaryFunction",UnaryFunction);
 

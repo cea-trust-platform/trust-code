@@ -22,7 +22,7 @@
 #ifndef FichierHDF_included
 #define FichierHDF_included
 
-#include <Process.h>
+
 #include <Entree_Brute.h>
 #include <Sortie_Brute.h>
 #include <Nom.h>

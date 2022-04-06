@@ -20,10 +20,10 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Debog.h>
+
 #include <Op_Diff_PolyMAC_base.h>
-#include <Motcle.h>
-#include <Champ_Don.h>
+
+
 #include <Champ_Uniforme.h>
 #include <TRUSTTrav.h>
 #include <Check_espace_virtuel.h>

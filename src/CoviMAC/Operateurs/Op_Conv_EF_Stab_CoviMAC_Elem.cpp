@@ -22,15 +22,12 @@
 
 #include <Op_Conv_EF_Stab_CoviMAC_Elem.h>
 #include <Probleme_base.h>
-#include <Convection_Diffusion_std.h>
-#include <Milieu_base.h>
-#include <Schema_Temps_base.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Symetrie.h>
+
+
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <Champ_P0_CoviMAC.h>

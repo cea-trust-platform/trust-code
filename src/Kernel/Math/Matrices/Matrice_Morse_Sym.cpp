@@ -24,8 +24,7 @@
 #include <TRUSTArrays.h>
 #include <Array_tools.h>
 #include <TRUSTTabs.h>
-#include <TRUSTList.h>
-#include <comm_incl.h>
+
 #include <Sparskit.h>
 #include <Noms.h>
 

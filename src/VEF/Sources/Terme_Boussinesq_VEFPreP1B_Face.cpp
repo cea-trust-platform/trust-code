@@ -26,9 +26,7 @@
 #include <Periodique.h>
 #include <Zone_VEF.h>
 #include <Zone_Cl_VEF.h>
-#include <Navier_Stokes_std.h>
 #include <Zone_VEF_PreP1b.h>
-#include <Domaine.h>
 #include <Synonyme_info.h>
 
 extern double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, const Zone_Cl_VEF& zcl, const Zone_VEF& zone_VEF);

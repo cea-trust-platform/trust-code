@@ -22,17 +22,24 @@
 
 #include <Op_Conv_Muscl_New_VEF_Face.h>
 #include <Champ_P1NC.h>
-#include <BilanQdmVEF.h>
+
 #include <Schema_Temps_base.h>
-#include <Debog.h>
+
 #include <Porosites_champ.h>
 #include <Sous_zone_VF.h>
 #include <Probleme_base.h>
 #include <ArrOfBit.h>
 #include <TRUSTVects.h>
-#include <SFichier.h>
+
 #include <TRUSTTabs.h>
 #include <stat_counters.h>
+#include <Neumann.h>
+#include <Symetrie.h>
+#include <Dirichlet_homogene.h>
+#include <Neumann_homogene.h>
+#include <Echange_impose_base.h>
+#include <Periodique.h>
+#include <Neumann_sortie_libre.h>
 
 /*
   static inline double vanleer(double r)

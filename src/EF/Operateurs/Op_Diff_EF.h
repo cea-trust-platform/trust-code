@@ -24,13 +24,11 @@
 #ifndef Op_Diff_EF_included
 #define Op_Diff_EF_included
 
-#include <Op_Diff_EF_base.h>
-#include <Ref_Champ_Inc.h>
-#include <Ref_Champ_Uniforme.h>
 #include <Neumann_sortie_libre.h>
-#include <Ref_Zone_EF.h>
+#include <Op_Diff_EF_base.h>
 #include <Ref_Zone_Cl_EF.h>
 #include <Matrice_Morse.h>
+#include <Ref_Zone_EF.h>
 #include <Op_EF_base.h>
 #include <Champ_Don.h>
 #include <Zone_Cl_EF.h>

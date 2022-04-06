@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Ecrire_Fichier.h>
 #include <SFichier.h>
 #include <Synonyme_info.h>
+#include <fstream>
 
 Implemente_instanciable(Ecrire_Fichier,"Ecrire_Fichier",Interprete);
 Add_synonym(Ecrire_Fichier,"Ecrire_Fichier_Bin");

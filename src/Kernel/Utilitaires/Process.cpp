@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,6 @@
 
 #include <Process.h>
 #include <Statistiques.h>
-#include <verif_cast.h>
 #include <Comm_Group.h>
 #include <PE_Groups.h>
 #include <communications.h>
@@ -35,7 +34,7 @@
 #include <TriouError.h>
 #include <Comm_Group_MPI.h>
 #include <unistd.h> // sleep() pour certaines machines
-#include <stat_counters.h>
+//#include <stat_counters.h>
 
 #include <SChaine.h>
 #include <FichierHDFPar.h>

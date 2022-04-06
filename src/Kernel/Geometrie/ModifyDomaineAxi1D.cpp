@@ -20,8 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <ModifyDomaineAxi1D.h>
-#include <Champ.h>
-#include <Param.h>
 #include <DomaineAxi1d.h>
 
 Implemente_instanciable(ModifyDomaineAxi1D,"ModifyDomaineAxi1D|Convert_1D_to_1Daxi",Interprete);

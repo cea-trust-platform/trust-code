@@ -22,7 +22,7 @@
 
 #include <Op_Diff_VEFP1NCP1B_Face.h>
 #include <Champ_P1NC.h>
-#include <Champ_Don.h>
+
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Periodique.h>
@@ -40,7 +40,7 @@
 #include <Champ_Don_lu.h>
 #include <Champ_Don_Fonc_xyz.h>
 #include <Champ_Uniforme_Morceaux.h>
-#include <Schema_Temps_base.h>
+
 #include <Porosites_champ.h>
 #include <Check_espace_virtuel.h>
 #include <Conduction.h>

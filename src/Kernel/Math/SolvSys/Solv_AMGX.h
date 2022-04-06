@@ -24,7 +24,7 @@
 #define Solv_AMGX_included
 
 #include <Solv_Petsc.h>
-#include <cstring>
+
 #ifdef PETSC_HAVE_CUDA
 #include <AmgXSolver.hpp>
 #include <amgx_c.h>

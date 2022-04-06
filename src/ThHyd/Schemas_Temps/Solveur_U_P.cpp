@@ -26,10 +26,8 @@
 #include <Debog.h>
 #include <Matrice_Bloc.h>
 #include <Assembleur_base.h>
-#include <Statistiques.h>
 #include <Schema_Temps_base.h>
 #include <TRUSTTrav.h>
-#include <Schema_Euler_Implicite.h>
 #include <Probleme_base.h>
 #include <Front_VF.h>
 #include <MD_Vector_std.h>
@@ -38,10 +36,9 @@
 #include <TRUSTTab_parts.h>
 #include <Dirichlet.h>
 #include <Matrice_Diagonale.h>
-#include <Dirichlet_homogene.h>
 #include <Neumann_sortie_libre.h>
-#include <Symetrie.h>
-#include <Zone_VF.h>
+
+
 
 Implemente_instanciable(Solveur_U_P,"Solveur_U_P",Simple);
 

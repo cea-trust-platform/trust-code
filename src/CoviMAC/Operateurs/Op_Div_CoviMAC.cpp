@@ -27,13 +27,13 @@
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
-#include <Check_espace_virtuel.h>
+
 #include <EcrFicPartage.h>
 #include <SFichier.h>
 #include <Matrice_Morse.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
-#include <Debog.h>
+
 
 Implemente_instanciable(Op_Div_CoviMAC,"Op_Div_CoviMAC",Operateur_Div_base);
 

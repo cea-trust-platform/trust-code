@@ -35,6 +35,7 @@
 #include <Synonyme_info.h>
 #include <RegroupeBord.h>
 #include <Char_ptr.h>
+#include <fstream>
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>

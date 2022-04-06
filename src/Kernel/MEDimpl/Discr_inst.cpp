@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,6 @@
 #include <Champ_Fonc.h>
 #include <Motcle.h>
 #include <Zone_dis_base.h>
-#include <Zone.h>
 #include <Domaine.h>
 
 Implemente_instanciable(Discr_inst,"VF_inst",Discretisation_base);

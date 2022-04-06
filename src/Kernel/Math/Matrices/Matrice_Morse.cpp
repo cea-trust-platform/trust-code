@@ -24,13 +24,13 @@
 #include <Sparskit.h>
 #include <Matrice_Morse_Sym.h>
 #include <Check_espace_virtuel.h>
-#include <comm_incl.h>
+
 #include <Noms.h>
 #include <ArrOfBit.h>
 #include <Array_tools.h>
 #include <TRUSTTrav.h>
 #include <TRUSTTrav.h>
-#include <Matrix_tools.h>
+
 
 Implemente_instanciable_sans_constructeur(Matrice_Morse,"Matrice_Morse",Matrice_Base);
 

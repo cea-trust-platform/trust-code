@@ -23,7 +23,6 @@
 #include <Traitement_particulier_NS_Profils_VDF.h>
 #include <Zone_VDF.h>
 #include <Schema_Temps_base.h>
-#include <Schema_Temps.h>
 #include <communications.h>
 #include <SFichier.h>
 #include <Navier_Stokes_std.h>

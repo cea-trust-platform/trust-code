@@ -21,13 +21,13 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Pb_Multiphase.h>
-#include <Champ_Uniforme.h>
+
 #include <Milieu_composite.h>
 #include <Interprete_bloc.h>
 #include <EChaine.h>
 
 // a cause du mettre_a_jour
-#include <Debog.h>
+
 #include <Domaine.h>
 #include <Loi_Fermeture_base.h>
 

@@ -21,31 +21,31 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Solv_Petsc.h>
-#include <tuple>
 #ifdef PETSCKSP_H
 #include <petscis.h>
 #include <petscdmshell.h>
 #include <petscsection.h>
-#endif
-#include <Matrice_Petsc.h>
+#include <tuple>
 #include <Matrice_Morse_Sym.h>
 #include <stat_counters.h>
 #include <Matrice_Bloc_Sym.h>
 #include <Matrice_Bloc.h>
-#include <Motcle.h>
-#include <SChaine.h>
 #include <communications.h>
-#include <SFichier.h>
 #include <MD_Vector_tools.h>
 #include <PE_Groups.h>
 #include <Comm_Group_MPI.h>
-#include <TRUSTTrav.h>
-#include <sys/stat.h>
-#include <MD_Vector_composite.h>
-#include <vector>
 #include <map>
 #include <ctime>
 #include <EFichier.h>
+#include <sys/stat.h>
+#endif
+#include <Matrice_Petsc.h>
+#include <Motcle.h>
+#include <SChaine.h>
+#include <SFichier.h>
+#include <TRUSTTrav.h>
+#include <MD_Vector_composite.h>
+#include <vector>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",SolveurSys_base);
 

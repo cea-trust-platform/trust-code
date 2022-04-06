@@ -22,7 +22,6 @@
 
 #include <Source_Neutronique_VDF.h>
 #include <Probleme_base.h>
-#include <Milieu_base.h>
 #include <Champ_Inc.h>
 
 Implemente_instanciable_sans_constructeur(Source_Neutronique_VDF,"Source_Neutronique_VDF_P0_VDF",Source_Neutronique);

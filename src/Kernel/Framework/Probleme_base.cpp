@@ -25,14 +25,12 @@
 #include <Periodique.h>
 #include <Schema_Euler_Implicite.h>
 #include <Milieu_base.h>
-#include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
 #include <LecFicDiffuseBin.h>
 #include <EcritureLectureSpecial.h>
 #include <Postraitement.h>
 #include <Discretisation_base.h>
 #include <ICoCoExceptions.h>
-#include <math.h>
 #include <stat_counters.h>
 #include <Debog.h>
 #include <List_Ref_Postraitement.h>

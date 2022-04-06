@@ -28,7 +28,7 @@
 #include <Champ_Proto.h>
 #include <Ref_Frontiere_dis_base.h>
 #include <Roue.h>
-#include <Noms.h>
+
 
 class Champ_Inc_base;
 

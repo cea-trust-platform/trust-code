@@ -25,6 +25,7 @@
 #include <Separateur.h>
 #include <iostream>
 #include <iomanip>
+#include <cstring>
 
 const Separateur finl(Separateur::ENDL);
 const Separateur space(Separateur::SPACE);

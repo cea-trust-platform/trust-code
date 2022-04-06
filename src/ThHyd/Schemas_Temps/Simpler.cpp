@@ -29,7 +29,7 @@
 #include <Statistiques.h>
 #include <Schema_Temps_base.h>
 #include <TRUSTTrav.h>
-#include <Schema_Euler_Implicite.h>
+
 #include <Probleme_base.h>
 
 Implemente_instanciable(Simpler,"Simpler",Simple);

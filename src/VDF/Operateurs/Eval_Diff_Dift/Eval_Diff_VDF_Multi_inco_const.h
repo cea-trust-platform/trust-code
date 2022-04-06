@@ -27,7 +27,7 @@
 #include <Ref_Champ_Uniforme.h>
 #include <Champ_Uniforme.h>
 #include <Eval_Diff_VDF.h>
-#include <Champ_Face.h>
+
 class Champ_base;
 
 // .DESCRIPTION class Eval_Diff_VDF_Multi_inco_const

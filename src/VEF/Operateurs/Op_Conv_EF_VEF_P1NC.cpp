@@ -22,8 +22,10 @@
 
 #include <Op_Conv_EF_VEF_P1NC.h>
 #include <Champ_P1NC.h>
-#include <Debog.h>
+
 #include <Porosites_champ.h>
+#include <Periodique.h>
+#include <Symetrie.h>
 
 Implemente_instanciable(Op_Conv_EF_VEF_P1NC,"Op_Conv_EF_VEF_P1NC",Op_Conv_VEF_base);
 

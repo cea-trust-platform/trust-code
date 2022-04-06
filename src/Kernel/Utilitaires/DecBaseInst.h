@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,21 +19,8 @@
 // Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
-#if 0
-#include <DecBase.h>
-#include <DecBaseSc.h>
-#include <DecBaseScSd.h>
-#include <DecBaseSd.h>
-#include <DecInst.h>
-#include <DecInstSc.h>
-#include <DecInstScSd.h>
-#include <DecInstSd.h>
-#else
+
 #include <Cast.h>
 #include <Type_info.h>
-
 #include <Declare_Base.h>
 #include <Declare_Inst.h>
-
-#endif
-

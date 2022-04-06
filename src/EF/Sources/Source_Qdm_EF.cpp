@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,8 +28,6 @@
 #include <Zone_Cl_EF.h>
 
 #include <Equation_base.h>
-#include <Champ_Inc.h>
-#include <Debog.h>
 
 Implemente_instanciable(Source_Qdm_EF,"Source_Qdm_EF",Source_base);
 

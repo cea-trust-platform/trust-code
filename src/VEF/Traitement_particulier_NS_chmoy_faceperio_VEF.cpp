@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,9 +25,7 @@
 #include <Periodique.h>
 #include <Champ_P1NC.h>
 #include <Champ_Uniforme.h>
-#include <TRUSTTrav.h>
 #include <Convection_Diffusion_Temperature.h>
-#include <Convection_Diffusion_Chaleur_QC.h>
 #include <Probleme_base.h>
 #include <EcrFicPartage.h>
 #include <Navier_Stokes_std.h>

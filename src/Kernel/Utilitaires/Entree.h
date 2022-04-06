@@ -23,8 +23,8 @@
 #ifndef Entree_included
 #define Entree_included
 
-#include <arch.h>
-#include <stdlib.h>
+
+
 #include <stdio.h>
 #include <cstdio> // Pour EOF sur GNU >= 4.4
 #include <iostream>

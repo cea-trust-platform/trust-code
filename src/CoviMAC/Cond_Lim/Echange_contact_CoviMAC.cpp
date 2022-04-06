@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,12 +29,11 @@
 
 #include <Zone_CoviMAC.h>
 #include <Equation_base.h>
-#include <Champ_P0_CoviMAC.h>
+#include <Entree.h>
 #include <Operateur.h>
 #include <Op_Diff_CoviMAC_Elem.h>
 #include <Front_VF.h>
 
-#include <cmath>
 
 Implemente_instanciable(Echange_contact_CoviMAC,"Paroi_Echange_contact_CoviMAC",Echange_externe_impose);
 using namespace MEDCoupling;

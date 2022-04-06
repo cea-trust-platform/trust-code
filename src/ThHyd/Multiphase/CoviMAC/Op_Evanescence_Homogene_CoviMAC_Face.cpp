@@ -23,7 +23,7 @@
 #include <Op_Evanescence_Homogene_CoviMAC_Face.h>
 #include <Zone_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
-#include <Op_Grad_CoviMAC_Face.h>
+
 #include <Zone_Cl_CoviMAC.h>
 #include <Matrix_tools.h>
 #include <Pb_Multiphase.h>

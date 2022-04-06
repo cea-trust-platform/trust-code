@@ -29,8 +29,6 @@
 #include <Periodique.h>
 #include <BilanQdmVEF.h>
 #include <Equation_base.h>
-#include <Champ_Inc.h>
-#include <Debog.h>
 #include <Schema_Temps_base.h>
 #include <Zone_VEF_PreP1b.h>
 

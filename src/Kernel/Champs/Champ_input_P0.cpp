@@ -26,7 +26,7 @@
 #include <Interprete.h>
 #include <Domaine.h>
 #include <ICoCoExceptions.h>
-#include <communications.h>
+
 #include <Convert_ICoCoTrioField.h>
 #include <Zone_VF.h>
 

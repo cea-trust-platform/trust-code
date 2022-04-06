@@ -27,13 +27,10 @@
 #include <Iterateur_VDF_base.h>
 #include <Schema_Temps_base.h>
 #include <Op_Conv_VDF_base.h>
-#include <Champ_Uniforme.h>
 #include <Operateur_base.h>
-#include <communications.h>
 #include <EcrFicPartage.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <TRUSTSingle.h>
 #include <Milieu_base.h>
 #include <TRUSTTrav.h>
 

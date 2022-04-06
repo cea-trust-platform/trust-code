@@ -23,6 +23,7 @@
 #ifndef Esp_Dist_included
 #define Esp_Dist_included
 
+
 #include <Vect_Descripteur.h>
 #include <TRUSTArray.h>
 #include <assert.h>

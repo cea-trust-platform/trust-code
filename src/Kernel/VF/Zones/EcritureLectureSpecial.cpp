@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <EcritureLectureSpecial.h>
-#include <Champ_Inc_base.h>
+
 #include <Champ_Fonc_base.h>
 #include <Zone_VF.h>
 #include <Domaine.h>

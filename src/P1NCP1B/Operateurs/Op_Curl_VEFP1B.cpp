@@ -23,9 +23,9 @@
 #include <Op_Curl_VEFP1B.h>
 #include <Nom.h>
 #include <TRUSTTab.h>
-#include <Champ_P1NC.h>
+
 #include <Zone_Cl_VEF.h>
-#include <Front_VF.h>
+
 #include <Zone_dis.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_VEF_PreP1b.h>

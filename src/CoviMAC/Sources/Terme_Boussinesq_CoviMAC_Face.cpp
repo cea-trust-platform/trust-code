@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,16 +21,12 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Terme_Boussinesq_CoviMAC_Face.h>
-#include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
-#include <Neumann_sortie_libre.h>
 #include <Dirichlet.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
-#include <Convection_Diffusion_Concentration.h>
 #include <Convection_Diffusion_Temperature.h>
-#include <Navier_Stokes_std.h>
 #include <Pb_Multiphase.h>
 #include <Synonyme_info.h>
 

@@ -24,7 +24,8 @@
 #include <Op_Conv_DI_L2_VEF_Face.h>
 #include <Champ_P1NC.h>
 #include <Schema_Temps_base.h>
-
+#include <Periodique.h>
+#include <Neumann_sortie_libre.h>
 
 Implemente_instanciable(Op_Conv_DI_L2_VEF_Face,"Op_Conv_DI_L2_VEF_P1NC",Op_Conv_VEF_base);
 

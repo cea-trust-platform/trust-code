@@ -23,9 +23,7 @@
 #include <Op_VEF_Face.h>
 #include <Matrice_Morse.h>
 #include <Equation_base.h>
-#include <Champ_Inc.h>
 #include <Sortie.h>
-#include <Operateur.h>
 #include <Probleme_base.h>
 #include <Champ_Don.h>
 #include <Champ_Uniforme.h>
@@ -36,10 +34,12 @@
 #include <Op_Conv_VEF_base.h>
 #include <EcrFicPartage.h>
 #include <SFichier.h>
-#include <Debog.h>
 #include <communications.h>
 #include <Matrice_Morse_Diag.h>
 #include <TRUSTTrav.h>
+#include <Dirichlet_homogene.h>
+#include <Periodique.h>
+#include <Symetrie.h>
 
 // Description
 // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de

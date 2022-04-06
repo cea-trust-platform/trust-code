@@ -24,7 +24,6 @@
 #include <Statistiques.h>
 #include <OBuffer.h>
 #include <PE_Groups.h>
-#include <Comm_Group.h>
 #include <communications.h>
 #include <Comm_Group_MPI.h>
 #include <string>

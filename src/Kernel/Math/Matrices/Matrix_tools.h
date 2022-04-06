@@ -24,7 +24,6 @@
 #define Matrix_tools_included
 
 #include <TRUSTTabs_forward.h>
-#include <arch.h>
 
 class Matrice;
 class Matrice_Base;

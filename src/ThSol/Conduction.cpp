@@ -26,7 +26,7 @@
 #include <Frontiere_dis_base.h>
 #include <Probleme_base.h>
 #include <Param.h>
-#include <Champ_Uniforme.h>
+
 
 Implemente_instanciable_sans_constructeur(Conduction,"Conduction",Equation_base);
 // XD Conduction eqn_base Conduction -1 Heat equation.

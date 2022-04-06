@@ -28,7 +28,7 @@
 #include <Zone_Cl_VEF.h>
 #include <Equation_base.h>
 #include <Modele_turbulence_scal_base.h>
-#include <Scalaire_impose_paroi.h>
+
 #include <Neumann_paroi.h>
 #include <Neumann_homogene.h>
 #include <Discretisation_base.h>

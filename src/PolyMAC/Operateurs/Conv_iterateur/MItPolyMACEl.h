@@ -25,18 +25,8 @@
 #ifndef MItPolyMAC_El_H
 #define MItPolyMAC_El_H
 
-#include <Equation_base.h>
-#include <Milieu_base.h>
-#include <Champ_Uniforme.h>
-#include <Debog.h>
-#include <Probleme_base.h>
 #include <Schema_Temps_base.h>
-#include <Operateur_base.h>
-#include <Operateur_Diff_base.h>
-#include <Op_Conv_PolyMAC_iterateur_base.h>
 #include <EcrFicPartage.h>
-#include <communications.h>
-#include <TRUSTTrav.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //

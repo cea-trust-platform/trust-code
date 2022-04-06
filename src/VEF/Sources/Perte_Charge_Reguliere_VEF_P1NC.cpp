@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,6 @@
 #include <Probleme_base.h>
 #include <Domaine.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Inc.h>
 #include <Matrice_Morse.h>
 
 Implemente_instanciable(Perte_Charge_Reguliere_VEF_P1NC,"Perte_Charge_Reguliere_VEF_P1NC",Perte_Charge_VEF_Face);

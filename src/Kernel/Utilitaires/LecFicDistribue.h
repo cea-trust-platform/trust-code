@@ -24,7 +24,7 @@
 #ifndef LecFicDistribue_included
 #define LecFicDistribue_included
 
-#include <Separateur.h>
+
 #include <EFichier.h>
 
 class Objet_U;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,10 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <RTabInt.h>
-#include <math.h>
-#ifdef SGI_
-#include <bstring.h>
-#endif
+
 
 Implemente_instanciable_sans_constructeur(RTabInt,"RTabInt",Objet_U);
 

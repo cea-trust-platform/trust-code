@@ -23,7 +23,6 @@
 #include <Champ_front_calc_interne.h>
 #include <Interprete.h>
 #include <Equation_base.h>
-#include <Frontiere_dis_base.h>
 #include <Probleme_base.h>
 #include <Domaine.h>
 #include <Zone_VF.h>

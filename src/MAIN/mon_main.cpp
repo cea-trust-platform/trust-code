@@ -33,7 +33,7 @@
 #include <petsc_for_kernel.h>
 #include <stat_counters.h>
 #include <info_atelier.h>
-#include <unistd.h> // chdir pour PGI et AIX
+#include <unistd.h> // Pour chdir for other compiler
 #include <catch_and_trace.h>
 
 // Initialisation des compteurs, dans stat_counters.cpp

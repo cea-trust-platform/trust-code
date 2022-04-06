@@ -29,7 +29,6 @@
 #include <Domaine_dis.h>
 #include <Discretisation.h>
 #include <Postraitements.h>
-#include <Ref_Probleme_Couple.h>
 #include <Champs_compris_interface.h>
 #include <List_Ref_Field_base.h>
 #include <Deriv_Sortie_Fichier_base.h>

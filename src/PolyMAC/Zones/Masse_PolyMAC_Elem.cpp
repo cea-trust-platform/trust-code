@@ -23,7 +23,7 @@
 #include <Masse_PolyMAC_Elem.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Zone_PolyMAC.h>
-#include <Debog.h>
+
 #include <Champ_P0_PolyMAC.h>
 #include <Equation_base.h>
 #include <Conds_lim.h>
@@ -32,7 +32,6 @@
 #include <Matrix_tools.h>
 #include <Operateur.h>
 #include <Op_Diff_negligeable.h>
-#include <Echange_impose_base.h>
 #include <TRUSTTab_parts.h>
 #include <Schema_Euler_Implicite.h>
 

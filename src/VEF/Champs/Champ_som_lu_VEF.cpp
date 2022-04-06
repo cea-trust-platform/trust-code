@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_som_lu_VEF.h>
-#include <Interprete.h>
+
 #include <EFichier.h>
 #include <TRUSTTab.h>
 #include <Domaine.h>

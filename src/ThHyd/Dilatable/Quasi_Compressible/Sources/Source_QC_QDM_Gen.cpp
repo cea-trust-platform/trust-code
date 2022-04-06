@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,12 +24,9 @@
 #include <Equation_base.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
-#include <Milieu_base.h>
-#include <Champ_Uniforme.h>
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <TRUSTTrav.h>
-#include <Matrice_Morse.h>
 
 Implemente_instanciable(Source_QC_QDM_Gen,"Source_QC_QDM_Gen_QC",Source_base);
 

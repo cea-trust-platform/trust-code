@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 #include <Masse_VDF_Elem.h>
 #include <Zone_Cl_VDF.h>
 #include <Zone_VDF.h>
-#include <Debog.h>
+
 
 Implemente_instanciable(Masse_VDF_Elem,"Masse_VDF_P0_VDF",Masse_VDF_base);
 

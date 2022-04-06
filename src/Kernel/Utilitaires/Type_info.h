@@ -22,9 +22,6 @@
 
 #ifndef Type_info_included
 #define Type_info_included
-#include <cstring>
-#include <arch.h>
-#include <assert.h>
 class Objet_U;
 class Nom;
 class Noms;

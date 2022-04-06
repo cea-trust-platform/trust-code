@@ -26,7 +26,6 @@
 
 #include <Op_Diff_VEF_base.h>
 #include <Ref_Champ_Inc.h>
-#include <Ref_Champ_Uniforme.h>
 #include <Matrice_Morse.h>
 #include <Champ_base.h>
 

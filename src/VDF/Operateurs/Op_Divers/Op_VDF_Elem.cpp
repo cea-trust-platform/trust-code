@@ -27,7 +27,7 @@
 #include <Zone_Cl_VDF.h>
 #include <Array_tools.h>
 #include <Periodique.h>
-#include <Champ_Inc.h>
+
 #include <Zone_VDF.h>
 
 void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zone_cl, Matrice_Morse& la_matrice) const

@@ -25,7 +25,6 @@
 
 #include <solv_iteratif.h>
 #include <SolveurSys.h>
-#include <Matrice.h>
 #include <Precond.h>
 
 

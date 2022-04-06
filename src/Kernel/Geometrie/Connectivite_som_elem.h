@@ -24,7 +24,6 @@
 #define Connectivite_som_elem_H_INCLU
 
 #include <TRUSTTabs_forward.h>
-#include <arch.h>
 
 class Static_Int_Lists;
 

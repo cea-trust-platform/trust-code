@@ -22,17 +22,16 @@
 
 #include <Op_Conv_EF_Stab_CoviMAC_Face.h>
 #include <Pb_Multiphase.h>
-#include <Schema_Temps_base.h>
+
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Symetrie.h>
+
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <Champ_Face_CoviMAC.h>
-#include <Op_Grad_CoviMAC_Face.h>
+
 #include <Param.h>
 #include <cmath>
 #include <Masse_ajoutee_base.h>

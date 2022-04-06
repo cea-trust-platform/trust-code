@@ -24,21 +24,12 @@
 #include <Zone_Cl_CoviMAC.h>
 #include <Zone_CoviMAC.h>
 #include <Neumann_sortie_libre.h>
-#include <Dirichlet.h>
-#include <Champ_Face_CoviMAC.h>
 #include <Op_Grad_CoviMAC_Face.h>
-#include <Masse_CoviMAC_Face.h>
-
-#include <Champ_front_instationnaire_base.h>
-#include <Champ_front_var_instationnaire.h>
 #include <Matrice_Bloc_Sym.h>
 #include <Matrice_Diagonale.h>
-
 #include <Array_tools.h>
 #include <Debog.h>
-#include <Connectivite_som_elem.h>
 #include <Static_Int_Lists.h>
-#include <Champ_Fonc_Q1_CoviMAC.h>
 #include <Operateur_Grad.h>
 #include <Schema_Temps_base.h>
 #include <Piso.h>

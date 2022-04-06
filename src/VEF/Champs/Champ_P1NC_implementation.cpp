@@ -37,6 +37,7 @@
 #include <Debog.h>
 #include <SSOR.h>
 
+
 static int methode_calcul_valeurs_sommets = 2 ;
 
 // -1 moyenne des faces

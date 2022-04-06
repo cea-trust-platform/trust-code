@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 #include <Champ_Inc_base.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Zone_VF.h>
+
 #include <TRUSTTrav.h>
 Implemente_instanciable(Champ_front_debit,"Champ_front_debit",Champ_front_xyz_debit);
 // XD champ_front_debit front_field_base champ_front_debit 0 This field is used to define a flow rate field instead of a velocity field for a Dirichlet boundary condition on Navier-Stokes equations.

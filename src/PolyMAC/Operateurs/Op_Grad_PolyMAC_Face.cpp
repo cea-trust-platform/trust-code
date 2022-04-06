@@ -24,10 +24,9 @@
 #include <Champ_P0_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Neumann_sortie_libre.h>
-#include <Periodique.h>
-#include <Symetrie.h>
+
 #include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
+
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>

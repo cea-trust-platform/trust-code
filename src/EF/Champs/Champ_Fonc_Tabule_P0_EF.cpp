@@ -22,7 +22,6 @@
 
 #include <Champ_Fonc_Tabule_P0_EF.h>
 #include <Zone_VF.h>
-#include <Champ_Inc.h>
 #include <Table.h>
 
 Implemente_instanciable(Champ_Fonc_Tabule_P0_EF,"Champ_Fonc_Tabule_P0_EF",Champ_Fonc_P0_EF);

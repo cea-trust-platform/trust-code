@@ -31,7 +31,7 @@
 #include <Array_tools.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
-#include <Symetrie.h>
+
 #include <Param.h>
 #include <cmath>
 

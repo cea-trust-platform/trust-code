@@ -23,7 +23,7 @@
 #include <Terme_Puissance_Thermique_VDF_Elem.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
-#include <Milieu_base.h>
+
 
 Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_VDF_Elem,"Puissance_Thermique_VDF_P0_VDF",Terme_Puissance_Thermique_VDF_base);
 implemente_It_Sou_VDF_Elem(Eval_Puiss_Th_VDF_Elem)

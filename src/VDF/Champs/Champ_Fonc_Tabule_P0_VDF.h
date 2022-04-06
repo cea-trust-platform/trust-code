@@ -25,7 +25,6 @@
 
 
 #include <Champ_Fonc_P0_VDF.h>
-#include <Ref_Champ_Inc.h>
 #include <Ref_Table.h>
 #include <Vect_Ref_Champ_base.h>
 //////////////////////////////////////////////////////////////////////////////

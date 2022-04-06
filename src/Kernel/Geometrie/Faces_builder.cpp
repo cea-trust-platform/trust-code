@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Connectivite_som_elem.h>
-#include <LecFicDistribueBin.h>
+
 #include <EcrFicCollecteBin.h>
 #include <MD_Vector_tools.h>
 #include <Poly_geom_base.h>

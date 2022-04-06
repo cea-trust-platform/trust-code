@@ -25,7 +25,7 @@
 #include <Zone_VF.h>
 #include <TRUSTTabs.h>
 #include <Champ_Fonc.h>
-#include <Champ_Inc.h>
+
 #include <Discretisation_base.h>
 #include <Interprete.h>
 #include <Equation_base.h>

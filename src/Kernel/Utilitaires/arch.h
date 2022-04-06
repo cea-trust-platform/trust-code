@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,7 @@
 
 #include <generique.h>
 // PL: stdlib.h necessaire pour exit() partout dans le code excepte g++>3.x?
-#include <stdlib.h>
+//#include <stdlib.h>
 
 #if defined(_COMPILE_AVEC_GCC_) || defined(_COMPILE_AVEC_PGCC)
 #define IOS_OPEN_MODE std::_Ios_Openmode

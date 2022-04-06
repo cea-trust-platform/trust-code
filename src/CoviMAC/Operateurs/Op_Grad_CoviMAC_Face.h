@@ -28,7 +28,6 @@
 #include <Ref_Zone_CoviMAC.h>
 #include <Zone_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
-#include <Ref_Champ_Face_CoviMAC.h>
 
 //
 // .DESCRIPTION class Op_Grad_CoviMAC_Face

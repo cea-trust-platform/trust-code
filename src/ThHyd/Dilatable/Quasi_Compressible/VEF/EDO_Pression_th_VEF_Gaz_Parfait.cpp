@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,12 +23,11 @@
 #include <EDO_Pression_th_VEF_Gaz_Parfait.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
+
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
 #include <Loi_Etat_GP_QC.h>
-#include <Debog.h>
-#include <Schema_Temps.h>
+
 #include <Dirichlet.h>
 #include <Neumann_sortie_libre.h>
 #include <Frontiere_ouverte_rho_u_impose.h>

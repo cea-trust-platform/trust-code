@@ -21,6 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Comm_Group_Noparallel.h>
+#include <cstring>
+
 Implemente_instanciable_sans_constructeur_ni_destructeur(Comm_Group_Noparallel,"Comm_Group_Noparallel",Comm_Group);
 
 int Comm_Group_Noparallel::sending_ = 0;

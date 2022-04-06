@@ -24,9 +24,8 @@
 #ifndef Op_Conv_AmontNew_VEF_Face_included
 #define Op_Conv_AmontNew_VEF_Face_included
 
-//#include <Operateur_Conv.h>
+
 #include <Op_Conv_VEF_base.h>
-#include <Equation_base.h>
 #include <Matrice_Morse.h>
 
 

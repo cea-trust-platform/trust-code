@@ -21,6 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Conv_Centre_old_VEF_Face.h>
+#include <Periodique.h>
+#include <Neumann_sortie_libre.h>
 
 Implemente_instanciable(Op_Conv_Centre_old_VEF_Face,"Op_Conv_Centre_old_VEF_P1NC",Op_Conv_VEF_base);
 

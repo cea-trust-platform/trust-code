@@ -28,17 +28,12 @@
 #include <Periodique.h>
 #include <Neumann_sortie_libre.h>
 #include <Symetrie.h>
-#include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
 #include <TRUSTLists.h>
 #include <Navier_Stokes_std.h>
 #include <Op_Div_VEFP1B_Elem.h>
-#include <Champ_front_instationnaire_base.h>
-#include <Champ_front_var.h>
 #include <Op_Grad_VEF_P1B_Face.h>
 #include <Milieu_base.h>
-#include <Debog.h>
-#include <Check_espace_virtuel.h>
 #include <Scatter.h>
 #include <communications.h>
 

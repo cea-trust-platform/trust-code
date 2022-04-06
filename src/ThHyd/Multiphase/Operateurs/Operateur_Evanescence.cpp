@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,9 +23,9 @@
 #include <Operateur_Evanescence.h>
 #include <Operateur_base.h>
 #include <Champ_Don.h>
-#include <Champ_Uniforme.h>
+
 #include <Discretisation_base.h>
-#include <stat_counters.h>
+
 #include <Champ_base.h>
 Implemente_deriv(Operateur_Evanescence_base);
 Implemente_instanciable(Operateur_Evanescence,"Operateur_Evanescence",DERIV(Operateur_Evanescence_base));

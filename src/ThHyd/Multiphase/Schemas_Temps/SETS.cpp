@@ -22,8 +22,6 @@
 
 #include <Discretisation_base.h>
 #include <Operateur_Diff_base.h>
-#include <MD_Vector_composite.h>
-#include <Energie_Multiphase.h>
 #include <Schema_Temps_base.h>
 #include <Masse_Multiphase.h>
 #include <Neumann_val_ext.h>
@@ -31,7 +29,6 @@
 #include <Assembleur_base.h>
 #include <TRUSTTab_parts.h>
 #include <QDM_Multiphase.h>
-#include <Probleme_base.h>
 #include <Pb_Multiphase.h>
 #include <Pb_Conduction.h>
 #include <MD_Vector_std.h>
@@ -45,7 +42,6 @@
 #include <Lapack.h>
 #include <Debog.h>
 #include <SETS.h>
-#include <cfloat>
 
 #ifndef NDEBUG
 template class std::map<std::string, matrices_t>;

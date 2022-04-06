@@ -30,7 +30,7 @@
 #include <Symetrie.h>
 #include <TRUSTTrav.h>
 #include <Equation_base.h>
-#include <Champ_Inc.h>
+
 
 Implemente_instanciable(Force_Centrifuge_VDF_Face_Axi,"Force_Centrifuge_VDF_Face_Axi",Source_base);
 

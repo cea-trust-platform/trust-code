@@ -40,6 +40,7 @@
 #include <EChaine.h>
 #include <Zone_VF.h>
 #include <Avanc.h>
+#include <EcrFicPartage.h>
 #include <Debog.h>
 #include <Param.h>
 

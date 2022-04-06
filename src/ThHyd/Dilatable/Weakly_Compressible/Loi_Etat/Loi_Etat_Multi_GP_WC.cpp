@@ -23,7 +23,7 @@
 #include <Fluide_Weakly_Compressible.h>
 #include <Loi_Etat_Multi_GP_WC.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Inc_base.h>
+
 #include <Probleme_base.h>
 #include <Zone_VF.h>
 #include <Param.h>

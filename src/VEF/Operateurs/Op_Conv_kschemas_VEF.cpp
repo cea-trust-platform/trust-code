@@ -21,6 +21,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Conv_kschemas_VEF.h>
+#include <Periodique.h>
+#include <Neumann_sortie_libre.h>
 
 Implemente_base(Op_Conv_kschemas_VEF,"Op_Conv_kschemas_VEF_P1NC",Op_Conv_VEF_base);
 

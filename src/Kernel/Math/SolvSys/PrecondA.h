@@ -23,7 +23,7 @@
 #ifndef PrecondA_included
 #define PrecondA_included
 
-#include <TRUSTTabs_forward.h>
+
 #include <Precond.h>
 
 class Matrice_Morse_Sym;

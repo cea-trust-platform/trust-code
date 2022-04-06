@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Terme_Source_Coriolis_VDF_Face.h>
-#include <math.h>
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>
 #include <Neumann_sortie_libre.h>

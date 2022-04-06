@@ -25,12 +25,11 @@
 #include <Front_VF.h>
 #include <Zone_dis.h>
 #include <Zone_Cl_dis.h>
-#include <Equation_base.h>
-#include <Navier_Stokes_std.h>
+
 #include <Matrice_Morse.h>
 #include <Op_Div_VEFP1B_Elem.h>
 #include <Domaine.h>
-#include <Debog.h>
+
 #include <TRUSTList.h>
 
 Implemente_instanciable(Op_Rot_VEFP1B,"Op_Rot_VEFPreP1B_P1NC",Operateur_base);

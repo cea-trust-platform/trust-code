@@ -27,7 +27,6 @@
 #include <Fluide_base.h>
 #include <Operateur_Diff_base.h>
 #include <Schema_Temps_base.h>
-#include <Schema_Temps.h>
 #include <Param.h>
 #include <EChaine.h>
 #include <TRUSTTab_parts.h>

@@ -20,7 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Fluide_Weakly_Compressible.h>
 #include <Fluide_Dilatable_base.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <Discretisation_base.h>

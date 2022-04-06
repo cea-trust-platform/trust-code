@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,6 +23,7 @@
 #include <Perte_Charge_Directionnelle_CoviMAC_Face.h>
 #include <Motcle.h>
 #include <Equation_base.h>
+#include <Entree.h>
 
 Implemente_instanciable(Perte_Charge_Directionnelle_CoviMAC_Face,"Perte_Charge_Directionnelle_Face_CoviMAC",Perte_Charge_CoviMAC);
 

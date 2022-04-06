@@ -38,7 +38,6 @@
 #include <unistd.h> // PGI
 #include <Poly_geom_base.h>
 #include <Entree_Brute.h>
-#include <hdf5.h>
 #include <Comm_Group_MPI.h>
 #include <FichierHDFPar.h>
 #include <LecFicDiffuse.h>

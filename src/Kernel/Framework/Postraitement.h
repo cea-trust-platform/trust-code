@@ -27,7 +27,6 @@
 #include <Champs_Fonc.h>
 #include <Sondes.h>
 #include <Sondes_Int.h>
-#include <EcrFicPartageBin.h>
 #include <List_Ref_IntVect.h>
 #include <Interprete.h>
 #include <Postraitement_base.h>

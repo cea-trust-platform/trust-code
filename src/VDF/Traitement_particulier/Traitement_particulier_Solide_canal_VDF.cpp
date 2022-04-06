@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Traitement_particulier_Solide_canal_VDF.h>
-#include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
 #include <communications.h>
 #include <Champ_Uniforme.h>

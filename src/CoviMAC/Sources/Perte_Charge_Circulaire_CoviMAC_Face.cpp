@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,11 +23,10 @@
 #include <Perte_Charge_Circulaire_CoviMAC_Face.h>
 #include <Motcle.h>
 #include <Equation_base.h>
-
+#include <Entree.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
 #include <Domaine.h>
-#include <Champ_Uniforme.h>
 #include <Sous_zone_VF.h>
 #include <Zone_CoviMAC.h>
 #include <Matrice_Morse.h>

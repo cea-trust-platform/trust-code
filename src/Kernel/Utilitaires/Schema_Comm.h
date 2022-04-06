@@ -22,7 +22,6 @@
 #ifndef Schema_Comm_included
 #define Schema_Comm_included
 #include <TRUSTArray.h>
-#include <Vect.h>
 #include <Ref_Comm_Group.h>
 
 // Ces objets stockent un graphe de conversation entre

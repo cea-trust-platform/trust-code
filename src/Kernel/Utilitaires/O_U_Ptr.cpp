@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,8 +22,7 @@
 
 #include <O_U_Ptr.h>
 #include <Nom.h>
-#include <stdio.h>
-#include <verif_cast.h>
+#include <Memoire.h>
 
 Implemente_base_sans_constructeur_ni_destructeur(O_U_Ptr,"O_U_Ptr",Objet_U);
 

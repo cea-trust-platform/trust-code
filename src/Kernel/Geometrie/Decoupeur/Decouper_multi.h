@@ -27,6 +27,7 @@
 #include <Interprete.h>
 #include <vector>
 #include <array>
+#include <map>
 
 // .DESCRIPTION
 //  Interprete Decouper_multi. Decoupage simultane de plusieurs domaine

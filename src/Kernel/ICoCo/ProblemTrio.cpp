@@ -25,7 +25,7 @@
 #include <Probleme_base.h>
 #include <ICoCoExceptions.h>
 #include <Noms.h>
-#include <stdlib.h>
+
 #include <Comm_Group_MPI.h>
 #include <MAIN.h>
 #include <mon_main.h>
@@ -33,10 +33,10 @@
 #include <Schema_Temps_base.h>
 #include <Catch_SIGINIT.h>
 #include <Init_Params.h>
-
+#include <signal.h>
 #include <Motcle.h>
 
-#include <ICoCoTrioField.h>
+//#include <ICoCoTrioField.h>
 #include <medcoupling++.h>
 #ifndef NO_MEDFIELD
 #include <ICoCoMEDDoubleField.h>

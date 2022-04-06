@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,14 +23,10 @@
 #include <Terme_Boussinesq_PolyMAC_Face.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
-#include <Neumann_sortie_libre.h>
-#include <Dirichlet.h>
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
-#include <Convection_Diffusion_Concentration.h>
 #include <Convection_Diffusion_Temperature.h>
-#include <Navier_Stokes_std.h>
 #include <Synonyme_info.h>
 
 Implemente_instanciable(Terme_Boussinesq_PolyMAC_Face,"Boussinesq_PolyMAC_Face",Terme_Boussinesq_base);

@@ -22,7 +22,6 @@
 
 #include <Perte_Charge_Singuliere.h>
 #include <Motcle.h>
-#include <stdlib.h>
 #include <Domaine.h>
 #include <Zone_VF.h>
 #include <Sous_Zone.h>
@@ -31,8 +30,6 @@
 #include <Param.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Probleme_base.h>
-#include <Schema_Temps_base.h>
 #include <Discretisation_base.h>
 #include <EChaine.h>
 #include <Pb_Multiphase.h>

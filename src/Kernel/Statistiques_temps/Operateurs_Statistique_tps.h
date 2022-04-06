@@ -25,7 +25,6 @@
 
 #include <Operateur_Statistique_tps.h>
 #include <Ref_Postraitement.h>
-#include <Ref_Operateur_Statistique_tps_base.h>
 
 Declare_liste(Operateur_Statistique_tps);
 class Motcle;

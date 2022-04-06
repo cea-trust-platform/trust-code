@@ -22,6 +22,11 @@
 
 #ifndef T_It_VDF_Elem_TPP_included
 #define T_It_VDF_Elem_TPP_included
+#include <communications.h>
+#include <TRUSTSingle.h>
+#include <Champ_Uniforme.h>
+#include <Operateur_Conv_base.h>
+#include <Operateur_Diff_base.h>
 
 template <class _TYPE_>
 int T_It_VDF_Elem<_TYPE_>::impr(Sortie& os) const

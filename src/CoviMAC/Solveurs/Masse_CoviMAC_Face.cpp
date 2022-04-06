@@ -26,19 +26,13 @@
 #include <Zone_CoviMAC.h>
 #include <Option_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
-#include <Array_tools.h>
+
 #include <Matrix_tools.h>
 #include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Symetrie.h>
-#include <Debog.h>
-#include <Schema_Temps_base.h>
+
 #include <Piso.h>
 #include <Vecteur3.h>
-#include <Matrice33.h>
-#include <Linear_algebra_tools_impl.h>
-#include <Op_Grad_CoviMAC_Face.h>
-#include <Champ_Uniforme.h>
+
 #include <Pb_Multiphase.h>
 #include <Masse_ajoutee_base.h>
 #include <TRUSTTab.h>

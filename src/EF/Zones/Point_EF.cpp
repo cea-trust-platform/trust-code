@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,6 @@
 #include <Zone_EF.h>
 #include <Champ_P1_EF.h>
 // Tri pour voire si champ_P1...
-#include <Tri_EF.h>
 Implemente_instanciable(Point_EF,"Point_EF",Elem_EF_base);
 
 // printOn et readOn

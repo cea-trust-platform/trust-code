@@ -23,7 +23,7 @@
 #ifndef O_U_Ptr_included
 #define O_U_Ptr_included
 #include <Objet_U.h>
-#include <Memoire.h>
+
 
 class Nom;
 

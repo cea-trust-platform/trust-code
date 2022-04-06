@@ -23,7 +23,7 @@
 #ifndef RTabInt_included
 #define RTabInt_included
 
-#include <assert.h>
+
 #include <TRUSTArray.h>
 
 

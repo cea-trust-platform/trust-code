@@ -28,7 +28,7 @@
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Champ_Uniforme.h>
-#include <Debog.h>
+
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
 #include <Operateur_base.h>

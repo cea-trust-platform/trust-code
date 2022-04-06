@@ -24,7 +24,6 @@
 #include <Probleme_base.h>
 #include <TRUSTTrav.h>
 #include <Equation.h>
-#include <Debog.h>
 
 Implemente_base(Schema_Adams_Bashforth_base,"Schema_Adams_Bashforth_base",Schema_Explicite_Multi_TimeStep_base);
 

@@ -28,8 +28,7 @@
 #define Convert_ICoCoTrioField_included
 
 #include <ICoCoTrioField.h>
-#include <TRUSTTab.h>
-#include <arch.h>
+#include <TRUSTTabs_forward.h>
 
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_

@@ -28,6 +28,7 @@
 #include <Parametre_implicite.h>
 #include <TRUSTTabs_forward.h>
 #include <Matrice_Morse.h>
+
 #include <Nom.h>
 
 class Solveur_Implicite_Base;

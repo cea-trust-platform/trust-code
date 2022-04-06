@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Evaluateur_Source_VDF_Face.h>
-#include <Zone_VDF.h>
+
 
 Evaluateur_Source_VDF_Face::Evaluateur_Source_VDF_Face(const Evaluateur_Source_VDF_Face& eval)
   : Evaluateur_Source_VDF(eval)

@@ -21,15 +21,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_CoviMAC_base.h>
-#include <Motcle.h>
-#include <Champ_Don.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Don_Fonc_xyz.h>
-#include <Vecteur3.h>
-#include <Matrice33.h>
-#include <Linear_algebra_tools_impl.h>
 #include <TRUSTTrav.h>
-#include <Check_espace_virtuel.h>
+
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Probleme_base.h>
@@ -38,13 +33,9 @@
 #include <SFichier.h>
 #include <communications.h>
 #include <EcrFicPartage.h>
-#include <Modele_turbulence_scal_base.h>
-#include <cfloat>
 #include <Champ_P0_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
-#include <Op_Diff_CoviMAC_Face.h>
 #include <Pb_Multiphase.h>
-#include <Echange_contact_CoviMAC.h>
 #include <Flux_parietal_base.h>
 
 Implemente_base(Op_Diff_CoviMAC_base,"Op_Diff_CoviMAC_base",Operateur_Diff_base);

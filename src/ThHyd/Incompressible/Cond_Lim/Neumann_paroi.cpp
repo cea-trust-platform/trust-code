@@ -24,7 +24,7 @@
 #include <Motcle.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Champ_Uniforme.h>
+
 #include <Probleme_base.h>
 
 Implemente_instanciable(Neumann_paroi,"Neumann_paroi",Neumann);

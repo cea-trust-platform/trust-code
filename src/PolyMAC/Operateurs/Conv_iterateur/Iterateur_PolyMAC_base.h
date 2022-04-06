@@ -30,7 +30,7 @@
 // .SECTION voir aussi
 //
 
-#include <Champ_Face_PolyMAC.h>
+
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Zone_Cl_dis.h>

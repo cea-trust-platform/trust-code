@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,8 +27,8 @@
 #include <Probleme_base.h>
 #include <Discretisation_base.h>
 #include <Equation_base.h>
-#include <Champ_Inc.h>
-#include <Debog.h>
+
+//#include <Debog.h>
 
 //#include <Champ_couplage_primaire_secondaire.h>
 

@@ -21,9 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Sortie_libre_pression_imposee_QC.h>
+
 #include <Convection_Diffusion_Temperature.h>
+
 #include <Loi_Etat_Multi_GP_QC.h>
-#include <Check_espace_virtuel.h>
+
 #include <EDO_Pression_th_VDF.h>
 #include <communications.h>
 #include <Zone_Cl_VDF.h>

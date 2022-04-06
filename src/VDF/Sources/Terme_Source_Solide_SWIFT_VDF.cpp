@@ -24,7 +24,6 @@
 #include <math.h>
 #include <Champ_Uniforme.h>
 #include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
 #include <Conduction.h>
 #include <Interprete.h>
 #include <Probleme_base.h>

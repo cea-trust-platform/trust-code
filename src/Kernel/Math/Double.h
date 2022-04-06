@@ -23,7 +23,7 @@
 #ifndef DOUBLE_H
 #define DOUBLE_H
 
-#include <math.h>
+
 #include <blas1.h>
 #include <Objet_U.h>
 #include <cmath>

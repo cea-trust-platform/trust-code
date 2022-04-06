@@ -28,9 +28,7 @@
 #include <Navier_Stokes_std.h>
 #include <Ref_Champ_Inc_base.h>
 #include <Champ_Fonc_P1NC.h>
-#include <Champ_P0_VEF.h>
 #include <Champ_Fonc_P1_isoP1Bulle.h>
-#include <Champ_Fonc_P0_VEF.h>
 #include <Champ_P1_isoP1Bulle.h>
 
 //////////////////////////////////////////////////////////////////////////////

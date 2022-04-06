@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,16 +22,9 @@
 
 #include <Terme_Source_Qdm_Face_PolyMAC.h>
 #include <Champ_Uniforme.h>
-#include <Champ_Don_Fonc_xyz.h>
-#include <Champ_Don_Fonc_txyz.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
-
-#include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
-#include <Symetrie.h>
-#include <Periodique.h>
 #include <Neumann.h>
 #include <Neumann_homogene.h>
 #include <Neumann_sortie_libre.h>

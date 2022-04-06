@@ -28,7 +28,6 @@
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
 #include <Domaine.h>
-#include <Schema_Temps.h>
 #include <Debog.h>
 #include <Check_espace_virtuel.h>
 #include <TRUSTTrav.h>

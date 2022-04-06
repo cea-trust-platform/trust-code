@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,14 +22,14 @@
 
 #include <Champ_implementation_P0.h>
 #include <Domaine.h>
-#include <Check_espace_virtuel.h>
+
 #include <Zone_VF.h>
 #include <Champ_base.h>
 #include <Champ_Uniforme_Morceaux.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Fonc_Morceaux.h>
 #include <Champ_Don_Fonc_txyz.h>
-#include <Champ_Fonc_t.h>
+
 
 DoubleVect& Champ_implementation_P0::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
 {

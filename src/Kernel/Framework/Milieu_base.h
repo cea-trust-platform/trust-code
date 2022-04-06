@@ -26,7 +26,6 @@
 #include <Champ.h>
 #include <Champ_Don.h>
 #include <Champ_Fonc.h>
-#include <Champ_Inc.h>
 #include <Champ_Inc_base.h>
 #include <Ref_Champ_Don_base.h>
 #include <Champs_compris.h>

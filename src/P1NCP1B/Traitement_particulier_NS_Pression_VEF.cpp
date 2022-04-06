@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,6 @@
 
 #include <Traitement_particulier_NS_Pression_VEF.h>
 #include <Zone_Cl_VEF.h>
-#include <Debog.h>
 #include <Assembleur_base.h>
 
 Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Pression_VEF,"Traitement_particulier_NS_Pression_VEF",Traitement_particulier_NS_Pression);

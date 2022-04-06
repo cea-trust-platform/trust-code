@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,14 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Echange_contact_Colburn_VDF.h>
-#include <Champ_front_calc.h>
 #include <Probleme_base.h>
 #include <Zone_VDF.h>
 #include <Milieu_base.h>
-#include <Champ_front_fonc.h>
 #include <Champ_Uniforme.h>
 #include <Conduction.h>
-#include <Solv_TDMA.h>
 
 Implemente_instanciable(Echange_contact_Colburn_VDF,"Paroi_Echange_contact_Colburn_VDF",Echange_contact_Correlation_VDF);
 

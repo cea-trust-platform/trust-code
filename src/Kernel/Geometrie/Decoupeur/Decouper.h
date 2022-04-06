@@ -25,7 +25,6 @@
 #include <Interprete.h>
 #include <Partitionneur_base.h>
 #include <vector>
-#include <map>
 #include <Ref_Domaine.h>
 
 class Domaine;

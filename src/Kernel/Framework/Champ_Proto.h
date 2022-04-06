@@ -24,7 +24,6 @@
 #define Champ_Proto_included
 
 #include <TRUSTTab.h>
-#include <arch.h>
 
 class Nom;
 class Entree;

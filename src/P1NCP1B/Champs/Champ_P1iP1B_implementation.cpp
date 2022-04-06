@@ -26,13 +26,13 @@
 #include <Zone_VEF_PreP1b.h>
 #include <Zone_Cl_VEFP1B.h>
 #include <Debog.h>
-#include <TRUSTList.h>
+
 #include <Matrice_Morse_Sym.h>
 #include <TRUSTLists.h>
 #include <SolveurSys.h>
 #include <Solv_GCP.h>
 #include <SSOR.h>
-#include <Check_espace_virtuel.h>
+
 #include <Neumann_sortie_libre.h>
 #include <Champ_P0_VEF.h>
 #include <TRUSTTab_parts.h>

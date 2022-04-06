@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <SolveurSys_base.h>
-#include <Nom.h>
 #include <EcrFicCollecte.h>
 #include <Matrice_Base.h>
 #include <MD_Vector_tools.h>

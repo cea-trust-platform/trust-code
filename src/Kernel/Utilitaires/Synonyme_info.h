@@ -22,7 +22,6 @@
 
 #ifndef Synonyme_info_included
 #define Synonyme_info_included
-#include <cstring>
 #include <arch.h>
 
 class Objet_U;

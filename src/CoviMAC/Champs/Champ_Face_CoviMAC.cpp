@@ -26,13 +26,10 @@
 #include <Champ_Uniforme.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_dis.h>
-#include <Zone_Cl_CoviMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Symetrie.h>
-#include <Connectivite_som_elem.h>
-#include <Matrix_tools.h>
 #include <EChaine.h>
 #include <TRUSTTab_parts.h>
 #include <Linear_algebra_tools_impl.h>

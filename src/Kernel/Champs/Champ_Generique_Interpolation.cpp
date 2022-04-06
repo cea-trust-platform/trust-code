@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,6 @@
 #include <Zone_VF.h>
 #include <Synonyme_info.h>
 #include <Param.h>
-#include <Poly_geom_base.h>
 
 Implemente_instanciable_sans_constructeur(Champ_Generique_Interpolation,"Interpolation",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Interpolation,"Champ_Post_Interpolation");

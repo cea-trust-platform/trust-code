@@ -21,7 +21,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_PolyMAC_Face.h>
+
 #include <Dirichlet_homogene.h>
+
 #include <Champ_Face_PolyMAC.h>
 #include <Schema_Temps_base.h>
 #include <Mod_turb_hyd_base.h>

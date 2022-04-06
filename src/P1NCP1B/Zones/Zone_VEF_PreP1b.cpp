@@ -36,7 +36,6 @@
 #include <MD_Vector_composite.h>
 #include <Check_espace_virtuel.h>
 #include <VEFPreP1B.h>
-#include <communications.h>
 #include <Octree_Double.h>
 
 Implemente_instanciable_sans_constructeur(Zone_VEF_PreP1b,"Zone_VEFPreP1b",Zone_VEF);

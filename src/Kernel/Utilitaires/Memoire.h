@@ -22,8 +22,7 @@
 
 #ifndef Memoire_included
 #define Memoire_included
-#include <assert.h>
-#include <arch.h>
+
 #include <Memoire_ptr.h>
 class Sortie;
 class Objet_U;

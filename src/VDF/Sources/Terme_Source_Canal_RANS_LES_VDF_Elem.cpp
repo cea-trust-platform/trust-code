@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Terme_Source_Canal_RANS_LES_VDF_Elem.h>
-#include <math.h>
 #include <Champ_Uniforme.h>
 #include <Zone_VDF.h>
 #include <Zone_Cl_VDF.h>

@@ -25,7 +25,7 @@
 #include <Probleme_base.h>
 #include <Zone_VEF.h>
 #include <Milieu_base.h>
-#include <Champ_front_fonc.h>
+
 #include <Champ_Uniforme.h>
 #include <Domaine.h>
 #include <Solv_TDMA.h>

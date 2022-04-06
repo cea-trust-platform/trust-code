@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@
 #ifndef Saturation_included
 #define Saturation_included
 
-#include <Ref.h>
+
 #include <Deriv.h>
 #include <Saturation_base.h>
 

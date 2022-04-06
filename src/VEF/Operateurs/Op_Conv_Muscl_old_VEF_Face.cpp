@@ -22,6 +22,8 @@
 
 #include <Op_Conv_Muscl_old_VEF_Face.h>
 #include <Champ_P1NC.h>
+#include <Neumann_sortie_libre.h>
+#include <Periodique.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Muscl_old_VEF_Face,"Op_Conv_Muscl_old_VEF_P1NC",Op_Conv_VEF_base);
 

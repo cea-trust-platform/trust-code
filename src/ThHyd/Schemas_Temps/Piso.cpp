@@ -22,16 +22,16 @@
 
 #include <Piso.h>
 #include <Source_PDF_base.h>
-#include <Zone_VF.h>
+
 #include <EChaine.h>
 #include <Debog.h>
 #include <Matrice_Bloc.h>
 #include <Assembleur_base.h>
-#include <Statistiques.h>
+
 #include <Schema_Temps_base.h>
 #include <TRUSTTrav.h>
 #include <Fluide_Dilatable_base.h>
-#include <Dirichlet.h>
+
 #include <Probleme_base.h>
 
 #include <MD_Vector_std.h>

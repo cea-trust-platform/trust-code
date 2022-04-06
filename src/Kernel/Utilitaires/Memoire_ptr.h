@@ -25,7 +25,7 @@
 
 #include <Objet_U.h>
 #include <assert.h>
-#include <arch.h>
+
 
 // .DESCRIPTION Pointeur dans la Memoire de TRUST pour un Objet_U
 // .SECTION voir aussi Objet_U Memoire

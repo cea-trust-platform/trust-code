@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <Schema_Comm.h>
 #include <PE_Groups.h>
-#include <TRUSTArrays.h>
 #include <InOutCommBuffers.h>
 #include <Comm_Group.h>
 #include <communications.h>

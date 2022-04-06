@@ -26,8 +26,7 @@
 #include <Echange_global_impose.h>
 #include <TRUSTTabs_forward.h>
 #include <Ref_Champ_Inc.h>
-#include <vector>
-#include <array>
+
 #include <map>
 class Front_VF;
 class Zone_VDF;

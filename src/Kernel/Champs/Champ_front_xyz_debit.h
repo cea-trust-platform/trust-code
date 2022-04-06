@@ -26,12 +26,10 @@
 
 #include <Champ_front_normal.h>
 #include <Parser_U.h>
-#include <Param.h>
-#include <Ch_front_var_instationnaire_dep.h>
+
 #include <Champ_front.h>
 #include <Zone_VF.h>
-#include <Champ_front_uniforme.h>
-#include <Ch_front_input_uniforme.h>
+
 //.DESCRIPTION  class Champ_front_xyz_debit
 //
 

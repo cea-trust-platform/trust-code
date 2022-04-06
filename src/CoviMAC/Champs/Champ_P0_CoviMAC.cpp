@@ -21,19 +21,16 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
+#include <Echange_contact_CoviMAC.h>
+#include <Dirichlet_homogene.h>
 #include <Champ_P0_CoviMAC.h>
-#include <Zone_Cl_dis.h>
 #include <Zone_Cl_CoviMAC.h>
+#include <TRUSTTab_parts.h>
+#include <Neumann_paroi.h>
 #include <Zone_CoviMAC.h>
-#include <Domaine.h>
+#include <Zone_Cl_dis.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
-#include <Dirichlet_homogene.h>
-#include <Neumann_paroi.h>
-#include <Echange_contact_CoviMAC.h>
-#include <Connectivite_som_elem.h>
-#include <TRUSTTab_parts.h>
-#include <Equation_base.h>
 #include <array>
 #include <cmath>
 

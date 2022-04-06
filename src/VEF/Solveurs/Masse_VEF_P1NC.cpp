@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,9 +25,7 @@
 #include <Zone_VEF.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
-#include <Periodique.h>
 #include <Symetrie.h>
-#include <Debog.h>
 #include <Equation_base.h>
 #include <Matrice_Morse.h>
 

@@ -26,7 +26,6 @@
 #include <Objet_U.h>
 #include <Champ.h>
 #include <Champ_Don.h>
-#include <Champ_Fonc.h>
 #include <Champs_compris_interface.h>
 #include <List.h>
 #include <Ref_Probleme_base.h>

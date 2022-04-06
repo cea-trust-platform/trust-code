@@ -24,7 +24,7 @@
 #include <Terme_Source_Constituant_VDF_Elem.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
-#include <Milieu_base.h>
+
 
 Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_VDF_Elem,"Source_Constituant_VDF_P0_VDF",Terme_Source_VDF_base);
 implemente_It_Sou_VDF_Elem(Eval_Source_C_VDF_Elem)

@@ -23,7 +23,7 @@
 #ifndef Terme_Source_Acceleration_included
 #define Terme_Source_Acceleration_included
 
-#include <TRUSTVect.h>
+
 #include <Ref_Navier_Stokes_std.h>
 #include <Champ_Don.h>
 #include <Champ_Fonc.h>

@@ -25,10 +25,9 @@
 
 #include <Echange_externe_impose.h>
 #include <TRUSTTabs_forward.h>
-#include <MD_Vector_tools.h>
+
 #include <Ref_Champ_Inc.h>
 #include <Ref_IntTab.h>
-#include <vector>
 
 class Zone_PolyMAC;
 class Front_VF;

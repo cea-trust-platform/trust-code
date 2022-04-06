@@ -26,7 +26,7 @@
 #include <Probleme_base.h>
 #include <TRUSTTrav.h>
 #include <Champ.h>
-#include <Debog.h>
+
 #include <Statistiques.h>
 
 extern Stat_Counter_Id convection_counter_;

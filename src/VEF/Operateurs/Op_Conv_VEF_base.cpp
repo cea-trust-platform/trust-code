@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Conv_VEF_base.h>
-#include <Champ_Uniforme.h>
+
 #include <Milieu_base.h>
 #include <Schema_Temps_base.h>
 #include <Probleme_base.h>
@@ -29,6 +29,8 @@
 #include <Discretisation_base.h>
 #include <Champ.h>
 #include <Modifier_pour_fluide_dilatable.h>
+#include <Dirichlet_homogene.h>
+#include <Periodique.h>
 
 Implemente_base(Op_Conv_VEF_base,"Op_Conv_VEF_base",Operateur_Conv_base);
 

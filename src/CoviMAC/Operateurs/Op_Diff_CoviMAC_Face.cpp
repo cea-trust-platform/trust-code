@@ -22,21 +22,21 @@
 
 #include <Op_Diff_CoviMAC_Face.h>
 #include <Probleme_base.h>
-#include <Schema_Temps_base.h>
+
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
-#include <TRUSTLists.h>
+
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
-#include <Symetrie.h>
+
 #include <Champ_Face_CoviMAC.h>
 #include <Champ_Uniforme.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
-#include <Mod_turb_hyd_base.h>
+
 #include <Synonyme_info.h>
 #include <MD_Vector_base.h>
-#include <Op_Grad_CoviMAC_Face.h>
+
 #include <Pb_Multiphase.h>
 
 Implemente_instanciable( Op_Diff_CoviMAC_Face, "Op_Diff_CoviMAC_Face|Op_Dift_CoviMAC_Face_CoviMAC", Op_Diff_CoviMAC_base ) ;

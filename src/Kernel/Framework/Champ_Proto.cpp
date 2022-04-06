@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_Proto.h>
-#include <ctype.h>
 
 // Description:
 //    Verification de la dimension du champ

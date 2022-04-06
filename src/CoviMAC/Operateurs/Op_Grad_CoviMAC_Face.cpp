@@ -21,26 +21,24 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Grad_CoviMAC_Face.h>
-#include <Champ_P0_CoviMAC.h>
+
 #include <Zone_Cl_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>
 #include <Neumann_sortie_libre.h>
 #include <Periodique.h>
-#include <Symetrie.h>
-#include <Dirichlet.h>
-#include <Dirichlet_homogene.h>
+
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
-#include <Schema_Temps_base.h>
+
 #include <EcrFicPartage.h>
 #include <SFichier.h>
-#include <Check_espace_virtuel.h>
+
 #include <communications.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <TRUSTTrav.h>
 #include <Masse_CoviMAC_Face.h>
-#include <Milieu_base.h>
+
 #include <Pb_Multiphase.h>
 #include <cfloat>
 

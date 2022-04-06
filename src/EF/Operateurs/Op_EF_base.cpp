@@ -28,11 +28,11 @@
 #include <Symetrie.h>
 #include <Matrice_Morse.h>
 #include <Equation_base.h>
-#include <Champ_Inc.h>
+
 #include <Sortie.h>
 #include <Operateur.h>
 #include <Probleme_base.h>
-#include <Champ_Don.h>
+
 #include <Champ_Uniforme.h>
 #include <Schema_Temps_base.h>
 #include <Milieu_base.h>
@@ -43,7 +43,7 @@
 #include <Echange_interne_global_impose.h>
 #include <Echange_interne_global_parfait.h>
 #include <Champ_front_calc_interne.h>
-#include <map>
+
 #include <vector>
 
 // Description

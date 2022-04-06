@@ -26,9 +26,7 @@
 #include <Periodique.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Schema_Temps_base.h>
 #include <Fluide_Dilatable_base.h>
-#include <Debog.h>
 #include <communications.h>
 #include <SFichier.h>
 #include <Convection_Diffusion_std.h>

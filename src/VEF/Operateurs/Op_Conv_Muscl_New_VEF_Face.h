@@ -26,7 +26,6 @@
 
 #include <Op_Conv_VEF_Face.h>
 #include <Ref_Sous_zone_VF.h>
-#include <Equation_base.h>
 #include <Matrice_Morse.h>
 #include <TRUSTTabs.h>
 #include <TRUSTList.h>

@@ -23,9 +23,14 @@
 #include <Op_Conv_VEF_Face.h>
 #include <Champ_P1NC.h>
 #include <Porosites_champ.h>
-#include <Debog.h>
+
 #include <stat_counters.h>
 #include <Convection_tools.h>
+#include <Dirichlet_homogene.h>
+#include <Periodique.h>
+#include <Symetrie.h>
+#include <Neumann_sortie_libre.h>
+
 Implemente_instanciable_sans_constructeur(Op_Conv_VEF_Face,"Op_Conv_Generic_VEF_P1NC",Op_Conv_VEF_base);
 
 

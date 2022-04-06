@@ -23,7 +23,7 @@
 #ifndef Champ_Input_Proto_included
 #define Champ_Input_Proto_included
 
-#include <TRUSTTabs_forward.h>
+#include <TRUSTArray.h>
 #include <Ref_Probleme_base.h>
 #include <ICoCoTrioField.h>
 #include <Ref_Sous_Zone.h>

@@ -20,7 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <Format_Post_Med.h>
-#include <Comm_Group.h>
 #include <EcrMED.h>
 #include <EcrFicPartage.h>
 #include <EFichier.h>

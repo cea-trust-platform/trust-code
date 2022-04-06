@@ -24,8 +24,7 @@
 #include <Char_ptr.h>
 #include <Objet_U.h>
 #include <math.h>
-#include <stdlib.h>
-#include <cstring>
+#include <string.h>
 #include <sstream>
 
 //using namespace std;

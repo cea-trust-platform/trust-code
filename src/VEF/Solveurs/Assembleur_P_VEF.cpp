@@ -28,7 +28,7 @@
 #include <Champ_front_instationnaire_base.h>
 #include <Champ_front_var_instationnaire.h>
 #include <Matrice_Bloc.h>
-#include <Debog.h>
+
 #include <Scatter.h>
 
 Implemente_instanciable(Assembleur_P_VEF,"Assembleur_P_VEF",Assembleur_base);

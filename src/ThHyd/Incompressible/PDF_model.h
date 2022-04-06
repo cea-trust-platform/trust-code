@@ -27,7 +27,6 @@
 #include <Vect_Parser_U.h>
 #include <Champ_Don.h>
 #include <Zone_VF.h>
-#include <Parser.h>
 #include <Motcle.h>
 
 /////////////////////////////////////////////////////////////////////////////

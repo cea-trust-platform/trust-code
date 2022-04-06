@@ -29,9 +29,9 @@
 #include <Zone_PolyMAC.h>
 #include <Equation_base.h>
 #include <Champ_P0_PolyMAC.h>
-#include <Operateur.h>
+
 #include <Op_Diff_PolyMAC_Elem.h>
-#include <cmath>
+
 
 Implemente_instanciable(Echange_contact_PolyMAC,"Paroi_Echange_contact_PolyMAC",Echange_externe_impose);
 

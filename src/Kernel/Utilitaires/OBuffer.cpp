@@ -20,9 +20,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 #include <OBuffer.h>
-#include <cstring>
 #include <assert.h>
-#include <Process.h>
 
 OBuffer::OBuffer() :
   precision_(8), buf_(0)

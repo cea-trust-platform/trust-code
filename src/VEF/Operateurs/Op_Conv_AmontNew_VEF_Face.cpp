@@ -22,6 +22,8 @@
 
 #include <Op_Conv_AmontNew_VEF_Face.h>
 #include <Hexaedre_VEF.h>
+#include <Periodique.h>
+#include <Neumann_sortie_libre.h>
 
 Implemente_base(Op_Conv_AmontNew_VEF_Face,"Op_Conv_AmontNew_VEF_P1NC",Op_Conv_VEF_base);
 

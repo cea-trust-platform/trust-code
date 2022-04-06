@@ -24,7 +24,6 @@
 #include <Rotationnel_Champ_Face.h>
 #include <grad_U_Champ_Face.h>
 #include <Correlation_Vec_Sca_VDF.h>
-#include <Champ_P0_VDF.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Champ_Fonc_Tabule_P0_VDF.h>
 #include <Critere_Q_Champ_Face.h>
@@ -37,7 +36,6 @@
 #include <Taux_cisaillement_P0_VDF.h>
 #include <Postraitement_base.h>
 #include <Schema_Temps_base.h>
-// #include <Champ_T_Paroi_Face.h>
 #include <Zone_Cl_VDF.h>
 #include <Navier_Stokes_std.h>
 #include <Zone_VDF.h>

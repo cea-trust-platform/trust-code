@@ -25,9 +25,6 @@
 #include <Discret_Thyd.h>
 #include <Zone_VF.h>
 #include <Domaine.h>
-#include <Avanc.h>
-#include <Debog.h>
-#include <Frontiere_dis_base.h>
 #include <EcritureLectureSpecial.h>
 #include <TRUSTTrav.h>
 #include <Matrice_Morse.h>

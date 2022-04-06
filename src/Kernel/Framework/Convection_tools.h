@@ -23,7 +23,6 @@
 #ifndef Convection_tools_included
 #define Convection_tools_included
 
-#include <Double.h>
 
 //////////////////////////////////////////////////////////////
 //   Fonctions limiteurs de MUSCL

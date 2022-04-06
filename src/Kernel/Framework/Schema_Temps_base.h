@@ -24,12 +24,11 @@
 #define Schema_Temps_base_included
 
 #include <Ref_Probleme_base.h>
-#include <Interface_blocs.h>
 #include <TRUSTTab.h>
 #include <Parser_U.h>
 #include <SFichier.h>
 #include <math.h>
-
+#include <Interface_blocs.h>
 class Equation_base;
 class Matrice_Base;
 class SFichier;

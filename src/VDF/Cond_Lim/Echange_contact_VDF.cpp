@@ -29,7 +29,6 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Zone_VDF.h>
 #include <Equation_base.h>
-#include <Mod_turb_hyd_base.h>
 #include <Ref_Turbulence_paroi_scal.h>
 #include <Schema_Comm.h>
 #include <ArrOfBit.h>

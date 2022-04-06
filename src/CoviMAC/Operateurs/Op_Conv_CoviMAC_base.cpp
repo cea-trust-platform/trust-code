@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,11 +21,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Conv_CoviMAC_base.h>
-#include <Debog.h>
 #include <TRUSTTrav.h>
 #include <Discretisation_base.h>
 #include <Champ.h>
-#include <Modifier_pour_fluide_dilatable.h>
 #include <Zone_CoviMAC.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Champ_Face_CoviMAC.h>

@@ -27,10 +27,8 @@
 #include <Op_Diff_CoviMAC_Elem.h>
 #include <TRUSTTabs_forward.h>
 #include <MD_Vector_tools.h>
-#include <Ref_Champ_Inc.h>
 #include <Ref_Front_VF.h>
 #include <Ref_IntTab.h>
-#include <vector>
 
 class Zone_CoviMAC;
 class Front_VF;

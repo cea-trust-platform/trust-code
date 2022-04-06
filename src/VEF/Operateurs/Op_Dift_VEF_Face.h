@@ -27,7 +27,6 @@
 #include <Op_Dift_VEF_base.h>
 #include <Ref_Champ_P1NC.h>
 #include <Matrice_Morse.h>
-#include <Ref_Convection_Diffusion_std.h>
 #include <Champ_base.h>
 
 //

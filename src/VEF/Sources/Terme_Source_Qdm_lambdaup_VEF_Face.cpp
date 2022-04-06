@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,6 @@
 #include <Schema_Temps_base.h>
 #include <Champ_P1NC.h>
 #include <SFichier.h>
-#include <Schema_Temps.h>
 
 Implemente_instanciable(Terme_Source_Qdm_lambdaup_VEF_Face,"Source_Qdm_lambdaup_VEF_P1NC",Source_base);
 

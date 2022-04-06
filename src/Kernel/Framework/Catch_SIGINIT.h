@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,8 +24,8 @@
 #define Catch_SIGINIT_included
 
 #include <Process.h>
-#include <signal.h>
-#include <iostream>
+//#include <signal.h>
+//#include <iostream>
 #include <Nom.h>
 
 class Catch_SIGINIT

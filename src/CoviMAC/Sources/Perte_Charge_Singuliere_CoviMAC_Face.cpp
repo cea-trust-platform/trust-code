@@ -22,11 +22,8 @@
 
 #include <Perte_Charge_Singuliere_CoviMAC_Face.h>
 #include <Zone_CoviMAC.h>
-#include <Equation_base.h>
-#include <Probleme_base.h>
 #include <Pb_Multiphase.h>
 #include <Champ_Face_CoviMAC.h>
-#include <Op_Grad_CoviMAC_Face.h>
 #include <Motcle.h>
 #include <Domaine.h>
 #include <Matrice_Morse.h>

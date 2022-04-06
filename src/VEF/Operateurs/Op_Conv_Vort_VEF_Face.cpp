@@ -22,6 +22,7 @@
 
 #include <Op_Conv_Vort_VEF_Face.h>
 #include <Champ_P1NC.h>
+#include <Periodique.h>
 
 Implemente_instanciable(Op_Conv_Vort_VEF_Face,"Op_Conv_Conserve_Ec_VEF_P1NC",Op_Conv_VEF_base);
 

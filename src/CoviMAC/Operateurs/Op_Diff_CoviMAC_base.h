@@ -26,7 +26,6 @@
 #define Op_Diff_CoviMAC_base_included
 
 #include <Operateur_Diff_base.h>
-#include <Op_Diff_Turbulent_base.h>
 #include <Ref_Zone_CoviMAC.h>
 #include <Ref_Zone_Cl_CoviMAC.h>
 #include <Zone_CoviMAC.h>

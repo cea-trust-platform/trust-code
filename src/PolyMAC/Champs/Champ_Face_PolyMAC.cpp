@@ -34,7 +34,6 @@
 #include <Matrix_tools.h>
 #include <Zone_PolyMAC.h>
 #include <Zone_Cl_dis.h>
-#include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
 #include <EChaine.h>

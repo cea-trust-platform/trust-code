@@ -34,6 +34,12 @@
 #include <TRUSTList.h>
 #include <TRUSTTabs.h>
 #include <stat_counters.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet_homogene.h>
+#include <Neumann_homogene.h>
+#include <Periodique.h>
+#include <Symetrie.h>
+#include <Echange_impose_base.h>
 
 Implemente_instanciable(Op_Conv_EF_VEF_P1NC_Stab,"Op_Conv_EF_Stab_VEF_P1NC",Op_Conv_VEF_Face);
 

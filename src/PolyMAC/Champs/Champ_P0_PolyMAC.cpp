@@ -23,19 +23,14 @@
 
 #include <Champ_P0_PolyMAC.h>
 #include <Zone_Cl_dis.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Domaine.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
 #include <Dirichlet_homogene.h>
 #include <Neumann_paroi.h>
 #include <Echange_contact_PolyMAC.h>
-#include <Connectivite_som_elem.h>
 #include <TRUSTTab_parts.h>
 #include <Schema_Euler_Implicite.h>
-#include <Equation_base.h>
 #include <array>
-#include <cmath>
 
 Implemente_instanciable(Champ_P0_PolyMAC,"Champ_P0_PolyMAC",Champ_Inc_P0_base);
 

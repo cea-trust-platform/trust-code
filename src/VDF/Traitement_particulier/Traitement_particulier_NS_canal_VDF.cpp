@@ -22,7 +22,6 @@
 
 #include <Traitement_particulier_NS_canal_VDF.h>
 #include <Zone_VDF.h>
-#include <Pave.h>
 
 #include <Fluide_base.h>
 #include <Navier_Stokes_std.h>

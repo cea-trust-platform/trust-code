@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,6 @@
 #include <distances_VDF.h>
 #include <Paroi_Knudsen_non_negligeable.h>
 #include <TRUSTTrav.h>
-#include <Champ_Inc.h>
 
 Implemente_instanciable(Champ_front_fonc_gradient_VDF,"Champ_front_fonc_gradient_VDF",Champ_front_fonc_gradient);
 

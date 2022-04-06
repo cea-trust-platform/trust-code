@@ -22,6 +22,9 @@
 
 #ifndef T_It_VDF_Face_TPP_included
 #define T_It_VDF_Face_TPP_included
+#include <TRUSTSingle.h>
+#include <Champ_Uniforme.h>
+#include <communications.h>
 
 template <class _TYPE_>
 inline T_It_VDF_Face<_TYPE_>::T_It_VDF_Face(const T_It_VDF_Face<_TYPE_>& iter) :

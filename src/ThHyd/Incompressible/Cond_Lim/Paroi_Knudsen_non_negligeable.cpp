@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@
 #include <Motcle.h>
 #include <Champ_front_fonc_gradient.h>
 #include <Discretisation_base.h>
-#include <Champ_Inc.h>
+
 
 Implemente_instanciable(Paroi_Knudsen_non_negligeable,"Paroi_Knudsen_non_negligeable",Dirichlet_paroi_defilante);
 

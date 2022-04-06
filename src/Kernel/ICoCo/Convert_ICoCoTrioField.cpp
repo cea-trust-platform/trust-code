@@ -121,10 +121,9 @@ void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
 #include <MEDCouplingUMesh.hxx>
 #include <MEDCouplingFieldDouble.hxx>
 #include <MCAuto.hxx>
+#include <string.h>
 
-#include <cstring>
-#include <iostream>
-#include <iomanip>
+
 
 using ICoCo::TrioField;
 using ICoCo::MEDDoubleField;

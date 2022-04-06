@@ -28,11 +28,10 @@
 #include <Op_Conv_negligeable.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Uniforme.h>
-#include <Equation_base.h>
+
 #include <Probleme_base.h>
-#include <Solveur_Masse.h>
 #include <Matrice_Morse.h>
-#include <Zone_Cl_dis.h>
+
 #include <TRUSTTrav.h>
 #include <Operateur.h>
 #include <Domaine.h>

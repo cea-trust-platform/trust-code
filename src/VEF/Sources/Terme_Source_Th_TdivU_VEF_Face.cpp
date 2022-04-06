@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,12 +21,19 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Terme_Source_Th_TdivU_VEF_Face.h>
-
+#include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Convection_Diffusion_std.h>
 #include <Op_Conv_Muscl_VEF_Face.h>
 #include <EChaine.h>
 #include <Milieu_base.h>
+#include <Periodique.h>
+#include <Neumann_homogene.h>
+#include <Symetrie.h>
+#include <Neumann.h>
+#include <Neumann_val_ext.h>
+#include <Dirichlet_homogene.h>
+#include <Echange_impose_base.h>
 
 Implemente_instanciable(Terme_Source_Th_TdivU_VEF_Face,"Source_Th_TdivU_VEF_P1NC",Source_base);
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <SFichier.h>
-#include <Process.h>
+
 Implemente_instanciable(SFichier,"SFichier",Sortie_Fichier_base);
 /*SFichier::SFichier(const SFichier& a): Sortie(a),Objet_U(a)
 {

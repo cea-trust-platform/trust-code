@@ -26,7 +26,6 @@
 #include <Zone_VF.h>
 #include <Champ.h>
 #include <Champ_Don.h>
-#include <Champ_Uniforme.h>
 #include <Discretisation_base.h>
 
 Implemente_instanciable(Diametre_hyd_champ,"Diametre_hyd_champ",Interprete);

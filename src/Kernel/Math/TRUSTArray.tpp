@@ -23,7 +23,7 @@
 #ifndef TRUSTArray_TPP_included
 #define TRUSTArray_TPP_included
 
-#include <string>
+#include <string.h>
 
 //  Change le nombre d'elements du tableau.
 //  - Si smart_resize est non nul :

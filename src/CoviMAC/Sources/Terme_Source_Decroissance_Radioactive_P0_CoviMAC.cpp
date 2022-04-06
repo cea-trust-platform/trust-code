@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,7 @@
 #include <Matrix_tools.h>
 #include <Synonyme_info.h>
 #include <Probleme_base.h>
+#include <Entree.h>
 
 Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_P0_CoviMAC,"Decroissance_Radioactive_P0_CoviMAC",Source_base);
 Add_synonym(Terme_Source_Decroissance_Radioactive_P0_CoviMAC,"radioactive_decay_P0_CoviMAC");
