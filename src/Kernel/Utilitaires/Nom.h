@@ -26,7 +26,7 @@
 #define Nom_included
 
 #include <Objet_U.h>
-#include <string.h>
+#include <cstring>
 #include <string>
 
 //////////////////////////////////////////////////////////////////////////////
