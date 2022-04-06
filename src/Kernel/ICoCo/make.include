@@ -1,11 +1,7 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
-	-I$(MPI_INCLUDE)\
-	-I$(TRUST_ICOCOAPI)/include\
-	-I$(TRUST_MEDCOUPLING_ROOT)/include\
 	-I$(TRUST_ROOT)/src/Kernel/Framework\
 	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
-	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
 	-I$(TRUST_ROOT)/src/MAIN\

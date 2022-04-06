@@ -5,26 +5,26 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
 	-I$(TRUST_ROOT)/src/Kernel/Framework\
 	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
-	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
 	-I$(TRUST_ROOT)/src/Kernel/Math/SolvSys\
+	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThSol\
-	-I$(TRUST_ROOT)/src/VDF\
 	-I$(TRUST_ROOT)/src/VDF/Champs\
 	-I$(TRUST_ROOT)/src/VDF/Cond_Lim\
-	-I$(TRUST_ROOT)/src/VDF/Zones\
+	-I$(TRUST_ROOT)/src/VDF/Operateurs/Eval_Diff_Dift\
+	-I$(TRUST_ROOT)/src/VDF/Operateurs/Eval_Divers\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Iterateurs\
-    -I$(TRUST_ROOT)/src/VDF/Operateurs/Eval_Diff_Dift\
-    -I$(TRUST_ROOT)/src/VDF/Operateurs/Eval_Divers\
-    -I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Conv\
-    -I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Diff_Dift/Op_Diff_Dift_base\
-    -I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Divers\
+	-I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Conv\
+	-I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Diff_Dift/Op_Diff_Dift_base\
+	-I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Divers\
+	-I$(TRUST_ROOT)/src/VDF/Zones\
+	
 
 Lib = $(TRUST_LIB)/libopvdf_diff_dift

@@ -11,7 +11,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Champs\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Loi_Etat\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
@@ -19,31 +20,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Sources\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Cond_Lim\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Equations\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Loi_Etat\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Milieu\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Problems\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Sources\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Equations\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Loi_Etat\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Milieu\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Problems\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Cond_Lim\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Equations\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Loi_Etat\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Sources\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Problems\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable\
-	-I$(TRUST_ROOT)/src/ThHyd\
 	-I$(TRUST_ROOT)/src/ThSol\
 	-I$(TRUST_ROOT)/src/VDF/Champs\
-	-I$(TRUST_ROOT)/src/VDF/Sources/Evaluateurs\
-	-I$(TRUST_ROOT)/src/VDF/Sources/Iterateurs\
 	-I$(TRUST_ROOT)/src/VDF/Zones\
 	
 

@@ -10,16 +10,16 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
-	-I$(TRUST_ROOT)/src/VDF/Champs\
-	-I$(TRUST_ROOT)/src/VDF/Operateurs\
-	-I$(TRUST_ROOT)/src/VDF/Zones\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
 	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Equations\
 	-I$(TRUST_ROOT)/src/ThSol\
+	-I$(TRUST_ROOT)/src/VDF/Champs\
+	-I$(TRUST_ROOT)/src/VDF/Zones\
+	
 
 Lib = $(TRUST_LIB)/libvdf_trait_part

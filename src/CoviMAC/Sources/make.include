@@ -1,34 +1,30 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ROOT)/src/CoviMAC/Champs\
+	-I$(TRUST_ROOT)/src/CoviMAC/Operateurs\
+	-I$(TRUST_ROOT)/src/CoviMAC/Zones\
 	-I$(TRUST_ROOT)/src/Kernel/Champs\
 	-I$(TRUST_ROOT)/src/Kernel/Champs/Champs_Don\
 	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
 	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
 	-I$(TRUST_ROOT)/src/Kernel/Framework\
 	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
-	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
 	-I$(TRUST_ROOT)/src/Kernel/Math/SolvSys\
+	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
-	-I$(TRUST_ROOT)/src/CoviMAC/Champs\
-	-I$(TRUST_ROOT)/src/CoviMAC/Zones\
-	-I$(TRUST_ROOT)/src/CoviMAC/Operateurs\
-	-I$(TRUST_ROOT)/src/ThHyd\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Champs\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Problems\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Sources\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible\
-	-I$(TRUST_ROOT)/src/ThHyd/Multiphase\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Correlations\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Operateurs\
-	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Schemas_Temps\
-	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/CoviMAC\
-	-I$(TRUST_ROOT)/src/ThSol
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase\
+	-I$(TRUST_ROOT)/src/ThSol\
+	
 
 Lib = $(TRUST_LIB)/libcovimac_sources

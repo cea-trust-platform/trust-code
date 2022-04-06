@@ -10,9 +10,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThSol\
 	-I$(TRUST_ROOT)/src/VDF/Champs\
-	-I$(TRUST_ROOT)/src/VDF/Operateurs/Eval_Conv\
-	-I$(TRUST_ROOT)/src/VDF/Operateurs/Eval_Diff_Dift\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Eval_Divers\
 	-I$(TRUST_ROOT)/src/VDF/Zones\
+	
 
 Lib = $(TRUST_LIB)/libitvdf
