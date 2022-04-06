@@ -8,6 +8,13 @@ cd $TRUST_ROOT
 INC=$TRUST_ROOT/include && [ ! -d $INC ] && mkdir $INC 2>/dev/null
 cd $INC
 mkdir -p $INC/backward
+
+# Ajout des fichiers deprecated by TRUST 1.8.5:
+for file in ArrOfDouble.h ArrOfInt.h DoubleVect.h IntVect.h DoubleTab.h IntTab.h DoubleTrav.h IntTrav.h DoubleList.h IntList.h DoubleLists.h IntLists.h Champ_Tabule_Morceaux.h
+do
+echo "#error File $file deprecated in TRUST 1.8.5. You SHOULD change the include. See TRUST_ROOT/DEVELOPER_NOTES for more information" > backward/$file
+done
+
 # Ouverture de $INC
 echo "s?$MPI_INCLUDE/mpi\.h?\$(MPI_INCLUDE)/mpi\.h?g">.tmp
 echo "s?$METIS_ROOT/include/metis\.h?\$(METIS_ROOT)/include/metis\.h?g">>.tmp
