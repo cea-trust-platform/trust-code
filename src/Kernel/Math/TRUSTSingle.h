@@ -35,6 +35,11 @@ public:
   inline int size_array() const { return 1; }
   inline const _TYPE_& operator()(int i) const { assert(i == 0); return d_; }
   inline _TYPE_& operator()(int i) { assert(i == 0); return d_; }
+  inline const _TYPE_& operator[](int i) const { assert(i == 0); return d_; }
+  inline _TYPE_& operator[](int i) { assert(i == 0); return d_; }
+  // We do want that .. but later
+//  inline const _TYPE_& operator()(int i) const = delete;
+//  inline _TYPE_& operator()(int i) = delete;
 
 private:
   _TYPE_ d_;
