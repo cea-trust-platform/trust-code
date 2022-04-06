@@ -123,7 +123,7 @@ check_recent_src()
     #################################################
     # Interdiction des include sous la forme "toto.h"
     #################################################
-    ok=`grep include $file | grep "#" | grep "\"*\"" 2>/dev/null`
+    ok=`grep '#include "' $file 2>/dev/null`
     if [ "$ok" != "" ]
     then
        echo "**************************************************************"
@@ -266,6 +266,19 @@ check_src()
 	 erreur 1
       fi
    fi  
+
+   ###################################################
+   # Interdiction des const reference vers type simple
+   ###################################################
+#   grep -e "^[ ]*const int& [A-Za-z0-9_]*=" -e "^[ ]*const double& [A-Za-z0-9_]*=" *.cpp *.h
+#   if [ "``" != "" ]
+#   then
+#      grep -e "const int&" -e "const double&" *.cpp *.h
+#      echo "********************************************************************************************"
+#      echo "Remplacer dans ces fichiers les const reference \"const int|double&\" par \"const int|double \"" 
+#      echo "********************************************************************************************"
+#      erreur -1
+#   fi
 }
 
 check_all()
