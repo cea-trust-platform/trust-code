@@ -370,10 +370,14 @@ class SonSEGFile(SonFile):
 
     def _populateFromHeader(self, hdr=None):
         hdr = SonFile._populateFromHeader(self, hdr)
-        if not hdr is None:
-            l = [0.0] * (2 * self._dim)
-            l2 = [float(hdr[3][i]) for i in range(2, 2 + 2 * self._dim)]
-            start, end = l2[: self._dim], l2[self._dim :]
+        if hdr is not None:
+            if hdr[3][1] == "SEGMENT":
+                l2 = [float(hdr[3][i]) for i in range(2, 2 + 2 * self._dim)]
+            elif hdr[3][1] == "SEGMENTPOINTS":
+                nb_pts = int((len(hdr[1]) - 1) / 2 / self._dim)
+                l2 = [float(hdr[1][i + 2]) for i in range(0, nb_pts * self._dim, 2)]
+            else: raise Exception("Invalid SON file type!")
+            start, end = l2[: self._dim], l2[-self._dim:]
             self.setXTremePoints(start, end)
             self._computeXAxis()
             return hdr
