@@ -259,7 +259,7 @@ private:
   {
     if (MAXDIM_TAB != 4)
       {
-        Cerr << "Mettre a jour le code pour MAXDIM_TAB pour CHECK_LINE_SIZE" << finl;
+        Cerr << "Update code for MAXDIM_TAB for CHECK_LINE_SIZE" << finl;
         throw;
       }
   }

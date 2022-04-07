@@ -1,15 +1,15 @@
 -------------------------------------------------------------
 Developer notes version 1.8.5_beta : Changes since version 1.8.4 :
 -------------------------------------------------------------
-06/04/22 (TRUST) To test a subtype of ArrOfXXX, XXXVect, XXXTab and XXXTrav, use a dynamic_cast (see for example the method MD_Vector_tools::creer_tableau_distribue)
-06/04/22 (TRUST) static_cast and dynamic_cast should be now used to down-cast ArrOfXXX, XXXVect, XXXTab (No more ref_cast since no more implement_instansciable => no type_info)
-06/04/22 (TRUST) To forward declare ArrOfXXX, XXXVect, XXXTab and XXXTrav in a header file, just #include <TRUSTTabs_forward.h>. Previous forward declaration "i.e. class ArrOfXXX;" WILL NOT WORK
-06/04/22 (TRUST) Classes VECT(ArrOfXXX), VECT(XXXVect) and VECT(XXXTab) are now implemented in TRUSTArrays.h, TRUSTVects.h and TRUSTTabs.h
-06/04/22 (TRUST) Same follows for the previous Int/DoubleList and Int/DoubleLists. They are now class templates TRUSTList and TRUSTLists
-06/04/22 (TRUST) Header files and includes change. Should include TRUSTArray.h instead of ArrOfXXX.h, TRUSTVect.h instead of XXXVect.h, TRUSTTab.h instead of XXXTab.h and TRUSTTrav.h instead of XXXTrav.h
-06/04/22 (TRUST) ArrOfXXX, XXXVect, XXXTab and XXXTrav are now typedefs and NOT classes. They inherit respectively from TRUSTArray<XXX>, TRUSTVect<XXX>, TRUSTTab<XXX> and TRUSTTrav<XXX>
-06/04/22 (TRUST) TRUST int/double Arrays, Vects, Tabs and Travs are now class templates
-06/04/22 (TRUST) Class Champ_Tabule_Morceaux is now replaced by the class Champ_Fonc_Tabule_Morceaux (a much more generic implementation)
+07/04/22 (TRUST) To test a subtype of ArrOfXXX, XXXVect, XXXTab and XXXTrav, use a dynamic_cast (see for example the method MD_Vector_tools::creer_tableau_distribue)
+07/04/22 (TRUST) static_cast and dynamic_cast should be now used to down-cast ArrOfXXX, XXXVect, XXXTab (No more ref_cast since no more implement_instansciable => no type_info)
+07/04/22 (TRUST) To forward declare ArrOfXXX, XXXVect, XXXTab and XXXTrav in a header file, just #include <TRUSTTabs_forward.h>. Previous forward declaration "i.e. class ArrOfXXX;" WILL NOT WORK
+07/04/22 (TRUST) Classes VECT(ArrOfXXX), VECT(XXXVect) and VECT(XXXTab) are now implemented in TRUSTArrays.h, TRUSTVects.h and TRUSTTabs.h
+07/04/22 (TRUST) Same follows for the previous Int/DoubleList and Int/DoubleLists. They are now class templates TRUSTList and TRUSTLists
+07/04/22 (TRUST) Header files and includes change. Should include TRUSTArray.h instead of ArrOfXXX.h, TRUSTVect.h instead of XXXVect.h, TRUSTTab.h instead of XXXTab.h and TRUSTTrav.h instead of XXXTrav.h
+07/04/22 (TRUST) ArrOfXXX, XXXVect, XXXTab and XXXTrav are now typedefs and NOT classes. They inherit respectively from TRUSTArray<XXX>, TRUSTVect<XXX>, TRUSTTab<XXX> and TRUSTTrav<XXX>
+07/04/22 (TRUST) TRUST int/double Arrays, Vects, Tabs and Travs are now class templates
+01/04/22 (TRUST) Class Champ_Tabule_Morceaux is now replaced by the class Champ_Fonc_Tabule_Morceaux (a much more generic implementation)
 10/03/22 (TRUST) Add -Wsuggest-override flag to force override when redefining virtual methods (Add line "cpp_flags  : -Wno-suggest-override" into project.cfg to disable into a Baltik)
 22/02/22 (TRUST) TEST_COEFF is a constexpr in the VDF diff evaluator. It can be used for debugging the coefficients of the implicit matrix and verify coherency with flux methods implementation
 22/02/22 (TRUST) The transpose of the velocity gradient is now taken into account in the VDF face diffusion operator (for const/var & lam/turb cases)
