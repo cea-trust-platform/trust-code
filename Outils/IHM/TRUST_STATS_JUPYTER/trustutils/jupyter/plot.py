@@ -18,8 +18,6 @@ import math
 from trustutils.jupyter.filelist import FileAccumulator
 from trustutils.jupyter.run import BUILD_DIRECTORY
 
-mon_dictionnaire = {"x": 0, "y": 1, "z": 2}
-
 pd.set_option("display.notebook_repr_html", True)
 pd.set_option("display.max_rows", None)
 
@@ -325,26 +323,26 @@ class Graph:
         self.subplot.grid(visible=True)
         self.subplot.set_title(self.title)
 
-    def addPoint(self, data, marker="-", var="x", label="", func=None, **kwargs):
+    def addPoint(self, data, marker="-", compo=0, label="", func=None, **kwargs):
         """
-        
+
         Methode to add a curve to the plot from a point sonde.
-        
+
         Parameters
-        --------- 
+        ---------
         data : str
             Adress of the file.
         marker : str
             symbol of the ploted line.
-        var :  str
-            coordinate we want to plot.
+        compo :  str
+            component we want to plot (for vector fields).
         label : str
             title of the curve .
         func : function
             function to apply to data before plot (ex: computation of error)
         kwargs : dictionary
             properties of line for matplotlib.pyplot.plot
-            
+
         """
 
         if label == "":
@@ -355,10 +353,7 @@ class Graph:
 
         saveFileAccumulator(data)
 
-        ### On recupere le nom des variables ###
-        coord = mon_dictionnaire[var]
-
-        self.y_label = donne.getEntries()[coord]
+        self.y_label = donne.getEntries()[compo]
         self.x_label = donne.getXLabel()
 
         X, Y = donne.getValues(self.y_label)
@@ -375,13 +370,13 @@ class Graph:
         ## On ajoute des titres
         self.subplot.set(xlabel=self.x_label, ylabel=self.y_label)
 
-    def addSegment(self, data, value=None, marker="-", label="", var="x", func=None, **kwargs):
+    def addSegment(self, data, value=None, marker="-", label="", compo=0, func=None, **kwargs):
         """
-        
+
         Methode to add a curve to the plot from a segment sonde.
-        
+
         Parameters
-        ---------  
+        ---------
         data : str
             Adress of the file.
         value : str
@@ -390,8 +385,8 @@ class Graph:
             symbol of the ploted line.
         label : str
             title of the curve .
-        var :  str
-            component we want to plot.
+        compo :  str
+            component we want to plot (for vector fields).
         nb : float
             erreur tolerated between the comparaison to find the right data.
         func : function
@@ -413,12 +408,11 @@ class Graph:
         saveFileAccumulator(data)
 
         # On recupere le nom des variables, leur dimension et la coordonnee que l'on veut tracer
-        coord = mon_dictionnaire[var]
         ncompo = donne.getnCompo()
 
         entries = donne.getEntries()
 
-        self.y_label = entries[coord].split()[0]
+        self.y_label = entries[compo].split()[0]
         self.x_label = donne.getXLabel()
         self.start, self.end = donne.getXTremePoints()
 
@@ -432,7 +426,7 @@ class Graph:
         X = donne.getXAxis()
 
         Y = []
-        for i in entries[coord::ncompo]:
+        for i in entries[compo::ncompo]:
             Y.append(list(donne.getValues(i)[1])[idx])
 
         if not func is None:
