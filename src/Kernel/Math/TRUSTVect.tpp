@@ -213,6 +213,16 @@ inline void TRUSTVect<_TYPE_>::resize_tab(int n, Array_base::Resize_Options opt)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
 {
+  if (new_size<0)
+    {
+      new_size=-new_size;
+      if (ptr[new_size]!=((std::is_same<_TYPE_,double>::value) ? 123456789.123456789 : 123456789))
+        {
+          Cerr << "taille dans ad" << ptr[new_size]<< " "<<new_size<<finl;
+          assert(0);
+          Process::exit();
+        }
+    }
   md_vector_.detach();
   TRUSTArray<_TYPE_>::ref_data(ptr, new_size);
   size_reelle_ = new_size;

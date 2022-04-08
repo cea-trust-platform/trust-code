@@ -246,6 +246,7 @@ template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
 {
   TRUSTVect<_TYPE_>::ref_data(ptr, new_size);
+  if (new_size<0) new_size=-new_size;
   assert(!TRUSTVect<_TYPE_>::get_md_vector().non_nul() && TRUSTVect<_TYPE_>::size_reelle() == TRUSTVect<_TYPE_>::size_array());
   nb_dim_ = 1;
   dimensions_[0] = dimension_tot_0_ = new_size;

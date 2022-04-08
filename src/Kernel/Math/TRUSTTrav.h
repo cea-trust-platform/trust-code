@@ -73,32 +73,32 @@ public:
     TRUSTTab<_TYPE_>::resize(n1, n2, n3, n4);
   }
 
-  //  ATTENTION: construit un tableau de meme taill et de meme structure (espaces virtuels), mais initialise avec ZERO !!!
+  //  ATTENTION: construit un tableau de meme taill et de meme structure (espaces virtuels), mais initialise avec TYPE_ZERO !!!
   inline TRUSTTrav(const TRUSTTab<_TYPE_>& tab)
   {
     TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE);
     TRUSTTab<_TYPE_>::copy(tab, Array_base::NOCOPY_NOINIT);
-    TRUSTTab<_TYPE_>::operator=(ZERO);
+    TRUSTTab<_TYPE_>::operator=(TYPE_ZERO);
   }
 
   // Constructeur par copie
-  //  ATTENTION: construit un tableau de meme taill et de meme structure (espaces virtuels), mais initialise avec ZERO !!!
+  //  ATTENTION: construit un tableau de meme taill et de meme structure (espaces virtuels), mais initialise avec TYPE_ZERO !!!
   inline TRUSTTrav(const TRUSTVect<_TYPE_>& tab)
   {
     TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE);
     TRUSTTab<_TYPE_>::set_line_size_(tab.line_size());
     TRUSTTab<_TYPE_>::resize(tab.size_array(), Array_base::NOCOPY_NOINIT);
     TRUSTTab<_TYPE_>::set_md_vector(tab.get_md_vector());
-    TRUSTTab<_TYPE_>::operator=(ZERO);
+    TRUSTTab<_TYPE_>::operator=(TYPE_ZERO);
   }
 
   // Constructeur par copie
-  //  ATTENTION: construit un tableau de meme taill et de meme structure (espaces virtuels), mais initialise avec ZERO !!!
+  //  ATTENTION: construit un tableau de meme taill et de meme structure (espaces virtuels), mais initialise avec TYPE_ZERO !!!
   inline TRUSTTrav(const TRUSTTrav& tab) : TRUSTTab<_TYPE_>(tab)
   {
     TRUSTTab<_TYPE_>::set_mem_storage(Array_base::TEMP_STORAGE);
     TRUSTTab<_TYPE_>::copy(tab, Array_base::NOCOPY_NOINIT);
-    TRUSTTab<_TYPE_>::operator=(ZERO);
+    TRUSTTab<_TYPE_>::operator=(TYPE_ZERO);
   }
 
   // Operateurs copie
@@ -119,7 +119,7 @@ public:
     //   IntTrav a;
     //   a = b
     //  est traduit en
-    //   IntTrav tmp(b); // copie la structure mais met les valeurs a zero
+    //   IntTrav tmp(b); // copie la structure mais met les valeurs a TYPE_ZERO
     //   a.operator=(tmp);
     TRUSTTab<_TYPE_>::operator=(tab);
     return *this;
@@ -141,7 +141,7 @@ public:
   }
 
 private:
-  static constexpr _TYPE_ ZERO = (_TYPE_)0;
+  static constexpr _TYPE_ TYPE_ZERO = (_TYPE_)0;
 };
 
 using IntTrav = TRUSTTrav<int>;
