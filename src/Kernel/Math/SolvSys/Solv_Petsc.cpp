@@ -2115,7 +2115,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
   /*******************************************/
   /* Choix du package pour le solveur direct */
   /*******************************************/
-  static int message_affi = 1;
+  static int message_affi = limpr() >= 0;
   if (solveur_direct_ == mumps)
     {
       // Message pour prevenir
@@ -2400,7 +2400,7 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
       for (auto &&kv : champ)
         {
           PetscSectionSetFieldName(sec, idx, kv.first.c_str());
-          Cerr << "Field " << kv.first << " available for PCFieldsplit." << finl;
+          if (limpr() >= 0) Cerr << "Field " << kv.first << " available for PCFieldsplit." << finl;
           for (int j = 0; j < (int) kv.second.size(); j++)
             PetscSectionSetDof(sec, kv.second[j], 1), PetscSectionSetFieldDof(sec, kv.second[j], idx, 1);
           idx++;
@@ -2698,7 +2698,7 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
       // Verifie la non symetrie de la matrice (au moins une fois)
       PetscBool IsSymmetric;
       MatIsSymmetric(MatricePetsc, 0.0, &IsSymmetric);
-      if (IsSymmetric) Cerr << "Warning: The PETSc matrix is aij but is symmetric. May be use sbaij ?" << finl;
+      if (IsSymmetric && limpr() >= 0) Cerr << "Warning: The PETSc matrix is aij but is symmetric. May be use sbaij ?" << finl;
     }
 #endif
   // Ignore les coefficients ajoutes:
