@@ -218,7 +218,7 @@ inline void TRUSTVect<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
       new_size=-new_size;
       if (ptr[new_size]!=((std::is_same<_TYPE_,double>::value) ? 123456789.123456789 : 123456789))
         {
-          Cerr << "taille dans ad" << ptr[new_size]<< " "<<new_size<<finl;
+          Cerr << "size in ad" << ptr[new_size]<< " "<<new_size<<finl;
           assert(0);
           Process::exit();
         }
