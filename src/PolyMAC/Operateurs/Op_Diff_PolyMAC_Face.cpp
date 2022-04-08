@@ -171,7 +171,7 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
 
   /* que faire avec les variables auxiliaires ? */
   if (aux_only) use_aux_ = 0; /* 1) on est en train d'assembler le systeme de resolution des variables auxiliaires lui-meme */
-  else if (t_last_aux_ < t && mat && !semi) t_last_aux_ = t, use_aux_ = 0; /* 2) on est en implicite complet : pas besoin de mat_aux / var_aux */
+  else if (mat && !semi) t_last_aux_ = t, use_aux_ = 0; /* 2) on est en implicite complet : pas besoin de mat_aux / var_aux */
   else if (t_last_aux_ < t) update_aux(t); /* 3) premier pas a ce temps en semi-implicite : on calcule les variables auxiliaires a t et on les stocke dans var_aux */
   ConstDoubleTab_parts p_inco(inco); /* deux parties de l'inconnue */
   const DoubleTab& omega = use_aux_ ? var_aux : p_inco[1]; /* les variables auxiliaires peuvent etre soit dans inco/semi_impl (cas 1), soit dans var_aux (cas 2) */
@@ -192,7 +192,7 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   nu_.nb_dim() == 2 ? inu.resize(1, N) : nu_.nb_dim() == 3 ? inu.resize(1, N, D) : inu.resize(1, N, D, D);
   m2.set_smart_resize(1), w1.set_smart_resize(1);
   if (!aux_only && mat && semi) for (a = 0; a < xa.dimension(0); a++) for (n = 0; n < N; n++) /* en semi-implicite : egalites w_a^+ = var_aux */
-        secmem(nf_tot + a, n) += omega(a, n) - inco(nf_tot + a, n), (*mat)(N * (nf_tot + a) + n, N * (nf_tot + a) + n) += 1;
+        secmem(nf_tot + a, n) += omega(a, n) - ch.valeurs()(nf_tot + a, n), (*mat)(N * (nf_tot + a) + n, N * (nf_tot + a) + n)++;
   else if (mat && !semi) for (e = 0; e < zone.nb_elem_tot(); e++) /* en implicite : vraies equations */
       {
         //tenseur de diffusion diagonal ou anisotrope diagonal : inverses faciles!
@@ -246,5 +246,6 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
                       (*mat)(N * (!aux_only * nf_tot + a) + n, N * (!aux_only * nf_tot + ab) + n) += w1(i, j, n) * la(ab) / dL(n);
                     }
       }
+  i++;
 }
 

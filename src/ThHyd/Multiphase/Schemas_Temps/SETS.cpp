@@ -341,7 +341,6 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       for (auto && n_i : inco) n_i.second->valeurs() += incr[n_i.first];
       if (p_degen) inco["pression"]->valeurs() -= mp_min_vect(inco["pression"]->valeurs()); // On prend la pression minimale comme pression de reference afin d'avoir la meme pression de reference en sequentiel et parallele
       if (!(ok = eq_qdm.milieu().check_unknown_range())) break; //si on a depasse les bornes du milieu sur (p, T), on doit sortir
-      eq_qdm.pression_pa().valeurs() = inco["pression"]->valeurs(); //en multiphase, la pression est deja en Pa
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
     }
 
@@ -350,13 +349,16 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
     {
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
       for (auto && n_i : inco) n_i.second->futur() = n_i.second->valeurs();
-      eq_qdm.pression().futur() = eq_qdm.pression().valeurs(), eq_qdm.pression_pa().futur() = eq_qdm.pression_pa().valeurs();
+      eq_qdm.pression().futur() = eq_qdm.pression().valeurs();
+      ConstDoubleTab_parts ppart(inco["pression"]->valeurs());
+      //en multiphase, la pression est deja en Pa
+      /* si pression_pa() est plus petit que pression() (ex. : variables auxiliaires PolyMAC), alors on ne copie que la 1ere partie */
+      eq_qdm.pression_pa().valeurs() = eq_qdm.pression_pa().valeurs().dimension_tot(0) < inco["pression"]->valeurs().dimension_tot(0) ? ppart[0] : inco["pression"]->valeurs(); //en multiphase, la pression est deja en Pa
       first_call_ = 0;
     }
   else
     {
       for (auto && n_i : inco)  n_i.second->futur() = n_i.second->valeurs() = n_i.second->passe();
-      eq_qdm.pression_pa().futur() = eq_qdm.pression_pa().valeurs() = inco["pression"]->passe();
       ok = 0;
     }
   if (!Process::me()) tp.PrintFooter();
@@ -546,10 +548,10 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
       stencil.set_smart_resize(1);
       for (auto &&n_m : mats.at(inco_p)) if (n_m.second && n_m.second->nb_colonnes())
           {
-            const Matrice_Morse& Mp = *n_m.second, &Ap = A_p.at(n_m.first);
+            const Matrice_Morse& Mp = *n_m.second, *Ap = n_m.first != inco_p ? &A_p.at(n_m.first) : NULL;
             for (i = 0; i < np; i++) if (calc[i]) for (ib = M * i, m = 0; m < M; m++, ib++) for (j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
-                    for (k = Mp.get_tab2()(j) - 1, l = Ap.get_tab1()(k) - 1; l < Ap.get_tab1()(k + 1) - 1; l++)
-                      stencil.append_line(ib, Ap.get_tab2()(l) - 1);
+                    for (k = Mp.get_tab2()(j) - 1, l = (Ap ? Ap->get_tab1()(k) - 1 : 0); l < (Ap ? Ap->get_tab1()(k + 1) - 1 : 1); l++)
+                      stencil.append_line(ib, Ap ? Ap->get_tab2()(l) - 1 : k);
           }
       tableau_trier_retirer_doublons(stencil);
       Matrix_tools::allocate_morse_matrix(secmem.size_totale(), secmem.size_totale(), stencil, P);
@@ -557,7 +559,9 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
 
   /* remplissage de P / secmem */
   P.get_set_coeff() = 0;
-  for (auto &&n_m : mats.at(inco_p)) if (n_m.second && n_m.second->nb_colonnes())
+  for (auto &&n_m : mats.at(inco_p))
+    if (n_m.first == inco_p && n_m.second && n_m.second->nb_colonnes()) P += *n_m.second; /* dependance directe en inco_p -> on ajoute */
+    else if (n_m.second && n_m.second->nb_colonnes()) /* dependance en une autre inconnue -> produit Mp.Ap + modif second membre */
       {
         const Matrice_Morse& Mp = *n_m.second, &Ap = A_p.at(n_m.first);
         const DoubleTab& bp = b_p.at(n_m.first);

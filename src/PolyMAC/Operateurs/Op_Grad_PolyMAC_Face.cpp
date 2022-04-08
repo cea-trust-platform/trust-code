@@ -110,7 +110,7 @@ void Op_Grad_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
 void Op_Grad_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_PolyMAC& zone = ref_zone.valeur();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const DoubleTab& vfd = zone.volumes_entrelaces_dir(), &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &pf = zone.porosite_face();
@@ -129,7 +129,7 @@ void Op_Grad_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                 {
                   double fac = alpha(n) * w2(i, j, 0) * prefac;
                   secmem(f, n) -= fac * (press(ne_tot + fb, m) - press(e, m));
-                  if (mat) (*mat)(N * f + n, M * (ne_tot + fb) + m) += fac; /* bloc (face, face) */
+                  if (mat && fcl(fb, 0) != 1) (*mat)(N * f + n, M * (ne_tot + fb) + m) += fac; /* bloc (face, face) */
                   coeff_e(n) += fac;
                 }
           if (mat) for (n = 0, m = 0; n < N; n++, m += (M > 1)) (*mat)(N * f + n, M * e + m) -= coeff_e(n); /* bloc (face, elem) */

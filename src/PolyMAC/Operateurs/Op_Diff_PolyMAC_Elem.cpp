@@ -134,7 +134,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
   for (i = 0, M = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
       std::string nom_mat = i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
-      mat[i] = !semi_impl.count(nom_inco) && matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
       zone.push_back(std::ref(ref_cast(Zone_PolyMAC, op_ext[i]->equation().zone_dis().valeur())));
       f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces()));
       cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
@@ -155,7 +155,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
     {
       zone[0].get().W2(&diffu[0].get(), e, w2); //interpolation : [n_ef.nu grad T]_f = w2_{ff'} (T_f' - T_e)
       //element <-> toutes ses faces (non Dirichlet)
-      if (!aux_only) for (i = 0; i < w2.dimension(0); i++) if (!semi && fcl[0](f = e_f[0](e, i), 0) < 6)
+      if (!aux_only && !semi) for (i = 0; i < w2.dimension(0); i++) if (!semi && fcl[0](f = e_f[0](e, i), 0) < 6)
             {
               if (e < zone[0].get().nb_elem()) for (n = 0; n < N[0]; n++) stencil[0].append_line(N[0] * e + n, N[0] * (ne_tot[0] + f) + n);
               if (f < zone[0].get().nb_faces()) for (n = 0; n < N[0]; n++) stencil[0].append_line(N[0] * (ne_tot[0] + f) + n, N[0] * e + n);
@@ -212,7 +212,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   for (i = 0, M = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
       std::string nom_mat = i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
-      mat[i] = !semi_impl.count(nom_inco) && matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
+      mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
       zone.push_back(std::ref(ref_cast(Zone_PolyMAC, op_ext[i]->equation().zone_dis().valeur())));
       f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces())), f_s.push_back(std::ref(zone[i].get().face_sommets()));
       fs.push_back(std::ref(zone[i].get().face_surfaces()));
@@ -231,7 +231,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   /* que faire avec les variables auxiliaires ? */
   double t = equation().schema_temps().temps_courant(), dt = equation().schema_temps().pas_de_temps();
   if (aux_only) use_aux_ = 0; /* 1) on est en train d'assembler le systeme de resolution des variables auxiliaires lui-meme */
-  else if (t_last_aux_ < t && mat[0] && !semi) t_last_aux_ = t + dt, use_aux_ = 0; /* 2) on est en implicite complet : pas besoin de mat_aux / var_aux, on aura les variables a t + dt */
+  else if (mat[0] && !semi) t_last_aux_ = t + dt, use_aux_ = 0; /* 2) on est en implicite complet : pas besoin de mat_aux / var_aux, on aura les variables a t + dt */
   else if (t_last_aux_ < t) update_aux(t); /* 3) premier pas a ce temps en semi-implicite : on calcule les variables auxiliaires a t et on les stocke dans var_aux */
   for (i = 0; i < n_ext; i++) v_aux.push_back(use_aux_ ? ref_cast(Op_Diff_PolyMAC_Elem, *op_ext[i]).var_aux : v_part[i][1]); /* les variables auxiliaires peuvent etre soit dans inco/semi_impl (cas 1), soit dans var_aux (cas 2) */
 
@@ -269,7 +269,8 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
 
   //contributions restantes aux equations aux faces
   for (f = 0; f < zone[0].get().nb_faces(); f++)
-    if (!aux_only && semi && mat[0]) for (n = 0; n < N[0]; n++) (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + f) + n)++; //semi-implicite : T_f^+ = T_f^-
+    if (!aux_only && semi && mat[0]) for (n = 0; n < N[0]; n++) //semi-implicite : T_f^+ = var_aux
+        secmem(ne_tot[0] + f, n) += v_aux[0](f, n) - equation().inconnue().valeurs()(ne_tot[0] + f, n), (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + f) + n)++;
     else if (fcl[0](f, 0) == 0) continue; //face interne -> rien
     else if (corr[0]) //Pb_Multiphase avec flux parietal -> on ne traite (pour le moment) que Dirichlet et Echange_contact
       {
@@ -301,7 +302,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
     else if (fcl[0](f, 0) > 5) for (n = 0; n < N[0]; n++) //Dirichlet : T_f^+ = T_b
         {
           secmem(!aux_only * ne_tot[0] + f, n) += (fcl[0](f, 0) == 6 ? ref_cast(Dirichlet, cls[0].get()[fcl[0](f, 1)].valeur()).val_imp(fcl[0](f, 2), n) : 0) - v_aux[0](f, n);
-          if (mat[0]) (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + f) + n)++;
+          if (mat[0]) (*mat[0])(N[0] * (!aux_only * ne_tot[0] + f) + n, N[0] * (!aux_only * ne_tot[0] + f) + n)++;
         }
     else if (fcl[0](f, 0) == 3) //Echange_contact
       {

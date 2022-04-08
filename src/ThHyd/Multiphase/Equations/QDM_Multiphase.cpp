@@ -103,14 +103,14 @@ Entree& QDM_Multiphase::readOn(Entree& is)
   divergence.set_description((Nom)"Mass flow rate=Integral(rho*u*ndS) [kg.s-1]");
   terme_convectif.valeur().set_incompressible(0);
 
-  if (!evanescence.non_nul())
+  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
+  if (!evanescence.non_nul() && pb.nb_phases() > 1)
     {
       EChaine eva("{ homogene { alpha_res 1e-6 } }");
       eva >> evanescence;
     }
 
   /* champs de vitesse par phase pour le postpro */
-  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   noms_vit_phases_.dimensionner(pb.nb_phases()), vit_phases_.resize(pb.nb_phases());
   for (int i = 0; i < pb.nb_phases(); i++)
     champs_compris_.ajoute_nom_compris(noms_vit_phases_[i] = Nom("vitesse_") + pb.nom_phase(i));
@@ -172,7 +172,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
       {
         vit_phases_[n].mettre_a_jour(temps);
         DoubleTab_parts psrc(inconnue().valeurs()), pdst(vit_phases_[n].valeurs());
-        for (i = 0; i < psrc.size(); i++)
+        for (i = 0; i < std::min(psrc.size(), pdst.size()); i++)
           {
             DoubleTab& src = psrc[i], &dst = pdst[i];
             if (src.line_size() == N) /* une colonne par composante */
@@ -210,13 +210,16 @@ void QDM_Multiphase::mettre_a_jour(double temps)
 bool QDM_Multiphase::initTimeStep(double dt)
 {
   Schema_Temps_base& sch=schema_temps();
+  ConstDoubleTab_parts ppart(pression()->valeurs());
+  /* si pression_pa() est plus petit que pression() (ex. : variables auxiliaires PolyMAC), alors on ne copie que la 1ere partie */
+  const DoubleTab& p_red = pression_pa()->valeurs().dimension_tot(0) < pression()->valeurs().dimension_tot(0) ? ppart[0] : pression()->valeurs();
   for (int i=1; i<=sch.nb_valeurs_futures(); i++)
     {
       // Mise a jour du temps dans la pression
       pression()->changer_temps_futur(sch.temps_futur(i),i);
       pression()->futur(i)=pression()->valeurs();
       pression_pa()->changer_temps_futur(sch.temps_futur(i),i);
-      pression_pa()->futur(i)=pression()->valeurs();
+      pression_pa()->futur(i) = p_red;
     }
   return Equation_base::initTimeStep(dt);
 }

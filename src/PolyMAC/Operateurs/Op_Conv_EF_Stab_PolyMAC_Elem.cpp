@@ -165,7 +165,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
                 for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * eb + m);
 
         tableau_trier_retirer_doublons(stencil);
-        Matrix_tools::allocate_morse_matrix(equation().inconnue().valeurs().size_totale(), cc.derivees().at(i_m.first).size_totale(), stencil, mat);
+        Matrix_tools::allocate_morse_matrix(equation().inconnue().valeurs().size_totale(), i_m.first == "vitesse" ? vitesse_->valeurs().size_totale() : cc.derivees().at(i_m.first).size_totale(), stencil, mat);
         i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
       }
 }
@@ -237,10 +237,10 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
 {
   Op_Conv_PolyMAC_base::mettre_a_jour(temps);
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins();
+  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const Champ_Inc_base& cc = equation().champ_convecte();
-  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
-  const DoubleTab& vit = vitesse_->valeurs(), &vcc = equation().champ_convecte().valeurs(), bcc = cc.valeur_aux_bords(), &alp = equation().inconnue().valeurs();
+  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
+  const DoubleTab& vit = vitesse_->valeurs(), &vcc = equation().champ_convecte().valeurs(), bcc = cc.valeur_aux_bords(), &alp = equation().inconnue().valeurs(), &xv = zone.xv(), &xp = zone.xp();
   DoubleTab balp;
   if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
 
@@ -288,12 +288,13 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
           c_ph.changer_temps(temps);
         }
 
-  DoubleTrav G(N), v2(N);
+  DoubleTrav G(N), v(N, D);
   double Gt;
   if (x_phases_.size()) for (e = 0; e < zone.nb_elem(); e++) //titre : aux elements
       {
-        for (v2 = 0, d = 0; d < D; d++) for (n = 0; n < N; n++) v2(n) += std::pow(vit(nf_tot + D * e + d, n), 2);
-        for (Gt = 0, n = 0; n < N; Gt += G(n), n++) G(n) = vcc(e, n) * sqrt(v2(n));
+        for (v = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++) for (d = 0; d < D; d++)
+              v(n, d) += fs(f) * pf(f) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * vit(f, n) / (pe(e) * ve(e));
+        for (Gt = 0, n = 0; n < N; Gt += G(n), n++) G(n) = vcc(e, n) * sqrt(zone.dot(&v(n, 0), &v(n, 0)));
         for (n = 0; n < N; n++) if (x_phases_[n].non_nul()) x_phases_[n]->valeurs()(e) = Gt ? G(n) / Gt : 0;
       }
   if (x_phases_.size()) for (n = 0; n < N; n++) if (x_phases_[n].non_nul()) x_phases_[n]->changer_temps(temps);

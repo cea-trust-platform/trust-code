@@ -613,8 +613,10 @@ void disp_ia(const ArrOfInt& A)
   fprintf(stderr, "}\n");
 }
 
-void disp_m(const Matrice_Morse& M)
+void disp_m(const Matrice_Base& M_in)
 {
+  Matrice_Morse M;
+  Matrix_tools::convert_to_morse_matrix(M_in, M);
   DoubleTab A(M.nb_lignes(), M.nb_colonnes());
   for (int i = 0; i < A.dimension(0); i++)
     for (int k = M.get_tab1().addr()[i] - 1; k < M.get_tab1().addr()[i + 1] - 1; k++)

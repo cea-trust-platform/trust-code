@@ -310,11 +310,12 @@ void Op_Diff_PolyMAC_base::update_aux(double t) const
   for (i = 0; i < n_ext; i++) p_inc[i] = v_part[i][1];
 
   /* assemblage */
+  if (!first_run) for (i = 0; i < n_ext; i++) for (j = 0; j < n_ext; j++) ref_cast(Matrice_Morse, mat_aux.get_bloc(i, j).valeur()).get_set_coeff() = 0;
   for (i = 0; i < n_ext; i++) opp_ext[i]->ajouter_blocs_ext(1, lines[i], p_sec[i]);
   /* passage incremente/inconnues */
   mat_aux.ajouter_multvect(inco, secmem);
   /* resolution */
-  if (first_run) solv_aux = ref_cast(Parametre_implicite, equation().parametre_equation().valeur()).solveur(); //on copie le solveur de l'equation
+  if (first_run) solv_aux = ref_cast(Parametre_implicite, equation().parametre_equation().valeur()).solveur(), solv_aux->fixer_limpr(-1); //on copie le solveur de l'equation
   solv_aux.valeur().reinit();
   solv_aux.resoudre_systeme(mat_aux, secmem, inco);
   /* maj de var_aux / t_last_aux dans tous les operateurs */
