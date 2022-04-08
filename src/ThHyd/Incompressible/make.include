@@ -9,6 +9,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
+	-I$(TRUST_ROOT)/src/Kernel/Solveurs\
 	-I$(TRUST_ROOT)/src/ThSol\
 	
 

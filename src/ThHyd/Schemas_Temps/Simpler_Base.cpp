@@ -173,7 +173,7 @@ Entree& Simpler_Base::readOn(Entree& is )
 // Description:
 // retourne le parametre_implicte de l'equation si il existe si il n'existe pas le cree...
 // si les params sont vides on copie ceux du simpler
-Parametre_implicite& Simpler_Base::get_and_set_parametre_implicite(Equation_base& eqn)
+Parametre_equation_base& Simpler_Base::get_and_set_parametre_equation(Equation_base& eqn)
 {
   Parametre_equation& param = eqn.parametre_equation();
   if (!param.non_nul())

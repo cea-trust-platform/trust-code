@@ -27,6 +27,7 @@
 #include <TRUSTTabs_forward.h>
 #include <Objet_U.h>
 #include <Double.h>
+#include <Parametre_implicite.h>
 
 class Equation_base;
 
@@ -52,6 +53,10 @@ public :
   virtual double get_default_growth_factor() const /* taux de croissance du pas de temps */
   {
     return DMAXFLOAT; /* par defaut pas de limite : on est en implicite */
+  }
+  virtual Parametre_equation_base& get_and_set_parametre_equation(Equation_base& eqn) /* initialisation de parametre_equation() dans une equation */
+  {
+    return eqn.parametre_equation(); /* par defaut : ne fait rien */
   }
 };
 

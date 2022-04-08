@@ -7,6 +7,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
+	-I$(TRUST_ROOT)/src/Kernel/Solveurs\
+	-I$(TRUST_ROOT)/src/Kernel/Statistiques_temps\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Loi_Etat\

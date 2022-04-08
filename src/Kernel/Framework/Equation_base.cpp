@@ -43,6 +43,8 @@
 #include <Avanc.h>
 #include <EcrFicPartage.h>
 #include <Debog.h>
+#include <Schema_Implicite_base.h>
+#include <Solveur_Implicite_Base.h>
 #include <Param.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
@@ -1287,6 +1289,10 @@ int Equation_base::preparer_calcul()
   les_sources.initialiser(temps);
   zone_Cl_dis().imposer_cond_lim(inconnue(),temps);
   inconnue().valeurs().echange_espace_virtuel();
+
+  /* initialisation de parametre_equation() par le schema en temps si celui-ci le permet */
+  if (sub_type(Schema_Implicite_base, schema_temps()))
+    ref_cast(Schema_Implicite_base, schema_temps()).solveur()->get_and_set_parametre_equation(*this);
 
   msg=que_suis_je();
   msg+=" dans Equation_base::preparer_calcul ";
