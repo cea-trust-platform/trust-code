@@ -26,6 +26,7 @@
 #include <Array_base.h>
 #include <Memoire.h>
 #include <assert.h>
+#include <typeinfo>
 
 class Memoire;
 template<typename _TYPE_> class TRUSTArray;

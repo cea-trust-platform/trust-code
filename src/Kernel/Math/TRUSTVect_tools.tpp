@@ -80,6 +80,16 @@ inline void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
 // DEBUT code pour operation min/max/abs
 enum class TYPE_OPERATION_VECT { IMAX_ , IMIN_ , MAX_ , MIN_ , MAX_ABS_ , MIN_ABS_ };
 
+inline double neutral_value_double_(const bool IS_MAX)
+{
+  return IS_MAX ? (-HUGE_VALL) : HUGE_VALL;
+}
+
+inline int neutral_value_int_(const bool IS_MAX)
+{
+  return IS_MAX ? INT_MIN : INT_MAX;
+}
+
 template <typename _TYPE_, TYPE_OPERATION_VECT _TYPE_OP_ >
 inline _TYPE_ neutral_value()
 {
@@ -88,8 +98,8 @@ inline _TYPE_ neutral_value()
 
   _TYPE_ neutral_val;
 
-  if (std::is_same<_TYPE_, double>::value) neutral_val = IS_MAX ? (-HUGE_VALL) : HUGE_VALL;
-  else neutral_val = IS_MAX ? INT_MIN : INT_MAX;
+  if (std::is_same<_TYPE_, double>::value) neutral_val = neutral_value_double_(IS_MAX);
+  else neutral_val = neutral_value_int_(IS_MAX);
 
   return neutral_val;
 }

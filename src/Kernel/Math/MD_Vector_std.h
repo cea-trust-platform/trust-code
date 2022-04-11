@@ -86,7 +86,7 @@ private:
 #include <MD_Vector_std_tools.tpp>
 
 template<typename _TYPE_>
-void MD_Vector_std::initialize_comm_template(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm, TRUSTVect<_TYPE_>& v) const
+void MD_Vector_std::initialize_comm_template(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& comm_, TRUSTVect<_TYPE_>& v) const
 {
   const int reverse = (opt.get_op() != Echange_EV_Options::SYNC);
   const int have_items_to_recv = (items_to_recv_.get_data().size_array() > 0);
@@ -106,8 +106,8 @@ void MD_Vector_std::initialize_comm_template(const Echange_EV_Options& opt, Sche
           sz1 = sz2;
           sz2 = tmp;
         }
-      comm.add_send_area_template < _TYPE_ > (pe, sz1 * v.line_size());
-      comm.add_recv_area_template < _TYPE_ > (pe, sz2 * v.line_size());
+      comm_.add_send_area_template < _TYPE_ > (pe, sz1 * v.line_size());
+      comm_.add_recv_area_template < _TYPE_ > (pe, sz2 * v.line_size());
     }
 }
 
