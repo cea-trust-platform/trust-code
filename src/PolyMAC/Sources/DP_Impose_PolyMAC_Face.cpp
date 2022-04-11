@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
 #include <Champ_Don_base.h>
 #include <cfloat>
 
-Implemente_instanciable(DP_Impose_PolyMAC_Face,"DP_Impose_Face_PolyMAC",Perte_Charge_PolyMAC_Face);
+Implemente_instanciable(DP_Impose_PolyMAC_Face,"DP_Impose_Face_PolyMAC|DP_Impose_Face_PolyMAC_V2",Perte_Charge_PolyMAC_Face);
 
 //// printOn
 //
@@ -65,10 +65,10 @@ Entree& DP_Impose_PolyMAC_Face::readOn(Entree& s)
 void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
 {
   const Domaine& le_domaine = equation().probleme().domaine();
-  const Zone_PolyMAC& zone_PolyMAC = ref_cast(Zone_PolyMAC,equation().zone_dis().valeur());
-  int taille_bloc = zone_PolyMAC.nb_elem();
+  const Zone_Poly_base& zone_poly = ref_cast(Zone_Poly_base,equation().zone_dis().valeur());
+  int taille_bloc = zone_poly.nb_elem();
   num_faces.resize(taille_bloc);
-  lire_surfaces(s,le_domaine,zone_PolyMAC,num_faces, sgn);
+  lire_surfaces(s,le_domaine,zone_poly,num_faces, sgn);
   // int nfac_tot = mp_sum(num_faces.size());
   int nfac_max = (int)mp_max(num_faces.size()); // not to count several (number of processes) times the same face
 
@@ -81,54 +81,37 @@ void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
     }
 
   DoubleTrav S;
-  zone_PolyMAC.creer_tableau_faces(S);
-  for (int i = 0; i < num_faces.size(); i++) S(num_faces(i)) = zone_PolyMAC.face_surfaces(num_faces(i));
+  zone_poly.creer_tableau_faces(S);
+  for (int i = 0; i < num_faces.size(); i++) S(num_faces(i)) = zone_poly.face_surfaces(num_faces(i));
   surf = mp_somme_vect(S);
 }
 
-DoubleTab& DP_Impose_PolyMAC_Face::ajouter(DoubleTab& resu) const
+void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  const DoubleVect& pf = zone_PolyMAC.porosite_face(), &fs = zone_PolyMAC.face_surfaces();
+  const Zone_Poly_base& zone_poly = ref_cast(Zone_Poly_base,equation().zone_dis().valeur());
+  const DoubleVect& pf = zone_poly.porosite_face(), &fs = zone_poly.face_surfaces();
   const DoubleTab& vit = equation().inconnue().valeurs();
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
   //valeurs du champ de DP
   DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
-  for (int i = 0; i < num_faces.size(); i++) for (int j = 0; j < dimension; j++) xvf(i, j) = zone_PolyMAC.xv()(num_faces(i), j);
+  for (int i = 0; i < num_faces.size(); i++) for (int j = 0; j < dimension; j++) xvf(i, j) = zone_poly.xv()(num_faces(i), j);
   DP_.valeur().valeur_aux(xvf, DP);
 
   double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;
 
-  for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
-      resu(f) += fs(f) * pf(f) * sgn(i) * (DP(i, 0) + DP(i, 1) * (surf * sgn(i) * vit(f) - DP(i, 2))) * fac_rho;
+  for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_poly.nb_faces())
+      {
+        secmem(f) += fs(f) * pf(f) * sgn(i) * (DP(i, 0) + DP(i, 1) * (surf * sgn(i) * vit(f) - DP(i, 2))) * fac_rho;
+        if (mat) (*mat)(f, f) -= fs(f) * pf(f) * DP(i, 1) * surf * fac_rho;
+      }
 
   bilan().resize(4); //DP dDP/dQ Q Q0
   bilan()(0) = Process::mp_max(num_faces.size() ? DP(0, 0)       : -DBL_MAX);
   bilan()(1) = Process::mp_max(num_faces.size() ? DP(0, 1) / rho : -DBL_MAX);
   bilan()(3) = Process::mp_max(num_faces.size() ? DP(0, 2) * rho : -DBL_MAX);
   if (Process::me()) bilan() = 0; //pour eviter un sommage en sortie
-  return resu;
-}
-
-void DP_Impose_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat) const
-{
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  const DoubleVect& pf = zone_PolyMAC.porosite_face(), &fs = zone_PolyMAC.face_surfaces();
-
-  //valeurs du champ de DP
-  DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
-  for (int i = 0; i < num_faces.size(); i++) for (int j = 0; j < dimension; j++) xvf(i, j) = zone_PolyMAC.xv()(num_faces(i), j);
-  DP_.valeur().valeur_aux(xvf, DP);
-
-  double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;
-  for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
-      mat(f, f) -= fs(f) * pf(f) * DP(i, 1) * surf * fac_rho;
-}
-
-DoubleTab& DP_Impose_PolyMAC_Face::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
 }
 
 void DP_Impose_PolyMAC_Face::mettre_a_jour(double temps)

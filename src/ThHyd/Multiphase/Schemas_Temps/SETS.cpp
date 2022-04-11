@@ -245,7 +245,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       semi_impl["vitesse"] = current;
     }
   else semi_impl["vitesse"] = eq_qdm.inconnue().passe();
-  eqn.solv_masse().corriger_solution(current, current, 0); //pour CoviMAC : vf -> ve
+  eqn.solv_masse().corriger_solution(current, current, 0); //pour PolyMAC_V2 : vf -> ve
 
   //premier passage : dimensionnement de mat_semi_impl, remplissage de p_degen_
   if (!mat_semi_impl.nb_lignes())
@@ -287,7 +287,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       /* expression des autres inconnues (x) en fonction de p : vitesse, puis temperature / pression */
       tabs_t b_p;
       std::vector<std::set<std::pair<std::string, int>>> ordre;
-      if (eq_qdm.zone_dis().valeur().le_nom() == "CoviMAC") ordre.push_back({{ "vitesse", 1 }}); //si CoviMAC: on commence par ve
+      if (eq_qdm.zone_dis().valeur().le_nom() == "PolyMAC_V2") ordre.push_back({{ "vitesse", 1 }}); //si PolyMAC_V2: on commence par ve
       ordre.push_back({{ "vitesse", 0 }}), ordre.push_back({}); //puis vf, puis toutes les autres inconnues simultanément
       for (auto &&nom : noms) if (nom != "vitesse" && nom != "pression") ordre.back().insert({{ nom, 0 }});
       eliminer(ordre, "pression", mats, sec, A_p, b_p);
@@ -315,7 +315,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           A_p[n_v.first].ajouter_multvect(incr["pression"], incr[n_v.first]); //dependance en les increments de pression
           incr[n_v.first].echange_espace_virtuel();
         }
-      eqn.solv_masse().corriger_solution(incr["vitesse"], incr["vitesse"], 1); //pour CoviMAC : sert a corriger ve
+      eqn.solv_masse().corriger_solution(incr["vitesse"], incr["vitesse"], 1); //pour PolyMAC_V2 : sert a corriger ve
 
 
       if (!Process::me()) tp << it + 1;

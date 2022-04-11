@@ -51,8 +51,10 @@ public :
   Champ_base& affecter_(const Champ_base& ch) override;
   int                       imprime(Sortie& , int ) const override;
 
-  virtual int fixer_nb_valeurs_nodales(int n) override; //valeurs aux elements
-  void init_auxiliary_variables(); //pour demander en plus les inconnues auxiliaires (valeurs aux faces)
+  int fixer_nb_valeurs_nodales(int n) override; //valeurs aux elements
+  int nb_valeurs_nodales() const override;
+  virtual void init_auxiliary_variables(); //pour demander en plus les inconnues auxiliaires (valeurs aux faces)
+  int reprendre(Entree& fich) override;
 
   /* fonctions reconstruisant de maniere plus precise le champ aux faces */
   DoubleTab& valeur_aux_faces(DoubleTab& vals) const override;

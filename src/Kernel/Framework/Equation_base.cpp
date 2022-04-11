@@ -2237,7 +2237,7 @@ void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
 
   matrice.get_set_coeff() = 0.0;  // just to be sure ...
 
-  if (probleme().discretisation().que_suis_je().finit_par("MAC") || probleme().discretisation().que_suis_je() == "DDFV")
+  if (probleme().discretisation().que_suis_je().debute_par("PolyMAC") || probleme().discretisation().que_suis_je() == "DDFV")
     {
       matrice.sort_stencil();
       matrice_stockee.get_set_tab1().ref_array(matrice.get_set_tab1());
@@ -2435,7 +2435,7 @@ void Equation_base::assembler_blocs(matrices_t matrices, DoubleTab& secmem, cons
   statistiques().end_count(source_counter_);
 
   statistiques().begin_count(assemblage_sys_counter_);
-  if (!discretisation().que_suis_je().finit_par("MAC"))
+  if (!discretisation().que_suis_je().debute_par("PolyMAC"))
     {
       const std::string& nom_inco = inconnue().le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
@@ -2449,7 +2449,7 @@ void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab&
   assembler_blocs(matrices, secmem, semi_impl);
   solv_masse().valeur().set_penalisation_flag(0);
   schema_temps().ajouter_blocs(matrices, secmem, *this);
-  if (!discretisation().que_suis_je().finit_par("MAC"))
+  if (!discretisation().que_suis_je().debute_par("PolyMAC"))
     {
       const std::string& nom_inco = inconnue().le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
@@ -2462,8 +2462,7 @@ void Equation_base::assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab&
 void Equation_base::init_champ_conserve() const
 {
   if (champ_conserve_.non_nul()) return; //deja fait
-  ConstDoubleTab_parts part(inconnue().valeurs()); //si l'inconnue est multi-localisee, on prend le premier morceau
-  int Nt = inconnue()->nb_valeurs_temporelles(), Nl = part[0].dimension(0), Nc = inconnue().valeurs().line_size();
+  int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue().valeurs().size_reelle_ok() ? inconnue().valeurs().dimension(0) : -1, Nc = inconnue().valeurs().line_size();
   //champ_conserve_ : meme type / support que l'inconnue
   discretisation().creer_champ(champ_conserve_, zone_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_conserve_->associer_eqn(*this);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 
 Implemente_instanciable(Source_Generique_P0_Elem,"Source_Generique_VDF_P0_VDF",Source_Generique_base);
 Add_synonym(Source_Generique_P0_Elem, "Source_Generique_P0_PolyMAC");
-Add_synonym(Source_Generique_P0_Elem, "Source_Generique_P0_CoviMAC");
+Add_synonym(Source_Generique_P0_Elem, "Source_Generique_P0_PolyMAC_V2");
 
 Sortie& Source_Generique_P0_Elem::printOn(Sortie& os) const
 {

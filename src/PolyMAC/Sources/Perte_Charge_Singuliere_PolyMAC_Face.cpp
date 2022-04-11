@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,15 +21,18 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Perte_Charge_Singuliere_PolyMAC_Face.h>
-#include <Zone_PolyMAC.h>
+#include <Zone_PolyMAC_V2.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
+#include <Pb_Multiphase.h>
+#include <Champ_Face_PolyMAC.h>
+#include <Op_Grad_PolyMAC_Face.h>
 #include <Motcle.h>
 #include <Domaine.h>
 #include <Matrice_Morse.h>
 #include <Param.h>
 
-Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_Face,"Perte_Charge_Singuliere_Face_PolyMAC",Perte_Charge_PolyMAC_Face);
+Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_Face,"Perte_Charge_Singuliere_Face_PolyMAC|Perte_Charge_Singuliere_Face_PolyMAC_V2",Perte_Charge_PolyMAC_Face);
 
 //// printOn
 //
@@ -67,10 +70,10 @@ Entree& Perte_Charge_Singuliere_PolyMAC_Face::readOn(Entree& s)
 void Perte_Charge_Singuliere_PolyMAC_Face::remplir_num_faces(Entree& s)
 {
   const Domaine& le_domaine = equation().probleme().domaine();
-  const Zone_PolyMAC& zone_PolyMAC = ref_cast(Zone_PolyMAC,equation().zone_dis().valeur());
-  int taille_bloc = zone_PolyMAC.nb_elem();
+  const Zone_Poly_base& zone_poly = ref_cast(Zone_Poly_base,equation().zone_dis().valeur());
+  int taille_bloc = zone_poly.nb_elem();
   num_faces.resize(taille_bloc);
-  lire_surfaces(s,le_domaine,zone_PolyMAC,num_faces, sgn);
+  lire_surfaces(s,le_domaine,zone_poly,num_faces, sgn);
   // int nfac_tot = mp_sum(num_faces.size());
   int nfac_max = (int)mp_max(num_faces.size()); // not to count several (number of processes) times the same face
 
@@ -83,39 +86,26 @@ void Perte_Charge_Singuliere_PolyMAC_Face::remplir_num_faces(Entree& s)
     }
 }
 
-DoubleTab& Perte_Charge_Singuliere_PolyMAC_Face::ajouter(DoubleTab& resu) const
+void Perte_Charge_Singuliere_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
+  const Zone_Poly_base& zone = ref_cast(Zone_Poly_base, equation().zone_dis().valeur());
   //const DoubleVect& volumes_entrelaces = zone_PolyMAC.volumes_entrelaces();
-  const DoubleVect& p_f = zone_PolyMAC.porosite_face();
-  const DoubleTab& vit = la_vitesse->valeurs();
-
-  for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
+  const DoubleVect& pf = zone.porosite_face(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
+  const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
+  const DoubleTab& vit = la_vitesse->valeurs(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(),
+                   *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL;
+  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
+  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  int i, j, e, f, n, N = equation().inconnue().valeurs().line_size(), calc_cl = !sub_type(Zone_PolyMAC_V2, zone);
+  DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
+  for (i = 0; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone.nb_faces() && (calc_cl || fcl(f, 0) < 2))
       {
-        double Ud = vit(f) * p_f(f),
-               surf = direction_perte_charge() < 0 ? zone_PolyMAC.face_surfaces(f) : std::fabs(zone_PolyMAC.face_normales(f,direction_perte_charge())); // Taking account of inclined plane
-        resu(f) -= 0.5 * surf * p_f(f) * K() * Ud * std::fabs(Ud);
-      }
-  return resu;
-}
-
-DoubleTab& Perte_Charge_Singuliere_PolyMAC_Face::calculer(DoubleTab& resu) const
-{
-  resu = 0;
-  return ajouter(resu);
-}
-
-void Perte_Charge_Singuliere_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  const Zone_PolyMAC& zone_PolyMAC = la_zone_PolyMAC.valeur();
-  const DoubleVect& p_f = zone_PolyMAC.porosite_face();
-  const DoubleTab& vit = la_vitesse->valeurs();
-
-  for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_PolyMAC.nb_faces())
-      {
-        double Ud = vit(f) * p_f(f),
-               surf = direction_perte_charge() < 0 ? zone_PolyMAC.face_surfaces(f) : std::fabs(zone_PolyMAC.face_normales(f,direction_perte_charge())); // Taking account of inclined plane
-        matrice.coef(f, f) += surf * p_f(f) * K() * p_f(f) * std::fabs(Ud);
+        double fac = (direction_perte_charge() < 0 ? fs(f) : std::fabs(nf(f,direction_perte_charge()))) * pf(f) * K();
+        if (pbm) for (aar_f = 0, j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) aar_f(n) += vfd(f, j) / vf(f) * (*a_r)(e, n) * (*alpha)(e, n);
+        else aar_f = 1;
+        for (n = 0; n < N; n++)  secmem(f, n) -= 0.5 * fac * aar_f(n) * vit(f, n) * std::fabs(vit(f, n));
+        if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += fac * aar_f(n) * std::fabs(vit(f, n));
       }
 }
 

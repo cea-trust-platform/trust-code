@@ -24,6 +24,7 @@
 #include <Champ_Uniforme.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_PolyMAC.h>
+#include <Zone_PolyMAC_V2.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Op_Grad_PolyMAC_Face.h>
@@ -31,7 +32,7 @@
 #include <Milieu_base.h>
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable(Terme_Source_Qdm_Face_PolyMAC,"Source_Qdm_face_PolyMAC",Source_base);
+Implemente_instanciable(Terme_Source_Qdm_Face_PolyMAC,"Source_Qdm_face_PolyMAC|Source_Qdm_face_PolyMAC_V2",Source_base);
 
 Sortie& Terme_Source_Qdm_Face_PolyMAC::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
@@ -52,23 +53,17 @@ void Terme_Source_Qdm_Face_PolyMAC::associer_pb(const Probleme_base& )
   ;
 }
 
-void Terme_Source_Qdm_Face_PolyMAC::associer_zones(const Zone_dis& zone_dis,
-                                                   const Zone_Cl_dis& zone_Cl_dis)
-{
-  la_zone_PolyMAC = ref_cast(Zone_PolyMAC, zone_dis.valeur());
-  la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, zone_Cl_dis.valeur());
-}
-
-
 void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const Zone_Poly_base& zone = ref_cast(Zone_Poly_base, equation().zone_dis().valeur());
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const DoubleTab& vals = la_source->valeurs(), &rho = equation().milieu().masse_volumique().passe(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
+  const DoubleTab& vals = la_source->valeurs(), &vfd = zone.volumes_entrelaces_dir(),
+                   &rho = equation().milieu().masse_volumique().passe(), &nf = zone.face_normales(),
+                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+  const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
-  int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
+  int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = zone.nb_faces_tot(),
+               n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, calc_cl = !sub_type(Zone_PolyMAC_V2, zone); //en PolyMAC V1, on calcule aux CL
 
   /* contributions aux faces (par chaque voisin), aux elems */
   DoubleTrav a_f(N), rho_f(N), val_f(N), rho_m(2);
@@ -90,12 +85,17 @@ void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab
                   for (d = 0; d < D; d++) vnf += nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
                   int strat = (i ? 1 : -1) * (rho_m(i) - rho(!cR * e, n)) * vnf > 0;
                   double R = alp && strat ? ((*alp)(e, n) < 1e-4 ? 1 : 0) /* min(max(1 - (*alp)(e, n) / 1e-4, 0.), 1.) */ : 0;
-                  secmem(f, n) += pf(f) * a_f(n) * vfd(f, i) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
+                  secmem(f, n) += vfd(f, i) * pf(f) * a_f(n) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
+                  // Cerr << "f " << f << " i " << i << " n " << n << " a " << (*alp)(e, n) << " r " << rho(!cR * e, n) << " R " << R << finl;
                 }
           }
       }
-    else for (e = f_e(f, 0), n = 0; n < N; n++) for (d = 0; d < D; d++) //face de bord -> avec le (alpha rho) de la maille
+    else if (calc_cl || fcl(f, 0) < 2) for (e = f_e(f, 0), n = 0; n < N; n++) for (d = 0; d < D; d++) //face de bord non imposee -> avec le (alpha rho) de la maille
           secmem(f, n) += pf(f) * vf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
+
+  /* en PolyMAC V2 : partie aux elements */
+  if (sub_type(Zone_PolyMAC_V2, zone)) for (e = 0; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+          secmem(nf_tot + D * e + d, n) += pe(e) * ve(e) * (alp ? rho(!cR * e, n) * (*alp)(e, n) : 1) * vals(!cS * e, N * d + n);
 }
 
 void Terme_Source_Qdm_Face_PolyMAC::mettre_a_jour(double temps)

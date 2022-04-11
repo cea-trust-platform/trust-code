@@ -1039,7 +1039,7 @@ void Navier_Stokes_std::projeter()
       // voir ca penalise le calcul en p1B et CL p<>0
       // On prend un DoubleTrav au lieu d'un DoubleTab pour avoir lagrange=0
       DoubleTrav lagrange(la_pression.valeurs());
-      DoubleTrav gradP(la_vitesse.valeurs());
+      DoubleTrav gradP(gradient_P.valeurs());
 
       double normal_seuil=0;
 
@@ -1092,7 +1092,13 @@ void Navier_Stokes_std::projeter()
       solveur_masse.appliquer(gradP);
       gradP.echange_espace_virtuel();
 
-      tab_vitesse.ajoute(-dt,gradP);
+      if (tab_vitesse.dimension_tot(0) == gradP.dimension_tot(0))
+        tab_vitesse.ajoute(-dt,gradP);
+      else
+        {
+          DoubleTab_parts partv(tab_vitesse);
+          partv[0].ajoute(-dt,gradP);
+        }
       tab_vitesse.echange_espace_virtuel();
       solveur_masse.corriger_solution(tab_vitesse, tab_vitesse);
 
@@ -2046,11 +2052,11 @@ static void construire_matrice_implicite(Operateur_base& op,
     }
 }
 
-/* dans CoviMAC, le gradient contribue a la matrice de l'equation de N-S */
+/* dans PolyMAC, le gradient contribue a la matrice de l'equation de N-S */
 void Navier_Stokes_std::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Equation_base::dimensionner_matrice_sans_mem(matrice);
-  if (discretisation().que_suis_je() == "CoviMAC" || discretisation().que_suis_je() == "VDF")
+  if (gradient.valeur().has_interface_blocs())
     gradient.valeur().dimensionner_blocs({{ "vitesse", &matrice }});
 }
 
@@ -2069,7 +2075,7 @@ void Navier_Stokes_std::dimensionner_blocs(matrices_t matrices, const tabs_t& se
 void Navier_Stokes_std::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   Equation_base::assembler_blocs(matrices, secmem, semi_impl);
-  if (!discretisation().que_suis_je().finit_par("MAC"))
+  if (!discretisation().que_suis_je().debute_par("PolyMAC"))
     {
       DoubleTab tmp(secmem);
       tmp = 0.0;

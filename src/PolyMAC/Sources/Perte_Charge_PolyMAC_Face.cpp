@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,14 +87,3 @@ void Perte_Charge_PolyMAC_Face::associer_pb(const Probleme_base& pb)
       exit();
     }
 }
-
-void Perte_Charge_PolyMAC_Face::associer_zones(const Zone_dis& zone_dis,
-                                               const Zone_Cl_dis& zone_Cl_dis)
-{
-  Cerr << " Perte_Charge_PolyMAC_Face::associer_zones " << finl ;
-  la_zone_PolyMAC = ref_cast(Zone_PolyMAC, zone_dis.valeur());
-  la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, zone_Cl_dis.valeur());
-}
-
-
-

@@ -69,6 +69,7 @@ inline Terme_Source_PolyMAC_base::Terme_Source_PolyMAC_base(const Iterateur_Sour
 inline void Terme_Source_PolyMAC_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   iter.ajouter(secmem);
+
 }
 
 #endif

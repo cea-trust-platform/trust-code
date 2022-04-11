@@ -27,6 +27,7 @@
 #include <Zone_VF.h>
 #include <Ref_Zone_VF.h>
 #include <SolveurSys.h>
+#include <Zone_PolyMAC.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // .NAME        : Champ_Face_PolyMAC
@@ -42,7 +43,7 @@ class Champ_Face_PolyMAC : public Champ_Inc_base
   Declare_instanciable(Champ_Face_PolyMAC) ;
 
 protected :
-  virtual       Champ_base& le_champ(void)      ;
+  virtual       Champ_base& le_champ(void);
   virtual const Champ_base& le_champ(void) const;
 
 public :
@@ -74,7 +75,8 @@ public :
 
   int fixer_nb_valeurs_nodales(int n) override;
 
-  void init_auxiliary_variables(); /* demande l'ajout des variables auxiliaires ( [lambda rot u] aux aretes )*/
+  virtual void init_auxiliary_variables(); /* demande l'ajout des variables auxiliaires ( [lambda rot u] aux aretes )*/
+  int reprendre(Entree& fich) override;
 
   //tableaux de correspondance lies aux CLs : fcl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
   //types de CL : 0 -> pas de CL

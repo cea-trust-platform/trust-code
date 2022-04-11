@@ -25,6 +25,7 @@
 #include <Equation_base.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Zone_PolyMAC.h>
+#include <Zone_PolyMAC_V2.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
 #include <Champ_Uniforme.h>
@@ -59,15 +60,15 @@ Entree& Perte_Charge_PolyMAC::readOn(Entree& s )
 
 void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone = la_Zone_PolyMAC.valeur();
+  const Zone_Poly_base& zone = ref_cast(Zone_Poly_base, equation().zone_dis().valeur());
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Champ_Don& dh = diam_hydr;
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &vit = la_vitesse->valeurs(), &nu = le_fluide->viscosite_cinematique().valeurs(), &vfd = zone.volumes_entrelaces_dir();
   const DoubleVect& pe = zone.porosite_elem(), &pf = zone.porosite_face(), &fs = zone.face_surfaces();
   const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
-  int i, j, f, d, D = dimension, C_nu = nu.dimension(0) == 1, C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur()), n, N = vit.line_size();
+  int i, j, f, d, D = dimension, C_nu = nu.dimension(0) == 1, C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur()), n, N = vit.line_size(), calc_cl = !sub_type(Zone_PolyMAC_V2, zone);
   double t = equation().schema_temps().temps_courant();
   DoubleTrav pos(D), ve(D), dir(D), C(N);
 
@@ -91,11 +92,14 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
           }
 
         /* contributions aux faces de e */
-        for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces())
+        for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) if (f < zone.nb_faces() && (calc_cl || fcl(f, 0) < 2))
             {
               for (n = 0; n < N; n++)secmem(f, n) -= pf(f) * vfd(f, e != f_e(f, 0)) * C(n) * vit(f, n);
               if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += pf(f) * vfd(f, e != f_e(f, 0)) * C(n);
             }
+
+        if (sub_type(Zone_PolyMAC_V2, zone.que_suis_je())) abort(); /* TODO : coder la contrib aux elements en PolyMAC V2 */
+
       }
 }
 
@@ -116,11 +120,4 @@ void Perte_Charge_PolyMAC::associer_pb(const Probleme_base& pb)
 {
   la_vitesse = ref_cast(Champ_Face_PolyMAC,equation().inconnue().valeur());
   le_fluide = ref_cast(Fluide_base,equation().milieu());
-}
-
-void Perte_Charge_PolyMAC::associer_zones(const Zone_dis& zone_dis,
-                                          const Zone_Cl_dis& zone_Cl_dis)
-{
-  la_Zone_PolyMAC = ref_cast(Zone_PolyMAC, zone_dis.valeur());
-  la_Zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, zone_Cl_dis.valeur());
 }

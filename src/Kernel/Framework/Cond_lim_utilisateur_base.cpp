@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -220,11 +220,11 @@ int Cond_lim_utilisateur_base::is_pb_PolyMAC()
   else
     return 0;
 }
-int Cond_lim_utilisateur_base::is_pb_CoviMAC()
+int Cond_lim_utilisateur_base::is_pb_PolyMAC_V2()
 {
   const Discretisation_base& discr=mon_equation->discretisation();
   Nom nom_discr=discr.que_suis_je();
-  if (nom_discr=="CoviMAC")
+  if (nom_discr=="PolyMAC_V2")
     return 1;
   else
     return 0;
@@ -357,10 +357,10 @@ void paroi_contact::complement(Nom& ajout)
       ajout+=nom_autre_bord;
       ajout+=" temperature 1.e10";
     }
-  else if (is_pb_CoviMAC())
+  else if (is_pb_PolyMAC_V2())
     {
-      //paroi_echange_contact_CoviMAC pb2 Droit1 temperature 1.e10
-      ajout= "paroi_echange_contact_CoviMAC ";
+      //paroi_echange_contact_PolyMAC_V2 pb2 Droit1 temperature 1.e10
+      ajout= "paroi_echange_contact_PolyMAC_V2 ";
       ajout+=nom_autre_pb;
       ajout+=" ";
       ajout+=nom_autre_bord + " ";
@@ -435,10 +435,10 @@ void paroi_contact_fictif::complement(Nom& ajout)
       ajout+=" temperature ";
       ajout+=Nom(conduct_fictif/ep_fictif,"%e");
     }
-  else if (is_pb_CoviMAC())
+  else if (is_pb_PolyMAC_V2())
     {
-      //paroi_echange_contact_CoviMAC pb2 Droit1 temperature conduc / ep
-      ajout= "paroi_echange_contact_CoviMAC ";
+      //paroi_echange_contact_PolyMAC_V2 pb2 Droit1 temperature conduc / ep
+      ajout= "paroi_echange_contact_PolyMAC_V2 ";
       ajout+=nom_autre_pb;
       ajout+=" ";
       ajout+=nom_autre_bord;

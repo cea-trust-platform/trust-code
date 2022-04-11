@@ -14,7 +14,9 @@ Includes = -I. -I$(TRUST_ROOT)/lib/src/LIBOSQP/include -I$(TRUST_ROOT)/include/b
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Champs\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/PolyMAC\
 	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
+	-I$(TRUST_ROOT)/src/PolyMAC/Cond_Lim\
 	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\

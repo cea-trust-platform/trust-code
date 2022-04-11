@@ -23,15 +23,21 @@
 #include <Terme_Boussinesq_PolyMAC_Face.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
-#include <Zone_PolyMAC.h>
+#include <Neumann_sortie_libre.h>
+#include <Dirichlet.h>
+#include <Zone_PolyMAC_V2.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Convection_Diffusion_Temperature.h>
+#include <Navier_Stokes_std.h>
+#include <Pb_Multiphase.h>
 #include <Synonyme_info.h>
 
-Implemente_instanciable(Terme_Boussinesq_PolyMAC_Face,"Boussinesq_PolyMAC_Face",Terme_Boussinesq_base);
+Implemente_instanciable(Terme_Boussinesq_PolyMAC_Face,"Boussinesq_PolyMAC_Face|Boussinesq_PolyMAC_V2_Face",Terme_Boussinesq_base);
 Add_synonym(Terme_Boussinesq_PolyMAC_Face,"Boussinesq_temperature_Face_PolyMAC");
+Add_synonym(Terme_Boussinesq_PolyMAC_Face,"Boussinesq_temperature_Face_PolyMAC_V2");
 Add_synonym(Terme_Boussinesq_PolyMAC_Face,"Boussinesq_concentration_PolyMAC_Face");
+Add_synonym(Terme_Boussinesq_PolyMAC_Face,"Boussinesq_concentration_PolyMAC_V2_Face");
 
 //// printOn
 Sortie& Terme_Boussinesq_PolyMAC_Face::printOn(Sortie& s ) const
@@ -52,31 +58,33 @@ void Terme_Boussinesq_PolyMAC_Face::associer_zones(const Zone_dis& zone_dis,
   la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, zone_Cl_dis.valeur());
 }
 
-DoubleTab& Terme_Boussinesq_PolyMAC_Face::ajouter(DoubleTab& resu) const
+void Terme_Boussinesq_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
-  const DoubleVect& grav = gravite().valeurs();
-  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
-  const DoubleTab& xv = zone.xv(), &xp = zone.xp();
-  const DoubleVect& pf = zone.porosite_face();
-  const DoubleVect& fs = zone.face_surfaces();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
+  const DoubleTab& rho = equation().milieu().masse_volumique().passe(), &vfd = zone.volumes_entrelaces_dir(), &nf = zone.face_normales(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+  const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &ve = zone.volumes(), &fs = zone.face_surfaces(), &grav = gravite().valeurs();
 
   DoubleVect g(dimension);
   g = grav;
 
-  int nb_dim = param.line_size();
-
   // Verifie la validite de T0:
   check();
-  int e, i, f, n;
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; fcl(f, 0) < 2 && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
+  int e, i, f, n, calc_cl = !sub_type(Zone_PolyMAC_V2, zone), nb_dim = param.line_size(), cR = (rho.dimension_tot(0) == 1), d, D = dimension, nf_tot = zone.nb_faces_tot();
+  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; (calc_cl || fcl(f, 0) < 2) && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
       {
         double coeff = 0;
-        for (n = 0; n < nb_dim; n++) coeff += valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));
-        resu(f) += coeff * (i ? -1 : 1) * zone.dot(&xv(f, 0), g.addr(), &xp(e, 0)) * fs(f) * pf(f);
+        for (n = 0; n < nb_dim; n++) coeff += (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));
+        secmem(f) += coeff * zone.dot(&nf(f, 0), g.addr()) / fs(f) * vfd(f, i) * pf(f);
       }
-  return resu;
+
+  if (sub_type(Zone_PolyMAC_V2, zone)) for (e = 0; e < zone.nb_elem_tot(); e++)
+      {
+        double coeff = 0;
+        for (n = 0; n < nb_dim; n++) coeff += (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));
+        for (d = 0; d < dimension; d++) secmem(nf_tot + D * e + d) += coeff * g(d) * pe(e) * ve(e);
+      }
 }

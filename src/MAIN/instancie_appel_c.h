@@ -3,13 +3,6 @@
 // To update this file, run: make depend
 //
 #include <verifie_pere.h>
-instancie_src_CoviMAC();
-instancie_src_CoviMAC_Champs();
-instancie_src_CoviMAC_Cond_Lim();
-instancie_src_CoviMAC_Operateurs();
-instancie_src_CoviMAC_Solveurs();
-instancie_src_CoviMAC_Sources();
-instancie_src_CoviMAC_Zones();
 instancie_src_EF_Champs();
 instancie_src_EF_Operateurs();
 instancie_src_EF_Sources();
@@ -40,6 +33,7 @@ instancie_src_P1NCP1B_Cond_Lim();
 instancie_src_P1NCP1B_Operateurs();
 instancie_src_P1NCP1B_Solveurs();
 instancie_src_P1NCP1B_Zones();
+instancie_src_PolyMAC();
 instancie_src_PolyMAC_Champs();
 instancie_src_PolyMAC_Cond_Lim();
 instancie_src_PolyMAC_Operateurs();
@@ -77,10 +71,10 @@ instancie_src_ThHyd_Incompressible_Traitement_particulier();
 instancie_src_ThHyd_Modele_turbulence_base();
 instancie_src_ThHyd_Multiphase();
 instancie_src_ThHyd_Multiphase_Correlations();
-instancie_src_ThHyd_Multiphase_CoviMAC();
 instancie_src_ThHyd_Multiphase_Equations();
 instancie_src_ThHyd_Multiphase_Milieu();
 instancie_src_ThHyd_Multiphase_Operateurs();
+instancie_src_ThHyd_Multiphase_PolyMAC();
 instancie_src_ThHyd_Multiphase_Schemas_Temps();
 instancie_src_ThHyd_Schemas_Temps();
 instancie_src_ThHyd_Turbulence();

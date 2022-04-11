@@ -39,8 +39,13 @@ class Terme_Boussinesq_PolyMAC_Face : public Terme_Boussinesq_base
   Declare_instanciable(Terme_Boussinesq_PolyMAC_Face);
 
 public:
-
-  DoubleTab& ajouter(DoubleTab& ) const override ;
+  int has_interface_blocs() const override
+  {
+    return 1;
+  };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void check_multiphase_compatibility() const override { };
 
 protected:
 

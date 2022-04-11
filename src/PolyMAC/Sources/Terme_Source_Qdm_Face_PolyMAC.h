@@ -58,9 +58,7 @@ public:
 
 protected:
 
-  REF(Zone_PolyMAC) la_zone_PolyMAC;
-  REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
 
 };
 

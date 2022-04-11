@@ -28,7 +28,7 @@
 #include <Ref_Sous_Zone.h>
 #include <Ref_Fluide_base.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Zone_PolyMAC.h>
+#include <Ref_Zone_Poly_base.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
 
 //! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
@@ -58,8 +58,7 @@ public:
 
 protected:
 
-  void associer_zones(const Zone_dis&,const Zone_Cl_dis&) override;   //!< associe la_Zone_PolyMAC et la_Zone_Cl_PolyMAC
-
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
   //! Appele pour chaque face par ajouter()
   /**
      Utilise les intermediaires de calcul : u, norme_u, dh_valeur, reynolds
@@ -92,9 +91,6 @@ protected:
   REF(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue
   REF(Champ_Inc_base) la_vitesse;
-  //! Zone dans laquelle s'applique la perte de charge
-  REF(Zone_PolyMAC) la_Zone_PolyMAC;
-  REF(Zone_Cl_PolyMAC) la_Zone_Cl_PolyMAC;
 
   // Cas d'une sous-zone
   bool sous_zone; //!< Le terme est-il limite a une sous-zone ?

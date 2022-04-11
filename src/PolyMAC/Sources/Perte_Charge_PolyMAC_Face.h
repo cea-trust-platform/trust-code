@@ -27,7 +27,7 @@
 #include <Source_base.h>
 #include <Terme_Source_Qdm.h>
 
-#include <Ref_Zone_PolyMAC.h>
+#include <Ref_Zone_Poly_base.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
 #include <Ref_Fluide_base.h>
@@ -55,20 +55,16 @@ class Perte_Charge_PolyMAC_Face :  public Source_base,
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& )  const override =0;
-  DoubleTab& calculer(DoubleTab& ) const override =0;
   void associer_pb(const Probleme_base& ) override;
   void mettre_a_jour(double ) override;
 
 protected:
 
   REF(Champ_Inc_base) la_vitesse;
-  REF(Zone_PolyMAC) la_zone_PolyMAC;
-  REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
   REF(Fluide_base) le_fluide;
   IntVect num_faces;
 
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
 
 
 

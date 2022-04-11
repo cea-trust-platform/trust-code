@@ -25,7 +25,7 @@
 #define Op_Conv_PolyMAC_base_included
 
 #include <Operateur_Conv.h>
-#include <Ref_Zone_PolyMAC.h>
+#include <Ref_Zone_Poly_base.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
 //
 // .DESCRIPTION class Op_Conv_PolyMAC_base
@@ -66,7 +66,7 @@ public:
 
 
 protected:
-  REF(Zone_PolyMAC) la_zone_poly_;
+  REF(Zone_Poly_base) la_zone_poly_;
   REF(Zone_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) vitesse_;
 

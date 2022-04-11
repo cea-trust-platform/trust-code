@@ -60,7 +60,7 @@ public:
   Cond_lim_utilisateur_base();
   int is_pb_VDF();
   int is_pb_PolyMAC();
-  int is_pb_CoviMAC();
+  int is_pb_PolyMAC_V2();
   int is_pb_VEF();
   int is_pb_rayo();
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -238,7 +238,7 @@ Entity Champ_Generique_refChamp::get_localisation(const int index) const
     {
       loc = NODE;
     }
-  else if ((ch.que_suis_je()=="Champ_Face_PolyMAC" || ch.que_suis_je()=="Champ_Face_CoviMAC"
+  else if ((ch.que_suis_je().debute_par("Champ_Face_PolyMAC")
             || ch.valeurs().dimension(0) == ref_cast(Zone_VF,z_dis_base).nb_faces()) && index <= 0)
     {
       loc = FACE;

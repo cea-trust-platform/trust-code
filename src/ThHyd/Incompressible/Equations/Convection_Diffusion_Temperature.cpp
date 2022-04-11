@@ -791,7 +791,7 @@ void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const D
 
 void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  if (discretisation().que_suis_je().finit_par("MAC"))
+  if (discretisation().que_suis_je().debute_par("PolyMAC"))
     {
       Equation_base::assembler_blocs(matrices, secmem, semi_impl);
       return;

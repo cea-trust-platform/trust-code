@@ -29,7 +29,7 @@
 #include <Champ_P0_PolyMAC.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC,"Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC",Source_base);
+Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC,"Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC|Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_V2",Source_base);
 
 
 

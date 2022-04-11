@@ -25,7 +25,7 @@
 #include <Convection_Diffusion_std.h>
 #include <Milieu_base.h>
 #include <Schema_Temps_base.h>
-#include <Zone_PolyMAC.h>
+#include <Zone_Poly_base.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
@@ -44,9 +44,9 @@
 #include <cfloat>
 #include <vector>
 
-Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_Elem, "Op_Conv_EF_Stab_PolyMAC_Elem_PolyMAC", Op_Conv_PolyMAC_base ) ;
-Implemente_instanciable( Op_Conv_Amont_PolyMAC_Elem, "Op_Conv_Amont_PolyMAC_Elem_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Elem ) ;
-Implemente_instanciable( Op_Conv_Centre_PolyMAC_Elem, "Op_Conv_Centre_PolyMAC_Elem_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Elem ) ;
+Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_Elem, "Op_Conv_EF_Stab_PolyMAC_Elem|Op_Conv_EF_Stab_PolyMAC_V2_Elem", Op_Conv_PolyMAC_base ) ;
+Implemente_instanciable( Op_Conv_Amont_PolyMAC_Elem, "Op_Conv_Amont_PolyMAC_Elem|Op_Conv_Amont_PolyMAC_V2_Elem", Op_Conv_EF_Stab_PolyMAC_Elem ) ;
+Implemente_instanciable( Op_Conv_Centre_PolyMAC_Elem, "Op_Conv_Centre_PolyMAC_Elem|Op_Conv_Centre_PolyMAC_V2_Elem", Op_Conv_EF_Stab_PolyMAC_Elem ) ;
 
 
 // XD Op_Conv_EF_Stab_PolyMAC_Elem interprete Op_Conv_EF_Stab_PolyMAC_Elem 1 Class Op_Conv_EF_Stab_PolyMAC_Elem
@@ -113,7 +113,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::preparer_calcul()
   Op_Conv_PolyMAC_base::preparer_calcul();
 
   /* au cas ou... */
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = la_zone_poly_.valeur();
   equation().init_champ_convecte();
   flux_bords_.resize(zone.premiere_face_int(), equation().inconnue().valeurs().line_size());
 
@@ -124,7 +124,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::preparer_calcul()
 double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
 {
   double dt = 1e10;
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &ve = zone.volumes(), &pe = zone.porosite_elem();
   const DoubleTab& vit = vitesse_->valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
@@ -145,7 +145,7 @@ double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
 
 void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
   int i, j, e, eb, f, n, N = equation().inconnue().valeurs().line_size();
   const Champ_Inc_base& cc = equation().champ_convecte();
@@ -174,7 +174,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
 // renvoie resu
 void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   const Champ_Inc_base& cc = equation().champ_convecte();
@@ -236,7 +236,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::creer_champ(const Motcle& motlu)
 void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
 {
   Op_Conv_PolyMAC_base::mettre_a_jour(temps);
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const Champ_Inc_base& cc = equation().champ_convecte();
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
@@ -245,7 +245,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
   if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
 
 
-  int i, e, f, d, D = dimension, n, m, N = vcc.line_size(), nf_tot = zone.nb_faces_tot(), M = vit.line_size();
+  int i, e, f, d, D = dimension, n, m, N = vcc.line_size(), M = vit.line_size();
   DoubleTrav cc_f(N); //valeur du champ convecte aux faces
   /* flux aux bords */
   for (f = 0; f < zone.premiere_face_int(); f++)
@@ -260,15 +260,8 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
         {
           Champ_Face_PolyMAC& c_ph = ref_cast(Champ_Face_PolyMAC, cc_phases_[n].valeur());
           DoubleTab& v_ph = c_ph.valeurs();
-          /* on remplit la partie aux faces, puis on demande au champ d'interpoler aux elements */
-          for (f = 0; f < zone.nb_faces(); f++)
-            {
-              for (v_ph(f) = 0, i = 0; i < 2; i++)
-                v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
-              v_ph(f) *= vit(f, m);
-            }
-          for (f = 0; f < zone.nb_faces(); f++) v_ph(f) *= pf(f);
-          for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) v_ph(nf_tot + D * e + d) *= pe(e); //pour repasser en debitant
+          for (f = 0; f < zone.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
+            for (v_ph(f) = 0, i = 0; i < 2; i++) v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
           c_ph.changer_temps(temps);
         }
 
@@ -277,14 +270,8 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
           Champ_Face_PolyMAC& c_ph = ref_cast(Champ_Face_PolyMAC, vd_phases_[n].valeur());
           DoubleTab& v_ph = c_ph.valeurs();
           /* on remplit la partie aux faces, puis on demande au champ d'interpoler aux elements */
-          for (f = 0; f < zone.nb_faces(); f++)
-            {
-              for (v_ph(f) = 0, i = 0; i < 2; i++)
-                v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
-              v_ph(f) *= vit(f, m);
-            }
-          for (f = 0; f < zone.nb_faces(); f++) v_ph(f) *= pf(f);
-          for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) v_ph(nf_tot + D * e + d) *= pe(e); //pour repasser en debitant
+          for (f = 0; f < zone.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
+            for (v_ph(f) = 0, i = 0; i < 2; i++) v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
           c_ph.changer_temps(temps);
         }
 

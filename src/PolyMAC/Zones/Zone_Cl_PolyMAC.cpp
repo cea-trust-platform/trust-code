@@ -76,8 +76,8 @@ void Zone_Cl_PolyMAC::completer(const Zone_dis& une_zone_dis)
   modif_perio_fait_ =0;
   if (sub_type(Zone_PolyMAC,une_zone_dis.valeur()))
     {
-      const Zone_PolyMAC& la_zone_PolyMAC = ref_cast(Zone_PolyMAC, une_zone_dis.valeur());
-      remplir_type_elem_Cl(la_zone_PolyMAC);
+      const Zone_PolyMAC& la_zone_poly = ref_cast(Zone_PolyMAC, une_zone_dis.valeur());
+      remplir_type_elem_Cl(la_zone_poly);
     }
   else
     {
@@ -99,6 +99,7 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
 
   Champ_Inc_base& ch_base=ch.valeur();
   DoubleTab& ch_tab = ch_base.valeurs(temps);
+  int n, N = ch_tab.line_size();
   if (sub_type(Champ_Inc_P0_base,ch_base))
     ;
   else if(ch_base.nature_du_champ()==scalaire)
@@ -112,39 +113,14 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
       for(int i=0; i<nb_cond_lim(); i++)
         {
           const Cond_lim_base& la_cl = les_conditions_limites(i).valeur();
-          if (sub_type(Periodique,la_cl))
-            {
-              if (modif_perio_fait_  == 0)
-                {
-                  // On fait en sorte que le champ ait la meme valeur
-                  // sur deux faces de periodicite qui sont en face l'une de l'autre
-                  const Periodique& la_cl_perio = ref_cast(Periodique,la_cl);
-                  const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-                  ndeb = le_bord.num_premiere_face();
-                  nfin = ndeb + le_bord.nb_faces();
-                  int voisine;
-                  double moy;
-                  for (num_face=ndeb; num_face<nfin; num_face++)
-                    {
-                      voisine = la_cl_perio.face_associee(num_face-ndeb) + ndeb;
-                      if ( ch_tab[num_face] != ch_tab[voisine] )
-                        {
-                          moy = 0.5*(ch_tab[num_face] + ch_tab[voisine]);
-                          ch_tab[num_face] = moy;
-                          ch_tab[voisine] = moy;
-                        }
-                    }
-                  // Il ne faut pas le faire a la premiere cl mais une fois toutes les cl faites une fois, cas multi perio avec ci non perio
-                  // init = 1;
-                }
-            }
+          if (sub_type(Periodique,la_cl)) abort(); //nope
           else if( sub_type(Symetrie,la_cl) )
             {
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
-              for (num_face=ndeb; num_face<nfin; num_face++)
-                ch_tab[num_face] = 0;
+              for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
+                  ch_tab(num_face, n) = 0;
             }
           else if ( sub_type(Dirichlet_entree_fluide,la_cl) )
             {
@@ -153,32 +129,32 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
 
-              for (num_face=ndeb; num_face<nfin; num_face++)
-                {
-                  // WEC : optimisable (pour chaque face recherche le bon temps !)
-                  // vn
-                  double vn=0;
-                  for (int d=0; d<dimension; d++)
-                    vn+=ma_zone_VF.face_normales(num_face,d)*la_cl_diri.val_imp_au_temps(temps,num_face-ndeb,d);
-                  vn/=ma_zone_VF.face_surfaces(num_face);
-                  ch_tab[num_face] = vn;
-                }
+              for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
+                  {
+                    // WEC : optimisable (pour chaque face recherche le bon temps !)
+                    // vn
+                    double vn=0;
+                    for (int d=0; d<dimension; d++)
+                      vn+=ma_zone_VF.face_normales(num_face,d)*la_cl_diri.val_imp_au_temps(temps,num_face-ndeb, N * d + n);
+                    vn/=ma_zone_VF.face_surfaces(num_face);
+                    ch_tab(num_face, n) = vn;
+                  }
             }
           else if ( sub_type(Dirichlet_paroi_fixe,la_cl) )
             {
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
-              for (num_face=ndeb; num_face<nfin; num_face++)
-                ch_tab[num_face] = 0;
+              for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
+                  ch_tab(num_face, n) = 0;
             }
           else if ( sub_type(Dirichlet_paroi_defilante,la_cl) )
             {
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
-              for (num_face=ndeb; num_face<nfin; num_face++)
-                ch_tab[num_face] = 0;
+              for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
+                  ch_tab(num_face, n) = 0;
             }
         }
       modif_perio_fait_  = 1;
@@ -191,10 +167,6 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
   ch_tab.echange_espace_virtuel();
   Debog::verifier("Zone_Cl_PolyMAC::imposer_cond_lim ch_tab",ch_tab);
 }
-
-
-
-
 
 int Zone_Cl_PolyMAC::nb_faces_sortie_libre() const
 {

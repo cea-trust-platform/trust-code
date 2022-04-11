@@ -26,7 +26,7 @@
 #include <Schema_Temps_base.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Pb_Multiphase.h>
-#include <Zone_PolyMAC.h>
+#include <Zone_Poly_base.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
@@ -36,9 +36,9 @@
 #include <cmath>
 #include <Masse_ajoutee_base.h>
 
-Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_Face, "Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC", Op_Conv_PolyMAC_base ) ;
-Implemente_instanciable( Op_Conv_Amont_PolyMAC_Face, "Op_Conv_Amont_PolyMAC_Face_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Face ) ;
-Implemente_instanciable( Op_Conv_Centre_PolyMAC_Face, "Op_Conv_Centre_PolyMAC_Face_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Face ) ;
+Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_Face, "Op_Conv_EF_Stab_PolyMAC_Face", Op_Conv_PolyMAC_base ) ;
+Implemente_instanciable( Op_Conv_Amont_PolyMAC_Face, "Op_Conv_Amont_PolyMAC_Face", Op_Conv_EF_Stab_PolyMAC_Face ) ;
+Implemente_instanciable( Op_Conv_Centre_PolyMAC_Face, "Op_Conv_Centre_PolyMAC_Face", Op_Conv_EF_Stab_PolyMAC_Face ) ;
 
 // XD Op_Conv_EF_Stab_PolyMAC_Face interprete Op_Conv_EF_Stab_PolyMAC_Face 1 Class Op_Conv_EF_Stab_PolyMAC_Face
 Sortie& Op_Conv_EF_Stab_PolyMAC_Face::printOn( Sortie& os ) const
@@ -86,7 +86,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
 {
   Op_Conv_PolyMAC_base::completer();
   /* au cas ou... */
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = la_zone_poly_.valeur();
   zone.init_equiv();
 
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
@@ -98,7 +98,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
 double Op_Conv_EF_Stab_PolyMAC_Face::calculer_dt_stab() const
 {
   double dt = 1e10;
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face(), &ve = zone.volumes(), &pe = zone.porosite_elem(), &vf = zone.volumes_entrelaces();
   const DoubleTab& vit = vitesse_->valeurs(), &vfd = zone.volumes_entrelaces_dir(),
@@ -122,7 +122,7 @@ double Op_Conv_EF_Stab_PolyMAC_Face::calculer_dt_stab() const
 
 void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& nf = zone.face_normales(), &inco = ch.valeurs(), &xp = zone.xp(), &xv = zone.xv();
@@ -162,7 +162,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const
 // renvoie resu
 void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();

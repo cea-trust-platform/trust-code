@@ -277,7 +277,7 @@ int Echange_impose_base::compatible_avec_discr(const Discretisation_base& discr)
       || (discr.que_suis_je() == "VEFPreP1B")
       || (discr.que_suis_je() == "VEFPreP1B")
       || (discr.que_suis_je() == "PolyMAC")
-      || (discr.que_suis_je() == "CoviMAC") )
+      || (discr.que_suis_je() == "PolyMAC_V2") )
     return 1;
   else
     {

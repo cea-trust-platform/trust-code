@@ -39,7 +39,7 @@
 #include <Operateur.h>
 #include <Op_Diff_PolyMAC_base.h>
 
-Implemente_instanciable(PolyMAC_discretisation,"PolyMAC",Discret_Thyd);
+Implemente_instanciable(PolyMAC_discretisation,"PolyMAC|PolyMAC_V1",Discret_Thyd);
 
 
 
@@ -82,8 +82,8 @@ void PolyMAC_discretisation::discretiser_champ(
   motcles[6] = "champ_sommets"; // Creer un champ aux sommets (type P1)
 
   // Le type de champ de vitesse depend du type d'element :
-  Nom type_champ_vitesse("Champ_Face_PolyMAC");
-  Nom type_elem("Champ_P0_PolyMAC");
+  Nom type_champ_vitesse = Nom("Champ_Face_") + que_suis_je();
+  Nom type_elem = Nom("Champ_P0_") + que_suis_je();
   Nom type;
   int default_nb_comp = 0; // Valeur par defaut du nombre de composantes
   int rang = motcles.search(directive);
@@ -610,74 +610,27 @@ void PolyMAC_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_vdf
 Nom  PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn,  const REF(Champ_base)& champ_sup) const
 {
   Nom type;
+  Nom type_ch=eqn.inconnue()->que_suis_je();
+  if (type_ch.debute_par("Champ_P0"))
+    type_ch = "_Elem";
+  if (type_ch.debute_par("Champ_Face"))
+    type_ch = "_Face";
+
   if (class_operateur=="Source")
-    {
-      type=type_operateur;
-      Nom champ = (eqn.inconnue()->que_suis_je());
-      champ.suffix("Champ");
-      type+=champ;
-      //type+="_PolyMAC";
-      return type;
-
-    }
+    type = type_operateur + (type_ch == "_Elem" ? "_P0" : type_ch) +  "_" + que_suis_je();
   else if (class_operateur=="Solveur_Masse")
-    {
-      Nom type_ch=eqn.inconnue()->que_suis_je();
-      if (type_ch.debute_par("Champ_P0"))
-        type_ch = "_Elem";
-
-      if (type_ch.debute_par("Champ_Face"))
-        type_ch = "_Face";
-
-
-      type="Masse_PolyMAC";
-      type+=type_ch;
-    }
+    type = Nom("Masse_") + que_suis_je() + type_ch;
   else if (class_operateur=="Operateur_Grad")
-    {
-      type="Op_Grad_PolyMAC_Face";
-    }
+    type = Nom("Op_Grad_") + que_suis_je() + "_Face";
   else if (class_operateur=="Operateur_Div")
-    {
-      type="Op_Div_PolyMAC";
-    }
-
+    type = Nom("Op_Div_") + que_suis_je();
   else if (class_operateur=="Operateur_Diff")
-    {
-      Nom type_ch=eqn.inconnue()->que_suis_je();
-      if (type_ch.debute_par("Champ_P0"))
-        type_ch = "_Elem";
-
-      if (type_ch.debute_par("Champ_Face"))
-        type_ch = "_Face";
-
-      type="Op_Diff" ;
-      if (type_operateur!="" )
-        {
-          type+="_";
-          type+=type_operateur;
-        }
-      type+="_PolyMAC";
-      type += type_ch;
-    }
+    type = Nom("Op_Diff") + (type_operateur != "" ? "_" : "") + type_operateur + "_" + que_suis_je() + type_ch;
   else if (class_operateur=="Operateur_Conv")
-    {
-      type="Op_Conv_";
-      type+=type_operateur;
-      Nom tiret="_";
-      type+= tiret;
-      type+=que_suis_je();
-      Nom type_ch=eqn.inconnue()->que_suis_je();
-      if (type_ch.debute_par("Champ_P0"))
-        type += "_Elem";
-      if (type_ch.debute_par("Champ_Face"))
-        type += "_Face";
-      type+= "_PolyMAC";
-    }
+    type = Nom("Op_Conv_") + type_operateur + "_" + que_suis_je() + type_ch;
+  else if (class_operateur=="Operateur_Evanescence")
+    type = Nom("Op_Evanescence") + (type_operateur != "" ? "_" : "") + type_operateur + "_" + que_suis_je() + type_ch;
+  else return Discret_Thyd::get_name_of_type_for(class_operateur,type_operateur,eqn);
 
-  else
-    {
-      return Discret_Thyd::get_name_of_type_for(class_operateur,type_operateur,eqn);
-    }
   return type;
 }

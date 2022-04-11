@@ -205,7 +205,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   if (eqnNS.has_interface_blocs()) //si l'interface blocs est disponible, on l'utilise
     {
       eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
-      if (eqnNS.discretisation().que_suis_je().finit_par("MAC"))
+      if (eqnNS.discretisation().que_suis_je().debute_par("PolyMAC"))
         matrice.ajouter_multvect(current, resu);  //pour ne pas etre en increment
     }
   else //sinon, on passe par ajouter/contribuer
@@ -289,7 +289,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       //Calcul de Un+1 = U* -delta_t*delta_P
       current -= gradP;
-      eqn.solv_masse().corriger_solution(current, current); //pour CoviMAC : sert a corriger ve
+      eqn.solv_masse().corriger_solution(current, current); //pour PolyMAC_V2 : sert a corriger ve
       current.echange_espace_virtuel();
       divergence.calculer(current,secmem);
 
