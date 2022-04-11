@@ -23,47 +23,23 @@
 #ifndef Champ_Fonc_Tabule_Morceaux_included
 #define Champ_Fonc_Tabule_Morceaux_included
 
+#include <TRUSTChamp_Morceaux_generique.h>
 #include <Vect_Ref_Champ_base.h>
-#include <List_Ref_Sous_Zone.h>
-#include <Champ_Don_base.h>
-#include <Probleme_base.h>
 #include <Table.h>
 
-class Motcle;
-
-//////////////////////////////////////////////////////////////////////////////
-//
 // .DESCRIPTION
 //     classe Champ_Fonc_Tabule_Morceaux
 //     Cette classe represente un champ prenant par morceaux des valuers fonctions
 //     de l'espace et d'un autre champ scalaire passe en parametre .
-// .SECTION voir aussi
-//     Champ_Don_base
-//////////////////////////////////////////////////////////////////////////////
-class Champ_Fonc_Tabule_Morceaux : public Champ_Don_base
+// .SECTION voir aussi : TRUSTChamp_Morceaux_generique
+class Champ_Fonc_Tabule_Morceaux : public TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TABULE>
 {
-
   Declare_instanciable(Champ_Fonc_Tabule_Morceaux);
-
 public :
-  Champ_base& affecter_(const Champ_base& ch) override;
-  DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override;
-  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const override;
-  double valeur_a_elem_compo(const DoubleVect& position, int le_poly,int ncomp) const override;
-  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override;
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
-
-  const REF(Domaine)& domaine() const { return mon_domaine; }
-  REF(Domaine)& domaine() { return mon_domaine; }
-  const LIST(REF(Sous_Zone))& sous_zones() const { return les_sous_zones; }
-  LIST(REF(Sous_Zone))& sous_zones() { return les_sous_zones; }
   void mettre_a_jour(double temps) override;
   int initialiser(const double temps) override;
 
 protected :
-
 
   typedef struct
   {
@@ -75,14 +51,8 @@ protected :
   } CHTAB;
 
   std::vector<CHTAB> champs_lus;
-
-  LIST(REF(Sous_Zone)) les_sous_zones;
-  REF(Domaine) mon_domaine;
-
   IntVect table_idx;        /* parser_idx(i, j) : parser a appeller pour calculer la composante j du champ a la maille i */
   bool init_ = false;
 };
 
-
-#endif
-
+#endif /* Champ_Fonc_Tabule_Morceaux_included */

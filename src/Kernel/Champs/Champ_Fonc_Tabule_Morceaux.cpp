@@ -35,9 +35,8 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
 {
   Nom nom;
   is >> nom;
-  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
-  Domaine& le_domaine = mon_domaine.valeur();
-  le_domaine.creer_tableau_elements(table_idx);
+  interprete_get_domaine<Champ_Morceaux_Type::FONC_TABULE>(nom);
+  mon_domaine->creer_tableau_elements(table_idx);
   table_idx = -1; // pour planter si on a oublie une sous-zone
 
   int nbcomp;
@@ -45,7 +44,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
 
   fixer_nb_comp(nbcomp);
   valeurs_.resize(0, nbcomp);
-  le_domaine.creer_tableau_elements(valeurs_);
+  mon_domaine->creer_tableau_elements(valeurs_);
 
   is >> nom;
   if(Motcle(nom) != Motcle("{") )
@@ -60,7 +59,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
     {
       CHTAB ch_lu;
       /* 1. lecture de la sous-zone */
-      REF(Sous_Zone) refssz = les_sous_zones.add(le_domaine.ss_zone(nom));
+      REF(Sous_Zone) refssz = les_sous_zones.add(mon_domaine->ss_zone(nom));
       Sous_Zone& ssz = refssz.valeur();
 
       /* 2. lecture des champs parametres */
@@ -137,110 +136,6 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
   return is;
 }
 
-Champ_base& Champ_Fonc_Tabule_Morceaux::affecter_(const Champ_base& ch)
-{
-  Cerr<<__FILE__<<(int)__LINE__<<" not coded" <<finl;
-  Process::exit();
-  return (*this);
-}
-
-DoubleVect& Champ_Fonc_Tabule_Morceaux::valeur_a(const DoubleVect& positions, DoubleVect& tab_valeurs) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect le_poly(1);
-  la_zone.chercher_elements(positions,le_poly);
-  return valeur_a_elem(positions,tab_valeurs,le_poly[0]);
-}
-
-DoubleVect& Champ_Fonc_Tabule_Morceaux::valeur_a_elem(const DoubleVect& , DoubleVect& val, int le_poly) const
-{
-  if (val.size() != nb_compo_)
-    {
-      Cerr << "Error TRUST in Champ_Fonc_Tabule_Morceaux::valeur_a_elem()" << finl;
-      Cerr << "The DoubleVect val doesn't have the correct size" << finl;
-      Process::exit();
-    }
-
-  const DoubleTab& ch = valeurs();
-  for (int k=0; k<nb_compo_; k++) val(k) = ch(le_poly,k);
-
-  return val;
-}
-
-double Champ_Fonc_Tabule_Morceaux::valeur_a_elem_compo(const DoubleVect& , int le_poly, int ncomp) const
-{
-  if (ncomp > nb_compo_)
-    {
-      Cerr << "Error TRUST in Champ_Fonc_Tabule_Morceaux::valeur_a_elem_compo()" << finl;
-      Cerr << "the integer ncomp is upper than the number of field components" << finl;
-      Process::exit();
-    }
-
-  const DoubleTab& ch = valeurs();
-  return ch(le_poly, (nb_compo_ == 1) ? 0 : ncomp);
-}
-
-DoubleTab& Champ_Fonc_Tabule_Morceaux::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect les_polys(la_zone.nb_elem());
-  la_zone.chercher_elements(positions,les_polys);
-  return valeur_aux_elems(positions,les_polys,tab_valeurs);
-}
-
-DoubleVect& Champ_Fonc_Tabule_Morceaux::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect les_polys(la_zone.nb_elem());
-  la_zone.chercher_elements(positions,les_polys);
-  return valeur_aux_elems_compo(positions,les_polys,tab_valeurs,ncomp);
-}
-
-DoubleTab& Champ_Fonc_Tabule_Morceaux::valeur_aux_elems(const DoubleTab&, const IntVect& les_polys, DoubleTab& val) const
-{
-  if (val.nb_dim() == 2)
-    {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
-      assert(val.dimension(1) == nb_compo_);
-    }
-  else
-    {
-      Cerr << "Error TRUST in Champ_Fonc_Tabule_Morceaux::valeur_aux_elems()" << finl;
-      Cerr << "The DoubleTab val don't have 2 entries" << finl;
-      exit();
-    }
-
-  const DoubleTab& ch = valeurs();
-  val = 0.;
-  int p;
-
-  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-    if ((p = les_polys(rang_poly)) != -1)
-      for(int n = 0; n < nb_compo_; n++)
-        val(rang_poly, n) = ch(p, n);
-
-  return val;
-}
-
-DoubleVect& Champ_Fonc_Tabule_Morceaux::
-valeur_aux_elems_compo(const DoubleTab&, const IntVect& les_polys, DoubleVect& val, int ncomp) const
-{
-  assert(val.size() == les_polys.size());
-  int le_poly;
-
-  const DoubleTab& ch = valeurs();
-
-  for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
-    {
-      le_poly=les_polys(rang_poly);
-      if (le_poly == -1)
-        val(rang_poly) = 0;
-      else
-        val(rang_poly) = ch(le_poly,ncomp);
-    }
-  return val;
-}
-
 void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
 {
   if (!init_)
@@ -274,10 +169,11 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
         {
           int nb_som = 0, s, r;
           for (int j = 0; j < nb_som_elem && (s = les_elems(i, j)) >= 0; j++)
-            for (r = 0, nb_som++; r < dimension; r++) centres_de_gravites(i, r) += le_domaine.coord(s, r);
+            for (r = 0, nb_som++; r < dimension; r++)
+              centres_de_gravites(i, r) += le_domaine.coord(s, r);
+
           for (r = 0; r < dimension; r++) centres_de_gravites(i, r) /= nb_som;
         }
-
 
       IntVect les_polys(nb_elem_tot);
       for(int elem = 0; elem < nb_elem_tot; elem++) les_polys(elem) = elem;
@@ -297,7 +193,6 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
                 else
                   val_params_aux_elems[nc] = ch.champs_parametre_[i]->valeurs();
               }
-
           }
     }
   else
@@ -334,19 +229,15 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
 
 int Champ_Fonc_Tabule_Morceaux::initialiser(const double time)
 {
-  for (auto && ch : champs_lus)
-    {
-      for (unsigned int i = 0; i < ch.noms_champs_parametre_.size(); i++)
-        {
-          REF(Champ_base) champ;
-          const Probleme_base& pb_ch = ref_cast(Probleme_base, Interprete::objet(Nom(ch.noms_pbs_[i].c_str())));
-          champ = pb_ch.get_champ(Nom(ch.noms_champs_parametre_[i].c_str()));
-          ch.champs_parametre_.add(champ);
-        }
-    }
+  for (auto &&ch : champs_lus)
+    for (unsigned int i = 0; i < ch.noms_champs_parametre_.size(); i++)
+      {
+        REF(Champ_base) champ;
+        const Probleme_base& pb_ch = ref_cast(Probleme_base, Interprete::objet(Nom(ch.noms_pbs_[i].c_str())));
+        champ = pb_ch.get_champ(Nom(ch.noms_champs_parametre_[i].c_str()));
+        ch.champs_parametre_.add(champ);
+      }
   init_ = true;
   mettre_a_jour(time);
   return 1;
 }
-
-

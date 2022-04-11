@@ -224,7 +224,7 @@ int TRUSTChamp_Morceaux_generique<_TYPE_>::initialiser(const double& time)
 }
 
 template<Champ_Morceaux_Type _TYPE_> template<Champ_Morceaux_Type T>
-enable_if_t<T == Champ_Morceaux_Type::FONC, void>
+enable_if_t<T != Champ_Morceaux_Type::FONC_TXYZ, void> /* FONC et FONC_TABULE */
 TRUSTChamp_Morceaux_generique<_TYPE_>::interprete_get_domaine(const Nom& nom)
 {
   mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
