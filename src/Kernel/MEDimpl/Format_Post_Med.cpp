@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -104,7 +104,7 @@ EcrMED Format_Post_Med::getEcrMED() const
   return e;
 }
 
-int Format_Post_Med::ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post)
+int Format_Post_Med::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
 {
 
   Nom nom_fich(med_basename_);

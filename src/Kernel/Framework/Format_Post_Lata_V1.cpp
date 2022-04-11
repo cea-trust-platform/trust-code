@@ -50,7 +50,7 @@ Sortie& Format_Post_Lata_V1::printOn(Sortie& os) const
 }
 
 // Description: ecriture de l'entete format LataV1
-int Format_Post_Lata_V1::ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post)
+int Format_Post_Lata_V1::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
 {
   ecrire_entete_lata_V1(lata_basename_,options_para_,est_le_premier_post);
 

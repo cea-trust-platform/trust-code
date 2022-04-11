@@ -97,8 +97,8 @@ public:
   int nb_valeurs_nodales() const override;
   virtual int fixer_nb_valeurs_temporelles(int);
   virtual int nb_valeurs_temporelles() const;
-  double changer_temps_futur(const double, int i = 1);
-  double changer_temps_passe(const double, int i = 1);
+  double changer_temps_futur(double, int i = 1);
+  double changer_temps_passe(double, int i = 1);
   double recuperer_temps_futur(int i = 1) const;
   double recuperer_temps_passe(int i = 1) const;
   DoubleTab& valeurs(double temps) override;

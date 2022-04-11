@@ -1182,8 +1182,8 @@ void Champ_front_recyclage::lire_fichier_format3(DoubleTab& moyenne,
 {
   int Nbfaces,trouve,compteur;
   int num_face2,num_face2_loc;
-  double x1,y1,z1;
-  double x2,y2,z2;
+  double x1=0.,y1=0.,z1=0.;
+  double x2=0.,y2=0.,z2=0.;
   double eps=1.e-4;
 
   Nom fichier = "VERIF_face_perio.";

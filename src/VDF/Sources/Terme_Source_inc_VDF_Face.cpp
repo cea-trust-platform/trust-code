@@ -1021,8 +1021,8 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   Cerr << me() << " faces internes " << finl;
 
   double min_inc=1.e6, max_inc=-1.e6;
-  int num_e1, n_comp1;
-  int num_e2, n_comp2;
+  int num_e1=-1, n_comp1=-1;
+  int num_e2=-1, n_comp2=-1;
   ndeb = zone_VDF.premiere_face_int();
   for (num_face =zone_VDF.premiere_face_int(); num_face<zone_VDF.nb_faces(); num_face++)
     {

@@ -248,11 +248,11 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
   Domaine& dom=domaine();
   DoubleTab& coord_sommets=dom.les_sommets();
   // Declaration des variables
-  int dim;
+  int dim=-1;
   int nb_som;
   int nb_elem;
   int nb_face;
-  int nb_som_elem;
+  int nb_som_elem=0;
   int type_elements=0;
   int compteur=0;
   // Tableau de travail

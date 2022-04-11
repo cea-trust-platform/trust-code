@@ -2363,7 +2363,7 @@ void Equation_base::assembler(Matrice_Morse& matrice, const DoubleTab& inco, Dou
     }
   else
     {
-      Cerr << "Unknown value in Equation_base::assembler for " << type_codage << finl;
+      Cerr << "Unknown value in Equation_base::assembler for " << (unsigned)type_codage << finl;
       Process::exit();
     }
 }

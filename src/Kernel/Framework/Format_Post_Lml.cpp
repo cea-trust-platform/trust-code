@@ -90,7 +90,7 @@ int Format_Post_Lml::initialize(const Nom& file_basename, const int format, cons
   return 1;
 }
 
-int Format_Post_Lml::ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post)
+int Format_Post_Lml::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
 {
 
   Nom nom_fich(lml_basename_);

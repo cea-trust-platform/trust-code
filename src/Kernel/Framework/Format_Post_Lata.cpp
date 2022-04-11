@@ -234,7 +234,7 @@ const char * Format_Post_Lata::remove_path(const char * filename)
 //  Ouvre le fichier maitre en mode ERASE et ecrit l'entete du fichier lata
 //  (sur le processeur maitre seulement).
 ////void Format_Post_Lata::ecrire_entete_lata()
-int Format_Post_Lata::ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post)
+int Format_Post_Lata::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
 {
 
   ecrire_entete_lata(lata_basename_,options_para_,format_,est_le_premier_post);

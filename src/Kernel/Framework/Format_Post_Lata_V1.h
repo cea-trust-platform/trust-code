@@ -35,7 +35,7 @@ public:
   // les formats de postraitment de champs):
   void reset() override;
 
-  int ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post) override;
+  int ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post) override;
   int finir(int& est_le_dernier_post) override;
   int ecrire_domaine(const Domaine& domaine,const int est_le_premier_post) override;
   virtual int ecrire_bords(const Nom&     id_du_domaine,

@@ -534,7 +534,7 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
 // Description:
 //    Fixe le temps du ieme champ futur.
 // Precondition:
-// Parametre: double& t, int i
+// Parametre: double t, int i
 //    Signification: le nouveau temps
 //    Valeurs par defaut:
 //    Contraintes:
@@ -545,7 +545,7 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
 // Exception:
 // Effets de bord:
 // Postcondition: le champ est au temps specifie
-double Champ_Inc_base::changer_temps_futur(const double t, int i)
+double Champ_Inc_base::changer_temps_futur(double t, int i)
 {
   Roue& la_roue=les_valeurs.valeur();
   la_roue.futur(i).changer_temps(t);
@@ -556,7 +556,7 @@ double Champ_Inc_base::changer_temps_futur(const double t, int i)
 // Description:
 //    Fixe le temps du ieme champ passe.
 // Precondition:
-// Parametre: double& t, int i
+// Parametre: double t, int i
 //    Signification: le nouveau temps
 //    Valeurs par defaut:
 //    Contraintes:
@@ -567,7 +567,7 @@ double Champ_Inc_base::changer_temps_futur(const double t, int i)
 // Exception:
 // Effets de bord:
 // Postcondition: le champ est au temps specifie
-double Champ_Inc_base::changer_temps_passe(const double t, int i)
+double Champ_Inc_base::changer_temps_passe(double t, int i)
 {
   Roue& la_roue=les_valeurs.valeur();
   la_roue.passe(i).changer_temps(t);
@@ -1031,7 +1031,7 @@ double Champ_Inc_base::integrale_espace(int ncomp) const
 // Description:
 //    Fixe le temps du champ.
 // Precondition:
-// Parametre: double& t
+// Parametre: double t
 //    Signification: le nouveau temps
 //    Valeurs par defaut:
 //    Contraintes:

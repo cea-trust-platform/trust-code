@@ -76,7 +76,6 @@ private:
 };
 
 // Fram4 pour centre 4 (inutile je pense mais bon)
-// TODO : FIXME : should use std::min ... :-)
 inline double Fram4(const double s1,const double s2, const double s3,const double s4)
 {
   double smin0 = std::min(s4,s2), smax0 = std::max(s4,s2), smin1 = std::min(s3,s1), smax1 = std::max(s3,s1);
@@ -88,7 +87,6 @@ inline double Fram4(const double s1,const double s2, const double s3,const doubl
 }
 
 // Fram pour QUICK
-// TODO : FIXME : should use std::min ... :-)
 inline double Fram(const double s1,const double s2, const double s3,const double s4)
 {
   double smin0 = std::min(s4,s2), smax0 = std::max(s4,s2), smin1 = std::min(s3,s1), smax1 = std::max(s3,s1);

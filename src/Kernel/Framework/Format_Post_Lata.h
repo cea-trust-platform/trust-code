@@ -67,7 +67,7 @@ public:
   int modify_file_basename(const Nom file_basename, const int a_faire, const double tinit) override;
   virtual int reconstruct(const Nom file_basename, const Nom, const double tinit);
   virtual int finir_sans_reprise(const Nom file_basename);
-  int ecrire_entete(double temps_courant, int reprise, const int est_le_premier_post) override;
+  int ecrire_entete(const double temps_courant, const int reprise, const int est_le_premier_post) override;
   int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post) override;
 
   int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init) override;
