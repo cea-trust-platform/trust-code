@@ -430,7 +430,7 @@ void  T_It_VDF_Elem<_TYPE_>::modifier_flux() const
           if (sub_type(Op_Conv_VDF_base,op)) if (ref_cast(Op_Conv_VDF_base,op).vitesse().le_nom()=="rho_u") is_rho_u = 1;
         }
       double Cp_=0,rho_=0;
-      const int& nb_faces_bords = la_zone_vdf.nb_faces_bord();
+      const int nb_faces_bords = la_zone_vdf.nb_faces_bord();
       for (int face = 0; face < nb_faces_bords; face++)
         {
           int num_elem = face_voisins(face,0);

@@ -117,7 +117,7 @@ inline void Terme_Boussinesq_base::check() const
   if (equation_scalaire().probleme().schema_temps().nb_pas_dt()>0 || equation_scalaire().probleme().reprise_effectuee() || verif_==0 || !sub_type(Convection_Diffusion_Temperature,equation_scalaire())) return;
 
   // Nouveau : on verifie que moyenne(T)==T0 au demarrage du calcul uniquement
-  const double& T0 = Scalaire0(0);
+  const double T0 = Scalaire0(0);
   double moyenne_T = mp_moyenne_vect(equation_scalaire().inconnue().valeurs());
   if (inf_ou_egal(moyenne_T,T0-10) || sup_ou_egal(moyenne_T,T0+10))
     {

@@ -63,7 +63,7 @@ template <class _TYPE_>
 int T_It_VDF_Face<_TYPE_>::impr(Sortie& os) const
 {
   const Zone& ma_zone=la_zone->zone();
-  const int& impr_mom=ma_zone.Moments_a_imprimer();
+  const int impr_mom=ma_zone.Moments_a_imprimer();
   const int impr_sum=(ma_zone.Bords_a_imprimer_sum().est_vide() ? 0:1), impr_bord=(ma_zone.Bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
   DoubleTab& tab_flux_bords=op_base->flux_bords();
