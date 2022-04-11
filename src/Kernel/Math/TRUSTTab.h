@@ -126,7 +126,7 @@ public:
   }
 
 #ifdef INT_is_64_
-  TRUSTTab(int n1, True_int n2) : IntVect(n1*n2), nb_dim_(2), dimension_tot_0_(n1)
+  TRUSTTab(int n1, True_int n2) : TRUSTVect<_TYPE_>(n1*n2), nb_dim_(2), dimension_tot_0_(n1)
   {
     assert(n1 >= 0 && n2 >= 0);
     if (std::is_same<_TYPE_,int>::value && n1*n2 < 0)
