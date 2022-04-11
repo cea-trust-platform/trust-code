@@ -42,14 +42,10 @@ Sortie& Champ_Fonc_Fonction_txyz_Morceaux::printOn(Sortie& os) const { return os
 Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
 {
   int dim;
-  Motcle motlu;
   Nom nom;
-  int k, poly;
   is >> nom;
 
-  ref_pb = ref_cast(Probleme_base, Interprete::objet(nom));
-  mon_domaine = ref_pb.valeur().domaine();
-  Domaine& le_domaine = mon_domaine.valeur();
+  interprete_get_domaine<Champ_Morceaux_Type::FONC_TXYZ>(nom);
 
   Nom val1, val2;
   is >> val1;
@@ -57,63 +53,8 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
   Champ_Fonc_Tabule::Warn_old_chp_fonc_syntax("Champ_Fonc_Fonction_txyz_Morceaux", val1, val2, dim, nom_champ_parametre_);
 
   dim = lire_dimension(dim, que_suis_je());
-  fixer_nb_comp(dim);
-  parser_idx.resize(0, dim);
-  le_domaine.creer_tableau_elements(parser_idx);
-  valeurs_.resize(0, dim);
-  le_domaine.creer_tableau_elements(valeurs_);
-
+  creer_tabs(dim);
   is >> nom;
-  motlu = nom;
-  if (motlu != Motcle("{"))
-    {
-      Cerr << "Error while reading a " << que_suis_je() << finl;
-      Cerr << "We expected a { instead of " << nom << finl;
-      exit();
-    }
-  is >> motlu;
-  if (motlu != Motcle("defaut"))
-    {
-      Cerr << "Error while reading a " << que_suis_je() << finl;
-      Cerr << "We expected defaut instead of " << nom << finl;
-      exit();
-    }
 
-  /* parsers par defaut */
-  for (k = 0; k < dim; k++)
-    {
-      Parser_U psr;
-      Nom tmp;
-      is >> tmp;
-      psr.setNbVar(5);
-      psr.setString(tmp);
-      psr.addVar("val"), psr.addVar("t"), psr.addVar("x"), psr.addVar("y"), psr.addVar("z");
-      psr.parseString();
-      for (poly = 0; poly < le_domaine.zone(0).nb_elem_tot(); poly++)
-        parser_idx(poly, k) = parser.size();
-      parser.add(psr);
-    }
-
-  Nom nom_zone;
-  is >> nom_zone;
-  while (nom_zone != Nom("}"))
-    {
-      REF(Sous_Zone) refssz = les_sous_zones.add(le_domaine.ss_zone(nom_zone));
-      Sous_Zone& ssz = refssz.valeur();
-      for (k = 0; k < dim; k++)
-        {
-          Parser_U psr;
-          Nom tmp;
-          is >> tmp;
-          psr.setNbVar(5);
-          psr.setString(tmp);
-          psr.addVar("val"), psr.addVar("t"), psr.addVar("x"), psr.addVar("y"), psr.addVar("z");
-          psr.parseString();
-          for (poly = 0; poly < ssz.nb_elem_tot(); poly++)
-            parser_idx(ssz(poly), k) = parser.size();
-          parser.add(psr);
-        }
-      is >> nom_zone;
-    }
-  return is;
+  return complete_readOn(dim,que_suis_je(),is,nom);
 }

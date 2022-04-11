@@ -223,4 +223,91 @@ int TRUSTChamp_Morceaux_generique<_TYPE_>::initialiser(const double& time)
   return 1;
 }
 
+template<Champ_Morceaux_Type _TYPE_> template<Champ_Morceaux_Type T>
+enable_if_t<T == Champ_Morceaux_Type::FONC, void>
+TRUSTChamp_Morceaux_generique<_TYPE_>::interprete_get_domaine(const Nom& nom)
+{
+  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
+}
+
+template<Champ_Morceaux_Type _TYPE_> template<Champ_Morceaux_Type T>
+enable_if_t<T == Champ_Morceaux_Type::FONC_TXYZ, void>
+TRUSTChamp_Morceaux_generique<_TYPE_>::interprete_get_domaine(const Nom& nom)
+{
+  ref_pb = ref_cast(Probleme_base, Interprete::objet(nom));
+  mon_domaine = ref_pb->domaine();
+}
+
+template<Champ_Morceaux_Type _TYPE_>
+void TRUSTChamp_Morceaux_generique<_TYPE_>::creer_tabs(const int dim)
+{
+  fixer_nb_comp(dim);
+  parser_idx.resize(0, dim);
+  mon_domaine->creer_tableau_elements(parser_idx);
+  valeurs_.resize(0, dim);
+  mon_domaine->creer_tableau_elements(valeurs_);
+}
+
+template<Champ_Morceaux_Type _TYPE_>
+Entree& TRUSTChamp_Morceaux_generique<_TYPE_>::complete_readOn(const int dim, const Nom& qsj, Entree& is, Nom& nom)
+{
+  Motcle motlu;
+  int k, poly;
+
+  if (nom != "{")
+    {
+      Cerr << "Error while reading a " << qsj << " . We expected a { instead of " << nom << finl;
+      Process::exit();
+    }
+  is >> motlu;
+  if (motlu != Motcle("defaut"))
+    {
+      Cerr << "Error while reading a " << qsj << " . We expected defaut instead of " << nom << finl;
+      Process::exit();
+    }
+
+  /* parsers par defaut */
+  for (k = 0; k < dim; k++)
+    {
+      Parser_U psr;
+      Nom tmp;
+      is >> tmp;
+      psr.setNbVar(5);
+      psr.setString(tmp);
+      psr.addVar("t"), psr.addVar("x"), psr.addVar("y"), psr.addVar("z");
+      if (ref_pb.non_nul()) psr.addVar("val");
+      psr.parseString();
+
+      for (poly = 0; poly < mon_domaine->zone(0).nb_elem_tot(); poly++)
+        parser_idx(poly, k) = parser.size();
+
+      parser.add(psr);
+    }
+
+  is >> nom;
+  while (nom != Nom("}"))
+    {
+      REF (Sous_Zone) refssz = les_sous_zones.add(mon_domaine->ss_zone(nom));
+      Sous_Zone& ssz = refssz.valeur(                                                               );
+      for (k = 0; k < dim; k++)
+        {
+          Parser_U psr;
+          Nom tmp;
+          is >> tmp;
+          psr.setNbVar(5);
+          psr.setString(tmp);
+          psr.addVar("t"), psr.addVar("x"), psr.addVar("y"), psr.addVar("z");
+          if (ref_pb.non_nul()) psr.addVar("val");
+          psr.parseString();
+
+          for (poly = 0; poly < ssz.nb_elem_tot(); poly++)
+            parser_idx(ssz(poly), k) = parser.size();
+
+          parser.add(psr);
+        }
+      is >> nom;
+    }
+  return is;
+}
+
 #endif /* TRUSTChamp_Morceaux_generique_TPP_included */
