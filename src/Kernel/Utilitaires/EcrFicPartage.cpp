@@ -335,31 +335,31 @@ Sortie& EcrFicPartage::operator <<(const Objet_U& ob)
   return *this;
 }
 
-Sortie& EcrFicPartage::operator <<(const int& ob)
+Sortie& EcrFicPartage::operator <<(const int ob)
 {
   get_obuffer() << ob;
   return *this;
 }
 
-Sortie& EcrFicPartage::operator <<(const unsigned& ob)
+Sortie& EcrFicPartage::operator <<(const unsigned ob)
 {
   get_obuffer() << ob;
   return *this;
 }
 
 #ifndef INT_is_64_
-Sortie& EcrFicPartage::operator <<(const long& ob)
+Sortie& EcrFicPartage::operator <<(const long ob)
 {
   get_obuffer() << ob;
   return *this;
 }
 #endif
-Sortie& EcrFicPartage::operator <<(const float& ob)
+Sortie& EcrFicPartage::operator <<(const float ob)
 {
   get_obuffer() << ob;
   return *this;
 }
-Sortie& EcrFicPartage::operator <<(const double& ob)
+Sortie& EcrFicPartage::operator <<(const double ob)
 {
   get_obuffer() << ob;
   return *this;

@@ -58,7 +58,7 @@ public:
   void   mettre_a_jour(double temps) override;
 
   virtual Champ_Fonc& creer_espace_stockage(const Nature_du_champ& nature,
-                                            const int& nb_comp,
+                                            const int nb_comp,
                                             Champ_Fonc& es_tmp) const;
 
   virtual const Champ_Generique_base&      get_source(int i) const;
@@ -99,8 +99,8 @@ public:
 
   //Methode pour changer t_deb et t_fin pour des reprises de statistiques
   //ou pour les statistiques en_serie
-  virtual void fixer_serie(const double& t1,const double& t2);
-  virtual void fixer_tstat_deb(const double& t1,const double& t2);
+  virtual void fixer_serie(const double t1,const double t2);
+  virtual void fixer_tstat_deb(const double t1,const double t2);
   virtual void lire_bidon(Entree& is) const;
 
 

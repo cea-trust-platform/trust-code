@@ -141,7 +141,7 @@ inline void nom_fichier(const Postraitement& post, const Champ_Generique_Statist
   nom_fichier+=Nom(s);
 }
 
-inline void nom_fichier(const Postraitement& post, const Nom& nom_post, const Nom& loc, const double& temps_ch, const Domaine& dom, Nom& nom_fichier)
+inline void nom_fichier(const Postraitement& post, const Nom& nom_post, const Nom& loc, const double temps_ch, const Domaine& dom, Nom& nom_fichier)
 {
   nom_fichier+=".";
   nom_fichier+=nom_post+"."+loc+"."+dom.le_nom()+"."+post.probleme().le_nom()+".";
@@ -1538,8 +1538,8 @@ int Postraitement::traiter_sondes()
   return 1;
 }
 
-int Postraitement::postraiter(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int& ncomp,
-                              const double& temps_champ,double& temps_courant,
+int Postraitement::postraiter(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+                              const double temps_champ,double& temps_courant,
                               Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs,int tenseur)
 
 {
@@ -1552,8 +1552,8 @@ int Postraitement::postraiter(const Domaine& dom,const Noms& unites,const Noms& 
   return 1;
 }
 
-int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int& ncomp,
-                                      const double& temps_champ,double& temps_courant,
+int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+                                      const double temps_champ,double& temps_courant,
                                       Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs)
 {
   const Nom& id_du_domaine = dom.le_nom();
@@ -1603,8 +1603,8 @@ int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,cons
   return 1;
 }
 
-int Postraitement::postraiter_tenseur(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int& ncomp,
-                                      const double& temps_champ,double& temps_courant,
+int Postraitement::postraiter_tenseur(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+                                      const double temps_champ,double& temps_courant,
                                       Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs)
 {
 
@@ -1616,7 +1616,7 @@ int Postraitement::postraiter_tenseur(const Domaine& dom,const Noms& unites,cons
 
 Nom Postraitement::set_expression_champ(const Motcle& motlu1,const Motcle& motlu2,
                                         const Motcle& motlu3,const Motcle& motlu4,
-                                        const int& trouve)
+                                        const int trouve)
 {
   Nom ajout("");
   if (((motlu2!="natif") && (motlu2!="faces") && (motlu3==""))
@@ -1915,7 +1915,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
 
 
 void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& motlu2,const Motcle& motlu3,const Motcle&
-                                          motlu4,const double& t_deb,const double& t_fin,Entree& s)
+                                          motlu4,const double t_deb,const double t_fin,Entree& s)
 {
   Champ_Generique champ;
   Nom ajout;
@@ -2048,7 +2048,7 @@ void Postraitement::creer_champ_post_stat(const Motcle& motlu1,const Motcle& mot
 // numero             : 0 (diffusion) 1 (convection) [ 2 (gradient) 3 (divergence) pour le cas des "flux_bords" ]
 // option disponible : stabilite flux_bords
 //
-void Postraitement::creer_champ_post_moreqn(const Motcle& type,const Motcle& option,const int& num_eq,const int& num_morceau,const int& compo,Entree& s)
+void Postraitement::creer_champ_post_moreqn(const Motcle& type,const Motcle& option,const int num_eq,const int num_morceau,const int compo,Entree& s)
 {
   Champ_Generique champ;
   Nom ajout("");

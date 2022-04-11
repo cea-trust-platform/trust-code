@@ -93,7 +93,7 @@ void Fluide_Ostwald::mettre_a_jour(double tps)
   Fluide_Incompressible::mettre_a_jour(tps);
 }
 
-int Fluide_Ostwald::initialiser(const double& temps)
+int Fluide_Ostwald::initialiser(const double temps)
 {
   return Fluide_Incompressible::initialiser(temps);
 }

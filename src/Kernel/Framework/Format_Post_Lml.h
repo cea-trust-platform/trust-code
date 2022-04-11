@@ -58,13 +58,13 @@ public:
   void reset() override;
   void set_param(Param& param) override;
   int initialize_by_default(const Nom& file_basename) override;
-  int initialize(const Nom& file_basename, const int& format, const Nom& option_para) override;
-  int ecrire_entete(double temps_courant, int reprise, const int& est_le_premier_post) override;
+  int initialize(const Nom& file_basename, const int format, const Nom& option_para) override;
+  int ecrire_entete(double temps_courant, int reprise, const int est_le_premier_post) override;
   int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post) override;
 
-  int preparer_post(const Nom& id_du_domaine, const int& est_le_premier_post, const int& reprise, const double& t_init) override;
+  int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init) override;
   int finir(int& est_le_dernier_post) override;
-  int ecrire_domaine(const Domaine& domaine, const int& est_le_premie_post) override;
+  int ecrire_domaine(const Domaine& domaine, const int est_le_premie_post) override;
   int ecrire_temps(const double temps) override;
 
   int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, double temps_courant, const Nom& id_du_champ, const Nom& id_du_domaine,
@@ -82,8 +82,8 @@ public:
 
   static int ecrire_item_int_lml(const Nom& id_item, const Nom& id_zone, const IntVect& data, const Nom& nom_fic);
 
-  static int ecrire_entete_lml(Nom& nom_fic, const int& est_le_premier_post);
-  static int finir_lml(Nom& nom_fic, const int& est_le_dernier_post);
+  static int ecrire_entete_lml(Nom& nom_fic, const int est_le_premier_post);
+  static int finir_lml(Nom& nom_fic, const int est_le_dernier_post);
   static int completer_post_lml();
   static int preparer_post_lml();
 

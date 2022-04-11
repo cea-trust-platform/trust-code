@@ -118,7 +118,7 @@ void Champ_Generique_Morceau_Equation::completer(const Postraitement_base& post)
 }
 
 Champ_Fonc& Champ_Generique_Morceau_Equation::creer_espace_stockage(const Nature_du_champ& nature,
-                                                                    const int& nb_comp,
+                                                                    const int nb_comp,
                                                                     Champ_Fonc& es_tmp) const
 {
   Noms noms;

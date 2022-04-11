@@ -65,7 +65,7 @@ public:
     return 0;
 #endif
   }
-  void scale(const double& x) override
+  void scale(const double x) override
   {
     Cerr << "ToDo" << finl;
     Process::exit(-1);

@@ -101,7 +101,7 @@ void Parser_Eval::eval_fct(const DoubleTab& positions,DoubleTab& val) const
 
 //Cas d une fonction a evaluer qui depend de l espace (x,y,z)
 //On ne traite que la composante ncomp
-void Parser_Eval::eval_fct(const DoubleTab& positions,DoubleVect& val,const int& ncomp) const
+void Parser_Eval::eval_fct(const DoubleTab& positions,DoubleVect& val,const int ncomp) const
 {
 
   int pos_size = positions.dimension(0);
@@ -130,7 +130,7 @@ void Parser_Eval::eval_fct(const DoubleTab& positions,DoubleVect& val,const int&
 
 //Cas d une fonction a evaluer qui depend de l espace et du temps (x,y,z,t)
 //On traite toute(s) le(s) composante(s)
-void Parser_Eval::eval_fct(const DoubleVect& positions,const double& tps,DoubleVect& val) const
+void Parser_Eval::eval_fct(const DoubleVect& positions,const double tps,DoubleVect& val) const
 {
   int dim = fonction_.size();
   int dimension = positions.size();
@@ -154,7 +154,7 @@ void Parser_Eval::eval_fct(const DoubleVect& positions,const double& tps,DoubleV
 }
 //Cas d une fonction a evaluer qui depend de l espace et du temps (x,y,z,t)
 //On traite toute(s) le(s) composante(s)
-void Parser_Eval::eval_fct(const DoubleTab& positions,const double& tps,DoubleTab& val) const
+void Parser_Eval::eval_fct(const DoubleTab& positions,const double tps,DoubleTab& val) const
 {
   int pos_size = positions.dimension(0);
   int dim = fonction_.size();
@@ -209,7 +209,7 @@ void Parser_Eval::eval_fct(const DoubleTab& positions,const double& tps,DoubleTa
 
 //Cas d une fonction a evaluer qui depend de l espace et du temps (x,y,z,t)
 //On ne traite que la composante ncomp
-void Parser_Eval::eval_fct(const DoubleTab& positions,const double& tps,DoubleVect& val,const int& ncomp) const
+void Parser_Eval::eval_fct(const DoubleTab& positions,const double tps,DoubleVect& val,const int ncomp) const
 {
 
   int pos_size = positions.dimension(0);
@@ -238,7 +238,7 @@ void Parser_Eval::eval_fct(const DoubleTab& positions,const double& tps,DoubleVe
 
 //Cas d une fonction a evaluer qui depend de l espace, du temps et des valeurs d un champ inconnu (x,y,z,t,val)
 //On traite toute(s) le(s) composante(s)
-void Parser_Eval::eval_fct(const DoubleTab& positions,const double& tps,const DoubleTab& val_param,DoubleTab& val) const
+void Parser_Eval::eval_fct(const DoubleTab& positions,const double tps,const DoubleTab& val_param,DoubleTab& val) const
 {
   int pos_size = positions.dimension(0);
   int dim = fonction_.size();
@@ -296,7 +296,7 @@ void Parser_Eval::eval_fct(const DoubleTab& positions,const double& tps,const Do
 
 //Cas d une fonction a evaluer qui depend de l espace, du temps et des valeurs d un champ inconnu (x,y,z,t,val)
 //On ne traite que la composante ncomp
-void Parser_Eval::eval_fct(const DoubleTab& positions,const double& tps,const DoubleTab& val_param,DoubleVect& val,const int& ncomp) const
+void Parser_Eval::eval_fct(const DoubleTab& positions,const double tps,const DoubleTab& val_param,DoubleVect& val,const int ncomp) const
 {
   int pos_size = positions.dimension(0);
   int dimension = positions.dimension(1);

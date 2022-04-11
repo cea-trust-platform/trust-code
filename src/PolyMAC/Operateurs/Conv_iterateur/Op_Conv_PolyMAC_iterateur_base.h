@@ -127,7 +127,7 @@ inline DoubleTab& Op_Conv_PolyMAC_iterateur_base::calculer(const DoubleTab& inco
 // Fonction utile pour le calcul du pas de temps de stabilite
 //
 
-inline void eval_fluent(const double& , const int , const int , DoubleVect& );
+inline void eval_fluent(const double , const int , const int , DoubleVect& );
 
 
 #endif

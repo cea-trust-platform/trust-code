@@ -88,7 +88,7 @@ void Champ_Fonc_Tabule_P0_VEF::mettre_a_jour(double t)
   Champ_Fonc_base::mettre_a_jour(t);
 }
 
-int Champ_Fonc_Tabule_P0_VEF::initialiser(const double& un_temps)
+int Champ_Fonc_Tabule_P0_VEF::initialiser(const double un_temps)
 {
   Champ_Fonc_Tabule_P0_VEF::mettre_a_jour(un_temps);
   return 1;

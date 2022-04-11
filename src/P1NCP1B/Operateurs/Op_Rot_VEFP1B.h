@@ -48,7 +48,7 @@ public:
   //////////////////////////////////////////////////
 
   //Methode pour rendre le vecteur normal a la "face" de l'element "elem"
-  DoubleTab vecteur_normal(const int& face, const int& elem) const;
+  DoubleTab vecteur_normal(const int face, const int elem) const;
 
   ///////////////////////////////////////////////////
   // Fin methode rajoutee

@@ -63,15 +63,15 @@ public:
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int initialize_by_default(const Nom& file_basename) override;
-  int initialize(const Nom& file_basename, const int& format, const Nom& option_para) override;
+  int initialize(const Nom& file_basename, const int format, const Nom& option_para) override;
   int modify_file_basename(const Nom file_basename, const int a_faire, const double tinit) override;
   virtual int reconstruct(const Nom file_basename, const Nom, const double tinit);
   virtual int finir_sans_reprise(const Nom file_basename);
-  int ecrire_entete(double temps_courant, int reprise, const int& est_le_premier_post) override;
+  int ecrire_entete(double temps_courant, int reprise, const int est_le_premier_post) override;
   int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post) override;
 
-  int preparer_post(const Nom& id_du_domaine, const int& est_le_premier_post, const int& reprise, const double& t_init) override;
-  int ecrire_domaine(const Domaine& domaine, const int& est_le_premier_post) override;
+  int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init) override;
+  int ecrire_domaine(const Domaine& domaine, const int est_le_premier_post) override;
   int ecrire_temps(const double temps) override;
 
   int finir(int& est_le_dernier_post) override;
@@ -111,8 +111,8 @@ public:
   Format_Post_Lata();
   virtual int initialize_lata(const Nom& file_basename, const Format format = ASCII, const Options_Para options_para = SINGLE_FILE);
 
-  static int ecrire_entete_lata(const Nom& base_name, const Options_Para& option, const Format& format, const int& est_le_premier_post);
-  static int ecrire_temps_lata(const double& temps, double& temps_format, const Nom& base_name, Status& stat, const Options_Para& option);
+  static int ecrire_entete_lata(const Nom& base_name, const Options_Para& option, const Format& format, const int est_le_premier_post);
+  static int ecrire_temps_lata(const double temps, double& temps_format, const Nom& base_name, Status& stat, const Options_Para& option);
 
 protected:
 

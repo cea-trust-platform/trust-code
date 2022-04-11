@@ -90,7 +90,7 @@ Entree& Champ_front_lu::readOn(Entree& is)
   return is;
 }
 
-void erreur_chfront(const Nom& nom_fic, const int& dim, const Nom& nom_domaine)
+void erreur_chfront(const Nom& nom_fic, const int dim, const Nom& nom_domaine)
 {
   Cerr << "****************************************************************************************************************" << finl;
   Cerr << "Error! It seems that several faces into the file " << nom_fic << " does not match any faces of the current mesh." << finl;

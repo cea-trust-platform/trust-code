@@ -47,7 +47,7 @@ class Champ_Fonc_Tabule : public Champ_Fonc_base
 public:
   using Champ_Fonc_base::valeurs;
 
-  inline int initialiser(const double& un_temps) override;
+  inline int initialiser(const double un_temps) override;
   inline void mettre_a_jour(double un_temps) override;
   inline void associer_zone_dis_base(const Zone_dis_base&) override;
   inline const DoubleTab& valeurs() const override;
@@ -113,7 +113,7 @@ inline void Champ_Fonc_Tabule::mettre_a_jour(double un_temps)
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline int Champ_Fonc_Tabule::initialiser(const double& un_temps)
+inline int Champ_Fonc_Tabule::initialiser(const double un_temps)
 {
   le_champ_tabule_discretise().initialiser(un_temps);
   return 1;

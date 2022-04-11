@@ -73,7 +73,7 @@ public :
   virtual void getOutputFieldsNames(Noms& noms) const;
   virtual void getOutputField(const Nom& nameField, ICoCo::TrioField& afield) const;
 
-  virtual void setInputDoubleValue(const Nom& name, const double& val);
+  virtual void setInputDoubleValue(const Nom& name, const double val);
 
   // Complements a l'API de Problem
 

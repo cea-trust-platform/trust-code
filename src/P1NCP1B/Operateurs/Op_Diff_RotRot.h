@@ -79,29 +79,29 @@ public:
   /* a placer dans la sous matrice de taille nb_elem * nb_elem */
   /* a la ligne "numero_elem" */
   /* Matrice EF */
-  double remplir_elem_elem_EF(const int& numero_elem) const;
+  double remplir_elem_elem_EF(const int numero_elem) const;
 
   /* Pour l'element "numero_elem" retourne le coefficient */
   /* a placer dans la sous matrice de taille nb_elem * nb_som */
   /* a la ligne "numero_elem" */
   /* Matrice EF */
-  double remplir_elem_som_EF(const int& numero_elem,
-                             const int& numero_som) const;
+  double remplir_elem_som_EF(const int numero_elem,
+                             const int numero_som) const;
 
   /* Pour le sommet "numero_som" retourne le coefficient */
   /* a placer dans la sous matrice de taille nb_som * nb_elem */
   /* a la ligne "numero_som" */
   /* Matrice EF */
-  double remplir_som_elem_EF(const int& numero_elem,
-                             const int& numero_som) const;
+  double remplir_som_elem_EF(const int numero_elem,
+                             const int numero_som) const;
 
   /* Pour l'element "numero_elem" retourne le coefficient */
   /* a placer dans la sous matrice de taille nb_elem * nb_som */
   /* a la ligne "numero_som" */
   /* "IntList" est le tableau des elements qui contiennent "numero_som" */
   /* Matrice EF */
-  double remplir_som_som_EF(const int& numero_som,
-                            const int& sommet_voisin,
+  double remplir_som_som_EF(const int numero_som,
+                            const int sommet_voisin,
                             const IntList&) const;
 
   /* Fonction de tri d'une IntList */
@@ -109,7 +109,7 @@ public:
   void Tri(IntList& liste_a_trier) const;
 
   //Methode pour rendre le vecteur normal a la "face" de l'element "elem"
-  DoubleTab vecteur_normal(const int& face, const int& elem) const;
+  DoubleTab vecteur_normal(const int face, const int elem) const;
 
   const Zone_VEF_PreP1b& zone_Vef() const;
 

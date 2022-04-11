@@ -143,7 +143,7 @@ void Champ_Gen_de_Champs_Gen::mettre_a_jour(double temps)
 }
 
 Champ_Fonc& Champ_Gen_de_Champs_Gen::creer_espace_stockage(const Nature_du_champ& nature,
-                                                           const int& nb_comp,
+                                                           const int nb_comp,
                                                            Champ_Fonc& es_tmp) const
 {
 
@@ -407,7 +407,7 @@ int Champ_Gen_de_Champs_Gen::get_info_type_post() const
 }
 
 //Methodes pour changer t_deb et t_fin pour des reprises de statistiques
-void Champ_Gen_de_Champs_Gen::fixer_serie(const double& t1, const double& t2)
+void Champ_Gen_de_Champs_Gen::fixer_serie(const double t1, const double t2)
 {
   const int n = get_nb_sources();;
   for (int i = 0; i < n; i++)
@@ -420,7 +420,7 @@ void Champ_Gen_de_Champs_Gen::fixer_serie(const double& t1, const double& t2)
     }
 }
 
-void Champ_Gen_de_Champs_Gen::fixer_tstat_deb(const double& t1, const double& t2)
+void Champ_Gen_de_Champs_Gen::fixer_tstat_deb(const double t1, const double t2)
 {
   const int n = get_nb_sources();;
   for (int i = 0; i < n; i++)

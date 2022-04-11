@@ -62,7 +62,7 @@ public:
   int nb_valeurs_nodales() const;
   const Zone_dis_base& associer_zone_dis_base(const Zone_dis_base&);
   const Zone_dis_base& zone_dis_base() const;
-  double changer_temps(const double&);
+  double changer_temps(const double);
   double temps() const;
   DoubleTab& futur(int i = 1) override;
   const DoubleTab& futur(int i = 1) const override;

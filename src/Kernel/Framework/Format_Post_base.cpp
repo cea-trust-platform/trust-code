@@ -62,7 +62,7 @@ int Format_Post_base::initialize_by_default(const Nom& file_basename)
   return 0;
 }
 
-int Format_Post_base::initialize(const Nom& file_basename, const int& format, const Nom& option_para)
+int Format_Post_base::initialize(const Nom& file_basename, const int format, const Nom& option_para)
 {
   Cerr << "Format_Post_base::initialize(" << file_basename
        << ")\n method not coded for " << que_suis_je() << finl;
@@ -74,7 +74,7 @@ int Format_Post_base::modify_file_basename(const Nom file_basename, const int a_
   return 0;
 }
 
-int Format_Post_base::ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post)
+int Format_Post_base::ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post)
 {
   Cerr << "Format_Post_base::ecrire_entete method not coded for " << que_suis_je() << finl;
   return 0;
@@ -110,9 +110,9 @@ int Format_Post_base::completer_post(const Domaine& dom,const int is_axi,
 
 }
 
-int Format_Post_base::preparer_post(const Nom& id_du_domaine,const int& est_le_premier_post,
-                                    const int& reprise,
-                                    const double& t_init)
+int Format_Post_base::preparer_post(const Nom& id_du_domaine,const int est_le_premier_post,
+                                    const int reprise,
+                                    const double t_init)
 {
 
   Cerr << "Format_Post_base::preparer_post(...)\n"
@@ -121,7 +121,7 @@ int Format_Post_base::preparer_post(const Nom& id_du_domaine,const int& est_le_p
 
 }
 
-int Format_Post_base::test_coherence(const int& champs, const int& stat, const double& dt_ch, const double dt_stat)
+int Format_Post_base::test_coherence(const int champs, const int stat, const double dt_ch, const double dt_stat)
 {
   if (stat && champs && !est_egal(dt_stat,dt_ch))
     {
@@ -168,14 +168,14 @@ int Format_Post_base::test_coherence(const int& champs, const int& stat, const d
 //  preconditions non remplies ou fonctionnalite non supportee par le
 //  format).
 
-int Format_Post_base::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
+int Format_Post_base::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
   Cerr << "Format_Post_base::ecrire_domaine(...)\n"
        << " method not coded for " << que_suis_je() << finl;
   return 0;
 }
 
-int Format_Post_base::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post)
+int Format_Post_base::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post)
 {
   return ecrire_domaine(domaine, est_le_premier_post);
 }

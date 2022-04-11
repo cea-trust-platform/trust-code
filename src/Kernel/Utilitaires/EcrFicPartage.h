@@ -62,13 +62,13 @@ public:
   int set_bin(int bin) override;
 
   Sortie& operator <<(const Separateur& ) override;
-  Sortie& operator <<(const int& ob) override;
-  Sortie& operator <<(const unsigned& ob) override;
+  Sortie& operator <<(const int ob) override;
+  Sortie& operator <<(const unsigned ob) override;
 #ifndef INT_is_64_
-  Sortie& operator <<(const long& ob) override;
+  Sortie& operator <<(const long ob) override;
 #endif
-  Sortie& operator <<(const float& ob) override;
-  Sortie& operator <<(const double& ob) override;
+  Sortie& operator <<(const float ob) override;
+  Sortie& operator <<(const double ob) override;
   Sortie& operator <<(const char* ob) override;
   Sortie& operator <<(const Objet_U& ob) override;
 #ifdef IO_avec_string

@@ -41,16 +41,16 @@ public :
   //Cas d une fonction a evaluer qui depend de l espace
   void eval_fct(const DoubleVect& positions,DoubleVect& val) const;
   void eval_fct(const DoubleTab& positions,DoubleTab& val) const;
-  void eval_fct(const DoubleTab& positions,DoubleVect& val,const int& ncomp) const;
+  void eval_fct(const DoubleTab& positions,DoubleVect& val,const int ncomp) const;
 
   //Cas d une fonction a evaluer qui depend de l espace et du temps
-  void eval_fct(const DoubleVect& positions,const double& tps,DoubleVect& val) const;
-  void eval_fct(const DoubleTab& positions,const double& tps,DoubleTab& val) const;
-  void eval_fct(const DoubleTab& positions,const double& tps,DoubleVect& val,const int& ncomp) const;
+  void eval_fct(const DoubleVect& positions,const double tps,DoubleVect& val) const;
+  void eval_fct(const DoubleTab& positions,const double tps,DoubleTab& val) const;
+  void eval_fct(const DoubleTab& positions,const double tps,DoubleVect& val,const int ncomp) const;
 
   //Cas d une fonction a evaluer qui depend de l espace, du temps et des valeurs d un champ inconnu
-  void eval_fct(const DoubleTab& positions,const double& tps,const DoubleTab& val_param,DoubleTab& val) const;
-  void eval_fct(const DoubleTab& positions,const double& tps,const DoubleTab& val_param,DoubleVect& val,const int& ncomp) const;
+  void eval_fct(const DoubleTab& positions,const double tps,const DoubleTab& val_param,DoubleTab& val) const;
+  void eval_fct(const DoubleTab& positions,const double tps,const DoubleTab& val_param,DoubleVect& val,const int ncomp) const;
 
   // Fonction generale qui depend de plusieurs champs inconnus
   void eval_fct(const DoubleTabs& variables, DoubleTab& val) const;

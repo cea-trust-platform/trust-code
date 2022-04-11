@@ -1005,7 +1005,7 @@ int Sous_Zone::lire_motcle_non_standard(const Motcle& motlu , Entree& is)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode modifie l'objet
-int Sous_Zone::add_poly(const int& poly)
+int Sous_Zone::add_poly(const int poly)
 {
   assert(0<=poly);
   int nb_poly=les_polys_.size();
@@ -1036,7 +1036,7 @@ int Sous_Zone::add_poly(const int& poly)
 // Exception:
 // Effets de bord:
 // Postcondition: la methode modifie l'objet
-int Sous_Zone::remove_poly(const int& poly)
+int Sous_Zone::remove_poly(const int poly)
 {
   assert(0<=poly);
   assert(poly<=la_zone_.valeur().nb_elem());

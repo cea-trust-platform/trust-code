@@ -51,7 +51,7 @@ void Reynolds_maille_Champ_Face::associer_champ(const Champ_Face& la_vitesse, co
 }
 
 // Methode de calcul de la valeur sur une face d'un champ uniforme ou non a plusieurs composantes
-inline double valeur(const DoubleTab& champ, const int& face, const int& compo, const Zone_VDF& la_zone_VDF)
+inline double valeur(const DoubleTab& champ, const int face, const int compo, const Zone_VDF& la_zone_VDF)
 {
   if (champ.dimension(0)==1)
     return champ(0,compo); // Champ uniforme

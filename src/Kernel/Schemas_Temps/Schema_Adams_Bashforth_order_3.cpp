@@ -108,7 +108,7 @@ inline int Schema_Adams_Bashforth_order_3::nb_valeurs_passees() const
 //                                     //
 /////////////////////////////////////////
 
-static double Ln02(const double& time_n_plus_1, const double& time_n, const double& time_n_minus_1, const double& time_n_minus_2)
+static double Ln02(const double time_n_plus_1, const double time_n, const double time_n_minus_1, const double time_n_minus_2)
 {
   //Integration of first degree-2 lagrangian polynomial with Simpson's formulae
   //Ln02(time_n_minus_2) = 0
@@ -135,7 +135,7 @@ static double Ln02(const double& time_n_plus_1, const double& time_n, const doub
   return result;
 }
 
-static double Ln12(const double& time_n_plus_1, const double& time_n, const double& time_n_minus_1, const double& time_n_minus_2)
+static double Ln12(const double time_n_plus_1, const double time_n, const double time_n_minus_1, const double time_n_minus_2)
 {
   //Integration of second degree-2 lagrangian polynomial with Simpson's formulae
   //Ln12(time_n_minus_2) = 0

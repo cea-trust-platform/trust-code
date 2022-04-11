@@ -59,7 +59,7 @@ public :
   void moy_spat(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&);
   void calculer_integrale_temporelle(DoubleVect&, const DoubleVect&);
   void ecriture_moy_spat(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&);
-  void ecriture_moy_temp(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, const double&);
+  void ecriture_moy_temp(DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, DoubleVect&, const double);
 
 
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}

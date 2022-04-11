@@ -99,7 +99,7 @@ void Source_PDF_base::associer_zones(const Zone_dis& zone_dis,
   abort();
 }
 
-double Source_PDF_base::fonct_coeff(const double& rho_m, const double& aire, const double& dt) const
+double Source_PDF_base::fonct_coeff(const double rho_m, const double aire, const double dt) const
 {
   double val_coeff = 0.;
   if (aire<=0.)
@@ -296,7 +296,7 @@ int Source_PDF_base::impr(Sortie& os) const
   return 0;
 }
 
-void Source_PDF_base::ouvrir_fichier(SFichier& os, const Nom& type, const int& flag=1) const
+void Source_PDF_base::ouvrir_fichier(SFichier& os, const Nom& type, const int flag=1) const
 {
   // flag nul on n'ouvre pas le fichier
   if (flag==0)

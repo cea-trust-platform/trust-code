@@ -52,7 +52,7 @@ class Flux_interfacial_base : public Correlation_base
 {
   Declare_base(Flux_interfacial_base);
 public:
-  virtual void coeffs(const double& dh, const double *alpha, const double *T, const double p, const double *nv,
+  virtual void coeffs(const double dh, const double *alpha, const double *T, const double p, const double *nv,
                       const double *lambda, const double *mu, const double *rho, const double *Cp,
                       DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const = 0;
 };

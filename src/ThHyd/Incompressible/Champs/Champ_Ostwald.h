@@ -51,7 +51,7 @@ class Champ_Ostwald : public Champ_Fonc_P0_base
 public :
   void mettre_a_jour(double temps) override;
   virtual void me_calculer(double tps);
-  int initialiser(const double& temps) override;
+  int initialiser(const double temps) override;
   //     virtual void associer_champ(const Champ_base& );
   inline virtual const Fluide_Ostwald& mon_fluide() const;
   inline virtual void associer_fluide(const Fluide_Ostwald&);

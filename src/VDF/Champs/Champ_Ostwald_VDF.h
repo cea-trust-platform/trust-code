@@ -61,7 +61,7 @@ public :
 
   void mettre_a_jour(double temps) override;
   void me_calculer(double tps) override;
-  int initialiser(const double& temps) override;
+  int initialiser(const double temps) override;
 
 protected :
 

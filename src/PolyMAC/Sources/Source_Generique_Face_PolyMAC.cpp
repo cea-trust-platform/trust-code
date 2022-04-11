@@ -42,7 +42,7 @@ Entree& Source_Generique_Face_PolyMAC::readOn(Entree& is)
 }
 
 // Methode de calcul de la valeur sur une face encadree par elem1 et elem2 d'un champ uniforme ou non a plusieurs composantes
-inline double valeur(const DoubleTab& valeurs_champ, int elem1, int elem2, const int& compo)
+inline double valeur(const DoubleTab& valeurs_champ, int elem1, int elem2, const int compo)
 {
   if (valeurs_champ.dimension(0)==1)
     return valeurs_champ(0,compo); // Champ uniforme

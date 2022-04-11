@@ -234,7 +234,7 @@ const char * Format_Post_Lata::remove_path(const char * filename)
 //  Ouvre le fichier maitre en mode ERASE et ecrit l'entete du fichier lata
 //  (sur le processeur maitre seulement).
 ////void Format_Post_Lata::ecrire_entete_lata()
-int Format_Post_Lata::ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post)
+int Format_Post_Lata::ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post)
 {
 
   ecrire_entete_lata(lata_basename_,options_para_,format_,est_le_premier_post);
@@ -298,7 +298,7 @@ int Format_Post_Lata::completer_post(const Domaine& dom, const int is_axi, const
   return 1;
 }
 
-int Format_Post_Lata::preparer_post(const Nom& id_du_domaine, const int& est_le_premier_post, const int& reprise, const double& t_init)
+int Format_Post_Lata::preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init)
 {
   return 1;
 }
@@ -597,7 +597,7 @@ int Format_Post_Lata::initialize_by_default(const Nom& file_basename)
   return 1;
 }
 
-int Format_Post_Lata::initialize(const Nom& file_basename, const int& format, const Nom& option_para)
+int Format_Post_Lata::initialize(const Nom& file_basename, const int format, const Nom& option_para)
 {
   assert(status == RESET);
   // Changement du format LATA (par defaut binaire)
@@ -795,7 +795,7 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
 //  la liste des sommets et la liste des elements.
 //  Si le PE est maitre, ouvre le fichier maitre en mode APPEND et
 //  ajoute une reference a ce fichier.
-int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
+int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
   if (status == RESET)
     {
@@ -1185,7 +1185,7 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
 }
 
 int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name,const Options_Para& option,const Format& format,
-                                         const int& est_le_premier_post)
+                                         const int est_le_premier_post)
 {
 
   if (est_le_premier_post)
@@ -1252,7 +1252,7 @@ int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name,const Options_Para
 
   return 1;
 }
-int Format_Post_Lata::ecrire_temps_lata(const double& temps,double& temps_format,const Nom& base_name,Status& stat,const Options_Para& option)
+int Format_Post_Lata::ecrire_temps_lata(const double temps,double& temps_format,const Nom& base_name,Status& stat,const Options_Para& option)
 {
   assert(stat != RESET);
   // On ecrit le temps que si ce n'est pas le meme...

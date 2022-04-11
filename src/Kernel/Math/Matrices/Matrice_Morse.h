@@ -141,7 +141,7 @@ public :
   friend Matrice_Morse operator +(const Matrice_Morse&, const Matrice_Morse& );
   Matrice_Morse& operator +=(const Matrice_Morse& );
   Matrice_Morse& operator *=(double );
-  void scale( const double& x ) override;
+  void scale( const double x ) override;
 
   void get_stencil( IntTab& stencil ) const override;
 

@@ -51,8 +51,8 @@ using std::endl;
 Implemente_instanciable_sans_constructeur(Op_Diff_VEFP1NCP1B_Face,"Op_Diff_VEFP1NCP1B_const_P1NC",Op_Diff_VEF_Face);
 
 
-static inline double maximum(const double& x,
-                             const double& y)
+static inline double maximum(const double x,
+                             const double y)
 {
   if(x<y)
     return y;
@@ -1629,7 +1629,7 @@ ajouter_contribution_aretes(const DoubleTab& inconnue,const DoubleVect& porosite
 //Fonction qui calcule les coefficients de la matrice pour une face
 //INTERNE.
 void Op_Diff_VEFP1NCP1B_Face::
-coeff_matrice_som(const int& face,IntVect& liste_som,
+coeff_matrice_som(const int face,IntVect& liste_som,
                   DoubleTab& gradient0, DoubleTab& gradient1,
                   const DoubleVect& porosite_face,const DoubleTab& nu_som,
                   const DoubleTab& coeff_perio,Matrice_Morse& matrice) const
@@ -1766,7 +1766,7 @@ coeff_matrice_som(const int& face,IntVect& liste_som,
 //Fonction qui calcule les coefficients de la matrice pour une face
 //de BORD qui n'est ni periodique ni symetrique.
 void Op_Diff_VEFP1NCP1B_Face::
-coeff_matrice_som_CL(const int& face,IntVect& liste_som,
+coeff_matrice_som_CL(const int face,IntVect& liste_som,
                      DoubleTab& gradient0, DoubleTab& gradient1,
                      const DoubleVect& porosite_face,const DoubleTab& nu_som,
                      const DoubleTab& coeff_perio,Matrice_Morse& matrice) const
@@ -1903,7 +1903,7 @@ coeff_matrice_som_CL(const int& face,IntVect& liste_som,
 //Fonction qui calcule les coefficients de la matrice pour une face
 //de BORD qui est une face de SYMETRIE.
 void Op_Diff_VEFP1NCP1B_Face::
-coeff_matrice_som_symetrie(const int& face,IntVect& liste_som,
+coeff_matrice_som_symetrie(const int face,IntVect& liste_som,
                            DoubleTab& gradient0, DoubleTab& gradient1,
                            const DoubleVect& porosite_face,const DoubleTab& nu_som,
                            const DoubleTab& coeff_perio,Matrice_Morse& matrice) const
@@ -2044,7 +2044,7 @@ coeff_matrice_som_symetrie(const int& face,IntVect& liste_som,
 //Fonction qui calcule les coefficients de la matrice pour une face
 //PERIODIQUE.
 void Op_Diff_VEFP1NCP1B_Face::
-coeff_matrice_som_perio(const int& face,const int& faceAss, IntVect& liste_som,
+coeff_matrice_som_perio(const int face,const int faceAss, IntVect& liste_som,
                         DoubleTab& gradient0, DoubleTab& gradient1,
                         const DoubleVect& porosite_face,const DoubleTab& nu_som,
                         const DoubleTab& coeff_perio,Matrice_Morse& matrice) const
@@ -2637,9 +2637,9 @@ void Op_Diff_VEFP1NCP1B_Face::liste_face(IntLists& liste,int& nnz) const
 //             sense etre CORRECTEMENT dimensionne AVANT l'appel
 //             de cette fonction
 void Op_Diff_VEFP1NCP1B_Face::
-gradient_som(const int& face,const int& som_glob,
-             const int& elem0, const int& som_loc0,
-             const int& elem1, const int& som_loc1,
+gradient_som(const int face,const int som_glob,
+             const int elem0, const int som_loc0,
+             const int elem1, const int som_loc1,
              DoubleTab& grad) const
 {
   const Zone_VEF_PreP1b& zone_VEF = zone_VEFPreP1B();
@@ -2723,7 +2723,7 @@ gradient_som(const int& face,const int& som_glob,
 //SORTIE : "nnz" est le nombre de sommets inclus dans le stencil
 //         de face
 void Op_Diff_VEFP1NCP1B_Face::
-gradient_som(const int& face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
+gradient_som(const int face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone& zone=zone_VEF.zone();
@@ -2838,7 +2838,7 @@ gradient_som(const int& face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
 //SORTIE : "nnz" est le nombre de sommets inclus dans le stencil
 //         de face
 void Op_Diff_VEFP1NCP1B_Face::
-gradient_som_CL(const int& face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
+gradient_som_CL(const int face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
 {
   const Zone_VEF_PreP1b& zone_VEF=zone_VEFPreP1B();
   const Zone& zone=zone_VEF.zone();

@@ -68,7 +68,7 @@ Entree& Schema_Implicite_Multi_TimeStep_base::readOn(Entree& s)
   return s;
 }
 
-static void Implicite_Multi_TimeStep_calcul_fac_sec(double& residu_,double& residu_old,double& facsec_,const double& facsec_max_,int& nb_ite_sans_accel_)
+static void Implicite_Multi_TimeStep_calcul_fac_sec(double& residu_,double& residu_old,double& facsec_,const double facsec_max_,int& nb_ite_sans_accel_)
 {
   double rap                   = 1.2;
   int    nb_ite_sans_accel_max = 20000;

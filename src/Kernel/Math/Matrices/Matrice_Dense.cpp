@@ -72,7 +72,7 @@ Matrice_Dense::Matrice_Dense( void )
   dimensionner( 0 , 0 );
 }
 
-Matrice_Dense::Matrice_Dense( const int& nb_lines , const int& nb_cols )
+Matrice_Dense::Matrice_Dense( const int nb_lines , const int nb_cols )
 {
   dimensionner( nb_lines , nb_cols );
 }
@@ -184,7 +184,7 @@ void Matrice_Dense::convert_to_morse_matrix( Matrice_Morse& morse_matrix ) const
 }
 
 
-void Matrice_Dense::dimensionner( const int& nb_lines , const int& nb_cols )
+void Matrice_Dense::dimensionner( const int nb_lines , const int nb_cols )
 {
   Matrix_.resize( nb_lines , nb_cols );
 }
@@ -242,7 +242,7 @@ DoubleVect& Matrice_Dense::ajouter_multvect_( const DoubleVect& x , DoubleVect& 
 }
 
 //set the coefficient Matrix( i , j ) at value
-void Matrice_Dense::set_coefficient( const int& i , const int& j , const double& value )
+void Matrice_Dense::set_coefficient( const int i , const int j , const double value )
 {
   assert( i < nb_lignes( ) );
   assert( j < nb_colonnes( ) );
@@ -267,7 +267,7 @@ void Matrice_Dense::build_the_transposed( Matrice_Dense& transposed ) const
 // return a bool which indicates if the other matrix is the same or not
 // return true  : Matrix_ and other_matrix are the same for a given tolerance tol
 // return false :  Matrix_ and other_matrix are NOT the same for a given tolerance tol
-bool Matrice_Dense::is_the_same( const Matrice_Dense& other_matrix , const double& tol ) const
+bool Matrice_Dense::is_the_same( const Matrice_Dense& other_matrix , const double tol ) const
 {
   bool same = true;
   int nb_lines = nb_lignes( );
@@ -325,7 +325,7 @@ DoubleVect& Matrice_Dense::ajouter_multvectT_(const DoubleVect& x,DoubleVect& re
   return resu;
 }
 
-void Matrice_Dense::scale( const double& x )
+void Matrice_Dense::scale( const double x )
 {
   const int nb_lines = nb_lignes( );
   const int nb_cols  = nb_colonnes( );

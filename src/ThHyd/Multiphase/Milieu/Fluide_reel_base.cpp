@@ -77,7 +77,7 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const  Discretisatio
   dis.discretiser_champ("champ_elem", zone_dis,  "capacite_calorifique",    "J/kg/K", 1, temps,       Cp);
 }
 
-int Fluide_reel_base::initialiser(const double& temps)
+int Fluide_reel_base::initialiser(const double temps)
 {
   const Equation_base& eqn = equation("temperature");
   Champ_Inc_base& ch_rho = ref_cast(Champ_Inc_base, rho.valeur()),

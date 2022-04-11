@@ -1347,7 +1347,7 @@ DoubleTab& Convection_Diffusion_Temperature::penalisation_L2(DoubleTab& u)
   return u;
 }
 
-void ouvrir_fichier_pena_th(SFichier& os, const Nom& type, const int& flag, const Transport_Interfaces_base& equation)
+void ouvrir_fichier_pena_th(SFichier& os, const Nom& type, const int flag, const Transport_Interfaces_base& equation)
 {
   // flag nul on n'ouvre pas le fichier
   if (flag==0)

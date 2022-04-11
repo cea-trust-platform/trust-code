@@ -236,7 +236,7 @@ void Traitement_particulier_Solide_canal_VDF::ecriture_fichier_moy_spat_thermo(c
 
 // #################### Ecriture Moyennes temporelles dans Fichier ################
 
-void Traitement_particulier_Solide_canal_VDF::ecriture_fichier_moy_temp_thermo(const DoubleVect& Tmoy, const DoubleVect& Trms, const DoubleVect& tabY, const double& dt)
+void Traitement_particulier_Solide_canal_VDF::ecriture_fichier_moy_temp_thermo(const DoubleVect& Tmoy, const DoubleVect& Trms, const DoubleVect& tabY, const double dt)
 {
   Nom nom_fic = "Solid_temp_";
   double tps = mon_equation->inconnue().temps();

@@ -112,21 +112,21 @@ public:
   virtual void set_param(Param& param)=0;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual int initialize_by_default(const Nom& file_basename);
-  virtual int initialize(const Nom& file_basename, const int& format, const Nom& option_para);
+  virtual int initialize(const Nom& file_basename, const int format, const Nom& option_para);
   virtual int modify_file_basename(const Nom file_basename, const int a_faire, const double tinit);
-  virtual int ecrire_entete(double temps_courant, int reprise, const int& est_le_premier_post);
+  virtual int ecrire_entete(double temps_courant, int reprise, const int est_le_premier_post);
   virtual int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post);
 
-  virtual int preparer_post(const Nom& id_du_domaine, const int& est_le_premier_post, const int& reprise, const double& t_init);
-  virtual int test_coherence(const int& champs, const int& stat, const double& dt_ch, const double dt_stat);
+  virtual int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init);
+  virtual int test_coherence(const int champs, const int stat, const double dt_ch, const double dt_stat);
 
   virtual int init_ecriture(double temps_courant, double temps_post, int est_le_premier_postraitement_pour_nom_fich_, const Domaine& domaine);
 
   virtual int finir_ecriture(double temps_courant);
   virtual int finir(int& est_le_dernier_post);
 
-  virtual int ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post);
-  virtual int ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post);
+  virtual int ecrire_domaine(const Domaine& domaine,const int est_le_premier_post);
+  virtual int ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post);
   virtual int ecrire_temps(const double temps);
 
   virtual int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, double temps_courant, const Nom& id_du_champ, const Nom& id_du_domaine,

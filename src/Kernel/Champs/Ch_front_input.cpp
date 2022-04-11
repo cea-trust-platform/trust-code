@@ -167,7 +167,7 @@ int  Ch_front_input::initialiser(double temps, const Champ_Inc_base& inco)
 }
 
 // setDoubleValue: actually set a field value, provided it has size 1.
-void Ch_front_input::setDoubleValue(const double& val)
+void Ch_front_input::setDoubleValue(const double val)
 {
   assert(les_valeurs[0].valeurs().size() == 1);
   for (int i=1; i<les_valeurs->nb_cases(); i++)

@@ -85,18 +85,18 @@ public:
 
   virtual Sortie& operator<<(const Separateur& );
   virtual Sortie& operator<<(const Objet_U&    ob);
-  virtual Sortie& operator<<(const int&     ob);
-  virtual Sortie& operator<<(const unsigned&     ob);
+  virtual Sortie& operator<<(const int    ob);
+  virtual Sortie& operator<<(const unsigned    ob);
 #ifndef INT_is_64_
-  virtual Sortie& operator<<(const long&       ob);
+  virtual Sortie& operator<<(const long      ob);
 #endif
-  virtual Sortie& operator<<(const float&      ob);
-  virtual Sortie& operator<<(const double&     ob);
+  virtual Sortie& operator<<(const float     ob);
+  virtual Sortie& operator<<(const double    ob);
   virtual Sortie& operator<<(const char      * ob);
 #ifdef IO_avec_string
   virtual Sortie& operator <<(const string& ob);
 #endif
-  virtual int add_col(const double& ob);
+  virtual int add_col(const double ob);
   virtual int add_col(const char * ob);
   virtual int put(const unsigned* ob, int n, int nb_colonnes=1);
   virtual int put(const int* ob, int n, int nb_colonnes=1);

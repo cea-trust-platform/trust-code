@@ -71,7 +71,7 @@ public:
   };
 
   double temps() const;
-  virtual double changer_temps(const double& t);
+  virtual double changer_temps(const double t);
 
   // Attention, il faut avoir fixe nb_comp et nature_du_champ avant
   // de fixer le nb_valeurs_nodales.

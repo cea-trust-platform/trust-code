@@ -125,10 +125,10 @@ private:
 
 };
 
-double Champ_Face_get_val_imp_face_bord( const double& temp,int face,int comp, const Zone_Cl_VDF& zclo) ;
-double Champ_Face_get_val_imp_face_bord( const double& temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo) ;
+double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, const Zone_Cl_VDF& zclo) ;
+double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo) ;
 
-double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double& temp,int face,int comp, const Zone_Cl_VDF& zclo);
+double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double temp,int face,int comp, const Zone_Cl_VDF& zclo);
 //////////////////////////////////////////////////
 //
 //   Fonctions inline de la classe Champ_Face

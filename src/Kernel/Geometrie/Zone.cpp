@@ -744,7 +744,7 @@ void Zone::renum(const IntVect& Les_Nums)
 // Exception:
 // Effets de bord:
 // Postcondition: les items communs ont une nouvelle numerotation
-void Zone::renum_joint_common_items(const IntVect& Les_Nums, const int& elem_offset)
+void Zone::renum_joint_common_items(const IntVect& Les_Nums, const int elem_offset)
 {
   for (int i_joint = 0; i_joint < nb_joints(); i_joint++)
     {

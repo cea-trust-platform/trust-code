@@ -50,7 +50,7 @@ Sortie& Format_Post_Lata_V1::printOn(Sortie& os) const
 }
 
 // Description: ecriture de l'entete format LataV1
-int Format_Post_Lata_V1::ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post)
+int Format_Post_Lata_V1::ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post)
 {
   ecrire_entete_lata_V1(lata_basename_,options_para_,est_le_premier_post);
 
@@ -75,7 +75,7 @@ int Format_Post_Lata_V1::finir(int& est_le_dernier_post)
 //   Rq :la numerotation des elements dans DV commence a 1.
 
 
-int Format_Post_Lata_V1::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
+int Format_Post_Lata_V1::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
   const Nom& id_domaine = domaine.le_nom();
   Motcle type_elem = domaine.zone(0).type_elem()->que_suis_je();
@@ -474,7 +474,7 @@ int Format_Post_Lata_V1::ecrire_domaine_lata_V1(const Nom& id_domaine,
   return 1;
 }
 
-int Format_Post_Lata_V1::ecrire_entete_lata_V1(const Nom& basename,const Options_Para& option,const int& est_le_premier_post)
+int Format_Post_Lata_V1::ecrire_entete_lata_V1(const Nom& basename,const Options_Para& option,const int est_le_premier_post)
 {
 
   if (est_le_premier_post)
@@ -499,7 +499,7 @@ int Format_Post_Lata_V1::ecrire_entete_lata_V1(const Nom& basename,const Options
   return 1;
 }
 
-int Format_Post_Lata_V1::finir_lata_V1(const Nom& basename,const Options_Para& option,const int& est_le_dernier_post)
+int Format_Post_Lata_V1::finir_lata_V1(const Nom& basename,const Options_Para& option,const int est_le_dernier_post)
 {
 
   if (est_le_dernier_post)
@@ -521,7 +521,7 @@ int Format_Post_Lata_V1::finir_lata_V1(const Nom& basename,const Options_Para& o
 int Format_Post_Lata_V1::ecrire_champ_lata_V1(const Nom&   id_du_champ,
                                               const Nom&   id_du_domaine,
                                               const Nom&   localisation,
-                                              const DoubleTab& data,const double& temps,const Nom& basename,
+                                              const DoubleTab& data,const double temps,const Nom& basename,
                                               const Format& format, const Options_Para& option)
 {
   // Verification que le nom du champ correspond bien au

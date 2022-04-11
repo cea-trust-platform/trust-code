@@ -77,9 +77,9 @@ private :
 
   //Methodes pour l'explicite
 
-  void calculer_coefficients_operateur_centre(DoubleTab&,DoubleTab&,DoubleTab&,DoubleTab&,const int&, const DoubleTab& vitesse) const;
-  void calculer_flux_operateur_centre(DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const int&,const DoubleTab&,const DoubleTab&) const;
-  void modifier_flux_operateur_centre(DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const int&,const DoubleTab&,const DoubleTab&) const;
+  void calculer_coefficients_operateur_centre(DoubleTab&,DoubleTab&,DoubleTab&,DoubleTab&,const int, const DoubleTab& vitesse) const;
+  void calculer_flux_operateur_centre(DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const int,const DoubleTab&,const DoubleTab&) const;
+  void modifier_flux_operateur_centre(DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const int,const DoubleTab&,const DoubleTab&) const;
 
   DoubleTab& ajouter_partie_compressible(const DoubleTab&, DoubleTab&, const DoubleTab& vitesse) const;
   DoubleTab& ajouter_operateur_centre(const DoubleTab&,const DoubleTab&, const DoubleTab&, DoubleTab&) const;
@@ -89,8 +89,8 @@ private :
   DoubleTab& ajouter_antidiffusion_v2(const DoubleTab&, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
 
 
-  inline void calculer_senseur_v1(const DoubleTab&, const DoubleTab&, const DoubleVect&, const int&, const int&, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
-  inline void calculer_senseur_v2(const DoubleTab&, const DoubleTab&, const DoubleVect&, const int&, const int&, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
+  inline void calculer_senseur_v1(const DoubleTab&, const DoubleTab&, const DoubleVect&, const int, const int, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
+  inline void calculer_senseur_v2(const DoubleTab&, const DoubleTab&, const DoubleVect&, const int, const int, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
   void mettre_a_jour_pour_periodicite(const DoubleTab&,const DoubleTab&,DoubleTab&) const;
   void ajouter_old(const DoubleTab& , DoubleTab&, const DoubleTab& vitesse) const;
   void calculer_data_pour_dirichlet();

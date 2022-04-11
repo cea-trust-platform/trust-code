@@ -57,7 +57,7 @@ protected :
   void calculer_coefficients(const DoubleTab&, DoubleTab&) const;
   void calculer_coefficients_vectoriel_diag(const DoubleTab& nu, const DoubleTab& nu2, DoubleTab& Aij) const;
   /*   void calculer_coefficients_vectoriel_extradiag(const DoubleTab& nu, DoubleTab& Aij) const ; */
-  inline double aij_extradiag(const int& elem, const int& facei, const int& facej, const int& dim, const int& dim2, const double& nu_elem) const;
+  inline double aij_extradiag(const int elem, const int facei, const int facej, const int dim, const int dim2, const double nu_elem) const;
 
   void calculer_min(const DoubleTab&, int&, DoubleTab&) const ;
   void calculer_max(const DoubleTab&, int&, DoubleTab&) const ;
@@ -85,7 +85,7 @@ protected :
   int new_jacobian_;
 };
 
-inline double Op_Dift_Stab_VEF_Face::aij_extradiag(const int& elem, const int& facei, const int& facej, const int& dim, const int& dim2, const double& nu_elem) const
+inline double Op_Dift_Stab_VEF_Face::aij_extradiag(const int elem, const int facei, const int facej, const int dim, const int dim2, const double nu_elem) const
 {
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
 

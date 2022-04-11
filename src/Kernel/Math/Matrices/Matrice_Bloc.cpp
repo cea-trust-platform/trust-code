@@ -186,7 +186,7 @@ DoubleTab& Matrice_Bloc::ajouter_multTab_(const DoubleTab& x,
   return r;
 }
 
-void Matrice_Bloc::scale( const double& x )
+void Matrice_Bloc::scale( const double x )
 {
   const int nb_line_blocks   = nb_bloc_lignes( );
   const int nb_column_blocks = nb_bloc_colonnes( );

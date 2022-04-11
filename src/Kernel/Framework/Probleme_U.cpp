@@ -764,7 +764,7 @@ void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
 }
 
 // For now: set a field value provided the field has only one item.
-void Probleme_U::setInputDoubleValue(const Nom& name, const double& val)
+void Probleme_U::setInputDoubleValue(const Nom& name, const double val)
 {
   REF(Field_base) ch = findInputField(name);
   if (!ch.non_nul())

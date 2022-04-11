@@ -108,8 +108,8 @@ bool Matrix_tools::is_normalized_symmetric_stencil( const IntTab& stencil )
 
 
 // building morse matrices
-void Matrix_tools::allocate_morse_matrix( const int&  nb_lines,
-                                          const int&  nb_columns,
+void Matrix_tools::allocate_morse_matrix( const int nb_lines,
+                                          const int nb_columns,
                                           const IntTab&  stencil,
                                           Matrice_Morse& matrix ,
                                           const bool& attach_stencil_to_matrix )
@@ -148,8 +148,8 @@ void Matrix_tools::allocate_morse_matrix( const int&  nb_lines,
     }
 }
 
-void Matrix_tools::build_morse_matrix( const int&      nb_lines,
-                                       const int&      nb_columns,
+void Matrix_tools::build_morse_matrix( const int     nb_lines,
+                                       const int     nb_columns,
                                        const IntTab&      stencil,
                                        const ArrOfDouble& coefficients,
                                        Matrice_Morse&     matrix )
@@ -188,7 +188,7 @@ void Matrix_tools::build_morse_matrix( const int&      nb_lines,
 
 
 // building symmetric morse matrices
-void Matrix_tools::allocate_symmetric_morse_matrix( const int&      order,
+void Matrix_tools::allocate_symmetric_morse_matrix( const int     order,
                                                     const IntTab&      stencil,
                                                     Matrice_Morse_Sym& matrix )
 {
@@ -224,7 +224,7 @@ void Matrix_tools::allocate_symmetric_morse_matrix( const int&      order,
 }
 
 
-void Matrix_tools::build_symmetric_morse_matrix( const int&      order,
+void Matrix_tools::build_symmetric_morse_matrix( const int     order,
                                                  const IntTab&      stencil,
                                                  const ArrOfDouble& coefficients,
                                                  Matrice_Morse_Sym& matrix )
@@ -353,9 +353,9 @@ void Matrix_tools::allocate_for_symmetric_scaled_addition( const Matrice& A,
 
 // scaled addition
 void Matrix_tools::add_scaled_matrices( const Matrice& A,
-                                        const double&  alpha,
+                                        const double alpha,
                                         const Matrice& B,
-                                        const double&  beta,
+                                        const double beta,
                                         Matrice&       C )
 {
   assert( sub_type( Matrice_Morse, C.valeur( ) ) );
@@ -407,9 +407,9 @@ void Matrix_tools::add_scaled_matrices( const Matrice& A,
 }
 
 void Matrix_tools::add_symmetric_scaled_matrices( const Matrice& A,
-                                                  const double&  alpha,
+                                                  const double alpha,
                                                   const Matrice& B,
-                                                  const double&  beta,
+                                                  const double beta,
                                                   Matrice&       C )
 {
   assert( sub_type( Matrice_Morse_Sym, C.valeur( ) ) );
@@ -466,8 +466,8 @@ bool Matrix_tools::is_null_stencil( const IntTab& stencil )
   return ( stencil.dimension( 0 ) == 0 );
 }
 
-bool Matrix_tools::is_diagonal_stencil( const int& nb_lines,
-                                        const int& nb_columns,
+bool Matrix_tools::is_diagonal_stencil( const int nb_lines,
+                                        const int nb_columns,
                                         const IntTab& stencil )
 {
   if ( nb_lines != nb_columns )
@@ -503,8 +503,8 @@ bool Matrix_tools::is_diagonal_stencil( const int& nb_lines,
   return true;
 }
 
-void Matrix_tools::allocate_from_stencil( const int& nb_lines,
-                                          const int& nb_columns,
+void Matrix_tools::allocate_from_stencil( const int nb_lines,
+                                          const int nb_columns,
                                           const IntTab& stencil,
                                           Matrice&      matrix ,
                                           const bool&   attach_stencil_to_matrix)
@@ -625,7 +625,7 @@ void Matrix_tools::matmorse_mult_matdiag( const DoubleTab& diag,
 }
 
 
-void Matrix_tools::uniform_matdiag_mult_matmorse( const double& diag,
+void Matrix_tools::uniform_matdiag_mult_matmorse( const double diag,
                                                   Matrice_Morse& mat,
                                                   const bool& inverse )
 {
@@ -649,7 +649,7 @@ void Matrix_tools::uniform_matdiag_mult_matmorse( const double& diag,
     }
 }
 
-void Matrix_tools::matmorse_mult_uniform_matdiag( const double& diag,
+void Matrix_tools::matmorse_mult_uniform_matdiag( const double diag,
                                                   Matrice_Morse& mat,
                                                   const bool& inverse )
 {

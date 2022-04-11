@@ -332,7 +332,7 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
   tab.echange_espace_virtuel();
 }
 
-int Champ_Fonc_Tabule_Morceaux::initialiser(const double& time)
+int Champ_Fonc_Tabule_Morceaux::initialiser(const double time)
 {
   for (auto && ch : champs_lus)
     {

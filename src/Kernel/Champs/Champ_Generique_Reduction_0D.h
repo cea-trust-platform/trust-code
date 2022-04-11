@@ -60,7 +60,7 @@ public:
   const Champ_base&  get_champ(Champ& espace_stockage) const override;
   const Champ_base&  get_champ_without_evaluation(Champ& espace_stockage) const override;
   void nommer_source() override;
-  void extraire(double& val_extraites, const DoubleVect& val_source, const int& composante_VDF=-1) const;
+  void extraire(double& val_extraites, const DoubleVect& val_source, const int composante_VDF=-1) const;
 
 protected:
 

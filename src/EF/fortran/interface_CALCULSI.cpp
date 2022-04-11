@@ -60,7 +60,7 @@ void interface_CALCULSI::compare_common()
 {
 }
 
-void interface_CALCULSI::Compute(const int& nbnn, const ArrOfDouble& co3d, const ArrOfDouble& poro, const int& ip, const int& npgau, const ArrOfDouble& xgau, const ArrOfDouble& frgau, const ArrOfDouble& dfrgau, const ArrOfDouble& poigau, ArrOfDouble& detj, const ArrOfDouble& cnorme, ArrOfDouble& si) const
+void interface_CALCULSI::Compute(const int nbnn, const ArrOfDouble& co3d, const ArrOfDouble& poro, const int ip, const int npgau, const ArrOfDouble& xgau, const ArrOfDouble& frgau, const ArrOfDouble& dfrgau, const ArrOfDouble& poigau, ArrOfDouble& detj, const ArrOfDouble& cnorme, ArrOfDouble& si) const
 {
   F77NAME(CALCULSI)(&nbnn,  co3d.addr(),  poro.addr(), &ip, &npgau,  xgau.addr(),  frgau.addr(),  dfrgau.addr(),  poigau.addr(),  detj.addr(),  cnorme.addr(),  si.addr());
 }

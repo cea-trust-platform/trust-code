@@ -107,7 +107,7 @@ void diviser_par_rho_np1_face(Equation_base& eqn,DoubleTab& tab)
 }
 
 void iterer_eqn_expl(Equation_base& eqn,int nb_iter,double dt,DoubleTab& current,DoubleTab& dudt,
-                     int& converge,const int& no_qdm_)
+                     int& converge,const int no_qdm_)
 {
   if (nb_iter>1)
     {
@@ -145,7 +145,7 @@ void iterer_eqn_expl(Equation_base& eqn,int nb_iter,double dt,DoubleTab& current
 }
 
 void iterer_eqn_expl_diffusion_implicite(Equation_base& eqn,int nb_iter,double dt,DoubleTab& current,DoubleTab& dudt,
-                                         int& converge,const int& no_qdm_,const double& seuil)
+                                         int& converge,const int no_qdm_,const double seuil)
 {
   if (nb_iter>1)
     {

@@ -158,7 +158,7 @@ void Champ_Input_Proto::setInitialValue(const ArrOfDouble& vo)
   initial_value_=vo;
 }
 
-void Champ_Input_Proto::setDoubleValue(const double& val)
+void Champ_Input_Proto::setDoubleValue(const double val)
 {
   Cerr<< "You need to override setDoubleValue() in derived class of Champ_Input_Proto"<< finl;
   throw;

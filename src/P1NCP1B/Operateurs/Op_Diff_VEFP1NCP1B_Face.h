@@ -109,19 +109,19 @@ protected :
   void ajouter_contribution_som(const DoubleTab&,const DoubleVect&,const DoubleTab&,Matrice_Morse&) const;
   void ajouter_contribution_aretes(const DoubleTab&,const DoubleVect&,const DoubleTab&,Matrice_Morse&) const;
 
-  void coeff_matrice_som(const int&,IntVect&,DoubleTab&,DoubleTab&,const DoubleVect&,const DoubleTab&,
+  void coeff_matrice_som(const int,IntVect&,DoubleTab&,DoubleTab&,const DoubleVect&,const DoubleTab&,
                          const DoubleTab&,Matrice_Morse&) const;
-  void coeff_matrice_som_CL(const int&,IntVect&,DoubleTab&,DoubleTab&,const DoubleVect&,const DoubleTab&,
+  void coeff_matrice_som_CL(const int,IntVect&,DoubleTab&,DoubleTab&,const DoubleVect&,const DoubleTab&,
                             const DoubleTab&,Matrice_Morse&) const;
-  void coeff_matrice_som_symetrie(const int&,IntVect&,DoubleTab&,DoubleTab&,const DoubleVect&,const DoubleTab&,
+  void coeff_matrice_som_symetrie(const int,IntVect&,DoubleTab&,DoubleTab&,const DoubleVect&,const DoubleTab&,
                                   const DoubleTab&,Matrice_Morse&) const;
-  void coeff_matrice_som_perio(const int&,const int&,IntVect&,DoubleTab&,DoubleTab&,
+  void coeff_matrice_som_perio(const int,const int,IntVect&,DoubleTab&,DoubleTab&,
                                const DoubleVect&,const DoubleTab&,const DoubleTab&,Matrice_Morse&) const;
 
 
-  void gradient_som(const int& face,const int&,const int&,const int&,const int&,const int&,DoubleTab&) const;
-  void gradient_som(const int&,int&,IntVect&,DoubleTab&) const;
-  void gradient_som_CL(const int&,int&,IntVect&,DoubleTab&) const;
+  void gradient_som(const int face,const int,const int,const int,const int,const int,DoubleTab&) const;
+  void gradient_som(const int,int&,IntVect&,DoubleTab&) const;
+  void gradient_som_CL(const int,int&,IntVect&,DoubleTab&) const;
 
   void isInStencil(int,int,int&,int&,int&,int&) const;
   void isFaceOfSymetry(ArrOfBit&,int&) const;

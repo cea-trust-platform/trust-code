@@ -69,7 +69,7 @@ Entree& Schema_Euler_Implicite::readOn(Entree& s)
   return s;
 }
 
-void calcul_fac_sec(double& residu_,double& residu_old,double& facsec_,const double& facsec_max_,int& nb_ite_sans_accel_)
+void calcul_fac_sec(double& residu_,double& residu_old,double& facsec_,const double facsec_max_,int& nb_ite_sans_accel_)
 {
   double rap=1.2;
   int nb_ite_sans_accel_max=10;

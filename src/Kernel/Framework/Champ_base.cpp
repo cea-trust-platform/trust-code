@@ -1094,7 +1094,7 @@ void Champ_base::completer(const Zone_Cl_dis_base& zcl)
 // Exception:
 // Effets de bord:
 // Postcondition: le temps du champ a ete change
-double Champ_base::changer_temps(const double& t)
+double Champ_base::changer_temps(const double t)
 {
   return temps_ = t ;
 }

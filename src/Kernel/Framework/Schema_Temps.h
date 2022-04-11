@@ -63,7 +63,7 @@ public :
   inline int nb_pas_dt() const;
   inline double temps_courant() const;
   inline double temps_calcul() const;
-  inline void changer_temps_courant(const double& );
+  inline void changer_temps_courant(const double );
   inline double facteur_securite_pas() const;
   inline double& facteur_securite_pas();
   inline int stop();
@@ -407,7 +407,7 @@ inline double Schema_Temps::temps_calcul() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline void Schema_Temps::changer_temps_courant(const double& t)
+inline void Schema_Temps::changer_temps_courant(const double t)
 {
   valeur().changer_temps_courant(t);
 }

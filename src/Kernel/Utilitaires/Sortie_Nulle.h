@@ -44,13 +44,13 @@ public:
 
   Sortie& operator <<(const Separateur& ) override;
   Sortie& operator <<(const Objet_U& ob) override;
-  Sortie& operator <<(const int& ob) override;
-  Sortie& operator <<(const unsigned& ob) override;
+  Sortie& operator <<(const int ob) override;
+  Sortie& operator <<(const unsigned ob) override;
 #ifndef INT_is_64_
-  Sortie& operator <<(const long& ob) override;
+  Sortie& operator <<(const long ob) override;
 #endif
-  Sortie& operator <<(const float& ob) override;
-  Sortie& operator <<(const double& ob) override;
+  Sortie& operator <<(const float ob) override;
+  Sortie& operator <<(const double ob) override;
   Sortie& operator <<(const char* ob) override;
   int put(const unsigned* ob, int n, int pas=1) override;
   int put(const int* ob, int n, int pas=1) override;

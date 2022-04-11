@@ -181,7 +181,7 @@ void Champ_Don_base::mettre_a_jour(double t)
 // Exception:
 // Effets de bord:
 // Postcondition:
-int Champ_Don_base::initialiser(const double& un_temps)
+int Champ_Don_base::initialiser(const double un_temps)
 {
   mettre_a_jour(un_temps);
   return 1;

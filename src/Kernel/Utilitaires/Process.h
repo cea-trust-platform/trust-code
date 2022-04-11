@@ -69,7 +69,7 @@ public:
   static void imprimer_ram_totale(int all_process=0);
   static int exception_sur_exit;
   static int multiple_files;
-  static bool force_single_file(const int& ranks, const Nom& filename);
+  static bool force_single_file(const int ranks, const Nom& filename);
 private:
 };
 

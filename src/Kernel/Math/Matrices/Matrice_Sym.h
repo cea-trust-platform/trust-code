@@ -62,8 +62,8 @@ public :
 
   int get_est_definie() const;
   void set_est_definie(int);
-  void unsymmetrize_stencil(const int& nb_lines, const IntTab& symmetric_stencil, IntTab& stencil) const;
-  void unsymmetrize_stencil_and_coefficients(const int& nb_lines, const IntTab& symmetric_stencil, const ArrOfDouble& symmetric_coefficients, IntTab& stencil, ArrOfDouble& coefficients) const;
+  void unsymmetrize_stencil(const int nb_lines, const IntTab& symmetric_stencil, IntTab& stencil) const;
+  void unsymmetrize_stencil_and_coefficients(const int nb_lines, const IntTab& symmetric_stencil, const ArrOfDouble& symmetric_coefficients, IntTab& stencil, ArrOfDouble& coefficients) const;
 
 protected :
   virtual DoubleTab& ajouter_multTab_(const DoubleTab&, DoubleTab& ) const=0 ;

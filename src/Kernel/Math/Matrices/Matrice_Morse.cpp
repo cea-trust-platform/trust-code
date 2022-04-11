@@ -1915,7 +1915,7 @@ Matrice_Morse& Matrice_Morse::operator *=(double x )
   return(*this);
 }
 
-void Matrice_Morse::scale( const double& x )
+void Matrice_Morse::scale( const double x )
 {
   coeff_ *= x;
 }

@@ -672,7 +672,7 @@ Matrice_Morse_Sym& Matrice_Morse_Sym::operator *=( double x )
   return(*this);
 }
 
-void Matrice_Morse_Sym::scale( const double& x )
+void Matrice_Morse_Sym::scale( const double x )
 {
   coeff_ *= x;
 }

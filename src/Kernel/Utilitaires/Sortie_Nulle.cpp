@@ -46,25 +46,25 @@ Sortie& Sortie_Nulle::operator<<(const Objet_U&    ob)
 {
   return *this;
 }
-Sortie& Sortie_Nulle::operator<<(const int&     ob)
+Sortie& Sortie_Nulle::operator<<(const int    ob)
 {
   return *this;
 }
-Sortie& Sortie_Nulle::operator<<(const unsigned&     ob)
+Sortie& Sortie_Nulle::operator<<(const unsigned    ob)
 {
   return *this;
 }
 #ifndef INT_is_64_
-Sortie& Sortie_Nulle::operator<<(const long&       ob)
+Sortie& Sortie_Nulle::operator<<(const long      ob)
 {
   return *this;
 }
 #endif
-Sortie& Sortie_Nulle::operator<<(const float&      ob)
+Sortie& Sortie_Nulle::operator<<(const float     ob)
 {
   return *this;
 }
-Sortie& Sortie_Nulle::operator<<(const double&     ob)
+Sortie& Sortie_Nulle::operator<<(const double    ob)
 {
   return *this;
 }

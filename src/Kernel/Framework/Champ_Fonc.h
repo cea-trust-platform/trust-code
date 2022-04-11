@@ -54,9 +54,9 @@ public :
   inline operator DoubleTab& () = delete ;
   inline operator const DoubleTab& () const  = delete;
   inline double temps() const ;
-  inline double changer_temps(const double& t) ;
+  inline double changer_temps(const double t) ;
   inline void mettre_a_jour(double un_temps) ;
-  inline int initialiser(const double& un_temps);
+  inline int initialiser(const double un_temps);
   inline void associer_zone_dis_base(const Zone_dis_base&) ;
   inline const Zone_dis_base& zone_dis_base() const ;
   inline int reprendre(Entree& ) override ;
@@ -189,7 +189,7 @@ inline double Champ_Fonc::temps() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline double Champ_Fonc::changer_temps(const double& t)
+inline double Champ_Fonc::changer_temps(const double t)
 {
   return valeur().changer_temps(t);
 }
@@ -248,7 +248,7 @@ inline void Champ_Fonc::mettre_a_jour(double un_temps)
 // Description:
 //    Appel a l'objet sous-jacent
 //    Initilialise le champ (si il y lieu)
-inline int Champ_Fonc::initialiser(const double& un_temps)
+inline int Champ_Fonc::initialiser(const double un_temps)
 {
   return valeur().initialiser(un_temps);
 }

@@ -74,10 +74,10 @@ public:
   inline double dist_face_period(int n1,int n2,int k) const { return la_zone->dist_face_period(n1,n2,k); }
   inline double dist_elem_period(int n1,int n2,int k) const override { return la_zone->dist_elem_period(n1,n2,k); }
   inline double dim_elem(int n1,int k) const override { return la_zone->dim_elem(n1,k); }
-  inline double conv_centre(const double& psc,const double& vit_0_0, const double& vit_0, const double& vit_1,const double& vit1_1,double g1, double g2, double g3,double g4) const override
+  inline double conv_centre(const double psc,const double vit_0_0, const double vit_0, const double vit_1,const double vit1_1,double g1, double g2, double g3,double g4) const override
   { return (g1*vit_0_0 + g2*vit_0 + g3*vit_1 + g4*vit1_1) * psc; }
 
-  inline void calcul_g(const double& dxam, const double& dx, const double& dxav, double& g1, double& g2, double& g3, double& g4) const override
+  inline void calcul_g(const double dxam, const double dx, const double dxav, double& g1, double& g2, double& g3, double& g4) const override
   {return calcul_g_impl(dxam,dx,dxav,g1,g2,g3,g4); }
 };
 
@@ -97,12 +97,12 @@ public:
   inline double dist_elem(int n1,int n2,int k) const override { return la_zone->dist_elem(n1,n2,k); }
   inline double dist_elem_period(int n1, int n2, int k) const override { return la_zone->dist_elem_period(n1,n2,k); }
   inline double dist_face_period(int n1,int n2,int k) const { return la_zone->dist_face_period(n1,n2,k); }
-  inline double conv_quick_sharp_plus(const double& psc,const double& vit_0, const double& vit_1, const double& vit_0_0,
-                                      const double& dx, const double& dm, const double& dxam) const override
+  inline double conv_quick_sharp_plus(const double psc,const double vit_0, const double vit_1, const double vit_0_0,
+                                      const double dx, const double dm, const double dxam) const override
   { return conv_quick_sharp_plus_impl(psc,vit_0,vit_1,vit_0_0,dx,dm,dxam); }
 
-  inline double conv_quick_sharp_moins(const double& psc,const double& vit_0,const double& vit_1, const double& vit_1_1,
-                                       const double& dx, const double& dm,const double& dxam) const override
+  inline double conv_quick_sharp_moins(const double psc,const double vit_0,const double vit_1, const double vit_1_1,
+                                       const double dx, const double dm,const double dxam) const override
   { return conv_quick_sharp_moins_impl(psc,vit_0,vit_1,vit_1_1,dx,dm,dxam); }
 };
 
@@ -121,12 +121,12 @@ public:
   inline double dim_face(int ,int ) const override;
   inline double dist_elem(int ,int ,int ) const override;
   inline double dim_elem(int ,int ) const override;
-  inline double conv_quick_sharp_plus(const double& psc,const double& vit_0, const double& vit_1, const double& vit_0_0,
-                                      const double& dx, const double& dm, const double& dxam) const override
+  inline double conv_quick_sharp_plus(const double psc,const double vit_0, const double vit_1, const double vit_0_0,
+                                      const double dx, const double dm, const double dxam) const override
   { return conv_quick_sharp_plus_impl(psc,vit_0,vit_1,vit_0_0,dx,dm,dxam); }
 
-  inline double conv_quick_sharp_moins(const double& psc,const double& vit_0,const double& vit_1, const double& vit_1_1,
-                                       const double& dx, const double& dm,const double& dxam) const override
+  inline double conv_quick_sharp_moins(const double psc,const double vit_0,const double vit_1, const double vit_1_1,
+                                       const double dx, const double dm,const double dxam) const override
   { return conv_quick_sharp_moins_impl(psc,vit_0,vit_1,vit_1_1,dx,dm,dxam); }
 };
 

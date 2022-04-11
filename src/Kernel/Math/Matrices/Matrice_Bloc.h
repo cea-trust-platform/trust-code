@@ -67,7 +67,7 @@ public :
   DoubleTab& ajouter_multTab_( const DoubleTab& x, DoubleTab& r ) const override;
 
   // multiplication par un scalaire
-  void scale( const double& x ) override;
+  void scale( const double x ) override;
 
   void get_stencil( IntTab& stencil ) const override;
   void get_stencil_and_coefficients(IntTab& stencil, ArrOfDouble& coefficients) const override;

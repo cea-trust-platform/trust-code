@@ -182,7 +182,7 @@ void Champ_Ostwald_VDF::me_calculer(double tps)
 // Exception:
 // Effets de bord:
 // Postcondition:
-int Champ_Ostwald_VDF::initialiser(const double& un_temps)
+int Champ_Ostwald_VDF::initialiser(const double un_temps)
 {
   mettre_a_jour(un_temps);
   return 1;

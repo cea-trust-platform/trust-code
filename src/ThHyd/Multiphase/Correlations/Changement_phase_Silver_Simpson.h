@@ -37,7 +37,7 @@ class Changement_phase_Silver_Simpson : public Changement_phase_base
 {
   Declare_instanciable(Changement_phase_Silver_Simpson);
 public:
-  double calculer(int k, int l, const double& dh, const double *alpha, const double *T, const double p, const double *nv,
+  double calculer(int k, int l, const double dh, const double *alpha, const double *T, const double p, const double *nv,
                   const double *lambda, const double *mu, const double *rho, const double *Cp, const Saturation_base& sat,
                   DoubleTab& dT_G, DoubleTab& da_G, double& dp_G) const override;
 protected:

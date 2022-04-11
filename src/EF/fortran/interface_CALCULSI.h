@@ -40,7 +40,7 @@ public:
   void dump(Sortie&);
   void init_from_common();
   void init_from_file(const Nom& );
-  void Compute(const int& nbnn, const ArrOfDouble& co3d, const ArrOfDouble& poro, const int& ip, const int& npgau, const ArrOfDouble& xgau, const ArrOfDouble& frgau, const ArrOfDouble& dfrgau, const ArrOfDouble& poigau, ArrOfDouble& detj, const ArrOfDouble& cnorme, ArrOfDouble& si) const;
+  void Compute(const int nbnn, const ArrOfDouble& co3d, const ArrOfDouble& poro, const int ip, const int npgau, const ArrOfDouble& xgau, const ArrOfDouble& frgau, const ArrOfDouble& dfrgau, const ArrOfDouble& poigau, ArrOfDouble& detj, const ArrOfDouble& cnorme, ArrOfDouble& si) const;
 
 };
 #endif

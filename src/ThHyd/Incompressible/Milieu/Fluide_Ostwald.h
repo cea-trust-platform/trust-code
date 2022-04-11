@@ -53,7 +53,7 @@ public :
   void set_param(Param& param) override;
   void creer_champs_non_lus() override;
   void mettre_a_jour(double) override;
-  int initialiser(const double& temps) override;
+  int initialiser(const double temps) override;
   void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
 
 protected :

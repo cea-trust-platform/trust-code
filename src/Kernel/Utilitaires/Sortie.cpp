@@ -120,7 +120,7 @@ void Sortie::set_ostream(ostream* os)
   ostream_ = os;
 }
 
-int Sortie::add_col(const double& ob)
+int Sortie::add_col(const double ob)
 {
   if (bin_ or col_width_ == -1)
     abort();
@@ -147,7 +147,7 @@ int Sortie::add_col(const char * ob)
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
 //  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
-Sortie& Sortie::operator<<(const unsigned& ob)
+Sortie& Sortie::operator<<(const unsigned ob)
 {
   if(bin_)
     {
@@ -205,7 +205,7 @@ int Sortie::put(const unsigned * ob, int n, int nb_col)
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
 //  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
-Sortie& Sortie::operator<<(const int& ob)
+Sortie& Sortie::operator<<(const int ob)
 {
   if(bin_)
     {
@@ -264,7 +264,7 @@ int Sortie::put(const int * ob, int n, int nb_col)
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
 //  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
-Sortie& Sortie::operator<<(const long& ob)
+Sortie& Sortie::operator<<(const long ob)
 {
   if(bin_)
     {
@@ -323,7 +323,7 @@ int Sortie::put(const long * ob, int n, int nb_col)
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
 //  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
-Sortie& Sortie::operator<<(const float& ob)
+Sortie& Sortie::operator<<(const float ob)
 {
   if(bin_)
     {
@@ -381,7 +381,7 @@ int Sortie::put(const float * ob, int n, int nb_col)
 //  Methode de bas niveau pour ecrire un int ou flottant dans le stream.
 //  Dans l'implementation de la classe de base, on ecrit dans ostream_.
 //  En binaire on utilise ostream::write(), en ascii ostream::operato<<()
-Sortie& Sortie::operator<<(const double& ob)
+Sortie& Sortie::operator<<(const double ob)
 {
   if(bin_)
     {

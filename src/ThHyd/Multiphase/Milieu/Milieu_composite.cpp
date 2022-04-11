@@ -108,7 +108,7 @@ Sortie& Milieu_composite::printOn(Sortie& os) const
   return os;
 }
 
-int Milieu_composite::initialiser(const double& temps)
+int Milieu_composite::initialiser(const double temps)
 {
   for (int i = 0; i < fluides.size(); i++)
     fluides[i].initialiser(temps);

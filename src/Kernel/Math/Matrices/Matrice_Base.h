@@ -72,7 +72,7 @@ public :
 
   friend DoubleVect operator*(const Matrice_Base&, const DoubleVect&);
 
-  virtual void scale(const double& x) =0;
+  virtual void scale(const double x) =0;
 
   virtual void get_stencil(IntTab& stencil) const;
 

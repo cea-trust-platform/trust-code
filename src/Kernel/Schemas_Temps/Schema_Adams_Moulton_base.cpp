@@ -65,7 +65,7 @@ void Schema_Adams_Moulton_base::associer_pb(const Probleme_base& un_probleme)
     pb_base().equation(i).set_calculate_time_derivative(1);
 }
 
-double Schema_Adams_Moulton_base::changer_temps(Equation_base& eqn, const double& temps)
+double Schema_Adams_Moulton_base::changer_temps(Equation_base& eqn, const double temps)
 {
   eqn.inconnue().valeur().Champ_base::changer_temps(temps);
   eqn.derivee_en_temps().valeur().Champ_base::changer_temps(temps);
@@ -79,7 +79,7 @@ void Schema_Adams_Moulton_base::update_time_derivative(Equation_base& eqn, const
   modifier_second_membre_full_impl(eqn,time_derivative);
 }
 
-void Schema_Adams_Moulton_base::mettre_a_jour_equation(Equation_base& eqn, const double& temps)
+void Schema_Adams_Moulton_base::mettre_a_jour_equation(Equation_base& eqn, const double temps)
 {
   eqn.inconnue().mettre_a_jour(temps);
   eqn.derivee_en_temps().mettre_a_jour(temps);

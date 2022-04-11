@@ -69,7 +69,7 @@ static int        cerr_to_journal_ = 0;
 extern Stat_Counter_Id mpi_allreduce_counter_;
 int Process::exception_sur_exit=0;
 int Process::multiple_files=5120; // Valeur modifiable dans le jeu de donnees ou variable d'environnement:
-bool Process::force_single_file(const int& ranks, const Nom& filename)
+bool Process::force_single_file(const int ranks, const Nom& filename)
 {
   char* theValue = getenv("TRUST_MultipleFiles");
   if (theValue != NULL) multiple_files=atoi(theValue);

@@ -50,11 +50,11 @@ public :
   void lire_expression();
 
   // Methodes inlines
-  inline void set_val_params(const Nom& prob,const double& A, const double& C,const double& Tref);
+  inline void set_val_params(const Nom& prob,const double A, const double C,const double Tref);
   inline void set_prob(const Nom& prob) { prob_ = prob ;}
-  inline void set_A(const double& A) { A_ = A; }
-  inline void set_C(const double& C) { C_ = C; }
-  inline void set_Tref(const double& Tref) { Tref_ = Tref; }
+  inline void set_A(const double A) { A_ = A; }
+  inline void set_C(const double C) { C_ = C; }
+  inline void set_Tref(const double Tref) { Tref_ = Tref; }
   inline Nom& get_prob() { return prob_; }
   inline const double& get_A() const { return A_; }
   inline const double& get_C() const { return C_; }
@@ -65,7 +65,7 @@ protected:
   Nom prob_;
 };
 
-inline void Sutherland::set_val_params(const Nom& prob,const double& A,const double& C,const double& Tref)
+inline void Sutherland::set_val_params(const Nom& prob,const double A,const double C,const double Tref)
 {
   set_prob(prob);
   set_A(A);

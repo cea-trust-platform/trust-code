@@ -48,7 +48,7 @@ protected:
    * contenant la face Numero_face.
    * Rem: Voisinage contient egalement la face Numero_face.
    */
-  void voisinage(const int& Numero_face, IntList& Voisinage) const;
+  void voisinage(const int Numero_face, IntList& Voisinage) const;
 
   /* Fonction membre qui renvoie dans la liste Voisinage,
    * l'ensemble des faces qui constitue le voisinage de la liste
@@ -61,17 +61,17 @@ protected:
    * le calcul des interactions des fonctions de base des faces
    * Face1 et Face2 le long d'une autre face.
    */
-  double signe(const int& Face1, const int& Face2 ) const;
+  double signe(const int Face1, const int Face2 ) const;
 
   /* Fonction membre qui renvoie le coefficient de penalisation
    * a passer sur chaque arete du maillage primaire.
    */
-  double coefficient_penalisation(const int& Numero_face) const;
+  double coefficient_penalisation(const int Numero_face) const;
 
   /* Fonction membre qui renvoie la liste Faces_communes des faces
    * qui appartiennent au voisinage de Face1 ET de Face2
    */
-  void faces_communes(const int& Face1,const int& Face2,
+  void faces_communes(const int Face1,const int Face2,
                       IntList& Face_commune) const;
 
   /* Fonction membre qui renvoie la liste Liste_reduite qui est
@@ -85,23 +85,23 @@ protected:
   /* Fonction membre qui renvoie le numero de l'element commun
    * a Face1 et a Face2 s'il existe et renvoie -1 sinon
    */
-  int element_commun(const int& Face1,const int& Face2) const;
+  int element_commun(const int Face1,const int Face2) const;
 
   /* Fonction membre qui retourne le numero de la 3eme face
    * d'un element, si Face1 et Face2 appartiennent au meme element.
    * Sinon retourne -1.
    */
-  int autre_face(const int& Face1, const int& Face2) const;
+  int autre_face(const int Face1, const int Face2) const;
 
   /* Fonction membre qui retourne le diametre de l'element Element
    * Rem: on considere que l'on opere en 2D.
    */
-  inline double diametre(const int& Element) const;
+  inline double diametre(const int Element) const;
 
   /* Fonction membre qui renvoie la longueur de la face Face
    * Rem: on considere que l'on opere en 2D.
    */
-  inline double longueur(const int& Face) const;
+  inline double longueur(const int Face) const;
 
 
 private:
@@ -122,7 +122,7 @@ private:
 
 
 
-inline double Op_Diff_VEF_Face_Penalise::longueur(const int& Face) const
+inline double Op_Diff_VEF_Face_Penalise::longueur(const int Face) const
 {
   double x_sommet1,x_sommet2;
   double y_sommet1,y_sommet2;
@@ -139,7 +139,7 @@ inline double Op_Diff_VEF_Face_Penalise::longueur(const int& Face) const
   return sqrt( pow(x_sommet1 - x_sommet2,2) + pow(y_sommet1 - y_sommet2,2) );
 }
 
-inline double Op_Diff_VEF_Face_Penalise::diametre(const int& Element) const
+inline double Op_Diff_VEF_Face_Penalise::diametre(const int Element) const
 {
   int face1,face2,face3;
   double longueur_face1,longueur_face2,longueur_face3;

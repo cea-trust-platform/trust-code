@@ -580,7 +580,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::ecriture_fichier_moy_spat_the
 
 // #################### Ecriture Moyennes temporelles dans Fichier ################
 
-void Traitement_particulier_NS_Profils_thermo_VDF::ecriture_fichier_moy_temp_thermo(const DoubleTab& Tmoy, const DoubleTab& Trms, const DoubleTab& upTp, const DoubleTab& vpTp, const DoubleTab& wpTp, const DoubleTab& Y, const double& dt, const IntVect& NN)
+void Traitement_particulier_NS_Profils_thermo_VDF::ecriture_fichier_moy_temp_thermo(const DoubleTab& Tmoy, const DoubleTab& Trms, const DoubleTab& upTp, const DoubleTab& vpTp, const DoubleTab& wpTp, const DoubleTab& Y, const double dt, const IntVect& NN)
 {
 
   int i,j;

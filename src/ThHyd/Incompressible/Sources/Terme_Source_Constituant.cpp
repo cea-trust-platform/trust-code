@@ -54,7 +54,7 @@ int Terme_Source_Constituant::completer(const Champ_Inc_base& inco)
   return colw_;
 }
 
-void Terme_Source_Constituant::ouvrir_fichier(const Equation_base& eq, const Nom& out, const Nom& qsj, const Nom& description, SFichier& os,const Nom& type, const int& flag) const
+void Terme_Source_Constituant::ouvrir_fichier(const Equation_base& eq, const Nom& out, const Nom& qsj, const Nom& description, SFichier& os,const Nom& type, const int flag) const
 {
   // flag nul on n'ouvre pas le fichier
   if (flag==0)

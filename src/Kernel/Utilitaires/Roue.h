@@ -108,7 +108,7 @@ public :
   void ajouter_case(int n=1);
   void supprimer_case(int n=1);
   inline double temps() const;
-  inline double changer_temps(const double& t);
+  inline double changer_temps(const double t);
   const Roue& futur(int i =1) const;
   Roue& futur(int i =1);
   const Roue& passe(int i =1) const;
@@ -257,7 +257,7 @@ inline double Roue::temps() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline double Roue::changer_temps(const double& t)
+inline double Roue::changer_temps(const double t)
 {
   return temps_=t;
 }

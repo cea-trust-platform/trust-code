@@ -45,7 +45,7 @@ Entree& Op_Conv_Amont_old_VEF_Face::readOn(Entree& s )
 
 //// convbis correspond au calcul de -1*terme_convection
 //
-static void convbis(const double& psc,const int num1,const int num2,
+static void convbis(const double psc,const int num1,const int num2,
                     const DoubleTab& transporte,const int ncomp,
                     DoubleTab& resu, DoubleVect& fluent)
 {
@@ -70,7 +70,7 @@ static void convbis(const double& psc,const int num1,const int num2,
       resu(num2,comp) += flux;
     }
 }
-static void convbisimplicite(const double& psc,const int num1,const int num2,
+static void convbisimplicite(const double psc,const int num1,const int num2,
                              const DoubleTab& transporte,const int ncomp,
                              DoubleVect& coeff, Matrice_Morse& matrice)
 {

@@ -60,7 +60,7 @@ public :
   const LIST(REF(Sous_Zone))& sous_zones() const { return les_sous_zones; }
   LIST(REF(Sous_Zone))& sous_zones() { return les_sous_zones; }
   void mettre_a_jour(double temps) override;
-  int initialiser(const double& temps) override;
+  int initialiser(const double temps) override;
 
 protected :
 

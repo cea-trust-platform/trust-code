@@ -49,8 +49,8 @@ public :
   inline int nb_faces() const;                 // Nombre de faces reelles du bord
   inline int nb_faces_tot() const;                // Nombre de faces reelles et virtuelles du bord
   inline int num_premiere_face() const;        // Numero de la premiere face du bord dans la liste des faces
-  inline int num_face(const int&) const;        // Renvoie le numero de face de la ieme face du bord
-  inline int num_local_face(const int&) const; //Renvoie le numero local de la face (inverse de num_face())
+  inline int num_face(const int) const;        // Renvoie le numero de face de la ieme face du bord
+  inline int num_local_face(const int) const; //Renvoie le numero local de la face (inverse de num_face())
 
 protected:
 
@@ -73,7 +73,7 @@ inline int Front_VF::num_premiere_face() const
   return frontiere().num_premiere_face();
 }
 
-inline int Front_VF::num_face(const int& ind_face) const
+inline int Front_VF::num_face(const int ind_face) const
 {
   if (ind_face<nb_faces())                 // Face de bord reelle
     return num_premiere_face()+ind_face;
@@ -81,7 +81,7 @@ inline int Front_VF::num_face(const int& ind_face) const
     return frontiere().get_faces_virt()[ind_face-nb_faces()];
 }
 
-inline int Front_VF::num_local_face(const int& ind_global_face) const
+inline int Front_VF::num_local_face(const int ind_global_face) const
 {
   if (ind_global_face<num_premiere_face()+nb_faces())
     {

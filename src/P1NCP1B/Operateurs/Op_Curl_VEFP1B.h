@@ -51,10 +51,10 @@ public:
   // Autres methodes
   /////////////////////////////////////////////////////
 
-  DoubleTab vecteur_normal(const int& face, const int& elem) const;
+  DoubleTab vecteur_normal(const int face, const int elem) const;
   int elements_pour_sommet();
-  int elements_pour_sommet(const int& sommet,const int& indice) const;
-  int elem_som_size(const int& sommet) const;
+  int elements_pour_sommet(const int sommet,const int indice) const;
+  int elem_som_size(const int sommet) const;
 
   const Zone_VEF_PreP1b& zone_Vef() const;
 

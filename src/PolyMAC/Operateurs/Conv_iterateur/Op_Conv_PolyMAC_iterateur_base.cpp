@@ -47,7 +47,7 @@ Entree& Op_Conv_PolyMAC_iterateur_base::readOn(Entree& s )
 }
 
 
-inline void eval_fluent(const double& psc,const int num1,const int num2,
+inline void eval_fluent(const double psc,const int num1,const int num2,
                         DoubleVect& fluent)
 {
   if (psc >= 0)

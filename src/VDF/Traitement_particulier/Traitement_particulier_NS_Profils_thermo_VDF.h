@@ -49,7 +49,7 @@ public :
   void sauver_stat() const override;
   void associer_eqn(const Equation_base&) override;
   void ecriture_fichier_moy_spat_thermo(const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const IntVect&, const DoubleVect&,  const DoubleVect& );
-  void ecriture_fichier_moy_temp_thermo(const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const double& , const IntVect& );
+  void ecriture_fichier_moy_temp_thermo(const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const double , const IntVect& );
   void calculer_moyennes_spatiales_thermo(DoubleTab& , DoubleTab& , DoubleTab& , DoubleTab& , DoubleTab& , const IntTab& , const IntTab& , const IntVect& , const DoubleTab& );
   void calculer_integrales_temporelles(DoubleTab& , const DoubleTab& , const DoubleTab& , const DoubleVect& , const DoubleVect& );
 

@@ -171,10 +171,10 @@ public:
 protected:
 
   inline int amont_amont(int , int ) const;
-  inline double qcentre(const double&, const int,
+  inline double qcentre(const double, const int,
                         const int, const int, const int,
                         const int, const DoubleTab& ) const;
-  inline void qcentre(const double&, const int,
+  inline void qcentre(const double, const int,
                       const int, const int, const int,
                       const int, const DoubleTab&, ArrOfDouble& ) const;
 
@@ -1205,7 +1205,7 @@ inline int Eval_centre_PolyMAC_Elem::amont_amont(int face, int i) const
 //// qcentre pour un champ transporte scalaire
 //
 
-inline double Eval_centre_PolyMAC_Elem::qcentre(const double& psc, const int num0, const int num1,
+inline double Eval_centre_PolyMAC_Elem::qcentre(const double psc, const int num0, const int num1,
                                                 const int num0_0, const int num1_1, const int face,
                                                 const DoubleTab& transporte) const
 {
@@ -1231,7 +1231,7 @@ inline double Eval_centre_PolyMAC_Elem::qcentre(const double& psc, const int num
 //// qcentre pour un champ transporte vectoriel
 //
 
-inline void Eval_centre_PolyMAC_Elem::qcentre(const double& psc, const int num0, const int num1,
+inline void Eval_centre_PolyMAC_Elem::qcentre(const double psc, const int num0, const int num1,
                                               const int num0_0, const int num1_1, const int face,
                                               const DoubleTab& transporte,ArrOfDouble& flux) const
 {

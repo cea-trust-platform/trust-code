@@ -60,7 +60,7 @@ void interface_CALCULBIJ::compare_common()
 {
 }
 
-void interface_CALCULBIJ::Compute(const int& nbnn, const int& nbsomtot, const ArrOfDouble& xl, const ArrOfInt& num, ArrOfDouble& bij, const ArrOfDouble& poro, const int& ip, const int& npgau, const ArrOfDouble& xgau, const ArrOfDouble& frgau, const ArrOfDouble& dfrgau, const ArrOfDouble& poigau, ArrOfDouble& detj, ArrOfDouble& ajm1, ArrOfDouble& aj, ArrOfDouble& df, double& volume, ArrOfDouble& volume_sommet, ArrOfDouble& iphi) const
+void interface_CALCULBIJ::Compute(const int nbnn, const int nbsomtot, const ArrOfDouble& xl, const ArrOfInt& num, ArrOfDouble& bij, const ArrOfDouble& poro, const int ip, const int npgau, const ArrOfDouble& xgau, const ArrOfDouble& frgau, const ArrOfDouble& dfrgau, const ArrOfDouble& poigau, ArrOfDouble& detj, ArrOfDouble& ajm1, ArrOfDouble& aj, ArrOfDouble& df, double& volume, ArrOfDouble& volume_sommet, ArrOfDouble& iphi) const
 {
   F77NAME(CALCULBIJ)(&nbnn, &nbsomtot,  xl.addr(),  num.addr(),  bij.addr(),  poro.addr(), &ip, &npgau,  xgau.addr(),  frgau.addr(),  dfrgau.addr(),  poigau.addr(),  detj.addr(),  ajm1.addr(),  aj.addr(),  df.addr(), &volume,  volume_sommet.addr(),  iphi.addr());
 }

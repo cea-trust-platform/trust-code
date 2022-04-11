@@ -56,7 +56,7 @@ public:
   virtual void getTemplate(TrioField& afield) const=0;
   virtual void setValue(const TrioField& afield)=0;
   void setInitialValue(const ArrOfDouble& vo);
-  virtual void setDoubleValue(const double& val);
+  virtual void setDoubleValue(const double val);
 
 protected:
 

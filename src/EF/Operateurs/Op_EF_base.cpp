@@ -556,7 +556,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   return 1;
 }
 
-int Op_EF_base::elem_contribue(const int& elem) const
+int Op_EF_base::elem_contribue(const int elem) const
 {
   if (marqueur_elem_.size_array()==0)
     return 1;

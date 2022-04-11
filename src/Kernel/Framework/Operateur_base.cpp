@@ -413,7 +413,7 @@ void Operateur_base::set_fichier(const Nom& nom)
 // Exception: methode a surcharger
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) const
+void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag) const
 {
 
   // flag nul on n'ouvre pas le fichier
@@ -532,7 +532,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& fla
 // Exception: methode a surcharger
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-void Operateur_base::ouvrir_fichier_partage(EcrFicPartage& os,const Nom& type, const int& flag) const
+void Operateur_base::ouvrir_fichier_partage(EcrFicPartage& os,const Nom& type, const int flag) const
 {
 
   // flag nul on n'ouvre pas le fichier

@@ -41,7 +41,7 @@ public:
   void dump(Sortie&);
   void init_from_common();
   void init_from_file(const Nom& );
-  void Compute(const int& nbnn, const int& nbsomtot, const ArrOfDouble& xl, const ArrOfInt& num, ArrOfDouble& bij, const ArrOfDouble& poro, const int& ip, const int& npgau, const ArrOfDouble& xgau, const ArrOfDouble& frgau, const ArrOfDouble& dfrgau, const ArrOfDouble& poigau, ArrOfDouble& detj, ArrOfDouble& ajm1, ArrOfDouble& aj, ArrOfDouble& df, double& volume, ArrOfDouble& volume_sommet, ArrOfDouble& iphi) const;
+  void Compute(const int nbnn, const int nbsomtot, const ArrOfDouble& xl, const ArrOfInt& num, ArrOfDouble& bij, const ArrOfDouble& poro, const int ip, const int npgau, const ArrOfDouble& xgau, const ArrOfDouble& frgau, const ArrOfDouble& dfrgau, const ArrOfDouble& poigau, ArrOfDouble& detj, ArrOfDouble& ajm1, ArrOfDouble& aj, ArrOfDouble& df, double& volume, ArrOfDouble& volume_sommet, ArrOfDouble& iphi) const;
 
 };
 #endif

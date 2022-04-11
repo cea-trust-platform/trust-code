@@ -1913,7 +1913,7 @@ static void calculer_liste_complete_sommets_joint(const Joint& joint, ArrOfInt& 
 #endif
 }
 
-inline int arete_de_sommets_Si_et_Sj(const int& Si, const int& Sj, const int& arete, const IntTab& aretes_som)
+inline int arete_de_sommets_Si_et_Sj(const int Si, const int Sj, const int arete, const IntTab& aretes_som)
 {
   if ( (aretes_som(arete,0) == Si && aretes_som(arete,1) == Sj)
        || (aretes_som(arete,1) == Si && aretes_som(arete,0) == Sj) )

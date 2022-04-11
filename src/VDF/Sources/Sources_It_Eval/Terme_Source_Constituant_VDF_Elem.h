@@ -41,7 +41,7 @@ public:
   void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
   void associer_pb(const Probleme_base& ) override;
   void mettre_a_jour(double temps) override { Terme_Source_Constituant::mettre_a_jour(temps); }
-  void ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) const override { Terme_Source_Constituant::ouvrir_fichier(equation(), out_, que_suis_je(), description(), os, type, flag); }
+  void ouvrir_fichier(SFichier& os,const Nom& type, const int flag) const override { Terme_Source_Constituant::ouvrir_fichier(equation(), out_, que_suis_je(), description(), os, type, flag); }
   void completer() override;
 };
 

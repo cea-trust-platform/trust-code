@@ -136,7 +136,7 @@ inline void Terme_Boussinesq_base::check() const
 }
 
 // Methode de calcul de la valeur sur un champ aux elements d'un champ uniforme ou non a plusieurs composantes
-inline double valeur(const DoubleTab& valeurs, const int& elem, const int& dim)
+inline double valeur(const DoubleTab& valeurs, const int elem, const int dim)
 {
   if(valeurs.nb_dim()==1)
     return valeurs(elem);
@@ -145,7 +145,7 @@ inline double valeur(const DoubleTab& valeurs, const int& elem, const int& dim)
 }
 
 // Methode de calcul de la valeur sur une face encadree par elem1 et elem2 d'un champ uniforme ou non a plusieurs composantes
-inline double valeur(const DoubleTab& valeurs_champ, int elem1, int elem2, const int& compo)
+inline double valeur(const DoubleTab& valeurs_champ, int elem1, int elem2, const int compo)
 {
   if (valeurs_champ.dimension(0)==1)
     return valeurs_champ(0,compo); // Champ uniforme

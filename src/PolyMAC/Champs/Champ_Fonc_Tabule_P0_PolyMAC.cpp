@@ -91,7 +91,7 @@ void Champ_Fonc_Tabule_P0_PolyMAC::mettre_a_jour(double t)
   Champ_Fonc_base::mettre_a_jour(t);
 }
 
-int Champ_Fonc_Tabule_P0_PolyMAC::initialiser(const double&)
+int Champ_Fonc_Tabule_P0_PolyMAC::initialiser(const double)
 {
   Champ_Fonc_Tabule_P0_PolyMAC::mettre_a_jour(temps());
   return 1;

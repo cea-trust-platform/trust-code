@@ -231,7 +231,7 @@ DoubleTab& Op_Curl_VEFP1B::ajouter(const DoubleTab& vitesse,
 }
 
 DoubleTab
-Op_Curl_VEFP1B::vecteur_normal(const int& face, const int& elem) const
+Op_Curl_VEFP1B::vecteur_normal(const int face, const int elem) const
 {
   assert(dimension == 2);
 
@@ -267,14 +267,14 @@ int Op_Curl_VEFP1B::elements_pour_sommet()
 
 // Fonction qui renvoie le numero global de l'element qui contient "sommet"
 // et qui est situe a la place "indice" de la liste "elements_pour_sommet_"
-int Op_Curl_VEFP1B::elements_pour_sommet(const int& sommet,const int& indice) const
+int Op_Curl_VEFP1B::elements_pour_sommet(const int sommet,const int indice) const
 {
   return elements_pour_sommet_[sommet][indice];
 }
 
 // Fonction qui renvoie la taille de la liste situe a l'emplacement "sommet"
 // du tableau "elements_pour_sommet_"
-int Op_Curl_VEFP1B::elem_som_size(const int& sommet) const
+int Op_Curl_VEFP1B::elem_som_size(const int sommet) const
 {
   return elements_pour_sommet_[sommet].size();
 }

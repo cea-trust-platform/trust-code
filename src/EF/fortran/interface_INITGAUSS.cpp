@@ -60,7 +60,7 @@ void interface_INITGAUSS::compare_common()
 {
 }
 
-void interface_INITGAUSS::Compute(const int& idimg, const int& nbnn, const int& npgau, ArrOfDouble& xgau, ArrOfDouble& frgau, ArrOfDouble& dfrgau, ArrOfDouble& poigau) const
+void interface_INITGAUSS::Compute(const int idimg, const int nbnn, const int npgau, ArrOfDouble& xgau, ArrOfDouble& frgau, ArrOfDouble& dfrgau, ArrOfDouble& poigau) const
 {
   F77NAME(INITGAUSS)(&idimg, &nbnn, &npgau,  xgau.addr(),  frgau.addr(),  dfrgau.addr(),  poigau.addr());
 }

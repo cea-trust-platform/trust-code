@@ -50,7 +50,7 @@ Entree& Op_Conv_kschemas_centre_VEF::readOn(Entree& s )
 
 void Op_Conv_kschemas_centre_VEF::convkschemas_centre(const double dK, const int ncomp, int dim, const int poly ,
                                                       const int poly1, const int poly2,const int jel0,
-                                                      const int jel1,const double& psc ,const DoubleTab& tab1 ,
+                                                      const int jel1,const double psc ,const DoubleTab& tab1 ,
                                                       DoubleVect& tab_fluent, DoubleVect& flux,
                                                       const DoubleVect& rx0, const DoubleTab& gradient_elem ,DoubleVect& coord_som) const
 {

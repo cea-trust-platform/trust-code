@@ -321,7 +321,7 @@ double Champ_Face::val_imp_face_bord_private(int face,int comp) const
 }
 
 
-double Champ_Face_get_val_imp_face_bord(const double& temp,int face,int comp, const Zone_Cl_VDF& zclo)
+double Champ_Face_get_val_imp_face_bord(const double temp,int face,int comp, const Zone_Cl_VDF& zclo)
 {
   const Zone_VDF& zone_vdf=zclo.zone_VDF();
   int face_globale,face_locale;
@@ -371,7 +371,7 @@ double Champ_Face_get_val_imp_face_bord(const double& temp,int face,int comp, co
   return 0; // All other cases
 
 }
-double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double& temp,int face,int comp, const Zone_Cl_VDF& zclo)
+double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double temp,int face,int comp, const Zone_Cl_VDF& zclo)
 {
   const Zone_VDF& zone_vdf=zclo.zone_VDF();
   int face_globale,face_locale;
@@ -440,7 +440,7 @@ double Champ_Face::val_imp_face_bord_private(int face,int comp1,int comp2) const
   return 0; // For compilers
 }
 
-double Champ_Face_get_val_imp_face_bord( const double& temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo)
+double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo)
 {
   Cerr << "Champ_Face::val_imp_face_bord(,,) exit" << finl;
   Process::exit();

@@ -76,13 +76,13 @@ private :
 
   //Methodes pour l'explicite
   void reinit_conv_pour_Cl(const DoubleTab&,const IntList&, const DoubleTabs&, const DoubleTab&, DoubleTab&) const;
-  void calculer_coefficients_operateur_centre(DoubleTab&,const int&, const DoubleTab& vitesse) const;
+  void calculer_coefficients_operateur_centre(DoubleTab&,const int, const DoubleTab& vitesse) const;
   DoubleTab& ajouter_partie_compressible(const DoubleTab&, DoubleTab&, const DoubleTab& vitesse) const;
   DoubleTab& ajouter_operateur_centre(const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& ajouter_diffusion(const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& ajouter_antidiffusion(const DoubleTab&, const DoubleTab&, DoubleTab&) const;
 
-  inline void calculer_senseur(const DoubleTab&, const DoubleVect&, const int&, const int&, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
+  inline void calculer_senseur(const DoubleTab&, const DoubleVect&, const int, const int, const IntTab&, const IntTab&, const IntTab&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&, ArrOfDouble&) const;
   void mettre_a_jour_pour_periodicite(DoubleTab&) const;
   void ajouter_old(const DoubleTab& , DoubleTab&, const DoubleTab& vitesse) const;
   void calculer_data_pour_dirichlet();

@@ -62,8 +62,8 @@ public :
   {
     return la_zone_.valeur();
   }
-  int add_poly(const int& poly);
-  int remove_poly(const int& poly);
+  int add_poly(const int poly);
+  int remove_poly(const int poly);
 
 protected :
 

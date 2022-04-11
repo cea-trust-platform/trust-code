@@ -240,8 +240,8 @@ public :
   /////////////////////////////////////////////////////
 
   virtual const Motcle& domaine_application() const;
-  virtual void verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int& nb_comp) const;
-  virtual void verifie_ch_init_nb_comp_cl(const Champ_Inc_base& ch_ref, const int& nb_comp, const Cond_lim_base& cl) const
+  virtual void verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int nb_comp) const;
+  virtual void verifie_ch_init_nb_comp_cl(const Champ_Inc_base& ch_ref, const int nb_comp, const Cond_lim_base& cl) const
   {
     verifie_ch_init_nb_comp(ch_ref, nb_comp);
   }

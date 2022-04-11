@@ -53,7 +53,7 @@ public:
   }
   void getTemplate(TrioField& afield) const override;
   void setValue(const TrioField& afield) override;
-  void setDoubleValue(const double& val) override;
+  void setDoubleValue(const double val) override;
 
   int initialiser(double temps, const Champ_Inc_base& inco) override;
   void buildSommetsFaces() const ; // const because used in Ch_Front_input_ALE::getTemplate() which is const - actually updates the 2 members below due to ALE mesh movement:

@@ -38,33 +38,33 @@ public:
   virtual double dim_face(int ,int ) const { return dont_call<double>(__func__); }
   virtual double dist_elem(int ,int ,int ) const { return dont_call<double>(__func__); }
   virtual double dist_elem_period(int , int , int ) const { return dont_call<double>(__func__); }
-  virtual double conv_centre(const double&,const double&,const double&,const double&,const double&,double,double,double,double) const { return dont_call<double>(__func__); }
-  virtual double conv_quick_sharp_plus(const double&,const double&,const double&,const double&,const double&,const double&,const double&) const { return dont_call<double>(__func__); }
-  virtual double conv_quick_sharp_moins(const double&,const double&,const double&,const double&,const double&,const double&,const double&) const { return dont_call<double>(__func__); }
-  virtual void calcul_g(const double&,const double&,const double&,double&,double&,double&,double&) const { return dont_call<void>(__func__); }
+  virtual double conv_centre(const double,const double,const double,const double,const double,double,double,double,double) const { return dont_call<double>(__func__); }
+  virtual double conv_quick_sharp_plus(const double,const double,const double,const double,const double,const double,const double) const { return dont_call<double>(__func__); }
+  virtual double conv_quick_sharp_moins(const double,const double,const double,const double,const double,const double,const double) const { return dont_call<double>(__func__); }
+  virtual void calcul_g(const double,const double,const double,double&,double&,double&,double&) const { return dont_call<void>(__func__); }
 
   template <typename Type_Double>
-  void qcentre(const double&, const int, const int, const int, const int, const int, const DoubleTab&, Type_Double& ) const { return dont_call<void>(__func__); }
+  void qcentre(const double, const int, const int, const int, const int, const int, const DoubleTab&, Type_Double& ) const { return dont_call<void>(__func__); }
 
   template <typename Type_Double>
-  void quick_fram(const double&, const int, const int, const int, const int, const int, const DoubleTab&, Type_Double& ) const { return dont_call<void>(__func__); }
+  void quick_fram(const double, const int, const int, const int, const int, const int, const DoubleTab&, Type_Double& ) const { return dont_call<void>(__func__); }
 
 protected:
   int face_amont_conj_axi_impl(int ,int ,int ,int , const IntTab& , const IntTab& , const IntVect&) const;
   double dist_face_axi_impl(int ,int ,int ,const DoubleTab&) const;
   double dist_elem_axi_impl(int ,int ,int ,const DoubleTab&) const;
-  double conv_quick_sharp_plus_impl(const double&,const double&,const double&,const double&,const double&,const double&,const double&) const ;
-  double conv_quick_sharp_moins_impl(const double&,const double&,const double&,const double&,const double&,const double&,const double&) const;
-  void calcul_g_impl(const double&,const double&,const double&,double&,double&,double&,double& ) const ;
+  double conv_quick_sharp_plus_impl(const double,const double,const double,const double,const double,const double,const double) const ;
+  double conv_quick_sharp_moins_impl(const double,const double,const double,const double,const double,const double,const double) const;
+  void calcul_g_impl(const double,const double,const double,double&,double&,double&,double& ) const ;
 
   template <typename Type_Double>
-  void qcentre2_impl(const double&,const int,const int,const int,const int,const int,const DoubleTab&,Type_Double&) const;
+  void qcentre2_impl(const double,const int,const int,const int,const int,const int,const DoubleTab&,Type_Double&) const;
 
   template <typename Type_Double>
-  void qcentre4_impl(const int,const double,const double,const double,const double&,const int,const int,const int,const int,const int,const DoubleTab&,Type_Double&) const;
+  void qcentre4_impl(const int,const double,const double,const double,const double,const int,const int,const int,const int,const int,const DoubleTab&,Type_Double&) const;
 
   template <typename Type_Double>
-  void quick_fram_impl(const int,const double,const double,const double,const double,const double,const double&,const int,const int,const int,const int,const int,const DoubleTab&,Type_Double&) const;
+  void quick_fram_impl(const int,const double,const double,const double,const double,const double,const double,const int,const int,const int,const int,const int,const DoubleTab&,Type_Double&) const;
 
 private:
   template <typename type>
@@ -77,7 +77,7 @@ private:
 
 // Fram4 pour centre 4 (inutile je pense mais bon)
 // TODO : FIXME : should use std::min ... :-)
-inline double Fram4(const double& s1,const double& s2, const double& s3,const double& s4)
+inline double Fram4(const double s1,const double s2, const double s3,const double s4)
 {
   double smin0 = std::min(s4,s2), smax0 = std::max(s4,s2), smin1 = std::min(s3,s1), smax1 = std::max(s3,s1);
   double sr0 = (s3-smin0)/(smax0-smin0+DMINFLOAT), sr1 = (s2-smin1)/(smax1-smin1+DMINFLOAT);
@@ -89,7 +89,7 @@ inline double Fram4(const double& s1,const double& s2, const double& s3,const do
 
 // Fram pour QUICK
 // TODO : FIXME : should use std::min ... :-)
-inline double Fram(const double& s1,const double& s2, const double& s3,const double& s4)
+inline double Fram(const double s1,const double s2, const double s3,const double s4)
 {
   double smin0 = std::min(s4,s2), smax0 = std::max(s4,s2), smin1 = std::min(s3,s1), smax1 = std::max(s3,s1);
   double sr0 = (std::fabs(smax0-smin0)<DMINFLOAT ? 0. : (s3-smin0)/(smax0-smin0));
@@ -101,7 +101,7 @@ inline double Fram(const double& s1,const double& s2, const double& s3,const dou
 }
 
 // Fonction de calcul de cf(limiteur de pente) dans le schema Quick-sharp
-inline double sharp2(const double& utc)
+inline double sharp2(const double utc)
 {
   double cf;
   if ( (utc <= -1) || (utc >= 1.5) ) cf = 0.125;
@@ -113,7 +113,7 @@ inline double sharp2(const double& utc)
 }
 
 template <typename Type_Double>
-void Eval_Conv_VDF_tools::qcentre2_impl(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face,
+void Eval_Conv_VDF_tools::qcentre2_impl(const double psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face,
                                         const DoubleTab& transporte,Type_Double& flux) const
 {
   int k, ncomp = flux.size_array();
@@ -127,7 +127,7 @@ void Eval_Conv_VDF_tools::qcentre2_impl(const double& psc, const int num0, const
 }
 
 template <typename Type_Double>
-void Eval_Conv_VDF_tools::qcentre4_impl(const int ori,const double dx, const double dxam, const double dxav, const double& psc, const int num0, const int num1,
+void Eval_Conv_VDF_tools::qcentre4_impl(const int ori,const double dx, const double dxam, const double dxav, const double psc, const int num0, const int num1,
                                         const int num0_0, const int num1_1, const int face, const DoubleTab& transporte,Type_Double& flux) const
 {
   int k, ncomp = flux.size_array();
@@ -145,7 +145,7 @@ void Eval_Conv_VDF_tools::qcentre4_impl(const int ori,const double dx, const dou
 }
 
 template <typename Type_Double>
-void Eval_Conv_VDF_tools::quick_fram_impl(const int ori,const double dx, const double dm0, const double dxam0, const double dm1, const double dxam1, const double& psc,
+void Eval_Conv_VDF_tools::quick_fram_impl(const int ori,const double dx, const double dm0, const double dxam0, const double dm1, const double dxam1, const double psc,
                                           const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte,Type_Double& flux) const
 {
   const int ncomp = flux.size_array();

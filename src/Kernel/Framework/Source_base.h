@@ -83,7 +83,7 @@ public :
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
   /////////////////////////////////////////////////////
 
-  virtual void ouvrir_fichier(SFichier& os,const Nom&, const int& flag=1) const;
+  virtual void ouvrir_fichier(SFichier& os,const Nom&, const int flag=1) const;
   void set_fichier(const Nom&);
   inline void set_description(const Nom& nom)
   {

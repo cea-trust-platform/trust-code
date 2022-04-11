@@ -35,9 +35,9 @@ public:
   // les formats de postraitment de champs):
   void reset() override;
 
-  int ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post) override;
+  int ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post) override;
   int finir(int& est_le_dernier_post) override;
-  int ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post) override;
+  int ecrire_domaine(const Domaine& domaine,const int est_le_premier_post) override;
   virtual int ecrire_bords(const Nom&     id_du_domaine,
                            const Motcle& type_faces,
                            const DoubleTab& sommets,
@@ -73,12 +73,12 @@ public:
                                     const IntTab&     elements,const Status& stat,const Nom& basename, const Format&
                                     format, const Options_Para& option);
 
-  static int ecrire_entete_lata_V1(const Nom& basename,const Options_Para& option,const int& est_le_premier_post);
-  static int finir_lata_V1(const Nom& basename,const Options_Para& option,const int& est_le_dernier_post);
+  static int ecrire_entete_lata_V1(const Nom& basename,const Options_Para& option,const int est_le_premier_post);
+  static int finir_lata_V1(const Nom& basename,const Options_Para& option,const int est_le_dernier_post);
   static int ecrire_champ_lata_V1(const Nom&   id_du_champ,
                                   const Nom&   id_du_domaine,
                                   const Nom&   localisation,
-                                  const DoubleTab& data,const double& temps,const Nom& basename,const Format& format, const
+                                  const DoubleTab& data,const double temps,const Nom& basename,const Format& format, const
                                   Options_Para& option);
 
   static int ecrire_faces_lata_V1(const Nom& basename,

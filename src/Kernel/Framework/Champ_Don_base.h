@@ -53,7 +53,7 @@ public:
   Champ_base& affecter_(const Champ_base& ) override;
   Champ_base& affecter_compo(const Champ_base& ,int ) override;
   void mettre_a_jour(double temps) override;
-  virtual int initialiser(const double& temps);
+  virtual int initialiser(const double temps);
   int reprendre(Entree& ) override;
   int sauvegarder(Sortie& ) const override;
 

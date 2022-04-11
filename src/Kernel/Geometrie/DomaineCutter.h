@@ -59,7 +59,7 @@ public:
     DomaineCutter_Correspondance  correspondance;
     construire_sous_domaine(part,correspondance,sous_domaine_);
   };
-  void ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int& reorder, const Static_Int_Lists *som_raccord = NULL);
+  void ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int reorder, const Static_Int_Lists *som_raccord = NULL);
   inline const Noms& bords_internes() const
   {
     return bords_a_pb_;

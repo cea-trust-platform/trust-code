@@ -235,7 +235,7 @@ void Champ_Ostwald_VEF::init_mu(DoubleTab& mu_tab)
     mu_tab[i] = K_tab[i];
 }
 
-int Champ_Ostwald_VEF::initialiser(const double& un_temps)
+int Champ_Ostwald_VEF::initialiser(const double un_temps)
 {
   mettre_a_jour(un_temps);
   return 1;

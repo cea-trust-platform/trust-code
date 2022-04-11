@@ -67,7 +67,7 @@ void Op_Conv_kschemas_VEF::associer(const Zone_dis& zone_dis,
 
 void convkschemas(const double K, const int ncomp, int dimension, const int poly ,
                   const int poly1, const int poly2,const int jel0,
-                  const int jel1,const double& psc ,const DoubleTab& tab1 ,
+                  const int jel1,const double psc ,const DoubleTab& tab1 ,
                   DoubleVect& fluent, DoubleVect& flux,
                   const DoubleVect& rx0, const DoubleTab& gradient_elem )
 {

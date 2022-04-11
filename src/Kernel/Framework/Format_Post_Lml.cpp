@@ -83,14 +83,14 @@ int Format_Post_Lml::initialize_by_default(const Nom& file_basename)
   return 1;
 }
 
-int Format_Post_Lml::initialize(const Nom& file_basename, const int& format, const Nom& option_para)
+int Format_Post_Lml::initialize(const Nom& file_basename, const int format, const Nom& option_para)
 {
 
   lml_basename_= file_basename;
   return 1;
 }
 
-int Format_Post_Lml::ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post)
+int Format_Post_Lml::ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post)
 {
 
   Nom nom_fich(lml_basename_);
@@ -126,9 +126,9 @@ int Format_Post_Lml::completer_post(const Domaine& dom,const int is_axi,
 
 }
 
-int Format_Post_Lml::preparer_post(const Nom& id_du_domaine,const int& est_le_premier_post,
-                                   const int& reprise,
-                                   const double& t_init)
+int Format_Post_Lml::preparer_post(const Nom& id_du_domaine,const int est_le_premier_post,
+                                   const int reprise,
+                                   const double t_init)
 {
 
   preparer_post_lml();
@@ -138,7 +138,7 @@ int Format_Post_Lml::preparer_post(const Nom& id_du_domaine,const int& est_le_pr
 
 // Description:
 //  voir Format_Post_base::ecrire_domaine
-int Format_Post_Lml::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
+int Format_Post_Lml::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
   //Appel de la methode statique specifique au format lml
   Nom nom_fich(lml_basename_);
@@ -211,7 +211,7 @@ int Format_Post_Lml::ecrire_item_int(const Nom&     id_item,
   return 1;
 }
 
-int Format_Post_Lml::ecrire_entete_lml(Nom& nom_fich,const int& est_le_premier_post)
+int Format_Post_Lml::ecrire_entete_lml(Nom& nom_fich,const int est_le_premier_post)
 {
   if (est_le_premier_post)
     {
@@ -233,7 +233,7 @@ int Format_Post_Lml::ecrire_entete_lml(Nom& nom_fich,const int& est_le_premier_p
   return 1;
 }
 
-int Format_Post_Lml::finir_lml(Nom& nom_fich, const int& est_le_dernier_post)
+int Format_Post_Lml::finir_lml(Nom& nom_fich, const int est_le_dernier_post)
 {
 
   EcrFicPartage s;

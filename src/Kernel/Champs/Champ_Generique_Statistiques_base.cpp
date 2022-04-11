@@ -97,7 +97,7 @@ int Champ_Generique_Statistiques_base::completer_post_statistiques(const Domaine
 
 }
 
-void Champ_Generique_Statistiques_base::fixer_tdeb_tfin(const double& t_deb,const double& t_fin)
+void Champ_Generique_Statistiques_base::fixer_tdeb_tfin(const double t_deb,const double t_fin)
 {
   tstat_deb_ = t_deb;
   tstat_fin_ = t_fin;
@@ -129,7 +129,7 @@ void Champ_Generique_Statistiques_base::mettre_a_jour(double un_temps)
 
 //Methodes pour changer t_deb et t_fin pour des reprises de statistiques
 //et pour des statistiques en serie
-void Champ_Generique_Statistiques_base::fixer_serie(const double& t1, const double& t2)
+void Champ_Generique_Statistiques_base::fixer_serie(const double t1, const double t2)
 {
   Champ_Gen_de_Champs_Gen::fixer_serie(t1,t2);
   Operateur_Statistique().initialiser(0);
@@ -138,7 +138,7 @@ void Champ_Generique_Statistiques_base::fixer_serie(const double& t1, const doub
 
 }
 
-void Champ_Generique_Statistiques_base::fixer_tstat_deb(const double& t1,const double& t2)
+void Champ_Generique_Statistiques_base::fixer_tstat_deb(const double t1,const double t2)
 {
   Champ_Gen_de_Champs_Gen::fixer_tstat_deb(t1,t2);
   Operateur_Statistique().fixer_tstat_deb(t1,t2);

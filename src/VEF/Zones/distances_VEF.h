@@ -54,12 +54,12 @@ double distance_sommets(const int , const int , const Zone_VEF& );
 double som_pscal(const int , const int , const int , const int , const Zone_VEF& );
 
 // Fonctions inlinees pour optimisation
-inline double vitesse_tangentielle(const double& v0,const double& v1,const double& r0,const double& r1)
+inline double vitesse_tangentielle(const double v0,const double v1,const double r0,const double r1)
 {
   // On prend std::fabs car mathematiquement la valeur est >=0
   return sqrt(std::fabs(carre(v0)+carre(v1)-carre(v0*r0+v1*r1)));
 }
-inline double vitesse_tangentielle(const double& v0,const double& v1,const double& v2,const double& r0,const double& r1,const double& r2)
+inline double vitesse_tangentielle(const double v0,const double v1,const double v2,const double r0,const double r1,const double r2)
 {
   // On prend std::fabs car mathematiquement la valeur est >=0
   return sqrt(std::fabs(carre(v0)+carre(v1)+carre(v2)-carre(v0*r0+v1*r1+v2*r2)));

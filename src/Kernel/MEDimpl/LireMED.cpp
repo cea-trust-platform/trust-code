@@ -1183,7 +1183,7 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
 
 #ifdef MEDCOUPLING_
 // renvoie le type trio a partir du type medocoupling : http://docs.salome-platform.org/6/gui/MED/MEDLoader_8cxx.html
-Nom type_medcoupling_to_type_geo_trio(const int& type_cell, const int& isvef, const int& axis_type, const bool& cell_from_boundary, const int& axi1d)
+Nom type_medcoupling_to_type_geo_trio(const int type_cell, const int isvef, const int axis_type, const bool& cell_from_boundary, const int axi1d)
 {
   Nom type_elem;
   // [ABN] : first make sure the axis type is properly set, this will influence choice of the element

@@ -34,16 +34,16 @@ class VECT(ArrOfInt);
 class DoubleTabs;
 class Objet_U;
 
-int envoyer(const int& t, int source, int cible, int canal);
-int envoyer(const long& t, int source, int cible, int canal);
-int envoyer(const float& t, int source, int cible, int canal);
-int envoyer(const double& t, int source, int cible, int canal);
+int envoyer(const int t, int source, int cible, int canal);
+int envoyer(const long t, int source, int cible, int canal);
+int envoyer(const float t, int source, int cible, int canal);
+int envoyer(const double t, int source, int cible, int canal);
 int envoyer(const Objet_U& t, int source, int cible, int canal);
 
-int envoyer(const int& t, int cible, int canal);
-int envoyer(const long& t, int cible, int canal);
-int envoyer(const float& t, int cible, int canal);
-int envoyer(const double& t, int cible, int canal);
+int envoyer(const int t, int cible, int canal);
+int envoyer(const long t, int cible, int canal);
+int envoyer(const float t, int cible, int canal);
+int envoyer(const double t, int cible, int canal);
 int envoyer(const Objet_U& t, int cible, int canal);
 
 int recevoir(int& t, int source, int cible, int canal);

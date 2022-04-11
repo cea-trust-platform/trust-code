@@ -202,7 +202,7 @@ const Zone_dis_base& Champ_Inc::zone_dis_base() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-double Champ_Inc::changer_temps(const double& t)
+double Champ_Inc::changer_temps(const double t)
 {
   return valeur().changer_temps(t);
 }

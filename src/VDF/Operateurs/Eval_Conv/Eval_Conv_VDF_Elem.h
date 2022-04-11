@@ -97,10 +97,10 @@ private:
   inline double dt_vitesse(const int face) const { return static_cast<const DERIVED_T *>(this)->get_dt_vitesse(face); }
   inline double surface_porosite(const int face) const { return static_cast<const DERIVED_T *>(this)->get_surface_porosite(face); }
 
-  template <typename Type_Double> inline void quick_fram_(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte, Type_Double& flux) const
+  template <typename Type_Double> inline void quick_fram_(const double psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte, Type_Double& flux) const
   { static_cast<const DERIVED_T *>(this)->template quick_fram<Type_Double>(psc, num0, num1, num0_0, num1_1, face, transporte, flux); }
 
-  template <typename Type_Double> inline void qcentre_(const double& psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte, Type_Double& flux) const
+  template <typename Type_Double> inline void qcentre_(const double psc, const int num0, const int num1, const int num0_0, const int num1_1, const int face, const DoubleTab& transporte, Type_Double& flux) const
   { static_cast<const DERIVED_T *>(this)->template qcentre<Type_Double>(psc,num0,num1,num0_0,num1_1,face,transporte,flux); }
 };
 

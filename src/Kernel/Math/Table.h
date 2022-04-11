@@ -45,14 +45,14 @@ public :
   void remplir(const DoubleVect& param,const DoubleTab& val);
   void remplir(const VECT(DoubleVect)& params, const DoubleVect& aval);
   double val_simple(double vals_param) const;
-  double val(const double& val_param, int ncomp=0) const;
+  double val(const double val_param, int ncomp=0) const;
   double val(const std::vector<double>& vals_param, int ncomp) const;
   double val(const DoubleVect& val_param) const;
-  DoubleTab& valeurs(const DoubleTab& val_param,const DoubleTab& pos,const double& tps,DoubleTab& val) const;
-  DoubleVect& valeurs(DoubleVect&, const double& val_param) const;
+  DoubleTab& valeurs(const DoubleTab& val_param,const DoubleTab& pos,const double tps,DoubleTab& val) const;
+  DoubleVect& valeurs(DoubleVect&, const double val_param) const;
   DoubleVect& valeurs(DoubleVect&, const DoubleVect& val_param) const;
   Entree& lire_f(Entree& is, const int nb_comp);
-  Entree& lire_fxyzt(Entree& is,const int& dim);
+  Entree& lire_fxyzt(Entree& is,const int dim);
   inline const int& isfonction() const;
   Table(const Table&);
   Table& operator=(const Table& t) = default; // exige par gcc 9 car sinon error: implicitly-declared 'Table& Table::operator=(const Table&)' is deprecated [-Werror=deprecated-copy]

@@ -274,7 +274,7 @@ DoubleTab& Op_Rot_VEFP1B::ajouter(const DoubleTab& vorticite, DoubleTab& rot) co
 }
 
 DoubleTab
-Op_Rot_VEFP1B::vecteur_normal(const int& face, const int& elem) const
+Op_Rot_VEFP1B::vecteur_normal(const int face, const int elem) const
 {
   assert(dimension == 2);
 

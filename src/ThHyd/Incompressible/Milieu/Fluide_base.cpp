@@ -409,7 +409,7 @@ void Fluide_base::mettre_a_jour(double temps)
 // Exception:
 // Effets de bord:
 // Postcondition: les parametres du fluide sont initialises
-int Fluide_base::initialiser(const double& temps)
+int Fluide_base::initialiser(const double temps)
 {
   Cerr << "Fluide_base::initialiser()" << finl;
   Milieu_base::initialiser(temps);

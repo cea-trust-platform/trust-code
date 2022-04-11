@@ -48,7 +48,7 @@ public :
 
   inline void associer_champs(const Champ_base&);
   void lire_donnees(Entree& );
-  void ouvrir_fichier(const Equation_base& eq, const Nom& out, const Nom& qsj, const Nom& description, SFichier& os,const Nom& type, const int& flag) const;
+  void ouvrir_fichier(const Equation_base& eq, const Nom& out, const Nom& qsj, const Nom& description, SFichier& os,const Nom& type, const int flag) const;
   int completer(const Champ_Inc_base& inco);
 
   inline const Champ_Don& get_source() const

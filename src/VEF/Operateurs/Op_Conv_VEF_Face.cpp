@@ -763,7 +763,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 }
 
 // methodes recuperes de l'ancien OpVEFFaAmont
-inline void convbisimplicite_dec(const double& psc_, const int num1, const int num2,
+inline void convbisimplicite_dec(const double psc_, const int num1, const int num2,
                                  const DoubleTab& transporte, const int ncomp,
                                  DoubleVect& coeff, Matrice_Morse& matrice,
                                  const DoubleVect& porosite_face, int phi_u_transportant)

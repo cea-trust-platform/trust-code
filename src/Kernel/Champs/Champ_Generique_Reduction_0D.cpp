@@ -318,7 +318,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
 }
 
 //Extrait la valeur du vecteur val_source dans val_extraite
-void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVect& val_source, const int& composante_VDF) const
+void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVect& val_source, const int composante_VDF) const
 {
   if (methode_=="min")
     {

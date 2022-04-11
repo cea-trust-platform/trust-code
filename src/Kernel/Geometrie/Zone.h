@@ -150,7 +150,7 @@ public:
   inline const Faces_Internes& faces_int() const;
   inline Faces_Internes& faces_int();
   void renum(const IntVect&);
-  void renum_joint_common_items(const IntVect& Les_Nums, const int& elem_offset);
+  void renum_joint_common_items(const IntVect& Les_Nums, const int elem_offset);
   inline void reordonner();
   int face_interne_conjuguee(int) const;
   int comprimer() ;

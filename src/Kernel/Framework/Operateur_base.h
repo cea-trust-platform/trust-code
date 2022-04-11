@@ -115,8 +115,8 @@ public :
   bool has_champ_inco() const { return le_champ_inco.non_nul(); }
 
 
-  void ouvrir_fichier(SFichier& os,const Nom&, const int& flag=1) const;
-  void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const int& flag=1) const;
+  void ouvrir_fichier(SFichier& os,const Nom&, const int flag=1) const;
+  void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const int flag=1) const;
   void set_fichier(const Nom&);
   inline const Nom fichier() const
   {

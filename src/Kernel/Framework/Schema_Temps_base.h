@@ -138,7 +138,7 @@ public :
   inline double temps_courant() const;
   inline double temps_precedent() const;
   inline double temps_calcul() const;
-  virtual inline void changer_temps_courant(const double& );
+  virtual inline void changer_temps_courant(const double );
   void update_critere_statio(const DoubleTab& tab_critere, Equation_base& equation);
   inline double facteur_securite_pas() const;
   inline double& facteur_securite_pas();
@@ -790,7 +790,7 @@ inline int Schema_Temps_base::nb_impr() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline void Schema_Temps_base::changer_temps_courant(const double& t)
+inline void Schema_Temps_base::changer_temps_courant(const double t)
 {
   temps_courant_ = t;
 }

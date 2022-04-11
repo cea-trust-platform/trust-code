@@ -545,7 +545,7 @@ void Champ_Inc_base::mettre_a_jour(double un_temps)
 // Exception:
 // Effets de bord:
 // Postcondition: le champ est au temps specifie
-double Champ_Inc_base::changer_temps_futur(const double& t, int i)
+double Champ_Inc_base::changer_temps_futur(const double t, int i)
 {
   Roue& la_roue=les_valeurs.valeur();
   la_roue.futur(i).changer_temps(t);
@@ -567,7 +567,7 @@ double Champ_Inc_base::changer_temps_futur(const double& t, int i)
 // Exception:
 // Effets de bord:
 // Postcondition: le champ est au temps specifie
-double Champ_Inc_base::changer_temps_passe(const double& t, int i)
+double Champ_Inc_base::changer_temps_passe(const double t, int i)
 {
   Roue& la_roue=les_valeurs.valeur();
   la_roue.passe(i).changer_temps(t);
@@ -1042,7 +1042,7 @@ double Champ_Inc_base::integrale_espace(int ncomp) const
 // Exception:
 // Effets de bord:
 // Postcondition: le champ est au temps specifie
-double Champ_Inc_base::changer_temps(const double& t)
+double Champ_Inc_base::changer_temps(const double t)
 {
   les_valeurs->changer_temps(t);
   return temps_ = t;

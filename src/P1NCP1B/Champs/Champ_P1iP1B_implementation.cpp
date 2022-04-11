@@ -341,7 +341,7 @@ double second_membre(const Zone_VEF_PreP1b& zone_VEF, ArrOfDouble& Pa, DoubleVec
   return norme;
 }
 
-void corriger(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& champ_filtre_, Matrice& matrice, const int& Condition_Neumann_imposee_)
+void corriger(const Zone_VEF_PreP1b& zone_VEF, DoubleTab& champ_filtre_, Matrice& matrice, const int Condition_Neumann_imposee_)
 {
   int nb_elem=zone_VEF.nb_elem();
   int nb_som=zone_VEF.nb_som();

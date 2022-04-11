@@ -58,9 +58,9 @@ public :
   //                                     //
   /////////////////////////////////////////
 
-  virtual double            changer_temps(Equation_base& eqn, const double& temps)                                              = 0;
+  virtual double            changer_temps(Equation_base& eqn, const double temps)                                              = 0;
   virtual void              update_time_derivative(Equation_base& eqn, const DoubleTab& data)                                   = 0;
-  virtual void              mettre_a_jour_equation(Equation_base& eqn, const double& temps)                                     = 0;
+  virtual void              mettre_a_jour_equation(Equation_base& eqn, const double temps)                                     = 0;
   virtual void              modify_equation_parameters(Equation_base& eqn, DoubleTab& stored_parameters)                        = 0;
   virtual void              store_equation_parameters(Equation_base& eqn, DoubleTab& stored_parameters)                         = 0;
   virtual DoubleTab&        coefficients()                                                                                      = 0;

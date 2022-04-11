@@ -175,7 +175,7 @@ Sortie& EcrFicPartageMPIIO::operator <<(const char* ob)
     write(MPI_CHAR, &ob[i]);
   return *this;
 }
-Sortie& EcrFicPartageMPIIO::operator <<(const int& ob)
+Sortie& EcrFicPartageMPIIO::operator <<(const int ob)
 {
   if (bin_)
     {
@@ -189,7 +189,7 @@ Sortie& EcrFicPartageMPIIO::operator <<(const int& ob)
     (*this)<<std::to_string(ob).c_str();
   return *this;
 }
-Sortie& EcrFicPartageMPIIO::operator <<(const unsigned& ob)
+Sortie& EcrFicPartageMPIIO::operator <<(const unsigned ob)
 {
   if (bin_)
     write(MPI_UNSIGNED, &ob);
@@ -198,7 +198,7 @@ Sortie& EcrFicPartageMPIIO::operator <<(const unsigned& ob)
   return *this;
 }
 
-Sortie& EcrFicPartageMPIIO::operator <<(const float& ob)
+Sortie& EcrFicPartageMPIIO::operator <<(const float ob)
 {
   if (bin_)
     write(MPI_FLOAT, &ob);
@@ -206,7 +206,7 @@ Sortie& EcrFicPartageMPIIO::operator <<(const float& ob)
     (*this)<<std::to_string(ob).c_str();
   return *this;
 }
-Sortie& EcrFicPartageMPIIO::operator <<(const double& ob)
+Sortie& EcrFicPartageMPIIO::operator <<(const double ob)
 {
   if (bin_)
     write(MPI_DOUBLE, &ob);

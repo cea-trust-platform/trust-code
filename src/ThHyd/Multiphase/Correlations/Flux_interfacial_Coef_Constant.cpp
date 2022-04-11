@@ -42,7 +42,7 @@ Entree& Flux_interfacial_Coef_Constant::readOn(Entree& is)
   return is;
 }
 
-void Flux_interfacial_Coef_Constant::coeffs(const double& dh, const double *alpha, const double *T, const double p, const double *nv,
+void Flux_interfacial_Coef_Constant::coeffs(const double dh, const double *alpha, const double *T, const double p, const double *nv,
                                             const double *lambda, const double *mu, const double *rho, const double *Cp,
                                             DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const
 {

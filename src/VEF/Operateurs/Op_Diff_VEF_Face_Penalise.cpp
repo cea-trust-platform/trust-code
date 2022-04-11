@@ -220,7 +220,7 @@ ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 //Description:
 //methode qui calcule le voisinage d'une face.
 void Op_Diff_VEF_Face_Penalise::
-voisinage(const int& Numero_face, IntList& Voisinage) const
+voisinage(const int Numero_face, IntList& Voisinage) const
 {
   //  Cerr << "J'entre dans voisinage pour un numero face" << finl;
 
@@ -350,7 +350,7 @@ voisinage(const IntList& Ensemble_faces, IntList& Voisinage) const
 
 
 double  Op_Diff_VEF_Face_Penalise::
-signe(const int& Face1, const int& Face2) const
+signe(const int Face1, const int Face2) const
 {
   //  Cerr << "J'entre dans signe" << finl;
 
@@ -394,7 +394,7 @@ signe(const int& Face1, const int& Face2) const
 //fonction membre qui retourne le coefficient de
 //penalisation associee a chaque face du maillage primaire.
 double  Op_Diff_VEF_Face_Penalise::
-coefficient_penalisation(const int& Numero_face) const
+coefficient_penalisation(const int Numero_face) const
 {
   //  Cerr << "J'entre dans coefficient_penalisation" << finl;
   /* Initialisation de parametres locaux */
@@ -445,7 +445,7 @@ coefficient_penalisation(const int& Numero_face) const
 //fonction membre qui renvoie la liste des faces appartenant
 //au voisinage de Face1 ET de Face2.
 void  Op_Diff_VEF_Face_Penalise::
-faces_communes(const int& Face1,const int& Face2,
+faces_communes(const int Face1,const int Face2,
                IntList& Faces_communes) const
 {
 
@@ -543,7 +543,7 @@ reduction(const IntList& Liste1,const IntList& Liste2,
 //fonction membre qui renvoie le numero de l'element contenant Face1 et Face2
 //s'il existe et renvoie -1 sinon.
 int Op_Diff_VEF_Face_Penalise::
-element_commun(const int& Face1,const int& Face2) const
+element_commun(const int Face1,const int Face2) const
 {
   //  Cerr << "J'entre dans element_commun" << finl;
 
@@ -585,7 +585,7 @@ element_commun(const int& Face1,const int& Face2) const
 // Face1 et Face2 appartiennent au meme element.
 // Sinon retourne -1.
 int Op_Diff_VEF_Face_Penalise::
-autre_face(const int& Face1, const int& Face2)
+autre_face(const int Face1, const int Face2)
 const
 {
   //  Cerr << "J'entre dans autre_face" << finl;

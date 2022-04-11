@@ -417,7 +417,7 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
 // Exception:
 // Effets de bord:
 // Postcondition: les parametres du fluide sont initialises
-int Fluide_Dilatable_base::initialiser(const double& temps)
+int Fluide_Dilatable_base::initialiser(const double temps)
 {
   Cerr << "Fluide_Dilatable_base::initialiser()" << finl;
   if (sub_type(Champ_Don_base, rho))
@@ -436,7 +436,7 @@ int Fluide_Dilatable_base::initialiser(const double& temps)
 
 // Initialisation des proprietes radiatives du fluide incompressible
 // (Pour un fluide incompressible semi transparent).
-void Fluide_Dilatable_base::initialiser_radiatives(const double& temps)
+void Fluide_Dilatable_base::initialiser_radiatives(const double temps)
 {
   coeff_absorption_.initialiser(temps);
   indice_refraction_.initialiser(temps);

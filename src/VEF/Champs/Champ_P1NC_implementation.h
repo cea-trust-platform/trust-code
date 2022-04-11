@@ -156,7 +156,7 @@ protected :
   friend int construire_MatP1NC2P1_H1(Champ_P1NC&, const Domaine&, double&);
 
   friend int construire_secmem_L2(Champ_P1NC&, const Domaine&, DoubleTab&);
-  friend int construire_secmem_H1(Champ_P1NC&, const Domaine&, DoubleTab&, const double&);
+  friend int construire_secmem_H1(Champ_P1NC&, const Domaine&, DoubleTab&, const double);
 
   Matrice_Morse_Sym MatP1NC2P1_L2_H1;
   SolveurSys solveur_L2_H1;

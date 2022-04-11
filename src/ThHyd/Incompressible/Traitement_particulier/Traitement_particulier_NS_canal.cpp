@@ -1173,7 +1173,7 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 }
 
 
-void Traitement_particulier_NS_canal::ecriture_fichiers_moy_vitesse_rho_mu(const DoubleTab& val_moy, const Nom& fichier, const double& dt, const int& k) const
+void Traitement_particulier_NS_canal::ecriture_fichiers_moy_vitesse_rho_mu(const DoubleTab& val_moy, const Nom& fichier, const double dt, const int k) const
 {
   SFichier fic (fichier);
 
@@ -1227,7 +1227,7 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_vitesse_rho_mu(const
   fic.close();
 }
 
-void Traitement_particulier_NS_canal::ecriture_fichiers_moy_nut(const DoubleTab& val_moy, const Nom& fichier, const double& dt, const int& k) const
+void Traitement_particulier_NS_canal::ecriture_fichiers_moy_nut(const DoubleTab& val_moy, const Nom& fichier, const double dt, const int k) const
 {
   SFichier fic (fichier);
 
@@ -1250,7 +1250,7 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_nut(const DoubleTab&
   fic.close();
 }
 
-void Traitement_particulier_NS_canal::ecriture_fichiers_moy_Temp(const DoubleTab& val_moy, const Nom& fichier, const double& dt, const int& k) const
+void Traitement_particulier_NS_canal::ecriture_fichiers_moy_Temp(const DoubleTab& val_moy, const Nom& fichier, const double dt, const int k) const
 {
   SFichier fic (fichier);
 
@@ -1296,7 +1296,7 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_Temp(const DoubleTab
 //Apres correction de l expression de la moyenne temporelle et des methodes d ecriture des moyennes temporelles
 //On conserve ces deux methodes d ecriture en version old pour l ecriture des moyennes de phase
 
-void Traitement_particulier_NS_canal::ecriture_fichiers_moy_vitesse_rho_mu_old(const DoubleTab& val_moy, const Nom& fichier, const double& dt, const int& k) const
+void Traitement_particulier_NS_canal::ecriture_fichiers_moy_vitesse_rho_mu_old(const DoubleTab& val_moy, const Nom& fichier, const double dt, const int k) const
 {
   SFichier fic (fichier);
 
@@ -1354,7 +1354,7 @@ void Traitement_particulier_NS_canal::ecriture_fichiers_moy_vitesse_rho_mu_old(c
 
 
 
-void Traitement_particulier_NS_canal::ecriture_fichiers_moy_Temp_old(const DoubleTab& val_moy, const Nom& fichier, const double& dt, const int& k) const
+void Traitement_particulier_NS_canal::ecriture_fichiers_moy_Temp_old(const DoubleTab& val_moy, const Nom& fichier, const double dt, const int k) const
 {
   SFichier fic (fichier);
   fic.setf(ios::scientific);

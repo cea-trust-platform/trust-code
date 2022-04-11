@@ -34,7 +34,7 @@ inline void erreur(const Nom& id)
 }
 
 extern void convert_to(const char *s, double& ob);
-double extract_time_from_string(const Nom& ident_lu, const int& digits)
+double extract_time_from_string(const Nom& ident_lu, const int digits)
 {
   double temps;
   int length = ident_lu.longueur();

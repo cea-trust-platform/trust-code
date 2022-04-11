@@ -594,7 +594,7 @@ void Champ_Fonc_Morceaux::mettre_a_jour(double time)
     }
 }
 
-int Champ_Fonc_Morceaux::initialiser(const double& time)
+int Champ_Fonc_Morceaux::initialiser(const double time)
 {
   mettre_a_jour(time);
   return 1;

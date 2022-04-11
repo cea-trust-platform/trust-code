@@ -76,7 +76,7 @@ Entree& Schema_Backward_Differentiation_base::readOn(Entree& s)
   return Schema_Implicite_Multi_TimeStep_base::readOn(s);
 }
 
-double Schema_Backward_Differentiation_base::changer_temps(Equation_base& eqn, const double& temps)
+double Schema_Backward_Differentiation_base::changer_temps(Equation_base& eqn, const double temps)
 {
   eqn.inconnue().valeur().Champ_base::changer_temps(temps);
   return temps;
@@ -87,7 +87,7 @@ void Schema_Backward_Differentiation_base::update_time_derivative(Equation_base&
   //Nothing to do
 }
 
-void Schema_Backward_Differentiation_base::mettre_a_jour_equation(Equation_base& eqn, const double& temps)
+void Schema_Backward_Differentiation_base::mettre_a_jour_equation(Equation_base& eqn, const double temps)
 {
   eqn.inconnue().mettre_a_jour(temps);
 }

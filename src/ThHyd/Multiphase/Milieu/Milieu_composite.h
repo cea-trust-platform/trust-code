@@ -49,7 +49,7 @@ class Milieu_composite: public Fluide_base
 public :
   void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
   void mettre_a_jour(double temps) override;
-  int initialiser(const double& temps) override;
+  int initialiser(const double temps) override;
   void associer_equation(const Equation_base* eqn) const override;
   bool has_saturation(int k, int l) const;
   Saturation_base& get_saturation(int k, int l) const;

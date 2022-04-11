@@ -42,7 +42,7 @@ public:
 
   void associer_param(const VECT(REF(Champ_base))&, const Table& );
   void mettre_a_jour(double ) override;
-  int initialiser(const double& temps) override;
+  int initialiser(const double temps) override;
 
 protected:
 

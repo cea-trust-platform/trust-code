@@ -322,7 +322,7 @@ inline const Discretisation_base& Probleme_base::discretisation() const
 }
 
 // Method which may be called from anywhere:
-inline const char* time_format_from(const int& reprise_version)
+inline const char* time_format_from(const int reprise_version)
 {
   // Depuis la 155 le format de la balise temps est en scientifique
   // pour eviter des erreurs (incoherence entre temps)

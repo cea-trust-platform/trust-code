@@ -47,7 +47,7 @@ class Op_Conv_kschemas_centre_VEF : public Op_Conv_VEF_base
 
 public:
   DoubleTab& ajouter( const DoubleTab& , DoubleTab& ) const override;
-  void convkschemas_centre(const double , const int, int , const int ,const int, const int,const int,const int ,const double& ,const DoubleTab&,DoubleVect& , DoubleVect& ,const DoubleVect& , const DoubleTab&,DoubleVect&) const ;
+  void convkschemas_centre(const double , const int, int , const int ,const int, const int,const int,const int ,const double ,const DoubleTab&,DoubleVect& , DoubleVect& ,const DoubleVect& , const DoubleTab&,DoubleVect&) const ;
 protected:
 
   double K;  // int caracterisant les differents schemas

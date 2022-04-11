@@ -114,7 +114,7 @@ void Champ_Ostwald::mettre_a_jour(double )
 // Exception:
 // Effets de bord:
 // Postcondition:
-int Champ_Ostwald::initialiser(const double& un_temps)
+int Champ_Ostwald::initialiser(const double un_temps)
 {
   Cerr << "Champ_Ostwald::initialiser(temps) must be overloaded" << finl;
   Cerr << " by " << que_suis_je() << finl;

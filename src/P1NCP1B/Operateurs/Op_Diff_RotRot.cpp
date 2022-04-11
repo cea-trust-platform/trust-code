@@ -504,7 +504,7 @@ void Op_Diff_RotRot::Tri(IntList& liste_a_trier) const
 /* a la ligne "numero_elem" , colonne "numero_elem"*/
 /* Matrice EF */
 double
-Op_Diff_RotRot::remplir_elem_elem_EF(const int& numero_elem) const
+Op_Diff_RotRot::remplir_elem_elem_EF(const int numero_elem) const
 {
   return 1.*zone_Vef().volumes(numero_elem);
 }
@@ -513,8 +513,8 @@ Op_Diff_RotRot::remplir_elem_elem_EF(const int& numero_elem) const
 /* a placer dans la sous matrice de taille nb_elem * nb_som */
 /* a la ligne "numero_elem" , colonne "numero_som"*/
 /* Matrice EF */
-double Op_Diff_RotRot::remplir_elem_som_EF(const int& numero_elem,
-                                           const int& numero_som)
+double Op_Diff_RotRot::remplir_elem_som_EF(const int numero_elem,
+                                           const int numero_som)
 const
 {
   return (1.*zone_Vef().volumes(numero_elem)/(dimension+1));
@@ -525,8 +525,8 @@ const
 /* a la ligne "numero_som" , colonne "numero_elem"*/
 /* Matrice EF */
 double
-Op_Diff_RotRot::remplir_som_elem_EF(const int& numero_elem,
-                                    const int& numero_som) const
+Op_Diff_RotRot::remplir_som_elem_EF(const int numero_elem,
+                                    const int numero_som) const
 {
   return (1.*zone_Vef().volumes(numero_elem)/(dimension+1));
 }
@@ -537,8 +537,8 @@ Op_Diff_RotRot::remplir_som_elem_EF(const int& numero_elem,
 /* "elem_voisins" est le tableau des elements contenant "numero_som" */
 /* Matrice EF */
 double
-Op_Diff_RotRot::remplir_som_som_EF(const int& numero_som,
-                                   const int& sommet_voisin,
+Op_Diff_RotRot::remplir_som_som_EF(const int numero_som,
+                                   const int sommet_voisin,
                                    const IntList& elem_voisins) const
 {
   double resultat = 0.;
@@ -590,7 +590,7 @@ Op_Diff_RotRot::remplir_som_som_EF(const int& numero_som,
 
 
 DoubleTab
-Op_Diff_RotRot::vecteur_normal(const int& face, const int& elem) const
+Op_Diff_RotRot::vecteur_normal(const int face, const int elem) const
 {
   assert(dimension == 2);
 

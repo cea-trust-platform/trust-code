@@ -90,7 +90,7 @@ int Format_Post_Med::initialize_by_default(const Nom& file_basename)
   return 1;
 }
 
-int Format_Post_Med::initialize(const Nom& file_basename, const int& format, const Nom& option_para)
+int Format_Post_Med::initialize(const Nom& file_basename, const int format, const Nom& option_para)
 {
   med_basename_= file_basename;
 
@@ -104,7 +104,7 @@ EcrMED Format_Post_Med::getEcrMED() const
   return e;
 }
 
-int Format_Post_Med::ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post)
+int Format_Post_Med::ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post)
 {
 
   Nom nom_fich(med_basename_);
@@ -171,9 +171,9 @@ int Format_Post_Med::completer_post(const Domaine& dom,const int is_axi,
   return 1;
 }
 
-int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int& est_le_premier_post,
-                                   const int& reprise,
-                                   const double& t_init)
+int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int est_le_premier_post,
+                                   const int reprise,
+                                   const double t_init)
 {
   return 1;
   Nom nom_fich1(med_basename_);
@@ -199,7 +199,7 @@ int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int& est_le_pr
 
 }
 
-int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
+int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
   const REF(Zone_dis_base) zone_dis_base;
   return ecrire_domaine_dis(domaine, zone_dis_base, est_le_premier_post);
@@ -207,7 +207,7 @@ int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int& est_le_pre
 
 // Description:
 //  voir Format_Post_base::ecrire_domaine
-int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int& est_le_premier_post)
+int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post)
 {
   Nom nom_fich(med_basename_);
   nom_fich +=".";
@@ -283,7 +283,7 @@ int Format_Post_Med::ecrire_item_int(const Nom&     id_item,
   return 1;
 }
 
-int Format_Post_Med::ecrire_entete_med(Nom& nom_fich,const int& est_le_premier_post)
+int Format_Post_Med::ecrire_entete_med(Nom& nom_fich,const int est_le_premier_post)
 {
 
   if (est_le_premier_post && Process::je_suis_maitre())
@@ -363,7 +363,7 @@ int Format_Post_Med::completer_post_med(const Nom& nom_fich2,const Nom& nom1,con
 }
 
 int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2,const Nom& nom_fich3,
-                                       const Nom& id_du_domaine,const int& est_le_premier_post)
+                                       const Nom& id_du_domaine,const int est_le_premier_post)
 {
   Nom nom_fich(nom_fich1);
   nom_fich.prefix(".med0");
@@ -406,7 +406,7 @@ int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2
   return 1;
 }
 
-int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_fic,const int& est_le_premier_post,Nom& nom_fich)
+int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_fic,const int est_le_premier_post,Nom& nom_fich)
 {
   EcrMED ecr_med(getEcrMED());
   int dim = domaine.les_sommets().dimension(1);

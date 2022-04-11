@@ -303,7 +303,7 @@ int Energie_Multiphase::impr(Sortie& os) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Energie_Multiphase::verifie_ch_init_nb_comp_cl(const Champ_Inc_base& ch_ref, const int& nb_comp, const Cond_lim_base& cl) const
+void Energie_Multiphase::verifie_ch_init_nb_comp_cl(const Champ_Inc_base& ch_ref, const int nb_comp, const Cond_lim_base& cl) const
 {
   //si on verifie une CL de type
   if (ref_cast(Pb_Multiphase, probleme()).has_correlation("flux_parietal")

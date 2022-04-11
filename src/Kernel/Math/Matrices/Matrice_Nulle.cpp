@@ -90,7 +90,7 @@ DoubleTab& Matrice_Nulle::ajouter_multTab_(const DoubleTab& x,
   return r;
 }
 
-void Matrice_Nulle::scale( const double& x )
+void Matrice_Nulle::scale( const double x )
 {
   // nothing to do
 }

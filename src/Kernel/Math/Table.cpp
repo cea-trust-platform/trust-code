@@ -74,7 +74,7 @@ Entree& Table::lire_f(Entree& is, const int nb_comp)
 //Lecture d'une expression analytique dependant des valeurs (val) d'un champ parametre,
 //de l espace (x,y,z) et du temps (t)
 //isf est fixe a 2
-Entree& Table::lire_fxyzt(Entree& is,const int& dim)
+Entree& Table::lire_fxyzt(Entree& is,const int dim)
 {
   isf=2;
   Nom tmp;
@@ -190,7 +190,7 @@ double Table::val_simple(double vp) const
   return les_valeurs(size - 1);
 }
 
-double Table::val(const double& val_param, int ncomp) const
+double Table::val(const double val_param, int ncomp) const
 {
   std::vector<double> vals_param {val_param};
   return val(vals_param, ncomp);
@@ -291,7 +291,7 @@ double Table::val(const DoubleVect& val_param) const
 //    Sort en erreur s'il manque des parametres
 // Effets de bord:
 // Postcondition:
-DoubleVect& Table::valeurs(DoubleVect& x, const double& val_param) const
+DoubleVect& Table::valeurs(DoubleVect& x, const double val_param) const
 {
 
   if (les_parametres.size() == 1)
@@ -363,7 +363,7 @@ DoubleVect& Table::valeurs(DoubleVect& x, const DoubleVect& val_param) const
 
 //Evaluation d un tableau de valeurs (val) a partir d une expression analytique fonction des valeurs (val_param)
 //d un champ parametre, de l espace (pos) et du temps (t)
-DoubleTab& Table::valeurs(const DoubleTab& val_param,const DoubleTab& pos,const double& tps,DoubleTab& aval) const
+DoubleTab& Table::valeurs(const DoubleTab& val_param,const DoubleTab& pos,const double tps,DoubleTab& aval) const
 {
   eval_fct(pos,tps,val_param,aval);
   return aval;

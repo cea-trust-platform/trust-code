@@ -53,7 +53,7 @@ public :
   void abortTimeStep() override;
   bool initTimeStep(double dt) override;
   void mettre_a_jour(double temps) override;
-  int initialiser(const double& temps) override;
+  int initialiser(const double temps) override;
   void set_param(Param& param) override;
 
   //verifie que chaque inconnue "inco" est entre val_min[inco] et val_max[inco]

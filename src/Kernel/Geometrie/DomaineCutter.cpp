@@ -1265,7 +1265,7 @@ void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
 //  fichiers basename_000n.Zones pour 0 <= n < nb_parties_.
 //  Si des "sous-zones" sont definies (dans le champ domaine.ss_zones()),
 //  on genere aussi un fichier par sous-zone.
-void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int& reorder, const Static_Int_Lists* som_raccord)
+void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int reorder, const Static_Int_Lists* som_raccord)
 {
   assert(nb_parties_ >= 0);
   const Domaine& domaine = ref_domaine_.valeur();

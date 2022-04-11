@@ -34,7 +34,7 @@ void Matrice_Sym::set_est_definie(int val)
   est_definie_ = val;
 }
 
-void Matrice_Sym::unsymmetrize_stencil( const int& nb_lines,
+void Matrice_Sym::unsymmetrize_stencil( const int nb_lines,
                                         const IntTab& symmetric_stencil,
                                         IntTab&       stencil ) const
 {
@@ -95,7 +95,7 @@ void Matrice_Sym::unsymmetrize_stencil( const int& nb_lines,
     }
 }
 
-void Matrice_Sym::unsymmetrize_stencil_and_coefficients( const int&      nb_lines,
+void Matrice_Sym::unsymmetrize_stencil_and_coefficients( const int     nb_lines,
                                                          const IntTab&      symmetric_stencil,
                                                          const ArrOfDouble& symmetric_coefficients,
                                                          IntTab&            stencil,

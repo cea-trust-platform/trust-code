@@ -906,7 +906,7 @@ void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_nut(Double
 
 
 
-void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_vitesse(DoubleTab& u_moy,DoubleTab& u_moy_2,DoubleTab& u_moy_3,DoubleTab& u_moy_4, const IntTab& corresp, const IntTab& compt, const IntVect& NN, const int& ori, const DoubleTab& xU)
+void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_vitesse(DoubleTab& u_moy,DoubleTab& u_moy_2,DoubleTab& u_moy_3,DoubleTab& u_moy_4, const IntTab& corresp, const IntTab& compt, const IntVect& NN, const int ori, const DoubleTab& xU)
 {
   int i,j;
   const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
@@ -1132,7 +1132,7 @@ void Traitement_particulier_NS_Profils_VDF::calculer_integrale_temporelle(Double
 
 
 
-void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_spat(const DoubleTab& umoy_m,const DoubleTab& umoy_2_m,const DoubleTab& umoy_3_m,const DoubleTab& umoy_4_m, const DoubleTab& umoy_p, const DoubleTab& umoy_2_p, const DoubleTab& umoy_3_p, const DoubleTab& umoy_4_p, const DoubleVect& delta_m, const DoubleVect& delta_p, const IntVect& NN, const DoubleTab& Y, const int& ori)
+void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_spat(const DoubleTab& umoy_m,const DoubleTab& umoy_2_m,const DoubleTab& umoy_3_m,const DoubleTab& umoy_4_m, const DoubleTab& umoy_p, const DoubleTab& umoy_2_p, const DoubleTab& umoy_3_p, const DoubleTab& umoy_4_p, const DoubleVect& delta_m, const DoubleVect& delta_p, const IntVect& NN, const DoubleTab& Y, const int ori)
 {
   int i,j;
 
@@ -1240,7 +1240,7 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_spat(const Dou
 
 
 
-void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_spat_1col(const DoubleTab& umoy_m, const DoubleTab& umoy_p, const DoubleTab& Y, const DoubleVect& delta_m, const DoubleVect& delta_p, const IntVect& NN, const int& ori)
+void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_spat_1col(const DoubleTab& umoy_m, const DoubleTab& umoy_p, const DoubleTab& Y, const DoubleVect& delta_m, const DoubleVect& delta_p, const IntVect& NN, const int ori)
 {
   int i,j;
   Nom nom_fic;
@@ -1309,7 +1309,7 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_spat_1col(cons
 
 
 
-void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_temp(const DoubleTab& umoy, const DoubleTab& umoy_2, const DoubleTab& umoy_3, const DoubleTab& umoy_4, const DoubleTab& Y, const IntVect& NN, const int& ori, const double& dt)
+void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_temp(const DoubleTab& umoy, const DoubleTab& umoy_2, const DoubleTab& umoy_3, const DoubleTab& umoy_4, const DoubleTab& Y, const IntVect& NN, const int ori, const double dt)
 {
   int i,j;
 
@@ -1401,7 +1401,7 @@ void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_temp(const Dou
 
 
 
-void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_temp_1col(const DoubleTab& umoy, const DoubleTab& Y, const IntVect& NN, const int& ori, const double& dt)
+void Traitement_particulier_NS_Profils_VDF::ecriture_fichiers_moy_temp_1col(const DoubleTab& umoy, const DoubleTab& Y, const IntVect& NN, const int ori, const double dt)
 {
   int i,j;
   Nom nom_fic;

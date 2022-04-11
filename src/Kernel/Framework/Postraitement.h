@@ -154,16 +154,16 @@ public:
   inline const Liste_Champ_Generique& champs_post_complet() const { return champs_post_complet_; }
 
   //On distingue le postraitement d un tableau et d un tenseur
-  int postraiter(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int& ncomp,
-                 const double& temps_champs,double& temps_courant,
+  int postraiter(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+                 const double temps_champs,double& temps_courant,
                  Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs,int tenseur);
 
-  int postraiter_tableau(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int& ncomp,
-                         const double& temps_champs,double& temps_courant,
+  int postraiter_tableau(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+                         const double temps_champs,double& temps_courant,
                          Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs);
 
-  int postraiter_tenseur(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int& ncomp,
-                         const double& temps_champs,double& temps_courant,
+  int postraiter_tenseur(const Domaine& dom,const Noms& unites,const Noms& noms_compo,const int ncomp,
+                         const double temps_champs,double& temps_courant,
                          Nom nom_post,const Nom& localisation,const Nom& nature,const DoubleTab& valeurs);
 
 
@@ -171,16 +171,16 @@ public:
 
   Nom set_expression_champ(const Motcle& motlu1,const Motcle& motlu2,
                            const Motcle& motlu3,const Motcle& motlu4,
-                           const int& trouve);
+                           const int trouve);
 
   //Methodes macro pour generer la creation de :
   //-Champ_Generique_Interpolation
   void creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,Entree& s);
   //-Champ_Generique_Interpolation_Statistiques
-  void creer_champ_post_stat(const Motcle& motlu1,const Motcle& motlu2,const Motcle& motlu3,const Motcle& motlu4,const double& t_deb, const
-                             double& t_fin,Entree& s);
+  void creer_champ_post_stat(const Motcle& motlu1,const Motcle& motlu2,const Motcle& motlu3,const Motcle& motlu4,const double t_deb, const
+                             double t_fin,Entree& s);
   //-Champ_Generique_Morceau_Equation
-  void creer_champ_post_moreqn(const Motcle& type,const Motcle& option,const int& num_eq,const int& num_morceau,const int& compo,Entree& s);
+  void creer_champ_post_moreqn(const Motcle& type,const Motcle& option,const int num_eq,const int num_morceau,const int compo,Entree& s);
 
   //Methode macro pour le cas des champs med
   void creer_champ_post_med(const Motcle& motlu1,const Motcle& motlu2,Entree& s);

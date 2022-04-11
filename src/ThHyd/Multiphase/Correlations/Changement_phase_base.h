@@ -55,7 +55,7 @@ class Changement_phase_base : public Correlation_base
 {
   Declare_base(Changement_phase_base);
 public:
-  virtual double calculer(int k, int l, const double& dh, const double *alpha, const double *T, const double p, const double *nv,
+  virtual double calculer(int k, int l, const double dh, const double *alpha, const double *T, const double p, const double *nv,
                           const double *lambda, const double *mu, const double *rho, const double *Cp, const Saturation_base& sat,
                           DoubleTab& dT_G, DoubleTab& da_G, double& dp_G) const = 0;
 };

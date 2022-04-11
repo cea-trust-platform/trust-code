@@ -591,7 +591,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::ecriture_moy_spat(DoubleVect& champ_s
 void Terme_Source_Canal_RANS_LES_VDF_Face::ecriture_moy_temp(DoubleVect& champ_temp_x, DoubleVect& champ_temp_y,
                                                              DoubleVect& champ_temp_z, DoubleVect& champ_temp_x_2,
                                                              DoubleVect& champ_temp_y_2, DoubleVect& champ_temp_z_2,
-                                                             const double& dt)
+                                                             const double dt)
 {
   const double tps = mon_equation->schema_temps().temps_courant();
   Nom temps = Nom(tps);

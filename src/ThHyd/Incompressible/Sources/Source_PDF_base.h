@@ -62,7 +62,7 @@ public:
   DoubleTab& calculer_pdf(DoubleTab& ) const;
   void mettre_a_jour(double ) override;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  double fonct_coeff(const double&, const double&, const double&) const;
+  double fonct_coeff(const double, const double, const double) const;
   virtual DoubleVect diag_coeff_elem(ArrOfDouble&, const DoubleTab&, int) const ;
   virtual DoubleTab compute_coeff_elem() const;
   virtual DoubleTab compute_coeff_matrice_pression() const;
@@ -77,7 +77,7 @@ public:
     return modele_lu_;
   }
   int impr(Sortie&) const override;
-  void ouvrir_fichier(SFichier&, const Nom&, const int&) const override;
+  void ouvrir_fichier(SFichier&, const Nom&, const int) const override;
   inline const DoubleTab& get_sec_mem_pdf() const
   {
     return sec_mem_pdf;

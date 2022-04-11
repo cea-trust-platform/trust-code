@@ -132,16 +132,16 @@ private:
   inline double dist_elem_period_(int n1, int n2, int k) const { return static_cast<const DERIVED_T *>(this)->dist_elem_period(n1,n2,k); }
   inline const Zone_Cl_VDF& la_zcl() const { return static_cast<const DERIVED_T *>(this)->get_la_zcl(); }
 
-  inline double conv_quick_sharp_plus_(const double& psc,const double& vit_0, const double& vit_1, const double& vit_0_0, const double& dx, const double& dm, const double& dxam) const
+  inline double conv_quick_sharp_plus_(const double psc,const double vit_0, const double vit_1, const double vit_0_0, const double dx, const double dm, const double dxam) const
   { return static_cast<const DERIVED_T *>(this)->conv_quick_sharp_plus(psc,vit_0,vit_1,vit_0_0,dx,dm,dxam); }
 
-  inline double conv_quick_sharp_moins_(const double& psc,const double& vit_0,const double& vit_1, const double& vit_1_1,const double& dx, const double& dm,const double& dxam) const
+  inline double conv_quick_sharp_moins_(const double psc,const double vit_0,const double vit_1, const double vit_1_1,const double dx, const double dm,const double dxam) const
   { return static_cast<const DERIVED_T *>(this)->conv_quick_sharp_moins(psc,vit_0,vit_1,vit_1_1,dx,dm,dxam); }
 
-  inline double conv_centre_(const double& psc,const double& vit_0_0, const double& vit_0, const double& vit_1, const double& vit1_1,double g1, double g2, double g3,double g4) const
+  inline double conv_centre_(const double psc,const double vit_0_0, const double vit_0, const double vit_1, const double vit1_1,double g1, double g2, double g3,double g4) const
   { return static_cast<const DERIVED_T *>(this)->conv_centre(psc,vit_0_0,vit_0,vit_1,vit1_1,g1,g2,g3,g4); }
 
-  inline void calcul_g_(const double& dxam, const double& dx, const double& dxav, double& g1, double& g2, double& g3, double& g4) const
+  inline void calcul_g_(const double dxam, const double dx, const double dxav, double& g1, double& g2, double& g3, double& g4) const
   { static_cast<const DERIVED_T *>(this)->calcul_g(dxam,dx,dxav,g1,g2,g3,g4); }
 };
 

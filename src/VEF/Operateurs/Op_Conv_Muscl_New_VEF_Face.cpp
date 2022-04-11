@@ -310,7 +310,7 @@ static inline double minimum(const double& x,
 //
 ////////////////////////////////////////////////////////////////////
 
-void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTab& Kij, DoubleTab& Cij, DoubleTab& Sij, DoubleTab& Sij2, const int& nb_comp, const DoubleTab& velocity) const
+void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTab& Kij, DoubleTab& Cij, DoubleTab& Sij, DoubleTab& Sij2, const int nb_comp, const DoubleTab& velocity) const
 {
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
@@ -562,7 +562,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
 
 
 void Op_Conv_Muscl_New_VEF_Face::
-calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleTab& Cij, const DoubleTab& Sij, const DoubleTab& Sij2, const int& nb_comp, const DoubleTab& velocity, const DoubleTab& transporte) const
+calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleTab& Cij, const DoubleTab& Sij, const DoubleTab& Sij2, const int nb_comp, const DoubleTab& velocity, const DoubleTab& transporte) const
 {
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
@@ -855,7 +855,7 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
 }
 
 void Op_Conv_Muscl_New_VEF_Face::
-modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleTab& Cij, const DoubleTab& Sij, const DoubleTab& Sij2, const int& nb_comp, const DoubleTab& velocity, const DoubleTab& transporte) const
+modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleTab& Cij, const DoubleTab& Sij, const DoubleTab& Sij2, const int nb_comp, const DoubleTab& velocity, const DoubleTab& transporte) const
 {
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
@@ -1981,7 +1981,7 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const
 //ATTENTION : suppose les parametres P_plus, P_moins, Q_plus, Q_moins nuls en entree
 inline void
 Op_Conv_Muscl_New_VEF_Face::calculer_senseur_v2(const DoubleTab& Kij, const DoubleTab& Fij, const DoubleVect& transporteV,
-                                                const int& nb_comp, const int& face_i,
+                                                const int nb_comp, const int face_i,
                                                 const IntTab& elem_faces, const IntTab& face_voisins, const IntTab& num_fac_loc,
                                                 ArrOfDouble& P_plus, ArrOfDouble& P_moins,
                                                 ArrOfDouble& Q_plus, ArrOfDouble& Q_moins) const
@@ -2040,7 +2040,7 @@ Op_Conv_Muscl_New_VEF_Face::calculer_senseur_v2(const DoubleTab& Kij, const Doub
 //ATTENTION : suppose les parametres P_plus, P_moins, Q_plus, Q_moins nuls en entree
 inline void
 Op_Conv_Muscl_New_VEF_Face::calculer_senseur_v1(const DoubleTab& Kij, const DoubleTab& Fij, const DoubleVect& transporteV,
-                                                const int& nb_comp, const int& face_i,
+                                                const int nb_comp, const int face_i,
                                                 const IntTab& elem_faces, const IntTab& face_voisins, const IntTab& num_fac_loc,
                                                 ArrOfDouble& P_plus, ArrOfDouble& P_moins,
                                                 ArrOfDouble& Q_plus, ArrOfDouble& Q_moins) const

@@ -64,7 +64,7 @@ public :
 
   bool corriger_dt_calcule(double&) const override;
   void completer() override;
-  void changer_temps_courant(const double&) override;
+  void changer_temps_courant(const double) override;
   int stop() const override;
   void imprimer(Sortie&) const override;
   /*   virtual int lsauv() const; */

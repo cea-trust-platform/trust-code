@@ -54,9 +54,9 @@ public :
   void set_Cp(double);
   void update_rho_cp(double temps) override;
   void creer_champs_non_lus() override;
-  void initialiser_radiatives(const double& temps);
+  void initialiser_radiatives(const double temps);
   void warn_syntax_Sutherland();
-  int initialiser(const double& temps) override;
+  int initialiser(const double temps) override;
 
   const DoubleTab& temperature() const;
   const Champ_Don& ch_temperature() const;

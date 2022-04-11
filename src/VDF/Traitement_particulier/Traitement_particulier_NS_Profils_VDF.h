@@ -53,14 +53,14 @@ public :
 
 protected :
   void init_calcul_moyenne(void) override;
-  void calculer_moyenne_spatiale_vitesse(DoubleTab& , DoubleTab& ,DoubleTab& , DoubleTab& , const IntTab& , const IntTab& , const IntVect& , const int& , const DoubleTab& );
+  void calculer_moyenne_spatiale_vitesse(DoubleTab& , DoubleTab& ,DoubleTab& , DoubleTab& , const IntTab& , const IntTab& , const IntVect& , const int , const DoubleTab& );
   void calculer_moyenne_spatiale_uv(DoubleTab& , const IntTab& , const IntTab& , const IntVect& , const DoubleTab& );
-  void ecriture_fichiers_moy_spat(const DoubleTab& ,const DoubleTab& , const DoubleTab& , const DoubleTab& ,const DoubleTab& ,const DoubleTab& , const DoubleTab& , const DoubleTab& , const DoubleVect& , const DoubleVect& , const IntVect& , const DoubleTab& , const int& );
-  void ecriture_fichiers_moy_spat_1col(const DoubleTab& , const DoubleTab& , const DoubleTab& , const DoubleVect& , const DoubleVect& , const IntVect& , const int& );
+  void ecriture_fichiers_moy_spat(const DoubleTab& ,const DoubleTab& , const DoubleTab& , const DoubleTab& ,const DoubleTab& ,const DoubleTab& , const DoubleTab& , const DoubleTab& , const DoubleVect& , const DoubleVect& , const IntVect& , const DoubleTab& , const int );
+  void ecriture_fichiers_moy_spat_1col(const DoubleTab& , const DoubleTab& , const DoubleTab& , const DoubleVect& , const DoubleVect& , const IntVect& , const int );
   void calculer_moyenne_spatiale_nut(DoubleTab& , const IntTab& , const IntTab& , const IntVect& , const DoubleTab& );
   void calculer_integrale_temporelle(DoubleTab& , DoubleTab& , DoubleTab& , const DoubleVect& , const DoubleVect&);
-  void ecriture_fichiers_moy_temp(const DoubleTab& , const DoubleTab& , const DoubleTab& , const DoubleTab& ,const DoubleTab& , const IntVect& , const int&, const double& );
-  void ecriture_fichiers_moy_temp_1col(const DoubleTab& , const DoubleTab& , const IntVect& , const int&, const double& );
+  void ecriture_fichiers_moy_temp(const DoubleTab& , const DoubleTab& , const DoubleTab& , const DoubleTab& ,const DoubleTab& , const IntVect& , const int, const double );
+  void ecriture_fichiers_moy_temp_1col(const DoubleTab& , const DoubleTab& , const IntVect& , const int, const double );
 
 
 protected:

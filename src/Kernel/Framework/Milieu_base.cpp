@@ -494,7 +494,7 @@ Champ_Don_base& Milieu_base::gravite()
   return g.valeur(); // pour les compilateurs
 }
 
-int Milieu_base::initialiser(const double& temps)
+int Milieu_base::initialiser(const double temps)
 {
   Cerr << que_suis_je() << "Milieu_base:::initialiser" << finl;
   if (sub_type(Champ_Don_base, rho.valeur())) ref_cast(Champ_Don_base, rho.valeur()).initialiser(temps);

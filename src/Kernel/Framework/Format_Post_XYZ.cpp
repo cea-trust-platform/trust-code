@@ -83,14 +83,14 @@ int Format_Post_XYZ::initialize_by_default(const Nom& file_basename)
   return 1;
 }
 
-int Format_Post_XYZ::initialize(const Nom& file_basename, const int& format, const Nom& option_para)
+int Format_Post_XYZ::initialize(const Nom& file_basename, const int format, const Nom& option_para)
 {
 
   xyz_basename_= file_basename;
   return 1;
 }
 
-int Format_Post_XYZ::ecrire_entete(double temps_courant,int reprise,const int& est_le_premier_post)
+int Format_Post_XYZ::ecrire_entete(double temps_courant,int reprise,const int est_le_premier_post)
 {
 
   Nom nom_fich(xyz_basename_);
@@ -126,9 +126,9 @@ int Format_Post_XYZ::completer_post(const Domaine& dom,const int is_axi,
 
 }
 
-int Format_Post_XYZ::preparer_post(const Nom& id_du_domaine,const int& est_le_premier_post,
-                                   const int& reprise,
-                                   const double& t_init)
+int Format_Post_XYZ::preparer_post(const Nom& id_du_domaine,const int est_le_premier_post,
+                                   const int reprise,
+                                   const double t_init)
 {
 
   preparer_post_xyz();
@@ -138,7 +138,7 @@ int Format_Post_XYZ::preparer_post(const Nom& id_du_domaine,const int& est_le_pr
 
 // Description:
 //  voir Format_Post_base::ecrire_domaine
-int Format_Post_XYZ::ecrire_domaine(const Domaine& domaine,const int& est_le_premier_post)
+int Format_Post_XYZ::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
   //Appel de la methode statique specifique au format xyz
   Nom nom_fich(xyz_basename_);
@@ -259,12 +259,12 @@ Nom Format_Post_XYZ::construire_nom_xyz(double temps_,
   return nom_fich;
 }
 
-int Format_Post_XYZ::ecrire_entete_xyz(Nom& nom_fich,const int& est_le_premier_post)
+int Format_Post_XYZ::ecrire_entete_xyz(Nom& nom_fich,const int est_le_premier_post)
 {
   return 1;
 }
 
-int Format_Post_XYZ::finir_xyz(Nom& nom_fich, const int& est_le_dernier_post)
+int Format_Post_XYZ::finir_xyz(Nom& nom_fich, const int est_le_dernier_post)
 {
   return 1;
 }

@@ -77,7 +77,7 @@ double calcul_surface_triangle(const ArrOfDouble& origine,const ArrOfDouble& poi
   return sqrt(res)/2.;
 }
 
-double  portion_surface_elem(const ArrOfDouble& pointA,const ArrOfDouble& pointB, const ArrOfDouble& pointC,const double& z)
+double  portion_surface_elem(const ArrOfDouble& pointA,const ArrOfDouble& pointB, const ArrOfDouble& pointC,const double z)
 {
   if (z<=pointA[2]) return 0;
   if (z>pointC[2]) return calcul_surface_triangle(pointA,pointB,pointC);
@@ -110,7 +110,7 @@ double  portion_surface_elem(const ArrOfDouble& pointA,const ArrOfDouble& pointB
 
 }
 
-double portion_surface(const ArrOfDouble& point0,const ArrOfDouble& point1, const ArrOfDouble& point2,const double& zmin,const double& zmax)
+double portion_surface(const ArrOfDouble& point0,const ArrOfDouble& point1, const ArrOfDouble& point2,const double zmin,const double zmax)
 {
   return portion_surface_elem(point0,point1,point2,zmax)- portion_surface_elem(point0,point1,point2,zmin);
 }

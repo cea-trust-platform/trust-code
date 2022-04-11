@@ -60,7 +60,7 @@ public :
   inline Champ_base& affecter_(const Champ_base& ch);
   inline Champ_base& affecter_compo(const Champ_base& , int );
   inline void mettre_a_jour(double temps);
-  inline int initialiser(const double& temps);
+  inline int initialiser(const double temps);
 };
 
 // Description:
@@ -224,7 +224,7 @@ inline void Champ_Don::mettre_a_jour(double temps)
 // Description:
 //    Appel a l'objet sous-jacent
 //    Provoque l'initialisation du champ si necessaire
-inline int Champ_Don::initialiser(const double& temps)
+inline int Champ_Don::initialiser(const double temps)
 {
   return valeur().initialiser(temps);
 }

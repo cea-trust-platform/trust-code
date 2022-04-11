@@ -212,7 +212,7 @@ inline void inverse(const DoubleTab& mat, ArrOfDouble& x)
    Donc:
    xM(t) = xG(t)+R(t)R-1(t0)(xM(t0)-xG(t0))
 */
-ArrOfDouble Loi_horaire::position(const double& t, const double& t0, const ArrOfDouble& xMt0)
+ArrOfDouble Loi_horaire::position(const double t, const double t0, const ArrOfDouble& xMt0)
 {
   ArrOfDouble xMt(xMt0);                // xM(t0)
   position_.me_calculer(t0);                // xG(t0)
@@ -236,7 +236,7 @@ ArrOfDouble Loi_horaire::position(const double& t, const double& t0, const ArrOf
    Donc:
    vM(t) = vG(t)+R'(t)R-1(t)(xM(t)-xG(t))
 */
-ArrOfDouble Loi_horaire::vitesse(const double& t, const ArrOfDouble& xMt)
+ArrOfDouble Loi_horaire::vitesse(const double t, const ArrOfDouble& xMt)
 {
   ArrOfDouble vMt(xMt);                        // xM(t)
   position_.me_calculer(t);                        // xG(t)
@@ -254,7 +254,7 @@ ArrOfDouble Loi_horaire::vitesse(const double& t, const ArrOfDouble& xMt)
 // par rapport a position et rotation. On utilise un developpement limite d'ordre 2
 // |f(t+dt)-f(t)-dt*f'(t)|=|0.5*f''(t)*dt*dt+O(dt*dt*dt)|>|10*f''(t)*dt*dt|
 // Une erreur sur des expressions de derivee seconde nulle ne sera donc pas detectee...
-void Loi_horaire::verifier_derivee(const double& t)
+void Loi_horaire::verifier_derivee(const double t)
 {
   if (verification_derivee_)
     {

@@ -41,9 +41,9 @@ class Schema_Adams_Moulton_base : public Schema_Implicite_Multi_TimeStep_base
 public :
 
   void   associer_pb(const Probleme_base&) override;
-  double changer_temps(Equation_base& eqn, const double& temps) override;
+  double changer_temps(Equation_base& eqn, const double temps) override;
   void   update_time_derivative(Equation_base& eqn, const DoubleTab& data) override;
-  void   mettre_a_jour_equation(Equation_base& eqn, const double& temps) override;
+  void   mettre_a_jour_equation(Equation_base& eqn, const double temps) override;
   void   store_equation_parameters(Equation_base& eqn, DoubleTab& stored_parameters) override;
   void   modify_equation_parameters(Equation_base& eqn, DoubleTab& stored_parameters) override;
   void   compute_coefficients(double time_step, const DoubleTab& times) const override;

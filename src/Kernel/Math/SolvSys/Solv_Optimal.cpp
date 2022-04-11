@@ -132,7 +132,7 @@ int test_solveur(SolveurSys& solveur,  const Matrice_Base& matrice , const Doubl
   return numero_best;
 }
 // Description genere un fichier de solveur a tester different selon si la matrice peut etre resolue avec ou sans GCP
-void generate_defaut(const Matrice_Base& matrice, const double& seuil, Sortie& sortie, int limpr=0)
+void generate_defaut(const Matrice_Base& matrice, const double seuil, Sortie& sortie, int limpr=0)
 {
   Nom impr(" impr " );
   if (limpr==0) impr=" ";

@@ -65,7 +65,7 @@ public :
   friend Matrice_Morse_Sym operator *(const Matrice_Morse_Sym&, double );
   friend Matrice_Morse_Sym operator *(double, const Matrice_Morse_Sym& );
   Matrice_Morse_Sym& operator *=(double );
-  void scale( const double& x ) override;
+  void scale( const double x ) override;
 
   void get_stencil(IntTab& stencil) const override;
 

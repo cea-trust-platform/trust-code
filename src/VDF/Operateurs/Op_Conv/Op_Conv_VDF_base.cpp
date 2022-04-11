@@ -36,7 +36,7 @@ Implemente_base(Op_Conv_VDF_base,"Op_Conv_VDF_base",Operateur_Conv_base);
 Sortie& Op_Conv_VDF_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Conv_VDF_base::readOn(Entree& s ) { return s ; }
 
-inline void eval_fluent(const double& psc,const int num1,const int num2, DoubleVect& fluent)
+inline void eval_fluent(const double psc,const int num1,const int num2, DoubleVect& fluent)
 {
   if (psc >= 0) fluent[num2] += psc;
   else fluent[num1] -= psc;

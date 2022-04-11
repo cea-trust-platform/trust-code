@@ -1730,7 +1730,7 @@ const Motcle& Equation_base::domaine_application() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Equation_base::verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int& nb_comp) const
+void Equation_base::verifie_ch_init_nb_comp(const Champ_Inc_base& ch_ref, const int nb_comp) const
 {
   const Nature_du_champ nature = ch_ref.nature_du_champ();
   const int nb_composantes = ch_ref.nb_comp();

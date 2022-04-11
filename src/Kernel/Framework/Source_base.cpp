@@ -343,7 +343,7 @@ int Source_base::initialiser(double temps)
 // Exception: methode a surcharger
 // Effets de bord:
 // Postcondition: la methode ne modifie pas l'objet
-void Source_base::ouvrir_fichier(SFichier& os,const Nom& type, const int& flag) const
+void Source_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag) const
 {
   // flag nul on n'ouvre pas le fichier
   if (flag==0)

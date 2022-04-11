@@ -48,7 +48,7 @@ public :
   inline const Champ_Don& diffusivite_constituant() const;
   inline void mettre_a_jour(double) override;
   void discretiser(const Probleme_base& pb, const Discretisation_base& dis) override;
-  int initialiser(const double& temps) override;
+  int initialiser(const double temps) override;
   int nb_constituants() const;
 protected :
 
@@ -114,7 +114,7 @@ inline void Constituant::mettre_a_jour(double temps)
 // Exception:
 // Effets de bord:
 // Postcondition:
-inline int Constituant::initialiser(const double& temps)
+inline int Constituant::initialiser(const double temps)
 {
   if (D.non_nul())
     D.initialiser(temps);

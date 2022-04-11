@@ -110,7 +110,7 @@ DoubleTab& Matrice_Diagonale::ajouter_multTab_( const DoubleTab& x, DoubleTab& r
   return r;
 }
 
-void Matrice_Diagonale::scale( const double& x )
+void Matrice_Diagonale::scale( const double x )
 {
   coefficients_ *= x;
 }

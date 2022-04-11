@@ -63,9 +63,9 @@ public:
   int reprendre(Entree& is) override;
   void   mettre_a_jour(double temps) override;
 
-  void fixer_tdeb_tfin(const double& t_deb,const double& t_fin);
-  void fixer_serie(const double& t1,const double& t2) override;
-  void fixer_tstat_deb(const double& t1,const double& t2) override;
+  void fixer_tdeb_tfin(const double t_deb,const double t_fin);
+  void fixer_serie(const double t1,const double t2) override;
+  void fixer_tstat_deb(const double t1,const double t2) override;
   void lire_bidon(Entree& is) const override;
   inline const Champ_base&   get_champ_without_evaluation(Champ& espace_stockage) const override
   {

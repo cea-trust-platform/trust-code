@@ -302,7 +302,7 @@ bool Multi_Sch_ThHyd::corriger_dt_calcule(double& dt) const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Multi_Sch_ThHyd::changer_temps_courant(const double& t)
+void Multi_Sch_ThHyd::changer_temps_courant(const double t)
 {
   sch_ns.valeur().changer_temps_courant(t);
   sch_scalaires.valeur().changer_temps_courant(t);

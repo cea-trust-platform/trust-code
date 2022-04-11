@@ -43,7 +43,7 @@ Entree& Changement_phase_Silver_Simpson::readOn(Entree& is)
   return is;
 }
 
-double Changement_phase_Silver_Simpson::calculer(int k, int l, const double& dh, const double *alpha, const double *T, const double p, const double *nv,
+double Changement_phase_Silver_Simpson::calculer(int k, int l, const double dh, const double *alpha, const double *T, const double p, const double *nv,
                                                  const double *lambda, const double *mu, const double *rho, const double *Cp, const Saturation_base& sat,
                                                  DoubleTab& dT_G, DoubleTab& da_G, double& dp_G) const
 {

@@ -65,11 +65,11 @@ protected :
   virtual void calculer_moyenne_spatiale_nut(DoubleTab&) const = 0;
   virtual void calculer_moyenne_spatiale_Temp(DoubleTab&) const = 0;
   void calcul_reynolds_tau();
-  void ecriture_fichiers_moy_vitesse_rho_mu(const DoubleTab&, const Nom&, const double&, const int&) const;
-  void ecriture_fichiers_moy_nut(const DoubleTab&, const Nom&, const double&, const int&) const;
-  void ecriture_fichiers_moy_Temp(const DoubleTab&, const Nom&, const double&, const int&) const;
-  void ecriture_fichiers_moy_vitesse_rho_mu_old(const DoubleTab&, const Nom&, const double&, const int&) const;
-  void ecriture_fichiers_moy_Temp_old(const DoubleTab&, const Nom&, const double&, const int&) const;
+  void ecriture_fichiers_moy_vitesse_rho_mu(const DoubleTab&, const Nom&, const double, const int) const;
+  void ecriture_fichiers_moy_nut(const DoubleTab&, const Nom&, const double, const int) const;
+  void ecriture_fichiers_moy_Temp(const DoubleTab&, const Nom&, const double, const int) const;
+  void ecriture_fichiers_moy_vitesse_rho_mu_old(const DoubleTab&, const Nom&, const double, const int) const;
+  void ecriture_fichiers_moy_Temp_old(const DoubleTab&, const Nom&, const double, const int) const;
 
   int Ny, Nval, Nphase;
   DoubleTab val_moy_tot, val_moy_temp, val_moy_phase;

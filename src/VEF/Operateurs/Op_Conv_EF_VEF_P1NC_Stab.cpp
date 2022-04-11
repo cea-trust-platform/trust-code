@@ -163,23 +163,23 @@ Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
 }
 
 
-static inline double maximum(const double& x,
-                             const double& y)
+static inline double maximum(const double x,
+                             const double y)
 {
   if(x<y)
     return y;
   return x;
 }
 
-static inline double maximum(const double& x,
-                             const double& y,
-                             const double& z)
+static inline double maximum(const double x,
+                             const double y,
+                             const double z)
 {
   return maximum(maximum(x,y),z);
 }
 
-static inline double minimum(const double& x,
-                             const double& y)
+static inline double minimum(const double x,
+                             const double y)
 {
   if(x>y)
     return y;
@@ -310,7 +310,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::reinit_conv_pour_Cl(const DoubleTab& transporte,c
     }
 }
 
-void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab& Kij,const int& nb_comp, const DoubleTab& tab_vitesse) const
+void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab& Kij,const int nb_comp, const DoubleTab& tab_vitesse) const
 {
   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
@@ -939,7 +939,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& Kij, const Doub
 //ATTENTION : suppose les parametres P_plus, P_moins, Q_plus, Q_moins nuls en entree
 inline void
 Op_Conv_EF_VEF_P1NC_Stab::calculer_senseur(const DoubleTab& Kij, const DoubleVect& transporteV,
-                                           const int& nb_comp, const int& face_i,
+                                           const int nb_comp, const int face_i,
                                            const IntTab& elem_faces, const IntTab& face_voisins, const IntTab& num_fac_loc,
                                            ArrOfDouble& P_plus, ArrOfDouble& P_moins,
                                            ArrOfDouble& Q_plus, ArrOfDouble& Q_moins) const

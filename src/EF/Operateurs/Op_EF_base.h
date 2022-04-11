@@ -41,7 +41,7 @@ public :
   void modifier_pour_Cl(const Zone_EF&, const Zone_Cl_EF&, Matrice_Morse&, DoubleTab&)const ;
   void modifier_flux(const Operateur_base&) const;
   int impr(Sortie&, const Operateur_base&) const;
-  int elem_contribue(const int& elem) const;
+  int elem_contribue(const int elem) const;
   void marque_elem( const Equation_base& eqn);
 protected:
   Matrice_Morse matrice_sto_;

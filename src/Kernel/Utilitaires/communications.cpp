@@ -196,24 +196,24 @@ template <class T> int recevoir_array_(T * objet, int n, int source, int cible, 
 }
 
 // Pour les types simples, on passe par envoyer_array_ qui n'utilise pas un buffer mais envoie directement les valeurs. Plus rapide.
-int envoyer(const int& t, int source, int cible, int canal)
+int envoyer(const int t, int source, int cible, int canal)
 {
   return envoyer_array_(&t, 1, source, cible, canal);
 }
 
 #ifndef INT_is_64_
-int envoyer(const long& t, int source, int cible, int canal)
+int envoyer(const long t, int source, int cible, int canal)
 {
   return envoyer_array_(&t, 1, source, cible, canal);
 }
 #endif
 
-int envoyer(const float& t, int source, int cible, int canal)
+int envoyer(const float t, int source, int cible, int canal)
 {
   return envoyer_array_(&t, 1, source, cible, canal);
 }
 
-int envoyer(const double& t, int source, int cible, int canal)
+int envoyer(const double t, int source, int cible, int canal)
 {
   return envoyer_array_(&t, 1, source, cible, canal);
 }
@@ -223,24 +223,24 @@ int envoyer(const Objet_U& t, int source, int cible, int canal)
   return envoyer_buffered_(t, source, cible, canal);
 }
 
-int envoyer(const int& t, int cible, int canal)
+int envoyer(const int t, int cible, int canal)
 {
   return envoyer_array_(&t, 1, Process::me(), cible, canal);
 }
 
 #ifndef INT_is_64_
-int envoyer(const long& t, int cible, int canal)
+int envoyer(const long t, int cible, int canal)
 {
   return envoyer_array_(&t, 1, Process::me(), cible, canal);
 }
 #endif
 
-int envoyer(const float& t, int cible, int canal)
+int envoyer(const float t, int cible, int canal)
 {
   return envoyer_array_(&t, 1, Process::me(), cible, canal);
 }
 
-int envoyer(const double& t, int cible, int canal)
+int envoyer(const double t, int cible, int canal)
 {
   return envoyer_array_(&t, 1, Process::me(), cible, canal);
 }

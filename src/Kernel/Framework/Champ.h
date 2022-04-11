@@ -51,7 +51,7 @@ public :
   inline const Nom& le_nom() const override;
   inline void fixer_nb_comp(int i);
   inline int nb_comp() const ;
-  inline double changer_temps(const double& t);
+  inline double changer_temps(const double t);
   inline double temps() const;
   inline const Noms& fixer_unites(const Noms& );
   inline const Nom& fixer_unite(const Nom& );
@@ -110,7 +110,7 @@ inline int Champ::nb_comp() const
 {
   return valeur().nb_comp();
 }
-inline double Champ::changer_temps(const double& t)
+inline double Champ::changer_temps(const double t)
 {
   return valeur().changer_temps(t);
 }

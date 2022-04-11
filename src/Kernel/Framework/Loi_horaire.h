@@ -37,8 +37,8 @@ class Loi_horaire : public Objet_U
   Declare_instanciable(Loi_horaire);
 
 public:
-  ArrOfDouble position(const double& t, const double& t0, const ArrOfDouble& position_a_t0);
-  ArrOfDouble vitesse(const double& t, const ArrOfDouble& position_a_t);
+  ArrOfDouble position(const double t, const double t0, const ArrOfDouble& position_a_t0);
+  ArrOfDouble vitesse(const double t, const ArrOfDouble& position_a_t);
   void imprimer(const Schema_Temps_base&, const ArrOfDouble&);
   void nommer(const Nom& un_nom) override
   {
@@ -49,7 +49,7 @@ public:
     return nom_;
   };
 private:
-  void verifier_derivee(const double& t);
+  void verifier_derivee(const double t);
   void tester(const Schema_Temps_base&);
 
   Champ_Fonc_t position_;
