@@ -51,7 +51,7 @@ Entree& Frottement_interfacial_Wallis::readOn(Entree& is)
 
 void Frottement_interfacial_Wallis::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                                                 const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                                                const DoubleTab& ndv, int e, DoubleTab& coeff) const
+                                                const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const
 {
   double A_i = 4 * sqrt(alpha(n_g)) / Dh, //aire interfaciale
          d_f = Dh / 2 * (1 - sqrt(alpha(n_g))), //epaisseur de film,

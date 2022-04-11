@@ -47,7 +47,7 @@ class Frottement_interfacial_base : public Correlation_base
 public:
   virtual void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                            const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                           const DoubleTab& ndv, int e, DoubleTab& coeff) const  = 0;
+                           const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const  = 0;
 };
 
 #endif

@@ -40,7 +40,7 @@ class Frottement_interfacial_Sonnenburg : public Frottement_interfacial_base
 public:
   void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                    const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                   const DoubleTab& ndv, int e, DoubleTab& coeff) const override;
+                   const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const override;
 protected:
   int n_l = -1, n_g = -1; //phases traitees : liquide / gaz continu
 };

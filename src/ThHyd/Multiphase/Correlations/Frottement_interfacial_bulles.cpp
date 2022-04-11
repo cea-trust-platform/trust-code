@@ -41,7 +41,7 @@ Entree& Frottement_interfacial_bulles::readOn(Entree& is)
 
 void Frottement_interfacial_bulles::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                                                 const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                                                const DoubleTab& ndv, int e, DoubleTab& coeff) const
+                                                const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const
 {
   int k, l, N = ndv.dimension(0);
   double rho_m = 0;

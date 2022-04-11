@@ -28,6 +28,7 @@
 #include <Pb_Multiphase.h>
 #include <Champ_Uniforme.h>
 #include <Frottement_interfacial_base.h>
+
 #include <Milieu_composite.h>
 #include <Interface_base.h>
 
@@ -90,16 +91,21 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
+
+  DoubleTab const * d_bulles = NULL ;
+  try { d_bulles = &equation().probleme().get_champ("diametre_bulles").valeurs();}
+  catch(Champs_compris_erreur) {  }
+
   int e, f, c, i, j, k, l, n, N = inco.line_size(), Np = press.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot(),
                               cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), exp_res = 2;
-  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), dv(N, N), ddv(N, N, 4), ddv_c(4), coeff(N, N, 2); //arguments pour coeff
+  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), dv(N, N), ddv(N, N, 4), ddv_c(4), d_bulles_l(N), coeff(N, N, 2); //arguments pour coeff
   double dv_min = 0.1, dh, a_res = 1e-2;
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
   /* faces */
   for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2)
       {
-        for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, sigma_l = 0, dv = dv_min, ddv = 0, c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
+        for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, sigma_l = 0, dv = dv_min, ddv = 0, d_bulles_l=0, c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
           {
             for (n = 0; n < N; n++) a_l(n)   += vfd(f, c) / vf(f) * alpha(e, n);
             for (n = 0; n < N; n++) p_l(n)   += vfd(f, c) / vf(f) * press(e, n * (Np > 1));
@@ -118,8 +124,9 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                   double dv_c = ch.v_norm(pvit, pvit, e, f, k, l, NULL, &ddv_c(0));
                   if (dv_c > dv(k, l)) for (dv(k, l) = dv_c, i = 0; i < 4; i++) ddv(k, l, i) = ddv_c(i);
                 }
+            for (n=0; n<N; n++) d_bulles_l(n) += (d_bulles) ? mu_f(f, n, c) * (*d_bulles)(e,n) : 0;
           }
-        correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh, dv, f_e(f, 0), coeff);
+        correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh, dv, d_bulles_l, coeff);
         for (k = 0; k < N; k++) for (l = 0; l < N; l++) for (j = 0; j < 2; j++)
               coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res, -exp_res) : 0);
 
@@ -150,9 +157,10 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                 sigma_l(n,k) = sat.sigma_(temp(e,n), press(e,n * (Np > 1)));
               }
         }
+      for (n=0; n<N; n++) d_bulles_l(n) += (d_bulles) ? (*d_bulles)(e,n) : 0;
 
       for (k = 0; k < N; k++) for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
-      correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh_e(e), dv, e, coeff);
+      correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh_e(e), dv, d_bulles_l, coeff);
       for (k = 0; k < N; k++) for (l = 0; l < N; l++) coeff(k, l, 1) *= (dv(k, l) > dv_min); //pas de derivee si dv < dv_min
       for (k = 0; k < N; k++) for (l = 0; l < N; l++) for (j = 0; j < 2; j++)
             coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res, -exp_res) : 0);

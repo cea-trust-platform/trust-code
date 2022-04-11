@@ -53,7 +53,7 @@ Entree& Frottement_interfacial_Sonnenburg::readOn(Entree& is)
 
 void Frottement_interfacial_Sonnenburg::coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
                                                     const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma, double Dh,
-                                                    const DoubleTab& ndv, int e, DoubleTab& coeff) const
+                                                    const DoubleTab& ndv, const DoubleTab& d_bulles, DoubleTab& coeff) const
 {
   coeff = 0;
   if (alpha(n_l) < 1e-8 || alpha(n_g) < 1e-8) return;
