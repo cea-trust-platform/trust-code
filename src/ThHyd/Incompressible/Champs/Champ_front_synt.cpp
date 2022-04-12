@@ -98,14 +98,14 @@ int Champ_front_synt::initialiser(double tps, const Champ_Inc_base& inco)
 Entree& Champ_front_synt::readOn(Entree& is)
 {
   timeScale = 0.;
-  lenghtScale =0.;
-  nbModes=0;
-  turbKinEn=0.;
-  turbDissRate=0.;
-  p=0.;
-  ratioCutoffWavenumber=0;
+  lenghtScale = 0.;
+  nbModes = 0;
+  turbKinEn = 0.;
+  turbDissRate = 0.;
+  KeOverKmin = 0.;
+  ratioCutoffWavenumber = 0;
 
-  long dim;
+  int dim;
   dim=lire_dimension(is,que_suis_je());
   if( dim != 3)
     {
@@ -119,7 +119,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
   les_mots[2]="nbModes";
   les_mots[3]="turbKinEn";
   les_mots[4]="turbDissRate";
-  les_mots[5]="p";
+  les_mots[5]="KeOverKmin";
   les_mots[6]="timeScale";
   les_mots[7]="ratioCutoffWavenumber";
   les_mots[8]="dir_fluct";
@@ -131,11 +131,11 @@ Entree& Champ_front_synt::readOn(Entree& is)
       Cerr << "We expected a { instead of " << motlu << finl;
       exit();
     }
-  long cpt = 0;
+  int cpt = 0;
   is >> motlu;
   while (motlu!="}")
     {
-      long rang=les_mots.search(motlu);
+      int rang=les_mots.search(motlu);
       switch(rang)
         {
         case 0:
@@ -143,7 +143,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
             cpt++;
             moyenne.resize(dim);
             fixer_nb_comp(dim);
-            for(long i=0; i<dim; i++)
+            for(int i=0; i<dim; i++)
               is >> moyenne(i);
             break;
           }
@@ -174,7 +174,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
         case 5:
           {
             cpt++;
-            is >> p;
+            is >> KeOverKmin;
             break;
           }
         case 6:
@@ -194,7 +194,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
             cpt++;
             dir_fluct.resize(dim);
             fixer_nb_comp(dim);
-            for(long i=0; i<dim; i++)
+            for(int i=0; i<dim; i++)
               {
                 is >> dir_fluct(i);
               }
@@ -202,9 +202,18 @@ Entree& Champ_front_synt::readOn(Entree& is)
           }
         default :
           {
-            Cerr << "Error while reading Champ_front_synt" << finl;
-            Cerr << motlu << "is not understood."<< finl;
-            Cerr << "We are expecting a word among " << les_mots << finl;
+            if (motlu == "p")
+              {
+                Cerr << "Error while reading Champ_front_synt:" << finl;
+                Cerr << "  Parameter " << motlu << " has been renamed to KeOverKmin since TRUST v1.8.5"<< finl;
+                Cerr << "  Update your datafile."<< finl;
+              }
+            else
+              {
+                Cerr << "Error while reading Champ_front_synt:" << finl;
+                Cerr << "  " << motlu << "is not understood."<< finl;
+                Cerr << "  We are expecting a parameter among " << les_mots << finl;
+              }
             exit();
           }
         }
@@ -216,14 +225,14 @@ Entree& Champ_front_synt::readOn(Entree& is)
       Cerr << "You should specify all these parameters: " << les_mots << finl;
       exit();
     }
-  if( lenghtScale == 0 || nbModes == 0 || turbKinEn == 0 || turbDissRate == 0 || p == 0 || timeScale == 0 || ratioCutoffWavenumber == 0 )
+  if( lenghtScale == 0 || nbModes == 0 || turbKinEn == 0 || turbDissRate == 0 || KeOverKmin == 0 || timeScale == 0 || ratioCutoffWavenumber == 0 )
     {
       Cerr << "Error while reading Champ_front_synt" << finl;
       Cerr << "There is at least one parameter among: timeScale, lenghtScale, nbModes, turbKinEn, turbDissRate and ratioCutoffWavenumber set to 0" << finl;
       exit();
     }
 
-  for(long i=0; i<dim; i++)
+  for(int i=0; i<dim; i++)
     {
       Cerr << dir_fluct(i) << " ";
     }
@@ -317,7 +326,7 @@ void Champ_front_synt::mettre_a_jour(double temps)
   double kappa_max = (pi/dmin)*ratioCutoffWavenumber; // plus grand nombre d'onde (depend du maillage)
   double kappa_e = 9*pi*amp/(55*lenghtScale); // pic d'energie
   double kappa_eta = pow((turbDissRate/(visc*visc*visc)),0.25); // nombre d'onde de Kolmogorov
-  double kappa_min = kappa_e / p; // plus petit nombre d'onde
+  double kappa_min = kappa_e / KeOverKmin; // plus petit nombre d'onde
   //double delta_kappa = (min(kappa_eta,kappa_max) - kappa_min) / nbModes; // repartition lineaire des modes => pas bon
   double delta_kappa = pow( (std::min(kappa_eta,kappa_max) / kappa_min ), 1./(nbModes-1.)); // repartition logarithmique des modes => OK
 

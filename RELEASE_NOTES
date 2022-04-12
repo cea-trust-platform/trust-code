@@ -3,7 +3,7 @@ Release notes version 1.8.5_beta : Enhancements, modifications and corrected bug
 --------------------------------------------------------------------------------------------------
 07/04/22 (TRUST)  Major Change: TRUST int/double Arrays, Vects, Tabs and Travs are now class templates
 01/04/22 (TRUST)  New feature : New implementation of Champ_fonc_tabule_morceaux. Allows to use multiple parameter fields and improve performance.
-28/03/22 (TRUST)  Fix         : Champ_front_synt boundary condition had some bugs which are fixed now.
+28/03/22 (TRUST)  Fix         : Champ_front_synt boundary condition had some bugs which are fixed now, parameter p ranamed to KeOverKmin.
 28/03/22 (TRUST)  Major Change: Pb_Multiphase can handle arbitrary additional equations (LIST) to handle turbulence modelling
 28/03/22 (TRUST)  Major Change: The CoviMAC discretization is improved and leads to more stable results
 08/03/22 (TRUST)  Fix         : Keyword Pre_calc_pression crashed under certain circumstancies due to unitialized values of tau_tan

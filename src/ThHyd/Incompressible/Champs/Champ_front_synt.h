@@ -64,7 +64,7 @@ protected :
   double timeScale; // echelle integrale en temps
   double turbKinEn; // energie cinetique turbulente (k)
   double turbDissRate; // taux de dissipation turbulente (epsilon)
-  double p;
+  double KeOverKmin;
   double ratioCutoffWavenumber; // au lieu de prendre kappa_mesh comme plus grand nombre d'onde, on prend kappa_mesh/ratioCutoffWavenumber (ratioCutoffWavenumber>1 permet de mieux discretiser les fluctuations => aspect plus lisse)
   double temps_d_avant_;
 };
