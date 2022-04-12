@@ -23,7 +23,7 @@
 #include <Champ_Fonc_Tabule_Morceaux.h>
 #include <Domaine.h>
 
-Implemente_instanciable(Champ_Fonc_Tabule_Morceaux, "Champ_Fonc_Tabule_Morceaux|Champ_Tabule_Morceaux", Champ_Don_base);
+Implemente_instanciable(Champ_Fonc_Tabule_Morceaux, "Champ_Fonc_Tabule_Morceaux|Champ_Tabule_Morceaux", TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TABULE>);
 // XD Champ_Fonc_Tabule_Morceaux champ_don_base Champ_Tabule_Morceaux 0 Field defined by tabulated data in each sub-zone. It makes possible the definition of a field which is a function of other fields.
 // XD   attr domain_name ref_domaine domain_name 0 Name of the domain.
 // XD   attr nb_comp int nb_comp 0 Number of field components.

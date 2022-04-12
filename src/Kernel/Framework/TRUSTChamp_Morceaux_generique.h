@@ -32,7 +32,7 @@
 #include <Ref_Domaine.h>
 #include <Domaine.h>
 
-enum class Champ_Morceaux_Type { FONC , FONC_TXYZ , FONC_TABULE };
+enum class Champ_Morceaux_Type { FONC , FONC_TXYZ , FONC_TABULE , UNIFORME };
 
 template <Champ_Morceaux_Type _TYPE_>
 class TRUSTChamp_Morceaux_generique : public Champ_Don_base

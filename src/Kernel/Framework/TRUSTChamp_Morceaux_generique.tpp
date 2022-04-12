@@ -183,6 +183,14 @@ DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_elems_compo(const 
 template<Champ_Morceaux_Type _TYPE_>
 void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
 {
+  static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Morceaux_Type::UNIFORME);
+
+  if (IS_UNIFORME)
+    {
+      Champ_Don_base::mettre_a_jour(time);
+      return;
+    }
+
   const IntTab& les_elems = mon_domaine->zone(0).les_elems();
   const int nb_som_elem = mon_domaine->zone(0).nb_som_elem();
 
@@ -219,12 +227,11 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
 template<Champ_Morceaux_Type _TYPE_>
 int TRUSTChamp_Morceaux_generique<_TYPE_>::initialiser(const double& time)
 {
-  mettre_a_jour(time);
-  return 1;
+  return Champ_Don_base::initialiser(time);
 }
 
 template<Champ_Morceaux_Type _TYPE_> template<Champ_Morceaux_Type T>
-enable_if_t<T != Champ_Morceaux_Type::FONC_TXYZ, void> /* FONC et FONC_TABULE */
+enable_if_t<T != Champ_Morceaux_Type::FONC_TXYZ, void> /* FONC, FONC_TABULE et UNIFORME */
 TRUSTChamp_Morceaux_generique<_TYPE_>::interprete_get_domaine(const Nom& nom)
 {
   mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
