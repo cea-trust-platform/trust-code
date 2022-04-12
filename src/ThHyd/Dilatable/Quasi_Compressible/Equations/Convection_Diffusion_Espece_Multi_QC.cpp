@@ -297,7 +297,7 @@ void Convection_Diffusion_Espece_Multi_QC::assembler_blocs_avec_inertie(matrices
 
   schema_temps().ajouter_blocs(matrices, secmem, *this);
 
-  if (discretisation().que_suis_je() == "VDF")
+  if (!discretisation().que_suis_je().finit_par("MAC"))
     modifier_pour_Cl(*mat,secmem);
 
   statistiques().end_count(assemblage_sys_counter_);

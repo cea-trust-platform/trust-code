@@ -276,7 +276,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       DoubleTrav resu_temp(current); /* residu en increments */
       if (eqn.has_interface_blocs()) /* si assembler_blocs est disponible */
         {
-          if (eqn.discretisation().que_suis_je() != "VDF")
+          if (eqn.discretisation().que_suis_je().finit_par("MAC"))
             {
               eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu_temp, { });
               resu = resu_temp;
@@ -444,7 +444,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
       for (i = 0; i < eqs.size(); i++)
         {
           eqs[i]->assembler_blocs_avec_inertie(mats[i], residu_parts[i], {});
-          if (eqs[i]->discretisation().que_suis_je() == "VDF")
+          if (!eqs[i]->discretisation().que_suis_je().finit_par("MAC"))
             {
               for (j = 0; j < eqs.size(); j++)
                 {
@@ -457,7 +457,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
                 }
             }
         }
-      if (eqs[0]->discretisation().que_suis_je() != "VDF") Mglob.ajouter_multvect(inconnues, residus); //pour ne pas resoudre en increments
+      if (eqs[0]->discretisation().que_suis_je().finit_par("MAC")) Mglob.ajouter_multvect(inconnues, residus); //pour ne pas resoudre en increments
     }
   else for(i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
         {

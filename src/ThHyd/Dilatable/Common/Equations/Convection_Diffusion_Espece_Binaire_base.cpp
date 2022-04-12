@@ -123,7 +123,7 @@ void Convection_Diffusion_Espece_Binaire_base::assembler_blocs_avec_inertie(matr
   statistiques().begin_count(assemblage_sys_counter_);
   Convection_Diffusion_Fluide_Dilatable_Proto::assembler_blocs(*this, matrices, secmem, semi_impl);
   schema_temps().ajouter_blocs(matrices, secmem, *this);
-  if (discretisation().que_suis_je() == "VDF")
+  if (!discretisation().que_suis_je().finit_par("MAC"))
     {
       const std::string& nom_inco = inconnue().le_nom().getString();
       Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;

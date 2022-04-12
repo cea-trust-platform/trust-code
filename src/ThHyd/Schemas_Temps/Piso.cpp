@@ -207,7 +207,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   if (eqnNS.has_interface_blocs()) //si l'interface blocs est disponible, on l'utilise
     {
       eqnNS.assembler_blocs_avec_inertie({{ "vitesse", &matrice }}, resu);
-      if (eqnNS.discretisation().que_suis_je() != "VDF")
+      if (eqnNS.discretisation().que_suis_je().finit_par("MAC"))
         matrice.ajouter_multvect(current, resu);  //pour ne pas etre en increment
     }
   else //sinon, on passe par ajouter/contribuer

@@ -2099,7 +2099,7 @@ void Navier_Stokes_std::dimensionner_blocs(matrices_t matrices, const tabs_t& se
 void Navier_Stokes_std::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   Equation_base::assembler_blocs(matrices, secmem, semi_impl);
-  if (discretisation().que_suis_je() == "VDF")
+  if (!discretisation().que_suis_je().finit_par("MAC"))
     {
       DoubleTab tmp(secmem);
       tmp = 0.0;

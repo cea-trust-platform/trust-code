@@ -305,7 +305,7 @@ DoubleTab&  Operateur_base::ajouter(const DoubleTab& inco, DoubleTab& secmem) co
   /* on tente ajouter_blocs */
   if (has_interface_blocs())
     {
-      if (equation().discretisation().que_suis_je() != "VDF")
+      if (equation().discretisation().que_suis_je().finit_par("MAC"))
         ajouter_blocs({}, secmem);
       else
         ajouter_blocs({}, secmem, {{ equation().inconnue().le_nom().getString(),inco }} ); //pour prise en compte du parametre inco (qui est pas forcement l'inco de l'equation)

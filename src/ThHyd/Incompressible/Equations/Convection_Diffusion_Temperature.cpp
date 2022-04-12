@@ -772,7 +772,7 @@ void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const D
 
 void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  if (discretisation().que_suis_je() != "VDF")
+  if (discretisation().que_suis_je().finit_par("MAC"))
     {
       Equation_base::assembler_blocs(matrices, secmem, semi_impl);
       return;
@@ -818,12 +818,10 @@ void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, Doub
   statistiques().end_count(source_counter_);
 
   statistiques().begin_count(assemblage_sys_counter_);
-  if (discretisation().que_suis_je() == "VDF")
-    {
-      const std::string& nom_inco = inconnue().le_nom().getString();
-      Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):NULL;
-      if(mat) mat->ajouter_multvect(inconnue().valeurs(), secmem);
-    }
+
+  const std::string& nom_inco = inconnue().le_nom().getString();
+  Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):NULL;
+  if(mat) mat->ajouter_multvect(inconnue().valeurs(), secmem);
 
   for (auto &&i_m : mats2)
     delete i_m.second;
