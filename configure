@@ -7,6 +7,16 @@ TRUST_ROOT_SA=$TRUST_ROOT
 
 [ "`id -u 2>/dev/null`" = 0 ] && echo "It is not recommended to configure and install TRUST as root." && exit
 
+# Fedora
+if [ -f /etc/fedora-release ] && [ ! -f /usr/bin/g++ ] && [ ! -f /usr/bin/gfortran ]
+then
+   echo "Ok. Minimal install found for Fedora, so install missing packages with then configure again:"
+   echo "$ sudo dnf install -y patch gcc-g++ gcc-gfortran libX11-devel mesa-libGLU-devel texlive-scheme-full"
+   echo "$ ./configure"
+   exit -1
+fi
+
+
 [ -f NON_INSTALLED ] && rm -f NON_INSTALLED
 
 ##########################
