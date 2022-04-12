@@ -28,7 +28,7 @@
 #include <Symetrie.h>
 #include <Debog.h>
 #include <Equation_base.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 
 Implemente_base_sans_constructeur(Masse_VDF_base,"Masse_VDF_base",Solveur_Masse_base);
 Masse_VDF_base::Masse_VDF_base() : penalisation_matrice_(0),penalisation_secmem_(0) {}

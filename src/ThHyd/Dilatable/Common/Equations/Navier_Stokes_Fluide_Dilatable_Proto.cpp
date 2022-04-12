@@ -259,7 +259,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::assembler_blocs_avec_inertie(const Na
   statistiques().begin_count(assemblage_sys_counter_);
   const std::string& nom_inco = eqn.inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco)?matrices.at(nom_inco):NULL;
-  const DoubleTab& present = eqn.inconnue();
+  const DoubleTab& present = eqn.inconnue()->valeurs();
 
   // ******   avant inertie   ******
   // diffusion en div(mu grad u ) or on veut impliciter en rho * u => on divise les contributions par le rho_face associe
