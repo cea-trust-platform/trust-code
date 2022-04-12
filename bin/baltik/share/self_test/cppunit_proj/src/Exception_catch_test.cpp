@@ -1,6 +1,6 @@
 #include <cppunit.h>
 #ifdef cppunit_
-#include <ArrOfDouble.h>
+#include <TRUSTArray.h>
 #include <EChaine.h>
 #include <TriouError.h>
 #include <Motcle.h>

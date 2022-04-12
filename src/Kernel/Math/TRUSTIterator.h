@@ -24,6 +24,7 @@
 #define TRUSTIterator_included
 
 #include<iostream>
+#include<arch.h>
 
 template<typename _TYPE_ARRAY_>
 class TRUSTIterator
@@ -41,7 +42,7 @@ public:
     return *this;
   }
 
-  TRUSTIterator operator++(int i)
+  TRUSTIterator operator++(True_int i)
   {
     TRUSTIterator it = *this; // copie !! faut pas modifier ...
     ++(*this);
@@ -54,14 +55,14 @@ public:
     return *this;
   }
 
-  TRUSTIterator operator--(int i)
+  TRUSTIterator operator--(True_int i)
   {
     TRUSTIterator it = *this; //copie !! faut pas modifier ...
     --(*this);
     return it;
   }
 
-  reference_type operator[](int ind) { return *(ptr_ + ind); }
+  reference_type operator[](True_int ind) { return *(ptr_ + ind); }
   reference_type operator*() { return *ptr_; }
   pointer_type operator->() { return ptr_; }
 
