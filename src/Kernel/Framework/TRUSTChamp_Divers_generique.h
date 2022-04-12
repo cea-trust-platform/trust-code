@@ -14,48 +14,44 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Tayl_Green.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Champs
-// Version:     /main/7
+// File:        TRUSTChamp_Divers_generique.h
+// Directory:   $TRUST_ROOT/src/Kernel/Framework
+// Version:     /main/17
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Tayl_Green.h>
+#ifndef TRUSTChamp_Divers_generique_included
+#define TRUSTChamp_Divers_generique_included
 
-Implemente_instanciable_sans_constructeur(Tayl_Green,"Tayl_Green",TRUSTChamp_Divers_generique<Champ_Divers_Type::INUTILE>);
+#include <Champ_Don_base.h>
 
-Sortie& Tayl_Green::printOn(Sortie& os) const { return os; }
+enum class Champ_Divers_Type { INUTILE , UNIFORME };
 
-Entree& Tayl_Green::readOn(Entree& is)
+template <Champ_Divers_Type _TYPE_>
+class TRUSTChamp_Divers_generique : public Champ_Don_base
 {
-  is >> kwave;
-  Cerr << "kwave=" << kwave << finl;
-  return is;
-}
+public:
+  Champ_base& affecter(const Champ_base&) { return *this; }
 
-DoubleTab& Tayl_Green::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
-{
-  assert(tab_valeurs.size_totale() == positions.size());
-  for (int i = 0; i < tab_valeurs.dimension(0); i++)
-    {
-      tab_valeurs(i, 0) = -sin(kwave * positions(i, 0)) * cos(kwave * positions(i, 1));
-      tab_valeurs(i, 1) = cos(kwave * positions(i, 0)) * sin(kwave * positions(i, 1));
-      if (dimension == 3) tab_valeurs(i, 2) = 0.;
-    }
-  return tab_valeurs;
-}
+  DoubleVect& valeur_a(const DoubleVect&, DoubleVect&) const override { return not_implemented_champ_<DoubleVect&>(__func__); }
 
-DoubleVect& Tayl_Green::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
-{
-  assert(tab_valeurs.size_totale() == positions.dimension(0));
-  if (ncomp == 0)
-    for (int i = 0; i < tab_valeurs.size(); i++)
-      tab_valeurs(i) = -sin(kwave * positions(i, 0)) * cos(kwave * positions(i, 1));
-  else if (ncomp == 1)
-    for (int i = 0; i < tab_valeurs.size(); i++)
-      tab_valeurs(i) = cos(kwave * positions(i, 0)) * sin(kwave * positions(i, 1));
-  else if (ncomp == 2)
-    for (int i = 0; i < tab_valeurs.size(); i++) tab_valeurs(i) = 0;
+  double valeur_a_compo(const DoubleVect&, int ) const override { return not_implemented_champ_<double>(__func__); }
 
-  return tab_valeurs;
-}
+  DoubleVect& valeur_a_elem(const DoubleVect&, DoubleVect&, int ) const override { return not_implemented_champ_<DoubleVect&>(__func__); }
+
+  double valeur_a_elem_compo(const DoubleVect&, int , int ) const override { return not_implemented_champ_<double>(__func__); }
+
+  DoubleVect& valeur_aux_compo(const DoubleTab&, DoubleVect&, int ) const override { return not_implemented_champ_<DoubleVect&>(__func__); }
+
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect&, DoubleTab& tab_valeurs) const override
+  {
+    return valeur_aux(positions, tab_valeurs);
+  }
+
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect&, DoubleVect& tab_valeurs, int ncomp) const override
+  {
+    return valeur_aux_compo(positions, tab_valeurs, ncomp);
+  }
+};
+
+#endif /* TRUSTChamp_Divers_generique_included */

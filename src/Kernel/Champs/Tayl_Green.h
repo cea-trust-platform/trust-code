@@ -20,48 +20,26 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-// .DESCRIPTION class Tayl_Green
-//   by: buchal@che41b0.der.edf.fr
-//   modified version on  Champs/Tourbillon
-//   in *.datafile:   Tourbillon kwave
-//    u=sin(kwave*x)*cos(kwave*y)
-//    v=cos(kwave*x)*sin(kwave*y)
-//
-
 #ifndef Tayl_Green_included
 #define Tayl_Green_included
 
-#include <Champ_Don_base.h>
+#include <TRUSTChamp_Divers_generique.h>
 
-class Tayl_Green : public Champ_Don_base
+// .DESCRIPTION class Tayl_Green
+//   by: buchal@che41b0.der.edf.fr
+//   modified version on  Champs/Tourbillon in *.datafile:   Tourbillon kwave
+//    u=sin(kwave*x)*cos(kwave*y) & v=cos(kwave*x)*sin(kwave*y)
+class Tayl_Green : public TRUSTChamp_Divers_generique<Champ_Divers_Type::INUTILE>
 {
   Declare_instanciable_sans_constructeur(Tayl_Green);
-public :
-  Tayl_Green();
-  Champ_base& affecter(const Champ_base& ch);
-  DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const override;
-  double valeur_a_compo(const DoubleVect& position,
-                        int compo) const override ;
-  DoubleVect& valeur_a_elem(const DoubleVect& position,
-                            DoubleVect& valeurs,
-                            int elem) const override ;
-  double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly,int ncomp) const override;
+public:
+  Tayl_Green() : kwave(-1) { dimensionner(1, 2); }
 
-  DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const override;
+  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
+  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override;
 
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override ;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override;
-protected :
+protected:
   int kwave;
 };
-#endif
+
+#endif /* Tayl_Green_included */

@@ -28,7 +28,7 @@ Champ_base& TRUSTChamp_Morceaux_generique<_TYPE_>::affecter_(const Champ_base& c
 {
   static constexpr bool IS_FONC = (_TYPE_ == Champ_Morceaux_Type::FONC);
 
-  if (!IS_FONC) not_implemented_champ_(__func__);
+  if (!IS_FONC) not_implemented_champ_<void>(__func__);
 
   if (sub_type(Champ_Uniforme, ch)) valeurs() = ch.valeurs()(0, 0);
   else valeurs() = ch.valeurs();

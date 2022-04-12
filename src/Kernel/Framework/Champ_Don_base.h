@@ -78,10 +78,11 @@ inline void erreur_champ_(const char *nom_methode)
   Process::exit();
 }
 
-inline void not_implemented_champ_(const char *nom_methode)
+template <typename _TYPE_RETURN_>
+inline _TYPE_RETURN_ not_implemented_champ_(const char *nom_methode)
 {
   Cerr << "TRUST Error !!! The method " << nom_methode << " is not implemented !!!" << finl;
-  Process::exit();
+  throw;
 }
 
 #endif /* Champ_Don_base_included */

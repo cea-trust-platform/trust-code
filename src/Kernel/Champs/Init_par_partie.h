@@ -20,49 +20,21 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-// .DESCRIPTION class Init_par_partie
-//
-//
-
 #ifndef Init_par_partie_included
 #define Init_par_partie_included
 
-#include <Champ_Don_base.h>
+#include <TRUSTChamp_Divers_generique.h>
 
-class Init_par_partie : public Champ_Don_base
+class Init_par_partie : public TRUSTChamp_Divers_generique<Champ_Divers_Type::INUTILE>
 {
   Declare_instanciable_sans_constructeur(Init_par_partie);
 public :
-  Init_par_partie();
+  Init_par_partie() : nbcomp(-1) { }
+  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
 
-  Champ_base& affecter(const Champ_base& ch);
-  DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const override;
-  double valeur_a_compo(const DoubleVect& position,
-                        int compo) const override ;
-  DoubleVect& valeur_a_elem(const DoubleVect& position,
-                            DoubleVect& valeurs,
-                            int elem) const override ;
-  double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly,int ncomp) const override;
-
-  DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const override;
-
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override ;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override;
 protected :
-
-
-  int nbcomp ;
-  DoubleVect val_don ;
-  DoubleVect R_loc ;
+  int nbcomp;
+  DoubleVect val_don , R_loc ;
 };
-#endif
+
+#endif /* Init_par_partie_included */
