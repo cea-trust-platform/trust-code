@@ -142,6 +142,8 @@ if [ -f $COMPILE ]
       DATE=$year"_"$month"_"$day"_"$Hh"_"$Mm"_"$Ss
       # on renome le dernier fichier COMPILE existant
       mv $COMPILE $TRUST_ROOT/compile_TRUST$COMM$OPT"_"$TRUST_ARCH"_"$HOST_BUILD"_"$DATE".log"
+      # Et on ne garde que les derniers:
+      ls -t $TRUST_ROOT/compile_TRUST$COMM$OPT"_"$TRUST_ARCH*.log | tail -n+4 | xargs rm -f
 fi
 echo "TRUST compilation on $HOST the `date` ...">$COMPILE
 
