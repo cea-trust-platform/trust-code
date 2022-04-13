@@ -25,7 +25,7 @@
 
 #include <Champ_Don_base.h>
 
-enum class Champ_Divers_Type { INUTILE , UNIFORME };
+enum class Champ_Divers_Type { INUTILE , UNIFORME , CANAL };
 
 template <Champ_Divers_Type _TYPE_>
 class TRUSTChamp_Divers_generique : public Champ_Don_base
@@ -33,12 +33,16 @@ class TRUSTChamp_Divers_generique : public Champ_Don_base
 public:
   Champ_base& affecter(const Champ_base& ch)
   {
-    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
-    return IS_UNIFORME ? Champ_Don_base::affecter(ch) : *this;
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME), IS_CANAL = (_TYPE_ == Champ_Divers_Type::CANAL);
+    if (IS_UNIFORME) return Champ_Don_base::affecter(ch);
+    if (IS_CANAL) Champ_base::affecter_erreur();
+
+    return *this;
   }
 
   DoubleVect& valeur_a(const DoubleVect&, DoubleVect& tab_valeurs) const override
   {
+    assert (_TYPE_ != Champ_Divers_Type::CANAL);
     static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
     if (IS_UNIFORME)
       {
@@ -46,31 +50,36 @@ public:
         return tab_valeurs;
       }
 
-    return not_implemented_champ_<DoubleVect&>(__func__);
+    return not_implemented_champ_<DoubleVect&>(__func__); /* Cas INUTILE : methode sur-chargee pour CANAL */
   }
 
-  double valeur_a_compo(const DoubleVect&, int ncomp) const override
+  double valeur_a_compo(const DoubleVect& x, int ncomp) const override
   {
-    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
-    return IS_UNIFORME ? valeurs_(0,ncomp) : not_implemented_champ_<double>(__func__);
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME), IS_CANAL = (_TYPE_ == Champ_Divers_Type::CANAL);
+    if (IS_UNIFORME) return valeurs_(0,ncomp);
+    if (IS_CANAL) return Champ_Don_base::valeur_a_compo(x,ncomp);
+
+    return not_implemented_champ_<double>(__func__); /* INUTILE */
   }
 
-  DoubleVect& valeur_a_elem(const DoubleVect&, DoubleVect& tab_valeurs, int) const override
+  DoubleVect& valeur_a_elem(const DoubleVect& positions, DoubleVect& tab_valeurs, int) const override
   {
-    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME), IS_CANAL = (_TYPE_ == Champ_Divers_Type::CANAL);
     if (IS_UNIFORME)
       {
         for (int j = 0; j < nb_comp(); j++) tab_valeurs(j) = valeurs_(0, j);
         return tab_valeurs;
       }
 
-    return not_implemented_champ_<DoubleVect&>(__func__);
+    if (IS_CANAL) return valeur_a(positions, tab_valeurs); // from VTABLE
+
+    return not_implemented_champ_<DoubleVect&>(__func__); /* INUTILE */
   }
 
   double valeur_a_elem_compo(const DoubleVect&, int, int ncomp) const override
   {
     static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
-    return IS_UNIFORME ? valeurs_(0,ncomp) : not_implemented_champ_<double>(__func__);
+    return IS_UNIFORME ? valeurs_(0,ncomp) : not_implemented_champ_<double>(__func__); /* methode sur-chargee pour CANAL */
   }
 
   DoubleTab& valeur_aux(const DoubleTab& , DoubleTab& tab_valeurs) const override

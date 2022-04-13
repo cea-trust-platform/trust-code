@@ -23,100 +23,49 @@
 #ifndef champ_init_canal_sinal_included
 #define champ_init_canal_sinal_included
 
-#include <Champ_Don_base.h>
-#include <Motcle.h>
+#include <TRUSTChamp_Divers_generique.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: champ_init_canal_sinal
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class champ_init_canal_sinal : public Champ_Don_base
+class champ_init_canal_sinal : public TRUSTChamp_Divers_generique<Champ_Divers_Type::CANAL>
 {
   Declare_instanciable(champ_init_canal_sinal);
 public :
-  //    champ_init_canal_sinal();
-  Champ_base& affecter(const Champ_base& ch);
-  DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const override;
-  DoubleVect& valeur_a_elem(const DoubleVect& position,
-                            DoubleVect& valeurs,
-                            int poly) const override ;
-  double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly,int ncomp) const override;
+  DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override;
+  double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
+  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
+  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override;
 
-  DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const override;
-
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override ;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override;
 protected :
-  double Ucent, h, ampli_bruit, omega, ampli_sin;
-  int dir_wall, dir_flow;
-  double min_dir_flow, min_dir_wall;
+  double Ucent = -1., h = -1., ampli_bruit = -1., omega = -1., ampli_sin = -1.;
+  // Initialisation par defaut des minimums et maximums pour generaliser l'initialisation du canal pour n'importe quelle position dans l'espace.
+  int dir_wall = 1, dir_flow = 0;
+  double min_dir_flow = 0., min_dir_wall = 0.;
 
-  inline double fx(double x) const;
-  inline double fx(double x, double y) const;
-  inline double fy(double x, double y) const;
-  inline double fx(double x, double y, double z) const;
-  inline double fy(double x, double y, double z) const;
-  inline double fz(double x, double y, double z) const;
+  inline double fx(double x) const { return 0.; }
+
+  inline double fx(double x, double y) const
+  {
+    return Ucent / (h * h) * (y - min_dir_wall) * (2.0 * h - (y - min_dir_wall));
+  }
+
+  inline double fy(double x, double y) const
+  {
+    return ampli_bruit * (-0.5 + drand48()) + ampli_sin * sin(omega * (x - min_dir_flow));
+  }
+
+  inline double fx(double x, double y, double z) const
+  {
+    return Ucent / (h * h) * (y - min_dir_wall) * (2.0 * h - (y - min_dir_wall));
+  }
+
+  inline double fy(double x, double y, double z) const
+  {
+    return ampli_bruit * (-0.5 + drand48()) + ampli_sin * sin(omega * (x - min_dir_flow));
+  }
+
+  inline double fz(double x, double y, double z) const
+  {
+    return ampli_bruit * (-0.5 + drand48());
+  }
 };
 
-//
-// Methodes inline :
-//
-
-// Description:
-//
-// 3
-inline double champ_init_canal_sinal::fx(double x) const
-{
-  // A CODER return f(x) si champ_init_canal_sinal a un sens en 1D;
-  return 0;
-}
-
-// Description:
-//
-inline double champ_init_canal_sinal::fx(double x, double y) const
-{
-  return Ucent/(h*h)*(y-min_dir_wall)*(2.0*h-(y-min_dir_wall));
-}
-
-// Description:
-//
-inline double champ_init_canal_sinal::fy(double x, double y) const
-{
-  return  ampli_bruit*(-0.5+drand48())+ampli_sin*sin(omega*(x-min_dir_flow));
-}
-
-// Description:
-//
-inline double champ_init_canal_sinal::fx(double x, double y, double z) const
-{
-  return Ucent/(h*h)*(y-min_dir_wall)*(2.0*h-(y-min_dir_wall));
-}
-
-// Description:
-//
-inline double champ_init_canal_sinal::fy(double x, double y, double z) const
-{
-  return ampli_bruit*(-0.5+drand48())+ampli_sin*sin(omega*(x-min_dir_flow));
-}
-
-// Description:
-//
-inline double champ_init_canal_sinal::fz(double x, double y, double z) const
-{
-  return ampli_bruit*(-0.5+drand48());
-}
-
-#endif
+#endif /* champ_init_canal_sinal_included */
