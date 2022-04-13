@@ -24,11 +24,10 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Champ_Fonc_Tabule_Morceaux, "Champ_Fonc_Tabule_Morceaux|Champ_Tabule_Morceaux", Champ_Don_base);
-// XD champ_fonc_fonction_txyz_morceaux champ_don_base champ_fonc_fonction_txyz_morceaux 0 Field defined by analytical functions in each sub-zone. It makes possible the definition of a field that depends on the time and the space.
-// XD   attr problem_name ref_Pb_base problem_name 0 Name of the problem.
-// XD   attr inco chaine inco 0 Name of the field (for example: temperature).
+// XD Champ_Fonc_Tabule_Morceaux champ_don_base Champ_Tabule_Morceaux 0 Field defined by tabulated data in each sub-zone. It makes possible the definition of a field which is a function of other fields.
+// XD   attr domain_name ref_domaine domain_name 0 Name of the domain.
 // XD   attr nb_comp int nb_comp 0 Number of field components.
-// XD   attr data bloc_lecture data 0 { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i } By default, the value val_def is assigned to the field. It takes the sous_zone_i identifier Sous_Zone (sub_area) type object function, val_i. Sous_Zone (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_fonction_txyz_morceaux type object.
+// XD   attr data bloc_lecture data 0 { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i } By default, the value val_def is assigned to the field. It takes the sous_zone_i identifier Sous_Zone (sub_area) type object function, val_i. Sous_Zone (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_tabule_morceaux type object.
 
 Sortie& Champ_Fonc_Tabule_Morceaux::printOn(Sortie& os) const { return os << valeurs(); }
 
