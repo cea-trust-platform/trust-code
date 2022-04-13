@@ -31,26 +31,92 @@ template <Champ_Divers_Type _TYPE_>
 class TRUSTChamp_Divers_generique : public Champ_Don_base
 {
 public:
-  Champ_base& affecter(const Champ_base&) { return *this; }
+  Champ_base& affecter(const Champ_base& ch)
+  {
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
+    return IS_UNIFORME ? Champ_Don_base::affecter(ch) : *this;
+  }
 
-  DoubleVect& valeur_a(const DoubleVect&, DoubleVect&) const override { return not_implemented_champ_<DoubleVect&>(__func__); }
+  DoubleVect& valeur_a(const DoubleVect&, DoubleVect& tab_valeurs) const override
+  {
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
+    if (IS_UNIFORME)
+      {
+        for (int j = 0; j < nb_comp(); j++) tab_valeurs(j) = valeurs_(0, j);
+        return tab_valeurs;
+      }
 
-  double valeur_a_compo(const DoubleVect&, int ) const override { return not_implemented_champ_<double>(__func__); }
+    return not_implemented_champ_<DoubleVect&>(__func__);
+  }
 
-  DoubleVect& valeur_a_elem(const DoubleVect&, DoubleVect&, int ) const override { return not_implemented_champ_<DoubleVect&>(__func__); }
+  double valeur_a_compo(const DoubleVect&, int ncomp) const override
+  {
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
+    return IS_UNIFORME ? valeurs_(0,ncomp) : not_implemented_champ_<double>(__func__);
+  }
 
-  double valeur_a_elem_compo(const DoubleVect&, int , int ) const override { return not_implemented_champ_<double>(__func__); }
+  DoubleVect& valeur_a_elem(const DoubleVect&, DoubleVect& tab_valeurs, int) const override
+  {
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
+    if (IS_UNIFORME)
+      {
+        for (int j = 0; j < nb_comp(); j++) tab_valeurs(j) = valeurs_(0, j);
+        return tab_valeurs;
+      }
 
-  DoubleVect& valeur_aux_compo(const DoubleTab&, DoubleVect&, int ) const override { return not_implemented_champ_<DoubleVect&>(__func__); }
+    return not_implemented_champ_<DoubleVect&>(__func__);
+  }
+
+  double valeur_a_elem_compo(const DoubleVect&, int, int ncomp) const override
+  {
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
+    return IS_UNIFORME ? valeurs_(0,ncomp) : not_implemented_champ_<double>(__func__);
+  }
+
+  DoubleTab& valeur_aux(const DoubleTab& , DoubleTab& tab_valeurs) const override
+  {
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
+    if (IS_UNIFORME)
+      {
+        for (int i = 0; i < tab_valeurs.dimension_tot(0); i++) // GF dimension_tot pour que la ligne soit valide pour les champs P1B
+          for (int j = 0; j < tab_valeurs.line_size(); j++)
+            tab_valeurs(i, j) = valeurs_(0, j);
+
+        return tab_valeurs;
+      }
+
+    return not_implemented_champ_<DoubleTab&>(__func__); // voir classes filles ...
+  }
+
+  DoubleVect& valeur_aux_compo(const DoubleTab&, DoubleVect& tab_valeurs, int ncomp) const override
+  {
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
+    if (IS_UNIFORME) return tab_valeurs = valeurs_(0, ncomp);
+
+    return not_implemented_champ_<DoubleVect&>(__func__); // BOOM
+  }
 
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect&, DoubleTab& tab_valeurs) const override
   {
-    return valeur_aux(positions, tab_valeurs);
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
+    if (IS_UNIFORME)
+      {
+        for (int i = 0; i < tab_valeurs.dimension(0); i++)
+          for (int j = 0; j < tab_valeurs.line_size(); j++)
+            tab_valeurs(i, j) = valeurs_(0, j);
+
+        return tab_valeurs;
+      }
+
+    return valeur_aux(positions, tab_valeurs); // from VTABLE
   }
 
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect&, DoubleVect& tab_valeurs, int ncomp) const override
   {
-    return valeur_aux_compo(positions, tab_valeurs, ncomp);
+    static constexpr bool IS_UNIFORME = (_TYPE_ == Champ_Divers_Type::UNIFORME);
+    if (IS_UNIFORME) return tab_valeurs = valeurs_(0, ncomp);
+
+    return valeur_aux_compo(positions, tab_valeurs, ncomp); // from VTABLE
   }
 };
 

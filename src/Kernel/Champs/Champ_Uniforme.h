@@ -23,54 +23,17 @@
 #ifndef Champ_Uniforme_included
 #define Champ_Uniforme_included
 
+#include <TRUSTChamp_Divers_generique.h>
 
-
-
-#include <Champ_Don_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
 // .DESCRIPTION
 //     classe Champ_Uniforme
 //     Represente un champ constant dans l'espace et dans le temps.
-// .SECTION voir aussi
-//     Champ_Don_base
-//////////////////////////////////////////////////////////////////////////////
-class Champ_Uniforme : public Champ_Don_base
+// .SECTION voir aussi : TRUSTChamp_Divers_generique
+class Champ_Uniforme : public TRUSTChamp_Divers_generique<Champ_Divers_Type::UNIFORME>
 {
-
   Declare_instanciable(Champ_Uniforme);
-
 public :
-
   Champ_base& affecter_(const Champ_base& ch) override;
-  DoubleVect& valeur_a(const DoubleVect& position,
-                       DoubleVect& valeurs) const override;
-
-
-  DoubleVect& valeur_a_elem(const DoubleVect& position,
-                            DoubleVect& valeurs,
-                            int le_poly) const override ;
-  double valeur_a_elem_compo(const DoubleVect& position,
-                             int le_poly,int ncomp) const override;
-
-  DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const override;
-
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override ;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override;
-
-  //OC:rajout 01/2005 valeur_a_compo
-  double valeur_a_compo(const DoubleVect& position,
-                        int ncomp) const override ;
 };
 
-#endif
-
+#endif /* Champ_Uniforme_included */
