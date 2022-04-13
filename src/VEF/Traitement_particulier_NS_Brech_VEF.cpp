@@ -291,9 +291,9 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
       l_inco = ref_cast(Champ_Inc_base, rch1.valeur()) ;
       const Champ_Inc_base& temp = l_inco.valeur();
 
-      DoubleTab temper_(taille);
-      DoubleTab rho_(taille) ;
-      DoubleTab cp_(taille) ;
+      DoubleTab temper_(taille,1);
+      DoubleTab rho_(taille,1) ;
+      DoubleTab cp_(taille,1) ;
       // Fin Modifs VB
       //
       double rad, teta ;
@@ -306,9 +306,9 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
       valeurs_.resize(taille,3);
 
       // Modifs VB pour prise en compte rho et calcul du flux enthalpique + Tmoy
-      rho_.resize(taille) ;
-      temper_.resize(taille);
-      cp_.resize(taille);
+      rho_.resize(taille,1) ;
+      temper_.resize(taille,1);
+      cp_.resize(taille,1);
       // Fin Modifs VB
 
       double a,b,c ;

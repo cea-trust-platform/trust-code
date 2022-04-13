@@ -295,7 +295,7 @@ Entree& TRUSTChamp_Morceaux_generique<_TYPE_>::complete_readOn(const int dim, co
   while (nom != Nom("}"))
     {
       REF (Sous_Zone) refssz = les_sous_zones.add(mon_domaine->ss_zone(nom));
-      Sous_Zone& ssz = refssz.valeur(                                                               );
+      Sous_Zone& ssz = refssz.valeur();
       for (k = 0; k < dim; k++)
         {
           Parser_U psr;
