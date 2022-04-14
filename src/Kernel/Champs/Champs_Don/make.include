@@ -1,0 +1,20 @@
+Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ICOCOAPI)/include\
+	-I$(TRUST_MEDCOUPLING_ROOT)/include\
+	-I$(TRUST_ROOT)/src/Kernel/Champs\
+	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
+	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
+	-I$(TRUST_ROOT)/src/Kernel/Framework\
+	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
+	-I$(TRUST_ROOT)/src/Kernel/ICoCo\
+	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
+	-I$(TRUST_ROOT)/src/Kernel/Math/SolvSys\
+	-I$(TRUST_ROOT)/src/Kernel/Math\
+	-I$(TRUST_ROOT)/src/Kernel/MEDimpl\
+	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
+	-I$(TRUST_ROOT)/src/Kernel/Statistiques_temps\
+	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	
+
+Lib = $(TRUST_LIB)/libchamp_don

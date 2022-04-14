@@ -15,6 +15,7 @@ void instancie_src_EF_Operateurs();
 void instancie_src_EF_Sources();
 void instancie_src_EF_Zones();
 void instancie_src_Kernel_Champs();
+void instancie_src_Kernel_Champs_Champs_Don();
 void instancie_src_Kernel_Champs_dis();
 void instancie_src_Kernel_Cond_Lim();
 void instancie_src_Kernel_Framework();

@@ -15,6 +15,7 @@ instancie_src_EF_Operateurs();
 instancie_src_EF_Sources();
 instancie_src_EF_Zones();
 instancie_src_Kernel_Champs();
+instancie_src_Kernel_Champs_Champs_Don();
 instancie_src_Kernel_Champs_dis();
 instancie_src_Kernel_Cond_Lim();
 instancie_src_Kernel_Framework();

@@ -4,6 +4,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/EF/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Geometrie/Interpolation_IBM\
 	-I$(TRUST_ROOT)/src/Kernel/Champs\
+	-I$(TRUST_ROOT)/src/Kernel/Champs/Champs_Don\
 	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
 	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
 	-I$(TRUST_ROOT)/src/Kernel/Framework\
