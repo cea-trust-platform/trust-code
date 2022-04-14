@@ -43,7 +43,7 @@ public:
 protected:
   double d_bulle_;
   Champ_Fonc diametres_;
-
+  int n_l = -1 ; // liquid phase
 };
 
 #endif

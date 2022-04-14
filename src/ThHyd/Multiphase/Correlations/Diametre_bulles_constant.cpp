@@ -51,8 +51,12 @@ Entree& Diametre_bulles_constant::readOn(Entree& is)
 
   champs_compris_.ajoute_champ(diametres_);
 
+  for (int n = 0; n < pb.nb_phases(); n++) //recherche de n_l, n_g : phase {liquide,gaz}_continu en priorite
+    if (pb.nom_phase(n).debute_par("liquide") && (n_l < 0 || pb.nom_phase(n).finit_par("continu")))  n_l = n;
+  if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
+
   DoubleTab& tab_diametres = diametres_->valeurs();
-  for (int i = 0 ; i < tab_diametres.dimension_tot(0) ; i++) for (int n = 1 ; n <N ; n++) tab_diametres(i, n) = d_bulle_;
+  for (int i = 0 ; i < tab_diametres.dimension_tot(0) ; i++) for (int n = 0 ; n <N ; n++) if (n!=n_l) tab_diametres(i, n) = d_bulle_;
 
   return is;
 }
