@@ -57,6 +57,7 @@ inline const _TYPE_& TRUSTTab<_TYPE_>::operator()(int i) const
   return TRUSTVect<_TYPE_>::operator[](i);
 }
 
+#pragma GCC diagnostic ignored "-Wstrict-overflow"
 template<typename _TYPE_>
 inline _TYPE_& TRUSTTab<_TYPE_>::operator()(int i1, int i2)
 {
