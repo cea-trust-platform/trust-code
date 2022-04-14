@@ -41,6 +41,7 @@ public:
   void ajouter(const double *alpha, const double *rho, DoubleTab& a_r) const override;
 protected:
   double beta = 0.5;
+  int n_l = -1; //liquid phase
 };
 
 #endif
