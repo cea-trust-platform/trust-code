@@ -30,9 +30,17 @@
 #include <Champ_Face_CoviMAC.h>
 #include <Ref_Champ_Fonc.h>
 
+//////////////////////////////////////////////////////////////////////////////
 //
-//.DESCRIPTION  class grad_Champ_Face_CoviMAC_TC for the calculation of the shear rate (taux de cisaillement)
+// .DESCRIPTION
+//    class Champ_Fonc_P0_CoviMAC_TC for the calculation of the shear rate (taux de cisaillement)
+//      This field is a Champ_Fonc_P0_CoviMAC with 1 value per element and per phase :
+//      Champ_Fonc_P0_CoviMAC_TC::valeurs()(e, n) returns the value of phase n in element e
+//      The shear rate is calculated using
+//        shear rate = sqrt(2*Sij*Sij)
+//        Sij = 1/2(grad(u)+t grad(u))
 //
+//////////////////////////////////////////////////////////////////////////////
 
 class Champ_Fonc_P0_CoviMAC_TC : public Champ_Fonc_P0_CoviMAC
 

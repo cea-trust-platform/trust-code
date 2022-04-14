@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,9 +98,11 @@ int Neumann_paroi_flux_nul::compatible_avec_eqn(const Equation_base& eqn) const
   Motcle V2                 ="Transport_V2";
   Motcle Diphasique         ="Diphasique_moyenne";
   Motcle Fraction_volumique ="Fraction_volumique";
+  Motcle Aire_interfaciale ="Aire_interfaciale";
   Motcle indetermine        ="indetermine";
 
-  if ( (dom_app==Concentration) || (dom_app==K_Eps) || (dom_app==K_Eps_Rea) || (dom_app==K_Eps_V2) || (dom_app==V2) || (dom_app==Diphasique) || (dom_app==indetermine) || (dom_app==Fraction_massique) || (dom_app==Fraction_volumique))
+  if ( (dom_app==Concentration) || (dom_app==K_Eps) || (dom_app==K_Eps_Rea) || (dom_app==K_Eps_V2) || (dom_app==V2) ||
+       (dom_app==Diphasique) || (dom_app==indetermine) || (dom_app==Fraction_massique) || (dom_app==Fraction_volumique) || (dom_app==Aire_interfaciale) )
     return 1;
   else
     {

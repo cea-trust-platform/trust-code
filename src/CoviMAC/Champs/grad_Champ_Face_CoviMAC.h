@@ -35,9 +35,24 @@
 #include <Ref_Champ_Fonc.h>
 
 
+//////////////////////////////////////////////////////////////////////////////
 //
-//.DESCRIPTION  classe grad_Champ_Face_CoviMAC
+// .DESCRIPTION
+//    class grad_Champ_Face_CoviMAC for the calculation of the gradient
+//      This field is a Champ_Fonc_Face_CoviMAC that calculates the gradient of a velocity field
+//      grad_u(f, n*D + dU) returns the gradient of the dU velocity component in the phase n at face f
+//      grad_u(nf_tot + e*D + dX, n*D + dU) returns the gradient of the dU velocity component in the phase n in element e along the dX component
+//        (i.e. = dU/dX)
+//      In 2D, the gradient at the element e in phase n is equal to :
+//                  |   grad_u(nf_tot + e*D + 0, n*D + 0)   grad_u(nf_tot + e*D + 1, n*D + 0)   |
+//        grad_u =  |                                                                           |
+//                  |   grad_u(nf_tot + e*D + 0, n*D + 1)   grad_u(nf_tot + e*D + 1, n*D + 1)   |
 //
+//      The gradient is calculated using past values of the velocity
+//        We compute the gradient at the faces for all velocity components,
+//          then interpolate it to obtain the gradient at the elements
+//
+//////////////////////////////////////////////////////////////////////////////
 
 class grad_Champ_Face_CoviMAC : public Champ_Fonc_Face_CoviMAC
 

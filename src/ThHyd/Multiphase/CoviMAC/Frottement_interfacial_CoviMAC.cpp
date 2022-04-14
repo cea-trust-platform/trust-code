@@ -91,10 +91,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
-
-  DoubleTab const * d_bulles = NULL ;
-  try { d_bulles = &equation().probleme().get_champ("diametre_bulles").valeurs();}
-  catch(Champs_compris_erreur) {  }
+  DoubleTab const * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL ;
 
   int e, f, c, i, j, k, l, n, N = inco.line_size(), Np = press.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot(),
                               cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), exp_res = 2;
@@ -157,7 +154,7 @@ void Frottement_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTa
                 sigma_l(n,k) = sat.sigma_(temp(e,n), press(e,n * (Np > 1)));
               }
         }
-      for (n=0; n<N; n++) d_bulles_l(n) += (d_bulles) ? (*d_bulles)(e,n) : 0;
+      for (n=0; n<N; n++) d_bulles_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
 
       for (k = 0; k < N; k++) for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
       correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh_e(e), dv, d_bulles_l, coeff);

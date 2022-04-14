@@ -195,6 +195,7 @@ public:
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
+  virtual bool has_champ(const Motcle& nom) const;
   /////////////////////////////////////////////////////
 
   //Pour acceder a un champ de la liste portee pas le postraitement.

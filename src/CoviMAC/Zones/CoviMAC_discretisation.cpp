@@ -386,7 +386,7 @@ void CoviMAC_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,con
         {
           ch_grad_u.fixer_nom_compo(dimension*n+0,Nom("dU_")+phase); // dU
           ch_grad_u.fixer_nom_compo(dimension*n+1,Nom("dV_")+phase); // dV
-          ch_grad_u.fixer_nom_compo(dimension*n+2,Nom("dX_")+phase); // dW
+          ch_grad_u.fixer_nom_compo(dimension*n+2,Nom("dW_")+phase); // dW
         }
     }
   ch_grad_u.fixer_nature_du_champ(multi_scalaire); // tensoriel pour etre precis

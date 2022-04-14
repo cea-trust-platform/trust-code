@@ -30,9 +30,16 @@
 #include <Champ_Face_CoviMAC.h>
 #include <Ref_Champ_Fonc.h>
 
+//////////////////////////////////////////////////////////////////////////////
 //
-//.DESCRIPTION  classe
+// .DESCRIPTION
+//    class Champ_Fonc_P0_CoviMAC_rot for the calculation of the vorticity
+//      This field is a Champ_Fonc_P0_CoviMAC with 1 value per element and per phase in 2D and 3 in 3D
+//      It isn't a Champ_Fonc_Face_CoviMAC as there is no physical justification to project the vorticity on a face
+//      In 3D, Champ_Fonc_P0_CoviMAC_TC::valeurs()(e, n*D + d) returns the value of phase n in element e along the d component
+//      The vorticity is calculated by hand in 2D and 3D using the values of the gradient
 //
+//////////////////////////////////////////////////////////////////////////////
 
 class Champ_Fonc_P0_CoviMAC_rot : public Champ_Fonc_P0_CoviMAC
 

@@ -292,6 +292,23 @@ void Pb_Multiphase::preparer_calcul()
   mettre_a_jour(temps);
 }
 
+bool Pb_Multiphase::has_champ(const Motcle& un_nom) const
+{
+  Champ_base const * champ = NULL ;
+
+  REF(Champ_base) ref_champ;
+  for (auto &&corr : correlations)
+    {
+      try
+        {
+          champ = &corr.second->get_champ(un_nom);
+        }
+      catch (Champs_compris_erreur)  {        }
+    }
+  if (champ) return true ;
+  return Probleme_base::has_champ(un_nom);
+}
+
 
 const Champ_base& Pb_Multiphase::get_champ(const Motcle& un_nom) const
 {

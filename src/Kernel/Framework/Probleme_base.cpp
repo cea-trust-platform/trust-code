@@ -1625,6 +1625,47 @@ void Probleme_base::creer_champ(const Motcle& motlu)
     }
 }
 
+bool Probleme_base::has_champ(const Motcle& un_nom) const
+{
+  Champ_base const * champ = NULL ;
+
+  int nb_eq = nombre_d_equations();
+  for (int i=0; i<nb_eq; i++)
+    {
+      try
+        {
+          champ = &equation(i).get_champ(un_nom);
+        }
+      catch (Champs_compris_erreur)
+        {
+        }
+      try
+        {
+          champ = &equation(i).milieu().get_champ(un_nom);
+        }
+      catch (Champs_compris_erreur)
+        {
+        }
+    }
+
+  CONST_LIST_CURSEUR(REF(Loi_Fermeture_base)) curseur = liste_loi_fermeture_;
+  while (curseur)
+    {
+      const Loi_Fermeture_base& loi=curseur.valeur().valeur();
+      try
+        {
+          champ = &loi.get_champ(un_nom);
+        }
+      catch(Champs_compris_erreur)
+        {
+        }
+      ++curseur;
+    }
+
+  if (champ) return true ;
+  return false;
+}
+
 const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
 {
   int nb_eq = nombre_d_equations();
