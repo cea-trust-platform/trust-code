@@ -1932,6 +1932,7 @@ then
       openmp="-fopenmp"
    fi
    CppFlags=$CppFlags" "$openmp
+   CppFlags=$CppFlags" -fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=gfx908 -fsave-loopmark "
    SYSLIBS=$SYSLIBS" "$openmp
 fi
 
