@@ -106,8 +106,18 @@ Entree& QDM_Multiphase::readOn(Entree& is)
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   if (!evanescence.non_nul() && pb.nb_phases() > 1)
     {
-      EChaine eva("{ homogene { alpha_res 1e-6 } }");
-      eva >> evanescence;
+      // Special treatment for Pb_HEM
+      // We enforce the evanescence to a specific value
+      if (sub_type(Pb_HEM, probleme()))
+        {
+          EChaine eva("{ homogene { alpha_res 1 alpha_res_min 0.5 } }");
+          eva >> evanescence;
+        }
+      else
+        {
+          EChaine eva("{ homogene { alpha_res 1e-6 } }");
+          eva >> evanescence;
+        }
     }
 
   /* champs de vitesse par phase pour le postpro */

@@ -4,7 +4,7 @@
  Acceleration_VDF_Face Terme_Source_Acceleration_VDF_Face Terme_Source_Acceleration_VDF_Face.h
  Acceleration_VEF_P1NC Terme_Source_Acceleration_VEF_Face Terme_Source_Acceleration_VEF_Face.h
  Acos Acos StdFunction.h
- Aire_interfaciale_Yao_Morel|Interfacial_area_Yao_Morel Aire_interfaciale_Yao_Morel Aire_interfaciale_Yao_Morel.h
+ Aire_interfaciale|Interfacial_area Aire_interfaciale Aire_interfaciale.h
  Analyse_Angle Analyse_Angle Analyse_Angle.h
  Aretes Aretes Aretes.h
  Array_base Array_base Array_base.h
@@ -774,6 +774,7 @@
  Pb_Conduction Pb_Conduction Pb_Conduction.h
  Pb_Dilatable_base Pb_Dilatable_base Pb_Dilatable_base.h
  Pb_Fluide_base Pb_Fluide_base Pb_Fluide_base.h
+ Pb_HEM Pb_HEM Pb_Multiphase.h
  Pb_Hydraulique Pb_Hydraulique Pb_Hydraulique.h
  Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration.h
  Pb_Hydraulique_Melange_Binaire_QC Pb_Hydraulique_Melange_Binaire_QC Pb_Hydraulique_Melange_Binaire_QC.h

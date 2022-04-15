@@ -101,6 +101,12 @@ protected:
   std::map<std::string, Correlation> correlations;
 };
 
+class Pb_HEM : public Pb_Multiphase
+{
+  Declare_instanciable(Pb_HEM);
 
+public:
+
+};
 
 #endif

@@ -62,6 +62,24 @@ Entree& Masse_Multiphase::readOn(Entree& is)
   terme_convectif.set_description((Nom)"Mass flow rate=Integral(-alpha*rho*u*ndS) [kg/s] if SI units used");
 
   champs_compris_.ajoute_champ(l_inco_ch);
+
+  // Special treatment for Pb_HEM
+  // We enforce the presence of a source term related to the
+  // interfacial flux automatically defined in the Pb_HEM class.
+  if (probleme().que_suis_je() == "Pb_HEM")
+    {
+      int check_source_FICC(0);
+      for (int ii = 0; ii < sources().size(); ii++)
+        if (sources()(ii).valeur().que_suis_je().debute_par("Flux_interfacial"))
+          check_source_FICC = 1;
+      if (check_source_FICC == 0)
+        {
+          EChaine source_FI("{ flux_interfacial }");
+          lire_sources(source_FI);
+        }
+    }
+  // End of Pb_HEM special treatment
+
   return is;
 }
 

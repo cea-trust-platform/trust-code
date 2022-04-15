@@ -99,6 +99,23 @@ Entree& Energie_Multiphase::readOn(Entree& is)
   //terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) "+unite);
   terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) [W] if SI units used");
 
+  // Special treatment for Pb_HEM
+  // We enforce the presence of a source term related to the
+  // interfacial flux automatically defined in the Pb_HEM class.
+  if (probleme().que_suis_je() == "Pb_HEM")
+    {
+      int check_source_FICC(0);
+      for (int ii = 0; ii < sources().size(); ii++)
+        if (sources()(ii).valeur().que_suis_je().debute_par("Flux_interfacial"))
+          check_source_FICC = 1;
+      if (check_source_FICC == 0)
+        {
+          EChaine source_FI("{ flux_interfacial }");
+          lire_sources(source_FI);
+        }
+    }
+  // End of Pb_HEM special treatment
+
   return is;
 }
 
