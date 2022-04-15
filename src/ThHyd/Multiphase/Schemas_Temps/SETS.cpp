@@ -327,9 +327,6 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       /* convergence? */
       cv = corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"], err_a_sum) < crit_conv["alpha"];
-      if (err_a_sum > crit_conv["alpha"])
-        Process::exit(que_suis_je() + ": pressure solver inaccuracy detected! The equation sum_k alpha_k = 1 is respected with a precision of "
-                      + Nom(err_a_sum) + " ,\nwhile the requested accuracy on alpha_k is " + Nom(crit_conv["alpha"]) + " . Please increase the accuracy of your pressure solver!");
       for (i = 0 ; i < pb.nombre_d_equations(); i++) if (pb.equation(i).positive_unkown()==1)
           {
             std::string nom_inco = pb.equation(i).inconnue().le_nom().getString() ;
@@ -340,7 +337,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       /* mises a jour : inconnues -> milieu -> champs/conserves -> sources */
       for (auto && n_i : inco) n_i.second->valeurs() += incr[n_i.first];
       if (p_degen) inco["pression"]->valeurs() -= mp_min_vect(inco["pression"]->valeurs()); // On prend la pression minimale comme pression de reference afin d'avoir la meme pression de reference en sequentiel et parallele
-      if (!(ok = eq_qdm.milieu().check_unknown_range())) break; //si on a depasse les bornes du milieu sur (p, T), on doit sortir
+      if (!(ok = err_a_sum < crit_conv["alpha"] && eq_qdm.milieu().check_unknown_range())) break; //si on a depasse les bornes du milieu sur (p, T) ou si on manque de precision, on doit sortir
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
     }
 
@@ -359,6 +356,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   else
     {
       for (auto && n_i : inco)  n_i.second->futur() = n_i.second->valeurs() = n_i.second->passe();
+      if (err_a_sum > crit_conv["alpha"])
+        Cerr << que_suis_je() + ": pressure solver inaccuracy detected (requested precision " << Nom(crit_conv["alpha"]) << " , achieved precision " << Nom(err_a_sum) + " )" << finl;
       ok = 0;
     }
   if (!Process::me()) tp.PrintFooter();
@@ -479,9 +478,7 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
       IntTrav piv(nb);
       for (i = 0; i < calc.size_array(); i++) if (calc[i])
           {
-            const int *deb = Ap[0]->get_tab2().addr() + Ap[0]->get_tab1()(off_g[0] + size[0] * i) - 1,
-                       *fin = Ap[0]->get_tab2().addr() + Ap[0]->get_tab1()(off_g[0] + size[0] * i + 1) - 1,
-                        ic = fin - deb, nc = ic + 1;
+            int deb = Ap[0]->get_tab1()(off_g[0] + size[0] * i) - 1, fin = Ap[0]->get_tab1()(off_g[0] + size[0] * i + 1) - 1, ic = fin - deb, nc = ic + 1, pos, col;
             S.resize(nc, nb), S = 0; //second membre : 5(i, .) -> dependance en la i-eme colonne du stencil des Ap du bloc, S(ic, .) -> partie constante
             //partie "second membre des equations"
             for (j = 0; j < nv; j++) for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++) S(ic, oMl + m) = vsec[j]->addr()[oMg + M * i + m];
@@ -496,23 +493,35 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
                           {
                             double coeff = mat[j][k]->get_coeff()(l);
                             S(ic, oMl + m) -= coeff * bp[k]->addr()[jb];
-                            for (lb = Ap[k]->get_tab1()(jb) - 1; lb < Ap[k]->get_tab1()(jb + 1) - 1; lb++)
-                              S(std::lower_bound(deb, fin, Ap[k]->get_tab2()(lb)) - deb, oMl + m) -= coeff * Ap[k]->get_coeff()(lb);
+                            for (lb = Ap[k]->get_tab1()(jb) - 1, pos = deb - 1; lb < Ap[k]->get_tab1()(jb + 1) - 1; lb++)
+                              {
+                                for (col = Ap[k]->get_tab2()(lb), pos++; Ap[0]->get_tab2()(pos) != col && pos < fin; ) pos++;
+                                assert(Ap[0]->get_tab2()(pos) == col);
+                                S(pos - deb, oMl + m) -= coeff * Ap[k]->get_coeff()(lb);
+                              }
                           }
                   }
 
             //partie "dependance directe en inco_p" -> dans S([0, ic[, .)
             for (j = 0; j < nv; j++) if (pmat[j]) for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
-                  for (k = pmat[j]->get_tab1()(oMg + M * i + m) - 1; k < pmat[j]->get_tab1()(oMg + M * i + m + 1) - 1; k++)
-                    S(std::lower_bound(deb, fin, pmat[j]->get_tab2()(k)) - deb, oMl + m) -= pmat[j]->get_coeff()(k);
+                  for (k = pmat[j]->get_tab1()(oMg + M * i + m) - 1, pos = deb - 1; k < pmat[j]->get_tab1()(oMg + M * i + m + 1) - 1; k++)
+                    {
+                      for (col = pmat[j]->get_tab2()(k), pos++; Ap[0]->get_tab2()(pos) != col && pos < fin; ) pos++;
+                      assert(Ap[0]->get_tab2()(pos) == col);
+                      S(pos - deb, oMl + m) -= pmat[j]->get_coeff()(k);
+                    }
             //partie "dependance en une variable hors bloc eliminee" -> b_p contribue a S(0, .), A_p contribue a S(1..nc, .)
             for (j = 0; j < nv; j++) for (k = 0; k < nd; k++) if (dmat[j][k]) for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
                     for (l = dmat[j][k]->get_tab1()(oMg + M * i + m) - 1; l < dmat[j][k]->get_tab1()(oMg + M * i + m + 1) - 1; l++)
                       {
                         double coeff = dmat[j][k]->get_coeff()(l);
                         jb = dmat[j][k]->get_tab2()(l) - 1, S(ic, oMl + m) -= coeff * dbp[k]->addr()[jb]; //partie "constante"
-                        for (lb = dAp[k]->get_tab1()(jb) - 1; lb < dAp[k]->get_tab1()(jb + 1) - 1; lb++) //partie "dependance en inco_p"
-                          S(std::lower_bound(deb, fin, dAp[k]->get_tab2()(lb)) - deb, oMl + m) -= coeff * dAp[k]->get_coeff()(lb);
+                        for (lb = dAp[k]->get_tab1()(jb) - 1, pos = deb - 1; lb < dAp[k]->get_tab1()(jb + 1) - 1; lb++) //partie "dependance en inco_p"
+                          {
+                            for (col = dAp[k]->get_tab2()(lb), pos++; Ap[0]->get_tab2()(pos) != col && pos < fin; ) pos++;
+                            assert(Ap[0]->get_tab2()(pos) == col);
+                            S(pos - deb, oMl + m) -= coeff * dAp[k]->get_coeff()(lb);
+                          }
                       }
 
             /* factorisation et resolution */
@@ -534,8 +543,7 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
                      const std::map<std::string, matrices_t>& mats, const tabs_t& sec, Matrice_Morse& P, DoubleTab& secmem, int p_degen)
 {
   secmem = sec.at(inco_p);
-  int i, ib, j, k, l, np = secmem.dimension_tot(0), m, M = secmem.line_size();
-  const int *deb, *fin; //bornes pour chercher des indices avec lower_bound()
+  int i, ib, j, k, l, np = secmem.dimension_tot(0), m, M = secmem.line_size(), deb, fin, pos, col;
 
   /* calc(i) = 1 si on doit remplir les lignes [N * i, (N + 1) * i[ de la matrice */
   ArrOfBit calc(np);
@@ -566,8 +574,15 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
         const Matrice_Morse& Mp = *n_m.second, &Ap = A_p.at(n_m.first);
         const DoubleTab& bp = b_p.at(n_m.first);
         for (i = 0; i < np; i++) if (calc[i]) for (ib = M * i, m = 0; m < M; m++, ib++)
-              for (deb = P.get_tab2().addr() + P.get_tab1()(ib) - 1, fin = P.get_tab2().addr() + P.get_tab1()(ib + 1) - 1, j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
-                for (k = Mp.get_tab2()(j) - 1, secmem(i, m) -= Mp.get_coeff()(j) * bp.addr()[k], l = Ap.get_tab1()(k) - 1; l < Ap.get_tab1()(k + 1) - 1; l++)
-                  P.get_set_coeff()(std::lower_bound(deb, fin, Ap.get_tab2()(l)) - P.get_tab2().addr()) += Mp.get_coeff()(j) * Ap.get_coeff()(l);
+              for (deb = P.get_tab1()(ib) - 1, fin = P.get_tab1()(ib + 1) - 1, j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
+                for (k = Mp.get_tab2()(j) - 1, secmem(i, m) -= Mp.get_coeff()(j) * bp.addr()[k], l = Ap.get_tab1()(k) - 1, pos = deb - 1; l < Ap.get_tab1()(k + 1) - 1; l++)
+                  {
+                    for (col = Ap.get_tab2()(l), pos++; P.get_tab2()(pos) != col && pos < fin; ) pos++;
+                    assert(P.get_tab2()(pos) == col);
+                    P.get_set_coeff()(pos) += Mp.get_coeff()(j) * Ap.get_coeff()(l);
+                  }
+
       }
+  double diag = P.get_coeff()(0);
+  if (p_degen && !Process::me()) for (i = 0; i < P.get_tab1()(1) - 1; i++) P.get_set_coeff()(i) += diag; //de-degeneration de la matrice
 }
