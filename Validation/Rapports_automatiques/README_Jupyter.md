@@ -6,7 +6,7 @@ in the coming versions of TRUST.
 
 A first example (and good starting point) can be found in 
 ```sh
-        SampleFormJupyter/SampleFormJupyter.ipynb
+        $TRUST_ROOT/Validation/Rapports_automatiques/Verification/SampleFormJupyter/SampleFormJupyter.ipynb
 ```
 
 To run a Jupyter validation forms, you need a specific environment:

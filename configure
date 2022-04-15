@@ -639,6 +639,10 @@ source ./env_TRUST.sh 1>/dev/null 2>&1
 if [ "$TRUST_WITHOUT_DOC" != 1 ] && [ "$TRUST_WITHOUT_PDFLATEX" != 1 ]
 then
    texerror=0
+   if [ "`eval xelatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
+   then
+      echo "xelatex is missing... it is needed if you want to build pdf reports from Jupyter notebook format." >> NON_INSTALLED
+   fi
    if [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
       echo "pdflatex is missing..." >> NON_INSTALLED
