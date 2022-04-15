@@ -97,8 +97,8 @@
    fun:PCSetUp
    fun:KSPSetUp
    fun:_ZN10Solv_Petsc14Create_objectsERK13Matrice_Morse*
-   fun:_ZN10Solv_Petsc16resoudre_systemeERK12Matrice_BaseRK10DoubleVectRS3_
-   fun:_ZN10SolveurSys16resoudre_systemeERK12Matrice_BaseRK10DoubleVectRS3_
+   fun:_ZN10Solv_Petsc16resoudre_systemeERK12Matrice_BaseRK9TRUSTVectIdERS4_
+   fun:_ZN10SolveurSys16resoudre_systemeERK12Matrice_BaseRK9TRUSTVectIdERS4_
    ...
 }
 
