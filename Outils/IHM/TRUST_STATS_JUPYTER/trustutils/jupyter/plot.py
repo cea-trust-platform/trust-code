@@ -370,7 +370,7 @@ class Graph:
         ## On ajoute des titres
         self.subplot.set(xlabel=self.x_label, ylabel=self.y_label)
 
-    def addSegment(self, data, value=None, marker="-", label="", compo=0, func=None, **kwargs):
+    def addSegment(self, data, value=None, marker="-", label="", compo=0, func=None, funcX=None, **kwargs):
         """
 
         Methode to add a curve to the plot from a segment sonde.
@@ -424,6 +424,7 @@ class Graph:
             idx = (np.abs(t - value)).argmin()
 
         X = donne.getXAxis()
+        if funcX is not None: X = funcX(X)
 
         Y = []
         for i in entries[compo::ncompo]:
