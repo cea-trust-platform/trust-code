@@ -23,51 +23,11 @@
 #ifndef Champ_som_lu_VDF_included
 #define Champ_som_lu_VDF_included
 
-#include <Champ_Don_base.h>
-#include <Ref_Domaine.h>
-#include <Motcle.h>
 #include <Champ_som_lu.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Champ_som_lu_VDF
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Champ_som_lu_VDF : public Champ_som_lu
+class Champ_som_lu_VDF: public Champ_som_lu
 {
   Declare_instanciable(Champ_som_lu_VDF);
-public :
-  Champ_base& affecter(const Champ_base& ch);
-  DoubleVect& valeur_a(const DoubleVect& positions,
-                       DoubleTab& valeurs) const;
-  DoubleVect& valeur_a(const DoubleVect& positions,
-                       DoubleVect& valeurs) const override;
-  DoubleVect& valeur_a(const DoubleVect& positions,
-                       DoubleVect& valeurs,
-                       int ncomp) const ;
-  DoubleVect& valeur_a(const DoubleVect& positions,
-                       DoubleVect& valeurs,
-                       int le_poly,int ncomp) const;
-
-  DoubleTab& valeur_aux(const DoubleTab& positions,
-                        DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions,
-                               DoubleVect& valeurs, int ncomp) const override;
-
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions,
-                              const IntVect& les_polys,
-                              DoubleTab& valeurs) const override ;
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions,
-                                     const IntVect& les_polys,
-                                     DoubleVect& valeurs,
-                                     int ncomp) const override;
-protected :
 };
 
-//
-// Methodes inline :
-//
-
-
-#endif
+#endif /* Champ_som_lu_VDF_included */

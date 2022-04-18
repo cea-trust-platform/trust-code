@@ -15,6 +15,7 @@
 #include <Champ_Uniforme.h>
 #include <Champ_Uniforme_Morceaux.h>
 #include <Champ_Uniforme_Morceaux_Tabule_Temps.h>
+#include <Champ_som_lu.h>
 #include <Init_par_partie.h>
 #include <Tayl_Green.h>
 #include <champ_init_canal_sinal.h>
@@ -32,7 +33,8 @@ Champ_Tabule_Temps inst9;verifie_pere(inst9);
 Champ_Uniforme inst10;verifie_pere(inst10);
 Champ_Uniforme_Morceaux inst11;verifie_pere(inst11);
 Champ_Uniforme_Morceaux_Tabule_Temps inst12;verifie_pere(inst12);
-Init_par_partie inst13;verifie_pere(inst13);
-Tayl_Green inst14;verifie_pere(inst14);
-champ_init_canal_sinal inst15;verifie_pere(inst15);
+Champ_som_lu inst13;verifie_pere(inst13);
+Init_par_partie inst14;verifie_pere(inst14);
+Tayl_Green inst15;verifie_pere(inst15);
+champ_init_canal_sinal inst16;verifie_pere(inst16);
 }

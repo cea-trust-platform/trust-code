@@ -27,12 +27,6 @@
 #include <Ref_Domaine.h>
 #include <Motcle.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Champ_som_lu
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Champ_som_lu : public Champ_Don_base
 {
   Declare_instanciable(Champ_som_lu);
@@ -40,15 +34,16 @@ public:
   Champ_base& affecter(const Champ_base& ch);
   DoubleVect& valeur_a(const DoubleVect& positions, DoubleTab& valeurs) const;
   DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& valeurs) const override;
-  DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& valeurs, int ncomp) const ;
-  DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& valeurs, int le_poly,int ncomp) const;
-  DoubleTab&   valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
+  DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& valeurs, int ncomp) const;
+  DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& valeurs, int le_poly, int ncomp) const;
+  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override;
-  DoubleTab&   valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override ;
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
+
 protected:
   REF(Domaine) mon_domaine;
-  double tolerance_;
+  double tolerance_ = 1.e-6;
 };
 
-#endif
+#endif /* Champ_som_lu_included */

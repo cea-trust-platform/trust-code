@@ -23,35 +23,24 @@
 #ifndef Champ_som_lu_VEF_included
 #define Champ_som_lu_VEF_included
 
-#include <TRUSTTabs_forward.h>
-#include <Champ_Don_base.h>
 #include <Champ_som_lu.h>
-#include <Ref_Domaine.h>
-#include <Motcle.h>
 
 class Champ_som_lu_VEF: public Champ_som_lu
 {
   Declare_instanciable(Champ_som_lu_VEF);
 public:
   Champ_base& affecter(const Champ_base& ch);
-  DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override;
   DoubleVect& valeur_a_compo(const DoubleVect& position, DoubleVect& valeurs, int ncomp) const;
   DoubleVect& valeur_a_elem_compo(const DoubleVect& position, DoubleVect& valeurs, int le_poly, int ncomp) const;
   double valeur_a_compo(const DoubleVect& position, int ncomp) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override;
-  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override;
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override;
 
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
-protected:
 };
 
-//
-// Methodes inline :
-//
 
 double coord_barycentrique3D(const IntTab& polys, const DoubleTab& coord, double x, double y, double z, int le_poly, int i);
 double coord_barycentrique2D(const IntTab& polys, const DoubleTab& coord, double x, double y, int le_poly, int i);
 
-#endif
+#endif /* Champ_som_lu_VEF_included */
