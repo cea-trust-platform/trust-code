@@ -612,13 +612,13 @@ void Mod_turb_hyd_base::a_faire(Sortie& os) const
 
 void Mod_turb_hyd_base::limiter_viscosite_turbulente()
 {
-  // On initialise
+  // On initial
   int size = viscosite_turbulente().valeurs().size();
   DoubleTab& visco_turb = la_viscosite_turbulente.valeurs();
   if (borne_visco_turb.size()==0)
     borne_visco_turb=visco_turb; //.resize(size);
   borne_visco_turb = XNUTM;
-  if (calcul_borne_locale_visco_turb_ && equation().schema_temps().nb_pas_dt() != 0)
+  if (calcul_borne_locale_visco_turb_ && (equation().schema_temps().nb_pas_dt() != 0 || equation().probleme().reprise_effectuee()))
     {
       // On recalcule les bornes de la viscosite turbulente apres le premier pas de temps
       const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base,equation().operateur(0).l_op_base());
