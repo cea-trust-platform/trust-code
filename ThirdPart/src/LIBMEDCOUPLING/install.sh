@@ -71,7 +71,7 @@ fi
 if [[ $USE_PYTHON == ON && $(uname -s) == "Darwin" ]]
 then
 	export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python3.8"
-	export LDFLAGS="$LDFLAGS -L${TRUST_ROOT}/exec/python/lib -lpython3.8 -Wl,-rpath,${TRUST_MED_ROOT}/lib"
+        export LDFLAGS="$LDFLAGS -Wl,-undefined,dynamic_lookup"
 fi
 # Patch for MacOS
 [ `uname -s` = "Darwin" ] && (cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/medcoupling_9.8.0_mac.diff)
