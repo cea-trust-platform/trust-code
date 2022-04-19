@@ -612,7 +612,9 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
     {
       const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
 
-      if ( sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante,la_cl.valeur()) )
+      if ( sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) ||
+           sub_type(Dirichlet_paroi_defilante,la_cl.valeur()) ||
+           la_cl.valeur().que_suis_je() == "Entree_fluide_vitesse_imposee_ALE")
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           ndeb = le_bord.num_premiere_face();
@@ -1018,7 +1020,8 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
       int nfin = ndeb + la_front_dis.nb_faces();
 
       if (sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) ||
-          sub_type(Dirichlet_paroi_defilante,la_cl.valeur()))
+          sub_type(Dirichlet_paroi_defilante,la_cl.valeur()) ||
+          la_cl.valeur().que_suis_je() == "Entree_fluide_vitesse_imposee_ALE")
         {
 
           for (fac=ndeb; fac<nfin ; fac++)
