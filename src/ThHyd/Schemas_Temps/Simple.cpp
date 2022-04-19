@@ -365,8 +365,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
     }
 
-  bool turbulence_hyd = eqn.que_suis_je().finit_par("_Turbulent") || eqn.que_suis_je().debute_par("Transport_K");
-  if (ok && eqn.has_interface_blocs() && !turbulence_hyd) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
+  if(ok && eqn.discretisation().que_suis_je().finit_par("MAC")) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
   solveur->reinit();
   return (ok && converge==1);
 }

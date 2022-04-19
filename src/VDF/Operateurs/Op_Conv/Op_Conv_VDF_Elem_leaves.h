@@ -27,6 +27,7 @@
 #include <Eval_Conv_VDF_Elem_leaves.h>
 #include <Op_Conv_VDF.h>
 #include <ItVDFEl.h>
+#include <Nom.h>
 
 /// \cond DO_NOT_DOCUMENT
 class Op_Conv_VDF_Elem_leaves
@@ -51,8 +52,12 @@ public:
 
   inline void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override
   {
+    const std::string& nom_inco = equation().inconnue().le_nom().getString();
     for (auto &&i_m : mats)
       {
+        std::string prefix = nom_inco + "_" ;
+        // pour la thermique monolithique: on traite uniquement notre inconnue
+        if(Nom(i_m.first.c_str()).debute_par(prefix.c_str())) continue;
         Matrice_Morse mat;
         if (i_m.first == "vitesse") dimensionner_bloc_vitesse_elem(mat);
         else dimensionner_elem(mat);

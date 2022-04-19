@@ -1,4 +1,5 @@
 Version	Qui				Tache
+1.8.5   anida.khizar@cea.fr     coder la resolution en increment dans le solveur_masse
 1.8.5   trust@cea.fr            mise a jour other baltik tutorial avec 184
 1.8.5   julie.darona@cea.fr     Ajouter methode install TrioCFD depuis FTP du mail dans README.md de TrioCFD
 1.8.5   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC
