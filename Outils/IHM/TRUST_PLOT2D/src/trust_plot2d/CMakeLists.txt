@@ -5,7 +5,6 @@ SALOME_CONFIGURE_FILE(utils.py.in ${CMAKE_CURRENT_BINARY_DIR}/utils.py)
 SET(_lib_SCRIPTS
     __init__.py
     FileManager.py
-#    TrustFiles.py
     DynamicDesktop.py
     DirScanWidget.py
     MenuTRUSTWidget.py
