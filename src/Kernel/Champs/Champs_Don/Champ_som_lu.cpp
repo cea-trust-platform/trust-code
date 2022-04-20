@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // File:        Champ_som_lu.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Champs_dis
+// Directory:   $TRUST_ROOT/src/Kernel/Champs/Champs_Don
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -23,73 +23,25 @@
 #include <Champ_implementation_P1.h>
 #include <LecFicDiffuse.h>
 #include <Champ_som_lu.h>
-#include <Domaine.h>
 
-Implemente_instanciable(Champ_som_lu,"Champ_som_lu",Champ_Don_base);
+Implemente_instanciable(Champ_som_lu,"Champ_som_lu",TRUSTChamp_Don_generique<Champ_Don_Type::LU>);
 
 Sortie& Champ_som_lu::printOn(Sortie& os) const { return not_implemented_champ_<Sortie&>(__func__); }
 
 Entree& Champ_som_lu::readOn(Entree& is)
 {
   int nbcomp;
+  double tolerance;
   Nom nom;
   is >> nom;
-  const Domaine& dom = ref_cast(Domaine, Interprete::objet(nom));
+  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
   is >> nbcomp; // nombre de composantes du champ
-  is >> tolerance_; // tolerance en metres pour la recherche des coordonnees
+  is >> tolerance; // tolerance en metres pour la recherche des coordonnees
   is >> nom; // nom du fichier a lire
-  mon_domaine = dom;
   LecFicDiffuse file(nom);
   fixer_nb_comp(nbcomp);
-  Champ_implementation_P1::init_from_file(valeurs_, dom, nbcomp, tolerance_, file);
+  Champ_implementation_P1::init_from_file(valeurs_, mon_domaine.valeur(), nbcomp, tolerance, file);
   return is;
-}
-
-Champ_base& Champ_som_lu::affecter(const Champ_base& ch)
-{
-  Champ_base::affecter_erreur();
-  return *this;
-}
-
-DoubleVect& Champ_som_lu::valeur_a(const DoubleVect& positions, DoubleTab& tab_valeurs) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect le_poly(1);
-  la_zone.chercher_elements(positions, le_poly);
-  DoubleTab positions2;
-  positions2 = positions;
-  return valeur_aux_elems(positions2, le_poly[0], tab_valeurs);
-}
-
-DoubleVect& Champ_som_lu::valeur_a(const DoubleVect& positions, DoubleVect& tab_valeurs) const
-{
-  return not_implemented_champ_<DoubleVect&>(__func__);
-}
-
-DoubleVect& Champ_som_lu::valeur_a(const DoubleVect& positions, DoubleVect& val, int ncomp) const
-{
-  return not_implemented_champ_<DoubleVect&>(__func__);
-}
-
-DoubleVect& Champ_som_lu::valeur_a(const DoubleVect& positions, DoubleVect& tab_valeurs, int le_poly, int ncomp) const
-{
-  return not_implemented_champ_<DoubleVect&>(__func__);
-}
-
-DoubleTab& Champ_som_lu::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect les_polys(la_zone.nb_elem());
-  la_zone.chercher_elements(positions, les_polys);
-  return valeur_aux_elems(positions, les_polys, tab_valeurs);
-}
-
-DoubleVect& Champ_som_lu::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
-{
-  const Zone& la_zone = mon_domaine->zone(0);
-  IntVect les_polys(la_zone.nb_elem());
-  la_zone.chercher_elements(positions, les_polys);
-  return valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
 }
 
 DoubleTab& Champ_som_lu::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const

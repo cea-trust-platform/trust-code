@@ -208,7 +208,7 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val
   const Zone& la_zone = mon_domaine->zone(0);
   IntVect les_polys(la_zone.nb_elem());
   la_zone.chercher_elements(x,les_polys);
-  return valeur_aux_elems(x,les_polys,val);
+  return valeur_aux_elems(x,les_polys,val); // VTABLE pour Champ_som_lu
 }
 
 // Description:
@@ -235,7 +235,7 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo_(const DoubleTab& x, DoubleVe
   const Zone& la_zone = mon_domaine->zone(0);
   IntVect les_polys(la_zone.nb_elem());
   la_zone.chercher_elements(x,les_polys);
-  return valeur_aux_elems_compo(x,les_polys,val,ncomp);
+  return valeur_aux_elems_compo(x,les_polys,val,ncomp); // VTABLE pour Champ_som_lu
 }
 
 // Description:
