@@ -30,6 +30,7 @@
 #include <Changement_phase_base.h>
 #include <Milieu_composite.h>
 #include <Op_Diff_CoviMAC_Elem.h>
+#include <Aire_interfaciale_Yao_Morel.h>
 
 Implemente_instanciable(Flux_interfacial_CoviMAC,"Flux_interfacial_P0_CoviMAC", Source_base);
 
@@ -87,8 +88,10 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const Zone_CoviMAC& zone = ref_cast(Zone_CoviMAC, equation().zone_dis().valeur());
   const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();
   const tabs_t& der_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees();
+  const Champ_base& ch_rho = milc.masse_volumique();
   const Champ_Inc_base& ch_alpha = pbm.eq_masse.inconnue().valeur(), &ch_a_r = pbm.eq_masse.champ_conserve(), &ch_vit = pbm.eq_qdm.inconnue().valeur(),
-                        &ch_temp = pbm.eq_energie.inconnue().valeur(), &ch_p = pbm.eq_qdm.pression().valeur();
+                        &ch_temp = pbm.eq_energie.inconnue().valeur(), &ch_p = pbm.eq_qdm.pression().valeur(),
+                         *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : NULL;
   const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &pvit = ch_vit.passe(),
                    &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL,
                     &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
@@ -96,12 +99,14 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                       *q_pi = sub_type(Op_Diff_CoviMAC_Elem, pbm.eq_energie.operateur(0).l_op_base()) ? &ref_cast(Op_Diff_CoviMAC_Elem, pbm.eq_energie.operateur(0).l_op_base()).q_pi() : NULL;
   Matrice_Morse *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
                  *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL,
-                  *Ma = matrices.count("alpha") ? matrices.at("alpha") : NULL;
+                  *Ma = matrices.count("alpha") ? matrices.at("alpha") : NULL,
+                   *Mai = matrices.count("interfacialarea") ? matrices.at("interfacialarea") : NULL;
+
   int i, j, col, e, d, D = dimension, k, l, n, N = inco.line_size(), nf_tot = zone.nb_faces_tot(),
                        cL = lambda.dimension_tot(0) == 1, cM = mu.dimension_tot(0) == 1, cR = rho.dimension_tot(0) == 1, cCp = Cp.dimension_tot(0) == 1, is_therm;
   const Flux_interfacial_base& correlation_fi = ref_cast(Flux_interfacial_base, correlation_.valeur().valeur());
   const Changement_phase_base *correlation_G = pbm.has_correlation("changement_phase") ? &ref_cast(Changement_phase_base, pbm.get_correlation("changement_phase").valeur()) : NULL;
-  double dt = equation().schema_temps().pas_de_temps();
+  double dt = equation().schema_temps().pas_de_temps(), alpha_min = 1.e-6;
 
   /* limiteur de changement de phase : on limite gamma pour eviter d'avoir alpha_k < 0 dans une phase */
   /* pour cela, on assemble l'equation de masse sans changement de phase */
@@ -139,7 +144,8 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
       correlation_fi.coeffs(dh, &alpha(e, 0), &temp(e, 0), press(e, 0), &nv(0),
                             &lambda(!cL * e, 0), &mu(!cM * e, 0), &rho(!cR * e, 0), &Cp(!cCp * e, 0), hi, dT_hi, da_hi, dP_hi);
 
-      for (k = 0; k < N; k++) for (l = k + 1; l < N; l++) if (milc.has_saturation(k, l)) //flux phase k <-> phase l si saturation
+      for (k = 0; k < N; k++) for (l = k + 1; l < N; l++)
+          if (milc.has_saturation(k, l)) //flux phase k <-> phase l si saturation
             {
               Saturation_base& sat = milc.get_saturation(k, l);
               if (correlation_G) /* taux de changement de phase par une correlation */
@@ -203,6 +209,44 @@ void Flux_interfacial_CoviMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                         for (col = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
                           (*s_d[1])(N * e + (i ? l : k), col) += (i ? -1 : 1) * hc * sgn * x;
                 }
+              if (sub_type(Aire_interfaciale_Yao_Morel, equation())) //eq d'aire interfaciale ; looks like the mass equation ; not a conservation equation !
+                if (k==0) // k est la phase porteuse
+                  if (alpha(e, l) > alpha_min) // if the phase l is present
+                    {
+                      secmem(e, l) += vol * 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * G ;
+                      if (n_lim < 0) /* G par limite thermique */
+                        {
+                          if (Ma)   //derivees en alpha
+                            {
+                              (*Ma)(N * e + l , N * e + l) -= vol * 2./3. * inco(e, l) / (-alpha(e, l)*alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * G;
+                              for (n = 0; n < N; n++) (*Ma)(N * e + l , N * e + n) -=
+                                  vol * 2./3. * inco(e, l) / (alpha(e, l)              * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * da_G(n);
+                            }
+                          if (Mt)   //derivees en T
+                            {
+                              if (pch_rho) (*Mt)(N * e + l , N * e + l) -=
+                                  vol * 2./3. * inco(e, l) / alpha(e, l)*-pch_rho->derivees().at("temperature")(e, l)/((*pch_rho).valeurs()(e, l)*(*pch_rho).valeurs()(e, l)) * G;
+                              for (n = 0; n < N; n++) (*Mt)(N * e + l , N * e + n) -=
+                                  vol * 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * dT_G(n);
+                            }
+                          if (Mp)  //derivees en p
+                            {
+                              if (pch_rho) (*Mp)(N * e + l , e) -=
+                                  vol * 2./3. * inco(e, l) / alpha(e, l)*-pch_rho->derivees().at("pression")(e, l)/((*pch_rho).valeurs()(e, l)*(*pch_rho).valeurs()(e, l)) * G;
+                              for (n = 0; n < N; n++) (*Mp)(N * e + l , N * e + n) -=
+                                  vol * 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * dP_G;
+                            }
+                          if (Mai) //derivees en ai
+                            {
+                              (*Mai)(N * e + l , N * e + l) -= vol * 2./3. / (alpha(e, l)* (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * G;
+                            } // dAi_G a ajouter
+                        }
+                      else for (auto &s_d : vec_m) /* G par evanescence */
+                          for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)
+                            for (col = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
+                              (*s_d[1])(N * e + l , col) -= 2./3. * inco(e, l) / (alpha(e, l) * (pch_rho ? (*pch_rho).valeurs()(e, l) : rho(e, l))) * sgn * x;
+                    }
+
             }
           else if (sub_type(Energie_Multiphase, equation())) /* pas de saturation : echanges d'energie seulement */
             {
