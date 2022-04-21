@@ -66,7 +66,7 @@ void Constituant_Avec_Vitesse::mettre_a_jour(double temps)
   vitesse_transport.changer_temps(temps);
 }
 
-int Constituant_Avec_Vitesse::initialiser(const double& temps)
+int Constituant_Avec_Vitesse::initialiser(const double temps)
 {
   Constituant::initialiser(temps);
   if (C.non_nul())
