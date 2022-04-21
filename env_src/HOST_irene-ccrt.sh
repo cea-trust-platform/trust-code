@@ -33,7 +33,8 @@ define_modules_config()
       intel="intel/18.0.3.222" 
       romio_hints="feature/openmpi/io/collective_buffering"
       mpi="mpi/intelmpi/2018.0.3.222"       # 1.8.2
-      mpi="mpi/openmpi/2.0.4 $romio_hints"  # 1.8.3 (car crash intelmpi sur grands nbrs de procs)
+      #mpi="mpi/openmpi/2.0.4 $romio_hints"  # 1.8.3 (car crash intelmpi sur grands nbrs de procs)
+      mpi="$romio_hints mpi/openmpi/2.0.4" # suite maintenance 1.8.5b charger openmpi en dernier
       module="$intel $mpi"
    fi
    #
