@@ -318,15 +318,19 @@ def chaine2File(titi):
     #print "lll" ,titi2
     return titi2
 def read_value_in_file(value,file):
+    """
+        retro-compatible python 2.6 .. 3.10
+
+        https://stackoverflow.com/questions/1463306/how-does-exec-work-with-locals
+        https://docs.python.org/2.7/reference/simple_stmts.html#exec
+    """
     import os,sys
-    # print dir(sys.path)
     sys.path.append(".")
     if not(os.path.exists(file+".py")):
         raise Exception("No such file or directory: '"+file+".py'")
-    exec("from "+file+" import "+value)
-
-    exec("res="+value)
-
+    ldict = {}
+    exec("from "+file+" import "+value, {}, ldict)
+    res = ldict[value]
     return str(res)
 def replace_value_in_file(chaine):
     separateur_debut='read_value_in_file('
