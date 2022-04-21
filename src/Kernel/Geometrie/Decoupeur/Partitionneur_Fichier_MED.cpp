@@ -115,7 +115,7 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
     Process::exit("The initialized field is not composed of integers ");
 
   DataArrayInt32 *da = field->getArray();
-  const int *field_values = da->begin();
+  const True_int *field_values = da->begin();
 
   const mcIdType sz = field->getNumberOfTuplesExpected();
   elem_part.resize(sz);

@@ -1,11 +1,11 @@
-import MEDLoader as ml
+import medcoupling as ml
 import numpy as np
 
 ### Generate MED mesh #####
 
-xarr = ml.DataArrayDouble.New(11,1)
+xarr = ml.DataArrayDouble(11,1)
 xarr.iota(0.)
-cmesh = ml.MEDCouplingCMesh.New()
+cmesh = ml.MEDCouplingCMesh()
 cmesh.setCoords(xarr,xarr,xarr)
 mesh = cmesh.buildUnstructured()
 mesh.setName("mesh")
@@ -47,14 +47,14 @@ mfu.write("mesh.med", 2) # 2 stands for write from scratch
 # Add Partitionnement
 meshRead = ml.ReadUMeshFromFile("mesh.med","mesh",0)
 
-arr2 = ml.DataArrayInt(meshRead.getNumberOfCells())
+arr2 = ml.DataArrayInt32(meshRead.getNumberOfCells())
 
 arr2[0:250] = 0
 arr2[250:500] = 1
 arr2[500:750] = 2
 arr2[750:1000] = 3
 
-f = ml.MEDCouplingFieldInt.New(ml.ON_CELLS, ml.ONE_TIME)
+f = ml.MEDCouplingFieldInt32(ml.ON_CELLS, ml.ONE_TIME)
 f.setArray(arr2)
 f.setMesh(meshRead)
 f.setName("Thread")
