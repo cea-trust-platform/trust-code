@@ -88,8 +88,6 @@ def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", 
     except:
         matrix = np.loadtxt(data, dtype=dtype, skiprows=skiprows)
 
-    os.chdir(origin)
-
     saveFileAccumulator(data)
     return matrix
 

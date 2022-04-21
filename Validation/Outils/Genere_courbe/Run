@@ -2,7 +2,7 @@
 # Script principal pour la generation d'un rapport automatique.
 # Utilisation:
 #  1) On suppose que le repertoire courant contient repertoire ./src
-#  2) Run ./src/fichier.prm [ -dest dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -aprallel_run ] [ -nb_pas_dt_max N ] [ -archive ]
+#  2) Run ./src/fichier.prm [ -dest dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -nb_pas_dt_max N ] [ -archive ]
 #  3) Le script genere un rapport dans ./build/rapport.pdf
 
 

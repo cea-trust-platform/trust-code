@@ -42,6 +42,7 @@ tracee dans le rapport de validation de TRUST.'''
         self.origine     = 'trio_u'
         self.version     = 'Undefined'
         self.fichier     = 'Undefined'
+        self.sonFile     = 'Undefined'
         self.plan        = 'Undefined'
         self.segment     = 'Undefined'
         self.points      = 'Undefined'
@@ -194,6 +195,7 @@ tracee dans le rapport de validation de TRUST.'''
 
             self.fichier = get_nom_cas(param[0]) + '_' + (param[1]).upper() + '.coupe'
             ficSon = get_nom_cas(param[0]) + '_' + (param[1]).upper() + '.son'
+            self.sonFile = ficSon
             if temps!="":
                 self.fichier=self.fichier+'.'+temps
                 # print "DEBG", self.fichier
@@ -215,7 +217,8 @@ tracee dans le rapport de validation de TRUST.'''
             param = self.points.split()
             if len(param)!=2:
                 self.gestMsg.ecrire(GestionMessages._ERR, 'We expected 2 values to define a probe : path/file.data PROBE_NAME, and not %s' % (self.points))
-            self.fichier = self.genererFichierSonde(param[0], param[1])
+            ficSon = get_nom_cas(param[0]) + '_' + (param[1]).upper() + '.son'
+            self.fichier = ficSon
 
         if len(cmd)>10:
             cmd += ','

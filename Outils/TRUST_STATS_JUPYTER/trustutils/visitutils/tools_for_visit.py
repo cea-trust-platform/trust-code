@@ -426,14 +426,16 @@ class Show(object):
             f.write(self._genAddPlot("'" + field + "'", "'" + name + "'"))
             f.write("DrawPlots() \n")
             # Boucle if pour roter le plot 3d de 30 degre ,selon l'axe x et y (2 rotations).
-            f.write("p=PseudocolorAttributes()\n")
             if not min is None:
+                f.write("p=PseudocolorAttributes()\n")
                 f.write("p.minFlag=1\n")
                 f.write("p.min=" + str(min) + "\n")
+                f.write("SetPlotOptions(p)\n")
             if not max is None:
+                f.write("p=PseudocolorAttributes()\n")
                 f.write("p.maxFlag=1\n")
                 f.write("p.max=" + str(max) + "\n")
-            f.write("SetPlotOptions(p)\n")
+                f.write("SetPlotOptions(p)\n")
         f.close()
 
     def visitCommand(self, string):
@@ -695,6 +697,7 @@ class Show(object):
             elif type_op == "slice2d":
                 f.write("s.SetProject2d(1)\n")
             f.write("SetOperatorOptions(s,0,%d)\n" % all)
+            f.write("DrawPlots() \n")
         f.close()
 
     def lineout(self, a, b):

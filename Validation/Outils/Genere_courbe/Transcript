@@ -1,0 +1,84 @@
+#!/bin/bash
+# Script principal pour la transcription d'une fiche prm en notebook jupyter.
+# Utilisation:
+#  1) On suppose que le repertoire courant contient repertoire ./src
+#  2) Transcript ./src/fichier.prm [ -dest dir ] [ -not_run ] | [ -post_run ] | [ -suite_run ] [ -test_run ] [ -get_list_cas_nr ] [ -parallel_run ] [ -nb_pas_dt_max N ] [ -archive ]
+#  3) Le script genere un notebook jupyter
+
+
+usage()
+{
+  echo "Usage:"
+  echo "  `dirname $0`/Transcript ./src/fichier.prm [ -help ] $*"
+  echo "  the other options are passed to genererCourbes.py"
+  exit 0
+}
+
+prm=$1
+# On verifie que la fiche prm a un format correct pour Python3, sinon on convertit
+if [ "$prm" != "-help" ] && [ -f $prm ] && [ "`file $prm | grep ISO-8859`" != "" ]
+then
+    echo "Bad format detected for $prm:"
+    file $prm
+    echo "Converting to UTF-8..."
+    tmpf=`mktemp_`
+    iconv -f ISO-8859-15 -t UTF-8//TRANSLIT -o $tmpf $prm || exit -1
+    mv -f $tmpf $prm
+fi
+
+[ "$1" = "-help" ] && usage
+shift
+
+# Est ce une fiche Jupyter?
+is_jupyter=false
+if [[ "$prm" == *.ipynb ]]; then
+  is_jupyter=true
+fi
+
+# If a directory is provided as main argument, try to find the PRM or Jupyter notebook associated to it.
+if [ "$prm" != "-help" ] && [ -d $prm ]; then
+  if ls $prm/src/*.prm 1>/dev/null 2>&1; then 
+    prm=`ls $prm/src/*.prm`
+  else 
+    if ls $prm/*.ipynb 1>/dev/null 2>&1; then
+      prm=`ls $prm/*.ipynb`
+      is_jupyter=true
+    else
+      echo "Neither a PRM nor a Jupyter notebook??"
+      exit -1
+    fi
+  fi
+fi
+
+if $is_jupyter ; then
+  prm=`basename $prm .ipynb`.ipynb
+else 
+  prm=`basename $prm .prm`.prm
+fi
+
+if [ ! -d src ]
+then
+    echo "-> Error! Directory src does not exist."
+    exit
+fi
+if [ ! -f "src/$prm" ] || $is_jupyter && [ ! -f "$prm" ]
+then
+    echo "-> Error! Report template file (src/)$prm does not exist."
+    exit
+fi
+
+## From this point onwards, Jupyter is not supported by this script - 
+## (the begining of the script is kept since it is responsible for runnning the prepare script
+## and ameding the .data files ...)
+if $is_jupyter ; then
+   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+   echo "Jupyter notebooks should not be executed with the 'Transcript' script!"
+   echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+   exit -1
+fi
+
+echo "====================================================="
+echo "-> Convert $prm in jupyter notebook..."
+echo "====================================================="
+python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p src/$prm --notebook $*
+

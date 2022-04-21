@@ -348,6 +348,83 @@ class Visu:
                         pass
                     ficPlot.write('pb=MoleculeAttributes()\npb.SetRadiusFixed(%s)\nSetPlotOptions(pb)\n'%plot[decal+1])
                     pass
+                #if (plot[0]=="blackvector"):
+                #    ficPlot.write('vb=VectorAttributes()\nvb.SetColorByMag(0)\nvb.SetUseLegend(0)\n')
+                #    if (len(plot)==2+decal):
+                #        ficPlot.write('vb.SetScale(%s)\n'%plot[decal+1])
+                #        pass
+                #    ficPlot.write('SetPlotOptions(vb)\n')
+                #    pass
+                #if (plot[0]=="blackvector_with_nb"):
+                #    ficPlot.write('vb=VectorAttributes()\nvb.SetColorByMag(0)\nvb.SetUseLegend(0)\n')
+                #    ficPlot.write('vb.SetUseStride(0)\nvb.SetNVectors(%s)\n'%plot[decal+1])
+                #    if (len(plot)==3+decal):
+                #        ficPlot.write('vb.SetScale(%s)\n'%plot[decal+2])
+                #        pass
+                #    ficPlot.write('SetPlotOptions(vb)\n')
+                #    pass
+                #if (plot[0]=="vector"):
+                #    if (len(plot)==2+decal):
+                #        ficPlot.write('vb=VectorAttributes()\n')
+                #        ficPlot.write('vb.SetScale(%s)\n'%plot[decal+1])
+                #        ficPlot.write('SetPlotOptions(vb)\n')
+                #        pass
+                #    pass
+                #if (plot[0]=="pseudocolor_with_opacity"):
+                #    if (len(plot)!=2+decal):
+                #        #from string import join
+                #        self.gestMsg.ecrire(GestionMessages._ERR, '3 or 5 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
+                #        pass
+                #    ficPlot.write('pb=PseudocolorAttributes()\npb.SetOpacity(%s)\npb.SetOpacityType(2)\nSetPlotOptions(pb)\n'%plot[decal+1])
+
+                #    pass
+                #if (plot[0]=="pseudocolor_with_range"):
+                #    if (len(plot)!=decal+3):
+                #        #from string import join
+                #        self.gestMsg.ecrire(GestionMessages._ERR, '6 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
+                #        pass
+                #    ficPlot.write('pb=PseudocolorAttributes()\n')
+                #    if (plot[decal+1].upper()!="MIN"):
+                #        ficPlot.write('pb.SetMin(%s)\npb.SetMinFlag(1)\n'%plot[decal+1])
+                #        pass
+                #    if (plot[decal+2].upper()!="MAX"):
+                #        ficPlot.write('pb.SetMax(%s)\npb.SetMaxFlag(1)\n'%plot[decal+2])
+                #        pass
+                #    ficPlot.write('SetPlotOptions(pb)\n')
+                #    pass
+                #if (plot[0]=="histogram"):
+                #    if (len(plot)!=decal+4):
+                #        #from string import join
+                #        self.gestMsg.ecrire(GestionMessages._ERR, '5 or 7 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
+                #        pass
+                #    ficPlot.write('pb=HistogramAttributes()\n')
+                #    min_user=0
+                #    if (plot[decal+1].upper()!="MIN"):
+                #        ficPlot.write('#pb.specifyRange=1\n')
+                #        ficPlot.write('pb.SetMinFlag(1)\n')
+                #        ficPlot.write('pb.SetMin(%s)\n'%plot[decal+1])
+                #        min_user=1
+                #        pass
+                #    max_user=0
+                #    if (plot[decal+2].upper()!="MAX"):
+                #        ficPlot.write('pb.SetMaxFlag(1)\n')
+                #        ficPlot.write('pb.SetMax(%s)\n'%plot[decal+2])
+                #        max_user=1
+                #        pass
+                #    if (min_user!=max_user):
+                #        #from string import join
+                #        self.gestMsg.ecrire(GestionMessages._ERR, 'if you specify the min (or the max) you should specify also the max (or the min) in %s'% (' '.join(plot)))
+                #        pass
+                #    ficPlot.write('pb.SetNumBins(%s)\n'%plot[decal+3])
+                #    ficPlot.write('SetPlotOptions(pb)\n')
+                #    pass
+                #if (plot[0]=="molecule"):
+                #    if (len(plot)!=decal+2):
+                #        #from string import join
+                #        self.gestMsg.ecrire(GestionMessages._ERR, '5 parameters expected after %s and not %s'% (plot[0],' '.join(plot)))
+                #        pass
+                #    ficPlot.write('pb=MoleculeAttributes()\npb.SetRadiusFixed(%s)\nSetPlotOptions(pb)\n'%plot[decal+1])
+                #    pass
             elif (plot[0]=='instruction_visit'):
                 for i in range(1,len(plot)):
                     ficPlot.write(plot[i]+" ")

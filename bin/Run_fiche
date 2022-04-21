@@ -37,6 +37,7 @@ help()
    echo "-archive                       : Build a preserve.tgz file containing all the need files from the build directory to compare later, PDF reports each other." 
    echo "-save                          : If the build is processed remotely on a cluster, save the previous build in a different directory."
    echo "-create_prm                    : Build a minimal .prm with data files found in the src directory."
+   echo "-convert_prm                   : Convert .prm file in jupyter notebook"
    #echo
    #echo "You could have a look at \$TRUST_ROOT/doc/TRUST/HowTo_Validation.pdf for the description of some (not all) of these options."
    #echo
@@ -92,7 +93,18 @@ do
    then
       $TRUST_WEBBROWSER $TRUST_ROOT/Validation/Outils/Genere_courbe/doc/manuel.xhtml &
       exit 0
-   elif [ "$1" = -dest ]
+   elif [ "$1" = -convert_prm ]
+   then
+		 prm=`ls src/*.prm 2>/dev/null`
+		 if [ "$((`echo $prm | wc -w`+0))" != 1 ]
+		 then
+			 echo ".prm files found: $prm"
+			 echo "There should be ONE .prm file in the src directory."
+			 exit -1
+		 fi
+   	 $TRUST_ROOT/Validation/Outils/Genere_courbe/Transcript $prm 2>&1
+     exit 0
+	 elif [ "$1" = -dest ]
    then
       options=$options" "$1
       shift

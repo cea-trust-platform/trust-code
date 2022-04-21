@@ -57,10 +57,11 @@ def getOptions(argv, gestMsg):
     sortie = 'rapport.pdf'
     novisit = False
     noprereq = False
+    notebook = False
     #recuperation des options
     try:
-        options,arguments = getopt.getopt(argv, 'g:hfp:v:o:d:c:Dn:nv:np', 
-                                          ['get_cmd_to_run=','help', 'format', 'parametres=', 'verbose=', 
+        options,arguments = getopt.getopt(argv, 'g:hfp:nt:v:o:d:c:Dn:nv:np', 
+                                          ['get_cmd_to_run=','help', 'format', 'parametres=', 'notebook', 'verbose=', 
                                            'output=','debug_figure=','compare=','DEBOG','nodisplay', 
                                            'no_visit', 'no_prereq'])
     except getopt.GetoptError:
@@ -85,6 +86,8 @@ def getOptions(argv, gestMsg):
                 gestMsg.ecrire(GestionMessages._ERR, 'The verbosity argument should be an integer (and not \'%s\') !' % arg, texteUsage=Usage(gestMsg))
         elif opt in ('-p', '--parametres'):
             ficParametres = arg
+        elif opt in ('--notebook'):
+            notebook = True
         elif opt in ('-o', '--output'):
             sortie = arg
         elif opt in ('--compare'):
@@ -111,7 +114,7 @@ def getOptions(argv, gestMsg):
     if ficParametres=='':
         gestMsg.ecrire(GestionMessages._ERR, 'The parameter file has not been given !', texteUsage=Usage(gestMsg))
 
-    return verbose, ficParametres, sortie, get_cmd_to_run,debug_figure,old_path, novisit, noprereq
+    return verbose, ficParametres, notebook, sortie, get_cmd_to_run,debug_figure,old_path, novisit, noprereq
 
 class GenererCourbes(object):
     '''
@@ -566,6 +569,23 @@ TODO
         pass
 
     pass
+    
+    #---------------------------------------------
+    # Methodes de generation du notebook
+
+    #methode de generation du notebook jupyter
+    def genererNotebook(self,debug_figure):
+        '''Generation du rapport de validation.'''
+        
+        nomFichierNotebook = 'fic.ipynb'
+        
+        from Write_notebook import Write_notebook
+        w=Write_notebook()
+        
+        dico={}
+        dico["nomFichierNotebook"]=os.path.basename(self.parametersFile).split('.')[0]
+        print("Write notebook")
+        w.write_fichiers(self,dico)
 
     def modifie_figures(app,old_path):
         ''' double les figures trio pour ajouter les anciens resultats situes dans old/lesnouveaux ... souvent old commence par ../ et finit par / '''
@@ -601,7 +621,7 @@ if __name__ == "__main__":
     # global debug_figures
     argv = sys.argv[1:]
     gestMsg = GestionMessages(verbose=10, output='log', ecran=True)
-    verbose, ficParam, sortie, get_cmd_to_run,debug_figure,old_path,novisit, noprereq= getOptions(argv, gestMsg)
+    verbose, ficParam, notebook, sortie, get_cmd_to_run,debug_figure,old_path,novisit, noprereq= getOptions(argv, gestMsg)
     gestMsg.setNiveauMessage(verbose)
     #creation de l'objet de generation des courbes
     app = GenererCourbes(parametersFile=ficParam, verbose=verbose, output=gestMsg, out=sortie, novisit=novisit, noprereq=noprereq)
@@ -681,8 +701,12 @@ if __name__ == "__main__":
     # generation du rapport de validation
     if (debug_figure!=None)and(debug_figure!=-2):
         app.compile_latex=0
-    app.genererRapport(debug_figure)
+    if (notebook):
+        app.genererNotebook(debug_figure)
+    else:
+        app.genererRapport(debug_figure)
+        
+        # Generate list of all files used during the process
+        FileAccumulator.WriteToFile("./used_files")
 
-    # Generate list of all files used during the process
-    FileAccumulator.WriteToFile("./used_files")
 
