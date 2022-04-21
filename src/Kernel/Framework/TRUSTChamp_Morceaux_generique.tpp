@@ -225,7 +225,7 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::mettre_a_jour(double time)
 }
 
 template<Champ_Morceaux_Type _TYPE_>
-int TRUSTChamp_Morceaux_generique<_TYPE_>::initialiser(const double& time)
+int TRUSTChamp_Morceaux_generique<_TYPE_>::initialiser(const double time)
 {
   return Champ_Don_base::initialiser(time);
 }

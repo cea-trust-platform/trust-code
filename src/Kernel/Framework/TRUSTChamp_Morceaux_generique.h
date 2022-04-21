@@ -57,7 +57,7 @@ public:
 
   void mettre_a_jour(double temps) override;
 
-  int initialiser(const double& temps) override;
+  int initialiser(const double temps) override;
 
   const REF(Domaine)& domaine() const { return mon_domaine; }
   REF(Domaine)& domaine() { return mon_domaine; }
