@@ -32,7 +32,7 @@
 #include <Champ_Uniforme.h>
 #include <Matrice_Morse.h>
 #include <Navier_Stokes_std.h>
-#include <DoubleTrav.h>
+#include <TRUSTTrav.h>
 #include <Neumann_sortie_libre.h>
 #include <Op_Conv_negligeable.h>
 #include <Param.h>
@@ -123,4 +123,20 @@ const Motcle& Aire_interfaciale_Yao_Morel::domaine_application() const
 void Aire_interfaciale_Yao_Morel::associer_fluide(const Fluide_base& un_fluide)
 {
   le_fluide = un_fluide;
+}
+
+void Aire_interfaciale_Yao_Morel::mettre_a_jour(double temps)
+{
+  Convection_Diffusion_std::mettre_a_jour(temps);  //on saute celui de Navier_Stokes_std
+
+  int i, n, N = ref_cast(Pb_Multiphase, probleme()).nb_phases();
+
+  const DoubleTab& alpha = probleme().get_champ("alpha").passe(), &a_i = inconnue().passe();
+  DoubleTab& d_b = diametre_bulles.valeurs();
+
+  diametre_bulles.mettre_a_jour(temps);
+
+  for (n = 0; n < N; n++) for (i = 0; i < d_b.dimension_tot(0); i++)
+      d_b(i, n) = 6 * alpha(i, n)/a_i(i, n);
+
 }

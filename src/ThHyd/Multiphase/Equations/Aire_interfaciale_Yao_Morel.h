@@ -51,6 +51,7 @@ public :
   Milieu_base& milieu() override;
   void associer_milieu_base(const Milieu_base& ) override;
   int impr(Sortie& os) const override;
+  void mettre_a_jour(double temps) override;
 
   const Motcle& domaine_application() const override;
 
