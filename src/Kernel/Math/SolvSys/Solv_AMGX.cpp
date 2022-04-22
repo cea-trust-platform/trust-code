@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -204,23 +204,22 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 // Resolution
 int Solv_AMGX::solve(ArrOfDouble& residu)
 {
-  if (seuil_relatif_==0)
+  // Calcul du seuil avant resolution pour eviter des soucis:
+  Vec ResidualPetsc_;
+  VecDuplicate(SolutionPetsc_, &ResidualPetsc_);
+  MatResidual(MatricePetsc_, SecondMembrePetsc_, SolutionPetsc_, ResidualPetsc_);
+  VecNorm(ResidualPetsc_, NORM_2, &residu(0));
+  VecDestroy(&ResidualPetsc_);
+  if (residu(0)==0) return 0;
+  else if (residu(0) < seuil_)
     {
       // Crash d'AmgX (non reproduit sur les cas poisson d'AmgXWrapper), peut etre a cause d'une creation differente
       // des vecteurs PETSc (via DM) par rapport a la notre (VecCreate), si deja converge a cause d'un seuil absolu trop haut (nbiter=0)
       // Contournement en calculant le residu avant le solve et on ne resout pas si inferieur au seuil:
-      Vec ResidualPetsc_;
-      VecDuplicate(SolutionPetsc_, &ResidualPetsc_);
-      MatResidual(MatricePetsc_, SecondMembrePetsc_, SolutionPetsc_, ResidualPetsc_);
-      VecNorm(ResidualPetsc_, NORM_2, &residu(0));
-      VecDestroy(&ResidualPetsc_);
-      if (residu(0) < seuil_)
-        {
-          Cerr << "[AmgX] The residual seems to small to be solved on GPU: ||Ax-b||="<<residu(0)<<"<"<<seuil_<< finl;
-          Cerr << "Please, try to use a relative tolerance, with rtol option or lower the absolute tolerance atol." << finl;
-          return 0;
-          //Process::exit();
-        }
+      Cerr << "[AmgX] The residual seems to small to be solved on GPU: ||Ax-b||="<<residu(0)<<"<"<<seuil_<< finl;
+      Cerr << "Please, try to use a relative tolerance, with rtol option or lower the absolute tolerance atol." << finl;
+      return 0;
+      //Process::exit();
     }
   std::clock_t start = std::clock();
   SolveurAmgX_.solve(lhs, rhs, nRowsLocal);
