@@ -872,12 +872,30 @@ fi
 echo "export PYTHONPATH=\$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:\$PYTHONPATH" >> $env
 
 # Disable autosave in jupyter
-jupyter_config=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/notebook/static/custom/custom.js
-if [ "$TRUST_DISABLE_JUPYTER" != 1 ] && [ -f $jupyter_config ] && [ "`grep 'Jupyter.notebook.set_autosave_interval(0)' $jupyter_config 2>/dev/null`" = "" ]
+jupyter_config_js=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/notebook/static/custom/custom.js
+if [ "$TRUST_DISABLE_JUPYTER" != 1 ] && [ -f $jupyter_config_js ] && [ "`grep 'Jupyter.notebook.set_autosave_interval(0)' $jupyter_config_js 2>/dev/null`" = "" ]
 then
    echo "Disabling autosave in jupyter-notebook"
-   echo "Jupyter.notebook.set_autosave_interval(0); // disable autosave" >> $jupyter_config
+   echo "Jupyter.notebook.set_autosave_interval(0); // disable autosave" >> $jupyter_config_js
 fi
+
+# Install pre_save hook for Jupyter notebook
+jupyter_nb_exe=$TRUST_ROOT/exec/python/bin/jupyter-notebook
+if [ "$TRUST_DISABLE_JUPYTER" != 1 ] && [ "`grep 'sys.argv.append' $jupyter_nb_exe 2>/dev/null`" = "" ]
+then
+   echo "Installing pre_save hook in jupyter-notebook"
+   s="
+    import os
+    tr=os.environ['TRUST_ROOT']
+    s=os.path.join(tr, 'env_src', 'jupyter_notebook_config.py')
+    sys.argv.append('--config')
+    sys.argv.append(s)
+
+    sys.exit(main())
+"
+   gawk -i inplace -v r="$s" '{gsub(/sys.exit\(main\(\)\)/,r)}1' $jupyter_nb_exe
+fi
+
 
 ####################
 # Compilateurs C/C++

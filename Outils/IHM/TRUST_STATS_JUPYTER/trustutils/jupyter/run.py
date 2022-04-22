@@ -17,6 +17,13 @@ defaultSuite_ = None  # a TRUSTSuite instance
 
 BUILD_DIRECTORY = "build"  # Directory where the cases are run.
 
+def saveFormOutput():
+    """ Dummy method to indicate that the output of the notebook should be saved.
+    This method does nothing here, but its invokation is detected by the pre_save hook
+    registered in the TRUST Jupyter configuration.
+    By default, outputs of the validation forms are not saved.
+    """
+    pass
 
 def getLastLines_(err_pth):
     """ Get last 20 lines of an error file ...
