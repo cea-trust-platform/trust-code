@@ -678,4 +678,4 @@ class Table:  # ancien tableau
         self.addLigne([row], "Total")
 
     def print(self):
-        return self.df
+        return display(self.df)
