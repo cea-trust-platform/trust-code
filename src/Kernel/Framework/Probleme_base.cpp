@@ -550,7 +550,7 @@ Entree& Probleme_base::readOn(Entree& is)
               //     exit();
               //   }
               // Look for the last time and set it to tinit if tinit not set
-              double last_time;
+              double last_time = -1.;
               if(format_rep == "single_hdf")
                 {
 #ifdef MPI_

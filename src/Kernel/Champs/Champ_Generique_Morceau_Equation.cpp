@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -160,7 +160,7 @@ const Champ_base& Champ_Generique_Morceau_Equation::get_champ(Champ& espace_stoc
 {
   Champ_Fonc es_tmp;
   Nature_du_champ nature;
-  int nb_comp;
+  int nb_comp = -1;
 
   if ((Motcle(option_)=="stabilite") || (Motcle(option_)=="flux_bords") || (Motcle(option_)=="flux_surfacique_bords"))
     {
@@ -184,7 +184,7 @@ const Champ_base& Champ_Generique_Morceau_Equation::get_champ_without_evaluation
 {
   Champ_Fonc es_tmp;
   Nature_du_champ nature;
-  int nb_comp;
+  int nb_comp = -1;
 
   if ((Motcle(option_)=="stabilite") || (Motcle(option_)=="flux_bords") || (Motcle(option_)=="flux_surfacique_bords"))
     {
