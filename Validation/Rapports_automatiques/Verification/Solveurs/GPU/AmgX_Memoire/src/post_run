@@ -5,8 +5,10 @@ cas=${1%.data}
 ncomp=1
 awk -v ncomp=$ncomp -v res=$cas.res -f ../res.awk $cas.out
 # Memoire:
-awk -v cas=$cas '/Total Memory Usage/ {setup=$4} /Maximum Memory Usage:/ {solve=$4} END { print "setup solve";printf("%.3f %.3f\n",solve,setup) }' $cas.out 1>$cas.mem
-awk -v cas=$cas '/setup: / && (NF==3) {setup=$2} /solve: / && (NF==3) {solve=$2}    END { print "setup solve";printf("%.3f %.3f\n",solve,setup) }' $cas.out 1>$cas.cpu
+#awk -v cas=$cas '/Total Memory Usage/ {setup=$4} /Maximum Memory Usage:/ {solve=$4} END { print "setup solve";printf("%.3f %.3f\n",solve,setup) }' $cas.out 1>$cas.mem
+#awk -v cas=$cas '/setup: / && (NF==3) {setup=$2} /solve: / && (NF==3) {solve=$2}    END { print "setup solve";printf("%.3f %.3f\n",solve,setup) }' $cas.out 1>$cas.cpu
+awk -v cas=$cas '/Total Memory Usage/ {setup=$4} /Maximum Memory Usage:/ {solve=$4} END { printf("%.3f %.3f\n",solve,setup) }' $cas.out 1>$cas.mem
+awk -v cas=$cas '/setup: / && (NF==3) {setup=$2} /solve: / && (NF==3) {solve=$2}    END { printf("%.3f %.3f\n",solve,setup) }' $cas.out 1>$cas.cpu
 
 memory_gpu=`awk '/Total amount of global memory/ {print $6}' $TRUST_ROOT/env/card.log 2>/dev/null` && [ "$memory_gpu" = "" ] && memory_gpu=0
 name_gpu=`awk -F\" '/Device / {print $2}' $TRUST_ROOT/env/card.log 2>/dev/null` && [ "$name_gpu" = "" ] && name_gpu="GPU"
