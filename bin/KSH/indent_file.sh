@@ -13,6 +13,9 @@ do
          # Source TRUST (en tete reconnu):
 	 tmp=`mktemp_`
 	 cp $file $tmp
+	 # Skip lines that start with a comment (//) and then replace all patterns with a 'for' or an 'if' placed after a ')' to break the line.
+	 # This avoids patterns like 'for() for() if(...)' on a single line ... 
+	 sed -i "/^ *\/\//! s@\()\) *\(\(for *(\)\|\(if *(\)\)@\1\n\2@g" $tmp
 	 LC_ALL="en_US.UTF-8" $TRUST_ROOT/exec/astyle/bin/astyle --keep-one-line-blocks --style=gnu --indent=spaces=2 --indent-cases --align-reference=type --max-instatement-indent=120 $tmp 1>/dev/null
 	 rm -f $tmp.orig
 	 if [ "`diff $file $tmp`" != "" ]
