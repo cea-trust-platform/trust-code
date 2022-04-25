@@ -23,7 +23,7 @@ depend:
 	@rm -f tmp $(TRUST_FILES)
 	@echo 'html: \' >> tmp
 	@for rep in `cat $(TRUST_ROOT)/env/rep.TRUST | sed s/^\\\.\\\///g`;\
-	do for file in `ls $(TRUST_ROOT)/$$rep/*.cpp $(TRUST_ROOT)/$$rep/*.h`;\
+	do for file in `ls $(TRUST_ROOT)/$$rep/*.cpp $(TRUST_ROOT)/$$rep/*.h $(TRUST_ROOT)/$$rep/*.tpp 2>/dev/null`;\
 	do echo $$file' \' >> tmp;\
 	echo $$file >> $(TRUST_FILES);\
 	done;\

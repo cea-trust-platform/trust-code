@@ -75,7 +75,7 @@ do
 	 files=""
 	 for rep in $PROJECT_DIRECTORIES
 	 do
-	    for file in `cd $PROJECT_ROOT/$rep;ls *.cpp *.h 2>/dev/null`
+	    for file in `cd $PROJECT_ROOT/$rep;ls *.cpp *.h *.tpp 2>/dev/null`
 	    do
 	       [ $PROJECT_ROOT/$rep/$file -nt $TARGET ] && files=$files" "$file
 	    done
@@ -156,7 +156,7 @@ do
 	    do
 	       mkdir -p $TRUST_DOXYGEN/$dir
 	       cd $TRUST_DOXYGEN/$dir
-	       for file in `cd $PROJECT_ROOT/$dir;ls *.cpp *.h 2>/dev/null`
+	       for file in `cd $PROJECT_ROOT/$dir;ls *.cpp *.h *.tpp 2>/dev/null`
 	       do
         	  $TRUST_ROOT/exec/triou2doxygen $PROJECT_ROOT/$dir/$file > $file
 	       done
