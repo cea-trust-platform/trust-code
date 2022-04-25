@@ -263,6 +263,7 @@ echo "[-disable-jupyter]                Disable jupyter installation."
 echo "[-disable-ccache]                 Disable ccache detection/installation."
 echo "[-disable-valgrind]               Disable valgrind installation and build."
 echo "[-disable-gnuplot]                Disable gnuplot installation and build."
+echo "[-disable-doxygen]                Disable doxygen installation and build. HTML documentation cannot be build if doxygen disabled."
 echo "[-disable-tcl_tk]                 Disable Tcl/Tk detection/installation."
 echo "[-disable-vc]                     Disable VC installation, might be necessary for intel compilers with lower version than 17"
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
@@ -285,7 +286,7 @@ cc=""
 F77=""
 clean=""
 
-LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING VC CCACHE GMSH VALGRIND GNUPLOT TCL_TK PLOT2D"
+LIST_THIRD_PARTY="PETSC MED MPI METIS MEDCOUPLING VC CCACHE GMSH VALGRIND GNUPLOT TCL_TK PLOT2D DOXYGEN"
 
 #[ -f configure.log ] && sed "s/^/# /" -i  configure.log
 [ -f configure.log ] && sed "s/# //" -i  configure.log && sed "s/^/# /" -i  configure.log
@@ -303,7 +304,7 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-checks -disable-check_sources $*
+  $0 -disable-ccache -disable-petsc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -disable-doxygen -disable-checks -disable-check_sources $*
   exit $?
 fi
 if [ "$1" = "-disable-tools" ]
@@ -453,6 +454,7 @@ do
       THIRD_PARTY="DOC"
       REP_THIRD_PARTY=$TRUST_ROOT/doc
       ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
+      export TRUST_DISABLE_DOXYGEN=1
 
    elif [ "${1#-without-pdflatex}" != "$1" ]
    then
@@ -499,6 +501,7 @@ do
       [ "$THIRD_PARTY" = "CCACHE" ] && REP_THIRD_PARTY=$TRUST_ROOT/env/ccache
       [ "$THIRD_PARTY" = "VALGRIND" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/valgrind
       [ "$THIRD_PARTY" = "GNUPLOT" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/gnuplot
+      [ "$THIRD_PARTY" = "DOXYGEN" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/doxygen
       [ "$THIRD_PARTY" = "TCL_TK" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/tcl_tk
       [ "$THIRD_PARTY" = "PLOT2D" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/IHM
       if [ ! -d $REP_THIRD_PARTY ]

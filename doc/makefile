@@ -20,6 +20,12 @@ ctags:
 	fi
 
 depend:
+ifeq ($(TRUST_DISABLE_DOXYGEN),1)
+	@echo "TRUST_DISABLE_DOXYGEN=1 ... so we will remove the html (doxygen) documentation if any and not rebuild it."
+	@rm -r -f $(HTML)
+	@mkdir $(HTML)
+	@echo "<BR><BR>Doxygen documentation has not been built because you configured TRUST without doc or without doxygen!" > $(HTML)/index.html
+else
 	@rm -f tmp $(TRUST_FILES)
 	@echo 'html: \' >> tmp
 	@for rep in `cat $(TRUST_ROOT)/env/rep.TRUST | sed s/^\\\.\\\///g`;\
@@ -33,6 +39,7 @@ depend:
 	@echo "	@make doc" >> tmp
 	@make -f tmp
 	@rm -f tmp $(TRUST_FILES)
+endif
 
 clean:
 	@echo "Cleaning..."
