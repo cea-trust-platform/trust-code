@@ -23,11 +23,7 @@
 #ifndef RRK2_included
 #define RRK2_included
 
-
-
-
-
-#include <Schema_Temps_base.h>
+#include <TRUSTSchema_RK.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -59,37 +55,12 @@
 //  rho*u reste au temps n pour une evaluation intermediaire de f.
 //  Said differently, from the time scheme perspective, f is only a function of Y1.
 //////////////////////////////////////////////////////////////////////////////
-class RRK2: public Schema_Temps_base
+
+class RRK2: public TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>
 {
-
   Declare_instanciable(RRK2);
-
 public :
-
-  ////////////////////////////////
-  //                            //
-  // Caracteristiques du schema //
-  //                            //
-  ////////////////////////////////
-
-  int nb_valeurs_temporelles() const override;
-  int nb_valeurs_futures() const override;
-  double temps_futur(int i) const override;
-  double temps_defaut() const override;
-
-  /////////////////////////////////////////
-  //                                     //
-  // Fin des caracteristiques du schema  //
-  //                                     //
-  /////////////////////////////////////////
-
   int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
-  inline void completer() override;
 };
 
-inline void RRK2::completer()
-{
-}
-
-
-#endif
+#endif /* RRK2_included */

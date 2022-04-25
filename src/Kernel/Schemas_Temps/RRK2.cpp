@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,96 +24,11 @@
 #include <Equation.h>
 #include <TRUSTTrav.h>
 
-Implemente_instanciable(RRK2,"Runge_Kutta_Rationnel_ordre_2",Schema_Temps_base);
+Implemente_instanciable(RRK2,"Runge_Kutta_Rationnel_ordre_2",TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>);
 
+Sortie& RRK2::printOn(Sortie& s) const { return  TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>::printOn(s); }
 
-// Description:
-//    Simple appel a: Schema_Temps_base::printOn(Sortie& )
-//    Ecrit le schema en temps sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& s
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& RRK2::printOn(Sortie& s) const
-{
-  return  Schema_Temps_base::printOn(s);
-}
-
-
-// Description:
-//    Lit le schema en temps a partir d'un flot d'entree.
-//    Simple appel a: Schema_Temps_base::readOn(Entree& )
-// Precondition:
-// Parametre: Entree& s
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& RRK2::readOn(Entree& s)
-{
-  return Schema_Temps_base::readOn(s) ;
-}
-
-
-////////////////////////////////
-//                            //
-// Caracteristiques du schema //
-//                            //
-////////////////////////////////
-
-// Description:
-//    Renvoie le nombre de valeurs temporelles a conserver.
-//    Ici : n et n+1, donc 2.
-int RRK2::nb_valeurs_temporelles() const
-{
-  return 2 ;
-}
-
-// Description:
-//    Renvoie le nombre de valeurs temporelles futures.
-//    Ici : n+1, donc 1.
-int RRK2::nb_valeurs_futures() const
-{
-  return 1 ;
-}
-
-// Description:
-//    Renvoie le le temps a la i-eme valeur future.
-//    Ici : t(n+1)
-double RRK2::temps_futur(int i) const
-{
-  assert(i==1);
-  return temps_courant()+pas_de_temps();
-}
-
-// Description:
-//    Renvoie le le temps le temps que doivent rendre les champs a
-//    l'appel de valeurs()
-//    Ici : t(n+1)
-double RRK2::temps_defaut() const
-{
-  return temps_courant()+pas_de_temps();
-}
-
-/////////////////////////////////////////
-//                                     //
-// Fin des caracteristiques du schema  //
-//                                     //
-/////////////////////////////////////////
+Entree& RRK2::readOn(Entree& s) { return TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>::readOn(s) ; }
 
 
 // Description:

@@ -14,25 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Schema_Euler_explicite.h
-// Directory:   $TRUST_ROOT/src/Kernel/Schemas_Temps
-// Version:     /main/18
+// File:        TRUSTSchema_RK.h
+// Directory:   $TRUST_ROOT/src/Kernel/Framework
+// Version:     /main/63
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Schema_Euler_explicite_included
-#define Schema_Euler_explicite_included
+#ifndef TRUSTSchema_RK_included
+#define TRUSTSchema_RK_included
 
-#include <TRUSTSchema_RK.h>
+#include<Schema_Temps_base.h>
 
-// .DESCRIPTION : classe Schema_Euler_explicite
-//     Cette classe represente un schema en temps d'Euler explicite: U(n+1) = U(n) + dt*(dU/dt)(n)
-// .SECTION voir aussi Schema_Temps_base
-class Schema_Euler_explicite: public TRUSTSchema_RK<Ordre_RK::UN>
+enum class Ordre_RK { UN , RATIO_DEUX , DEUX , TROIS , QUATRE };
+
+template <Ordre_RK _ORDRE_ >
+class TRUSTSchema_RK : public Schema_Temps_base
 {
-  Declare_instanciable(Schema_Euler_explicite);
-public :
-  int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
+  // Renvoie le nombre de valeurs temporelles a conserver. Ici : n et n+1, donc 2.
+  int nb_valeurs_temporelles() const override { return 2 ; }
+
+  // Renvoie le nombre de valeurs temporelles futures. Ici : n+1, donc 1.
+  int nb_valeurs_futures() const override { return 1 ; }
+
+  // Renvoie le le temps a la i-eme valeur future. Ici : t(n+1)
+  double temps_futur(int i) const override
+  {
+    assert(i==1);
+    return temps_courant()+pas_de_temps();
+  }
+
+  // Renvoie le le temps le temps que doivent rendre les champs a l'appel de valeurs(). Ici : t(n+1)
+  double temps_defaut() const override { return temps_courant()+pas_de_temps(); }
+
+  // a surcharger si utile
+  void completer() override { /* Do nothing */ }
 };
 
-#endif /* Schema_Euler_explicite_included */
+#endif /* TRUSTSchema_RK_included */

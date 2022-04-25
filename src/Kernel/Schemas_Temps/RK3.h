@@ -23,14 +23,7 @@
 #ifndef RK3_included
 #define RK3_included
 
-
-
-
-
-#include <Schema_Temps_base.h>
-#include <Vect_Ref_Probleme_base.h>
-class Pb_MG;
-class Pb_2G;
+#include <TRUSTSchema_RK.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -49,52 +42,12 @@ class Pb_2G;
 // .SECTION voir aussi
 //     Schema_Temps_base
 //////////////////////////////////////////////////////////////////////////////
-class RK3: public Schema_Temps_base
+
+class RK3: public TRUSTSchema_RK<Ordre_RK::TROIS>
 {
-
   Declare_instanciable(RK3);
-
 public :
-
-  ////////////////////////////////
-  //                            //
-  // Caracteristiques du schema //
-  //                            //
-  ////////////////////////////////
-
-  int nb_valeurs_temporelles() const override;
-  int nb_valeurs_futures() const override;
-  double temps_futur(int i) const override;
-  double temps_defaut() const override;
-
-  /////////////////////////////////////////
-  //                                     //
-  // Fin des caracteristiques du schema  //
-  //                                     //
-  /////////////////////////////////////////
-
   int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
-  inline void completer() override;
-  //  virtual int faire_un_pas_de_temps_pb_couple(Probleme_Couple&);
-
-
-  //// COMMENTE POUR PASSAGE A LA V1.4.4
-  ////
-  //  virtual int faire_un_pas_de_temps_pb_mg(Pb_MG&);
-
-private:
-
-  int  trouver_tous_les_pbs(Pb_MG& , VECT(REF(Probleme_base))& );
-  void  associer_pb_fins(int , Pb_MG& , VECT(REF(Probleme_base))& );
-  void  nb_pb_fins(int& , Pb_MG& );
-
-
-
 };
 
-inline void RK3::completer()
-{
-}
-
-
-#endif
+#endif /* RK3_included */
