@@ -768,3 +768,14 @@ void Probleme_U::setInputDoubleValue(const Nom& name, const double val)
     throw WrongArgument(le_nom().getChar(),"setInputField",name.getString(),"field of this name is not an input field");
   chip->setDoubleValue(val);
 }
+
+void Probleme_U::setInputIntValue(const Nom& name, const int& val)
+{
+  // add value in ICoCoScalarRegister
+  reg.setInputIntValue(name, val);
+}
+
+int Probleme_U::getOutputIntValue(const Nom& name) const
+{
+  return reg.getOutputIntValue(name);
+}

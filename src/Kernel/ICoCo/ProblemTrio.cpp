@@ -583,6 +583,19 @@ double ProblemTrio::getOutputDoubleValue(const std::string& name) const
   return f._field[0];
 }
 
+void ProblemTrio::setInputIntValue(const std::string& name, const int& val)
+{
+  // add value in ICoCoScalarRegister
+  const Nom nom(name.c_str());
+  pb->setInputIntValue(nom, val);
+}
+
+int ProblemTrio::getOutputIntValue(const std::string& name) const
+{
+  const Nom nom(name.c_str());
+  return pb->getOutputIntValue(nom);
+}
+
 vector<string> ProblemTrio::getOutputFieldsNames() const
 {
 

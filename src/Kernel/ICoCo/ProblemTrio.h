@@ -56,11 +56,9 @@ public :
   ProblemTrio();
   void setDataFile(const std::string& datafile) override;
   void setMPIComm(void*) override;
-
-
   ~ProblemTrio() override  ;
-  bool initialize() override;
 
+  bool initialize() override;
   void terminate() override;
 
   // interface UnsteadyProblem
@@ -104,8 +102,17 @@ public :
   int getMEDCouplingMajorVersion() const override;
   bool isMEDCoupling64Bits() const override;
 
+  //
+  // Scalar I/O: double and int.
+  //
+  void setInputIntValue(const std::string& name, const int& val) override;
+  int getOutputIntValue(const std::string& name) const override;
   double getOutputDoubleValue(const std::string& name) const override;
   void setInputDoubleValue(const std::string& name, const double& val) override;
+
+  void setInputIntValue(const std::string& name, const int& val) override;
+  int getOutputIntValue(const std::string& name) const override;
+
 protected :
 
   Init_Params* my_params;

@@ -39,6 +39,7 @@
 #include <Schema_Implicite_base.h>
 #include <Solveur_Implicite_Base.h>
 #include <Param.h>
+#include <String2.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;
@@ -66,9 +67,20 @@ Equation_base::Equation_base()
 
 int Equation_base::equation_non_resolue() const
 {
-  double t = le_schema_en_temps->temps_courant();
-  equation_non_resolue_.setVar("t",t);
-  return (int)equation_non_resolue_.eval() ;
+  String2 str= equation_non_resolue_.getString();
+  String2 str2("input_int_value");
+  if (str.compare(str2)==0)
+    {
+      Nom name = eq_non_resolue_input_.getName();
+      int eq_non_resolue_int = mon_probleme.valeur().getOutputIntValue(name);
+      return eq_non_resolue_int;
+    }
+  else
+    {
+      double t = le_schema_en_temps->temps_courant();
+      equation_non_resolue_.setVar("t",t);
+      return (int)equation_non_resolue_.eval();
+    }
 }
 
 // Description:
@@ -279,12 +291,9 @@ Entree& Equation_base::readOn(Entree& is)
   Param param(que_suis_je());
   set_param(param);
   Nom expr_equation_non_resolue="0";
-  param.ajouter("equation_non_resolue",&expr_equation_non_resolue); // XD attr equation_non_resolue chaine equation_non_resolue 1 The equation will not be solved while condition(t) is verified if equation_non_resolue keyword is used. Exemple: The Navier-Stokes equations are not solved between time t0 and t1. NL2 Navier_Sokes_Standard NL2 { equation_non_resolue (t>t0)*(t<t1) }
   param.ajouter("disable_equation_residual",&disable_equation_residual_); // XD attr disable_equation_residual chaine disable_equation_residual 1 The equation residual will not be used for the problem residual used when checking time convergence or computing dynamic time-step
-  param.lire_avec_accolades_depuis(is);
-  // On complete:
   equation_non_resolue_.setString(expr_equation_non_resolue);
-  equation_non_resolue_.parseString();
+  param.lire_avec_accolades_depuis(is);
   matrice_init = 0;
   return is;
 }
@@ -300,6 +309,7 @@ void Equation_base::set_param(Param& param)
   param.ajouter_non_std("ecrire_fichier_xyz_valeur",(this)); // XD attr ecrire_fichier_xyz_valeur ecrire_fichier_xyz_valeur_param ecrire_fichier_xyz_valeur 1 This keyword is used to write the values of a field only for some boundaries in a text file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
   param.ajouter_non_std("bords",(this));
   param.ajouter("parametre_equation",&parametre_equation_); // XD attr parametre_equation parametre_equation_base parametre_equation 1 Keyword used to specify additional parameters for the equation
+  param.ajouter_non_std("equation_non_resolue",(this)); // XD attr equation_non_resolue chaine equation_non_resolue 1 The equation will not be solved while condition(t) is verified if equation_non_resolue keyword is used. Exemple: The Navier-Stokes equations are not solved between time t0 and t1. NL2 Navier_Sokes_Standard NL2 { equation_non_resolue (t>t0)*(t<t1) }
 }
 
 int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -357,6 +367,18 @@ int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
         }
       noms_bord_xyz.add(noms_bord);
       return 1;
+    }
+  else if (mot=="equation_non_resolue")
+    {
+      // differentiate an entry with an expression from an entry with the keyword eq_non_resoue_input_
+      // On complete:
+      Motcle expr_equation_non_resolue;
+      is >> expr_equation_non_resolue;
+      equation_non_resolue_.setString(expr_equation_non_resolue);
+      if (expr_equation_non_resolue=="INPUT_INT_VALUE")
+        is >> eq_non_resolue_input_;
+      else
+        equation_non_resolue_.parseString();
     }
   else
     {

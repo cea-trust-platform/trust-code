@@ -57,6 +57,7 @@
 #include <Sous_zone_dis.h>
 #include <Sous_zones_dis.h>
 #include <Testeur.h>
+#include <Value_Input_Int.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_dis.h>
 #include <Zones_dis.h>
@@ -120,7 +121,8 @@ Sources inst55;verifie_pere(inst55);
 Sous_zone_dis inst56;verifie_pere(inst56);
 Sous_zones_dis inst57;verifie_pere(inst57);
 Testeur inst58;verifie_pere(inst58);
-Zone_Cl_dis inst59;verifie_pere(inst59);
-Zone_dis inst60;verifie_pere(inst60);
-Zones_dis inst61;verifie_pere(inst61);
+Value_Input_Int inst59;verifie_pere(inst59);
+Zone_Cl_dis inst60;verifie_pere(inst60);
+Zone_dis inst61;verifie_pere(inst61);
+Zones_dis inst62;verifie_pere(inst62);
 }

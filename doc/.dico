@@ -1126,6 +1126,7 @@
  UserUnaryFunction UserUnaryFunction UserUnaryFunction.h
  Valeur_totale_sur_volume_VDF Champ_val_tot_sur_vol_VDF Champ_val_tot_sur_vol_VDF.h
  Valeur_totale_sur_volume_VEF Champ_val_tot_sur_vol_VEF Champ_val_tot_sur_vol_VEF.h
+ Value_Input_Int Value_Input_Int Value_Input_Int.h
  VDF VDF_discretisation VDF_discretisation.h
  vect_impl vect_impl vect_impl.h
  VEF VEF_discretisation VEF_discretisation.h

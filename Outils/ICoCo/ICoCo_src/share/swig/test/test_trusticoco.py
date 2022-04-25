@@ -46,6 +46,9 @@ class trusticoco_test(unittest.TestCase):
         pbT.setDataFile("test_conduc.data")
         pbT.initialize()
 
+        equation_non_resolue = pbT.getOutputIntValue("non_resolue");
+        pbT.setInputIntValue("non_resolue",equation_non_resolue);
+
         def run(pb, tmax):
             # pb.initialize()
             stop = False

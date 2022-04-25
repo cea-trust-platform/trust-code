@@ -34,6 +34,7 @@
 #include <Parser_U.h>
 #include <Sources.h>
 #include <vector>
+#include <Value_Input_Int.h>
 
 class Discretisation_base;
 class Milieu_base;
@@ -358,8 +359,9 @@ private :
   Champ_Fonc field_residu_;
 
   mutable DoubleTab NULL_;
-  mutable Parser_U equation_non_resolue_;
   int disable_equation_residual_ = 0;
+  mutable Parser_U equation_non_resolue_;
+  Value_Input_Int eq_non_resolue_input_;
 
   // For multistep methods, store previous dI/dt(n), dI/dt(n-1),...
   Champ_Inc derivee_en_temps_;

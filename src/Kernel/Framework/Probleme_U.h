@@ -18,6 +18,7 @@
 
 #include <Ref_Field_base.h>
 #include <Ref_Champ_Generique_base.h>
+#include <ScalarRegister.h>
 class Noms;
 
 namespace ICoCo
@@ -65,6 +66,8 @@ public :
   virtual void setInputField(const Nom& name, const ICoCo::TrioField& afield);
   virtual void getOutputFieldsNames(Noms& noms) const;
   virtual void getOutputField(const Nom& nameField, ICoCo::TrioField& afield) const;
+  virtual void setInputIntValue(const Nom& name, const int& val);
+  virtual int getOutputIntValue(const Nom& name) const;
 
   virtual void setInputDoubleValue(const Nom& name, const double val);
 
@@ -91,6 +94,7 @@ public :
 protected :
 
   Nom nom;
+  ScalarRegister reg;
 
 };
 

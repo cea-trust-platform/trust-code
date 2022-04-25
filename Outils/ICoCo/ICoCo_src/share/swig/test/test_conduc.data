@@ -80,7 +80,8 @@ discretize pb dis
 Read pb
   { 
     conduction 
-      { 
+      {
+				equation_non_resolue input_int_value { nom non_resolue probleme pb initial_value 0 }
         diffusion    {   }
         initial_conditions    {  temperature champ_uniforme 1 291.  }
 /*
