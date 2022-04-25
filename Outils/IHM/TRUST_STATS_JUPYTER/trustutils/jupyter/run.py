@@ -12,6 +12,7 @@ validation form (i.e. a directory containing at least a 'src' subdirectory).
 
 import os
 import subprocess
+from string import Template
 
 defaultSuite_ = None  # a TRUSTSuite instance
 
@@ -116,6 +117,15 @@ class TRUSTCase(object):
 
         with open(path, "w") as f:
             f.write(text_out)
+
+    def substitute_template(self, subs_dict):
+        """ Substitute (in place and in the build directory) a part of the dataset
+        @param subs_dict : dict : Text we want to substitute.
+        """
+        path = self.fullPath()
+        with open(path, "r") as file: filedata = Template(file.read())
+        result = filedata.substitute(subs_dict)
+        with open(path, "w") as file: file.write(result)
 
     def copy(self, targetName, directory=None, nbProcs=1):
         """ Copy a TRUST Case.
@@ -539,6 +549,30 @@ def dumpData(fiche, list_keywords=[]):
     f.close()
 
     print("".join(test))
+
+def addCaseFromTemplate(datasetName, directory, d, nbProcs=1):
+    """ Add a case to run to the list of globally recorded cases.
+    @param directoryOrTRUSTCase: str : directory where the case is stored (relative to build/)
+    @param datasetName: str : Name of the case we want to run.
+    @param nbProcs : int : Number of proceseurs
+    @return case: a TRUSTcase instance. Trust we want to launch.
+    """
+    global defaultSuite_
+    if defaultSuite_ is None:
+        # When called for the first time, will copy src to build, and execute 'prepare' script if any
+        defaultSuite_ = TRUSTSuite()
+    fullDir = os.path.join(BUILD_DIRECTORY, datasetName)
+    fullDir2 = os.path.join(BUILD_DIRECTORY, directory)
+    if not os.path.exists(fullDir2):
+        os.makedirs(fullDir2, exist_ok=True)
+    pthTgt = os.path.join(BUILD_DIRECTORY, directory, datasetName)
+    # And copy the .data file:
+    from shutil import copyfile
+
+    copyfile(fullDir, pthTgt)
+    tc = addCase(directory, datasetName, nbProcs)
+    tc.substitute_template(d)
+    return tc
 
 
 def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1):
