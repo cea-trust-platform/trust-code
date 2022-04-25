@@ -30,13 +30,13 @@ class SiteSpecificLauncher(MainLauncher):
            env_pairs = [ (e[:e.find("=")],e[e.find("=")+1:]) for e in env_lines]
            for k,v in env_pairs:
                SETENV(k,v)
-	else:
+        else:
            # Minimal TRUST environment
-	   # For qsub wrapper:
+           # For qsub wrapper:
            SETENV("PATH", self.joinpaths([GETENV("PATH"), "TRUST_ROOT/bin"]))
-	   # For mpirun/mpiexec:
-	   SETENV("PATH", self.joinpaths([GETENV("PATH"), "MPI_ROOT/bin"])) 
-	   # For MPI libraries:
+           # For mpirun/mpiexec:
+           SETENV("PATH", self.joinpaths([GETENV("PATH"), "MPI_ROOT/bin"]))
+           # For MPI libraries:
            SETENV("LD_LIBRARY_PATH", self.joinpaths([GETENV("LD_LIBRARY_PATH"), "MPI_ROOT/lib"]))
 # Launcher creation function
 def createlauncher():

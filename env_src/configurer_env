@@ -1358,9 +1358,9 @@ then
    pkgs="mpi4py "$pkgs
 fi
 # ld from conda does not recognize openmpi configuration on TGCC
-if [ "${HOST#irene}" != $HOST ] || [ "${HOST#jean-zay}" != $HOST ] || [ "${HOST#topaze}" != $HOST ]
+if [ "${HOST#irene}" != $HOST ] || [ "${HOST#jean-zay}" != $HOST ] || [ "${HOST_BUILD#jean-zay}" != $HOST ] || [ "${HOST#topaze}" != $HOST ]
 then
-   rm -rf $TRUST_ROOT/exec/python/compiler_compat && echo "We remove ld from conda on TGCC..."
+   rm -rf $TRUST_ROOT/exec/python/compiler_compat && echo "We remove ld from conda on $HOST ..."
 fi
 InstallPipPkgs=0
 for pkg in $pkgs
