@@ -23,6 +23,7 @@
 #include <Schema_Euler_explicite.h>
 #include <Schema_Euler_Implicite.h>
 #include <Fluide_Dilatable_base.h>
+#include <Schema_RK_Williamson.h>
 #include <Loi_Fermeture_base.h>
 #include <Pb_Dilatable_base.h>
 #include <Probleme_Couple.h>
@@ -32,7 +33,6 @@
 #include <Domaine.h>
 #include <Debog.h>
 #include <RRK2.h>
-#include <RK3.h>
 
 Implemente_base(Pb_Dilatable_base,"Pb_Dilatable_base",Pb_Fluide_base);
 
@@ -49,7 +49,7 @@ void Pb_Dilatable_base::associer_milieu_base(const Milieu_base& mil)
 void Pb_Dilatable_base::associer_sch_tps_base(const Schema_Temps_base& sch)
 {
   if (!sub_type(Schema_Euler_explicite,sch) && !sub_type(Schema_Euler_Implicite,sch)
-      && !sub_type(RRK2,sch) && !sub_type(RK3,sch))
+      && !sub_type(RRK2,sch) && !sub_type(RK2,sch) && !sub_type(RK3,sch) && !sub_type(RK4,sch))
     {
       Cerr << "TRUST can't solve a " << que_suis_je() << " with a " << sch.que_suis_je() << " time scheme." << finl;
       Process::exit();

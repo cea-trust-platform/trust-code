@@ -24,8 +24,15 @@
 #define TRUSTSchema_RK_included
 
 #include<Schema_Temps_base.h>
+#include <Equation.h>
 
-enum class Ordre_RK { UN , RATIO_DEUX , DEUX , TROIS , QUATRE };
+template<bool B, typename T>
+using enable_if_t = typename std::enable_if<B, T>::type;
+
+using ARR3 = std::array<double, 3>;
+
+// See Williamson RK series https://www.sciencedirect.com/science/article/pii/0021999180900339
+enum class Ordre_RK { UN , RATIO_DEUX , DEUX_CLASSIQUE , DEUX_WILLIAMSON , TROIS_CLASSIQUE , TROIS_WILLIAMSON , QUATRE_CLASSIQUE , QUATRE_WILLIAMSON };
 
 template <Ordre_RK _ORDRE_ >
 class TRUSTSchema_RK : public Schema_Temps_base
@@ -39,15 +46,55 @@ class TRUSTSchema_RK : public Schema_Temps_base
   // Renvoie le le temps a la i-eme valeur future. Ici : t(n+1)
   double temps_futur(int i) const override
   {
-    assert(i==1);
-    return temps_courant()+pas_de_temps();
+    assert(i == 1);
+    return temps_courant() + pas_de_temps();
   }
 
   // Renvoie le le temps le temps que doivent rendre les champs a l'appel de valeurs(). Ici : t(n+1)
-  double temps_defaut() const override { return temps_courant()+pas_de_temps(); }
+  double temps_defaut() const override { return temps_courant() + pas_de_temps(); }
 
   // a surcharger si utile
   void completer() override { /* Do nothing */ }
+
+  int faire_un_pas_de_temps_eqn_base(Equation_base& eq) override { return faire_un_pas_de_temps_eqn_base_generique<_ORDRE_>(eq); } // SFINAE :-)
+
+private:
+  static constexpr int NW = 100;
+  static constexpr double SQRT2 = sqrt(2.), SQRT2_2 = SQRT2 / 2.;
+
+  inline const ARR3 get_a() { return ( _ORDRE_ == Ordre_RK::DEUX_WILLIAMSON ) ? A2 : _ORDRE_ == Ordre_RK::TROIS_WILLIAMSON ? A3 : A4; }
+  inline const ARR3 get_b() { return ( _ORDRE_ == Ordre_RK::DEUX_WILLIAMSON ) ? B2 : _ORDRE_ == Ordre_RK::TROIS_WILLIAMSON ? B3 : B4; }
+
+  static constexpr ARR3 A2 = { 0.0, SQRT2 - 2. , -1.e15 /* poubelle */ };
+  static constexpr ARR3 B2 = { SQRT2_2, SQRT2_2, -1.e15 /* poubelle */ };
+
+  static constexpr ARR3 A3 = { 0.0, -5. / 9., -153. / 128. };
+  static constexpr ARR3 B3 = { 1. / 3., 15. / 16., 8. / 15. };
+
+  static constexpr ARR3 A4 = { 0.0, -1. /2. , -2. };
+  static constexpr ARR3 B4 = { 1. / 2., 1. , 1. / 6. };
+
+  inline void print_warning(const int nw)
+  {
+    Cerr << finl << "**** Advice (printed only on the first " << nw << " time steps)****" << finl;
+    Cerr << "You are using Runge Kutta schema ! If you wish to increase the time step, try facsec between 1 and 2/3/4 (depends on the order of the scheme)." << finl;
+  }
+
+  /*
+   * SFINAE template functions : can not be implemented directly on overrided functions ==> methodes internes ;-)
+   */
+  template<Ordre_RK _O_ = _ORDRE_>
+  enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE, int>
+  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // TODO : CODE ME
+
+  template<Ordre_RK _O_ = _ORDRE_>
+  enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON || _O_ == Ordre_RK::TROIS_WILLIAMSON || _O_ == Ordre_RK::QUATRE_WILLIAMSON, int>
+  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
+
+  template<Ordre_RK _O_ = _ORDRE_> enable_if_t<_O_ == Ordre_RK::UN || _O_ == Ordre_RK::RATIO_DEUX, int>
+  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // From VTABLE
 };
+
+#include <TRUSTSchema_RK.tpp>
 
 #endif /* TRUSTSchema_RK_included */

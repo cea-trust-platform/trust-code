@@ -14,43 +14,22 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Schema_Euler_explicite.cpp
+// File:        Schema_RK_Williamson.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Schemas_Temps
-// Version:     /main/29
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Schema_Euler_explicite.h>
-#include <Equation.h>
+#include <Schema_RK_Williamson.h>
 
-Implemente_instanciable(Schema_Euler_explicite,"Schema_euler_explicite|Scheme_euler_explicit",TRUSTSchema_RK<Ordre_RK::UN>);
+Implemente_instanciable(RK2,"Runge_Kutta_ordre_2",TRUSTSchema_RK<Ordre_RK::DEUX_WILLIAMSON>);
+Sortie& RK2::printOn(Sortie& s) const { return  TRUSTSchema_RK<Ordre_RK::DEUX_WILLIAMSON>::printOn(s); }
+Entree& RK2::readOn(Entree& s) { return TRUSTSchema_RK<Ordre_RK::DEUX_WILLIAMSON>::readOn(s) ; }
 
-Sortie& Schema_Euler_explicite::printOn(Sortie& s) const { return  TRUSTSchema_RK<Ordre_RK::UN>::printOn(s); }
+Implemente_instanciable(RK3,"Runge_Kutta_ordre_3",TRUSTSchema_RK<Ordre_RK::TROIS_WILLIAMSON>);
+Sortie& RK3::printOn(Sortie& s) const { return  TRUSTSchema_RK<Ordre_RK::TROIS_WILLIAMSON>::printOn(s); }
+Entree& RK3::readOn(Entree& s) { return TRUSTSchema_RK<Ordre_RK::TROIS_WILLIAMSON>::readOn(s) ; }
 
-Entree& Schema_Euler_explicite::readOn(Entree& s) { return TRUSTSchema_RK<Ordre_RK::UN>::readOn(s) ; }
-
-// Description: Effectue un pas de temps d'Euler explicite sur l'equation passee en parametre.
-int Schema_Euler_explicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
-{
-  DoubleTab& present = eqn.inconnue().valeurs(); // Un
-  DoubleTab& futur = eqn.inconnue().futur();   // Un+1
-  DoubleTab dudt(futur); // just for initializing the array structure ...
-
-  // Boundary conditions applied on Un+1:
-  eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
-
-  // On tourne la roue pour que les operateurs utilisent les champs au temps futur
-  eqn.inconnue().avancer();
-  eqn.derivee_en_temps_inco(dudt);
-  eqn.inconnue().reculer();
-
-  // Un+1=Un+dt_*dU/dt
-  futur = dudt;
-  futur *= dt_;
-  futur += present;
-
-  eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
-  update_critere_statio(dudt, eqn);
-
-  return 1;
-}
+Implemente_instanciable(RK4, "Runge_Kutta_ordre_4_D3P", TRUSTSchema_RK<Ordre_RK::QUATRE_WILLIAMSON>);
+Sortie& RK4::printOn(Sortie& s) const { return TRUSTSchema_RK<Ordre_RK::QUATRE_WILLIAMSON>::printOn(s); }
+Entree& RK4::readOn(Entree& s) { return TRUSTSchema_RK<Ordre_RK::QUATRE_WILLIAMSON>::readOn(s); }

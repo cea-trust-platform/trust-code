@@ -14,82 +14,51 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        RK4_D3P.h
-// Directory:   $TRUST_ROOT/src/Kernel/Schemas_Temps
-// Version:     /main/9
+// File:        TRUSTSchema_RK.tpp
+// Directory:   $TRUST_ROOT/src/Kernel/Framework
+// Version:     /main/63
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef RK4_D3P_included
-#define RK4_D3P_included
+#ifndef TRUSTSchema_RK_TPP_included
+#define TRUSTSchema_RK_TPP_included
 
-
-
-
-
-#include <Schema_Temps_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe RK4_D3P
-//     Cette classe represente un schema en temps de Runge Kutta d'ordre 4
-//     degnere (schema a trois points)
-//     (cas 17 de Williamson) s'ecrit :
-//     q1=h f(x0)
-//     x1=x0+b1 q1
-//     q2=h f(x1) +a2 q1
-//     x2=x1+b2 q2
-//     q3=h f(x2)+a3 q2
-//     x3=x2+b3 q3
-//      avec a1=0, a2=-1/2, a3=-2
-//                              b1=1/2, b2=1, b3=1/6
-// .SECTION voir aussi
-//     Schema_Temps_base
-//////////////////////////////////////////////////////////////////////////////
-class RK4_D3P: public Schema_Temps_base
+template <Ordre_RK _ORDRE_ > template<Ordre_RK _O_>
+enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON || _O_ == Ordre_RK::TROIS_WILLIAMSON || _O_ == Ordre_RK::QUATRE_WILLIAMSON, int>
+TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base& eqn)
 {
+  static constexpr int NB_PTS = (_ORDRE_ == Ordre_RK::DEUX_WILLIAMSON) ? 2 : 3;
 
-  Declare_instanciable(RK4_D3P);
+  // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
+  if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
 
-public :
+  DoubleTab& xi = eqn.inconnue().valeurs(), &xip1 = eqn.inconnue().futur();
+  DoubleTab present(xi), qi(xi);
 
-  ////////////////////////////////
-  //                            //
-  // Caracteristiques du schema //
-  //                            //
-  ////////////////////////////////
+  for (int i = 0; i < NB_PTS; i++)
+    {
+      // on fait ca : q_i = a_{i-1} * q_{i-1} + dt * f(x_{i-1})
+      qi *= get_a()[i];
+      qi.ajoute(dt_, eqn.derivee_en_temps_inco(xip1));
 
-  int nb_valeurs_temporelles() const override;
-  int nb_valeurs_futures() const override;
-  double temps_futur(int i) const override;
-  double temps_defaut() const override;
+      // on fait ca : x_i = x_{i-1} + b_i * q_i
+      xi.ajoute(get_b()[i], qi);
+    }
 
-  /////////////////////////////////////////
-  //                                     //
-  // Fin des caracteristiques du schema  //
-  //                                     //
-  /////////////////////////////////////////
+  xip1 = xi;
+  xi -= present;
+  xi /= dt_;
+  update_critere_statio(xi, eqn);
 
-  int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
-  inline void completer() override;
-  //  virtual int faire_un_pas_de_temps_pb_couple(Probleme_Couple&);
+  // Update boundary condition on futur:
+  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+  xip1.echange_espace_virtuel();
 
+  // xi = x0;
+  xi = present;
 
-  //// COMMENTE POUR PASSAGE A LA V1.4.4
-  ////
-  //  virtual int faire_un_pas_de_temps_pb_mg(Pb_MG&);
-
-private:
-
-
-
-
-};
-
-inline void RK4_D3P::completer()
-{
+  return 1;
 }
 
 
-#endif
+#endif /* TRUSTSchema_RK_TPP_included */
