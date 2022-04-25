@@ -48,69 +48,38 @@ int RK3::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   // Warning sur les 100 premiers pas de temps si facsec est egal a 1
   // pour faire reflechir l'utilisateur
   int nw = 100;
-  if ( nb_pas_dt()>=0 && nb_pas_dt()<=nw && facsec_ == 1 )
+  if (nb_pas_dt() >= 0 && nb_pas_dt() <= nw && facsec_ == 1)
     {
       Cerr << finl << "**** Advice (printed only on the first " << nw << " time steps)****" << finl;
       Cerr << "You are using Runge Kutta schema order 3 so if you wish to increase the time step, try facsec between 1 and 3." << finl;
     }
 
-  double a2=-5./9.;
-  double a3=-153./128.;
-  double b1=1./3.;
-  double b2=15./16.;
-  double b3=8./15.;
+  const std::array<double, 3> a = {    0.0,  -5. / 9., -153. / 128.};
+  const std::array<double, 3> b = {1. / 3., 15. / 16.,     8. / 15.};
+  DoubleTab& xi = eqn.inconnue().valeurs(), &xip1 = eqn.inconnue().futur();
+  DoubleTab present(xi), qi(xi);
 
-  DoubleTab& xi=eqn.inconnue().valeurs();
-  DoubleTab& xipls1=eqn.inconnue().futur();
-  DoubleTab qi(xi) ;
-  DoubleTab present(xi);
+  for (int i = 0; i < 3; i++)
+    {
+      // q_i = a_{i-1} * q_{i-1} + dt * f(x_{i-1})
+      qi *= a[i];
+      qi.ajoute(dt_, eqn.derivee_en_temps_inco(xip1));
 
-  // q1 = f(x0)
-  eqn.derivee_en_temps_inco(qi);
+      // x_i = x_{i-1} + b_i * q_i
+      xi.ajoute(b[i], qi);
+    }
 
-  // q1 = h f(x0)
-  qi *= dt_;
-
-  // x1 = x0 + b1 q1
-  xi.ajoute(b1, qi);
-
-  // xipls1 = f(x1)
-
-  eqn.derivee_en_temps_inco(xipls1);
-
-  // q2 = h f(x1) + a2 q1
-  qi *= a2;
-  qi.ajoute(dt_,xipls1);
-
-  // x2 = x1 + b2 q2
-  xi.ajoute(b2, qi);
-
-  // xipls1 = f(x2)
-
-  eqn.derivee_en_temps_inco(xipls1);
-
-  // q3 = h f(x2) + a3 q2
-  qi *= a3;
-  qi.ajoute(dt_,xipls1);
-
-  // x3 = x2 + b3 q3
-  xi.ajoute(b3, qi);
-
-  // futur = x3
-  xipls1 = xi;
-
-  // xi = (x3-x0)/dt
+  xip1 = xi;
   xi -= present;
   xi /= dt_;
   update_critere_statio(xi, eqn);
 
   // Update boundary condition on futur:
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
-  xipls1.echange_espace_virtuel();
+  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+  xip1.echange_espace_virtuel();
 
   // xi = x0;
   xi = present;
 
   return 1;
 }
-
