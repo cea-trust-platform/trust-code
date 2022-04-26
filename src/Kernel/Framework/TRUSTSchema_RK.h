@@ -29,9 +29,9 @@
 template<bool B, typename T>
 using enable_if_t = typename std::enable_if<B, T>::type;
 
+using ARR2 = std::array<double, 2>;
 using ARR3 = std::array<double, 3>;
 
-// See Williamson RK series https://www.sciencedirect.com/science/article/pii/0021999180900339
 enum class Ordre_RK { UN , RATIO_DEUX , DEUX_CLASSIQUE , DEUX_WILLIAMSON , TROIS_CLASSIQUE , TROIS_WILLIAMSON , QUATRE_CLASSIQUE , QUATRE_WILLIAMSON };
 
 template <Ordre_RK _ORDRE_ >
@@ -70,11 +70,9 @@ protected:
 private:
   static constexpr double SQRT2 = sqrt(2.), SQRT2_2 = SQRT2 / 2.;
 
-  inline const ARR3 get_a() { return ( _ORDRE_ == Ordre_RK::DEUX_WILLIAMSON ) ? A2 : _ORDRE_ == Ordre_RK::TROIS_WILLIAMSON ? A3 : A4; }
-  inline const ARR3 get_b() { return ( _ORDRE_ == Ordre_RK::DEUX_WILLIAMSON ) ? B2 : _ORDRE_ == Ordre_RK::TROIS_WILLIAMSON ? B3 : B4; }
-
-  static constexpr ARR3 A2 = { 0.0, SQRT2 - 2. , -1.e15 /* poubelle */ };
-  static constexpr ARR3 B2 = { SQRT2_2, SQRT2_2, -1.e15 /* poubelle */ };
+  // See Williamson RK series https://www.sciencedirect.com/science/article/pii/0021999180900339
+  static constexpr ARR2 A2 = { 0.0, SQRT2 - 2. };
+  static constexpr ARR2 B2 = { SQRT2_2, SQRT2_2 };
 
   static constexpr ARR3 A3 = { 0.0, -5. / 9., -153. / 128. };
   static constexpr ARR3 B3 = { 1. / 3., 15. / 16., 8. / 15. };
@@ -82,14 +80,30 @@ private:
   static constexpr ARR3 A4 = { 0.0, -1. /2. , -2. };
   static constexpr ARR3 B4 = { 1. / 2., 1. , 1. / 6. };
 
-  // SFINAE template functions : can not be implemented directly on overrided functions ==> methodes internes ;-)
-  template<Ordre_RK _O_ = _ORDRE_>
-  enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE, int>
-  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // TODO : CODE ME
+  // SFINAE template functions
+  template<Ordre_RK _O_ = _ORDRE_, int NB>
+  enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
+  inline const get_a() { return A2; }
+
+  template<Ordre_RK _O_ = _ORDRE_, int NB>
+  enable_if_t<_O_ != Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
+  inline const get_a() { return _ORDRE_ == Ordre_RK::TROIS_WILLIAMSON ? A3 : A4; }
+
+  template<Ordre_RK _O_ = _ORDRE_, int NB>
+  enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
+  inline const get_b() { return B2; }
+
+  template<Ordre_RK _O_ = _ORDRE_, int NB>
+  enable_if_t<_O_ != Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
+  inline const get_b() { return _ORDRE_ == Ordre_RK::TROIS_WILLIAMSON ? B3 : B4; }
 
   template<Ordre_RK _O_ = _ORDRE_>
   enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON || _O_ == Ordre_RK::TROIS_WILLIAMSON || _O_ == Ordre_RK::QUATRE_WILLIAMSON, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
+
+  template<Ordre_RK _O_ = _ORDRE_>
+  enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE, int>
+  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // TODO : CODE ME
 
   template<Ordre_RK _O_ = _ORDRE_> enable_if_t<_O_ == Ordre_RK::UN || _O_ == Ordre_RK::RATIO_DEUX, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // From VTABLE

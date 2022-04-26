@@ -38,11 +38,11 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   for (int i = 0; i < NB_PTS; i++)
     {
       // on fait ca : q_i = a_{i-1} * q_{i-1} + dt * f(x_{i-1})
-      qi *= get_a()[i];
+      qi *= get_a<_ORDRE_,NB_PTS>()[i];
       qi.ajoute(dt_, eqn.derivee_en_temps_inco(xip1));
 
       // on fait ca : x_i = x_{i-1} + b_i * q_i
-      xi.ajoute(get_b()[i], qi);
+      xi.ajoute(get_b<_ORDRE_,NB_PTS>()[i], qi);
     }
 
   xip1 = xi;
