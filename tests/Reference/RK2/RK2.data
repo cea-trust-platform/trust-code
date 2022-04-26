@@ -39,9 +39,7 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VDF dis
-# Runge_Kutta_ordre_3 sch #
-Runge_Kutta_Rationnel_ordre_2 sch
-# Scheme_euler_explicit sch #
+Runge_Kutta_ordre_2 sch
 
 Nom coucou
 Read coucou coucou

@@ -14,27 +14,25 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        RRK2.cpp
+// File:        Schema_RK_Rationnel.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Schemas_Temps
 // Version:     /main/23
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <RRK2.h>
+#include <Schema_RK_Rationnel.h>
 #include <Equation.h>
-#include <TRUSTTrav.h>
 
+// XD runge_kutta_rationnel_ordre_2 schema_temps_base runge_kutta_rationnel_ordre_2 -1 This is the Runge-Kutta rational scheme of second order. The method is described in the note: Wambeck - Rational Runge-Kutta methods for solving systems of ordinary differential equations, at the link: https://link.springer.com/article/10.1007/BF02252381. Although rational methods require more computational work than linear ones, they can have some other properties, such as a stable behaviour with explicitness, which make them preferable. The CFD application of this RRK2 scheme is described in the note: https://link.springer.com/content/pdf/10.1007\%2F3-540-13917-6_112.pdf.
 Implemente_instanciable(RRK2,"Runge_Kutta_Rationnel_ordre_2",TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>);
 
 Sortie& RRK2::printOn(Sortie& s) const { return  TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>::printOn(s); }
 
 Entree& RRK2::readOn(Entree& s) { return TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>::readOn(s) ; }
 
-
 // Description:
-//    Effectue un pas de temps de Runge Kutta rationel d'ordre 2,
-//    sur l'equation passee en parametre.
-//    Le schema de Runge Kutta  rationel d'ordre 2:
+//    Effectue un pas de temps de Runge Kutta rationnel d'ordre 2, sur l'equation passee en parametre.
+//    Le schema de Runge Kutta rationel d'ordre 2:
 //     g1=hf(y0)
 //     g2=hf(y0+c2g1)
 //     y1=y0+(g1g1)/(b1g1+b2g2)
@@ -44,49 +42,26 @@ Entree& RRK2::readOn(Entree& s) { return TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>::r
 //      ordre2 si b2c2=-1/2
 //     b2c2<=-1/2 A0 stabilite et I stabilite
 //     b2c2<= 1/(2cos(alpha)(2-cos(alpha))) O<=alpha<pi/2 Aalpha stabilite
-// Precondition:
-// Parametre: Equation_base& eqn
-//    Signification: l'equation que l'on veut faire avancer d'un
-//                   pas de temps
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: int
-//    Signification: renvoie toujours 1
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 int RRK2::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
 {
-  // Warning sur les 100 premiers pas de temps si facsec est egal a 1
-  // pour faire reflechir l'utilisateur
-  int nw = 100;
-  if ( nb_pas_dt()>=0 && nb_pas_dt()<=nw && facsec_ == 1 )
-    {
-      Cerr << finl << "**** Advice (printed only on the first " << nw << " time steps)****" << finl;
-      Cerr << "You are using Runge Kutta schema order 2 so if you wish to increase the time step, try facsec between 1 and 2." << finl;
-    }
+  // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
+  if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
 
-  double b1=2.0;
-  double c2=0.5;
-  double b2=-1;
+  const double b1 = 2.0, b2 = -1, c2 = 0.5;
 
-  DoubleTab& present=eqn.inconnue().valeurs();
-  DoubleTab& futur=eqn.inconnue().futur();
+  DoubleTab& present = eqn.inconnue().valeurs(), &futur = eqn.inconnue().futur();
 
   // g1=futur=f(y0)
-  DoubleTab g1(present) ;
-  DoubleTab g2(present) ;
+  DoubleTab g1(present), g2(present); // just for initializing the array structure ...
 
   // sauv=y0
   DoubleTrav sauv(present);
-  sauv=present;
+  sauv = present;
 
   eqn.derivee_en_temps_inco(g1);
 
   // g1=hf(y0)
-  g1*=dt_;
+  g1 *= dt_;
 
   // present=y0+c2g1
   present.ajoute(c2, g1);
@@ -95,7 +70,7 @@ int RRK2::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   eqn.derivee_en_temps_inco(g2);
 
   // g2=b2"g2"
-  g2*=(b2*dt_);
+  g2 *= (b2 * dt_);
 
   // g2=b2"g2" + b1g1
   g2.ajoute(b1, g1);
@@ -103,21 +78,21 @@ int RRK2::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   // normeg2=("g2","g2")
   double normeg2 = mp_carre_norme_vect(g2) + DMINFLOAT;
   // normeg1=-(g1,g1)
-  double normeg1 = - mp_carre_norme_vect(g1);
+  double normeg1 = -mp_carre_norme_vect(g1);
   // psc1=2(g1,"g2")
   double psc1 = 2.0 * mp_prodscal(g1, g2);
 
   // y1=y0+(2g1(g1,"g2")-("g2")(g1,g1)/("g2","g2")
-  futur=g1;
-  futur*=psc1;
+  futur = g1;
+  futur *= psc1;
   futur.ajoute(normeg1, g2);
-  futur/=normeg2;
-  present=sauv;
+  futur /= normeg2;
+  present = sauv;
   futur /= dt_;
   update_critere_statio(futur, eqn);
   futur *= dt_;
-  futur+=sauv;
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+  futur += sauv;
+  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
   futur.echange_espace_virtuel();
 
   return 1;

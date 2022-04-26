@@ -347,10 +347,7 @@ Sch_CN_iteratif schema_temps_base Sch_CN_iteratif -1 The Crank-Nicholson method 
   attr seuil floattant seuil 1 criteria for ending iterative process (Max( || u(p) - u(p-1)||/Max || u(p) ||) < seuil) (0.001  by default)
 Sch_CN_EX_iteratif Sch_CN_iteratif Sch_CN_EX_iteratif -1 This keyword also describes a Crank-Nicholson method of second order accuracy but here, for scalars, because of instablities encountered when dt>dt_CFL, the Crank Nicholson scheme is not applied to scalar quantities. Scalars are treated according to Euler-Explicite scheme at the end of the CN treatment for velocity flow fields (by doing p Euler explicite under-iterations at dt<=dt_CFL). Parameters are the sames (but default values may change) compare to the Sch_CN_iterative scheme plus a relaxation keyword: niter_min (2 by default), niter_max (6 by default), niter_avg (3 by default), facsec_max (20 by default), seuil (0.05 by default)
   attr omega floattant omega 1 relaxation factor (0.1 by default)
-runge_kutta_ordre_3 schema_temps_base runge_kutta_ordre_3 -1 This is the Runge-Kutta scheme of third order.
-runge_kutta_ordre_4_d3p schema_temps_base runge_kutta_ordre_4_d3p -1 not_set
 leap_frog schema_temps_base leap_frog -1 This is the leap-frog scheme.
-runge_kutta_rationnel_ordre_2 schema_temps_base runge_kutta_rationnel_ordre_2 -1 This is the Runge-Kutta rational scheme of second order. The method is described in the note: Wambeck - Rational Runge-Kutta methods for solving systems of ordinary differential equations, at the link: https://link.springer.com/article/10.1007/BF02252381. Although rational methods require more computational work than linear ones, they can have some other properties, such as a stable behaviour with explicitness, which make them preferable. The CFD application of this RRK2 scheme is described in the note: https://link.springer.com/content/pdf/10.1007\%2F3-540-13917-6_112.pdf.
 solveur_lineaire_std solveur_implicite_base solveur_lineaire_std 1 not_set
   attr solveur solveur_sys_base solveur 1 not_set
 simpler solveur_implicite_base simpler 1 Simpler method for incompressible systems.

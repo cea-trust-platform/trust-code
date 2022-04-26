@@ -58,8 +58,16 @@ class TRUSTSchema_RK : public Schema_Temps_base
 
   int faire_un_pas_de_temps_eqn_base(Equation_base& eq) override { return faire_un_pas_de_temps_eqn_base_generique<_ORDRE_>(eq); } // SFINAE :-)
 
-private:
+protected:
   static constexpr int NW = 100;
+
+  inline void print_warning(const int nw)
+  {
+    Cerr << finl << "**** Advice (printed only on the first " << nw << " time steps)****" << finl;
+    Cerr << "You are using Runge Kutta schema ! If you wish to increase the time step, try facsec between 1 and 2/3/4 (depends on the order of the scheme)." << finl;
+  }
+
+private:
   static constexpr double SQRT2 = sqrt(2.), SQRT2_2 = SQRT2 / 2.;
 
   inline const ARR3 get_a() { return ( _ORDRE_ == Ordre_RK::DEUX_WILLIAMSON ) ? A2 : _ORDRE_ == Ordre_RK::TROIS_WILLIAMSON ? A3 : A4; }
@@ -74,15 +82,7 @@ private:
   static constexpr ARR3 A4 = { 0.0, -1. /2. , -2. };
   static constexpr ARR3 B4 = { 1. / 2., 1. , 1. / 6. };
 
-  inline void print_warning(const int nw)
-  {
-    Cerr << finl << "**** Advice (printed only on the first " << nw << " time steps)****" << finl;
-    Cerr << "You are using Runge Kutta schema ! If you wish to increase the time step, try facsec between 1 and 2/3/4 (depends on the order of the scheme)." << finl;
-  }
-
-  /*
-   * SFINAE template functions : can not be implemented directly on overrided functions ==> methodes internes ;-)
-   */
+  // SFINAE template functions : can not be implemented directly on overrided functions ==> methodes internes ;-)
   template<Ordre_RK _O_ = _ORDRE_>
   enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // TODO : CODE ME

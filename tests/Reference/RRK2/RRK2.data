@@ -27,7 +27,7 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
+	Partition_tool tranche { tranches 2 1 }
 	Larg_joint 1
 	zones_name DOM
 }
@@ -39,18 +39,27 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VDF dis
-Runge_Kutta_ordre_4 sch
+# Runge_Kutta_ordre_3 sch #
+Runge_Kutta_Rationnel_ordre_2 sch
+# Scheme_euler_explicit sch #
+
+Nom coucou
+Read coucou coucou
+Ecrire coucou
+
 Read sch
 {
-	tinit 0
-	tmax 1.
+        tmax 1.
+	tinit 0.
 	dt_min 0.0001
 	dt_max 10.
 	dt_impr 0.0001
 	dt_sauv 100
 	seuil_statio 1.e-8
-	facsec 1
+	facsec 1.
 }
+
+Ecrire coucou
 
 Solide sol
 Read sol

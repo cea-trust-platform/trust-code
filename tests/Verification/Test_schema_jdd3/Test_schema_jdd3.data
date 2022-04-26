@@ -161,7 +161,7 @@ Associate pb_3 solide_3
 
 
 Pb_conduction pb_4
-runge_kutta_ordre_4_D3P sch_4
+runge_kutta_ordre_4 sch_4
 Read sch_4
 {
 	tinit	0.

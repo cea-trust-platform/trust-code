@@ -14,21 +14,23 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        RRK2.h
+// File:        Schema_RK_Rationnel.h
 // Directory:   $TRUST_ROOT/src/Kernel/Schemas_Temps
 // Version:     /main/16
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef RRK2_included
-#define RRK2_included
+#ifndef Schema_RK_Rationnel_included
+#define Schema_RK_Rationnel_included
 
 #include <TRUSTSchema_RK.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     classe RRK2
+/// \cond DO_NOT_DOCUMENT
+class Schema_RK_Rationnel
+{  };
+/// \endcond
+
+// .DESCRIPTION : classe RRK2
 //     Cette classe represente un  schema de Runge Kutta
 //     rationel d'ordre 2 qui s'ecrit:
 //     U(n+1) = U(n) + (2g1 (g1,b) - b(g1,g1))/(b,b)
@@ -36,8 +38,7 @@
 //          g2 = dt f(U(n) + c2 g1)
 //          b = b1 g1 + b2 g2
 //     on choisit b1=2, b2=-1, c2=1/2
-// .SECTION voir aussi
-//     Schema_Temps_base RK3
+// .SECTION voir aussi : TRUSTSchema_RK
 //
 //  03/07/2017 ABn. Quelques explications RRK2:
 //  Le papier de reference pour l'implementation du Rational Runge Kutta 2 semble etre :
@@ -54,7 +55,6 @@
 //  https://link.springer.com/content/pdf/10.1007%2F3-540-13917-6_112.pdf
 //  rho*u reste au temps n pour une evaluation intermediaire de f.
 //  Said differently, from the time scheme perspective, f is only a function of Y1.
-//////////////////////////////////////////////////////////////////////////////
 
 class RRK2: public TRUSTSchema_RK<Ordre_RK::RATIO_DEUX>
 {
@@ -63,4 +63,4 @@ public :
   int faire_un_pas_de_temps_eqn_base(Equation_base&) override;
 };
 
-#endif /* RRK2_included */
+#endif /* Schema_RK_Rationnel_included */

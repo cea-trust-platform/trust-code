@@ -24,6 +24,7 @@
 #include <Schema_Euler_Implicite.h>
 #include <Fluide_Dilatable_base.h>
 #include <Schema_RK_Williamson.h>
+#include <Schema_RK_Rationnel.h>
 #include <Loi_Fermeture_base.h>
 #include <Pb_Dilatable_base.h>
 #include <Probleme_Couple.h>
@@ -32,7 +33,6 @@
 #include <Pred_Cor.h>
 #include <Domaine.h>
 #include <Debog.h>
-#include <RRK2.h>
 
 Implemente_base(Pb_Dilatable_base,"Pb_Dilatable_base",Pb_Fluide_base);
 

@@ -925,8 +925,8 @@
  RTabInt RTabInt RTabInt.h
  Runge_Kutta_ordre_2 RK2 Schema_RK_Williamson.h
  Runge_Kutta_ordre_3 RK3 Schema_RK_Williamson.h
- Runge_Kutta_ordre_4_D3P RK4 Schema_RK_Williamson.h
- Runge_Kutta_Rationnel_ordre_2 RRK2 RRK2.h
+ Runge_Kutta_ordre_4 RK4 Schema_RK_Williamson.h
+ Runge_Kutta_Rationnel_ordre_2 RRK2 Schema_RK_Rationnel.h
  Saturation Saturation Saturation.h
  Saturation_base Saturation_base Saturation_base.h
  Saturation_constant Saturation_constant Saturation_constant.h
