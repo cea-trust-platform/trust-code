@@ -487,7 +487,8 @@ class Show(object):
             f.write("annotation=GetAnnotationAttributes()\nannotation.SetUserInfoFlag(0)\nSetAnnotationAttributes(annotation)\n")
             # f.write("ResizeWindow(1,160,156) \n")
             f.write("s = SaveWindowAttributes() \n")
-            f.write("s.fileName = '" + self.fichier + name + str(self.time) + "_' \n")
+            fName = "img_" + self.fichier + name + str(self.time)
+            f.write("s.fileName = '" + fName + "_' \n")
             f.write("s.format = s.PNG \n")
             f.write("s.progressive = 1 \n")
             f.write("SetSaveWindowAttributes(s) \n")
@@ -545,7 +546,7 @@ class Show(object):
         from ..jupyter.run import BUILD_DIRECTORY
 
         name = self.name.replace("/", "_")
-        fName = self.fichier + name + str(self.time)  # +"_0000.png"
+        fName = "img_" + self.fichier + name + str(self.time)  # +"_0000.png"
         from glob import glob
 
         listFiles = glob(os.path.join(BUILD_DIRECTORY, fName + "*.png"))

@@ -352,6 +352,8 @@ class TRUSTSuite(object):
             cmd = pth
             subprocess.check_output("chmod u+x %s" % pth, shell=True)
             output = subprocess.run(cmd, shell=True, executable="/bin/bash")
+        else:
+            output = subprocess.run(scriptName, shell=True, executable="/bin/bash")
         os.chdir(origin)
 
     def addCase(self, case):
