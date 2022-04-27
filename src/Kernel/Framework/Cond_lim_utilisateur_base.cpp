@@ -332,39 +332,23 @@ void paroi_contact::complement(Nom& ajout)
       exit();
     }
 
-  if (is_pb_VDF())
+  if (is_pb_VDF() || is_pb_PolyMAC() || is_pb_PolyMAC_V2())
     {
-      //paroi_echange_contact_VDF pb2 Droit1 temperature 1.e10
+      if (is_pb_VDF())
+        {
+          ajout = "paroi_echange_contact_VDF ";
+          if (rayo == 2)
+            ajout = "Echange_contact_Rayo_transp_VDF ";
+          if (rayo == 1)
+            ajout = "Paroi_Echange_contact_rayo_semi_transp_VDF ";
+        }
+      else
+        ajout = is_pb_PolyMAC() ? "paroi_echange_contact_PolyMAC " : "paroi_echange_contact_PolyMAC_V2 ";
 
-
-      ajout= "paroi_echange_contact_VDF ";
-      if (rayo==2)
-        ajout= "Echange_contact_Rayo_transp_VDF ";
-      if (rayo==1)
-        ajout="Paroi_Echange_contact_rayo_semi_transp_VDF ";
-
-      ajout+=nom_autre_pb;
-      ajout+=" ";
-      ajout+=nom_autre_bord;
-      ajout+=" temperature 1.e10";
-    }
-  else if (is_pb_PolyMAC())
-    {
-      //paroi_echange_contact_PolyMAC pb2 Droit1 temperature 1.e10
-      ajout= "paroi_echange_contact_PolyMAC ";
-      ajout+=nom_autre_pb;
-      ajout+=" ";
-      ajout+=nom_autre_bord;
-      ajout+=" temperature 1.e10";
-    }
-  else if (is_pb_PolyMAC_V2())
-    {
-      //paroi_echange_contact_PolyMAC_V2 pb2 Droit1 temperature 1.e10
-      ajout= "paroi_echange_contact_PolyMAC_V2 ";
-      ajout+=nom_autre_pb;
-      ajout+=" ";
-      ajout+=nom_autre_bord + " ";
-      ajout+=mon_equation->inconnue().le_nom() + " 1.e10";
+      ajout += nom_autre_pb;
+      ajout += " ";
+      ajout += nom_autre_bord + " ";
+      ajout += mon_equation->inconnue().le_nom() + " 1.e10";
     }
   else
     {
