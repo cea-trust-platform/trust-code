@@ -1,7 +1,0 @@
-#!/bin/bash
-
-for M in `cat listmeshes`
-do
-    cat $M/jdd_*/conv_p | awk '{print $2,$1}'| sort -n> $M/conv_glob_p
-    cat $M/jdd_*/conv_v | awk '{print $2,$1}'| sort -n> $M/conv_glob_v
-done
