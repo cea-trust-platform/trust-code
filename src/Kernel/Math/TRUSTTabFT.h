@@ -100,6 +100,7 @@ public:
 using ArrOfIntFT = TRUSTArrayFT<int>;
 using ArrOfDoubleFT = TRUSTArrayFT<double>;
 
+/// \cond DO_NOT_DOCUMENT
 template<>
 inline TRUSTArrayFT<int>::TRUSTArrayFT(const TRUSTArrayFT<int>& x) = default;
 
@@ -141,5 +142,5 @@ inline TRUSTArrayFT<int>& TRUSTArrayFT<int>::operator=(const TRUSTArrayFT<int>& 
   TRUSTArray<int>::operator=(x);
   return *this;
 }
-
+/// \endcond
 #endif /* TRUSTTabFT_included */
