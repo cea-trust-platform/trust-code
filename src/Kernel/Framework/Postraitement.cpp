@@ -749,6 +749,11 @@ void Postraitement::completer()
   les_sondes_.init_bords();
 }
 
+void Postraitement::completer_sondes()
+{
+  les_sondes_.completer();
+}
+
 // Description:
 //    Lit le nom des champs a postraiter sur un flot d'entree.
 //    Format:

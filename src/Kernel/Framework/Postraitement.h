@@ -97,6 +97,7 @@ public:
   int sauvegarder(Sortie& os) const override;
   int reprendre(Entree& is) override;
   void completer() override;
+  void completer_sondes() override;
 
   //
   // Methodes specifiques :
@@ -227,7 +228,6 @@ protected:
 
   Format_Post format_post;
 
-private :
   static LIST(Nom) noms_fichiers_sondes_;
   int sondes_demande_, champs_demande_, stat_demande_, stat_demande_definition_champs_;
   int binaire, tableaux_demande_;
@@ -236,6 +236,8 @@ private :
   static Motcles formats_supportes;
   REF(Domaine) le_domaine;
   REF(Zone_dis_base) zone_dis_pour_faces;
+
+private :
 };
 
 inline int Postraitement::lpost(double temps_courant, double dt_post) const

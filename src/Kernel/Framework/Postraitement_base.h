@@ -48,6 +48,7 @@ public:
   int sauvegarder(Sortie& os) const override;
   int reprendre(Entree& is) override;
   virtual void completer() = 0;
+  virtual void completer_sondes() {};
 
   enum Format { ASCII, BINAIRE };
   enum Type_Champ { CHAMP=0, STATISTIQUE=1 };

@@ -49,6 +49,7 @@ public:
   int sauvegarder(Sortie& os) const override;
   int reprendre(Entree& is) override;
   void completer();
+  void completer_sondes();
 };
 
 #endif

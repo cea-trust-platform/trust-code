@@ -112,7 +112,14 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu,
     {
       // Creation et lecture d'un postraitement unique standard
       DERIV(Postraitement_base) & post = add( DERIV(Postraitement_base)() );
-      post.typer("Postraitement");
+      if (mon_pb.que_suis_je() == "Pb_STT")
+        {
+          post.typer("Postraitement_STT");
+        }
+      else
+        {
+          post.typer("Postraitement");
+        }
       post.valeur().associer_nom_et_pb_base("neant", mon_pb);
       is >> post.valeur();
     }
@@ -292,6 +299,17 @@ void Postraitements::completer()
     {
       Postraitement_base& post = curseur.valeur().valeur();
       post.completer();
+      ++curseur;
+    }
+}
+
+void Postraitements::completer_sondes()
+{
+  LIST_CURSEUR(DERIV(Postraitement_base)) curseur = *this;
+  while(curseur)
+    {
+      Postraitement_base& post = curseur.valeur().valeur();
+      post.completer_sondes();
       ++curseur;
     }
 }

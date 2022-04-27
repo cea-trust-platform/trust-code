@@ -48,10 +48,10 @@ public :
   Sonde(const Nom& );
   void associer_post(const Postraitement& );
   void initialiser();
-  void mettre_a_jour(double temps, double tinit);
+  virtual void mettre_a_jour(double temps, double tinit);
   void postraiter();
   void ouvrir_fichier();
-  void completer();
+  virtual void completer();
   inline void fermer_fichier();
   inline const Champ_Generique_base& le_champ() const;
   inline const DoubleTab& les_positions_sondes_initiales() const; // Positions initiales
