@@ -72,9 +72,9 @@ template<typename T> void TablePrinter::OutputDecimalNumber(T input)
 
   *out_stream_ << std::setiosflags(std::ios::fixed)
                << std::setprecision(std::min(precision, 5))
-               << std::setw(column_widths_.at(j_))
-               << std::defaultfloat
-               << input;
+               << std::setw(column_widths_.at(j_));
+  out_stream_->unsetf(std::ios_base::floatfield);
+  *out_stream_ << input;
 
   if (j_ == get_num_columns()-1)
     {
