@@ -11,6 +11,7 @@
 #include <Schema_Adams_Moulton_order_3.h>
 #include <Schema_Euler_Implicite.h>
 #include <Schema_Euler_explicite.h>
+#include <Schema_RK_Classique.h>
 #include <Schema_RK_Rationnel.h>
 #include <Schema_RK_Williamson.h>
 void instancie_src_Kernel_Schemas_Temps() {
@@ -23,8 +24,12 @@ Schema_Adams_Moulton_order_2 inst5;verifie_pere(inst5);
 Schema_Adams_Moulton_order_3 inst6;verifie_pere(inst6);
 Schema_Euler_Implicite inst7;verifie_pere(inst7);
 Schema_Euler_explicite inst8;verifie_pere(inst8);
-RRK2 inst9;verifie_pere(inst9);
-RK2 inst10;verifie_pere(inst10);
-RK3 inst11;verifie_pere(inst11);
-RK4 inst12;verifie_pere(inst12);
+RK2_Classique inst9;verifie_pere(inst9);
+RK3_Classique inst10;verifie_pere(inst10);
+RK4_Classique inst11;verifie_pere(inst11);
+RK4_Classique_3_8 inst12;verifie_pere(inst12);
+RRK2 inst13;verifie_pere(inst13);
+RK2 inst14;verifie_pere(inst14);
+RK3 inst15;verifie_pere(inst15);
+RK4 inst16;verifie_pere(inst16);
 }

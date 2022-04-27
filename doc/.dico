@@ -924,8 +924,12 @@
  Rotationnel_Champ_Q1_EF Rotationnel_Champ_Q1_EF Rotationnel_Champ_Q1_EF.h
  RTabInt RTabInt RTabInt.h
  Runge_Kutta_ordre_2 RK2 Schema_RK_Williamson.h
+ Runge_Kutta_ordre_2_classique RK2_Classique Schema_RK_Classique.h
  Runge_Kutta_ordre_3 RK3 Schema_RK_Williamson.h
+ Runge_Kutta_ordre_3_classique RK3_Classique Schema_RK_Classique.h
  Runge_Kutta_ordre_4 RK4 Schema_RK_Williamson.h
+ Runge_Kutta_ordre_4_classique RK4_Classique Schema_RK_Classique.h
+ Runge_Kutta_ordre_4_classique_3_8 RK4_Classique_3_8 Schema_RK_Classique.h
  Runge_Kutta_Rationnel_ordre_2 RRK2 Schema_RK_Rationnel.h
  Saturation Saturation Saturation.h
  Saturation_base Saturation_base Saturation_base.h

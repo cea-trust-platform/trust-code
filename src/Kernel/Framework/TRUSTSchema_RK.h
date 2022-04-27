@@ -32,7 +32,7 @@ using enable_if_t = typename std::enable_if<B, T>::type;
 using ARR2 = std::array<double, 2>;
 using ARR3 = std::array<double, 3>;
 
-enum class Ordre_RK { UN , RATIO_DEUX , DEUX_CLASSIQUE , DEUX_WILLIAMSON , TROIS_CLASSIQUE , TROIS_WILLIAMSON , QUATRE_CLASSIQUE , QUATRE_WILLIAMSON };
+enum class Ordre_RK { UN , RATIO_DEUX , DEUX_CLASSIQUE , DEUX_WILLIAMSON , TROIS_CLASSIQUE , TROIS_WILLIAMSON , QUATRE_CLASSIQUE , QUATRE_CLASSIQUE_3_8 , QUATRE_WILLIAMSON };
 
 template <Ordre_RK _ORDRE_ >
 class TRUSTSchema_RK : public Schema_Temps_base
@@ -63,7 +63,7 @@ protected:
 
   inline void print_warning(const int nw)
   {
-    Cerr << finl << "**** Advice (printed only on the first " << nw << " time steps)****" << finl;
+    Cerr << finl << "**** Advice (printed only on the first " << nw << " time steps) ****" << finl;
     Cerr << "You are using Runge Kutta schema ! If you wish to increase the time step, try facsec between 1 and 2/3/4 (depends on the order of the scheme)." << finl;
   }
 
@@ -102,8 +102,20 @@ private:
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
 
   template<Ordre_RK _O_ = _ORDRE_>
-  enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE, int>
-  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // TODO : CODE ME
+  enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE, int>
+  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
+
+  template<Ordre_RK _O_ = _ORDRE_>
+  enable_if_t<_O_ == Ordre_RK::TROIS_CLASSIQUE, int>
+  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
+
+  template<Ordre_RK _O_ = _ORDRE_>
+  enable_if_t<_O_ == Ordre_RK::QUATRE_CLASSIQUE, int>
+  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
+
+  template<Ordre_RK _O_ = _ORDRE_>
+  enable_if_t<_O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, int>
+  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
 
   template<Ordre_RK _O_ = _ORDRE_> enable_if_t<_O_ == Ordre_RK::UN || _O_ == Ordre_RK::RATIO_DEUX, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // From VTABLE
