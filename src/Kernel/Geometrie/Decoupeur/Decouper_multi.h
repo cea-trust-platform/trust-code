@@ -43,7 +43,6 @@ public:
 
 private:
   std::map<std::string, Decouper> decoupeurs; //decoupeurs de chaque domaine
-  std::vector<std::array<const Raccord_base *, 2>> racc_pairs; //liste de paires de raccords a connecter
   double tolerance = 1e-8; //tolerance geometrique
 };
 
