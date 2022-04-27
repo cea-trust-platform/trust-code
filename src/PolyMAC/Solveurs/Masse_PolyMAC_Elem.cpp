@@ -84,6 +84,7 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
 
 void Masse_PolyMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
+  equation().init_champ_conserve();
   /* une diagonale par derivee de champ_conserve_ presente dans matrices */
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const Champ_Inc_base& cc = equation().champ_conserve();

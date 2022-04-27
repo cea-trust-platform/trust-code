@@ -53,9 +53,9 @@ Entree& Echange_contact_PolyMAC_V2::readOn(Entree& s )
   return s;
 }
 
-int Echange_contact_PolyMAC_V2::initialiser(double temps)
+void Echange_contact_PolyMAC_V2::init_op() const
 {
-  Echange_externe_impose::initialiser(temps);
+  if (o_diff.non_nul()) return;
   Champ_front_calc ch;
   ch.creer(nom_autre_pb_, nom_bord_, nom_champ_);
   fvf = ref_cast(Front_VF, frontiere_dis()), o_fvf = ref_cast(Front_VF, ch.front_dis()); //frontieres
@@ -72,7 +72,6 @@ int Echange_contact_PolyMAC_V2::initialiser(double temps)
   diff = ref_cast(Op_Diff_PolyMAC_V2_Elem, eqn.operateur(i_op).l_op_base());
   o_diff = ref_cast(Op_Diff_PolyMAC_V2_Elem, o_eqn.operateur(o_i_op).l_op_base());
 
-  return 1;
 }
 
 /* identification des elements / faces de l'autre cote de la frontiere, avec offsets */

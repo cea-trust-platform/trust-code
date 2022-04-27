@@ -47,7 +47,7 @@
 #include <Flux_parietal_base.h>
 #include <ConstDoubleTab_parts.h>
 
-Implemente_instanciable_sans_constructeur( Op_Diff_PolyMAC_Elem          , "Op_Diff_PolyMAC_Elem|Op_Diff_PolyMAC_var_Elem"                                , Op_Diff_PolyMAC_base ) ;
+Implemente_instanciable_sans_constructeur(Op_Diff_PolyMAC_Elem, "Op_Diff_PolyMAC_Elem|Op_Diff_PolyMAC_var_Elem", Op_Diff_PolyMAC_base);
 Implemente_ref(Op_Diff_PolyMAC_Elem);
 
 Op_Diff_PolyMAC_Elem::Op_Diff_PolyMAC_Elem()
@@ -88,9 +88,11 @@ void Op_Diff_PolyMAC_Elem::init_op_ext() const
   const Conds_lim& cls = equation().zone_Cl_dis().les_conditions_limites();
   for (int i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
       {
-        const Op_Diff_PolyMAC_Elem *o_op = &ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).o_diff.valeur();
+        const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[i].valeur());
+        cl.init_op();
+        const Op_Diff_PolyMAC_Elem *o_op = &cl.o_diff.valeur();
         if (std::find(op_ext.begin(), op_ext.end(), o_op) == op_ext.end()) op_ext.push_back(o_op);
-        ref_cast(Echange_contact_PolyMAC, cls[i].valeur()).o_idx = std::find(op_ext.begin(), op_ext.end(), o_op) - op_ext.begin();
+        cl.o_idx = std::find(op_ext.begin(), op_ext.end(), o_op) - op_ext.begin();
       }
 }
 

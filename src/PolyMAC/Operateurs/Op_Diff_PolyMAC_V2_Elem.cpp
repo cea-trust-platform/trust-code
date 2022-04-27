@@ -41,8 +41,8 @@
 #include <functional>
 #include <Flux_parietal_base.h>
 
-Implemente_instanciable_sans_constructeur( Op_Diff_PolyMAC_V2_Elem          , "Op_Diff_PolyMAC_V2_Elem|Op_Diff_PolyMAC_V2_var_Elem"                                , Op_Diff_PolyMAC_V2_base ) ;
-Implemente_instanciable( Op_Dift_PolyMAC_V2_Elem          , "Op_Dift_PolyMAC_V2_P0_PolyMAC_V2|Op_Dift_PolyMAC_V2_var_P0_PolyMAC_V2"                    , Op_Diff_PolyMAC_V2_Elem ) ;
+Implemente_instanciable_sans_constructeur(Op_Diff_PolyMAC_V2_Elem, "Op_Diff_PolyMAC_V2_Elem|Op_Diff_PolyMAC_V2_var_Elem", Op_Diff_PolyMAC_V2_base);
+Implemente_instanciable(Op_Dift_PolyMAC_V2_Elem, "Op_Dift_PolyMAC_V2_P0_PolyMAC_V2|Op_Dift_PolyMAC_V2_var_P0_PolyMAC_V2", Op_Diff_PolyMAC_V2_Elem);
 Implemente_ref(Op_Diff_PolyMAC_V2_Elem);
 
 Op_Diff_PolyMAC_V2_Elem::Op_Diff_PolyMAC_V2_Elem()
@@ -93,6 +93,7 @@ void Op_Diff_PolyMAC_V2_Elem::init_s_dist() const
   for (int i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC_V2, cls[i].valeur()))
       {
         const Echange_contact_PolyMAC_V2& cl = ref_cast(Echange_contact_PolyMAC_V2, cls[i].valeur());
+        cl.init_op();
         const Op_Diff_PolyMAC_V2_Elem *o_diff = &cl.o_diff.valeur();
         cl.init_fs_dist();
         for (auto &s_sb : cl.s_dist) s_dist[s_sb.first][o_diff] = s_sb.second;
@@ -119,6 +120,7 @@ void Op_Diff_PolyMAC_V2_Elem::init_som_ext() const
       for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_PolyMAC_V2, cls[i].valeur()))
           {
             const Echange_contact_PolyMAC_V2& cl = ref_cast(Echange_contact_PolyMAC_V2, cls[i].valeur());
+            cl.init_op();
             const Op_Diff_PolyMAC_V2_Elem *o_diff = &cl.o_diff.valeur();
             if (std::find(op_ext.begin(), op_ext.end(), o_diff) == op_ext.end())
               op_ext.push_back(o_diff), op_ext_tbd.insert(o_diff);

@@ -43,13 +43,13 @@ class Echange_contact_PolyMAC  : public Echange_externe_impose
 {
   Declare_instanciable(Echange_contact_PolyMAC);
 public :
-  int initialiser(double temps) override;
+  void init_op() const;
   void mettre_a_jour(double temps) override { }; //non utilise
   void verifie_ch_init_nb_comp() const override { }; //pas de contrainte sur les composantes de chaque cote
 
-  REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
-  int i_fvf, i_o_fvf;  //indices de frontiere de chaque cote
-  REF(Op_Diff_PolyMAC_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
+  mutable REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
+  mutable int i_fvf, i_o_fvf;  //indices de frontiere de chaque cote
+  mutable REF(Op_Diff_PolyMAC_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
   mutable int o_idx = -1; //indice de l'autre operateur dans le tableau op_ext de Op_Diff_PolyMAC_Elem (a remplir par celui-ci)
 
   /* faces de l'autre cote de la frontiere */
