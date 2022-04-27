@@ -14,7 +14,7 @@
 cd TC2
 cp ../TC1/get_max_error.py .
 cp ../TC1/post_run .
-LISTE_CAS="Ar1 Ar1_iso Ar10 Ar100 Ar1000"
+LISTE_CAS="Ar1 Ar10 Ar100 Ar1000"
 LISTE_MESH="M1 M2 M3" # 3 mesh for sensetivity analysis :)
 
 for CAS in $LISTE_CAS; do
@@ -45,6 +45,7 @@ for CAS in $LISTE_CAS; do
     if test "$CAS" = "Ar1"; then
 
       cp $MEDC1 $REP/$MEDC1
+      cp $MEDC2 $REP/$MEDC2
       cp $PRERUN $REP/$PRERUN
       cp $POSTRUN $REP/$POSTRUN
       cp $SCRIPTMED $REP/$SCRIPTMED
@@ -54,6 +55,9 @@ for CAS in $LISTE_CAS; do
         cp $SRCDATA1 $DEST_DATA1
 	sed -i "1,$ s?# PARALLEL OK #??g" $DEST_DATA1
 
+	cp $SRCDATA2 $DEST_DATA2
+	sed -i "1,$ s?# PARALLEL OK #??g" $DEST_DATA2
+
         cp $SRCDOMAINE $DEST_DOMAINE
 
       elif test "$MESH" = "M2"; then
@@ -62,38 +66,6 @@ for CAS in $LISTE_CAS; do
              s/# END MESH #/END MESH #/;
              s/# PARALLEL OK #/# PARALLEL ONLY 2 #/;
              s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA1 > $DEST_DATA1
-
-        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 90 90/;
-             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
-             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
-
-      else # M3
-
-        sed "s/# BEGIN MESH #/# BEGIN MESH/;
-             s/# END MESH #/END MESH #/;
-             s/# PARALLEL OK #/# PARALLEL ONLY 4 #/;
-             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA1 > $DEST_DATA1
-
-        sed "s/nombre_de_noeuds 50 50/nombre_de_noeuds 180 180/;
-             s/# BEGIN PARTITION/# BEGIN PARTITION #/;
-             s/Partition_tool tranche { tranches 2 1 }/Partition_tool tranche { tranches 2 2 }/;
-             s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
-
-      fi
-      
-    elif test "$CAS" = "Ar1_iso"; then
-			 
-      cp $MEDC2 $REP/$MEDC2
-      cp $PRERUN $REP/$PRERUN
-      cp $POSTRUN $REP/$POSTRUN
-
-      if test "$MESH" = "M1"; then
-
-        cp $SRCDATA2 $DEST_DATA2
-	sed -i "1,$ s?# PARALLEL OK #??g" $DEST_DATA2
-        cp $SRCDOMAINE $DEST_DOMAINE
-
-      elif test "$MESH" = "M2"; then
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
@@ -105,6 +77,11 @@ for CAS in $LISTE_CAS; do
              s/END PARTITION #/# END PARTITION #/" $SRCDOMAINE > $DEST_DOMAINE
 
       else # M3
+
+        sed "s/# BEGIN MESH #/# BEGIN MESH/;
+             s/# END MESH #/END MESH #/;
+             s/# PARALLEL OK #/# PARALLEL ONLY 4 #/;
+             s/# Scatter DOM.Zones DOM #/Scatter DOM.Zones DOM/" $SRCDATA1 > $DEST_DATA1
 
         sed "s/# BEGIN MESH #/# BEGIN MESH/;
              s/# END MESH #/END MESH #/;
