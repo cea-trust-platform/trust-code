@@ -498,7 +498,7 @@ void Op_Diff_PolyMAC_V2_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             for (n = 0; n < N[p]; n++) nv(n) = sqrt(nv(n));
                             //appel : on n'est implicite qu'en les temperatures
                             corr.qp(N[p], f, dh(e), dh(e), &alpha(e, 0), &Tefs(0, i_efs(i, j, 0)), press(e), nv.addr(), Tefs(0, i_efs(i, j, M)), &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
-                                    qpk.addr(), NULL, NULL, NULL, dTf_qpk.addr(), dTp_qpk.addr(), qpi.addr(), NULL, NULL, NULL, dTf_qpi.addr(), dTp_qpi.addr(), nonlinear);
+                                    &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi, nonlinear);
                             /* on ajoute qpi(k, l) a la qpk(k) (sera ensuite retire par Flux_interfacial_PolyMAC_V2) */
                             for (k1 = 0; k1 < N[p]; k1++) for (k2 = k1 + 1; k2 < N[p]; k2++)
                                 for (qpk(k1) += qpi(k1, k2), dTp_qpk(k1) += dTp_qpi(k1, k2), n = 0; n < N[p]; n++) dTf_qpk(k1, n) += dTf_qpi(k1, k2, n);

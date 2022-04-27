@@ -291,7 +291,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
         double Tp = ech ? v_aux[o_p](o_f, 0) : fcl[0](f, 0) == 6 ? ref_cast(Dirichlet, cls[0].get()[fcl[0](f, 1)].valeur()).val_imp(fcl[0](f, 2), 0) : 0;
         //appel : on n'est implicite qu'en les temperatures
         corr[0]->qp(N[0], f, dh(e), dh(e), &alpha(e, 0), &v_aux[0](f, 0), press(e), nv.addr(), Tp, &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
-                    qpk.addr(), NULL, NULL, NULL, dTf_qpk.addr(), dTp_qpk.addr(), qpi.addr(), NULL, NULL, NULL, dTf_qpi.addr(), dTp_qpi.addr(), j);
+                    &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi, j);
         /* on ajoute qpi(k, l) a la qpk(k) (sera ensuite retire par Flux_interfacial_PolyMAC) */
         for (k1 = 0; k1 < N[0]; k1++) for (k2 = k1 + 1; k2 < N[0]; k2++)
             for (qpk(k1) += qpi(k1, k2), dTp_qpk(k1) += dTp_qpi(k1, k2), n = 0; n < N[0]; n++) dTf_qpk(k1, n) += dTf_qpi(k1, k2, n);
@@ -323,7 +323,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
             for (n = 0; n < N[o_p]; n++) nv(n) = sqrt(nv(n));
             //appel : on n'est implicite qu'en les temperatures
             corr[o_p]->qp(N[o_p], o_f, dh(o_e), dh(o_e), &alpha(o_e, 0), &v_aux[o_p](o_f, 0), press(e), nv.addr(), v_aux[0](f, 0), &lambda(o_e, 0), &mu(o_e, 0), &rho(o_e, 0), &Cp(o_e, 0),
-                          qpk.addr(), NULL, NULL, NULL, dTf_qpk.addr(), dTp_qpk.addr(), qpi.addr(), NULL, NULL, NULL, dTf_qpi.addr(), dTp_qpi.addr(), j);
+                          &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi, j);
             /* on ajoute qpi(k, l) a qpk(k) (sera ensuite retire par Flux_interfacial_PolyMAC) */
             for (k1 = 0; k1 < N[0]; k1++) for (k2 = k1 + 1; k2 < N[0]; k2++)
                 for (qpk(k1) += qpi(k1, k2), dTp_qpk(k1) += dTp_qpi(k1, k2), n = 0; n < N[0]; n++) dTf_qpk(k1, n) += dTf_qpi(k1, k2, n);
