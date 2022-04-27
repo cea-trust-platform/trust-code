@@ -211,10 +211,10 @@ class Visu:
         ficPlot.write('vd=VectorAttributes()\nvd.SetUseStride(1)\nSetDefaultPlotOptions(vd)\n')
         ficPlot.write('# on retire le nom du user sur les images \n')
         ficPlot.write('annotation=GetAnnotationAttributes()\nannotation.SetUserInfoFlag(0)\nSetAnnotationAttributes(annotation)\n')
-        ficPlot.write('try:\n  execfile(\'config_visit.py\')\n  print "user config loaded"\nexcept:\n  pass\n\nsondetmp=0\n\n')
+        ficPlot.write('try:\n  execfile(\'config_visit.py\')\n  print ("user config loaded")\nexcept:\n  pass\n\nsondetmp=0\n\n')
         for database in list_data_base:
             ficPlot.write('res=OpenDatabase(\"%s\")\n' % (database))
-            ficPlot.write('if res==0: print "can\'t read data file %s ";quit()\n'%(database))
+            ficPlot.write('if res==0: print ("can\'t read data file %s ");quit()\n'%(database))
             #FileAccumulator.Append(database)
             pass
         # a faire CreateDatabaseCorrelation("database",["FTD_all_VEF/post1.lata","FTD_all_VEF/post2.lata"],0) print GetDatabaseCorrelation("database")
@@ -446,21 +446,21 @@ class Visu:
                     ficPlot.write(' annotation.GetAxes3D().SetVisible(0)\n')
                     ficPlot.write(' annotation.GetAxes2D().SetVisible(0)\n')
                     ficPlot.write('except:\n')
-                    ficPlot.write(' print \"option no_axes incompatible with this version of visit\"\n pass\n')
+                    ficPlot.write(' print (\"option no_axes incompatible with this version of visit\")\n pass\n')
                     ficPlot.write('SetAnnotationAttributes(annotation)\n')
                 elif type_op=='no_triad':
                     ficPlot.write('annotation=GetAnnotationAttributes()\n')
                     ficPlot.write('try:\n annotation.GetAxes2D().SetVisible(0)\n')
                     ficPlot.write(' annotation.GetAxes3D().SetTriadFlag(0)\n')
                     ficPlot.write('except:\n')
-                    ficPlot.write(' print \"option no_triad incompatible with this version of visit\"\n pass\n')
+                    ficPlot.write(' print (\"option no_triad incompatible with this version of visit\")\n pass\n')
                     ficPlot.write('SetAnnotationAttributes(annotation)\n')
                 elif type_op=='no_bounding_box':
                     ficPlot.write('annotation=GetAnnotationAttributes()\n')
 
                     ficPlot.write('try: annotation.GetAxes3D().SetBboxFlag(0)\n')
                     ficPlot.write('except:\n')
-                    ficPlot.write(' print \"option no_boundig_box incompatible with this version of visit\"\n pass\n')
+                    ficPlot.write(' print (\"option no_boundig_box incompatible with this version of visit\")\n pass\n')
                     ficPlot.write('SetAnnotationAttributes(annotation)\n')
                 elif type_op=='no_databaseinfo':
                     ficPlot.write('annotation=GetAnnotationAttributes()\n')
@@ -542,12 +542,12 @@ class Visu:
         ficPlot.write('  Query("Time")\n  time=GetQueryOutputValue()\n')
         ficPlot.write(queries_str)
         ficPlot.write('  name=SaveWindow()\n')
-        ficPlot.write('  print name\n')
+        ficPlot.write('  print (name)\n')
         self.fichierGraphique='fic_%03d'%(indice)
         self.fichierGraphiqueComplet = dest + '/' + self.fichierGraphique
         ficPlot.write('''  cmd="mv \\\""+name+"\\\" ''')
         ficPlot.write(self.fichierGraphiqueComplet+'_%d.'+self.format+'\"%num\n')
-        ficPlot.write('  import os\n  print cmd\n  os.system(cmd)\n')
+        ficPlot.write('  import os\n  print (cmd)\n  os.system(cmd)\n')
         ficPlot.write('SaveSession(\"visit_%03d.session\")\n'%(indice))
         ficPlot.write('quit()\n')
         ficPlot.close()
