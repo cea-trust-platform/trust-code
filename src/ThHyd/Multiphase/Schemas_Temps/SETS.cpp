@@ -341,6 +341,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
     }
 
+  if (!Process::me()) tp.PrintFooter();
   //ha ha ha
   if (ok && cv)
     {
@@ -360,7 +361,6 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
         Cerr << que_suis_je() + ": pressure solver inaccuracy detected (requested precision " << Nom(crit_conv["alpha"]) << " , achieved precision " << Nom(err_a_sum) + " )" << finl;
       ok = 0;
     }
-  if (!Process::me()) tp.PrintFooter();
   return;
 }
 

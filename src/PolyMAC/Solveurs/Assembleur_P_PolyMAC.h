@@ -68,6 +68,7 @@ protected :
   int has_P_ref;
   int stencil_done;
   IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)
+  double cont_norm = 0; //facteur multiplicatif a mettre dans l'equation de continuite
 };
 
 inline const Equation_base& Assembleur_P_PolyMAC::equation() const

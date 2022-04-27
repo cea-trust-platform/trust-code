@@ -44,7 +44,7 @@
 
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable(Assembleur_P_PolyMAC_V2,"Assembleur_P_PolyMAC_V2",Assembleur_base);
+Implemente_instanciable(Assembleur_P_PolyMAC_V2,"Assembleur_P_PolyMAC_V2",Assembleur_P_PolyMAC);
 
 Sortie& Assembleur_P_PolyMAC_V2::printOn(Sortie& s ) const
 {
@@ -53,13 +53,7 @@ Sortie& Assembleur_P_PolyMAC_V2::printOn(Sortie& s ) const
 
 Entree& Assembleur_P_PolyMAC_V2::readOn(Entree& s )
 {
-  return Assembleur_base::readOn(s);
-}
-
-int Assembleur_P_PolyMAC_V2::assembler(Matrice& la_matrice)
-{
-  DoubleVect rien;
-  return assembler_mat(la_matrice,rien,1,1);
+  return Assembleur_P_PolyMAC::readOn(s);
 }
 
 int  Assembleur_P_PolyMAC_V2::assembler_mat(Matrice& la_matrice,const DoubleVect& diag,int incr_pression,int resoudre_en_u)
@@ -69,7 +63,7 @@ int  Assembleur_P_PolyMAC_V2::assembler_mat(Matrice& la_matrice,const DoubleVect
   la_matrice.typer("Matrice_Morse");
   Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
-  const Zone_PolyMAC_V2& zone = ref_cast(Zone_PolyMAC_V2, la_zone_PolyMAC_V2.valeur());
+  const Zone_PolyMAC_V2& zone = ref_cast(Zone_PolyMAC_V2, la_zone_PolyMAC.valeur());
   const Op_Grad_PolyMAC_V2_Face& grad = ref_cast(Op_Grad_PolyMAC_V2_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur());
   grad.update_grad();
   const DoubleTab& fgrad_c = grad.fgrad_c;
@@ -79,8 +73,8 @@ int  Assembleur_P_PolyMAC_V2::assembler_mat(Matrice& la_matrice,const DoubleVect
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;
-  for (int n_bord=0; n_bord<la_zone_PolyMAC_V2->nb_front_Cl(); n_bord++)
-    if (sub_type(Neumann_sortie_libre, la_Zone_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
+  for (int n_bord=0; n_bord<la_zone_PolyMAC->nb_front_Cl(); n_bord++)
+    if (sub_type(Neumann_sortie_libre, la_zone_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
       has_P_ref=1;
 
   /* 1. stencil de la matrice en pression : seulement au premier passage */
@@ -114,64 +108,14 @@ int  Assembleur_P_PolyMAC_V2::assembler_mat(Matrice& la_matrice,const DoubleVect
   return 1;
 }
 
-int Assembleur_P_PolyMAC_V2::modifier_solution(DoubleTab& pression)
-{
-  Debog::verifier("pression dans modifier solution in",pression);
-  // Projection :
-  double press_0;
-  if(!has_P_ref)
-    {
-      //abort();
-      // On prend la pression minimale comme pression de reference
-      // afin d'avoir la meme pression de reference en sequentiel et parallele
-      press_0=DMAXFLOAT;
-      int n,nb_elem=la_zone_PolyMAC_V2.valeur().zone().nb_elem();
-      for(n=0; n<nb_elem; n++)
-        if (pression[n] < press_0)
-          press_0 = pression[n];
-      press_0 = Process::mp_min(press_0);
-
-      for(n=0; n<nb_elem; n++)
-        pression[n] -=press_0;
-
-      pression.echange_espace_virtuel();
-    }
-  return 1;
-}
-
-const Zone_dis_base& Assembleur_P_PolyMAC_V2::zone_dis_base() const
-{
-  return la_zone_PolyMAC_V2.valeur();
-}
-
-const Zone_Cl_dis_base& Assembleur_P_PolyMAC_V2::zone_Cl_dis_base() const
-{
-  return la_Zone_Cl_PolyMAC.valeur();
-}
-
-void Assembleur_P_PolyMAC_V2::associer_zone_dis_base(const Zone_dis_base& la_zone_dis)
-{
-  la_zone_PolyMAC_V2 = ref_cast(Zone_PolyMAC_V2,la_zone_dis);
-}
-
-void Assembleur_P_PolyMAC_V2::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis)
-{
-  la_Zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, la_zone_Cl_dis);
-}
-
-void Assembleur_P_PolyMAC_V2::completer(const Equation_base& Eqn)
-{
-  mon_equation=Eqn;
-  stencil_done = 0;
-}
 
 /* equation sum_k alpha_k = 1 en Pb_Multiphase */
 void Assembleur_P_PolyMAC_V2::dimensionner_continuite(matrices_t matrices) const
 {
-  int e, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), ne_tot = la_zone_PolyMAC_V2->nb_elem_tot();
+  int e, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), ne_tot = la_zone_PolyMAC->nb_elem_tot();
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
-  for (e = 0; e < la_zone_PolyMAC_V2->nb_elem(); e++) for (n = 0; n < N; n++) stencil.append_line(e, N * e + n);
+  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++) for (n = 0; n < N; n++) stencil.append_line(e, N * e + n);
   Matrix_tools::allocate_morse_matrix(ne_tot, N * ne_tot, stencil, *matrices.at("alpha"));
 }
 
@@ -179,11 +123,11 @@ void Assembleur_P_PolyMAC_V2::assembler_continuite(matrices_t matrices, DoubleTa
 {
   const DoubleTab& alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeurs();
   Matrice_Morse& mat = *matrices.at("alpha");
-  const DoubleVect& ve = la_zone_PolyMAC_V2->volumes(), &pe = la_zone_PolyMAC_V2->porosite_elem();
+  const DoubleVect& ve = la_zone_PolyMAC->volumes(), &pe = la_zone_PolyMAC->porosite_elem();
   int e, n, N = alpha.line_size();
   /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
-  for (e = 0; e < la_zone_PolyMAC_V2->nb_elem(); e++)
-    for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * alpha(e, n);
+  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++)
+    for (secmem(e) = -pe(e) * ve(e) * cont_norm, n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * cont_norm * alpha(e, n);
   /* matrice */
-  for (e = 0; e < la_zone_PolyMAC_V2->nb_elem(); e++) for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e);
+  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++) for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e) * cont_norm;
 }

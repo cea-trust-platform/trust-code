@@ -66,23 +66,6 @@ int Assembleur_P_PolyMAC::assembler_rho_variable(Matrice& la_matrice, const Cham
 {
   abort();
   return 0;
-  /*
-  // On multiplie par la masse volumique aux sommets
-  if (!sub_type(Champ_Fonc_Q1_PolyMAC, rho))
-    {
-      Cerr << "La masse volumique n'est pas aux sommets dans Assembleur_P_PolyMAC::assembler_rho_variable." << finl;
-      Process::exit();
-    }
-  const DoubleVect& volumes_som=ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur()).volumes_sommets_thilde();
-  const DoubleVect& masse_volumique=rho.valeurs();
-  DoubleVect quantitee_som(volumes_som);
-  int size=quantitee_som.size_array();
-  for (int i=0; i<size; i++)
-    quantitee_som(i)=(volumes_som(i)*masse_volumique(i));
-
-  // On assemble la matrice
-  return assembler_mat(la_matrice,quantitee_som,1,1);
-  */
 }
 
 int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& diag,int incr_pression,int resoudre_en_u)
@@ -242,9 +225,9 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
   /* equations sum alpha_k = 1 */
   /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
   for (e = 0; e < zone.nb_elem(); e++)
-    for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * alpha(e, n);
+    for (secmem(e) = -pe(e) * ve(e) * cont_norm, n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * cont_norm * alpha(e, n);
   /* matrice */
-  for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) mat_a(e, N * e + n) = -pe(e) * ve(e);
+  for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) mat_a(e, N * e + n) = -pe(e) * ve(e) * cont_norm;
 
   /* equations sur les p_f : continuite du gradient si interne, p = p_f si Neumann, sum_k alpha_k v_k = sum_k alpha_k v_k,imp si Dirichlet */
   for (mat_p.get_set_coeff() = 0, mat_v.get_set_coeff() = 0, e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
@@ -252,19 +235,19 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
       else if (!fcl(f, 0)) //face interne
         {
           for (acc = 0, j = 0; j < w2.dimension(1); acc+= w2(i, j, 0), j++) //second membre
-            secmem(ne_tot + f) -= w2(i, j, 0) * (press(ne_tot + e_f(e, j), 0) - press(e, 0));
-          for (mat_p(ne_tot + f, e) -= acc, j = 0; j < w2.dimension(1); j++) //matrice (sauf bords de Meumann)
-            if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) != 1) mat_p(ne_tot + f, ne_tot + fb) += w2(i, j, 0);
+            secmem(ne_tot + f) -= w2(i, j, 0) * (press(ne_tot + e_f(e, j), 0) - press(e, 0)) * cont_norm;
+          for (mat_p(ne_tot + f, e) -= acc * cont_norm, j = 0; j < w2.dimension(1); j++) //matrice (sauf bords de Meumann)
+            if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) != 1) mat_p(ne_tot + f, ne_tot + fb) += w2(i, j, 0) * cont_norm;
         }
       else if (fcl(f, 0) == 1) //Neumann -> egalite p_f = p_imp
         mat_p(ne_tot + f, ne_tot + f) = 1, secmem(ne_tot + f) = ref_cast(Neumann, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2)) - press(ne_tot + f);
       else  //Dirichlet -> egalite flux_tot_imp - flux_tot = 0
         {
           for (ar_tot = 0, n = 0; n < N; n++) ar_tot += alpha_rho(e, n);
-          for (n = 0; n < N; n++) secmem(ne_tot + f) += fs(f) * alpha_rho(e, n) / ar_tot * vit(f, n);
+          for (n = 0; n < N; n++) secmem(ne_tot + f) += alpha_rho(e, n) / ar_tot * vit(f, n);
           if (fcl(f, 0) == 3) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //contrib de la valeur imposee: Dirichlet non homogene seulement
-                secmem(ne_tot + f) -= alpha_rho(e, n) / ar_tot * nf(f, d) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
-          for (n = 0; n < N; n++)  mat_v(ne_tot + f, N * f + n) -= fs(f) * alpha_rho(e, n) / ar_tot;
+                secmem(ne_tot + f) -= alpha_rho(e, n) / ar_tot * nf(f, d) / fs(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
+          for (n = 0; n < N; n++)  mat_v(ne_tot + f, N * f + n) -= alpha_rho(e, n) / ar_tot;
         }
 }
 
@@ -281,9 +264,7 @@ void Assembleur_P_PolyMAC::modifier_secmem_pour_incr_p(const DoubleTab& press, c
 int Assembleur_P_PolyMAC::modifier_solution(DoubleTab& pression)
 {
   Debog::verifier("pression dans modifier solution in",pression);
-  //on ne considere pas les pressions aux faces dans le min (solveur_U_P ne les met pas a jour)
-  DoubleTab_parts ppart(pression);
-  if(!has_P_ref) pression -= mp_min_vect(ppart[0]);
+  if(!has_P_ref) pression -= mp_min_vect(pression);
   return 1;
 }
 
@@ -311,4 +292,8 @@ void Assembleur_P_PolyMAC::completer(const Equation_base& Eqn)
 {
   mon_equation=Eqn;
   stencil_done = 0;
+  /* norme pour assembler_continuite */
+  const DoubleVect& pe= la_zone_PolyMAC->porosite_elem(), &ve = la_zone_PolyMAC->volumes();
+  for (int e = 0; e < la_zone_PolyMAC->nb_elem(); e++) cont_norm = std::max(cont_norm, 1. / (pe(e) * ve(e)));
+  cont_norm = Process::mp_max(cont_norm);
 }

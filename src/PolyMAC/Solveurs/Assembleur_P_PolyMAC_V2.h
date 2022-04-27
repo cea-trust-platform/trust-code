@@ -23,11 +23,7 @@
 #ifndef Assembleur_P_PolyMAC_V2_included
 #define Assembleur_P_PolyMAC_V2_included
 
-#include <Matrice_Morse_Sym.h>
-#include <Assembleur_base.h>
-#include <Zone_PolyMAC_V2.h>
-#include <Ref_Zone_PolyMAC_V2.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Assembleur_P_PolyMAC.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -35,39 +31,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Assembleur_P_PolyMAC_V2 : public Assembleur_base
+class Assembleur_P_PolyMAC_V2 : public Assembleur_P_PolyMAC
 {
   Declare_instanciable(Assembleur_P_PolyMAC_V2);
 
 public:
-  void associer_zone_dis_base(const Zone_dis_base& ) override         ;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override   ;
-  const Zone_dis_base& zone_dis_base() const override                 ;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const override           ;
-  int assembler(Matrice&) override                                 ;
   int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
-  int modifier_secmem(DoubleTab&) override
-  {
-    return 1;
-  }
-  int modifier_solution(DoubleTab&) override                       ;
-  void completer(const Equation_base& ) override                      ;
-  inline const Equation_base& equation() const                ;
   void dimensionner_continuite(matrices_t matrices) const override;
   void assembler_continuite(matrices_t matrices, DoubleTab& secmem) const override;
-
-protected :
-  REF(Equation_base) mon_equation                            ;
-  REF(Zone_PolyMAC_V2) la_zone_PolyMAC_V2                                  ;
-  REF(Zone_Cl_PolyMAC) la_Zone_Cl_PolyMAC                            ;
-  int has_P_ref;
-  int stencil_done;
-  IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)
+  void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override { } //rien a faire
 };
-
-inline const Equation_base& Assembleur_P_PolyMAC_V2::equation() const
-{
-  return  mon_equation.valeur();
-}
 
 #endif
