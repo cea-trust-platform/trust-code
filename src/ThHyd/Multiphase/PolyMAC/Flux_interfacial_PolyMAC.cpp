@@ -30,6 +30,7 @@
 #include <Changement_phase_base.h>
 #include <Milieu_composite.h>
 #include <Op_Diff_PolyMAC_Elem.h>
+#include <Op_Diff_PolyMAC_V2_Elem.h>
 #include <Aire_interfaciale_Yao_Morel.h>
 
 Implemente_instanciable(Flux_interfacial_PolyMAC,"Flux_interfacial_P0_PolyMAC|Flux_interfacial_P0_PolyMAC_V2", Source_base);
@@ -96,7 +97,8 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                    &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL,
                     &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
                      &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs(),
-                      *q_pi = sub_type(Op_Diff_PolyMAC_Elem, pbm.eq_energie.operateur(0).l_op_base()) ? &ref_cast(Op_Diff_PolyMAC_Elem, pbm.eq_energie.operateur(0).l_op_base()).q_pi() : NULL;
+                      *q_pi = sub_type(Op_Diff_PolyMAC_Elem, pbm.eq_energie.operateur(0).l_op_base()) ? &ref_cast(Op_Diff_PolyMAC_Elem, pbm.eq_energie.operateur(0).l_op_base()).q_pi() : 
+                             (sub_type(Op_Diff_PolyMAC_V2_Elem, pbm.eq_energie.operateur(0).l_op_base()) ? &ref_cast(Op_Diff_PolyMAC_V2_Elem, pbm.eq_energie.operateur(0).l_op_base()).q_pi() : NULL) ;
   Matrice_Morse *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
                  *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL,
                   *Ma = matrices.count("alpha") ? matrices.at("alpha") : NULL,
