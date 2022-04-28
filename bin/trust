@@ -123,6 +123,7 @@ help()
    echo "-evol                         : Monitor the TRUST calculation (GUI)."
 #   echo "-wiz                          : Create a TRUST datafile from a MED file (new GUI)."
    echo "-prm                          : Write a prm file."
+   echo "-jupyter                      : Create basic jupyter notebook file."
    echo "-clean                        : Clean the current directory from all the generated files by TRUST."
    echo "-search keywords              : Know the list of test cases from the data bases which contain keywords."
    echo "-copy                         : Copy the test case datafile from the TRUST database under the present directory."
@@ -162,6 +163,7 @@ mesh=""
 monitor=""
 probes=""
 prm=""
+jupyter=""
 copy=""
 gdb=""
 taches=""
@@ -455,6 +457,9 @@ do
    elif [ "$1" = "-prm" ]
    then
       prm=1 
+   elif [ "$1" = "-jupyter" ]
+   then
+      jupyter=1 
    elif [ "$1" = "-search" ]
    then
       shift
@@ -710,6 +715,15 @@ fi
 if [ "$prm" = 1 ]
 then
    create_basic_prm_from_lata.sh $NOM
+   exit $?
+fi
+
+#############################
+# Generate jupyter notebook #
+#############################
+if [ "$jupyter" = 1 ]
+then
+   create_basic_jupyter_notebook.sh $NOM
    exit $?
 fi
 
