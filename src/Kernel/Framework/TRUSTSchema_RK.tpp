@@ -61,175 +61,39 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
 }
 
 template <Ordre_RK _ORDRE_ > template<Ordre_RK _O_>
-enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE, int>
+enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, int>
 TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base& eqn)
 {
   // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
   if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
 
-  const double c2 = 0.5;
+  static constexpr bool IS_DEUX = (_O_ == Ordre_RK::DEUX_CLASSIQUE) , IS_TROIS = (_O_ == Ordre_RK::TROIS_CLASSIQUE), IS_QUATRE = (_O_ == Ordre_RK::QUATRE_CLASSIQUE);
+  static constexpr int NB_PTS = IS_DEUX ? 2 : ( IS_TROIS ? 3 : 4);
+  static constexpr int NB_BUTCHER = IS_DEUX ? 0 : ( IS_TROIS ? 1 : ( IS_QUATRE ? 2 : 3 ));
+
   DoubleTab& present = eqn.inconnue().valeurs(), &futur = eqn.inconnue().futur();
-  DoubleTab k1(present), k2(present); // just for initializing the array structure ...
+  DoubleTabs ki(NB_PTS); // just for initializing the array structure ...
+
+  for (int i = 0; i < NB_PTS; i++) ki[i] = present;
 
   DoubleTrav sauv(present);
   sauv = present; // sauv = y0
 
-  eqn.derivee_en_temps_inco(k1); // k1 = f(y0)
-  k1 *= dt_; // k1 = h * f(y0)
+  // Step 1
+  eqn.derivee_en_temps_inco(ki[0]); // ki[0] = f(y0)
+  ki[0] *= dt_; // ki[0] = h * f(y0)
 
-  present.ajoute(c2, k1); // present = y0 + c2k1
+  for (int step = 1; step < NB_PTS; step++ ) // ATTENTION : ne touche pas !
+    {
+      present = sauv; // back to y0
+      for (int i = 0; i < step; i++) present.ajoute(get_butcher_coeff<_ORDRE_,NB_PTS-1>().at(step-1).at(i), ki[i]); // Et ouiiiiiiii :-)
 
-  eqn.derivee_en_temps_inco(k2); // k2 = f(y0 + c2k1)
-  k2 *= dt_; // k2 = h * f(y0 + c2k1)
-
-  futur = sauv; // futur = y1 = y0
-  futur.ajoute(1., k2); // y1 = y0 + k2
-
-  update_critere_statio(futur, eqn);
-
-  // Update boundary condition on futur:
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
-  futur.echange_espace_virtuel();
-
-  present = sauv; // back to y0
-
-  return 1;
-}
-
-template <Ordre_RK _ORDRE_ > template<Ordre_RK _O_>
-enable_if_t<_O_ == Ordre_RK::TROIS_CLASSIQUE, int>
-TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base& eqn)
-{
-  // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
-  if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
-
-  const double c2 = 0.5, b2 = 2., b3 = -1.;
-  DoubleTab& present = eqn.inconnue().valeurs(), &futur = eqn.inconnue().futur();
-  DoubleTab k1(present), k2(present), k3(present); // just for initializing the array structure ...
-
-  DoubleTrav sauv(present);
-  sauv = present; // sauv = y0
-
-  eqn.derivee_en_temps_inco(k1); // k1 = f(y0)
-  k1 *= dt_; // k1 = h * f(y0)
-
-  present.ajoute(c2, k1); // present = y0 + c2k1
-
-  eqn.derivee_en_temps_inco(k2); // k2 = f(y0 + c2k1)
-  k2 *= dt_; // k2 = h * f(y0 + c2k1)
-
-  present = sauv; // back to y0
-  present.ajoute(b2, k2); // present = y0 + b2k2
-  present.ajoute(b3, k1); // present = y0 + b2k2 + b3k1
-
-  eqn.derivee_en_temps_inco(k3); // k3 = f(y0 + b2k2 + b3k1)
-  k3 *= dt_; // k3 = h * f(y0 + b2k2 + b3k1)
+      eqn.derivee_en_temps_inco(ki[step]);
+      ki[step] *= dt_;
+    }
 
   futur = sauv; // futur = y1 = y0
-  futur.ajoute(1./6., k1); // y1 = y0 + 1/6 k1
-  futur.ajoute(4./6., k2); // y1 = y0 + 1/6 k1 + 4/6 k2
-  futur.ajoute(1./6., k3); // y1 = y0 + 1/6 k1 + 4/6 k2 + 1/6 k3
-
-  update_critere_statio(futur, eqn);
-
-  // Update boundary condition on futur:
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
-  futur.echange_espace_virtuel();
-
-  present = sauv; // back to y0
-
-  return 1;
-}
-
-template <Ordre_RK _ORDRE_ > template<Ordre_RK _O_>
-enable_if_t<_O_ == Ordre_RK::QUATRE_CLASSIQUE, int>
-TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base& eqn)
-{
-  // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
-  if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
-
-  const double c2 = 0.5;
-  DoubleTab& present = eqn.inconnue().valeurs(), &futur = eqn.inconnue().futur();
-  DoubleTab k1(present), k2(present), k3(present), k4(present); // just for initializing the array structure ...
-
-  DoubleTrav sauv(present);
-  sauv = present; // sauv = y0
-
-  eqn.derivee_en_temps_inco(k1); // k1 = f(y0)
-  k1 *= dt_; // k1 = h * f(y0)
-
-  present.ajoute(c2, k1); // present = y0 + c2k1
-
-  eqn.derivee_en_temps_inco(k2); // k2 = f(y0 + c2k1)
-  k2 *= dt_; // k2 = h * f(y0 + c2k1)
-
-  present = sauv; // back to y0
-  present.ajoute(c2, k2); // present = y0 + c2k2
-
-  eqn.derivee_en_temps_inco(k3); // k3 = f(y0 + c2k2)
-  k3 *= dt_; // k3 = h * f(y0 + c2k2)
-
-  present = sauv; // back to y0
-  present.ajoute(1.0, k3); // present = y0 + 1.0k3
-
-  eqn.derivee_en_temps_inco(k4); // k4 = f(y0 + 1.0k3)
-  k4 *= dt_; // k4 = h * f(y0 + 1.0k3)
-
-  futur = sauv; // futur = y1 = y0
-  futur.ajoute(1./6., k1); // y1 = y0 + 1/6 k1
-  futur.ajoute(2./6., k2); // y1 = y0 + 1/6 k1 + 2/6 k2
-  futur.ajoute(2./6., k3); // y1 = y0 + 1/6 k1 + 2/6 k2 + 2/6 k3
-  futur.ajoute(1./6., k4); // y1 = y0 + 1/6 k1 + 2/6 k2 + 2/6 k3 + 1/6 k4
-
-  update_critere_statio(futur, eqn);
-
-  // Update boundary condition on futur:
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
-  futur.echange_espace_virtuel();
-
-  present = sauv; // back to y0
-
-  return 1;
-}
-
-template <Ordre_RK _ORDRE_ > template<Ordre_RK _O_>
-enable_if_t<_O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, int>
-TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base& eqn)
-{
-  // Warning sur les 100 premiers pas de temps si facsec est egal a 1 pour faire reflechir l'utilisateur
-  if (nb_pas_dt() >= 0 && nb_pas_dt() <= NW && facsec_ == 1) print_warning(NW);
-
-  DoubleTab& present = eqn.inconnue().valeurs(), &futur = eqn.inconnue().futur();
-  DoubleTab k1(present), k2(present), k3(present), k4(present); // just for initializing the array structure ...
-
-  DoubleTrav sauv(present);
-  sauv = present; // sauv = y0
-
-  eqn.derivee_en_temps_inco(k1); // k1 = f(y0)
-  k1 *= dt_; // k1 = h * f(y0)
-
-  present.ajoute(1. / 3. , k1); // present = y0 + c2k1
-  eqn.derivee_en_temps_inco(k2); // k2 = f(y0 + c2k1)
-  k2 *= dt_; // k2 = h * f(y0 + c2k1)
-
-  present = sauv; // back to y0
-  present.ajoute(-1./3., k1); // present = y0 - 1/3 k1
-  present.ajoute(1.0, k2); // present = y0 - 1/3 k1 + k2
-  eqn.derivee_en_temps_inco(k3); // k3 = f(y0 - 1/3 k1 + k2)
-  k3 *= dt_; // k3 = h * f(y0 - 1/3 k1 + k2)
-
-  present = sauv; // back to y0
-  present.ajoute(1.0, k1); // present = y0 + 1.0k1
-  present.ajoute(-1.0, k2); // present = y0 + 1.0k1 - 1.0k2
-  present.ajoute(1.0, k3); // present = y0 + 1.0k1 - 1.0k2 + 1.0k3
-  eqn.derivee_en_temps_inco(k4); // k4 = f(y0 + 1.0k1 - 1.0k2 + 1.0k3)
-  k4 *= dt_; // k4 = h * f(y0 + 1.0k1 - 1.0k2 + 1.0k3)
-
-  futur = sauv; // futur = y1 = y0
-  futur.ajoute(1./8., k1); // y1 = y0 + 1/8 k1
-  futur.ajoute(3./8., k2); // y1 = y0 + 1/8 k1 + 3/8 k2
-  futur.ajoute(3./8., k3); // y1 = y0 + 1/8 k1 + 3/8 k2 + 3/8 k3
-  futur.ajoute(1./8., k4); // y1 = y0 + 1/8 k1 + 3/8 k2 + 3/8 k3 + 1/8 k4
+  for (int i = 0; i < NB_PTS; i++) futur.ajoute(BUTCHER_TAB.at(NB_BUTCHER).at(i), ki[i]);
 
   update_critere_statio(futur, eqn);
 

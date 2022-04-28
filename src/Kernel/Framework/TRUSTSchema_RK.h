@@ -29,8 +29,10 @@
 template<bool B, typename T>
 using enable_if_t = typename std::enable_if<B, T>::type;
 
+using ARR1 = std::array<double, 1>; // OK je sais mais bon ... ne demande pas alors :-)
 using ARR2 = std::array<double, 2>;
 using ARR3 = std::array<double, 3>;
+using ARR4 = std::array<double, 4>;
 
 enum class Ordre_RK { UN , RATIO_DEUX , DEUX_CLASSIQUE , DEUX_WILLIAMSON , TROIS_CLASSIQUE , TROIS_WILLIAMSON , QUATRE_CLASSIQUE , QUATRE_CLASSIQUE_3_8 , QUATRE_WILLIAMSON };
 
@@ -70,7 +72,7 @@ protected:
 private:
   static constexpr double SQRT2 = sqrt(2.), SQRT2_2 = SQRT2 / 2.;
 
-  // See Williamson RK series https://www.sciencedirect.com/science/article/pii/0021999180900339
+  // RK low storage : See Williamson RK series https://www.sciencedirect.com/science/article/pii/0021999180900339
   static constexpr ARR2 A2 = { 0.0, SQRT2 - 2. };
   static constexpr ARR2 B2 = { SQRT2_2, SQRT2_2 };
 
@@ -79,6 +81,20 @@ private:
 
   static constexpr ARR3 A4 = { 0.0, -1. /2. , -2. };
   static constexpr ARR3 B4 = { 1. / 2., 1. , 1. / 6. };
+
+  // RK CLASSIQUE : see https://en.wikipedia.org/wiki/List_of_Runge%E2%80%93Kutta_methods
+  static constexpr std::array<ARR1, 1> BUTCHER_2 = { { { 1. / 2. } } }; /* RK2 */
+  static constexpr std::array<ARR2, 2> BUTCHER_3 = { { { 1. / 2., 0. }, { -1., 2. } } }; /* RK3 */
+  static constexpr std::array<ARR3, 3> BUTCHER_4 = { { { 1. / 2., 0. , 0.}, { 0., 1. / 2., 0.}, { 0. , 0., 1. } } }; /* RK4 */
+  static constexpr std::array<ARR3, 3> BUTCHER_4_3_8 = { { { 1. / 3., 0. , 0.}, { -1. / 3., 1., 0.}, { 1. , -1., 1. } } }; /* RK4 3/8 rule */
+
+  static constexpr std::array<ARR4, 4> BUTCHER_TAB = { {
+      { 0., 1., 0., 0. }, /* RK2 classique*/
+      { 1. / 6., 2. / 3., 1. / 6., 0. }, /* RK3 classique*/
+      { 1. / 6., 1. / 3., 1. / 3., 1. / 6. }, /* RK4 classique*/
+      { 1. / 8., 3. / 8., 3. / 8., 1. / 8. } /* RK4 3/8 rule */
+    }
+  };
 
   // SFINAE template functions
   template<Ordre_RK _O_ = _ORDRE_, int NB>
@@ -101,25 +117,43 @@ private:
   enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON || _O_ == Ordre_RK::TROIS_WILLIAMSON || _O_ == Ordre_RK::QUATRE_WILLIAMSON, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
 
-  template<Ordre_RK _O_ = _ORDRE_>
-  enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE, int>
-  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
+  template<Ordre_RK _O_ = _ORDRE_, int NB>
+  enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE, std::array<std::array<double, NB>, NB> >
+  inline const get_butcher_coeff() { return BUTCHER_2; }
+
+  template<Ordre_RK _O_ = _ORDRE_, int NB>
+  enable_if_t<_O_ == Ordre_RK::TROIS_CLASSIQUE, std::array<std::array<double, NB>, NB> >
+  inline const get_butcher_coeff() { return BUTCHER_3; }
+
+  template<Ordre_RK _O_ = _ORDRE_, int NB>
+  enable_if_t<_O_ == Ordre_RK::QUATRE_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, std::array<std::array<double, NB>, NB> >
+  inline const get_butcher_coeff() { return _O_ == Ordre_RK::QUATRE_CLASSIQUE ? BUTCHER_4 : BUTCHER_4_3_8; }
 
   template<Ordre_RK _O_ = _ORDRE_>
-  enable_if_t<_O_ == Ordre_RK::TROIS_CLASSIQUE, int>
+  enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
 
-  template<Ordre_RK _O_ = _ORDRE_>
-  enable_if_t<_O_ == Ordre_RK::QUATRE_CLASSIQUE, int>
-  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
-
-  template<Ordre_RK _O_ = _ORDRE_>
-  enable_if_t<_O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, int>
-  faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
-
+  // DANGER : SHOULD NOT GO HERE
   template<Ordre_RK _O_ = _ORDRE_> enable_if_t<_O_ == Ordre_RK::UN || _O_ == Ordre_RK::RATIO_DEUX, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // From VTABLE
 };
+
+// XXX : CAN BE REMOVED WHEN WE PASS TO C++17
+// see https://stackoverflow.com/questions/40690260/undefined-reference-error-for-static-constexpr-member
+template <Ordre_RK _ORDRE_ >
+constexpr std::array<ARR1, 1> TRUSTSchema_RK<_ORDRE_>::BUTCHER_2;
+
+template <Ordre_RK _ORDRE_ >
+constexpr std::array<ARR2, 2> TRUSTSchema_RK<_ORDRE_>::BUTCHER_3;
+
+template <Ordre_RK _ORDRE_ >
+constexpr std::array<ARR3, 3> TRUSTSchema_RK<_ORDRE_>::BUTCHER_4;
+
+template <Ordre_RK _ORDRE_ >
+constexpr std::array<ARR3, 3> TRUSTSchema_RK<_ORDRE_>::BUTCHER_4_3_8;
+
+template <Ordre_RK _ORDRE_ >
+constexpr std::array<ARR4, 4> TRUSTSchema_RK<_ORDRE_>::BUTCHER_TAB;
 
 #include <TRUSTSchema_RK.tpp>
 
