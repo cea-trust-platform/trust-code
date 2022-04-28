@@ -166,12 +166,12 @@ void Op_Grad_PolyMAC_V2_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   Matrice_Morse *mat_p = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : NULL,
                  *mat_v = !semi_impl.count(nom_inc) && matrices.count(nom_inc) ? matrices.at(nom_inc) : NULL;
 
-  DoubleTrav gb(nf_tot, M), gf(N), alpha(N); //grad p aux bords , alpha |f| (grad p)_f
-  std::map<int, std::map<int, double>> dgp_gb, dgb_v; //dependances vitesses -(dgb_v)-> grad p aux bords -(dgp_gb)-> grad p ailleurs
+  DoubleTrav gb(nf_tot, M), gf(N), alpha(N); //-grad p aux bords , alpha |f| (grad p)_f
+  std::map<int, std::map<int, double>> dgp_gb, dgb_v; //dependances vitesses -(dgb_v)-> -grad p aux bords -(dgp_gb)-> grad p ailleurs
   for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl(f, 0) > 1)  //Dirichlet/Symetrie : pression du voisin + correction en regardant l'eq de NS dans celui-ci
       for (e = f_e(f, 0), n = 0, m = 0; n < N; n++, m += (M > 1))
         {
-          double fac = -1. / (fs(f) * ve(e));
+          double fac = 1. / (fs(f) * ve(e));
           std::map<int, double> *dv = mat_v ? &dgb_v[M * f + m] : NULL; //dv[indice dans mat_NS] = coeff
           for (d = 0, i = nf_tot + D * e; d < D; d++, i++) if (std::fabs(nf(f, d)) > 1e-6 * fs(f)) //boucle sur la direction : i est l'indice dans mat_v
               {

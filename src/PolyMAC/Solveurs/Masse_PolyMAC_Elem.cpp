@@ -37,7 +37,7 @@
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem",Solveur_Masse_base);
+Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem|Masse_PolyMAC_V2_Elem",Solveur_Masse_base);
 
 
 //     printOn()
@@ -110,13 +110,20 @@ void Masse_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const Champ_Inc_base& cc = equation().champ_conserve();
+  const Conds_lim& cls = equation().zone_Cl_dis()->les_conditions_limites();
+  const IntTab& fcl = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur()).fcl(), &f_e = zone.face_voisins();
   const DoubleTab& present = cc.valeurs(), &passe = cc.passe();
-  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem();
-  int e, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();
+  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
+  int e, f, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();
 
   /* second membre : avec ou sans resolution en increments*/
   for (e = 0; e < ne; e++) for (n = 0; n < N; n++)
       secmem(e, n) += pe(e) * ve(e) * (passe(e, n) - resoudre_en_increments * present(e, n)) / dt;
+
+  /* si on n'a pas d'operateur de diffusion, alors ajout des flux aux faces de Neumann */
+  if (sub_type(Op_Diff_negligeable, equation().operateur(0).l_op_base()))
+    for (f = 0; f < zone.premiere_face_int(); f++) if (fcl(f, 0) == 4) for (e = f_e(f, 0), n = 0; n < N; n++)
+          secmem(e, n) += fs(f) * ref_cast(Neumann_paroi, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), n);
 
   /* matrices */
   for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))

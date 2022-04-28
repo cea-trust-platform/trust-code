@@ -250,7 +250,7 @@ void Zone_PolyMAC_V2::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                       if (!cl) continue; //rien de l'autre cote
                       else if (is_dir) Mf(n, k, k) = Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) = 1; //Dirichlet -> equation u_fs = u_b
                       else if (is_p ? !is_dir : sub_type(Neumann, *cl)) //Neumann -> ajout du flux au bord
-                        Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) -= surf_fs[k];
+                        Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) += surf_fs[k];
                       else if (sub_type(Frottement_global_impose, *cl)) //Frottement_global_impose -> flux =  - coeff * v_e
                         Meb(n, i, k) -= surf_fs[k] * ref_cast(Frottement_global_impose, *cl).coefficient_frottement(fcl(f, 2), n);
                       else if (sub_type(Frottement_externe_impose, *cl)) //Frottement_externe_impose -> flux =  - coeff * v_f
