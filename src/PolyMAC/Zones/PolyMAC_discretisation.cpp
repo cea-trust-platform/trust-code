@@ -289,24 +289,14 @@ void PolyMAC_discretisation::discretiser_champ_fonc_don(
     }
 }
 
-
-
-void PolyMAC_discretisation::distance_paroi(const Schema_Temps_base& sch,
-                                            Zone_dis& z, Champ_Fonc& ch) const
+void PolyMAC_discretisation::distance_paroi(const Schema_Temps_base& sch, Zone_dis& z, Champ_Fonc& ch) const
 {
-  Cerr << "Discretisation de la distance paroi" << finl;
-  Zone_PolyMAC& zone_PolyMAC=ref_cast(Zone_PolyMAC, z.valeur());
-  ch.typer("Champ_Fonc_P0_PolyMAC");
-  Champ_Fonc_P0_PolyMAC& ch_dist_paroi=ref_cast(Champ_Fonc_P0_PolyMAC,ch.valeur());
-  ch_dist_paroi.associer_zone_dis_base(zone_PolyMAC);
-  ch_dist_paroi.nommer("distance_paroi");
-  ch_dist_paroi.fixer_nb_comp(1);
-  ch_dist_paroi.fixer_nb_valeurs_nodales(zone_PolyMAC.nb_elem());
-  ch_dist_paroi.fixer_unite("m");
-  ch_dist_paroi.changer_temps(sch.temps_courant());
+  Cerr << "Discretisation de distance paroi" << finl;
+  Noms noms(1), unites(1);
+  noms[0] = Nom("distance_paroi");
+  unites[0] = Nom("m");
+  discretiser_champ(Motcle("champ_elem"), z.valeur(), scalaire, noms , unites, 1, 0, ch);
 }
-
-
 
 void PolyMAC_discretisation::vorticite(Zone_dis& z,const Champ_Inc& ch_vitesse,
                                        Champ_Fonc& ch) const

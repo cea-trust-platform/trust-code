@@ -4,6 +4,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
+	-I$(TRUST_ROOT)/src/Kernel/Cond_Lim\
 	
 
 Lib = $(TRUST_LIB)/libzvf

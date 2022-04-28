@@ -194,6 +194,7 @@ protected:
   Champ_Fonc pression_hydrostatique_;
   Champ_Fonc porosite_volumique;
   Champ_Fonc combinaison_champ;
+  Champ_Fonc distance_paroi;
   Champ_Fonc y_plus;
   Champ_Fonc Reynolds_maille;
   Champ_Fonc Courant_maille;

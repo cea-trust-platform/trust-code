@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -82,10 +82,20 @@ public :
   inline int nb_som() const ;
   inline int nb_som_tot() const ;
   inline int nb_front_Cl() const ;
+
+// Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
+  virtual inline void init_dist_paroi(const Conds_lim& conds_lim) ;
+  virtual const DoubleTab& y_elem()  const {return y_elem_;} ;
+  virtual const DoubleTab& y_faces() const {return y_faces_;} ;
+
 protected :
 
   REF(Zone) la_zone;
   REF(Domaine_dis) le_domaine_dis;
+
+  DoubleTab y_elem_ ;
+  DoubleTab y_faces_;
+  int dist_paroi_initialisee_ = 0;
 };
 
 // Description:
@@ -157,4 +167,10 @@ inline int Zone_dis_base::nb_front_Cl() const
 {
   return zone().nb_front_Cl();
 }
+inline void Zone_dis_base::init_dist_paroi(const Conds_lim& conds_lim)
+{
+  Cerr << "Zone_dis_base::init_dist_paroi() does nothing ! " << que_suis_je() << "Needs to overload it !" << finl;
+  Process::exit();
+}
+
 #endif

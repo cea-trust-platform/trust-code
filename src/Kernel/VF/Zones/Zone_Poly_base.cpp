@@ -60,6 +60,17 @@
 #include <set>
 #include <map>
 
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
+#include <MEDCouplingMemArray.hxx>
+
+using namespace MEDCoupling;
+#endif
+#include <Dirichlet_homogene.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Navier.h>
+
+
 Implemente_base(Zone_Poly_base,"Zone_Poly_base",Zone_VF);
 
 
@@ -679,4 +690,110 @@ void Zone_Poly_base::init_som_elem() const
   if (is_init["som_elem"]) return;
   construire_connectivite_som_elem(zone().domaine().nb_som_tot(), zone().les_elems(), som_elem, 1);
   is_init["som_elem"] = 1;
+}
+
+void Zone_Poly_base::init_dist_paroi(const Conds_lim& conds_lim) // Methode inspiree de Raccord_distant_homogene::initialise
+{
+  if(dist_bord_initialisee_) return;
+
+  const Zone_Poly_base& zone = *this;
+  int D=Objet_U::dimension, nf = zone.nb_faces(), ne = zone.nb_elem();
+
+  // On initialise les tables y_faces_ et y_elem_
+  zone.creer_tableau_faces(y_faces_);
+  zone.zone().creer_tableau_elements(y_elem_);
+
+  // On va identifier les faces par leur centres de gravite
+  int parts = Process::nproc();
+  int moi = Process::me();
+  DoubleTabs remote_xv(parts);
+
+  // On initialise la table de faces de bord locale
+  int nb_faces_bord = 0;
+  for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim(ind_cl).valeur()) || sub_type(Dirichlet_homogene, conds_lim(ind_cl).valeur()) || sub_type(Navier, conds_lim(ind_cl).valeur()) )
+      nb_faces_bord += conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
+
+  remote_xv[moi].resize(nb_faces_bord,D);
+
+  // On remplit les coordonnes des faces de bord locales
+  int ind_tab = 0 ;
+  for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim(ind_cl).valeur()) || sub_type(Dirichlet_homogene, conds_lim(ind_cl).valeur()) || sub_type(Navier, conds_lim(ind_cl).valeur()) )
+      {
+        int num_face_1_cl = conds_lim(ind_cl).frontiere_dis().frontiere().num_premiere_face();
+        int nb_faces_cl   = conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
+
+        for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++, ind_tab++)
+          for (int d=0 ; d<D ; d++)
+            remote_xv[moi](ind_tab,d) = zone.xv(f, d);
+      }
+
+  // Puis on echange les tableaux des centres de gravites
+  // envoi des tableaux
+  for (int p = 0; p < parts; p++)
+    envoyer_broadcast(remote_xv[p], p);
+
+  VECT(ArrOfInt) racc_vois(parts);
+  for (int p = 0; p < parts; p++)
+    racc_vois[p].set_smart_resize(1);
+
+#ifdef MEDCOUPLING_
+  // On traite les informations, chaque proc connait tous les XV
+
+  // On boucle sur toutes les faces puis tous les elems
+  const DoubleTab& local_xv = zone.xv(),
+                   & local_xp = zone.xp();
+
+  //DataArrayDoubles des xv locaux et de tous les remote_xv (a la suite)
+  std::vector<MCAuto<DataArrayDouble> > vxv(parts);
+  std::vector<const DataArrayDouble*> cvxv(parts);
+  for (int p = 0; p < parts; p++)
+    {
+      vxv[p] = DataArrayDouble::New();
+      vxv[p]->useExternalArrayWithRWAccess(remote_xv[p].addr(), remote_xv[p].dimension(0), remote_xv[p].dimension(1));
+      cvxv[p] = vxv[p];
+    }
+  MCAuto<DataArrayDouble> remote_xvs(DataArrayDouble::Aggregate(cvxv)), local_xs(DataArrayDouble::New());
+  local_xs->alloc(nf+ne, D);
+  for (int f = 0; f < nf; f++) for (int d = 0; d < D; d++)
+      local_xs->setIJ(f, d, local_xv(f, d));
+  for (int e = 0; e < ne; e++) for (int d = 0; d < D; d++)
+      local_xs->setIJ(nf+e, d, local_xp(e, d));
+
+  //indices des points de remote_xvs les plus proches de chaque point de local_xv
+  MCAuto<DataArrayInt> glob_idx(DataArrayInt::New());
+  glob_idx = remote_xvs->findClosestTupleId(local_xs);
+
+  //pour chaque element et face de local_xs : remplissage des tableaux
+  for (int fe = 0; fe<nf+ne; fe++)
+    {
+      //retour de l'indice global (glob_idx(ind_face)) au couple (proc, ind_face2)
+      int proc = 0, fe2 = glob_idx->getIJ(fe, 0);
+      while (fe2 >= remote_xv[proc].dimension(0)) fe2 -= remote_xv[proc].dimension(0), proc++;
+      assert(fe2 <  remote_xv[proc].dimension(0));
+
+      double distance2 = 0;
+      for (int d=0; d<D; d++)
+        {
+          double x1 = 0 ;
+          if (fe<nf) x1=local_xv(fe,d);
+          else if (fe<nf+ne) x1=local_xp(fe-nf,d);
+          else { Cerr<<"Zone_Poly_base::init_dist_bord : problem in the ditance to the edge calculation. Contact TRUST support."<<finl; Process::exit();}
+          double x2=remote_xv[proc](fe2,d);
+          distance2 += (x1-x2)*(x1-x2);
+        }
+      if (fe<nf) y_faces_(fe) = std::sqrt(distance2);
+      else       y_elem_(fe-nf)  = std::sqrt(distance2);
+    }
+
+#else
+  Cerr<<"Zone_Poly_base::init_dist_bord needs TRUST compiled with MEDCoupling."<<finl;
+  exit();
+#endif
+
+  y_faces_.echange_espace_virtuel();
+  y_elem_.echange_espace_virtuel();
+  dist_bord_initialisee_ = 1;
+  Cerr <<"Initialize the y table " << zone.zone().domaine().le_nom();
 }

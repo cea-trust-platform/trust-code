@@ -142,6 +142,11 @@ public :
   void init_som_elem() const;
   mutable Static_Int_Lists som_elem;
 
+// Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
+  void init_dist_paroi(const Conds_lim& conds_lim) override;
+  const DoubleTab& y_elem()  const override {return y_elem_;} ;
+  const DoubleTab& y_faces() const override {return y_faces_;} ;
+
 protected:
   double h_carre;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
@@ -157,6 +162,10 @@ protected:
   void remplir_elem_faces() override {};
   Sortie& ecrit(Sortie& os) const;
   void creer_faces_virtuelles_non_std();
+
+  DoubleTab y_elem_ ;
+  DoubleTab y_faces_;
+  int dist_bord_initialisee_ = 0;
 };
 
 // Fonctions inline

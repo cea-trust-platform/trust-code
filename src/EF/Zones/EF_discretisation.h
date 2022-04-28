@@ -70,7 +70,7 @@ public :
                          int nb_comp, double temps,
                          Champ_Don& champ) const override;
   void zone_Cl_dis(Zone_dis& z, Zone_Cl_dis& zcl) const override;
-  void distance_paroi(const Schema_Temps_base& , Zone_dis&, Champ_Fonc&) const;
+  void distance_paroi(const Schema_Temps_base& , Zone_dis&, Champ_Fonc&) const override;
   void proprietes_physiques_fluide_Ostwald(const Zone_dis& ,Fluide_Ostwald& ,
                                            const Navier_Stokes_std& ,
                                            const Champ_Inc& ) const override;

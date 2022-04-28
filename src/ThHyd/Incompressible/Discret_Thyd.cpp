@@ -278,6 +278,15 @@ void Discret_Thyd::y_plus(const Zone_dis& ,const Zone_Cl_dis& ,const Champ_Inc& 
   exit();
 }
 
+void Discret_Thyd::distance_paroi(const Schema_Temps_base& , Zone_dis&, Champ_Fonc& ) const
+{
+  // pour le VDF, on a besoin de la Zone_Cl_dis, mais pas pour le VEF
+  // -->> on passe quand meme l argument mais on n en fait rien!!!
+  Cerr << "Discret_Thyd::distance_paroi() does nothing" << finl;
+  Cerr <<  que_suis_je() << " needs to overload it !" << finl;
+  exit();
+}
+
 void Discret_Thyd::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl, const Champ_Inc& eqn,Champ_Fonc& ch) const
 {
   Cerr << "Discret_Thyd::grad_T() does nothing" << finl;
