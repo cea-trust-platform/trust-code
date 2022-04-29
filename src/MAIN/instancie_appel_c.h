@@ -37,6 +37,7 @@ instancie_src_PolyMAC();
 instancie_src_PolyMAC_Champs();
 instancie_src_PolyMAC_Cond_Lim();
 instancie_src_PolyMAC_Operateurs();
+instancie_src_PolyMAC_Solveurs();
 instancie_src_PolyMAC_Sources();
 instancie_src_PolyMAC_Zones();
 instancie_src_ThHyd_Chimie();
