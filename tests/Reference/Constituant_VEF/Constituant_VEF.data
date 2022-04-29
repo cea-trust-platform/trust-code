@@ -117,28 +117,9 @@ Read pb
 
 	Post_processing
 	{
-		Probes
-		{
-			sonde_pres pression periode 0.01 points 1 0.45 0.45
-			sonde_vit vitesse periode 0.01 points 1 0.4 0.45
-			sonde_conc concentration periode 0.01 points 1 0.55 0.45
-			sonde_seg_gradient gradient_test_concentration periode 0.01 segment 10 0. 0.45 1. 0.45
-			sonde_moy_grad Moyenne_gradient_conc_som_dom periode 0.01 points 1 0.8 0.6
-		}
+		Probes_file { file probes_def }
 		
-		Definition_champs
-		{
-		 gradient_test_concentration Gradient {
-		 		         source refChamp { Pb_champ pb concentration } 
-		 }
-		 			 
-		 Moyenne_gradient_conc_som_dom Interpolation {
-		  			localisation som
-		 			source Moyenne {
-		 			  sources_reference { gradient_test_concentration  } t_deb 0.1 t_fin 0.2
-		 			}			 
-		 }
-		}
+		Definition_champs_file { file advanced_fields_def }
 		
 		fields dt_post 0.3
 		{

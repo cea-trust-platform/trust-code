@@ -34,6 +34,7 @@
 #include <Operateur_base.h>
 #include <Operateur.h>
 #include <Param.h>
+#include <LecFicDiffuse_JDD.h>
 
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Postraitement,"Postraitement|Post_processing",Postraitement_base);
@@ -368,6 +369,7 @@ void Postraitement::set_param(Param& param)
   param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
   param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
   param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.
+  param.ajouter_non_std("Definition_champs_fichier|Definition_champs_file",(this));// XD_ADD_P Definition_champs_fichier  Definition_champs read from file.
   param.ajouter_non_std("Sondes|Probes",(this)); // XD_ADD_P sondes Probe.
   param.ajouter_non_std("Sondes_fichier|Probes_file",(this)); // XD_ADD_P sondes_fichier Probe read in a file.
   param.ajouter_non_std("champs|fields",(this)); // XD_ADD_P champs_posts Field\'s write mode.
@@ -393,7 +395,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       Nom file;
       Param param2("probes_files");
       // XD sondes_fichier objet_lecture nul 1 not_set
-      param2.ajouter("fichier",&file,Param::REQUIRED); // XD_ADD_P chaine name of file
+      param2.ajouter("fichier|file",&file,Param::REQUIRED); // XD_ADD_P chaine name of file
       param2.lire_avec_accolades_depuis(s);
 
       Cerr << "Reading of probes" << finl;
@@ -536,6 +538,21 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       //La methode lire_champs_operateurs() permet la lecture d un champ a postraiter avec
       //la nouvelle formulation dans le jeu de donnees
       lire_champs_operateurs(s);
+      return 1;
+    }
+  else if (mot=="Definition_champs_fichier|Definition_champs_file")
+    {
+      //bool depuisFichier = false;
+      Nom file;
+      Param param("definition_champ_files");
+      // XD Definition_champs_fichier objet_lecture nul 1 Keyword to read definition_champs from a file
+      param.ajouter("fichier|file",&file,Param::REQUIRED); // XD_ADD_P chaine name of file containing the definition of advanced fields
+      param.lire_avec_accolades_depuis(s);
+
+      Cerr << "Reading of Definition_champs from file " << file << finl;
+
+      lire_fichier(file);
+
       return 1;
     }
   else
@@ -1026,6 +1043,28 @@ int Postraitement::lire_champs_operateurs(Entree& s)
   return 1;
 }
 
+void Postraitement::lire_fichier(const Nom& nom_fichier)
+{
+  LecFicDiffuse_JDD f(nom_fichier);
+  Motcle motlu;
+  Champ_Generique champ;
+
+  if (!f.good())
+    {
+      Cerr << "Cannot open the file " << nom_fichier << finl;
+      Process::exit();
+    }
+
+  f >> motlu;
+  while (!f.eof())
+    {
+      Cerr <<"Reading definition of field "<<motlu<<finl;
+      f >> champ;
+      complete_champ(champ,motlu);
+      f >> motlu;
+    }
+  f.close();
+}
 
 void Postraitement::complete_champ(Champ_Generique& champ,const Motcle& motlu)
 {

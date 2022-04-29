@@ -110,6 +110,7 @@ public:
   // Methodes specifiques :
   //
   Postraitement();
+  void lire_fichier(const Nom& nom_fichier);
 
   inline const Sondes& les_sondes() const { return les_sondes_; }
   inline Sondes& les_sondes() { return les_sondes_; }

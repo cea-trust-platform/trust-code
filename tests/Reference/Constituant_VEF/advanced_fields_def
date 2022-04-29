@@ -1,0 +1,10 @@
+gradient_test_concentration Gradient {
+         source refChamp { Pb_champ pb concentration } 
+}
+
+Moyenne_gradient_conc_som_dom Interpolation {
+	localisation som
+	source Moyenne {
+		sources_reference { gradient_test_concentration  } t_deb 0.1 t_fin 0.2
+	}			 
+}
