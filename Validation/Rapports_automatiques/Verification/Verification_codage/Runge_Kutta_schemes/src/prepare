@@ -1,0 +1,120 @@
+#!/bin/bash
+
+# Elie Saikali & Yannick Gorsse, avril 2022
+
+LISTE_CAS="RK2 RK2_Classique RRK2 RK3 RK3_Classique RK4 RK4_Classique RK4_Classique_3_8"
+LISTE_DT="1 1e_1 1e_2 1e_3 1e_4"
+ERREUR=get_erreur
+
+SRCDATA=jdd.data
+
+for CAS in $LISTE_CAS; do
+  for DT in $LISTE_DT; do
+  
+  REP=./$CAS/$DT
+  mkdir -p $REP
+  DEST_DATA=$REP/$SRCDATA
+  DEST_ERREUR=$REP/$ERREUR
+  
+  cp $ERREUR $DEST_ERREUR
+  
+  if test "$CAS" = "RK2"; then
+  	if test "$DT" = "1"; then
+  		cp $SRCDATA $DEST_DATA
+  	elif test "$DT" = "1e_1"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-1~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_2"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-2~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_3"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-3~" $SRCDATA > $DEST_DATA
+  	else # 1e_4
+  		sed "s~dt_max 1.e0~dt_max 1.e-4~" $SRCDATA > $DEST_DATA
+  	fi
+  elif test "$CAS" = "RK2_Classique"; then
+  	if test "$DT" = "1"; then
+  		sed "s~runge_kutta_ordre_2~runge_kutta_ordre_2_classique~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_1"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-1~;s~runge_kutta_ordre_2~runge_kutta_ordre_2_classique~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_2"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-2~;s~runge_kutta_ordre_2~runge_kutta_ordre_2_classique~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_3"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-3~;s~runge_kutta_ordre_2~runge_kutta_ordre_2_classique~" $SRCDATA > $DEST_DATA
+  	else # 1e_4
+  		sed "s~dt_max 1.e0~dt_max 1.e-4~;s~runge_kutta_ordre_2~runge_kutta_ordre_2_classique~" $SRCDATA > $DEST_DATA
+  	fi
+  elif test "$CAS" = "RRK2"; then
+  	if test "$DT" = "1"; then
+  		sed "s~runge_kutta_ordre_2~runge_kutta_Rationnel_ordre_2~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_1"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-1~;s~runge_kutta_ordre_2~runge_kutta_Rationnel_ordre_2~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_2"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-2~;s~runge_kutta_ordre_2~runge_kutta_Rationnel_ordre_2~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_3"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-3~;s~runge_kutta_ordre_2~runge_kutta_Rationnel_ordre_2~" $SRCDATA > $DEST_DATA
+  	else # 1e_4
+  		sed "s~dt_max 1.e0~dt_max 1.e-4~;s~runge_kutta_ordre_2~runge_kutta_Rationnel_ordre_2~" $SRCDATA > $DEST_DATA
+  	fi
+  elif test "$CAS" = "RK3"; then
+  	if test "$DT" = "1"; then
+  		sed "s~runge_kutta_ordre_2~runge_kutta_ordre_3~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_1"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-1~;s~runge_kutta_ordre_2~runge_kutta_ordre_3~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_2"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-2~;s~runge_kutta_ordre_2~runge_kutta_ordre_3~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_3"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-3~;s~runge_kutta_ordre_2~runge_kutta_ordre_3~" $SRCDATA > $DEST_DATA
+  	else # 1e_4
+  		sed "s~dt_max 1.e0~dt_max 1.e-4~;s~runge_kutta_ordre_2~runge_kutta_ordre_3~" $SRCDATA > $DEST_DATA
+  	fi
+  elif test "$CAS" = "RK3_Classique"; then
+  	if test "$DT" = "1"; then
+  		sed "s~runge_kutta_ordre_2~runge_kutta_ordre_3_classique~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_1"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-1~;s~runge_kutta_ordre_2~runge_kutta_ordre_3_classique~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_2"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-2~;s~runge_kutta_ordre_2~runge_kutta_ordre_3_classique~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_3"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-3~;s~runge_kutta_ordre_2~runge_kutta_ordre_3_classique~" $SRCDATA > $DEST_DATA
+  	else # 1e_4
+  		sed "s~dt_max 1.e0~dt_max 1.e-4~;s~runge_kutta_ordre_2~runge_kutta_ordre_3_classique~" $SRCDATA > $DEST_DATA
+  	fi
+  elif test "$CAS" = "RK4"; then
+  	if test "$DT" = "1"; then
+  		sed "s~runge_kutta_ordre_2~runge_kutta_ordre_4~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_1"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-1~;s~runge_kutta_ordre_2~runge_kutta_ordre_4~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_2"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-2~;s~runge_kutta_ordre_2~runge_kutta_ordre_4~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_3"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-3~;s~runge_kutta_ordre_2~runge_kutta_ordre_4~" $SRCDATA > $DEST_DATA
+  	else # 1e_4
+  		sed "s~dt_max 1.e0~dt_max 1.e-4~;s~runge_kutta_ordre_2~runge_kutta_ordre_4~" $SRCDATA > $DEST_DATA
+  	fi
+  elif test "$CAS" = "RK4_Classique"; then
+  	if test "$DT" = "1"; then
+  		sed "s~runge_kutta_ordre_2~runge_kutta_ordre_4_classique~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_1"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-1~;s~runge_kutta_ordre_2~runge_kutta_ordre_4_classique~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_2"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-2~;s~runge_kutta_ordre_2~runge_kutta_ordre_4_classique~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_3"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-3~;s~runge_kutta_ordre_2~runge_kutta_ordre_4_classique~" $SRCDATA > $DEST_DATA
+  	else # 1e_4
+  		sed "s~dt_max 1.e0~dt_max 1.e-4~;s~runge_kutta_ordre_2~runge_kutta_ordre_4_classique~" $SRCDATA > $DEST_DATA
+  	fi
+  else # RK4_Classique_3_8
+  	if test "$DT" = "1"; then
+  		sed "s~runge_kutta_ordre_2~runge_kutta_ordre_4_classique_3_8~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_1"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-1~;s~runge_kutta_ordre_2~runge_kutta_ordre_4_classique_3_8~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_2"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-2~;s~runge_kutta_ordre_2~runge_kutta_ordre_4_classique_3_8~" $SRCDATA > $DEST_DATA
+  	elif test "$DT" = "1e_3"; then
+  		sed "s~dt_max 1.e0~dt_max 1.e-3~;s~runge_kutta_ordre_2~runge_kutta_ordre_4_classique_3_8~" $SRCDATA > $DEST_DATA
+  	else # 1e_4
+  		sed "s~dt_max 1.e0~dt_max 1.e-4~;s~runge_kutta_ordre_2~runge_kutta_ordre_4_classique_3_8~" $SRCDATA > $DEST_DATA
+  	fi
+  fi
+  done
+done  
+

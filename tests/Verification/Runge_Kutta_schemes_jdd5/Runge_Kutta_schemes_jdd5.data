@@ -1,0 +1,89 @@
+dimension 2
+Pb_conduction pb
+Domaine dom
+
+Mailler dom
+{
+	Pave Cavite
+		{
+		Origine 0. 0.
+		Nombre_de_Noeuds 2 2
+		Longueurs  1. 1.
+		}
+		{
+		Bord Gauche	X = 0.	0. <= Y <= 1.
+		Bord Droit	X = 1.	0. <= Y <= 1.
+		Bord Bas	Y = 0.	0. <= X <= 1.
+		Bord Haut	Y = 1.	0. <= X <= 1.
+		}
+}
+
+Solide solide
+Read solide
+{
+	rho champ_uniforme 1  1
+	cp  champ_uniforme 1 1
+	lambda champ_uniforme 1 0.01 
+}
+
+runge_kutta_ordre_3_classique sch
+Read sch
+{
+	tinit	0.
+	nb_pas_dt_max 3
+	tmax	5.
+	dt_min	1.e-10
+	dt_max 1.e-4
+	dt_impr 1.
+	dt_sauv 15.
+        seuil_statio 1.e-12
+}
+VDF dis
+Associate pb dom
+Associate pb solide
+Associate pb sch
+Discretize pb dis
+
+Read pb
+{
+
+	Conduction
+	{
+		diffusion { } 
+		
+		boundary_conditions 
+		{
+			Haut		paroi_echange_global_impose h_imp champ_front_uniforme 1 1 t_ext  Champ_Front_Uniforme 1 50.
+			Bas		Symetrie
+			Gauche		Symetrie
+			Droit		Symetrie
+		}
+		initial_conditions { Temperature Champ_Uniforme 1 100. }
+	}
+
+	Post_processing
+        {       
+		Definition_champs {
+			erreur_temp Transformation {
+				methode formule expression 1 abs(temp/(50+50*exp(-t))-1)
+					source refChamp {
+					Pb_Champ pb temperature nom_source temp 
+					}
+				} 
+    		} 
+                Probes
+		{
+			temperature		grav	temperature	periode 1.e-6 point   1  0.45 0.95
+			erreur_temperature	grav	erreur_temp	periode 1.e-6 point   1  0.45 0.95
+		}
+		fields dt_post 1.
+		{
+			temperature	elem
+			erreur_temp	elem
+		}
+	}
+}
+
+Solve pb
+End
+

@@ -1,0 +1,26 @@
+#!/bin/bash
+# Elie Saikali & Yannick Gorsse, avril 2022
+
+get_max()
+{
+awk 'BEGIN {max=0}{ if ($1!="#") {if ($2>max) {max=$2} }} END {print max}' $1 
+
+}
+
+LISTE_CAS="RK2 RK2_Classique RRK2 RK3 RK3_Classique RK4 RK4_Classique RK4_Classique_3_8"
+LISTE_DT="1 1e_1 1e_2 1e_3 1e_4"
+SON=jdd_ERREUR_TEMPERATURE.son
+
+for CAS in $LISTE_CAS; do
+  ERREUR_FILE=erreur_$CAS
+  cat /dev/null > $ERREUR_FILE
+  for DT in $LISTE_DT; do
+    ff=$CAS/$DT/$SON
+    cp $ff toto.son
+    max=`get_max toto.son`
+    eval max_${DT}=$max
+    rm toto.son
+  done
+  echo $max_1 $max_1e_1 $max_1e_2 $max_1e_3 $max_1e_4 >> $ERREUR_FILE
+done  
+
