@@ -85,7 +85,7 @@ avtlataFileFormat::avtlataFileFormat(const char *filename)
         LataOptions::extract_path_basename(filename, opt.path_prefix, opt.basename);
         opt.dual_mesh = true;
         opt.faces_mesh = true;
-        opt.regularize = 2;
+        opt.regularize = 0;
         opt.regularize_tolerance = 1e-7;
         opt.user_fields_=true;
         read_any_format_options(filename, opt);

@@ -551,6 +551,9 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
     entier regularizable = (((element_type == Domain::quadri)&&(data.dimension_==2)) || ((element_type == Domain::hexa)&&(data.dimension_==3)))
       && (lata_geom.elem_type_ != "HEXAEDRE_AXI") && (lata_geom.elem_type_ != "RECTANGLE_AXI");
     Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says regularizable=" << regularizable << endl;
+    // It is dualizable ?
+    entier dualizable = element_type == Domain::triangle || element_type == Domain::tetra;
+    Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says dualizable=" << dualizable << endl;
     if (regularizable && ((opt_.regularize_tolerance < 0) || (!opt_.regularize))) {
       regularizable = 0;
       Journal(filter_info_level) << " regularize option not set: don't build ijk domain" << endl;
@@ -584,7 +587,7 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
     }
 
     // Provide dual mesh
-    if (opt_.dual_mesh && have_faces) {
+    if (dualizable && opt_.dual_mesh && have_faces) {
       data.internal_name_ = lata_geom_name;
       
       // If it's quadri or hexa, we need the regular mesh
