@@ -133,10 +133,14 @@ int Milieu_composite::initialiser(const double temps)
   ch_rho.associer_eqn(eqn), ch_rho.init_champ_calcule(*this, calculer_masse_volumique);
   ch_e.associer_eqn(eqn),   ch_e.init_champ_calcule(*this, calculer_energie_interne);
   ch_h.associer_eqn(eqn),   ch_h.init_champ_calcule(*this, calculer_enthalpie);
-  mettre_a_jour(temps);
+  t_init_ = temps;
   return 1;
 }
 
+void Milieu_composite::preparer_calcul()
+{
+  mettre_a_jour(t_init_);
+}
 
 void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {

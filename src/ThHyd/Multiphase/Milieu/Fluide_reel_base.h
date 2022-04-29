@@ -54,6 +54,7 @@ public :
   bool initTimeStep(double dt) override;
   void mettre_a_jour(double temps) override;
   int initialiser(const double temps) override;
+  void preparer_calcul() override;
   void set_param(Param& param) override;
 
   //verifie que chaque inconnue "inco" est entre val_min[inco] et val_max[inco]
@@ -87,7 +88,7 @@ protected :
   double T_ref_ = -1;
   double P_ref_ = -1;
   int first_maj_ = 1;
-
+  double t_init_;
 };
 
 #endif

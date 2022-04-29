@@ -52,6 +52,7 @@ public :
   void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
   void mettre_a_jour(double temps) override;
   int initialiser(const double temps) override;
+  void preparer_calcul() override;
   void associer_equation(const Equation_base* eqn) const override;
   bool has_interface(int k, int l) const;
   Interface_base& get_interface(int k, int l) const;
@@ -73,6 +74,7 @@ protected :
   std::pair<std::string, int> check_fluid_name(const Nom& name);
   std::vector<std::vector<Interface_base *>> tab_interface;
   std::map<std::string, std::set<int>> phases_melange;
+  double t_init_;
 };
 
 #endif

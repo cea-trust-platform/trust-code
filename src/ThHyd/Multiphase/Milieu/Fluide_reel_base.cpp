@@ -92,9 +92,15 @@ int Fluide_reel_base::initialiser(const double temps)
   nu.initialiser(temps);
   alpha.initialiser(temps);
   lambda.initialiser(temps);
-  mettre_a_jour(temps);
+  t_init_ = temps;
   return 1;
 }
+
+void Fluide_reel_base::preparer_calcul()
+{
+  mettre_a_jour(t_init_);
+}
+
 
 void Fluide_reel_base::mettre_a_jour(double t)
 {
