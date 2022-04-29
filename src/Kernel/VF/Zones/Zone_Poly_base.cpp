@@ -698,6 +698,8 @@ void Zone_Poly_base::init_dist_paroi(const Conds_lim& conds_lim) // Methode insp
 
   const Zone_Poly_base& zone = *this;
   int D=Objet_U::dimension, nf = zone.nb_faces(), ne = zone.nb_elem();
+  const IntTab& f_s = face_sommets();
+  const DoubleTab& xs = zone.zone().domaine().coord_sommets();
 
   // On initialise les tables y_faces_ et y_elem_
   zone.creer_tableau_faces(y_faces_);
@@ -708,26 +710,64 @@ void Zone_Poly_base::init_dist_paroi(const Conds_lim& conds_lim) // Methode insp
   int moi = Process::me();
   DoubleTabs remote_xv(parts);
 
-  // On initialise la table de faces de bord locale
+  // On initialise la table de faces/sommets/aretes de bords locale, on cree une table de sommets locale et on compte les aretes
   int nb_faces_bord = 0;
-  for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
-    if ( sub_type(Dirichlet_paroi_defilante, conds_lim(ind_cl).valeur()) || sub_type(Dirichlet_homogene, conds_lim(ind_cl).valeur()) || sub_type(Navier, conds_lim(ind_cl).valeur()) )
-      nb_faces_bord += conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
-
-  remote_xv[moi].resize(nb_faces_bord,D);
-
-  // On remplit les coordonnes des faces de bord locales
-  int ind_tab = 0 ;
+  int nb_aretes = 0;
+  std::set<int> soms;
   for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
     if ( sub_type(Dirichlet_paroi_defilante, conds_lim(ind_cl).valeur()) || sub_type(Dirichlet_homogene, conds_lim(ind_cl).valeur()) || sub_type(Navier, conds_lim(ind_cl).valeur()) )
       {
         int num_face_1_cl = conds_lim(ind_cl).frontiere_dis().frontiere().num_premiere_face();
         int nb_faces_cl   = conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
 
-        for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++, ind_tab++)
-          for (int d=0 ; d<D ; d++)
-            remote_xv[moi](ind_tab,d) = zone.xv(f, d);
+        nb_faces_bord += conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
+
+        for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
+          {
+            int nb_som_loc = 0;
+            while ( (nb_som_loc < nb_som_face()) && (f_s(f, nb_som_loc) != -1))
+              {
+                soms.insert(f_s(f, nb_som_loc));
+                nb_som_loc++;
+              }
+            nb_aretes += (D == 3 ? nb_som_loc : 0)  ; // Autant d'aretes autour d'une face que de sommets !
+          }
       }
+  remote_xv[moi].resize(nb_faces_bord + soms.size() + nb_aretes,D);
+
+  // On remplit les coordonnes des faces et aretes de bord locales
+  int ind_tab = 0 ; // indice de la face/sommet/arete dans le tableau
+  for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim(ind_cl).valeur()) || sub_type(Dirichlet_homogene, conds_lim(ind_cl).valeur()) || sub_type(Navier, conds_lim(ind_cl).valeur()) )
+      {
+        int num_face_1_cl = conds_lim(ind_cl).frontiere_dis().frontiere().num_premiere_face();
+        int nb_faces_cl   = conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
+
+        for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
+          {
+            for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = zone.xv(f, d); // Remplissage des faces
+            ind_tab++;
+
+            if (D==3) // Remplissage des aretes
+              {
+                int id_som = 1 ;
+                while ( (id_som < nb_som_face()) && (f_s(f, id_som) != -1))
+                  {
+                    for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = (xs(f_s(f, id_som), d) + xs(f_s(f, id_som-1), d)) / 2;
+                    id_som++;
+                    ind_tab++;
+                  }
+                for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = (xs(f_s(f, 0), d) + xs(f_s(f, id_som-1), d)) / 2;
+                ind_tab++;
+              }
+          }
+      }
+
+  for (auto som:soms) // Remplissage des sommets
+    {
+      for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = xs(som, d);
+      ind_tab++;
+    }
 
   // Puis on echange les tableaux des centres de gravites
   // envoi des tableaux
@@ -791,6 +831,17 @@ void Zone_Poly_base::init_dist_paroi(const Conds_lim& conds_lim) // Methode insp
   Cerr<<"Zone_Poly_base::init_dist_bord needs TRUST compiled with MEDCoupling."<<finl;
   exit();
 #endif
+
+  // Pour les elems de bord, on calcule la distance de facon propre avec le produit scalaire
+  for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim(ind_cl).valeur()) || sub_type(Dirichlet_homogene, conds_lim(ind_cl).valeur()) || sub_type(Navier, conds_lim(ind_cl).valeur()) )
+      {
+        int num_face_1_cl = conds_lim(ind_cl).frontiere_dis().frontiere().num_premiere_face();
+        int nb_faces_cl   = conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
+
+        for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
+          y_elem_(face_voisins(f, 0)) = std::min(dist_face_elem0(f, face_voisins(f, 0)), y_elem_(face_voisins(f, 0))) ; // Prise en compte du cas ou l'element a plusieurs faces de bord
+      }
 
   y_faces_.echange_espace_virtuel();
   y_elem_.echange_espace_virtuel();

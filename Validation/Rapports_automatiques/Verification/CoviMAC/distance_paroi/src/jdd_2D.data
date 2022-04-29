@@ -1,0 +1,196 @@
+# PARALLEL OK #
+system "rm -rf lata; mkdir -p lata"
+dimension 2
+
+Domaine dom
+
+# BEGIN MESH #
+mailler dom
+{
+    pave Cavite_Est
+    {
+        Origine 2  -1
+        Nombre_de_Noeuds 61 61
+        Longueurs 3 3
+    }
+    {
+        Bord Est               Y = 2      2  <= X <= 5  
+        Bord Est		X = 2      -1  <= Y <= 2 
+        Bord Est_ext           X = 5      -1  <= Y <= 2 
+
+    } ,
+    pave Cavite_Sud
+    {
+        Origine -1  -2 
+        Nombre_de_Noeuds 121 6
+        Longueurs 6 1
+    }
+    {
+        Bord Sud_ext           Y = -2      -1  <= X <= 5  
+        Bord Sud		Y = -1      -1  <= X <= 2  
+        Bord Sud               X = 5      -2  <= Y <= -1 
+    } ,
+    pave Cavite_Ouest
+    {  
+        Origine -2  -2 
+        Nombre_de_Noeuds 6 21
+        Longueurs 1 4
+    }
+    {  
+        Bord Ouest              X = -2  -2  <= Y <= 2 
+        Bord Ouest              Y = 2   -2  <= X <= -1 
+        Bord Ouest              Y = -2  -2  <= X <= -1 
+        Bord Ouest		 X = -1  -1  <= Y <= 1  
+    } ,
+    pave Cavite_Nord
+    {
+        Origine  -1  1  
+        Nombre_de_Noeuds 41 6
+        Longueurs 2 1
+    }
+    {
+        Bord Nord                     Y = 2   -1  <= X <= 1  
+        Bord Nord   			Y = 1   -1  <= X <= 1  
+        Bord Nord_sym 		X = 1   1  <= Y <= 2 
+    }
+}
+
+# END MESH #
+
+
+
+# BEGIN PARTITION
+Partition dom
+{
+        /* Choose Nb_parts so to have ~ 25000 cells per processor */
+        Partition_tool metis { nb_parts 4 }
+        Larg_joint 2
+        zones_name DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+
+PolyMAC_V2  dis
+option_polymac_v2 {  }
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    nb_pas_dt_max 0
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5 pression 1e8 vitesse 1e8 temperature 1e8 }
+        iter_min 1
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Fluide_Incompressible eau_liquide
+Read eau_liquide /* 20 degrees */
+{
+	mu champ_uniforme      1 1.002e-3
+ 	rho champ_uniforme     1 998.30
+	lambda Champ_Uniforme  1 0.604
+        Cp Champ_Uniforme      1 75.366
+        beta_th Champ_Uniforme 1 0
+}
+
+pb_Multiphase pb
+
+phases pb
+{
+    liquide { eau }
+}
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    correlations
+    {
+    }
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse  Champ_Fonc_xyz dom 2 0 0
+            pression Champ_Fonc_xyz dom 1 1e5
+        }
+        boundary_conditions
+	{
+	Est       paroi_fixe
+	Sud       paroi_fixe
+	Ouest     paroi_fixe
+	Nord      paroi_fixe
+	Est_ext   frontiere_ouverte_vitesse_imposee_sortie champ_front_uniforme 2 0 0
+	Sud_ext   frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
+	Nord_sym  symetrie	
+	}
+    }            
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
+        convection { amont }
+        boundary_conditions
+        {
+	Est       paroi
+	Sud       paroi
+	Ouest     paroi
+	Nord      paroi
+	Est_ext   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+	Sud_ext   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+	Nord_sym  paroi	
+        }
+        sources { }
+    }
+    Energie_Multiphase
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 1 0 }
+        boundary_conditions
+        {
+	Est       paroi_adiabatique
+	Sud       paroi_adiabatique
+	Ouest     paroi_adiabatique
+	Nord      paroi_adiabatique
+	Est_ext   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+	Sud_ext   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+	Nord_sym  paroi_adiabatique	
+        }
+	sources
+	{   
+        }
+    }
+    Post_processing
+    {
+        probes
+	{
+	     Nord        distance_paroi  periode 1.e8 segment 40  -.975  1.5  	.975   1.5 
+	     Ouest       distance_paroi  periode 1.e8 segment 5    -1.9   0.  	-1.1   0.  
+	     Sud1	 distance_paroi   periode 1.e8 segment 5      0. -1.9  	 0.   -1.1 
+	     Sud2	 distance_paroi   periode 1.e8 segment 100  .025  -1.9	4.975 -1.9 
+	     Est	 distance_paroi   periode 1.e8 segment 60  2.025 1.975	4.975 -.975
+        }
+	format lata
+        fields dt_post 1e-8
+        {
+	    distance_paroi elem
+        }
+    }
+}
+Solve pb
+End

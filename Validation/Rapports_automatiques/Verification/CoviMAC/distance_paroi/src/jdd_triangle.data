@@ -1,0 +1,126 @@
+Dimension 3
+system "rm -rf lata; mkdir -p lata"
+dimension 2
+
+Domaine dom
+
+Mailler dom
+{
+	pave bloc
+	{
+		origine 0 0
+		longueurs 10 5
+		nombre_de_noeuds 11 6
+		}
+		{
+		bord ouvert	X = 0	0 <= Y <= 5	
+		bord ouvert	X = 10	0 <= Y <= 5	
+		bord paroi	Y = 0	0 <= X <= 10	
+		bord ouvert	Y = 5	0 <= X <= 10	
+		}
+}
+
+trianguler dom
+
+PolyMAC_V2  dis
+option_polymac_v2 {  }
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    nb_pas_dt_max 0
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5 pression 1e8 vitesse 1e8 temperature 1e8 }
+        iter_min 1
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Fluide_Incompressible eau_liquide
+Read eau_liquide /* 20 degrees */
+{
+	mu champ_uniforme      1 1.002e-3
+ 	rho champ_uniforme     1 998.30
+	lambda Champ_Uniforme  1 0.604
+        Cp Champ_Uniforme      1 75.366
+        beta_th Champ_Uniforme 1 0
+}
+
+pb_Multiphase pb
+
+phases pb
+{
+    liquide { eau }
+}
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    correlations
+    {
+    }
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse  Champ_Fonc_xyz dom 2 0 0
+            pression Champ_Fonc_xyz dom 1 1e5
+        }
+        boundary_conditions
+	{
+	paroi     paroi_fixe
+	ouvert    frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
+	}
+    }            
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
+        convection { amont }
+        boundary_conditions
+        {
+	paroi     paroi
+	ouvert    frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+        }
+        sources { }
+    }
+    Energie_Multiphase
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 1 0 }
+        boundary_conditions
+        {
+    	paroi     paroi_adiabatique
+	ouvert    frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+        }
+	sources
+	{   
+        }
+    }
+
+	Post_processing
+	{
+
+		sondes			{
+					dist	distance_paroi  periode 1.e8 segment 20  0.25  0.5  9.75   .5  
+					}
+		format lata
+		champs binaire dt_post 1e6
+					{
+					    distance_paroi elem
+					}
+	}
+}
+
+Resoudre pb
+Fin
