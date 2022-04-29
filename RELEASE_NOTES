@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
+04/05/22 (TRUST)  New feature : Add list of low-storage/classical time Runge-Kutta schemes with order 2,3 and 4.
 03/05/22 (TRUST)  New keyword : Definition_champs_fichier { file filename } to read definition_champs from a file
 03/05/22 (TRUST)  Major Change: Class and SFINAE templates are introduced to factorize the implementation of TRUST Don fields.
 20/04/22 (TRUST)  New keyword : Partition_tool Fichier_MED: allows to split a domain according to an integer field (giving the proc number of each element) stored in a MED file.
