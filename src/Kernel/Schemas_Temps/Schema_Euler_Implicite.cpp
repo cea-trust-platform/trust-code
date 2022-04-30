@@ -388,8 +388,9 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                       {
                         const Probleme_base& pb = ref_cast(Probleme_base,pbc.probleme(i));
                         const Motcle type = pb.equation(j).domaine_application();
-                        if (s.count(type.getString()) || s.count((Nom("_") + type).getString())) eqs.add(pb.equation(j));
+                        if ((s.count(type.getString()) || s.count((Nom("_") + type).getString())) && !pb.equation(j).equation_non_resolue()) eqs.add(pb.equation(j));
                       }
+                  if (eqs.size() == 0) continue; // equations non resolues
 
                   Cout << "RESOLUTION {";
                   for (auto &&d : s) Cout << Nom(" ") + d;
