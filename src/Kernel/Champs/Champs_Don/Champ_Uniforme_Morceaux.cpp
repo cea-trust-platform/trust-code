@@ -42,7 +42,7 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
   Nom nom;
   int k, poly;
   is >> nom;
-  interprete_get_domaine<Champ_Morceaux_Type::UNIFORME>(nom);
+  interprete_get_domaine(nom);
   Domaine& le_domaine=mon_domaine.valeur();
   const IntTab& les_elems=le_domaine.zone(0).les_elems();
   const int nb_som_elem = le_domaine.zone(0).nb_som_elem();

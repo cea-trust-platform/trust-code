@@ -35,7 +35,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
 {
   Nom nom;
   is >> nom;
-  interprete_get_domaine<Champ_Morceaux_Type::FONC_TABULE>(nom);
+  interprete_get_domaine(nom);
   mon_domaine->creer_tableau_elements(table_idx);
   table_idx = -1; // pour planter si on a oublie une sous-zone
 

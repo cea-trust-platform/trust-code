@@ -230,19 +230,16 @@ int TRUSTChamp_Morceaux_generique<_TYPE_>::initialiser(const double time)
   return Champ_Don_base::initialiser(time);
 }
 
-template<Champ_Morceaux_Type _TYPE_> template<Champ_Morceaux_Type T>
-enable_if_t<T != Champ_Morceaux_Type::FONC_TXYZ, void> /* FONC, FONC_TABULE et UNIFORME */
-TRUSTChamp_Morceaux_generique<_TYPE_>::interprete_get_domaine(const Nom& nom)
+template<Champ_Morceaux_Type _TYPE_>
+void TRUSTChamp_Morceaux_generique<_TYPE_>::interprete_get_domaine(const Nom& nom)
 {
-  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
-}
-
-template<Champ_Morceaux_Type _TYPE_> template<Champ_Morceaux_Type T>
-enable_if_t<T == Champ_Morceaux_Type::FONC_TXYZ, void>
-TRUSTChamp_Morceaux_generique<_TYPE_>::interprete_get_domaine(const Nom& nom)
-{
-  ref_pb = ref_cast(Probleme_base, Interprete::objet(nom));
-  mon_domaine = ref_pb->domaine();
+  static constexpr bool IS_FONC_TXYZ = (_TYPE_ == Champ_Morceaux_Type::FONC_TXYZ);
+  if (IS_FONC_TXYZ)
+    {
+      ref_pb = ref_cast(Probleme_base, Interprete::objet(nom));
+      mon_domaine = ref_pb->domaine();
+    }
+  else mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
 }
 
 template<Champ_Morceaux_Type _TYPE_>

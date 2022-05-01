@@ -44,8 +44,7 @@ Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)
   int dim;
   Nom nom;
   is >> nom;
-
-  interprete_get_domaine<Champ_Morceaux_Type::FONC_TXYZ>(nom);
+  interprete_get_domaine(nom);
 
   Nom val1, val2;
   is >> val1;

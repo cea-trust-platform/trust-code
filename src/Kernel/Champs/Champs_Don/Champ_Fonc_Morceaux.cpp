@@ -37,8 +37,7 @@ Entree& Champ_Fonc_Morceaux::readOn(Entree& is)
 {
   Nom nom;
   is >> nom;
-
-  interprete_get_domaine<Champ_Morceaux_Type::FONC>(nom);
+  interprete_get_domaine(nom);
 
   int dim = lire_dimension(is, que_suis_je());
   creer_tabs(dim);

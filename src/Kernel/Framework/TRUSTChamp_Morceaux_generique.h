@@ -72,11 +72,7 @@ protected:
   Nom nom_champ_parametre_; /* nom du champ dont les fonctions ont parametres */
   IntTab parser_idx; /* parser_idx(i, j) : parser a appeller pour calculer la composante j du champ a la maille i */
 
-  template<Champ_Morceaux_Type T> enable_if_t<T != Champ_Morceaux_Type::FONC_TXYZ, void>
-  interprete_get_domaine(const Nom& nom);
-
-  template<Champ_Morceaux_Type T> enable_if_t<T == Champ_Morceaux_Type::FONC_TXYZ, void>
-  interprete_get_domaine(const Nom& nom);
+  void interprete_get_domaine(const Nom& nom);
 
   void creer_tabs(const int);
   Entree& complete_readOn(const int dim, const Nom& qsj, Entree& is, Nom& nom);
