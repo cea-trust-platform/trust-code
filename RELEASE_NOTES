@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
+03/05/22 (TRUST)  Major Change: Class and SFINAE templates are introduced to factorize the implementation of TRUST Don fields.
 20/04/22 (TRUST)  New feature : Partitionneur_Fichier_MED: allows to split a domain according to an integer field (giving the proc number of each element) stored in a MED file.
 07/04/22 (TRUST)  Major Change: TRUST int/double Arrays, Vects, Tabs and Travs are now class templates
 01/04/22 (TRUST)  New feature : New implementation of Champ_fonc_tabule_morceaux. Allows to use multiple parameter fields and improve performance.

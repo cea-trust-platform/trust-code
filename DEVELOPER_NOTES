@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.5_beta : Changes since version 1.8.4 :
 -------------------------------------------------------------
+03/05/22 (TRUST) Add three generic class templates (TRUSTChamp_Don_generique,TRUSTChamp_Morceaux_generique & TRUSTChamp_Divers_generique) + SFINAE methods to factorize the implementation of 12 classes that derive from Champ_Don_base.
 13/04/22 (TRUST) VDF operators/sources follow the Interface_Bloc architecture
 07/04/22 (TRUST) To test a subtype of ArrOfXXX, XXXVect, XXXTab and XXXTrav, use a dynamic_cast (see for example the method MD_Vector_tools::creer_tableau_distribue)
 07/04/22 (TRUST) static_cast and dynamic_cast should be now used to down-cast ArrOfXXX, XXXVect, XXXTab (No more ref_cast since no more implement_instansciable => no type_info)
