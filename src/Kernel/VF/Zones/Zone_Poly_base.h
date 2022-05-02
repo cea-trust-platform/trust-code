@@ -144,8 +144,8 @@ public :
 
 // Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
   void init_dist_paroi(const Conds_lim& conds_lim) override;
-  const DoubleTab& y_elem()  const override {return y_elem_;} ;
-  const DoubleTab& y_faces() const override {return y_faces_;} ;
+  const DoubleTab& normale_paroi_elem()  const {return n_y_elem_;} ;
+  const DoubleTab& normale_paroi_faces() const {return n_y_faces_;} ;
 
 protected:
   double h_carre;			 // carre du pas du maillage
@@ -163,9 +163,8 @@ protected:
   Sortie& ecrit(Sortie& os) const;
   void creer_faces_virtuelles_non_std();
 
-  DoubleTab y_elem_ ;
-  DoubleTab y_faces_;
-  int dist_bord_initialisee_ = 0;
+  DoubleTab n_y_elem_ ; // vecteur normal entre le bord le plus proche et l'element
+  DoubleTab n_y_faces_; // vecteur normal entre le bord le plus proche et la face
 };
 
 // Fonctions inline

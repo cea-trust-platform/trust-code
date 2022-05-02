@@ -694,7 +694,7 @@ void Zone_Poly_base::init_som_elem() const
 
 void Zone_Poly_base::init_dist_paroi(const Conds_lim& conds_lim) // Methode inspiree de Raccord_distant_homogene::initialise
 {
-  if(dist_bord_initialisee_) return;
+  if(dist_paroi_initialisee_) return;
 
   const Zone_Poly_base& zone = *this;
   int D=Objet_U::dimension, nf = zone.nb_faces(), ne = zone.nb_elem();
@@ -704,6 +704,12 @@ void Zone_Poly_base::init_dist_paroi(const Conds_lim& conds_lim) // Methode insp
   // On initialise les tables y_faces_ et y_elem_
   zone.creer_tableau_faces(y_faces_);
   zone.zone().creer_tableau_elements(y_elem_);
+
+  n_y_elem_.resize(0,D);
+  n_y_faces_.resize(0,D);
+
+  MD_Vector_tools::creer_tableau_distribue(y_elem_.get_md_vector(), n_y_elem_);
+  MD_Vector_tools::creer_tableau_distribue(y_faces_.get_md_vector(), n_y_faces_);
 
   // On va identifier les faces par leur centres de gravite
   int parts = Process::nproc();
@@ -823,8 +829,16 @@ void Zone_Poly_base::init_dist_paroi(const Conds_lim& conds_lim) // Methode insp
           double x2=remote_xv[proc](fe2,d);
           distance2 += (x1-x2)*(x1-x2);
         }
-      if (fe<nf) y_faces_(fe) = std::sqrt(distance2);
-      else       y_elem_(fe-nf)  = std::sqrt(distance2);
+      if (fe<nf)
+        {
+          y_faces_(fe) = std::sqrt(distance2);
+          if (y_faces_(fe)>1.e-8) for (int d = 0 ; d<D ; d++) n_y_faces_(fe, d) = ( local_xv(fe,d)-remote_xv[proc](fe2,d) )/ y_faces_(fe);
+        }
+      else
+        {
+          y_elem_(fe-nf)  = std::sqrt(distance2);
+          for (int d = 0 ; d<D ; d++) n_y_elem_(fe, d) = ( local_xp(fe-nf,d)-remote_xv[proc](fe2,d) )/ y_elem_(fe-nf);
+        }
     }
 
 #else
@@ -840,11 +854,19 @@ void Zone_Poly_base::init_dist_paroi(const Conds_lim& conds_lim) // Methode insp
         int nb_faces_cl   = conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
 
         for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
-          y_elem_(face_voisins(f, 0)) = std::min(dist_face_elem0(f, face_voisins(f, 0)), y_elem_(face_voisins(f, 0))) ; // Prise en compte du cas ou l'element a plusieurs faces de bord
+          if ( dist_face_elem0(f, face_voisins(f, 0)) < y_elem_(face_voisins(f, 0)) ) // Prise en compte du cas ou l'element a plusieurs faces de bord
+            {
+              y_elem_(face_voisins(f, 0)) = dist_face_elem0(f, face_voisins(f, 0)) ;
+              for (int d = 0 ; d<D ; d++)
+                {
+                  n_y_elem_(face_voisins(f, 0), d) = -face_normales(f,  d)/face_surfaces(f);
+                  n_y_faces_ = -face_normales(f,  d)/face_surfaces(f);
+                }
+            }
       }
 
   y_faces_.echange_espace_virtuel();
   y_elem_.echange_espace_virtuel();
-  dist_bord_initialisee_ = 1;
+  dist_paroi_initialisee_ = 1;
   Cerr <<"Initialize the y table " << zone.zone().domaine().le_nom();
 }
