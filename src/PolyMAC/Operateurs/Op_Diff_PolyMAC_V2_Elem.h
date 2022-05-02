@@ -55,6 +55,8 @@ public :
   /* flux paroi_interface : q_pi(e, k, l) : flux de chaleur contribuant au changement de phase k->l dans l'element e */
   const DoubleTab& q_pi() const;
 
+  /* flux paroi_interface : d_nucleation(e, k) : diametre de nucleation de la phase k dans l'element e */
+  const DoubleTab& d_nucleation() const;
 
 private:
   /* sommets connectes a un autre probleme par un Echange_contact */
@@ -71,6 +73,10 @@ private:
   /* tableau renvoye par q_pi(), rempli lors de ajouter_blocs() */
   mutable DoubleTab q_pi_;
   mutable int q_pi_a_jour_ = 0; //q_pi() est utilisable ("a jour") entre le moment ou on a appelle ajouter_blocs() et le mettre_a_jour() suivant
+
+  /* tableau renvoye par d_nucleation(), rempli lors de ajouter_blocs() */
+  mutable DoubleTab d_nuc_;
+  mutable int d_nuc_a_jour_ = 0; //d_nucleation() est utilisable ("a jour") entre le moment ou on a appelle ajouter_blocs() et le mettre_a_jour() suivant
 };
 
 /* comme des synonymes, mais avec l'info de ce qu'on est dans que_suis_je() */

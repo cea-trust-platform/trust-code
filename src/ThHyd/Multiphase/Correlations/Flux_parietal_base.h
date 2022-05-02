@@ -58,6 +58,7 @@
 //        (*dv_qpi)(k, l,m)  -> derivee par rapport a v[m]
 //       (*dTf_qpi)(k, l, m) -> derivee par rapport a T[m]
 //       (*dTp_qpi)(k, l)    -> derivee par rapport a Tp
+//       (*d_nucleation)(k)  -> diametre de nucleation de la phase k
 //        nonlinear          -> regler a 1 si q_pk / q_pi est non-lineaire en Tp / Tf; ne pas toucher sinon
 //////////////////////////////////////////////////////////////////////////////
 
@@ -69,7 +70,10 @@ public:
                   const double *alpha, const double *T, const double p, const double *v, const double Tp,
                   const double *lambda, const double *mu, const double *rho, const double *Cp,
                   DoubleTab *qpk, DoubleTab *da_qpk, DoubleTab *dp_qpk, DoubleTab *dv_qpk, DoubleTab *dTf_qpk, DoubleTab *dTp_qpk,
-                  DoubleTab *qpi, DoubleTab *da_DoubleTabqpi, DoubleTab *dp_qpi, DoubleTab *dv_qpi, DoubleTab *dTf_qpi, DoubleTab *dTp_qpi, int& nonlinear) const = 0;
+                  DoubleTab *qpi, DoubleTab *da_DoubleTabqpi, DoubleTab *dp_qpi, DoubleTab *dv_qpi, DoubleTab *dTf_qpi, DoubleTab *dTp_qpi,
+                  DoubleTab *d_nucleation, int& nonlinear) const = 0;
+
+  virtual int calculates_bubble_nucleation_diameter() const {return 0;};
 };
 
 #endif

@@ -83,6 +83,10 @@ void Op_Diff_PolyMAC_V2_Elem::completer()
   /* tableau q_pi */
   if (sub_type(Energie_Multiphase, eq))
     q_pi_.resize(0, ch.valeurs().line_size(), ch.valeurs().line_size()), zone.zone().creer_tableau_elements(q_pi_);
+
+  const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, eq.probleme()) ? &ref_cast(Pb_Multiphase, eq.probleme()) : NULL;
+  if (sub_type(Energie_Multiphase, eq)) if (pbm) if (pbm->has_correlation("Flux_parietal")) if (ref_cast(Flux_parietal_base, pbm->get_correlation("Flux_parietal").valeur()).calculates_bubble_nucleation_diameter())
+          d_nuc_.resize(0, ch.valeurs().line_size()), zone.zone().creer_tableau_elements(d_nuc_);
 }
 
 /* construction de s_dist : sommets du porbleme coincidant avec des sommets de problemes distants */
@@ -283,6 +287,7 @@ void Op_Diff_PolyMAC_V2_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
     }
   const Zone_PolyMAC_V2& zone0 = zone[0];
   q_pi_ = 0; //remise a zero du flux paroi-interface
+  d_nuc_ = -1; //remise a zero du diametre de nucleation ; flag pour ne pas etre gene s'il n'est pas calcule
 
   /* avec phif : flux hors Echange_contact -> mat[0] seulement */
   DoubleTrav flux(N[0]);
@@ -493,12 +498,12 @@ void Op_Diff_PolyMAC_V2_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = zone[p].get().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
                                              &vit = pbm.eq_qdm.inconnue().passe(), &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
                                               &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
-                            DoubleTrav qpk(N[p]), dTf_qpk(N[p], N[p]), dTp_qpk(N[p]), qpi(N[p], N[p]), dTf_qpi(N[p], N[p], N[p]), dTp_qpi(N[p], N[p]), nv(N[p]);
+                            DoubleTrav qpk(N[p]), dTf_qpk(N[p], N[p]), dTp_qpk(N[p]), qpi(N[p], N[p]), dTf_qpi(N[p], N[p], N[p]), dTp_qpi(N[p], N[p]), nv(N[p]), d_nuc(N[p]);
                             for (d = 0; d < D; d++) for (n = 0; n < N[p]; n++) nv(n) += std::pow(vit(zone[p].get().nb_faces_tot() + D * e + d, n), 2);
                             for (n = 0; n < N[p]; n++) nv(n) = sqrt(nv(n));
                             //appel : on n'est implicite qu'en les temperatures
                             corr.qp(N[p], f, dh(e), dh(e), &alpha(e, 0), &Tefs(0, i_efs(i, j, 0)), press(e), nv.addr(), Tefs(0, i_efs(i, j, M)), &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
-                                    &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi, nonlinear);
+                                    &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi,  &d_nuc, nonlinear);
                             /* on ajoute qpi(k, l) a la qpk(k) (sera ensuite retire par Flux_interfacial_PolyMAC_V2) */
                             for (k1 = 0; k1 < N[p]; k1++) for (k2 = k1 + 1; k2 < N[p]; k2++)
                                 for (qpk(k1) += qpi(k1, k2), dTp_qpk(k1) += dTp_qpi(k1, k2), n = 0; n < N[p]; n++) dTf_qpk(k1, n) += dTf_qpi(k1, k2, n);
@@ -513,6 +518,8 @@ void Op_Diff_PolyMAC_V2_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                                 Qec(i, t_e, k1, k2) += surf_fs[k] * qpi(k1, k2), Qf(i, i_efs(i, j, M), k1, k2) += surf_fs[k] * dTp_qpi(k1, k2);
                             for (m = 0; m < N[p]; m++) for (k1 = 0; k1 < N[p]; k1++) for (k2 = k1 + 1; k2 < N[p]; k2++)
                                   Qf(i, i_efs(i, j, m), k1, k2) += surf_fs[k] * dTf_qpi(k1, k2, m); //derivees en Tf
+                            if (d_nuc_.dimension(0)) for (k1 =0 ; k1 < N[p]; k1++)
+                                d_nuc_(e, k1) += d_nuc(k1);
                           }
                         else for (n = 0; n < N[p]; n++) if ((i_eq = i_eq_cont(k, mix * n)) >= 0) /* pas d'inconnue de Tparoi -> continuite composante par composante */
                               B(!mix * n, t_e, i_eq) += sgn * Tefs(!mix * n, i_efs(i, j, mix * n)), A(!mix * n, i_efs(i, j, mix * n), i_eq) -= sgn;
