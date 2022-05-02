@@ -74,25 +74,31 @@ const char StringTokenizer::keyword_op_bis[][10] = { "+", "-", "*", "/", "^", "<
 StringTokenizer::StringTokenizer()
 {
   sval =NULL;
-  str = new String2("0");
+  str = new std::string("0");
   init_keyword_op();
-  reste = str->s;
+  reste = new char[strlen(str->c_str())+1];
+  strcpy(reste,str->c_str());
+  // reste = &str[0];
 }
 
-StringTokenizer::StringTokenizer(String2& s)
+StringTokenizer::StringTokenizer(std::string& s)
 {
   sval =NULL;
-  str = new String2(s);
+  str = new std::string(s);
   init_keyword_op();
-  reste = str->s;
+  reste = new char[strlen(s.c_str())+1];
+  strcpy(reste,s.c_str());
+  //reste = &str[0];
 }
 
-StringTokenizer::StringTokenizer(String2 s, String2 sep)
+StringTokenizer::StringTokenizer(std::string s, std::string sep)
 {
   sval =NULL;
-  str = new String2(s);
+  str = new std::string(s);
   init_keyword_op();
-  reste = str->s;
+  reste = new char[strlen(s.c_str())+1];
+  strcpy(reste,s.c_str());
+  //reste = &str[0];
 }
 
 StringTokenizer::~StringTokenizer()
@@ -112,7 +118,7 @@ StringTokenizer::~StringTokenizer()
 
 int StringTokenizer::check_GRP()
 {
-  char* ch = str->s;
+  const char* ch = str->c_str();
   int nb_o=0;
   int nb_f=0;
   int sz = strlen(ch);
@@ -165,7 +171,8 @@ int StringTokenizer::nextToken(void)
           else
             {
               type=STRING;
-              sval = new String2(reste);
+              sval = new std::string(reste);
+              for (auto & c: *sval) c = toupper(c);
             }
           while ((*reste++) != '\0') ;
           reste--;
@@ -216,7 +223,7 @@ int StringTokenizer::nextToken(void)
                   nextToken();
                   if (type != NUMBER)
                     {
-                      Cerr << "Error while interpreting the string " << str << finl;
+                      Cerr << "Error while interpreting the string " << str->c_str() << finl;
                       Process::exit();
                     }
                   nval_tmp*=pow(10,-nval);
@@ -226,7 +233,7 @@ int StringTokenizer::nextToken(void)
                   nextToken();
                   if (type != NUMBER)
                     {
-                      Cerr << "Error while inetrpreting the string " << str << finl;
+                      Cerr << "Error while interpreting the string " << str->c_str() << finl;
                       Process::exit();
                     }
                   nval_tmp*=pow(10.,nval);
@@ -243,7 +250,7 @@ int StringTokenizer::nextToken(void)
                 }
               else
                 {
-                  Cerr << "Error while interpreting the string " << str << finl;
+                  Cerr << "Error while interpreting the string " << str->c_str() << finl;
                   Process::exit();
                 }
             }
@@ -269,7 +276,8 @@ int StringTokenizer::nextToken(void)
       else
         {
           type=STRING;
-          sval = new String2(tok);
+          sval = new std::string(tok);
+          for (auto & c: *sval) c = toupper(c);
           reste=tmp;
         }
       // delete[] tok;
@@ -356,7 +364,7 @@ char* StringTokenizer::find_sep(char* ch, int& type_sep, int& length)
   int main()
   {
   //String s("23+34*12-13+COS ( 12 )* 2^3");
-  String2 s("2+3");
+  std::string s("2+3");
   StringTokenizer tk(s);
   Cout << StringTokenizer::NUMBER << finl;
   Cout << StringTokenizer::EOS << finl;

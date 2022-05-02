@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -87,7 +87,8 @@ Entree& Moyenne_volumique::readOn(Entree& is )
           exit();
         }
       {
-        String2 s(expression_parser_);
+        std::string s(expression_parser_);
+        for (auto & c: s) c = toupper(c);
         parser_.setString(s);
         parser_.setNbVar(Objet_U::dimension);
         parser_.addVar("x");

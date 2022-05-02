@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,13 +22,14 @@
 #ifndef Variable_included
 #define Variable_included
 
-#include <String2.h>
+#include <string>
+#include <Nom.h>
 
 class Variable
 {
 private:
   double value;
-  String2 *s;
+  std::string *s;
 
 
 
@@ -36,7 +37,7 @@ public:
   Variable()
   {
     value =0.;
-    s = new String2("x");
+    s = new std::string("X");
   }
 
   ~Variable()
@@ -46,19 +47,21 @@ public:
   Variable(Variable& v)
   {
     value =v.value;
-    s = new String2(v.s);
+    s = new std::string(*v.s);
   }
 
-  Variable(String2& ss)
+  Variable(std::string& ss)
   {
     value = 0.;
-    s = new String2(ss);
+    s = new std::string(ss);
   }
 
   Variable(const char* ss)
   {
     value = 0.;
-    s = new String2(ss);
+    s = new std::string(ss);
+    // int length = s->size();
+    for (auto & c: *s) c = toupper(c);
   }
 
 
@@ -70,12 +73,12 @@ public:
   {
     value = x;
   }
-  String2& getString()
+  std::string& getString()
   {
     return *s;
   }
 
-  /*void setValue(String2 s)
+  /*void setValue(std::string s)
     {
     System.out.println(s);
     Parser p = new Parser(s);

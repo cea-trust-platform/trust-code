@@ -66,7 +66,8 @@ Entree& Champ_Fonc_t::readOn(Entree& is)
       Nom expression;
       is >> expression;
       const char* s = expression.getChar();
-      String2 ss(s);
+      std::string ss(s);
+      for (auto & c: ss) c = toupper(c);
       ft[i_parser].setNbVar(1);
       ft[i_parser].setString(ss);
       ft[i_parser].addVar("t");

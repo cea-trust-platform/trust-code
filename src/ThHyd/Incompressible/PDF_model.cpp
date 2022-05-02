@@ -78,7 +78,8 @@ int PDF_model::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
       for (int i = 0; i < dim; i++)
         {
           is >> expr_vit_imp;
-          String2 sx(expr_vit_imp);
+          std::string sx(expr_vit_imp);
+          for (auto & c: sx) c = toupper(c);
           parsers_[i].setString(sx);
           parsers_[i].setNbVar(4);
           parsers_[i].addVar("x");

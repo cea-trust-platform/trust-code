@@ -69,9 +69,9 @@ public :
   inline void setVar(const char* sv, double val);
 
   /**
-   * Fixe la valeur de la variable representee par une chaine String2 v.
+   * Fixe la valeur de la variable representee par une chaine v.
    */
-  inline void setVar(const String2& v, double val);
+  inline void setVar(const std::string& v, double val);
 
   /**
    * Fixe la valeur de la variable de numero specifie. Ce numero correspondt a l'ordre de l'ajout des variables par la methode addVar().
@@ -93,8 +93,8 @@ public :
    */
   inline void addVar(const char *v);
 
-  inline String2& getString() ;
-  inline void setString(const String2& s) ;
+  inline std::string& getString() ;
+  inline void setString(const std::string& s) ;
   inline void setString(const Nom& nom) ;
   inline void addCst(const Constante& cst);
   inline void setImpulsion(double tinit, double periode);
@@ -136,15 +136,15 @@ inline void Parser_U::setVar(const char* sv, double val)
 }
 
 /**
- * Fixe la valeur de la variable representee par une chaine String2 v.
+ * Fixe la valeur de la variable representee par un string v.
  */
-inline void Parser_U::setVar(const String2& v, double val)
+inline void Parser_U::setVar(const std::string& v, double val)
 {
   parser->setVar(v, val);
 }
 
 /**
- * Fixe la valeur de la variable de numero specifie. Ce numero correspondt a l'ordre de l'ajout des variables par la methode addVar().
+ * Fixe la valeur de la variable de numero specifie. Ce numero correspond a l'ordre de l'ajout des variables par la methode addVar().
  */
 inline void Parser_U::setVar(int i, double val)
 {
@@ -169,13 +169,13 @@ inline void Parser_U::addVar(const char *v)
   parser->addVar(v);
 }
 
-inline String2& Parser_U::getString()
+inline std::string& Parser_U::getString()
 {
   return parser->getString();
 }
 
 
-inline void Parser_U::setString(const String2& s)
+inline void Parser_U::setString(const std::string& s)
 {
   parser->setString(s);
 }
@@ -183,7 +183,8 @@ inline void Parser_U::setString(const String2& s)
 inline void Parser_U::setString(const Nom& nom)
 {
   const char *s =  nom.getChar();
-  String2 ss(s);
+  std::string ss(s);
+  for (auto & c: ss) c = toupper(c);
   setString(ss);
 }
 

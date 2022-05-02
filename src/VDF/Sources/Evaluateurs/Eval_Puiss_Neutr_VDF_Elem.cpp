@@ -41,7 +41,8 @@ void Eval_Puiss_Neutr_VDF_Elem::associer_repartition(const Nom& n, const Nom& no
 
   fxyz = n;
 
-  String2 sfxyz(fxyz.getChar());
+  std::string sfxyz(fxyz.getString());
+  for (auto & c: sfxyz) c = toupper(c);
   Parser p(sfxyz,3);
   p.addVar("x");
   p.addVar("y");

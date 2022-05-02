@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ Parser::Parser()
   init_parser();
   state=0;
   root=NULL;
-  str=new String2("0");
+  str= new std::string("0");
   maxvar=1;
   ivar=0;
   les_var = new Variable*[maxvar];
@@ -61,7 +61,7 @@ Parser::Parser(const Parser& p)
 
   root=NULL;
 
-  str=new String2(p.str);
+  str= new std::string(*p.str);
 
   les_var = new Variable*[maxvar];
   for (int i = 0; i < ivar; i++)
@@ -73,7 +73,7 @@ Parser::Parser(const Parser& p)
 }
 
 
-Parser::Parser(String2& s,int n)
+Parser::Parser(std::string& s,int n)
 {
   init_parser();
   impuls_tn = -1.;
@@ -83,7 +83,7 @@ Parser::Parser(String2& s,int n)
 
   state=0;
   root=NULL;
-  str=new String2(s);
+  str= new std::string(s);
   maxvar=n;
   ivar=0;
   les_var = new Variable*[maxvar];
@@ -180,7 +180,7 @@ void Parser::parseString()
   StringTokenizer tok(*str);
   if (!tok.check_GRP())
     {
-      Cerr << "Expression " << *str << " does not contain the same number of opening and closing parenthesis." << finl;
+      Cerr << "Expression " << str->c_str() << " does not contain the same number of opening and closing parenthesis." << finl;
       Process::exit();
     }
 
@@ -346,7 +346,7 @@ void Parser::parserState0(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
         }
       else
         {
-          const String2& func = tokenizer->getSValue();
+          const std::string& func = tokenizer->getSValue();
           trouv = searchFunc(func);
           if (trouv>-1)
             {
@@ -367,13 +367,13 @@ void Parser::parserState0(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
               else
                 {
                   Cerr << "Error in Parser::parserState0 during interpretation of the following string :\n ";
-                  Cerr << *str << "\n";
-                  Cerr << " identifier " << func << " unknown " << finl;
+                  Cerr << str->c_str() << "\n";
+                  Cerr << " identifier " << func.c_str() << " unknown " << finl;
                   // permet d avoir 0 erreur valgrind avec cppunit
                   root=(PNode*) *(ob->getBase());
                   Cerr << "List of known var "<<finl;
                   for (int i=0; i<ivar; i++)
-                    Cerr<<les_var[i]->getString()<< " ";
+                    Cerr<<les_var[i]->getString().c_str()<< " ";
                   Cerr<<finl;
                   Process::exit();
                 }
@@ -439,7 +439,7 @@ void Parser::parserState1(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
         }
       else
         {
-          const String2& func = tokenizer->getSValue();
+          const std::string& func = tokenizer->getSValue();
           trouv = searchFunc(func);
           if (trouv>-1)
             {
@@ -460,11 +460,11 @@ void Parser::parserState1(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
               else
                 {
                   Cerr << "Error in Parser::parserState1 during interpretation of the following string :\n ";
-                  Cerr << str << "\n";
-                  Cerr << " identifier " << func << " unknown !! " << finl;
+                  Cerr << str->c_str() << "\n";
+                  Cerr << " identifier " << func.c_str() << " unknown !! " << finl;
                   Cerr << "List of known var "<<finl;
                   for (int i=0; i<ivar; i++)
-                    Cerr<<les_var[i]->getString()<< " ";
+                    Cerr<<les_var[i]->getString().c_str()<< " ";
                   Cerr<<finl;
                   Process::exit();
                 }
@@ -642,7 +642,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
     }
   else
     {
-      Cerr << "Error state 2 !!! " <<tokenizer->type<<"  "<<tokenizer->getSValue()<<"  "<<tokenizer->getNValue()<< finl;
+      Cerr << "Error state 2 !!! " <<tokenizer->type<<"  "<<tokenizer->getSValue().c_str()<<"  "<<tokenizer->getNValue()<< finl;
       Cerr<<" StringTokenizer::ADD "<<StringTokenizer::ADD<<" StringTokenizer::SUBTRACT "<<StringTokenizer::SUBTRACT<<" StringTokenizer::MULTIPLY "<<StringTokenizer::MULTIPLY;
       Cerr<<" StringTokenizer::DIVIDE "<<StringTokenizer::DIVIDE<<" StringTokenizer::POWER "<<StringTokenizer::POWER<<" StringTokenizer::LT "<<StringTokenizer::LT<<" StringTokenizer::GT "<<StringTokenizer::GT;
       Cerr<<" StringTokenizer::LE "<<StringTokenizer::LE<<" StringTokenizer::GE "<<StringTokenizer::GE<<" StringTokenizer::MOD "<<StringTokenizer::MOD<<" ENDStringTokenizer::GRP "<<StringTokenizer::ENDGRP;
@@ -672,16 +672,16 @@ void Parser::addVar(const char *vv)
     }
 }
 
-int Parser::searchCst(const String2& v)
+int Parser::searchCst(const std::string& v)
 {
   LIST_CURSEUR(Constante) curseur(les_cst);
   int i=0;
-  Nom nv(v.toChar());
+  Nom nv(v.c_str());
   while(curseur)
     {
       Constante& cst = ref_cast(Constante,curseur.valeur());
-      const String2 ss(cst.le_nom());
-      if (nv == Nom(ss.toChar())) return i;
+      std::string ss(cst.le_nom());  // TODO a voir majuscules
+      if (nv == Nom(ss.c_str())) return i;
       ++curseur;
       i++;
     }
@@ -689,11 +689,11 @@ int Parser::searchCst(const String2& v)
 }
 
 
-int Parser::searchFunc(const String2& v)
+int Parser::searchFunc(const std::string& v)
 {
   LIST_CURSEUR(DERIV(UnaryFunction)) curseur(unary_func);
   int i=0;
-  Nom nv(v.toChar());
+  Nom nv(v.c_str());
   nv.majuscule();
   while(curseur)
     {
@@ -730,7 +730,7 @@ void Parser::addFunc(const UnaryFunction& f)
 void debug(StringTokenizer * t)
 {
   if (t->type == StringTokenizer::STRING)
-    Cout << "STRING : " << t->getSValue() << finl;
+    Cout << "STRING : " << t->getSValue().c_str() << finl;
   else if (t->type == StringTokenizer::NUMBER)
     Cout << "NUMBER : " << t->getNValue() << finl;
   else if (t->type == StringTokenizer::EOS)

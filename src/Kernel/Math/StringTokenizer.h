@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 #ifndef StringTokenizer_included
 #define StringTokenizer_included
 
-#include <String2.h>
+#include <string>
 
 
 class StringTokenizer
@@ -67,8 +67,8 @@ public:
   int type;
 
   StringTokenizer();
-  StringTokenizer(String2& );
-  StringTokenizer(String2,String2);
+  StringTokenizer(std::string& );
+  StringTokenizer(std::string,std::string);
   ~StringTokenizer();
 
   int nextToken(void);
@@ -80,7 +80,7 @@ public:
   {
     return nval;
   }
-  inline const String2& getSValue()
+  inline const std::string& getSValue()
   {
     return *sval;
   }
@@ -90,8 +90,8 @@ public:
 private :
 
   double nval;
-  String2* sval;
-  String2* str;
+  std::string* sval;
+  std::string* str;
   char *reste;
 
 

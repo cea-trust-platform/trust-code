@@ -31,7 +31,7 @@
 /////////////////////////////////////////////////////////////////////////=
 /////
 #include <UnaryFunction.h>
-#include <String2.h>
+#include <string>
 #include <Nom.h>
 #include <Parser_U.h>
 

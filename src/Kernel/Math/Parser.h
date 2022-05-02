@@ -28,6 +28,7 @@
 #include <ListeConstantes.h>
 #include <ListUnaryFunction.h>
 #include <math.h>
+#include <string>
 class StringTokenizer;
 
 /////////////////////////////////////////////////////////////////////////=
@@ -52,7 +53,7 @@ public :
   /**
    * Construit un objet Parser avec une chaine specifiee et un nb max de variables a indiquer avec la methode addVar.
    */
-  Parser(String2&,int n =1);
+  Parser(std::string&,int n =1);
 
   /**
    *
@@ -77,9 +78,9 @@ public :
   inline void setVar(const char* sv, double val);
 
   /**
-  * Fixe la valeur de la variable representee par une chaine String2 v.
+  * Fixe la valeur de la variable representee par v.
   */
-  inline void setVar(const String2& v, double val);
+  inline void setVar(const std::string& v, double val);
 
   /**
   * Fixe la valeur de la variable de numero specifie. Ce numero correspondt a l'ordre de l'ajout des variables par la methode addVar().
@@ -98,14 +99,14 @@ public :
 
 
 
-  inline String2& getString()
+  inline std::string& getString()
   {
     return *str;
   }
-  inline void setString(const String2& s)
+  inline void setString(const std::string& s)
   {
     delete str;
-    str = new String2(s);
+    str = new std::string(s);
   }
   void addCst(const Constante& cst);
   void addFunc(const UnaryFunction& f);
@@ -133,10 +134,10 @@ private:
   void parserState0(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
   void parserState1(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
   void parserState2(StringTokenizer*,PSTACK(PNode)* ,STACK(int)*);
-  inline int searchVar(const String2&);
+  inline int searchVar(const std::string&);
   inline int searchVar(const char*);
-  int searchCst(const String2& v);
-  int searchFunc(const String2& v);
+  int searchCst(const std::string& v);
+  int searchFunc(const std::string& v);
   int state;
   static Constante c_pi ;
   double impuls_T;
@@ -145,7 +146,7 @@ private:
   double impuls_tempo;
 
   PNode* root;
-  String2* str;
+  std::string* str;
   Variable** les_var;
   static ListeConstantes les_cst;
   static ListUnaryFunction unary_func;
@@ -168,7 +169,7 @@ inline void Parser::setVar(const char * sv, double val)
   setVar(searchVar(sv),val);
 }
 
-inline void Parser::setVar(const String2& v, double val)
+inline void Parser::setVar(const std::string& v, double val)
 {
   setVar(searchVar(v),val);
 }
@@ -188,15 +189,19 @@ inline void Parser::setVar(int i, double val)
 
 inline int Parser::searchVar(const char * sv)
 {
+  std::string s(sv);
+  for (auto & c: s) c = toupper(c);
   for (int i=0; i<ivar; i++)
-    if ((les_var[i]->getString()).compare(sv) == 0 ) return i;
+    if ((les_var[i]->getString()).compare(s) == 0 ) return i;
   return -1;
 }
 
-inline int Parser::searchVar(const String2& v)
+inline int Parser::searchVar(const std::string& v)
 {
+  std::string s(v);
+  for (auto & c: s) c = toupper(c);
   for (int i=0; i<ivar; i++)
-    if ((les_var[i]->getString()).compare(v) == 0 ) return i;
+    if ((les_var[i]->getString()).compare(s) == 0 ) return i;
   return -1;
 }
 

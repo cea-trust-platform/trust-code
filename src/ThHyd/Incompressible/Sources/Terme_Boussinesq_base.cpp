@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,7 +96,8 @@ void read(Entree& is, Parser_U& fct_Scalaire0_)
 {
   Nom expression;
   is >> expression;
-  String2 ss(expression.getChar());
+  std::string ss(expression.getString());
+  for (auto & c: ss) c = toupper(c);
   fct_Scalaire0_.setNbVar(1);
   fct_Scalaire0_.setString(ss);
   fct_Scalaire0_.addVar("t");

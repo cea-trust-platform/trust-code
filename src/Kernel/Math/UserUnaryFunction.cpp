@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -99,7 +99,8 @@ void UserUnaryFunction::setFunction(Nom& name, Nom& inco, Nom& func)
   nom_ = name;
   inconnue = inco;
 
-  String2 sfunc(func.getChar());
+  std::string sfunc(func.getString());
+  for (auto & c: sfunc) c = toupper(c);
 
   p.setString(sfunc);
   p.addVar(inco.getChar());

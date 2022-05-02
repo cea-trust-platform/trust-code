@@ -205,7 +205,7 @@ void Extraire_surface::extraire_surface(Domaine& domaine_surfacique,const Domain
   IntTab marq_elem;
 
   zone_vf.zone().creer_tableau_elements(marq_elem);
-  String2 X("x"), Y("y"), Z("z"); // Pour eviter les creations de String2 a partir d'un char* dans la boucle:
+  std::string X("X"), Y("Y"), Z("Z");
   for (int elem=0; elem<nb_elem; elem++)
     {
       condition_elements.setVar(X,xp(elem,0));
