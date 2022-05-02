@@ -434,12 +434,12 @@ void Op_Diff_PolyMAC_V2_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
               {
                 for (A = 0, B = 0, Ff = 0, Fec = 0, Qf = 0, Qec = 0, i = 0; i < n_e; i++)
                   {
-                    p = s_pe[i][0], e = s_pe[i][1];
+                    p = s_pe[i][0], e = s_pe[i][1], n_ef = se_f[i].size();
+                    C.resize(Nm, n_ef, D), Y.resize(Nm, D, n_m = std::max(D, n_ef)), X.resize(Nm, n_ef, D);
                     /* gradient dans e */
                     if (essai < 2) /* essais 0 et 1 : gradient consistant */
                       {
                         /* gradient dans (e, s) -> matrice / second membre M.x = Y du systeme (grad u)_i = sum_f b_{fi} (x_fs_i - x_e), avec x_fs le pt de continuite de u_fs */
-                        C.resize(Nm, n_ef = se_f[i].size(), D), Y.resize(Nm, D, n_m = std::max(D, n_ef)), X.resize(Nm, n_ef, D);
                         for (n = 0; n < Nm; n++) for (j = 0; j < n_ef; j++) for (k = se_f[i][j], pb = s_pf[k][0], f = s_pf[k][1], d = 0; d < D; d++) C(n, j, d) = (essai ? x_fs(n, k, d) : xv[pb](f, d)) - xp[p](e, d);
                         for (Y = 0, n = 0; n < Nm; n++) for (d = 0; d < D; d++) Y(n, d, d) = 1;
                         nw = -1, F77NAME(dgelsy)(&D, &n_ef, &D, &C(0, 0, 0), &D, &Y(0, 0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
