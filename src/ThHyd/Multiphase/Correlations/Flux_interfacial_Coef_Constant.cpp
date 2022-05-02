@@ -43,7 +43,7 @@ Entree& Flux_interfacial_Coef_Constant::readOn(Entree& is)
 }
 
 void Flux_interfacial_Coef_Constant::coeffs(const double dh, const double *alpha, const double *T, const double p, const double *nv,
-                                            const double *lambda, const double *mu, const double *rho, const double *Cp,
+                                            const double *lambda, const double *mu, const double *rho, const double *Cp, int e,
                                             DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const
 {
   int k, l, N = hi.dimension(0);

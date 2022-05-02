@@ -134,17 +134,17 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
 
   /* elements */
   //coefficients et plein de derivees...
-  DoubleTrav hi(N, N), dT_hi(N, N, N), da_hi(N, N, N), dP_hi(N, N), dT_phi(N), da_phi(N), dT_G(N), da_G(N), nv(N);
+  DoubleTrav hi(N, N), dT_hi(N, N, N), da_hi(N, N, N), dP_hi(N, N), dT_phi(N), da_phi(N), dT_G(N), da_G(N), nv(N, N);
   for (e = 0; e < zone.nb_elem(); e++)
     {
       //  double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e, 0), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
       // PL ToDo: Uniformiser diametre_hydraulique_elem (vecteur) pour C3D et F5
       double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
-      for (nv = 0, d = 0; d < D; d++) for (n = 0; n < N; n++) nv(n) += std::pow(pvit(nf_tot + D * e + d, n), 2);
-      for (n = 0; n < N; n++) nv(n) = std::max(sqrt(nv(n)), dv_min);
+      for (nv = 0, d = 0; d < D; d++) for (n = 0; n < N; n++) for (k = 0 ; k<N ; k++) nv(n, k) += std::pow( pvit(nf_tot + D * e + d, n) - ((n!=k) ? pvit(nf_tot + D * e + d, k) : 0) , 2);
+      for (n = 0; n < N; n++) for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
       correlation_fi.coeffs(dh, &alpha(e, 0), &temp(e, 0), press(e, 0), &nv(0),
-                            &lambda(!cL * e, 0), &mu(!cM * e, 0), &rho(!cR * e, 0), &Cp(!cCp * e, 0), hi, dT_hi, da_hi, dP_hi);
+                            &lambda(!cL * e, 0), &mu(!cM * e, 0), &rho(!cR * e, 0), &Cp(!cCp * e, 0), e, hi, dT_hi, da_hi, dP_hi);
 
       for (k = 0; k < N; k++) for (l = k + 1; l < N; l++)
           if (milc.has_saturation(k, l)) //flux phase k <-> phase l si saturation

@@ -38,7 +38,7 @@ class Flux_interfacial_Coef_Constant : public Flux_interfacial_base
   Declare_instanciable(Flux_interfacial_Coef_Constant);
 public:
   void coeffs(const double dh, const double *alpha, const double *T, const double p, const double *nv,
-              const double *lambda, const double *mu, const double *rho, const double *Cp,
+              const double *lambda, const double *mu, const double *rho, const double *Cp, int e,
               DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const override;
 protected:
   DoubleTab h_phase;

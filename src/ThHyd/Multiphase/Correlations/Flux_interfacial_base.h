@@ -38,7 +38,7 @@
 //        alpha[n]  -> taux de presence de la phase n
 //        T[n]      -> temperature de la phase n
 //        p         -> pression
-//        nv[n]     -> norme de la vitesse de la phase n
+//        nv[N * n + k]     -> norme de la vitesse de la phase n en si k == n, norme de v_k-v_n si k != n
 //        lambda[n], mu[n], rho[n], Cp[n] -> diverses proprietes physiques de la phase n
 //
 //    sorties :
@@ -53,7 +53,7 @@ class Flux_interfacial_base : public Correlation_base
   Declare_base(Flux_interfacial_base);
 public:
   virtual void coeffs(const double dh, const double *alpha, const double *T, const double p, const double *nv,
-                      const double *lambda, const double *mu, const double *rho, const double *Cp,
+                      const double *lambda, const double *mu, const double *rho, const double *Cp, int e,
                       DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const = 0;
 };
 
