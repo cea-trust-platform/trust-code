@@ -226,7 +226,7 @@ do
       fi
       if [ -f $doc ]
       then
-	 for app in evince xpdf kpdf okular
+	 for app in xpdf evince kpdf okular
 	 do
             $app $doc 1>/dev/null 2>&1 && exit 0
 	 done
