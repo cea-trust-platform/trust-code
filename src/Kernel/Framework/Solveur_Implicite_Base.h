@@ -54,7 +54,7 @@ public :
   {
     return DMAXFLOAT; /* par defaut pas de limite : on est en implicite */
   }
-  virtual Parametre_equation_base& get_and_set_parametre_equation(Equation_base& eqn) /* initialisation de parametre_equation() dans une equation */
+  virtual Parametre_equation& get_and_set_parametre_equation(Equation_base& eqn) /* initialisation de parametre_equation() dans une equation */
   {
     return eqn.parametre_equation(); /* par defaut : ne fait rien */
   }

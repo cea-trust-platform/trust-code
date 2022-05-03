@@ -90,10 +90,10 @@ public :
   virtual void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok)=0;
 
   void assembler_matrice_pression_implicite(Equation_base& eqn_NS,const Matrice_Morse& matrice,Matrice& matrice_en_pression_2);
-  Parametre_equation_base& get_and_set_parametre_equation(Equation_base&) override;
+  Parametre_equation& get_and_set_parametre_equation(Equation_base&) override;
   Parametre_implicite& get_and_set_parametre_implicite(Equation_base& eqn)
   {
-    return ref_cast(Parametre_implicite, get_and_set_parametre_equation(eqn));
+    return ref_cast(Parametre_implicite, get_and_set_parametre_equation(eqn).valeur());
   }
 
 protected :

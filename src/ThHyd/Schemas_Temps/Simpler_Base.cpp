@@ -173,7 +173,7 @@ Entree& Simpler_Base::readOn(Entree& is )
 // Description:
 // retourne le parametre_implicte de l'equation si il existe si il n'existe pas le cree...
 // si les params sont vides on copie ceux du simpler
-Parametre_equation_base& Simpler_Base::get_and_set_parametre_equation(Equation_base& eqn)
+Parametre_equation& Simpler_Base::get_and_set_parametre_equation(Equation_base& eqn)
 {
   Parametre_equation& param = eqn.parametre_equation();
   if (!param.non_nul())
@@ -217,7 +217,7 @@ Parametre_equation_base& Simpler_Base::get_and_set_parametre_equation(Equation_b
   Cerr << "Remove the option." << finl;
   exit();
   } */
-  return param_impl;
+  return param;
 }
 
 void Simpler_Base::assembler_matrice_pression_implicite(Equation_base& eqn_NS,const Matrice_Morse& matrice,Matrice& matrice_en_pression_2)
