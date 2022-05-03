@@ -1115,10 +1115,13 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
         if (residu_initial_equation(i)>0)
           residu_equation(i) /= residu_initial_equation(i);
     }
-  //double equation_residual = mp_max_abs_vect(residu_equation);
-  double equation_residual = local_max_abs_vect(residu_equation);
-  residu_ = std::max(residu_,equation_residual);
-  set_stationnaire_atteint() *= ( equation_residual < seuil_statio_ );
+  if (!equation.disable_equation_residual())
+    {
+      //double equation_residual = mp_max_abs_vect(residu_equation);
+      double equation_residual = local_max_abs_vect(residu_equation);
+      residu_ = std::max(residu_, equation_residual);
+      set_stationnaire_atteint() *= (equation_residual < seuil_statio_);
+    }
 }
 
 // Impression du temps courant en tenant compte du dt

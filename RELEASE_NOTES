@@ -1,3 +1,4 @@
+XX/XX/22 (TRUST)  New keyword : Equation option "disable_equation_residual 0|1" to not use current equation residual when computing problem residual (useful for permanent KEps simulation when residuals don't decrease)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------

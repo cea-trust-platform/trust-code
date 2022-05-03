@@ -73,6 +73,7 @@ Read pb
 {
 	Navier_Stokes_Standard
 	{
+		disable_equation_residual 0
 		solveur_pression Petsc Cholesky { save_matrix save_matrix_petsc_format }
 		convection { amont }
 		diffusion { }	
@@ -87,6 +88,7 @@ Read pb
 	}
 	Convection_diffusion_temperature
 	{
+		disable_equation_residual 1
 		convection { Amont }
 		diffusion { }		
 		boundary_conditions

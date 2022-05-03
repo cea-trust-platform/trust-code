@@ -265,6 +265,7 @@ public :
   };
   virtual const REF(Objet_U)& get_modele(Type_modele type) const;
   virtual int equation_non_resolue() const;
+  int disable_equation_residual() const { return disable_equation_residual_; };
 
   //pour les schemas en temps a pas multiples
   inline virtual const Champ_Inc& derivee_en_temps() const
@@ -351,6 +352,7 @@ private :
 
   mutable DoubleTab NULL_;
   mutable Parser_U equation_non_resolue_;
+  int disable_equation_residual_ = 0;
 
   // For multistep methods, store previous dI/dt(n), dI/dt(n-1),...
   Champ_Inc derivee_en_temps_;

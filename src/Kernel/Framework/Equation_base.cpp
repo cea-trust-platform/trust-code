@@ -49,6 +49,7 @@ extern Stat_Counter_Id source_counter_;
 
 Implemente_liste(RefObjU);
 Implemente_base_sans_constructeur(Equation_base,"Equation_base",Objet_U);
+// XD eqn_base mor_eqn eqn_base -3 Basic class for equations.
 
 Equation_base::Equation_base()
 {
@@ -281,7 +282,8 @@ Entree& Equation_base::readOn(Entree& is)
   Param param(que_suis_je());
   set_param(param);
   Nom expr_equation_non_resolue="0";
-  param.ajouter("equation_non_resolue",&expr_equation_non_resolue);
+  param.ajouter("equation_non_resolue",&expr_equation_non_resolue); // XD attr equation_non_resolue chaine equation_non_resolue 1 The equation will not be solved while condition(t) is verified if equation_non_resolue keyword is used. Exemple: The Navier-Stokes equations are not solved between time t0 and t1. NL2 Navier_Sokes_Standard NL2 { equation_non_resolue (t>t0)*(t<t1) }
+  param.ajouter("disable_equation_residual",&disable_equation_residual_); // XD attr disable_equation_residual chaine disable_equation_residual 1 The equation residual will not be used for the problem residual used when checking time convergence or computing dynamic time-step
   param.lire_avec_accolades_depuis(is);
   // On complete:
   equation_non_resolue_.setString(expr_equation_non_resolue);
@@ -290,15 +292,17 @@ Entree& Equation_base::readOn(Entree& is)
   return is;
 }
 
+// XD attr convection bloc_convection convection 1 Keyword to alter the convection scheme.
+// XD attr diffusion bloc_diffusion diffusion 1 Keyword to specify the diffusion operator.
 void Equation_base::set_param(Param& param)
 {
-  param.ajouter_non_std("conditions_limites|boundary_conditions",(this),Param::REQUIRED);
-  param.ajouter_non_std("conditions_initiales|initial_conditions",(this),Param::REQUIRED);
-  param.ajouter_non_std("sources",(this));
-  param.ajouter_non_std("ecrire_fichier_xyz_valeur_bin",(this));
-  param.ajouter_non_std("ecrire_fichier_xyz_valeur",(this));
+  param.ajouter_non_std("conditions_limites|boundary_conditions",(this),Param::REQUIRED);  // XD attr conditions_limites|boundary_conditions condlims conditions_limites 1 Boundary conditions.
+  param.ajouter_non_std("conditions_initiales|initial_conditions",(this),Param::REQUIRED); // XD attr conditions_initiales|initial_conditions condinits conditions_initiales 1 Initial conditions.
+  param.ajouter_non_std("sources",(this)); // XD attr sources sources sources 1 To introduce a source term into an equation (in case of several source terms into the same equation, the blocks corresponding to the various terms need to be separated by a comma)
+  param.ajouter_non_std("ecrire_fichier_xyz_valeur_bin",(this)); // XD attr ecrire_fichier_xyz_valeur_bin ecrire_fichier_xyz_valeur_param ecrire_fichier_xyz_valeur_bin 1 This keyword is used to write the values of a field only for some boundaries in a binary file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
+  param.ajouter_non_std("ecrire_fichier_xyz_valeur",(this)); // XD attr ecrire_fichier_xyz_valeur ecrire_fichier_xyz_valeur_param ecrire_fichier_xyz_valeur 1 This keyword is used to write the values of a field only for some boundaries in a text file with the following format: n_valeur NL2 x_1 y_1 [z_1] val_1 NL2 ... NL2 x_n y_n [z_n] val_n NL2 The created files are named : pbname_fieldname_[boundaryname]_time.dat
   param.ajouter_non_std("bords",(this));
-  param.ajouter("parametre_equation",&parametre_equation_);
+  param.ajouter("parametre_equation",&parametre_equation_); // XD attr parametre_equation parametre_equation_base parametre_equation 1 Keyword used to specify additional parameters for the equation
 }
 
 int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -374,7 +378,7 @@ int Equation_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces:
-// Retour:
+// Retour: Entree&
 //    Signification: le flot d'entree modifie
 //    Contraintes:
 // Exception:
