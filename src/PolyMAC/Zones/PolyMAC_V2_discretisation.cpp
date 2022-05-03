@@ -128,7 +128,7 @@ void PolyMAC_V2_discretisation::taux_cisaillement(const Zone_dis& z, const Zone_
   ch_grad_u.fixer_nb_comp(vit.valeurs().line_size());
 
   ch_grad_u.fixer_nature_du_champ(scalaire); // tensoriel pour etre precis
-  ch_grad_u.fixer_nb_valeurs_nodales(zone.nb_elem_tot());
+  ch_grad_u.fixer_nb_valeurs_nodales(zone.nb_elem());
   ch_grad_u.fixer_unite("s-1");
   ch_grad_u.changer_temps(-1); // so it is calculated at time 0
 }
@@ -160,7 +160,7 @@ void PolyMAC_V2_discretisation::creer_champ_vorticite(const Schema_Temps_base& s
     }
   else abort();
 
-  ch_rot_u.fixer_nb_valeurs_nodales(zone.nb_elem_tot());
+  ch_rot_u.fixer_nb_valeurs_nodales(zone.nb_elem());
   ch_rot_u.fixer_unite("s-1");
   ch_rot_u.changer_temps(-1); // so it is calculated at time 0
 }
