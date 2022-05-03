@@ -223,7 +223,7 @@ int StringTokenizer::nextToken(void)
                   nextToken();
                   if (type != NUMBER)
                     {
-                      Cerr << "Error while interpreting the string " << str->c_str() << finl;
+                      Cerr << "Error while interpreting the string " << *str << finl;
                       Process::exit();
                     }
                   nval_tmp*=pow(10,-nval);
@@ -233,7 +233,7 @@ int StringTokenizer::nextToken(void)
                   nextToken();
                   if (type != NUMBER)
                     {
-                      Cerr << "Error while interpreting the string " << str->c_str() << finl;
+                      Cerr << "Error while interpreting the string " << *str << finl;
                       Process::exit();
                     }
                   nval_tmp*=pow(10.,nval);
@@ -250,7 +250,7 @@ int StringTokenizer::nextToken(void)
                 }
               else
                 {
-                  Cerr << "Error while interpreting the string " << str->c_str() << finl;
+                  Cerr << "Error while interpreting the string " << *str << finl;
                   Process::exit();
                 }
             }

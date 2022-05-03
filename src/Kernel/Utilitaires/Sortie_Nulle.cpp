@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,6 +69,11 @@ Sortie& Sortie_Nulle::operator<<(const double    ob)
   return *this;
 }
 Sortie& Sortie_Nulle::operator<<(const char      * ob)
+{
+  return *this;
+}
+
+Sortie& Sortie_Nulle::operator<<(const std::string& str)
 {
   return *this;
 }

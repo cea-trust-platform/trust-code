@@ -82,6 +82,7 @@ public:
   Sortie& operator <<(const double ob) override;
   Sortie& operator <<(const Objet_U& ob) override;
   Sortie& operator <<(const char* ob) override;
+  Sortie& operator <<(const std::string& str) override;
   int put(const unsigned* ob, int n, int pas) override
   {
     return put(MPI_UNSIGNED, ob, n);

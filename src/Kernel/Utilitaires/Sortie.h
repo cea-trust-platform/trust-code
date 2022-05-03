@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@
 #include <string>
 using std::string;
 #endif
+#include <string>
 #include <iostream>
 using std::ios;
 using std::ostream;
@@ -93,8 +94,9 @@ public:
   virtual Sortie& operator<<(const float     ob);
   virtual Sortie& operator<<(const double    ob);
   virtual Sortie& operator<<(const char      * ob);
+  virtual Sortie& operator<<(const std::string& str);
 #ifdef IO_avec_string
-  virtual Sortie& operator <<(const string& ob);
+  virtual Sortie& operator <<(const std::string& ob);
 #endif
   virtual int add_col(const double ob);
   virtual int add_col(const char * ob);

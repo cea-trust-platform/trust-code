@@ -52,6 +52,7 @@ public:
   Sortie& operator <<(const float ob) override;
   Sortie& operator <<(const double ob) override;
   Sortie& operator <<(const char* ob) override;
+  Sortie& operator <<(const std::string& str) override;
   int put(const unsigned* ob, int n, int pas=1) override;
   int put(const int* ob, int n, int pas=1) override;
 #ifndef INT_is_64_

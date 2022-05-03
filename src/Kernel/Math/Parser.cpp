@@ -180,7 +180,7 @@ void Parser::parseString()
   StringTokenizer tok(*str);
   if (!tok.check_GRP())
     {
-      Cerr << "Expression " << str->c_str() << " does not contain the same number of opening and closing parenthesis." << finl;
+      Cerr << "Expression " << *str << " does not contain the same number of opening and closing parenthesis." << finl;
       Process::exit();
     }
 
@@ -367,13 +367,13 @@ void Parser::parserState0(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
               else
                 {
                   Cerr << "Error in Parser::parserState0 during interpretation of the following string :\n ";
-                  Cerr << str->c_str() << "\n";
-                  Cerr << " identifier " << func.c_str() << " unknown " << finl;
+                  Cerr << *str << "\n";
+                  Cerr << " identifier " << func << " unknown " << finl;
                   // permet d avoir 0 erreur valgrind avec cppunit
                   root=(PNode*) *(ob->getBase());
                   Cerr << "List of known var "<<finl;
                   for (int i=0; i<ivar; i++)
-                    Cerr<<les_var[i]->getString().c_str()<< " ";
+                    Cerr<<les_var[i]->getString()<< " ";
                   Cerr<<finl;
                   Process::exit();
                 }
@@ -460,11 +460,11 @@ void Parser::parserState1(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
               else
                 {
                   Cerr << "Error in Parser::parserState1 during interpretation of the following string :\n ";
-                  Cerr << str->c_str() << "\n";
-                  Cerr << " identifier " << func.c_str() << " unknown !! " << finl;
+                  Cerr << *str << "\n";
+                  Cerr << " identifier " << func << " unknown !! " << finl;
                   Cerr << "List of known var "<<finl;
                   for (int i=0; i<ivar; i++)
-                    Cerr<<les_var[i]->getString().c_str()<< " ";
+                    Cerr<<les_var[i]->getString()<< " ";
                   Cerr<<finl;
                   Process::exit();
                 }
@@ -642,7 +642,7 @@ void Parser::parserState2(StringTokenizer* tokenizer, PSTACK(PNode)* ob, STACK(i
     }
   else
     {
-      Cerr << "Error state 2 !!! " <<tokenizer->type<<"  "<<tokenizer->getSValue().c_str()<<"  "<<tokenizer->getNValue()<< finl;
+      Cerr << "Error state 2 !!! " <<tokenizer->type<<"  "<<tokenizer->getSValue()<<"  "<<tokenizer->getNValue()<< finl;
       Cerr<<" StringTokenizer::ADD "<<StringTokenizer::ADD<<" StringTokenizer::SUBTRACT "<<StringTokenizer::SUBTRACT<<" StringTokenizer::MULTIPLY "<<StringTokenizer::MULTIPLY;
       Cerr<<" StringTokenizer::DIVIDE "<<StringTokenizer::DIVIDE<<" StringTokenizer::POWER "<<StringTokenizer::POWER<<" StringTokenizer::LT "<<StringTokenizer::LT<<" StringTokenizer::GT "<<StringTokenizer::GT;
       Cerr<<" StringTokenizer::LE "<<StringTokenizer::LE<<" StringTokenizer::GE "<<StringTokenizer::GE<<" StringTokenizer::MOD "<<StringTokenizer::MOD<<" ENDStringTokenizer::GRP "<<StringTokenizer::ENDGRP;
@@ -730,7 +730,7 @@ void Parser::addFunc(const UnaryFunction& f)
 void debug(StringTokenizer * t)
 {
   if (t->type == StringTokenizer::STRING)
-    Cout << "STRING : " << t->getSValue().c_str() << finl;
+    Cout << "STRING : " << t->getSValue() << finl;
   else if (t->type == StringTokenizer::NUMBER)
     Cout << "NUMBER : " << t->getNValue() << finl;
   else if (t->type == StringTokenizer::EOS)
