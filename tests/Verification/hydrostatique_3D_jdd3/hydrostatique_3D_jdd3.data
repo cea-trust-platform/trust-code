@@ -33,16 +33,10 @@ Read sch
     tmax 5
     dt_max 0.1
     facsec 1e30
+    seuil_statio 0
     solveur implicite
     {
-        solveur petsc cli
-        {
-            -pc_type fieldsplit
-            -pc_fieldsplit_0_field b1
-            -pc_fieldsplit_1_field b0
-            -pc_fieldsplit_type schur
-            -ksp_type fgmres
-        }
+        solveur petsc cli { }
     }
 }
 

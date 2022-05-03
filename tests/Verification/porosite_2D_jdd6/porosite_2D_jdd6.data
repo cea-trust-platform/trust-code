@@ -21,7 +21,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC dis
+CoviMAC dis
 
 Schema_euler_implicite sch
 Read sch

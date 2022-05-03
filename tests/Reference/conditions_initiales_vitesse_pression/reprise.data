@@ -58,7 +58,8 @@ read  pb_fluide
 
     navier_stokes_standard
     {
-        solveur_pression  petsc  cholesky  { }
+        methode_calcul_pression_initiale sans_rien
+	solveur_pression  petsc  cholesky  { }
         convection  { amont }
         diffusion   { }
         initial_conditions  {

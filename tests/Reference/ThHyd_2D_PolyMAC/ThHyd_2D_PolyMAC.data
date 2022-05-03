@@ -27,8 +27,11 @@ Read sch
 {
     tinit 0.
     tmax 12
+    facsec 1e8
+    facsec_max 1e8
+    dt_max 0.01
     solveur implicite {
-        solveur petsc gmres { precond diag { } rtol 1.e-8 }
+        solveur petsc cli { -ksp_type fgmres }
     }
 }
 
@@ -62,7 +65,7 @@ Read pb
         initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
         boundary_conditions {
             Bord 	paroi_fixe
-            inlet	frontiere_ouverte_pression_imposee Champ_front_Fonc_xyz 1 1
+            inlet	frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Debit Champ_front_Uniforme 1 2
             outlet	frontiere_ouverte_pression_imposee Champ_front_Fonc_xyz 1 0
         }
     }

@@ -32,6 +32,7 @@ Read sch
 	nb_pas_dt_max 3
     tmax 5
     dt_max 0.1
+    seuil_statio 0
     solveur implicite
     {
         solveur petsc cli { }

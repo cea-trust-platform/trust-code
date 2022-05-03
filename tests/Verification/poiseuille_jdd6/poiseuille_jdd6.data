@@ -21,7 +21,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC dis
+CoviMAC dis
 option_vdf { P_imposee_aux_faces oui traitement_coins oui }
 
 Schema_euler_implicite sch

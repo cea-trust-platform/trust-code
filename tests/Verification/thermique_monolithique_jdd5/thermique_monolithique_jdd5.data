@@ -70,11 +70,6 @@ partition_multi
         Larg_joint 2
         zones_name DOM2
     }
-    raccords
-    {
-        dom_solide Droit1 dom_fluide Droit1
-        dom_solide Haut2 dom_fluide Haut2
-    }
 }
 Fin
 END PARTITION #
