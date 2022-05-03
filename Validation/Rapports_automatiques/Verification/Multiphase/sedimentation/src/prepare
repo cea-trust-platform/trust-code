@@ -1,15 +1,14 @@
 #!/bin/bash
 
 meshes_2d="Triangles Quadrangles Cartesian Locally_Refined"
-share=$TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC/share
+share=$TRUST_ROOT/Validation/Rapports_automatiques/Verification/PolyMAC/share/meshes
 
 for mesh in $meshes_2d
 do
     for n in "3"
     do
         mkdir -p $mesh/jdd_$n
-        meshname=$share/meshes/$mesh/jdd_$n/mesh.med
-        sed "s~__meshprerun__~$meshname~g" pre_run > $mesh/pre_run
+        gunzip -c $share/$mesh/jdd_$n/mesh.med.gz >$mesh/mesh.med
         cp sep.data $mesh/cas.data
     done
 done
