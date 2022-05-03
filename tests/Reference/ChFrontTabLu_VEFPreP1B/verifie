@@ -1,0 +1,12 @@
+#!/bin/bash
+
+compare_lata ChFrontTab.lml ChFrontTabLu_VEFPreP1B.lml 1>verifie.log 2>&1 || exit -1
+
+numb_diff=`awk '$1=="Number"{print $5}' verifie.log`
+if [[ "$numb_diff" -gt "0" ]]
+then
+  echo "   ===> Error ! The simulations performed with Champ_front_tabule_lu and Champ_front_tabule do not give identical results !"
+  exit -1
+else
+  echo "   ===> All OK ! The simulations performed with Champ_front_tabule_lu and Champ_front_tabule give identical results !"
+fi

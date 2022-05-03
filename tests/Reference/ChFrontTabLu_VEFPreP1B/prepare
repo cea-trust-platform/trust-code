@@ -1,0 +1,3 @@
+#!/bin/bash
+
+trust ChFrontTab.data 1>ChFrontTab.out 2>ChFrontTab.err
