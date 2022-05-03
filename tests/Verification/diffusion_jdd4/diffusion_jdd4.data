@@ -1,0 +1,112 @@
+# PARALLEL OK #
+dimension 2
+Pb_conduction pb
+Domaine dom
+
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom mesh mesh.med
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    dt_max  1e-2
+    facsec 1e8
+    seuil_statio 1e-8
+    solveur implicite
+    {
+        solveur petsc cli
+        {
+            -pc_type hypre
+            -pc_hypre_type boomeramg
+            -pc_hypre_boomeramg_strong_threshold 0.8
+            -pc_hypre_boomeramg_agg_nl 4
+            -pc_hypre_boomeramg_agg_num_paths 5
+            -pc_hypre_boomeramg_max_levels 25
+            -pc_hypre_boomeramg_coarsen_type PMIS
+            -pc_hypre_boomeramg_interp_type ext+i
+            -pc_hypre_boomeramg_P_max 2
+            -pc_hypre_boomeramg_truncfactor 0.5
+            -ksp_type fgmres
+        }
+    }
+}
+
+Solide sol
+Read sol
+{
+    rho    Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.
+    Cp     Champ_Uniforme 1 1.
+}
+Associate pb dom
+Associate pb sch
+Associate pb sol
+
+Discretize pb dis
+
+Read pb
+{
+    Conduction
+    {
+        diffusion { }
+        sources { Puissance_thermique Champ_Fonc_XYZ dom 1 2.*pi*pi*sin(pi*x)*sin(pi*y) }
+        initial_conditions { temperature Champ_Uniforme 1 0 }
+        boundary_conditions
+        {
+            boundary paroi_temperature_imposee Champ_Front_Uniforme 1 0
+        }
+    }
+
+    Post_processing
+    {
+        Definition_champs
+        {
+            erreur_T transformation
+            {
+                methode formule expression 1 abs(Temp-sin(pi*x)*sin(pi*y)) sources
+                {
+                    refChamp { pb_champ pb temperature nom_source Temp }
+                }
+            }
+            max_erreur_T reduction_0D
+            {
+                methode max source_reference erreur_T
+            }
+        }
+
+        Probes
+        {
+            temperature_diag grav temperature periode 1e8 segment 500 0. 1. 1. 0.
+            norme_linf max_erreur_T periode 1e-7 numero_elem_sur_maitre 0
+        }
+        format Lata
+        fields dt_post 30.
+        {
+            temperature elem
+            erreur_T
+        }
+    }
+}
+
+Solve pb
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+End

@@ -1,0 +1,162 @@
+# PARALLEL OK #
+Dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+	pave bloc
+	{
+		origine 0 0 0
+		longueurs 1 1 1
+		nombre_de_noeuds 21 21 21
+		}
+		{
+		bord periox	X = 0	0 <= Y <= 1	0 <= Z <= 1
+		bord periox	X = 1	0 <= Y <= 1	0 <= Z <= 1
+		bord perioy	Y = 0	0 <= X <= 1	0 <= Z <= 1
+		bord perioy	Y = 1	0 <= X <= 1	0 <= Z <= 1
+		bord perioz	Z = 0	0 <= X <= 1	0 <= Y <= 1
+		bord perioz	Z = 1	0 <= X <= 1	0 <= Y <= 1
+		}
+}
+
+Polyedriser dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 2 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+CoviMAC  dis
+option_covimac {  }
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 0
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5 pression 1e8 vitesse 1e8 temperature 1e8 k 1e-5 omega 1. }
+        iter_min 5
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Fluide_Incompressible eau_liquide
+Read eau_liquide
+{
+	mu champ_uniforme 1 0.001
+ 	rho champ_uniforme 1 1000
+	lambda Champ_Uniforme  1 1.
+        Cp Champ_Uniforme      1 1.
+        beta_th Champ_Uniforme 1 0.
+}
+Pb_Multiphase pb
+
+phases pb
+{
+    liquide { eau }
+}
+
+associate  pb dom
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Lire pb
+{
+    correlations
+    {
+    }
+    QDM_Multiphase
+    {
+        equation_non_resolue	(t>0)
+        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { centre }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse  champ_fonc_xyz dom 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z) 
+            pression Champ_Fonc_xyz dom 1 1e5
+        }
+	conditions_limites	
+	{
+	    periox	frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z)
+	    perioy	frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z)
+	    perioz	frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z)
+	}
+    }
+    Masse_Multiphase
+    {
+        equation_non_resolue	(t>0)
+        initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
+        convection { amont }
+	conditions_limites	
+	{
+	    periox	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+	    perioy	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+	    perioz	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+	}
+        sources { }
+    }
+    Energie_Multiphase
+    {
+        equation_non_resolue	(t>0)
+        diffusion { negligeable }
+        convection { negligeable }
+        initial_conditions { temperature Champ_Uniforme 1 0 }
+        boundary_conditions
+        {
+	    periox	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+	    perioy	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+	    perioz	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+        }
+        sources
+        {
+        }
+    }
+
+    Postraitement
+	{
+		Definition_champs	{
+					}
+		sondes			{
+					vitesseX	vitesseX		periode 1 segment 100 0.005 0.005 0.005 0.995 0.995 0.995
+					vitesseY	vitesseY		periode 1 position_like vitesseX
+					vitesseZ	vitesseZ		periode 1 position_like vitesseX
+
+					grad_v		gradient_vitesse_liquide_eau periode 1 position_like vitesseX
+
+					vorticiteX	vorticiteX		periode 1 position_like vitesseX
+					vorticiteY	vorticiteY		periode 1 position_like vitesseX					
+					vorticiteZ	vorticiteZ		periode 1 position_like vitesseX
+					}
+		format lml
+		champs binaire dt_post 1e6
+					{
+					vitesse elem
+					vorticite elem
+					gradient_vitesse_liquide_eau elem
+					}
+	}
+}
+
+
+Resoudre pb
+
+Fin

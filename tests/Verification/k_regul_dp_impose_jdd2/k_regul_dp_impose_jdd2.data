@@ -1,0 +1,91 @@
+# PARALLEL OK #
+dimension 3
+
+Pb_hydraulique pb
+Domaine dom
+# BEGIN MESH #
+Lire_med family_names_from_group_names dom mesh mesh.med
+regroupebord dom wall { left right front back down up wall wall_dup }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+CoviMAC dis
+option_vdf { p_imposee_aux_faces oui }
+
+domaine surf1
+domaine surf2
+Lire_MED short_family_names surf1 surf1 mesh.med
+Lire_MED short_family_names surf2 surf2 mesh.med
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    dt_max  0.01
+    seuil_statio 1e-12
+    dt_impr 1e-10
+    solveur implicite { solveur petsc cholesky { } }
+}
+
+Fluide_Incompressible eau
+Read eau
+{
+    mu  Champ_Uniforme 1 2.5
+    rho Champ_Uniforme 1 1000
+}
+
+Associate  pb dom
+Associate  pb sch
+Associate  pb eau
+Discretize pb dis
+
+Read pb
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions { vitesse Champ_Uniforme 3 0 0 0 }
+        boundary_conditions { wall symetrie }
+        sources
+        {
+            DP_Impose { dp Champ_uniforme 3 1e2 0 0 surface { surface surf2 orientation Champ_Uniforme 3 0 0 -1 } } ,
+            perte_Charge_Singuliere { dir K regul { K0 10.0 deb 5 eps 0.005*(t>0.1) } surface { Surface surf1 orientation Champ_Uniforme 3 0 0 -1 } }
+        }
+    }
+
+    Post_processing
+    {
+        probes
+        {
+            p1 grav pression_pa periode 1e-6 point 1 0.3 0.1 0.4
+            p2 grav pression_pa periode 1e-6 point 1 0.3 0.1 0.6
+        }
+
+        Format Lata
+        fields dt_post 1e5
+        {
+            pression_pa elem
+            vitesse elem
+        }
+    }
+}
+
+Solve pb
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+End
