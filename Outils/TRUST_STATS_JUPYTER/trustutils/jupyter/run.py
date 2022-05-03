@@ -16,7 +16,8 @@ from string import Template
 
 defaultSuite_ = None  # a TRUSTSuite instance
 
-BUILD_DIRECTORY = "build"  # Directory where the cases are run.
+origin = os.getcwd()
+BUILD_DIRECTORY = os.path.join(origin,"build")  # Directory where the cases are run.
 
 def saveFormOutput():
     """ Dummy method to indicate that the output of the notebook should be saved.
@@ -137,7 +138,7 @@ class TRUSTCase(object):
         if not os.path.exists(fullDir2):
             os.makedirs(fullDir2, exist_ok=True)
         pthTgt = os.path.join(self.buildDir_, directory, targetName)
-        # And copy the .data file:
+        # And copy the .data file:TRUSTSuite
         from shutil import copyfile
 
         copyfile(self.fullPath(), pthTgt)
@@ -215,7 +216,7 @@ class TRUSTCase(object):
         pth = "./%s" % scriptName
         if os.path.exists(pth):
             subprocess.check_output("chmod u+x %s" % pth, shell=True)
-            cmd = "%s %s" % (pth, self.name_.split(".")[0])
+            cmd = "%s %s" % (pth, self.name_)
             output = subprocess.run(cmd, shell=True, executable="/bin/bash", stderr=subprocess.STDOUT)
             if verbose or output.returncode != 0:
                 print(pth)
@@ -267,7 +268,6 @@ class TRUSTCase(object):
         The results of the run are stored in members self.last_run_ok_ and self.last_run_err_
         """
         ok, err = True, ""
-        origin = os.getcwd()
         os.chdir(self.fullDir())
 
         ### Run pre_run ###
@@ -298,13 +298,15 @@ class TRUSTCase(object):
         """ Extract performances for this case and add it to the global table
             passed in parameter.
         """
-        origin = os.getcwd()
         os.chdir(self.fullDir())
-        cmd = os.environ["TRUST_ROOT"] + "/Validation/Outils/Genere_courbe/scripts/extract_perf " + self.name_
-        subprocess.run(cmd, shell=True)
-
-        ## Save the file
-        saveFileAccumulator(self.name_ + ".perf")
+ 
+        opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
+        # Very specific to the validation process - we need to keep build there:
+        if not opt is None and "-not_run" in opt:
+            cmd = '.'
+        else:
+            cmd = os.environ["TRUST_ROOT"] + "/Validation/Outils/Genere_courbe/scripts/extract_perf " + self.name_
+            subprocess.run(cmd, shell=True)
 
         f = open(self.name_ + ".perf", "r")
         row = f.readlines()[0].replace("\n", "").split(" ")[1:]
@@ -317,6 +319,9 @@ class TRUSTCase(object):
 
         zeTable.addLigne([row], self.dir_ + "/" + self.name_)
         os.chdir(origin)
+        
+        ## Save the file
+        saveFileAccumulator(self.dir_ + "/" + self.name_ + ".perf")
 
 
 class TRUSTSuite(object):
@@ -355,13 +360,23 @@ class TRUSTSuite(object):
     def executeScript(self, scriptName, verbose=False):
         """ Execute scriptName if any.
         """
-        origin = os.getcwd()
         os.chdir(self.buildDir_)
         pth = "./" + scriptName
         if os.path.exists(pth):
             cmd = pth
             subprocess.check_output("chmod u+x %s" % pth, shell=True)
             output = subprocess.run(cmd, shell=True, executable="/bin/bash")
+            if verbose or output.returncode != 0:
+                print(cmd)
+        os.chdir(origin)
+    
+    def executeCommand(self, cmd, verbose=False):
+        """ Execute bash command.
+        """
+        os.chdir(self.buildDir_)
+        output = subprocess.run(cmd, shell=True, executable="/bin/bash")
+        if verbose or output.returncode != 0:
+            print(cmd)
         os.chdir(origin)
 
     def addCase(self, case):
@@ -409,7 +424,6 @@ class TRUSTSuite(object):
             print(stream.read())
 
         ### Change the root to build file ###
-        origin = os.getcwd()
 
         allOK = True
         lstC = defaultSuite_.getCases()
@@ -424,7 +438,7 @@ class TRUSTSuite(object):
                 (script, logFile,) = case.generateExecScript()  # Generate the shell script doing pre_run, case and post_run
                 log_lst.append(logFile)
                 # Invoke Salloc to schedule test case execution:
-                cmdLst = [salloc, "-n", str(case.nbProcs_), "./" + script]
+                cmdLst = [salloc, "-n", str(case.nbProcs_), script]
                 #   We don't track Salloc output (should we?)
                 th = subprocess.Popen(cmdLst, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 th_lst.append(th)
@@ -449,6 +463,20 @@ class TRUSTSuite(object):
         if allOK:
             print("  => A total of %d cases were (successfully) run in %.1fs." % (len(lstC), t1 - t0))
 
+def readFile(data):
+    """
+    Method to open and read file with Save in FileAccumulator"
+    """
+    path = os.getcwd()
+    os.chdir(BUILD_DIRECTORY)
+    
+    f = open(data,"r")
+    print(f.read())
+    f.close()
+    
+    os.chdir(path)
+
+    saveFileAccumulator(data)
 
 def saveFileAccumulator(data):
     """ Method for saving files.
@@ -456,15 +484,14 @@ def saveFileAccumulator(data):
     """
     from .filelist import FileAccumulator
 
-    origin = os.getcwd()
-    path = origin
-    os.chdir(path)
+    path = os.getcwd()
+    os.chdir(BUILD_DIRECTORY)
 
     FileAccumulator.active = True
     FileAccumulator.Append(data)
+    FileAccumulator.WriteToFile("used_files", mode="a")
 
-    os.chdir(origin)
-
+    os.chdir(path)
 
 def introduction(auteur, creationDate=None):
     """ Function that creates an introduction cell Mardown
@@ -503,10 +530,7 @@ def TRUST_parameters(version="", param=[]):
     else:
         binary = os.environ.get("exec", "[UNKNOWN]")
 
-    origin = os.getcwd()
-    path = os.path.join(origin, BUILD_DIRECTORY)
-
-    text = "### TRUST parameters \n * Version TRUST: " + version + "\n * Binary used: " + binary + " (built on TRUST " + path + ")"
+    text = "### TRUST parameters \n * Version TRUST: " + version + "\n * Binary used: " + binary + " (built on TRUST " + BUILD_DIRECTORY + ")"
     for i in param:
         text = text + "\n" + i
     displayMD(text)
@@ -527,7 +551,7 @@ def dumpData(fiche, list_keywords=[]):
     """
     ## Save the file
     name = os.path.join(BUILD_DIRECTORY, fiche)
-    saveFileAccumulator(name)
+    saveFileAccumulator(fiche)
 
     f = open(name, "r")
     tmp = f.readlines()
@@ -631,9 +655,29 @@ def executeScript(scriptName, verbose=False):
     """ Execute a script shell in the BUILD_DIRECTORY
     """
     global defaultSuite_
+        
+    opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
+    if not opt is None and "-not_run" in opt:
+        return []
     if defaultSuite_ is None:
         return []
+    opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
+    # No additional modification of the results file with new script
+    if not opt is None and "-not_run" in opt:
+        return []
     return defaultSuite_.executeScript(scriptName, verbose)
+
+def executeCommand(cmd, verbose=False):
+    """ Execute a bash command in the BUILD_DIRECTORY
+    """
+    global defaultSuite_
+    if defaultSuite_ is None:
+        return []
+    opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
+    # No additional modification of the results file with new script
+    if not opt is None and "-not_run" in opt:
+        return []
+    return defaultSuite_.executeCommand(cmd, verbose)
 
 
 def printCases():
@@ -691,7 +735,6 @@ def tablePerf():
         try:
             case.addPerfToTable(zeTable)
         except Exception as e:
-            os.chdir(origin)
             raise e
 
     zeTable.sum("Total CPU Time")
@@ -709,9 +752,7 @@ def extractHistogram(domain, Out, file):
     """
     raise NotImplementedError  # TODO TODO review the code for this one ...
 
-    origin = os.getcwd()
-    path = os.path.join(origin, BUILD_DIRECTORY)
-    os.chdir(path)
+    os.chdir(BUILD_DIRECTORY)
 
     tmp = ""
     flag = False

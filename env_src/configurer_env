@@ -887,7 +887,6 @@ then
    rm -f jupyter-notebook_tmp
 fi
 
-
 ####################
 # Compilateurs C/C++
 ####################

@@ -16,11 +16,15 @@ import os
 import re
 import math
 from trustutils.jupyter.filelist import FileAccumulator
-from trustutils.jupyter.run import BUILD_DIRECTORY
+from trustutils.jupyter.run import BUILD_DIRECTORY, origin
 
 pd.set_option("display.notebook_repr_html", True)
 pd.set_option("display.max_rows", None)
 
+def _repr_latex_(self):
+    return "\\begin{center} \n %s \n \end{center}" % self.to_latex()
+
+pd.DataFrame._repr_latex_ = _repr_latex_ # To display pandas table as latex table into report
 
 def saveFileAccumulator(data):
     """
@@ -35,15 +39,14 @@ def saveFileAccumulator(data):
     ------- 
     """
 
-    origin = os.getcwd()
-    path = os.path.join(origin, BUILD_DIRECTORY)
-    os.chdir(path)
+    path = os.getcwd()
+    os.chdir(BUILD_DIRECTORY)
 
     FileAccumulator.active = True
     FileAccumulator.Append(data)
     FileAccumulator.WriteToFile("used_files", mode="a")
 
-    os.chdir(origin)
+    os.chdir(path)
 
 
 def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", skiprows=0):
@@ -71,9 +74,7 @@ def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", 
         matrix.
     """
 
-    origin = os.getcwd()
-    path = os.path.join(origin, BUILD_DIRECTORY)
-    os.chdir(path)
+    os.chdir(BUILD_DIRECTORY)
 
     if nb_column == -1:
         nb = None
@@ -106,9 +107,7 @@ def readFile(name):
     list of lines
     """
 
-    origin = os.getcwd()
-    path = os.path.join(origin, BUILD_DIRECTORY)
-    os.chdir(path)
+    os.chdir(BUILD_DIRECTORY)
 
     f = open(name, "r")
     data = f.read().splitlines()
@@ -354,16 +353,22 @@ class Graph:
         ### On recupere le nom des variables ### 
         entries = donne.getEntries()
 
-        self.y_label=entries[compo] 
-        self.x_label=donne.getXLabel() 
+        nCompo = donne.getnCompo()
+        nPoints = donne.getnPoints()
 
-        X, Y = donne.getValues(self.y_label)
+        for k in range(nPoints):
+            entry = donne.getEntries()[k*nCompo + compo]
+            self.y_label = entry.split()[0]
+            label = entry.split()[1][1:-1]
+            self.x_label = donne.getXLabel()
 
-        if not func is None:
-            Y = func(X, Y)
+            X, Y = donne.getValues(entry)
 
-        ### On plot les données ###
-        self.subplot.plot(X, Y, marker, label=label, **kwargs)
+            if not func is None:
+                Y = func(X, Y)
+
+            ### On plot les données ###
+            self.subplot.plot(X, Y, marker, label=label, **kwargs)
 
         if not label is None:
             self.subplot.legend()
@@ -371,7 +376,7 @@ class Graph:
         ## On ajoute des titres
         self.subplot.set(xlabel=self.x_label, ylabel=self.y_label)
 
-    def addSegment(self, data, value=None, marker="-", label="", compo=0, func=None, funcX=None, **kwargs):
+    def addSegment(self, data, time=None, marker="-", label="", compo=0, func=None, funcX=None, **kwargs):
         """
 
         Methode to add a curve to the plot from a segment sonde.
@@ -380,8 +385,8 @@ class Graph:
         ---------
         data : str
             Adress of the file.
-        value : str
-            value of the parameter. If None, it equals to zero.
+        time : double
+            time of the parameter. If None, it equals to zero.
         marker: str
             symbol of the ploted line.
         label : str
@@ -419,10 +424,10 @@ class Graph:
 
         t = donne.getValues(entries[0])[0]
         ## find closest value of t
-        if value == None:
+        if time == None:
             idx = -1
         else:
-            idx = (np.abs(t - value)).argmin()
+            idx = (np.abs(t - time)).argmin()
 
         X = donne.getXAxis()
         if funcX is not None: X = funcX(X)

@@ -88,7 +88,7 @@ def setFrame(self, numero=-1):
     f.close()
 
 
-def saveFile(file, field, name, active=False):
+def saveFile(file, field, name, time, active=False):
     """
 
     Save the used fie in the build directory(Visitfile).
@@ -118,9 +118,10 @@ def saveFile(file, field, name, active=False):
         FileAccumulator.active = True
         if field=="Mesh" or field=="Subset":
             FileAccumulator.AppendVisuMesh(file,name)
+            FileAccumulator.WriteToFile("used_files", mode="a")
         else:
             field, loc, dom = FileAccumulator.ParseDirectName(name)
-            FileAccumulator.AppendVisuComplex(file, dom, field, loc)
+            FileAccumulator.AppendVisuComplex(file, dom, field, loc, time)
             FileAccumulator.WriteToFile("used_files", mode="a")
 
         os.chdir(origin)
@@ -241,8 +242,6 @@ class Show(object):
         self.plotmesh = plotmesh
         # Mesh
         self.mesh = mesh
-        # Temps
-        self.time = str(0)
         # Coordonée
         self.xIndice = 0
         self.yIndice = 0
@@ -266,10 +265,6 @@ class Show(object):
         self.min = min
         self.visitLog = visitLog
         self.show = show
-
-        if not empty:
-            name = name.replace("/", "_")  # avoid error when / in name
-            saveFile(fichier, field, name, active)
 
         self._reset()
 
@@ -296,13 +291,17 @@ class Show(object):
                     ax.axis("off")
         self.addPlot(self.coordonee(), self.title)
 
-    def _genAddPlot(self, arg1, arg2):
+    def _genAddPlot(self, arg1, arg2, arg3):
         s = "try:\n"
         s += "  a = AddPlot(%s, %s)\n" % (arg1, arg2)
         s += "  if a == 0: exit(-1)\n"
         s += "except Exception as e:\n"
         s += "  print(e)\n"
         s += "  exit(-1)\n"
+        if arg3 == -1:  # last frame
+            s += "SetTimeSliderState(TimeSliderGetNStates()-1)\n"
+        else:
+            s += "SetTimeSliderState(%s)\n" % (str(arg3))
         return s
 
     def addPlot(self, coordonee, title=""):
@@ -327,31 +326,6 @@ class Show(object):
             f.write("VectorAtts = VectorAttributes()\n")
             f.write("VectorAtts.glyphLocation = VectorAtts.AdaptsToMeshResolution  # AdaptsToMeshResolution, UniformInSpace\n")
             f.write("VectorAtts.useStride = 1\n")
-            f.write("VectorAtts.stride = 1\n")
-            f.write("VectorAtts.nVectors = 400\n")
-            f.write("VectorAtts.lineWidth = 0\n")
-            f.write("VectorAtts.scale = 0.25\n")
-            f.write("VectorAtts.scaleByMagnitude = 1\n")
-            f.write("VectorAtts.autoScale = 1\n")
-            f.write("VectorAtts.headSize = 0.25\n")
-            f.write("VectorAtts.headOn = 1\n")
-            f.write("VectorAtts.colorByMag = 1\n")
-            f.write("VectorAtts.useLegend = 1\n")
-            f.write("VectorAtts.vectorColor = (0, 0, 0, 255)\n")
-            f.write('VectorAtts.colorTableName = "Default"\n')
-            f.write("VectorAtts.invertColorTable = 0\n")
-            f.write("VectorAtts.vectorOrigin = VectorAtts.Tail  # Head, Middle, Tail\n")
-            f.write("VectorAtts.minFlag = 0\n")
-            f.write("VectorAtts.maxFlag = 0\n")
-            f.write("VectorAtts.limitsMode = VectorAtts.OriginalData  # OriginalData, CurrentPlot\n")
-            f.write("VectorAtts.min = 0\n")
-            f.write("VectorAtts.max = 1\n")
-            f.write("VectorAtts.lineStem = VectorAtts.Line  # Cylinder, Line\n")
-            f.write("VectorAtts.geometryQuality = VectorAtts.Fast  # Fast, High\n")
-            f.write("VectorAtts.stemWidth = 0.08\n")
-            f.write("VectorAtts.origOnly = 1\n")
-            f.write("VectorAtts.glyphType = VectorAtts.Arrow  # Arrow, Ellipsoid\n")
-            f.write("VectorAtts.animationStep = 0\n")
             f.write("SetDefaultPlotOptions(VectorAtts)\n")
 
         f.close()
@@ -382,7 +356,7 @@ class Show(object):
             if title != "":
                 self.title = title
                 self.subplot.set_title(self.title)
-
+        
     def addField(self, fichier=None, field=None, name=None, mesh=None, plotmesh=True, min=None, max=None):
         """ 
         
@@ -410,6 +384,7 @@ class Show(object):
         """
         if fichier is None:
             fichier = self.fichier
+
         if min is None:
             min = self.min
         if max is None:
@@ -422,8 +397,8 @@ class Show(object):
                 f.write("dbs = ('" + fichier + "') \n")
                 f.write("ActivateDatabase(dbs) \n")
             if not mesh is None and plotmesh and not field == "Mesh" and not field == "Histogram":
-                f.write(self._genAddPlot("'Mesh'", "'" + mesh + "'"))
-            f.write(self._genAddPlot("'" + field + "'", "'" + name + "'"))
+                f.write(self._genAddPlot("'Mesh'", "'" + mesh + "'", self.time))
+            f.write(self._genAddPlot("'" + field + "'", "'" + name + "'", self.time))
             f.write("DrawPlots() \n")
             # Boucle if pour roter le plot 3d de 30 degre ,selon l'axe x et y (2 rotations).
             if not min is None:
@@ -437,6 +412,8 @@ class Show(object):
                 f.write("p.max=" + str(max) + "\n")
                 f.write("SetPlotOptions(p)\n")
         f.close()
+        
+        saveFile(fichier, field, name, self.time, active=True)
 
     def visitCommand(self, string):
         """ 
@@ -454,6 +431,14 @@ class Show(object):
         with open(visitTmpFile_(), "a") as f:
             f.write(string + "\n")
         f.close()
+        
+        from ..jupyter.run import BUILD_DIRECTORY
+
+        origin = os.getcwd()
+        os.chdir(BUILD_DIRECTORY)
+
+        FileAccumulator.AppendFromInstructionVisit(string, self.time)
+        os.chdir(origin)
 
     def _dumpLogTail(self):
         from ..jupyter.run import BUILD_DIRECTORY
@@ -628,7 +613,6 @@ class Show(object):
         -------
         
         """
-        self.setFrame(self.time)
         self.executeVisitCmds()
         if self.show:
             self.insert()
@@ -650,7 +634,7 @@ class Show(object):
         
         """
         with open(visitTmpFile_(), "a") as f:
-            f.write(self._genAddPlot("'Mesh'", "'%s'" % mesh))
+            f.write(self._genAddPlot("'Mesh'", "'%s'" % mesh, self.time))
             f.write("DrawPlots() \n")
         f.close()
 
@@ -759,28 +743,6 @@ class Show(object):
         self.time = str(int(self.time) + 1)
         with open(visitTmpFile_(), "a") as f:
             f.write('QueryOverTime("Pick")\n')
-        f.close()
-
-    def setFrame(self, numero=-1):
-        """
-
-        For setting frame in visit
-
-        Parameters
-        ---------
-        numero: int
-            If numero = -1, the last frame chosen, else it select the frame in visit
-
-        Returns
-        -------
-        
-        """
-        self.time = str(numero)
-        with open(visitTmpFile_(), "a") as f:
-            if numero == -1:  # last frame
-                f.write("SetTimeSliderState(TimeSliderGetNStates()-1)\n")
-            else:
-                f.write("SetTimeSliderState(" + str(numero) + ")\n")
         f.close()
 
     def zoom2D(self, coords=[]):
@@ -1046,8 +1008,7 @@ class export_lata_base:
         with open(file, "a") as f:
             f.write("dbs = ('" + self.fichier + "') \n")
             f.write("ActivateDatabase(dbs) \n")
-        self.setFrame(self.frame)
-        self.addPlot(self.field, self.name)
+        self.addPlot(self.field, self.name, self.frame)
         f.close()
 
     def getFrames(self):
@@ -1093,7 +1054,7 @@ class export_lata_base:
         res = [int(r) - 1 for r in res]
         return res
 
-    def addPlot(self, field, name):
+    def addPlot(self, field, name, frame):
         """
 
         Add a new field to the plot.
@@ -1112,17 +1073,24 @@ class export_lata_base:
         
         """
         with open(visitTmpFile_(), "a") as f:
-            f.write(self._genAddPlot("'%s'" % field, "'%s'" % name))
+            f.write(self._genAddPlot("'%s'" % field, "'%s'" % name, frame))
             f.write("DrawPlots() \n")
         f.close()
+        
+        saveFile(self.fichier, field, name, frame, active=True)
 
-    def _genAddPlot(self, arg1, arg2):
+    def _genAddPlot(self, arg1, arg2, arg3):
         s = "try:\n"
         s += "  a = AddPlot(%s, %s)\n" % (arg1, arg2)
         s += "  if a == 0: exit(-1)\n"
         s += "except Exception as e:\n"
         s += "  print(e)\n"
         s += "  exit(-1)\n"
+        if arg3 == -1:  # last frame
+            s += "SetTimeSliderState(TimeSliderGetNStates()-1)\n"
+        else:
+            s += "SetTimeSliderState(%s)\n" % (str(arg3))
+
         return s
 
     def setFrame(self, numero=-1):

@@ -16,8 +16,8 @@ intro += " Report generated " + datetime.now().strftime("%d/%m/%Y")
 
 description = "### Description\n "
 
-description += "Sketch of a classic jupyter validation form.\n\n"
-description += "For additional information, please consult validation form documentation with <code>Run_fiche --doc</code>."
+description += "Sketch of a classic jupyter validation form with main example of validation.\n\n"
+description += "For additional information, please consult validation form documentation with <code>Run_fiche --doc</code> and report to the more detailed tutorial in $TRUST_ROOT/Validation/Rapport_automatiques/Verification/SampleFormJupyter."
 
 binary, version = os.environ.get("exec", "[UNKNOWN]"), os.environ.get("TRUST_VERSION", "[UNKNOWN]")
 
@@ -33,7 +33,7 @@ testCases += "run.printCases()\n"
 testCases += "run.runCases()"
 
 
-graph_t = "## Visualization of the probes"
+graph_t = "## Visualization of the probes evolution (point and segment example)"
 
 graph = "from trustutils import plot \n \n"
 
@@ -44,13 +44,13 @@ graph += "graph2=plot.Graph(\"Sonde segment\",size=[15,8])\n"
 graph += "graph2.addSegment(\"%s_SONDE_VITESSE.son\",compo=0,marker=\"-x\")\n"%args.inputfile
 
 
-visit_t = "## Visualization via VisIt"
+visit_t = "## Visualization via VisIti (Pressure field example)"
 
 visit = "from trustutils import visit\n \n"
 visit += "fig=visit.Show(\"%s.lata\",\"Pseudocolor\",\"PRESSION_ELEM_dom\",nX=1,nY=1,mesh=\"dom\",title=\"\",time=-1)\n"%args.inputfile
 visit += "fig.plot()"
 
-tab_t = "## Table" 
+tab_t = "## Table Creation" 
 tab = "from trustutils import plot\n \n" 
 tab += "tab = plot.Table(['column1','column2'])\n"
 tab += "data = plot.loadText(\"file.dat\",transpose=False)\n"

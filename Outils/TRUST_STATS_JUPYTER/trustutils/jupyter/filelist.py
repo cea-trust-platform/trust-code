@@ -5,6 +5,7 @@ The file 'used_files' is then read by the archive process (see archive_resultat 
 """
 
 from glob import glob
+import os
 
 
 class FileAccumulator(object):
@@ -17,7 +18,7 @@ class FileAccumulator(object):
     last_LATA_used = ""
 
     @classmethod
-    def _ParseLataDB(cls, file, dom, var, loc, cycles):
+    def _ParseLataDB(cls, file, dom, var, loc, time):
         """ Extract subfile from a LATA database. Take the last time step.
         var or loc might be None in which case the last field found will be returned (useful for plane
         probes)
@@ -73,14 +74,7 @@ class FileAccumulator(object):
                 records.append(fNames)
                 print("WARNING: Expected keyword FIN at end of file %s -- found '%s'" % (file, a[0]))
                 # raise Exception("Expected keyword FIN at end of file %s -- found '%s'" % (file, a[0]))
-            # Extract relevant cycles and flatten list of lists:
-            ret = []
-            for c in cycles:
-                r = records[c]
-                if len(r) == 0:
-                    raise ValueError("Variable %s for domain %s at loc %s (cycle %d) not found in %s" % (var, str(dom), str(loc), c, file))
-                ret.extend(r)
-            return ret
+            return records[time]
 
     @classmethod
     def _GetRealDomName(cls, dom):
@@ -88,10 +82,15 @@ class FileAccumulator(object):
           * my_domain_dual -> my_domain
           * dom/Inlet  -> dom_Inlet
         """
+
         dom = dom.replace("/", "_")
+        dom = dom.replace("(", "_")
+        dom = dom.replace(")", "_")
         a = dom.split("_")
         if a[-1] in ["dual", "centerfaces"]:  # specific keywords that can be appended to the domain name
             dom = "_".join(a[:-1])
+        if a[0] == "blocks":
+            dom = "_".join(a[1:-1])
         return dom
 
     @classmethod
@@ -193,7 +192,7 @@ class FileAccumulator(object):
                 cls.Append(interfFiles)
 
     @classmethod
-    def AppendVisuComplex(cls, file, dom, var, loc, cycles=""):
+    def AppendVisuComplex(cls, file, dom, var, loc, time=-1):
         """ Handle all other visu types in a 'visu { ... }' block (pseudocolor, etc ...)
         Last postprocessing time of the LATA database for the given field is added:
         @param file LATA file name
@@ -230,14 +229,8 @@ class FileAccumulator(object):
                     var = "_".join(a[:-1])  # keep VITESSE only
                 if a[0].upper() == "NORME":  # same for norme_VITESSE, keep VITESSE only
                     var = "_".join(a[1:])
-            # print(var)
-            # Take all the required time steps in the LATA database:
-            if cycles == "":
-                cyc = [-1]
-            else:
-                cyc = [int(s) for s in cycles.split()]
             try:
-                fNames = cls._ParseLataDB(file, dom, var, loc, cyc)
+                fNames = cls._ParseLataDB(file, dom, var, loc, time)
                 for fNa in fNames:
                     #                     print("@@@ VIS COMP adding :%s for var %s" % (fNa, var))
                     cls.Append(baseDir + "/" + fNa)
@@ -289,7 +282,7 @@ class FileAccumulator(object):
         cls.Append(probe_file_base + ".plan")
 
     @classmethod
-    def AppendFromInstructionVisit(cls, param, cycles=""):
+    def AppendFromInstructionVisit(cls, param, time=-1):
         """ Try to recognise some of the common fields in a set of Visit instructions """
         if not cls.active:
             return
@@ -315,7 +308,7 @@ class FileAccumulator(object):
                 var, loc, dom = mo.group(1), mo.group(2), mo.group(3)  # group 0 is the whole match !
                 dom = cls._GetRealDomName(dom)
                 start = mo.end()
-                cls.AppendVisuComplex(cls.last_LATA_used, dom, var, loc, cycles)
+                cls.AppendVisuComplex(cls.last_LATA_used, dom, var, loc, time)
 
     @classmethod
     def WriteToFile(cls, filename, mode="w"):

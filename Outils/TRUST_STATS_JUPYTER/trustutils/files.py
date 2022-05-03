@@ -1,5 +1,5 @@
 import numpy as np
-
+import re
 
 class TrustFile(object):
     _COMPO_NAMES = ["X", "Y", "Z", "4", "5", "6", "7", "8", "9"]
@@ -297,15 +297,15 @@ class SonFile(TrustFile):
             # Store point coords:
             if (len(hdr[1]) - 1) % 2 or ((len(hdr[1]) - 1) // 2) % dim:
                 return None
-            npoints = (len(hdr[1]) - 1) // 2 // dim
+            self._npoints = (len(hdr[1]) - 1) // 2 // dim
             pts = []
-            for i in range(npoints):
+            for i in range(self._npoints):
                 pt = [float(a) for a in hdr[1][2 + i * 2 * dim : 2 + (i + 1) * 2 * dim : 2]]
                 pts.append(pt)
             # And finally number of components:
-            if (len(hdr[4]) - 1) % npoints:
+            if (len(hdr[4]) - 1) % self._npoints:
                 return None
-            self._ncompo = (len(hdr[4]) - 1) // npoints
+            self._ncompo = (len(hdr[4]) - 1) // self._npoints
             self._points = np.array(pts)
             self._ncols = len(hdr[4])
             return hdr
@@ -343,6 +343,14 @@ class SonFile(TrustFile):
             hdr = self._populateFromHeader()
         return self._ncompo
     
+    def getnPoints(self):
+        status = self._queryAndUpdateStatus(update=False)
+        if status == "invalid":
+            return []
+        if not len(self._entries):
+            hdr = self._populateFromHeader()
+        return self._npoints
+
 class SonPOINTFile(SonFile):
     def __init__(self, filePath, refPath):
         SonFile.__init__(self, filePath, refPath)
@@ -370,11 +378,12 @@ class SonSEGFile(SonFile):
     def _populateFromHeader(self, hdr=None):
         hdr = SonFile._populateFromHeader(self, hdr)
         if hdr is not None:
-            if hdr[3][1] == "SEGMENT":
-                l2 = [float(hdr[3][i]) for i in range(2, 2 + 2 * self._dim)]
-            elif hdr[3][1] == "SEGMENTPOINTS":
+            face = re.compile("SEGMENTFACES[X-Z]")
+            if hdr[3][1] == "SEGMENTPOINTS":
                 nb_pts = int((len(hdr[1]) - 1) / 2 / self._dim)
                 l2 = [float(hdr[1][i + 2]) for i in range(0, nb_pts * self._dim, 2)]
+            elif hdr[3][1] == "SEGMENT" or face.match(hdr[3][1]):
+                l2 = [float(hdr[3][i]) for i in range(2, 2 + 2 * self._dim)]
             else: raise Exception("Invalid SON file type!")
             start, end = l2[: self._dim], l2[-self._dim:]
             self.setXTremePoints(start, end)
