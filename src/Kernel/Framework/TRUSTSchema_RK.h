@@ -58,6 +58,7 @@ class TRUSTSchema_RK : public Schema_Temps_base
   // a surcharger si utile
   void completer() override { /* Do nothing */ }
 
+  friend class RK3_FT; // pour trio
   int faire_un_pas_de_temps_eqn_base(Equation_base& eq) override { return faire_un_pas_de_temps_eqn_base_generique<_ORDRE_>(eq); } // SFINAE :-)
 
 protected:
