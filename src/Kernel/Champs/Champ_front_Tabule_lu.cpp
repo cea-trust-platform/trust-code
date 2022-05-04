@@ -22,6 +22,7 @@
 
 #include <Champ_front_Tabule_lu.h>
 #include <EChaine.h>
+#include <fstream>
 
 Implemente_instanciable(Champ_front_Tabule_lu, "Champ_front_Tabule_lu", Champ_front_Tabule);
 // XD champ_front_tabule_lu champ_front_tabule champ_front_tabule_lu 0 Constant field on the boundary, tabulated from a specified column file. Lines starting with # are ignored.
