@@ -29,7 +29,7 @@ class Champ_som_lu : public TRUSTChamp_Don_generique<Champ_Don_Type::LU>
 {
   Declare_instanciable(Champ_som_lu);
 public:
-  DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& valeurs) const override { return not_implemented_champ_<DoubleVect&>(__func__); }
+  DoubleVect& valeur_a(const DoubleVect& positions, DoubleVect& vals) const override { return not_implemented_champ_<DoubleVect&>(__func__); }
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
 };

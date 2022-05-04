@@ -63,14 +63,14 @@ public:
     return *this;
   }
 
-  DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& valeurs) const override
+  DoubleVect& valeur_a(const DoubleVect& position, DoubleVect& vals) const override
   {
-    return valeur_a_<_TYPE_>(position, valeurs);
+    return valeur_a_<_TYPE_>(position, vals);
   }
 
-  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const override
+  DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& vals, int le_poly) const override
   {
-    return valeur_a_elem_<_TYPE_>(position, valeurs, le_poly);
+    return valeur_a_elem_<_TYPE_>(position, vals, le_poly);
   }
 
   double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const override
@@ -78,24 +78,24 @@ public:
     return valeur_a_elem_compo_<_TYPE_>(position, le_poly, ncomp);
   }
 
-  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& valeurs) const override
+  DoubleTab& valeur_aux(const DoubleTab& positions, DoubleTab& vals) const override
   {
-    return valeur_aux_<_TYPE_>(positions, valeurs);
+    return valeur_aux_<_TYPE_>(positions, vals);
   }
 
-  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const override
+  DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& vals, int ncomp) const override
   {
-    return valeur_aux_compo_<_TYPE_>(positions, valeurs, ncomp);
+    return valeur_aux_compo_<_TYPE_>(positions, vals, ncomp);
   }
 
-  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const override
+  DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& vals) const override
   {
-    return valeur_aux_elems_<_TYPE_>(positions, les_polys, valeurs);
+    return valeur_aux_elems_<_TYPE_>(positions, les_polys, vals);
   }
 
-  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override
+  DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& vals, int ncomp) const override
   {
-    return valeur_aux_elems_compo_<_TYPE_>(positions,les_polys,valeurs,ncomp);
+    return valeur_aux_elems_compo_<_TYPE_>(positions,les_polys,vals,ncomp);
   }
 
 protected:
