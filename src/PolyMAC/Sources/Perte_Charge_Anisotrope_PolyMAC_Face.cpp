@@ -24,7 +24,7 @@
 #include <Motcle.h>
 #include <Equation_base.h>
 
-Implemente_instanciable(Perte_Charge_Anisotrope_PolyMAC_Face,"Perte_Charge_Anisotrope_Face_PolyMAC",Perte_Charge_PolyMAC);
+Implemente_instanciable(Perte_Charge_Anisotrope_PolyMAC_Face,"Perte_Charge_Anisotrope_Face_PolyMAC|Perte_Charge_Anisotrope_Face_PolyMAC_V2",Perte_Charge_PolyMAC);
 
 
 Sortie& Perte_Charge_Anisotrope_PolyMAC_Face::printOn(Sortie& s ) const
