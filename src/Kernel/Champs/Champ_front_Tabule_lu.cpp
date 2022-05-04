@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_front_Tabule_lu.h>
-#include <EFichier.h>
 #include <EChaine.h>
 
 Implemente_instanciable(Champ_front_Tabule_lu, "Champ_front_Tabule_lu", Champ_front_Tabule);
@@ -55,8 +54,7 @@ Entree& Champ_front_Tabule_lu::readOn(Entree& is)
   is >> column_file;
 
   // open column file
-  EFichier f(column_file);
-  std::ifstream& infile = f.get_ifstream();
+  std::ifstream infile(column_file);
   Nom liste_temps(""), liste_vals("");
 
   // read line by line
