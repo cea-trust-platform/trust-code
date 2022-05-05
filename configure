@@ -731,6 +731,11 @@ then
    fi
 fi
 
+if [ "`dot -V 1>/dev/null 2>&1;echo $?`" != 0 ] && [ $TRUST_DISABLE_DOXYGEN != 1 ]
+then
+   echo "graphviz package needed to build html diagrams via doxygen" >> NON_INSTALLED
+fi
+
 if [ -f $TRUST_ROOT/NON_INSTALLED ]
 then
    echo ""

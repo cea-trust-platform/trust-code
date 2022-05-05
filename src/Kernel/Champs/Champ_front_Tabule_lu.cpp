@@ -48,7 +48,7 @@ Sortie& Champ_front_Tabule_lu::printOn(Sortie& os) const { return Champ_front_Ta
 Entree& Champ_front_Tabule_lu::readOn(Entree& is)
 {
   // read number of components
-  const int nb_comp = lire_dimension(is, que_suis_je());
+  const int nb_comp_ = lire_dimension(is, que_suis_je());
 
   // read name of the column file
   Nom column_file, nomlu;
@@ -72,18 +72,18 @@ Entree& Champ_front_Tabule_lu::readOn(Entree& is)
             Process::exit();
           }
         const int nb_col_lues = result.size();
-        if (nb_col_lues != (nb_comp + 1))
+        if (nb_col_lues != (nb_comp_ + 1))
           {
-            Cerr << "The file " << column_file << " should contain " << nb_comp + 1 << " columns but " << nb_col_lues << " have been detected on line " << l << finl;
+            Cerr << "The file " << column_file << " should contain " << nb_comp_ + 1 << " columns but " << nb_col_lues << " have been detected on line " << l << finl;
             Process::exit();
           }
         liste_temps += Nom(" ") + result[0].c_str();
-        for (int n = 0; n < nb_comp; n++)
+        for (int n = 0; n < nb_comp_; n++)
           liste_vals += Nom(" ") + result[1 + n].c_str();
       }
 
   // send to the parent class readOn
-  Nom chaine_tabulee(nb_comp);
+  Nom chaine_tabulee(nb_comp_);
   chaine_tabulee += Nom(" { ") + Nom(nb_val) + liste_temps + liste_vals + Nom(" }");
   Cerr << "Creation from " << column_file << " of the field" << finl;
   Cerr << "Champ_front_Tabule " << chaine_tabulee << finl;
