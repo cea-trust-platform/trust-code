@@ -198,11 +198,11 @@ liste()
 
 check_size_lml()
 {
-   max_size=800
-   lml=`find $1 -size +$max_size"k" -name '*'.lml.gz`
+   max_size=12 # it was 800k previously, we set it to 12M
+   lml=`find $1 -size +$max_size"M" -name '*'.lml.gz`
    if [ "$lml" != "" ]
    then
-      echo $ECHO_OPTS "\nThe file $lml is too big (`du -s -k $lml | awk '{print $1}'` Ko > $max_size Ko)! \c"
+      echo $ECHO_OPTS "\nThe file $lml is too big (`du -s -m $lml | awk '{print $1}'` Mo > $max_size Mo)! \c"
       err=1
    else
       err=0
@@ -292,6 +292,15 @@ add_test_case_from_validation()
 			  check_size_lml $DIRECTORY/$cas_test
         		  if [ "$err" != 0 ]
 			  then
+			     msg="\n -> The validation form $FICHE_ROOT generates test cases with huge size...\n"
+			     msg_warning="\n-----------------------------Advice--------------------------------------\n"
+			     msg_warning+="You can skip the validation form or a part of its test cases : \n"
+			     msg_warning+="- To skip the validation form, add a file skip_prm into '$FICHE_ROOT' or '$FICHE_ROOT/src'\n"
+			     msg_warning+="- To not build one or several test cases, add them in the file liste_cas_exclu_nr in '$FICHE_ROOT/src'\n"
+			     msg_warning+="- To build no test cases, add a file fiche_exclu_nr into '$FICHE_ROOT/src'\n"
+			     msg_warning+="--------------------------------------------------------------------------\n"
+			     echo $ECHO_OPTS $msg $msg_warning
+			     return 255
 			     echo $ECHO_OPTS "\n-> The validation $FICHE_ROOT SHOULD be moved to ${Rapports_auto_root}/Validation/Rapports_automatiques/Validant !"
       			     NEW_DIRECTORY=$DIRECTORY
 			  else
