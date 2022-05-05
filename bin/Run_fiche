@@ -10,7 +10,7 @@ help()
    echo "-export_pdf                    : Produce the PDF report direclty as 'build/rapport.pdf'. This is the default for PRM format, but not for Jupyter notebooks."
    echo "-not_run                       : Build the PDF report file without running the TRUST calculations and pre_run/post_run scripts."
    echo "-post_run                      : As -not_run except it runs the post_run scripts."
-   echo "-parallel_run                  : Run/submit calculations in a parallel way. To disable this feature, add into the prm file: # DISABLE_PARALLEL_RUN #" 
+   echo "-parallel_run [n]              : Run/submit calculations in a parallel way on n cores (n=$TRUST_NB_PROCS by default). To disable this feature, add into the prm file: # DISABLE_PARALLEL_RUN #" 
    echo "-parallel_sjob                 : Run/submit calculations in a parallel way using the Sserver. To disable this feature, add into the prm file: # DISABLE_PARALLEL_RUN #" 
    echo "-nb_pas_dt_max N               : The test cases will be run on N time steps only."
    echo "-visit_np np                   : Run VisIt on np cores (by default 1) when building the figures, which is faster on a very big mesh."
@@ -85,10 +85,14 @@ do
       shift
    elif [ "$1" = -not_run ] || [ "$1" = -post_run ] || [ "$1" = -parallel_run ] || [ "$1" = -parallel_sjob ]
    then
+      options=$options" "$1
       if [ "$1" = -not_run ]; then
         not_run=1
-      fi 
-      options=$options" "$1
+      elif [ "$1" = -parallel_run ] && [ "$2" != "" ]
+      then
+         shift
+         TRUST_NB_PROCS=$1
+      fi
       shift
    elif [ "$1" = -nb_pas_dt_max ]
    then
