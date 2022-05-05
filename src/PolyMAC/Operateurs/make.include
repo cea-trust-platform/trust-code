@@ -21,9 +21,15 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Problems\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
 	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
+	-I$(TRUST_ROOT)/src/ThHyd/Schemas_Temps\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Operateurs\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Correlations\
 	-I$(TRUST_ROOT)/src/ThSol\
 	
 

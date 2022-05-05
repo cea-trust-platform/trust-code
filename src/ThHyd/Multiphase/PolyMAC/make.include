@@ -1,7 +1,7 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
-	-I$(TRUST_ROOT)/src/CoviMAC/Champs\
-	-I$(TRUST_ROOT)/src/CoviMAC/Operateurs\
-	-I$(TRUST_ROOT)/src/CoviMAC/Zones\
+	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
+	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs\
+	-I$(TRUST_ROOT)/src/PolyMAC/Zones\
 	-I$(TRUST_ROOT)/src/Kernel/Champs\
 	-I$(TRUST_ROOT)/src/Kernel/Champs/Champs_Don\
 	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
