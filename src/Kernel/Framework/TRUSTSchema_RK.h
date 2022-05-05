@@ -71,7 +71,7 @@ protected:
   }
 
 private:
-  static constexpr double SQRT2 = sqrt(2.), SQRT2_2 = SQRT2 / 2.;
+  static constexpr double SQRT2 = 1.4142135623730950488016887242096980785696718753769480731766797, SQRT2_2 = SQRT2 / 2.;
 
   // RK low storage : See Williamson RK series https://www.sciencedirect.com/science/article/pii/0021999180900339
   static constexpr ARR2 A2 = { 0.0, SQRT2 - 2. };
@@ -155,6 +155,24 @@ constexpr std::array<ARR3, 3> TRUSTSchema_RK<_ORDRE_>::BUTCHER_4_3_8;
 
 template <Ordre_RK _ORDRE_ >
 constexpr std::array<ARR4, 4> TRUSTSchema_RK<_ORDRE_>::BUTCHER_TAB;
+
+template <Ordre_RK _ORDRE_ >
+constexpr ARR2 TRUSTSchema_RK<_ORDRE_>::A2;
+
+template <Ordre_RK _ORDRE_ >
+constexpr ARR2 TRUSTSchema_RK<_ORDRE_>::B2;
+
+template <Ordre_RK _ORDRE_ >
+constexpr ARR3 TRUSTSchema_RK<_ORDRE_>::A3;
+
+template <Ordre_RK _ORDRE_ >
+constexpr ARR3 TRUSTSchema_RK<_ORDRE_>::B3;
+
+template <Ordre_RK _ORDRE_ >
+constexpr ARR3 TRUSTSchema_RK<_ORDRE_>::A4;
+
+template <Ordre_RK _ORDRE_ >
+constexpr ARR3 TRUSTSchema_RK<_ORDRE_>::B4;
 
 #include <TRUSTSchema_RK.tpp>
 
