@@ -181,7 +181,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
             if (!aux_only) for (n = 0; n < N[0]; n++) for (m = (N[0] == N[p]) * n; m < (N[0] == N[p] ? n + 1 : N[p]); m++)
                   stencil[p].append_line(N[0] * (ne_tot[0] + f) + n, N[p] * o_e + m); //face <-> elem : compo par compo si N[0] == N[p], tout sinon
             for (l = 0; l < w2.dimension(0); l++) if (fcl[p](fb = e_f[p](o_e, l), 0) < 6) for (n = 0; n < N[0]; n++) for (m = (N[0] == N[p]) * n; m < (N[0] == N[p] ? n + 1 : N[p]); m++)
-                    if (w2(k, l, m)) stencil[p].append_line(N[0] * (!aux_only * ne_tot[0] + f) + n, N[p] * (!aux_only * ne_tot[p] + o_f) + m);
+                    if (w2(k, l, m)) stencil[p].append_line(N[0] * (!aux_only * ne_tot[0] + f) + n, N[p] * (!aux_only * ne_tot[p] + fb) + m);
           }
 
   for (i = 0; i < n_ext; i++) if (mat[i])
@@ -333,7 +333,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
             if (mat[0]) for (n = 0; n < N[o_p]; n++) /* derivees en Tparoi */
                 (*mat[0])(!aux_only * ne_tot[0] + f, !aux_only * ne_tot[0] + f) += fs[0](f) * dTp_qpk(n);
           }
-        if (ech.invh_paroi) for (n = 0; n < N[0]; n++)/* resistance de la paroi -> ajout du h(T'-T) */
+        else if (ech.invh_paroi) for (n = 0; n < N[0]; n++)/* resistance de la paroi -> ajout du h(T'-T) */
             {
               secmem(!aux_only * ne_tot[0] + f, n) -= fs[0](f) / ech.invh_paroi * (v_aux[0](f, n) - v_aux[o_p](o_f, n)); //second membre
               if (mat[0])   (*mat[0])(N[0] * (!aux_only * ne_tot[0] + f) + n, N[0] * (!aux_only * ne_tot[0] + f) + n) += fs[0](f) / ech.invh_paroi; //derivees
@@ -342,9 +342,9 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
         else for (zone[o_p].get().W2(&diffu[o_p].get(), o_e, w2), i = 0; i < w2.dimension(0); i++) /* pas de resistance -> ajout du flux de l'autre cote */
             if (e_f[o_p](o_e, i) == o_f) for (j = 0; j < w2.dimension(1); j++) for (n = 0; n < N[0]; n++) if (w2(i, j, n))
                     {
-                      secmem(!aux_only * ne_tot[0] + f, n) -= w2(i, j, n) * (v_aux[o_p](e_f[o_p](o_e, j), n) - inco[o_p](o_e, n)); //second membre
+                      secmem(!aux_only * ne_tot[0] + f, n) -= w2(i, j, n) * (v_aux[o_p * (j != i)](j != i ? e_f[o_p](o_e, j) : f, n) - inco[o_p](o_e, n)); //second membre
                       if (mat[o_p * (j != i)] && (j == i || fcl[o_p](o_f, 0) < 6)) //autre face: on substitue T_fb par T_f
-                        (*mat[o_p * (j != i)])(N[0] * (!aux_only * ne_tot[0] + f) + n, N[0] * (!aux_only * ne_tot[o_p * (j != i)] + (j == i ? f : o_f)) + n) += w2(i, j, n);
+                        (*mat[o_p * (j != i)])(N[0] * (!aux_only * ne_tot[0] + f) + n, N[0] * (!aux_only * ne_tot[o_p * (j != i)] + (j != i ? e_f[o_p](o_e, j) : f)) + n) += w2(i, j, n);
                       if (!aux_only && mat[o_p]) (*mat[o_p])(N[0] * (ne_tot[0] + f) + n, N[0] * o_e + n) -= w2(i, j, n); //autre element
                     }
       }
