@@ -30,10 +30,6 @@
 #include <iostream>
 using std::ios;
 using std::istream;
-#ifdef IO_avec_string
-#include <string>
-//using namespace std;
-#endif
 class Objet_U;
 class Nom;
 
@@ -117,7 +113,7 @@ protected:
   inline int error_handle(int fail_flag);
   virtual int error_handle_(int fail_flag);
   int bin_;
-  bool is_different_int_size_; // File with int32 (or int64) whereas version is int64 (or int32à
+  bool is_different_int_size_; // File with int32 (or int64) whereas version is int64 (or int32)
   int check_types_;
   Error_Action error_action_;
   int diffuse_; // By default 1, but some child classes (eg: LecFicDiffuse) could set temporary to 0 to not diffuse to other processes

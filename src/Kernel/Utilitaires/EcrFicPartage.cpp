@@ -395,13 +395,6 @@ int EcrFicPartage::put(const double* ob, int n, int pas)
   return 1;
 }
 
-#ifdef IO_avec_string
-Sortie& EcrFicPartage::operator <<(const std::string& ob)
-{
-  get_obuffer() << ob;
-  return *this;
-}
-#endif
 Sortie& EcrFicPartage::operator <<(const char* ob)
 {
   get_obuffer() << ob;

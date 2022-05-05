@@ -25,11 +25,6 @@
 
 #include <arch.h>
 
-#ifdef IO_avec_string
-#include <stdio.h>
-#include <string>
-using std::string;
-#endif
 #include <string>
 #include <iostream>
 using std::ios;
@@ -95,9 +90,6 @@ public:
   virtual Sortie& operator<<(const double    ob);
   virtual Sortie& operator<<(const char      * ob);
   virtual Sortie& operator<<(const std::string& str);
-#ifdef IO_avec_string
-  virtual Sortie& operator <<(const std::string& ob);
-#endif
   virtual int add_col(const double ob);
   virtual int add_col(const char * ob);
   virtual int put(const unsigned* ob, int n, int nb_colonnes=1);

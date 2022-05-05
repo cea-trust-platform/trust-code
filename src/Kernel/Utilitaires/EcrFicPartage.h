@@ -72,9 +72,6 @@ public:
   Sortie& operator <<(const char* ob) override;
   Sortie& operator <<(const Objet_U& ob) override;
   Sortie& operator <<(const std::string& ob) override;
-#ifdef IO_avec_string
-  Sortie& operator <<(const std::string& ob) override;
-#endif
 
   int put(const unsigned* ob, int n, int pas) override;
   int put(const int* ob, int n, int pas) override;

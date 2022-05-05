@@ -562,13 +562,8 @@ Sortie& Sortie::operator <<(const std::string& str)
 {
   return (*this) << str.c_str();
 }
-#ifdef IO_avec_string
-Sortie& Sortie::operator <<(const std::string& str)
-{
-  (*ostream_) << str;
-  return (*this);
-}
-#endif
+
+
 Sortie::~Sortie()
 {
   if(ostream_)
