@@ -508,6 +508,12 @@ then
    exit -1
 fi
 
+#####
+# HDF
+#####
+# Attention: support HDF pour PETSc (actuellement non utilise) peut poser probleme a C3D (conflit avec autre HDF): on desactive
+# [ -d $TRUST_ROOT/lib/src/LIBMED/hdf5_install ] && with_packages=$with_packages" --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install"
+ 
 #############
 # TRUST_INT64
 #############
@@ -568,7 +574,6 @@ do
    $LIBS \
    --with-clean=1 \
    --with-ssl=0 \
-   --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install \
    --with-gmsh=0 --with-gmsh-exec=/bin/ls \
    $with_packages \
    $with_blas \
