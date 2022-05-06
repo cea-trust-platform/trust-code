@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ void desalloue_pwd()
 }
 char * pwd()
 {
-#if defined(_CSH_) || defined(linux) || defined(cygwin) || defined(MICROSOFT)
+#if defined(_CSH_) || defined(linux) || defined(cygwin) || defined(MICROSOFT) || defined(__APPLE__)
   if (buf==0)
     buf=new char[801];
 #endif
@@ -71,7 +71,7 @@ char * pwd()
   int longueur=800;
   _getcwd(buf, longueur);
 #else
-#if defined(_CSH_) || defined(linux) || defined(cygwin)
+#if defined(_CSH_) || defined(linux) || defined(cygwin) || defined(__APPLE__)
   int longueur=800;
   if (getcwd(buf, longueur)==NULL)
     {
