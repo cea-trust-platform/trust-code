@@ -1,7 +1,7 @@
-XX/XX/22 (TRUST)  New keyword : Equation option "disable_equation_residual 0|1" to not use current equation residual when computing problem residual (useful for permanent KEps simulation when residuals don't decrease)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
+06/05/22 (TRUST)  New keyword : Equation option "disable_equation_residual 0|1" to not use current equation residual when computing problem residual (useful for permanent KEps simulation when residuals don't decrease)
 05/05/22 (TRUST)  Portability : Ubuntu 22 supported (VisIt issues though)
 05/05/22 (TRUST)  Portabilty  : Fedora 36 and GNU compilers 12.0.1 are supported
 04/05/22 (TRUST)  New keyword : Champ_Front_Tabule_Lu is a new boundary field that can be used to create a Champ_Front_Tabule field from a column file. Syntax : Champ_Front_Tabule_Lu nb_comp your_file
