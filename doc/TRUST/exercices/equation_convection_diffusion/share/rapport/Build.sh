@@ -17,10 +17,10 @@ make check_all_optim validation check_gui #  doxygen
 
 cd $proj/build/rapport
 
-for file in classProbleme__base.png classEquation__base.png classConvection__Diffusion__std.png classConvection__Diffusion__Concentration.png
+for file in classProbleme__base classEquation__base classConvection__Diffusion__std classConvection__Diffusion__Concentration
 do
 
-cp $TRUST_ROOT/doc/html/$file .
+cp $TRUST_ROOT/doc/html/$file"__inherit__graph.png" $file.png
 
 done
 
