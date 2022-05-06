@@ -1,7 +1,10 @@
 Version	Qui				Tache
+1.8.5   trust@cea.fr            maj Run_fiche -help
+1.8.5   trust@cea.fr            tester dans AGL Run_fiche -export_pdf
+1.8.5   trust@cea.fr            empecher d'installer TRUST sur home titania
+1.8.5   adrien.bruneton@cea.fr  Deplacer Outils/IHM/TRUST_STATS_JUPYTER dans Outils/ (il y a un files.py dans trustutils qu'il faut unifier avec trust -evol)
+1.8.5   trust@cea.fr            mise a jour tuto utilisateur/dev avec jupyter
 1.8.5   anida.khizar@cea.fr     coder la resolution en increment dans le solveur_masse
-1.8.5   trust@cea.fr            mise a jour other baltik tutorial avec 184
-1.8.5   julie.darona@cea.fr     Ajouter methode install TrioCFD depuis FTP du mail dans README.md de TrioCFD
 1.8.5   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC
 1.8.5   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
 1.8.5   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
@@ -11,6 +14,9 @@ Version	Qui				Tache
 1.8.5   adrien.bruneton@cea.fr  Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
 1.8.5   pierre.ledac@cea.fr	VisIt sur Ubuntu 22
 1.8.5   pierre.ledac@cea.fr     [PETSC_AMGX] Corriger erreur valgrind sur machine gpu en mettant a jour AMGX*
+1.8.5   pierre.ledac@cea.fr     Modifier scripts Baltik pour qu un Baltik quelconque puisse etre deplace sans souci apres installation
+1.8.5   pierre.ledac@cea.fr     Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
+1.8.5   elie.saikali@cea.fr     Remove doxygen tags \cond DO_NOT_DOCUMENT ... \endcond from G3
 1.8.5   pierre.ledac@cea.fr     Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
 1.8.5   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE Canal_172M_PE_4913 sur un cluster
 1.8.5   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 185" (cf DI 188128)
