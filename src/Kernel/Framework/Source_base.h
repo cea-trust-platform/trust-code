@@ -30,7 +30,6 @@
 #include <Matrice_Bloc.h>
 #include <MorEqn.h>
 
-class DoubleTabs;
 class Probleme_base;
 class Zone_dis;
 class Zone_Cl_dis;

@@ -37,7 +37,6 @@
 /////////////////////////////////////////////////////////////////////////////
 
 class Static_Int_Lists;
-class IntTabs;
 
 class Refine_Mesh : public Interprete_geometrique_base
 {

@@ -25,25 +25,7 @@
 
 #include <TRUSTTab_Vector.h>
 
-/// \cond DO_NOT_DOCUMENT
-class TRUSTTabs
-{ };
-/// \endcond
-
-// .DESCRIPTION : IntTabs est equivalent a VECT(IntTab)
-class IntTabs : public VECT(IntTab)
-{
-  Declare_instanciable(IntTabs);
-public :
-  IntTabs(int i) : VECT(IntTab)(i) {}
-};
-
-// .DESCRIPTION : DoubleTabs est equivalent a VECT(DoubleTab)
-class DoubleTabs : public VECT(DoubleTab)
-{
-  Declare_instanciable(DoubleTabs);
-public :
-  DoubleTabs(int i) : VECT(DoubleTab)(i) {}
-};
+using IntTabs = Vect_IntTab;
+using DoubleTabs = Vect_DoubleTab;
 
 #endif /* TRUSTTabs_included */

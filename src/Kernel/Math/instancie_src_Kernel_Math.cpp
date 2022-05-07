@@ -17,7 +17,6 @@
 #include <Polynome.h>
 #include <RTabInt.h>
 #include <StdFunction.h>
-#include <TRUSTTabs.h>
 #include <TRUSTVects.h>
 #include <Table.h>
 #include <UserUnaryFunction.h>
@@ -55,10 +54,8 @@ Atanh inst29;verifie_pere(inst29);
 Not inst30;verifie_pere(inst30);
 Abs inst31;verifie_pere(inst31);
 Sgn inst32;verifie_pere(inst32);
-IntTabs inst33;verifie_pere(inst33);
-DoubleTabs inst34;verifie_pere(inst34);
-IntVects inst35;verifie_pere(inst35);
-DoubleVects inst36;verifie_pere(inst36);
-Table inst37;verifie_pere(inst37);
-UserUnaryFunction inst38;verifie_pere(inst38);
+IntVects inst33;verifie_pere(inst33);
+DoubleVects inst34;verifie_pere(inst34);
+Table inst35;verifie_pere(inst35);
+UserUnaryFunction inst36;verifie_pere(inst36);
 }

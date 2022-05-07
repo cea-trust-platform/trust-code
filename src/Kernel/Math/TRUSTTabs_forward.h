@@ -35,6 +35,13 @@ template<typename _TYPE_> class TRUSTTab;
 using IntTab = TRUSTTab<int>;
 using DoubleTab = TRUSTTab<double>;
 
+// previous VECT macro :-)
+template<typename _TYPE_> class TRUSTTab_Vector;
+using Vect_DoubleTab = TRUSTTab_Vector<double>;
+using Vect_IntTab = TRUSTTab_Vector<int>;
+using DoubleTabs = Vect_DoubleTab;
+using IntTabs = Vect_IntTab;
+
 template<typename _TYPE_> class TRUSTTrav;
 using IntTrav = TRUSTTrav<int>;
 using DoubleTrav = TRUSTTrav<double>;
