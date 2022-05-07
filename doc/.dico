@@ -279,8 +279,6 @@
  DomaineCutter DomaineCutter DomaineCutter.h
  Domaine_bord Domaine_bord Domaine_bord.h
  Domaine_dis Domaine_dis Domaine_dis.h
- DoubleTabs DoubleTabs TRUSTTabs.h
- DoubleVects DoubleVects TRUSTVects.h
  DP_Impose_Face_CoviMAC DP_Impose_CoviMAC_Face DP_Impose_CoviMAC_Face.h
  DP_Impose_Face_PolyMAC DP_Impose_PolyMAC_Face DP_Impose_PolyMAC_Face.h
  Echange_couplage_thermique Echange_couplage_thermique Echange_couplage_thermique.h
@@ -451,8 +449,6 @@
  Interprete Interprete Interprete.h
  Interprete_bloc Interprete_bloc Interprete_bloc.h
  Interprete_geometrique_base Interprete_geometrique_base Interprete_geometrique_base.h
- IntTabs IntTabs TRUSTTabs.h
- IntVects IntVects TRUSTVects.h
  Iterateur_PolyMAC Iterateur_PolyMAC Iterateur_PolyMAC_base.h
  Iterateur_PolyMAC_base Iterateur_PolyMAC_base Iterateur_PolyMAC_base.h
  Iterateur_Source_CoviMAC Iterateur_Source_CoviMAC Iterateur_Source_CoviMAC.h

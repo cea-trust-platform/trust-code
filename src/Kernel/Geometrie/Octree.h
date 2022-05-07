@@ -23,10 +23,9 @@
 #ifndef Octree_included
 #define Octree_included
 
+#include <TRUSTTabs_forward.h>
 #include <TRUSTTab.h>
 #include <Ref_Zone.h>
-
-class IntVects;
 
 #define GaucheArriereBas 0
 #define DroitArriereBas 1

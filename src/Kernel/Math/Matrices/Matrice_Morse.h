@@ -23,12 +23,11 @@
 #ifndef Matrice_Morse_included
 #define Matrice_Morse_included
 
+#include <TRUSTTabs_forward.h>
 #include <Matrice_Base.h>
 #include <TRUSTLists.h>
 #include <TRUSTTab.h>
 #include <algorithm>
-
-class DoubleVects;
 
 //////////////////////////////////////////////////////////////////////////////
 //

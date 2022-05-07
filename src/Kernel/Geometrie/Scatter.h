@@ -30,7 +30,6 @@
 
 class Joints;
 class Zone_VF;
-class VECT(ArrOfInt);
 
 class Scatter : public Interprete
 {

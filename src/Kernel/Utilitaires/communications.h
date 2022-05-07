@@ -30,7 +30,6 @@
 #include <Vect.h>
 #include <vector>
 
-class VECT(ArrOfInt);
 class Objet_U;
 
 int envoyer(const int t, int source, int cible, int canal);

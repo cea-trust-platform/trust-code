@@ -23,15 +23,12 @@
 #ifndef TRUSTArrays_included
 #define TRUSTArrays_included
 
-#include <TRUSTArray.h>
-#include <Vect.h>
+#include <TRUST_Vector.h>
 
-/// \cond DO_NOT_DOCUMENT
-class TRUSTArrays
-{ };
-/// \endcond
-
-Declare_vect(ArrOfInt);
-Declare_vect(ArrOfDouble);
+// BYE BYE MACRO !! ahahaha
+using Vect_ArrOfDouble = TRUST_Vector<TRUSTArray,double>; // remplace VECT(ArrOfDouble)
+using Vect_ArrOfInt = TRUST_Vector<TRUSTArray,int>; // remplace VECT(ArrOfInt)
+using ArrsOfDouble = Vect_ArrOfDouble;
+using ArrsOfInt = Vect_ArrOfInt;
 
 #endif /* TRUSTArrays_included */

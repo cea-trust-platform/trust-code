@@ -23,29 +23,12 @@
 #ifndef TRUSTVects_included
 #define TRUSTVects_included
 
-#include <TRUSTVect.h>
+#include <TRUST_Vector.h>
 
-/// \cond DO_NOT_DOCUMENT
-class TRUSTVects
-{ };
-/// \endcond
-
-Declare_vect(IntVect);
-// .DESCRIPTION Un tableau (VECT) d'elements du type IntVect
-class IntVects : public VECT(IntVect)
-{
-  Declare_instanciable(IntVects);
-public :
-  IntVects(int i) : VECT(IntVect)(i) {}
-};
-
-Declare_vect(DoubleVect);
-// .DESCRIPTION Un tableau (VECT) d'elements du type DoubleVect
-class DoubleVects : public VECT(DoubleVect)
-{
-  Declare_instanciable(DoubleVects);
-public :
-  DoubleVects(int i) : VECT(DoubleVect)(i) {}
-};
+// BYE BYE MACRO !! ahahaha
+using Vect_DoubleVect = TRUST_Vector<TRUSTVect,double>; // remplace VECT(DoubleVect)
+using Vect_IntVect = TRUST_Vector<TRUSTVect,int>; // remplace VECT(IntVect)
+using IntVects = Vect_IntVect;
+using DoubleVects = Vect_DoubleVect;
 
 #endif /* TRUSTVects_included */

@@ -35,15 +35,23 @@ template<typename _TYPE_> class TRUSTTab;
 using IntTab = TRUSTTab<int>;
 using DoubleTab = TRUSTTab<double>;
 
-// previous VECT macro :-)
-template<typename _TYPE_> class TRUSTTab_Vector;
-using Vect_DoubleTab = TRUSTTab_Vector<double>;
-using Vect_IntTab = TRUSTTab_Vector<int>;
-using DoubleTabs = Vect_DoubleTab;
-using IntTabs = Vect_IntTab;
-
 template<typename _TYPE_> class TRUSTTrav;
 using IntTrav = TRUSTTrav<int>;
 using DoubleTrav = TRUSTTrav<double>;
+
+// previous VECT macros :-)
+template<template<class> class _TRUST_TABL_,typename _TYPE_> class TRUST_Vector;
+using Vect_ArrOfDouble = TRUST_Vector<TRUSTArray,double>; // remplace VECT(ArrOfDouble)
+using Vect_ArrOfInt = TRUST_Vector<TRUSTArray,int>; // remplace VECT(ArrOfInt)
+using ArrsOfDouble = Vect_ArrOfDouble;
+using ArrsOfInt = Vect_ArrOfInt;
+using Vect_DoubleVect = TRUST_Vector<TRUSTVect,double>; // remplace VECT(DoubleVect)
+using Vect_IntVect = TRUST_Vector<TRUSTVect,int>; // remplace VECT(IntVect)
+using DoubleVects = Vect_DoubleVect;
+using IntVects = Vect_IntVect;
+using Vect_DoubleTab = TRUST_Vector<TRUSTTab,double>; // remplace VECT(DoubleTab)
+using Vect_IntTab = TRUST_Vector<TRUSTTab,int>; // remplace VECT(IntTab)
+using DoubleTabs = Vect_DoubleTab;
+using IntTabs = Vect_IntTab;
 
 #endif /* TRUSTTabs_forward_included */

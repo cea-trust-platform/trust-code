@@ -23,8 +23,11 @@
 #ifndef TRUSTTabs_included
 #define TRUSTTabs_included
 
-#include <TRUSTTab_Vector.h>
+#include <TRUST_Vector.h>
 
+// BYE BYE MACRO !! ahahaha
+using Vect_DoubleTab = TRUST_Vector<TRUSTTab,double>; // remplace VECT(DoubleTab)
+using Vect_IntTab = TRUST_Vector<TRUSTTab,int>; // remplace VECT(IntTab)
 using IntTabs = Vect_IntTab;
 using DoubleTabs = Vect_DoubleTab;
 

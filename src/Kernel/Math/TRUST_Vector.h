@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        TRUSTTab_Vector.h
+// File:        TRUST_Vector.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math
 // Version:     /main/10
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef TRUSTTab_Vector_included
-#define TRUSTTab_Vector_included
+#ifndef TRUST_Vector_included
+#define TRUST_Vector_included
 
 #include <vect_impl.h>
 #include <TRUSTTab.h>
@@ -30,8 +30,8 @@
 // J'ajoute cette classe temporairement (enfin j'espere)
 // a virer le jour ou le macro VECT devient / ou accepte des templates
 // Pourquoi ? car dans Const_DoubleTab_parts on a VECT(IntTab) et VECT(DoubleTab) .... boom, comment je peux faire sinon ?
-template<typename _TYPE_>
-class TRUSTTab_Vector: public vect_impl
+template<template<class> class _TRUST_TABL_,typename _TYPE_>
+class TRUST_Vector: public vect_impl
 {
 protected:
 
@@ -39,7 +39,7 @@ protected:
 
   inline int duplique() const override
   {
-    TRUSTTab_Vector *xxx = new TRUSTTab_Vector(*this);
+    TRUST_Vector *xxx = new TRUST_Vector(*this);
     if (!xxx)
       {
         Cerr << "Not enough memory " << finl;
@@ -50,7 +50,7 @@ protected:
 
   Objet_U* cree_une_instance() const override
   {
-    TRUSTTab<_TYPE_> *instan = new TRUSTTab<_TYPE_>();
+    _TRUST_TABL_<_TYPE_> *instan = new _TRUST_TABL_<_TYPE_>();
     return instan;
   }
 
@@ -59,18 +59,18 @@ protected:
   Entree& readOn(Entree& s) override { return vect_impl::readOn(s); }
 
 public:
-  TRUSTTab_Vector() : vect_impl() { }
-  TRUSTTab_Vector(int i) { build_vect_impl(i); }
-  TRUSTTab_Vector(const TRUSTTab_Vector& avect) : vect_impl(avect) { }
+  TRUST_Vector() : vect_impl() { }
+  TRUST_Vector(int i) { build_vect_impl(i); }
+  TRUST_Vector(const TRUST_Vector& avect) : vect_impl(avect) { }
 
   /* Returns the ith VECT element */
-  const TRUSTTab<_TYPE_>& operator[](int i) const { return static_cast<const TRUSTTab<_TYPE_>&>(vect_impl::operator[](i)); }
-  TRUSTTab<_TYPE_>& operator[](int i) { return static_cast<TRUSTTab<_TYPE_>&>(vect_impl::operator[](i)); }
+  const _TRUST_TABL_<_TYPE_>& operator[](int i) const { return static_cast<const _TRUST_TABL_<_TYPE_>&>(vect_impl::operator[](i)); }
+  _TRUST_TABL_<_TYPE_>& operator[](int i) { return static_cast<_TRUST_TABL_<_TYPE_>&>(vect_impl::operator[](i)); }
 
-  const TRUSTTab<_TYPE_>& operator()(int i) const { return operator[](i); }
-  TRUSTTab<_TYPE_>& operator()(int i) { return operator[](i); }
+  const _TRUST_TABL_<_TYPE_>& operator()(int i) const { return operator[](i); }
+  _TRUST_TABL_<_TYPE_>& operator()(int i) { return operator[](i); }
 
-  TRUSTTab_Vector& operator=(const TRUSTTab_Vector& avect)
+  TRUST_Vector& operator=(const TRUST_Vector& avect)
   {
     vect_impl::operator=(avect);
     return *this;
@@ -78,18 +78,14 @@ public:
 
   Entree& lit(Entree& s) { return vect_impl::lit(s); }
 
-  TRUSTTab<_TYPE_>& add(const TRUSTTab<_TYPE_>& data_to_add)
+  _TRUST_TABL_<_TYPE_>& add(const _TRUST_TABL_<_TYPE_>& data_to_add)
   {
     vect_impl::add(data_to_add);
     return (*this)[size() - 1];
   }
 
-  TRUSTTab<_TYPE_>& add() { return add(TRUSTTab<_TYPE_>()); }
-  void add(const TRUSTTab_Vector& data_to_add) { vect_impl::add(data_to_add); }
+  _TRUST_TABL_<_TYPE_>& add() { return add(_TRUST_TABL_<_TYPE_>()); }
+  void add(const TRUST_Vector& data_to_add) { vect_impl::add(data_to_add); }
 };
 
-// BYE BYE MACRO !! ahahaha
-using Vect_DoubleTab = TRUSTTab_Vector<double>; // remplace VECT(DoubleTab)
-using Vect_IntTab = TRUSTTab_Vector<int>; // remplace VECT(IntTab)
-
-#endif /* TRUSTTab_Vector_included */
+#endif /* TRUST_Vector_included */

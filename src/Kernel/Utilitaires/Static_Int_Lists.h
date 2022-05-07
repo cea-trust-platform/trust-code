@@ -22,9 +22,9 @@
 #ifndef Static_Int_Lists_included
 #define Static_Int_Lists_included
 
+#include <TRUSTTabs_forward.h>
 #include <TRUSTArray.h>
 #include <Vect.h>
-class VECT(ArrOfInt);
 
 // .DESCRIPTION
 //  Cette classe permet de stocker des listes d'entiers accessibles
