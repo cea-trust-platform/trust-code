@@ -40,7 +40,7 @@ public:
 
 protected:
   REF(Turbulence_paroi_scal) loipar;
-  VECT(DoubleVect) equivalent_distance;
+  DoubleVects equivalent_distance;
 };
 
 #endif /* Eval_Turbulence_included */

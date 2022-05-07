@@ -56,7 +56,7 @@ void Champ_Fonc_Tabule_P0_VEF::mettre_a_jour(double t)
   const Table& table = la_table.valeur();
   DoubleTab& mes_valeurs = valeurs();
   const int nb_elem = zone_VF.nb_elem(), nb_elem_tot = zone_VF.nb_elem_tot(), nb_param = les_ch_param.size();
-  VECT(DoubleTab) val_params_aux_elems;
+  DoubleTabs val_params_aux_elems;
   for (int i = 0; i < nb_param; i++)
     {
       DoubleTab vp(nb_elem_tot, mes_valeurs.dimension(1));

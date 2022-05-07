@@ -76,7 +76,7 @@ void mp_min_for_each_item(ArrOfInt&);
 void mp_min_for_each_item(ArrOfDouble&);
 
 int envoyer_all_to_all(const DoubleTabs& src, DoubleTabs& dest);
-int envoyer_all_to_all(const VECT(ArrOfInt) &src, VECT(ArrOfInt) &dest);
+int envoyer_all_to_all(const ArrsOfInt& src, ArrsOfInt& dest);
 int envoyer_all_to_all(const ArrOfInt& src, ArrOfInt& dest);
 int envoyer_all_to_all(const ArrOfDouble& src, ArrOfDouble& dest);
 int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest);

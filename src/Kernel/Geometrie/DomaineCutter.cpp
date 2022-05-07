@@ -655,7 +655,7 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
   // Liste de sommets de joint (toutes parties confondues, un sommet peut
   // apparaitre plusieurs fois dans le tableau, une fois par pe voisin au maximum)
   // C'est le numero global du sommet
-  VECT(ArrOfInt) joints_sommets(parts);
+  ArrsOfInt joints_sommets(parts);
   {
     // Pour append_array :
     for (int i = 0; i < parts; i++)
@@ -1291,7 +1291,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   //To detect my parts (when running in parallel)
   ArrOfInt myZones(nb_parties_);
   myZones = 0;
-  VECT(ArrOfInt) otherProcZones(Process::nproc());
+  ArrsOfInt otherProcZones(Process::nproc());
 
   //if some zones are splitted between multiple procs,
   //we assign consecutive indices to each of its fragment
@@ -1307,7 +1307,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
 
   Cerr << "Generation of " << nb_parties_ << " parts:" << finl;
   IntVect EdgeCut(nb_parties_);
-  VECT(ArrOfInt) Neighbours(nb_parties_);
+  ArrsOfInt Neighbours(nb_parties_);
   // 2 loops if reorder=1
   for (int loop=0; loop<1+reorder; loop++)
     {
@@ -1328,7 +1328,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           // 2- master process will assign a unique positive number to each fragment of a shared zone
           // 3- if a part is owned by a single process, it is indicated with the index -1
           // 4- the master process scatters the indices to all the proc
-          VECT(ArrOfInt) zones_indices(Process::nproc());
+          ArrsOfInt zones_indices(Process::nproc());
 
           for(int i=0; i < nbelem; i++)
             {

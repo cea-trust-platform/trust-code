@@ -1061,9 +1061,9 @@ void Zone::creer_aretes()
     for (i = 0; i < nb_voisins; i++)
       indices_pe[pe_voisins[i]] = i;
 
-    VECT(ArrOfInt) aretes_communes_to_recv(nb_voisins);
-    VECT(ArrOfInt) blocs_aretes_virt(nb_voisins);
-    VECT(ArrOfInt) aretes_to_send(nb_voisins);
+    ArrsOfInt aretes_communes_to_recv(nb_voisins);
+    ArrsOfInt blocs_aretes_virt(nb_voisins);
+    ArrsOfInt aretes_to_send(nb_voisins);
     for (i = 0; i < nb_voisins; i++)
       {
         aretes_communes_to_recv[i].set_smart_resize(1);

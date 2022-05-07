@@ -505,7 +505,7 @@ int envoyer_all_to_all(const DoubleTabs& src, DoubleTabs& dest)
   return envoyer_all_to_all_(src, dest);
 }
 
-int envoyer_all_to_all(const VECT(ArrOfInt) &src, VECT(ArrOfInt) &dest)
+int envoyer_all_to_all(const ArrsOfInt& src, ArrsOfInt& dest)
 {
   return envoyer_all_to_all_(src, dest);
 }

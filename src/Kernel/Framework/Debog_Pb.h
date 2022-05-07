@@ -99,7 +99,7 @@ protected:
   // indice de cet items dans le tableau sequentiel), tableau valide uniquement
   // pendant la phase lecture/comparaison. renum_array_[i] a le meme descripteur parallele
   // que known_md_[i]
-  VECT(IntVect) renum_array_;
+  IntVects renum_array_;
 
   // Fichier pour la phase d'ecriture
   SFichier write_debog_data_file_;

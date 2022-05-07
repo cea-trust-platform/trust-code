@@ -45,7 +45,7 @@ class MD_Vector_std : public MD_Vector_base2
 public:
   MD_Vector_std();
   MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfInt& pe_voisins,
-                const VECT(ArrOfInt) & items_to_send, const VECT(ArrOfInt) & items_to_recv, const VECT(ArrOfInt) & blocs_to_recv);
+                const ArrsOfInt& items_to_send, const ArrsOfInt& items_to_recv, const ArrsOfInt& blocs_to_recv);
 
   inline void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, DoubleVect& v) const override { initialize_comm_template<double>(opt,sc,v); }
   inline void initialize_comm(const Echange_EV_Options& opt, Schema_Comm_Vecteurs& sc, IntVect& v) const override { initialize_comm_template<int>(opt,sc,v); }

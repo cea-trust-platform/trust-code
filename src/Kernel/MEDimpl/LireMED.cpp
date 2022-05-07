@@ -306,7 +306,7 @@ void test_version(Nom& nom)
 
 int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& dimension,
                 DoubleTab& sommets, Nom& type_elem, Elem_geom& ele, IntTab& les_elems,
-                Noms& v_type_face, VECT(IntTab)& v_all_faces_bord, VECT(ArrOfInt)& v_familles,
+                Noms& v_type_face, IntTabs& v_all_faces_bord, ArrsOfInt& v_familles,
                 Noms& noms_bords, IntVect& Indice_bords, int isvef, int isfamilyshort)
 {
   // IntTab les_elems;
@@ -1102,7 +1102,7 @@ int verifier_modifier_type_elem(Nom& type_elem,const IntTab& les_elems,const Dou
 void renum_conn(IntTab& les_elems2,Nom& type_elem,int sens);
 
 
-void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const Nom& nom_dom, VECT(ArrOfInt)& corres_joint,  ArrOfInt& tab_pe_voisin)
+void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const Nom& nom_dom, ArrsOfInt& corres_joint,  ArrOfInt& tab_pe_voisin)
 {
   Cerr<<"reading of the joint informations "<<finl;
   int njoint=-1;
@@ -1270,16 +1270,16 @@ Nom type_medcoupling_to_type_geo_trio(const int type_cell, const int isvef, cons
 void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const Nom& nom_dom_trio, int isvef, int convertAllToPoly, int isfamilyshort)
 {
 
-  VECT(ArrOfInt) sommets_joints;
+  ArrsOfInt sommets_joints;
   ArrOfInt tab_pe_voisin;
 
   Nom type_elem;
   Noms type_face;
   Noms noms_bords;
   DoubleTab sommets2;
-  VECT(ArrOfInt) familles;
+  ArrsOfInt familles;
   IntVect Indices_bord;
-  VECT(IntTab) all_faces_bord;
+  IntTabs all_faces_bord;
   IntTab les_elems2;
   int dim = dimension;
 

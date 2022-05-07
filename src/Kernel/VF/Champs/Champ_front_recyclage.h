@@ -209,11 +209,11 @@ protected :
 
   // Pour chaque point ou il faut evaluer inconnue1, indice de l'element dans lequel
   //  se trouve ce point (toujours par processeur destination)
-  VECT(ArrOfInt) inconnues1_elems_;
+  ArrsOfInt inconnues1_elems_;
 
   // A la reception des valeurs, indices des faces de bord ou on doit stocker le
   //  resultat recu de chaque processeur
-  VECT(ArrOfInt) inconnues2_faces_;
+  ArrsOfInt inconnues2_faces_;
 };
 
 #endif

@@ -293,7 +293,7 @@ inline int Zone_CoviMAC::oriente_normale(int face_opp, int elem2) const
 
 // Decription:
 // Renvoie le tableau des indices des faces virtuelles non standard
-//inline const VECT(ArrOfInt)& Zone_CoviMAC::faces_virt_non_std() const
+//inline const ArrsOfInt& Zone_CoviMAC::faces_virt_non_std() const
 //{
 //  return faces_virt_non_std_;
 //}

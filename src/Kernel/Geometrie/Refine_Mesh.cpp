@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -130,16 +130,16 @@ void Refine_Mesh::apply_2D(void)
   Static_Int_Lists incidence_from_node_to_edges;
   build_incidence_from_node_to_edges(new_nodes.dimension(0),nodes_of_edges,incidence_from_node_to_edges);
 
-  VECT(IntTab) new_nodes_of_boundary_faces;
-  VECT(IntTab) new_cells_of_boundary_faces;
+  IntTabs new_nodes_of_boundary_faces;
+  IntTabs new_cells_of_boundary_faces;
   build_new_boundary_faces_2D(new_nodes_of_boundary_faces, new_cells_of_boundary_faces, incidence_from_node_to_edges);
 
-  VECT(IntTab) new_nodes_of_connector_faces;
-  VECT(IntTab) new_cells_of_connector_faces;
+  IntTabs new_nodes_of_connector_faces;
+  IntTabs new_cells_of_connector_faces;
   build_new_connector_faces_2D(new_nodes_of_connector_faces, new_cells_of_connector_faces, incidence_from_node_to_edges);
 
-  VECT(IntTab) new_nodes_of_internal_frontier_faces;
-  VECT(IntTab) new_cells_of_internal_frontier_faces;
+  IntTabs new_nodes_of_internal_frontier_faces;
+  IntTabs new_cells_of_internal_frontier_faces;
   build_new_internal_frontier_faces_2D(new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces, incidence_from_node_to_edges);
 
   update_domain(Nom("Triangle"),
@@ -180,16 +180,16 @@ void Refine_Mesh::apply_3D(void)
   Static_Int_Lists incidence_from_node_to_edges;
   build_incidence_from_node_to_edges(new_nodes.dimension(0),nodes_of_edges,incidence_from_node_to_edges);
 
-  VECT(IntTab) new_nodes_of_boundary_faces;
-  VECT(IntTab) new_cells_of_boundary_faces;
+  IntTabs new_nodes_of_boundary_faces;
+  IntTabs new_cells_of_boundary_faces;
   build_new_boundary_faces_3D(new_nodes_of_boundary_faces, new_cells_of_boundary_faces, incidence_from_node_to_edges);
 
-  VECT(IntTab) new_nodes_of_connector_faces;
-  VECT(IntTab) new_cells_of_connector_faces;
+  IntTabs new_nodes_of_connector_faces;
+  IntTabs new_cells_of_connector_faces;
   build_new_connector_faces_3D(new_nodes_of_connector_faces, new_cells_of_connector_faces, incidence_from_node_to_edges);
 
-  VECT(IntTab) new_nodes_of_internal_frontier_faces;
-  VECT(IntTab) new_cells_of_internal_frontier_faces;
+  IntTabs new_nodes_of_internal_frontier_faces;
+  IntTabs new_cells_of_internal_frontier_faces;
   build_new_internal_frontier_faces_3D(new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces, incidence_from_node_to_edges);
 
   update_domain(Nom("Tetraedre"),
@@ -482,8 +482,8 @@ void Refine_Mesh::build_incidence_from_node_to_edges(int            nb_nodes,
   incidence.trier_liste(-1);
 }
 
-void Refine_Mesh::build_new_boundary_faces_2D(VECT(IntTab)&           new_nodes_of_boundary_faces,
-                                              VECT(IntTab)&           new_cells_of_boundary_faces,
+void Refine_Mesh::build_new_boundary_faces_2D(IntTabs&           new_nodes_of_boundary_faces,
+                                              IntTabs&           new_cells_of_boundary_faces,
                                               const Static_Int_Lists& incidence_from_node_to_edges) const
 {
   const int nb_boundaries = domaine().zone(0).nb_bords();
@@ -502,8 +502,8 @@ void Refine_Mesh::build_new_boundary_faces_2D(VECT(IntTab)&           new_nodes_
     }
 }
 
-void Refine_Mesh::build_new_boundary_faces_3D(VECT(IntTab)&           new_nodes_of_boundary_faces,
-                                              VECT(IntTab)&           new_cells_of_boundary_faces,
+void Refine_Mesh::build_new_boundary_faces_3D(IntTabs&           new_nodes_of_boundary_faces,
+                                              IntTabs&           new_cells_of_boundary_faces,
                                               const Static_Int_Lists& incidence_from_node_to_edges) const
 {
   const int nb_boundaries = domaine().zone(0).nb_bords();
@@ -522,8 +522,8 @@ void Refine_Mesh::build_new_boundary_faces_3D(VECT(IntTab)&           new_nodes_
     }
 }
 
-void Refine_Mesh::build_new_connector_faces_2D(VECT(IntTab)&           new_nodes_of_connector_faces,
-                                               VECT(IntTab)&           new_cells_of_connector_faces,
+void Refine_Mesh::build_new_connector_faces_2D(IntTabs&           new_nodes_of_connector_faces,
+                                               IntTabs&           new_cells_of_connector_faces,
                                                const Static_Int_Lists& incidence_from_node_to_edges) const
 {
   const int nb_connectors = domaine().zone(0).nb_raccords();
@@ -542,8 +542,8 @@ void Refine_Mesh::build_new_connector_faces_2D(VECT(IntTab)&           new_nodes
     }
 }
 
-void Refine_Mesh::build_new_connector_faces_3D(VECT(IntTab)&           new_nodes_of_connector_faces,
-                                               VECT(IntTab)&           new_cells_of_connector_faces,
+void Refine_Mesh::build_new_connector_faces_3D(IntTabs&           new_nodes_of_connector_faces,
+                                               IntTabs&           new_cells_of_connector_faces,
                                                const Static_Int_Lists& incidence_from_node_to_edges) const
 {
   const int nb_connectors = domaine().zone(0).nb_raccords();
@@ -563,8 +563,8 @@ void Refine_Mesh::build_new_connector_faces_3D(VECT(IntTab)&           new_nodes
 }
 
 
-void Refine_Mesh::build_new_internal_frontier_faces_2D(VECT(IntTab)&           new_nodes_of_internal_frontier_faces,
-                                                       VECT(IntTab)&           new_cells_of_internal_frontier_faces,
+void Refine_Mesh::build_new_internal_frontier_faces_2D(IntTabs&           new_nodes_of_internal_frontier_faces,
+                                                       IntTabs&           new_cells_of_internal_frontier_faces,
                                                        const Static_Int_Lists& incidence_from_node_to_edges) const
 {
   const int nb_internal_frontier = domaine().zone(0).nb_frontieres_internes();
@@ -584,8 +584,8 @@ void Refine_Mesh::build_new_internal_frontier_faces_2D(VECT(IntTab)&           n
 }
 
 
-void Refine_Mesh::build_new_internal_frontier_faces_3D(VECT(IntTab)&           new_nodes_of_internal_frontier_faces,
-                                                       VECT(IntTab)&           new_cells_of_internal_frontier_faces,
+void Refine_Mesh::build_new_internal_frontier_faces_3D(IntTabs&           new_nodes_of_internal_frontier_faces,
+                                                       IntTabs&           new_cells_of_internal_frontier_faces,
                                                        const Static_Int_Lists& incidence_from_node_to_edges) const
 {
   const int nb_internal_frontier = domaine().zone(0).nb_frontieres_internes();
@@ -697,12 +697,12 @@ void Refine_Mesh::update_domain(const Nom&          cell_type,
                                 const DoubleTab&    new_nodes,
                                 const IntTab&       new_cells,
                                 const Noms&         new_sub_zones_descriptions,
-                                const VECT(IntTab)& new_nodes_of_boundary_faces,
-                                const VECT(IntTab)& new_cells_of_boundary_faces,
-                                const VECT(IntTab)& new_nodes_of_connector_faces,
-                                const VECT(IntTab)& new_cells_of_connector_faces,
-                                const VECT(IntTab)& new_nodes_of_internal_frontier_faces,
-                                const VECT(IntTab)& new_cells_of_internal_frontier_faces)
+                                const IntTabs& new_nodes_of_boundary_faces,
+                                const IntTabs& new_cells_of_boundary_faces,
+                                const IntTabs& new_nodes_of_connector_faces,
+                                const IntTabs& new_cells_of_connector_faces,
+                                const IntTabs& new_nodes_of_internal_frontier_faces,
+                                const IntTabs& new_cells_of_internal_frontier_faces)
 {
   update_nodes(new_nodes);
   update_cells(new_cells);
@@ -743,8 +743,8 @@ void Refine_Mesh::update_sub_zones(const Noms& new_sub_zones_descriptions)
 }
 
 void Refine_Mesh::update_boundary_faces(const Type_Face&    face_type,
-                                        const VECT(IntTab)& new_nodes_of_boundary_faces,
-                                        const VECT(IntTab)& new_cells_of_boundary_faces)
+                                        const IntTabs& new_nodes_of_boundary_faces,
+                                        const IntTabs& new_cells_of_boundary_faces)
 {
   int boundary = 0;
   LIST_CURSEUR(Bord) cursor(domaine().zone(0).faces_bord());
@@ -760,8 +760,8 @@ void Refine_Mesh::update_boundary_faces(const Type_Face&    face_type,
 }
 
 void Refine_Mesh::update_connector_faces(const Type_Face&    face_type,
-                                         const VECT(IntTab)& new_nodes_of_connector_faces,
-                                         const VECT(IntTab)& new_cells_of_connector_faces)
+                                         const IntTabs& new_nodes_of_connector_faces,
+                                         const IntTabs& new_cells_of_connector_faces)
 {
   int connector = 0;
   LIST_CURSEUR(Raccord) cursor(domaine().zone(0).faces_raccord());
@@ -777,8 +777,8 @@ void Refine_Mesh::update_connector_faces(const Type_Face&    face_type,
 }
 
 void Refine_Mesh::update_internal_frontier_faces(const Type_Face&    face_type,
-                                                 const VECT(IntTab)& new_nodes_of_internal_frontier_faces,
-                                                 const VECT(IntTab)& new_cells_of_internal_frontier_faces)
+                                                 const IntTabs& new_nodes_of_internal_frontier_faces,
+                                                 const IntTabs& new_cells_of_internal_frontier_faces)
 {
   int internal_frontier = 0;
   LIST_CURSEUR(Faces_Interne) cursor(domaine().zone(0).faces_int());

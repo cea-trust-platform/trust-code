@@ -111,7 +111,7 @@ protected :
   double nb_bip;
   SFichier le_fichier_;
   Motcle nom_champ_lu_;
-  VECT(ArrOfInt) participant ;            // vecteur d'ArrOfInt sur le maitre ; participant[pe][i] -> le ieme point sur pe correspond  la  participant [pe][i]  eme position
+  ArrsOfInt participant ;            // vecteur d'ArrOfInt sur le maitre ; participant[pe][i] -> le ieme point sur pe correspond  la  participant [pe][i]  eme position
   int reprise;                            // si reprise=0, on cree la sonde, sinon on ecrit a la suite
   Nom type_;
   int orientation_faces_;

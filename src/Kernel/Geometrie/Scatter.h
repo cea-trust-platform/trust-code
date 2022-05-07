@@ -51,7 +51,7 @@ public:
 
   static void calculer_espace_distant(Zone&                  zone,
                                       const int           nb_items_reels,
-                                      const VECT(ArrOfInt) & items_to_send,
+                                      const ArrsOfInt& items_to_send,
                                       const Joint::Type_Item type_item);
 
   static void calculer_nb_items_virtuels(Joints& joints,

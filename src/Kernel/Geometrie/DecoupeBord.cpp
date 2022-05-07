@@ -73,7 +73,7 @@ void create_listb_from_domaine2(const Domaine& dom1, const Domaine& dom2,const N
           int nbfaces2=fr2.nb_faces();
           const IntTab& sommets_face2 = (ref_cast(Frontiere,fr2)).les_sommets_des_faces();
 
-          VECT(ArrOfInt) faces_associees(nbfaces2);
+          ArrsOfInt faces_associees(nbfaces2);
 
           ArrOfDouble xg1(Objet_U::dimension); // centre de gravite face de fr1
           ArrOfDouble xg2(Objet_U::dimension); // centre de gravite face de fr2
@@ -178,7 +178,7 @@ void create_listb_from_xyz(const Domaine& dom1,const Noms& nomdec,const Noms& ex
 
 
 
-          VECT(ArrOfInt) faces_associees(1000); // dimensionnement en dur qui devrait suffire
+          ArrsOfInt faces_associees(1000); // dimensionnement en dur qui devrait suffire
 
           ArrOfDouble xg1(Objet_U::dimension); // centre de gravite face de fr1
 

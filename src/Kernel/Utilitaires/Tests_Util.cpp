@@ -144,7 +144,7 @@ int test_Vect()
 {
   Cerr << "test_Vect" << finl;
   DoubleVect x(5);
-  VECT(DoubleVect) xx(2);
+  DoubleVects xx(2);
   xx[1]=x;
   assert( xx.search(x) == 1);
   Motcles les_mots(3);

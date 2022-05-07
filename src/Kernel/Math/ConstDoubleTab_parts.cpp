@@ -25,7 +25,7 @@
 
 // GF je retire le template car insure se plaint
 
-static void init_parts(DoubleVect& vect, VECT(DoubleTab) & parts, DoubleTab *dummy_type_ptr)
+static void init_parts(DoubleVect& vect, DoubleTabs& parts, DoubleTab *dummy_type_ptr)
 {
   const MD_Vector& md = vect.get_md_vector();
   DoubleTab* doubleT = dynamic_cast<DoubleTab*>(&vect);
@@ -89,7 +89,7 @@ static void init_parts(DoubleVect& vect, VECT(DoubleTab) & parts, DoubleTab *dum
         }
     }
 }
-static void init_parts(IntVect& vect, VECT(IntTab) & parts, IntTab *dummy_type_ptr)
+static void init_parts(IntVect& vect, IntTabs& parts, IntTab *dummy_type_ptr)
 {
   const MD_Vector& md = vect.get_md_vector();
   IntTab* intT = dynamic_cast<IntTab*>(&vect);

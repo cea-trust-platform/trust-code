@@ -959,7 +959,7 @@ void Sonde::initialiser()
   // chaque processeur a regarde s'il avait le point
   // le maitre construit un tableau (prop) determinant qui
   // va donner la valeur au maitre
-  // Le maitre construit aussi le vect(ArrOfInt) participant
+  // Le maitre construit aussi le ArrsOfInt participant
   // lui donnant pour un proc les differents elements de celui-ci
   IntVect prop(elem_);
   if (je_suis_maitre())

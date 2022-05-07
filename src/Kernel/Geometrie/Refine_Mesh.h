@@ -76,28 +76,28 @@ protected :
                                           const IntTab&     nodes_of_edges,
                                           Static_Int_Lists& incidence) const;
 
-  void build_new_boundary_faces_2D(VECT(IntTab)&           new_nodes_of_boundary_faces,
-                                   VECT(IntTab)&           new_cells_of_boundary_faces,
+  void build_new_boundary_faces_2D(IntTabs&           new_nodes_of_boundary_faces,
+                                   IntTabs&           new_cells_of_boundary_faces,
                                    const Static_Int_Lists& incidence_from_node_to_edges) const;
 
-  void build_new_boundary_faces_3D(VECT(IntTab)&           new_nodes_of_boundary_faces,
-                                   VECT(IntTab)&           new_cells_of_boundary_faces,
+  void build_new_boundary_faces_3D(IntTabs&           new_nodes_of_boundary_faces,
+                                   IntTabs&           new_cells_of_boundary_faces,
                                    const Static_Int_Lists& incidence_from_node_to_edges) const;
 
-  void build_new_connector_faces_2D(VECT(IntTab)&           new_nodes_of_connector_faces,
-                                    VECT(IntTab)&           new_cells_of_connector_faces,
+  void build_new_connector_faces_2D(IntTabs&           new_nodes_of_connector_faces,
+                                    IntTabs&           new_cells_of_connector_faces,
                                     const Static_Int_Lists& incidence_from_node_to_edges) const;
 
-  void build_new_connector_faces_3D(VECT(IntTab)&           new_nodes_of_connector_faces,
-                                    VECT(IntTab)&           new_cells_of_connector_faces,
+  void build_new_connector_faces_3D(IntTabs&           new_nodes_of_connector_faces,
+                                    IntTabs&           new_cells_of_connector_faces,
                                     const Static_Int_Lists& incidence_from_node_to_edges) const;
 
-  void build_new_internal_frontier_faces_2D(VECT(IntTab)&           new_nodes_of_internal_frontier_faces,
-                                            VECT(IntTab)&           new_cells_of_internal_frontier_faces,
+  void build_new_internal_frontier_faces_2D(IntTabs&           new_nodes_of_internal_frontier_faces,
+                                            IntTabs&           new_cells_of_internal_frontier_faces,
                                             const Static_Int_Lists& incidence_from_node_to_edges) const;
 
-  void build_new_internal_frontier_faces_3D(VECT(IntTab)&           new_nodes_of_internal_frontier_faces,
-                                            VECT(IntTab)&           new_cells_of_internal_frontier_faces,
+  void build_new_internal_frontier_faces_3D(IntTabs&           new_nodes_of_internal_frontier_faces,
+                                            IntTabs&           new_cells_of_internal_frontier_faces,
                                             const Static_Int_Lists& incidence_from_node_to_edges) const;
 
   void build_new_frontier_faces_2D(IntTab&                 new_nodes_of_frontier_faces,
@@ -117,12 +117,12 @@ protected :
                      const DoubleTab&    new_nodes,
                      const IntTab&       new_cells,
                      const Noms&         new_sub_zones_descriptions,
-                     const VECT(IntTab)& new_nodes_of_boundary_faces,
-                     const VECT(IntTab)& new_cells_of_boundary_faces,
-                     const VECT(IntTab)& new_nodes_of_connector_faces,
-                     const VECT(IntTab)& new_cells_of_connector_faces,
-                     const VECT(IntTab)& new_nodes_of_internal_frontier_faces,
-                     const VECT(IntTab)& new_cells_of_internal_frontier_faces);
+                     const IntTabs& new_nodes_of_boundary_faces,
+                     const IntTabs& new_cells_of_boundary_faces,
+                     const IntTabs& new_nodes_of_connector_faces,
+                     const IntTabs& new_cells_of_connector_faces,
+                     const IntTabs& new_nodes_of_internal_frontier_faces,
+                     const IntTabs& new_cells_of_internal_frontier_faces);
 
   void update_nodes(const DoubleTab& new_nodes);
 
@@ -133,16 +133,16 @@ protected :
   void update_sub_zones(const Noms& new_sub_zones_descriptions);
 
   void update_boundary_faces(const Type_Face&    face_type,
-                             const VECT(IntTab)& new_nodes_of_boundary_faces,
-                             const VECT(IntTab)& new_cells_of_boundary_faces);
+                             const IntTabs& new_nodes_of_boundary_faces,
+                             const IntTabs& new_cells_of_boundary_faces);
 
   void update_connector_faces(const Type_Face&    face_type,
-                              const VECT(IntTab)& new_nodes_of_connector_faces,
-                              const VECT(IntTab)& new_cells_of_connector_faces);
+                              const IntTabs& new_nodes_of_connector_faces,
+                              const IntTabs& new_cells_of_connector_faces);
 
   void update_internal_frontier_faces(const Type_Face&    face_type,
-                                      const VECT(IntTab)& new_nodes_of_internal_frontier_faces,
-                                      const VECT(IntTab)& new_cells_of_internal_frontier_faces);
+                                      const IntTabs& new_nodes_of_internal_frontier_faces,
+                                      const IntTabs& new_cells_of_internal_frontier_faces);
 
 };
 

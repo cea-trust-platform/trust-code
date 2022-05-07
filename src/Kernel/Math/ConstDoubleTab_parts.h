@@ -54,7 +54,7 @@ private:
   ConstDoubleTab_parts& operator=(const ConstDoubleTab_parts&) = delete;
   ConstDoubleTab_parts(const ConstDoubleTab_parts&) = delete;
   // parts_[i] is initialized by adopter() to point to a sub_part of the source array.
-  VECT(DoubleTab) parts_;
+  DoubleTabs parts_;
 };
 
 class DoubleTab_parts
@@ -72,7 +72,7 @@ public:
 private:
   DoubleTab_parts& operator=(const DoubleTab_parts&) = delete;
   DoubleTab_parts(const DoubleTab_parts&) = delete;
-  VECT(DoubleTab) parts_;
+  DoubleTabs parts_;
 };
 
 class ConstIntTab_parts
@@ -87,7 +87,7 @@ public:
 private:
   ConstIntTab_parts& operator=(const ConstIntTab_parts&) = delete;
   ConstIntTab_parts(const ConstIntTab_parts&) = delete;
-  VECT(IntTab) parts_;
+  IntTabs parts_;
 };
 
 class IntTab_parts
@@ -105,7 +105,7 @@ public:
 private:
   IntTab_parts& operator=(const IntTab_parts&) = delete;
   IntTab_parts(const IntTab_parts&) = delete;
-  VECT(IntTab) parts_;
+  IntTabs parts_;
 };
 
 #endif /* ConstDoubleTab_parts_included */

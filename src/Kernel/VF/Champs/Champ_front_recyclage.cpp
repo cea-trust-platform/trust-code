@@ -520,7 +520,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
   // Remplissage de remote_coords[i]: coordonnees des centres des faces du bord nom_bord2
   // (bord destination) + delt_dist
   // du processeur i (tous les procs possedent le meme tableau remote_coords)
-  // Build a VECT(DoubleTab) containing the coordinates of the remote faces on zone 1 for each processor
+  // Build a DoubleTabs containing the coordinates of the remote faces on zone 1 for each processor
   DoubleTabs remote_coords(nprocs);
   /*
   if (nom_bord!="??") // Improve this test
@@ -539,7 +539,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
   inconnues1_elems_.dimensionner(nprocs);
   inconnues2_faces_.dimensionner(nprocs);
 
-  VECT(ArrOfInt) indexes_to_recv(nprocs);
+  ArrsOfInt indexes_to_recv(nprocs);
 
   // tmp array for octree results:
   ArrOfInt elem_list;

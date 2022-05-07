@@ -43,7 +43,7 @@ public :
   Table();
   inline Table(const DoubleVect& param,const DoubleVect& aval);
   void remplir(const DoubleVect& param,const DoubleTab& val);
-  void remplir(const VECT(DoubleVect)& params, const DoubleVect& aval);
+  void remplir(const DoubleVects& params, const DoubleVect& aval);
   double val_simple(double vals_param) const;
   double val(const double val_param, int ncomp=0) const;
   double val(const std::vector<double>& vals_param, int ncomp) const;
@@ -60,7 +60,7 @@ public :
 private:
 
   DoubleTab les_valeurs;
-  VECT(DoubleVect) les_parametres;
+  DoubleVects les_parametres;
   int isf;
 };
 

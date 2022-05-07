@@ -95,7 +95,7 @@ protected :
   IntTab indic_pena_global;
   IntTab indic_face_pena_global;
   VECT(RefObjU) ref_penalisation_L2_FTD;
-  VECT(DoubleTab) tab_penalisation_L2_FTD;
+  DoubleTabs tab_penalisation_L2_FTD;
 
   DoubleTab& filtrage_si_appart_ibc(DoubleTab& , DoubleTab&);
   DoubleTab& penalisation_L2(DoubleTab&);

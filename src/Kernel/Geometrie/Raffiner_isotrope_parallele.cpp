@@ -70,12 +70,12 @@ void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const J
   const int nb_joints = joints.size();
 
   // Indices des items de joints dans le domaine sur mon processeur
-  VECT(ArrOfInt)  indices_items_locaux(nb_joints);
+  ArrsOfInt  indices_items_locaux(nb_joints);
   // Indices des items de joints dans le domaine sur le processeur voisin
-  VECT(ArrOfInt)  indices_items_distants(nb_joints);
+  ArrsOfInt  indices_items_distants(nb_joints);
   // Coordonnees des items correspondants (dans le meme ordre que indices_items_xxx)
-  VECT(DoubleTab) coord_items_locaux(nb_joints);
-  VECT(DoubleTab) coord_items_distants(nb_joints);
+  DoubleTabs coord_items_locaux(nb_joints);
+  DoubleTabs coord_items_distants(nb_joints);
 
   // Remplissage des tableaux indices_items_locaux
   // et coord_items_locaux

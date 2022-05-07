@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -103,8 +103,8 @@ void Octree_Int::build(const int dimension, const IntTab& elements_boxes)
   assert(elements_boxes.size_array() == 0
          || (min_array(elements_boxes) >= 0 && max_array(elements_boxes) <= coord_max_));
 
-  VECT(ArrOfInt) tmp_elem_flags(max_levels_);
-  VECT(ArrOfInt) tmp_elem_list(max_levels_);
+  ArrsOfInt tmp_elem_flags(max_levels_);
+  ArrsOfInt tmp_elem_list(max_levels_);
   for (int i = 0; i < max_levels_; i++)
     {
       tmp_elem_flags[i].set_smart_resize(1);
@@ -318,9 +318,9 @@ int Octree_Int::build_octree_recursively(const int octree_center_x,
                                          const int octree_center_z,
                                          const int octree_half_width,
                                          const IntTab& elements_boxes,
-                                         VECT(ArrOfInt) & vect_elements_list,
+                                         ArrsOfInt& vect_elements_list,
                                          const int level,
-                                         VECT(ArrOfInt) & tmp_elem_flags)
+                                         ArrsOfInt& tmp_elem_flags)
 {
   // Criteres d'arret de la subdivision:
   // Nombre maximal d'elements dans un sous-cube floor

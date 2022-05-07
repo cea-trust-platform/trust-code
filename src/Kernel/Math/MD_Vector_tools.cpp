@@ -678,13 +678,13 @@ MD_Vector MD_Vector_tools::extend(const MD_Vector& src, extra_item_t& items)
   else if (sub_type(MD_Vector_composite, src.valeur())) mds = &ref_cast(MD_Vector_composite, src.valeur()).global_md_;
 
   /* recv[p] : items qu'on veut recevoir du processeur p : taille nrecv[p]. On en profite pour les numeroter dans items */
-  VECT(ArrOfInt) recv(Process::nproc());
+  ArrsOfInt recv(Process::nproc());
   for (p = 0; p < Process::nproc(); p++) recv[p].set_smart_resize(1);
   std::vector<int> nrecv(Process::nproc());
   for (auto &kv : items) recv[kv.first[0]].append_array(kv.first[1]), kv.second = idx, nrecv[kv.first[0]]++, idx++;
 
   /* send[p] : items qu'on doit envoyer au processeur p */
-  VECT(ArrOfInt) send(Process::nproc());
+  ArrsOfInt send(Process::nproc());
   envoyer_all_to_all(recv, send);
 
   std::map<int, std::array<std::vector<int>, 3>> map; //map[p] = { items a envoyer a p, items a recevoir de p, blocs a recevoir de p }
@@ -704,7 +704,7 @@ MD_Vector MD_Vector_tools::extend(const MD_Vector& src, extra_item_t& items)
 
   /* reconstruction de tableaux pour MD_Vector_std */
   ArrOfInt pe_voisins(map.size());
-  VECT(ArrOfInt) items_to_send(map.size()), items_to_recv(map.size()), blocs_to_recv(map.size());
+  ArrsOfInt items_to_send(map.size()), items_to_recv(map.size()), blocs_to_recv(map.size());
   for (p = 0, i = 0; p < Process::nproc(); nb_items_tot += nrecv[p],  p++) if (map.count(p))
       {
         pe_voisins[i] = p;

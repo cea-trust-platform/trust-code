@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -137,7 +137,7 @@ Entree& Champ_Fonc_Tabule::readOn(Entree& is)
   if (motlu == accolade_ouverte)
     {
       /* 1. lecture de la grille de parametres */
-      VECT(DoubleVect) params;
+      DoubleVects params;
       for (int n = 0; n < nb_param; n++)
         {
           const int nb_val = lire_dimension(is, que_suis_je());

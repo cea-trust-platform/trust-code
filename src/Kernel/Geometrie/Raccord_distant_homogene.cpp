@@ -281,7 +281,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
   for (int p = 0; p < parts; p++)
     envoyer_broadcast(remote_xv[p], p);
 
-  VECT(ArrOfInt) racc_vois(parts);
+  ArrsOfInt racc_vois(parts);
   for (int p = 0; p < parts; p++)
     racc_vois[p].set_smart_resize(1);
 
@@ -355,7 +355,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
   Cerr<<"Raccord_distant_homogene needs TRUST compiled with MEDCoupling."<<finl;
   exit();
 #endif
-  VECT(ArrOfInt) facteurs(Process::nproc());
+  ArrsOfInt facteurs(Process::nproc());
   envoyer_all_to_all(racc_vois, facteurs);
 
   IntTab& Envoi = raccord_distant.Tab_Envoi();

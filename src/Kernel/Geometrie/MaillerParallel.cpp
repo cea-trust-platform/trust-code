@@ -53,7 +53,7 @@ Sortie& MaillerParallel::printOn(Sortie& os) const
 
 struct BlocData
 {
-  void add_bloc(Domaine& domaine, const VECT(ArrOfDouble) & coord_ijk) const;
+  void add_bloc(Domaine& domaine, const ArrsOfDouble& coord_ijk) const;
   // xmin_tot = 0 implicitement
   // xmax_tot = nombre total de sommets dans le maillage
   // xmax = indice du dernier sommet + 1
@@ -72,7 +72,7 @@ struct BlocData
   void add_faces(Zone& zone, const Nom& nombord, int offset_sommets, int dir, int cote_max) const;
 };
 
-void BlocData::add_bloc(Domaine& domaine, const VECT(ArrOfDouble) & coord_ijk) const
+void BlocData::add_bloc(Domaine& domaine, const ArrsOfDouble& coord_ijk) const
 {
   if (nb_elem(0) < 1 || nb_elem(1) < 1 || nb_elem(2) < 1)
     {
@@ -229,7 +229,7 @@ static int bbox_intersection(const DoubleTab& bboxes, int i, int j, double epsil
 //  Nodes are listed in the same order on couples of processors sharing a list of nodes
 //  match[Process::me()] will be left empty.
 void find_matching_coordinates(const DoubleTab& coords,
-                               VECT(ArrOfInt) & match,
+                               ArrsOfInt& match,
                                double epsilon)
 {
   int i, j;
@@ -443,7 +443,7 @@ static void auto_build_joints(Zone& zone, const int epaisseur_joint)
         for (j = 0; j < dim; j++)
           coord(i, j) = sommets(som, j);
       }
-    VECT(ArrOfInt) match(Process::nproc());
+    ArrsOfInt match(Process::nproc());
     find_matching_coordinates(coord, match, epsilon);
 
     for (int pe = 0; pe < match.size(); pe++)
@@ -483,7 +483,7 @@ static void auto_build_joints(Zone& zone, const int epaisseur_joint)
               coord(i, k) += sommets(som, k) * facteur;
           }
       }
-    VECT(ArrOfInt) match(Process::nproc());
+    ArrsOfInt match(Process::nproc());
     find_matching_coordinates(coord, match, epsilon);
 
     for (int pe = 0; pe < match.size(); pe++)
@@ -580,7 +580,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
     param.lire_avec_accolades(is);
   }
 
-  VECT(ArrOfDouble) coord_ijk(3);
+  ArrsOfDouble coord_ijk(3);
   for (int dir=0; dir<3; dir++)
     {
       const int n = nb_noeuds[dir];

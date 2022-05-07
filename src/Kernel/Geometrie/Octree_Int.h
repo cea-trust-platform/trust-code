@@ -48,9 +48,9 @@ protected:
   int build_octree_recursively(const int octree_center_x, const int octree_center_y, const int octree_center_z,
                                const int octree_half_width,
                                const IntTab& elements_boxes,
-                               VECT(ArrOfInt) & vect_elements_list,
+                               ArrsOfInt& vect_elements_list,
                                const int level,
-                               VECT(ArrOfInt) & tmp_elem_flags);
+                               ArrsOfInt& tmp_elem_flags);
   int build_octree_floor(const ArrOfInt& elements_list);
   int search_octree_floor(int x_pos, int y_pos, int z_pos) const;
   void search_elements_box_floor(IntBoxData& boxdata, int octree_floor_id) const;

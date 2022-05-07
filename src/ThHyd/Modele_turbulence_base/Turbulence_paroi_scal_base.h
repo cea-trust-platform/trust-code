@@ -85,7 +85,7 @@ public :
   virtual bool use_equivalent_distance() const;
   virtual DoubleVect& equivalent_distance_name(DoubleVect& d_eq, const Nom& nom_bord) const = 0;
 
-  inline const VECT(DoubleVect)& equivalent_distance() const
+  inline const DoubleVects& equivalent_distance() const
   {
     return equivalent_distance_;
   };
@@ -101,7 +101,7 @@ public :
     return equivalent_distance_[bord](face);
   };
 
-  inline const VECT(DoubleVect)& tab_equivalent_distance() const
+  inline const DoubleVects& tab_equivalent_distance() const
   {
     return equivalent_distance_;
   };
@@ -125,7 +125,7 @@ protected:
   double Prdt_sur_kappa_;         // Constante dans la loi de paroi
   inline double T_plus(double y_plus, double Pr);
 
-  VECT(DoubleVect) equivalent_distance_;
+  DoubleVects equivalent_distance_;
   // tableau des distances equivalentes sur chaque bord
   // calculees lors de l'application des lois
   // de paroi et a utiliser dans le calcul des

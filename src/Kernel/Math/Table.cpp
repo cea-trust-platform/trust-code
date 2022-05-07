@@ -402,7 +402,7 @@ void Table::remplir(const DoubleVect& param,const DoubleTab& aval)
   les_parametres[0].ref(param);
 }
 
-void Table::remplir(const VECT(DoubleVect)& params, const DoubleVect& aval)
+void Table::remplir(const DoubleVects& params, const DoubleVect& aval)
 {
   // on verifie que les params sont strictement monotones
   for (int n = 0; n < params.size(); n++)

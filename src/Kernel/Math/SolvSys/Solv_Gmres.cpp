@@ -206,7 +206,7 @@ int Solv_Gmres::resoudre_systeme(const Matrice_Base& la_matrice,
 
 
 int gmres_local( const Matrice_Morse& A, const DoubleVect& b,DoubleVect& x1,double& seuil,int precond_diag,int& nb_it_max,int&
-                 controle_residu,VECT(DoubleVect)& v,int dim_espace_Krilov, int limpr_=0)
+                 controle_residu,DoubleVects& v,int dim_espace_Krilov, int limpr_=0)
 
 // Copied from SouConPhase_field (scalar)//
 {

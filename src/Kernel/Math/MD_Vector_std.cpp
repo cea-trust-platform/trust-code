@@ -43,7 +43,7 @@ MD_Vector_std::MD_Vector_std()
 //  -1 signifie qu'il n'y a pas d'items "reels" groupes au debut du tableau
 // Parametre: pe_voisins
 // Signification: liste des processeurs voisins, classes dans l'ordre croissant
-//  (les tableaux VECT(ArrOfInt) doivent avoir la meme taille).
+//  (les tableaux ArrsOfInt doivent avoir la meme taille).
 //  Cette liste n'est pas reprise integralement: on retire les processeurs
 //  pour lesquels toutes les trois listes d'items sont vides.
 // Parametre: items_to_send
@@ -56,7 +56,7 @@ MD_Vector_std::MD_Vector_std()
 // Signification: liste de blocs d'items a recevoir (voir MD_Vector_std::blocs_to_recv_)
 //  (souvent les items virtuels...)
 MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfInt& pe_voisins,
-                             const VECT(ArrOfInt) & items_to_send, const VECT(ArrOfInt) & items_to_recv, const VECT(ArrOfInt) & blocs_to_recv)
+                             const ArrsOfInt& items_to_send, const ArrsOfInt& items_to_recv, const ArrsOfInt& blocs_to_recv)
 {
   assert(nb_items_tot >= 0);
   assert(nb_items_reels >= -1 && nb_items_reels <= nb_items_tot);
@@ -84,7 +84,7 @@ MD_Vector_std::MD_Vector_std(int nb_items_tot, int nb_items_reels, const ArrOfIn
   pe_voisins_ = tmp;
 
   {
-    VECT(ArrOfInt) tmpbis(nb_voisins2);
+    ArrsOfInt tmpbis(nb_voisins2);
 
     for (i = 0; i < nb_voisins2; i++)
       tmpbis[i] = items_to_send[selection[i]];

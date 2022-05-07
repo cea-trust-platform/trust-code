@@ -396,7 +396,7 @@ int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,med_idt fid,const
 
 void affecte_nom_med(Char_ptr& nom_med,const Nom& mot);
 // ecrit la geom appele par EcrMED::ecrire_domaine
-int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleTab& sommets,const Nom& type_elem,const Elem_geom& ele,const IntTab& les_elems,const Noms& type_face,VECT(IntTab)& all_faces_bord,const VECT(ArrOfInt)& familles,Noms& noms_bords,const Nom& nom_zone,int mode, bool major_mode)
+int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleTab& sommets,const Nom& type_elem,const Elem_geom& ele,const IntTab& les_elems,const Noms& type_face,IntTabs& all_faces_bord,const ArrsOfInt& familles,Noms& noms_bords,const Nom& nom_zone,int mode, bool major_mode)
 {
   // creation d'un mot de longueur MED_NAME_SIZE
   Char_ptr med_taille_nom;
@@ -828,7 +828,7 @@ const Frontiere& mes_faces_fr(const Zone& zone,int i)
 
 
 // a partir d'un domaine extrait le type de face, la connectivite des faces de bords, le nom des bords et cree les familles
-void creer_all_faces_bord(const Domaine& dom,Noms& type_face,VECT(IntTab)& all_faces_bord, Noms& noms_bords,VECT(ArrOfInt)& familles)
+void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
 {
   const Zone& zone=dom.zone(0);
   int nb_type_face=zone.type_elem().nb_type_face();
@@ -949,9 +949,9 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
   const IntTab& les_elems=zone.les_elems();
 
   Noms type_face;
-  VECT(IntTab) all_faces_bord;
+  IntTabs all_faces_bord;
   Noms noms_bords;
-  VECT(ArrOfInt) familles;
+  ArrsOfInt familles;
   // remplit le tableau all_faces_bords ainsi que noms_bords et familles
   creer_all_faces_bord( dom, type_face, all_faces_bord,  noms_bords,familles);
   // connectivite Trio a MED

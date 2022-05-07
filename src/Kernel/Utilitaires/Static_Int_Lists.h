@@ -62,7 +62,7 @@ public:
   void set_data(const ArrOfInt& data);
   void set_index_data(const ArrOfInt& index, const ArrOfInt& data);
   void trier_liste(int i);
-  void set(const VECT(ArrOfInt)&);
+  void set(const ArrsOfInt&);
 
   // MODIF ELI LAUCOIN (22/08/2007) :
   // j'ajoute un printOn et un readOn

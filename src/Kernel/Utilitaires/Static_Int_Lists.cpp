@@ -152,7 +152,7 @@ Sortie& Static_Int_Lists::ecrire(Sortie& os) const
   return os;
 }
 
-void Static_Int_Lists::set(const VECT(ArrOfInt) & src)
+void Static_Int_Lists::set(const ArrsOfInt& src)
 {
   const int nb_lists = src.size();
   index_.resize_array(nb_lists + 1, Array_base::NOCOPY_NOINIT);

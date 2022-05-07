@@ -45,7 +45,7 @@ public :
 protected :
   int Gmres(const Matrice_Morse&, const DoubleVect&, DoubleVect& );
 
-  VECT(DoubleVect) v; //espcace Krilov
+  DoubleVects v; //espcace Krilov
   int is_local_gmres,precond_diag;
   int nb_it_max_, controle_residu_, dim_espace_Krilov_;
 };

@@ -329,8 +329,8 @@ void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& merge
         }
     }
 
-  VECT(DoubleTab) coord_items_locaux(nb_joints);
-  VECT(DoubleTab) coord_items_distants(nb_joints);
+  DoubleTabs coord_items_locaux(nb_joints);
+  DoubleTabs coord_items_distants(nb_joints);
   for (int i_joint = 0; i_joint < nb_joints; i_joint++)
     {
       const Joint& joint     = joints[i_joint];
@@ -935,7 +935,7 @@ static int ajouter_joint(Zone& zone, int pe)
 //  Methode a appeler simultanement par tous les processeurs.
 void Scatter::calculer_espace_distant(Zone&                  zone,
                                       const int           nb_items_reels,
-                                      const VECT(ArrOfInt) & items_to_send,
+                                      const ArrsOfInt& items_to_send,
                                       const Joint::Type_Item type_item)
 {
   assert(items_to_send.size() == Process::nproc());
@@ -1032,7 +1032,7 @@ void Scatter::calculer_espace_distant(Zone&                  zone,
   // Reception des items distants. On lit tous les buffers et on
   // range les items dans "items_distants" par processeur destination.
   // Pour chaque processeur voisin, la liste des items distants a envoyer:
-  VECT(ArrOfInt) items_distants(nproc);
+  ArrsOfInt items_distants(nproc);
   {
     // Pour append_array
     for (int pe = 0; pe < nproc; pe++)
@@ -1226,7 +1226,7 @@ static void calculer_espace_distant_item(Zone& la_zone,
   const int   nproc                  = Process::nproc();
   const int   nb_items_par_element   = connectivite_elem_item.dimension(1);
   // Les type_item a envoyer a chaque processeur:
-  VECT(ArrOfInt) items_to_send(nproc);
+  ArrsOfInt items_to_send(nproc);
   // Un tableau temporaire;
   ArrOfInt liste_items;
   liste_items.set_smart_resize(1);
@@ -1411,9 +1411,9 @@ void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const
   const int nb_joints = joints.size();
 
   ArrOfInt pe_voisins(nb_joints);
-  VECT(ArrOfInt) items_to_send(nb_joints);
-  VECT(ArrOfInt) items_to_recv(nb_joints);
-  VECT(ArrOfInt) blocs_to_recv(nb_joints);
+  ArrsOfInt items_to_send(nb_joints);
+  ArrsOfInt items_to_recv(nb_joints);
+  ArrsOfInt blocs_to_recv(nb_joints);
 
   // drapeau indique si l'item (commun) est recu d'un processeur
   ArrOfBit flags(nb_items_reels);
@@ -2203,10 +2203,10 @@ void Scatter::calculer_espace_distant_elements(Domaine& dom)
   // voisins des sommets de joint. On sait qu'il voudra ensuite les elements voisins des elements
   // ainsi trouves, donc on ajoutera aux listes les sommets des elements distants trouves
   // a l'iteration precedente.
-  VECT(ArrOfInt) liste_sommets(nproc);
+  ArrsOfInt liste_sommets(nproc);
 
   // Pour chaque processeur, la liste des elements locaux qu'il faut lui envoyer
-  VECT(ArrOfInt) elements_distants(nproc);
+  ArrsOfInt elements_distants(nproc);
   {
     // smart_resize car on va faire append_array sur ces tableaux
     for (int i = 0; i < nproc; i++)
@@ -2669,12 +2669,12 @@ void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, co
   const int nb_joints = joints.size();
 
   // Indices des items de joints dans le domaine sur mon processeur
-  VECT(ArrOfInt)  indices_items_locaux(nb_joints);
+  ArrsOfInt  indices_items_locaux(nb_joints);
   // Indices des items de joints dans le domaine sur le processeur voisin
-  VECT(ArrOfInt)  indices_items_distants(nb_joints);
+  ArrsOfInt  indices_items_distants(nb_joints);
   // Coordonnees des items correspondants (dans le meme ordre que indices_items_xxx)
-  VECT(DoubleTab) coord_items_locaux(nb_joints);
-  VECT(DoubleTab) coord_items_distants(nb_joints);
+  DoubleTabs coord_items_locaux(nb_joints);
+  DoubleTabs coord_items_distants(nb_joints);
 
   // Remplissage des tableaux indices_items_locaux
   // et coord_items_locaux

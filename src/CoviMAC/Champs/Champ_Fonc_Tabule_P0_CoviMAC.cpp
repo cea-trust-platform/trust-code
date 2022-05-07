@@ -62,7 +62,7 @@ void Champ_Fonc_Tabule_P0_CoviMAC::mettre_a_jour(double t)
   const Table& table = la_table.valeur();
   DoubleTab& mes_valeurs = valeurs();
   const int nb_elem = zvf.nb_elem(), nb_elem_tot = zvf.nb_elem_tot(), nb_param = les_ch_param.size();
-  VECT(DoubleTab) val_params_aux_elems;
+  DoubleTabs val_params_aux_elems;
   for (int i = 0; i < nb_param; i++)
     {
       assert(les_ch_param[i]->valeurs().dimension(1) == 1 || les_ch_param[i]->valeurs().dimension(1) == mes_valeurs.dimension(1));

@@ -95,7 +95,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
       if (nom == "{")
         {
           /* 1. lecture de la grille de parametres */
-          VECT(DoubleVect) params;
+          DoubleVects params;
           for (int n = 0; n < nb_param; n++)
             {
               const int nb_val = lire_dimension(is, que_suis_je());
