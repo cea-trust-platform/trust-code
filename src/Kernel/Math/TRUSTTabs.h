@@ -23,14 +23,13 @@
 #ifndef TRUSTTabs_included
 #define TRUSTTabs_included
 
-#include <TRUSTTab.h>
+#include <TRUSTTab_Vector.h>
 
 /// \cond DO_NOT_DOCUMENT
 class TRUSTTabs
 { };
 /// \endcond
 
-Declare_vect(IntTab);
 // .DESCRIPTION : IntTabs est equivalent a VECT(IntTab)
 class IntTabs : public VECT(IntTab)
 {
@@ -39,7 +38,6 @@ public :
   IntTabs(int i) : VECT(IntTab)(i) {}
 };
 
-Declare_vect(DoubleTab);
 // .DESCRIPTION : DoubleTabs est equivalent a VECT(DoubleTab)
 class DoubleTabs : public VECT(DoubleTab)
 {

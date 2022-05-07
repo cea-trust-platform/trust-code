@@ -22,12 +22,10 @@
 
 #include <TRUSTTabs.h>
 
-Implemente_vect(IntTab);
 Implemente_instanciable(IntTabs,"IntTabs",VECT(IntTab));
 Sortie& IntTabs::printOn(Sortie& s) const { return VECT(IntTab)::printOn(s); }
 Entree& IntTabs::readOn(Entree& s) { return VECT(IntTab)::readOn(s); }
 
-Implemente_vect(DoubleTab);
 Implemente_instanciable(DoubleTabs,"DoubleTabs",VECT(DoubleTab));
 Sortie& DoubleTabs::printOn(Sortie& s) const { return VECT(DoubleTab)::printOn(s); }
 Entree& DoubleTabs::readOn(Entree& s) { return VECT(DoubleTab)::readOn(s); }
