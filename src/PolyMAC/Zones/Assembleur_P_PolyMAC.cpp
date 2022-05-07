@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,20 +26,17 @@
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet.h>
 #include <Champ_Face_PolyMAC.h>
-#include <ConstDoubleTab_parts.h>
-
+#include <TRUSTTab_parts.h>
 #include <Champ_front_instationnaire_base.h>
 #include <Champ_front_var_instationnaire.h>
 #include <Matrice_Bloc_Sym.h>
 #include <Matrice_Diagonale.h>
-
 #include <Array_tools.h>
 #include <Debog.h>
 #include <Connectivite_som_elem.h>
 #include <Static_Int_Lists.h>
 #include <Champ_Fonc_Q1_PolyMAC.h>
 #include <Operateur_Grad.h>
-
 #include <Navier_Stokes_std.h>
 #include <Matrice_Morse_Sym.h>
 #include <Matrix_tools.h>

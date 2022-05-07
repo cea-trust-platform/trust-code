@@ -22,13 +22,13 @@
 
 #include <Linear_algebra_tools_impl.h>
 #include <Connectivite_som_elem.h>
-#include <ConstDoubleTab_parts.h>
 #include <Dirichlet_homogene.h>
 #include <Champ_Fonc_reprise.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Schema_Temps_base.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
+#include <TRUSTTab_parts.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Matrix_tools.h>

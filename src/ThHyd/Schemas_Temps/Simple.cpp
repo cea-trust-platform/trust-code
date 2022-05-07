@@ -36,7 +36,7 @@
 #include <Probleme_base.h>
 #include <MD_Vector_composite.h>
 #include <MD_Vector_tools.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 #include <SETS.h>
 #include <TRUSTTrav.h>
 #include <Discretisation_base.h>

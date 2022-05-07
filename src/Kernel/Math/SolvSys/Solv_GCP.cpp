@@ -29,7 +29,7 @@
 #include <MD_Vector_base.h>
 #include <MD_Vector_tools.h>
 #include <communications.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 
 Implemente_instanciable_sans_constructeur(Solv_GCP,"Solv_GCP",solv_iteratif);
 //

@@ -37,7 +37,7 @@
 #include <MD_Vector_std.h>
 #include <MD_Vector_composite.h>
 #include <MD_Vector_tools.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 #include <Discretisation_base.h>
 
 Implemente_instanciable_sans_constructeur(Piso,"Piso",Simpler);

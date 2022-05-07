@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ConstDoubleTab_parts.h>
 #include <Discretisation_base.h>
 #include <Operateur_Diff_base.h>
 #include <MD_Vector_composite.h>
@@ -30,6 +29,7 @@
 #include <Neumann_val_ext.h>
 #include <MD_Vector_tools.h>
 #include <Assembleur_base.h>
+#include <TRUSTTab_parts.h>
 #include <QDM_Multiphase.h>
 #include <Probleme_base.h>
 #include <Pb_Multiphase.h>

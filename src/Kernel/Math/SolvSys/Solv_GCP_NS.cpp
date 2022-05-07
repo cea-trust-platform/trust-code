@@ -22,7 +22,7 @@
 
 #include <Solv_GCP_NS.h>
 #include <Matrice_Bloc_Sym.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 #include <Motcle.h>
 
 Implemente_instanciable(Solv_GCP_NS,"Solv_GCP_NS",solv_iteratif);

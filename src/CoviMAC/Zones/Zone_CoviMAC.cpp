@@ -24,12 +24,12 @@
 #include <Champ_implementation_P1.h>
 #include <Echange_contact_CoviMAC.h>
 #include <Connectivite_som_elem.h>
-#include <ConstDoubleTab_parts.h>
 #include <MD_Vector_composite.h>
 #include <Dirichlet_homogene.h>
 #include <MD_Vector_tools.h>
 #include <Zone_Cl_CoviMAC.h>
 #include <Segment_CoviMAC.h>
+#include <TRUSTTab_parts.h>
 #include <Option_CoviMAC.h>
 #include <Comm_Group_MPI.h>
 #include <Quadrangle_VEF.h>

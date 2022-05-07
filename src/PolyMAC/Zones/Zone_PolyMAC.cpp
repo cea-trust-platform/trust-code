@@ -23,11 +23,11 @@
 #include <Linear_algebra_tools_impl.h>
 #include <Champ_implementation_P1.h>
 #include <Connectivite_som_elem.h>
-#include <ConstDoubleTab_parts.h>
 #include <MD_Vector_composite.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Segment_PolyMAC.h>
 #include <MD_Vector_tools.h>
+#include <TRUSTTab_parts.h>
 #include <Quadri_PolyMAC.h>
 #include <Quadrangle_VEF.h>
 #include <Comm_Group_MPI.h>

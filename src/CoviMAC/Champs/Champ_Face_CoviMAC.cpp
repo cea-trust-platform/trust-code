@@ -34,7 +34,7 @@
 #include <Connectivite_som_elem.h>
 #include <Matrix_tools.h>
 #include <EChaine.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 #include <Linear_algebra_tools_impl.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>

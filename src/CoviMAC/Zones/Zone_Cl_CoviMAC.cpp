@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@
 #include <Matrice_Morse.h>
 #include <Champ_Face_CoviMAC.h>
 #include <Debog.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 
 Implemente_instanciable(Zone_Cl_CoviMAC,"Zone_Cl_CoviMAC",Zone_Cl_dis_base);
 //// printOn

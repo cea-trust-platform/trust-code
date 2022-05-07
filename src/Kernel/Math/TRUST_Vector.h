@@ -30,7 +30,7 @@
 // J'ajoute cette classe temporairement (enfin j'espere)
 // a virer le jour ou le macro VECT devient / ou accepte des templates
 // Pourquoi ? car dans Const_DoubleTab_parts on a VECT(IntTab) et VECT(DoubleTab) .... boom, comment je peux faire sinon ?
-template<template<class> class _TRUST_TABL_,typename _TYPE_>
+template<template<typename> class _TRUST_TABL_,typename _TYPE_>
 class TRUST_Vector: public vect_impl
 {
 protected:

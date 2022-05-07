@@ -35,7 +35,7 @@
 #include <Check_espace_virtuel.h>
 #include <Neumann_sortie_libre.h>
 #include <Champ_P0_VEF.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 #include <Frontiere_dis_base.h>
 
 DoubleVect& Champ_P1iP1B_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const

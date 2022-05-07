@@ -20,11 +20,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ConstDoubleTab_parts.h>
 #include <Matrice_Morse_Sym.h>
 #include <Matrice_Bloc_Sym.h>
 #include <MD_Vector_tools.h>
 #include <MD_Vector_base.h>
+#include <TRUSTTab_parts.h>
 #include <Motcle.h>
 #include <Param.h>
 #include <SSOR.h>

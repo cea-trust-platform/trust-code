@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
 #include <Frontiere_dis_base.h>
 #include <Zone_dis_base.h>
 #include <Zone_VF.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 
 Implemente_instanciable(Ch_front_var_instationnaire_dep,"Ch_front_var_instationnaire_dep",Champ_front_var_instationnaire);
 

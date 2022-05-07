@@ -20,8 +20,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ConstDoubleTab_parts.h>
 #include <Solveur_Masse_base.h>
+#include <TRUSTTab_parts.h>
 #include <Equation_base.h>
 #include <Matrice_Morse.h>
 #include <TRUSTTrav.h>

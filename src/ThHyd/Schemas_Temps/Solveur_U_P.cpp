@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@
 #include <MD_Vector_std.h>
 #include <MD_Vector_composite.h>
 #include <MD_Vector_tools.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 #include <Dirichlet.h>
 #include <Matrice_Diagonale.h>
 #include <Dirichlet_homogene.h>
