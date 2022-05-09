@@ -25,7 +25,7 @@
 
 #include <string>
 
-// Description : Change le nombre d'elements du tableau.
+//  Change le nombre d'elements du tableau.
 //  - Si smart_resize est non nul :
 //    * Si la nouvelle taille est inferieure ou egale a la taille alouee (p->get_size()) on ne realloue pas de memoire
 //    * sinon, on realloue et on copie les donnees existantes.
@@ -49,7 +49,7 @@ inline void TRUSTArray<_TYPE_>::resize_array(int new_size, Array_base::Resize_Op
   resize_array_(new_size, opt);
 }
 
-// Description: methode virtuelle (dans Array_base) identique a resize_array(), permet de traiter
+//  methode virtuelle (dans Array_base) identique a resize_array(), permet de traiter
 //   de facon generique les ArrOf, Vect et Tab. Si l'objet est de type TRUSTArray, appel a resize_array(n)
 // Prerequis: le tableau doit etre "resizable" (voir resize_array()). S'il est d'un type derive (Vect ou Tab),
 //    il ne doit pas avoir de descripteur parallele si la taille est effectivement modifiee.
@@ -59,7 +59,7 @@ inline void TRUSTArray<_TYPE_>::resize_tab(int n, Array_base::Resize_Options opt
   resize_array(n, opt);
 }
 
-// Description: Change le mode l'allocation memoire: reallocation d'un tableau a chaque changement de taille (flag = 0) ou reallocation
+//  Change le mode l'allocation memoire: reallocation d'un tableau a chaque changement de taille (flag = 0) ou reallocation
 // uniquement si la taille augmente et par doublement de la taille du tableau (flag = 1).
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::set_smart_resize(int flag)
@@ -68,7 +68,7 @@ inline void TRUSTArray<_TYPE_>::set_smart_resize(int flag)
   smart_resize_ = flag;
 }
 
-// Description: Change le mode d'allocation memoire lors des resize (voir VTRUSTdata et TRUST_ptr_trav)
+//  Change le mode d'allocation memoire lors des resize (voir VTRUSTdata et TRUST_ptr_trav)
 //   Exemple pour creer un tableau avec allocation temporaire:
 //    DoubleTab tab; // Creation d'un tableau vide
 //    tab.set_mem_storage(TEMP_STORAGE); // Changement de mode d'allocation
@@ -79,7 +79,7 @@ inline void TRUSTArray<_TYPE_>::set_mem_storage(const Storage storage)
   storage_type_ = storage;
 }
 
-// Description:
+//
 //    Fait pointer le tableau vers la zone de memoire "data_". On detache la zone de memoire existante.
 //    Le tableau devient de type "ref_data". Attention : ptr doit etre non nul. La taille est initialisee avec size.
 //   Attention: methode virtuelle: dans les classes derivee, cette methode initialise les structures pour creer
@@ -101,7 +101,7 @@ inline void TRUSTArray<_TYPE_>::ref_data(_TYPE_* ptr, int size)
   memory_size_ = size; // Pour passer les tests si on resize a la meme taille
 }
 
-// Description:
+//
 //    Fait pointer le tableau vers les memes donnees qu'un tableau existant. Le tableau sera du meme type que le tableau m ("detache", "normal").
 //    Le tableau m ne doit pas etre de type "ref_data". Attention, le tableau source et *this sont ensuite figes (resize_array() interdit).
 //   Attention: methode virtuelle: dans les classes derivee, cette methode initialise les structures pour creer un tableau sequentiel.
@@ -118,7 +118,7 @@ inline void TRUSTArray<_TYPE_>::ref_array(TRUSTArray& m, int start, int size)
   attach_array(m, start, size);
 }
 
-// Description: Copie les donnees du tableau m. Si "m" n'a pas la meme taille que "*this", on fait un resize_array.
+//  Copie les donnees du tableau m. Si "m" n'a pas la meme taille que "*this", on fait un resize_array.
 //    Ensuite, on copie les valeurs de "m" dans "*this". Le type de tableau (methode d'allocation) n'est pas copie.
 // Precondition: preconditions identiques a resize_array()
 // Parametre: const TRUSTArray<_TYPE_>& m
@@ -138,7 +138,7 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(const TRUSTArray& m)
   return *this;
 }
 
-// Description: operateur [] retourne le ieme element du tableau
+//  operateur [] retourne le ieme element du tableau
 // Parametre: int i
 //    Signification: indice dans l'intervalle 0 <= i < size_array()
 // Exception: assert si i n'est pas dans l'intervalle
@@ -149,10 +149,11 @@ inline _TYPE_& TRUSTArray<_TYPE_>::operator[](int i)
   return data_[i];
 }
 
-// Description: operateur [] pour TRUSTArray<double> : retourne le ieme element du tableau
+//  operateur [] pour TRUSTArray<double> : retourne le ieme element du tableau
 // Exception:
 //    assert si la valeur sort de l'intervalle : [ -DMAXFLOAT,DMAXFLOAT ]
 //    assert si i n'est pas dans l'intervalle
+/// \cond DO_NOT_DOCUMENT
 template<>
 inline double& TRUSTArray<double>::operator[](int i)
 {
@@ -160,6 +161,7 @@ inline double& TRUSTArray<double>::operator[](int i)
   assert(data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT);
   return data_[i];
 }
+/// \endcond
 
 template<typename _TYPE_>
 inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](int i) const
@@ -168,6 +170,7 @@ inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](int i) const
   return data_[i];
 }
 
+/// \cond DO_NOT_DOCUMENT
 template<>
 inline const double& TRUSTArray<double>::operator[](int i) const
 {
@@ -175,8 +178,9 @@ inline const double& TRUSTArray<double>::operator[](int i) const
   assert(data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT);
   return data_[i];
 }
+/// \endcond
 
-// Description: Renvoie un pointeur sur le premier element du tableau. Le pointeur est nul si le tableau est "detache".
+//  Renvoie un pointeur sur le premier element du tableau. Le pointeur est nul si le tableau est "detache".
 //   Attention, l'adresse peut changer apres un appel a resize_array(), ref_data, ref_array, ...
 // Retour: const _TYPE_*
 //   Signification: pointeur sur le premier element du tableau
@@ -192,7 +196,7 @@ inline const _TYPE_* TRUSTArray<_TYPE_>::addr() const
   return data_;
 }
 
-// Description: Renvoie la taille du tableau (nombre d'elements declares a la construction ou a resize_array()).
+//  Renvoie la taille du tableau (nombre d'elements declares a la construction ou a resize_array()).
 //    C'est le nombre d'elements accessibles a operator[]
 template <typename _TYPE_>
 inline int TRUSTArray<_TYPE_>::size_array() const
@@ -200,7 +204,7 @@ inline int TRUSTArray<_TYPE_>::size_array() const
   return size_array_;
 }
 
-// Description: Retourne le nombre de references des donnees du tableau si le tableau est "normal", -1 s'il est "detache" ou "ref_data"
+//  Retourne le nombre de references des donnees du tableau si le tableau est "normal", -1 s'il est "detache" ou "ref_data"
 // Retour: int
 //    Signification: ref_count_
 template <typename _TYPE_>
@@ -209,7 +213,7 @@ inline int TRUSTArray<_TYPE_>::ref_count() const
   return p_ ? p_->ref_count() : -1;
 }
 
-// Description: Ajoute une case en fin de tableau et y stocke la "valeur"
+//  Ajoute une case en fin de tableau et y stocke la "valeur"
 // Precondition:
 //  Tableau doit etre de type "smart_resize" (sinon, ecroulement des performances). De plus, le tableau ne doit pas etre "ref_data",
 //  et il ne doit pas y avoir plus d'une reference a la zone de memoire pointee (meme precondition que resize_array())
@@ -223,7 +227,7 @@ inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
   data_[n] = valeur;
 }
 
-// Description: Copie les elements source[first_element_source + i] dans les elements  (*this)[first_element_dest + i] pour 0 <= i < nb_elements
+//  Copie les elements source[first_element_source + i] dans les elements  (*this)[first_element_dest + i] pour 0 <= i < nb_elements
 //    Les autres elements de (*this) sont inchanges.
 // Precondition:
 // Parametre:       const ArrOfDouble& m
@@ -264,7 +268,7 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& so
   return *this;
 }
 
-// Description: Fonction de comparaison utilisee pour trier le tableau dans ArrOfDouble::trier(). Voir man qsort
+//  Fonction de comparaison utilisee pour trier le tableau dans ArrOfDouble::trier(). Voir man qsort
 static True_int fonction_compare_arrofdouble_ordonner(const void * data1, const void * data2)
 {
   const double x = *(const double*)data1;
@@ -274,7 +278,7 @@ static True_int fonction_compare_arrofdouble_ordonner(const void * data1, const 
   else return 0;
 }
 
-// Description: Fonction de comparaison utilisee pour trier le tableau dans ArrOfInt::trier(). Voir man qsort
+//  Fonction de comparaison utilisee pour trier le tableau dans ArrOfInt::trier(). Voir man qsort
 static True_int fonction_compare_arrofint_ordonner(const void * data1, const void * data2)
 {
   const int x = *(const int*)data1;
@@ -288,7 +292,8 @@ static True_int fonction_compare_arrofint_ordonner(const void * data1, const voi
 #endif
 }
 
-// Description: Tri des valeurs du tableau dans l'ordre croissant. La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
+//  Tri des valeurs du tableau dans l'ordre croissant. La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
+/// \cond DO_NOT_DOCUMENT
 template <>
 inline void TRUSTArray<double>::ordonne_array()
 {
@@ -299,7 +304,6 @@ inline void TRUSTArray<double>::ordonne_array()
       qsort(data, size, sizeof(double), fonction_compare_arrofdouble_ordonner);
     }
 }
-
 template <>
 inline void TRUSTArray<int>::ordonne_array()
 {
@@ -310,8 +314,9 @@ inline void TRUSTArray<int>::ordonne_array()
       qsort(data, size, sizeof(int), fonction_compare_arrofint_ordonner);
     }
 }
+/// \endcond
 
-// Description:  Tri des valeurs du tableau dans l'ordre croissant et suppresion des doublons La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
+//   Tri des valeurs du tableau dans l'ordre croissant et suppresion des doublons La fonction utilisee est qsort de stdlib (elle est en n*log(n)).
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
 {
@@ -336,7 +341,7 @@ inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
   resize_array(new_size_);
 }
 
-// Description: Amene le tableau dans l'etat "normal", "detache" ou "ref_array" en associant une sous-zone de memoire du tableau m,
+//  Amene le tableau dans l'etat "normal", "detache" ou "ref_array" en associant une sous-zone de memoire du tableau m,
 //    definie par start et size. Si size < 0, on prend le tableau m jusqu'a la fin.
 // Precondition: Le tableau doit etre "detache"
 // Parametre: const ArrOfDouble& m
@@ -375,7 +380,7 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
     }
 }
 
-// Description: Remplit "nb" cases consecutives du tableau a partir de la case "first" avec une valeur par defaut.
+//  Remplit "nb" cases consecutives du tableau a partir de la case "first" avec une valeur par defaut.
 //  Cette fonction est appelee lors d'un resize pour initialiser les cases nouvellement creees.
 //  Le comportement depend actuellement du type de tableau :
 //  * Tableau de type "smart_resize":
@@ -411,7 +416,7 @@ inline void TRUSTArray<_TYPE_>::fill_default_value(Array_base::Resize_Options op
     for (int i = 0; i < nb; i++) data[i] = (_TYPE_) 0;
 }
 
-// Description: methode protegee de changement de taille, appelable par les classes derivees
+//  methode protegee de changement de taille, appelable par les classes derivees
 //   (idem que resize_array() mais sans condition sur le type derive de l'objet)
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, Array_base::Resize_Options opt)
@@ -429,7 +434,7 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, Array_base::Resize_O
   size_array_ = new_size;
 }
 
-// Description: Amene le tableau dans l'etat "detache". C'est a dire:
+//  Amene le tableau dans l'etat "detache". C'est a dire:
 //  Si le tableau est "detache" :
 //   * ne rien faire
 //  Si le tableau est "normal" :
@@ -461,7 +466,7 @@ inline int TRUSTArray<_TYPE_>::detach_array()
   return retour;
 }
 
-// Description: Si besoin, alloue une nouvelle zone de memoire, copie les donnees et efface l'ancienne zone de memoire.
+//  Si besoin, alloue une nouvelle zone de memoire, copie les donnees et efface l'ancienne zone de memoire.
 //  Attention, on suppose que cette methode est appelee par resize_array().
 //  Attention: si ref_count_>1, l'appel a resize_array() est autorise uniquement si la nouvelle taille est identique a la precedente (auquel cas on ne fait rien)
 //  Si ref_count_ == 1, l'appel est invalide si p_->data_ est different de data_ (le tableau a ete construit avec ref_array() avec start > 0)

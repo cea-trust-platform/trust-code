@@ -118,10 +118,10 @@ inline const _TYPE_& TRUSTTab<_TYPE_>::operator()(int i1, int i2, int i3, int i4
   return TRUSTVect<_TYPE_>::operator[](((i1*dimensions_[1]+i2)*dimensions_[2]+i3)*dimensions_[3]+i4);
 }
 
-// Description: Returns one of the "real" dimensions of the multi-dimensionnal array, as defined by:
+//  Returns one of the "real" dimensions of the multi-dimensionnal array, as defined by:
 //   dimension(0) = size_reelle() / line_size(), or 0 if line_size()==0
 //  and, for i >= 1 : dimension(i) is equal to dimension_tot(i)
-//  If size_reelle_ok() returns 0, it is invalid to ask for dimension(0). You can only ask for dimension_tot(0) (see Int/DoubleVect::size_reelle_ok())
+//  If TRUSTVect<_TYPE_>::size_reelle_ok() returns 0, it is invalid to ask for dimension(0). You can only ask for dimension_tot(0) (see TRUSTVect<_TYPE_>::size_reelle_ok())
 template<typename _TYPE_>
 inline int TRUSTTab<_TYPE_>::dimension(int i) const
 {
@@ -131,7 +131,7 @@ inline int TRUSTTab<_TYPE_>::dimension(int i) const
   return dimensions_[i];
 }
 
-// Description: Returns the total dimensions of the multi-dimensionnal array, including virtual items (used in parallel distributed arrays)
+//  Returns the total dimensions of the multi-dimensionnal array, including virtual items (used in parallel distributed arrays)
 template<typename _TYPE_>
 inline int TRUSTTab<_TYPE_>::dimension_tot(int i) const
 {
@@ -139,7 +139,7 @@ inline int TRUSTTab<_TYPE_>::dimension_tot(int i) const
   return (i == 0) ? dimension_tot_0_ : dimensions_[i];
 }
 
-// Description: Adds 1 to dimension_tot(0) and puts a in the added line.
+//  Adds 1 to dimension_tot(0) and puts a in the added line.
 // Precondition: line_size() must be equal to 1 and the array must be resizable.
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a)
@@ -153,7 +153,7 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a)
   ptr[0] = a;
 }
 
-// Description: Adds 1 to dimension_tot(0) and puts a and b in the added line.
+//  Adds 1 to dimension_tot(0) and puts a and b in the added line.
 // Precondition: line_size() must be equal to 2 and the array must be resizable.
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b)
@@ -168,7 +168,7 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b)
   ptr[1] = b;
 }
 
-// Description: Like append_line(i,j), but for arrays with line_size()==3
+//  Like append_line(i,j), but for arrays with line_size()==3
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c)
 {
@@ -183,7 +183,7 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c)
   ptr[2] = c;
 }
 
-// Description: Like append_line(i,j), but for arrays with line_size()==4
+//  Like append_line(i,j), but for arrays with line_size()==4
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c, _TYPE_ d)
 {
@@ -199,7 +199,7 @@ inline void TRUSTTab<_TYPE_>::append_line(_TYPE_ a, _TYPE_ b, _TYPE_ c, _TYPE_ d
   ptr[3] = d;
 }
 
-// Description: fait pointer le tableau sur le vecteur v et en associant la meme structure parallele.
+//  fait pointer le tableau sur le vecteur v et en associant la meme structure parallele.
 //  Attention, si line_size du vecteur v est different de 1, on cree un tableau bidimensionnel (on peut avoir un vecteur
 //  de ce type si on copie un Tab dans un Vect puis on prend une ref sur ce Vect).
 // Precondition: le vecteur v doit vraiment etre de type Vect ! (sinon utiliser DoubleTab::ref(const DoubleTab &)
@@ -231,7 +231,7 @@ inline void TRUSTTab<_TYPE_>::ref(const TRUSTVect<_TYPE_>& v)
   assert(verifie_LINE_SIZE());
 }
 
-// Description: fait pointer le tableau sur le tableau t en recuperant la structure parallele. Attention, on fige le tableau qui ne pourra plus etre resize
+//  fait pointer le tableau sur le tableau t en recuperant la structure parallele. Attention, on fige le tableau qui ne pourra plus etre resize
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::ref(const TRUSTTab& src)
 {
@@ -242,7 +242,7 @@ inline void TRUSTTab<_TYPE_>::ref(const TRUSTTab& src)
   assert(verifie_LINE_SIZE());
 }
 
-// Description: identique a DoubleVect::ref_data()
+//  identique a DoubleVect::ref_data()
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
 {
@@ -254,7 +254,7 @@ inline void TRUSTTab<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
   assert(verifie_LINE_SIZE());
 }
 
-// Description: identique a TRUSTVect::ref_array() (cree un tableau monodimensionnel sans structure parallele)
+//  identique a TRUSTVect::ref_array() (cree un tableau monodimensionnel sans structure parallele)
 //  Attention, le tableau source et destination sont figes (resize interdit)
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::ref_array(TRUSTArray<_TYPE_>& src, int start, int sz)
@@ -266,7 +266,7 @@ inline void TRUSTTab<_TYPE_>::ref_array(TRUSTArray<_TYPE_>& src, int start, int 
   assert(verifie_LINE_SIZE());
 }
 
-// Description: fait pointer le tableau sur une sous-partie du tableau t definie par la valeur du premier indice et ne nombre de "lignes" du tableau
+//  fait pointer le tableau sur une sous-partie du tableau t definie par la valeur du premier indice et ne nombre de "lignes" du tableau
 //   a recuperer (une ligne = toutes les valeurs tab(i,j,k,...) pour un i donne). Le nombre de dimensions du tableau est le meme que pour t,
 //   les dimension(i) pour i>=1 sont les memes et dimension(0) = nb_lines.
 template<typename _TYPE_>
@@ -285,7 +285,7 @@ inline void TRUSTTab<_TYPE_>::ref_tab(TRUSTTab<_TYPE_>& t, int start_line, int n
   assert(verifie_LINE_SIZE());
 }
 
-// Description: met le tableau dans l'etat obtenu par le constructeur par defaut
+//  met le tableau dans l'etat obtenu par le constructeur par defaut
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::reset()
 {
@@ -296,7 +296,7 @@ inline void TRUSTTab<_TYPE_>::reset()
   assert(verifie_LINE_SIZE());
 }
 
-// Description: methode virtuelle qui force le tableau a changer de taille. Change aussi nb_dim_ a 1. Equivalent a TRUSTTab::resize(n, opt)
+//  methode virtuelle qui force le tableau a changer de taille. Change aussi nb_dim_ a 1. Equivalent a TRUSTTab::resize(n, opt)
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::resize_tab(int n, Array_base::Resize_Options opt)
 {
@@ -304,7 +304,7 @@ inline void TRUSTTab<_TYPE_>::resize_tab(int n, Array_base::Resize_Options opt)
   assert(verifie_LINE_SIZE());
 }
 
-// Description: change la dimension[0] du tableau en conservant les autres.
+//  change la dimension[0] du tableau en conservant les autres.
 // Precondition: le tableau ne doit pas avoir de structure parallele
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::resize_dim0(int n, Array_base::Resize_Options opt)
@@ -390,7 +390,7 @@ inline void TRUSTTab<_TYPE_>::resize(int n, int n2, int n3, int n4, Array_base::
   assert(verifie_LINE_SIZE());
 }
 
-// Description: redimensionne le tableau (nb_dim_ sera egal a tailles.size_array() et dimension(i) a tailles[i].
+//  redimensionne le tableau (nb_dim_ sera egal a tailles.size_array() et dimension(i) a tailles[i].
 // Precondition: identiques a TRUSTVect::resize_vect_()
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::resize(const TRUSTArray<int>& tailles, Array_base::Resize_Options opt)
@@ -420,7 +420,7 @@ inline void TRUSTTab<_TYPE_>::resize(const TRUSTArray<int>& tailles, Array_base:
   assert(verifie_LINE_SIZE());
 }
 
-// Description: copie la structure et les valeurs du tableau src
+//  copie la structure et les valeurs du tableau src
 //   Restrictions et preconditions identiques a TRUSTVect::operator=(const TRUSTVect & v)
 template<typename _TYPE_>
 inline TRUSTTab<_TYPE_>& TRUSTTab<_TYPE_>::operator=(const TRUSTTab<_TYPE_>& src)
@@ -429,7 +429,7 @@ inline TRUSTTab<_TYPE_>& TRUSTTab<_TYPE_>::operator=(const TRUSTTab<_TYPE_>& src
   return *this;
 }
 
-// Description: copie la structure et les valeurs de src. Attention: appel invalide si src est un type derive de Vect
+//  copie la structure et les valeurs de src. Attention: appel invalide si src est un type derive de Vect
 //  (sinon quoi faire, un tableau unidimensionnel, ou une copie de la structure ?)
 template<typename _TYPE_>
 inline TRUSTTab<_TYPE_>& TRUSTTab<_TYPE_>::operator=(const TRUSTVect<_TYPE_>& src)
@@ -515,7 +515,7 @@ inline _TYPE_ TRUSTTab<_TYPE_>::operator()(const TRUSTArray<int>& indice) const
     }
 }
 
-// Description: associe le md_vector au vecteur (voir TRUSTVect::set_md_vector()) dimension(0) sera initialise a md_vector...get_nb_items_reels().
+//  associe le md_vector au vecteur (voir TRUSTVect::set_md_vector()) dimension(0) sera initialise a md_vector...get_nb_items_reels().
 // Precondition: en plus des preconditions de TRUSTVect::set_md_vector(), dimension_tot(0) doit etre egal a get_nb_items_tot() du md_vector.
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
@@ -549,7 +549,7 @@ inline void TRUSTTab<_TYPE_>::jump(Entree& is)
   TRUSTTab<_TYPE_>::lit(is, 0 /* Do not resize&read the array */);
 }
 
-// Description: lecture d'un tableau pour reprise de calcul. On lit les valeurs "raw".
+//  lecture d'un tableau pour reprise de calcul. On lit les valeurs "raw".
 //  Attention, si le tableau n'est pas vide, il doit deja avoir la bonne taille et la bonne structure, sinon erreur !
 // Parameter resize_and_read if the array is sized AND read (by default, yes)
 template<typename _TYPE_>
@@ -591,7 +591,7 @@ inline void TRUSTTab<_TYPE_>::lit(Entree& is, int resize_and_read)
 // ------------------------------------------------------
 // Juste pour double
 
-// Description: Quelqu'un veut-il expliquer ce que fait cette methode ?
+//  Quelqu'un veut-il expliquer ce que fait cette methode ?
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::ajoute_produit_tensoriel(double alpha, const TRUSTTab<double>& x, const TRUSTTab<double>& y)
 {
@@ -636,7 +636,7 @@ inline void TRUSTTab<_TYPE_>::ajoute_produit_tensoriel(double alpha, const TRUST
     }
 }
 
-// Description: Resolution du systeme Ax=b
+//  Resolution du systeme Ax=b
 template<typename _TYPE_>
 inline int TRUSTTab<_TYPE_>::inverse_LU(const TRUSTArray<double>& b, TRUSTArray<double>& solution)
 {
@@ -650,7 +650,7 @@ inline int TRUSTTab<_TYPE_>::inverse_LU(const TRUSTArray<double>& b, TRUSTArray<
   return cvg;
 }
 
-// Description: Decomposition d'une matrice en L.U: methode de Crout (diagonale de L =1)
+//  Decomposition d'une matrice en L.U: methode de Crout (diagonale de L =1)
 // Retour: matrice A_ = assemblage (L-diagonale)+U
 template<typename _TYPE_>
 inline int TRUSTTab<_TYPE_>::decomp_LU(int n, TRUSTArray<int>& index, TRUSTTab<double>& matLU)
@@ -717,7 +717,7 @@ inline int TRUSTTab<_TYPE_>::decomp_LU(int n, TRUSTArray<int>& index, TRUSTTab<d
   return cvg;
 }
 
-// Description: Resolution du systeme A_x=b : A_ contenant le decompostion LU de A (stockee dans une seule matrice)
+//  Resolution du systeme A_x=b : A_ contenant le decompostion LU de A (stockee dans une seule matrice)
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::resoud_LU(int n, TRUSTArray<int>& index, const TRUSTArray<double>& b, TRUSTArray<double>& solution)
 {
@@ -744,7 +744,7 @@ inline void TRUSTTab<_TYPE_>::resoud_LU(int n, TRUSTArray<int>& index, const TRU
     }
 }
 
-// Description: Fonction utilisee pour le calcul du du/u (pour convergence implicite)
+//  Fonction utilisee pour le calcul du du/u (pour convergence implicite)
 //    renvoie le max de abs(du(i)/u(i)). utilisation    max_ = (u(n+1)-u(n)).max_du_u(u(n))
 template<typename _TYPE_>
 inline double TRUSTTab<_TYPE_>::max_du_u(const TRUSTTab<double>& u)

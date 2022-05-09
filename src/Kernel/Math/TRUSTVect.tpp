@@ -25,7 +25,7 @@
 
 #include <string>
 
-// Description: Taille de l'espace "reel" du vecteur. (si md_vector_ est nul, cette valeur est identique a size_array(),
+//  Taille de l'espace "reel" du vecteur. (si md_vector_ est nul, cette valeur est identique a size_array(),
 //   sinon, soit elle est egale a md_vector_....get_nb_items(),
 //          soit l'appel est invalide (en particulier si les items reels ne sont pas regroupes en debut de tableau)
 //  On peut interroger le vecteur pour savoir si size_reelle() est valide avec size_reelle_ok()
@@ -39,14 +39,14 @@ inline int TRUSTVect<_TYPE_>::size_reelle() const
   return size_reelle_;
 }
 
-// Description renvoie 1 si l'appel a size() et size_reelle() est valide, 0 sinon
+//  renvoie 1 si l'appel a size() et size_reelle() est valide, 0 sinon
 template<typename _TYPE_>
 inline int TRUSTVect<_TYPE_>::size_reelle_ok() const
 {
   return size_reelle_ >= 0;
 }
 
-// Description: Identique a size_reelle()
+//  Identique a size_reelle()
 template<typename _TYPE_>
 inline int TRUSTVect<_TYPE_>::size() const
 {
@@ -60,7 +60,7 @@ inline void TRUSTVect<_TYPE_>::ajoute(double alpha, const TRUSTVect<double>& y, 
   if (opt == VECT_ALL_ITEMS) echange_espace_virtuel();
 }
 
-// Description: Identique a size_array()
+//  Identique a size_array()
 template<typename _TYPE_>
 inline int TRUSTVect<_TYPE_>::size_totale() const
 {
@@ -75,7 +75,7 @@ inline int TRUSTVect<_TYPE_>::line_size() const
   return line_size_;
 }
 
-// Description: change l'attribut line_size_ du tableau avec n >= 1. n == 0 est autorise uniquement si size_array_ == 0
+//  change l'attribut line_size_ du tableau avec n >= 1. n == 0 est autorise uniquement si size_array_ == 0
 // Precondition: le md_vector_ doit etre nul (il faut attribuer md_vector_ apres la line_size_ car lorsqu'on attribue md_vector_ on teste
 //  la validite des tailles de tableaux en fonction de line_size_) ou la line_size_ ne doit pas changer (cas d'un resize qui ne change rien)
 template<typename _TYPE_>
@@ -86,7 +86,7 @@ inline void TRUSTVect<_TYPE_>::set_line_size_(int n)
   line_size_ = n;
 }
 
-// Description: Change la taille du vecteur (identique a resize_array() pour le traitement des anciennes valeurs et de nouvelles cases).
+//  Change la taille du vecteur (identique a resize_array() pour le traitement des anciennes valeurs et de nouvelles cases).
 //  Attention: Cette methode n'est pas virtuelle, et afin d'eviter d'amener un DoubleTab/Int dans un etat invalide, l'appel est interdit si l'objet
 //  est de ce type. Dans ce cas, voir resize_tab.
 // Precondition: l'appel est interdit si le vecteur a une structure parallele. Le vecteur doit etre "resizable" (voir preconditions de ArrOfDouble::resize_array()).
@@ -99,7 +99,7 @@ inline void TRUSTVect<_TYPE_>::resize(int n, Array_base::Resize_Options opt)
   resize_vect_(n, opt);
 }
 
-// Description: Methode interne de resize (appellee par DoubleTab/Int::resize(...)) sans precondition sur le type de l'objet.
+//  Methode interne de resize (appellee par DoubleTab/Int::resize(...)) sans precondition sur le type de l'objet.
 // Precondition: l'appel est interdit si le vecteur a une structure parallele.
 //  Le vecteur doit etre "resizable" (voir preconditions de ArrOfDouble/Int::resize_array()). n doit etre un multiple de line_size_
 template<typename _TYPE_>
@@ -120,7 +120,7 @@ inline void TRUSTVect<_TYPE_>::resize_vect_(int n, Array_base::Resize_Options op
   // ne pas mettre line_size_ a 1 ici, voir DoubleTab::resize_dim0()
 }
 
-// Description: copie la structure et les valeurs du tableau v dans *this avec ArrOfDouble/Int::operator=()
+//  copie la structure et les valeurs du tableau v dans *this avec ArrOfDouble/Int::operator=()
 //  (attention, si le tableau est de type ref_data ou ref, restrictions et cas particuliers !!!)
 //  Attention: si on ne veut pas copier les structures paralleles, utiliser inject_array()
 // Precondition: si le tableau *this doit etre resize, il doit etre de type DoubleVect (et pas d'un type derive !)
@@ -141,7 +141,7 @@ inline TRUSTVect<_TYPE_>& TRUSTVect<_TYPE_>::operator=(_TYPE_ x)
   return *this;
 }
 
-// Description: detache le tableau et l'attache a v (sauf si v==*this, ne fait rien)
+//  detache le tableau et l'attache a v (sauf si v==*this, ne fait rien)
 //  Fait pointer le tableau sur la meme zone de memoire que v et copie le MD_Vector (utilise ArrOfDouble/Int::attach_array())
 //  Attention, il devient alors interdit de resizer le tableau v ainsi que *this
 //  Methode virtuelle reimplementee dans DoubleTab
@@ -160,7 +160,7 @@ inline void TRUSTVect<_TYPE_>::ref(const TRUSTVect& v)
     }
 }
 
-// Description: copie de la structure et des valeurs (si opt==COPY_INIT) du tableau v.
+//  copie de la structure et des valeurs (si opt==COPY_INIT) du tableau v.
 //  Attention, v doit vraiment etre de type ArrOfDouble/Int, pas d'un type derive (sinon ambiguite: faut-il copier ou pas le MD_Vector ?)
 // Precondition: Le vecteur ne doit pas avoir de structure de tableau distribue et il doit vraiment etre de type Double/IntVect.
 template<typename _TYPE_>
@@ -173,7 +173,7 @@ inline void TRUSTVect<_TYPE_>::copy(const TRUSTArray<_TYPE_>& v, Array_base::Res
   if (opt != Array_base::NOCOPY_NOINIT) inject_array(v);
 }
 
-// Description: copie de la structure du vecteur v et des valeurs si opt==COPY_INIT.
+//  copie de la structure du vecteur v et des valeurs si opt==COPY_INIT.
 // Precondition: idem que operator=(const DoubleVect &)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::copy(const TRUSTVect& v, Array_base::Resize_Options opt)
@@ -186,7 +186,7 @@ inline void TRUSTVect<_TYPE_>::copy(const TRUSTVect& v, Array_base::Resize_Optio
     }
 }
 
-// Description: methode protegee appelable depuis une classe derivee (pas de precondition sur le type derive de *this)
+//  methode protegee appelable depuis une classe derivee (pas de precondition sur le type derive de *this)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::copy_(const TRUSTVect& v, Array_base::Resize_Options opt)
 {
@@ -201,7 +201,7 @@ inline void TRUSTVect<_TYPE_>::copy_(const TRUSTVect& v, Array_base::Resize_Opti
   line_size_ = v.line_size_;
 }
 
-// Description: methode virtuelle identique a resize_array(), permet de traiter de facon generique les ArrOf, Vect et Tab.
+//  methode virtuelle identique a resize_array(), permet de traiter de facon generique les ArrOf, Vect et Tab.
 //   Cree un tableau sequentiel... Si l'objet est de type Int/DoubleVect, appel a resize(n)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::resize_tab(int n, Array_base::Resize_Options opt)
@@ -209,7 +209,7 @@ inline void TRUSTVect<_TYPE_>::resize_tab(int n, Array_base::Resize_Options opt)
   resize(n, opt);
 }
 
-// Description: voir ArrOfDouble/Int::ref_data(). (cree un tableau sans structure parallele)
+//  voir ArrOfDouble/Int::ref_data(). (cree un tableau sans structure parallele)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
 {
@@ -229,7 +229,7 @@ inline void TRUSTVect<_TYPE_>::ref_data(_TYPE_* ptr, int new_size)
   line_size_ = 1;
 }
 
-// Description: voir ArrOfDouble/Int::ref_array(). (cree un tableau sans structure parallele)
+//  voir ArrOfDouble/Int::ref_array(). (cree un tableau sans structure parallele)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::ref_array(TRUSTArray<_TYPE_>& m, int start, int new_size)
 {
@@ -239,7 +239,7 @@ inline void TRUSTVect<_TYPE_>::ref_array(TRUSTArray<_TYPE_>& m, int start, int n
   line_size_ = 1;
 }
 
-// Description: associe le md_vector au vecteur et initialise l'attribut size_reelle_ (voir methode size_reelle())
+//  associe le md_vector au vecteur et initialise l'attribut size_reelle_ (voir methode size_reelle())
 //  Si md_vector est nul, detache simplement le md_vector existant.
 // Precondition: le vecteur doit deja avoir la taille appropriee au nouveau md_vector, c'est a dire md_vector...get_nb_items_tot() * line_size_
 template<typename _TYPE_>
@@ -276,7 +276,7 @@ inline void TRUSTVect<_TYPE_>::echange_espace_virtuel()
   MD_Vector_tools::echange_espace_virtuel(*this);
 }
 
-// Description: ecriture des valeurs du tableau "raw" sans structure parallele
+//  ecriture des valeurs du tableau "raw" sans structure parallele
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::ecrit(Sortie& os) const
 {
@@ -289,7 +289,7 @@ inline void TRUSTVect<_TYPE_>::jump(Entree& is)
   TRUSTVect::lit(is, 0 /* Do not resize&read the array */);
 }
 
-// Description: lecture d'un tableau pour reprise de calcul. On lit les valeurs "raw".
+//  lecture d'un tableau pour reprise de calcul. On lit les valeurs "raw".
 //  Attention, si le tableau n'est pas vide, il doit deja avoir la bonne taille et la bonne structure, sinon erreur !
 // Parameter resize_and_read if the array is sized AND read (by default, yes)
 template<typename _TYPE_>
