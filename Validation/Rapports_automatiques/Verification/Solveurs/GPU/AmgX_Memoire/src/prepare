@@ -27,9 +27,5 @@ do
       cd .. 1>/dev/null 2>&1
    done
 done
-sed -i "1,$ s?_cpu_?$cpu?g" fiche.prm.P
-sed -i "1,$ s?_meshes_?$meshes?g" fiche.prm.P
 sed -i "1,$ s?_meshes_?$meshes?g" post_run
-sed -i "1,$ s?_liste_cas_?$liste_cas?g" fiche.prm.P
-python $TRUST_ROOT/bin/KSH/preprocessor.py fiche.prm.P fiche.prm
 exit 0
