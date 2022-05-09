@@ -2,32 +2,32 @@
 # PARALLEL OK 8 #
 dimension 2
 Pb_Thermohydraulique pb
-Domaine dom 
+Domaine dom
 
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 9 51
-		Longueurs 0.04 0.3
-		}
-		{
-		Bord OUEST 	X = 0.  	0. <= Y <= 0.3
-		Bord HAUT 	Y = 0.3  	0. <= X <= 0.04
-		Bord BAS	Y = 0.     	0. <= X <= 0.04
-		Bord EST 	X = 0.04 	0. <= Y <= 0.3
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 9 51
+        Longueurs 0.04 0.3
+    }
+    {
+        Bord OUEST 	X = 0.  	0. <= Y <= 0.3
+        Bord HAUT 	Y = 0.3  	0. <= X <= 0.04
+        Bord BAS	Y = 0.     	0. <= X <= 0.04
+        Bord EST 	X = 0.04 	0. <= Y <= 0.3
+    }
 }
 Trianguler_H dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -35,32 +35,32 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VEFprep1b dis  
+VEFprep1b dis
 
-Schema_Predictor_Corrector sch  
+Schema_Predictor_Corrector sch
 Read sch
 {
-	tinit 0.
-	nb_pas_dt_max 10
-	tmax 10.
-	dt_min 0.00001
-	dt_max  1.
-	dt_impr 0.1
-	dt_sauv 100
-	seuil_statio 1.e-3
-	facsec 0.25
-	diffusion_implicite 1
-	seuil_diffusion_implicite 1.e-8
+    tinit 0.
+    nb_pas_dt_max 10
+    tmax 10.
+    dt_min 0.00001
+    dt_max  1.
+    dt_impr 0.1
+    dt_sauv 100
+    seuil_statio 1.e-3
+    facsec 0.25
+    diffusion_implicite 1
+    seuil_diffusion_implicite 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.0925371 
-	rho Champ_Uniforme 1 900.
-	lambda Champ_Uniforme 1 0.162
-	Cp Champ_Uniforme 1 2000.
-	beta_th Champ_Uniforme 1 1.498e-3
+    mu Champ_Uniforme 1 0.0925371
+    rho Champ_Uniforme 1 900.
+    lambda Champ_Uniforme 1 0.162
+    Cp Champ_Uniforme 1 2000.
+    beta_th Champ_Uniforme 1 1.498e-3
 }
 
 Champ_Uniforme gravite
@@ -75,65 +75,66 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.500000 } 
-			seuil 1.000000e-12
-			impr 
-			}
-		convection { muscl }
-		diffusion { }
-		sources { boussinesq_temperature { T0 20. } }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			HAUT paroi_fixe
-			BAS paroi_fixe
-			OUEST paroi_fixe
-			EST paroi_fixe
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { muscl }
-		boundary_conditions 
-		{
-                        HAUT 	paroi_adiabatique
-                        BAS 	paroi_adiabatique
- 			OUEST 	paroi_temperature_imposee 
-				champ_front_uniforme 1 53.50
-			EST 	paroi_temperature_imposee 
-				champ_front_uniforme 1 20.
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 20. }
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.500000 }
+            seuil 1.000000e-12
+            impr
+        }
+        convection { muscl }
+        diffusion { }
+        sources { boussinesq_temperature { T0 20. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            HAUT paroi_fixe
+            BAS paroi_fixe
+            OUEST paroi_fixe
+            EST paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            HAUT 	paroi_adiabatique
+            BAS 	paroi_adiabatique
+            OUEST 	paroi_temperature_imposee
+            champ_front_uniforme 1 53.50
+            EST 	paroi_temperature_imposee
+            champ_front_uniforme 1 20.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 20. }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_pression pression periode 1e-4 points 1 0.005 0.05
-			
-			sonde_temp temperature periode 1e-4 points 1 0.005 0.05
-			sonde_vitesse vitesse periode 1e-4 segment 10  0.0
-0.194  0.02 0.194 }
-		
-		fields dt_post 3.5
-		{
-			pression elem
-			pression som
-			vitesse elem
-			vitesse som
-			temperature elem
-			temperature som
-			vorticite som
-		}
-	}
-	
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 1e-4 points 1 0.005 0.05
+
+            sonde_temp temperature periode 1e-4 points 1 0.005 0.05
+            sonde_vitesse vitesse periode 1e-4 segment 10  0.0
+            0.194  0.02 0.194
+        }
+
+        fields dt_post 3.5
+        {
+            pression elem
+            pression som
+            vitesse elem
+            vitesse som
+            temperature elem
+            temperature som
+            vorticite som
+        }
+    }
+
 }
-	
+
 Solve pb
 End

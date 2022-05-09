@@ -22,7 +22,7 @@ Read scheme
     max_iter_implicite 50
     Solveur Implicite
     {
-      Solveur petsc cholesky { quiet }
+        Solveur petsc cholesky { quiet }
     }
 }
 
@@ -43,61 +43,61 @@ discretize pb dis
 
 read pb
 {
-	# Resolution div (-grad u) = 0 donc sans source, sans coefficient, steady state #
-	conduction
-	{
-		diffusion { }
-		initial_conditions
+    # Resolution div (-grad u) = 0 donc sans source, sans coefficient, steady state #
+    conduction
     {
-			temperature champ_uniforme 1 0.
-		}
-		boundary_conditions
-    {
-			Left paroi_temperature_imposee champ_front_uniforme 1 0
-			Right paroi_temperature_imposee champ_front_uniforme 1 1.
-			Down paroi_temperature_imposee champ_front_fonc_xyz 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
-			Up paroi_temperature_imposee champ_front_fonc_xyz 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
-		}
-	}
-
-	post_processing
-	{
-
-		Definition_champs
-		{
-
-		solution_elem Transformation {
-					methode formule expression 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
-					localisation elem
-					}
-
-		error_elem transformation  {
-					methode formule expression 1 abs(solution_elem-temperature_physique)/(solution_elem+0.0001)
-					sources_reference {  solution_elem , temperature_physique }
-					localisation elem
-					   }
-
-		}
-
-		format LATA
-		fields dt_post 10.
-		{
-			error_elem
-		}
-	}
-
-  post_processings
-	{
-    volume
-    {
-      format LATA
-  		fields dt_post 10.
-  		{
-  			temperature elem
-  			diffusivite_thermique elem
-  		}
+        diffusion { }
+        initial_conditions
+        {
+            temperature champ_uniforme 1 0.
+        }
+        boundary_conditions
+        {
+            Left paroi_temperature_imposee champ_front_uniforme 1 0
+            Right paroi_temperature_imposee champ_front_uniforme 1 1.
+            Down paroi_temperature_imposee champ_front_fonc_xyz 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
+            Up paroi_temperature_imposee champ_front_fonc_xyz 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
+        }
     }
-  }
+
+    post_processing
+    {
+
+        Definition_champs
+        {
+
+            solution_elem Transformation {
+                methode formule expression 1 (20./11.*x*(x[0.5)+(9./11.+x*2./11.)*(x>0.5))
+                localisation elem
+            }
+
+            error_elem transformation  {
+                methode formule expression 1 abs(solution_elem-temperature_physique)/(solution_elem+0.0001)
+                sources_reference {  solution_elem , temperature_physique }
+                localisation elem
+            }
+
+        }
+
+        format LATA
+        fields dt_post 10.
+        {
+            error_elem
+        }
+    }
+
+    post_processings
+    {
+        volume
+        {
+            format LATA
+            fields dt_post 10.
+            {
+                temperature elem
+                diffusivite_thermique elem
+            }
+        }
+    }
 }
 
 solve pb

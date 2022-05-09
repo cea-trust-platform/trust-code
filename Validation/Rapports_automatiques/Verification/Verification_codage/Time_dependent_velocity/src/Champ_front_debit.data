@@ -1,6 +1,6 @@
 # The run of this datafile should stop when trust interprets: #
 #  champ_front_debit champ_front_fonc_txyz #
-# It is abnormal that this datafile runs without error # 
+# It is abnormal that this datafile runs without error #
 dimension 2
 Pb_Hydraulique pb
 Domaine dom
@@ -11,9 +11,9 @@ Read_file mesh.geo ;
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -26,18 +26,18 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 3
-	tinit 0
-	tmax 32
-	dt_impr 0.1
-	dt_sauv 1000.
-	seuil_statio 1.e-8
+    nb_pas_dt_max 3
+    tinit 0
+    tmax 32
+    dt_impr 0.1
+    dt_sauv 1000.
+    seuil_statio 1.e-8
 }
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 3.7e-05
-	rho Champ_Uniforme 1 1000
+    mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 1000
 }
 Associate pb dom
 Associate pb sch
@@ -45,32 +45,32 @@ Associate pb fluide
 Discretize pb dis
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			inlet frontiere_ouverte_vitesse_imposee champ_front_debit champ_front_fonc_txyz 2 2.*t+x+1. y
-		        outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
-			bottomwall  symetrie
-	                topwall   symetrie	
-					
-		}
-		solveur_pression petsc cholesky { }
-		convection { amont }
-		diffusion { }
-	}
-	Post_processing
-	{
-	 	format lata
-		fields dt_post 1.
-		{
-			vitesse elem
-			vitesse faces
-		}		
-	}  
-}	 
+    Navier_Stokes_standard
+    {
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            inlet frontiere_ouverte_vitesse_imposee champ_front_debit champ_front_fonc_txyz 2 2.*t+x+1. y
+            outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            bottomwall  symetrie
+            topwall   symetrie
+
+        }
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+    }
+    Post_processing
+    {
+        format lata
+        fields dt_post 1.
+        {
+            vitesse elem
+            vitesse faces
+        }
+    }
+}
 
 Solve pb
 End

@@ -1,5 +1,5 @@
-# Hydraulique 2D pour tester le terme de convection de
-  l'equation de bilan de quantite de mouvement #
+# Hydraulique 2D pour tester le terme de convection de #
+#  l'equation de bilan de quantite de mouvement #
 
 dimension 2
 
@@ -10,18 +10,18 @@ Domaine dom
 
 Mailler dom
 {
-        Pave Cavite
-        {
-                Origine 0. 0.
-                Nombre_de_noeuds 11 21
-                Longueurs 1. 1.
-        }
-        {
-                Bord Gauche   X = 0.  0. <= Y <= 1.
-                Bord Droit    X = 1.  0. <= Y <= 1.
-                Bord Bas      Y = 0.  0. <= X <= 1.
-                Bord Haut     Y = 1.  0. <= X <= 1.
-        }
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_noeuds 11 21
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche   X = 0.  0. <= Y <= 1.
+        Bord Droit    X = 1.  0. <= Y <= 1.
+        Bord Bas      Y = 0.  0. <= X <= 1.
+        Bord Haut     Y = 1.  0. <= X <= 1.
+    }
 }
 
 EF dis
@@ -29,21 +29,21 @@ EF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 1.
-	dt_min 5.e-7
-	dt_max 0.025
-	dt_impr 1.e-1
-	dt_sauv 1.e-3
-	seuil_statio 1.e-8
-	seuil_statio 4e-7
+    tinit 0
+    tmax 1.
+    dt_min 5.e-7
+    dt_max 0.025
+    dt_impr 1.e-1
+    dt_sauv 1.e-3
+    seuil_statio 1.e-8
+    seuil_statio 4e-7
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Fonc_XYZ dom 1 1.5
-	rho Champ_Uniforme 1 2.
+    mu Champ_Fonc_XYZ dom 1 1.5
+    rho Champ_Uniforme 1 2.
 }
 
 Associate pb dom
@@ -54,52 +54,47 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
+    Navier_Stokes_standard
+    {
 
-                methode_calcul_pression_initiale avec_sources_et_operateurs
-		solveur_pression GCP { 
-			precond ssor { omega -1.5 } 
-			seuil 1.e-12 
-		}		
-		convection { generic centre }
-		diffusion { negligeable }
-		initial_conditions {
-			vitesse Champ_Fonc_XYZ dom 2 (4.*x) (-4.*y)
-			}
-		boundary_conditions {
-			Gauche frontiere_ouverte_vitesse_imposee 
-				Champ_Front_Fonc_tXYZ 2 (4.*x) (-4.*y)
-			Bas frontiere_ouverte_vitesse_imposee
-				Champ_Front_Fonc_tXYZ 2 (4.*x) (-4.*y)
-			Haut frontiere_ouverte_vitesse_imposee  
-				Champ_Front_Fonc_tXYZ 2 (4.*x) (-4.*y)	
-			Droit frontiere_ouverte_pression_imposee 
-				Champ_Front_Fonc_XYZ 1 (2.*(4.*4.)/2.*(2.-x^2-y^2))
-		}
-	}
-
-	Post_processing
-	{
-		Definition_champs 
-			{
-vitesse_convection_som_dom  Interpolation {
-                                        localisation som
-                                        source Operateur_Eqn {
-                                         numero_op 1
-                                         source refChamp { Pb_champ pb vitesse }
+        methode_calcul_pression_initiale avec_sources_et_operateurs
+        solveur_pression GCP {
+            precond ssor { omega -1.5 }
+            seuil 1.e-12
         }
+        convection { generic centre }
+        diffusion { negligeable }
+        initial_conditions {
+            vitesse Champ_Fonc_XYZ dom 2 (4.*x) (-4.*y)
         }
+        boundary_conditions {
+            Gauche frontiere_ouverte_vitesse_imposee Champ_Front_Fonc_tXYZ 2 (4.*x) (-4.*y)
+            Bas frontiere_ouverte_vitesse_imposee Champ_Front_Fonc_tXYZ 2 (4.*x) (-4.*y)
+            Haut frontiere_ouverte_vitesse_imposee Champ_Front_Fonc_tXYZ 2 (4.*x) (-4.*y)
+            Droit frontiere_ouverte_pression_imposee Champ_Front_Fonc_XYZ 1 (2.*(4.*4.)/2.*(2.-x^2-y^2))
+        }
+    }
 
-			
-}	
-		fields dt_post 1.e-1
-		{
-			pression_pa elem
-			vitesse som
-			vitesse_convection_som_dom
-		}
-	}
+    Post_processing
+    {
+        Definition_champs {
+            vitesse_convection_som_dom  Interpolation {
+                localisation som
+                source Operateur_Eqn {
+                    numero_op 1
+                    source refChamp { Pb_champ pb vitesse }
+                }
+            }
+
+
+        }
+        fields dt_post 1.e-1
+        {
+            pression_pa elem
+            vitesse som
+            vitesse_convection_som_dom
+        }
+    }
 }
 
 Solve pb

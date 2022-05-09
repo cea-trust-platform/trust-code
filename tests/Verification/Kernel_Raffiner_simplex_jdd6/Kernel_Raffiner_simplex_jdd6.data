@@ -41,16 +41,16 @@ Read_file domain_5 domain_5.geom
 
 postraiter_domaine
 {
-   domaines 
-   { 
-      domain_0
-      domain_1
-      domain_2
-      domain_3
-      domain_4
-      domain_5
-   }
-   format lml 
+    domaines
+    {
+        domain_0
+        domain_1
+        domain_2
+        domain_3
+        domain_4
+        domain_5
+    }
+    format lml
 }
 analyse_angle domain_5 180
 analyse_angle domain_0 180

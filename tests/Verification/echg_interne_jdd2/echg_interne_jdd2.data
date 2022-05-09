@@ -52,9 +52,9 @@ Read sol
     rho Champ_Uniforme 1 2
     lambda Champ_Uniforme_morceaux dom 1
     {
-	    defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
-            left_elem 0.01
-            right_elem 0.03
+        defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
+        left_elem 0.01
+        right_elem 0.03
     }
     Cp Champ_Uniforme 1 0.5
 }
@@ -78,13 +78,13 @@ Read pb
             Gauche paroi_temperature_imposee        Champ_Front_Uniforme 1 20.
             Droit paroi_temperature_imposee         Champ_Front_Uniforme 1 100.
 
-#      interne_gauche Paroi_echange_global_impose
-            h_imp Champ_Front_Uniforme 1 100.
-            T_ext Champ_Front_Uniforme 1 50.
+            /* interne_gauche Paroi_echange_global_impose
+                h_imp Champ_Front_Uniforme 1 100.
+                T_ext Champ_Front_Uniforme 1 50.
 
-            interne_droite Paroi_echange_global_impose
-            h_imp Champ_Front_Uniforme 1 100.
-            T_ext Champ_Front_Uniforme 1 70.   #
+             interne_droite Paroi_echange_global_impose
+                h_imp Champ_Front_Uniforme 1 100.
+                T_ext Champ_Front_Uniforme 1 70. */
 
             interne_tout Paroi_echange_interne_impose
             h_gap Champ_Front_Uniforme 1 1.0e-12

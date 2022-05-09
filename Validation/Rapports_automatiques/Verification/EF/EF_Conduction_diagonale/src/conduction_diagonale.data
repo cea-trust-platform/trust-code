@@ -10,32 +10,30 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0. 0.
-		Nombre_de_Noeuds 51 5 5 
-		Longueurs 2. 1. 1.
-	}
-	{
-		Bord Devant    X = 2. 0. <= Y <= 1. 0. <= Z <= 1.
-		Bord Derriere  X = 0. 0. <= Y <= 1. 0. <= Z <= 1.
-		Bord Droit     Y = 1. 0. <= X <= 2. 0. <= Z <= 1.
-		Bord Gauche    Y = 0. 0. <= X <= 2. 0. <= Z <= 1.
-		Bord Bas       Z = 0. 0. <= X <= 2. 0. <= Y <= 1.
-		Bord Haut      Z = 1. 0. <= X <= 2. 0. <= Y <= 1.
-	}
-} 
-
-
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 51 5 5
+        Longueurs 2. 1. 1.
+    }
+    {
+        Bord Devant    X = 2. 0. <= Y <= 1. 0. <= Z <= 1.
+        Bord Derriere  X = 0. 0. <= Y <= 1. 0. <= Z <= 1.
+        Bord Droit     Y = 1. 0. <= X <= 2. 0. <= Z <= 1.
+        Bord Gauche    Y = 0. 0. <= X <= 2. 0. <= Z <= 1.
+        Bord Bas       Z = 0. 0. <= X <= 2. 0. <= Y <= 1.
+        Bord Haut      Z = 1. 0. <= X <= 2. 0. <= Y <= 1.
+    }
+}
 transformer dom (x/2.0-y/2.0-sqrt(2.0)*z/2.0) (sqrt(2.0)*x/2.0+sqrt(2.0)*y/2.0) (x/2.0-y/2.0+sqrt(2.0)*z/2.0)
-
 # END MESH #
+
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -49,26 +47,26 @@ EF dis
 Scheme_euler_implicit sch
 Read sch
 {
-	tinit 0
-	tmax 300.
-	dt_min 0.00001
-	dt_impr 0.00001
-	dt_sauv 100
-	seuil_statio 1.e-8
-solveur piso { seuil_convergence_solveur 1e-8 } 
-facsec 1e2
+    tinit 0
+    tmax 300.
+    dt_min 0.00001
+    dt_impr 0.00001
+    dt_sauv 100
+    seuil_statio 1.e-8
+    solveur piso { seuil_convergence_solveur 1e-8 }
+    facsec 1e2
 }
-#
-champ_fonc_xyz ll Read ll dom 1 1+1.125*x
+
+/* champ_fonc_xyz ll Read ll dom 1 1+1.125*x
 ecrire_champ_med dom ll ll.med
-	lambda Champ_fonc_med  last_time ll.med dom ll elem 0.
-#
+lambda Champ_fonc_med  last_time ll.med dom ll elem 0. */
+
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 1.
-	lambda Champ_Uniforme 1 1.
-	Cp Champ_Uniforme 1 1.
+    rho Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.
+    Cp Champ_Uniforme 1 1.
 }
 Associate pb dom
 Associate pb sch
@@ -78,32 +76,30 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1 2. 
-			}
-		boundary_conditions {
-			Haut paroi_adiabatique
-			Bas symetrie
-			Devant paroi_temperature_imposee
-			      Champ_Front_Uniforme 1 4.
-			Derriere paroi_temperature_imposee
-			      Champ_Front_Uniforme 1 2.
-			Droit paroi_adiabatique
-			Gauche symetrie
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 2.
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Bas symetrie
+            Devant paroi_temperature_imposee Champ_Front_Uniforme 1 4.
+            Derriere paroi_temperature_imposee Champ_Front_Uniforme 1 2.
+            Droit paroi_adiabatique
+            Gauche symetrie
+        }
+    }
 
-	Post_processing
-	{
-		format lata
-		fields dt_post 30.
-		{
-			temperature som
-		}
-	}
+    Post_processing
+    {
+        format lata
+        fields dt_post 30.
+        {
+            temperature som
+        }
+    }
 }
 
 Solve pb

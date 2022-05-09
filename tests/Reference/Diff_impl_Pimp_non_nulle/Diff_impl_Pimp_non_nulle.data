@@ -11,9 +11,9 @@ Read_file dom_pb1 croix_Pb1.geom
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -27,23 +27,23 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	tmax 1000.
-	dt_min 0.0001
-	dt_max 0.005
-	dt_impr 0.0001
-	dt_sauv 1000
-	seuil_statio 1.e-4
-	diffusion_implicite 1
-	seuil_diffusion_implicite 1.e-6
-	nb_pas_dt_max 15
+    tinit 0.
+    tmax 1000.
+    dt_min 0.0001
+    dt_max 0.005
+    dt_impr 0.0001
+    dt_sauv 1000
+    seuil_statio 1.e-4
+    diffusion_implicite 1
+    seuil_diffusion_implicite 1.e-6
+    nb_pas_dt_max 15
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 2
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 2
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom_pb1
@@ -54,39 +54,39 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-9 }
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 0. 0. 0.
-			}
-		boundary_conditions {
-nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 2.
-paroi paroi_fixe
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-9 }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0. 0. 0.
+        }
+        boundary_conditions {
+            nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 2.
+            paroi paroi_fixe
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_pression pression periode 0.0001 
-				points 1 1. 0. 0.
-		}
-		fields dt_post 0.04
-		{
-			pression elem
-			vitesse som
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 0.0001
+            points 1 1. 0. 0.
+        }
+        fields dt_post 0.04
+        {
+            pression elem
+            vitesse som
+        }
+    }
 }
 
 Solve pb

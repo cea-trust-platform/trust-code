@@ -55,10 +55,12 @@ lire mil_fluide
 {
     rho      champ_uniforme 1  2000.0
     cp       champ_uniforme 1  3075.0
-    beta_th  champ_fonc_tabule { pb viscosite_dynamique 
-                                 pb conductivite 
-                                 pb temperature } 
-                               1
+    beta_th  champ_fonc_tabule {
+        pb viscosite_dynamique
+        pb conductivite
+        pb temperature
+    }
+    1
     {
         2 0 1 # viscosite #
         3 0 0.4 1 # conductivite #

@@ -8,25 +8,25 @@ Domaine dom
 
 # BEGIN MESH #
 Mailler dom {
-	Pave Cavite {
-		Origine 0 0
-     		Nombre_de_Noeuds 31 11
-		Longueurs 30 10
-	} {
-		Bord Haut Y = 10   0 <= X <= 30
-		Bord Bas Y = 0     0 <= X <= 30
-		Bord Entree X = 30 0 <= Y <= 10
-		Bord Sortie X = 0  0 <= Y <= 10
-	}
+    Pave Cavite {
+        Origine 0 0
+        Nombre_de_Noeuds 31 11
+        Longueurs 30 10
+    } {
+        Bord Haut Y = 10   0 <= X <= 30
+        Bord Bas Y = 0     0 <= X <= 30
+        Bord Entree X = 30 0 <= Y <= 10
+        Bord Sortie X = 0  0 <= Y <= 10
+    }
 }
 Trianguler_H dom
 
 Sous_Zone zone1
 Associate zone1 dom
 Read zone1 {
-   Rectangle
-      Origine 10 2
-      Cotes   10 6
+    Rectangle
+    Origine 10 2
+    Cotes   10 6
 }
 
 # END MESH #
@@ -34,9 +34,9 @@ Read zone1 {
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -52,13 +52,13 @@ END SCATTER #
 # Le schema en temps #
 Scheme_euler_explicit sch
 Read sch {
-	tinit   0
-	tmax    10
-	dt_min  1e-10
-	dt_max  1
-	dt_impr 1
-	dt_sauv 100
-	seuil_statio 1e-8
+    tinit   0
+    tmax    10
+    dt_min  1e-10
+    dt_max  1
+    dt_impr 1
+    dt_sauv 100
+    seuil_statio 1e-8
 }
 
 VEFPreP1B dis
@@ -66,8 +66,8 @@ VEFPreP1B dis
 # Le Fluide #
 Fluide_Incompressible eau
 Read eau {
-	mu Champ_Uniforme 1 0.01
-	rho Champ_Uniforme 1 1000
+    mu Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 1000
 }
 
 
@@ -80,46 +80,46 @@ Discretize pb dis
 
 Read pb {
 
-	Navier_Stokes_standard {
-		solveur_pression GCP {
-			precond ssor { omega 1.5 }
-			seuil 1.e-7
-		}
-		Sources {
-			Perte_charge_directionnelle {
-				diam_hydr champ_uniforme 1 0.02
-				lambda 96/Re
-				sous_zone zone1
-				direction champ_uniforme 2 1 1
-			}
-		}
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0 0
-		}
-		boundary_conditions {
-			Haut   symetrie
-			Bas    symetrie
-			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0
-			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1 0
-		}
-	}
+    Navier_Stokes_standard {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-7
+        }
+        Sources {
+            Perte_charge_directionnelle {
+                diam_hydr champ_uniforme 1 0.02
+                lambda 96/Re
+                sous_zone zone1
+                direction champ_uniforme 2 1 1
+            }
+        }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0 0
+        }
+        boundary_conditions {
+            Haut   symetrie
+            Bas    symetrie
+            Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0
+            Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1 0
+        }
+    }
 
-	Post_processing {
-		Probes 
-		{
-		   sonde_vitesse vitesse periode 0.1 point 1 15 5
-		   profil_vitesse vitesse periode 0.1 segment 10 15 0 15 10
-		}
-		format lml
-		fields dt_post 1 {
-			pression elem
-			vitesse elem
-			pression som
-			vitesse som
-		}
-	}
+    Post_processing {
+        Probes
+        {
+            sonde_vitesse vitesse periode 0.1 point 1 15 5
+            profil_vitesse vitesse periode 0.1 segment 10 15 0 15 10
+        }
+        format lml
+        fields dt_post 1 {
+            pression elem
+            vitesse elem
+            pression som
+            vitesse som
+        }
+    }
 }
 
 Solve pb
@@ -132,32 +132,32 @@ Autres exemples :
 
 
 
-			Perte_charge_directionnelle {
-				diam_hydr champ_uniforme 1 0.02
-				lambda 96/Re
-				sous_zone zone1
-				direction champ_uniforme 2 1 1
-			}
+Perte_charge_directionnelle {
+    diam_hydr champ_uniforme 1 0.02
+    lambda 96/Re
+    sous_zone zone1
+    direction champ_uniforme 2 1 1
+}
 
 
-			Perte_charge_isotrope {
-				diam_hydr champ_uniforme 1 0.1
-				lambda 64/Re
-			}
+Perte_charge_isotrope {
+    diam_hydr champ_uniforme 1 0.1
+    lambda 64/Re
+}
 
 
-			Perte_charge_isotrope {
-				diam_hydr champ_uniforme 1 0.1
-				lambda 96/Re
-				sous_zone zone1
-			}
+Perte_charge_isotrope {
+    diam_hydr champ_uniforme 1 0.1
+    lambda 96/Re
+    sous_zone zone1
+}
 
 
-			Perte_charge_anisotrope {
-				diam_hydr champ_uniforme 1 0.01
-				lambda_ortho 64/Re
-				lambda 64/Re
-				sous_zone zone1
-				direction champ_uniforme 2 1 1
-			}
+Perte_charge_anisotrope {
+    diam_hydr champ_uniforme 1 0.01
+    lambda_ortho 64/Re
+    lambda 64/Re
+    sous_zone zone1
+    direction champ_uniforme 2 1 1
+}
 

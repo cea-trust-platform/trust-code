@@ -3,19 +3,19 @@
 # lance_test 1 ecart #
 Dimension 3
 
-domaine SOLIDE 
+domaine SOLIDE
 Pb_conduction pb_solide
 
 # BEGIN MESH #
-Read_file SOLIDE dom_SOLIDE.geom 
+Read_file SOLIDE dom_SOLIDE.geom
 # END MESH #
 
 # BEGIN PARTITION
 Partition SOLIDE
 {
-	Partition_tool tranche { tranches 1 1 2 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 1 1 2 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -28,90 +28,90 @@ END SCATTER #
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 25
-        tinit 0 
-        tmax 2.6
-        dt_min 1.E-8
-        dt_max 0.005
-        dt_impr 1.E-8
-        dt_sauv 1
-        seuil_statio 1.e-6
-        facsec 1.
-	diffusion_implicite 1
-	seuil_diffusion_implicite 1.e-12
+    nb_pas_dt_max 25
+    tinit 0
+    tmax 2.6
+    dt_min 1.E-8
+    dt_max 0.005
+    dt_impr 1.E-8
+    dt_sauv 1
+    seuil_statio 1.e-6
+    facsec 1.
+    diffusion_implicite 1
+    seuil_diffusion_implicite 1.e-12
 }
 
 VEFPreP1B cubes
 Read cubes { P0 }
 
-Solide ceramique    
-Read ceramique  
+Solide ceramique
+Read ceramique
 {
 
-        rho Champ_Uniforme 1 2225.
-        lambda Champ_Uniforme 1 59.48     
-        Cp Champ_Uniforme 1 6
+    rho Champ_Uniforme 1 2225.
+    lambda Champ_Uniforme 1 59.48
+    Cp Champ_Uniforme 1 6
 }
 
 Associate pb_solide SOLIDE
-Associate pb_solide ceramique     
+Associate pb_solide ceramique
 
 Associate pb_solide sch
 Discretize pb_solide cubes
 
 Read pb_solide
 {
-        Conduction
-        {
-                diffusion { }
-                initial_conditions {
-                        temperature Champ_Uniforme 1 751.
-                        }
-                sources {
-                       Puissance_Thermique Champ_uniforme 1 30E+06 
-                        }
-                boundary_conditions {
-                        PAROI		paroi_adiabatique
-                        HAUT		paroi_adiabatique           
-                        BAS		paroi_adiabatique
-                        INTERFACE   	Paroi_Echange_contact_Correlation_VEF 
-					{
-					dir 2
-					Tinf 1180
-					Tsup 751
-					lambda 2.774e-3*T^0.701
-					rho 90e5/(2077.22*T+90e5*(9.5e-4+9.5e-4/(1-3.4e-2*T)+2.74e-3/(1+9.4e-4*T)))
-					Cp 5193
-					mu 3.953e-7*T^0.687
-					debit -109.5
-					Dh 0.008+0.008
-					dt_impr 0.1
-					Nu 0.023*Re^0.8*Pr^(1./3.)
-					surface 3.1415*0.25*Dh*Dh
-					N 10
-					xinf 0.
-					xsup 0.8
-					}
-                }
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 751.
         }
-        Post_processing
-        {
-                Probes
-                {
-                         coupe_combustible_long_canal_1_Tparoi    temperature periode  0.1  segment 100  0.0085 0.034 0. 0.0085 0.034      0.8 
-			 sonde_combustible_entree    temperature periode 0.1   points 5 
-				0.01 0.034 0.75
-				0.01 0.8 0.75
- 				0.01 0.1 0.75
- 				0.01 0.12 0.75
-				0.01 0.16 0.75
-                       
-               }
-                fields dt_post .2
-                {
-                   temperature elem
-                }
+        sources {
+            Puissance_Thermique Champ_uniforme 1 30E+06
         }
+        boundary_conditions {
+            PAROI		paroi_adiabatique
+            HAUT		paroi_adiabatique
+            BAS		paroi_adiabatique
+            INTERFACE   	Paroi_Echange_contact_Correlation_VEF
+            {
+                dir 2
+                Tinf 1180
+                Tsup 751
+                lambda 2.774e-3*T^0.701
+                rho 90e5/(2077.22*T+90e5*(9.5e-4+9.5e-4/(1-3.4e-2*T)+2.74e-3/(1+9.4e-4*T)))
+                Cp 5193
+                mu 3.953e-7*T^0.687
+                debit -109.5
+                Dh 0.008+0.008
+                dt_impr 0.1
+                Nu 0.023*Re^0.8*Pr^(1./3.)
+                surface 3.1415*0.25*Dh*Dh
+                N 10
+                xinf 0.
+                xsup 0.8
+            }
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            coupe_combustible_long_canal_1_Tparoi    temperature periode  0.1  segment 100  0.0085 0.034 0. 0.0085 0.034      0.8
+            sonde_combustible_entree    temperature periode 0.1   points 5
+            0.01 0.034 0.75
+            0.01 0.8 0.75
+            0.01 0.1 0.75
+            0.01 0.12 0.75
+            0.01 0.16 0.75
+
+        }
+        fields dt_post .2
+        {
+            temperature elem
+        }
+    }
 }
 
 

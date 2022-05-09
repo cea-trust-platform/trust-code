@@ -7,29 +7,29 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0. 0.
-     		Nombre_de_Noeuds 51 51 51
-		Longueurs 0.01 0.01 0.003
-		}
-		{
-		Bord Gauche X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.003
-		Bord Haut   Y = 0.01  0. <= X <= 0.01 0. <= Z <= 0.003
-		Bord Bas    Y = 0.    0. <= X <= 0.01 0. <= Z <= 0.003
-		Bord Droit  X = 0.01  0. <= Y <= 0.01 0. <= Z <= 0.003
-		Bord Sud    Z = 0.    0. <= X <= 0.01 0. <= Y <= 0.01
-		Bord Nord   Z = 0.003 0. <= X <= 0.01 0. <= Y <= 0.01
-		}
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 51 51 51
+        Longueurs 0.01 0.01 0.003
+    }
+    {
+        Bord Gauche X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.003
+        Bord Haut   Y = 0.01  0. <= X <= 0.01 0. <= Z <= 0.003
+        Bord Bas    Y = 0.    0. <= X <= 0.01 0. <= Z <= 0.003
+        Bord Droit  X = 0.01  0. <= Y <= 0.01 0. <= Z <= 0.003
+        Bord Sud    Z = 0.    0. <= X <= 0.01 0. <= Y <= 0.01
+        Bord Nord   Z = 0.003 0. <= X <= 0.01 0. <= Y <= 0.01
+    }
 }
 
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -43,19 +43,19 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	nb_pas_dt_max 300
-	dt_max 1
-	dt_impr 1e8
-	dt_sauv 1e8
-	seuil_statio 1.e-8
+    tinit 0.
+    nb_pas_dt_max 300
+    dt_max 1
+    dt_impr 1e8
+    dt_sauv 1e8
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-	rho Champ_Uniforme 1 1.17
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
 }
 
 Champ_Uniforme gravite
@@ -70,23 +70,23 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression amgx GCP { precond c-amg { } seuil 1.000000e-20 impr }
-		convection { negligeable }
-		diffusion { negligeable }
-		initial_conditions {
-			vitesse champ_fonc_xyz dom 3 0 0 0
-			}
-		boundary_conditions {
-			Haut paroi_fixe
-			Bas paroi_fixe
-			Gauche frontiere_ouverte_vitesse_imposee champ_front_fonc_txyz 3 1+cos(t) 0 0
-			Droit frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
-			Sud Symetrie
-			Nord Symetrie
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression amgx GCP { precond c-amg { } seuil 1.000000e-20 impr }
+        convection { negligeable }
+        diffusion { negligeable }
+        initial_conditions {
+            vitesse champ_fonc_xyz dom 3 0 0 0
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Gauche frontiere_ouverte_vitesse_imposee champ_front_fonc_txyz 3 1+cos(t) 0 0
+            Droit frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            Sud Symetrie
+            Nord Symetrie
+        }
+    }
 }
 EcritureLectureSpecial 0
 Solve pb

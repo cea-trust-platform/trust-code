@@ -8,27 +8,27 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 2 
-		Longueurs 1. 1.
-	}
-	{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-	}
-} 
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 2
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
+}
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -42,45 +42,45 @@ VDF dis
 Scheme_euler_implicit sch
 Read sch
 {
-	tinit 0
+    tinit 0
 	nb_pas_dt_max 3
-	tmax 300.
-	dt_min 0.00001
-	dt_max 0.1
-	dt_impr 0.00001
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tmax 300.
+    dt_min 0.00001
+    dt_max 0.1
+    dt_impr 0.00001
+    dt_sauv 100
+    seuil_statio 1.e-8
 
-	facsec_max 100
-	facsec 10
-	solveur implicite { solveur gmres { diag seuil 1e-20 nb_it_max 3 } } 
+    facsec_max 100
+    facsec 10
+    solveur implicite { solveur gmres { diag seuil 1e-20 nb_it_max 3 } }
 
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_tabule_temps 1
-	# 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
-	{
-     3	
-	    0     24    25  
-	    2.0   2.0   2.0     
-	}
-	lambda Champ_tabule_temps 1
-	# 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
-	  { 
-	    3
-	    0     149   150  
-	    0.01  0.01  0.04
-	  }
-	Cp Champ_tabule_temps 1
-	# 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
-	{
-     3	
-	   0     24    25  
-	   0.5   0.5   0.5     
-	}
+    rho Champ_tabule_temps 1
+    # 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
+    {
+        3
+        0     24    25
+        2.0   2.0   2.0
+    }
+    lambda Champ_tabule_temps 1
+    # 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
+    {
+        3
+        0     149   150
+        0.01  0.01  0.04
+    }
+    Cp Champ_tabule_temps 1
+    # 1ere ligne: dimension / 2eme ligne: temps / 3eme ligne: valeurs #
+    {
+        3
+        0     24    25
+        0.5   0.5   0.5
+    }
 
 }
 Associate pb dom
@@ -91,32 +91,32 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1  10.0
-			}
-		boundary_conditions {
-			Haut paroi_adiabatique
-			Bas paroi_adiabatique
-			Gauche paroi_temperature_imposee        Champ_Front_Uniforme 1 10.		
-			Droit paroi_flux_impose                 Champ_Front_Uniforme 1 0.05						
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1  10.0
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche paroi_temperature_imposee        Champ_Front_Uniforme 1 10.
+            Droit paroi_flux_impose                 Champ_Front_Uniforme 1 0.05
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_horiz temperature periode 1. segment 10 0.05 0.5 0.95 0.5 
-  		sonde_point temperature periode 5. points 1 0.983 0.5 
-		}
-		fields dt_post 1.e10
-		{
-			temperature
-		}				
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_horiz temperature periode 1. segment 10 0.05 0.5 0.95 0.5
+            sonde_point temperature periode 5. points 1 0.983 0.5
+        }
+        fields dt_post 1.e10
+        {
+            temperature
+        }
+    }
 }
 
 Solve pb

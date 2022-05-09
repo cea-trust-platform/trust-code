@@ -14,9 +14,9 @@ trianguler_h dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -30,12 +30,12 @@ VEFPreP1B dis
 Scheme_euler_implicit sch
 Read sch
 {
-	tinit 0
+    tinit 0
 	nb_pas_dt_max 3
-	seuil_statio 1e-2
-	facsec_max 100
-	facsec 10
-	solveur implicite { solveur gmres { diag seuil 1e-20 nb_it_max 3 } }
+    seuil_statio 1e-2
+    facsec_max 100
+    facsec 10
+    solveur implicite { solveur gmres { diag seuil 1e-20 nb_it_max 3 } }
 }
 
 /*
@@ -56,9 +56,9 @@ Read sch
 Solide sol
 Read sol
 {
-	rho       Champ_uniforme  1 1.0
-  lambda    Champ_uniforme  1 3.0
-  Cp        Champ_uniforme  1 1.0
+    rho       Champ_uniforme  1 1.0
+    lambda    Champ_uniforme  1 3.0
+    Cp        Champ_uniforme  1 1.0
 }
 Associate pb dom
 Associate pb sch
@@ -68,34 +68,34 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1  5.0
-			}
-	  sources {  }
-		boundary_conditions {
-		  Haut   paroi_adiabatique
-		  Bas    paroi_adiabatique
-			Gauche paroi_temperature_imposee       Champ_Front_Uniforme 1 0.0
-			Droit  paroi_echange_externe_impose   # si si, Externe .... #
-			        h_imp champ_front_uniforme 1 2.0
-			        T_ext champ_front_uniforme 1 10.0
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1  5.0
+        }
+        sources {  }
+        boundary_conditions {
+            Haut   paroi_adiabatique
+            Bas    paroi_adiabatique
+            Gauche paroi_temperature_imposee       Champ_Front_Uniforme 1 0.0
+            Droit  paroi_echange_externe_impose   # si si, Externe .... #
+            h_imp champ_front_uniforme 1 2.0
+            T_ext champ_front_uniforme 1 10.0
+        }
+    }
 
-	Post_processing
-	{
-	  probes {
-  	  sonde_horiz nodes temperature periode 1. segment 21 -1.0 0.1 1.0 0.1   # aux centres des faces ... oupa? #
-	  }
-	  format lml
-	  fields dt_post 1.0
-	  {
-	    temperature
-	  }
-	}
+    Post_processing
+    {
+        probes {
+            sonde_horiz nodes temperature periode 1. segment 21 -1.0 0.1 1.0 0.1   # aux centres des faces ... oupa? #
+        }
+        format lml
+        fields dt_post 1.0
+        {
+            temperature
+        }
+    }
 
 
 }

@@ -15,15 +15,15 @@ VerifierCoin DOM_DOM { }
 
 Partition DOM_DOM
 {
-        Partition_tool tranche { tranches 8 1 1 }
-        Larg_joint 2
-        zones_name DOM
+    Partition_tool tranche { tranches 8 1 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
 
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones DOM_DOM
 END SCATTER #
 
@@ -35,26 +35,26 @@ VEFPreP1B dis
 Scheme_euler_implicit sch
 Read sch
 {
-        tinit 0.0
-        tmax  20
-        dt_start dt_fixe 1.e-5
-        dt_max 1.5
-        dt_impr 0.00001
-        dt_sauv 1000.
-        seuil_statio 1.e-8
-        facsec 5 
-        periode_sauvegarde_securite_en_heures 5
-        solveur implicite
-        {
-	solveur gmres { diag seuil 1e-20 impr nb_it_max 3 }
-        }
+    tinit 0.0
+    tmax  20
+    dt_start dt_fixe 1.e-5
+    dt_max 1.5
+    dt_impr 0.00001
+    dt_sauv 1000.
+    seuil_statio 1.e-8
+    facsec 5
+    periode_sauvegarde_securite_en_heures 5
+    solveur implicite
+    {
+        solveur gmres { diag seuil 1e-20 impr nb_it_max 3 }
+    }
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-        mu Champ_Uniforme 1 1.e-5
-        rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 1.e-5
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb DOM_DOM
@@ -66,35 +66,35 @@ Discretize pb dis
 
 Read pb
 {
-        Navier_Stokes_standard
-        {
-                solveur_pression petsc cholesky {  }
-                convection { amont }
-                diffusion { }
-                initial_conditions {
-                        vitesse Champ_Uniforme 3 0. 0.5 1
-                                        }
-                boundary_conditions {
-                        in frontiere_ouverte_vitesse_imposee
-                                champ_front_Uniforme 3 0. 0.5 0.0
-                        out1 frontiere_ouverte_pression_imposee
-                                Champ_front_pression_from_u 1e0*u_moy^2 
-                        out2 frontiere_ouverte_pression_imposee
-                                Champ_front_pression_from_u 2e0*u_moy^2 
-                        wall symetrie
-                                        }
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky {  }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0. 0.5 1
         }
-        Post_processing
-        {
-                Format lata
-                fields binaire dt_post 10.
-                       {
-                        pression_pa elem
-                        gradient_pression elem
-                        vitesse elem
-                       }
+        boundary_conditions {
+            in frontiere_ouverte_vitesse_imposee
+            champ_front_Uniforme 3 0. 0.5 0.0
+            out1 frontiere_ouverte_pression_imposee
+            Champ_front_pression_from_u 1e0*u_moy^2
+            out2 frontiere_ouverte_pression_imposee
+            Champ_front_pression_from_u 2e0*u_moy^2
+            wall symetrie
         }
-Sauvegarde_simple binaire TEST_CL.sauv
+    }
+    Post_processing
+    {
+        Format lata
+        fields binaire dt_post 10.
+        {
+            pression_pa elem
+            gradient_pression elem
+            vitesse elem
+        }
+    }
+    Sauvegarde_simple binaire TEST_CL.sauv
 
 }
 

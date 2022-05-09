@@ -25,12 +25,12 @@ Domaine dom_fluide
 Mailler dom_fluide
 {
     Pave Cavite3
-        {
+    {
         Origine 0.3 0.3 0.3
         Nombre_de_Noeuds 20 20 20
         Longueurs 0.7 0.7 0.7
-        }
-        {
+    }
+    {
         Bord Droit1    X = 0.3  0.3 <= Y <= 1.0  0.3 <= Z <= 1.0
         Bord Entree    Y = 1.0  0.3 <= X <= 0.7  0.3 <= Z <= 1.0
         Bord Haut3     Y = 1.0  0.7 <= X <= 1.0  0.3 <= Z <= 1.0
@@ -39,7 +39,7 @@ Mailler dom_fluide
         Bord Droit2    X = 1.0  0.7 <= Y <= 1.0  0.3 <= Z <= 1.0
         Bord lateral1  Z = 1.0  0.3 <= X <= 1.0  0.3 <= Y <= 1.0
         Bord lateral2  Z = 0.3  0.3 <= X <= 1.0  0.3 <= Y <= 1.0
-        }
+    }
 }
 # END MESH #
 
@@ -106,7 +106,7 @@ Read pb
     {
         diffusion { }
         convection { amont }
-        boundary_conditions 
+        boundary_conditions
         {
             Entree frontiere_ouverte_temperature_imposee    Champ_front_Uniforme 1 293.
             Sortie frontiere_ouverte_temperature_imposee    Champ_front_Uniforme 1 293.
@@ -126,10 +126,10 @@ Read pb
             sonde_pression pression     periode 1. points   1    0.55 0.55 0.55
             sonde_seg      temperature  periode 5. segment 10    0. 0.75 0.3 1. 0.75 0.3
         }
-	format lml
+        format lml
         fields dt_post 500.
         {
-	    vitesse elem 
+            vitesse elem
             temperature elem
             pression    som
             vitesse     som

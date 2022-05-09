@@ -4,32 +4,32 @@ Pb_Hydraulique pb
 Domaine dom
 # BEGIN MESH #
 Mailler dom
-{	Pave Cavite
-	{
-		Origine 0. 0. 0.
-		Nombre_de_Noeuds 11 11 11
-		Longueurs 2. 2. 2. 
-	}
-	{
-		Bord entree  X = 0.            	0. <= Y <= 2.0		0. <= Z <= 2.0          
-		Bord sortie  X = 2.0       	0. <= Y <= 2.0          0. <= Z <= 2.0
-		Bord bas     Y = 0.            	0. <= X <= 2.0          0. <= Z <= 2.0
-		Bord haut    Y = 2.0           	0. <= X <= 2.0          0. <= Z <= 2.0
-		Bord back    Z = 0.0		0. <= X <= 2.0		0. <= Y <= 2.0
-		Bord front   Z = 2.0		0. <= X <= 2.0		0. <= Y <= 2.0		
-	} 	
+{   Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 11 11 11
+        Longueurs 2. 2. 2.
+    }
+    {
+        Bord entree  X = 0.            	0. <= Y <= 2.0		0. <= Z <= 2.0
+        Bord sortie  X = 2.0       	0. <= Y <= 2.0          0. <= Z <= 2.0
+        Bord bas     Y = 0.            	0. <= X <= 2.0          0. <= Z <= 2.0
+        Bord haut    Y = 2.0           	0. <= X <= 2.0          0. <= Z <= 2.0
+        Bord back    Z = 0.0		0. <= X <= 2.0		0. <= Y <= 2.0
+        Bord front   Z = 2.0		0. <= X <= 2.0		0. <= Y <= 2.0
+    }
 }
 
 /* tetra_here */
 /* Transformer dom x*cos(pi/6)+z*sin(pi/6) y -x*sin(pi/6)+z*cos(pi/6) */
-				
+
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -43,18 +43,18 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 0
-	tinit 0
-	tmax 1e-5
-	dt_impr 0
-	dt_sauv 0
-	seuil_statio 1e5
+    nb_pas_dt_max 0
+    tinit 0
+    tmax 1e-5
+    dt_impr 0
+    dt_sauv 0
+    seuil_statio 1e5
 }
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 3.7e-05
-	rho Champ_Uniforme 1 1000
+    mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 1000
 }
 Associate pb dom
 Associate pb sch
@@ -63,61 +63,61 @@ Discretize pb dis
 Read pb
 {
 
-	 Navier_Stokes_standard
-	   {
-		projection_initiale 0
-	   	equation_non_resolue 1
-	   	solveur_pression petsc cholesky { }
-	   	convection { negligeable }
-	   	diffusion { negligeable }
-	   	initial_conditions {
-	   		vitesse Champ_fonc_xyz dom 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z 
-	   		}
-	   	boundary_conditions {
-	   		entree frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z 
-	   	        sortie frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z 
-	   		bas    frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z 
-	                haut   frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z 
-	   		front  frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z 
-	                back   frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z 
-	   	}
-	   }
+    Navier_Stokes_standard
+    {
+        projection_initiale 0
+        equation_non_resolue 1
+        solveur_pression petsc cholesky { }
+        convection { negligeable }
+        diffusion { negligeable }
+        initial_conditions {
+            vitesse Champ_fonc_xyz dom 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z
+        }
+        boundary_conditions {
+            entree frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z
+            sortie frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z
+            bas    frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z
+            haut   frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z
+            front  frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z
+            back   frontiere_ouverte_vitesse_imposee  Champ_Front_Fonc_xyz 3 x+2*y+3*z  1/2*x*x+1/2*y*y+1/2*z*z  1/3*x*x*x+1/3*y*y*y+1/3*z*z*z
+        }
+    }
 
 
-        Post_processing
-	{
+    Post_processing
+    {
 
-                definition_champs
-                {
-                        DU_DX Transformation { methode composante numero 0 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
-                        DU_DY Transformation { methode composante numero 1 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
-                        DU_DZ Transformation { methode composante numero 2 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
-                        DV_DX Transformation { methode composante numero 3 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
-                        DV_DY Transformation { methode composante numero 4 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
-                        DV_DZ Transformation { methode composante numero 5 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
-                        DW_DX Transformation { methode composante numero 6 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
-                        DW_DY Transformation { methode composante numero 7 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
-                        DW_DZ Transformation { methode composante numero 8 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
-                }
-
-
-	 	format lata
-		fields dt_post 0.
-		{
-			vitesse faces
-			DU_DX elem
-			DU_DY elem
-			DU_DZ elem
-			DV_DX elem
-			DV_DY elem
-			DV_DZ elem
-			DW_DX elem
-			DW_DY elem
-			DW_DZ elem
-		}
+        definition_champs
+        {
+            DU_DX Transformation { methode composante numero 0 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+            DU_DY Transformation { methode composante numero 1 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+            DU_DZ Transformation { methode composante numero 2 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+            DV_DX Transformation { methode composante numero 3 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+            DV_DY Transformation { methode composante numero 4 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+            DV_DZ Transformation { methode composante numero 5 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+            DW_DX Transformation { methode composante numero 6 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+            DW_DY Transformation { methode composante numero 7 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+            DW_DZ Transformation { methode composante numero 8 source refChamp { Pb_champ pb gradient_vitesse } localisation elem }
+        }
 
 
-	}
+        format lata
+        fields dt_post 0.
+        {
+            vitesse faces
+            DU_DX elem
+            DU_DY elem
+            DU_DZ elem
+            DV_DX elem
+            DV_DY elem
+            DV_DZ elem
+            DW_DX elem
+            DW_DY elem
+            DW_DZ elem
+        }
+
+
+    }
 }
 
 Solve pb

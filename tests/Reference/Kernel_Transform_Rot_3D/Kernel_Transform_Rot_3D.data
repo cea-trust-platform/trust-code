@@ -13,20 +13,20 @@ Domaine dom_rotz
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite1
-		{
-		Origine 0. 0. 0.
-     		Nombre_de_Noeuds 4 11 4
-		Longueurs 1. 1. 1.
-		}
-		{
-		Bord Gauche 				X = 0.   0. <= Y <= 1.  0. <= Z <= 1.
-		Bord Droite				X = 1.   0. <= Y <= 1.  0. <= Z <= 1.
-		Bord Avant    				Y = 0.   0. <= X <= 1.  0. <= Z <= 1.
-		Bord Arriere	   			Y = 1.   0. <= X <= 1.  0. <= Z <= 1.
-		Bord Bas				Z = 0.   0. <= X <= 1.  0. <= Y <= 1.
-		Bord Haut 				Z = 1.   0. <= X <= 1.  0. <= Y <= 1.
-		}
+    Pave Cavite1
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 4 11 4
+        Longueurs 1. 1. 1.
+    }
+    {
+        Bord Gauche 				X = 0.   0. <= Y <= 1.  0. <= Z <= 1.
+        Bord Droite				X = 1.   0. <= Y <= 1.  0. <= Z <= 1.
+        Bord Avant    				Y = 0.   0. <= X <= 1.  0. <= Z <= 1.
+        Bord Arriere	   			Y = 1.   0. <= X <= 1.  0. <= Z <= 1.
+        Bord Bas				Z = 0.   0. <= X <= 1.  0. <= Y <= 1.
+        Bord Haut 				Z = 1.   0. <= X <= 1.  0. <= Y <= 1.
+    }
 }
 
 Tetraedriser_homogene_compact dom
@@ -44,17 +44,17 @@ Ecrire_Fichier dom_roty dom_roty.geom
 Read_file dom_rotz dom_roty.geom
 Rotation dom_rotz Z 0. 0. 180.
 
-Postraiter_domaine 
-  { 
+Postraiter_domaine
+{
     format lata
     domaines { dom dom_rotx dom_roty dom_rotz }
-  }
+}
 
-Postraiter_domaine 
-  { 
+Postraiter_domaine
+{
     format lml
     domaines { dom dom_rotx dom_roty dom_rotz }
-  }
-  
+}
+
 End
 

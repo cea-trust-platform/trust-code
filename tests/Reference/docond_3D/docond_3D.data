@@ -4,15 +4,15 @@ dimension 3
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	tmax 1000. 
-	dt_min 1.E-4
-	dt_max 1.E-2
-        nb_pas_dt_max 1
-	dt_impr 1.E-4
-	dt_sauv 1000.
-	seuil_statio 1.e-30
-	facsec 0.8
+    tinit 0.
+    tmax 1000.
+    dt_min 1.E-4
+    dt_max 1.E-2
+    nb_pas_dt_max 1
+    dt_impr 1.E-4
+    dt_sauv 1000.
+    seuil_statio 1.e-30
+    facsec 0.8
 }
 
 
@@ -42,15 +42,15 @@ Read Suz1900 { Fichier Suz1900 }
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 1
-	zones_name DOM1
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 1
+    zones_name DOM1
 }
 Partition dom_pb2
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 2
-	zones_name DOM2
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 2
+    zones_name DOM2
 }
 End
 END PARTITION #
@@ -76,31 +76,31 @@ VDF cubesregu
 Fluide_Incompressible air
 Read air
 {
-        mu Champ_Uniforme 1 2.3E-4  
-	rho Champ_Uniforme 1 .882
-	lambda Champ_Uniforme 1 3.4E-2     
-	Cp Champ_Uniforme 1 1014.
-        beta_th Champ_Uniforme 1 2.5E-3
+    mu Champ_Uniforme 1 2.3E-4
+    rho Champ_Uniforme 1 .882
+    lambda Champ_Uniforme 1 3.4E-2
+    Cp Champ_Uniforme 1 1014.
+    beta_th Champ_Uniforme 1 2.5E-3
 }
 
 Champ_Uniforme gravite
 Read gravite 3 0. 0. -9.81
 Associate air gravite
 Associate pb2 dom_pb2
-Associate pb2 air  
+Associate pb2 air
 
 
-Solide acier    
-Read acier  
+Solide acier
+Read acier
 {
-	rho Champ_Uniforme 1 8000.
-	lambda Champ_Uniforme 1 20.     
-	Cp Champ_Uniforme 1 1.
+    rho Champ_Uniforme 1 8000.
+    lambda Champ_Uniforme 1 20.
+    Cp Champ_Uniforme 1 1.
 }
 
 
 Associate pb1 dom_pb1
-Associate pb1 acier     
+Associate pb1 acier
 
 
 Probleme_Couple Conduccouplethermoh
@@ -112,109 +112,110 @@ Discretize Conduccouplethermoh cubesregu
 
 Read pb1
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1 20.
-			}
-                sources {
-                       Puissance_Thermique Champ_uniforme_Morceaux dom_pb1 1
-                          { defaut 0. Suz1300 2.68E+04
-                                      Suz1600 1.91E+04
-                                      Suz1900 1.56E+04 }
-                        }
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 20.
+        }
+        sources {
+            Puissance_Thermique Champ_uniforme_Morceaux dom_pb1 1
+            {   defaut 0. Suz1300 2.68E+04
+                Suz1600 1.91E+04
+                Suz1900 1.56E+04
+            }
+        }
 
-		boundary_conditions {
-                        bord1               paroi_adiabatique
-                        bord3               paroi_adiabatique
-                        bord4               symetrie              
-			raccord5             paroi_echange_contact_vdf  pb2 raccord5 temperature -4. 
-		}
-	}
-	Post_processing
-	{
-		Probes
-		{
-			sonde_Tpuits        temperature periode 1.E-5   points 4
-                           .44  .01  2.
-                           .44  .01  5.
-                           .44  .01  8.
-                           .44  .01  11.
-		}
-		fields dt_post 500.
-		{
-		   temperature elem
-		}
-	}
-        Sauvegarde binaire pb1.sauv
+        boundary_conditions {
+            bord1               paroi_adiabatique
+            bord3               paroi_adiabatique
+            bord4               symetrie
+            raccord5             paroi_echange_contact_vdf  pb2 raccord5 temperature -4.
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_Tpuits        temperature periode 1.E-5   points 4
+            .44  .01  2.
+            .44  .01  5.
+            .44  .01  8.
+            .44  .01  11.
+        }
+        fields dt_post 500.
+        {
+            temperature elem
+        }
+    }
+    Sauvegarde binaire pb1.sauv
 
 }
 
 Read pb2
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.500000 } 
-			seuil 1.000000e-07 
-			impr 
-		}
-		convection { quick }
-		diffusion { }
-		sources { boussinesq_temperature { T0 20. } }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 0. 0. 0.
-			}
-		boundary_conditions {
-                        bord1        paroi_fixe
-	          	bord2       frontiere_ouverte_gradient_pression_impose champ_front_uniforme 1  0.
-	          	bord4       symetrie                                                        
-                        raccord5     paroi_fixe
-		}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.500000 }
+            seuil 1.000000e-07
+            impr
+        }
+        convection { quick }
+        diffusion { }
+        sources { boussinesq_temperature { T0 20. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0. 0. 0.
+        }
+        boundary_conditions {
+            bord1        paroi_fixe
+            bord2       frontiere_ouverte_gradient_pression_impose champ_front_uniforme 1  0.
+            bord4       symetrie
+            raccord5     paroi_fixe
+        }
 
-	}
+    }
 
-	Convection_Diffusion_Temperature 
-	{
-		diffusion { }
-		convection { quick }
-		initial_conditions {
-			temperature Champ_Uniforme 1 20.
-			}
-		boundary_conditions {
-                        bord1               paroi_adiabatique
-	          	bord2       frontiere_ouverte T_ext champ_front_uniforme 1 20.
-                        bord4       symetrie 
-			raccord5      paroi_echange_contact_vdf  pb1 raccord5     temperature -4. 
-                                   }
-	}
-	Post_processing {
-		Probes
-		{
-			sonde_Vair         vitesse periode 1.E-5 points 4
-                        .46 .01  2. 
-                        .46 .01  5. 
-                        .46 .01  8. 
-                        .46 .01  11. 
-			sonde_Tairpui      temperature periode 1.E-5 points 4
-                        .46 .01  2. 
-                        .46 .01  5. 
-                        .46 .01  8. 
-                        .46 .01  11. 
-			sonde_Tairlib      temperature periode 1.E-5 points 4
-                        .84 .01  2. 
-                        .84 .01  5. 
-                        .84 .01  8. 
-                        .84 .01  11. 
-		}
-		fields dt_post 500.
-		{
-                   vitesse elem
-		   temperature elem
-		}
-	}
-        Sauvegarde binaire pb2.sauv
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { quick }
+        initial_conditions {
+            temperature Champ_Uniforme 1 20.
+        }
+        boundary_conditions {
+            bord1               paroi_adiabatique
+            bord2       frontiere_ouverte T_ext champ_front_uniforme 1 20.
+            bord4       symetrie
+            raccord5      paroi_echange_contact_vdf  pb1 raccord5     temperature -4.
+        }
+    }
+    Post_processing {
+        Probes
+        {
+            sonde_Vair         vitesse periode 1.E-5 points 4
+            .46 .01  2.
+            .46 .01  5.
+            .46 .01  8.
+            .46 .01  11.
+            sonde_Tairpui      temperature periode 1.E-5 points 4
+            .46 .01  2.
+            .46 .01  5.
+            .46 .01  8.
+            .46 .01  11.
+            sonde_Tairlib      temperature periode 1.E-5 points 4
+            .84 .01  2.
+            .84 .01  5.
+            .84 .01  8.
+            .84 .01  11.
+        }
+        fields dt_post 500.
+        {
+            vitesse elem
+            temperature elem
+        }
+    }
+    Sauvegarde binaire pb2.sauv
 
 }
 Imprimer_flux dom_pb2 { bord1 bord2 bord4 }

@@ -2,7 +2,7 @@
 # PARALLEL OK #
 dimension 2
 
-Domaine domain 
+Domaine domain
 
 # BEGIN MESH #
 Lire_medfile family_names_from_group_names domain COUPLEX1 data.med
@@ -10,20 +10,20 @@ Read_file domain_ssz.geo ;
 Remove_Invalid_Internal_Boundaries domain
 # END MESH #
 
-# BEGIN PARTITION 
+# BEGIN PARTITION
 Partition domain
 {
-   Partition_tool metis
-   {
-      nb_parts 2
-   } 
-   Larg_joint 1
-   zones_name DOM 
-} 
-End 
+    Partition_tool metis
+    {
+        nb_parts 2
+    }
+    Larg_joint 1
+    zones_name DOM
+}
+End
 END PARTITION #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones domain
 Read_file domain_ssz_par.geo ;
 END SCATTER #

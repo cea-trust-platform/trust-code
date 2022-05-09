@@ -1,8 +1,8 @@
 # Conduction 2D Axi #
 # PARALLEL NOT #
-Dimension 2 
+Dimension 2
 Axi
-Pb_Conduction pb 
+Pb_Conduction pb
 Domaine dom
 # BEGIN MESH #
 Read_file Th_Axi.geo ;
@@ -11,9 +11,9 @@ Read_file Th_Axi.geo ;
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -22,63 +22,63 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VDF dis 
+VDF dis
 
 Solide sol
 Read sol
 {
-rho Champ_Uniforme 1 2.0
-lambda Champ_Uniforme 1 10.
-Cp Champ_Uniforme 1 5.0
+    rho Champ_Uniforme 1 2.0
+    lambda Champ_Uniforme 1 10.
+    Cp Champ_Uniforme 1 5.0
 }
 
 Scheme_euler_explicit sch
 Read sch
 {
-   tinit 0
-   tmax 1. 
-   dt_min 0.001
-   dt_max 10.
-   dt_impr 0.001
-   seuil_statio 1.e-9
-} 
+    tinit 0
+    tmax 1.
+    dt_min 0.001
+    dt_max 10.
+    dt_impr 0.001
+    seuil_statio 1.e-9
+}
 
-Associate pb dom  
-Associate pb sch 
-Associate pb sol 
-Discretize pb dis 
+Associate pb dom
+Associate pb sch
+Associate pb sol
+Discretize pb dis
 
 Read pb
 {
-   Conduction
-   {
-    	diffusion { }
-     	initial_conditions {
-      		temperature Champ_Uniforme 1 0.
-    	}
-      	boundary_conditions {
-      		GrandArc paroi_temperature_imposee
-			Champ_Front_Uniforme 1 0.
-      		PetitArc paroi_temperature_imposee
-	   		Champ_Front_Uniforme 1 1.
- 	}
-   }
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 0.
+        }
+        boundary_conditions {
+            GrandArc paroi_temperature_imposee
+            Champ_Front_Uniforme 1 0.
+            PetitArc paroi_temperature_imposee
+            Champ_Front_Uniforme 1 1.
+        }
+    }
 
-   Post_processing
-   {
-	Probes
-	{
-	 sonde temperature periode 0.01 segment 10 1. 0. 2. 0.
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde temperature periode 0.01 segment 10 1. 0. 2. 0.
+        }
 
-	fields dt_post 0.1 
-	{
-			Temperature elem
-			Temperature som
-	}      
-   }
-      
+        fields dt_post 0.1
+        {
+            Temperature elem
+            Temperature som
+        }
+    }
+
 }
 
-Solve pb 
+Solve pb
 End

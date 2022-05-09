@@ -64,11 +64,11 @@ Read pb
         convection { muscl }
         diffusion { }
         initial_conditions  { vitesse Champ_Uniforme 3 0 0 0 }
-        boundary_conditions 
+        boundary_conditions
         {
             # Vmax 0.01 #
-            Inlet  Frontiere_ouverte_vitesse_imposee  Champ_front_fonc_xyz 3 
-                   (y^2+z^2<0.01)*(-(0.01/0.1^2)*(y^2+z^2-0.1^2))  0.  0.
+            Inlet  Frontiere_ouverte_vitesse_imposee  Champ_front_fonc_xyz 3
+            (y^2+z^2<0.01)*(-(0.01/0.1^2)*(y^2+z^2-0.1^2))  0.  0.
             Outlet Frontiere_ouverte_pression_imposee  Champ_front_Uniforme 1 10.
             Wall   paroi_fixe
         }
@@ -84,7 +84,7 @@ Read pb
                 methode formule expression 1 p_pa+p_hydro+energie_cine_elem
                 localisation elem
                 sources_reference { energie_cine_elem }
-                sources 
+                sources
                 {
                     RefChamp { Pb_champ pb pression_pa  nom_source p_pa } ,
                     RefChamp { Pb_champ pb masse_volumique  nom_source rho } ,
@@ -117,7 +117,7 @@ Read pb
                 methode average
                 source interpolation {
                     domaine dom_boundaries_Outlet
-                    localisation elem 
+                    localisation elem
                     source refChamp { Pb_champ pb pression }
                 }
             }
@@ -146,7 +146,7 @@ Read pb
                 }
             }
         }
-        Format lata 
+        Format lata
         Fields dt_post 80
         {
             pression_pa                 elem
@@ -155,7 +155,7 @@ Read pb
             pressure_tot
         }
 
-        Probes 
+        Probes
         {
             vitX vitesseX periode 20 segment 22 0.01 0. -0.1 0.01 0. 0.1
             p_pa pression_pa periode 20 segment 24 0. 0. 0. 0.1 0. 0.

@@ -6,20 +6,20 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Cavite 
-                {
-                Origine 0. 0. 0.
-                Nombre_de_Noeuds 7 7 7
-                Longueurs 3. 3. 3.
-                }
-                {
-                Bord Perio X = 0. 0. <= Y <= 3. 0. <= Z <= 3. 
-                Bord Perio X = 3. 0. <= Y <= 3. 0. <= Z <= 3. 
-                Bord Perio2 Y = 0. 0. <= X <= 3. 0. <= Z <= 3. 
-                Bord Perio2 Y = 3. 0. <= X <= 3. 0. <= Z <= 3. 
-                Bord Perio3e Z = 0. 0. <= X <= 3. 0. <= Y <= 3. 
-                Bord Perio3s Z = 3. 0. <= X <= 3. 0. <= Y <= 3. 
-                }
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 7 7 7
+        Longueurs 3. 3. 3.
+    }
+    {
+        Bord Perio X = 0. 0. <= Y <= 3. 0. <= Z <= 3.
+        Bord Perio X = 3. 0. <= Y <= 3. 0. <= Z <= 3.
+        Bord Perio2 Y = 0. 0. <= X <= 3. 0. <= Z <= 3.
+        Bord Perio2 Y = 3. 0. <= X <= 3. 0. <= Z <= 3.
+        Bord Perio3e Z = 0. 0. <= X <= 3. 0. <= Y <= 3.
+        Bord Perio3s Z = 3. 0. <= X <= 3. 0. <= Y <= 3.
+    }
 }
 Tetraedriser dom
 Corriger_frontiere_periodique { Domaine dom Bord Perio }
@@ -28,10 +28,10 @@ Corriger_frontiere_periodique { Domaine dom Bord Perio2 }
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 1 1 2 }
-	zones_name nom_zone
-	Periodique 2 Perio Perio2
-	Larg_joint 2
+    Partition_tool tranche { tranches 1 1 2 }
+    zones_name nom_zone
+    Periodique 2 Perio Perio2
+    Larg_joint 2
 }
 End
 END PARTITION #
@@ -46,20 +46,20 @@ Fluide_Incompressible eau
 Pb_Hydraulique pb
 Read sch
 {
-	tinit 0
-        tmax 0.3
-	dt_min 0.00001
-	dt_max 0.2
-	dt_impr 0.1
-	dt_sauv 100
-	seuil_statio 1.e-10
-	nb_pas_dt_max 3
+    tinit 0
+    tmax 0.3
+    dt_min 0.00001
+    dt_max 0.2
+    dt_impr 0.1
+    dt_sauv 100
+    seuil_statio 1.e-10
+    nb_pas_dt_max 3
 }
 
 Read eau
 {
-	mu Champ_Uniforme 1 0.002
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -69,40 +69,40 @@ Associate pb eau
 Discretize pb dis
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond_nul
-			seuil 1.000000e-15
-			impr 
-		}
-		diffusion {  }
-                convection { EF_stab { } }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 1. 1. 1.
-			}
-		boundary_conditions {
-			Perio periodique 
-			Perio2 periodique 
-			Perio3e Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 1. 1. 1.
-			Perio3s Frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond_nul
+            seuil 1.000000e-15
+            impr
+        }
+        diffusion {  }
+        convection { EF_stab { } }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 1. 1. 1.
+        }
+        boundary_conditions {
+            Perio periodique
+            Perio2 periodique
+            Perio3e Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 1. 1. 1.
+            Perio3s Frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
 
-			}
+        }
 
-	}
+    }
 
-	Post_processing
-	{
-		fields dt_post 100.
-		{
-			vitesse elem
-                        pression elem
-		}
-                Probes 
-                {
-			vitx_moyenne vitesse  periode 0.5 segment 20  1. 1. 1. 2. 2. 2.
-                }
-	}
+    Post_processing
+    {
+        fields dt_post 100.
+        {
+            vitesse elem
+            pression elem
+        }
+        Probes
+        {
+            vitx_moyenne vitesse  periode 0.5 segment 20  1. 1. 1. 2. 2. 2.
+        }
+    }
 }
 
 Solve pb

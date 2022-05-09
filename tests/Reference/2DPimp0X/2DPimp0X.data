@@ -6,27 +6,27 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0.  0. 
-                Nombre_de_Noeuds 11 11
-                Longueurs 1 1 
-        }
-        {
-                Bord paroi   X = 0.   0. <= Y <= 1.   
-                Bord Sortie  X = 1.  0. <= Y <= 1.   
-                Bord paroi   Y =  0.  0. <= X <= 1.  
-                Bord paroi   Y =  1.  0. <= X <= 1.  
-        }
-} 
+    Pave Cavite
+    {
+        Origine 0.  0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1 1
+    }
+    {
+        Bord paroi   X = 0.   0. <= Y <= 1.
+        Bord Sortie  X = 1.  0. <= Y <= 1.
+        Bord paroi   Y =  0.  0. <= X <= 1.
+        Bord paroi   Y =  1.  0. <= X <= 1.
+    }
+}
 Trianguler_h dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool Tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool Tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -39,24 +39,24 @@ VEFPreP1b dis
 Read dis { P0 P1 }
 
 Scheme_euler_explicit sch
-Read sch 
+Read sch
 {
-	nb_pas_dt_max 3
-        tinit 0.1
-        tmax 10.
-        dt_min 1.e-5
-        dt_max 1.e-1
-	dt_start dt_calc
-        dt_impr 0.1
-        dt_sauv 20.
-        seuil_statio 1.e-8  
-        facsec 0.5
+    nb_pas_dt_max 3
+    tinit 0.1
+    tmax 10.
+    dt_min 1.e-5
+    dt_max 1.e-1
+    dt_start dt_calc
+    dt_impr 0.1
+    dt_sauv 20.
+    seuil_statio 1.e-8
+    facsec 0.5
 }
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme	1 1.
-	rho Champ_Uniforme	1 1.
+    mu Champ_Uniforme	1 1.
+    rho Champ_Uniforme	1 1.
 }
 
 Pb_Hydraulique pb
@@ -66,67 +66,68 @@ Associate pb fluide
 
 Discretize pb dis
 Read pb
-	{
-	Navier_Stokes_standard
-		{
-		dt_projection 1.e5 1.e-10
+{
+    Navier_Stokes_standard
+    {
+        dt_projection 1.e5 1.e-10
 
-		Solveur_Pression petsc cholesky { }
-		solveur_bar petsc Cholesky { }
+        Solveur_Pression petsc cholesky { }
+        solveur_bar petsc Cholesky { }
 
-                convection { negligeable }
-                diffusion  { negligeable }
-				
-                Sources { Source_Qdm Champ_fonc_xyz dom  2 x 0 
-                        }
-		initial_conditions
-			{
-                        vitesse Champ_fonc_xyz dom 2  0.  0. 
-			}
-		boundary_conditions
-			{
-			paroi paroi_fixe
-			Sortie Frontiere_Ouverte_Pression_Imposee
-				Champ_Front_Uniforme 1 0
-			}
-	         }
+        convection { negligeable }
+        diffusion  { negligeable }
 
-	Post_processings
+        Sources {
+            Source_Qdm Champ_fonc_xyz dom  2 x 0
+        }
+        initial_conditions
         {
-	 	lml
-		{
-			fichier 2DPimp0X
-			format lml  
-                	Probes
-            		{ 
-				sonde_gradient_pression gradient_pression periode 0.01 segment 10 0 0.5 1 0.5
-				sonde_vitesse vitesse periode 0.01 segment 10 0 0.5 1 0.5
-				sonde_pression pression periode 0.01 segment 10 0 0.5 1 0.5
-			}
-			fields dt_post 2.
-			{
-				pression elem
-				pression som
-			}
-		}
-		lata 
-		{
-			fichier 2DPimp0X
-			format lata  
-			fields dt_post 2.
-			{
-				vitesse elem
-				vitesse som
-				gradient_pression elem
-				gradient_pression som
-				divergence_U elem
-				divergence_U som
-				pression elem
-				pression som
-			}
-		}	
-	
-	}
+            vitesse Champ_fonc_xyz dom 2  0.  0.
+        }
+        boundary_conditions
+        {
+            paroi paroi_fixe
+            Sortie Frontiere_Ouverte_Pression_Imposee
+            Champ_Front_Uniforme 1 0
+        }
+    }
+
+    Post_processings
+    {
+        lml
+        {
+            fichier 2DPimp0X
+            format lml
+            Probes
+            {
+                sonde_gradient_pression gradient_pression periode 0.01 segment 10 0 0.5 1 0.5
+                sonde_vitesse vitesse periode 0.01 segment 10 0 0.5 1 0.5
+                sonde_pression pression periode 0.01 segment 10 0 0.5 1 0.5
+            }
+            fields dt_post 2.
+            {
+                pression elem
+                pression som
+            }
+        }
+        lata
+        {
+            fichier 2DPimp0X
+            format lata
+            fields dt_post 2.
+            {
+                vitesse elem
+                vitesse som
+                gradient_pression elem
+                gradient_pression som
+                divergence_U elem
+                divergence_U som
+                pression elem
+                pression som
+            }
+        }
+
+    }
 }
 
 Solve pb

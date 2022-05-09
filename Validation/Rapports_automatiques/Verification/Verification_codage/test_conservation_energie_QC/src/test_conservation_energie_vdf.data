@@ -3,34 +3,34 @@ dimension 2
 Domaine dom
 
 mailler dom {
-	Pave Cavite {
-		Origine 0 0
-     		Nombre_de_Noeuds 21 6
-		Longueurs 20 5
-	} {
-		Bord entree1 X = 0   0 <= Y <= 5
-		Bord entree2 Y = 5   5 <= X <= 10
-		Bord sortie  X = 20  0 <= Y <= 5
-		Bord paroi   Y = 0   0 <= X <= 20
-		Bord paroi   Y = 5   0 <= X <= 5
-		Bord paroi   Y = 5  10 <= X <= 20
-	}
+    Pave Cavite {
+        Origine 0 0
+        Nombre_de_Noeuds 21 6
+        Longueurs 20 5
+    } {
+        Bord entree1 X = 0   0 <= Y <= 5
+        Bord entree2 Y = 5   5 <= X <= 10
+        Bord sortie  X = 20  0 <= Y <= 5
+        Bord paroi   Y = 0   0 <= X <= 20
+        Bord paroi   Y = 5   0 <= X <= 5
+        Bord paroi   Y = 5  10 <= X <= 20
+    }
 }
 
-Scheme_euler_implicit sch 
-Read sch 
-{ 
-	tinit 0
-        tmax 600.
-        dt_min 1.e-6
-        dt_max 1.e-1 
-        dt_impr 1.e-6
-        dt_sauv 10.
-dt_start dt_calc
-        seuil_statio 1.e-8 
-solveur piso { seuil_convergence_solveur 1e-8 seuil_convergence_implicite 1e-2 }
-facsec 5 
-} 
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0
+    tmax 600.
+    dt_min 1.e-6
+    dt_max 1.e-1
+    dt_impr 1.e-6
+    dt_sauv 10.
+    dt_start dt_calc
+    seuil_statio 1.e-8
+    solveur piso { seuil_convergence_solveur 1e-8 seuil_convergence_implicite 1e-2 }
+    facsec 5
+}
 
 
 Pb_thermohydraulique_QC pb_plenum
@@ -38,77 +38,77 @@ VDF dis
 
 Fluide_Quasi_Compressible heliumQC_plenum
 Read heliumQC_plenum
-{ 
-        pression 7000000.
-        Sutherland pb_plenum mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
+{
+    pression 7000000.
+    Sutherland pb_plenum mu0 1.6E-5 T0 273.15 Slambda 235. C 235.
 
-        loi_etat gaz_parfait_QC {
-          Prandtl 0.67
-          Cp 5193.
-          gamma 1.666
-        }
-        traitement_pth constant
+    loi_etat gaz_parfait_QC {
+        Prandtl 0.67
+        Cp 5193.
+        gamma 1.666
+    }
+    traitement_pth constant
 }
 
 Associate pb_plenum dom
-Associate pb_plenum sch 
+Associate pb_plenum sch
 Associate pb_plenum heliumQC_plenum
 
-Discretize pb_plenum dis 
+Discretize pb_plenum dis
 
 
 
 Read pb_plenum {
- 
- Navier_Stokes_QC 
- { 
 
-    solveur_pression Gcp {
-      precond ssor { omega 1.5 } 
-      seuil 1.e-10
+    Navier_Stokes_QC
+    {
+
+        solveur_pression Gcp {
+            precond ssor { omega 1.5 }
+            seuil 1.e-10
+        }
+
+        convection { amont }
+
+        diffusion { negligeable }
+
+        initial_conditions { vitesse champ_uniforme 2 0. 0. }
+
+        boundary_conditions {
+            paroi    paroi_fixe
+            entree1  frontiere_ouverte_rho_u_impose champ_front_uniforme 2 150 0
+            entree2  frontiere_ouverte_rho_u_impose champ_front_uniforme 2 0 -150
+            sortie   frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+        }
     }
 
-    convection { amont }
+    Convection_Diffusion_Chaleur_QC
+    {
+        MODE_CALCUL_CONVECTION divrhouT_moins_Tdivrhou
+        convection { amont }
 
-    diffusion { negligeable }
-    
-    initial_conditions { vitesse champ_uniforme 2 0. 0. }
+        diffusion { negligeable }
 
-    boundary_conditions {
-      paroi    paroi_fixe
-      entree1  frontiere_ouverte_rho_u_impose champ_front_uniforme 2 150 0
-      entree2  frontiere_ouverte_rho_u_impose champ_front_uniforme 2 0 -150
-      sortie   frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
-   }
- }
+        initial_conditions { Temperature  champ_uniforme 1 673. }
 
- Convection_Diffusion_Chaleur_QC
- {
-    MODE_CALCUL_CONVECTION divrhouT_moins_Tdivrhou
-    convection { amont }
+        boundary_conditions {
+            paroi    Paroi_adiabatique
+            entree1  frontiere_ouverte_temperature_imposee Champ_Front_fonc_txyz 1 450.+223*(0.1-t)*(0.1-t)*(t<0.1)
+            entree2  frontiere_ouverte_temperature_imposee Champ_Front_fonc_txyz 1 900.-227*(0.1-t)*(0.1-t)*(t<0.1)
+            sortie   frontiere_ouverte T_ext Champ_Front_Uniforme 1 673.
 
-    diffusion { negligeable }
-
-    initial_conditions { Temperature  champ_uniforme 1 673. }
-
-    boundary_conditions {
-      paroi    Paroi_adiabatique
-      entree1  frontiere_ouverte_temperature_imposee Champ_Front_fonc_txyz 1 450.+223*(0.1-t)*(0.1-t)*(t<0.1)
-      entree2  frontiere_ouverte_temperature_imposee Champ_Front_fonc_txyz 1 900.-227*(0.1-t)*(0.1-t)*(t<0.1)
-      sortie   frontiere_ouverte T_ext Champ_Front_Uniforme 1 673.
-               
+        }
     }
- }
- Post_processing {
-      format lata
-      fields binaire dt_post 0.2 {
-	pression elem
-	pression_pa elem
-	vitesse faces
-	temperature elem
-	masse_volumique elem
+    Post_processing {
+        format lata
+        fields binaire dt_post 0.2 {
+            pression elem
+            pression_pa elem
+            vitesse faces
+            temperature elem
+            masse_volumique elem
+        }
     }
-  }
 }
 
 Solve pb_plenum

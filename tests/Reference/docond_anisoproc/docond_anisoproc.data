@@ -167,15 +167,15 @@ Read pb1
                 temperature som
             }
         }
-	med
-	{
+        med
+        {
             format med fichier docond_anisoproc
             fields dt_post 10.
             {
                 temperature elem
                 temperature som
-            }	
-	}
+            }
+        }
     }
     sauvegarde formatte solide.rep
 }
@@ -246,8 +246,8 @@ Read pb2
                 temperature som
             }
         }
-	med
-	{
+        med
+        {
             format med fichier docond_anisoproc
             fields dt_post 10.
             {
@@ -257,8 +257,8 @@ Read pb2
                 vitesse som
                 temperature elem
                 temperature som
-            }	
-	}
+            }
+        }
     }
     sauvegarde formatte fluide.rep
 }

@@ -8,29 +8,29 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-	{
-		Origine 0. 0. 0.
-		Nombre_de_Noeuds 21 9 9
-		Longueurs 6.283185307 2. 2.
-	}
-	{
-		Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 2.
-		Bord periox  X = 6.283185307            0. <= Y <= 2.0           0. <= Z <= 2. 
-		Bord bas     Y = 0.            0. <= X <= 6.283185307            0. <= Z <= 2.
-		Bord haut    Y = 2.            0. <= X <= 6.283185307            0. <= Z <= 2.
-                Bord perioz  Z = 0.            0. <= X <= 6.283185307            0. <= Y <= 2.0
-		Bord perioz  Z = 2.            0. <= X <= 6.283185307            0. <= Y <= 2.0   	
-		}
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 21 9 9
+        Longueurs 6.283185307 2. 2.
+    }
+    {
+        Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 2.
+        Bord periox  X = 6.283185307            0. <= Y <= 2.0           0. <= Z <= 2.
+        Bord bas     Y = 0.            0. <= X <= 6.283185307            0. <= Z <= 2.
+        Bord haut    Y = 2.            0. <= X <= 6.283185307            0. <= Z <= 2.
+        Bord perioz  Z = 0.            0. <= X <= 6.283185307            0. <= Y <= 2.0
+        Bord perioz  Z = 2.            0. <= X <= 6.283185307            0. <= Y <= 2.0
+    }
 }
 # END MESH #
 # BEGIN PARTITION #
 Partition dom
 {
-	Partition_tool tranche { tranches 1 2 1 }
-	Larg_joint 1
-	zones_name DOM
-	periodique 2 periox perioz
+    Partition_tool tranche { tranches 1 2 1 }
+    Larg_joint 1
+    zones_name DOM
+    periodique 2 periox perioz
 }
 End
 # END PARTITION #

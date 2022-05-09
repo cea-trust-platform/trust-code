@@ -259,12 +259,12 @@ Read pb
                 diffU_X Interpolation {
                     domaine front
                     localisation elem
-                    source Predefini { pb_champ pb viscous_force_x } 
+                    source Predefini { pb_champ pb viscous_force_x }
                 }
                 diffU_Y Interpolation {
                     domaine front
                     localisation elem
-                    source Predefini { pb_champ pb viscous_force_y } 
+                    source Predefini { pb_champ pb viscous_force_y }
                 }
                 convU_X Interpolation {
                     domaine front
@@ -339,15 +339,15 @@ Read pb
                 convT_sum
             }
         }
-	
-	med 
-	{
+
+        med
+        {
             format med fichier VAHL_DAVIS
             fields dt_post 0.1
             {
                 vitesse faces
             }
-	}
+        }
     }
 # Save the unknowns #
     sauvegarde_simple formatte test_sauvegarde_simple.sauv

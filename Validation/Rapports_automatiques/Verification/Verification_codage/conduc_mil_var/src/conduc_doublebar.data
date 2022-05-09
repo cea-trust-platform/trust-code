@@ -13,9 +13,9 @@ Read_file dom_ssz.geo ;
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -29,35 +29,35 @@ VDF dis
 Scheme_euler_implicit sch
 Read sch
 {
-	tinit 0
-	tmax 300.
-	dt_min 0.00001
-	dt_max 0.1
-	dt_impr 0.00001
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tinit 0
+    tmax 300.
+    dt_min 0.00001
+    dt_max 0.1
+    dt_impr 0.00001
+    dt_sauv 100
+    seuil_statio 1.e-8
 
-	facsec_max 100
-	facsec 1
-	nb_pas_dt_max 9000000000 
-	solveur implicite { solveur gmres { diag seuil 1e-15 nb_it_max 5 impr } } 
+    facsec_max 100
+    facsec 1
+    nb_pas_dt_max 9000000000
+    solveur implicite { solveur gmres { diag seuil 1e-15 nb_it_max 5 impr } }
 
 }
 
 Solide sol
 Read sol
 {
-  rho Champ_Uniforme 1 2
-  # rho Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 2.0 right_elem 0.5 } #
-  
-	lambda Champ_Uniforme_morceaux dom 1 
-	  {
-       defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
-       left_elem 0.01
-       right_elem 0.03
-	  }
-	Cp Champ_Uniforme 1 0.5
-	# Cp Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 0.5 right_elem 2.0 } #
+    rho Champ_Uniforme 1 2
+    # rho Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 2.0 right_elem 0.5 } #
+
+    lambda Champ_Uniforme_morceaux dom 1
+    {
+        defaut	1.0e10  # pas plus de 1.0e38, sinon assert en debug :-) #
+        left_elem 0.01
+        right_elem 0.03
+    }
+    Cp Champ_Uniforme 1 0.5
+    # Cp Champ_Uniforme_morceaux dom 1 { defaut	1.0e10 left_elem 0.5 right_elem 2.0 } #
 }
 Associate pb dom
 Associate pb sch
@@ -67,41 +67,41 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-   		# temperature Champ_Uniforme_morceaux dom 1 { defaut 1.0e10 left_elem 20.0 right_elem 10.0 } #
-   		temperature Champ_Fonc_med domain.med med_domain T_init som 0.0
-     	# temperature Champ_Fonc_xyz dom 1 (x<0.0)*5.0+(x<0.0001)*5.0+10.0 #
-			}
-		boundary_conditions {
-			Haut paroi_adiabatique
-			Bas paroi_adiabatique
-			Droit paroi_temperature_imposee         Champ_Front_Uniforme 1 10.			
-			Gauche paroi_temperature_imposee        Champ_Front_Uniforme 1 20.		
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            # temperature Champ_Uniforme_morceaux dom 1 { defaut 1.0e10 left_elem 20.0 right_elem 10.0 } #
+            temperature Champ_Fonc_med domain.med med_domain T_init som 0.0
+            # temperature Champ_Fonc_xyz dom 1 (x<0.0)*5.0+(x<0.0001)*5.0+10.0 #
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Droit paroi_temperature_imposee         Champ_Front_Uniforme 1 10.
+            Gauche paroi_temperature_imposee        Champ_Front_Uniforme 1 20.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-      sonde_horiz temperature periode 1. segment 30 -0.983 0.5 0.983 0.5
-			# sonde_horiz temperature periode 1. segment 31 -1.0 0.5 1.0 0.5 #
-		}		
-/* 		format med
-		fields dt_post 1.
-		{
-		  temperature som
- 		  temperature elem
-		}
- */
- 		fields dt_post 1.e10
-		{
-			temperature
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_horiz temperature periode 1. segment 30 -0.983 0.5 0.983 0.5
+            # sonde_horiz temperature periode 1. segment 31 -1.0 0.5 1.0 0.5 #
+        }
+        /* 		format med
+        		fields dt_post 1.
+        		{
+        		  temperature som
+         		  temperature elem
+        		}
+         */
+        fields dt_post 1.e10
+        {
+            temperature
+        }
+    }
 }
 
 Solve pb

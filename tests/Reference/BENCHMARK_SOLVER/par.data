@@ -10,23 +10,23 @@ VEFPreP1B ma_discretisation
 Scheme_euler_explicit mon_schema
 Read mon_schema
 {
-	nb_pas_dt_max 3
-	tinit 0
-	tmax 5.0
-	dt_min 1.e-6
-	dt_max 1.e-6
-	dt_impr 1.e-6
-	dt_sauv 0 # Pas de sauvegarde #
+    nb_pas_dt_max 3
+    tinit 0
+    tmax 5.0
+    dt_min 1.e-6
+    dt_max 1.e-6
+    dt_impr 1.e-6
+    dt_sauv 0 # Pas de sauvegarde #
 }
 
 Fluide_Incompressible milieu
 Read milieu
 {
-	mu  Champ_Uniforme 1 0.01
-	rho Champ_Uniforme 1 2.
-        lambda Champ_Uniforme 1 2
-        Cp Champ_Uniforme 1 100.
-        beta_th Champ_Uniforme 1 0.	
+    mu  Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Uniforme 1 2
+    Cp Champ_Uniforme 1 100.
+    beta_th Champ_Uniforme 1 0.
 }
 
 Associate pb dom
@@ -36,34 +36,34 @@ Discretize pb ma_discretisation
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { seuil 1.e-7 precond ssor { omega 1.65 } impr }
-		convection { muscl }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 1. 0. 0.
-		}
-		boundary_conditions {
-			Cylindre 	paroi_fixe
-			Box  		symetrie
-			Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-			Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
-		}
-	}
-        Convection_Diffusion_Temperature
-        {
-                diffusion { }
-                convection { muscl }
-                boundary_conditions
-                {
-			Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
-			Box 		symetrie
-			Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
-			Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
-                }
-                initial_conditions { Temperature Champ_Uniforme 1 20. }
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { seuil 1.e-7 precond ssor { omega 1.65 } impr }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 1. 0. 0.
         }
+        boundary_conditions {
+            Cylindre 	paroi_fixe
+            Box  		symetrie
+            Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
+            Box 		symetrie
+            Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+            Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 20. }
+    }
 }
 Solve pb
 EcritureLectureSpecial 0

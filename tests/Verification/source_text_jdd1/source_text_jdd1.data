@@ -86,7 +86,7 @@ Read pb
         sources { }
         initial_conditions {
             vitesse Champ_Uniforme 2 0. 0.
-            }
+        }
         boundary_conditions {
             gauche paroi_fixe
             droite paroi_fixe

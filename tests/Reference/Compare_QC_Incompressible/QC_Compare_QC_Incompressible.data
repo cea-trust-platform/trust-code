@@ -6,65 +6,65 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Entree
-		{
-		Origine 0. 1.
-		Nombre_de_Noeuds 8 6 
-		Longueurs 7. 1.
-		}
-		{
-		Bord Entree X = 0. 1. <= Y <= 2.
-		Bord Haut1  Y = 2. 0. <= X <= 7.
-		Bord Bas1   Y = 1. 0. <= X <= 7.
-		} ,
-	Pave Haut
-		{
-		Origine 7. 1.
-		Nombre_de_Noeuds 11 6 
-		Longueurs 10. 1.
-		}
-		{
-		Bord Haut2  Y = 2.  7. <= X <= 17.
-		} ,
-	Pave SHaute
-		{
-		Origine 17. 1.
-		Nombre_de_Noeuds 14 6 
-		Longueurs 13. 1.
-		}
-		{
-		Bord SortieHaute X = 30.  1. <= Y <= 2.
-		Bord Haut3  Y = 2.  17. <= X <= 30.
-		} ,
-	Pave Bas
-		{
-		Origine 7. 0.
-		Nombre_de_Noeuds 11 6 
-		Longueurs 10. 1.
-		}
-		{
-		Bord Bas2   Y = 0.  7. <= X <= 17.
-		Bord Gauche X = 7.  0. <= Y <= 1.
-		} ,
-	Pave SBasse
-		{
-		Origine 17. 0.
-		Nombre_de_Noeuds 14 6 
-		Longueurs 13. 1.
-		}
-		{
-		Bord SortieBasse X = 30. 0. <= Y <= 1.
-		Bord Bas3   Y = 0. 17. <= X <= 30.
-		}
+    Pave Entree
+    {
+        Origine 0. 1.
+        Nombre_de_Noeuds 8 6
+        Longueurs 7. 1.
+    }
+    {
+        Bord Entree X = 0. 1. <= Y <= 2.
+        Bord Haut1  Y = 2. 0. <= X <= 7.
+        Bord Bas1   Y = 1. 0. <= X <= 7.
+    } ,
+    Pave Haut
+    {
+        Origine 7. 1.
+        Nombre_de_Noeuds 11 6
+        Longueurs 10. 1.
+    }
+    {
+        Bord Haut2  Y = 2.  7. <= X <= 17.
+    } ,
+    Pave SHaute
+    {
+        Origine 17. 1.
+        Nombre_de_Noeuds 14 6
+        Longueurs 13. 1.
+    }
+    {
+        Bord SortieHaute X = 30.  1. <= Y <= 2.
+        Bord Haut3  Y = 2.  17. <= X <= 30.
+    } ,
+    Pave Bas
+    {
+        Origine 7. 0.
+        Nombre_de_Noeuds 11 6
+        Longueurs 10. 1.
+    }
+    {
+        Bord Bas2   Y = 0.  7. <= X <= 17.
+        Bord Gauche X = 7.  0. <= Y <= 1.
+    } ,
+    Pave SBasse
+    {
+        Origine 17. 0.
+        Nombre_de_Noeuds 14 6
+        Longueurs 13. 1.
+    }
+    {
+        Bord SortieBasse X = 30. 0. <= Y <= 1.
+        Bord Bas3   Y = 0. 17. <= X <= 30.
+    }
 }
 Trianguler_H dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -77,28 +77,28 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 20
-	tinit 0
-	tmax 32.
-	dt_min 0.001
-	dt_max 1
-	dt_impr 0.00001
-	dt_sauv 1000.
-	seuil_statio 1.e-8
-	precision_impr 5
+    nb_pas_dt_max 20
+    tinit 0
+    tmax 32.
+    dt_min 0.001
+    dt_max 1
+    dt_impr 0.00001
+    dt_sauv 1000.
+    seuil_statio 1.e-8
+    precision_impr 5
 }
 fluide_quasi_compressible fluide
 Read fluide
 {
-   mu      	Champ_Uniforme 1 1.983e-5
-  pression 100886  
-  loi_etat gaz_parfait_QC {
-   Prandtl 0.68
-   Cp 1000.
-   gamma 1.4
-   rho_constant_pour_debug Champ_uniforme 1 1.177
-  }
-  traitement_pth constant
+    mu      	Champ_Uniforme 1 1.983e-5
+    pression 100886
+    loi_etat gaz_parfait_QC {
+        Prandtl 0.68
+        Cp 1000.
+        gamma 1.4
+        rho_constant_pour_debug Champ_uniforme 1 1.177
+    }
+    traitement_pth constant
 }
 
 
@@ -108,60 +108,60 @@ Associate pb fluide
 Discretize pb dis
 Read pb
 {
-	Navier_Stokes_QC
-	{
-		solveur_pression petsc cholesky { }
-		convection { Amont }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			 Haut1 Paroi_Fixe
-			 Bas1 Paroi_Fixe
-			 Haut2 Paroi_Fixe
-			 Bas2 Paroi_Fixe
-			 Haut3 Paroi_Fixe
-			 Bas3 Paroi_Fixe
-			 Gauche Paroi_Fixe
-			 SortieBasse frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-			 SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-			 Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
-		}
-	}
-  Convection_Diffusion_Chaleur_QC 
-        {
-                diffusion { negligeable }
-                convection { negligeable }
-                boundary_conditions 
-                {
-Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 300.
- 
-Haut1   paroi_adiabatique
-Bas1   paroi_adiabatique
-Haut2   paroi_adiabatique
-Bas2   paroi_adiabatique
-Haut3   paroi_adiabatique
-Bas3   paroi_adiabatique
-Gauche   paroi_adiabatique
-SortieBasse frontiere_ouverte T_ext Champ_Front_Uniforme 1 300.
- 
-SortieHaute frontiere_ouverte T_ext Champ_Front_Uniforme 1 300.
-                 }
-                initial_conditions { Temperature Champ_Uniforme 1 300. }
+    Navier_Stokes_QC
+    {
+        solveur_pression petsc cholesky { }
+        convection { Amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
         }
- 	Post_processing 
-	{
-	       Probes 
-	       {
-		       sonde_vitesse vitesse periode 0.01 points 1 10. 0.5
-	       }
-	       fields dt_post 20.
-	       {
-			       pression_pa elem
-			       vitesse elem
-	       }
-	}
+        boundary_conditions {
+            Haut1 Paroi_Fixe
+            Bas1 Paroi_Fixe
+            Haut2 Paroi_Fixe
+            Bas2 Paroi_Fixe
+            Haut3 Paroi_Fixe
+            Bas3 Paroi_Fixe
+            Gauche Paroi_Fixe
+            SortieBasse frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
+        }
+    }
+    Convection_Diffusion_Chaleur_QC
+    {
+        diffusion { negligeable }
+        convection { negligeable }
+        boundary_conditions
+        {
+            Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 300.
+
+            Haut1   paroi_adiabatique
+            Bas1   paroi_adiabatique
+            Haut2   paroi_adiabatique
+            Bas2   paroi_adiabatique
+            Haut3   paroi_adiabatique
+            Bas3   paroi_adiabatique
+            Gauche   paroi_adiabatique
+            SortieBasse frontiere_ouverte T_ext Champ_Front_Uniforme 1 300.
+
+            SortieHaute frontiere_ouverte T_ext Champ_Front_Uniforme 1 300.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 300. }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_vitesse vitesse periode 0.01 points 1 10. 0.5
+        }
+        fields dt_post 20.
+        {
+            pression_pa elem
+            vitesse elem
+        }
+    }
 }
 Solve pb
 End

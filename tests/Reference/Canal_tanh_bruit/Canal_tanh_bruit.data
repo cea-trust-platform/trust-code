@@ -8,28 +8,28 @@ Domaine Canal
 # BEGIN MESH #
 Mailler Canal
 {
-	Pave Canal 
- 	{
-		Origine 0. -0.5
-		Nombre_de_Noeuds 51 21
-		Longueurs 5. 1.
-		Facteurs 1. 1.05
-		symy
-	}
-	{
-		Bord Perio X = 0.   -0.5 <= Y <= 0.5
-		Bord Paroi Y = 0.5   0. <= X <= 5.
-		Bord Paroi Y = -0.5  0. <= X <= 5.
-		Bord Perio X = 5.   -0.5 <= Y <= 0.5
-	}
-} 
+    Pave Canal
+    {
+        Origine 0. -0.5
+        Nombre_de_Noeuds 51 21
+        Longueurs 5. 1.
+        Facteurs 1. 1.05
+        symy
+    }
+    {
+        Bord Perio X = 0.   -0.5 <= Y <= 0.5
+        Bord Paroi Y = 0.5   0. <= X <= 5.
+        Bord Paroi Y = -0.5  0. <= X <= 5.
+        Bord Perio X = 5.   -0.5 <= Y <= 0.5
+    }
+}
 # END MESH #
 # BEGIN PARTITION
 Partition Canal
 {
-	Partition_tool tranche { tranches 1 2 }
-	Larg_joint 2
-	zones_name CANAL
+    Partition_tool tranche { tranches 1 2 }
+    Larg_joint 2
+    zones_name CANAL
 }
 End
 END PARTITION #
@@ -42,24 +42,24 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 10
-	tmax 50
-        tinit 0.
-        dt_min 0.00001
-        dt_max 1
-        dt_impr 1
-        dt_sauv 100
-        seuil_statio 1.e-8
+    nb_pas_dt_max 10
+    tmax 50
+    tinit 0.
+    dt_min 0.00001
+    dt_max 1
+    dt_impr 1
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-        mu Champ_Uniforme 1 1.85e-5
-        rho Champ_Uniforme 1 1.17
-        lambda Champ_Uniforme 1 0.0262
-        Cp Champ_Uniforme 1 1006
-	beta_th Champ_Uniforme 1 3.41e-3
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+    Cp Champ_Uniforme 1 1006
+    beta_th Champ_Uniforme 1 3.41e-3
 }
 
 Champ_Uniforme gravite
@@ -74,43 +74,45 @@ Discretize pb dis
 
 Read pb
 {
-        Navier_Stokes_standard
-        {
-                solveur_pression petsc cholesky { }
-                convection { quick }
-                diffusion { }
-                initial_conditions { vitesse Champ_Fonc_XYZ Canal 2
-		tanh(4*y)*(0.95+0.1*rnd(1)) 0. }
-                boundary_conditions {
-                        Paroi paroi_fixe
-Perio periodique 
-                }
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { quick }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Fonc_XYZ Canal 2
+            tanh(4*y)*(0.95+0.1*rnd(1)) 0.
         }
-        Convection_Diffusion_Temperature
-        {
-                diffusion { negligeable }
-                convection { quick }
-                boundary_conditions 
-                {
-                        Paroi paroi_adiabatique
-Perio periodique 
-                }
-                initial_conditions { Temperature Champ_Fonc_XYZ Canal 1 tanh(4*y) }
+        boundary_conditions {
+            Paroi paroi_fixe
+            Perio periodique
         }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { negligeable }
+        convection { quick }
+        boundary_conditions
+        {
+            Paroi paroi_adiabatique
+            Perio periodique
+        }
+        initial_conditions { Temperature Champ_Fonc_XYZ Canal 1 tanh(4*y) }
+    }
 
-        Post_processing
+    Post_processing
+    {
+        Probes
         {
-                Probes
-                {
-                        sonde_pression pression periode 1 points 1 2.5 0.
-                }
-                fields dt_post 1
-                {
-                        pression elem
-                        vitesse som
-                        temperature som
-                }
+            sonde_pression pression periode 1 points 1 2.5 0.
         }
+        fields dt_post 1
+        {
+            pression elem
+            vitesse som
+            temperature som
+        }
+    }
 }
 Solve pb
 End

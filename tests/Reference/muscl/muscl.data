@@ -111,13 +111,15 @@ Read pb
                 gradient_pression_elem_dom  Interpolation {
                     localisation elem
                     source Gradient {
-                        source refChamp { Pb_champ pb pression } }
+                        source refChamp { Pb_champ pb pression }
+                    }
 
                 }
                 gradient_temperature_elem_dom  Interpolation {
                     localisation elem
                     source Gradient {
-                        source refChamp { Pb_champ pb temperature } }
+                        source refChamp { Pb_champ pb temperature }
+                    }
 
                 }
             }
@@ -137,9 +139,9 @@ Read pb
             fields dt_post 6.
             {
                 temperature faces
-		vitesse faces
-		temperature elem
-		temperature som
+                vitesse faces
+                temperature elem
+                temperature som
             }
         }
     }

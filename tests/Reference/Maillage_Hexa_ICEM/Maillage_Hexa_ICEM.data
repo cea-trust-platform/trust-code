@@ -6,20 +6,20 @@ dimension 3
 domaine dom
 # BEGIN MESH #
 Read_file dom trio_DOM_geo.geom
-dilate dom 0.001 
-tetraedriser_homogene_compact dom  
+dilate dom 0.001
+tetraedriser_homogene_compact dom
 transformer dom -x y z
 
 # END MESH #
- 
+
 Pb_Thermohydraulique pb
 
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 4 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool metis { Nb_parts 4 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -34,25 +34,25 @@ VEFPreP1B ma_discretisation
 Scheme_euler_explicit mon_schema
 Read mon_schema
 {
-	nb_pas_dt_max 2
-	tinit 0
-	tmax 5.0
-	dt_min 1.e-7
-	dt_max 1.e+6
-	dt_impr 1.e-6
-	dt_sauv 100
-	seuil_statio 1.e-8
+    nb_pas_dt_max 2
+    tinit 0
+    tmax 5.0
+    dt_min 1.e-7
+    dt_max 1.e+6
+    dt_impr 1.e-6
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 # Je definis un milieu #
 Fluide_Incompressible milieu
 Read milieu
 {
-	mu  Champ_Uniforme 1 0.01
-	rho Champ_Uniforme 1 2.
-        lambda Champ_Uniforme 1 2
-        Cp Champ_Uniforme 1 100.
-        beta_th Champ_Uniforme 1 0.	
+    mu  Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Uniforme 1 2
+    Cp Champ_Uniforme 1 100.
+    beta_th Champ_Uniforme 1 0.
 }
 
 Associate pb dom
@@ -62,48 +62,48 @@ Discretize pb ma_discretisation
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.65 } 
-			seuil 1.000000e-3
-			impr 
-		}
-		convection { muscl }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 0. 0. 0.
-			}
-		boundary_conditions {
-			PAROI paroi_fixe
-			INX frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 2.
-			INZ frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 1.
-			OUT frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-		}
-
-	}
-        Convection_Diffusion_Temperature
-        {
-                diffusion { }
-                convection { muscl }
-                boundary_conditions
-                {
-			PAROI paroi_temperature_imposee 		Champ_front_Uniforme 1 0.
-			INX frontiere_ouverte_temperature_imposee 	Champ_front_Uniforme 1 2.
-			INZ frontiere_ouverte_temperature_imposee 	Champ_front_Uniforme 1 1.
-			OUT frontiere_ouverte T_ext 			Champ_front_Uniforme 1 0.
-                }
-                initial_conditions { Temperature Champ_Uniforme 1 0. }
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.65 }
+            seuil 1.000000e-3
+            impr
+        }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0. 0. 0.
+        }
+        boundary_conditions {
+            PAROI paroi_fixe
+            INX frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 2.
+            INZ frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 1.
+            OUT frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
         }
 
-	Post_processing
-	{
-			format lata
-			fields dt_post 1.
-			{ 
-				temperature elem
-			}
-	}
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            PAROI paroi_temperature_imposee 		Champ_front_Uniforme 1 0.
+            INX frontiere_ouverte_temperature_imposee 	Champ_front_Uniforme 1 2.
+            INZ frontiere_ouverte_temperature_imposee 	Champ_front_Uniforme 1 1.
+            OUT frontiere_ouverte T_ext 			Champ_front_Uniforme 1 0.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 0. }
+    }
+
+    Post_processing
+    {
+        format lata
+        fields dt_post 1.
+        {
+            temperature elem
+        }
+    }
 }
 # On ne resout pas car prends beaucoup de RAM ~1 Go #
 End

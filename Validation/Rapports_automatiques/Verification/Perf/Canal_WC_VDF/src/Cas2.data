@@ -7,28 +7,28 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-  Pave DOM_DOM
-  {
-    Origine 0. 0. 0.
-    Nombre_de_Noeuds 22 101 22
-    Longueurs 2.1 10. 2.1
-  }
-  {
-    bord wall Z = 0.0 0.0 <= X <= 2.1 0.0 <= Y <= 10.
-    bord wall Z = 2.1 0.0 <= X <= 2.1 0.0 <= Y <= 10.
-    bord wall X = 0.0 0.0 <= Y <= 10. 0.0 <= Z <= 2.1
-    bord wall X = 2.1 0.0 <= Y <= 10. 0.0 <= Z <= 2.1
-    bord in Y = 0.0 0.0 <= X <= 2.1 0.0 <= Z <= 2.1
-    bord out Y = 10. 0.0 <= X <= 2.1 0.0 <= Z <= 2.1
-  }
+    Pave DOM_DOM
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 22 101 22
+        Longueurs 2.1 10. 2.1
+    }
+    {
+        bord wall Z = 0.0 0.0 <= X <= 2.1 0.0 <= Y <= 10.
+        bord wall Z = 2.1 0.0 <= X <= 2.1 0.0 <= Y <= 10.
+        bord wall X = 0.0 0.0 <= Y <= 10. 0.0 <= Z <= 2.1
+        bord wall X = 2.1 0.0 <= Y <= 10. 0.0 <= Z <= 2.1
+        bord in Y = 0.0 0.0 <= X <= 2.1 0.0 <= Z <= 2.1
+        bord out Y = 10. 0.0 <= X <= 2.1 0.0 <= Z <= 2.1
+    }
 }
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-  Partition_tool Tranche { tranches 1 2 1 }
-  Larg_joint 2
-  zones_name dom
+    Partition_tool Tranche { tranches 1 2 1 }
+    Larg_joint 2
+    zones_name dom
 }
 End
 END PARTITION #
@@ -41,36 +41,36 @@ Runge_Kutta_Rationnel_ordre_2 sch
 
 Lire sch
 {
-  tinit 0.
-  dt_start dt_calc
-  tmax 0.25
-  dt_min 1.e-7
-  dt_max 6.e-3
-  dt_impr 1.e-5
-  seuil_statio 1.e-14
-  facsec 0.9
-  nb_pas_dt_max 10 
+    tinit 0.
+    dt_start dt_calc
+    tmax 0.25
+    dt_min 1.e-7
+    dt_max 6.e-3
+    dt_impr 1.e-5
+    seuil_statio 1.e-14
+    facsec 0.9
+    nb_pas_dt_max 10
 }
 
 Fluide_Weakly_Compressible air
 Lire air
 {
-  pression_thermo   100000.
-  use_total_pressure 1 /* 0 is by default */
-  time_activate_ptot 0.00001 /* In seconds : use the total pressure in the EOS */
-  loi_etat binaire_gaz_parfait_WC
-  {
-    temperature 373.15
-    diffusion_coeff 20.2e-6
+    pression_thermo   100000.
+    use_total_pressure 1 /* 0 is by default */
+    time_activate_ptot 0.00001 /* In seconds : use the total pressure in the EOS */
+    loi_etat binaire_gaz_parfait_WC
+    {
+        temperature 373.15
+        diffusion_coeff 20.2e-6
 
-    # H20 rho 0.580168818959181 #
-    molar_mass1 18e-3
-    mu1 0.0017916
+        # H20 rho 0.580168818959181 #
+        molar_mass1 18e-3
+        mu1 0.0017916
 
-    # H2 rho 0.06497568456332292 #
-    molar_mass2 0.0020159
-    mu2 0.86269e-5
-  }
+        # H2 rho 0.06497568456332292 #
+        molar_mass2 0.0020159
+        mu2 0.86269e-5
+    }
 }
 
 Champ_Uniforme gravite
@@ -88,41 +88,41 @@ Discretiser pb dis
 
 Lire pb
 {
-  Navier_Stokes_WC
-  {
-    solveur_pression petsc cholesky { }
-    convection { centre }
-    diffusion { }
-    conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
-    conditions_limites
+    Navier_Stokes_WC
     {
-      wall paroi_fixe
-      in  frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 10.80168818959181 0.
-      out    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -0.580168818959181*9.81*z
+        solveur_pression petsc cholesky { }
+        convection { centre }
+        diffusion { }
+        conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
+        conditions_limites
+        {
+            wall paroi_fixe
+            in  frontiere_ouverte_rho_U_impose  Champ_front_uniforme 3 0. 10.80168818959181 0.
+            out    Frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1  -0.580168818959181*9.81*z
+        }
     }
-  }
 
-  Convection_Diffusion_Espece_Binaire_WC
-  {
-    convection  { quick }
-    diffusion { }
-    conditions_initiales { fraction_massique Champ_fonc_XYZ dom 1 0.0 }
-    conditions_limites
+    Convection_Diffusion_Espece_Binaire_WC
     {
-      wall paroi
-      in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 0.7
-      out  frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
+        convection  { quick }
+        diffusion { }
+        conditions_initiales { fraction_massique Champ_fonc_XYZ dom 1 0.0 }
+        conditions_limites
+        {
+            wall paroi
+            in frontiere_ouverte_fraction_massique_imposee  Champ_front_Uniforme 1 0.7
+            out  frontiere_ouverte Y_ext Champ_front_Uniforme 1 0.0
+        }
     }
-  }
 
-  Postraitement
-  {
-    format lata
-    Champs dt_post 0.05
+    Postraitement
     {
-    fraction_massique elem
+        format lata
+        Champs dt_post 0.05
+        {
+            fraction_massique elem
+        }
     }
-  }
 
 }
 

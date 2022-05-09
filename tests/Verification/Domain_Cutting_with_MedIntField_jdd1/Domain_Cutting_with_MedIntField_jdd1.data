@@ -4,11 +4,11 @@ dimension 3
 Pb_hydraulique pb
 domaine dom
 
-# BEGIN MESH 
-lire_med family_names_from_group_names dom mesh mesh.med 
- END MESH #
+# BEGIN MESH
+lire_med family_names_from_group_names dom mesh mesh.med
+END MESH #
 
-# BEGIN PARTITION 
+# BEGIN PARTITION
 Postraiter_domaine
 {
     fichier mesh.lata
@@ -18,41 +18,41 @@ Postraiter_domaine
 
 Partition dom
 {
-	Partition_tool Fichier_MED { file Processor.med field Thread }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool Fichier_MED { file Processor.med field Thread }
+    Larg_joint 2
+    zones_name DOM
 }
 End
- END PARTITION #
+END PARTITION #
 
 # BEGIN SCATTER #
 Scatter DOM.Zones dom
 # END SCATTER #
 
-# discretiser_domaine dom
-postraiter_domaine { domaine dom fichier dom.lata format lml } #
+/* discretiser_domaine dom
+postraiter_domaine { domaine dom fichier dom.lata format lml } */
 
 VDF dis
 
 Schema_euler_explicite sch
 Read sch
 {
-	tinit 0
+    tinit 0
 	nb_pas_dt_max 3
-	tmax 2.5
-	/* dt_min identique au dt_max alors dt=dt_min=dt_max */
-	dt_min 5.e-3
-	dt_max 5.e-3
-	dt_impr 5.e-1
-	dt_sauv 1
-	seuil_statio 1.e-8
+    tmax 2.5
+    /* dt_min identique au dt_max alors dt=dt_min=dt_max */
+    dt_min 5.e-3
+    dt_max 5.e-3
+    dt_impr 5.e-1
+    dt_sauv 1
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-	rho Champ_Uniforme 1 1.17
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
 }
 
 Associate pb dom
@@ -63,36 +63,36 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
+    Navier_Stokes_standard
+    {
 
-		solveur_pression GCP {
-			precond ssor { omega 1.5 }
-			seuil 1.e-8 impr
-		}
-		convection { amont }
-		diffusion {  }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 1. 0. 0.
-			}
-		boundary_conditions {
-			up paroi_fixe
-			down paroi_fixe
-			left frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3  1. 0. 0.
-			right frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-			front Symetrie
-			back Symetrie
-		}
-	}
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-8 impr
+        }
+        convection { amont }
+        diffusion {  }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 1. 0. 0.
+        }
+        boundary_conditions {
+            up paroi_fixe
+            down paroi_fixe
+            left frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3  1. 0. 0.
+            right frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            front Symetrie
+            back Symetrie
+        }
+    }
 
-	Post_processing
-	{
-		format lml
-		fields dt_post 0.1
-		{
-			pression elem 
-		}
-	}
+    Post_processing
+    {
+        format lml
+        fields dt_post 0.1
+        {
+            pression elem
+        }
+    }
 }
 EcritureLectureSpecial 0
 Solve pb

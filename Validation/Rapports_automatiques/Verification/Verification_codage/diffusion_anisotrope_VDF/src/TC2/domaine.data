@@ -3,29 +3,29 @@ dimension 2
 Domaine DOM
 
 # BEGIN MESH #
-Mailler DOM 
+Mailler DOM
 {
-        Pave pave1
-        {
-                origine         0. 0.  
-                longueurs       1. 1.  
-                nombre_de_noeuds 50 50 
-        }
-        {
-                bord paroi X = 0       0 <= Y <= 1
-                bord paroi X = 1.      0 <= Y <= 1 
-                bord paroi Y = 0       0 <= X <= 1 
-                bord paroi Y = 1.      0 <= X <= 1
-        }
+    Pave pave1
+    {
+        origine         0. 0.
+        longueurs       1. 1.
+        nombre_de_noeuds 50 50
+    }
+    {
+        bord paroi X = 0       0 <= Y <= 1
+        bord paroi X = 1.      0 <= Y <= 1
+        bord paroi Y = 0       0 <= X <= 1
+        bord paroi Y = 1.      0 <= X <= 1
+    }
 }
 # END MESH #
 
 # BEGIN PARTITION
 Partition DOM
 {
-        Partition_tool tranche { tranches 2 1 } 
-        Larg_joint 1
-        zones_name dom 
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name dom
 }
 End
 END PARTITION #

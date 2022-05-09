@@ -9,7 +9,7 @@ Mailler coarse_dom
     {
         Origine 0. 0. 0.
         Nombre_de_Noeuds 8 8 8 		/* 109760 cells after tetraedrized (7*7*7*40) et isotrope raffined *8 */
-     /* Nombre_de_Noeuds 101 101 31 */	/* 96,000,000 cells */
+        /* Nombre_de_Noeuds 101 101 31 */	/* 96,000,000 cells */
         Longueurs 10 10 3
     }
     {
@@ -24,7 +24,7 @@ Mailler coarse_dom
 Dilate coarse_dom 1.e-3
 Tetraedriser_homogene coarse_dom
 Ecrire_fichier coarse_dom coarse_dom.geom
-Lire_fichier dom coarse_dom.geom  
+Lire_fichier dom coarse_dom.geom
 Raffiner_isotrope dom
 # END MESH #
 
@@ -39,7 +39,7 @@ End
 END PARTITION #
 
 # BEGIN SCATTER
-Raffiner_isotrope_parallele { name_of_initial_zones COARSE_DOM name_of_new_zones DOM } 
+Raffiner_isotrope_parallele { name_of_initial_zones COARSE_DOM name_of_new_zones DOM }
 Scatter DOM.Zones dom
 END SCATTER #
 

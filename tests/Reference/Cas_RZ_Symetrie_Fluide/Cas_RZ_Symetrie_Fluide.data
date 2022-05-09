@@ -5,14 +5,14 @@ bidim_axi
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.           
-	tmax 1000.
-	dt_min 0.00001 
-	dt_max 10000
-	dt_impr 10.     
-	dt_sauv 100000.  
-	nb_pas_dt_max 200
-	facsec 1. 
+    tinit 0.
+    tmax 1000.
+    dt_min 0.00001
+    dt_max 10000
+    dt_impr 10.
+    dt_sauv 100000.
+    nb_pas_dt_max 200
+    facsec 1.
 }
 
 Pb_Hydraulique pb
@@ -24,9 +24,9 @@ Read_file dom_pb maillage.geom
 # BEGIN PARTITION
 Partition dom_pb
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -40,12 +40,12 @@ VDF cubesregu
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 0.02
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 2.853E-2          
-	Cp Champ_Uniforme 1 0.5
-        beta_th Champ_Uniforme 1 3.E-3     
-	      
+    mu Champ_Uniforme 1 0.02
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 2.853E-2
+    Cp Champ_Uniforme 1 0.5
+    beta_th Champ_Uniforme 1 3.E-3
+
 }
 
 Champ_Uniforme gravite
@@ -58,32 +58,32 @@ Discretize pb cubesregu
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 }
-		convection { quick }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-	          	entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 1. 0.
-	          	sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
-                        milieu Symetrie    
-                        droite paroi_fixe
-                        haut paroi_fixe
-                        bas paroi_fixe
-		}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 }
+        convection { quick }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
         }
-	Post_processing
-	{
-                fields dt_post 100000.
-		{
-		   pression elem
-		   vitesse som
-		}
-	}
-        Sauvegarde binaire pb.sauv
+        boundary_conditions {
+            entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 1. 0.
+            sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+            milieu Symetrie
+            droite paroi_fixe
+            haut paroi_fixe
+            bas paroi_fixe
+        }
+    }
+    Post_processing
+    {
+        fields dt_post 100000.
+        {
+            pression elem
+            vitesse som
+        }
+    }
+    Sauvegarde binaire pb.sauv
 }
 
 Solve pb

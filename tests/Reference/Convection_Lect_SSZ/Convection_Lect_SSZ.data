@@ -6,30 +6,30 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Entree 
-	{
-	Origine 0. 0.
-	Nombre_de_Noeuds 11 11
-	Longueurs 1.0 1.0
-	}
-	{
-	Bord Entree1 Y = 0. 0. <= X <= 0.5
-	Bord Entree2 Y = 0. 0.5 <= X <= 1.
-	Bord Ouest  X = 0. 0. <= Y <= 1.
-	Bord Est    X = 1. 0. <= Y <= 1.
-	} ,
-	Pave Sortie
-	{
-	Origine 0. 1.
-	Nombre_de_Noeuds 21 11
-	Longueurs 2.0 1.0
-	}
-	{
-	Bord Sortie X = 2. 1. <= Y <= 2.
-	Bord Haut   Y = 2. 0. <= X <= 2.
-	Bord Ouest1 X = 0. 1. <= Y <= 2.
-	Bord Bas    Y = 1. 1. <= X <= 2.
-	}
+    Pave Entree
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1.0 1.0
+    }
+    {
+        Bord Entree1 Y = 0. 0. <= X <= 0.5
+        Bord Entree2 Y = 0. 0.5 <= X <= 1.
+        Bord Ouest  X = 0. 0. <= Y <= 1.
+        Bord Est    X = 1. 0. <= Y <= 1.
+    } ,
+    Pave Sortie
+    {
+        Origine 0. 1.
+        Nombre_de_Noeuds 21 11
+        Longueurs 2.0 1.0
+    }
+    {
+        Bord Sortie X = 2. 1. <= Y <= 2.
+        Bord Haut   Y = 2. 0. <= X <= 2.
+        Bord Ouest1 X = 0. 1. <= Y <= 2.
+        Bord Bas    Y = 1. 1. <= X <= 2.
+    }
 }
 # END MESH #
 # BEGIN PARTITION
@@ -38,16 +38,16 @@ Associate sous_zone1 dom
 
 Read sous_zone1
 {
-      Rectangle
-      Origine 0. 0.
-      Cotes   0.75 2.
+    Rectangle
+    Origine 0. 0.
+    Cotes   0.75 2.
 }
 
 Partition dom
 {
-	Partition_tool sous_zones { sous_zones 1 sous_zone1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool sous_zones { sous_zones 1 sous_zone1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -61,23 +61,23 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 10. 
-	dt_min 0.0001 
-	dt_max 1.
-	dt_impr 0.01
-	dt_sauv 100
-	seuil_statio 1e-8
+    tinit 0
+    tmax 10.
+    dt_min 0.0001
+    dt_max 1.
+    dt_impr 0.01
+    dt_sauv 100
+    seuil_statio 1e-8
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 0.02
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 0.1
-	Cp Champ_Uniforme 1 0.5
-	beta_th Champ_Uniforme 1 0.0
+    mu Champ_Uniforme 1 0.02
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.1
+    Cp Champ_Uniforme 1 0.5
+    beta_th Champ_Uniforme 1 0.0
 }
 
 Pb_thermohydraulique pb
@@ -89,81 +89,81 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.e-8
-			impr 
-		}
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Haut symetrie
-			Bas symetrie
-			Ouest1 symetrie
-			Ouest symetrie
-			Est symetrie
-			Sortie frontiere_ouverte_pression_imposee 
-			Champ_Front_Uniforme 1 0.
-			Entree1 frontiere_ouverte_vitesse_imposee 
-			Champ_Front_Uniforme 2  0. 1.
-			Entree2 frontiere_ouverte_vitesse_imposee 
-			Champ_Front_Uniforme 2  0. 1.
-			 
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { amont }
-		boundary_conditions {
-			Haut Paroi_adiabatique
-			Bas Paroi_adiabatique
-			Ouest1 Paroi_adiabatique
-			Ouest Paroi_adiabatique
-			Est Paroi_adiabatique
-			Sortie frontiere_ouverte_temperature_imposee 
-			Champ_Front_Uniforme 1 5.
-			Entree1 frontiere_ouverte_temperature_imposee 
-			Champ_Front_Uniforme 1 10.
-			Entree2 frontiere_ouverte_temperature_imposee 
-			Champ_Front_Uniforme 1 0.
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 5. }
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-8
+            impr
+        }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut symetrie
+            Bas symetrie
+            Ouest1 symetrie
+            Ouest symetrie
+            Est symetrie
+            Sortie frontiere_ouverte_pression_imposee
+            Champ_Front_Uniforme 1 0.
+            Entree1 frontiere_ouverte_vitesse_imposee
+            Champ_Front_Uniforme 2  0. 1.
+            Entree2 frontiere_ouverte_vitesse_imposee
+            Champ_Front_Uniforme 2  0. 1.
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_temperature temperature 
-			periode 0.1 points 2 0.45 1.45 1.55 1.05
-			sonde_pression pression 
-			periode 0.1 points 2 0.45 1.45 0.45 1.55
-			sonde_vitesse vitesse 
-			periode 0.1 points 2 0.55 1.4 0.6 1.45
-		}
-		fields dt_post 10.
-		{
-			pression elem
-			temperature elem
-			vitesse som
-		}
-	}
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions {
+            Haut Paroi_adiabatique
+            Bas Paroi_adiabatique
+            Ouest1 Paroi_adiabatique
+            Ouest Paroi_adiabatique
+            Est Paroi_adiabatique
+            Sortie frontiere_ouverte_temperature_imposee
+            Champ_Front_Uniforme 1 5.
+            Entree1 frontiere_ouverte_temperature_imposee
+            Champ_Front_Uniforme 1 10.
+            Entree2 frontiere_ouverte_temperature_imposee
+            Champ_Front_Uniforme 1 0.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 5. }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            sonde_temperature temperature
+            periode 0.1 points 2 0.45 1.45 1.55 1.05
+            sonde_pression pression
+            periode 0.1 points 2 0.45 1.45 0.45 1.55
+            sonde_vitesse vitesse
+            periode 0.1 points 2 0.55 1.4 0.6 1.45
+        }
+        fields dt_post 10.
+        {
+            pression elem
+            temperature elem
+            vitesse som
+        }
+    }
 }
 
 Solve pb
 End
 seuil 1.e-10
 vitesse Champ_Uniforme 2 0. 0.
-Sortie frontiere_ouverte_pression_imposee 
-			Champ_Front_Uniforme 1 0.
-			Entree1 frontiere_ouverte_vitesse_imposee 
-			Champ_Front_Uniforme 2  0. 1.
-			Entree2 frontiere_ouverte_vitesse_imposee 
-			Champ_Front_Uniforme 2  0. 1.
+Sortie frontiere_ouverte_pression_imposee
+Champ_Front_Uniforme 1 0.
+Entree1 frontiere_ouverte_vitesse_imposee
+Champ_Front_Uniforme 2  0. 1.
+Entree2 frontiere_ouverte_vitesse_imposee
+Champ_Front_Uniforme 2  0. 1.
 vitesse som

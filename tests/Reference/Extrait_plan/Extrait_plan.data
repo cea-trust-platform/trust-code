@@ -2,57 +2,57 @@
 # PARALLEL OK #
 # lance_test Erreur verifie si VisIt mal installe #
 dimension 3
-domaine dom 
+domaine dom
 # BEGIN MESH #
 Read_file dom FLUI_geo.geom
 dilate dom 0.001
 verifiercoin dom { }
 # END MESH #
-# BEGIN PARTITION 
-Partition dom 
-  { 
-    
-    Partition_tool metis   { nb_parts 2   } 
+# BEGIN PARTITION
+Partition dom
+{
+
+    Partition_tool metis   { nb_parts 2   }
     Larg_joint 2
-    zones_name DOM 
-  } 
-End 
+    zones_name DOM
+}
+End
 END PARTITION #
-# BEGIN SCATTER 
-Scatter DOM.Zones dom 
+# BEGIN SCATTER
+Scatter DOM.Zones dom
 END SCATTER #
-vefprep1b dis 
-Scheme_euler_explicit sch 
+vefprep1b dis
+Scheme_euler_explicit sch
 Read sch
-  { 
+{
     tinit 0.0
     dt_min 1e-06
     nb_pas_dt_max 2
     dt_impr 0.0001
     dt_start dt_calc
     seuil_statio 0.001
-  }
-fluide_incompressible fluide 
+}
+fluide_incompressible fluide
 Read fluide
-  { 
+{
     mu champ_uniforme  1 0.00054613
     rho champ_uniforme  1 987.888
-  }
-pb_hydraulique pb 
+}
+pb_hydraulique pb
 Associate pb dom
 Associate pb sch
 Associate pb fluide
 Discretize pb dis
-postraiter_domaine 
-  { 
+postraiter_domaine
+{
     format lata
     fichier geom.lata
     domaine dom
-  }
+}
 
-domaine plan 
-extraire_plan 
-  { 
+domaine plan
+extraire_plan
+{
     domaine plan
     probleme pb
     epaisseur 0.0001
@@ -60,11 +60,11 @@ extraire_plan
     point1 3 0.0 0.0 0.02
     point2 3 0.02 0.02 0.0
     via_extraire_surface
-  }
+}
 
-domaine plan_qcq 
-extraire_plan 
-  { 
+domaine plan_qcq
+extraire_plan
+{
     domaine plan_qcq
     probleme pb
     epaisseur 0.0001
@@ -72,260 +72,260 @@ extraire_plan
     point1 3 0.01 0.0 0.02
     point2 3 0.0 0.02 0.02
     point3 3 0.02 0.02 0.02
-  }
+}
 
-domaine plan_in 
-extraire_plan 
-  { 
+domaine plan_in
+extraire_plan
+{
     domaine plan_in
     probleme pb
     epaisseur 0.0001
     origine 3 0.02 0.0 0.0
     point1 3 0.02 0.02 0.0
     point2 3 0.0 0.0 0.0
-    triangle 
-  }
+    triangle
+}
 
 domaine surface
-extraire_surface 
-  {
+extraire_surface
+{
     domaine surface
     probleme pb
     condition_elements (x>y)
     condition_faces (1)
-  }	
+}
 domaine surface_out
-extraire_surface 
-  {
+extraire_surface
+{
     domaine surface_out
     probleme pb
     condition_elements (y>x)
     condition_faces (2e-2-z>1e-5)
     avec_les_bords
-  }	
+}
 domaine surface_qcq
-extraire_surface 
-  {
+extraire_surface
+{
     domaine surface_qcq
     probleme pb
     condition_elements (z>x)
     condition_faces (1)
-  }	
+}
 domaine in
-extraire_surface 
-  {
+extraire_surface
+{
     domaine in
     probleme pb
-    avec_certains_bords 1 IN  
-  }	
+    avec_certains_bords 1 IN
+}
 
 Postraiter_domaine { domaine in format lata fichier in }
 Read pb
-  { 
-    navier_stokes_standard 
-      { 
-        solveur_pression gcp 
-          { 
-            precond ssor 
-              { 
+{
+    navier_stokes_standard
+    {
+        solveur_pression gcp
+        {
+            precond ssor
+            {
                 omega 1.55
-              }
+            }
             seuil 1e-12
-            impr 
-          }
-        convection    { amont   } 
-        diffusion    {   } 
-        initial_conditions 
-          {
+            impr
+        }
+        convection    { amont   }
+        diffusion    {   }
+        initial_conditions
+        {
             vitesse champ_uniforme  3 0.0 0.0 0.3
-          }
-        boundary_conditions 
-          {
+        }
+        boundary_conditions
+        {
             IN frontiere_ouverte_vitesse_imposee champ_front_uniforme  3 0.0 0.0 0.1
             OUT frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
-            PAR paroi_fixe 
-          }
-      }
-    Post_processing 
-      { 
+            PAR paroi_fixe
+        }
+    }
+    Post_processing
+    {
 
-	Definition_champs {
-	 u_plan Interpolation
-              {
+        Definition_champs {
+            u_plan Interpolation
+            {
                 localisation elem
                 domaine plan
                 source refChamp
-                  {
+                {
                     pb_champ  pb vitesse
-                  }
-		}
-	}
-        Probes 
-          {
+                }
+            }
+        }
+        Probes
+        {
             Sonde1 vitesse periode 0.01 points 1  0.005 0.015 0.02
             Sonde2 vitesse periode 0.01 segment 31  0.02 0.0 0.0
             0.01 0.01 0.0
             Sonde3 vitesse periode 0.01 segment 31  0.01 0.01 0.02
             0.0 0.02 0.02
-          }
-	domaine plan
-	
-        fields  dt_post 50.0 
-          {
+        }
+        domaine plan
+
+        fields  dt_post 50.0
+        {
             vitesse elem
-          }
-      }
-    Post_processings 
-      {
-        plan 
-          { 
+        }
+    }
+    Post_processings
+    {
+        plan
+        {
             domaine plan
             format lata
-            fields  dt_post 50.0 
-              {
+            fields  dt_post 50.0
+            {
                 pression elem
                 vitesse elem
-              }
+            }
             fichier plan
-          }
-        plan_in 
-          { 
+        }
+        plan_in
+        {
             domaine plan_in
             format lata
-            fields  dt_post 50.0 
-              {
+            fields  dt_post 50.0
+            {
                 pression elem
                 vitesse elem
-              }
+            }
             fichier plan_in
-          }
-        plan_qcq 
-          { 
+        }
+        plan_qcq
+        {
             domaine plan_qcq
             format lata
-            fields  dt_post 50.0 
-              {
+            fields  dt_post 50.0
+            {
                 pression elem
                 vitesse elem
-              }
+            }
             fichier plan_qcq
-          }
-        surface 
-          { 
+        }
+        surface
+        {
             domaine surface
             format lata
-            fields  dt_post 50.0 
-              {
+            fields  dt_post 50.0
+            {
                 pression elem
                 vitesse elem
-              }
+            }
             fichier surface
-          }
-        surface_out 
-          { 
+        }
+        surface_out
+        {
             domaine surface_out
             format lata
-            fields  dt_post 50.0 
-              {
+            fields  dt_post 50.0
+            {
                 pression elem
                 vitesse elem
-              }
+            }
             fichier surface_out
-          }
-        surface_qcq 
-          { 
+        }
+        surface_qcq
+        {
             domaine surface_qcq
             format lata
-            fields  dt_post 50.0 
-              {
+            fields  dt_post 50.0
+            {
                 pression elem
                 vitesse elem
-              }
+            }
             fichier surface_qcq
-          }
+        }
 
-      }
-  }
+    }
+}
 Solve pb
 
 # afin de ne faire cela qu en sequentiel , le // est teste dans verifie #
 # BEGIN MESH #
 lata_to_med plan.lata plan.med
-champ_fonc_med champ_plan 
+champ_fonc_med champ_plan
 Read champ_plan last_time plan.med plan vitesse elem 0.0
 lata_to_med plan_in.lata plan_in.med
-champ_fonc_med champ_plan_in 
+champ_fonc_med champ_plan_in
 Read champ_plan_in last_time plan_in.med plan_in vitesse elem 0.0
 lata_to_med plan_qcq.lata plan_qcq.med
-champ_fonc_med champ_plan_qcq 
+champ_fonc_med champ_plan_qcq
 Read champ_plan_qcq last_time plan_qcq.med plan_qcq vitesse elem 0.0
 
 
 lata_to_med surface.lata surface.med
-champ_fonc_med champ_surface 
+champ_fonc_med champ_surface
 Read champ_surface last_time surface.med surface vitesse elem 0.0
 lata_to_med surface_out.lata surface_out.med
-champ_fonc_med champ_surface_out 
+champ_fonc_med champ_surface_out
 Read champ_surface_out last_time surface_out.med surface_out vitesse elem 0.0
 lata_to_med surface_qcq.lata surface_qcq.med
-champ_fonc_med champ_surface_qcq 
+champ_fonc_med champ_surface_qcq
 Read champ_surface_qcq last_time surface_qcq.med surface_qcq vitesse elem 0.0
 
-integrer_champ_med 
-  { 
+integrer_champ_med
+{
     champ_med champ_plan
     methode integrale_en_z
     zmin 0.0
     zmax 0.02
     nb_tranche 20
     fichier_sortie test_20
-  }
-integrer_champ_med 
-  { 
+}
+integrer_champ_med
+{
     champ_med champ_plan
     methode integrale_en_z
     zmin 0.0
     zmax 0.02
     nb_tranche 100
     fichier_sortie test_100
-  }
-integrer_champ_med 
-  { 
+}
+integrer_champ_med
+{
     champ_med champ_plan
     methode debit_total
     fichier_sortie test_1
-  }
-integrer_champ_med 
-  { 
+}
+integrer_champ_med
+{
     champ_med champ_plan_in
     methode debit_total
     fichier_sortie test_1b
-  }
-integrer_champ_med 
-  { 
+}
+integrer_champ_med
+{
     champ_med champ_plan_qcq
     methode debit_total
     fichier_sortie test_1c
-  }
-integrer_champ_med 
-  { 
+}
+integrer_champ_med
+{
     champ_med champ_surface
     methode debit_total
     fichier_sortie surf_1
-  }
-integrer_champ_med 
-  { 
+}
+integrer_champ_med
+{
     champ_med champ_surface_out
     methode debit_total
     fichier_sortie surf_1b
-  }
-integrer_champ_med 
-  { 
+}
+integrer_champ_med
+{
     champ_med champ_surface_qcq
     methode debit_total
     fichier_sortie surf_1c
-  }
+}
 
 
 # END MESH #
-End 
+End

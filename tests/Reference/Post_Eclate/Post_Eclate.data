@@ -9,48 +9,48 @@ Domaine dom_post
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Entree 
-	{
-	Origine 0. 0.
-	Nombre_de_Noeuds 47 23
-	Longueurs 0.92 0.22
-	}
-	{
-	Bord Entree X = 0. 0. <= Y <= 0.22
-	Bord Haut Y = 0.22 0. <= X <= 0.92
-	Bord Bas Y = 0. 0. <= X <= 0.92
-	Bord Sortie X = 0.92 0. <= Y <= 0.22
-	}
+    Pave Entree
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 47 23
+        Longueurs 0.92 0.22
+    }
+    {
+        Bord Entree X = 0. 0. <= Y <= 0.22
+        Bord Haut Y = 0.22 0. <= X <= 0.92
+        Bord Bas Y = 0. 0. <= X <= 0.92
+        Bord Sortie X = 0.92 0. <= Y <= 0.22
+    }
 }
 Mailler dom_post
 {
-	Pave Entree 
-	{
-	Origine 0.4 0.08
-	Nombre_de_Noeuds 25 13
-	Longueurs 0.92 0.22
-	}
-	{
-	Bord Entree X = 0.4 0.08 <= Y <= 0.30
-	Bord Haut Y = 0.30 0.4 <= X <= 1.32
-	Bord Bas Y = 0.08 0.4 <= X <= 1.32
-	Bord Sortie X = 1.32 0.08 <= Y <= 0.30
-	}
+    Pave Entree
+    {
+        Origine 0.4 0.08
+        Nombre_de_Noeuds 25 13
+        Longueurs 0.92 0.22
+    }
+    {
+        Bord Entree X = 0.4 0.08 <= Y <= 0.30
+        Bord Haut Y = 0.30 0.4 <= X <= 1.32
+        Bord Bas Y = 0.08 0.4 <= X <= 1.32
+        Bord Sortie X = 1.32 0.08 <= Y <= 0.30
+    }
 }
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Ecrire_decoupage DEC_Post_Eclate_dom.dec
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Ecrire_decoupage DEC_Post_Eclate_dom.dec
+    Larg_joint 1
+    zones_name DOM
 }
 Partition dom_post
 {
-	Partition_tool Partition { Domaine dom }
-	zones_name DOMP
+    Partition_tool Partition { Domaine dom }
+    zones_name DOMP
 }
 End
 END PARTITION #
@@ -66,20 +66,20 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 0.25
-	dt_min 0.001
-	dt_max 0.001
-	dt_impr 0.001
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tinit 0
+    tmax 0.25
+    dt_min 0.001
+    dt_max 0.001
+    dt_impr 0.001
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 0.02
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 0.02
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -90,63 +90,63 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.500000 } 
-			seuil 1.000000e-12
-			impr 
-		}
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 1. 0.
-			}
-		boundary_conditions {
-			Haut paroi_fixe
-			Bas paroi_fixe
-			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.500000 }
+            seuil 1.000000e-12
+            impr
+        }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 1. 0.
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
+        }
+    }
 
-	Post_processings
-	{
-		first_post
-		{
-			Format lata
-			Domaine dom_post
-			fields dt_post 0.1
-			{
-				pression som
-				pression elem
-				vitesse elem
-			}
-			
-			Statistiques_en_serie dt_integr 0.1
-	                { 
-			   t_deb 0. t_fin 0.1
-        	           Moyenne vitesse elem
-                	   Moyenne pression elem
-	                }
-                		
-		}
-		second_post
-		{
-		 
-			fichier Post_Eclate
-			Domaine dom_post
-			fields dt_post 0.1
-			{
-				pression elem
-				vitesse elem
-				vitesseX elem
-				vitesseY elem
-			}
-			
-				
-		}
-	}
+    Post_processings
+    {
+        first_post
+        {
+            Format lata
+            Domaine dom_post
+            fields dt_post 0.1
+            {
+                pression som
+                pression elem
+                vitesse elem
+            }
+
+            Statistiques_en_serie dt_integr 0.1
+            {
+                t_deb 0. t_fin 0.1
+                Moyenne vitesse elem
+                Moyenne pression elem
+            }
+
+        }
+        second_post
+        {
+
+            fichier Post_Eclate
+            Domaine dom_post
+            fields dt_post 0.1
+            {
+                pression elem
+                vitesse elem
+                vitesseX elem
+                vitesseY elem
+            }
+
+
+        }
+    }
 }
 
 Solve pb

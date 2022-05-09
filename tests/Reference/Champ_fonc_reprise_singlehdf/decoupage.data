@@ -8,16 +8,16 @@ Read_file upwind.geo ;
 # BEGIN PARTITION #
 Postraiter_domaine
 {
-   fichier mesh.lata
-   format lata
-   domaine dom
+    fichier mesh.lata
+    format lata
+    domaine dom
 }
 
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 # END PARTITION #

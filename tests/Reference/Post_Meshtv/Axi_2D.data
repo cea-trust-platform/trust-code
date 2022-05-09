@@ -10,21 +10,21 @@ Fluide_Incompressible eau
 
 Read sch
 {
-	tinit 0
-	nb_pas_dt_max 10
-	tmax 50. 
-	dt_min 0.1
-	dt_max 0.1
-	dt_impr 0.1
-	dt_sauv 100
-	seuil_statio 1.e-8
-	facsec 1.
+    tinit 0
+    nb_pas_dt_max 10
+    tmax 50.
+    dt_min 0.1
+    dt_max 0.1
+    dt_impr 0.1
+    dt_sauv 100
+    seuil_statio 1.e-8
+    facsec 1.
 }
 Ecrire sch
 Read eau
 {
-       mu Champ_Uniforme 1 1.85e-2
-       rho Champ_Uniforme 1 1.
+    mu Champ_Uniforme 1 1.85e-2
+    rho Champ_Uniforme 1 1.
 }
 Ecrire eau
 Associate pb dom
@@ -35,36 +35,36 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }	
-		convection { amont }
-		diffusion {  }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			PetitArc Paroi_fixe 
-			GrandArc Paroi_defilante Champ_Front_Uniforme 2 0. 1.
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }
+        convection { amont }
+        diffusion {  }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            PetitArc Paroi_fixe
+            GrandArc Paroi_defilante Champ_Front_Uniforme 2 0. 1.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_pression pression periode 1 points 1 1.45 0.
-			sonde_vitesse vitesse periode 1 points 3 1.45 1 1.45 3 1.45 5
-		}
-		format lml
-		fields dt_post 5
-		{
-			vitesse elem
-			vitesse som
-			pression elem
-			pression som
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 1 points 1 1.45 0.
+            sonde_vitesse vitesse periode 1 points 3 1.45 1 1.45 3 1.45 5
+        }
+        format lml
+        fields dt_post 5
+        {
+            vitesse elem
+            vitesse som
+            pression elem
+            pression som
+        }
+    }
 }
 
 Ecrire pb

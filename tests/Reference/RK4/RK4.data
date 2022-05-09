@@ -7,29 +7,29 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds 21 2  
-		Longueurs 1. 1.
-		Facteurs 1.1 1
-		SYMX
-	}
-	{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-	}
-} 
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 21 2
+        Longueurs 1. 1.
+        Facteurs 1.1 1
+        SYMX
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
+}
 
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -42,22 +42,22 @@ VDF dis
 Runge_Kutta_ordre_4 sch
 Read sch
 {
-	tinit 0
-	tmax 1.
-	dt_min 0.0001
-	dt_max 10.
-	dt_impr 0.0001
-	dt_sauv 100
-	seuil_statio 1.e-8
-	facsec 1
+    tinit 0
+    tmax 1.
+    dt_min 0.0001
+    dt_max 10.
+    dt_impr 0.0001
+    dt_sauv 100
+    seuil_statio 1.e-8
+    facsec 1
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 1.0
-	Cp Champ_Uniforme 1 0.5
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 1.0
+    Cp Champ_Uniforme 1 0.5
 }
 Associate pb dom
 Associate pb sch
@@ -67,34 +67,34 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1 1. 
-			}
-		boundary_conditions {
-			Haut paroi_adiabatique
-			Droit paroi_temperature_imposee
-			       Champ_Front_Uniforme 1 0.
-			Bas paroi_adiabatique 
-			Gauche paroi_temperature_imposee 
-			       Champ_Front_Uniforme 1 0.
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 1.
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Droit paroi_temperature_imposee
+            Champ_Front_Uniforme 1 0.
+            Bas paroi_adiabatique
+            Gauche paroi_temperature_imposee
+            Champ_Front_Uniforme 1 0.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde temperature periode 0.001 points 1 0.05 0.45
-		}
-		fields dt_post 0.02
-		{
-			temperature elem
-			temperature som
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde temperature periode 0.001 points 1 0.05 0.45
+        }
+        fields dt_post 0.02
+        {
+            temperature elem
+            temperature som
+        }
+    }
 }
 
 Solve pb

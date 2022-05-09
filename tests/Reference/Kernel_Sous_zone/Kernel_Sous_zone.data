@@ -6,31 +6,31 @@ domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave pave1
-	{
-		origine 	  0.    0.
-		longueurs 	  1     0.5
-		nombre_de_noeuds  11    6
-	}
-	{
-		bord b_ALE X =  0.   	  0 <= Y <= 0.5
-		bord b_ALE X =  1         0 <= Y <= 0.5
-		bord paroi Y =  0.   	  0 <= X <= 0.4
-		bord paroi Y =  0.   	0.6 <= X <= 1
-		bord b_ALE Y =  0.5   	  0 <= X <= 1
-	} , 
+    Pave pave1
+    {
+        origine 	  0.    0.
+        longueurs 	  1     0.5
+        nombre_de_noeuds  11    6
+    }
+    {
+        bord b_ALE X =  0.   	  0 <= Y <= 0.5
+        bord b_ALE X =  1         0 <= Y <= 0.5
+        bord paroi Y =  0.   	  0 <= X <= 0.4
+        bord paroi Y =  0.   	0.6 <= X <= 1
+        bord b_ALE Y =  0.5   	  0 <= X <= 1
+    } ,
 
-	Pave pave2
-	{
-		origine 	  0.4   -0.5
-		longueurs 	  0.2    0.5
-		nombre_de_noeuds  3      6
-	}
-	{
-		bord paroi X =  0.4    -0.5 <= Y <= 0.
-		bord paroi X =  0.6    -0.5 <= Y <= 0.
-		bord bas   Y =  -0.5   	0.4 <= X <= 0.6
-	} 
+    Pave pave2
+    {
+        origine 	  0.4   -0.5
+        longueurs 	  0.2    0.5
+        nombre_de_noeuds  3      6
+    }
+    {
+        bord paroi X =  0.4    -0.5 <= Y <= 0.
+        bord paroi X =  0.6    -0.5 <= Y <= 0.
+        bord bas   Y =  -0.5   	0.4 <= X <= 0.6
+    }
 }
 
 transformer dom
@@ -43,9 +43,9 @@ trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool Tranche { tranches 2 2 }
-	Larg_joint 2
-	zones_name dom
+    Partition_tool Tranche { tranches 2 2 }
+    Larg_joint 2
+    zones_name dom
 }
 End
 END PARTITION #

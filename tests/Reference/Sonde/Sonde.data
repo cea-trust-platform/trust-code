@@ -10,16 +10,16 @@ Read_file upwind.geo ;
 # BEGIN PARTITION
 Postraiter_domaine
 {
-   fichier mesh.lata
-   format lata
-   domaine dom
+    fichier mesh.lata
+    format lata
+    domaine dom
 }
 
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -33,21 +33,21 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 10
-	tinit 0
-	tmax 2.5
-	dt_min 0.005
-	dt_max 0.005
-	dt_impr 0.005
-	dt_sauv 1
-	seuil_statio 1.e-8
+    nb_pas_dt_max 10
+    tinit 0
+    tmax 2.5
+    dt_min 0.005
+    dt_max 0.005
+    dt_impr 0.005
+    dt_sauv 1
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 3.7e-05
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -58,39 +58,39 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.e-8
-		}
-		convection { amont }
-		diffusion {  }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Obstacle paroi_fixe
-			Symetrie symetrie
-			Sortie frontiere_ouverte_pression_imposee 
-			    Champ_front_Uniforme 1 0.
-			Entree frontiere_ouverte_vitesse_imposee 
-			     Champ_front_Uniforme 2  1. 0.
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-8
+        }
+        convection { amont }
+        diffusion {  }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Obstacle paroi_fixe
+            Symetrie symetrie
+            Sortie frontiere_ouverte_pression_imposee
+            Champ_front_Uniforme 1 0.
+            Entree frontiere_ouverte_vitesse_imposee
+            Champ_front_Uniforme 2  1. 0.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde pression periode 0.01 points 2 0.13 0.105 0.13 0.115
-		}
-		fields dt_post 1
-		{
-			pression elem
-		}
-	}
-	sauvegarde formatte sonde.sauv
+    Post_processing
+    {
+        Probes
+        {
+            sonde pression periode 0.01 points 2 0.13 0.105 0.13 0.115
+        }
+        fields dt_post 1
+        {
+            pression elem
+        }
+    }
+    sauvegarde formatte sonde.sauv
 }
 Solve pb
 End

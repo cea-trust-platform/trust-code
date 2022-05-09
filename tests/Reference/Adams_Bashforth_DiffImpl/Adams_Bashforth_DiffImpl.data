@@ -10,16 +10,16 @@ Read_file upwind.geo ;
 # BEGIN PARTITION
 Postraiter_domaine
 {
-   fichier mesh.lata
-   format lata
-   domaine dom
+    fichier mesh.lata
+    format lata
+    domaine dom
 }
 
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -33,17 +33,17 @@ VDF dis
 Schema_Adams_Bashforth_order_2 sch
 Read sch
 {
-	tinit 0
-	tmax 2.5
-	facsec 0.5
-	diffusion_implicite 1
+    tinit 0
+    tmax 2.5
+    facsec 0.5
+    diffusion_implicite 1
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 3.7e-05
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -54,35 +54,35 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		parametre_equation parametre_diffusion_implicite { preconditionnement_diag 0 crank 1 }
-		solveur_pression petsc cholesky { }
-		convection { amont }
-		diffusion {  }
-		# Conditions initiales sur la vitesse #
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Obstacle paroi_fixe
-			Symetrie symetrie
-			Sortie frontiere_ouverte_pression_imposee 
-			    Champ_front_Uniforme 1 0.
-			Entree frontiere_ouverte_vitesse_imposee 
-			     Champ_front_Uniforme 2  1. 0.
-		}
-	}
+    Navier_Stokes_standard
+    {
+        parametre_equation parametre_diffusion_implicite { preconditionnement_diag 0 crank 1 }
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion {  }
+        # Conditions initiales sur la vitesse #
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Obstacle paroi_fixe
+            Symetrie symetrie
+            Sortie frontiere_ouverte_pression_imposee
+            Champ_front_Uniforme 1 0.
+            Entree frontiere_ouverte_vitesse_imposee
+            Champ_front_Uniforme 2  1. 0.
+        }
+    }
 
-	Post_processing
-	{
-		Format lml
-		fields dt_post 1.3
-		{
-			pression elem
-			vitesse elem
-		}
-	}
+    Post_processing
+    {
+        Format lml
+        fields dt_post 1.3
+        {
+            pression elem
+            vitesse elem
+        }
+    }
 }
 Solve pb
 End

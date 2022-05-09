@@ -6,22 +6,22 @@ Domaine dom_fluide
 # BEGIN MESH #
 Mailler dom_fluide
 {
-	Pave Cavite3
-		{
-		Origine 0.3 0.3 0
-		Nombre_de_Noeuds 8 8 4
-		Longueurs 0.7 0.7 1.
-		}
-		{
-		Raccord local homogene Paroi_echange2   X = 0.3  0.3 <= Y <= 1.0  0. <= Z <= 1.
-		Bord Entree    				Y = 1.0  0.3 <= X <= 0.7  0. <= Z <= 1.
-		Bord Paroi     				Y = 1.0  0.7 <= X <= 1.0  0. <= Z <= 1.
-		Raccord local homogene Paroi_echange2   Y = 0.3  0.3 <= X <= 1.0  0. <= Z <= 1.
-		Bord Sortie    				X = 1.0  0.3 <= Y <= 0.7  0. <= Z <= 1.
-		Bord Paroi				X = 1.0  0.7 <= Y <= 1.0  0. <= Z <= 1.
-		Bord Devant3   				Z = 0. 0.3 <= X <= 1. 0.3 <= Y <= 1.0
-		Bord Derriere3 				Z = 1. 0.3 <= X <= 1. 0.3 <= Y <= 1.0
-		}
+    Pave Cavite3
+    {
+        Origine 0.3 0.3 0
+        Nombre_de_Noeuds 8 8 4
+        Longueurs 0.7 0.7 1.
+    }
+    {
+        Raccord local homogene Paroi_echange2   X = 0.3  0.3 <= Y <= 1.0  0. <= Z <= 1.
+        Bord Entree    				Y = 1.0  0.3 <= X <= 0.7  0. <= Z <= 1.
+        Bord Paroi     				Y = 1.0  0.7 <= X <= 1.0  0. <= Z <= 1.
+        Raccord local homogene Paroi_echange2   Y = 0.3  0.3 <= X <= 1.0  0. <= Z <= 1.
+        Bord Sortie    				X = 1.0  0.3 <= Y <= 0.7  0. <= Z <= 1.
+        Bord Paroi				X = 1.0  0.7 <= Y <= 1.0  0. <= Z <= 1.
+        Bord Devant3   				Z = 0. 0.3 <= X <= 1. 0.3 <= Y <= 1.0
+        Bord Derriere3 				Z = 1. 0.3 <= X <= 1. 0.3 <= Y <= 1.0
+    }
 }
 
 Tetraedriser_homogene_compact dom_fluide
@@ -30,9 +30,9 @@ Tetraedriser_homogene_compact dom_fluide
 # BEGIN PARTITION #
 Partition dom_fluide
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM2
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM2
 }
 End
 # END PARTITION #

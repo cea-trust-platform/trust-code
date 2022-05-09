@@ -124,11 +124,11 @@ Read pb
             fields dt_post 0.01
             {
                 temperature faces
-		temperature elem
-		temperature som
-		vitesse faces
-		vitesse elem
-		vitesse som
+                temperature elem
+                temperature som
+                vitesse faces
+                vitesse elem
+                vitesse som
             }
         }
         first_post {
@@ -167,7 +167,8 @@ Read pb
                     localisation elem
                     sources {
                         Gradient {
-                            source refChamp { Pb_champ pb temperature } } ,
+                            source refChamp { Pb_champ pb temperature }
+                        } ,
                         refChamp { Pb_champ pb pression }
                     }
                 }
@@ -274,12 +275,12 @@ Read pb
                 diffU_X Interpolation {
                     domaine front
                     localisation elem
-                    source Predefini { pb_champ pb viscous_force_x } 
+                    source Predefini { pb_champ pb viscous_force_x }
                 }
                 diffU_Y Interpolation {
                     domaine front
                     localisation elem
-                    source Predefini { pb_champ pb viscous_force_y } 
+                    source Predefini { pb_champ pb viscous_force_y }
                 }
                 convU_X Interpolation {
                     domaine front

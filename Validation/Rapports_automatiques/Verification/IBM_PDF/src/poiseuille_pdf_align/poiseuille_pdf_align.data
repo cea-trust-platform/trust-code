@@ -1,12 +1,12 @@
-# Hydraulique 2D laminaire POISEUILLE_ALIGNED
-  Re = (rho*U_max*L)/mu
+# Hydraulique 2D laminaire POISEUILLE_ALIGNED #
+/*  Re = (rho*U_max*L)/mu
   rho = 1.0 kg/m^3
   U_max = 1 m/s
-  L = 1 m                  
+  L = 1 m
   Re = 1
   mu = (rho*U_max*L)/Re
   A.N.
-  mu = 1.0 #
+  mu = 1.0 */
 
 dimension 3
 Pb_Hydraulique pb
@@ -14,19 +14,18 @@ Domaine dom
 
 # BEGIN MESH #
 read_MED short_family_names dom domain_mesh ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1.med
-
 regroupebord dom Wall { TOP DOWN UP }
 regroupebord dom Postpro { BOTTOM }
 regroupebord dom Sortie { OUT }
 regroupebord dom Entree { IN }
 # END MESH #
-# BEGIN PARTITION
 
+# BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -111,15 +110,15 @@ Read pb
         }
     }
 
-  Post_processing
-	{
-    format lata
-	  Champs dt_post 300
-		{
-      pression elem
-			vitesse som
-		}
-  }
+    Post_processing
+    {
+        format lata
+        Champs dt_post 300
+        {
+            pression elem
+            vitesse som
+        }
+    }
 }
 resoudre pb
 fin

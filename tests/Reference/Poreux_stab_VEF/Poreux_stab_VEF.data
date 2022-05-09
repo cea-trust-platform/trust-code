@@ -10,37 +10,37 @@ Domaine dom
 
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0. 0.
-                Nombre_de_Noeuds 9 5
-                Longueurs 2 1.
-        }
-        {
-		Bord entree  X = 0.            0. <= Y <= 1 
-		Bord sortie  X = 2.            0. <= Y <= 1 
-		Bord paroi   Y = 0.            0. <= X <= 2 
-		Bord paroi   Y = 1.            0. <= X <= 2 
-        }
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 9 5
+        Longueurs 2 1.
+    }
+    {
+        Bord entree  X = 0.            0. <= Y <= 1
+        Bord sortie  X = 2.            0. <= Y <= 1
+        Bord paroi   Y = 0.            0. <= X <= 2
+        Bord paroi   Y = 1.            0. <= X <= 2
+    }
 }
 Trianguler_H dom
 
 Sous_zone z_interface
 Associate z_interface dom
 Read z_interface {
-          Rectangle
-          Origine 0.9  0
-          Cotes   0.2  1
-          }
+    Rectangle
+    Origine 0.9  0
+    Cotes   0.2  1
+}
 
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-        Partition_tool tranche { tranches 2 1 }
-        Larg_joint 2
-        zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -59,22 +59,22 @@ VeFprep1b dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 100000.
-	dt_min 1.e-6
-	dt_start dt_calc
-	dt_max 1.0
-	dt_sauv 100
-	dt_impr 0.2
-	facsec 1.
-	seuil_statio 1.e-10
+    tinit 0
+    tmax 100000.
+    dt_min 1.e-6
+    dt_start dt_calc
+    dt_max 1.0
+    dt_sauv 100
+    dt_impr 0.2
+    facsec 1.
+    seuil_statio 1.e-10
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-       mu Champ_Uniforme 1 1.
-       rho Champ_Uniforme 1 40
+    mu Champ_Uniforme 1 1.
+    rho Champ_Uniforme 1 40
 }
 
 
@@ -87,47 +87,47 @@ Discretize pb dis
 porosites_champ pb champ_fonc_xyz dom 1 0.2
 Read pb
 {
-        Navier_Stokes_standard
+    Navier_Stokes_standard
+    {
+        projection_initiale 1
+        solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-12 impr }
+        convection { amont }
+        diffusion { }
+        sources {
+            Perte_Charge_Singuliere { dir KX coeff 0.5 surface { X = 1 z_interface } }
+        }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            entree  frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
+            sortie  frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            paroi   paroi_fixe
+        }
+    }
+    Post_processing
+    {
+        Definition_champs {
+            erreur_pression_pa Transformation {
+                methode formule expression 1 pression_pa-(x<1.)*1/4
+                source refChamp {
+                    Pb_Champ pb pression_pa nom_source pression_pa
+                }
+                localisation elem
+            }
+        }
+        Probes {
+            vitesse vitesse periode 0.0001 point 1 1. 0.5
+        }
+        format lml
+        fields dt_post 1000
         {
-                projection_initiale 1
-                solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-12 impr }
-                convection { amont }
-                diffusion { }
-                sources {
-                        Perte_Charge_Singuliere { dir KX coeff 0.5 surface { X = 1 z_interface } }
-                        }
-                initial_conditions {
-                        vitesse Champ_Uniforme 2 0. 0.
-                        }
-                boundary_conditions {
-                        entree  frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
-                        sortie  frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-                        paroi   paroi_fixe
-                }
+            erreur_pression_pa elem
+            pression_pa elem
+            vitesse elem
+            porosite_volumique elem
         }
-        Post_processing
-        {		
-		Definition_champs {
-			erreur_pression_pa Transformation {
-				methode formule expression 1 pression_pa-(x<1.)*1/4
-				source refChamp {
-					Pb_Champ pb pression_pa nom_source pression_pa 
-				}
-			localisation elem
-			} 
-  		}
-		Probes {
-			vitesse vitesse periode 0.0001 point 1 1. 0.5
-		}
-                format lml
-                fields dt_post 1000
-                {
-                        erreur_pression_pa elem
-			pression_pa elem
-                        vitesse elem
-                        porosite_volumique elem
-                }
-        }
+    }
 }
 
 Solve pb

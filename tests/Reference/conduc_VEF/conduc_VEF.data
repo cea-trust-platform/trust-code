@@ -8,28 +8,28 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 11 
-		Longueurs 1. 1.
-	}
-	{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-	}
-} 
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
+}
 
 trianguler dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -43,22 +43,22 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 300.
-	dt_min 0.00001
-	dt_max 0.1
-	dt_impr 5
-	dt_sauv 100
-	seuil_statio 1.e-8
-	facsec 0.9375
+    tinit 0
+    tmax 300.
+    dt_min 0.00001
+    dt_max 0.1
+    dt_impr 5
+    dt_sauv 100
+    seuil_statio 1.e-8
+    facsec 0.9375
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 0.01
-	Cp Champ_Uniforme 1 0.5
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.01
+    Cp Champ_Uniforme 1 0.5
 }
 Associate pb dom
 Associate pb sch
@@ -68,89 +68,89 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1 0. 
-			}
-		boundary_conditions {
-			Haut paroi_adiabatique
-			Bas paroi_temperature_imposee
-			       Champ_Front_Uniforme 1 5.
-			Droit paroi_flux_impose  
-			      Champ_Front_Uniforme 1 0.1
-			Gauche paroi_temperature_imposee 
-			       Champ_Front_Uniforme 1 0
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 0.
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Bas paroi_temperature_imposee
+            Champ_Front_Uniforme 1 5.
+            Droit paroi_flux_impose
+            Champ_Front_Uniforme 1 0.1
+            Gauche paroi_temperature_imposee
+            Champ_Front_Uniforme 1 0
+        }
+    }
 
-	Post_processing
-	{
-		Definition_champs
-		{
-			flux_Haut Reduction_0D { 
-				methode sum 
-				source Interpolation {
-					domaine dom_boundaries_Haut
-					localisation elem
-					source Morceau_Equation {
-						type operateur numero 0 option flux_bords
-						source refChamp { Pb_champ pb temperature }
-					}
-				}
-         		}
-			flux_Gauche Reduction_0D { 
-				methode sum 
-				source Interpolation {
-					domaine dom_boundaries_Gauche
-					localisation elem
-					source Morceau_Equation {
-						type operateur numero 0 option flux_bords
-						source refChamp { Pb_champ pb temperature }
-					}
-				}
-         		}
-			flux_Droit Reduction_0D { 
-				methode sum 
-				source Interpolation {
-					domaine dom_boundaries_Droit
-					localisation elem
-					source Morceau_Equation {
-						type operateur numero 0 option flux_bords
-						source refChamp { Pb_champ pb temperature }
-					}
-				}
-         		}
-			flux_Bas Reduction_0D { 
-				methode sum 
-				source Interpolation {
-					domaine dom_boundaries_Bas
-					localisation elem
-					source Morceau_Equation {
-						type operateur numero 0 option flux_bords
-						source refChamp { Pb_champ pb temperature }
-					}
-				}
-         		}
-		}
-		Probes
-		{
-			flux_Haut flux_Haut periode 5 numero_elem_sur_maitre 0
-			flux_Gauche flux_Gauche periode 5 numero_elem_sur_maitre 0
-			flux_Droit flux_Droit periode 5 numero_elem_sur_maitre 0
-			flux_Bas flux_Bas periode 5 numero_elem_sur_maitre 0
-			sonde_T temperature periode 5. points 1 0.45 0.45
-			sonde_T1 temperature periode 5. segment 21 0. 0.45 1. 0.45
-			sonde_T2 temperature periode 5. segment 21 0.45 0. 0.45 1.
-		}
-		Format lml
-		fields dt_post 30.
-		{
-			temperature som
-			pas_de_temps
-		}
-	}
+    Post_processing
+    {
+        Definition_champs
+        {
+            flux_Haut Reduction_0D {
+                methode sum
+                source Interpolation {
+                    domaine dom_boundaries_Haut
+                    localisation elem
+                    source Morceau_Equation {
+                        type operateur numero 0 option flux_bords
+                        source refChamp { Pb_champ pb temperature }
+                    }
+                }
+            }
+            flux_Gauche Reduction_0D {
+                methode sum
+                source Interpolation {
+                    domaine dom_boundaries_Gauche
+                    localisation elem
+                    source Morceau_Equation {
+                        type operateur numero 0 option flux_bords
+                        source refChamp { Pb_champ pb temperature }
+                    }
+                }
+            }
+            flux_Droit Reduction_0D {
+                methode sum
+                source Interpolation {
+                    domaine dom_boundaries_Droit
+                    localisation elem
+                    source Morceau_Equation {
+                        type operateur numero 0 option flux_bords
+                        source refChamp { Pb_champ pb temperature }
+                    }
+                }
+            }
+            flux_Bas Reduction_0D {
+                methode sum
+                source Interpolation {
+                    domaine dom_boundaries_Bas
+                    localisation elem
+                    source Morceau_Equation {
+                        type operateur numero 0 option flux_bords
+                        source refChamp { Pb_champ pb temperature }
+                    }
+                }
+            }
+        }
+        Probes
+        {
+            flux_Haut flux_Haut periode 5 numero_elem_sur_maitre 0
+            flux_Gauche flux_Gauche periode 5 numero_elem_sur_maitre 0
+            flux_Droit flux_Droit periode 5 numero_elem_sur_maitre 0
+            flux_Bas flux_Bas periode 5 numero_elem_sur_maitre 0
+            sonde_T temperature periode 5. points 1 0.45 0.45
+            sonde_T1 temperature periode 5. segment 21 0. 0.45 1. 0.45
+            sonde_T2 temperature periode 5. segment 21 0.45 0. 0.45 1.
+        }
+        Format lml
+        fields dt_post 30.
+        {
+            temperature som
+            pas_de_temps
+        }
+    }
 }
 
 Solve pb

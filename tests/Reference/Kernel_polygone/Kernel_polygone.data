@@ -15,9 +15,9 @@ Ecrire_fichier_formatte dom2 dom2.geom
 # BEGIN PARTITION
 Partition dom2
 {
-        Partition_tool tranche { tranches 2 1 }
-        Larg_joint 1
-        zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #

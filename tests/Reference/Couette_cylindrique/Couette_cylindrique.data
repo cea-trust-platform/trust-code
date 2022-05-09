@@ -1,16 +1,16 @@
 # Hydraulique 2D : Couette cylindrique avec Paroi defilante #
 # PARALLEL OK #
 
-# Solution Analytique :
+/* Solution Analytique :
  Urayon = 0
 
-               R²  4   r   
- Uteta = omega./.( / - / ) 
-               3   r   R²  
+               R²  4   r
+ Uteta = omega./.( / - / )
+               3   r   R²
 
-            10                        
- Moment_z = / .Pi.R.mu = 3.1415927e-7 
-            3                         #
+            10
+ Moment_z = / .Pi.R.mu = 3.1415927e-7
+            3                         */
 
 dimension 2
 Pb_Hydraulique pb
@@ -23,9 +23,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -39,20 +39,20 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.           
-	tmax 5.e-2
-	dt_min 1.e-6
-	dt_max 1.
-	dt_impr 1.e-4  
-	seuil_statio 1e-8
-	diffusion_implicite 1
+    tinit 0.
+    tmax 5.e-2
+    dt_min 1.e-6
+    dt_max 1.
+    dt_impr 1.e-4
+    seuil_statio 1e-8
+    diffusion_implicite 1
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.e-5
-	rho Champ_Uniforme 1 0.01
+    mu Champ_Uniforme 1 1.e-5
+    rho Champ_Uniforme 1 0.01
 }
 
 Champ_Uniforme gravite
@@ -67,49 +67,49 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { precond ssor { omega 1.651 } seuil 1.e-12 }
-		convection { muscl }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-		}
-		boundary_conditions {
-			cl_1 	paroi_defilante Champ_front_fonc_xyz 2 -(y-0.005)/0.003 (x-0.005)/0.003
-			cl_2 	paroi_fixe
-		}	
-	}
-	Post_processing
-	{	
-		Definition_champs {
-			solution Transformation {
-				methode formule expression 1 0.003/3*(4/sqrt((x-0.005)*(x-0.005)+(y-0.005)*(y-0.005))-sqrt((x-0.005)*(x-0.005)+(y-0.005)*(y-0.005))/(0.003*0.003)) 
-				localisation som
-			} 
-			solution_elem Transformation {
-				methode formule expression 1 0.003/3*(4/sqrt((x-0.005)*(x-0.005)+(y-0.005)*(y-0.005))-sqrt((x-0.005)*(x-0.005)+(y-0.005)*(y-0.005))/(0.003*0.003)) 
-				localisation elem
-			}  
-  		}  	
-		Probes
-		{
-			sonde_vorticite		vorticite 	periode 0.0001 points  1  0.0015 0.005
-			sonde_pression		pression 	periode 0.0001 segment 15 0.008  0.005 0.011 0.005
-			sonde_vitesse  nodes	vitesse 	periode 0.0001 segment 15 0.008  0.005 0.011 0.005
-			sonde_solution nodes	solution 	periode 0.0001 segment 15 0.008  0.005 0.011 0.005
-			sonde_taux_cisaillement taux_cisaillement periode 0.0001 segment 15 0.008  0.005 0.011 0.005
-		}
-		fields dt_post 0.005
-		{
-			pression	elem
-			pression	som
-			vitesse		elem
-			vitesse		som
-			solution_elem	elem
-			solution	som
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.651 } seuil 1.e-12 }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            cl_1 	paroi_defilante Champ_front_fonc_xyz 2 -(y-0.005)/0.003 (x-0.005)/0.003
+            cl_2 	paroi_fixe
+        }
+    }
+    Post_processing
+    {
+        Definition_champs {
+            solution Transformation {
+                methode formule expression 1 0.003/3*(4/sqrt((x-0.005)*(x-0.005)+(y-0.005)*(y-0.005))-sqrt((x-0.005)*(x-0.005)+(y-0.005)*(y-0.005))/(0.003*0.003))
+                localisation som
+            }
+            solution_elem Transformation {
+                methode formule expression 1 0.003/3*(4/sqrt((x-0.005)*(x-0.005)+(y-0.005)*(y-0.005))-sqrt((x-0.005)*(x-0.005)+(y-0.005)*(y-0.005))/(0.003*0.003))
+                localisation elem
+            }
+        }
+        Probes
+        {
+            sonde_vorticite		vorticite 	periode 0.0001 points  1  0.0015 0.005
+            sonde_pression		pression 	periode 0.0001 segment 15 0.008  0.005 0.011 0.005
+            sonde_vitesse  nodes	vitesse 	periode 0.0001 segment 15 0.008  0.005 0.011 0.005
+            sonde_solution nodes	solution 	periode 0.0001 segment 15 0.008  0.005 0.011 0.005
+            sonde_taux_cisaillement taux_cisaillement periode 0.0001 segment 15 0.008  0.005 0.011 0.005
+        }
+        fields dt_post 0.005
+        {
+            pression	elem
+            pression	som
+            vitesse		elem
+            vitesse		som
+            solution_elem	elem
+            solution	som
+        }
+    }
 }
 # Calcul du moment resistant exerce par le fluide sur le disque tournant #
 Calculer_moments dom centre_de_gravite 0.005 0.005

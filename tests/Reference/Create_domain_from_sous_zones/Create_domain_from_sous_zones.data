@@ -1,6 +1,6 @@
 # Creation de domaines a partir de sous_zone #
 # PARALLEL NOT #
-dimension 3  
+dimension 3
 domaine dom
 
 # BEGIN MESH #
@@ -9,25 +9,25 @@ Lire_Med dom all all.med
 Read_file dom_ssz.geo ;
 # END MESH #
 
-# BEGIN PARTITION 
+# BEGIN PARTITION
 Partition dom
 {
-   Partition_tool metis
-   {
-      nb_parts 2
-   } 
-   Larg_joint 1
-   zones_name DOM 
-} 
-End 
+    Partition_tool metis
+    {
+        nb_parts 2
+    }
+    Larg_joint 1
+    zones_name DOM
+}
+End
 END PARTITION #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones dom
 Read_file dom_ssz_par.geo ;
 END SCATTER #
 
-/* 
+/*
 # Creation d un domaine avec sous-zones disjointes #
 domaine new
 Create_domain_from_sous_zone { domaine_final new par_sous_zones 2 G_3D_93 G_3D_91 domaine_init dom }
@@ -43,7 +43,7 @@ Create_domain_from_sous_zone { domaine_final newdom par_sous_zone G_3D_2 domaine
 discretiser_domaine newdom
 postraiter_domaine { domaines { dom newdom } fichier mesh format lata }
 
-/* 
+/*
 # Exemple de calcul sur le domaine resultant de l union des sous-zones en ayant toujours acces aux sous-zones #
 Regroupebord newdom inlet { F_2D_30 F_2D_41 }
 Regroupebord newdom outlet { F_2D_31 F_2D_42 }
@@ -63,8 +63,8 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit	0.
-        nb_pas_dt_max 1
+    tinit	0.
+    nb_pas_dt_max 1
 }
 
 Pb_Conduction pb
@@ -72,9 +72,9 @@ Pb_Conduction pb
 Solide sol
 Read sol
 {
-	rho	Champ_Uniforme 1 1000.
-	lambda	Champ_Uniforme 1 250.    
-	Cp	Champ_Uniforme 1 100.
+    rho	Champ_Uniforme 1 1000.
+    lambda	Champ_Uniforme 1 250.
+    Cp	Champ_Uniforme 1 100.
 }
 
 Associate pb newdom
@@ -84,28 +84,28 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-                # Doc champ_uniforme_morceaux: Name of the domain to which the sub-areas belong. Here dom and not newdom (sub-area=G_3D_2) #
-		initial_conditions { temperature Champ_Uniforme_morceaux dom 1 { defaut 0. G_3D_2 15. } }
-		boundary_conditions
-		{
-			inlet	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
-			outlet	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
-			wall	paroi_adiabatique
-		 	sym1	symetrie
-			sym2	symetrie
-		}
-		equation_non_resolue 0
-	}
-	Post_processing
-	{	format lml
-		fields dt_post 1.
-		{
-			temperature som # post-traiter au faces pour voir ce qu'il faut #
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        # Doc champ_uniforme_morceaux: Name of the domain to which the sub-areas belong. Here dom and not newdom (sub-area=G_3D_2) #
+        initial_conditions { temperature Champ_Uniforme_morceaux dom 1 { defaut 0. G_3D_2 15. } }
+        boundary_conditions
+        {
+            inlet	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
+            outlet	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
+            wall	paroi_adiabatique
+            sym1	symetrie
+            sym2	symetrie
+        }
+        equation_non_resolue 0
+    }
+    Post_processing
+    {   format lml
+        fields dt_post 1.
+        {
+            temperature som # post-traiter au faces pour voir ce qu'il faut #
+        }
+    }
 }
 
 Solve pb

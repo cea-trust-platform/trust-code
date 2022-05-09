@@ -1,13 +1,12 @@
-# Hydraulique 2D laminaire POISEUILLE 
-  Re = (rho*U_max*L)/mu
+# Hydraulique 2D laminaire POISEUILLE #
+/*  Re = (rho*U_max*L)/mu
   rho = 1.0 kg/m^3
   U_max = 1 m/s
   L = 1 m
   Re = 1
   mu = (rho*U_max*L)/Re
   A.N.
-  mu = 1.0 
-#
+  mu = 1.0 */
 # PARALLEL NOT #
 dimension 3
 Pb_Hydraulique pb
@@ -133,24 +132,24 @@ Lire pb
     }
     Post_processings
     {
-	med {
-	        format med
-        	fichier results/postdom
-        	Champs binaire dt_post 1e0
-        	{
-            		pression elem
-            		vitesse som
-        	}
-	} 
-	lml
-	{
-		format lml fichier TAYLOR_COUETTE
-        	Champs dt_post 1e0
-        	{
-            		pression elem
-            		vitesse som
-        	}
-	}
+        med {
+            format med
+            fichier results/postdom
+            Champs binaire dt_post 1e0
+            {
+                pression elem
+                vitesse som
+            }
+        }
+        lml
+        {
+            format lml fichier TAYLOR_COUETTE
+            Champs dt_post 1e0
+            {
+                pression elem
+                vitesse som
+            }
+        }
     }
 }
 resoudre pb

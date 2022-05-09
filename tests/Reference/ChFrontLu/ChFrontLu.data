@@ -34,8 +34,9 @@ Transformer DOMout x y z+7.5
 Supprime_bord DOMout { INLET }
 
 Domaine DOM_DOM
-Mailler DOM_DOM { Epsilon 1.e-6 , Domain DOM1 , Domain DOM2 , Domain DOM3 , Domain DOM4 
-            , Domain DOMin , Domain DOMout }
+Mailler DOM_DOM { Epsilon 1.e-6 , Domain DOM1 , Domain DOM2 , Domain DOM3 , Domain DOM4
+                  , Domain DOMin , Domain DOMout
+                }
 
 dilate DOM_DOM 1.e-3
 Ecrire_fichier_formatte DOM_DOM DOM.geom
@@ -52,21 +53,21 @@ Scheme_euler_implicit sch
 
 Read sch
 {
-	nb_pas_dt_max 0
-	tinit 0.
-        tmax  0.0003
-        dt_min 1.e-10
-        dt_max 0.001
-        dt_impr 1.e-6
-        dt_sauv 0.0001
-        seuil_statio 1.e-8
-	Solveur
-           Implicite
-           {
-		 seuil_convergence_solveur 1.e-6
-           }
-	facsec 2
-	facsec_max 500
+    nb_pas_dt_max 0
+    tinit 0.
+    tmax  0.0003
+    dt_min 1.e-10
+    dt_max 0.001
+    dt_impr 1.e-6
+    dt_sauv 0.0001
+    seuil_statio 1.e-8
+    Solveur
+    Implicite
+    {
+        seuil_convergence_solveur 1.e-6
+    }
+    facsec 2
+    facsec_max 500
 
 }
 
@@ -74,11 +75,11 @@ Fluide_Incompressible fluide
 
 Read fluide
 {
-   mu           Champ_Uniforme 1    1.96e-05
-   rho          Champ_Uniforme 1    1.3
-   Cp           Champ_Uniforme 1    1150.
-   lambda       Champ_Uniforme 1    0.025
-   beta_th      Champ_Uniforme 1    0.
+    mu           Champ_Uniforme 1    1.96e-05
+    rho          Champ_Uniforme 1    1.3
+    Cp           Champ_Uniforme 1    1150.
+    lambda       Champ_Uniforme 1    0.025
+    beta_th      Champ_Uniforme 1    0.
 }
 
 Champ_Uniforme gravite
@@ -94,60 +95,61 @@ Discretize pb dis
 
 Read pb
 {
-        Navier_Stokes_standard
-        {
-                solveur_pression GCP
-                       { precond SSOR { omega 1.5 } seuil 1.e-4 impr }
-                convection { EF_stab { alpha 0.2 } }
-                diffusion { }
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP
+        { precond SSOR { omega 1.5 } seuil 1.e-4 impr }
+        convection { EF_stab { alpha 0.2 } }
+        diffusion { }
 
-        	Traitement_particulier { temperature
-                                 { bord OUTLE direction 2 }
-                               }
-
-                initial_conditions
-                        {
-                        vitesse Champ_Uniforme 3 0. 0. 443.
-                        }
-                boundary_conditions
-                {
-			PINS   paroi_fixe
-			SYM    symetrie
-                        INLET  frontiere_ouverte_vitesse_imposee  Champ_front_lu DOM_DOM 3 pb1_VITESSE_PERIO.dat
-                        OUTLE  frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-                } 
+        Traitement_particulier {
+            temperature
+            { bord OUTLE direction 2 }
         }
 
-	Convection_Diffusion_Temperature
+        initial_conditions
         {
-                     Convection { EF_stab { alpha 0.2 } }
-                     Diffusion { }
-                     boundary_conditions
-                      {
-                                PINS  Paroi_flux_impose Champ_front_uniforme 1 10000.
-                                OUTLE frontiere_ouverte T_ext Champ_Front_Uniforme 1 300.
-                                SYM   symetrie
-                                INLET frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 300.
-                      }
-                     initial_conditions { temperature Champ_Uniforme 1 300. }
+            vitesse Champ_Uniforme 3 0. 0. 443.
         }
+        boundary_conditions
+        {
+            PINS   paroi_fixe
+            SYM    symetrie
+            INLET  frontiere_ouverte_vitesse_imposee  Champ_front_lu DOM_DOM 3 pb1_VITESSE_PERIO.dat
+            OUTLE  frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+        }
+    }
 
-        Post_processing
+    Convection_Diffusion_Temperature
+    {
+        Convection { EF_stab { alpha 0.2 } }
+        Diffusion { }
+        boundary_conditions
         {
-		format lata
-		fields dt_post 1000 { }
-		Probes 
-		   { 
-			sonde_vitb vitesse periode 1.e-6 segment 25 8.e-3   1.e-4 0.009 9.6e-3 1.e-4   0.009
-                        sonde_vith vitesse periode 1.e-6 segment 35 6.94e-3 4.e-3 0.009 9.6e-3 5.53e-3 0.009
-                        sonde_temb temperature periode 1.e-6 segment 25 8.e-3   1.e-4 0.009   9.6e-3 1.e-4   0.009
-                        sonde_temh temperature periode 1.e-6 segment 35 6.94e-3 4.e-3 0.009   9.6e-3 5.53e-3 0.009
-                   }
+            PINS  Paroi_flux_impose Champ_front_uniforme 1 10000.
+            OUTLE frontiere_ouverte T_ext Champ_Front_Uniforme 1 300.
+            SYM   symetrie
+            INLET frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 300.
         }
-Sauvegarde_simple binaire pb.sauv
+        initial_conditions { temperature Champ_Uniforme 1 300. }
+    }
+
+    Post_processing
+    {
+        format lata
+        fields dt_post 1000 { }
+        Probes
+        {
+            sonde_vitb vitesse periode 1.e-6 segment 25 8.e-3   1.e-4 0.009 9.6e-3 1.e-4   0.009
+            sonde_vith vitesse periode 1.e-6 segment 35 6.94e-3 4.e-3 0.009 9.6e-3 5.53e-3 0.009
+            sonde_temb temperature periode 1.e-6 segment 25 8.e-3   1.e-4 0.009   9.6e-3 1.e-4   0.009
+            sonde_temh temperature periode 1.e-6 segment 35 6.94e-3 4.e-3 0.009   9.6e-3 5.53e-3 0.009
+        }
+    }
+    Sauvegarde_simple binaire pb.sauv
 }
 EcritureLectureSpecial 0
 
 Solve pb
 End
- 
+

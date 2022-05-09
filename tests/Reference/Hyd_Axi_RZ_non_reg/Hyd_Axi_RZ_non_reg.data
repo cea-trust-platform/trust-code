@@ -9,21 +9,21 @@ Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Mailler dom 
+Mailler dom
 {
-	Pave TUBE_Axi
-		{
-		Origine 0. 0.
-		Longueurs 0.006 1.
-		Nombre_de_Noeuds 11 51 
-		Facteurs 1.2 1.0
-		}
-		{
-		bord ENTREE   Y = 0.        0. <= X <= 0.006   
-		bord SORTIE   Y = 1.       0. <= X <= 0.006  
-		bord AXE      X = 0.        0. <= Y <= 1.
-		bord PAROI    X = 0.006     0. <= Y <= 1.	
-		} 
+    Pave TUBE_Axi
+    {
+        Origine 0. 0.
+        Longueurs 0.006 1.
+        Nombre_de_Noeuds 11 51
+        Facteurs 1.2 1.0
+    }
+    {
+        bord ENTREE   Y = 0.        0. <= X <= 0.006
+        bord SORTIE   Y = 1.       0. <= X <= 0.006
+        bord AXE      X = 0.        0. <= Y <= 1.
+        bord PAROI    X = 0.006     0. <= Y <= 1.
+    }
 
 
 }
@@ -32,9 +32,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -48,19 +48,19 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	dt_min 0.02
-	dt_max 2.5
-	dt_impr 5.e-7
-	dt_sauv 100
-        tmax 8.0
+    tinit 0.
+    dt_min 0.02
+    dt_max 2.5
+    dt_impr 5.e-7
+    dt_sauv 100
+    tmax 8.0
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu  Champ_Uniforme 1 1.e-3
-	rho Champ_Uniforme 1 1000
+    mu  Champ_Uniforme 1 1.e-3
+    rho Champ_Uniforme 1 1000
 
 }
 
@@ -72,38 +72,38 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 impr }
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse champ_uniforme 2 0 0
-			}
-		boundary_conditions {
-			
-			PAROI paroi_fixe
-			AXE   Symetrie
-			SORTIE Frontiere_ouverte_pression_imposee  Champ_Front_uniforme 1 0.
-			ENTREE Frontiere_ouverte_vitesse_imposee  Champ_Front_uniforme 2 0. 0.05
-		}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 impr }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse champ_uniforme 2 0 0
+        }
+        boundary_conditions {
 
-	}
+            PAROI paroi_fixe
+            AXE   Symetrie
+            SORTIE Frontiere_ouverte_pression_imposee  Champ_Front_uniforme 1 0.
+            ENTREE Frontiere_ouverte_vitesse_imposee  Champ_Front_uniforme 2 0. 0.05
+        }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_vit vitesse periode 1.e-6 segment  20 3.e-4 0.8  57.e-4 0.8
-			sonde_vit_temps  vitesse periode 1.e-6 points 1 3.e-4 0.8
-		
-		}
-		fields dt_post 5.5
-		{
-		vitesse elem
-	        pression elem 
-		}
-	}
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            sonde_vit vitesse periode 1.e-6 segment  20 3.e-4 0.8  57.e-4 0.8
+            sonde_vit_temps  vitesse periode 1.e-6 points 1 3.e-4 0.8
+
+        }
+        fields dt_post 5.5
+        {
+            vitesse elem
+            pression elem
+        }
+    }
 }
 Solve pb
 End

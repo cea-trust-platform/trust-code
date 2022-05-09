@@ -6,21 +6,21 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0.  0. 0.
-                Nombre_de_Noeuds 5 5 5
-                Longueurs 1 1 1
-        }
-        {
-                Bord entree   	X = 0.   	0. <= Y <= 1.    	0. <= Z <= 1.
-                Bord sortie  	X = 1.  	0. <= Y <= 1.   	0. <= Z <= 1.
-                Bord paroi   	Y = 0.  	0. <= X <= 1.  		0. <= Z <= 1.
-                Bord paroi   	Y = 1. 	 	0. <= X <= 1.  		0. <= Z <= 1.
-                Bord paroi   	Z = 0.  	0. <= X <= 1.  		0. <= Y <= 1.
-                Bord paroi   	Z = 1.  	0. <= X <= 1.   	0. <= Y <= 1.
-        }
-} 
+    Pave Cavite
+    {
+        Origine 0.  0. 0.
+        Nombre_de_Noeuds 5 5 5
+        Longueurs 1 1 1
+    }
+    {
+        Bord entree   	X = 0.   	0. <= Y <= 1.    	0. <= Z <= 1.
+        Bord sortie  	X = 1.  	0. <= Y <= 1.   	0. <= Z <= 1.
+        Bord paroi   	Y = 0.  	0. <= X <= 1.  		0. <= Z <= 1.
+        Bord paroi   	Y = 1. 	 	0. <= X <= 1.  		0. <= Z <= 1.
+        Bord paroi   	Z = 0.  	0. <= X <= 1.  		0. <= Y <= 1.
+        Bord paroi   	Z = 1.  	0. <= X <= 1.   	0. <= Y <= 1.
+    }
+}
 Tetraedriser_homogene dom
 Transformer dom
 x+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5-y)
@@ -31,9 +31,9 @@ z
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool Tranche { tranches 1 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool Tranche { tranches 1 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -45,22 +45,22 @@ END SCATTER #
 VEFPreP1b dis
 
 Scheme_euler_explicit sch
-Read sch 
+Read sch
 {
-	nb_pas_dt_max 10
-        tinit 0.
-        tmax 0.1
-        dt_min 1.e-6
-        dt_max 1.e-1
-        dt_impr 1.e-6
-        dt_sauv 20.
-        seuil_statio 1.e-8  
+    nb_pas_dt_max 10
+    tinit 0.
+    tmax 0.1
+    dt_min 1.e-6
+    dt_max 1.e-1
+    dt_impr 1.e-6
+    dt_sauv 20.
+    seuil_statio 1.e-8
 }
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme	1 2.
-	rho Champ_Uniforme	1 3.
+    mu Champ_Uniforme	1 2.
+    rho Champ_Uniforme	1 3.
 }
 
 Pb_Hydraulique pb
@@ -70,64 +70,64 @@ Associate pb fluide
 
 Discretize pb dis
 Read pb
-	{
-	Navier_Stokes_standard
-		{
-		dt_projection 1. 1.e-16
+{
+    Navier_Stokes_standard
+    {
+        dt_projection 1. 1.e-16
 
-		Solveur_Pression GCP { 
-			precond ssor { omega 1.6 }
-			seuil 1.e-11 impr 
-		} 
+        Solveur_Pression GCP {
+            precond ssor { omega 1.6 }
+            seuil 1.e-11 impr
+        }
 
-		solveur_bar petsc cholesky { }
+        solveur_bar petsc cholesky { }
 
-                convection { negligeable  }
-                diffusion  {  }
-		initial_conditions
-			{
-                        vitesse Champ_fonc_xyz dom 3  0. 0. 0.
-			}
-		boundary_conditions
-			{
-			paroi paroi_fixe
-			entree frontiere_ouverte_vitesse_imposee Champ_front_recyclage
-     					    		         {
-     					     			  pb_champ_evaluateur pb vitesse 3
-								  ampli_fluctuation 3 0. 0. 0.
-								  moyenne_imposee connexion_exacte fichier geom_face_perio chmoy_face_perio
-								  direction_anisotrope 1
-     					  		         }
-			sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0
-			}
-		}
+        convection { negligeable  }
+        diffusion  {  }
+        initial_conditions
+        {
+            vitesse Champ_fonc_xyz dom 3  0. 0. 0.
+        }
+        boundary_conditions
+        {
+            paroi paroi_fixe
+            entree frontiere_ouverte_vitesse_imposee Champ_front_recyclage
+            {
+                pb_champ_evaluateur pb vitesse 3
+                ampli_fluctuation 3 0. 0. 0.
+                moyenne_imposee connexion_exacte fichier geom_face_perio chmoy_face_perio
+                direction_anisotrope 1
+            }
+            sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0
+        }
+    }
 
-	Post_processings
-	{
-		lml
-        	{
-		fichier Chmoy_faceperio
-		format lml  
-                Probes
-                	{ 
-                        sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 0.5 
-			sonde_pression pression periode 0.01 segment 10 0. 0.5 0.5      1. 0.5 0.5
-			}
-		fields dt_post 2.
-			{
-			vitesse elem
-			}
-		}
-		lata
-		{
-		fichier Chmoy_faceperio
-		format lata
-		fields dt_post 2.
-			{
-			vitesse elem
-			}		
-		}
-	}
+    Post_processings
+    {
+        lml
+        {
+            fichier Chmoy_faceperio
+            format lml
+            Probes
+            {
+                sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 0.5
+                sonde_pression pression periode 0.01 segment 10 0. 0.5 0.5      1. 0.5 0.5
+            }
+            fields dt_post 2.
+            {
+                vitesse elem
+            }
+        }
+        lata
+        {
+            fichier Chmoy_faceperio
+            format lata
+            fields dt_post 2.
+            {
+                vitesse elem
+            }
+        }
+    }
 }
 Solve pb
 End

@@ -1,216 +1,216 @@
 # Jeu de donnees test de extraire_plan #
 # PARALLEL OK #
 dimension 3
-domaine dom 
+domaine dom
 # BEGIN MESH #
 Read_file dom FLUI_geo.geom
 dilate dom 0.001
 verifiercoin dom { }
 # END MESH #
-# BEGIN PARTITION 
-Partition dom 
-  { 
-    
-    Partition_tool metis   { nb_parts 2   } 
+# BEGIN PARTITION
+Partition dom
+{
+
+    Partition_tool metis   { nb_parts 2   }
     Larg_joint 2
-    zones_name DOM 
-  } 
-End 
+    zones_name DOM
+}
+End
 END PARTITION #
-# BEGIN SCATTER 
-Scatter DOM.Zones dom 
+# BEGIN SCATTER
+Scatter DOM.Zones dom
 END SCATTER #
-vefprep1b dis 
-Scheme_euler_explicit sch 
+vefprep1b dis
+Scheme_euler_explicit sch
 Read sch
-  { 
+{
     tinit 0.0
     dt_min 1e-06
     nb_pas_dt_max 2
     dt_impr 0.0001
     dt_start dt_calc
     seuil_statio 0.001
-  }
-fluide_incompressible fluide 
+}
+fluide_incompressible fluide
 Read fluide
-  { 
+{
     mu champ_uniforme  1 0.00054613
     rho champ_uniforme  1 987.888
-  }
+}
 Sous_zone test
 associer test dom
 lire test {
-fonction_sous_zone (x>y)
+    fonction_sous_zone (x>y)
 
 }
-pb_hydraulique pb 
+pb_hydraulique pb
 Associate pb dom
 Associate pb sch
 Associate pb fluide
 Discretize pb dis
-postraiter_domaine 
-  { 
+postraiter_domaine
+{
     format lata
     fichier geom.lata
     domaine dom
-  }
-domaine sous_domaine 
-extraire_domaine 
-  { 
+}
+domaine sous_domaine
+extraire_domaine
+{
     domaine sous_domaine
     probleme pb
     condition_elements (x>y)
-  }
+}
 domaine sous_domaine_bis
 extraire_domaine
 {
-  domaine sous_domaine_bis
+    domaine sous_domaine_bis
     probleme pb
-   sous_zone test
+    sous_zone test
 
 }
-domaine surface 
-extraire_surface 
-  { 
+domaine surface
+extraire_surface
+{
     domaine surface
     probleme pb
     condition_elements (1)
-	   condition_faces (z<1e-6)
-   avec_certains_bords 1 IN
-  }
+    condition_faces (z<1e-6)
+    avec_certains_bords 1 IN
+}
 
 Read pb
-  { 
-    navier_stokes_standard 
-      { 
-        solveur_pression gcp 
-          { 
-            precond ssor 
-              { 
+{
+    navier_stokes_standard
+    {
+        solveur_pression gcp
+        {
+            precond ssor
+            {
                 omega 1.55
-              }
+            }
             seuil 1e-12
-            impr 
-          }
-        convection    { amont   } 
-        diffusion    {   } 
-        initial_conditions 
-          {
+            impr
+        }
+        convection    { amont   }
+        diffusion    {   }
+        initial_conditions
+        {
             vitesse champ_uniforme  3 0.0 0.0 0.3
-          }
-        boundary_conditions 
-          {
+        }
+        boundary_conditions
+        {
             IN frontiere_ouverte_vitesse_imposee champ_front_uniforme  3 0.0 0.0 0.1
             OUT frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
-            PAR paroi_fixe 
-          }
-      }
-    Post_processing 
-      { 
-       
-        
-        definition_champs 
-          {
-            vitesse_sous Interpolation 
-              { 
+            PAR paroi_fixe
+        }
+    }
+    Post_processing
+    {
+
+
+        definition_champs
+        {
+            vitesse_sous Interpolation
+            {
                 localisation elem
                 domaine sous_domaine
-                source refChamp 
-                  { 
+                source refChamp
+                {
                     pb_champ  pb vitesse
-                  }
-              }
-            vitesse_min Reduction_0D 
-              { 
+                }
+            }
+            vitesse_min Reduction_0D
+            {
                 methode Min
-                source refChamp 
-                  { 
+                source refChamp
+                {
                     pb_champ  pb vitesse
-                  }
-              }
-            vitesse_min_sous Reduction_0D 
-              { 
+                }
+            }
+            vitesse_min_sous Reduction_0D
+            {
                 methode min
-                sources_reference { vitesse_sous } 
-              }
-            vitesse_surface Interpolation 
-              { 
+                sources_reference { vitesse_sous }
+            }
+            vitesse_surface Interpolation
+            {
                 localisation elem
                 domaine surface
-                source refChamp 
-                  { 
+                source refChamp
+                {
                     pb_champ  pb vitesse
-                  }
-              }
-	   vitesse_max_surface Reduction_0D 
-              { 
+                }
+            }
+            vitesse_max_surface Reduction_0D
+            {
                 methode max
-                sources_reference { vitesse_surface } 
-              }	
-          }
+                sources_reference { vitesse_surface }
+            }
+        }
 
-    Probes 
-          {
+        Probes
+        {
             Sonde1 vitesse_min_sous periode 1e-6 numero_elem_sur_maitre 1
             Sonde2 vitesse_min periode 1e-6  numero_elem_sur_maitre 1
-            
+
             Sonde3 vitesse_sous periode 0.01 points 1  0.001 0.001 0.001
-	    sonde4 vitesse_max_surface periode 1e-6 numero_elem_sur_maitre 1
-            
-          }
-	 domaine sous_domaine
-    
-        fields  dt_post 50.0 
-          {
+            sonde4 vitesse_max_surface periode 1e-6 numero_elem_sur_maitre 1
+
+        }
+        domaine sous_domaine
+
+        fields  dt_post 50.0
+        {
             vitesse elem
-	    vitesse_min_sous
-          }
-      }
-    Post_processings 
-      {
-        sous_domaine 
-          { 
+            vitesse_min_sous
+        }
+    }
+    Post_processings
+    {
+        sous_domaine
+        {
             domaine sous_domaine
             format lata
-            fields  dt_post 50.0 
-              {
+            fields  dt_post 50.0
+            {
                 pression elem
                 vitesse elem
-	
-              
-              }
+
+
+            }
             fichier sous_domaine
-          }
+        }
         sous_domaine_bis
-          { 
+        {
             domaine sous_domaine_bis
             format lata
-            fields  dt_post 50.0 
-              {
+            fields  dt_post 50.0
+            {
                 pression elem
                 vitesse elem
-	
-              
-              }
+
+
+            }
             fichier sous_domaine_bis
-          }
-        surface 
-	{
-	 domaine surface
+        }
+        surface
+        {
+            domaine surface
             format lata
-            fields  dt_post 50.0 
-              {
-               
+            fields  dt_post 50.0
+            {
+
                 vitesse elem
-	
-              
-              }
-	}	
-	verif { format lata fields dt_post 50. { vitesse faces } }
-      }
-  }
+
+
+            }
+        }
+        verif { format lata fields dt_post 50. { vitesse faces } }
+    }
+}
 Solve pb
 # afin de ne faire cela qu en sequentiel , le // est teste dans verifie #
 # BEGIN MESH #
 # END MESH #
-End 
+End

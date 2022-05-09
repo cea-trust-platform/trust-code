@@ -125,18 +125,18 @@ Lire pb1
             g   frontiere_ouverte T_ext Champ_front_Uniforme 1 272
         }
     }
-    Postraitement 
+    Postraitement
     {
-       format lata fichier GAMELAN parallele mpi-io
-       Champs dt_post 1000
-       {
-           vitesse som
-           temperature som
-           #             Vol_frac som #
-           masse_volumique som
-           vorticite som
-           #             viscosite_turbulente som #
-       }
+        format lata fichier GAMELAN parallele mpi-io
+        Champs dt_post 1000
+        {
+            vitesse som
+            temperature som
+            #             Vol_frac som #
+            masse_volumique som
+            vorticite som
+            #             viscosite_turbulente som #
+        }
     }
     sauvegarde single_hdf GAMELAN.sauv
 }

@@ -30,21 +30,24 @@ Associate zone1 dom
 Read zone1 {
     Rectangle
     Origine 0.4 0.
-    Cotes   0.2 0.8 }
+    Cotes   0.2 0.8
+}
 
 Sous_Zone zone2
 Associate zone2 dom
 Read zone2 {
     Rectangle
     Origine 0.7 0.
-    Cotes   0.3 0.4 }
+    Cotes   0.3 0.4
+}
 
 Sous_Zone zone3
 Associate zone3 dom
 Read zone3 {
     Rectangle
     Origine 0.75 0.4
-    Cotes   0.25 0.4 }
+    Cotes   0.25 0.4
+}
 # END MESH #
 
 # BEGIN PARTITION

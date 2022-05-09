@@ -15,9 +15,9 @@ Raffiner_isotrope dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -32,23 +32,23 @@ VEFPreP1B ma_discretisation
 Scheme_euler_explicit mon_schema
 Read mon_schema
 {
-	nb_pas_dt_max 5
-	tinit 0
-	dt_max 0.1
-	dt_sauv 1.e-8
-	dt_impr -1
-	seuil_statio -1
+    nb_pas_dt_max 5
+    tinit 0
+    dt_max 0.1
+    dt_sauv 1.e-8
+    dt_impr -1
+    seuil_statio -1
 }
 
 # A fluid is defined #
 Fluide_Incompressible milieu
 Read milieu
 {
-	mu  Champ_Uniforme 1 0.01
-	rho Champ_Uniforme 1 2.
-        lambda Champ_Uniforme 1 2
-        Cp Champ_Uniforme 1 100.
-        beta_th Champ_Uniforme 1 0.	
+    mu  Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Uniforme 1 2
+    Cp Champ_Uniforme 1 100.
+    beta_th Champ_Uniforme 1 0.
 }
 
 Associate pb dom
@@ -59,38 +59,38 @@ Discretize pb ma_discretisation
 Domaine Entree
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		equation_non_resolue 1
-		projection_initiale 0
-		solveur_pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e8 }
-		convection { negligeable }
-		diffusion { negligeable }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 1. 0. 0.
-		}
-		boundary_conditions {
-			Cylindre 	paroi_fixe
-			Box  		symetrie
-			Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-			Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
-		}
-	}
-        Convection_Diffusion_Temperature
-        {
-		equation_non_resolue 1
-                diffusion { negligeable }
-                convection { negligeable }
-                boundary_conditions
-                {
-			Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
-			Box 		symetrie
-			Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
-			Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
-                }
-                initial_conditions { Temperature Champ_Uniforme 1 20. }
+    Navier_Stokes_standard
+    {
+        equation_non_resolue 1
+        projection_initiale 0
+        solveur_pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e8 }
+        convection { negligeable }
+        diffusion { negligeable }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 1. 0. 0.
         }
-	sauvegarde_simple xyz cas.xyz # Pour avoir une seule sauvegarde par fichier #
+        boundary_conditions {
+            Cylindre 	paroi_fixe
+            Box  		symetrie
+            Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        equation_non_resolue 1
+        diffusion { negligeable }
+        convection { negligeable }
+        boundary_conditions
+        {
+            Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
+            Box 		symetrie
+            Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+            Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 20. }
+    }
+    sauvegarde_simple xyz cas.xyz # Pour avoir une seule sauvegarde par fichier #
 }
 EcritureLectureSpecial cas
 Solve pb

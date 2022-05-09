@@ -8,26 +8,26 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Entree
-                {
-                Origine 0. 0.
-                Nombre_de_Noeuds  10 3
-                Longueurs 1 1
-                }
-                {
-                bord Entree X = 0.   0. <= Y <= 1.0
-                bord Haut   Y = 1.0  0. <= X <= 1.0
-                bord Haut  Y = 0.   0. <= X <= 1.0
-                bord Sortie X = 1.0  0. <= Y <= 1.0
-                }
+    Pave Entree
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds  10 3
+        Longueurs 1 1
+    }
+    {
+        bord Entree X = 0.   0. <= Y <= 1.0
+        bord Haut   Y = 1.0  0. <= X <= 1.0
+        bord Haut  Y = 0.   0. <= X <= 1.0
+        bord Sortie X = 1.0  0. <= Y <= 1.0
+    }
 }
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -40,30 +40,30 @@ VDF dis
 Scheme_euler_implicit sch
 Read sch
 {
-   nb_pas_dt_max 200
-   tinit 0
-   tmax 5000.
-   dt_min 0.0001e-5
-   dt_start dt_calc
-   dt_max 5.0
-   dt_sauv 100
-   seuil_statio 1.e-6
-   max_iter_implicite 10
-   solveur simpler
-   {
-       seuil_convergence_implicite 1.e-4
-       seuil_convergence_solveur 1.e-8
-       solveur gmres { diag seuil 1.e-8 }
-   }
-   facsec 10000
+    nb_pas_dt_max 200
+    tinit 0
+    tmax 5000.
+    dt_min 0.0001e-5
+    dt_start dt_calc
+    dt_max 5.0
+    dt_sauv 100
+    seuil_statio 1.e-6
+    max_iter_implicite 10
+    solveur simpler
+    {
+        seuil_convergence_implicite 1.e-4
+        seuil_convergence_solveur 1.e-8
+        solveur gmres { diag seuil 1.e-8 }
+    }
+    facsec 10000
 }
 
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 1.
-	rho Champ_Uniforme 1 4.
+    mu Champ_Uniforme 1 1.
+    rho Champ_Uniforme 1 4.
 }
 
 Champ_Uniforme gravite
@@ -75,39 +75,39 @@ Discretize pb dis
 # Debog pb seq faces 1.e-6 0 #
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP  { precond ssor { omega  1.5 } seuil 1e-11 }
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP  { precond ssor { omega  1.5 } seuil 1e-11 }
 
-		convection { negligeable }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Haut symetrie
-			Entree frontiere_ouverte_vitesse_imposee ch_front_input_uniforme { nb_comp 2 nom vitesse_entree probleme pb }
-			Sortie frontiere_ouverte_pression_imposee ch_front_input { nb_comp 1 nom pression_sortie probleme pb }
-		}
-	}
-	Post_processing
-	{
-		Probes
-		{
-		 seg_P pression periode 0.1 segment 20 0.025 0.5 0.975 0.5
-		 seg_U1 vitesse periode 0.1 segment 11 0. 0.5 1.0 0.5
-		 seg_U2 vitesse periode 0.1 segment 19 1.0 0.02631 1.0 0.9736
-		 sonde_pression pression periode 0.1 points 1 0.5 0.5
-		 sonde_vitesse  vitesse periode 0.1 points 1 0.5 0.5
-		}
-		fields dt_post 50.
-		{
-			pression elem
-			pression som
-			vitesse elem
-			vitesse som
-		}
-	}
+        convection { negligeable }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut symetrie
+            Entree frontiere_ouverte_vitesse_imposee ch_front_input_uniforme { nb_comp 2 nom vitesse_entree probleme pb }
+            Sortie frontiere_ouverte_pression_imposee ch_front_input { nb_comp 1 nom pression_sortie probleme pb }
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            seg_P pression periode 0.1 segment 20 0.025 0.5 0.975 0.5
+            seg_U1 vitesse periode 0.1 segment 11 0. 0.5 1.0 0.5
+            seg_U2 vitesse periode 0.1 segment 19 1.0 0.02631 1.0 0.9736
+            sonde_pression pression periode 0.1 points 1 0.5 0.5
+            sonde_vitesse  vitesse periode 0.1 points 1 0.5 0.5
+        }
+        fields dt_post 50.
+        {
+            pression elem
+            pression som
+            vitesse elem
+            vitesse som
+        }
+    }
 }
 Pilote_ICoCo { main Pilote_ICoCo_1 pb_name pb }
 End

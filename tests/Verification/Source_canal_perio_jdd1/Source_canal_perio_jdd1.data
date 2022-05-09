@@ -9,28 +9,28 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-	{
-		Origine 0. 0. 
-		Nombre_de_Noeuds 11 6
-		Longueurs 6. 2. 
-	}
-	{
-		Bord periox  X = 0.            	0. <= Y <= 2.0          
-		Bord periox  X = 6.	0. <= Y <= 2.0           
-		Bord haut     Y = 0.            	0. <= X <= 6.           
-		Bord haut    Y = 2.           	0. <= X <= 6.           
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 6
+        Longueurs 6. 2.
+    }
+    {
+        Bord periox  X = 0.            	0. <= Y <= 2.0
+        Bord periox  X = 6.	0. <= Y <= 2.0
+        Bord haut     Y = 0.            	0. <= X <= 6.
+        Bord haut    Y = 2.           	0. <= X <= 6.
+    }
 }
 Trianguler_Fin dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { nb_parts 4 }
-	zones_name DOM
-	Periodique 2 periox haut
-        Larg_joint 2
+    Partition_tool metis { nb_parts 4 }
+    zones_name DOM
+    Periodique 2 periox haut
+    Larg_joint 2
 }
 End
 END PARTITION #
@@ -44,18 +44,18 @@ VEFPreP1B dis
 Scheme_euler_implicit sch
 Read sch
 {
-	tinit 0.0
+    tinit 0.0
 	nb_pas_dt_max 3
-	dt_impr 1.
-	seuil_statio 1.e-8
-	solveur implicite { solveur gmres { diag seuil 1e-20 nb_it_max 3 } }
+    dt_impr 1.
+    seuil_statio 1.e-8
+    solveur implicite { solveur gmres { diag seuil 1e-20 nb_it_max 3 } }
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.05
- 	rho Champ_Uniforme 1 1.2
+    mu Champ_Uniforme 1 0.05
+    rho Champ_Uniforme 1 1.2
 
 }
 
@@ -67,35 +67,35 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { seuil 1e-6 precond ssor { omega 1.5 } }
-		solveur_pression petsc cholesky { }
-		convection { negligeable }
-		diffusion { }
-		initial_conditions {
-			vitesse champ_uniforme 2 1. 0. 
-		}
-		sources { Canal_perio {  bord periox } }
-		# balise #
-		boundary_conditions {
-			periox periodique 
-			haut paroi_fixe
-	               		
-		}
-     }
-	      
-	Post_processing
-	{
-	        format lml
-		fields dt_post 4.0
-		{			
-			pression elem			
-			vitesse som		
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { seuil 1e-6 precond ssor { omega 1.5 } }
+        solveur_pression petsc cholesky { }
+        convection { negligeable }
+        diffusion { }
+        initial_conditions {
+            vitesse champ_uniforme 2 1. 0.
+        }
+        sources { Canal_perio {  bord periox } }
+        # balise #
+        boundary_conditions {
+            periox periodique
+            haut paroi_fixe
+
+        }
+    }
+
+    Post_processing
+    {
+        format lml
+        fields dt_post 4.0
+        {
+            pression elem
+            vitesse som
+        }
 
 
-	}
+    }
 }
 
 Solve pb

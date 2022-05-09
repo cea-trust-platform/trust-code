@@ -8,18 +8,18 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine -0.5 -0.5
-     		Nombre_de_Noeuds 33 33
-		Longueurs 1.0 1.0
-		}
-		{
-		Bord BOUNDARY 	X = -0.5  -0.5 <= Y <= 0.5
-		Bord BOUNDARY 	Y = 0.5   -0.5 <= X <= 0.5
-		Bord BOUNDARY	Y = -0.5  -0.5 <= X <= 0.5
-		Bord BOUNDARY   X = 0.5   -0.5 <= Y <= 0.5
-		}
+    Pave Cavite
+    {
+        Origine -0.5 -0.5
+        Nombre_de_Noeuds 33 33
+        Longueurs 1.0 1.0
+    }
+    {
+        Bord BOUNDARY 	X = -0.5  -0.5 <= Y <= 0.5
+        Bord BOUNDARY 	Y = 0.5   -0.5 <= X <= 0.5
+        Bord BOUNDARY	Y = -0.5  -0.5 <= X <= 0.5
+        Bord BOUNDARY   X = 0.5   -0.5 <= Y <= 0.5
+    }
 }
 dilate dom 0.5
 Trianguler_H dom
@@ -28,9 +28,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -43,22 +43,22 @@ VEFPreP1B dis
 schema_Adams_Moulton_order_3 sch
 Read sch
 {
-	tmax 0.15
-	seuil_statio -1
-	dt_impr -1
-	# facsec 2 facsec_max 2 diverges #
-	facsec 1. facsec_max 1. 
-	Solveur Implicite { 
-		# solveur petsc gmres { precond diag { } seuil 1.e-12 impr } #
-		solveur petsc cli { -ksp_type gmres -pc_type jacobi -ksp_atol 1.e-12 }
-	}
+    tmax 0.15
+    seuil_statio -1
+    dt_impr -1
+    # facsec 2 facsec_max 2 diverges #
+    facsec 1. facsec_max 1.
+    Solveur Implicite {
+        # solveur petsc gmres { precond diag { } seuil 1.e-12 impr } #
+        solveur petsc cli { -ksp_type gmres -pc_type jacobi -ksp_atol 1.e-12 }
+    }
 }
 
 Fluide_Incompressible air
 Read air
 {
-	mu  Champ_Uniforme 1 0.01
-	rho Champ_Uniforme 1 1
+    mu  Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 1
 }
 
 Associate pb dom
@@ -68,30 +68,30 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_Standard
-	{
-		
-		solveur_pression petsc cholesky { }
-		convection { muscl }
-		diffusion {  }
-		initial_conditions 
-		{
-			vitesse 	Champ_Fonc_txyz dom 2 -cos(2*Pi*x)*sin(2*Pi*y)*exp(-8*Pi*Pi*0.01*t) sin(2*Pi*x)*cos(2*Pi*y)*exp(-8*Pi*Pi*0.01*t)
-		}
-		boundary_conditions 
-		{
-			BOUNDARY symetrie
-		}
-	}
-        Post_processing
-	{
-		Format lml
-                fields dt_post 2
-		{
-		    pression 				som
-		    vitesse 				elem
-		}
-       }
+    Navier_Stokes_Standard
+    {
+
+        solveur_pression petsc cholesky { }
+        convection { muscl }
+        diffusion {  }
+        initial_conditions
+        {
+            vitesse 	Champ_Fonc_txyz dom 2 -cos(2*Pi*x)*sin(2*Pi*y)*exp(-8*Pi*Pi*0.01*t) sin(2*Pi*x)*cos(2*Pi*y)*exp(-8*Pi*Pi*0.01*t)
+        }
+        boundary_conditions
+        {
+            BOUNDARY symetrie
+        }
+    }
+    Post_processing
+    {
+        Format lml
+        fields dt_post 2
+        {
+            pression 				som
+            vitesse 				elem
+        }
+    }
 }
 
 Solve pb

@@ -7,34 +7,34 @@ Domaine dom2
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 11 11
-		Longueurs 0.01 0.01
-		}
-		{
-		Bord Gauche X = 0.  0. <= Y <= 0.01
-		Bord Haut Y = 0.01  0. <= X <= 0.01
-		Bord Bas Y = 0.     0. <= X <= 0.01
-		Bord Droit X = 0.01 0. <= Y <= 0.01
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.01
+        Bord Haut Y = 0.01  0. <= X <= 0.01
+        Bord Bas Y = 0.     0. <= X <= 0.01
+        Bord Droit X = 0.01 0. <= Y <= 0.01
+    }
 }
 Transformer dom x -y
 Mailler dom2
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 11 11
-		Longueurs 0.01 0.01
-		}
-		{
-		Bord Gauche X = 0.  0. <= Y <= 0.01
-		Bord Haut Y = 0.01  0. <= X <= 0.01
-		Bord Bas Y = 0.     0. <= X <= 0.01
-		Bord Droit X = 0.01 0. <= Y <= 0.01
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.01
+        Bord Haut Y = 0.01  0. <= X <= 0.01
+        Bord Bas Y = 0.     0. <= X <= 0.01
+        Bord Droit X = 0.01 0. <= Y <= 0.01
+    }
 }
 Transformer dom2 x*(1-10*y) y
 ecrire_fichier dom2 quad.geom
@@ -42,9 +42,9 @@ ecrire_fichier dom2 quad.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name dom
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name dom
 }
 End
 END PARTITION #
@@ -58,24 +58,24 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 5
-	tinit 0.
-	tmax 1.2
-	dt_min 0.01
-	dt_max 0.01
-	dt_impr 0.01
-	dt_sauv 0.1
-	seuil_statio 1.e-8
+    nb_pas_dt_max 5
+    tinit 0.
+    tmax 1.2
+    dt_min 0.01
+    dt_max 0.01
+    dt_impr 0.01
+    dt_sauv 0.1
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-	rho Champ_Uniforme 1 1.17
-	lambda Champ_Uniforme 1 0.0262 
-	Cp Champ_Uniforme 1 1006
-	beta_th Champ_Uniforme 1 3.41e-3
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+    Cp Champ_Uniforme 1 1006
+    beta_th Champ_Uniforme 1 3.41e-3
 }
 
 Champ_Uniforme gravite
@@ -90,47 +90,47 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond_nul
-			seuil 1.000000e-16 
-			impr
-		}
-		convection { quick }
-		diffusion { }
-		sources { boussinesq_temperature { T0 5. } }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Haut paroi_fixe
-			Bas paroi_fixe
-			Gauche paroi_fixe
-			Droit paroi_fixe
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { quick }
-		boundary_conditions 
-		{
-			Haut paroi_adiabatique
-			Bas paroi_adiabatique
- 			Gauche paroi_temperature_imposee  Champ_Front_Uniforme 1 10. 
-			Droit  paroi_temperature_imposee  Champ_Front_Uniforme 1 0.  
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 5. }
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond_nul
+            seuil 1.000000e-16
+            impr
+        }
+        convection { quick }
+        diffusion { }
+        sources { boussinesq_temperature { T0 5. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Gauche paroi_fixe
+            Droit paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { quick }
+        boundary_conditions
+        {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche paroi_temperature_imposee  Champ_Front_Uniforme 1 10.
+            Droit  paroi_temperature_imposee  Champ_Front_Uniforme 1 0.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 5. }
+    }
 
-	Post_processing
-	{
-		fields dt_post 0.1
-		{
-			pression elem
-		}
-	}
+    Post_processing
+    {
+        fields dt_post 0.1
+        {
+            pression elem
+        }
+    }
 }
 
 Solve pb

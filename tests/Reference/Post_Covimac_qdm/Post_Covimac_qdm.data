@@ -13,21 +13,21 @@ Domaine theDomain
 # BEGIN MESH #
 Mailler theDomain
 {
-  Pave volum0
-  {
-    Origine 0. 0. 0.
-    Nombre_de_Noeuds 10 10 15
-    Longueurs 0.5 0.5 1.5
-    Facteurs 1. 1. 1.
-  }
-  {
-    Bord wall   X = 0.0  0.0 <= Y <= 0.5  0.0 <= Z <= 1.5
-    Bord wall   X = 0.5  0.0 <= Y <= 0.5  0.0 <= Z <= 1.5
-    Bord wall   Y = 0.0  0.0 <= X <= 0.5  0.0 <= Z <= 1.5
-    Bord wall   Y = 0.5  0.0 <= X <= 0.5  0.0 <= Z <= 1.5
-    Bord inlet  Z = 0.0  0.0 <= X <= 0.5  0.0 <= Y <= 0.5
-    Bord outlet Z = 1.5  0.0 <= X <= 0.5  0.0 <= Y <= 0.5
-  }
+    Pave volum0
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 10 10 15
+        Longueurs 0.5 0.5 1.5
+        Facteurs 1. 1. 1.
+    }
+    {
+        Bord wall   X = 0.0  0.0 <= Y <= 0.5  0.0 <= Z <= 1.5
+        Bord wall   X = 0.5  0.0 <= Y <= 0.5  0.0 <= Z <= 1.5
+        Bord wall   Y = 0.0  0.0 <= X <= 0.5  0.0 <= Z <= 1.5
+        Bord wall   Y = 0.5  0.0 <= X <= 0.5  0.0 <= Z <= 1.5
+        Bord inlet  Z = 0.0  0.0 <= X <= 0.5  0.0 <= Y <= 0.5
+        Bord outlet Z = 1.5  0.0 <= X <= 0.5  0.0 <= Y <= 0.5
+    }
 }
 
 Polyedriser theDomain
@@ -36,9 +36,9 @@ Polyedriser theDomain
 # BEGIN PARTITION
 Partition theDomain
 {
-  Partition_tool tranche { tranches 1 1 2 }
-  Larg_joint 2
-  Zones_name DOM
+    Partition_tool tranche { tranches 1 1 2 }
+    Larg_joint 2
+    Zones_name DOM
 }
 End
 END PARTITION #
@@ -55,27 +55,27 @@ CoviMAC theDiscretization
 Scheme_euler_explicit theScheme
 Read theScheme
 {
-  # Time step #
-  tinit 0.0
-  dt_min 1.e-6
-  dt_max 1.e-2
-  dt_start dt_calc
-  facsec 1.
-  # Output criteria #
-  dt_impr 1.e-5
-  dt_sauv 1.e-5
-  # Stop if one of the following criteria is checked: #
-  tmax 2.
-  nb_pas_dt_max 100000
-  seuil_statio 1.e-12
+    # Time step #
+    tinit 0.0
+    dt_min 1.e-6
+    dt_max 1.e-2
+    dt_start dt_calc
+    facsec 1.
+    # Output criteria #
+    dt_impr 1.e-5
+    dt_sauv 1.e-5
+    # Stop if one of the following criteria is checked: #
+    tmax 2.
+    nb_pas_dt_max 100000
+    seuil_statio 1.e-12
 }
 
 # Physical characteristcs of medium #
 Fluide_Incompressible theMedium
 Read theMedium
 {
-  mu  Uniform_Field 1 2.076e-04
-  rho Uniform_Field 1 9.410e+02
+    mu  Uniform_Field 1 2.076e-04
+    rho Uniform_Field 1 9.410e+02
 }
 
 # Association between the different objects #
@@ -90,87 +90,87 @@ Discretize theProblem theDiscretization
 # Problem description #
 Read theProblem
 {
-  # mass and momentum balance equations #
-  Navier_Stokes_standard
-  {
-    # Pressure maxtrix solved with #
-    Solveur_Pression petsc cholesky { }
-
-    # Convection operator #
-    Convection { amont }
-
-    # Diffusion operator #
-    Diffusion { negligeable }
-
-    # Initial conditions #
-    Initial_Conditions
+    # mass and momentum balance equations #
+    Navier_Stokes_standard
     {
-      vitesse  Champ_Fonc_xyz theDomain 3 0. 0. 2.+z
+        # Pressure maxtrix solved with #
+        Solveur_Pression petsc cholesky { }
+
+        # Convection operator #
+        Convection { amont }
+
+        # Diffusion operator #
+        Diffusion { negligeable }
+
+        # Initial conditions #
+        Initial_Conditions
+        {
+            vitesse  Champ_Fonc_xyz theDomain 3 0. 0. 2.+z
+        }
+
+        # Boundary conditions #
+        Boundary_Conditions
+        {
+            outlet Frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 155.e5
+            inlet  Frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 3 0. 0. 2.
+            wall   Symetrie
+        }
+
+        # Sources #
+        Sources
+        {
+            Source_Qdm Uniform_Field 3 0 0 -9.81
+        }
     }
 
-    # Boundary conditions #
-    Boundary_Conditions 
+    # Post_processing description #
+    Post_processing
     {
-      outlet Frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 155.e5
-      inlet  Frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 3 0. 0. 2.
-      wall   Symetrie
-    }
+        # Definition of new fields #
+        Definition_champs {
+            solution Transformation {
+                methode formule expression 1 -(4.+2.*z)
+                localisation elem
+            }
+            convection_qdm Operateur_eqn {
+                numero_op 1
+                sources { refChamp { Pb_champ theProblem vitesse } }
+            }
+            convection_qdmz Transformation {
+                methode composante numero 2
+                localisation elem
+                sources_reference { convection_qdm }
+            }
+            hydro Transformation {
+                methode formule expression 1 (-9.81*(z-1.5)*rho+155.e5)/rho
+                localisation elem
+                sources { refChamp { Pb_champ theProblem masse_volumique nom_source rho } }
+            }
+            source_qdm Operateur_eqn {
+                numero_source 0
+                sources { refChamp { Pb_champ theProblem vitesse } }
+            }
+            source_qdmz Transformation {
+                methode composante numero 2
+                localisation elem
+                sources_reference { source_qdm }
+            }
+        }
 
-    # Sources #
-    Sources
-    {
-      Source_Qdm Uniform_Field 3 0 0 -9.81
-    }
-  }
+        # Fields #
+        Format lml
+        Fields dt_post 1.e+0
+        {
+            vitessez elem
+            convection_qdmz elem
+            solution elem
+            masse_volumique elem
+            pression elem
+            hydro elem
+            source_qdmz elem
+        }
 
-  # Post_processing description #
-  Post_processing
-  {
-    # Definition of new fields #
-    Definition_champs {
-      solution Transformation {
-        methode formule expression 1 -(4.+2.*z)
-        localisation elem
-      }
-      convection_qdm Operateur_eqn {
-        numero_op 1
-        sources { refChamp { Pb_champ theProblem vitesse } }
-      }
-      convection_qdmz Transformation {
-        methode composante numero 2
-        localisation elem
-        sources_reference { convection_qdm }
-      }
-      hydro Transformation {
-        methode formule expression 1 (-9.81*(z-1.5)*rho+155.e5)/rho
-        localisation elem
-        sources { refChamp { Pb_champ theProblem masse_volumique nom_source rho } }
-      }
-      source_qdm Operateur_eqn {
-        numero_source 0
-        sources { refChamp { Pb_champ theProblem vitesse } }
-      }
-      source_qdmz Transformation {
-        methode composante numero 2
-        localisation elem
-        sources_reference { source_qdm }
-      }
     }
-
-    # Fields #
-    Format lml
-    Fields dt_post 1.e+0
-    {
-      vitessez elem
-      convection_qdmz elem
-      solution elem
-      masse_volumique elem
-      pression elem
-      hydro elem
-      source_qdmz elem
-    }
-
-  } 
 
 }
 

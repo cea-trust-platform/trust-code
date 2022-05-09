@@ -7,20 +7,20 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-  Pave Entree
-  {
-    Origine 0. 0. 0.
-    Nombre_de_Noeuds 21 21 11
-    Longueurs 1.0 1.0 1.0
-  }
-  {
-    bord FRON   Z = 0.0      0.0 <= X <= 1.0   0.0 <= Y <= 1.0
-    bord BACK   Z = 1.0      0.0 <= X <= 1.0   0.0 <= Y <= 1.0
-    bord LEFT   X = 0.0      0.0 <= Y <= 1.0   0.0 <= Z <= 1.0
-    bord RIGH   X = 1.0      0.0 <= Y <= 1.0   0.0 <= Z <= 1.0
-    bord COND   Y = 1.0      0.0 <= X <= 1.0   0.0 <= Z <= 1.0
-    bord BAS    Y = 0.0      0.0 <= X <= 1.0   0.0 <= Z <= 1.0
-  }
+    Pave Entree
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 21 21 11
+        Longueurs 1.0 1.0 1.0
+    }
+    {
+        bord FRON   Z = 0.0      0.0 <= X <= 1.0   0.0 <= Y <= 1.0
+        bord BACK   Z = 1.0      0.0 <= X <= 1.0   0.0 <= Y <= 1.0
+        bord LEFT   X = 0.0      0.0 <= Y <= 1.0   0.0 <= Z <= 1.0
+        bord RIGH   X = 1.0      0.0 <= Y <= 1.0   0.0 <= Z <= 1.0
+        bord COND   Y = 1.0      0.0 <= X <= 1.0   0.0 <= Z <= 1.0
+        bord BAS    Y = 0.0      0.0 <= X <= 1.0   0.0 <= Z <= 1.0
+    }
 }
 Regroupebord dom WALL { FRON BACK LEFT RIGH BAS COND }
 # END MESH #
@@ -28,9 +28,9 @@ Regroupebord dom WALL { FRON BACK LEFT RIGH BAS COND }
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -44,31 +44,31 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-  tinit 0
-  dt_start dt_fixe 1.e-5
-  tmax 500
-  nb_pas_dt_max 10000000
-  dt_min 1.e-9
-  dt_max 5.
-  dt_impr 1.e-7
-  dt_sauv 100
-  seuil_statio 1.e-99
-  facsec 0.5
+    tinit 0
+    dt_start dt_fixe 1.e-5
+    tmax 500
+    nb_pas_dt_max 10000000
+    dt_min 1.e-9
+    dt_max 5.
+    dt_impr 1.e-7
+    dt_sauv 100
+    seuil_statio 1.e-99
+    facsec 0.5
 }
 Fluide_Weakly_Compressible fluide
 Lire fluide
 {
-  pression_thermo   100000.
-  loi_etat Multi_Gaz_Parfait_WC
-  {
-  
-    Species_number 2
-    diffusion_coeff Champ_uniforme 2 0.001268 0.001268
-    molar_mass Champ_uniforme 2 0.01 10.
-    mu Champ_uniforme 2 0.001 0.001
-    cp Champ_uniforme 2 1005 1000
-    Prandtl 0.71
-  }
+    pression_thermo   100000.
+    loi_etat Multi_Gaz_Parfait_WC
+    {
+
+        Species_number 2
+        diffusion_coeff Champ_uniforme 2 0.001268 0.001268
+        molar_mass Champ_uniforme 2 0.01 10.
+        mu Champ_uniforme 2 0.001 0.001
+        cp Champ_uniforme 2 1005 1000
+        Prandtl 0.71
+    }
 
 }
 
@@ -83,64 +83,64 @@ Discretize pb dis
 
 Read pb
 {
-  Navier_Stokes_WC
-  {
-    solveur_pression Petsc Cholesky {  }
-    convection { amont }
-    diffusion { }
-    conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
-    conditions_limites { WALL paroi_fixe }
-  }
-  
-  Convection_Diffusion_Chaleur_WC
-  {
-    equation_non_resolue 1
-    convection { amont }
-    diffusion { }
-    conditions_initiales { temperature Champ_uniforme 1 323. }
-    conditions_limites { WALL paroi_adiabatique }
-  }
-  
-  /* Equations_Especes */
-  Equations_Scalaires_Passifs
-  {
-    Convection_Diffusion_Espece_Multi_WC
+    Navier_Stokes_WC
     {
-      convection  { amont }
-      diffusion { }
-      conditions_initiales { fraction_massique0 Champ_fonc_xyz dom 1 0.2+(y<0.5)*0.5 }
-      conditions_limites { WALL paroi }
-    }
-  }
-
-
-  Post_processing
-  {
-    Definition_champs
-    {
-      fraction_massique11 Transformation
-      {
-        methode formule expression 1 1.0-fm
-        sources { refChamp { Pb_champ pb fraction_massique0 nom_source fm } }
-      }
-    } /* end Definition_champs */
-
-    Probes
-    {
-      vitesse vitesse periode 0.0001 point 1 0.5 0.25 0.5
-      masse_volumique masse_volumique periode 0.0001 point 1 0.5 0.5 0.5
-      fraction_massique00 fraction_massique0 periode 0.0001 point 1 0.5 0.5 0.5
-      fraction_massique11 fraction_massique11 periode 0.0001 point 1 0.5 0.5 0.5
+        solveur_pression Petsc Cholesky {  }
+        convection { amont }
+        diffusion { }
+        conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
+        conditions_limites { WALL paroi_fixe }
     }
 
-    format lata
-    fields dt_post 50
+    Convection_Diffusion_Chaleur_WC
     {
-      fraction_massique0 elem
-      fraction_massique11 elem
-      masse_volumique elem
+        equation_non_resolue 1
+        convection { amont }
+        diffusion { }
+        conditions_initiales { temperature Champ_uniforme 1 323. }
+        conditions_limites { WALL paroi_adiabatique }
     }
-  }
+
+    /* Equations_Especes */
+    Equations_Scalaires_Passifs
+    {
+        Convection_Diffusion_Espece_Multi_WC
+        {
+            convection  { amont }
+            diffusion { }
+            conditions_initiales { fraction_massique0 Champ_fonc_xyz dom 1 0.2+(y<0.5)*0.5 }
+            conditions_limites { WALL paroi }
+        }
+    }
+
+
+    Post_processing
+    {
+        Definition_champs
+        {
+            fraction_massique11 Transformation
+            {
+                methode formule expression 1 1.0-fm
+                sources { refChamp { Pb_champ pb fraction_massique0 nom_source fm } }
+            }
+        } /* end Definition_champs */
+
+        Probes
+        {
+            vitesse vitesse periode 0.0001 point 1 0.5 0.25 0.5
+            masse_volumique masse_volumique periode 0.0001 point 1 0.5 0.5 0.5
+            fraction_massique00 fraction_massique0 periode 0.0001 point 1 0.5 0.5 0.5
+            fraction_massique11 fraction_massique11 periode 0.0001 point 1 0.5 0.5 0.5
+        }
+
+        format lata
+        fields dt_post 50
+        {
+            fraction_massique0 elem
+            fraction_massique11 elem
+            masse_volumique elem
+        }
+    }
 }
 Solve pb
 End

@@ -36,8 +36,7 @@ Read sch
     solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }
 }
 
-#
-Schema_euler_explicite sch
+/* Schema_euler_explicite sch
 Read sch
 {
     tinit   0
@@ -46,8 +45,7 @@ Read sch
     dt_max  1e-6
     dt_impr 1e-10
     seuil_statio 1e-10
-}
-#
+} */
 
 Fluide_Incompressible eau
 Read eau

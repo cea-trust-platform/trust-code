@@ -7,20 +7,20 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0. 0. 0.
-                Nombre_de_Noeuds 3 3 2
-                Longueurs 1 1 1
-        }
-        {
-                Bord perio   	X = 0.   0. <= Y <= 1.   0. <= Z <= 1
-                Bord perio  	X = 1.  0. <= Y <= 1.   0. <= Z <= 1
-                Bord paroi   	Y =  0.  0. <= X <= 1.  0. <= Z <= 1
-                Bord paroi   	Y =  1.  0. <= X <= 1.  0. <= Z <= 1
-                Bord paroi  	Z = 0.  0. <= X <= 1.   0. <= Y <= 1.
-                Bord paroi  	Z = 1 0. <= X <= 1.   0. <= Y <= 1.
-        }
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 3 3 2
+        Longueurs 1 1 1
+    }
+    {
+        Bord perio   	X = 0.   0. <= Y <= 1.   0. <= Z <= 1
+        Bord perio  	X = 1.  0. <= Y <= 1.   0. <= Z <= 1
+        Bord paroi   	Y =  0.  0. <= X <= 1.  0. <= Z <= 1
+        Bord paroi   	Y =  1.  0. <= X <= 1.  0. <= Z <= 1
+        Bord paroi  	Z = 0.  0. <= X <= 1.   0. <= Y <= 1.
+        Bord paroi  	Z = 1 0. <= X <= 1.   0. <= Y <= 1.
+    }
 }
 Tetraedriser_homogene dom
 VerifierCoin dom { }
@@ -29,10 +29,10 @@ Corriger_frontiere_periodique { domaine dom bord perio }
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool Tranche { tranches 1 2 1 }
-	Larg_joint 2
-	zones_name DOM
-	periodique 1 perio
+    Partition_tool Tranche { tranches 1 2 1 }
+    Larg_joint 2
+    zones_name DOM
+    periodique 1 perio
 }
 End
 END PARTITION #
@@ -47,21 +47,21 @@ Read dis { P0 P1 Pa }
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 3
-	tinit 0.0
-	tmax 0.05
-	dt_min 1.e-5
-	dt_max 0.01
-	dt_impr 1.e-6
-	dt_sauv 100
-	seuil_statio 1.e-10
+    nb_pas_dt_max 3
+    tinit 0.0
+    tmax 0.05
+    dt_min 1.e-5
+    dt_max 0.01
+    dt_impr 1.e-6
+    dt_sauv 100
+    seuil_statio 1.e-10
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 2e-05
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 2e-05
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -72,56 +72,56 @@ Discretize pb dis
 Debog pb seq faces 1.e-6 0
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.65 } 
-			seuil 1.e-9
-			impr 
-		}
-		convection { EF_stab { alpha 0.2 } }
-		diffusion { }
-		initial_conditions
-		        {
-			vitesse Champ_Uniforme 3 1. 0. 0.
-			}
-		boundary_conditions {
-		        paroi paroi_fixe
-			perio periodique 
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.65 }
+            seuil 1.e-9
+            impr
+        }
+        convection { EF_stab { alpha 0.2 } }
+        diffusion { }
+        initial_conditions
+        {
+            vitesse Champ_Uniforme 3 1. 0. 0.
+        }
+        boundary_conditions {
+            paroi paroi_fixe
+            perio periodique
+        }
+    }
 
-Post_processings
-{
-	lml
-	{ 
-		Probes
-		{
-		  sonde_vit1 vitesse periode 1.e-6 segment 20 0. 0.06 0. 0. 0.06 0.06
-		  sonde_vit2 vitesse periode 1.e-6 segment  6 0. 0.05 0.04 0. 0.0653 0.04
-		  sonde_pression pression periode 1.e-6 segment  6 0. 0.5 0.5 1. 0.5 0.5
-		}
-		format lml
-		fichier 2Cubes_perio
-		fields dt_post 0.01
-		{
-			vitesse elem
-			pression som
-			pression elem	
-		}
-	}
-	lata
-	{ 
-		format lata
-		fichier 2Cubes_perio
-		fields dt_post 0.01
-		{
-			vitesse elem
-			pression som
-			pression elem
-		}
-	}
-}
+    Post_processings
+    {
+        lml
+        {
+            Probes
+            {
+                sonde_vit1 vitesse periode 1.e-6 segment 20 0. 0.06 0. 0. 0.06 0.06
+                sonde_vit2 vitesse periode 1.e-6 segment  6 0. 0.05 0.04 0. 0.0653 0.04
+                sonde_pression pression periode 1.e-6 segment  6 0. 0.5 0.5 1. 0.5 0.5
+            }
+            format lml
+            fichier 2Cubes_perio
+            fields dt_post 0.01
+            {
+                vitesse elem
+                pression som
+                pression elem
+            }
+        }
+        lata
+        {
+            format lata
+            fichier 2Cubes_perio
+            fields dt_post 0.01
+            {
+                vitesse elem
+                pression som
+                pression elem
+            }
+        }
+    }
 }
 
 Solve pb

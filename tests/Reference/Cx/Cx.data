@@ -17,11 +17,11 @@ OrienteFacesBord dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 9 }
-	Ecrire_decoupage Cx.metis
-        print_more_infos 1
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 9 }
+    Ecrire_decoupage Cx.metis
+    print_more_infos 1
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -36,26 +36,26 @@ VEFPreP1B ma_discretisation
 Scheme_euler_explicit mon_schema
 Read mon_schema
 {
-	nb_pas_dt_max 10
-	tinit 0
-	tmax 5.0
-	dt_min 1.e-6
-	dt_max 1.e-6
-	dt_impr 1.e-6
-	dt_sauv 100
-	seuil_statio 1.e-8
-	periode_sauvegarde_securite_en_heures 12
+    nb_pas_dt_max 10
+    tinit 0
+    tmax 5.0
+    dt_min 1.e-6
+    dt_max 1.e-6
+    dt_impr 1.e-6
+    dt_sauv 100
+    seuil_statio 1.e-8
+    periode_sauvegarde_securite_en_heures 12
 }
 
 # A fluid is defined #
 Fluide_Incompressible milieu
 Read milieu
 {
-	mu  Champ_Uniforme 1 0.01
-	rho Champ_Uniforme 1 2.
-        lambda Champ_Uniforme 1 2
-        Cp Champ_Uniforme 1 100.
-        beta_th Champ_Uniforme 1 0.	
+    mu  Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Uniforme 1 2
+    Cp Champ_Uniforme 1 100.
+    beta_th Champ_Uniforme 1 0.
 }
 
 Associate pb dom
@@ -71,172 +71,175 @@ Extraire_surface { Domaine ring Probleme pb Condition_faces (z+2)*(z+1)*(x^2+y^2
 Domaine Entree
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression Petsc Cholesky { impr }
-		convection { muscl }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 1. 0. 0.
-		}
-		boundary_conditions {
-			Cylindre 	paroi_fixe
-			Box  		symetrie
-			Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-			Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
-		}
-	}
-        Convection_Diffusion_Temperature
-        {
-                diffusion { }
-                convection { muscl }
-                boundary_conditions
-                {
-			Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
-			Box 		symetrie
-			Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
-			Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
-                }
-                initial_conditions { Temperature Champ_Uniforme 1 20. }
+    Navier_Stokes_standard
+    {
+        solveur_pression Petsc Cholesky { impr }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 1. 0. 0.
         }
-	Post_processings
-	{
-		lml
-		{
-			format lml fichier Cx
-			Definition_champs
-			{
-				pressure_inlet Reduction_0D { methode average 
-					source Extraction { domaine Entree nom_frontiere Entree 
-						source Interpolation { domaine dom localisation elem 
-							source RefChamp { Pb_champ pb pression } 
-						}
-                                        }
-                                }
-			}
-			Probes
-			{
-				sonde_pression 	pression_pa 	periode 0.005 	circle 11 0. 0. 0. 2 0.7 0. 360.
-				sonde_vitesse 	vitesse 	periode 0.005 	point 1 0.7 0. 0.
-				pressure_inlet 	pressure_inlet 	periode 1 	numero_elem_sur_maitre 0
-			}
-			fields dt_post 1.
-			{ 
-				pression_pa elem
-				pression_pa som
-			}
-			Statistiques dt_post 1.
-			{
-			    	t_deb 0. t_fin 10.
-			    	Moyenne vitesse elem
-			}
-		}
-		lata
-		{
-			format lata fichier Cx parallele mpi-io
-			Definition_champs
-			{
-				# Calculate viscous force on the ring #
-				FVx Reduction_0D { 
-					methode sum source Interpolation { 
-						domaine ring localisation elem source Predefini { pb_champ pb viscous_force_x } 
-					}
-				}
-				FVy Reduction_0D { 
-					methode sum source Interpolation { 
-						domaine ring localisation elem source Predefini { pb_champ pb viscous_force_y } 
-					}
-				}
-				FVz Reduction_0D { 
-					methode sum source Interpolation { 
-						domaine ring localisation elem source Predefini { pb_champ pb viscous_force_z } 
-					}
-				}
-				FV_vecteur Reduction_0D { 
-					methode sum source Interpolation { 
-						domaine ring localisation elem source Predefini { pb_champ pb viscous_force } 
-					}
-				}
-				# Calculate pressure force on the ring #
-				FPx Reduction_0D { 
-					methode sum source Interpolation { 
-						domaine ring localisation elem source Predefini { pb_champ pb pressure_force_x } 
-					}
-				}
-				FPy Reduction_0D { 
-					methode sum source Interpolation { 
-						domaine ring localisation elem source Predefini { pb_champ pb pressure_force_y } 
-					}
-				}
-				FPz Reduction_0D { 
-					methode sum source Interpolation { 
-						domaine ring localisation elem source Predefini { pb_champ pb pressure_force_z } 
-					}
-				}
-				FP_vecteur Reduction_0D { 
-					methode sum source Interpolation { 
-						domaine ring localisation elem source Predefini { pb_champ pb pressure_force } 
-					}
-                                }
-				# Calculate pressure force on the cylinder (new feature, boundary domain are usable everywhere in the data file) #				
-                                FPx_cylinder Reduction_0D {
-                                        methode sum source Interpolation {
-                                                domaine dom_boundaries_Cylindre localisation elem source Morceau_equation {
-                                                        type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
-                                                }
-                                        }
-				}
-				# Calculate total force on the ring #
-                                FTx Reduction_0D {  
-                                        methode sum source Interpolation { 
-                                                domaine ring localisation elem source Predefini { pb_champ pb total_force_x }
-                                        }
-                                }
-                                FTy Reduction_0D {  
-                                        methode sum source Interpolation { 
-                                                domaine ring localisation elem source Predefini { pb_champ pb total_force_y }
-                                        }
-                                }
-                                FTz Reduction_0D {  
-                                        methode sum source Interpolation { 
-                                                domaine ring localisation elem source Predefini { pb_champ pb total_force_z }
-                                        }
-                                }
-                                FT_vecteur Reduction_0D {  
-                                        methode sum source Interpolation { 
-                                                domaine ring localisation elem source Predefini { pb_champ pb total_force }
-                                        }
-                                }
-			}
-			Probes
-			{
-				FVx FVx periode 0.005 numero_elem_sur_maitre 0
-				FVy FVy periode 0.005 numero_elem_sur_maitre 0
-				FVz FVz periode 0.005 numero_elem_sur_maitre 0
-				FPx FPx periode 0.005 numero_elem_sur_maitre 0
-				FPy FPy periode 0.005 numero_elem_sur_maitre 0
-				FPz FPz periode 0.005 numero_elem_sur_maitre 0	
-				FTx FTx periode 0.005 numero_elem_sur_maitre 0		
-				FTy FTy periode 0.005 numero_elem_sur_maitre 0		
-				FTz FTz periode 0.005 numero_elem_sur_maitre 0		
-				FV_vecteur FV_vecteur periode 0.005 numero_elem_sur_maitre 0
-				FP_vecteur FP_vecteur periode 0.005 numero_elem_sur_maitre 0
-				FT_vecteur FT_vecteur periode 0.005 numero_elem_sur_maitre 0
-				FPx_cylinder FPx_cylinder periode 0.005 numero_elem_sur_maitre 0 		
-			}
-			fields dt_post 1.
-			{ 
-				pression_pa elem
-				pression_pa som
-			}
-			Statistiques dt_post 1.
-			{
-			    	t_deb 0. t_fin 10.
-			    	Moyenne vitesse elem
-			}
-		}	
-	}
-	sauvegarde_simple binaire Cx.sauv
+        boundary_conditions {
+            Cylindre 	paroi_fixe
+            Box  		symetrie
+            Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
+            Box 		symetrie
+            Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+            Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 20. }
+    }
+    Post_processings
+    {
+        lml
+        {
+            format lml fichier Cx
+            Definition_champs
+            {
+                pressure_inlet Reduction_0D {
+                    methode average
+                    source Extraction {
+                        domaine Entree nom_frontiere Entree
+                        source Interpolation {
+                            domaine dom localisation elem
+                            source RefChamp { Pb_champ pb pression }
+                        }
+                    }
+                }
+            }
+            Probes
+            {
+                sonde_pression 	pression_pa 	periode 0.005 	circle 11 0. 0. 0. 2 0.7 0. 360.
+                sonde_vitesse 	vitesse 	periode 0.005 	point 1 0.7 0. 0.
+                pressure_inlet 	pressure_inlet 	periode 1 	numero_elem_sur_maitre 0
+            }
+            fields dt_post 1.
+            {
+                pression_pa elem
+                pression_pa som
+            }
+            Statistiques dt_post 1.
+            {
+                t_deb 0. t_fin 10.
+                Moyenne vitesse elem
+            }
+        }
+        lata
+        {
+            format lata fichier Cx parallele mpi-io
+            Definition_champs
+            {
+                # Calculate viscous force on the ring #
+                FVx Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb viscous_force_x }
+                    }
+                }
+                FVy Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb viscous_force_y }
+                    }
+                }
+                FVz Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb viscous_force_z }
+                    }
+                }
+                FV_vecteur Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb viscous_force }
+                    }
+                }
+                # Calculate pressure force on the ring #
+                FPx Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb pressure_force_x }
+                    }
+                }
+                FPy Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb pressure_force_y }
+                    }
+                }
+                FPz Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb pressure_force_z }
+                    }
+                }
+                FP_vecteur Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb pressure_force }
+                    }
+                }
+                # Calculate pressure force on the cylinder (new feature, boundary domain are usable everywhere in the data file) #
+                FPx_cylinder Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine dom_boundaries_Cylindre localisation elem source Morceau_equation {
+                            type operateur numero 2 option flux_bords compo 0 source refChamp { Pb_champ pb vitesse }
+                        }
+                    }
+                }
+                # Calculate total force on the ring #
+                FTx Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb total_force_x }
+                    }
+                }
+                FTy Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb total_force_y }
+                    }
+                }
+                FTz Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb total_force_z }
+                    }
+                }
+                FT_vecteur Reduction_0D {
+                    methode sum source Interpolation {
+                        domaine ring localisation elem source Predefini { pb_champ pb total_force }
+                    }
+                }
+            }
+            Probes
+            {
+                FVx FVx periode 0.005 numero_elem_sur_maitre 0
+                FVy FVy periode 0.005 numero_elem_sur_maitre 0
+                FVz FVz periode 0.005 numero_elem_sur_maitre 0
+                FPx FPx periode 0.005 numero_elem_sur_maitre 0
+                FPy FPy periode 0.005 numero_elem_sur_maitre 0
+                FPz FPz periode 0.005 numero_elem_sur_maitre 0
+                FTx FTx periode 0.005 numero_elem_sur_maitre 0
+                FTy FTy periode 0.005 numero_elem_sur_maitre 0
+                FTz FTz periode 0.005 numero_elem_sur_maitre 0
+                FV_vecteur FV_vecteur periode 0.005 numero_elem_sur_maitre 0
+                FP_vecteur FP_vecteur periode 0.005 numero_elem_sur_maitre 0
+                FT_vecteur FT_vecteur periode 0.005 numero_elem_sur_maitre 0
+                FPx_cylinder FPx_cylinder periode 0.005 numero_elem_sur_maitre 0
+            }
+            fields dt_post 1.
+            {
+                pression_pa elem
+                pression_pa som
+            }
+            Statistiques dt_post 1.
+            {
+                t_deb 0. t_fin 10.
+                Moyenne vitesse elem
+            }
+        }
+    }
+    sauvegarde_simple binaire Cx.sauv
 }
 Imprimer_flux dom { Cylindre }
 Solve pb

@@ -1,39 +1,39 @@
 # Pbc_MED #
 # PARALLEL NOT #
-Dimension 2 
-export Domaine dom_solide 
-export Domaine dom_fluide 
-Pbc_MED pbmed 
-Read pbmed 
-{ 
-   MED_docond.med 
-   dom_solide 
-   { 
-      Post_processing 
-      { 
-	 fields dt_post 1e-9 
-	 { 
-	 temperature_ELEM ELEM 
-	 temperature_SOM SOM 
-	 } 
-      } 
-   } 
-   , 
-   MED_docond.med 
-   dom_fluide 
-   {  
-      Post_processing 
-      { 
-         fields dt_post 1e-9 
-         { 
-	    pression_ELEM ELEM 
-	    pression_SOM SOM 
-	    vitesse_ELEM ELEM 
-	    vitesse_SOM SOM 
-	    temperature_ELEM ELEM 
-	    temperature_SOM SOM 
-         } 
-      } 
-   } 
-} 
-End 
+Dimension 2
+export Domaine dom_solide
+export Domaine dom_fluide
+Pbc_MED pbmed
+Read pbmed
+{
+    MED_docond.med
+    dom_solide
+    {
+        Post_processing
+        {
+            fields dt_post 1e-9
+            {
+                temperature_ELEM ELEM
+                temperature_SOM SOM
+            }
+        }
+    }
+    ,
+    MED_docond.med
+    dom_fluide
+    {
+        Post_processing
+        {
+            fields dt_post 1e-9
+            {
+                pression_ELEM ELEM
+                pression_SOM SOM
+                vitesse_ELEM ELEM
+                vitesse_SOM SOM
+                temperature_ELEM ELEM
+                temperature_SOM SOM
+            }
+        }
+    }
+}
+End

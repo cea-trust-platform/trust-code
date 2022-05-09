@@ -5,21 +5,21 @@ Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Mailler dom 
+Mailler dom
 {
-	Pave pave1
-		{
-		Origine 0. 0.
-		Longueurs 5 2
-		Nombre_de_Noeuds 11 11
-                Facteurs 1. 1.
-		}
-		{
-		bord Inlet 	X = 0. 0. <= Y <= 2.
-		bord Upper 	Y = 2. 0. <= X <= 5.
-		bord Lower 	Y = 0. 0. <= X <= 5.
-		bord Outlet	X = 5. 0. <= Y <= 2.
-		}
+    Pave pave1
+    {
+        Origine 0. 0.
+        Longueurs 5 2
+        Nombre_de_Noeuds 11 11
+        Facteurs 1. 1.
+    }
+    {
+        bord Inlet 	X = 0. 0. <= Y <= 2.
+        bord Upper 	Y = 2. 0. <= X <= 5.
+        bord Lower 	Y = 0. 0. <= X <= 5.
+        bord Outlet	X = 5. 0. <= Y <= 2.
+    }
 }
 trianguler_h dom
 # END MESH #
@@ -27,9 +27,9 @@ trianguler_h dom
 
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }  
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -43,19 +43,19 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-        tinit 0
+    tinit 0
 	nb_pas_dt_max 3
-        dt_min 5.e-8
-        dt_impr 5.e-1
-        seuil_statio 1.e-8
-        dt_max 1
+    dt_min 5.e-8
+    dt_impr 5.e-1
+    seuil_statio 1.e-8
+    dt_max 1
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu  Champ_uniforme 1 1.
-	rho Champ_Uniforme 1 1000.
+    mu  Champ_uniforme 1 1.
+    rho Champ_Uniforme 1 1000.
 }
 
 Associate pb dom
@@ -66,55 +66,55 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		projection_initiale 0
-		solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.e-8
-			impr
-		}
-		diffusion {  }
-		convection { amont }
-		initial_conditions { vitesse Champ_fonc_xyz dom  2 0 0 }
-		boundary_conditions {
-			Upper  paroi_fixe
-			Lower  paroi_fixe
-			Inlet  frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
-			Outlet  frontiere_ouverte_vitesse_imposee champ_front_xyz_debit { 
-				flow_rate Champ_front_tabule 1 { # nb time steps # 3 # Times # 0 2 4 # Values # -1 -5 -22 }
-				velocity_profil champ_front_uniforme 2 1 2
-			}
-		}
-	}
+    Navier_Stokes_standard
+    {
+        projection_initiale 0
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-8
+            impr
+        }
+        diffusion {  }
+        convection { amont }
+        initial_conditions { vitesse Champ_fonc_xyz dom  2 0 0 }
+        boundary_conditions {
+            Upper  paroi_fixe
+            Lower  paroi_fixe
+            Inlet  frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            Outlet  frontiere_ouverte_vitesse_imposee champ_front_xyz_debit {
+                flow_rate Champ_front_tabule 1 { # nb time steps # 3 # Times # 0 2 4 # Values # -1 -5 -22 }
+                velocity_profil champ_front_uniforme 2 1 2
+            }
+        }
+    }
 
-	Post_processing
-	{
-		definition_champs
-		{
-			debit_elem Interpolation
-			{
-				domaine dom_boundaries_Outlet
-				localisation elem
-				source Morceau_Equation {
-				type operateur numero 3 option flux_bords
-				source refChamp { Pb_champ pb vitesse }
-				}
-			}
-			debit Reduction_0D { methode sum sources_reference { debit_elem } }
-		}
-		Probes
-		{
-			debit_Outlet        debit    periode 100 numero_elem_sur_maitre 0
-			profil_vitX   nodes vitesseX periode 2.1 segment 10 5 0.1 5 2
-			profil_vitY   nodes vitesseY periode 2.1 segment 10 5 0.1 5 2
-		}
-		format lml
-		fields dt_post 100
-		{
-			vitesse som
-		}
-	}
+    Post_processing
+    {
+        definition_champs
+        {
+            debit_elem Interpolation
+            {
+                domaine dom_boundaries_Outlet
+                localisation elem
+                source Morceau_Equation {
+                    type operateur numero 3 option flux_bords
+                    source refChamp { Pb_champ pb vitesse }
+                }
+            }
+            debit Reduction_0D { methode sum sources_reference { debit_elem } }
+        }
+        Probes
+        {
+            debit_Outlet        debit    periode 100 numero_elem_sur_maitre 0
+            profil_vitX   nodes vitesseX periode 2.1 segment 10 5 0.1 5 2
+            profil_vitY   nodes vitesseY periode 2.1 segment 10 5 0.1 5 2
+        }
+        format lml
+        fields dt_post 100
+        {
+            vitesse som
+        }
+    }
 }
 Solve pb
 End

@@ -7,31 +7,31 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0. 0.
-     		Nombre_de_Noeuds 8 4 3
-		Longueurs 0.02 0.01 0.006
-		Facteurs 1. 1.1 1.1
-		Symy Symz
-		}
-		{
-		Bord Gauche X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.006
-		Bord Haut   Y = 0.01  0. <= X <= 0.02 0. <= Z <= 0.006
-		Bord Bas    Y = 0.    0. <= X <= 0.02 0. <= Z <= 0.006
-		Bord Droit  X = 0.02  0. <= Y <= 0.01 0. <= Z <= 0.006
-		Bord Sud    Z = 0.    0. <= X <= 0.02 0. <= Y <= 0.01
-		Bord Nord   Z = 0.006 0. <= X <= 0.02 0. <= Y <= 0.01
-		}
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 8 4 3
+        Longueurs 0.02 0.01 0.006
+        Facteurs 1. 1.1 1.1
+        Symy Symz
+    }
+    {
+        Bord Gauche X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.006
+        Bord Haut   Y = 0.01  0. <= X <= 0.02 0. <= Z <= 0.006
+        Bord Bas    Y = 0.    0. <= X <= 0.02 0. <= Z <= 0.006
+        Bord Droit  X = 0.02  0. <= Y <= 0.01 0. <= Z <= 0.006
+        Bord Sud    Z = 0.    0. <= X <= 0.02 0. <= Y <= 0.01
+        Bord Nord   Z = 0.006 0. <= X <= 0.02 0. <= Y <= 0.01
+    }
 }
 Tetraedriser_homogene dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool Metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -45,21 +45,21 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 3
-	tinit 0.
-	tmax 1.2
-	dt_min 1e-10
-	dt_max 1e10  
-	dt_impr 0.00001
-	dt_sauv 100
-	seuil_statio 1.e-8
+    nb_pas_dt_max 3
+    tinit 0.
+    tmax 1.2
+    dt_min 1e-10
+    dt_max 1e10
+    dt_impr 0.00001
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-	rho Champ_Uniforme 1 1.17
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
 }
 Associate pb dom
 Associate pb sch
@@ -69,33 +69,34 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_Standard
-	{
-		solveur_pression GCP { 
-		precond ssor { omega 1.65 } 
-		seuil 1.e-17 impr }
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse champ_fonc_xyz dom 3 y*(0.01-y) 0. 0. 
-			}
-		boundary_conditions {
-			Haut 	paroi_fixe
-			Bas 	paroi_fixe
-			Gauche	frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 y*(0.01-y) 0. 0. 
-			Droit 	frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
-			Sud 	Symetrie
-			Nord 	Symetrie
-		}
-	}
-	Post_processing
-	{
-		format lml
-		fields dt_post 0.1
-		{
-			vitesse elem
-		}
-	}
+    Navier_Stokes_Standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.65 }
+            seuil 1.e-17 impr
+        }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse champ_fonc_xyz dom 3 y*(0.01-y) 0. 0.
+        }
+        boundary_conditions {
+            Haut 	paroi_fixe
+            Bas 	paroi_fixe
+            Gauche	frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 y*(0.01-y) 0. 0.
+            Droit 	frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            Sud 	Symetrie
+            Nord 	Symetrie
+        }
+    }
+    Post_processing
+    {
+        format lml
+        fields dt_post 0.1
+        {
+            vitesse elem
+        }
+    }
 }
 
 Solve pb

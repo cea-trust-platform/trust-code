@@ -125,12 +125,12 @@ Lire pb1
             g   frontiere_ouverte T_ext Champ_front_Uniforme 1 272
         }
     }
-    Postraitement 
+    Postraitement
     {
-       Champs dt_post 1000
-       {
-       	   pression elem
-       }
+        Champs dt_post 1000
+        {
+            pression elem
+        }
     }
 }
 Resoudre pb1

@@ -6,18 +6,18 @@ Domaine dom_fluide
 # BEGIN MESH #
 Mailler dom_solide
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 3 3
-		Longueurs 1 1
-		}
-		{
-		Bord Gauche 	X = 0.  	0. <= Y <= 1
-		Bord Haut 	Y = 1  		0. <= X <= 1
-		Bord Bas 	Y = 0.     	0. <= X <= 1
-		Bord Droit 	X = 1 		0. <= Y <= 1
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 3 3
+        Longueurs 1 1
+    }
+    {
+        Bord Gauche 	X = 0.  	0. <= Y <= 1
+        Bord Haut 	Y = 1  		0. <= X <= 1
+        Bord Bas 	Y = 0.     	0. <= X <= 1
+        Bord Droit 	X = 1 		0. <= Y <= 1
+    }
 }
 Trianguler_H dom_solide
 Modif_bord_to_raccord dom_solide Haut
@@ -25,18 +25,18 @@ Ecrire_fichier dom_solide dom_solide.geom
 
 Mailler dom_fluide
 {
-	Pave Cavite 
-		{
-		Origine 0. 1.
-     		Nombre_de_Noeuds 5 5
-		Longueurs 1 1
-		}
-		{
-		Bord Gauche 	X = 0.  	1. <= Y <= 2
-		Bord Haut 	Y = 2  		0. <= X <= 1
-		Bord Bas 	Y = 1.     	0. <= X <= 1
-		Bord Droit 	X = 1 		1. <= Y <= 2
-		}
+    Pave Cavite
+    {
+        Origine 0. 1.
+        Nombre_de_Noeuds 5 5
+        Longueurs 1 1
+    }
+    {
+        Bord Gauche 	X = 0.  	1. <= Y <= 2
+        Bord Haut 	Y = 2  		0. <= X <= 1
+        Bord Bas 	Y = 1.     	0. <= X <= 1
+        Bord Droit 	X = 1 		1. <= Y <= 2
+    }
 }
 Trianguler_H dom_fluide
 Modif_bord_to_raccord dom_fluide Bas
@@ -46,14 +46,14 @@ Ecrire_fichier dom_fluide dom_fluide.geom
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	tmax 30.
-	dt_min 0.001
-	dt_max 10.
-	dt_impr 0.1
-	dt_sauv 400.
-	seuil_statio 1.e-20
-	diffusion_implicite 1
+    tinit 0.
+    tmax 30.
+    dt_min 0.001
+    dt_max 10.
+    dt_impr 0.1
+    dt_sauv 400.
+    seuil_statio 1.e-20
+    diffusion_implicite 1
 }
 
 VEFPreP1B dis
@@ -61,19 +61,19 @@ VEFPreP1B dis
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.002
-	rho Champ_Uniforme 1 2.
-	lambda Champ_Uniforme 1 2.0
-	Cp Champ_Uniforme 1 1000.
-	beta_th Champ_Uniforme 1 0.0001
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Uniforme 1 2.0
+    Cp Champ_Uniforme 1 1000.
+    beta_th Champ_Uniforme 1 0.0001
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 1000.
-	lambda Champ_Uniforme 1 250.    
-	Cp Champ_Uniforme 1 100.
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100.
 }
 
 Champ_Uniforme gravite
@@ -95,62 +95,62 @@ Discretize pbc dis
 
 Read pb_solide
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1 30.
-			}
-		boundary_conditions {
-			Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
-			Droit 	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
-			Bas 	paroi_temperature_imposee Champ_Front_Uniforme 1 20.
-		 	Haut 	paroi_contact pb_fluide Bas
-		}
-	}
-	Post_processing
-	{
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 30.
+        }
+        boundary_conditions {
+            Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+            Droit 	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+            Bas 	paroi_temperature_imposee Champ_Front_Uniforme 1 20.
+            Haut 	paroi_contact pb_fluide Bas
+        }
+    }
+    Post_processing
+    {
+    }
 }
 
 Read pb_fluide
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.500000 } 
-			seuil 1.000000e-14 
-			impr 
-		}
-		convection { amont }
-		diffusion { }
-		sources { boussinesq_temperature { T0 30. } }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Gauche 	paroi_fixe
-			Droit 	paroi_fixe
-			Bas	paroi_fixe
-			Haut	paroi_fixe
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { amont }
-		boundary_conditions 
-		{
-			Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
-			Droit 	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
-			Haut 	paroi_temperature_imposee Champ_Front_Uniforme 1 20.
-		 	Bas 	paroi_contact pb_solide Haut
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 30. }
-	}
-	Post_processing
-	{
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.500000 }
+            seuil 1.000000e-14
+            impr
+        }
+        convection { amont }
+        diffusion { }
+        sources { boussinesq_temperature { T0 30. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Gauche 	paroi_fixe
+            Droit 	paroi_fixe
+            Bas	paroi_fixe
+            Haut	paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+            Droit 	paroi_temperature_imposee Champ_Front_Uniforme 1 40.
+            Haut 	paroi_temperature_imposee Champ_Front_Uniforme 1 20.
+            Bas 	paroi_contact pb_solide Haut
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 30. }
+    }
+    Post_processing
+    {
+    }
 }
 Solve pbc
 End

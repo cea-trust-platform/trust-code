@@ -22,9 +22,9 @@ Read Z1 { Boite Origine -10. -10. -10. Cotes 100. 100. 100. }
 # BEGIN PARTITION
 Partition DOM
 {
-	Partition_tool Metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -36,25 +36,25 @@ END SCATTER #
 VEFPreP1B dis
 Scheme_euler_implicit sch
 Read sch {
-	nb_pas_dt_max 10
-	tinit   0
-	tmax    2.
-	dt_min  1e-12
-	dt_max  1.
-	dt_impr 0.0001
-	dt_sauv 100.
-	seuil_statio 1e-10
-	facsec 1.
-	facsec_max 10.
-	solveur implicite { seuil_convergence_solveur 1e-12 }
+    nb_pas_dt_max 10
+    tinit   0
+    tmax    2.
+    dt_min  1e-12
+    dt_max  1.
+    dt_impr 0.0001
+    dt_sauv 100.
+    seuil_statio 1e-10
+    facsec 1.
+    facsec_max 10.
+    solveur implicite { seuil_convergence_solveur 1e-12 }
 }
 
 
 Fluide_Incompressible liquide
 Read liquide
 {
-	mu  Champ_Uniforme 1 0.001
- 	rho Champ_Uniforme 1 1000.
+    mu  Champ_Uniforme 1 0.001
+    rho Champ_Uniforme 1 1000.
 }
 
 
@@ -67,60 +67,61 @@ Discretize pb dis
 
 
 Read pb
-{ 
- Navier_Stokes_standard 
- { 
-       solveur_pression Gcp { precond ssor { omega 1.5 } 
-                                             seuil 1.e-12
-					impr
-                            } 
-       convection { ef_stab { alpha 1. } }
-       diffusion  { }
-             
-
-       initial_conditions { 
-       			    Vitesse champ_uniforme 3 0. 0. 0.
-       			    }
-       
-       
-       boundary_conditions {  
-				OUT frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 2 0 0							
-				IN frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.					
-				SYM1 symetrie
-				SYM2 frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 0 0 0
-				SYMH symetrie
-				SYMB symetrie
-                          } 
-			  
-   	             
-	 
-  }
-  
-
-Liste_postraitements
 {
-	Post_processing TEST
-	{
-		fichier Symetrie_Implicite
-		format lml
-		fields binaire dt_post 1.
-		{
-			vitesse elem
-		}
-	}
-	
-	Post_processing Probes
-	{
-		Probes
-		{
-			gradP_2 gradient_pression periode 0.5 segment 21 0.5 0. 0. 1. 0. 0.
-			vitesse_2 vitesse periode 0.5 segment 21 0.5 0. 0. 1. 0. 0.
-		}
-	}
-	
-}
+    Navier_Stokes_standard
+    {
+        solveur_pression Gcp {
+            precond ssor { omega 1.5 }
+            seuil 1.e-12
+            impr
+        }
+        convection { ef_stab { alpha 1. } }
+        diffusion  { }
 
-sauvegarde binaire couronne.sauv
+
+        initial_conditions {
+            Vitesse champ_uniforme 3 0. 0. 0.
+        }
+
+
+        boundary_conditions {
+            OUT frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 2 0 0
+            IN frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+            SYM1 symetrie
+            SYM2 frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 0 0 0
+            SYMH symetrie
+            SYMB symetrie
+        }
+
+
+
+    }
+
+
+    Liste_postraitements
+    {
+        Post_processing TEST
+        {
+            fichier Symetrie_Implicite
+            format lml
+            fields binaire dt_post 1.
+            {
+                vitesse elem
+            }
+        }
+
+        Post_processing Probes
+        {
+            Probes
+            {
+                gradP_2 gradient_pression periode 0.5 segment 21 0.5 0. 0. 1. 0. 0.
+                vitesse_2 vitesse periode 0.5 segment 21 0.5 0. 0. 1. 0. 0.
+            }
+        }
+
+    }
+
+    sauvegarde binaire couronne.sauv
 
 }
 

@@ -9,19 +9,19 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Cavite
-                {
-                Origine 0 0
-                Nombre_de_Noeuds 2 2
-                Longueurs 1 1
-                }
-                {
-                Bord entree 			X = 0  	0 <= Y <= 1
-                Bord paroi			X = 1   0 <= Y <= 1
-                Bord paroi 			Y = 0   0 <= X <= 1
-                Bord paroi			Y = 1   0 <= X <= 1
-                }
-	
+    Pave Cavite
+    {
+        Origine 0 0
+        Nombre_de_Noeuds 2 2
+        Longueurs 1 1
+    }
+    {
+        Bord entree 			X = 0  	0 <= Y <= 1
+        Bord paroi			X = 1   0 <= Y <= 1
+        Bord paroi 			Y = 0   0 <= X <= 1
+        Bord paroi			Y = 1   0 <= X <= 1
+    }
+
 }
 Trianguler_H dom
 # END MESH #
@@ -29,9 +29,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -46,21 +46,21 @@ VEFPreP1B dis
 Scheme_euler_implicit sch
 Read sch
 {
-        tinit 0
+    tinit 0
 	nb_pas_dt_max 3
-        tmax 0.0999
-        dt_min 1.e-2
-        dt_max 1.e-2 
-        dt_impr 1e-10 
-        dt_sauv 2.
-        seuil_statio 1.e-8 
-        facsec 1.
-	precision_impr 10
-	Solveur 
-           Piso
-	   {
-		seuil_convergence_solveur 1.e-12
-	   }
+    tmax 0.0999
+    dt_min 1.e-2
+    dt_max 1.e-2
+    dt_impr 1e-10
+    dt_sauv 2.
+    seuil_statio 1.e-8
+    facsec 1.
+    precision_impr 10
+    Solveur
+    Piso
+    {
+        seuil_convergence_solveur 1.e-12
+    }
 }
 
 Champ_Uniforme gravite
@@ -68,64 +68,66 @@ Read gravite 2 0. 0.
 
 Fluide_Quasi_Compressible gaz
 Read gaz
-{ 
-        pression 100000.
-	mu champ_uniforme 1 1e-6
+{
+    pression 100000.
+    mu champ_uniforme 1 1e-6
 
-        loi_etat gaz_parfait_QC {
-          Prandtl 1.
-          Cp 1000.
-          gamma 1.666
-         }
-        traitement_pth conservation_masse
+    loi_etat gaz_parfait_QC {
+        Prandtl 1.
+        Cp 1000.
+        gamma 1.666
+    }
+    traitement_pth conservation_masse
 }
 
 
 Associate gaz gravite
 Associate pb dom
-Associate pb sch 
+Associate pb sch
 Associate pb gaz
 
-Discretize pb dis 
+Discretize pb dis
 
 
-Read pb 
-{ 
- Navier_Stokes_QC 
- { 
-     solveur_pression Gcp { precond ssor { omega 1.5 } 
-                                             seuil 1.e-12 }
-     convection { amont }
-     diffusion  { }
-
-     initial_conditions {  vitesse champ_uniforme  2 0. 0.  }
-
-    boundary_conditions {
-      paroi paroi_fixe
-      entree  frontiere_ouverte_rho_u_impose champ_front_fonc_txyz 2 20*t-1 0.
-    } 
-}
-
- Convection_Diffusion_Chaleur_QC
+Read pb
 {
-    convection { amont }
-    diffusion { }
-    initial_conditions { Temperature Champ_Uniforme 1 300 }
+    Navier_Stokes_QC
+    {
+        solveur_pression Gcp {
+            precond ssor { omega 1.5 }
+            seuil 1.e-12
+        }
+        convection { amont }
+        diffusion  { }
 
-    boundary_conditions {
-      paroi Paroi_adiabatique
-      entree frontiere_ouverte T_ext champ_front_uniforme 1 500
+        initial_conditions {  vitesse champ_uniforme  2 0. 0.  }
+
+        boundary_conditions {
+            paroi paroi_fixe
+            entree  frontiere_ouverte_rho_u_impose champ_front_fonc_txyz 2 20*t-1 0.
+        }
     }
-  }
- 
-  Post_processing {
-    fields dt_post 1e-10 {
-      pression elem
-      vitesse elem
-      temperature elem
-      masse_volumique elem
+
+    Convection_Diffusion_Chaleur_QC
+    {
+        convection { amont }
+        diffusion { }
+        initial_conditions { Temperature Champ_Uniforme 1 300 }
+
+        boundary_conditions {
+            paroi Paroi_adiabatique
+            entree frontiere_ouverte T_ext champ_front_uniforme 1 500
+        }
     }
-  }
+
+    Post_processing {
+        fields dt_post 1e-10 {
+            pression elem
+            vitesse elem
+            temperature elem
+            masse_volumique elem
+        }
+    }
 }
 
 Solve pb

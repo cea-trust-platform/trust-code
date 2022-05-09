@@ -6,21 +6,21 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0.  0. 
-                Nombre_de_Noeuds 5 5 
-                Longueurs 1 1 
-        }
-        {
-                Bord entree   X =  0.  0. <= Y <= 0.5
-		Bord paroi    X =  0.  0.5 <= Y <= 1 
-                Bord sortie   X =  1.  0. <= Y <= 0.5
-		Bord symetrie X =  1.  0.5 <= Y <= 1 
-                Bord paroiY   Y =  0.  0. <= X <= 1.  
-                Bord paroiY   Y =  1.  0. <= X <= 1.  
-        }
-} 
+    Pave Cavite
+    {
+        Origine 0.  0.
+        Nombre_de_Noeuds 5 5
+        Longueurs 1 1
+    }
+    {
+        Bord entree   X =  0.  0. <= Y <= 0.5
+        Bord paroi    X =  0.  0.5 <= Y <= 1
+        Bord sortie   X =  1.  0. <= Y <= 0.5
+        Bord symetrie X =  1.  0.5 <= Y <= 1
+        Bord paroiY   Y =  0.  0. <= X <= 1.
+        Bord paroiY   Y =  1.  0. <= X <= 1.
+    }
+}
 Trianguler_h dom
 Transformer dom
 x+4*x*(1-x)*y*(1-y)*(0.5-y)
@@ -29,9 +29,9 @@ y+4*x*(1-x)*y*(1-y)*(0.5+x)
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool Tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool Tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -44,24 +44,24 @@ VEFPreP1b dis
 Read dis { P1 }
 
 Scheme_euler_explicit sch
-Read sch 
+Read sch
 {
-        tinit 0.
-        tmax 0.1
-        dt_min 1.e-6
-        dt_max 1.e-1
-	dt_start dt_calc
-        dt_impr 0.1
-        dt_sauv 20.
-        seuil_statio 1.e-8  
-        facsec 0.5
-	nb_pas_dt_max 4
+    tinit 0.
+    tmax 0.1
+    dt_min 1.e-6
+    dt_max 1.e-1
+    dt_start dt_calc
+    dt_impr 0.1
+    dt_sauv 20.
+    seuil_statio 1.e-8
+    facsec 0.5
+    nb_pas_dt_max 4
 }
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme	1 1.
-	rho Champ_Uniforme	1 1.
+    mu Champ_Uniforme	1 1.
+    rho Champ_Uniforme	1 1.
 }
 
 Pb_Hydraulique pb
@@ -72,69 +72,69 @@ Associate pb fluide
 Discretize pb dis
 Debog pb seq faces 1.e-6 0
 Read pb
-	{
-	Navier_Stokes_standard
-		{
-		dt_projection 1. 1.e-16
-		Solveur_Pression GCP {
-			precond ssor { omega 1.6 }
-			seuil 1e-14 impr 
-		} 
+{
+    Navier_Stokes_standard
+    {
+        dt_projection 1. 1.e-16
+        Solveur_Pression GCP {
+            precond ssor { omega 1.6 }
+            seuil 1e-14 impr
+        }
 
-		solveur_bar petsc cholesky { }
+        solveur_bar petsc cholesky { }
 
-                convection { muscl }
-                diffusion { }
-				
-                Sources { Source_Qdm Champ_fonc_xyz dom 2 x*(1-y) x*y }
-		initial_conditions
-			{
-                        vitesse Champ_fonc_xyz dom 2 1.e-5 0. 
-			}
-		boundary_conditions
-			{
-			entree frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.e-5 }
-			paroiY periodique 
-			sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
-			paroi paroi_fixe
-			symetrie symetrie
-			}
-	         }
+        convection { muscl }
+        diffusion { }
 
-	Post_processings
-        	{
-		lata
-		{
-		fichier 2D_P1
-		format lata  
-                Probes
-                	{ 
-                        sonde_vit1 vitesse periode 0.01 points 1 0.5 0.5 
-			sonde_vitesse vitesse periode 0.01 segment 10 0.5 0.0 0.5 1.0
-                        sonde_pression pression periode 0.01 segment 10 0.5 0.0 0.5 1.0
-			}
-		fields dt_post 2.
-			{
-			vitesse elem
-			vitesse som
-			pression elem
-			pression som
-			}
-		}
-		lml
-		{
-		fichier 2D_P1
-		format lml  
-		fields dt_post 2.
-			{
-			vitesse elem
-			vitesse som
-			pression elem
-			pression som
-			}
-		}		
-		}
-	}
+        Sources { Source_Qdm Champ_fonc_xyz dom 2 x*(1-y) x*y }
+        initial_conditions
+        {
+            vitesse Champ_fonc_xyz dom 2 1.e-5 0.
+        }
+        boundary_conditions
+        {
+            entree frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.e-5 }
+            paroiY periodique
+            sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+            paroi paroi_fixe
+            symetrie symetrie
+        }
+    }
+
+    Post_processings
+    {
+        lata
+        {
+            fichier 2D_P1
+            format lata
+            Probes
+            {
+                sonde_vit1 vitesse periode 0.01 points 1 0.5 0.5
+                sonde_vitesse vitesse periode 0.01 segment 10 0.5 0.0 0.5 1.0
+                sonde_pression pression periode 0.01 segment 10 0.5 0.0 0.5 1.0
+            }
+            fields dt_post 2.
+            {
+                vitesse elem
+                vitesse som
+                pression elem
+                pression som
+            }
+        }
+        lml
+        {
+            fichier 2D_P1
+            format lml
+            fields dt_post 2.
+            {
+                vitesse elem
+                vitesse som
+                pression elem
+                pression som
+            }
+        }
+    }
+}
 
 Solve pb
 End

@@ -10,7 +10,6 @@ Lire_med family_names_from_group_names dom Extruded nc.med
 # END MESH #
 
 # BEGIN PARTITION
-
 Partition dom
 {
     Partition_tool metis { nb_parts 2 }
@@ -85,13 +84,13 @@ Read pb
             }
             erreur_P_max reduction_0D { methode max sources_reference { erreur_P } }
             erreur_V_max
-                    reduction_0D
-                    {
-                        methode max source transformation
-                        {
-                            methode norme source interpolation { domaine dom localisation elem source refchamp { Pb_champ pb vitesse } }
-                        }
-                    }
+            reduction_0D
+            {
+                methode max source transformation
+                {
+                    methode norme source interpolation { domaine dom localisation elem source refchamp { Pb_champ pb vitesse } }
+                }
+            }
 
         }
         probes
@@ -107,8 +106,8 @@ Read pb
             pression elem
             pression_pa elem
             vitesse elem
-            # divergence_u elem
-            gradient_pression elem #
+            # divergence_u elem #
+            # gradient_pression elem #
         }
     }
     sauvegarde formatte ascci.sauv

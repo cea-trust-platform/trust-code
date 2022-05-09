@@ -6,18 +6,18 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 21 21
-		Longueurs 0.031 0.31
-		}
-		{
-		Bord Gauche X = 0.  0. <= Y <= 0.31
-		Bord Haut Y = 0.31  0. <= X <= 0.031
-		Bord Bas Y = 0.     0. <= X <= 0.031
-		Bord Droit X = 0.031 0. <= Y <= 0.31
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 21 21
+        Longueurs 0.031 0.31
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.31
+        Bord Haut Y = 0.31  0. <= X <= 0.031
+        Bord Bas Y = 0.     0. <= X <= 0.031
+        Bord Droit X = 0.031 0. <= Y <= 0.31
+    }
 }
 
 
@@ -25,9 +25,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	partitionneur Tranche { tranches 2 2 }
-	Larg_joint 1
-	Nom_Zones DOM
+    partitionneur Tranche { tranches 2 2 }
+    Larg_joint 1
+    Nom_Zones DOM
 }
 End
 END PARTITION #
@@ -41,31 +41,31 @@ VDF dis
 Schema_Euler_explicite sch
 Read sch
 {
-	tinit 0.
+    tinit 0.
 	nb_pas_dt_max 3
-	tmax 50
-     
-	dt_min  1.e-8
-	dt_max 1e-1
-	dt_impr 1.e1
-	dt_sauv 100
-	seuil_statio 1.e-8
-        facsec 0.5
+    tmax 50
+
+    dt_min  1.e-8
+    dt_max 1e-1
+    dt_impr 1.e1
+    dt_sauv 100
+    seuil_statio 1.e-8
+    facsec 0.5
 }
 
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 5.0134715e-5
-	pression 1.
-	lambda Champ_Uniforme 1 2.471429613e-4
-	loi_etat gaz_parfait_QC {
-		Prandtl 0.71
+    mu Champ_Uniforme 1 5.0134715e-5
+    pression 1.
+    lambda Champ_Uniforme 1 2.471429613e-4
+    loi_etat gaz_parfait_QC {
+        Prandtl 0.71
 
-		Cp 3.5
-		gamma 1.4
-	}
-	Traitement_pth conservation_masse
+        Cp 3.5
+        gamma 1.4
+    }
+    Traitement_pth conservation_masse
 }
 
 Champ_Uniforme gravite
@@ -81,54 +81,54 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_QC
-	{
-		solveur_pression petsc Cholesky { }
-		convection { amont }
-		diffusion { }
-		conditions_initiales {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Haut paroi_fixe
-			Bas paroi_fixe
-			Gauche paroi_fixe
-			Droit paroi_fixe
-		}
-	}
-	Convection_Diffusion_Chaleur_QC
-	{
-		diffusion { }
-		convection { amont }
-		boundary_conditions 
-		{
-			Haut paroi_adiabatique
-			Bas paroi_adiabatique
-                        Gauche paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 1.9 H_imp Champ_Front_Uniforme 1  1.e11
-                        Droit  paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 .1  H_imp Champ_Front_Uniforme 1  1.e11
- 		}
-		conditions_initiales { Temperature Champ_fonc_xyz dom 1 1. }
-	}
+    Navier_Stokes_QC
+    {
+        solveur_pression petsc Cholesky { }
+        convection { amont }
+        diffusion { }
+        conditions_initiales {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Gauche paroi_fixe
+            Droit paroi_fixe
+        }
+    }
+    Convection_Diffusion_Chaleur_QC
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 1.9 H_imp Champ_Front_Uniforme 1  1.e11
+            Droit  paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 .1  H_imp Champ_Front_Uniforme 1  1.e11
+        }
+        conditions_initiales { Temperature Champ_fonc_xyz dom 1 1. }
+    }
 
-	Postraitement
-	{
-		Sondes {
-			pression_tot pression_tot periode 0.001 point 1 0.005 0.005
-			pression pression periode 0.001 point 1 0.005 0.005
-                        vitesse vitesse periode 0.001 point 1 0.005 0.005
-                        temperature temperature periode 0.001 point 1 0.005 0.005
-                }
-		format lml
-		Champs dt_post 10.
-		{
-			pression_tot som
-			pression elem
-			vitesse som
-			vitesse elem
-			temperature elem
-			masse_volumique elem
-		}
-	}
+    Postraitement
+    {
+        Sondes {
+            pression_tot pression_tot periode 0.001 point 1 0.005 0.005
+            pression pression periode 0.001 point 1 0.005 0.005
+            vitesse vitesse periode 0.001 point 1 0.005 0.005
+            temperature temperature periode 0.001 point 1 0.005 0.005
+        }
+        format lml
+        Champs dt_post 10.
+        {
+            pression_tot som
+            pression elem
+            vitesse som
+            vitesse elem
+            temperature elem
+            masse_volumique elem
+        }
+    }
 }
 
 Solve pb

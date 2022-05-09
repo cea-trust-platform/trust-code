@@ -3,7 +3,7 @@ dimension 3
 domaine dom
 
 # BEGIN MESH #
-lire_med family_names_from_group_names dom mesh mesh.med 
+lire_med family_names_from_group_names dom mesh mesh.med
 # END MESH #
 
 # BEGIN PARTITION #
@@ -16,9 +16,9 @@ Postraiter_domaine
 
 Partition dom
 {
-	Partition_tool Fichier_MED { file Processor.med field Thread }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool Fichier_MED { file Processor.med field Thread }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 # END PARTITION #

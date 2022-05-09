@@ -1,57 +1,57 @@
 # Conduction 2D : couplage de 2 domaines solides #
 # PARALLEL OK 5 #
-Dimension 2 
+Dimension 2
 
 
-Domaine dom1  
+Domaine dom1
 Domaine dom2
 
 # BEGIN MESH #
 Mailler dom1
 {
-   Pave pave1 
-   	{ 
-		Origine 0. 0.
-		Longueurs 0.5 1.
-		Nombre_de_Noeuds 6 2
-   	}
-   	{
-      		Bord gauche X = 0. 0. <= Y <= 1.
-	 	Bord haut Y = 1. 0. <= X <= 0.5
-	 	Raccord local homogene interface1 X = 0.5 0. <= Y <= 1.
-	 	Bord bas Y = 0. 0. <= X <= 0.5
-   	} 
+    Pave pave1
+    {
+        Origine 0. 0.
+        Longueurs 0.5 1.
+        Nombre_de_Noeuds 6 2
+    }
+    {
+        Bord gauche X = 0. 0. <= Y <= 1.
+        Bord haut Y = 1. 0. <= X <= 0.5
+        Raccord local homogene interface1 X = 0.5 0. <= Y <= 1.
+        Bord bas Y = 0. 0. <= X <= 0.5
+    }
 }
 
 Mailler dom2
 {
-   Pave pave2 
-   	{ 
-		Origine 0.5 0.
-		Longueurs 0.5 1.
-		Nombre_de_Noeuds 6 2
-   	}
-   	{
-      		Raccord local homogene interface2 X = 0.5 0. <= Y <= 1.
-	 	Bord haut Y = 1. 0.5 <= X <= 1.
-	 	Bord droit X = 1. 0. <= Y <= 1.
-	 	Bord bas Y = 0. 0.5 <= X <= 1.
-   	} 
+    Pave pave2
+    {
+        Origine 0.5 0.
+        Longueurs 0.5 1.
+        Nombre_de_Noeuds 6 2
+    }
+    {
+        Raccord local homogene interface2 X = 0.5 0. <= Y <= 1.
+        Bord haut Y = 1. 0.5 <= X <= 1.
+        Bord droit X = 1. 0. <= Y <= 1.
+        Bord bas Y = 0. 0.5 <= X <= 1.
+    }
 }
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom1
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM1
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM1
 }
 Partition dom2
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM2
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM2
 }
 End
 END PARTITION #
@@ -61,36 +61,36 @@ Scatter DOM1.Zones dom1
 Scatter DOM2.Zones dom2
 END SCATTER #
 
-VDF dis  
+VDF dis
 
 # On choisit un schema commun aux deux problemes #
-Scheme_euler_explicit sch  
+Scheme_euler_explicit sch
 Read sch
 {
-   tinit 0
-   tmax 50.
-   nb_pas_dt_max 100000000
-   dt_min 1.e-8
-   dt_max 100.
-   dt_impr 1.e-8
-   seuil_statio 1.e-4
-   facsec 0.2
-} 
+    tinit 0
+    tmax 50.
+    nb_pas_dt_max 100000000
+    dt_min 1.e-8
+    dt_max 100.
+    dt_impr 1.e-8
+    seuil_statio 1.e-4
+    facsec 0.2
+}
 
 # On choisit un Solide commun aux deux problemes #
 Solide acier1
 Solide acier2
 Read acier1
 {
-	rho Champ_Uniforme 1 100.
-	lambda Champ_Uniforme 1 100.
-	Cp Champ_Uniforme 1 10.
+    rho Champ_Uniforme 1 100.
+    lambda Champ_Uniforme 1 100.
+    Cp Champ_Uniforme 1 10.
 }
 Read acier2
 {
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 100.
-	Cp Champ_Uniforme 1 209
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 100.
+    Cp Champ_Uniforme 1 209
 }
 
 Champ_Uniforme gravite
@@ -101,14 +101,14 @@ Associate acier2 gravite
 
 
 # Declaration des problemes #
-Pb_Conduction pb1  
-Pb_Conduction pb2  
+Pb_Conduction pb1
+Pb_Conduction pb2
 
 # Association des problemes #
-Associate pb1 dom1 
-Associate pb2 dom2 
-Associate pb1 acier1 
-Associate pb2 acier2 
+Associate pb1 dom1
+Associate pb2 dom2
+Associate pb1 acier1
+Associate pb2 acier2
 
 # Creation du probleme couple #
 Probleme_Couple pbc
@@ -116,65 +116,65 @@ Associate pbc pb1
 Associate pbc pb2
 Associate pbc sch
 
-Discretize pbc dis 
+Discretize pbc dis
 
 Read pb1
 {
-   Conduction
-   {
-      diffusion {  }	
-      initial_conditions {
-         temperature Champ_Uniforme 1 30
-      }	
-      boundary_conditions {
-         gauche paroi_temperature_imposee 
-	        Champ_Front_Uniforme 1 40.
-         interface1 Paroi_Echange_contact_VDF pb2 interface2 temperature 100.
-         haut symetrie 
-         bas symetrie
-      }
-   }
-   Post_processing
-   {
-   Probes	      
-   {
-     sonde_temp1 temperature periode 0.01 segment 5 0. 0.5 0.5 0.5   
-   }
-    fields dt_post 1.
-   {
-      temperature elem
-      temperature som
-      }
-   }
+    Conduction
+    {
+        diffusion {  }
+        initial_conditions {
+            temperature Champ_Uniforme 1 30
+        }
+        boundary_conditions {
+            gauche paroi_temperature_imposee
+            Champ_Front_Uniforme 1 40.
+            interface1 Paroi_Echange_contact_VDF pb2 interface2 temperature 100.
+            haut symetrie
+            bas symetrie
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_temp1 temperature periode 0.01 segment 5 0. 0.5 0.5 0.5
+        }
+        fields dt_post 1.
+        {
+            temperature elem
+            temperature som
+        }
+    }
 }
 
 Read pb2
 {
-   Conduction
-   {
-      diffusion {  }	
-      initial_conditions {
-         temperature Champ_Uniforme 1 30
-      }	
-      boundary_conditions {
-         interface2 Paroi_Echange_contact_VDF pb1 interface1 temperature 100.
-         droit paroi_temperature_imposee 
-	        Champ_Front_Uniforme 1 20
-         haut symetrie
-         bas symetrie
-      }
-   }
-   Post_processing
-   {
-   Probes	      
-   {
-     sonde_temp2 temperature periode 0.01 segment 5 0.51 0.5 0.99 0.5 
-   }
-    fields dt_post 1. {
-      temperature elem
-      temperature som
-      }
-   }
+    Conduction
+    {
+        diffusion {  }
+        initial_conditions {
+            temperature Champ_Uniforme 1 30
+        }
+        boundary_conditions {
+            interface2 Paroi_Echange_contact_VDF pb1 interface1 temperature 100.
+            droit paroi_temperature_imposee
+            Champ_Front_Uniforme 1 20
+            haut symetrie
+            bas symetrie
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_temp2 temperature periode 0.01 segment 5 0.51 0.5 0.99 0.5
+        }
+        fields dt_post 1. {
+            temperature elem
+            temperature som
+        }
+    }
 }
 
 

@@ -6,30 +6,30 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 189 36
-		Longueurs 0.1295 0.0015875
-		facteurs 1. 1.05
-		symx
-		}
-		{
-		Bord Gauche X = 0.        0. <= Y <= 0.0015875
-		Bord Haut   Y = 0.0015875 0. <= X <= 0.1295
-		Bord BasE   Y = 0.        0. <= X <= 0.0551064
-		Bord BasP   Y = 0. 0.0551064 <= X <= 0.0619947
-		Bord BasS   Y = 0. 0.0619947 <= X <= 0.1295
-		Bord Droit  X = 0.1295    0. <= Y <= 0.0015875
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 189 36
+        Longueurs 0.1295 0.0015875
+        facteurs 1. 1.05
+        symx
+    }
+    {
+        Bord Gauche X = 0.        0. <= Y <= 0.0015875
+        Bord Haut   Y = 0.0015875 0. <= X <= 0.1295
+        Bord BasE   Y = 0.        0. <= X <= 0.0551064
+        Bord BasP   Y = 0. 0.0551064 <= X <= 0.0619947
+        Bord BasS   Y = 0. 0.0619947 <= X <= 0.1295
+        Bord Droit  X = 0.1295    0. <= Y <= 0.0015875
+    }
 }
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -39,26 +39,26 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 VDF dis
-Runge_Kutta_ordre_3 sch 
+Runge_Kutta_ordre_3 sch
 # Scheme_euler_explicit sch #
 Read sch
 {
-	tinit 0.
-	tmax 0.02
-        nb_pas_dt_max 5
-	dt_min 1.e-6
-	dt_max 1.e-4
-	dt_impr 1.e-3
-	dt_sauv 0.1
-	seuil_statio 1.e-8
-	facsec 1.
+    tinit 0.
+    tmax 0.02
+    nb_pas_dt_max 5
+    dt_min 1.e-6
+    dt_max 1.e-4
+    dt_impr 1.e-3
+    dt_sauv 0.1
+    seuil_statio 1.e-8
+    facsec 1.
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme  1 1.5e-5
-	rho Champ_Uniforme 1 2.
+    mu Champ_Uniforme  1 1.5e-5
+    rho Champ_Uniforme 1 2.
 }
 
 
@@ -70,49 +70,49 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.7 } 
-			seuil 1e-6
-			impr 
-		}
-		convection { centre4 }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 30. 0.
-			}
-		boundary_conditions {
-			Haut symetrie 
-			BasE paroi_fixe
-			BasP paroi_fixe
-			BasS paroi_fixe
-			Gauche frontiere_ouverte_vitesse_imposee
-			       Champ_front_bruite 2 
-			        { Moyenne 30.0 0.0  Amplitude 0.0 0.03 }
-			Droit frontiere_ouverte_pression_imposee
-                               Champ_front_Uniforme 1 0.
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.7 }
+            seuil 1e-6
+            impr
+        }
+        convection { centre4 }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 30. 0.
+        }
+        boundary_conditions {
+            Haut symetrie
+            BasE paroi_fixe
+            BasP paroi_fixe
+            BasS paroi_fixe
+            Gauche frontiere_ouverte_vitesse_imposee
+            Champ_front_bruite 2
+            { Moyenne 30.0 0.0  Amplitude 0.0 0.03 }
+            Droit frontiere_ouverte_pression_imposee
+            Champ_front_Uniforme 1 0.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_pression pression periode 1.e-5 points 3 0.001 0.0004 0.07 0.0004 
-                        0.008 0.0004
-			sonde_vitesse  vitesse  periode 1.e-5 points 5 0.05 0.0004 0.06 0.0004 
-                                                           0.07 0.0004 0.08 0.0004 0.09 0.0004
-			seg_vitx vitesse periode 1.e-5 segment 50 0.00 0.0004 0.12 0.0004
-                        seg_prex pression periode 1.e-5 segment 50 0.00 0.0004 0.12 0.0004
-			seg_vity vitesse periode 1.e-5 segment 30 0.08 0.    0.08 0.0015875 
-		}
-		fields dt_post 0.001
-		{
-			pression 
-			vitesse 
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 1.e-5 points 3 0.001 0.0004 0.07 0.0004
+            0.008 0.0004
+            sonde_vitesse  vitesse  periode 1.e-5 points 5 0.05 0.0004 0.06 0.0004
+            0.07 0.0004 0.08 0.0004 0.09 0.0004
+            seg_vitx vitesse periode 1.e-5 segment 50 0.00 0.0004 0.12 0.0004
+            seg_prex pression periode 1.e-5 segment 50 0.00 0.0004 0.12 0.0004
+            seg_vity vitesse periode 1.e-5 segment 30 0.08 0.    0.08 0.0015875
+        }
+        fields dt_post 0.001
+        {
+            pression
+            vitesse
+        }
+    }
 }
 
 Solve pb

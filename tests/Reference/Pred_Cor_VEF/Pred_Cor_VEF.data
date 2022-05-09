@@ -6,13 +6,13 @@ Pb_Thermohydraulique pb
 # BEGIN MESH #
 Mailler dom
 {
-    Pave TUBE1 
+    Pave TUBE1
     {
         Origine 0. 0.
         Nombre_de_Noeuds 61 11
         Longueurs 6.0 1.0
     }
-            
+
     {
         Bord ENTREE  X = 0. 0. <= Y <= 1.
         Bord OUEST   Y = 0. 0. <= X <= 6.
@@ -20,19 +20,19 @@ Mailler dom
         Bord ESTH    Y = 1. 3. <= X <= 6.
         Bord SORTIEH X = 6. 0. <= Y <= 1.
     } ,
-        
+
     Pave TUBE2
     {
         Origine 2. 1.
         Nombre_de_Noeuds 11 31
         Longueurs 1.0 3.0
     }
-    
+
     {
         Bord SORTIER Y = 4. 2. <= X <= 3.
         Bord HAUT    X = 2. 1. <= Y <= 4.
         Bord BAS     X = 3. 1. <= Y <= 4.
-    } 
+    }
 }
 
 Trianguler_H dom
@@ -40,9 +40,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -55,28 +55,28 @@ VEFPreP1B dis
 Schema_Predictor_Corrector sch
 Read sch
 {
-	nb_pas_dt_max 5
-        tinit 0.
-        tmax 2.
-        dt_min 1.e-5 
-        dt_max 1. 
-        dt_impr 1.e-4 
-        dt_sauv 100
-        seuil_statio 1.e-12
+    nb_pas_dt_max 5
+    tinit 0.
+    tmax 2.
+    dt_min 1.e-5
+    dt_max 1.
+    dt_impr 1.e-4
+    dt_sauv 100
+    seuil_statio 1.e-12
 }
 Fluide_Incompressible fluide
 
 Read fluide
 {
-   mu champ_fonc_tabule { pb temperature } 1
-        {      2
-               0        1
-               2.0e-6   2.0e-3     
-        }  
-	rho Champ_Uniforme 1 2
-   lambda  Champ_Uniforme 1 0.597
-	Cp Champ_Uniforme 1 2091
-   beta_th Champ_Uniforme 1 1.e-10
+    mu champ_fonc_tabule { pb temperature } 1
+    {   2
+        0        1
+        2.0e-6   2.0e-3
+    }
+    rho Champ_Uniforme 1 2
+    lambda  Champ_Uniforme 1 0.597
+    Cp Champ_Uniforme 1 2091
+    beta_th Champ_Uniforme 1 1.e-10
 }
 
 Associate pb dom
@@ -87,82 +87,82 @@ Discretize pb dis
 
 Read pb
 {
-        Navier_Stokes_standard
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr }
+        convection { muscl }
+        diffusion { }
+        initial_conditions
         {
-                solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-8 impr } 
-                convection { muscl }
-                diffusion { }
-                initial_conditions 
-                {
-                        vitesse Champ_Uniforme 2 0. 0. 
-                }
-                boundary_conditions 
-                {
-                        ENTREE   frontiere_ouverte_vitesse_imposee 
-			    Champ_Front_Uniforme 2 0.1  0.
-                        SORTIEH  frontiere_ouverte_pression_imposee 
-                            Champ_Front_Uniforme 1 0.
-                        SORTIER  frontiere_ouverte_vitesse_imposee 
-                            Champ_Front_Uniforme 2 0. -0.1
-                        BAS      paroi_fixe
-                        HAUT     paroi_fixe 
-                        ESTB     paroi_fixe 
-                        ESTH     paroi_fixe 
-                        OUEST    paroi_fixe
-                }
+            vitesse Champ_Uniforme 2 0. 0.
         }
-        Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { muscl }
-		initial_conditions 
-		     { 
-		     Temperature Champ_Uniforme 1  0. 
-		     }
-		boundary_conditions 
-		     { 
-		        ENTREE   frontiere_ouverte_temperature_imposee 
-			    Champ_Front_Uniforme 1 1.0  
-                        SORTIEH  frontiere_ouverte_temperature_imposee 
-                            Champ_Front_Uniforme 1 0.5
-                        SORTIER  frontiere_ouverte_temperature_imposee 
-                            Champ_Front_Uniforme 1 0.0
-                        BAS      paroi_adiabatique
-                        HAUT     paroi_adiabatique
-                        ESTB     paroi_adiabatique
-                        ESTH     paroi_adiabatique
-                        OUEST    paroi_adiabatique		 	
-		     }
-	}
-        
-        Post_processing
+        boundary_conditions
         {
-                Probes
-                {
-			sonde 		vitesse 	periode 1.e-6 
-point 1 1. 0.5
-                        sonde1_vit     vitesse          periode 1.e-6 
-segment 11  1. 0.   1.  1.  
-                        sonde2_vit     vitesse          periode 1.e-6 
-segment 11  5. 0.   5.  1. 
-                        sonde3_vit     vitesse          periode 1.e-6 
-segment 11  2. 3.   3.  3. 
-                        sonde1_tem     temperature      periode 1.e-6 
-segment 11  1. 0.   1.  1.  
-                        sonde2_tem     temperature      periode 1.e-6 
-segment 11  5. 0.   5.  1. 
-                        sonde3_tem     temperature      periode 1.e-6 
-segment 11  2. 3.   3.  3. 
-                }
-                fields dt_post 10.0 
-                {
-                    vitesse
-                    pression
-                    temperature
-                }
-                
-                
+            ENTREE   frontiere_ouverte_vitesse_imposee
+            Champ_Front_Uniforme 2 0.1  0.
+            SORTIEH  frontiere_ouverte_pression_imposee
+            Champ_Front_Uniforme 1 0.
+            SORTIER  frontiere_ouverte_vitesse_imposee
+            Champ_Front_Uniforme 2 0. -0.1
+            BAS      paroi_fixe
+            HAUT     paroi_fixe
+            ESTB     paroi_fixe
+            ESTH     paroi_fixe
+            OUEST    paroi_fixe
         }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { muscl }
+        initial_conditions
+        {
+            Temperature Champ_Uniforme 1  0.
+        }
+        boundary_conditions
+        {
+            ENTREE   frontiere_ouverte_temperature_imposee
+            Champ_Front_Uniforme 1 1.0
+            SORTIEH  frontiere_ouverte_temperature_imposee
+            Champ_Front_Uniforme 1 0.5
+            SORTIER  frontiere_ouverte_temperature_imposee
+            Champ_Front_Uniforme 1 0.0
+            BAS      paroi_adiabatique
+            HAUT     paroi_adiabatique
+            ESTB     paroi_adiabatique
+            ESTH     paroi_adiabatique
+            OUEST    paroi_adiabatique
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            sonde 		vitesse 	periode 1.e-6
+            point 1 1. 0.5
+            sonde1_vit     vitesse          periode 1.e-6
+            segment 11  1. 0.   1.  1.
+            sonde2_vit     vitesse          periode 1.e-6
+            segment 11  5. 0.   5.  1.
+            sonde3_vit     vitesse          periode 1.e-6
+            segment 11  2. 3.   3.  3.
+            sonde1_tem     temperature      periode 1.e-6
+            segment 11  1. 0.   1.  1.
+            sonde2_tem     temperature      periode 1.e-6
+            segment 11  5. 0.   5.  1.
+            sonde3_tem     temperature      periode 1.e-6
+            segment 11  2. 3.   3.  3.
+        }
+        fields dt_post 10.0
+        {
+            vitesse
+            pression
+            temperature
+        }
+
+
+    }
 }
 Solve pb
 End

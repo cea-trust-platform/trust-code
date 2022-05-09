@@ -8,23 +8,23 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-	{
-		Origine 0. 0. 0.
-		Nombre_de_Noeuds 10 65 10
-		Longueurs 6.283185307 2.0 3.141592653
-		ytanh_dilatation 0
-                ytanh_taille_premiere_maille 0.01
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 10 65 10
+        Longueurs 6.283185307 2.0 3.141592653
+        ytanh_dilatation 0
+        ytanh_taille_premiere_maille 0.01
 
-	}
-	{
-	Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
-	Bord periox  X = 6.283185307   0. <= Y <= 2.0           0. <= Z <= 3.141592653 
-	Bord bas     Y = 0.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
-	Bord haut    Y = 2.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+    }
+    {
+        Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
+        Bord periox  X = 6.283185307   0. <= Y <= 2.0           0. <= Z <= 3.141592653
+        Bord bas     Y = 0.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+        Bord haut    Y = 2.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
         Bord perioz  Z = 0.            0. <= X <= 6.283185307   0. <= Y <= 2.0
-	Bord perioz  Z = 3.141592653   0. <= X <= 6.283185307   0. <= Y <= 2.0   	
-	}
+        Bord perioz  Z = 3.141592653   0. <= X <= 6.283185307   0. <= Y <= 2.0
+    }
 }
 # END MESH #
 # BEGIN PARTITION
@@ -32,16 +32,16 @@ Sous_Zone sous_zone
 Associate sous_zone dom
 Read sous_zone
 {
-      Boite
-      Origine 2.  0. 1.
-      Cotes   2.  2. 1.
+    Boite
+    Origine 2.  0. 1.
+    Cotes   2.  2. 1.
 }
 Partition dom
 {
-	Partition_tool sous_zones { sous_zones 1 sous_zone }
-	Larg_joint 1
-	zones_name DOM
-	Periodique 2 periox perioz
+    Partition_tool sous_zones { sous_zones 1 sous_zone }
+    Larg_joint 1
+    zones_name DOM
+    Periodique 2 periox perioz
 }
 End
 END PARTITION #
@@ -55,21 +55,21 @@ VDF dis
 Runge_Kutta_ordre_3 sch
 Read sch
 {
-        tinit 0.
-	tmax 10.
-	dt_min 1.e-7
-	dt_max 1.e-1
-	dt_impr 0.00001
-	dt_sauv 1.5
-	seuil_statio 1.e-8
-	nb_pas_dt_max 2
+    tinit 0.
+    tmax 10.
+    dt_min 1.e-7
+    dt_max 1.e-1
+    dt_impr 0.00001
+    dt_sauv 1.5
+    seuil_statio 1.e-8
+    nb_pas_dt_max 2
 }
 
 Fluide_Incompressible air
 Read air
 {
-	mu Champ_Uniforme 1 0.01
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -80,34 +80,34 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { precond ssor { omega 1.5 } seuil 5.e-9 impr }	
-		convection { centre }
-		diffusion { }
-		initial_conditions {
-			vitesse champ_init_canal_sinal 3 { Ucent 25.0 h 1.0 ampli_bruit 0. ampli_sin 0. omega 2. }
-			}
-		boundary_conditions {
-periox periodique 
-perioz periodique 
-			haut  paroi_fixe
-	                bas  paroi_fixe		
-		}
-     }	      
-	Post_processing
-	{
-	     Probes
-	          {
-	           	sonde_pression pression periode 0.001 points 1 0.05 0.15 3.14 
-			sonde_vit2 vitesse periode 0.05 segment 40   4. 0. 3.14    4. 2. 3.14
-	        }
-		fields dt_post 4.0
-		{			
-			pression elem			
-			vitesse elem
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 5.e-9 impr }
+        convection { centre }
+        diffusion { }
+        initial_conditions {
+            vitesse champ_init_canal_sinal 3 { Ucent 25.0 h 1.0 ampli_bruit 0. ampli_sin 0. omega 2. }
+        }
+        boundary_conditions {
+            periox periodique
+            perioz periodique
+            haut  paroi_fixe
+            bas  paroi_fixe
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 0.001 points 1 0.05 0.15 3.14
+            sonde_vit2 vitesse periode 0.05 segment 40   4. 0. 3.14    4. 2. 3.14
+        }
+        fields dt_post 4.0
+        {
+            pression elem
+            vitesse elem
+        }
+    }
 
 }
 Solve pb

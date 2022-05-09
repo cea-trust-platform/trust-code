@@ -9,18 +9,18 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Entree
-                {
-                Origine 0. -0.5
-                Nombre_de_Noeuds  11 11
-                Longueurs 1. 1.
-                }
-                {
-                bord Entree X = 0.    -0.5 <= Y <= 0.5
-                bord Haut   Y = 0.5    0.  <= X <= 1.
-                bord Bas    Y = -0.5   0.  <= X <= 1.
-                bord Sortie X = 1.    -0.5 <= Y <= 0.5
-                }
+    Pave Entree
+    {
+        Origine 0. -0.5
+        Nombre_de_Noeuds  11 11
+        Longueurs 1. 1.
+    }
+    {
+        bord Entree X = 0.    -0.5 <= Y <= 0.5
+        bord Haut   Y = 0.5    0.  <= X <= 1.
+        bord Bas    Y = -0.5   0.  <= X <= 1.
+        bord Sortie X = 1.    -0.5 <= Y <= 0.5
+    }
 }
 Trianguler_h dom
 # END MESH #
@@ -28,9 +28,9 @@ Trianguler_h dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 1 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 1 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -44,20 +44,20 @@ VEFPrep1b dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 10.
-	dt_min 0.0001
-	dt_max 0.1
-	dt_sauv 100
-	seuil_statio 1.e-5
+    tinit 0
+    tmax 10.
+    dt_min 0.0001
+    dt_max 0.1
+    dt_sauv 100
+    seuil_statio 1.e-5
 }
 
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu  Champ_Uniforme 1 0.25
-	rho Champ_Uniforme 1 2.
+    mu  Champ_Uniforme 1 0.25
+    rho Champ_Uniforme 1 2.
 }
 
 Associate pb dom
@@ -68,75 +68,76 @@ Discretize pb dis
 # La convection est neglige, car les resultats sont mauvais #
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP  { precond ssor { omega 1.65 } seuil 1e-12 impr }
-		convection { negligeable }
-		diffusion { }
-		initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
-		boundary_conditions
-		{
-			Haut 	paroi_fixe
-			Bas 	paroi_fixe
-			Entree 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 20.
-			Sortie 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-		}
-	}
-	Post_processing
-	{
-		Definition_champs {
-			solution Transformation {
-				localisation Faces
-				methode formule expression 1 10*(1-4*y*y)
-			} 
-			norme_L2_1		reduction_0D	{
-										methode euclidian_norm
-										source transformation	{
-													methode formule
-													expression 1 1
-													localisation elem
-													}
-										}
-            norme_L2_divu		reduction_0D	{
-										methode euclidian_norm
-										sources	{
-                                                  interpolation { localisation elem 
-                                            sources {
-											# divergence u #
-											divergence	{
-													source refChamp { Pb_champ pb vitesse }
-													}
-											}
-											}
-										}
-										}
-            errdivu			transformation	{
-										methode formule
-										expression 1 norme_L2_divu/norme_L2_1
-										localisation elem
-										sources_reference { norme_L2_divu , norme_L2_1 }
-										}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP  { precond ssor { omega 1.65 } seuil 1e-12 impr }
+        convection { negligeable }
+        diffusion { }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+        boundary_conditions
+        {
+            Haut 	paroi_fixe
+            Bas 	paroi_fixe
+            Entree 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 20.
+            Sortie 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
         }
-					
-		
-		Probes
-		{
-		 seg_vitesse		nodes	vitesse		periode 0.5 segment 10 1. -0.45	1. 0.45
-		 seg_solution		nodes	solution	periode 0.5 segment 10 1. -0.45	1. 0.45
-		 seg_pression_pa		pression_pa	periode 0.5 segment 10 0.  0.   1.  0.
-         errdivu			errdivu		periode 1e+6 numero_elem_sur_maitre 0
-  		}
-  		
-		fields dt_post 1.
-		{
-			pression	elem
-			pression	som
-			pression_pa	elem
-			pression_pa	som
-			vitesse		elem
-			vitesse		som
-		}
-	}
+    }
+    Post_processing
+    {
+        Definition_champs {
+            solution Transformation {
+                localisation Faces
+                methode formule expression 1 10*(1-4*y*y)
+            }
+            norme_L2_1		reduction_0D	{
+                methode euclidian_norm
+                source transformation	{
+                    methode formule
+                    expression 1 1
+                    localisation elem
+                }
+            }
+            norme_L2_divu		reduction_0D	{
+                methode euclidian_norm
+                sources	{
+                    interpolation {
+                        localisation elem
+                        sources {
+                            # divergence u #
+                            divergence	{
+                                source refChamp { Pb_champ pb vitesse }
+                            }
+                        }
+                    }
+                }
+            }
+            errdivu			transformation	{
+                methode formule
+                expression 1 norme_L2_divu/norme_L2_1
+                localisation elem
+                sources_reference { norme_L2_divu , norme_L2_1 }
+            }
+        }
+
+
+        Probes
+        {
+            seg_vitesse		nodes	vitesse		periode 0.5 segment 10 1. -0.45	1. 0.45
+            seg_solution		nodes	solution	periode 0.5 segment 10 1. -0.45	1. 0.45
+            seg_pression_pa		pression_pa	periode 0.5 segment 10 0.  0.   1.  0.
+            errdivu			errdivu		periode 1e+6 numero_elem_sur_maitre 0
+        }
+
+        fields dt_post 1.
+        {
+            pression	elem
+            pression	som
+            pression_pa	elem
+            pression_pa	som
+            vitesse		elem
+            vitesse		som
+        }
+    }
 }
 Solve pb
 End

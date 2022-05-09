@@ -6,20 +6,20 @@ Pb_Hydraulique pb
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Cavite 
-                {
-                Origine 0. 0. 0.
-                Nombre_de_Noeuds 41 41 41 
-                Longueurs 10. 10.  10.
-                }
-                {
-                Bord Gauche  X = 0.       0. <= Y <= 10. 0. <= Z <= 10.
-                Bord Haut    Y = 10.	  0. <= X <= 10. 0. <= Z <= 10. 
-                Bord Bas     Y = 0.       0. <= X <= 10. 0. <= Z <= 10. 
-                Bord Droite  X = 10.  	  0. <= Y <= 10. 0. <= Z <= 10. 
-                Bord cote1   Z = 0.       0. <= X <= 10. 0. <= Y <= 10. 
-                Bord cote2   Z = 10.  	  0. <= X <= 10. 0. <= Y <= 10. 
-                }
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 41 41 41
+        Longueurs 10. 10.  10.
+    }
+    {
+        Bord Gauche  X = 0.       0. <= Y <= 10. 0. <= Z <= 10.
+        Bord Haut    Y = 10.	  0. <= X <= 10. 0. <= Z <= 10.
+        Bord Bas     Y = 0.       0. <= X <= 10. 0. <= Z <= 10.
+        Bord Droite  X = 10.  	  0. <= Y <= 10. 0. <= Z <= 10.
+        Bord cote1   Z = 0.       0. <= X <= 10. 0. <= Y <= 10.
+        Bord cote2   Z = 10.  	  0. <= X <= 10. 0. <= Y <= 10.
+    }
 }
 # END MESH #
 
@@ -42,20 +42,20 @@ VDF dis
 Runge_Kutta_ordre_3 sch
 Read sch
 {
-        tinit 0.
-        tmax 10. 
-        dt_min 5.e-7
-        dt_max 5.e-2
-        dt_impr 1.e-5 
-        dt_sauv 100
-        seuil_statio 1.e-6
-        diffusion_implicite 0
+    tinit 0.
+    tmax 10.
+    dt_min 5.e-7
+    dt_max 5.e-2
+    dt_impr 1.e-5
+    dt_sauv 100
+    seuil_statio 1.e-6
+    diffusion_implicite 0
 }
 Fluide_Incompressible fluide
 Read fluide
 {
-        mu Champ_Uniforme 1 1
-        rho Champ_Uniforme 1 1
+    mu Champ_Uniforme 1 1
+    rho Champ_Uniforme 1 1
 }
 Associate pb dom
 Associate pb sch
@@ -63,48 +63,49 @@ Associate pb fluide
 Discretize pb dis
 Read pb
 {
-        Navier_Stokes_standard
-        {
-               solveur_pression Gcp { precond ssor 
-					{ omega 1.5 }
-                                      seuil 1.e-8
-                                      impr
-                                    }   	   
-                convection { 
-                           negligeable
-                           }
-                diffusion { negligeable }
-		sources { Coriolis { omega 3 0. 0. 5. } }
-                initial_conditions { 
-                        vitesse champ_uniforme 3 10. 0. 0.
-                        }
-                boundary_conditions {
-			Bas Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
-			Haut Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
-			Gauche Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
-			Droite Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
-			cote1 Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
-			cote2 Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+    Navier_Stokes_standard
+    {
+        solveur_pression Gcp {
+            precond ssor
+            { omega 1.5 }
+            seuil 1.e-8
+            impr
+        }
+        convection {
+            negligeable
+        }
+        diffusion { negligeable }
+        sources { Coriolis { omega 3 0. 0. 5. } }
+        initial_conditions {
+            vitesse champ_uniforme 3 10. 0. 0.
+        }
+        boundary_conditions {
+            Bas Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+            Haut Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+            Gauche Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+            Droite Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+            cote1 Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
+            cote2 Frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 10. 0. 0.
 
-                }
         }
-        Post_processing
+    }
+    Post_processing
+    {
+        Probes
         {
-                Probes
-                {
-                        sonde_vitx     vitesse          periode 0.0001  segment 41  0. 3.1415927 2. 6.2831853  3.1415927  2.
-                        sonde_vity     vitesse          periode 0.0001  segment 41  3.1415927  0. 2.  3.1415927  6.2831853  2.
-                        sonde_prex     pression         periode 0.0001  segment 41  0. 3.1415927 2.  6.2831853  3.1415927 2. 
-                        sonde_prey     pression         periode 0.0001  segment 41  0.  0.  2.       6.2831853  6.2831853 2. 
-                }
-                fields dt_post 0.5
-                {
-                    vitesse elem
-                    vitesse som
-                    pression elem
-                    pression som
-               }
+            sonde_vitx     vitesse          periode 0.0001  segment 41  0. 3.1415927 2. 6.2831853  3.1415927  2.
+            sonde_vity     vitesse          periode 0.0001  segment 41  3.1415927  0. 2.  3.1415927  6.2831853  2.
+            sonde_prex     pression         periode 0.0001  segment 41  0. 3.1415927 2.  6.2831853  3.1415927 2.
+            sonde_prey     pression         periode 0.0001  segment 41  0.  0.  2.       6.2831853  6.2831853 2.
         }
+        fields dt_post 0.5
+        {
+            vitesse elem
+            vitesse som
+            pression elem
+            pression som
+        }
+    }
 }
 Solve pb
 End

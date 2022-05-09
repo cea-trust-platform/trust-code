@@ -6,18 +6,18 @@ domaine dom_pb2
 # BEGIN MESH #
 Mailler dom_pb2
 {
-        Pave demi_canal
-                {
-                Origine  0.  0. 
-                Nombre_de_Noeuds 5 5 
-                Longueurs 5 2 
-                }
-                {
-                bord Plaque 	   Y = 0.     0. <= X <= 5 
-                bord Plaque        Y = 2     0. <= X <= 5 
-                bord periox        X = 0.   0 <= Y <= 2 
-                bord periox        X = 5 0 <= Y <= 2 
-                }
+    Pave demi_canal
+    {
+        Origine  0.  0.
+        Nombre_de_Noeuds 5 5
+        Longueurs 5 2
+    }
+    {
+        bord Plaque 	   Y = 0.     0. <= X <= 5
+        bord Plaque        Y = 2     0. <= X <= 5
+        bord periox        X = 0.   0 <= Y <= 2
+        bord periox        X = 5 0 <= Y <= 2
+    }
 }
 trianguler_h dom_pb2
 Corriger_frontiere_periodique { domaine dom_pb2 bord periox }
@@ -28,10 +28,10 @@ Corriger_frontiere_periodique { domaine dom_pb2 bord periox }
 # BEGIN PARTITION
 Partition dom_pb2
 {
-	Partition_tool metis { nb_parts 2  }
-	periodique 1 periox
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { nb_parts 2  }
+    periodique 1 periox
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -42,17 +42,17 @@ END SCATTER #
 
 Pb_thermohydraulique pb2
 Scheme_euler_explicit sch
-Read sch 
+Read sch
 {
-        tinit 0
+    tinit 0
 	nb_pas_dt_max 3
-        tmax 150000.
-        dt_min 1.e-7
-	dt_start dt_calc
-        dt_impr 1000
-        dt_sauv 10000.
-        seuil_statio 1.e-8  
-        facsec 1.
+    tmax 150000.
+    dt_min 1.e-7
+    dt_start dt_calc
+    dt_impr 1000
+    dt_sauv 10000.
+    seuil_statio 1.e-8
+    facsec 1.
 }
 
 
@@ -62,18 +62,18 @@ VEFPreP1b cubesregu
 Fluide_Incompressible He
 Read He
 {
-        mu Champ_Uniforme 1 4.46437e-05 
-        rho Champ_Uniforme 1 4.40684
-        lambda Champ_Uniforme 1 0.344964     
-        Cp Champ_Uniforme 1 5193.
-        beta_th Champ_Uniforme 1 0.0014285714
+    mu Champ_Uniforme 1 4.46437e-05
+    rho Champ_Uniforme 1 4.40684
+    lambda Champ_Uniforme 1 0.344964
+    Cp Champ_Uniforme 1 5193.
+    beta_th Champ_Uniforme 1 0.0014285714
 }
 Champ_Uniforme gravite
 Read gravite 2 -9 0.
 Associate He gravite
 
 Associate pb2 dom_pb2
-Associate pb2 He  
+Associate pb2 He
 
 
 
@@ -82,62 +82,63 @@ Discretize pb2 cubesregu
 
 Read pb2
 {
-        Navier_Stokes_standard
+    Navier_Stokes_standard
+    {
+        solveur_pression Gcp {
+            precond ssor { omega 1.5 }
+            seuil 1.e-10
+        }
+
+        convection {      amont }
+        diffusion  {  }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 2  0
+        }
+        Sources { Canal_perio { bord periox  }  }
+        boundary_conditions {
+            periox periodique
+            Plaque            symetrie
+        }
+
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion {  }
+        convection { EF_stab { volumes_etendus }  }
+        initial_conditions { Temperature Champ_Fonc_xyz dom_pb2 1 -1/0.344964*y/2*(y-2) }
+        Sources {
+            Puissance_Thermique Champ_Uniforme 1 1.
+        }
+        boundary_conditions {
+            periox   periodique
+            Plaque   paroi_temperature_imposee  Champ_Front_Uniforme 1 0.
+        }
+    }
+
+    Post_processing {
+        Probes
         {
-                solveur_pression Gcp { precond ssor { omega 1.5 }
-                                        seuil 1.e-10
-                                        }
-
-                convection {      amont }
-                diffusion  {  }
-                initial_conditions {
-                        vitesse Champ_Uniforme 2 2  0
-                        }
-       		Sources { Canal_perio { bord periox  }  }
-                boundary_conditions {
-                        periox periodique  
-                        Plaque            symetrie
-                }
-
+            sonde_sortie_vite  vitesse     periode 100.   points 1  4.5  1
+            prof_sortie_vite  vitesse     periode 1000.   segment 40  4.5  0.0  4.5 2.
+            sonde_sortie_T  temperature     periode 100.   points 1  4.5  1
+            prof_sortie_T  temperature     periode 1000.   segment 40  4.5  0.0   4.5 2.
         }
-        Convection_Diffusion_Temperature
+
+        format lml
+        fields dt_post 10000.
         {
-                diffusion {  }
-                convection { EF_stab { volumes_etendus }  }
-                initial_conditions { Temperature Champ_Fonc_xyz dom_pb2 1 -1/0.344964*y/2*(y-2) }
-                Sources {
-                        Puissance_Thermique Champ_Uniforme 1 1.
-                        }
-                boundary_conditions {
-                		        periox   periodique  
-                       		        Plaque   paroi_temperature_imposee  Champ_Front_Uniforme 1 0.
-                                   }
+            vitesse elem
+            pression elem
+            temperature elem
         }
-
-        Post_processing {
-                Probes
-                {
-                        sonde_sortie_vite  vitesse     periode 100.   points 1  4.5  1 
-                         prof_sortie_vite  vitesse     periode 1000.   segment 40  4.5  0.0  4.5 2.
-                        sonde_sortie_T  temperature     periode 100.   points 1  4.5  1 
-                         prof_sortie_T  temperature     periode 1000.   segment 40  4.5  0.0   4.5 2.
-                }
-                
-		format lml
-                fields dt_post 10000.
-                {
-                   vitesse elem
-		   pression elem
-		   temperature elem
-                }
-        }
+    }
 }
 
 Solve pb2
 End
 
-                       sonde_sortie_vite  vitesse     periode 10.   points 1  4.5  1 
-                         prof_sortie_vite  vitesse     periode 100.   segment 40  4.5  0.025   4.5 1.975 
-                        sonde_sortie_T  temperature     periode 10.   points 1  4.5  1 
-                         prof_sortie_T  temperature     periode 100   segment 40  4.5  0.025   4.5 1.975
+sonde_sortie_vite  vitesse     periode 10.   points 1  4.5  1
+prof_sortie_vite  vitesse     periode 100.   segment 40  4.5  0.025   4.5 1.975
+sonde_sortie_T  temperature     periode 10.   points 1  4.5  1
+prof_sortie_T  temperature     periode 100   segment 40  4.5  0.025   4.5 1.975
 

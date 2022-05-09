@@ -9,18 +9,18 @@ Domaine dom_fluide
 # BEGIN MESH #
 Mailler dom_fluide
 {
-	Pave Cavite
-		{
-		Origine 0. 0.
-		Nombre_de_Noeuds 6 6
-		Longueurs  1. 1.
-		}
-		{
-		Bord Gauche	X = 0.	0. <= Y <= 1.
-		Bord Droit	X = 1.	0. <= Y <= 1.
-		Bord Bas	Y = 0.	0. <= X <= 1.
-		Bord Haut	Y = 1.	0. <= X <= 1.
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 6 6
+        Longueurs  1. 1.
+    }
+    {
+        Bord Gauche	X = 0.	0. <= Y <= 1.
+        Bord Droit	X = 1.	0. <= Y <= 1.
+        Bord Bas	Y = 0.	0. <= X <= 1.
+        Bord Haut	Y = 1.	0. <= X <= 1.
+    }
 }
 Trianguler_H dom_fluide
 # END MESH #
@@ -30,28 +30,28 @@ VEFPreP1B dis
 Runge_Kutta_ordre_3 sch
 Read sch
 {
-	tinit	0.
-	tmax	15.
-	dt_min	1.e-10
-	dt_max	1.e-2
-	dt_impr	1.
-	dt_sauv	15.
-        seuil_statio 1.e-12
+    tinit	0.
+    tmax	15.
+    dt_min	1.e-10
+    dt_max	1.e-2
+    dt_impr	1.
+    dt_sauv	15.
+    seuil_statio 1.e-12
 }
 
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-	mu	Champ_Uniforme 1 5.e-5
-	lambda	Champ_Uniforme 1 5.e-1
-        pression 1000.
-	loi_etat gaz_parfait_QC
-	{
-                Prandtl   0.0003
-                Cp        3.
-                gamma     1.5
-	}
-	Traitement_Pth		constant
+    mu	Champ_Uniforme 1 5.e-5
+    lambda	Champ_Uniforme 1 5.e-1
+    pression 1000.
+    loi_etat gaz_parfait_QC
+    {
+        Prandtl   0.0003
+        Cp        3.
+        gamma     1.5
+    }
+    Traitement_Pth		constant
 }
 
 Champ_Uniforme gravite
@@ -66,87 +66,87 @@ Discretize pb_Th dis
 
 Read pb_Th
 {
-	Navier_Stokes_QC
-	{
-		solveur_pression petsc cholesky { }
-		convection { centre }
-		diffusion { }
-		initial_conditions { vitesse champ_uniforme 2 0. 0. }
-		boundary_conditions
-		{
-			Haut		frontiere_ouverte_pression_imposee	Champ_Front_Uniforme 1 0.
-			Bas		Symetrie
-			Gauche		Symetrie
-			Droit		Symetrie
-		}
-	}
+    Navier_Stokes_QC
+    {
+        solveur_pression petsc cholesky { }
+        convection { centre }
+        diffusion { }
+        initial_conditions { vitesse champ_uniforme 2 0. 0. }
+        boundary_conditions
+        {
+            Haut		frontiere_ouverte_pression_imposee	Champ_Front_Uniforme 1 0.
+            Bas		Symetrie
+            Gauche		Symetrie
+            Droit		Symetrie
+        }
+    }
 
-	Convection_Diffusion_Chaleur_QC
-	{
-		diffusion { negligeable }
-		convection { centre }
-		sources { Puissance_Thermique Champ_Fonc_txyz dom_fluide 1 100.*t }
-		boundary_conditions 
-		{
-			Haut		frontiere_ouverte T_ext Champ_Front_Uniforme 1 1000.
-			Bas		Symetrie
-			Gauche		Symetrie
-			Droit		Symetrie
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 1000. }
-	}
+    Convection_Diffusion_Chaleur_QC
+    {
+        diffusion { negligeable }
+        convection { centre }
+        sources { Puissance_Thermique Champ_Fonc_txyz dom_fluide 1 100.*t }
+        boundary_conditions
+        {
+            Haut		frontiere_ouverte T_ext Champ_Front_Uniforme 1 1000.
+            Bas		Symetrie
+            Gauche		Symetrie
+            Droit		Symetrie
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 1000. }
+    }
 
-	Post_processing
-        {       		
-	
-	
-		Definition_champs {
-			erreur_press Transformation {
-				methode formule expression 1 ((((1+t*t/30)/60)*1*exp(-t*t/60)*(1-y*y))-pres)*100/(((1+t*t/30)/60)*1*exp(-t*t/60)*(1-y*y))
-				localisation elem
-				source refChamp {
-					Pb_champ pb_Th pression nom_source pres
-				}
-			}
-			erreur_vit Transformation {
-				methode formule expression 1 (t/30*1.-vit)*100/(t/30*1.+1*(t<0.001)) 
-				source refChamp {
-					Pb_champ pb_Th vitesse nom_source vit
-				}
-			}			
-			erreur_temp Transformation {
-				methode formule expression 1 ((1000*exp(t*t/60))-temp)*100/(1000*exp(t*t/60))
-				source refChamp {
-					Pb_champ pb_Th temperature nom_source temp
-				}
-			}
-		
-		}
-                Probes
-		{
-			pression		grav	pression	periode 1. point   1  0.45 0.55
-			sonde_p			grav	pression	periode 1. segment 10 0.45 0.	0.45 1.
-			vitesse			nodes	vitesse		periode 1. point   1  0.45 1.
-			sonde_v			nodes	vitesse		periode 1. segment 10 0.45 0.	0.45 1.
-			temperature		nodes	temperature	periode 1. point   1  0.45 0.95
-			rho			nodes	masse_volumique periode 1. point   1  0.45 0.95
-			erreur_vitesse		nodes	erreur_vit	periode 1. point   1  0.45 1.
-			erreur_temperature	nodes	erreur_temp	periode 1. point   1  0.45 0.95
-		}
-		fields dt_post 1.
-		{
-			pression	      elem
-			pression	      som
-			vitesse 	      elem
-			vitesse 	      som
-			temperature	      elem
-			temperature	      som
-			masse_volumique       elem
-			masse_volumique       som
-			erreur_press		elem
-			erreur_temp		elem
-		}
-	}
+    Post_processing
+    {
+
+
+        Definition_champs {
+            erreur_press Transformation {
+                methode formule expression 1 ((((1+t*t/30)/60)*1*exp(-t*t/60)*(1-y*y))-pres)*100/(((1+t*t/30)/60)*1*exp(-t*t/60)*(1-y*y))
+                localisation elem
+                source refChamp {
+                    Pb_champ pb_Th pression nom_source pres
+                }
+            }
+            erreur_vit Transformation {
+                methode formule expression 1 (t/30*1.-vit)*100/(t/30*1.+1*(t<0.001))
+                source refChamp {
+                    Pb_champ pb_Th vitesse nom_source vit
+                }
+            }
+            erreur_temp Transformation {
+                methode formule expression 1 ((1000*exp(t*t/60))-temp)*100/(1000*exp(t*t/60))
+                source refChamp {
+                    Pb_champ pb_Th temperature nom_source temp
+                }
+            }
+
+        }
+        Probes
+        {
+            pression		grav	pression	periode 1. point   1  0.45 0.55
+            sonde_p			grav	pression	periode 1. segment 10 0.45 0.	0.45 1.
+            vitesse			nodes	vitesse		periode 1. point   1  0.45 1.
+            sonde_v			nodes	vitesse		periode 1. segment 10 0.45 0.	0.45 1.
+            temperature		nodes	temperature	periode 1. point   1  0.45 0.95
+            rho			nodes	masse_volumique periode 1. point   1  0.45 0.95
+            erreur_vitesse		nodes	erreur_vit	periode 1. point   1  0.45 1.
+            erreur_temperature	nodes	erreur_temp	periode 1. point   1  0.45 0.95
+        }
+        fields dt_post 1.
+        {
+            pression	      elem
+            pression	      som
+            vitesse 	      elem
+            vitesse 	      som
+            temperature	      elem
+            temperature	      som
+            masse_volumique       elem
+            masse_volumique       som
+            erreur_press		elem
+            erreur_temp		elem
+        }
+    }
 }
 
 Solve pb_Th

@@ -5,20 +5,20 @@ Pb_Conduction pb
 Domaine dom
 
 # BEGIN MESH #
-Mailler dom 
+Mailler dom
 {
-	Pave Entree
-		{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 11
-		Longueurs 1 1
-		}
-		{
-		bord Haut	Y = 1.	0. <= X <= 1.
-		bord Bas	Y = 0.	0. <= X <= 1.
-		bord Gauche	X = 0.	0. <= Y <= 1.
-		bord Droite	X = 1.	0. <= Y <= 1.
-		}
+    Pave Entree
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1 1
+    }
+    {
+        bord Haut	Y = 1.	0. <= X <= 1.
+        bord Bas	Y = 0.	0. <= X <= 1.
+        bord Gauche	X = 0.	0. <= Y <= 1.
+        bord Droite	X = 1.	0. <= Y <= 1.
+    }
 }
 Trianguler_H dom
 # END MESH #
@@ -26,9 +26,9 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -42,25 +42,25 @@ VEFPreP1B dis
 Scheme_euler_implicit sch
 Read sch
 {
-	tinit	0.
-        tmax	1.
-	dt_min	1.e-5
-	dt_max	100
-	dt_impr	1.
-	dt_sauv	1.
-        seuil_statio 1.e-10
-        Solveur	Solveur_lineaire_std
-	{
-		Solveur Gmres { }
-	}
+    tinit	0.
+    tmax	1.
+    dt_min	1.e-5
+    dt_max	100
+    dt_impr	1.
+    dt_sauv	1.
+    seuil_statio 1.e-10
+    Solveur	Solveur_lineaire_std
+    {
+        Solveur Gmres { }
+    }
 }
 
 Solide sol
-Read sol 
+Read sol
 {
-	rho	Champ_Uniforme 1 1.
-	lambda	Champ_Uniforme 1 0.1
-	Cp	Champ_Uniforme 1 0.1
+    rho	Champ_Uniforme 1 1.
+    lambda	Champ_Uniforme 1 0.1
+    Cp	Champ_Uniforme 1 0.1
 }
 
 Associate pb dom
@@ -73,26 +73,26 @@ Read pb
 {
     Conduction
     {
-	diffusion { }
-	initial_conditions { temperature Champ_Uniforme 1 0. }
-	boundary_conditions
-	{
-		Haut	paroi_adiabatique
-		Bas	paroi_adiabatique
-		Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 1.
-		Droite	paroi_temperature_imposee Champ_Front_Uniforme 1 0.
-	}
+        diffusion { }
+        initial_conditions { temperature Champ_Uniforme 1 0. }
+        boundary_conditions
+        {
+            Haut	paroi_adiabatique
+            Bas	paroi_adiabatique
+            Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 1.
+            Droite	paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+        }
     }
     Post_processing
     {
-	Probes
-	{
-		sonde_T temperature periode 1.e-5 point 1	0. 0.5
-	}
-	fields dt_post 0.1
-	{
-              	temperature elem
-	}
+        Probes
+        {
+            sonde_T temperature periode 1.e-5 point 1	0. 0.5
+        }
+        fields dt_post 0.1
+        {
+            temperature elem
+        }
     }
 }
 

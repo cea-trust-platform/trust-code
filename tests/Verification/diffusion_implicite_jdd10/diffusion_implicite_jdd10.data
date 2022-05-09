@@ -4,17 +4,17 @@ dimension 2
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
+    tinit 0.
 	nb_pas_dt_max 3
-	tmax 10.
-	dt_min 0.001
-	dt_max 10.
-	dt_impr 0.001
-	dt_sauv 400.
-	seuil_statio 1.e-20
-        diffusion_implicite 0
-/*        seuil_diffusion_implicite 0.e-8 */
-	impr_diffusion_implicite 0
+    tmax 10.
+    dt_min 0.001
+    dt_max 10.
+    dt_impr 0.001
+    dt_sauv 400.
+    seuil_statio 1.e-20
+    diffusion_implicite 0
+    /*        seuil_diffusion_implicite 0.e-8 */
+    impr_diffusion_implicite 0
 }
 
 Pb_conduction pb1
@@ -25,20 +25,20 @@ Domaine dom_solide
 # BEGIN MESH #
 Mailler dom_solide
 {
-	Pave Cavite1
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 11 3 
-		Longueurs 1.0 1.0
-		}
-		{
-		Bord Gauche1 X = 0.   0.  <= Y <= 1.0
-		Bord Haut1   Y = 1.0  0.  <= X <= 1.
-		Bord Bas1    Y = 0.   0.  <= X <= 1.
-		Bord Droit1  X = 1.  0. <= Y <= 1.0
-		}
+    Pave Cavite1
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 3
+        Longueurs 1.0 1.0
+    }
+    {
+        Bord Gauche1 X = 0.   0.  <= Y <= 1.0
+        Bord Haut1   Y = 1.0  0.  <= X <= 1.
+        Bord Bas1    Y = 0.   0.  <= X <= 1.
+        Bord Droit1  X = 1.  0. <= Y <= 1.0
+    }
 }
- trianguler_h dom_solide 
+trianguler_h dom_solide
 
 transformer dom_solide x y*0.2
 # END MESH #
@@ -46,9 +46,9 @@ transformer dom_solide x y*0.2
 # BEGIN PARTITION
 Partition dom_solide
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM1
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM1
 }
 
 End
@@ -64,9 +64,9 @@ VEFPrep1b  dis
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 1000.
-	lambda Champ_Uniforme 1 250.    
-	Cp Champ_Uniforme 1 100.
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100.
 }
 
 
@@ -80,41 +80,41 @@ Discretize pb1 dis
 
 Read pb1
 {
-	Conduction
-	{
-		diffusion { }
-		sources { puissance_thermique champ_fonc_xyz  dom_solide 1  1e5*x }	
-		initial_conditions {
-			temperature Champ_Uniforme 1 0.
-			}
-		boundary_conditions {
-			Gauche1 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 0.
-			Haut1 paroi_adiabatique
-			
-			Bas1 paroi_adiabatique
-		 	Droit1  paroi_temperature_imposee
-				Champ_Front_fonc_txyz 1 t
-		
-		}
-	}
-	
-	Post_processing
-	{
-	format lml
-		Probes
-		{
-			sonde_tsol temperature periode 1. segment 10  
-				0. 0.1
-				1 .1
-		}
-		fields dt_post 10.
-		{
-			temperature elem
-			temperature som
-		}
-	}
-	sauvegarde formatte solide.rep
+    Conduction
+    {
+        diffusion { }
+        sources { puissance_thermique champ_fonc_xyz  dom_solide 1  1e5*x }
+        initial_conditions {
+            temperature Champ_Uniforme 1 0.
+        }
+        boundary_conditions {
+            Gauche1 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 0.
+            Haut1 paroi_adiabatique
+
+            Bas1 paroi_adiabatique
+            Droit1  paroi_temperature_imposee
+            Champ_Front_fonc_txyz 1 t
+
+        }
+    }
+
+    Post_processing
+    {
+        format lml
+        Probes
+        {
+            sonde_tsol temperature periode 1. segment 10
+            0. 0.1
+            1 .1
+        }
+        fields dt_post 10.
+        {
+            temperature elem
+            temperature som
+        }
+    }
+    sauvegarde formatte solide.rep
 }
 
 Solve pb1

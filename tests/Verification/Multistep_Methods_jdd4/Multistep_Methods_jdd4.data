@@ -5,19 +5,19 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0. 0.  
-                Nombre_de_Noeuds 91 29 
-                Longueurs 3. 1. 
-        }
-        {
-                Bord periox   X = 0.     0. <= Y <= 1. 
-                Bord periox   X = 3.     0. <= Y <= 1.  
-                Bord bas      Y = 0.     0. <= X <= 3.   
-                Bord haut     Y = 1.     0. <= X <= 3.   
- 
-                }
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 91 29
+        Longueurs 3. 1.
+    }
+    {
+        Bord periox   X = 0.     0. <= Y <= 1.
+        Bord periox   X = 3.     0. <= Y <= 1.
+        Bord bas      Y = 0.     0. <= X <= 3.
+        Bord haut     Y = 1.     0. <= X <= 3.
+
+    }
 }
 
 Trianguler dom
@@ -26,10 +26,10 @@ Trianguler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	zones_name DOM
-	Periodique 1 periox
-        Larg_joint 2
+    Partition_tool metis { Nb_parts 2 }
+    zones_name DOM
+    Periodique 1 periox
+    Larg_joint 2
 }
 End
 END PARTITION #

@@ -15,22 +15,22 @@ domaine dom2
 Lire_Medfile dom Face rectangle_a1.med /* Use Medfile to read an old 2.2 format */
 Ecrire_medfile dom new_rectangle_a1.med /* Convert to new format */
 Read_file dom_ssz.geo ;
-Reordonner dom 
+Reordonner dom
 Lire_Med dom2 dom new_rectangle_a1.med
-Reordonner dom2 
+Reordonner dom2
 # END MESH #
 # BEGIN PARTITION
-Partition dom 
+Partition dom
 {
-	Partition_tool Tranche { tranches 1 3 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool Tranche { tranches 1 3 }
+    Larg_joint 1
+    zones_name DOM
 }
-End 
+End
 END PARTITION #
 
-# BEGIN SCATTER  
-Scatter DOM.Zones dom 
+# BEGIN SCATTER
+Scatter DOM.Zones dom
 Scatter DOM.Zones dom2
 Read_file ssz_par.geo2 ;
 END SCATTER #
@@ -42,24 +42,24 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-        tinit 0
-	dt_min 0.1
-	dt_max 0.1
-	nb_pas_dt_max 1
+    tinit 0
+    dt_min 0.1
+    dt_max 0.1
+    nb_pas_dt_max 1
 }
 Solide sol_test_sous_zone
 Read sol_test_sous_zone
 {
-        rho Champ_Uniforme 1 2
-        lambda Champ_Uniforme 1 0.01
-        Cp Champ_Uniforme 1 0.5
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.01
+    Cp Champ_Uniforme 1 0.5
 }
 Solide sol_champ_med_interpole
 Read sol_champ_med_interpole
 {
-        rho Champ_Uniforme 1 2
-        lambda Champ_Uniforme 1 0.01
-        Cp Champ_Uniforme 1 0.5
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.01
+    Cp Champ_Uniforme 1 0.5
 }
 Associate pb_test_sous_zone dom
 Associate pb_test_sous_zone sol_test_sous_zone
@@ -79,57 +79,57 @@ Discretize pbc dis
 Read pb_test_sous_zone
 {
     Conduction
-        {
-                diffusion { negligeable }
-                initial_conditions {
-                        temperature Champ_Uniforme_Morceaux dom 1 { defaut -1 centre 1.  }
-                        }
-                boundary_conditions {
-                        FAM_-4_GAUCHE  paroi_adiabatique
-         		FAM_-5_HAUT  paroi_adiabatique
-                        FAM_-6_DROIT  paroi_adiabatique
-                        FAM_-7_BAS  paroi_adiabatique
-                }
+    {
+        diffusion { negligeable }
+        initial_conditions {
+            temperature Champ_Uniforme_Morceaux dom 1 { defaut -1 centre 1.  }
         }
-	 Post_processing
-        {
-                Probes
-                {
-                        sonde temperature periode 5. points 1 0.45 0.45
-                }
-                fields dt_post 30.
-                {
-                        temperature elem
-                 }
+        boundary_conditions {
+            FAM_-4_GAUCHE  paroi_adiabatique
+            FAM_-5_HAUT  paroi_adiabatique
+            FAM_-6_DROIT  paroi_adiabatique
+            FAM_-7_BAS  paroi_adiabatique
         }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde temperature periode 5. points 1 0.45 0.45
+        }
+        fields dt_post 30.
+        {
+            temperature elem
+        }
+    }
 }
 Read pb_champ_med_interpole
 {
     Conduction
-        {
-                diffusion { negligeable }
-                initial_conditions {
-                        temperature   Champ_Fonc_MED last_time cInit_tDiffu.med Face concentrationInitialeC1 elem  1000.
-                        }
-                boundary_conditions {
-                        FAM_-4_GAUCHE  paroi_adiabatique
-         		FAM_-5_HAUT  paroi_adiabatique
-                        FAM_-6_DROIT  paroi_adiabatique
-                        FAM_-7_BAS  paroi_adiabatique
-                }
+    {
+        diffusion { negligeable }
+        initial_conditions {
+            temperature   Champ_Fonc_MED last_time cInit_tDiffu.med Face concentrationInitialeC1 elem  1000.
         }
-	 Post_processing
-        {
-                Probes
-                {
-                        sonde2 temperature periode 5. points 1 0.45 0.45
-                }
-		format lata
-                fields dt_post 30.
-                {
-                        temperature elem
-                 }
+        boundary_conditions {
+            FAM_-4_GAUCHE  paroi_adiabatique
+            FAM_-5_HAUT  paroi_adiabatique
+            FAM_-6_DROIT  paroi_adiabatique
+            FAM_-7_BAS  paroi_adiabatique
         }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde2 temperature periode 5. points 1 0.45 0.45
+        }
+        format lata
+        fields dt_post 30.
+        {
+            temperature elem
+        }
+    }
 }
 
 Solve pbc

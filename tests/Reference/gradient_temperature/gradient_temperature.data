@@ -7,59 +7,59 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave pave1
-		{
-		Origine 0 0 
-		Nombre_de_Noeuds 11 41
-		Longueurs 0.05 0.2 
-		}
-		{
-		Bord PerioX 		X = 0		0    <= Y <= 0.2          
-		Bord Carre		X = 0.05	0.05 <= Y <= 0.15        
-		Bord Paroi_Bas		Y = 0		0    <= X <= 0.05
-		Bord Paroi_Haut		Y = 0.2		0    <= X <= 0.05        
-		} ,
-Pave pave2
-		{
-		Origine 0.05 0.15 
-		Nombre_de_Noeuds 21 11
-		Longueurs 0.1 0.05 
-		}
-		{
-		Bord Carre		Y = 0.15	0.05 <= X <= 0.15
-		Bord Paroi_Haut		Y = 0.2		0.05 <= X <= 0.15        
-		} ,
-Pave pave3
-		{
-		Origine 0.05 0 
-		Nombre_de_Noeuds 21 11
-		Longueurs 0.1 0.05 
-		}
-		{
-		Bord Carre		Y = 0.05	0.05 <= X <= 0.15
-		Bord Paroi_Bas		Y = 0		0.05 <= X <= 0.15        
-		} ,
-Pave pave4
-		{
-		Origine 0.15 0 
-		Nombre_de_Noeuds 11 41
-		Longueurs 0.05 0.2 
-		}
-		{
-		Bord PerioX 		X = 0.2		0    <= Y <= 0.2          
-		Bord Carre		X = 0.15	0.05 <= Y <= 0.15        
-		Bord Paroi_Bas		Y = 0		0.15 <= X <= 0.2
-		Bord Paroi_Haut		Y = 0.2		0.15 <= X <= 0.2
-		}
+    Pave pave1
+    {
+        Origine 0 0
+        Nombre_de_Noeuds 11 41
+        Longueurs 0.05 0.2
+    }
+    {
+        Bord PerioX 		X = 0		0    <= Y <= 0.2
+        Bord Carre		X = 0.05	0.05 <= Y <= 0.15
+        Bord Paroi_Bas		Y = 0		0    <= X <= 0.05
+        Bord Paroi_Haut		Y = 0.2		0    <= X <= 0.05
+    } ,
+    Pave pave2
+    {
+        Origine 0.05 0.15
+        Nombre_de_Noeuds 21 11
+        Longueurs 0.1 0.05
+    }
+    {
+        Bord Carre		Y = 0.15	0.05 <= X <= 0.15
+        Bord Paroi_Haut		Y = 0.2		0.05 <= X <= 0.15
+    } ,
+    Pave pave3
+    {
+        Origine 0.05 0
+        Nombre_de_Noeuds 21 11
+        Longueurs 0.1 0.05
+    }
+    {
+        Bord Carre		Y = 0.05	0.05 <= X <= 0.15
+        Bord Paroi_Bas		Y = 0		0.05 <= X <= 0.15
+    } ,
+    Pave pave4
+    {
+        Origine 0.15 0
+        Nombre_de_Noeuds 11 41
+        Longueurs 0.05 0.2
+    }
+    {
+        Bord PerioX 		X = 0.2		0    <= Y <= 0.2
+        Bord Carre		X = 0.15	0.05 <= Y <= 0.15
+        Bord Paroi_Bas		Y = 0		0.15 <= X <= 0.2
+        Bord Paroi_Haut		Y = 0.2		0.15 <= X <= 0.2
+    }
 }
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-        Partition_tool Metis { Nb_parts 6 }
-	periodique 1 PerioX
-        Larg_joint 2
-        zones_name dom
+    Partition_tool Metis { Nb_parts 6 }
+    periodique 1 PerioX
+    Larg_joint 2
+    zones_name dom
 }
 End
 END PARTITION #
@@ -73,67 +73,67 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 10
-	tinit 0
-	tmax 5000
-	dt_min 1e-3
-	dt_max 1e3
-	dt_impr 5000
-	dt_sauv 5000
-	seuil_statio 1e-15
-        facsec 1
-	Precision_impr 12
+    nb_pas_dt_max 10
+    tinit 0
+    tmax 5000
+    dt_min 1e-3
+    dt_max 1e3
+    dt_impr 5000
+    dt_sauv 5000
+    seuil_statio 1e-15
+    facsec 1
+    Precision_impr 12
 }
 
 Solide sodium_liquide_500K
 Read sodium_liquide_500K
 {
-	rho Champ_Uniforme 1 900
-	lambda Champ_Uniforme 1 80
-	Cp Champ_Uniforme 1 1334
+    rho Champ_Uniforme 1 900
+    lambda Champ_Uniforme 1 80
+    Cp Champ_Uniforme 1 1334
 }
 
 Associate pb dom
 Associate pb sch
 Associate pb sodium_liquide_500K
-Discretize pb dis 
+Discretize pb dis
 
 Read pb
 {
-	Conduction
-		{
-		diffusion		{ }
-		initial_conditions 	{ temperature Champ_Uniforme 1 0 }
-		boundary_conditions 	{
-			 		PerioX 		periodique
-					Paroi_Haut 	paroi_flux_impose Champ_Front_Uniforme 1 -1
-					Paroi_Bas 	paroi_flux_impose Champ_Front_Uniforme 1 1
-					Carre		paroi_flux_impose Champ_Front_Uniforme 1 0
-					}
-		}
-		
-	Post_processing
-		{
-		definition_champs
-		{
-  			gradient_temperature Gradient
-  			{
-     				source refChamp { Pb_champ pb temperature }
-  			}
-		}
-		Probes			{
-					Temp0			temperature	periode 10	Points	1 	0	0.1
-					Temp_profil_Y	nodes	temperature	periode 10	Segment	40	0	0.0025	0	0.1975
-					Temp_paroi_H	nodes	temperature	periode 10	Segment	40	0.0025	0.2	0.1975	0.2
-					Temp_paroi_B	nodes	temperature	periode 10	Segment	40	0.0025	0	0.1975	0
-					}
-		fields dt_post 1000
-					{
-					temperature elem
-					gradient_temperature elem
-					}
-		}	
-		sauvegarde formatte sauvegarde.sauv
+    Conduction
+    {
+        diffusion		{ }
+        initial_conditions 	{ temperature Champ_Uniforme 1 0 }
+        boundary_conditions 	{
+            PerioX 		periodique
+            Paroi_Haut 	paroi_flux_impose Champ_Front_Uniforme 1 -1
+            Paroi_Bas 	paroi_flux_impose Champ_Front_Uniforme 1 1
+            Carre		paroi_flux_impose Champ_Front_Uniforme 1 0
+        }
+    }
+
+    Post_processing
+    {
+        definition_champs
+        {
+            gradient_temperature Gradient
+            {
+                source refChamp { Pb_champ pb temperature }
+            }
+        }
+        Probes			{
+            Temp0			temperature	periode 10	Points	1 	0	0.1
+            Temp_profil_Y	nodes	temperature	periode 10	Segment	40	0	0.0025	0	0.1975
+            Temp_paroi_H	nodes	temperature	periode 10	Segment	40	0.0025	0.2	0.1975	0.2
+            Temp_paroi_B	nodes	temperature	periode 10	Segment	40	0.0025	0	0.1975	0
+        }
+        fields dt_post 1000
+        {
+            temperature elem
+            gradient_temperature elem
+        }
+    }
+    sauvegarde formatte sauvegarde.sauv
 }
 
 Solve pb

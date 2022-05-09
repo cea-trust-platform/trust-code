@@ -7,20 +7,20 @@ Domaine dom_pbF1
 # BEGIN MESH #
 Mailler dom_pbF1
 {
-       Pave domF
-               {
-               Origine 0. 0. 0.
-               Nombre_de_Noeuds 3 3 3
-               Longueurs 1. 1. 1.
-               }
-               {
-               bord perio       X = 0  0 <= Y <= 1   0 <= Z <= 1
-	       bord perio       X = 1  0 <= Y <= 1   0 <= Z <= 1 
-               bord Devant      Y = 0  0 <= X <= 1   0 <= Z <= 1
-               bord Derriere    Y = 1  0 <= X <= 1   0 <= Z <= 1
-	       bord Bas         Z = 0  0 <= X <= 1   0 <= Y <= 1
-	       bord Haut        Z = 1  0 <= X <= 1   0 <= Y <= 1
-               }
+    Pave domF
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 3 3 3
+        Longueurs 1. 1. 1.
+    }
+    {
+        bord perio       X = 0  0 <= Y <= 1   0 <= Z <= 1
+        bord perio       X = 1  0 <= Y <= 1   0 <= Z <= 1
+        bord Devant      Y = 0  0 <= X <= 1   0 <= Z <= 1
+        bord Derriere    Y = 1  0 <= X <= 1   0 <= Z <= 1
+        bord Bas         Z = 0  0 <= X <= 1   0 <= Y <= 1
+        bord Haut        Z = 1  0 <= X <= 1   0 <= Y <= 1
+    }
 }
 tetraedriser_homogene dom_pbF1
 Corriger_frontiere_periodique { domaine dom_pbF1 bord perio }
@@ -31,10 +31,10 @@ Pb_Hydraulique pbF1
 # BEGIN PARTITION
 Partition dom_pbF1
 {
-        Partition_tool tranche { tranches 4 1 1 }
-        Larg_joint 2
-        zones_name DOM
-	periodique 1 perio
+    Partition_tool tranche { tranches 4 1 1 }
+    Larg_joint 2
+    zones_name DOM
+    periodique 1 perio
 }
 End
 END PARTITION #
@@ -46,20 +46,20 @@ END SCATTER #
 Scheme_euler_implicit schG
 Read schG
 {
-        tinit 0.
-        tmax  20.
-        dt_min 1.E-4
-        dt_max 1.
-        dt_impr 0.01
-        dt_sauv 5000
-        seuil_statio 1.e-8
-        facsec 1.
-	facsec_max 10
-	nb_pas_dt_max 4
-        solveur piso
-        {
-                solveur petsc lu { }
-        }
+    tinit 0.
+    tmax  20.
+    dt_min 1.E-4
+    dt_max 1.
+    dt_impr 0.01
+    dt_sauv 5000
+    seuil_statio 1.e-8
+    facsec 1.
+    facsec_max 10
+    nb_pas_dt_max 4
+    solveur piso
+    {
+        solveur petsc lu { }
+    }
 }
 
 
@@ -68,59 +68,59 @@ VEFPreP1b cubesregu
 Fluide_Incompressible eau
 Read eau
 {
-       rho Champ_Uniforme 1 1.
-       mu Champ_Uniforme 1 1.
+    rho Champ_Uniforme 1 1.
+    mu Champ_Uniforme 1 1.
 }
 
 
 Associate pbF1 dom_pbF1
-Associate pbF1 eau  
+Associate pbF1 eau
 Associate pbF1 schG
 
 Discretize pbF1 cubesregu
 
 Read pbF1
 {
-Navier_Stokes_standard
-       {
-               solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 }
-       	       convection { negligeable }
-               /* diffusion { P1NCP1B {  } } */
-               diffusion { }
-               initial_conditions {
-                       vitesse Champ_fonc_txyz dom_pbF1 3 y z 0.
-                       }
-               boundary_conditions {
-                   perio periodique 
-                   Haut  Symetrie 
-                   Bas   Symetrie
-		   Devant   frontiere_ouverte_vitesse_imposee Champ_Front_fonc_txyz 3 0 z 0.
-		   Derriere frontiere_ouverte_vitesse_imposee Champ_Front_fonc_txyz 3 1. z 0.
-               }
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 }
+        convection { negligeable }
+        /* diffusion { P1NCP1B {  } } */
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_fonc_txyz dom_pbF1 3 y z 0.
+        }
+        boundary_conditions {
+            perio periodique
+            Haut  Symetrie
+            Bas   Symetrie
+            Devant   frontiere_ouverte_vitesse_imposee Champ_Front_fonc_txyz 3 0 z 0.
+            Derriere frontiere_ouverte_vitesse_imposee Champ_Front_fonc_txyz 3 1. z 0.
+        }
 
 
-       }
-       Post_processings
-       {
-       		lml
-       		{
-        		format lml
-        		fichier OpDiffP1B_mixte_vitesse_implicite_3D
-        		fields dt_post 1.
-               		{
-                	vitesse elem
-               		}
-       		}
-		lata
-		{
-			format lata
-			fields dt_post 1.
-               		{
-                	vitesse faces
-               		}
-		}
-	}
-       sauvegarde formatte pbF.sauv              
+    }
+    Post_processings
+    {
+        lml
+        {
+            format lml
+            fichier OpDiffP1B_mixte_vitesse_implicite_3D
+            fields dt_post 1.
+            {
+                vitesse elem
+            }
+        }
+        lata
+        {
+            format lata
+            fields dt_post 1.
+            {
+                vitesse faces
+            }
+        }
+    }
+    sauvegarde formatte pbF.sauv
 }
 
 Solve pbF1

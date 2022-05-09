@@ -6,28 +6,28 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0.  0. 
-                Nombre_de_Noeuds 11 11
-                Longueurs 1 1 
-        }
-        {
-                Bord paroi   X = 0.   0. <= Y <= 1.   
-                Bord paroi  X = 1.  0. <= Y <= 1.   
-                Bord paroi   Y =  0.  0. <= X <= 1.  
-                Bord paroi   Y =  1.  0. <= X <= 1.  
-        }
-} 
+    Pave Cavite
+    {
+        Origine 0.  0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1 1
+    }
+    {
+        Bord paroi   X = 0.   0. <= Y <= 1.
+        Bord paroi  X = 1.  0. <= Y <= 1.
+        Bord paroi   Y =  0.  0. <= X <= 1.
+        Bord paroi   Y =  1.  0. <= X <= 1.
+    }
+}
 Trianguler_h dom
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool Metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -38,23 +38,23 @@ END SCATTER #
 
 VEFPreP1b dis
 Scheme_euler_explicit sch
-Read sch 
+Read sch
 {
-        tinit 0.
-        tmax 0.1
-        dt_min 1.e-6
-        dt_max 1.e-1
-	dt_start dt_calc
-        dt_impr 0.1
-        dt_sauv 20.
-        seuil_statio 1.e-8  
-        facsec 0.5
+    tinit 0.
+    tmax 0.1
+    dt_min 1.e-6
+    dt_max 1.e-1
+    dt_start dt_calc
+    dt_impr 0.1
+    dt_sauv 20.
+    seuil_statio 1.e-8
+    facsec 0.5
 }
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme	1 1.e-3
-	rho Champ_Uniforme	1 1.
+    mu Champ_Uniforme	1 1.e-3
+    rho Champ_Uniforme	1 1.
 }
 
 Pb_Hydraulique pb
@@ -64,46 +64,47 @@ Associate pb fluide
 
 Discretize pb dis
 Read pb
-	{
-	Navier_Stokes_standard
-		{
-		dt_projection 1. 1.e-12
+{
+    Navier_Stokes_standard
+    {
+        dt_projection 1. 1.e-12
 
-		Solveur_Pression GCP { precond ssor { omega 1.5 } 
-			seuil 1.e-6 impr 
-		} 
+        Solveur_Pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-6 impr
+        }
 
-		solveur_bar petsc cholesky { }
+        solveur_bar petsc cholesky { }
 
-                convection { negligeable  }
-                diffusion  {  }
-			
-		initial_conditions
-			{
-                        vitesse Champ_fonc_xyz dom 2  x-0.5 0.5-y
-			}
-		boundary_conditions
-			{
-			paroi Frontiere_Ouverte_Vitesse_Imposee 
-				Champ_front_fonc_xyz 2 x-0.5 0.5-y
-			}
-	         }
+        convection { negligeable  }
+        diffusion  {  }
 
-	Post_processing
-        	{
-                Probes
-                	{ 
-                        sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 
-			}
-		fields dt_post 2.
-			{
-			vitesse elem
-			vitesse som
-			pression elem
-			pression som
-			}
-		}
-	}
+        initial_conditions
+        {
+            vitesse Champ_fonc_xyz dom 2  x-0.5 0.5-y
+        }
+        boundary_conditions
+        {
+            paroi Frontiere_Ouverte_Vitesse_Imposee
+            Champ_front_fonc_xyz 2 x-0.5 0.5-y
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5
+        }
+        fields dt_post 2.
+        {
+            vitesse elem
+            vitesse som
+            pression elem
+            pression som
+        }
+    }
+}
 
 Solve pb
 End

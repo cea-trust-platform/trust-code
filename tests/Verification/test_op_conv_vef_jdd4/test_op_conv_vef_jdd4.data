@@ -6,37 +6,37 @@ Domaine dom_canal
 
 # BEGIN MESH #
 Mailler dom_canal
-        {
-        Pave Cavite
-                {
-                Origine 0. 0.
-		/* Nombre_de_Noeuds  79 79 */  
-		Nombre_de_Noeuds  11 11 
-		Longueurs  6.28318530717959 6.28318530717959
-		}
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        /* Nombre_de_Noeuds  79 79 */
+        Nombre_de_Noeuds  11 11
+        Longueurs  6.28318530717959 6.28318530717959
+    }
 
-                {
-		Bord periox   X = 0.                      0. <= Y <= 6.28318530717959
-                Bord periox  X = 6.28318530717959        0. <= Y <= 6.28318530717959    
-                Bord perioy   Y = 0.            	  0. <= X <= 6.28318530717959  
-                Bord perioy   Y = 6.28318530717959        0. <= X <= 6.28318530717959     
+    {
+        Bord periox   X = 0.                      0. <= Y <= 6.28318530717959
+        Bord periox  X = 6.28318530717959        0. <= Y <= 6.28318530717959
+        Bord perioy   Y = 0.            	  0. <= X <= 6.28318530717959
+        Bord perioy   Y = 6.28318530717959        0. <= X <= 6.28318530717959
 
-                }
-        }
+    }
+}
 Trianguler_h dom_canal
 # END MESH #
 # BEGIN PARTITION
 Partition dom_canal
 {
-        Partition_tool metis { nb_parts 2 }
-        Larg_joint 2
-        zones_name DOM
-	Periodique 2 perioy periox
+    Partition_tool metis { nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
+    Periodique 2 perioy periox
 }
 End
 END PARTITION #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones dom_canal
 END SCATTER #
 
@@ -44,16 +44,16 @@ Pb_Thermohydraulique pb_canal
 
 VEFpreP1b dis
 
-Scheme_euler_explicit sch_qc   
+Scheme_euler_explicit sch_qc
 Read sch_qc
 
 {
-        tinit 0
+    tinit 0
 	nb_pas_dt_max 1
-        dt_min 1.e-11
-        dt_start dt_fixe 0.00000000002 
-        facsec 1 
-        diffusion_implicite 0
+    dt_min 1.e-11
+    dt_start dt_fixe 0.00000000002
+    facsec 1
+    diffusion_implicite 0
 }
 
 
@@ -61,11 +61,11 @@ Read sch_qc
 Fluide_Incompressible fuilde_canal
 Read fuilde_canal
 {
-        mu Champ_uniforme 1 1.461e-6
-        rho Champ_uniforme 1 1.
-	lambda Champ_uniforme 1 1.
-	Cp Champ_uniforme 1 1.
-	beta_th Champ_uniforme 1 1.
+    mu Champ_uniforme 1 1.461e-6
+    rho Champ_uniforme 1 1.
+    lambda Champ_uniforme 1 1.
+    Cp Champ_uniforme 1 1.
+    beta_th Champ_uniforme 1 1.
 }
 
 
@@ -76,110 +76,110 @@ Associate pb_canal sch_qc
 Discretize pb_canal dis
 
 Read pb_canal
-{ 
-        Navier_Stokes_standard
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression  GCP { precond ssor { omega 1.5 } seuil 1.e+14 }
+        projection_initiale 0
+        convection { amont_old }
+        diffusion { negligeable }
+
+        #  #
+
+        initial_conditions
         {
-		solveur_pression  GCP { precond ssor { omega 1.5 } seuil 1.e+14 }
-                projection_initiale 0								
-	 	convection { amont_old }
-	    	diffusion { negligeable }
-
-		#  #
-
-		initial_conditions 
-		{   
-			vitesse champ_fonc_xyz dom_canal 2 0.1*sin(x-y)+1 0.1*sin(x-y)
-		}
-                                                      
-                boundary_conditions 
-		{
-		        periox periodique
-			perioy periodique
-                }
-	}
-
-	# Thermique #				
-        Convection_Diffusion_temperature
-        {
-
-		
-		diffusion { negligeable }
-		convection { amont_old }
-
-		initial_conditions {
-			Temperature Champ_Fonc_xyz dom_canal 1 (1+0.1*sin(x-y))
-	 	} 
-
-		boundary_conditions 
-        	{
-			perioy periodique
-			periox periodique
-		}
+            vitesse champ_fonc_xyz dom_canal 2 0.1*sin(x-y)+1 0.1*sin(x-y)
         }
 
-	Post_processing
+        boundary_conditions
         {
-		Definition_champs 
-		{
-			# Velocity convection u.u #
-			convection_qdm operateur_eqn 
-			{ 
-				sources { refchamp { pb_champ pb_canal vitesse } }  
-				numero_op 1
-			}
-                       convection_qdmx transformation { methode composante numero 0 sources_reference  { convection_qdm } }  
-                       convection_qdmy transformation { methode composante numero 1 sources_reference  { convection_qdm } }  
-			erreur_conv_qdm	transformation  {
-		 		methode vecteur expression 2 abs(convection_qdmx+(0.1*cos(x-y-t))) abs(convection_qdmy+(0.1*cos(x-y-t)))
-				sources_reference  { convection_qdmx , convection_qdmy }
-			}
-			erreur_conv_qdm_elem interpolation { 
-				localisation elem 
-				source_reference erreur_conv_qdm 
-			} 
-			max_erreur_conv_qdm reduction_0D {
-				methode max
- 				source_reference erreur_conv_qdm
-			}
-			# Temperature convection T.u #
-			convection_T operateur_eqn 
-			{ 
-				sources { refchamp { pb_champ pb_canal temperature } }  
-				numero_op 1
-		 	} 
-			erreur_conv_T transformation  {
-		 		methode formule expression 1 abs(convection_T+(0.1*cos(x-y-t))) 
-				source_reference convection_T
-			}
-			erreur_conv_T_elem interpolation 
-			{ 
-				localisation elem 
-				source_reference erreur_conv_T 
-			} 
-			max_erreur_conv_T reduction_0D {
-		 			methode max
- 					source_reference erreur_conv_T
-			}
-		}
-      	 	format lml
-                fields dt_post 1
-                {
-                	temperature elem
-			vitesse
-			erreur_conv_T_elem
-			erreur_conv_qdm_elem
-			/* convection_qdm
-			convection_T 
-			erreur_conv_T
-			erreur_conv_qdm  
-			*/	
- 		}  	
-		Probes 
-		{ 
-			max_erreur_conv_qdm 	max_erreur_conv_qdm 	periode 1e-7 numero_elem_sur_maitre 0	
-			max_erreur_conv_T 	max_erreur_conv_T 	periode 1e-7 numero_elem_sur_maitre 0	
-		}
-	}
+            periox periodique
+            perioy periodique
+        }
+    }
+
+    # Thermique #
+    Convection_Diffusion_temperature
+    {
+
+
+        diffusion { negligeable }
+        convection { amont_old }
+
+        initial_conditions {
+            Temperature Champ_Fonc_xyz dom_canal 1 (1+0.1*sin(x-y))
+        }
+
+        boundary_conditions
+        {
+            perioy periodique
+            periox periodique
+        }
+    }
+
+    Post_processing
+    {
+        Definition_champs
+        {
+            # Velocity convection u.u #
+            convection_qdm operateur_eqn
+            {
+                sources { refchamp { pb_champ pb_canal vitesse } }
+                numero_op 1
+            }
+            convection_qdmx transformation { methode composante numero 0 sources_reference  { convection_qdm } }
+            convection_qdmy transformation { methode composante numero 1 sources_reference  { convection_qdm } }
+            erreur_conv_qdm	transformation  {
+                methode vecteur expression 2 abs(convection_qdmx+(0.1*cos(x-y-t))) abs(convection_qdmy+(0.1*cos(x-y-t)))
+                sources_reference  { convection_qdmx , convection_qdmy }
+            }
+            erreur_conv_qdm_elem interpolation {
+                localisation elem
+                source_reference erreur_conv_qdm
+            }
+            max_erreur_conv_qdm reduction_0D {
+                methode max
+                source_reference erreur_conv_qdm
+            }
+            # Temperature convection T.u #
+            convection_T operateur_eqn
+            {
+                sources { refchamp { pb_champ pb_canal temperature } }
+                numero_op 1
+            }
+            erreur_conv_T transformation  {
+                methode formule expression 1 abs(convection_T+(0.1*cos(x-y-t)))
+                source_reference convection_T
+            }
+            erreur_conv_T_elem interpolation
+            {
+                localisation elem
+                source_reference erreur_conv_T
+            }
+            max_erreur_conv_T reduction_0D {
+                methode max
+                source_reference erreur_conv_T
+            }
+        }
+        format lml
+        fields dt_post 1
+        {
+            temperature elem
+            vitesse
+            erreur_conv_T_elem
+            erreur_conv_qdm_elem
+            /* convection_qdm
+            convection_T
+            erreur_conv_T
+            erreur_conv_qdm
+            */
+        }
+        Probes
+        {
+            max_erreur_conv_qdm 	max_erreur_conv_qdm 	periode 1e-7 numero_elem_sur_maitre 0
+            max_erreur_conv_T 	max_erreur_conv_T 	periode 1e-7 numero_elem_sur_maitre 0
+        }
+    }
 }
 
 Solve pb_canal

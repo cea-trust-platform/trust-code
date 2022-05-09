@@ -1,27 +1,27 @@
 # Thermique axisymetrique R,Z : diffusion dans un cylindre d'aluminium #
 # PARALLEL OK 8 #
 
-dimension 2 
+dimension 2
 Bidim_Axi
 Pb_conduction pb
 
 Domaine dom
 
 # BEGIN MESH #
-Mailler dom 
+Mailler dom
 {
-Pave fpt4
-        {    
-        Origine   0.  0.   
+    Pave fpt4
+    {
+        Origine   0.  0.
         Longueurs 0.1 0.1
         Nombre_de_Noeuds 21 21
-        }
-        {
+    }
+    {
         Bord Gauche    X = 0        0. <= Y <= 0.1
         Bord Droit     X = 0.1     0. <= Y <= 0.1
-        Bord Bas       Y = 0.       0. <= X <= 0.1 
+        Bord Bas       Y = 0.       0. <= X <= 0.1
         Bord Haut      Y = 0.1      0. <= X <= 0.1
-        } 
+    }
 
 }
 
@@ -30,9 +30,9 @@ Pave fpt4
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -47,21 +47,21 @@ Scheme_euler_explicit sch
 
 Read sch
 {
-        tinit 0.
-        tmax 10.
-        dt_min  1.e-13
-        dt_max  1.e-3
-        dt_impr 1.e-2
-        dt_sauv 10.
-        seuil_statio 1.e-80
+    tinit 0.
+    tmax 10.
+    dt_min  1.e-13
+    dt_max  1.e-3
+    dt_impr 1.e-2
+    dt_sauv 10.
+    seuil_statio 1.e-80
 }
 
 Solide sol
 Read sol
 {
-        rho     Champ_Uniforme    1  2700.  
-        lambda  Champ_Uniforme    1  221.   
-        Cp      Champ_Uniforme    1  920.
+    rho     Champ_Uniforme    1  2700.
+    lambda  Champ_Uniforme    1  221.
+    Cp      Champ_Uniforme    1  920.
 }
 
 Associate pb dom
@@ -72,36 +72,36 @@ Discretize pb dis
 
 Read pb
 {
-   
+
     Conduction
     {
         diffusion { }
-        boundary_conditions 
+        boundary_conditions
         {
-             Droit  Paroi_flux_impose Champ_Front_Uniforme 1 250.
-             Gauche Symetrie
-             Haut   Symetrie
-             Bas    Symetrie
+            Droit  Paroi_flux_impose Champ_Front_Uniforme 1 250.
+            Gauche Symetrie
+            Haut   Symetrie
+            Bas    Symetrie
 
         }
         initial_conditions { 	Temperature Champ_Uniforme 1 0. }
     }
 
 
-    Post_processing 
+    Post_processing
     {
-        Probes 
+        Probes
         {
-                segment_T  temperature periode 4.e-2   point 1 0.05  0.05
-		segment_T1 temperature periode 4.e-2 segment 24 0.05 0. 0.05 0.1
-                segment_T2 temperature periode 4.e-2 segment 10 0. 0.05 0.1 0.05 
-		
-        }       
-        fields dt_post 3.   
-        {
-                temperature elem
+            segment_T  temperature periode 4.e-2   point 1 0.05  0.05
+            segment_T1 temperature periode 4.e-2 segment 24 0.05 0. 0.05 0.1
+            segment_T2 temperature periode 4.e-2 segment 10 0. 0.05 0.1 0.05
+
         }
-   }
+        fields dt_post 3.
+        {
+            temperature elem
+        }
+    }
 }
 
 Solve pb

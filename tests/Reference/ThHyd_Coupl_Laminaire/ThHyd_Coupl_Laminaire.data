@@ -11,61 +11,61 @@ Pb_thermohydraulique  pb2
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	tmax  2.
-        dt_min 1.E-11
-        dt_max 1.E-2
-        dt_impr 0.00005
-        dt_sauv .5
-        seuil_statio 1.e-8
-        facsec 1.
-	nb_pas_dt_max 100
+    tinit 0.
+    tmax  2.
+    dt_min 1.E-11
+    dt_max 1.E-2
+    dt_impr 0.00005
+    dt_sauv .5
+    seuil_statio 1.e-8
+    facsec 1.
+    nb_pas_dt_max 100
 }
 
 # BEGIN MESH #
 Mailler dom_pb1
 {
-        Pave demi_plaque
-                {
-                Origine -0.003 0.
-                Nombre_de_Noeuds 11 29
-                Longueurs 0.003 0.014
-                }
-                {
-                bord Gauche X = -0.003   0. <= Y <= 0.014
-                bord Haut   Y = 0.014  -0.003 <= X <= 0.0
-                bord Bas    Y = 0.   -0.003 <= X <= 0.0
-                raccord local homogene Contact X = 0.     0. <= Y <= 0.014
-                }
+    Pave demi_plaque
+    {
+        Origine -0.003 0.
+        Nombre_de_Noeuds 11 29
+        Longueurs 0.003 0.014
+    }
+    {
+        bord Gauche X = -0.003   0. <= Y <= 0.014
+        bord Haut   Y = 0.014  -0.003 <= X <= 0.0
+        bord Bas    Y = 0.   -0.003 <= X <= 0.0
+        raccord local homogene Contact X = 0.     0. <= Y <= 0.014
+    }
 }
 Mailler dom_pb2
 {
-        Pave couche_limite
-                {
-                Origine  0.  0.
-                Nombre_de_Noeuds  25 36
-                Longueurs 0.0004 0.0175
-		Facteurs 1.2 1. 
-                }
-                {
-                raccord local homogene Contact X = 0.     0. <= Y <= 0.014
-                bord Bord_entree_CL           Y = 0.     0. <= X <= 0.0004
-                bord Bord_sortie_CL           Y = 0.0175   0. <= X <= 0.0004
-                bord Gauche_CL                X = 0.    0.014 <= Y <= 0.0175
-                }
-                ,
-        Pave demi_canal
-                {
-                Origine  0.0004  0.
-                Nombre_de_Noeuds 16 36
-                Longueurs 0.0016 0.0175
-		facteurs 1.05 1.
-                }
-                {
-                bord Bord_entree_canal        Y = 0.   0.0004 <= X <= 0.002
-                bord Bord_sortie_canal        Y = 0.0175 0.0004 <= X <= 0.002
-                bord Droit                    X = 0.002    0. <= Y <= 0.0175
-                }
+    Pave couche_limite
+    {
+        Origine  0.  0.
+        Nombre_de_Noeuds  25 36
+        Longueurs 0.0004 0.0175
+        Facteurs 1.2 1.
+    }
+    {
+        raccord local homogene Contact X = 0.     0. <= Y <= 0.014
+        bord Bord_entree_CL           Y = 0.     0. <= X <= 0.0004
+        bord Bord_sortie_CL           Y = 0.0175   0. <= X <= 0.0004
+        bord Gauche_CL                X = 0.    0.014 <= Y <= 0.0175
+    }
+    ,
+    Pave demi_canal
+    {
+        Origine  0.0004  0.
+        Nombre_de_Noeuds 16 36
+        Longueurs 0.0016 0.0175
+        facteurs 1.05 1.
+    }
+    {
+        bord Bord_entree_canal        Y = 0.   0.0004 <= X <= 0.002
+        bord Bord_sortie_canal        Y = 0.0175 0.0004 <= X <= 0.002
+        bord Droit                    X = 0.002    0. <= Y <= 0.0175
+    }
 }
 ecrire_fichier_formatte dom_pb1 ascii.geom
 ecrire_fichier_bin dom_pb1 binaire.geom
@@ -80,15 +80,15 @@ Read_file_binary dom_pb1 binaire.geom
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM1
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM1
 }
 Partition dom_pb2
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM2
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM2
 }
 End
 END PARTITION #
@@ -105,32 +105,32 @@ VDF cubesregu
 Fluide_Incompressible He
 Read He
 {
-        mu Champ_Uniforme 1 4.46437e-05 
-        rho Champ_Uniforme 1 4.40684
-        lambda Champ_Uniforme 1 0.344964     
-        Cp Champ_Uniforme 1 5193.
-        beta_th champ_fonc_fonction pb2 temperature 1 1/val
+    mu Champ_Uniforme 1 4.46437e-05
+    rho Champ_Uniforme 1 4.40684
+    lambda Champ_Uniforme 1 0.344964
+    Cp Champ_Uniforme 1 5193.
+    beta_th champ_fonc_fonction pb2 temperature 1 1/val
 }
 
 Champ_Uniforme gravite
 Read gravite 2 0. -9.81
 Associate He gravite
 Associate pb2 dom_pb2
-Associate pb2 He  
+Associate pb2 He
 
 
-Solide ceramique    
-Read ceramique  
+Solide ceramique
+Read ceramique
 {
-        rho Champ_Uniforme 1 7009.
-        lambda Champ_Uniforme 1 15.8     
-        Cp Champ_Uniforme 1 .527
+    rho Champ_Uniforme 1 7009.
+    lambda Champ_Uniforme 1 15.8
+    Cp Champ_Uniforme 1 .527
 }
 # valeur reelle        Cp Champ_Uniforme 1 527. #
 
 
 Associate pb1 dom_pb1
-Associate pb1 ceramique     
+Associate pb1 ceramique
 
 
 Probleme_Couple Conduccouplethermoh
@@ -141,100 +141,100 @@ Discretize Conduccouplethermoh cubesregu
 
 Read pb2
 {
-        Navier_Stokes_standard
-        {
-                solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-7 }
-		convection { amont }
-                diffusion { }
-                sources { boussinesq_temperature { T0 480. } }
-                initial_conditions {
-                        vitesse Champ_Uniforme 2 0. 400.
-                        }
-                boundary_conditions {
-                        Droit             symetrie
-                        Bord_entree_canal frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0. 400.
-                        Bord_entree_CL    frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0. 400.
-                        Bord_sortie_canal frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
-                        Bord_sortie_CL    frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
-                        Contact            paroi_fixe
-                        Gauche_CL         paroi_fixe
-                }
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-7 }
+        convection { amont }
+        diffusion { }
+        sources { boussinesq_temperature { T0 480. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 400.
         }
+        boundary_conditions {
+            Droit             symetrie
+            Bord_entree_canal frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0. 400.
+            Bord_entree_CL    frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0. 400.
+            Bord_sortie_canal frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+            Bord_sortie_CL    frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.
+            Contact            paroi_fixe
+            Gauche_CL         paroi_fixe
+        }
+    }
 
-        Convection_Diffusion_Temperature
-        {
-                diffusion { }
-                convection { amont }
-                initial_conditions {
-                        temperature Champ_Uniforme 1 480.
-                        }
-                boundary_conditions {
-                        Droit               symetrie
-                        Bord_entree_canal   frontiere_ouverte_temperature_imposee champ_front_uniforme 1 480.
-                        Bord_entree_CL      frontiere_ouverte_temperature_imposee champ_front_uniforme 1 480.
-                        Bord_sortie_canal   frontiere_ouverte T_ext champ_front_uniforme 1  800.
-                        Bord_sortie_CL      frontiere_ouverte T_ext champ_front_uniforme 1  800.
-                        Contact              paroi_contact  pb1   Contact
-                        Gauche_CL           paroi_adiabatique
-                                   }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions {
+            temperature Champ_Uniforme 1 480.
         }
+        boundary_conditions {
+            Droit               symetrie
+            Bord_entree_canal   frontiere_ouverte_temperature_imposee champ_front_uniforme 1 480.
+            Bord_entree_CL      frontiere_ouverte_temperature_imposee champ_front_uniforme 1 480.
+            Bord_sortie_canal   frontiere_ouverte T_ext champ_front_uniforme 1  800.
+            Bord_sortie_CL      frontiere_ouverte T_ext champ_front_uniforme 1  800.
+            Contact              paroi_contact  pb1   Contact
+            Gauche_CL           paroi_adiabatique
+        }
+    }
 
-        Post_processing {
-                Probes
-                {
-                        sonde_He_entree_p pression    periode 1.E-5   points   1  0.001  0.
-                        prof_sortie_vite  vitesse     periode 1.E-5   segment 25  0.  0.014   0.002 0.014
-                        prof_sortie_temp  temperature periode 1.E-5   segment 25  0.  0.014   0.002 0.014
-                        prof_canal_temp   temperature periode 1.E-5   segment 25  0.001 0.  0.001 0.014
-                }
-                fields dt_post .05
-                {
-                   vitesse elem
-                   vitesse som
-                   temperature elem
-                   temperature som
-		   pression elem
-		   pression som
-		   dilatabilite
-                }
+    Post_processing {
+        Probes
+        {
+            sonde_He_entree_p pression    periode 1.E-5   points   1  0.001  0.
+            prof_sortie_vite  vitesse     periode 1.E-5   segment 25  0.  0.014   0.002 0.014
+            prof_sortie_temp  temperature periode 1.E-5   segment 25  0.  0.014   0.002 0.014
+            prof_canal_temp   temperature periode 1.E-5   segment 25  0.001 0.  0.001 0.014
         }
-        sauvegarde formatte pb2.sauv
+        fields dt_post .05
+        {
+            vitesse elem
+            vitesse som
+            temperature elem
+            temperature som
+            pression elem
+            pression som
+            dilatabilite
+        }
+    }
+    sauvegarde formatte pb2.sauv
 }
 
 
 Read pb1
 {
-        Conduction
-        {
-                diffusion { }
-                initial_conditions {
-                        temperature Champ_Uniforme 1 900.
-                        }
-                sources {
-                       Puissance_Thermique Champ_uniforme 1 166.67E+06 
-                        }
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 900.
+        }
+        sources {
+            Puissance_Thermique Champ_uniforme 1 166.67E+06
+        }
 
-                boundary_conditions {
-                        Gauche            paroi_adiabatique
-                        Haut              paroi_adiabatique
-                        Bas               paroi_adiabatique
-                        Contact             paroi_contact  pb2  Contact
-                }
+        boundary_conditions {
+            Gauche            paroi_adiabatique
+            Haut              paroi_adiabatique
+            Bas               paroi_adiabatique
+            Contact             paroi_contact  pb2  Contact
         }
-        Post_processing
+    }
+    Post_processing
+    {
+        Probes
         {
-                Probes
-                {
-                        sond_Tcombustible_sortie    temperature periode 1.E-5   points   1 -0.003 0.014 
-                        prof_Tcombustible_sortie    temperature periode 1.E-5   segment 10 -0.003 0.014   0.  0.014
-                }
-                fields dt_post .05
-                {
-                   temperature elem
-                   temperature som
-                }
+            sond_Tcombustible_sortie    temperature periode 1.E-5   points   1 -0.003 0.014
+            prof_Tcombustible_sortie    temperature periode 1.E-5   segment 10 -0.003 0.014   0.  0.014
         }
-        sauvegarde formatte pb1.sauv
+        fields dt_post .05
+        {
+            temperature elem
+            temperature som
+        }
+    }
+    sauvegarde formatte pb1.sauv
 }
 
 Solve Conduccouplethermoh

@@ -5,41 +5,41 @@ dimension 3
 Domaine tetra
 Mailler tetra
 {
- 	Pave  Gauche
-		{
-		Origine 0. 0. 0.
-     		Nombre_de_Noeuds 4 4 4
-		Longueurs 0.3 1.0 1.0
-		}
-		{
-		Bord Gauche X = 0.   0.  <= Y <= 1.0  0.  <= Z <= 1.0
-		Bord Haut   Y = 1.0  0.  <= X <= 0.3  0.  <= Z <= 1.0
-		Bord Bas    Y = 0.   0.  <= X <= 0.3 0.  <= Z <= 1.0
-		Raccord local homogene Droit  X = 0.3  0. <= Y <= 1.0 0.  <= Z <= 1.0
-		Bord zo Z = 1.0  0.  <= X <= 0.3  0.  <= Y <= 1.0
-		Bord zo Z = 0.0  0.  <= X <= 0.3  0.  <= Y <= 1.0
+    Pave  Gauche
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 4 4 4
+        Longueurs 0.3 1.0 1.0
+    }
+    {
+        Bord Gauche X = 0.   0.  <= Y <= 1.0  0.  <= Z <= 1.0
+        Bord Haut   Y = 1.0  0.  <= X <= 0.3  0.  <= Z <= 1.0
+        Bord Bas    Y = 0.   0.  <= X <= 0.3 0.  <= Z <= 1.0
+        Raccord local homogene Droit  X = 0.3  0. <= Y <= 1.0 0.  <= Z <= 1.0
+        Bord zo Z = 1.0  0.  <= X <= 0.3  0.  <= Y <= 1.0
+        Bord zo Z = 0.0  0.  <= X <= 0.3  0.  <= Y <= 1.0
 
 
-		} 
+    }
 }
 Tetraedriser_homogene tetra
 
-Supprime_bord tetra { Haut Droit } 
+Supprime_bord tetra { Haut Droit }
 Ecrire_fichier tetra dom2.geom
 
-Postraiter_domaine 
+Postraiter_domaine
 {
- 	domaine tetra 
- 	format lata
- 	fichier dom.lata
-} 
-Postraiter_domaine 
-{
- 	domaine tetra 
- 	format lml
- 	fichier Kernel_supprime_bord.lml
+    domaine tetra
+    format lata
+    fichier dom.lata
 }
- 
+Postraiter_domaine
+{
+    domaine tetra
+    format lml
+    fichier Kernel_supprime_bord.lml
+}
+
 End
 
 

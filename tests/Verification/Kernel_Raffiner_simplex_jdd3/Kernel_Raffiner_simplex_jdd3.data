@@ -4,22 +4,22 @@ dimension 3
 
 Domaine domain
 
-Mailler domain 
+Mailler domain
 {
-   Pave Cavite1
-   {
-      Origine           0. 0. 0.
-      Nombre_de_Noeuds  4  4  4
-      Longueurs         1. 1. 1.
-   }
-   {
-      Bord Gauche   X = 0.0   0.0  <= Y <= 1.0   0.0  <= Z <= 1.0
-      Bord Derriere Y = 0.0   0.0  <= X <= 1.0   0.0  <= Z <= 1.0
-      Bord Bas      Z = 0.0   0.0  <= X <= 1.0   0.0  <= Y <= 1.0
-      Bord Droit    X = 1.0   0.0  <= Y <= 1.0   0.0  <= Z <= 1.0
-      Bord Devant   Y = 1.0   0.0  <= X <= 1.0   0.0  <= Z <= 1.0
-      Bord Haut     Z = 1.0   0.0  <= X <= 1.0   0.0  <= Y <= 1.0
-   } 
+    Pave Cavite1
+    {
+        Origine           0. 0. 0.
+        Nombre_de_Noeuds  4  4  4
+        Longueurs         1. 1. 1.
+    }
+    {
+        Bord Gauche   X = 0.0   0.0  <= Y <= 1.0   0.0  <= Z <= 1.0
+        Bord Derriere Y = 0.0   0.0  <= X <= 1.0   0.0  <= Z <= 1.0
+        Bord Bas      Z = 0.0   0.0  <= X <= 1.0   0.0  <= Y <= 1.0
+        Bord Droit    X = 1.0   0.0  <= Y <= 1.0   0.0  <= Z <= 1.0
+        Bord Devant   Y = 1.0   0.0  <= X <= 1.0   0.0  <= Z <= 1.0
+        Bord Haut     Z = 1.0   0.0  <= X <= 1.0   0.0  <= Y <= 1.0
+    }
 }
 
 
@@ -36,8 +36,8 @@ Read_file initial_domain domain_0.geom
 Read_file final_domain   domain_1.geom
 
 postraiter_domaine {
-     domaines { initial_domain final_domain }
-     format lml
+    domaines { initial_domain final_domain }
+    format lml
 }
 Discretiser_domaine final_domain
 

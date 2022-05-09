@@ -9,24 +9,24 @@ VEFPreP1b dis
 # La CL de pression est imposee de facon faible car sinon le calcul diverge #
 Read dis { P0 P1 changement_de_base_P1Bulle 1 cl_pression_sommet_faible 1 }
 Scheme_euler_explicit sch
-Read sch 
+Read sch
 {
-        tinit 0.
-        tmax 2.
-        dt_min 1.e-7
-        dt_max 1.e-1
-	dt_start dt_calc
-        dt_impr 0.001
-        dt_sauv 20.
-        seuil_statio 1.e-12
-        facsec 0.5
+    tinit 0.
+    tmax 2.
+    dt_min 1.e-7
+    dt_max 1.e-1
+    dt_start dt_calc
+    dt_impr 0.001
+    dt_sauv 20.
+    seuil_statio 1.e-12
+    facsec 0.5
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-        mu Champ_Uniforme 1  3.465e-05
-        rho Champ_Uniforme 1 4.9433
+    mu Champ_Uniforme 1  3.465e-05
+    rho Champ_Uniforme 1 4.9433
 }
 
 Associate pb dom
@@ -36,51 +36,51 @@ Associate pb fluide
 Discretize pb dis
 
 Read pb
-	{
-	Navier_Stokes_standard
-		{
-                solveur_pression GCP {
-                        precond ssor { omega 1.5 }
-                        seuil 1.e-8
-                }
-                convection { EF_stab { volumes_etendus } }
-                diffusion  { negligeable }
-		initial_conditions
-			{
-                        vitesse Champ_fonc_xyz dom 2  0. 0. 
-			}
-		boundary_conditions
-			{
-			cl_13 frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz  2 -1.5 -2.598  
-			cl_12 frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-			cl_14 frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0. 
-			cl_15	paroi_fixe
-			}
-	}
-
-	Post_processings
+{
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-8
+        }
+        convection { EF_stab { volumes_etendus } }
+        diffusion  { negligeable }
+        initial_conditions
         {
-	     lata {
-		     fichier Ecoulement_Neumann
-		     format lata
-		     fields dt_post 1.e-1
-		     {
-			     vitesse elem
-			     pression elem
-			     pression som
-		     }
-	     }
-	     lml {
-		     fichier Ecoulement_Neumann
-		     format lml
-		     fields dt_post 1.e-1
-		     {
-			     vitesse elem
-			     pression elem
-			     pression som
-		     }
-	     }
-	}
+            vitesse Champ_fonc_xyz dom 2  0. 0.
+        }
+        boundary_conditions
+        {
+            cl_13 frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz  2 -1.5 -2.598
+            cl_12 frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            cl_14 frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            cl_15	paroi_fixe
+        }
+    }
+
+    Post_processings
+    {
+        lata {
+            fichier Ecoulement_Neumann
+            format lata
+            fields dt_post 1.e-1
+            {
+                vitesse elem
+                pression elem
+                pression som
+            }
+        }
+        lml {
+            fichier Ecoulement_Neumann
+            format lml
+            fields dt_post 1.e-1
+            {
+                vitesse elem
+                pression elem
+                pression som
+            }
+        }
+    }
 }
 
 Solve pb

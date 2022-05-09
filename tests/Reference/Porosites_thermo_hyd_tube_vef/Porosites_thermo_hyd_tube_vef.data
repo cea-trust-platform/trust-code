@@ -8,18 +8,18 @@ domaine dom_pb1
 # BEGIN MESH #
 Mailler dom_pb1
 {
-	Pave cube
-	{
-	Origine 0. 0.
-	Nombre_de_Noeuds 21 21
-	Longueurs 2. 1.
-	}
-	{
-	Bord entree X = 0.   0. <= Y <= 1.
-	Bord sortie X = 2.   0. <= Y <= 1. 
-	Bord haut   Y = 1.   0. <= X <= 2.
-	Bord bas    Y = 0.   0. <= X <= 2.
-	} 
+    Pave cube
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 21 21
+        Longueurs 2. 1.
+    }
+    {
+        Bord entree X = 0.   0. <= Y <= 1.
+        Bord sortie X = 2.   0. <= Y <= 1.
+        Bord haut   Y = 1.   0. <= X <= 2.
+        Bord bas    Y = 0.   0. <= X <= 2.
+    }
 }
 
 trianguler_h dom_pb1
@@ -28,18 +28,18 @@ Sous_zone Suz1001
 Associate Suz1001 dom_pb1
 Read Suz1001
 {
-      rectangle
-      Origine 0.5 0.
-      Cotes   1.  1.
+    rectangle
+    Origine 0.5 0.
+    Cotes   1.  1.
 }
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -56,24 +56,24 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 10
-	tinit 0.
-	tmax 10.
-	dt_min 0.000001
-	dt_max 0.01
-	dt_impr 1e-3
-	dt_sauv 0.5
-	seuil_statio 1.e-15
-	facsec 0.5
+    nb_pas_dt_max 10
+    tinit 0.
+    tmax 10.
+    dt_min 0.000001
+    dt_max 0.01
+    dt_impr 1e-3
+    dt_sauv 0.5
+    seuil_statio 1.e-15
+    facsec 0.5
 }
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 2
-	rho Champ_Uniforme 1 2
-        lambda Champ_uniforme 1 .5   
-	Cp Champ_Uniforme 1 3500
-        beta_th Champ_Uniforme 1 0.0043   
+    mu Champ_Uniforme 1 2
+    rho Champ_Uniforme 1 2
+    lambda Champ_uniforme 1 .5
+    Cp Champ_Uniforme 1 3500
+    beta_th Champ_Uniforme 1 0.0043
 }
 
 Associate pb dom_pb1
@@ -84,56 +84,58 @@ Discretize pb dis
 Porosites_champ pb champ_uniforme_morceaux dom_pb1 1 { defaut 1 Suz1001 0.5 }
 Read pb
 {
-	Navier_Stokes_standard      
-	{
-		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-5
-		impr }
-		convection { amont }
-		diffusion { } 
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.	
-			}
-		boundary_conditions {
-			bas symetrie
-			haut symetrie
-			sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-			entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion {  }
-		convection { amont }
-		sources {
-			Puissance_thermique Valeur_totale_sur_volume dom_pb1 1
-				{ defaut 100 Suz1001 20 }
-		}
-		boundary_conditions {
-	               entree frontiere_ouverte_temperature_imposee champ_front_uniforme 1 1.
-	               sortie frontiere_ouverte T_ext champ_front_uniforme 1 0. 
-		       haut Symetrie
-                       bas Symetrie
-		}
-		initial_conditions { temperature Champ_Uniforme 1 0. }
-	}
-	
-Post_processing 
-{
-	Probes 
-	{
-		pres pression   periode 1e-2  segment 20 0. 0.5 2. 0.5
-		vit  vitesse    periode 1e-2  segment 20 1. 0. 1.  1.
-		vit_L  vitesse    periode 1e-2  segment 20 0. 0.5 2. 0.5
-		temp temperature periode 1e-2  segment 20 1. 0. 1.  1.
-		temp_L temperature periode 1e-2  segment 20 0. 0.5 2. 0.5
-	}
-	fields dt_post 0.1
-	{
-			pression elem
-			vitesse elem                    
-			temperature elem			
-	}
-}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 } seuil 1.e-5
+            impr
+        }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            bas symetrie
+            haut symetrie
+            sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1. 0.
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion {  }
+        convection { amont }
+        sources {
+            Puissance_thermique Valeur_totale_sur_volume dom_pb1 1
+            { defaut 100 Suz1001 20 }
+        }
+        boundary_conditions {
+            entree frontiere_ouverte_temperature_imposee champ_front_uniforme 1 1.
+            sortie frontiere_ouverte T_ext champ_front_uniforme 1 0.
+            haut Symetrie
+            bas Symetrie
+        }
+        initial_conditions { temperature Champ_Uniforme 1 0. }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            pres pression   periode 1e-2  segment 20 0. 0.5 2. 0.5
+            vit  vitesse    periode 1e-2  segment 20 1. 0. 1.  1.
+            vit_L  vitesse    periode 1e-2  segment 20 0. 0.5 2. 0.5
+            temp temperature periode 1e-2  segment 20 1. 0. 1.  1.
+            temp_L temperature periode 1e-2  segment 20 0. 0.5 2. 0.5
+        }
+        fields dt_post 0.1
+        {
+            pression elem
+            vitesse elem
+            temperature elem
+        }
+    }
 
 
 }

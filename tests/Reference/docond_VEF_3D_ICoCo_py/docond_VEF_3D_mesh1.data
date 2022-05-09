@@ -6,33 +6,33 @@ Domaine dom_solide
 # BEGIN MESH #
 Mailler dom_solide
 {
-	Pave Cavite1
-		{
-		Origine 0. 0. 0.
-     		Nombre_de_Noeuds 4 11 4
-		Longueurs 0.3 1.0 1.
-		}
-		{
-		Bord paroi_a_40 			X = 0.   0.  <= Y <= 1.0  0. <= Z <= 1.
-		Bord paroi_a_20   			Y = 1.0  0.  <= X <= 0.3  0. <= Z <= 1.
-		Bord paroi_a_40    			Y = 0.   0.  <= X <= 0.3  0. <= Z <= 1.
-		Raccord local homogene Paroi_echange1  	X = 0.3  0.3 <= Y <= 1.0  0. <= Z <= 1.
-		Bord Devant1 				Z = 0. 0. <= X <= 0.3  0. <= Y <= 1.
-		Bord Derriere1 				Z = 1. 0. <= X <= 0.3  0. <= Y <= 1.
-		} ,
-	Pave Cavite2
-		{
-		Origine 0.3 0. 0.
-		Nombre_de_Noeuds 8 4 4
-		Longueurs 0.7 0.3 1.
-		}
-		{
-		Raccord local homogene Paroi_echange1   Y = 0.3  0.3 <= X <= 1.0  0. <= Z <= 1.
-		Bord paroi_a_40    			Y = 0.   0.3 <= X <= 1.0  0. <= Z <= 1.
-		Bord paroi_a_20  			X = 1.0  0.  <= Y <= 0.3  0. <= Z <= 1.
-		Bord Devant2 				Z = 0. 0.3 <= X <= 1.0  0. <= Y <= 0.3
-		Bord Derriere2 				Z = 1. 0.3 <= X <= 1.0  0. <= Y <= 0.3
-		}
+    Pave Cavite1
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 4 11 4
+        Longueurs 0.3 1.0 1.
+    }
+    {
+        Bord paroi_a_40 			X = 0.   0.  <= Y <= 1.0  0. <= Z <= 1.
+        Bord paroi_a_20   			Y = 1.0  0.  <= X <= 0.3  0. <= Z <= 1.
+        Bord paroi_a_40    			Y = 0.   0.  <= X <= 0.3  0. <= Z <= 1.
+        Raccord local homogene Paroi_echange1  	X = 0.3  0.3 <= Y <= 1.0  0. <= Z <= 1.
+        Bord Devant1 				Z = 0. 0. <= X <= 0.3  0. <= Y <= 1.
+        Bord Derriere1 				Z = 1. 0. <= X <= 0.3  0. <= Y <= 1.
+    } ,
+    Pave Cavite2
+    {
+        Origine 0.3 0. 0.
+        Nombre_de_Noeuds 8 4 4
+        Longueurs 0.7 0.3 1.
+    }
+    {
+        Raccord local homogene Paroi_echange1   Y = 0.3  0.3 <= X <= 1.0  0. <= Z <= 1.
+        Bord paroi_a_40    			Y = 0.   0.3 <= X <= 1.0  0. <= Z <= 1.
+        Bord paroi_a_20  			X = 1.0  0.  <= Y <= 0.3  0. <= Z <= 1.
+        Bord Devant2 				Z = 0. 0.3 <= X <= 1.0  0. <= Y <= 0.3
+        Bord Derriere2 				Z = 1. 0.3 <= X <= 1.0  0. <= Y <= 0.3
+    }
 }
 Tetraedriser_homogene_compact dom_solide
 # END MESH #
@@ -40,9 +40,9 @@ Tetraedriser_homogene_compact dom_solide
 # BEGIN PARTITION #
 Partition dom_solide
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM1
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM1
 }
 End
 # END PARTITION #

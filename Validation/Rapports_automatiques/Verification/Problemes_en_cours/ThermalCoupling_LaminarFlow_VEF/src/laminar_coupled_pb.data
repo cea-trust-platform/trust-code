@@ -8,40 +8,40 @@ Pb_conduction pb2
 # BEGIN MESH #
 
 Mailler dom_solide {
-	Pave Cavite2 {
-		Origine 0. -0.1 0.
-     		Nombre_de_Noeuds 3 2 4
-		longueurs 0.5 0.2 0.5
-		facteurs 1. 1. 1.
-	} {
-		bord Bas2 Z = 0. 0. <= X <= 0.5 -0.1 <= Y <= 0.1
-		Raccord local homogene Contact Z = 0.5 0. <= X <= 0.5 -0.1 <= Y <= 0.1
-				
-		Bord Gauche2 X = 0. -0.1 <= Y <= 0.1 0. <= Z <= 0.5
-		Bord Droite2 X = 0.5 -0.1 <= Y <= 0.1 0. <= Z <= 0.5
-		
-		Bord Devant2 Y = -0.1 0. <= X <= 0.5 0. <= Z <= 0.5
-		Bord Derriere2 Y = 0.1 0. <= X <= 0.5 0. <= Z <= 0.5
-	} 
-	}
+    Pave Cavite2 {
+        Origine 0. -0.1 0.
+        Nombre_de_Noeuds 3 2 4
+        longueurs 0.5 0.2 0.5
+        facteurs 1. 1. 1.
+    } {
+        bord Bas2 Z = 0. 0. <= X <= 0.5 -0.1 <= Y <= 0.1
+        Raccord local homogene Contact Z = 0.5 0. <= X <= 0.5 -0.1 <= Y <= 0.1
+
+        Bord Gauche2 X = 0. -0.1 <= Y <= 0.1 0. <= Z <= 0.5
+        Bord Droite2 X = 0.5 -0.1 <= Y <= 0.1 0. <= Z <= 0.5
+
+        Bord Devant2 Y = -0.1 0. <= X <= 0.5 0. <= Z <= 0.5
+        Bord Derriere2 Y = 0.1 0. <= X <= 0.5 0. <= Z <= 0.5
+    }
+}
 Mailler dom_fluide {
-	Pave Cavite1 {
-		Origine 0. -0.1 0.5
-     		Nombre_de_Noeuds 3 2 8
-		LONGUEURS 0.5 0.2 1.
-		facteurs 1. 1. 1.
-	} {
-		Raccord local homogene Contact Z = 0.5 0. <= X <= 0.5 -0.1 <= Y <= 0.1
-		bord Haut1 Z = 1.5 0. <= X <= 0.5 -0.1 <= Y <= 0.1
-				
-		Bord PerioX X = 0. -0.1 <= Y <= 0.1 0.5 <= Z <= 1.5
-		Bord PerioX X = 0.5 -0.1 <= Y <= 0.1 0.5 <= Z <= 1.5
-		
-		Bord Devant1 Y = -0.1 0. <= X <= 0.5 0.5 <= Z <= 1.5
-		Bord Derriere1 Y = 0.1 0. <= X <= 0.5 0.5 <= Z <= 1.5
-	}
-	} 
-	
+    Pave Cavite1 {
+        Origine 0. -0.1 0.5
+        Nombre_de_Noeuds 3 2 8
+        LONGUEURS 0.5 0.2 1.
+        facteurs 1. 1. 1.
+    } {
+        Raccord local homogene Contact Z = 0.5 0. <= X <= 0.5 -0.1 <= Y <= 0.1
+        bord Haut1 Z = 1.5 0. <= X <= 0.5 -0.1 <= Y <= 0.1
+
+        Bord PerioX X = 0. -0.1 <= Y <= 0.1 0.5 <= Z <= 1.5
+        Bord PerioX X = 0.5 -0.1 <= Y <= 0.1 0.5 <= Z <= 1.5
+
+        Bord Devant1 Y = -0.1 0. <= X <= 0.5 0.5 <= Z <= 1.5
+        Bord Derriere1 Y = 0.1 0. <= X <= 0.5 0.5 <= Z <= 1.5
+    }
+}
+
 
 tetraedriser_homogene_fin dom_fluide
 tetraedriser_homogene_fin dom_solide
@@ -54,50 +54,50 @@ Reorienter_tetraedres dom_solide
 
 VEFPRep1B dis
 
-Corriger_frontiere_periodique 
-{ domaine dom_fluide
- bord  PerioX
- direction 3 0.5 0. 0.
- }
+Corriger_frontiere_periodique
+{   domaine dom_fluide
+    bord  PerioX
+    direction 3 0.5 0. 0.
+}
 
 Scheme_euler_implicit sch
 Read sch {
-	tinit   0.
-	tmax    40.
-	dt_min  1e-8
-	dt_max  5.e-4
-	dt_impr 1.
-	dt_sauv 100.
-	seuil_statio 1e-9
-	
-	facsec 1.
-	facsec_max 25.
-	
-	solveur implicite
-	{
-		seuil_convergence_implicite 1e6
-		seuil_convergence_solveur 1.e-13
-		solveur  gmres { diag seuil 1e-13 impr controle_residu 1 }
-	}
-	
-	}
+    tinit   0.
+    tmax    40.
+    dt_min  1e-8
+    dt_max  5.e-4
+    dt_impr 1.
+    dt_sauv 100.
+    seuil_statio 1e-9
+
+    facsec 1.
+    facsec_max 25.
+
+    solveur implicite
+    {
+        seuil_convergence_implicite 1e6
+        seuil_convergence_solveur 1.e-13
+        solveur  gmres { diag seuil 1e-13 impr controle_residu 1 }
+    }
+
+}
 
 Fluide_Incompressible fluide
 Read fluide {
-	MU Champ_Uniforme 1 1.
-	RHO Champ_Uniforme 1 10.
-	LAMBDA Champ_Uniforme 1 5.
-	CP Champ_Uniforme 1 5.
-	Beta_th Champ_Uniforme 1 1.
+    MU Champ_Uniforme 1 1.
+    RHO Champ_Uniforme 1 10.
+    LAMBDA Champ_Uniforme 1 5.
+    CP Champ_Uniforme 1 5.
+    Beta_th Champ_Uniforme 1 1.
 }
 
 
 Solide solide
 Read solide
 {
-	rho champ_uniforme 1 4.
-	lambda champ_uniforme 1 3.   
-	cp champ_uniforme 1 0.5
+    rho champ_uniforme 1 4.
+    lambda champ_uniforme 1 3.
+    cp champ_uniforme 1 0.5
 }
 
 Associate pb1 dom_fluide
@@ -115,121 +115,122 @@ Discretize pbc dis
 
 
 Read pb1
-{ 
- Navier_Stokes_standard
- { 
-       solveur_pression Gcp { precond ssor { omega 1.5 } 
-                                             seuil 1.e-8
-					impr
-                            } 
-       convection { ef_stab { alpha 1. } }
-       diffusion  { }
-       
-       initial_conditions { 
-				Vitesse champ_fonc_xyz dom_fluide 3 30.*(1-4*(z-1.)*(z-1.)) 0. 0.
-       			    }
-       
-       
-       boundary_conditions {  
-				PerioX periodique
-				Devant1 symetrie
-				Derriere1 symetrie
-				Haut1 paroi_fixe
-				Contact paroi_fixe		
-                          } 
-			  
-	sources { canal_perio { bord PerioX } }
-	
-	Traitement_particulier { Temperature { Bord PerioX Direction 0 } }
-			                    
-  }
-    
-Convection_Diffusion_Temperature
 {
-		diffusion { }
-		convection { EF_STAB { alpha 1. } }
+    Navier_Stokes_standard
+    {
+        solveur_pression Gcp {
+            precond ssor { omega 1.5 }
+            seuil 1.e-8
+            impr
+        }
+        convection { ef_stab { alpha 1. } }
+        diffusion  { }
 
-		initial_conditions { Temperature Champ_uniforme 1 0. }
-		boundary_conditions 
-		{
-			PerioX periodique
-			Devant1 symetrie
-			Derriere1 symetrie
-			Haut1 paroi_temperature_imposee champ_front_uniforme 1 0.
-			Contact paroi_contact pb2 Contact
-		}
-}
-        
-	 
-	Post_processing 
-	{
-		format lata
-		fields binaire dt_post 5.
-		{
-			vitesse elem
-			pression_pa elem	
-			temperature elem
-		}
-	}
-	
-liste_de_postraitements 
-{
-	Sonde Post_processing 
-	{
-		Probes
-		{
-			Temp_contact_fluide nodes temperature periode 0.2 points 1 0.25 0. 0.5
-			
-			seg_temp_fluide nodes temperature periode 0.2 segment 11 0.25 0. 0.5 0.25 0. 1.5
-						
-			seg_vitesse_fluide vitesse periode 0.2 segment 11 0.25 0. 0.5 0.25 0. 1.5
-		}
-	}
+        initial_conditions {
+            Vitesse champ_fonc_xyz dom_fluide 3 30.*(1-4*(z-1.)*(z-1.)) 0. 0.
+        }
 
 
-} 
-sauvegarde binaire fluide.sauv
+        boundary_conditions {
+            PerioX periodique
+            Devant1 symetrie
+            Derriere1 symetrie
+            Haut1 paroi_fixe
+            Contact paroi_fixe
+        }
+
+        sources { canal_perio { bord PerioX } }
+
+        Traitement_particulier { Temperature { Bord PerioX Direction 0 } }
+
+    }
+
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { EF_STAB { alpha 1. } }
+
+        initial_conditions { Temperature Champ_uniforme 1 0. }
+        boundary_conditions
+        {
+            PerioX periodique
+            Devant1 symetrie
+            Derriere1 symetrie
+            Haut1 paroi_temperature_imposee champ_front_uniforme 1 0.
+            Contact paroi_contact pb2 Contact
+        }
+    }
+
+
+    Post_processing
+    {
+        format lata
+        fields binaire dt_post 5.
+        {
+            vitesse elem
+            pression_pa elem
+            temperature elem
+        }
+    }
+
+    liste_de_postraitements
+    {
+        Sonde Post_processing
+        {
+            Probes
+            {
+                Temp_contact_fluide nodes temperature periode 0.2 points 1 0.25 0. 0.5
+
+                seg_temp_fluide nodes temperature periode 0.2 segment 11 0.25 0. 0.5 0.25 0. 1.5
+
+                seg_vitesse_fluide vitesse periode 0.2 segment 11 0.25 0. 0.5 0.25 0. 1.5
+            }
+        }
+
+
+    }
+    sauvegarde binaire fluide.sauv
 
 }
 
 Read pb2
 {
-	Conduction
-	{
-		diffusion { }
-                initial_conditions 
-                        {
-			temperature Champ_Uniforme  1 0.
-			}
-			
-		sources { puissance_thermique champ_uniforme 1 10. } 
-                boundary_conditions 
-                        {
-				Contact paroi_contact pb1 Contact
-				Bas2 symetrie
-				Devant2 symetrie
-				Derriere2 symetrie
-				Droite2 symetrie
-				Gauche2 symetrie
-		        }
-	}
-	Post_processing 
+    Conduction
+    {
+        diffusion { }
+        initial_conditions
         {
-		Probes
-		{
-			Temp_max nodes temperature periode 0.2 points 1 0.25 0. 0.  
-			Temp_contact_solide nodes temperature periode 0.2 points 1 0.25 0. 0.5
-			
-			seg_temp_solide nodes temperature periode 0.2 segment 11 0.25 0. 0. 0.25 0. 0.5
-		}
-		format lata
-		fields binaire dt_post 5.
-		{
-			temperature elem
-		}
-	}
+            temperature Champ_Uniforme  1 0.
+        }
 
-sauvegarde binaire solide.sauv
+        sources { puissance_thermique champ_uniforme 1 10. }
+        boundary_conditions
+        {
+            Contact paroi_contact pb1 Contact
+            Bas2 symetrie
+            Devant2 symetrie
+            Derriere2 symetrie
+            Droite2 symetrie
+            Gauche2 symetrie
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            Temp_max nodes temperature periode 0.2 points 1 0.25 0. 0.
+            Temp_contact_solide nodes temperature periode 0.2 points 1 0.25 0. 0.5
+
+            seg_temp_solide nodes temperature periode 0.2 segment 11 0.25 0. 0. 0.25 0. 0.5
+        }
+        format lata
+        fields binaire dt_post 5.
+        {
+            temperature elem
+        }
+    }
+
+    sauvegarde binaire solide.sauv
 }
 
 Solve pbc

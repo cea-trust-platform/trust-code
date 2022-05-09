@@ -15,7 +15,7 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 4 }
+    Partition_tool metis { Nb_parts 4 }
     Larg_joint 2
     zones_name DOM
 }
@@ -31,20 +31,20 @@ VEFPreP1B dis
 Scheme_euler_implicit sch
 Read sch
 {
-	nb_pas_dt_max 3
-	tinit 0
-	tmax 20.1
-	dt_min 1.e-10
-	dt_max 1.0
-	dt_start dt_fixe 0.001
-	dt_sauv 100000.
-	dt_impr 1.e-20
-	seuil_statio -1.
+    nb_pas_dt_max 3
+    tinit 0
+    tmax 20.1
+    dt_min 1.e-10
+    dt_max 1.0
+    dt_start dt_fixe 0.001
+    dt_sauv 100000.
+    dt_impr 1.e-20
+    seuil_statio -1.
     facsec 500.
-	solveur implicite
-	{
-		solveur gen { seuil 1e-8 impr solv_elem bicgstab precond ilu { type 2 filling 10 } }
-	}
+    solveur implicite
+    {
+        solveur gen { seuil 1e-8 impr solv_elem bicgstab precond ilu { type 2 filling 10 } }
+    }
     no_check_disk_space
 }
 
@@ -70,49 +70,49 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression Petsc Cholesky  { }
-		convection { amont }
-		diffusion {  }
-  		initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
-		sources
-        {
-        	Boussinesq_temperature { T0 470. verif_boussinesq 0 }
-		  , Perte_Charge_Singuliere { dir KZ coeff 0.5 surface { Surface interf } }
-        }
-		boundary_conditions
-		{
-			Inlet    frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Uniforme 3 0. 0. 1.
-			Outlet	 frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 100000.
-			Adiab    symetrie
-		}
-	}
-	Convection_diffusion_temperature
+    Navier_Stokes_standard
     {
-		convection { amont }
-		diffusion { }
-		initial_conditions { temperature Champ_Uniforme 1 550. }
-		boundary_conditions
-		{
-			Inlet    frontiere_ouverte T_ext Champ_Front_Uniforme 1 400.
-			Outlet	 frontiere_ouverte T_ext Champ_Front_Uniforme 1 550.
-			Adiab	 paroi_adiabatique
-		}
-	}
-	Post_processing
-	{
-		format lml
-		fields Binaire dt_post 1.
-		{
-			vitesse     som
-			vitesse     elem
-			pression_pa elem
-			temperature som
-		}
-	}
+        solveur_pression Petsc Cholesky  { }
+        convection { amont }
+        diffusion {  }
+        initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
+        sources
+        {
+            Boussinesq_temperature { T0 470. verif_boussinesq 0 }
+            , Perte_Charge_Singuliere { dir KZ coeff 0.5 surface { Surface interf } }
+        }
+        boundary_conditions
+        {
+            Inlet    frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Uniforme 3 0. 0. 1.
+            Outlet	 frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 100000.
+            Adiab    symetrie
+        }
+    }
+    Convection_diffusion_temperature
+    {
+        convection { amont }
+        diffusion { }
+        initial_conditions { temperature Champ_Uniforme 1 550. }
+        boundary_conditions
+        {
+            Inlet    frontiere_ouverte T_ext Champ_Front_Uniforme 1 400.
+            Outlet	 frontiere_ouverte T_ext Champ_Front_Uniforme 1 550.
+            Adiab	 paroi_adiabatique
+        }
+    }
+    Post_processing
+    {
+        format lml
+        fields Binaire dt_post 1.
+        {
+            vitesse     som
+            vitesse     elem
+            pression_pa elem
+            temperature som
+        }
+    }
 }
 
 Solve pb
- 
+
 End

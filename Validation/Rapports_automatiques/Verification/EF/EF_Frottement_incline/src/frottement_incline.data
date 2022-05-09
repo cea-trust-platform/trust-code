@@ -8,18 +8,18 @@ Domaine dom
 
 Mailler dom
 {
-        Pave Cavite
-        {
-                Origine 0. 0.
-                Nombre_de_noeuds 31 31
-                Longueurs 1. 1.
-        }
-        {
-                Bord Gauche   X = 0.  0. <= Y <= 1.
-                Bord Droit    X = 1.  0. <= Y <= 1.
-                Bord Bas      Y = 0.  0. <= X <= 1.
-                Bord Haut     Y = 1.  0. <= X <= 1.
-        }
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_noeuds 31 31
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche   X = 0.  0. <= Y <= 1.
+        Bord Droit    X = 1.  0. <= Y <= 1.
+        Bord Bas      Y = 0.  0. <= X <= 1.
+        Bord Haut     Y = 1.  0. <= X <= 1.
+    }
 }
 
 EF dis
@@ -27,21 +27,21 @@ EF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 1.
-	dt_min 5.e-7
-	dt_max 5.e-3
-	dt_impr 1.e-1
-	dt_sauv 1.e-3
-	seuil_statio 1.e-8
-	seuil_statio 2.7e-05
+    tinit 0
+    tmax 1.
+    dt_min 5.e-7
+    dt_max 5.e-3
+    dt_impr 1.e-1
+    dt_sauv 1.e-3
+    seuil_statio 1.e-8
+    seuil_statio 2.7e-05
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Fonc_XYZ dom 1 1.5
-	rho Champ_Uniforme 1 2.
+    mu Champ_Fonc_XYZ dom 1 1.5
+    rho Champ_Uniforme 1 2.
 }
 
 Associate pb dom
@@ -52,40 +52,40 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-                methode_calcul_pression_initiale avec_sources_et_operateurs
-		solveur_pression GCP { 
-			precond ssor { omega -1.5 } 
-			seuil 1.e-8 
-		}		
-		convection { negligeable }
-		diffusion {  }
-		sources { source_qdm Champ_Fonc_XYZ dom 2 (sqrt(3.)/4.)/2. -(7./4.)/2. }
-		initial_conditions {
-			vitesse Champ_Fonc_XYZ dom 2 0. 1.
-			}
-		boundary_conditions {
-			Gauche frontiere_ouverte_vitesse_imposee 
-				Champ_Front_Fonc_tXYZ 2 0. 1.
-			Droit frontiere_ouverte_vitesse_imposee 
-				Champ_Front_Fonc_tXYZ 2 0. 1.
-			Bas frontiere_ouverte_vitesse_imposee 
-				Champ_Front_Fonc_tXYZ 2 0. 1.
-			Haut frontiere_ouverte_pression_imposee 
-				Champ_Front_Fonc_tXYZ 1 (sqrt(3.)/4.*x-7./4.*y)
-		}
-	}
+    Navier_Stokes_standard
+    {
+        methode_calcul_pression_initiale avec_sources_et_operateurs
+        solveur_pression GCP {
+            precond ssor { omega -1.5 }
+            seuil 1.e-8
+        }
+        convection { negligeable }
+        diffusion {  }
+        sources { source_qdm Champ_Fonc_XYZ dom 2 (sqrt(3.)/4.)/2. -(7./4.)/2. }
+        initial_conditions {
+            vitesse Champ_Fonc_XYZ dom 2 0. 1.
+        }
+        boundary_conditions {
+            Gauche frontiere_ouverte_vitesse_imposee
+            Champ_Front_Fonc_tXYZ 2 0. 1.
+            Droit frontiere_ouverte_vitesse_imposee
+            Champ_Front_Fonc_tXYZ 2 0. 1.
+            Bas frontiere_ouverte_vitesse_imposee
+            Champ_Front_Fonc_tXYZ 2 0. 1.
+            Haut frontiere_ouverte_pression_imposee
+            Champ_Front_Fonc_tXYZ 1 (sqrt(3.)/4.*x-7./4.*y)
+        }
+    }
 
-	Post_processing
-	{
-                format lata
-		fields dt_post 1.e-1
-		{
-			pression_pa elem
-			vitesse som
-		}
-	}
+    Post_processing
+    {
+        format lata
+        fields dt_post 1.e-1
+        {
+            pression_pa elem
+            vitesse som
+        }
+    }
 }
 
 Solve pb

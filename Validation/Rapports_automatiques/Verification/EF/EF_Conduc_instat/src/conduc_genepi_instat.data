@@ -11,27 +11,27 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds 101 3 
-		Longueurs 0.05 0.05
-	}
-	{
-		Bord Gauche X = 0.   0. <= Y <= 0.05
-		Bord Haut   Y = 0.05 0. <= X <= 0.05
-		Bord Bas    Y = 0.   0. <= X <= 0.05
-		Bord Droit  X = 0.05 0. <= Y <= 0.05
-	}
-} 
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 101 3
+        Longueurs 0.05 0.05
+    }
+    {
+        Bord Gauche X = 0.   0. <= Y <= 0.05
+        Bord Haut   Y = 0.05 0. <= X <= 0.05
+        Bord Bas    Y = 0.   0. <= X <= 0.05
+        Bord Droit  X = 0.05 0. <= Y <= 0.05
+    }
+}
 
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -45,20 +45,20 @@ EF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	tmax  10.
-	dt_min 0.00001
-	dt_sauv 1000.
-	dt_impr 0.5
-	seuil_statio 1.e-8
+    tinit 0.
+    tmax  10.
+    dt_min 0.00001
+    dt_sauv 1000.
+    dt_impr 0.5
+    seuil_statio 1.e-8
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 0.5
-	lambda Champ_Uniforme 1 0.5
-	Cp Champ_Uniforme 1 1000.
+    rho Champ_Uniforme 1 0.5
+    lambda Champ_Uniforme 1 0.5
+    Cp Champ_Uniforme 1 1000.
 }
 Associate pb dom
 Associate pb sch
@@ -68,35 +68,35 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Fonc_XYZ dom 1 (-100./0.5*x+20.*sin(3.141592654*x/(2.*0.05)))
-			}
-		boundary_conditions {
-			Haut paroi_adiabatique
-			Bas symetrie
-			Gauche paroi_temperature_imposee
-			      Champ_Front_Uniforme 1 0.
-			Droit paroi_flux_impose
-			      Champ_Front_Uniforme 1 -100.
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Fonc_XYZ dom 1 (-100./0.5*x+20.*sin(3.141592654*x/(2.*0.05)))
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Bas symetrie
+            Gauche paroi_temperature_imposee
+            Champ_Front_Uniforme 1 0.
+            Droit paroi_flux_impose
+            Champ_Front_Uniforme 1 -100.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			temperature_x temperature periode 0.5 segment 42  0. 0.025 0.05 0.025
-		}
-		format lata
-		fields dt_post 0.5
-		{
-			temperature elem
-			temperature som
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            temperature_x temperature periode 0.5 segment 42  0. 0.025 0.05 0.025
+        }
+        format lata
+        fields dt_post 0.5
+        {
+            temperature elem
+            temperature som
+        }
+    }
 }
 
 Solve pb

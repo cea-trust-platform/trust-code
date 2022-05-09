@@ -7,18 +7,18 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 11 
-		Longueurs 0.01 0.01
-		}
-		{
-		Bord Gauche X = 0.	0. <= Y <= 0.01
-		Bord Haut   Y = 0.01	0. <= X <= 0.01
-		Bord Bas    Y = 0.	0. <= X <= 0.01
-		Bord Droit  X = 0.01	0. <= Y <= 0.01
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.	0. <= Y <= 0.01
+        Bord Haut   Y = 0.01	0. <= X <= 0.01
+        Bord Bas    Y = 0.	0. <= X <= 0.01
+        Bord Droit  X = 0.01	0. <= Y <= 0.01
+    }
 }
 trianguler_H dom
 # END MESH #
@@ -26,9 +26,9 @@ trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -42,23 +42,23 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit	0
-	tmax	0.2
-	dt_min	1.e-8
-	dt_max	0.01
-	dt_impr	0.01
-	dt_sauv	100
-	seuil_statio	1.e-8
+    tinit	0
+    tmax	0.2
+    dt_min	1.e-8
+    dt_max	0.01
+    dt_impr	0.01
+    dt_sauv	100
+    seuil_statio	1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu	Champ_Uniforme 1 1.85e-5
-	rho	Champ_Uniforme 1 1.17
-	lambda	Champ_Uniforme 1 0.0262 
-	Cp	Champ_Uniforme 1 1006
-	beta_th	Champ_Uniforme 1 3.41e-3
+    mu	Champ_Uniforme 1 1.85e-5
+    rho	Champ_Uniforme 1 1.17
+    lambda	Champ_Uniforme 1 0.0262
+    Cp	Champ_Uniforme 1 1006
+    beta_th	Champ_Uniforme 1 3.41e-3
 }
 
 Champ_Uniforme gravite
@@ -73,51 +73,51 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP
-		{ 
-			precond ssor { omega 1.500000 } 
-			seuil 1.000000e-16 
-			impr 
-		}
-		diffusion { }
-		convection { muscl }
-		Sources { Boussinesq_Temperature { T0 0. } }
-		initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
-		boundary_conditions
-		{
-			Haut	paroi_fixe
-			Droit	paroi_fixe
-			Bas	paroi_fixe
-			Gauche	paroi_fixe
-		}
-	}
-	
-	Convection_diffusion_temperature
-	{
-		diffusion { }
-		convection { muscl }
-		Sources { dirac 2 0.002 0.005 Champ_fonc_t 1 50.*(t<0.1) }
-		initial_conditions { temperature Champ_Uniforme 1 0. }
-		boundary_conditions
-		{
-			Haut	paroi_adiabatique
-			Droit	paroi_adiabatique
-			Gauche	paroi_adiabatique
-			Bas	paroi_adiabatique
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP
+        {
+            precond ssor { omega 1.500000 }
+            seuil 1.000000e-16
+            impr
+        }
+        diffusion { }
+        convection { muscl }
+        Sources { Boussinesq_Temperature { T0 0. } }
+        initial_conditions { vitesse Champ_Uniforme 2 0. 0. }
+        boundary_conditions
+        {
+            Haut	paroi_fixe
+            Droit	paroi_fixe
+            Bas	paroi_fixe
+            Gauche	paroi_fixe
+        }
+    }
 
-	Post_processing
-	{
-		fields dt_post 0.01
-		{
-			pression	elem
-			vitesse		elem
-			temperature	elem
-		}
-	}
+    Convection_diffusion_temperature
+    {
+        diffusion { }
+        convection { muscl }
+        Sources { dirac 2 0.002 0.005 Champ_fonc_t 1 50.*(t<0.1) }
+        initial_conditions { temperature Champ_Uniforme 1 0. }
+        boundary_conditions
+        {
+            Haut	paroi_adiabatique
+            Droit	paroi_adiabatique
+            Gauche	paroi_adiabatique
+            Bas	paroi_adiabatique
+        }
+    }
+
+    Post_processing
+    {
+        fields dt_post 0.01
+        {
+            pression	elem
+            vitesse		elem
+            temperature	elem
+        }
+    }
 }
 
 Solve pb

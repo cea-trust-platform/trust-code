@@ -4,31 +4,31 @@ dimension 3
 Pb_Thermohydraulique_QC pb
 Domaine dom
 # BEGIN MESH #
-Mailler dom 
+Mailler dom
 {
-        Pave Entree
-                {
-                Origine 0. 0. 0.
-                Nombre_de_Noeuds 61 16 16
-                Longueurs .125 .0015 .0105
-                }
-                {
-                bord Avant   Y = 0.      0. <= X <= 0.125  0. <= Z <= 0.0105
-                bord Arriere Y = 0.0015  0. <= X <= 0.125  0. <= Z <= 0.0105
-                bord Bas     Z = 0.      0. <= X <= 0.125  0. <= Y <= 0.0015
-                bord Haut    Z = 0.0105  0. <= X <= 0.125  0. <= Y <= 0.0015
-                bord Gauche  X = 0.      0. <= Y <= 0.0015  0. <= Z <= 0.0105
-                bord Droite  X = 0.125   0. <= Y <= 0.0015  0. <= Z <= 0.0105
-                }
+    Pave Entree
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 61 16 16
+        Longueurs .125 .0015 .0105
+    }
+    {
+        bord Avant   Y = 0.      0. <= X <= 0.125  0. <= Z <= 0.0105
+        bord Arriere Y = 0.0015  0. <= X <= 0.125  0. <= Z <= 0.0105
+        bord Bas     Z = 0.      0. <= X <= 0.125  0. <= Y <= 0.0015
+        bord Haut    Z = 0.0105  0. <= X <= 0.125  0. <= Y <= 0.0015
+        bord Gauche  X = 0.      0. <= Y <= 0.0015  0. <= Z <= 0.0105
+        bord Droite  X = 0.125   0. <= Y <= 0.0015  0. <= Z <= 0.0105
+    }
 }
 
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -42,29 +42,29 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-        tinit 0
-        tmax .2
-        nb_pas_dt_max 10
-        dt_min 2.e-7
-        dt_max 2.e-4
-        dt_impr  1.e-7
-        dt_sauv 100
-        seuil_statio 1.e-8
+    tinit 0
+    tmax .2
+    nb_pas_dt_max 10
+    dt_min 2.e-7
+    dt_max 2.e-4
+    dt_impr  1.e-7
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-        mu Champ_Uniforme 1 1.85e-5
-        pression 140000.
-        lambda Champ_Uniforme 1 0.0262
-        loi_etat gaz_parfait_QC {
-                Prandtl 0.70610687022900753274
+    mu Champ_Uniforme 1 1.85e-5
+    pression 140000.
+    lambda Champ_Uniforme 1 0.0262
+    loi_etat gaz_parfait_QC {
+        Prandtl 0.70610687022900753274
 
-                Cp 1000.
-                gamma 1.4
-        }
-	traitement_pth constant
+        Cp 1000.
+        gamma 1.4
+    }
+    traitement_pth constant
 }
 
 Champ_Uniforme gravite
@@ -79,55 +79,55 @@ Discretize pb dis
 
 Read pb
 {
-        Navier_Stokes_QC
-        {
-                solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-8 }        
-                convection { amont }
-                diffusion { }
-                initial_conditions {
-                        vitesse Champ_Uniforme 3 .1 0. 0.
-                        }
-                boundary_conditions {
-                        Avant   paroi_fixe
-                        Arriere paroi_fixe
-                        Gauche  frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 .1 0. 0.
-                        Droite  Frontiere_ouverte_Gradient_Pression_impose Champ_front_Uniforme 1 0.
-                        Bas     paroi_fixe
-                        Haut    paroi_fixe
-                }
-
+    Navier_Stokes_QC
+    {
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-8 }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 .1 0. 0.
         }
-        Convection_Diffusion_Chaleur_QC
-        {
-                diffusion { }
-                convection { amont }
-                boundary_conditions 
-                {
-                        Bas     paroi_temperature_imposee Champ_Front_Uniforme 1 773. 
-                        Haut    paroi_temperature_imposee Champ_Front_Uniforme 1  323. 
-                        Avant   paroi_temperature_imposee Champ_Front_Fonc_XYZ 1 (323*Z+773*(0.0105-Z))/0.0105
-                        Arriere paroi_temperature_imposee Champ_Front_Fonc_XYZ 1 (323*Z+773*(0.0105-Z))/0.0105
-                        Gauche  frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 303.
-                        Droite  frontiere_ouverte T_ext Champ_Front_Uniforme 1 303.
-                }
-                initial_conditions { Temperature Champ_Uniforme 1 303. }
+        boundary_conditions {
+            Avant   paroi_fixe
+            Arriere paroi_fixe
+            Gauche  frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 .1 0. 0.
+            Droite  Frontiere_ouverte_Gradient_Pression_impose Champ_front_Uniforme 1 0.
+            Bas     paroi_fixe
+            Haut    paroi_fixe
         }
 
-        Post_processing
+    }
+    Convection_Diffusion_Chaleur_QC
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
         {
-		Probes {
-  			vitesse vitesse periode 0.0001 point 1 0.06 0.00075 0.005
-			temperature temperature periode 0.0001 point 1 0.06 0.00075 0.005
-			masse_volumique masse_volumique periode 0.0001 point 1 0.06 0.00075 0.005
- 		}
-                fields dt_post 10.
-                {
-                        pression som
-                        vitesse som
-                        temperature som
-                        masse_volumique som
-                }
+            Bas     paroi_temperature_imposee Champ_Front_Uniforme 1 773.
+            Haut    paroi_temperature_imposee Champ_Front_Uniforme 1  323.
+            Avant   paroi_temperature_imposee Champ_Front_Fonc_XYZ 1 (323*Z+773*(0.0105-Z))/0.0105
+            Arriere paroi_temperature_imposee Champ_Front_Fonc_XYZ 1 (323*Z+773*(0.0105-Z))/0.0105
+            Gauche  frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 303.
+            Droite  frontiere_ouverte T_ext Champ_Front_Uniforme 1 303.
         }
+        initial_conditions { Temperature Champ_Uniforme 1 303. }
+    }
+
+    Post_processing
+    {
+        Probes {
+            vitesse vitesse periode 0.0001 point 1 0.06 0.00075 0.005
+            temperature temperature periode 0.0001 point 1 0.06 0.00075 0.005
+            masse_volumique masse_volumique periode 0.0001 point 1 0.06 0.00075 0.005
+        }
+        fields dt_post 10.
+        {
+            pression som
+            vitesse som
+            temperature som
+            masse_volumique som
+        }
+    }
 }
 Solve pb
 End

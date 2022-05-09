@@ -14,9 +14,9 @@ VerifierCoin dom { }
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -30,24 +30,24 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	nb_pas_dt_max 5
-	tmax 10.
-	dt_min 0.0001
-	dt_max 1.
-	dt_impr 0.01
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tinit 0.
+    nb_pas_dt_max 5
+    tmax 10.
+    dt_min 0.0001
+    dt_max 1.
+    dt_impr 0.01
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-	rho Champ_Uniforme 1 1.17
-	lambda Champ_Uniforme 1 0.0262 
-	Cp Champ_Uniforme 1 1006
-	beta_th Champ_Uniforme 1 0
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+    Cp Champ_Uniforme 1 1006
+    beta_th Champ_Uniforme 1 0
 }
 
 Champ_Uniforme gravite
@@ -62,60 +62,60 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.650000 } 
-			seuil 1.000000e+20 
-			impr 
-		}
-		convection { negligeable }
-		diffusion { negligeable }
-		initial_conditions {
-			vitesse champ_fonc_xyz dom 2 y -x
-			}
-		boundary_conditions {
-			HAUT 	frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 2 y -x
-			BAS 	frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 2 y -x
-			OUEST 	frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 2 y -x
-			EST 	frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 2 y -x
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { negligeable }
-		convection { muscl_old }
-		boundary_conditions 
-		{
-			HAUT 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
-			BAS 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
- 			OUEST 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
-			EST 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
-		}
-		initial_conditions {
-			temperature champ_fonc_xyz dom 1 cos(sqrt(x^2+(y+0.6)^2)/0.25)*(sqrt(x^2+(y+0.6)^2)<0.25)
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.650000 }
+            seuil 1.000000e+20
+            impr
+        }
+        convection { negligeable }
+        diffusion { negligeable }
+        initial_conditions {
+            vitesse champ_fonc_xyz dom 2 y -x
+        }
+        boundary_conditions {
+            HAUT 	frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 2 y -x
+            BAS 	frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 2 y -x
+            OUEST 	frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 2 y -x
+            EST 	frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 2 y -x
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { negligeable }
+        convection { muscl_old }
+        boundary_conditions
+        {
+            HAUT 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
+            BAS 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
+            OUEST 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
+            EST 	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 0
+        }
+        initial_conditions {
+            temperature champ_fonc_xyz dom 1 cos(sqrt(x^2+(y+0.6)^2)/0.25)*(sqrt(x^2+(y+0.6)^2)<0.25)
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_vit vitesse periode 0.01 point 1 0. -0.6
-			sonde_tempH temperature periode 0.01 segment 11 -1.5 -0.6 1.5 -0.6
-			sonde_tempV temperature periode 0.01 segment 11 0 -1.5 0. 1.5
-			sonde_temp temperature periode 0.1 plan 21 21 -1.5 -1.5 1.5 -1.5 -1.5 1.5
-			sonde_t temperature periode 0.01 point 1 0. -0.6
-		}
-		fields dt_post 6.
-		{
-			pression elem
-			vitesse som
-			temperature som
-			volume_maille elem
-			gradient_pression elem
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_vit vitesse periode 0.01 point 1 0. -0.6
+            sonde_tempH temperature periode 0.01 segment 11 -1.5 -0.6 1.5 -0.6
+            sonde_tempV temperature periode 0.01 segment 11 0 -1.5 0. 1.5
+            sonde_temp temperature periode 0.1 plan 21 21 -1.5 -1.5 1.5 -1.5 -1.5 1.5
+            sonde_t temperature periode 0.01 point 1 0. -0.6
+        }
+        fields dt_post 6.
+        {
+            pression elem
+            vitesse som
+            temperature som
+            volume_maille elem
+            gradient_pression elem
+        }
+    }
 }
 
 Solve pb

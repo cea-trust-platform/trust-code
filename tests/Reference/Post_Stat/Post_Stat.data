@@ -11,9 +11,9 @@ Read_file dom dom.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -28,31 +28,31 @@ Scheme_euler_implicit sch
 
 Read sch
 {
-	tinit		0.
-	tmax		0.2
-	dt_min		1.e-1
-	dt_max		1.e-1
-	dt_start	dt_calc
-	dt_impr		1e-10
-	dt_sauv		0.1
-	facsec		50000000 
-	seuil_statio	1.e-8
-	solveur implicite
-	{
-		seuil_convergence_solveur	1e-8
-		seuil_convergence_implicite	1e+1
-		controle_residu
-	}
+    tinit		0.
+    tmax		0.2
+    dt_min		1.e-1
+    dt_max		1.e-1
+    dt_start	dt_calc
+    dt_impr		1e-10
+    dt_sauv		0.1
+    facsec		50000000
+    seuil_statio	1.e-8
+    solveur implicite
+    {
+        seuil_convergence_solveur	1e-8
+        seuil_convergence_implicite	1e+1
+        controle_residu
+    }
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	rho	Champ_Uniforme 1 1.
-	mu	Champ_Uniforme 1 2.5e-5
-	lambda	Champ_Uniforme 1 2.e-2
-	Cp	Champ_Uniforme 1 1006
-	beta_th	Champ_Uniforme 1 0.
+    rho	Champ_Uniforme 1 1.
+    mu	Champ_Uniforme 1 2.5e-5
+    lambda	Champ_Uniforme 1 2.e-2
+    Cp	Champ_Uniforme 1 1006
+    beta_th	Champ_Uniforme 1 0.
 }
 
 Associate pb fluide
@@ -63,74 +63,74 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { precond ssor { omega 1.500000 } seuil 1.e-6 }
-		parametre_equation parametre_implicite { }
-		convection { amont }
-		diffusion { }
-		initial_conditions { vitesse Champ_fonc_xyz dom 2 0. 0. }
-		boundary_conditions
-		{
-			IN_P	frontiere_ouverte_vitesse_imposee	Champ_Front_fonc_xyz 2	0.	-0.07*0.06510945275		
-			IN_F	frontiere_ouverte_vitesse_imposee	Champ_Front_fonc_xyz 2	0	-7*0.0612924209/0.07804*0.06518 	
-			WALL	paroi_fixe
-			WALL2	paroi_fixe
-			OUT	frontiere_ouverte_pression_imposee	Champ_Front_Uniforme 1 0.
-		}
-	}
-	
-	Convection_Diffusion_Temperature
-	{
-		parametre_equation parametre_implicite { }
-		convection { amont }
-		diffusion { }
-		initial_conditions { Temperature  champ_fonc_xyz dom 1 323+1*200*(y>0)*((x*x)<(0.043*0.043)) }
-		boundary_conditions
-		{
-			IN_P	frontiere_ouverte_temperature_imposee	Champ_front_Uniforme 1 523.
-			IN_F	frontiere_ouverte_temperature_imposee	Champ_front_Uniforme 1 323.
-			WALL	paroi_adiabatique
-			WALL2	paroi_adiabatique
-			OUT	frontiere_ouverte	T_ext		Champ_front_Uniforme 1 323.
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.500000 } seuil 1.e-6 }
+        parametre_equation parametre_implicite { }
+        convection { amont }
+        diffusion { }
+        initial_conditions { vitesse Champ_fonc_xyz dom 2 0. 0. }
+        boundary_conditions
+        {
+            IN_P	frontiere_ouverte_vitesse_imposee	Champ_Front_fonc_xyz 2	0.	-0.07*0.06510945275
+            IN_F	frontiere_ouverte_vitesse_imposee	Champ_Front_fonc_xyz 2	0	-7*0.0612924209/0.07804*0.06518
+            WALL	paroi_fixe
+            WALL2	paroi_fixe
+            OUT	frontiere_ouverte_pression_imposee	Champ_Front_Uniforme 1 0.
+        }
+    }
 
-	Post_processings
-	{
-	   Premier_post
-	   {
-		Format lata_v1
-		fields dt_post 0.1
-		{
-			vitesse		elem
-			temperature	elem
-			pression	
-		}
-		Statistiques dt_post 0.1
-		{
-			t_deb 0.  t_fin 400.
-			moyenne		vitesse			faces
-			moyenne		temperature		som
-			correlation	vitesse temperature	faces
-		}
-	   }
+    Convection_Diffusion_Temperature
+    {
+        parametre_equation parametre_implicite { }
+        convection { amont }
+        diffusion { }
+        initial_conditions { Temperature  champ_fonc_xyz dom 1 323+1*200*(y>0)*((x*x)<(0.043*0.043)) }
+        boundary_conditions
+        {
+            IN_P	frontiere_ouverte_temperature_imposee	Champ_front_Uniforme 1 523.
+            IN_F	frontiere_ouverte_temperature_imposee	Champ_front_Uniforme 1 323.
+            WALL	paroi_adiabatique
+            WALL2	paroi_adiabatique
+            OUT	frontiere_ouverte	T_ext		Champ_front_Uniforme 1 323.
+        }
+    }
 
-	   Deuxieme_post
-	   {
-		fichier Post_Stat
-		fields dt_post 1.
-		{
-			temperature	elem
-		}
-		Statistiques dt_post 1.
-		{
-			t_deb 0.  t_fin 400.
-			moyenne		temperature		som
-		}
-	   }
-	}
-} 
+    Post_processings
+    {
+        Premier_post
+        {
+            Format lata_v1
+            fields dt_post 0.1
+            {
+                vitesse		elem
+                temperature	elem
+                pression
+            }
+            Statistiques dt_post 0.1
+            {
+                t_deb 0.  t_fin 400.
+                moyenne		vitesse			faces
+                moyenne		temperature		som
+                correlation	vitesse temperature	faces
+            }
+        }
+
+        Deuxieme_post
+        {
+            fichier Post_Stat
+            fields dt_post 1.
+            {
+                temperature	elem
+            }
+            Statistiques dt_post 1.
+            {
+                t_deb 0.  t_fin 400.
+                moyenne		temperature		som
+            }
+        }
+    }
+}
 Solve pb
 End
 

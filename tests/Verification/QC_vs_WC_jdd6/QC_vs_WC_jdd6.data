@@ -7,27 +7,27 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-  Pave Cavite
-  {
-    Origine 0. 0.
-    Nombre_de_Noeuds 6 51
-    Longueurs  1.0 100.0
-  }
-  {
-    Bord wall X = 0. 0. <= Y <= 100.0
-    Bord wall X = 1.0 0. <= Y <= 100.0
-    Bord out Y = 0. 0. <= X <= 1.0
-    Bord wall Y = 100.0 0. <= X <= 1.0
-  }
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 6 51
+        Longueurs  1.0 100.0
+    }
+    {
+        Bord wall X = 0. 0. <= Y <= 100.0
+        Bord wall X = 1.0 0. <= Y <= 100.0
+        Bord out Y = 0. 0. <= X <= 1.0
+        Bord wall Y = 100.0 0. <= X <= 1.0
+    }
 }
 trianguler_fin dom # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-  Partition_tool metis { nb_parts 4 }
-  Larg_joint 2
-  zones_name DOM
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -40,30 +40,30 @@ vefpreP1b dis
 Scheme_euler_explicit sch
 Read sch
 {
-  tinit 0.
+    tinit 0.
 	nb_pas_dt_max 3
-  tmax 5000.
-  dt_min 1.e-11
-  dt_max 5000.
-  dt_impr 1.e1
-  dt_start dt_calc
-  seuil_statio 1.e-7
-  facsec 1.0
+    tmax 5000.
+    dt_min 1.e-11
+    dt_max 5000.
+    dt_impr 1.e1
+    dt_start dt_calc
+    seuil_statio 1.e-7
+    facsec 1.0
 }
 
 Fluide_Weakly_Compressible fluide
 Read fluide
 {
-  mu champ_fonc_fonction pb temperature 1 5.e-3
-  lambda champ_fonc_fonction pb temperature 1 5.e-3
-  loi_etat gaz_parfait_WC
-  {
-    Prandtl 0.71
-    Cp 1005.
-    gamma 1.4
-  }
-  pression_thermo 1.E5
-  use_hydrostatic_pressure 1 /* 0 is by default */
+    mu champ_fonc_fonction pb temperature 1 5.e-3
+    lambda champ_fonc_fonction pb temperature 1 5.e-3
+    loi_etat gaz_parfait_WC
+    {
+        Prandtl 0.71
+        Cp 1005.
+        gamma 1.4
+    }
+    pression_thermo 1.E5
+    use_hydrostatic_pressure 1 /* 0 is by default */
 }
 
 Champ_Uniforme gravite
@@ -80,57 +80,57 @@ Discretize pb dis
 
 Read pb
 {
-  Navier_Stokes_WC
-  {
-    solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-7 impr }
-    convection { amont }
-    diffusion { }
-    initial_conditions { vitesse Champ_Uniforme 2  0. 0. }
-    boundary_conditions
+    Navier_Stokes_WC
     {
-      wall paroi_fixe
-      out frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1 -1.045*9.81*y
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-7 impr }
+        convection { amont }
+        diffusion { }
+        initial_conditions { vitesse Champ_Uniforme 2  0. 0. }
+        boundary_conditions
+        {
+            wall paroi_fixe
+            out frontiere_ouverte_pression_imposee Champ_front_fonc_XYZ 1 -1.045*9.81*y
+        }
     }
-  }
 
-  Convection_Diffusion_Chaleur_WC
-  {
-    diffusion { }
-    convection { amont }
-    initial_conditions
+    Convection_Diffusion_Chaleur_WC
     {
-      Temperature
-      Champ_Uniforme 1 333.15
-      /* champ_fonc_xyz dom 1 333.15-y */
+        diffusion { }
+        convection { amont }
+        initial_conditions
+        {
+            Temperature
+            Champ_Uniforme 1 333.15
+            /* champ_fonc_xyz dom 1 333.15-y */
+        }
+        boundary_conditions
+        {
+            wall paroi_adiabatique
+            out frontiere_ouverte T_ext Champ_front_Uniforme 1 333.15
+        }
     }
-    boundary_conditions
-    {
-      wall paroi_adiabatique
-      out frontiere_ouverte T_ext Champ_front_Uniforme 1 333.15
-    }
-  }
 
-  Post_processing
-  {
-    Definition_champs
+    Post_processing
     {
-      exact_t transformation { methode formule expression 1 333.15-9.81/1005*y localisation elem }
-      temp transformation { methode formule expression 1 tt source refChamp { Pb_Champ pb temperature nom_source tt } }
-      error_t transformation { methode formule expression 1 (exact_t-temp)/temp sources_reference { exact_t , temp } localisation elem }
+        Definition_champs
+        {
+            exact_t transformation { methode formule expression 1 333.15-9.81/1005*y localisation elem }
+            temp transformation { methode formule expression 1 tt source refChamp { Pb_Champ pb temperature nom_source tt } }
+            error_t transformation { methode formule expression 1 (exact_t-temp)/temp sources_reference { exact_t , temp } localisation elem }
+        }
+        Format lml
+        fields dt_post 5000.
+        {
+            vitesse elem
+            masse_volumique elem
+            pression elem
+            pression_tot elem
+            Pression_hydro elem
+            temperature elem
+            exact_t elem
+            error_t elem
+        }
     }
-    Format lml
-    fields dt_post 5000.
-    {
-      vitesse elem
-      masse_volumique elem
-      pression elem
-      pression_tot elem
-      Pression_hydro elem
-      temperature elem
-      exact_t elem
-      error_t elem
-    }
-  }
 }
 Solve pb
 End

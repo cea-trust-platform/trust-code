@@ -4,7 +4,7 @@ dimension 2
 Pb_conduction pb
 Domaine dom
 # BEGIN MESH #
-Mailler dom 
+Mailler dom
 {
     Pave Cavite
     {
@@ -22,21 +22,21 @@ Mailler dom
 
 Postraiter_domaine
 {
-   fichier mesh.lata
-   format lata
-   domaine dom
+    fichier mesh.lata
+    format lata
+    domaine dom
 }
 
 # END MESH #
-# BEGIN PARTITION  
+# BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
- END PARTITION #
+END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
@@ -44,18 +44,18 @@ END SCATTER #
 
 Sous_zone sz1
 Associate sz1 dom
-Read sz1 { 
- rectangle
-      Origine 0.0 0.0 
-      Cotes 2.0 1.0
- }
+Read sz1 {
+    rectangle
+    Origine 0.0 0.0
+    Cotes 2.0 1.0
+}
 Sous_zone sz2
 Associate sz2 dom
-Read sz2 {  
-   Rectangle
-      Origine 2. 0.0
-      Cotes 2.0 1.0
-} 
+Read sz2 {
+    Rectangle
+    Origine 2. 0.0
+    Cotes 2.0 1.0
+}
 
 
 VDF dis
@@ -64,9 +64,9 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 1.0
-  nb_pas_dt_max 0
+    tinit 0
+    tmax 1.0
+    nb_pas_dt_max 0
 }
 
 Solide sol
@@ -86,47 +86,47 @@ Discretize pb dis
 
 Read pb
 {
-  Conduction
-	{
+    Conduction
+    {
         diffusion { }
         initial_conditions {
-            
+
             temperature Champ_Fonc_Fonction_txyz_Morceaux pb rho 1
-                { 
-                  defaut 3000.0
-                  sz1 val+3
-                  sz2 val*2+2
-                }
-            
+            {
+                defaut 3000.0
+                sz1 val+3
+                sz2 val*2+2
+            }
+
         }
-        
+
         boundary_conditions {
             Haut paroi_adiabatique
             Bas  paroi_adiabatique
             Droit paroi_adiabatique
             Gauche paroi_adiabatique
         }
-	}
-	
-  Post_processing 
-	{
-	      definition_champs 
-	      {
-	           ma_comparaison Transformation 
-	            {
-	                   methode formule expression 1 temperature_natif_dom+10.0
-	                   source refChamp { Pb_champ pb temperature }
-	            }
-	      }
-	      format lata 
-		    fields dt_post 1.
-		    {
-           ma_comparaison
-		       temperature elem
-		    }
-	}
+    }
 
-	
+    Post_processing
+    {
+        definition_champs
+        {
+            ma_comparaison Transformation
+            {
+                methode formule expression 1 temperature_natif_dom+10.0
+                source refChamp { Pb_champ pb temperature }
+            }
+        }
+        format lata
+        fields dt_post 1.
+        {
+            ma_comparaison
+            temperature elem
+        }
+    }
+
+
 }
 
 Solve pb

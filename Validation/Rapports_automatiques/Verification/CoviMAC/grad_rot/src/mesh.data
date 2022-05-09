@@ -3,20 +3,20 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	pave bloc
-	{
-		origine 0 0 0
-		longueurs 1 1 1
-		nombre_de_noeuds 101 101 101
-		}
-		{
-		bord periox	X = 0	0 <= Y <= 1	0 <= Z <= 1
-		bord periox	X = 1	0 <= Y <= 1	0 <= Z <= 1
-		bord perioy	Y = 0	0 <= X <= 1	0 <= Z <= 1
-		bord perioy	Y = 1	0 <= X <= 1	0 <= Z <= 1
-		bord perioz	Z = 0	0 <= X <= 1	0 <= Y <= 1
-		bord perioz	Z = 1	0 <= X <= 1	0 <= Y <= 1
-		}
+    pave bloc
+    {
+        origine 0 0 0
+        longueurs 1 1 1
+        nombre_de_noeuds 101 101 101
+    }
+    {
+        bord periox	X = 0	0 <= Y <= 1	0 <= Z <= 1
+        bord periox	X = 1	0 <= Y <= 1	0 <= Z <= 1
+        bord perioy	Y = 0	0 <= X <= 1	0 <= Z <= 1
+        bord perioy	Y = 1	0 <= X <= 1	0 <= Z <= 1
+        bord perioz	Z = 0	0 <= X <= 1	0 <= Y <= 1
+        bord perioz	Z = 1	0 <= X <= 1	0 <= Y <= 1
+    }
 }
 
 Polyedriser dom

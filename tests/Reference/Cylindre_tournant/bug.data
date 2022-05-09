@@ -15,9 +15,9 @@ Domaine dom
 # BEGIN MESH #
 Read_file dom Cylindre_tournant_Castem.geom
 Transformer dom
- z+0.05
- y
- x
+z+0.05
+y
+x
 # END MESH #
 
 # --------- DISCRETISATION --------- #
@@ -26,23 +26,23 @@ VEFPreP1B dis
 # --------- SCHEMA EN TEMPS --------- #
 Scheme_euler_explicit sch
 Read sch
-	{
-	nb_pas_dt_max 2
-	tinit 0.
-        tmax 30.
-	dt_min 1.e-3
-	dt_max 1.e-1
-	dt_impr 1.e-2
-        dt_sauv 10
-        seuil_statio 1.e-5
-	}
+{
+    nb_pas_dt_max 2
+    tinit 0.
+    tmax 30.
+    dt_min 1.e-3
+    dt_max 1.e-1
+    dt_impr 1.e-2
+    dt_sauv 10
+    seuil_statio 1.e-5
+}
 
 # --------- DEFINITION DU FLUIDE --------- #
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme       1 0.015
- 	rho Champ_Uniforme      1 1500.
+    mu Champ_Uniforme       1 0.015
+    rho Champ_Uniforme      1 1500.
 }
 
 # --------- ASSOCIATION --------- #
@@ -56,42 +56,42 @@ Discretize pb dis
 # --------- LECTURE DES CONDITIONS DE CALCUL --------- #
 Read pb
 {
-  Navier_Stokes_standard
-  {
-    solveur_pression petsc cholesky { }
-    convection { EF transportant_bar 0 transporte_bar 0 filtrer_resu 0 antisym 0 }
-    diffusion { }
-    initial_conditions
+    Navier_Stokes_standard
     {
-	vitesse Champ_fonc_xyz dom 3 0. -z y
+        solveur_pression petsc cholesky { }
+        convection { EF transportant_bar 0 transporte_bar 0 filtrer_resu 0 antisym 0 }
+        diffusion { }
+        initial_conditions
+        {
+            vitesse Champ_fonc_xyz dom 3 0. -z y
+        }
+        boundary_conditions
+        {
+            SENTREE frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 0 -z y
+            SSORTIE frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 0 -z y
+            SPAROI frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 0 -z y
+        }
+        Traitement_particulier { Ec { Ec periode 1.e-5 } }
     }
-    boundary_conditions
-    {
-	SENTREE frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 0 -z y
-	SSORTIE frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 0 -z y
-	SPAROI frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 0 -z y
-    }
-    Traitement_particulier { Ec { Ec periode 1.e-5 } }
-  }
 
-  Post_processing
-  {
-    Probes { 
-       profil_pression	pression 	periode 0.01 segment	20 0.05 -0.1 0. 0.05 0.1 0.     
-       profil_vitesse	vitesse 	periode 0.01 segment	10 0.05 -0.1 0. 0.05 0.1 0.     
-    }
-    format lata
-    fichier bug
-    fields dt_post 1.e-1
+    Post_processing
     {
-	gradient_pression		elem
-	gradient_pression		som
-	divergence_U			elem
-	vitesse				elem
-	pression			elem
-	pression			som
+        Probes {
+            profil_pression	pression 	periode 0.01 segment	20 0.05 -0.1 0. 0.05 0.1 0.
+            profil_vitesse	vitesse 	periode 0.01 segment	10 0.05 -0.1 0. 0.05 0.1 0.
+        }
+        format lata
+        fichier bug
+        fields dt_post 1.e-1
+        {
+            gradient_pression		elem
+            gradient_pression		som
+            divergence_U			elem
+            vitesse				elem
+            pression			elem
+            pression			som
+        }
     }
-  }
 }
 
 # --------- IMPRESSION DES COUPLES --------- #

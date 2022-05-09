@@ -7,21 +7,21 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-Pave Cavite
-        {
-                Origine 0. 0. 0.
-                Nombre_de_Noeuds 5 5 5
-                Longueurs 1 1 1
-        }
-        {
-                Bord entree   	X = 0.   	0. <= Y <= 1.    	0. <= Z <= 1.
-                Bord sortie  	X = 1.  	0. <= Y <= 1.   	0. <= Z <= 1.
-                Bord paroiY   	Y =  0.  	0. <= X <= 1.  		0. <= Z <= 1.
-                Bord paroiY   	Y =  1.  	0. <= X <= 1.  		0. <= Z <= 1.
-                Bord symetrie   Z =  0.  	0. <= X <= 1.  		0. <= Y <= 1.
-                Bord paroi   	Z =  1.  	0. <= X <= 1.   	0. <= Y <= 1.
-        }
-} 
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 5 5 5
+        Longueurs 1 1 1
+    }
+    {
+        Bord entree   	X = 0.   	0. <= Y <= 1.    	0. <= Z <= 1.
+        Bord sortie  	X = 1.  	0. <= Y <= 1.   	0. <= Z <= 1.
+        Bord paroiY   	Y =  0.  	0. <= X <= 1.  		0. <= Z <= 1.
+        Bord paroiY   	Y =  1.  	0. <= X <= 1.  		0. <= Z <= 1.
+        Bord symetrie   Z =  0.  	0. <= X <= 1.  		0. <= Y <= 1.
+        Bord paroi   	Z =  1.  	0. <= X <= 1.   	0. <= Y <= 1.
+    }
+}
 Tetraedriser_homogene dom
 Transformer dom
 x+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5-y)
@@ -33,11 +33,11 @@ Corriger_frontiere_periodique { domaine dom bord paroiY }
 # BEGIN PARTITION #
 Partition dom
 {
-	Partition_tool Tranche { tranches 2 1 1 }
-	Larg_joint 2
-	zones_name DOM
-	periodique 1 paroiY
-	single_hdf
+    Partition_tool Tranche { tranches 2 1 1 }
+    Larg_joint 2
+    zones_name DOM
+    periodique 1 paroiY
+    single_hdf
 }
 End
 # END PARTITION #

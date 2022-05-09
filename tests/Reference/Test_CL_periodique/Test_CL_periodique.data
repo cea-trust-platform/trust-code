@@ -57,7 +57,7 @@ Read water {
 # DEFINE THE ASSOCIATION OF PREVIOUSLY DEFINED OBJECTS #
 Associate pb dom
 Associate pb water
-Associate pb sch 
+Associate pb sch
 Discretize pb dis
 
 

@@ -4,22 +4,22 @@ dimension 3
 Domaine dom
 
 # BEGIN MESH #
-Mailler dom 
+Mailler dom
 {
-	Pave Entree
-	{
-	Origine 0. 0. 0.
-	Nombre_de_Noeuds 11 11 11
-	Longueurs 1. 1. 1.
-	}
-	{
-	Bord Entree X = 0.  0. <= Y <= 1. 0. <= Z <= 1. 
-	Bord Sortie X = 1.  0. <= Y <= 1. 0. <= Z <= 1. 
-	Bord Haut1  Y = 0.  0. <= X <= 1. 0. <= Z <= 1. 
-	Bord Bas1   Y = 1.  0. <= X <= 1. 0. <= Z <= 1. 
-	Bord Sud1   Z = 0.  0. <= X <= 1. 0. <= Y <= 1. 
-	Bord Nord1  Z = 1.  0. <= X <= 1. 0. <= Y <= 1.
-	} 
+    Pave Entree
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 11 11 11
+        Longueurs 1. 1. 1.
+    }
+    {
+        Bord Entree X = 0.  0. <= Y <= 1. 0. <= Z <= 1.
+        Bord Sortie X = 1.  0. <= Y <= 1. 0. <= Z <= 1.
+        Bord Haut1  Y = 0.  0. <= X <= 1. 0. <= Z <= 1.
+        Bord Bas1   Y = 1.  0. <= X <= 1. 0. <= Z <= 1.
+        Bord Sud1   Z = 0.  0. <= X <= 1. 0. <= Y <= 1.
+        Bord Nord1  Z = 1.  0. <= X <= 1. 0. <= Y <= 1.
+    }
 }
 Remove_elem dom { liste 4 0 1 2 3 }
 Remove_elem dom { fonction 0.2*0.2-(x-0.5)^2-(y-0.5)^2>0 }
@@ -28,9 +28,9 @@ Remove_elem dom { fonction 0.2*0.2-(x-0.5)^2-(y-0.5)^2>0 }
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #

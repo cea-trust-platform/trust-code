@@ -97,7 +97,7 @@ Read pb
                 taux_cisaillement elem
             }
         }
-	
+
         med
         {
             format med fichier M3DLAM
@@ -106,7 +106,7 @@ Read pb
                 vitesse faces
             }
         }
-	
+
     }
 }
 Imprimer_flux_sum dom { Entree }

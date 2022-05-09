@@ -10,16 +10,16 @@ Read_file upwind.geo ;
 # BEGIN PARTITION
 Postraiter_domaine
 {
-   fichier mesh.lata
-   format lata
-   domaine dom
+    fichier mesh.lata
+    format lata
+    domaine dom
 }
 
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -33,21 +33,21 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 2.5
-	/* dt_min identique au dt_max alors dt=dt_min=dt_max */
-	dt_min 5.e-3
-	dt_max 5.e-3
-	dt_impr 5.e-1
-	dt_sauv 1
-	seuil_statio 1.e-8
+    tinit 0
+    tmax 2.5
+    /* dt_min identique au dt_max alors dt=dt_min=dt_max */
+    dt_min 5.e-3
+    dt_max 5.e-3
+    dt_impr 5.e-1
+    dt_sauv 1
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 3.7e-05
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -58,151 +58,153 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.e-8 impr
-		}
-		convection { amont }
-		diffusion {  }
-		# Conditions initiales sur la vitesse #
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Obstacle paroi_fixe
-			Symetrie symetrie
-			Sortie frontiere_ouverte_pression_imposee 
-			    Champ_front_Uniforme 1 0.
-			Entree frontiere_ouverte_vitesse_imposee 
-			     Champ_front_Uniforme 2  1. 0.
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-8 impr
+        }
+        convection { amont }
+        diffusion {  }
+        # Conditions initiales sur la vitesse #
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Obstacle paroi_fixe
+            Symetrie symetrie
+            Sortie frontiere_ouverte_pression_imposee
+            Champ_front_Uniforme 1 0.
+            Entree frontiere_ouverte_vitesse_imposee
+            Champ_front_Uniforme 2  1. 0.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
-			sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
-			sonde_vitesse_bis vitesse periode 0.005 position_like sonde_vitesse
-                	sonde_vitesse_ter vitesse periode 1e-5 position_like sonde_vitesse
-		}
-		
-		Definition_champs 
-		 {  
-		  	# Calcul du produit scalaire grad(Pression).Vitesse #
-	  		pscal_gradP_vit Transformation {
-			  	methode produit_scalaire
-				sources {
-				 	Interpolation { localisation elem source refChamp { Pb_champ pb gradient_pression } } ,
-				  	Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } }
-				}
-		    	}
-		    	# Calcul du produit scalaire Vitesse.Vitesse #
-	       		pscal_vit_vit_elem Transformation {
-				methode produit_scalaire
-				sources {
-					refChamp { Pb_champ pb vitesse } ,
-				 	refChamp { Pb_champ pb vitesse } 
-				}
-				localisation elem 
-		    	}
-		    
-			pscal_vit_vit_elem_interp Transformation {
-				methode produit_scalaire
-				sources {
-			 		Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } } ,
-					Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } }
-				}
-		    	}   
-		    
-	        	pscal_vit_vit_som Interpolation { localisation som sources_reference { pscal_vit_vit_elem_interp } }   
-		    
-	        	pscal_vit_vit_faces Interpolation { localisation faces sources_reference { pscal_vit_vit_elem_interp } }
-		        
-	  	 	norme_transfo_vit Transformation {
-		  	  	methode norme
-			  	source Interpolation { 
-			  	localisation elem
-			    	source refChamp { Pb_champ pb vitesse } } 
-			}
-			   
-	         	vecteur_unitairex transformation { methode vecteur expression 2 1. 0. localisation faces }   
-			
-		  	vecteur_transfo transformation { methode vecteur  expression 2 x t localisation faces }
-			
-		  	vecteur_source_elem Transformation { 
-				methode vecteur  expression 2 pression_natif_dom y
-		 		source refChamp { Pb_champ pb pression }
-				localisation elem	
-			}
-		  	vecteur_source_faces Transformation { 
-				methode vecteur expression  2 pression_natif_dom y
-		 		source refChamp { Pb_champ pb pression }
-				localisation faces	
-			}
-			
-		  	compo_vitessex Transformation { 
-				methode composante numero 0 
-		 		source refChamp { Pb_champ pb vitesse }
-				localisation elem	
-			}
-			
-		  	compo_vitessex_elem Interpolation { localisation elem sources_reference { compo_vitessex } }
-			
-			# Calcul de la composante selon X du gradient de pression #
-		  	compo_graPx Transformation { 
-				methode composante numero 0 
-				source refChamp { Pb_champ pb gradient_pression }
-				localisation elem 
-			}
-			# Interpolation de cette composante aux elements #
-		 	compo_graPx_elem Interpolation { localisation elem sources_reference { compo_graPx } }				   							       		   		    	
-		}
-		Format lml
-		fields dt_post 1.3
-		{
-			pression elem
-			vitesse elem
-			masse_volumique elem
-			gradient_pression elem
-			pscal_gradP_vit elem
-			pscal_vit_vit_elem
-			pscal_vit_vit_elem_interp
-			pscal_vit_vit_som
-			norme_transfo_vit elem
-			vecteur_unitairex elem
-			vecteur_transfo elem
-			vecteur_source_elem
-			compo_vitessex_elem
-			compo_graPx_elem
-		}
-	}
-	liste_de_postraitements {
-	test1 Post_processing {
-		Definition_champs {
-		test_nom reduction_0D { methode weighted_average 
-	              sources { refchamp { pb_champ pb pression } } 
-		         }
-	                }
-		format lata 
-		fields dt_post 1.3
-		  {
-			pression elem
-			test_nom
-		 }
-	      }
-	
-	test2 Post_processing {
-	        format lata 
-		fields dt_post 1.3e9
-		{
-		       pression elem			
-		}
-	    } 
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+            sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
+            sonde_vitesse_bis vitesse periode 0.005 position_like sonde_vitesse
+            sonde_vitesse_ter vitesse periode 1e-5 position_like sonde_vitesse
+        }
+
+        Definition_champs
+        {
+            # Calcul du produit scalaire grad(Pression).Vitesse #
+            pscal_gradP_vit Transformation {
+                methode produit_scalaire
+                sources {
+                    Interpolation { localisation elem source refChamp { Pb_champ pb gradient_pression } } ,
+                    Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } }
+                }
+            }
+            # Calcul du produit scalaire Vitesse.Vitesse #
+            pscal_vit_vit_elem Transformation {
+                methode produit_scalaire
+                sources {
+                    refChamp { Pb_champ pb vitesse } ,
+                    refChamp { Pb_champ pb vitesse }
+                }
+                localisation elem
+            }
+
+            pscal_vit_vit_elem_interp Transformation {
+                methode produit_scalaire
+                sources {
+                    Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } } ,
+                    Interpolation { localisation elem source refChamp { Pb_champ pb vitesse } }
+                }
+            }
+
+            pscal_vit_vit_som Interpolation { localisation som sources_reference { pscal_vit_vit_elem_interp } }
+
+            pscal_vit_vit_faces Interpolation { localisation faces sources_reference { pscal_vit_vit_elem_interp } }
+
+            norme_transfo_vit Transformation {
+                methode norme
+                source Interpolation {
+                    localisation elem
+                    source refChamp { Pb_champ pb vitesse }
+                }
+            }
+
+            vecteur_unitairex transformation { methode vecteur expression 2 1. 0. localisation faces }
+
+            vecteur_transfo transformation { methode vecteur  expression 2 x t localisation faces }
+
+            vecteur_source_elem Transformation {
+                methode vecteur  expression 2 pression_natif_dom y
+                source refChamp { Pb_champ pb pression }
+                localisation elem
+            }
+            vecteur_source_faces Transformation {
+                methode vecteur expression  2 pression_natif_dom y
+                source refChamp { Pb_champ pb pression }
+                localisation faces
+            }
+
+            compo_vitessex Transformation {
+                methode composante numero 0
+                source refChamp { Pb_champ pb vitesse }
+                localisation elem
+            }
+
+            compo_vitessex_elem Interpolation { localisation elem sources_reference { compo_vitessex } }
+
+            # Calcul de la composante selon X du gradient de pression #
+            compo_graPx Transformation {
+                methode composante numero 0
+                source refChamp { Pb_champ pb gradient_pression }
+                localisation elem
+            }
+            # Interpolation de cette composante aux elements #
+            compo_graPx_elem Interpolation { localisation elem sources_reference { compo_graPx } }
+        }
+        Format lml
+        fields dt_post 1.3
+        {
+            pression elem
+            vitesse elem
+            masse_volumique elem
+            gradient_pression elem
+            pscal_gradP_vit elem
+            pscal_vit_vit_elem
+            pscal_vit_vit_elem_interp
+            pscal_vit_vit_som
+            norme_transfo_vit elem
+            vecteur_unitairex elem
+            vecteur_transfo elem
+            vecteur_source_elem
+            compo_vitessex_elem
+            compo_graPx_elem
+        }
+    }
+    liste_de_postraitements {
+        test1 Post_processing {
+            Definition_champs {
+                test_nom reduction_0D {
+                    methode weighted_average
+                    sources { refchamp { pb_champ pb pression } }
+                }
+            }
+            format lata
+            fields dt_post 1.3
+            {
+                pression elem
+                test_nom
+            }
+        }
+
+        test2 Post_processing {
+            format lata
+            fields dt_post 1.3e9
+            {
+                pression elem
+            }
+        }
+    }
 }
 EcritureLectureSpecial EcrFicPartageBin
 # On doit trouver les resultantes des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positives #

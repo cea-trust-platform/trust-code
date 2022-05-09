@@ -5,15 +5,15 @@ Pb_Hydraulique pb
 
 Domaine dom
 # BEGIN MESH #
-Read_file dom MacCormack_3D.geom 
+Read_file dom MacCormack_3D.geom
 
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool Metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -28,22 +28,22 @@ Read dis { P0 P1 }
 Schema_predictor_corrector sch
 Read sch
 {
-	nb_pas_dt_max 0
-	tinit 0.0
-	tmax 0.05
-	dt_min 5.e-4
-	dt_max 5.e-4
-	dt_impr 1.e-6
-	dt_sauv 100
-	seuil_statio 1.e-10
-	facsec 1.0
+    nb_pas_dt_max 0
+    tinit 0.0
+    tmax 0.05
+    dt_min 5.e-4
+    dt_max 5.e-4
+    dt_impr 1.e-6
+    dt_sauv 100
+    seuil_statio 1.e-10
+    facsec 1.0
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 2e-05
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 2e-05
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -54,37 +54,37 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression petsc cholesky { } 
-		convection { EF_stab { alpha 0.2 } }
-		diffusion { }
-		initial_conditions 
-		        {
-			vitesse Champ_Uniforme 3 0. 0. 0.
-			}
-		boundary_conditions {
-		        PAROI1 paroi_defilante Champ_Front_Tangentiel_VEF
-		               vitesse_tangentielle 0.45
-			PAROI2 paroi_fixe
-			ENTREE paroi_fixe
-			SORTIE symetrie
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { EF_stab { alpha 0.2 } }
+        diffusion { }
+        initial_conditions
+        {
+            vitesse Champ_Uniforme 3 0. 0. 0.
+        }
+        boundary_conditions {
+            PAROI1 paroi_defilante Champ_Front_Tangentiel_VEF
+            vitesse_tangentielle 0.45
+            PAROI2 paroi_fixe
+            ENTREE paroi_fixe
+            SORTIE symetrie
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-		  sonde_vit1 vitesse periode 1.e-6 segment 20 0. 0.06 0. 0. 0.06 0.06
-		  sonde_vit2 vitesse periode 1.e-6 segment  6 0. 0.05 0.04 0. 0.0653 0.04
-		}
-		fields dt_post 0.01
-		{
-			vitesse elem
-	                pression elem	
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_vit1 vitesse periode 1.e-6 segment 20 0. 0.06 0. 0. 0.06 0.06
+            sonde_vit2 vitesse periode 1.e-6 segment  6 0. 0.05 0.04 0. 0.0653 0.04
+        }
+        fields dt_post 0.01
+        {
+            vitesse elem
+            pression elem
+        }
+    }
 }
 Solve pb
 End

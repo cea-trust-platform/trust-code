@@ -9,49 +9,49 @@ Domaine dom_solide
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Cavite
-                {
-                Origine 0. 0.01
-                Nombre_de_Noeuds 11 11
-                Longueurs 0.01 0.01
-                }
-                {
-                Bord Entree 			X = 0.  	0.01 <= Y <= 0.02
-                Bord Haut 			Y = 0.02  	0. <= X <= 0.01
-                Raccord local homogene 	Contact Y = 0.01     	0. <= X <= 0.01
-                Bord Sortie 			X = 0.01 	0.01 <= Y <= 0.02
-                }
+    Pave Cavite
+    {
+        Origine 0. 0.01
+        Nombre_de_Noeuds 11 11
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Entree 			X = 0.  	0.01 <= Y <= 0.02
+        Bord Haut 			Y = 0.02  	0. <= X <= 0.01
+        Raccord local homogene 	Contact Y = 0.01     	0. <= X <= 0.01
+        Bord Sortie 			X = 0.01 	0.01 <= Y <= 0.02
+    }
 }
 Trianguler_H dom
 Mailler dom_solide
 {
-        Pave Cavite
-                {
-                Origine 0. 0.
-                Nombre_de_Noeuds 11 11
-                Longueurs 0.01 0.01
-                }
-                {
-                Bord Cote 			X = 0.  	0. <= Y <= 0.01
-                Raccord local homogene 	Contact	Y = 0.01  	0. <= X <= 0.01
-                Bord Bas 			Y = 0.     	0. <= X <= 0.01
-                Bord Cote 			X = 0.01 	0. <= Y <= 0.01
-                }
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Cote 			X = 0.  	0. <= Y <= 0.01
+        Raccord local homogene 	Contact	Y = 0.01  	0. <= X <= 0.01
+        Bord Bas 			Y = 0.     	0. <= X <= 0.01
+        Bord Cote 			X = 0.01 	0. <= Y <= 0.01
+    }
 }
 Trianguler_H dom_solide
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 Partition dom_solide
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM_SOLIDE
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM_SOLIDE
 }
 End
 END PARTITION #
@@ -66,37 +66,37 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 15.0
-        nb_pas_dt_max 1
-	dt_min 5.e-6
-	dt_max 5.
-	dt_impr 5.e-6
-	precision_impr 3
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tinit 0
+    tmax 15.0
+    nb_pas_dt_max 1
+    dt_min 5.e-6
+    dt_max 5.
+    dt_impr 5.e-6
+    precision_impr 3
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-        pression 162684.57148045
-        lambda Champ_Uniforme 1 0.0262
-        loi_etat gaz_parfait_QC {
-                Prandtl 0.71034351145038165942
-                Cp 1006.
-                gamma 1.4
-		rho_constant_pour_debug Champ_uniforme 1 2.
-        }
-	traitement_pth constant
+    mu Champ_Uniforme 1 1.85e-5
+    pression 162684.57148045
+    lambda Champ_Uniforme 1 0.0262
+    loi_etat gaz_parfait_QC {
+        Prandtl 0.71034351145038165942
+        Cp 1006.
+        gamma 1.4
+        rho_constant_pour_debug Champ_uniforme 1 2.
+    }
+    traitement_pth constant
 }
 Solide sol
 Read sol
 {
-        rho Champ_Uniforme 1 1000.
-        lambda Champ_Uniforme 1 250.
-        Cp Champ_Uniforme 1 100.
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100.
 }
 
 
@@ -120,68 +120,68 @@ Discretize pbc dis
 
 Read pb
 {
-	Navier_Stokes_QC
-	{
-		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 }	
-		convection { muscl } 
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-                        Contact   	paroi_fixe
-                        Haut 		paroi_fixe
-                        Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-                        Entree 		frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 .1 0.
-		}
-
-	}
-        Convection_Diffusion_Chaleur_QC
-        {
-                diffusion { }
-                convection { muscl }
-                boundary_conditions 
-                {
-                        Contact   	Paroi_contact pb_solide Contact
-                        Haut 		Paroi_flux_impose Champ_Front_Uniforme 1 200.
-                        Sortie 		frontiere_ouverte T_ext Champ_Front_Uniforme 1 283
-                        Entree  	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 283
-                }
-                initial_conditions { Temperature Champ_Uniforme 1 283 }
+    Navier_Stokes_QC
+    {
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-9 }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Contact   	paroi_fixe
+            Haut 		paroi_fixe
+            Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree 		frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 2 .1 0.
         }
 
-	Post_processing
-	{
-		fields dt_post 10.
-		{
-			pression_pa som
-			vitesse som
-			temperature som
-		}
-	}
+    }
+    Convection_Diffusion_Chaleur_QC
+    {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            Contact   	Paroi_contact pb_solide Contact
+            Haut 		Paroi_flux_impose Champ_Front_Uniforme 1 200.
+            Sortie 		frontiere_ouverte T_ext Champ_Front_Uniforme 1 283
+            Entree  	frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 283
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 283 }
+    }
+
+    Post_processing
+    {
+        fields dt_post 10.
+        {
+            pression_pa som
+            vitesse som
+            temperature som
+        }
+    }
 }
 Read pb_solide
 {
-        Conduction
-        {
-                diffusion { }
-                initial_conditions {
-                        temperature Champ_Uniforme 1 303.
-                        }
-                boundary_conditions {
-                        Cote 	Paroi_adiabatique
-			Bas 	Paroi_flux_impose Champ_Front_Uniforme 1 200.
-			Contact	Paroi_contact pb Contact
-                }
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 303.
         }
-        Post_processing
-        {
-		Probes { temperature temperature periode 0.001 point 1 0.05 0.05 }
-                fields dt_post 10.
-                {
-                        temperature som
-                }
+        boundary_conditions {
+            Cote 	Paroi_adiabatique
+            Bas 	Paroi_flux_impose Champ_Front_Uniforme 1 200.
+            Contact	Paroi_contact pb Contact
         }
+    }
+    Post_processing
+    {
+        Probes { temperature temperature periode 0.001 point 1 0.05 0.05 }
+        fields dt_post 10.
+        {
+            temperature som
+        }
+    }
 }
 Solve pbc
 End

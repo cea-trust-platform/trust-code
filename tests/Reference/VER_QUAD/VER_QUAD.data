@@ -11,9 +11,9 @@ Read_file dom mod2o.geom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -28,22 +28,22 @@ Read dis { P0 }
 Scheme_euler_explicit sch
 Read sch
 {
-        tinit 0
-        tmax 300.
-        dt_min 0.00001
-        dt_max 0.1
-        dt_impr 0.00001
-        dt_sauv 100
-        seuil_statio 1.e-8
-	nb_pas_dt_max 1
+    tinit 0
+    tmax 300.
+    dt_min 0.00001
+    dt_max 0.1
+    dt_impr 0.00001
+    dt_sauv 100
+    seuil_statio 1.e-8
+    nb_pas_dt_max 1
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 2
-        lambda Champ_Uniforme 1 0.01
-	Cp Champ_Uniforme 1 0.5
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.01
+    Cp Champ_Uniforme 1 0.5
 }
 Associate pb dom
 Associate pb sch
@@ -53,29 +53,29 @@ Discretize pb dis
 
 Read pb
 {
-        Conduction
-        {
-                diffusion { }
-                initial_conditions {
-                        temperature Champ_Uniforme 1 0. 
-                        }
-                boundary_conditions {
-                        defaut paroi_adiabatique
-                }
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 0.
         }
+        boundary_conditions {
+            defaut paroi_adiabatique
+        }
+    }
 
-        Post_processing
+    Post_processing
+    {
+        Probes
         {
-                Probes
-                {
-                        sonde_T temperature periode 5. points 1 0.45 0.45
-                }
-                fields dt_post 30.
-                {
-			temperature elem
-			temperature som
-                }
+            sonde_T temperature periode 5. points 1 0.45 0.45
         }
+        fields dt_post 30.
+        {
+            temperature elem
+            temperature som
+        }
+    }
 }
 
 Solve pb

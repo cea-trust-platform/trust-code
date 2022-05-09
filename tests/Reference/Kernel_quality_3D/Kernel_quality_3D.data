@@ -41,16 +41,16 @@ Verifier_Qualite_Raffinements 6 domain_0 domain_1 domain_2 domain_3 domain_4 dom
 
 postraiter_domaine
 {
-   domaines 
-   { 
-      domain_0
-      domain_1
-      domain_2
-      domain_3
-      domain_4
-      domain_5
-   }
-   format lml 
+    domaines
+    {
+        domain_0
+        domain_1
+        domain_2
+        domain_3
+        domain_4
+        domain_5
+    }
+    format lml
 }
 
 End

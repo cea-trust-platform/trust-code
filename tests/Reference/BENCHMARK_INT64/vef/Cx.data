@@ -20,10 +20,10 @@ Raffiner_isotrope dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 9 }
-	Larg_joint 2
-	zones_name DOM
-	single_hdf
+    Partition_tool metis { Nb_parts 9 }
+    Larg_joint 2
+    zones_name DOM
+    single_hdf
 }
 End
 END PARTITION #
@@ -40,25 +40,25 @@ VEFPreP1B ma_discretisation
 Scheme_euler_explicit mon_schema
 Read mon_schema
 {
-	nb_pas_dt_max 3
-	tinit 0
-	tmax 5.0
-	dt_min 1.e-6
-	dt_max 1.e-6
-	dt_impr 1.e-6
-	dt_sauv 0
-	seuil_statio 1.e-8
+    nb_pas_dt_max 3
+    tinit 0
+    tmax 5.0
+    dt_min 1.e-6
+    dt_max 1.e-6
+    dt_impr 1.e-6
+    dt_sauv 0
+    seuil_statio 1.e-8
 }
 
 # A fluid is defined #
 Fluide_Incompressible milieu
 Read milieu
 {
-	mu  Champ_Uniforme 1 0.01
-	rho Champ_Uniforme 1 2.
-        lambda Champ_Uniforme 1 2
-        Cp Champ_Uniforme 1 100.
-        beta_th Champ_Uniforme 1 0.	
+    mu  Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 2.
+    lambda Champ_Uniforme 1 2
+    Cp Champ_Uniforme 1 100.
+    beta_th Champ_Uniforme 1 0.
 }
 
 Associate pb dom
@@ -68,35 +68,35 @@ Discretize pb ma_discretisation
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-	 	# solveur_pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e-4 impr aij } aij car bug PETSc en cours de correction ? #
-	 	solveur_pression       GCP { precond ssor { omega 1.6 } seuil 1.e-4 impr     }
-		convection { muscl }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 1. 0. 0.
-		}
-		boundary_conditions {
-			Cylindre 	paroi_fixe
-			Box  		symetrie
-			Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-			Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
-		}
-	}
-        Convection_Diffusion_Temperature
-        {
-                diffusion { }
-                convection { muscl }
-                boundary_conditions
-                {
-			Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
-			Box 		symetrie
-			Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
-			Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
-                }
-                initial_conditions { Temperature Champ_Uniforme 1 20. }
+    Navier_Stokes_standard
+    {
+        # solveur_pression Petsc GCP { precond ssor { omega 1.6 } seuil 1.e-4 impr aij } aij car bug PETSc en cours de correction ? #
+        solveur_pression       GCP { precond ssor { omega 1.6 } seuil 1.e-4 impr     }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 1. 0. 0.
         }
+        boundary_conditions {
+            Cylindre 	paroi_fixe
+            Box  		symetrie
+            Sortie 		frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree 		frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 3 1. 0. 0.
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            Cylindre 	paroi_temperature_imposee Champ_front_Uniforme 1 30.
+            Box 		symetrie
+            Sortie 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+            Entree 		frontiere_ouverte_temperature_imposee Champ_front_Uniforme 1 20.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 20. }
+    }
 }
 EcritureLectureSpecial 0
-Solve pb	
+Solve pb

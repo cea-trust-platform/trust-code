@@ -6,18 +6,18 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Plaques
-	{
-	Origine -0.5 -0.5
-	Nombre_de_Noeuds 11 11
-	Longueurs 1. 1.
-	}
-	{
-	Bord periox  X = -0.5     -0.5 <= Y <= 0.5
-	Bord periox  X =  0.5     -0.5 <= Y <= 0.5
-	Bord perioy  Y = -0.5     -0.5 <= X <= 0.5  
-	Bord perioy  Y =  0.5     -0.5 <= X <= 0.5  
-	}	
+    Pave Plaques
+    {
+        Origine -0.5 -0.5
+        Nombre_de_Noeuds 11 11
+        Longueurs 1. 1.
+    }
+    {
+        Bord periox  X = -0.5     -0.5 <= Y <= 0.5
+        Bord periox  X =  0.5     -0.5 <= Y <= 0.5
+        Bord perioy  Y = -0.5     -0.5 <= X <= 0.5
+        Bord perioy  Y =  0.5     -0.5 <= X <= 0.5
+    }
 }
 Trianguler_H dom
 Corriger_frontiere_periodique { Domaine dom Bord periox }
@@ -27,10 +27,10 @@ Corriger_frontiere_periodique { Domaine dom Bord perioy }
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
-	Periodique 2 periox perioy
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
+    Periodique 2 periox perioy
 }
 End
 END PARTITION #
@@ -43,23 +43,23 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	tmax 0.01
-	dt_min 1.e-3
-	dt_max 1.e-3
-	dt_impr 1.e-7
-	dt_sauv 100.
-	seuil_statio 1.e-8
+    tinit 0.
+    tmax 0.01
+    dt_min 1.e-3
+    dt_max 1.e-3
+    dt_impr 1.e-7
+    dt_sauv 100.
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.
-	rho Champ_Uniforme 1 1000.
-	lambda Champ_Uniforme 1 1.
-	Cp Champ_Uniforme 1 1000.
-	beta_th Champ_Uniforme 1 1.e-6
+    mu Champ_Uniforme 1 1.
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 1.
+    Cp Champ_Uniforme 1 1000.
+    beta_th Champ_Uniforme 1 1.e-6
 
 }
 
@@ -71,40 +71,40 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_Standard
-	{
-		equation_non_resolue 1
-		solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-5 impr }
-		convection { muscl }
-		diffusion { }	
-		initial_conditions { vitesse Champ_fonc_xyz dom 2 2.*(1+COS(2.*3.14159*x)) 2.*(1+COS(2.*3.14159*y)) }		
-		boundary_conditions 
-		{
-			periox periodique 
-			perioy periodique 
-		}
-	}
-	Convection_diffusion_temperature
-	{
-		convection { muscl }
-		diffusion { negligeable }		
-                Sources { Source_Th_TdivU }
-		boundary_conditions
-		{
-			periox periodique 
-			perioy periodique 
-		}		
-		initial_conditions { temperature Champ_Uniforme 1 10. }
-	}
-		
-	Post_processing 
-	{
-		fields dt_post 0.001
-		{
-			vitesse elem 
-			temperature elem 
-		}
-	}
+    Navier_Stokes_Standard
+    {
+        equation_non_resolue 1
+        solveur_pression GCP { precond ssor { omega 1.6 } seuil 1.e-5 impr }
+        convection { muscl }
+        diffusion { }
+        initial_conditions { vitesse Champ_fonc_xyz dom 2 2.*(1+COS(2.*3.14159*x)) 2.*(1+COS(2.*3.14159*y)) }
+        boundary_conditions
+        {
+            periox periodique
+            perioy periodique
+        }
+    }
+    Convection_diffusion_temperature
+    {
+        convection { muscl }
+        diffusion { negligeable }
+        Sources { Source_Th_TdivU }
+        boundary_conditions
+        {
+            periox periodique
+            perioy periodique
+        }
+        initial_conditions { temperature Champ_Uniforme 1 10. }
+    }
+
+    Post_processing
+    {
+        fields dt_post 0.001
+        {
+            vitesse elem
+            temperature elem
+        }
+    }
 }
 
 Solve pb

@@ -1,5 +1,5 @@
 # Lecture maillage 3D Hexa+Tetra+Pyramide cree dans Salome avec: #
-# MG-Hybrid + MG-CADSurf + 0 couche de prisme + Cartesian Core # 
+# MG-Hybrid + MG-CADSurf + 0 couche de prisme + Cartesian Core #
 # Cela garantit de n'avoir que des faces planes pour les hexas #
 # PARALLEL NOT #
 dimension 3
@@ -12,16 +12,16 @@ Postraiter_domaine { domaine dom fichier mesh format med }
 # BEGIN PARTITION
 Postraiter_domaine
 {
-   fichier mesh.lata
-   format lata
-   domaine dom
+    fichier mesh.lata
+    format lata
+    domaine dom
 }
 
 Partition dom
 {
-	Partition_tool metis { nb_parts 3 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { nb_parts 3 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -35,22 +35,22 @@ polymac dis
 Schema_euler_implicite sch
 Read sch
 {
-	nb_pas_dt_max 3
-	tinit 0
-	tmax 2.5
-	dt_min 0.001
-	dt_max 0.001
-	dt_impr 0.001
-	facsec 1
-	facsec_max 1
-	solveur implicite { seuil_convergence_solveur 1.e-12 }
+    nb_pas_dt_max 3
+    tinit 0
+    tmax 2.5
+    dt_min 0.001
+    dt_max 0.001
+    dt_impr 0.001
+    facsec 1
+    facsec_max 1
+    solveur implicite { seuil_convergence_solveur 1.e-12 }
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 3.7e-05
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -61,26 +61,26 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression petsc cholesky { } 
-		convection { amont }
-		diffusion {  }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 0. 0. 0.
-			}
-		boundary_conditions {
-			Wall paroi_fixe
-			Outlet frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-			Inlet frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3  1. 0. 0.
-		}
-	}
-	postraitement
-	{
-		champs dt_post 1e8 { 
-			pression elem
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion {  }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0. 0. 0.
+        }
+        boundary_conditions {
+            Wall paroi_fixe
+            Outlet frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Inlet frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3  1. 0. 0.
+        }
+    }
+    postraitement
+    {
+        champs dt_post 1e8 {
+            pression elem
+        }
+    }
 }
 Solve pb
 End

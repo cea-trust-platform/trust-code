@@ -8,29 +8,29 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds 25 2
-		Longueurs 1. 1.
-	}
-	{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-	}
-} 
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 25 2
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
+}
 
 Sous_Zone zone1
 Associate zone1 dom
 Read zone1 {
     polynomes {
-  2 2 1 2 -0.3333333 1.
-et 2 2 1 2 0.6666666 -1.
-et 2 1 2 2 0. 1. 
-et 2 1 2 2 1. -1.
-}
+        2 2 1 2 -0.3333333 1.
+        et 2 2 1 2 0.6666666 -1.
+        et 2 1 2 2 0. 1.
+        et 2 1 2 2 1. -1.
+    }
 
 }
 # END MESH #
@@ -38,9 +38,9 @@ et 2 1 2 2 1. -1.
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -57,22 +57,22 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 0.4
-	dt_min 0.0001
-	dt_max 10.
-	dt_impr 0.0001
-	dt_sauv 100
-	seuil_statio 1.e-8
-	facsec 0.5
+    tinit 0
+    tmax 0.4
+    dt_min 0.0001
+    dt_max 10.
+    dt_impr 0.0001
+    dt_sauv 100
+    seuil_statio 1.e-8
+    facsec 0.5
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 2.
-	Cp Champ_Uniforme 1 0.5
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 2.
+    Cp Champ_Uniforme 1 0.5
 }
 Associate pb dom
 Associate pb sch
@@ -82,40 +82,40 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		sources {
-			Puissance_thermique Champ_Uniforme_Morceaux dom 1
-				{ defaut 0. zone1 6. }
-		}
-		initial_conditions {
-			temperature Champ_Uniforme 1 0. 
-			}
-		boundary_conditions {
-			Haut paroi_adiabatique
-			Bas paroi_adiabatique
-			Droit  paroi_temperature_imposee
-			       Champ_Front_Uniforme 1 1.
-			Gauche  paroi_temperature_imposee 
-			       Champ_Front_Uniforme 1 0.
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        sources {
+            Puissance_thermique Champ_Uniforme_Morceaux dom 1
+            { defaut 0. zone1 6. }
+        }
+        initial_conditions {
+            temperature Champ_Uniforme 1 0.
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Droit  paroi_temperature_imposee
+            Champ_Front_Uniforme 1 1.
+            Gauche  paroi_temperature_imposee
+            Champ_Front_Uniforme 1 0.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde temperature periode 0.01 segment 10 0.05 0.5 0.95 0.5
-		}
-		fields dt_post 0.01
-		{
-			temperature elem
-			temperature som
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde temperature periode 0.01 segment 10 0.05 0.5 0.95 0.5
+        }
+        fields dt_post 0.01
+        {
+            temperature elem
+            temperature som
+        }
+    }
 }
 
 Solve pb
-Ecrire sol    
+Ecrire sol
 End

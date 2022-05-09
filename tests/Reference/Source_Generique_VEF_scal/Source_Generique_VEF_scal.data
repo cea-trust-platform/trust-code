@@ -10,27 +10,27 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 11 
-		Longueurs 1. 1.
-		}
-		{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
 }
 trianguler_H dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -44,27 +44,27 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 2.
-	dt_min 0.001
-	dt_max 0.01
-	dt_impr 0.01
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tinit 0
+    tmax 2.
+    dt_min 0.001
+    dt_max 0.01
+    dt_impr 0.01
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 3.7e-05
-	rho Champ_Uniforme 1 2.
-	beta_co Champ_Uniforme 1 0.
+    mu Champ_Uniforme 1 3.7e-05
+    rho Champ_Uniforme 1 2.
+    beta_co Champ_Uniforme 1 0.
 }
 
 Constituant c
 Read c
 {
-coefficient_diffusion Champ_Uniforme 1 0.01
+    coefficient_diffusion Champ_Uniforme 1 0.01
 }
 
 Champ_Uniforme gravite
@@ -80,68 +80,69 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-	 	solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.0e-06 
-			impr 
-		}
-		convection { muscl }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 1. 0.
-		}
-		boundary_conditions {
-			Haut paroi_fixe
-			Droit frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
-			Bas paroi_fixe
-			Gauche frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
-		}
-		
-	}
-	Convection_diffusion_Concentration {
-	
-		Sources { Source_Generique Transformation {
-		  	   methode formule expression 1 -concentration_natif_dom*(1.-concentration_natif_dom)
-			   source refChamp { Pb_champ pb concentration }
-		  	  }  
-			}
-		diffusion { negligeable }
-		convection { negligeable }
-		
-		initial_conditions {
-			concentration Champ_fonc_xyz dom 1 1.-x
-		}
-		boundary_conditions {
-		  Haut paroi_flux_impose Champ_Front_Uniforme 1 0.
-		  Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
-		  Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 1.
-		  Bas paroi_flux_impose Champ_Front_Uniforme 1 0.
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.0e-06
+            impr
+        }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 1. 0.
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Droit frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
+            Bas paroi_fixe
+            Gauche frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 0.
+        }
 
-	Post_processing
-	{
-		Probes
-		{
-		  sonde_pres pression periode 0.01 points 1 0.45 0.45
-		  sonde_vit vitesse periode 0.01 points 1 0.4 0.45
-		  sonde_conc concentration periode 0.01 points 1 0.55 0.45
-		  sonde_profilc concentration periode 0.01 segment 10 0.05 0.045 0.95 0.045
-		}
-		
-		Format lml
-		fields dt_post 0.3
-		{
-		  pression elem
-		  pression som
-		  vitesse elem
-		  vitesse som
-		  concentration elem
-		  concentration som
-		}
-	}
+    }
+    Convection_diffusion_Concentration {
+
+        Sources {
+            Source_Generique Transformation {
+                methode formule expression 1 -concentration_natif_dom*(1.-concentration_natif_dom)
+                source refChamp { Pb_champ pb concentration }
+            }
+        }
+        diffusion { negligeable }
+        convection { negligeable }
+
+        initial_conditions {
+            concentration Champ_fonc_xyz dom 1 1.-x
+        }
+        boundary_conditions {
+            Haut paroi_flux_impose Champ_Front_Uniforme 1 0.
+            Droit frontiere_ouverte C_ext Champ_Front_Uniforme 1 0.
+            Gauche frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 1 1.
+            Bas paroi_flux_impose Champ_Front_Uniforme 1 0.
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pres pression periode 0.01 points 1 0.45 0.45
+            sonde_vit vitesse periode 0.01 points 1 0.4 0.45
+            sonde_conc concentration periode 0.01 points 1 0.55 0.45
+            sonde_profilc concentration periode 0.01 segment 10 0.05 0.045 0.95 0.045
+        }
+
+        Format lml
+        fields dt_post 0.3
+        {
+            pression elem
+            pression som
+            vitesse elem
+            vitesse som
+            concentration elem
+            concentration som
+        }
+    }
 }
 
 Solve pb

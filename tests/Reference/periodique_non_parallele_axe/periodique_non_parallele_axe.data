@@ -7,18 +7,18 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 3 5
-		Longueurs 2. 1.
-		}
-		{
-		Bord Perio X = 0.  	0. <= Y <= 1.
-		Bord Haut  Y = 1.   	0. <= X <= 2.
-		Bord Bas   Y = 0.  	0. <= X <= 2.
-		Bord Perio X = 2. 	0. <= Y <= 1.
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 3 5
+        Longueurs 2. 1.
+    }
+    {
+        Bord Perio X = 0.  	0. <= Y <= 1.
+        Bord Haut  Y = 1.   	0. <= X <= 2.
+        Bord Bas   Y = 0.  	0. <= X <= 2.
+        Bord Perio X = 2. 	0. <= Y <= 1.
+    }
 }
 Trianguler_H dom
 Transformer dom X Y+X*0.5
@@ -28,10 +28,10 @@ Corriger_frontiere_periodique { Domaine dom Bord Perio direction 2 2. 1. }
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool Metis { nb_parts 2 }
-	Larg_joint 2
-	zones_name dom
-	periodique 1 Perio
+    Partition_tool Metis { nb_parts 2 }
+    Larg_joint 2
+    zones_name dom
+    periodique 1 Perio
 }
 End
 END PARTITION #
@@ -45,20 +45,20 @@ VEFPreP1B dis
 Runge_Kutta_ordre_3 sch
 Read sch
 {
-	tinit 0
-    	tmax 3.
-	dt_min 0.001
-	dt_max 2
-	dt_impr 0.1
-	dt_sauv 100
-	seuil_statio 1.e-10
+    tinit 0
+    tmax 3.
+    dt_min 0.001
+    dt_max 2
+    dt_impr 0.1
+    dt_sauv 100
+    seuil_statio 1.e-10
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 0.002
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2
 }
 Associate pb dom
 Associate pb sch
@@ -68,32 +68,32 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.650000 } 
-			seuil 1.000000e-12
-			impr 
-		}
-		diffusion { }
-                convection { muscl }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 2 1
-			}
-		boundary_conditions {
-			Perio periodique 
-			Haut paroi_fixe
-           		Bas paroi_fixe
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.650000 }
+            seuil 1.000000e-12
+            impr
+        }
+        diffusion { }
+        convection { muscl }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 2 1
+        }
+        boundary_conditions {
+            Perio periodique
+            Haut paroi_fixe
+            Bas paroi_fixe
+        }
+    }
 
-	Post_processing
-	{
-		fields dt_post 100.
-		{
-			vitesse elem
-		}
-	}
+    Post_processing
+    {
+        fields dt_post 100.
+        {
+            vitesse elem
+        }
+    }
 }
 
 Solve pb

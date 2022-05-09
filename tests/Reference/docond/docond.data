@@ -4,13 +4,13 @@ dimension 2
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	tmax 300.
-	dt_min 0.001
-	dt_max 10.
-	dt_impr 0.001
-	dt_sauv 400.
-	seuil_statio 1.e-20
+    tinit 0.
+    tmax 300.
+    dt_min 0.001
+    dt_max 10.
+    dt_impr 0.001
+    dt_sauv 400.
+    seuil_statio 1.e-20
 }
 
 Pb_conduction pb1
@@ -22,47 +22,47 @@ Domaine dom_fluide
 # BEGIN MESH #
 Mailler dom_solide
 {
-	Pave Cavite1
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 4 11
-		Longueurs 0.3 1.0
-		}
-		{
-		Bord Gauche1 X = 0.   0.  <= Y <= 1.0
-		Bord Haut1   Y = 1.0  0.  <= X <= 0.3
-		Bord Bas1    Y = 0.   0.  <= X <= 0.3
-		Raccord local homogene Droit1  X = 0.3  0.3 <= Y <= 1.0
-		} ,
-	Pave Cavite2
-		{
-		Origine 0.3 0.
-		Nombre_de_Noeuds 8 4
-		Longueurs 0.7 0.3
-		}
-		{
-		Raccord local homogene Haut2   Y = 0.3  0.3 <= X <= 1.0
-		Bord Bas2    Y = 0.   0.3 <= X <= 1.0
-		Bord Droit2  X = 1.0  0.  <= Y <= 0.3
-		}
+    Pave Cavite1
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 4 11
+        Longueurs 0.3 1.0
+    }
+    {
+        Bord Gauche1 X = 0.   0.  <= Y <= 1.0
+        Bord Haut1   Y = 1.0  0.  <= X <= 0.3
+        Bord Bas1    Y = 0.   0.  <= X <= 0.3
+        Raccord local homogene Droit1  X = 0.3  0.3 <= Y <= 1.0
+    } ,
+    Pave Cavite2
+    {
+        Origine 0.3 0.
+        Nombre_de_Noeuds 8 4
+        Longueurs 0.7 0.3
+    }
+    {
+        Raccord local homogene Haut2   Y = 0.3  0.3 <= X <= 1.0
+        Bord Bas2    Y = 0.   0.3 <= X <= 1.0
+        Bord Droit2  X = 1.0  0.  <= Y <= 0.3
+    }
 }
 
 Mailler dom_fluide
 {
-	Pave Cavite3
-		{
-		Origine 0.3 0.3
-		Nombre_de_Noeuds 8 8
-		Longueurs 0.7 0.7
-		}
-		{
-		Raccord local homogene Droit1 X = 0.3  0.3 <= Y <= 1.0
-		Bord Entree    Y = 1.0  0.3 <= X <= 0.7
-		Bord Haut3     Y = 1.0  0.7 <= X <= 1.0
-		Raccord local homogene Haut2  Y = 0.3  0.3 <= X <= 1.0
-		Bord Sortie    X = 1.0  0.3 <= Y <= 0.7
-		Bord Droit2    X = 1.0  0.7 <= Y <= 1.0
-		}
+    Pave Cavite3
+    {
+        Origine 0.3 0.3
+        Nombre_de_Noeuds 8 8
+        Longueurs 0.7 0.7
+    }
+    {
+        Raccord local homogene Droit1 X = 0.3  0.3 <= Y <= 1.0
+        Bord Entree    Y = 1.0  0.3 <= X <= 0.7
+        Bord Haut3     Y = 1.0  0.7 <= X <= 1.0
+        Raccord local homogene Haut2  Y = 0.3  0.3 <= X <= 1.0
+        Bord Sortie    X = 1.0  0.3 <= Y <= 0.7
+        Bord Droit2    X = 1.0  0.7 <= Y <= 1.0
+    }
 }
 Postraiter_domaine { format lata fichier dom.lata domaines { dom_solide dom_fluide } }
 # END MESH #
@@ -70,15 +70,15 @@ Postraiter_domaine { format lata fichier dom.lata domaines { dom_solide dom_flui
 # BEGIN PARTITION
 Partition dom_solide
 {
-	Partition_tool tranche { tranches 3 1 }
-	Larg_joint 1
-	zones_name DOM1
+    Partition_tool tranche { tranches 3 1 }
+    Larg_joint 1
+    zones_name DOM1
 }
 Partition dom_fluide
 {
-	Partition_tool tranche { tranches 3 1 }
-	Larg_joint 1
-	zones_name DOM2
+    Partition_tool tranche { tranches 3 1 }
+    Larg_joint 1
+    zones_name DOM2
 }
 End
 END PARTITION #
@@ -93,19 +93,19 @@ VDF dis
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.002
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 1.0 
-	Cp Champ_Uniforme 1 500
-	beta_th Champ_Uniforme 1 0.0001
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 1.0
+    Cp Champ_Uniforme 1 500
+    beta_th Champ_Uniforme 1 0.0001
 }
 
 Solide sol
 Read sol
 {
-	rho Uniform_Field 1 1000.
-	lambda Champ_Uniforme 1 250.    
-	Cp Champ_Uniforme 1 100
+    rho Uniform_Field 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100
 }
 
 Uniform_field gravite
@@ -127,140 +127,140 @@ Discretize pbc dis
 
 Read pb1
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1 30.
-			}
-		boundary_conditions {
-			Gauche1 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 40.
-			Haut1 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 20.
-			Bas1 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 40.
-		 	Droit1 paroi_contact pb2  Droit1
-			Haut2 paroi_contact pb2  Haut2
-			Bas2 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 40.
-			Droit2 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 20.
-		}
-	}
-	Post_processing
-	{
-		Probes
-		{
-			sonde_tsol temperature periode 1. points 2 
-				0.15 0.55 
-				0.55 0.15 
-		}
-		
-		Definition_champs 
-		{
-		 temperature_elem_dom_solide Interpolation {
-		  	localisation elem
-			source refChamp { Pb_champ pb1 temperature }
-		 }
-		 temperature_som_dom_solide Interpolation {
-		  	localisation som
-			source refChamp { Pb_champ pb1 temperature }
-		 }
-		}
-		Format lml
-		fields dt_post 20.+2.*t
-		{
-		    temperature_elem_dom_solide
-		    temperature_som_dom_solide
-		    temperature elem
-		}
-	}
-	sauvegarde formatte solide.rep
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 30.
+        }
+        boundary_conditions {
+            Gauche1 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 40.
+            Haut1 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 20.
+            Bas1 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 40.
+            Droit1 paroi_contact pb2  Droit1
+            Haut2 paroi_contact pb2  Haut2
+            Bas2 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 40.
+            Droit2 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 20.
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_tsol temperature periode 1. points 2
+            0.15 0.55
+            0.55 0.15
+        }
+
+        Definition_champs
+        {
+            temperature_elem_dom_solide Interpolation {
+                localisation elem
+                source refChamp { Pb_champ pb1 temperature }
+            }
+            temperature_som_dom_solide Interpolation {
+                localisation som
+                source refChamp { Pb_champ pb1 temperature }
+            }
+        }
+        Format lml
+        fields dt_post 20.+2.*t
+        {
+            temperature_elem_dom_solide
+            temperature_som_dom_solide
+            temperature elem
+        }
+    }
+    sauvegarde formatte solide.rep
 }
 
 Read pb2
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { precond ssor { omega 1.500000 } seuil 1.000000e-14 impr }
-		convection { amont }
-		diffusion { }
-		sources { boussinesq_temperature { T0 30. } }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Entree frontiere_ouverte_vitesse_imposee
-				Champ_front_Uniforme 2 0. -0.01
-			Sortie frontiere_ouverte_pression_imposee
-				Champ_front_Uniforme 1 0.
-			Droit1 paroi_fixe
-			Haut3 paroi_fixe
-			Haut2 paroi_fixe
-			Droit2 paroi_fixe
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { amont }
-		boundary_conditions 
-		{
-			Entree frontiere_ouverte_temperature_imposee
-				Champ_front_Uniforme 1 20.
-			Sortie frontiere_ouverte_temperature_imposee
-				Champ_front_Uniforme 1 20.
-			Droit1 paroi_contact pb1  Droit1
-			Haut3 paroi_temperature_imposee
-				Champ_front_Uniforme 1 20.
-			Haut2 paroi_contact pb1  Haut2
-			Droit2 paroi_temperature_imposee
-				Champ_front_Uniforme 1 20.
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 30. }
-	}
-	Post_processing
-	{
-		Probes
-		{
-			sonde_pression pression periode 1. points 1
-				0.55 0.55
-			sonde_vitesse vitesse periode 1. points 1
-				0.55 0.55
-			sonde_tflu temperature periode 1. points 1
-				0.55 0.55
-			sonde_seg temperature periode 5. segment 10 0. 0.75 1. 0.75
-			sonde_temp_interp_elem temperature_elem_dom_fluide periode 1. points 1
-				0.55 0.55
-			sonde_temp_interp_som 	temperature_som_dom_fluide periode 1. points 1
-				0.55 0.55
-			sonde_seg_temp_interp_elem temperature_elem_dom_fluide periode 5. segment 10 0. 0.75 1. 0.75
-		}
-		
-		Definition_champs 
-		{
-		 temperature_elem_dom_fluide Interpolation {
-		  	localisation elem
-			source refChamp { Pb_champ pb2 temperature }
-		 }
-		 temperature_som_dom_fluide Interpolation {
-		  	localisation som
-			source refChamp { Pb_champ pb2 temperature }
-		 }
-		}
-		Format lml
-		fields dt_post 20.+2.*t
-		{
-			pression elem
-			pression som
-			vitesse elem
-			vitesse som
-			temperature_elem_dom_fluide
-			temperature_som_dom_fluide
-		}
-	}
-	sauvegarde formatte fluide.rep
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.500000 } seuil 1.000000e-14 impr }
+        convection { amont }
+        diffusion { }
+        sources { boussinesq_temperature { T0 30. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Entree frontiere_ouverte_vitesse_imposee
+            Champ_front_Uniforme 2 0. -0.01
+            Sortie frontiere_ouverte_pression_imposee
+            Champ_front_Uniforme 1 0.
+            Droit1 paroi_fixe
+            Haut3 paroi_fixe
+            Haut2 paroi_fixe
+            Droit2 paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            Entree frontiere_ouverte_temperature_imposee
+            Champ_front_Uniforme 1 20.
+            Sortie frontiere_ouverte_temperature_imposee
+            Champ_front_Uniforme 1 20.
+            Droit1 paroi_contact pb1  Droit1
+            Haut3 paroi_temperature_imposee
+            Champ_front_Uniforme 1 20.
+            Haut2 paroi_contact pb1  Haut2
+            Droit2 paroi_temperature_imposee
+            Champ_front_Uniforme 1 20.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 30. }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 1. points 1
+            0.55 0.55
+            sonde_vitesse vitesse periode 1. points 1
+            0.55 0.55
+            sonde_tflu temperature periode 1. points 1
+            0.55 0.55
+            sonde_seg temperature periode 5. segment 10 0. 0.75 1. 0.75
+            sonde_temp_interp_elem temperature_elem_dom_fluide periode 1. points 1
+            0.55 0.55
+            sonde_temp_interp_som 	temperature_som_dom_fluide periode 1. points 1
+            0.55 0.55
+            sonde_seg_temp_interp_elem temperature_elem_dom_fluide periode 5. segment 10 0. 0.75 1. 0.75
+        }
+
+        Definition_champs
+        {
+            temperature_elem_dom_fluide Interpolation {
+                localisation elem
+                source refChamp { Pb_champ pb2 temperature }
+            }
+            temperature_som_dom_fluide Interpolation {
+                localisation som
+                source refChamp { Pb_champ pb2 temperature }
+            }
+        }
+        Format lml
+        fields dt_post 20.+2.*t
+        {
+            pression elem
+            pression som
+            vitesse elem
+            vitesse som
+            temperature_elem_dom_fluide
+            temperature_som_dom_fluide
+        }
+    }
+    sauvegarde formatte fluide.rep
 }
 Imprimer_flux dom_fluide { Entree Haut2 }
 Imprimer_flux dom_solide { Bas1 Haut2 }

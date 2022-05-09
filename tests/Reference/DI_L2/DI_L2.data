@@ -1,7 +1,7 @@
 # Hydraulique 3D laminaire avec schema convection DI_L2 #
 # PARALLEL OK 5 #
 
-dimension 3 
+dimension 3
 
 Pb_Hydraulique pb
 
@@ -9,20 +9,20 @@ Domaine dom
 
 # BEGIN MESH #
 Mailler dom {
-Pave tube
-        {
+    Pave tube
+    {
         Origine 0. 0. 0.
         Nombre_de_Noeuds 6 6 16
         Longueurs 0.01 0.01 0.10
-        }
-        {
+    }
+    {
         Bord PAROI   X = 0.       0. <= Y <=  0.01  0. <= Z <=  0.10
         Bord PAROI   X = 0.01     0. <= Y <=  0.01  0. <= Z <=  0.10
         Bord SYMET   Y = 0.01     0. <= X <=  0.01  0. <= Z <=  0.10
         Bord SYMET   Y = 0.       0. <= X <=  0.01  0. <= Z <=  0.10
         Bord ENTREE  Z = 0.       0. <= X <=  0.01  0. <= Y <=  0.01
-        Bord SORTIE  Z = 0.10     0. <= X <=  0.01  0. <= Y <=  0.01       
-        } 
+        Bord SORTIE  Z = 0.10     0. <= X <=  0.01  0. <= Y <=  0.01
+    }
 
 }
 Tetraedriser_homogene dom
@@ -30,9 +30,9 @@ Tetraedriser_homogene dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -47,23 +47,23 @@ Scheme_euler_explicit sch
 
 Read sch
 {
-	tinit   0.
-	tmax    2.0
-	nb_pas_dt_max 1
-	dt_min  0.0003
-	dt_max  0.0003
-	dt_impr 1.e-6
-	dt_sauv 10.
-	seuil_statio 1.e-8
-	diffusion_implicite 0
+    tinit   0.
+    tmax    2.0
+    nb_pas_dt_max 1
+    dt_min  0.0003
+    dt_max  0.0003
+    dt_impr 1.e-6
+    dt_sauv 10.
+    seuil_statio 1.e-8
+    diffusion_implicite 0
 
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1      1.85e-5
-	rho Champ_Uniforme 1     1.17
+    mu Champ_Uniforme 1      1.85e-5
+    rho Champ_Uniforme 1     1.17
 }
 
 Associate pb dom
@@ -76,35 +76,35 @@ Read pb
 {
     Navier_Stokes_standard
     {
-	solveur_pression GCP {
+        solveur_pression GCP {
             precond ssor { omega 1.6 } seuil 1.e-12 impr
         }
-	convection { DI_L2 }
-	diffusion { }
-	initial_conditions {	vitesse Champ_Uniforme 3  0. 0. 0.2 }
-	boundary_conditions 
-	{
-	    PAROI  paroi_fixe
-	    SYMET  symetrie
-	    SORTIE frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-	    ENTREE frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 3 0. 0.0 0.2
-	}
-     }
-     
-    Post_processing 
+        convection { DI_L2 }
+        diffusion { }
+        initial_conditions {	vitesse Champ_Uniforme 3  0. 0. 0.2 }
+        boundary_conditions
+        {
+            PAROI  paroi_fixe
+            SYMET  symetrie
+            SORTIE frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            ENTREE frontiere_ouverte_vitesse_imposee  Champ_Front_Uniforme 3 0. 0.0 0.2
+        }
+    }
+
+    Post_processing
     {
-	Probes 
-	{
-	    pression pression    periode 1.e-6 points   1 0.005 0.005 0.2 
-	    vitesse_en_x3 vitesse periode 1.e-6 segment  19  0.0001 0.005 0.1
-	                                                    0.0099 0.005 0.1
-	}
-	fields dt_post 0.2
-	{
-		vitesse 
-		pression
-	}
-   }
+        Probes
+        {
+            pression pression    periode 1.e-6 points   1 0.005 0.005 0.2
+            vitesse_en_x3 vitesse periode 1.e-6 segment  19  0.0001 0.005 0.1
+            0.0099 0.005 0.1
+        }
+        fields dt_post 0.2
+        {
+            vitesse
+            pression
+        }
+    }
 }
 
 Solve pb

@@ -10,27 +10,27 @@ Pb_conduction pb
 # BEGIN MESH
 Mailler DOM
 {
-        Pave pave1
-        {
-                origine         0. 0.
-                longueurs       1. 1.
-                nombre_de_noeuds 50 50
-        }
-        {
-                bord paroi X = 0       0 <= Y <= 1
-                bord paroi X = 1.      0 <= Y <= 1
-                bord paroi Y = 0       0 <= X <= 1
-                bord paroi Y = 1.      0 <= X <= 1
-        }
+    Pave pave1
+    {
+        origine         0. 0.
+        longueurs       1. 1.
+        nombre_de_noeuds 50 50
+    }
+    {
+        bord paroi X = 0       0 <= Y <= 1
+        bord paroi X = 1.      0 <= Y <= 1
+        bord paroi Y = 0       0 <= X <= 1
+        bord paroi Y = 1.      0 <= X <= 1
+    }
 }
 END MESH #
 
 # BEGIN PARTITION
 Partition DOM
 {
-        Partition_tool tranche { tranches 2 2 }
-        Larg_joint 1
-        zones_name dom
+    Partition_tool tranche { tranches 2 2 }
+    Larg_joint 1
+    zones_name dom
 }
 End
 END PARTITION #
@@ -57,7 +57,7 @@ Read scheme
     max_iter_implicite 50
     Solveur Implicite
     {
-      Solveur petsc cholesky { quiet }
+        Solveur petsc cholesky { quiet }
     }
 }
 
@@ -77,65 +77,65 @@ discretize pb dis
 
 read pb
 {
-	conduction
-	{
-		diffusion { }
-		initial_conditions { temperature champ_uniforme 1 0. }
-		boundary_conditions { paroi paroi_temperature_imposee champ_front_uniforme 1 0.0 }
-		sources {
-
-		Puissance_thermique Champ_Fonc_XYZ DOM 1 (-0.004*pi*x*sin(pi*x)*sin(pi*y)*sin(pi*y)*cos(pi*x)-0.004*pi*y*sin(pi*x)*sin(pi*x)*sin(pi*y)*cos(pi*y)+2*pi*pi*(0.001*x*x+y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(0.001*x*x+y*y)*sin(pi*y)*sin(pi*y)*cos(pi*x)*cos(pi*x)+2*pi*pi*(x*x+0.001*y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(x*x+0.001*y*y)*sin(pi*x)*sin(pi*x)*cos(pi*y)*cos(pi*y))
-
-                }
-
-	}
-
-	post_processing
-	{
-		Definition_champs
-		{
-
-			solution_elem Transformation {
-						methode formule expression 1 (sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y))
-						localisation elem
-						}
-
-
-			tempo Transformation {
-                                methode formule expression 1 temp
-                                        source refChamp {
-                                        Pb_Champ pb temperature nom_source temp
-                                }
-                        }
-
-
-			error_elem transformation  {
-					methode formule expression 1 solution_elem-tempo
-					sources_reference {  solution_elem , tempo }
-					localisation elem
-					   }
-
-		}
-
-		format LATA
-		fields dt_post 20.
-		{
-			error_elem
-		}
-	}
-
-  post_processings
-	{
-    volume
+    conduction
     {
-      format LATA
-  		fields dt_post 20.
-  		{
-  			temperature elem
-  			diffusivite_thermique elem
-  		}
+        diffusion { }
+        initial_conditions { temperature champ_uniforme 1 0. }
+        boundary_conditions { paroi paroi_temperature_imposee champ_front_uniforme 1 0.0 }
+        sources {
+
+            Puissance_thermique Champ_Fonc_XYZ DOM 1 (-0.004*pi*x*sin(pi*x)*sin(pi*y)*sin(pi*y)*cos(pi*x)-0.004*pi*y*sin(pi*x)*sin(pi*x)*sin(pi*y)*cos(pi*y)+2*pi*pi*(0.001*x*x+y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(0.001*x*x+y*y)*sin(pi*y)*sin(pi*y)*cos(pi*x)*cos(pi*x)+2*pi*pi*(x*x+0.001*y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(x*x+0.001*y*y)*sin(pi*x)*sin(pi*x)*cos(pi*y)*cos(pi*y))
+
+        }
+
     }
-  }
+
+    post_processing
+    {
+        Definition_champs
+        {
+
+            solution_elem Transformation {
+                methode formule expression 1 (sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y))
+                localisation elem
+            }
+
+
+            tempo Transformation {
+                methode formule expression 1 temp
+                source refChamp {
+                    Pb_Champ pb temperature nom_source temp
+                }
+            }
+
+
+            error_elem transformation  {
+                methode formule expression 1 solution_elem-tempo
+                sources_reference {  solution_elem , tempo }
+                localisation elem
+            }
+
+        }
+
+        format LATA
+        fields dt_post 20.
+        {
+            error_elem
+        }
+    }
+
+    post_processings
+    {
+        volume
+        {
+            format LATA
+            fields dt_post 20.
+            {
+                temperature elem
+                diffusivite_thermique elem
+            }
+        }
+    }
 }
 
 solve pb

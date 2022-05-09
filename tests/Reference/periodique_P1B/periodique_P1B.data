@@ -6,18 +6,18 @@ Pb_Hydraulique pb
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Cavite 
-                {
-                Origine 0. 0.
-                Nombre_de_Noeuds 10 10
-                Longueurs 6.2831853  6.2831853 
-                }
-                {
-                Bord Gauche  X = 0.       0. <= Y <= 6.2831853 
-                Bord Haut    Y = 6.2831853   0. <= X <= 6.2831853 
-                Bord Haut    Y = 0.       0. <= X <= 6.2831853 
-                Bord Gauche  X = 6.2831853   0. <= Y <= 6.2831853 
-                }
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 10 10
+        Longueurs 6.2831853  6.2831853
+    }
+    {
+        Bord Gauche  X = 0.       0. <= Y <= 6.2831853
+        Bord Haut    Y = 6.2831853   0. <= X <= 6.2831853
+        Bord Haut    Y = 0.       0. <= X <= 6.2831853
+        Bord Gauche  X = 6.2831853   0. <= Y <= 6.2831853
+    }
 }
 Trianguler_H dom
 # END MESH #
@@ -25,10 +25,10 @@ Trianguler_H dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 2 }
-	Larg_joint 2
-	zones_name DOM
-	Periodique 2 Gauche Haut
+    Partition_tool tranche { tranches 2 2 }
+    Larg_joint 2
+    zones_name DOM
+    Periodique 2 Gauche Haut
 }
 End
 END PARTITION #
@@ -42,20 +42,20 @@ VEFPreP1B dis
 Schema_Predictor_Corrector sch
 Read sch
 {
-        tinit 0.
-        tmax 2.e-4 
-        dt_min 1.e-5 
-        dt_max 1.e-4 
-        dt_impr 1.e-5 
-        dt_sauv 100
-        seuil_statio 1.e-12
-        facsec 0.1
+    tinit 0.
+    tmax 2.e-4
+    dt_min 1.e-5
+    dt_max 1.e-4
+    dt_impr 1.e-5
+    dt_sauv 100
+    seuil_statio 1.e-12
+    facsec 0.1
 }
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.02
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 0.02
+    rho Champ_Uniforme 1 2
 }
 Associate pb dom
 Associate pb sch
@@ -63,53 +63,53 @@ Associate pb fluide
 Discretize pb dis
 Read pb
 {
-        Navier_Stokes_standard
-        {
-               solveur_pression gcp { precond ssor { omega 1.6 } seuil 1.e-10 impr }
-                convection { muscl }
-                diffusion {  }
-                initial_conditions {
-                        vitesse Tayl_Green 1 
-                        }
-                boundary_conditions {
-			Haut periodique 
-			Gauche periodique 
-                }
+    Navier_Stokes_standard
+    {
+        solveur_pression gcp { precond ssor { omega 1.6 } seuil 1.e-10 impr }
+        convection { muscl }
+        diffusion {  }
+        initial_conditions {
+            vitesse Tayl_Green 1
         }
-        Post_processings
+        boundary_conditions {
+            Haut periodique
+            Gauche periodique
+        }
+    }
+    Post_processings
+    {
+        lml
         {
-		lml
-		{
-                Probes
-                {
-                        sonde_vitx     vitesse          periode 0.0001  segment 41  0. 3.1415927   6.2831853  3.1415927  
-                        sonde_vity     vitesse          periode 0.0001  segment 41  3.1415927  0.  3.1415927  6.2831853  
-                        sonde_prex     pression         periode 0.0001  segment 41  0. 3.1415927   6.2831853  3.1415927  
-                        sonde_prey     pression         periode 0.0001  segment 41  0.  0.         6.2831853  6.2831853  
+            Probes
+            {
+                sonde_vitx     vitesse          periode 0.0001  segment 41  0. 3.1415927   6.2831853  3.1415927
+                sonde_vity     vitesse          periode 0.0001  segment 41  3.1415927  0.  3.1415927  6.2831853
+                sonde_prex     pression         periode 0.0001  segment 41  0. 3.1415927   6.2831853  3.1415927
+                sonde_prey     pression         periode 0.0001  segment 41  0.  0.         6.2831853  6.2831853
 
 
-                }
-		format lml
-		fichier periodique_P1B
-                fields dt_post 0.0001 
-                {
-                    vitesse
-                    pression elem
-                    pression som
-                }
-		}
- 		lata
-		{
-		format lata
-		fichier periodique_P1B
-                fields dt_post 0.0001 
-                {
-                    vitesse
-                    pression elem
-                    pression som
-                }
-		}               
+            }
+            format lml
+            fichier periodique_P1B
+            fields dt_post 0.0001
+            {
+                vitesse
+                pression elem
+                pression som
+            }
         }
+        lata
+        {
+            format lata
+            fichier periodique_P1B
+            fields dt_post 0.0001
+            {
+                vitesse
+                pression elem
+                pression som
+            }
+        }
+    }
 }
 Solve pb
 End

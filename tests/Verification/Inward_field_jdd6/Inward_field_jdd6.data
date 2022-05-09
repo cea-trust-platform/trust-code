@@ -6,18 +6,18 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave dom
-	{
-		Origine 0. 0.
-		Nombre_de_Noeuds 4 4
-		Longueurs 1 1
-	}
-	{
-		Bord Left      X = 0.0    0.00 <= Y <= 1.0
-		Bord Right     X = 1.0    0.00 <= Y <= 1.0
-		Bord Top       Y = 1.0    0.00 <= X <= 1.0
-		Bord Bottom    Y = 0.0    0.00 <= X <= 1.0
-	}
+    Pave dom
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 4 4
+        Longueurs 1 1
+    }
+    {
+        Bord Left      X = 0.0    0.00 <= Y <= 1.0
+        Bord Right     X = 1.0    0.00 <= Y <= 1.0
+        Bord Top       Y = 1.0    0.00 <= X <= 1.0
+        Bord Bottom    Y = 0.0    0.00 <= X <= 1.0
+    }
 }
 Trianguler_H dom
 /* rotation of angle theta : */
@@ -29,14 +29,14 @@ Transformer dom x*cos(pi/4)+y*sin(pi/4) -x*sin(pi/4)+y*cos(pi/4)
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { nb_parts 2 }
-	zones_name DOM
-        Larg_joint 2
+    Partition_tool metis { nb_parts 2 }
+    zones_name DOM
+    Larg_joint 2
 }
 End
 END PARTITION #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones dom
 END SCATTER #
 
@@ -47,16 +47,16 @@ Domaine boundary_Right
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.0
+    tinit 0.0
 	nb_pas_dt_max 0
-	seuil_statio -1
+    seuil_statio -1
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.05
- 	rho Champ_Uniforme 1 1.2
+    mu Champ_Uniforme 1 0.05
+    rho Champ_Uniforme 1 1.2
 }
 
 Associate pb dom
@@ -67,77 +67,77 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression petsc cholesky { }
-		convection { negligeable }
-		diffusion { }
-		initial_conditions { vitesse champ_uniforme 2 0. 0. }
-		boundary_conditions 
-		{
-		     Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
-		     Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }
-		     Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -1./sqrt(2) 1./sqrt(2)
-		     Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -1./sqrt(2) 1./sqrt(2)
-		}
-     	}
-	      
-	Post_processing
-	{
-	    format lml
-		fields dt_post 0.0
-		{			
-			pression elem			
-			vitesse som
-			vitesse elem
-		}	
-	}
-	Post_processings
-	{
-	   volumic
-	   {
-	        format lml
-		fields dt_post 0.0
-		{			
-			pression elem			
-			vitesse som
-			vitesse elem
-		}	
-	   }
-	   Champ_front_normal
-	   {
-	      format lml
-	      Domaine boundary_Right
-	      definition_champs
-	      {
-	         # velocity given by Trio on the boundary #
-	         velocity_trio Extraction { Domaine boundary_Right nom_frontiere Right methode trace source refChamp { Pb_champ pb vitesse } }
-		 # we know what is the vector shape on the boundary #
-		 true_vector  Transformation { methode vecteur expression 2 -1./sqrt(2) 1./sqrt(2) localisation Faces }
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { negligeable }
+        diffusion { }
+        initial_conditions { vitesse champ_uniforme 2 0. 0. }
+        boundary_conditions
+        {
+            Left frontiere_ouverte_pression_imposee champ_front_uniforme  1 0.0
+            Right frontiere_ouverte_vitesse_imposee Boundary_field_inward { normal_value 1.0 }
+            Top Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -1./sqrt(2) 1./sqrt(2)
+            Bottom Frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz 2 -1./sqrt(2) 1./sqrt(2)
+        }
+    }
 
-		 # all this stuff is to compute error between velocity_trio and true_vector #
- 		 true_vector_interp Interpolation { localisation elem  sources_reference { true_vector } }  
-		 velocity_X Transformation { methode composante numero 0 source refChamp { Pb_champ pb vitesse } localisation elem }
-		 velocity_Y Transformation { methode composante numero 1 source refChamp { Pb_champ pb vitesse } localisation elem }
-		 true_velocity_X Transformation { methode composante numero 0 sources_reference { true_vector_interp } localisation elem }
-		 true_velocity_Y Transformation { methode composante numero 1 sources_reference { true_vector_interp } localisation elem }
-		 error_X transformation  { methode formule expression 1 true_velocity_X-velocity_X sources_reference { velocity_X , true_velocity_X } }
-		 error_Y transformation  { methode formule expression 1 true_velocity_Y-velocity_Y sources_reference { velocity_Y , true_velocity_Y } }
+    Post_processing
+    {
+        format lml
+        fields dt_post 0.0
+        {
+            pression elem
+            vitesse som
+            vitesse elem
+        }
+    }
+    Post_processings
+    {
+        volumic
+        {
+            format lml
+            fields dt_post 0.0
+            {
+                pression elem
+                vitesse som
+                vitesse elem
+            }
+        }
+        Champ_front_normal
+        {
+            format lml
+            Domaine boundary_Right
+            definition_champs
+            {
+                # velocity given by Trio on the boundary #
+                velocity_trio Extraction { Domaine boundary_Right nom_frontiere Right methode trace source refChamp { Pb_champ pb vitesse } }
+                # we know what is the vector shape on the boundary #
+                true_vector  Transformation { methode vecteur expression 2 -1./sqrt(2) 1./sqrt(2) localisation Faces }
 
-		 error	transformation { methode vecteur expression 2 error_X error_Y sources_reference { error_X , error_Y } }
-	  	 error_norm Transformation { methode norme source_reference error }
+                # all this stuff is to compute error between velocity_trio and true_vector #
+                true_vector_interp Interpolation { localisation elem  sources_reference { true_vector } }
+                velocity_X Transformation { methode composante numero 0 source refChamp { Pb_champ pb vitesse } localisation elem }
+                velocity_Y Transformation { methode composante numero 1 source refChamp { Pb_champ pb vitesse } localisation elem }
+                true_velocity_X Transformation { methode composante numero 0 sources_reference { true_vector_interp } localisation elem }
+                true_velocity_Y Transformation { methode composante numero 1 sources_reference { true_vector_interp } localisation elem }
+                error_X transformation  { methode formule expression 1 true_velocity_X-velocity_X sources_reference { velocity_X , true_velocity_X } }
+                error_Y transformation  { methode formule expression 1 true_velocity_Y-velocity_Y sources_reference { velocity_Y , true_velocity_Y } }
 
-              }
-	      fields dt_post 0.0
-	      {
-		 velocity_trio
-		 true_vector_interp
-		 error
-		 error_norm
-	      }
-	   }
+                error	transformation { methode vecteur expression 2 error_X error_Y sources_reference { error_X , error_Y } }
+                error_norm Transformation { methode norme source_reference error }
 
-	}
+            }
+            fields dt_post 0.0
+            {
+                velocity_trio
+                true_vector_interp
+                error
+                error_norm
+            }
+        }
+
+    }
 
 }
 

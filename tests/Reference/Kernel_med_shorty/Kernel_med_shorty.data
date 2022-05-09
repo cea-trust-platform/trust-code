@@ -1,6 +1,6 @@
 # Cas pour tester la lecture d un fichier med avec short_family_names #
 dimension 3
-domaine dom 
+domaine dom
 # BEGIN MESH #
 # Lecture du maillage genere par salome voir cas Lire_unv #
 # test de ecrire_champ_med #
@@ -9,4 +9,4 @@ ecrire_fichier dom ess.geom
 discretiser_domaine dom
 postraiter_domaine { domaine dom format lml }
 # END MESH #
-End 
+End

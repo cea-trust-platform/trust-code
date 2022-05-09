@@ -7,24 +7,24 @@ Domaine dom
 
 Mailler dom
 {
-	Pave Cavite
-	{
-		Origine 0. 0. 0.
-		Nombre_de_Noeuds 21 11 11
-		Longueurs 6.283185307 2.0 3.141592653
-		xtanh 0.87
-		ytanh 0.89
-		ztanh 0.75
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 21 11 11
+        Longueurs 6.283185307 2.0 3.141592653
+        xtanh 0.87
+        ytanh 0.89
+        ztanh 0.75
 
-	}
-	{
-		Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
-		Bord periox  X = 6.283185307   0. <= Y <= 2.0           0. <= Z <= 3.141592653 
-		Bord bas     Y = 0.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
-		Bord haut    Y = 2.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
-		Bord perioz  Z = 0.            0. <= X <= 6.283185307   0. <= Y <= 2.0
-		Bord perioz  Z = 3.141592653   0. <= X <= 6.283185307   0. <= Y <= 2.0   	
-	}
+    }
+    {
+        Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
+        Bord periox  X = 6.283185307   0. <= Y <= 2.0           0. <= Z <= 3.141592653
+        Bord bas     Y = 0.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+        Bord haut    Y = 2.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+        Bord perioz  Z = 0.            0. <= X <= 6.283185307   0. <= Y <= 2.0
+        Bord perioz  Z = 3.141592653   0. <= X <= 6.283185307   0. <= Y <= 2.0
+    }
 }
 
 discretiser_domaine dom

@@ -26,7 +26,7 @@ Read scheme
     max_iter_implicite 50
     Solveur Implicite
     {
-      Solveur petsc cholesky { quiet }
+        Solveur petsc cholesky { quiet }
     }
 }
 
@@ -46,57 +46,57 @@ discretize pb dis
 
 read pb
 {
-	conduction
-	{
-		diffusion { }
-		initial_conditions { temperature champ_uniforme 1 0. }
-		boundary_conditions { paroi paroi_temperature_imposee champ_front_uniforme 1 0.0 }
-		sources {
-
-  			Puissance_thermique Champ_Fonc_XYZ DOM 1 (7.2*pi*pi*x*y*sin(pi*x)*sin(pi*y)*cos(pi*x)*cos(pi*y)+1.4*pi*x*sin(pi*x)*sin(pi*y)*sin(pi*y)*cos(pi*x)+1.4*pi*y*sin(pi*x)*sin(pi*x)*sin(pi*y)*cos(pi*y)+2*pi*pi*(0.1*x*x+y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(0.1*x*x+y*y)*sin(pi*y)*sin(pi*y)*cos(pi*x)*cos(pi*x)+2*pi*pi*(x*x+0.1*y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(x*x+0.1*y*y)*sin(pi*x)*sin(pi*x)*cos(pi*y)*cos(pi*y))
-
-	                }
-
-	}
-
-	# post traitement  #
-	post_processing
-	{
-		Definition_champs
-		{
-
-			solution_elem Transformation {
-						methode formule expression 1 (sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y))
-						localisation elem
-						}
-
-			error_elem transformation  {
-							methode formule expression 1 abs(solution_elem-temperature_physique)
-							sources_reference {  solution_elem , temperature_physique }
-							localisation elem
-						   }
-
-		}
-
-		format LATA
-		fields dt_post 100.
-		{
-			error_elem
-		}
-	}
-
-  post_processings
-	{
-    volume
+    conduction
     {
-      format LATA
-  		fields dt_post 100.
-  		{
-  			temperature elem
-  			diffusivite_thermique elem
-  		}
+        diffusion { }
+        initial_conditions { temperature champ_uniforme 1 0. }
+        boundary_conditions { paroi paroi_temperature_imposee champ_front_uniforme 1 0.0 }
+        sources {
+
+            Puissance_thermique Champ_Fonc_XYZ DOM 1 (7.2*pi*pi*x*y*sin(pi*x)*sin(pi*y)*cos(pi*x)*cos(pi*y)+1.4*pi*x*sin(pi*x)*sin(pi*y)*sin(pi*y)*cos(pi*x)+1.4*pi*y*sin(pi*x)*sin(pi*x)*sin(pi*y)*cos(pi*y)+2*pi*pi*(0.1*x*x+y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(0.1*x*x+y*y)*sin(pi*y)*sin(pi*y)*cos(pi*x)*cos(pi*x)+2*pi*pi*(x*x+0.1*y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(x*x+0.1*y*y)*sin(pi*x)*sin(pi*x)*cos(pi*y)*cos(pi*y))
+
+        }
+
     }
-  }
+
+    # post traitement  #
+    post_processing
+    {
+        Definition_champs
+        {
+
+            solution_elem Transformation {
+                methode formule expression 1 (sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y))
+                localisation elem
+            }
+
+            error_elem transformation  {
+                methode formule expression 1 abs(solution_elem-temperature_physique)
+                sources_reference {  solution_elem , temperature_physique }
+                localisation elem
+            }
+
+        }
+
+        format LATA
+        fields dt_post 100.
+        {
+            error_elem
+        }
+    }
+
+    post_processings
+    {
+        volume
+        {
+            format LATA
+            fields dt_post 100.
+            {
+                temperature elem
+                diffusivite_thermique elem
+            }
+        }
+    }
 }
 
 solve pb

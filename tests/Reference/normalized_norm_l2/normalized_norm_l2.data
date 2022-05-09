@@ -8,27 +8,27 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave dom
-        {
-                Origine 0. 0.
-                Nombre_de_Noeuds 5 5
-                Longueurs 1. 1.
-        }
-        {
-                Bord Left      X = 0.0    0.00 <= Y <= 1.0
-                Bord Right     X = 1.0    0.00 <= Y <= 1.0
-                Bord Top       Y = 1.0    0.00 <= X <= 1.0
-                Bord Bottom    Y = 0.0    0.00 <= X <= 1.0
-        }
+    Pave dom
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 5 5
+        Longueurs 1. 1.
+    }
+    {
+        Bord Left      X = 0.0    0.00 <= Y <= 1.0
+        Bord Right     X = 1.0    0.00 <= Y <= 1.0
+        Bord Top       Y = 1.0    0.00 <= X <= 1.0
+        Bord Bottom    Y = 0.0    0.00 <= X <= 1.0
+    }
 }
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-        Partition_tool metis { nb_parts 2 }
-        Larg_joint 2
-        zones_name DOM
+    Partition_tool metis { nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -42,15 +42,15 @@ VDF dis
 Scheme_Euler_explicit sch
 Read sch
 {
-	tinit 0.
-	nb_pas_dt_max 0
+    tinit 0.
+    nb_pas_dt_max 0
 }
 
 Fluide_incompressible fluide
 Read fluide
 {
-	mu  champ_uniforme 1 1.
- 	rho champ_uniforme 1 1.
+    mu  champ_uniforme 1 1.
+    rho champ_uniforme 1 1.
 }
 
 Associate pb dom
@@ -61,60 +61,61 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		Solveur_pression	Petsc Cholesky { impr }
-		Convection		{ negligeable }
-		Diffusion		{ }
-		Conditions_initiales	{
-					vitesse champ_fonc_xyz dom 2 -256*x^2*(x-1)^2*y*(y-1)*(2*y-1) 256*y^2*(y-1)^2*x*(x-1)*(2*x-1)
-					}
-		Conditions_limites	{
-					Left  	paroi_fixe
-					Right 	paroi_fixe
-					Top 	paroi_fixe
-					Bottom	paroi_fixe
-					}
-		Sources			{
-						Source_Qdm champ_fonc_xyz dom 
-							2 0.5*256*(x^2*(x-1)^2*(12*y-6)+y*(y-1)*(2*y-1)*(12*x^2-12*x+2))+(y-1/2) -0.5*256*(y^2*(y-1)^2*(12*x-6)+x*(x-1)*(2*x-1)*(12*y^2-12*y+2))+(x-1/2) ,
- 						Source_Generique Transformation { localisation faces methode vecteur expression 
-							2 0.5*256*(x^2*(x-1)^2*(12*y-6)+y*(y-1)*(2*y-1)*(12*x^2-12*x+2))+(y-1/2) -0.5*256*(y^2*(y-1)^2*(12*x-6)+x*(x-1)*(2*x-1)*(12*y^2-12*y+2))+(x-1/2) 
-						} 	
+    Navier_Stokes_standard
+    {
+        Solveur_pression	Petsc Cholesky { impr }
+        Convection		{ negligeable }
+        Diffusion		{ }
+        Conditions_initiales	{
+            vitesse champ_fonc_xyz dom 2 -256*x^2*(x-1)^2*y*(y-1)*(2*y-1) 256*y^2*(y-1)^2*x*(x-1)*(2*x-1)
+        }
+        Conditions_limites	{
+            Left  	paroi_fixe
+            Right 	paroi_fixe
+            Top 	paroi_fixe
+            Bottom	paroi_fixe
+        }
+        Sources			{
+            Source_Qdm champ_fonc_xyz dom
+            2 0.5*256*(x^2*(x-1)^2*(12*y-6)+y*(y-1)*(2*y-1)*(12*x^2-12*x+2))+(y-1/2) -0.5*256*(y^2*(y-1)^2*(12*x-6)+x*(x-1)*(2*x-1)*(12*y^2-12*y+2))+(x-1/2) ,
+            Source_Generique Transformation {
+                localisation faces methode vecteur expression
+                2 0.5*256*(x^2*(x-1)^2*(12*y-6)+y*(y-1)*(2*y-1)*(12*x^2-12*x+2))+(y-1/2) -0.5*256*(y^2*(y-1)^2*(12*x-6)+x*(x-1)*(2*x-1)*(12*y^2-12*y+2))+(x-1/2)
+            }
 
-					}
-	}
-	Post_processing
-	{
-		Definition_champs	{
-					norme_L2_1	reduction_0D	{
-									methode normalized_euclidian_norm
-									source transformation	{
-												methode formule expression 1 1
-												localisation elem
-												}
-									}
-					L2_norm reduction_0D {
-						methode L2_norm
-						source refchamp { Pb_champ pb vitesse }
-						}
-					L1_norm reduction_0D {
-						methode L1_norm
-						source refchamp { Pb_champ pb vitesse }
-						}
-					}
-		Probes			{
-					norme_L2_1	norme_L2_1	periode 1e+6 numero_elem_sur_maitre 0
-					L2_norm 	L2_norm 	periode 1e+6 numero_elem_sur_maitre 0
-					L1_norm 	L1_norm 	periode 1e+6 numero_elem_sur_maitre 0
-					}
-                Format lml
-		Fields dt_post 1e+6	{
-					norme_L2_1	elem
-					L2_norm 	elem
-					L1_norm 	elem
-					}
-	}
+        }
+    }
+    Post_processing
+    {
+        Definition_champs	{
+            norme_L2_1	reduction_0D	{
+                methode normalized_euclidian_norm
+                source transformation	{
+                    methode formule expression 1 1
+                    localisation elem
+                }
+            }
+            L2_norm reduction_0D {
+                methode L2_norm
+                source refchamp { Pb_champ pb vitesse }
+            }
+            L1_norm reduction_0D {
+                methode L1_norm
+                source refchamp { Pb_champ pb vitesse }
+            }
+        }
+        Probes			{
+            norme_L2_1	norme_L2_1	periode 1e+6 numero_elem_sur_maitre 0
+            L2_norm 	L2_norm 	periode 1e+6 numero_elem_sur_maitre 0
+            L1_norm 	L1_norm 	periode 1e+6 numero_elem_sur_maitre 0
+        }
+        Format lml
+        Fields dt_post 1e+6	{
+            norme_L2_1	elem
+            L2_norm 	elem
+            L1_norm 	elem
+        }
+    }
 }
 
 Solve pb

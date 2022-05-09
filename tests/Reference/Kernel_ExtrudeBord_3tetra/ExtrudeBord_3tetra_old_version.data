@@ -6,13 +6,13 @@ Domaine canal
 Read_file dom domainComplet.geom
 
 # avec 3 tetraedres par prisme: #
- extract_2d_from_3d dom entree canal 
- 
- dimension 2  
- 
-  Extruder_en3 { domaine 1 canal nb_tranches 5 direction 0 0 0.0403 } 
-  
- dimension 3 
+extract_2d_from_3d dom entree canal
+
+dimension 2
+
+Extruder_en3 { domaine 1 canal nb_tranches 5 direction 0 0 0.0403 }
+
+dimension 3
 
 RegroupeBord canal PERIO { devant derriere }
 

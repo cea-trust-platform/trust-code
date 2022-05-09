@@ -113,9 +113,9 @@ Read pb
     {
         probes
         {
-             rho grav masse_volumique periode 1e8 segment 1000 0 0.5 1 0.5
-               v grav         vitesse periode 1e8 segment 1000 0 0.5 1 0.5
-               p grav        pression periode 1e8 segment 1000 0 0.5 1 0.5
+            rho grav masse_volumique periode 1e8 segment 1000 0 0.5 1 0.5
+            v grav         vitesse periode 1e8 segment 1000 0 0.5 1 0.5
+            p grav        pression periode 1e8 segment 1000 0 0.5 1 0.5
             eint grav energie_interne periode 1e8 segment 1000 0 0.5 1 0.5
         }
         Format lml

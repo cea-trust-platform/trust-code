@@ -43,8 +43,7 @@ Read sch
     # solveur implicite { solveur petsc cli { } } #
 }
 
-#
-Schema_euler_explicite sch
+/* Schema_euler_explicite sch
 Read sch
 {
     tinit   0
@@ -54,8 +53,7 @@ Read sch
     dt_max  1e-6
     dt_impr 1e-10
     seuil_statio 1e-10
-}
-#
+} */
 
 Fluide_Incompressible eau
 Read eau

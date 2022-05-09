@@ -8,27 +8,27 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 11 
-		Longueurs 0.01 0.01
-		}
-		{
-		Bord Gauche X = 0.	0. <= Y <= 0.01
-		Bord Haut   Y = 0.01	0. <= X <= 0.01
-		Bord Bas    Y = 0.	0. <= X <= 0.01
-		Bord Droit  X = 0.01	0. <= Y <= 0.01
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.	0. <= Y <= 0.01
+        Bord Haut   Y = 0.01	0. <= X <= 0.01
+        Bord Bas    Y = 0.	0. <= X <= 0.01
+        Bord Droit  X = 0.01	0. <= Y <= 0.01
+    }
 }
 trianguler_H dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -42,27 +42,27 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 1.
-	dt_min 1.e-6
-	dt_max 0.01
-	dt_impr 0.001
-	dt_sauv 100
-	seuil_statio 1.e-8
-	nb_pas_dt_max 10
+    tinit 0
+    tmax 1.
+    dt_min 1.e-6
+    dt_max 0.01
+    dt_impr 0.001
+    dt_sauv 100
+    seuil_statio 1.e-8
+    nb_pas_dt_max 10
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu	Champ_Uniforme 1 1.85e-5
-	rho	Champ_Uniforme 1 1.17
+    mu	Champ_Uniforme 1 1.85e-5
+    rho	Champ_Uniforme 1 1.17
 }
 
 Constituant c
 Read c
 {
-	coefficient_diffusion Champ_Uniforme 2 1e-5 1e-4
+    coefficient_diffusion Champ_Uniforme 2 1e-5 1e-4
 }
 
 Champ_Uniforme gravite
@@ -78,62 +78,62 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-	 	solveur_pression petsc cholesky { }
-		convection { muscl }
-		diffusion { }
-		initial_conditions
-		{
-			vitesse Champ_Uniforme 2 0. 0.
-		}
-		boundary_conditions
-		{
-			Haut	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
-			Droit	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
-			Bas	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
-			Gauche	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
-		}
-		
-	}
-	Convection_diffusion_Concentration
-	{
-		diffusion { }
-		convection { muscl }
-		
-		initial_conditions
-		{
-			concentration Champ_Uniforme 2 0. 0.
-		}
-		boundary_conditions
-		{
-			Haut	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 2 0. 0.
-			Droit	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 2 0. 0.
-			Gauche	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 2 1. 1.
-			Bas	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 2 0. 0.
-		}
-		# Adding source terms #
-		Sources { source_constituant Champ_fonc_xyz dom 2 x y }
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { muscl }
+        diffusion { }
+        initial_conditions
+        {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions
+        {
+            Haut	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
+            Droit	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
+            Bas	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
+            Gauche	frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  0. 0.
+        }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_pres pression	 periode 0.01 points 1 0.0045 0.0045
-			sonde_vit  vitesse	 periode 0.01 points 1 0.004  0.0045
-			sonde_conc concentration periode 0.01 points 1 0.0055 0.0045
-		}
-		Definition_champs {
-                        # Post processing concentration source terms #
-                        Concentration_sources Operateur_Eqn { numero_source 0 sources { refChamp { pb_champ pb concentration } } }
-               	}
-		fields dt_post 0.1
-		{
-			Concentration			elem
-			Concentration_sources		elem
-		}
-	}
+    }
+    Convection_diffusion_Concentration
+    {
+        diffusion { }
+        convection { muscl }
+
+        initial_conditions
+        {
+            concentration Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions
+        {
+            Haut	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 2 0. 0.
+            Droit	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 2 0. 0.
+            Gauche	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 2 1. 1.
+            Bas	frontiere_ouverte_concentration_imposee Champ_Front_Uniforme 2 0. 0.
+        }
+        # Adding source terms #
+        Sources { source_constituant Champ_fonc_xyz dom 2 x y }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pres pression	 periode 0.01 points 1 0.0045 0.0045
+            sonde_vit  vitesse	 periode 0.01 points 1 0.004  0.0045
+            sonde_conc concentration periode 0.01 points 1 0.0055 0.0045
+        }
+        Definition_champs {
+            # Post processing concentration source terms #
+            Concentration_sources Operateur_Eqn { numero_source 0 sources { refChamp { pb_champ pb concentration } } }
+        }
+        fields dt_post 0.1
+        {
+            Concentration			elem
+            Concentration_sources		elem
+        }
+    }
 }
 
 Solve pb

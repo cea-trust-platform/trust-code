@@ -7,15 +7,15 @@ Pb_Hydraulique pb
 
 Domaine dom
 # BEGIN MESH #
-Read_file dom tube_3D.geom 
+Read_file dom tube_3D.geom
 
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -29,22 +29,22 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.0
-        nb_pas_dt_max 5
-	tmax 0.0001
-	dt_min 1.e-6
-	dt_max 0.001
-	dt_impr 0.000001
-	dt_sauv 100
-	seuil_statio 1.e-10
-	facsec 1.0
+    tinit 0.0
+    nb_pas_dt_max 5
+    tmax 0.0001
+    dt_min 1.e-6
+    dt_max 0.001
+    dt_impr 0.000001
+    dt_sauv 100
+    seuil_statio 1.e-10
+    facsec 1.0
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.002
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2
 }
 
 
@@ -56,38 +56,38 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
-		convection { amont }
-		diffusion { }
-		initial_conditions 
-		        {
-			vitesse Champ_Uniforme 3 0.00 0.0 0.1
-			}
-		boundary_conditions {
-		        PAROI  paroi_fixe
-			ENTREE frontiere_ouverte_vitesse_imposee 
-			        Champ_Front_Uniforme 3 0.0 0.0 0.1
-			SORTIE frontiere_ouverte_pression_imposee 
-			        Champ_Front_Uniforme 1 0.0  
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP { precond ssor { omega 1.65 } seuil 1.e-12 }
+        convection { amont }
+        diffusion { }
+        initial_conditions
+        {
+            vitesse Champ_Uniforme 3 0.00 0.0 0.1
+        }
+        boundary_conditions {
+            PAROI  paroi_fixe
+            ENTREE frontiere_ouverte_vitesse_imposee
+            Champ_Front_Uniforme 3 0.0 0.0 0.1
+            SORTIE frontiere_ouverte_pression_imposee
+            Champ_Front_Uniforme 1 0.0
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-		   sonde_vit1 vitesse  periode 1.e-5 segment 10 0. 0. 0. 0. 0. 0.1
-		   sonde_vit2 vitesse  periode 1.e-5 segment 15 0. -0.01 0.08 0. 0.01 0.08
-	           sonde_pre1 pression periode 1.e-5 segment 10 0. 0.0 0. 0. 0.0 0.1
-		}
-		fields dt_post 0.1
-		{		
-			vitesse
-	                pression	
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_vit1 vitesse  periode 1.e-5 segment 10 0. 0. 0. 0. 0. 0.1
+            sonde_vit2 vitesse  periode 1.e-5 segment 15 0. -0.01 0.08 0. 0.01 0.08
+            sonde_pre1 pression periode 1.e-5 segment 10 0. 0.0 0. 0. 0.0 0.1
+        }
+        fields dt_post 0.1
+        {
+            vitesse
+            pression
+        }
+    }
 }
 
 Solve pb

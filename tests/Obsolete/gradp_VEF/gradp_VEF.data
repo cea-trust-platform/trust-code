@@ -10,28 +10,28 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Entree
-                {
-                Origine 0. 0.
-                Nombre_de_Noeuds 11 11
-                Longueurs 1 1
-                }
-                {
-                bord Entree X = 0.   0. <= Y <= 1.0
-                bord Haut   Y = 1.0  0. <= X <= 1.0
-                bord Bas    Y = 0.   0. <= X <= 1.0
-                bord Sortie X = 1.0  0. <= Y <= 1.0
-                }
+    Pave Entree
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1 1
+    }
+    {
+        bord Entree X = 0.   0. <= Y <= 1.0
+        bord Haut   Y = 1.0  0. <= X <= 1.0
+        bord Bas    Y = 0.   0. <= X <= 1.0
+        bord Sortie X = 1.0  0. <= Y <= 1.0
+    }
 }
-Trianguler dom 
+Trianguler dom
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -46,20 +46,20 @@ Read dis { P0 }
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 5000.
-	dt_min 1.e-6
-	dt_max 1.0
-	dt_impr 0.0001
-	dt_sauv 100
-	seuil_statio 1.e-5
+    tinit 0
+    tmax 5000.
+    dt_min 1.e-6
+    dt_max 1.0
+    dt_impr 0.0001
+    dt_sauv 100
+    seuil_statio 1.e-5
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 2
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 2
+    rho Champ_Uniforme 1 2
 }
 
 Champ_Uniforme gravite
@@ -70,42 +70,42 @@ Associate pb eau
 Discretize pb dis
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.650000 } 
-			seuil 1.000000e-16 
-			impr 
-		}
-		convection { negligeable }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Haut paroi_fixe
-			Bas paroi_fixe
-			Entree frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-			Sortie frontiere_ouverte_gradient_pression_impose_VEFPREP1B Champ_Front_Uniforme 1 0.
-		}
-	}
-	Post_processing
-	{
-		Probes
-		{
-		 seg_P pression periode 0.001 segment 20 0.025 0.5 0.975 0.5
-		 seg_U1 vitesse periode 0.001 segment 11 0. 0.5 1.0 0.5
-		 seg_U2 vitesse periode 0.001 segment 19 1.0 0.02631 1.0 0.9736
-		 sonde_pression pression periode 0.001 points 1 0.5 0.5
-		 sonde_vitesse  vitesse periode 0.001 points 1 0.5 0.5
-		}
-		fields dt_post 1.0
-		{
-			pression elem
-			pression som
-			vitesse som
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.650000 }
+            seuil 1.000000e-16
+            impr
+        }
+        convection { negligeable }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Entree frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            Sortie frontiere_ouverte_gradient_pression_impose_VEFPREP1B Champ_Front_Uniforme 1 0.
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            seg_P pression periode 0.001 segment 20 0.025 0.5 0.975 0.5
+            seg_U1 vitesse periode 0.001 segment 11 0. 0.5 1.0 0.5
+            seg_U2 vitesse periode 0.001 segment 19 1.0 0.02631 1.0 0.9736
+            sonde_pression pression periode 0.001 points 1 0.5 0.5
+            sonde_vitesse  vitesse periode 0.001 points 1 0.5 0.5
+        }
+        fields dt_post 1.0
+        {
+            pression elem
+            pression som
+            vitesse som
+        }
+    }
 }
 Solve pb
 End

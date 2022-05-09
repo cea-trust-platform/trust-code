@@ -1,13 +1,13 @@
-# Hydraulique 2D laminaire POISEUILLE 
-  Re = (rho*U_max*L)/mu
+# Hydraulique 2D laminaire POISEUILLE #
+/*  Re = (rho*U_max*L)/mu
   rho = 1.0 kg/m^3
   U_max = 1 m/s
   L = 1 m
   Re = 1
   mu = (rho*U_max*L)/Re
   A.N.
-  mu = 1.0 
-#
+  mu = 1.0 */
+
 # PARALLEL NOT #
 dimension 3
 Pb_Hydraulique pb
@@ -111,7 +111,7 @@ Lire pb
                     local
                     vitesse_imposee_fonction 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
                 }
-		# Attention: cas test qui verifie seulement que le code lit les mots cles prevus de cette interpolation #
+                # Attention: cas test qui verifie seulement que le code lit les mots cles prevus de cette interpolation #
                 interpolation IBM_aucune
             }
         }
@@ -128,12 +128,12 @@ Lire pb
     }
     Post_processing
     {
-		format lml
-        	Champs dt_post 1e0
-        	{
-            		pression elem
-            		vitesse som
-        	}
+        format lml
+        Champs dt_post 1e0
+        {
+            pression elem
+            vitesse som
+        }
     }
 }
 resoudre pb

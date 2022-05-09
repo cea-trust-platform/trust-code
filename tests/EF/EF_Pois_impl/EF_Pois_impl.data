@@ -5,29 +5,29 @@ Pb_hydraulique pb
 Domaine dom
 EcritureLectureSpecial 0
 # BEGIN MESH #
-Mailler dom 
+Mailler dom
 {
-	Pave Entree
-		{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 101 
-		Longueurs 0.1 0.22
-		}
-		{
-		bord Entree X = 0. 0. <= Y <= 0.22 
-		bord Symetrie Y = 0.22 0. <= X <= 0.1 
-		bord Symetrie Y = 0. 0. <= X <= 0.1 
-		bord Sortie X = 0.1 0. <= Y <= 0.22
-		} 
+    Pave Entree
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 101
+        Longueurs 0.1 0.22
+    }
+    {
+        bord Entree X = 0. 0. <= Y <= 0.22
+        bord Symetrie Y = 0.22 0. <= X <= 0.1
+        bord Symetrie Y = 0. 0. <= X <= 0.1
+        bord Sortie X = 0.1 0. <= Y <= 0.22
+    }
 }
 # END MESH #
 # BEGIN PARTITION
 
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -41,38 +41,38 @@ EF dis
 Scheme_euler_implicit sch2
 Read sch2
 {
-	tinit 0
-	dt_min 5.e-8
-	dt_impr 5.e-1
-	dt_sauv 1
-	seuil_statio 1.e-5
-	solveur implicite { 
-		seuil_convergence_implicite 1e-2
-		seuil_convergence_solveur  1e-10
-		solveur gmres { diag seuil 1e-10 }
-		solveur optimal { seuil 1e-10 }
-		solveur Gen { seuil 1e-10 solv_elem BiCGStab precond ILU { type 2 filling 20 }  quiet } 
+    tinit 0
+    dt_min 5.e-8
+    dt_impr 5.e-1
+    dt_sauv 1
+    seuil_statio 1.e-5
+    solveur implicite {
+        seuil_convergence_implicite 1e-2
+        seuil_convergence_solveur  1e-10
+        solveur gmres { diag seuil 1e-10 }
+        solveur optimal { seuil 1e-10 }
+        solveur Gen { seuil 1e-10 solv_elem BiCGStab precond ILU { type 2 filling 20 }  quiet }
 
-		 }
-	nb_pas_dt_max 100
-	facsec 100
+    }
+    nb_pas_dt_max 100
+    facsec 100
 
 }
 Scheme_euler_explicit sch
 Read sch
 {
-        tinit 0
-        dt_min 5.e-8
-        dt_impr 5.e-1
-        dt_sauv 1
-        seuil_statio 1.e-8
+    tinit 0
+    dt_min 5.e-8
+    dt_impr 5.e-1
+    dt_sauv 1
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 3.
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 3.
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -83,44 +83,44 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-                methode_calcul_pression_initiale avec_sources_et_operateurs
-		solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.e-12
-		}
-		convection { negligeable }
-		diffusion { option { grad_u_transpose 0 }    }
-		initial_conditions {
-			vitesse Champ_fonc_xyz dom  2 0.9*(y)*(0.22-y) 0*x*x*x
-			}
-		sources { source_qdm champ_uniforme 2 0 0 }
-		boundary_conditions {
-			Symetrie frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0. 0.
-			Sortie 
-frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-			Entree frontiere_ouverte_vitesse_imposee 
-			     Champ_front_fonc_txyz 2  (y)*(0.22-y) 0.
-		}
-	}
+    Navier_Stokes_standard
+    {
+        methode_calcul_pression_initiale avec_sources_et_operateurs
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-12
+        }
+        convection { negligeable }
+        diffusion { option { grad_u_transpose 0 }    }
+        initial_conditions {
+            vitesse Champ_fonc_xyz dom  2 0.9*(y)*(0.22-y) 0*x*x*x
+        }
+        sources { source_qdm champ_uniforme 2 0 0 }
+        boundary_conditions {
+            Symetrie frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0. 0.
+            Sortie
+            frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree frontiere_ouverte_vitesse_imposee
+            Champ_front_fonc_txyz 2  (y)*(0.22-y) 0.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-		sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
-		sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
-		sonde_vitesse_bis vitesse periode 0.005 position_like sonde_vitesse
-                sonde_vitesse_ter vitesse periode 1e-5 position_like sonde_vitesse
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 0.005 points 2 0.13 0.105 0.13 0.115
+            sonde_vitesse vitesse periode 0.005 points 2 0.14 0.105 0.14 0.115
+            sonde_vitesse_bis vitesse periode 0.005 position_like sonde_vitesse
+            sonde_vitesse_ter vitesse periode 1e-5 position_like sonde_vitesse
 
-		}
-		fields dt_post 1.3
-		{
-			pression elem
-			vitesse som
-		}
-	}
+        }
+        fields dt_post 1.3
+        {
+            pression elem
+            vitesse som
+        }
+    }
 }
 Solve pb
 End

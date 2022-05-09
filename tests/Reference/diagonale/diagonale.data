@@ -137,7 +137,7 @@ Read pb
             sonde_pres pression periode 0.01 points 1 0.45 0.45
             sonde_vit vitesse periode 0.01 points 1 0.4 0.45
             sonde_conc concentration periode 0.01 points 1 0.55 0.45
-	    sonde_FS FS periode 0.01 point 1 0. 0.
+            sonde_FS FS periode 0.01 point 1 0. 0.
         }
         fields dt_post 0.1
         {

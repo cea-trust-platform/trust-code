@@ -15,9 +15,9 @@ Dilate dom 1000
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -32,14 +32,14 @@ VEFPreP1B ma_discretisation
 Scheme_euler_explicit mon_schema
 Read mon_schema
 {
-	nb_pas_dt_max 3
-	tinit 0
-	tmax 5.0
-	dt_min 1.e-3
-	dt_max 1.e-3
-	dt_impr 1.e-6
-	dt_sauv 100
-	seuil_statio 1.e-8
+    nb_pas_dt_max 3
+    tinit 0
+    tmax 5.0
+    dt_min 1.e-3
+    dt_max 1.e-3
+    dt_impr 1.e-6
+    dt_sauv 100
+    seuil_statio 1.e-8
 
 }
 
@@ -47,8 +47,8 @@ Read mon_schema
 Fluide_Incompressible milieu
 Read milieu
 {
-	mu  Champ_Uniforme 1 0.01
-	rho Champ_Uniforme 1 2.
+    mu  Champ_Uniforme 1 0.01
+    rho Champ_Uniforme 1 2.
 }
 
 Associate pb dom
@@ -58,31 +58,31 @@ Discretize pb ma_discretisation
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression Petsc Cholesky { impr }
-		convection { muscl }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 1. 0. 0.
-			}
-		boundary_conditions {
-			Cylindre paroi_fixe
-			Surfanz symetrie
-			Surfa  symetrie
-		      	Bas  symetrie
-			Haut symetrie
-			Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
-			Entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 1. 0. 0.
-		}
+    Navier_Stokes_standard
+    {
+        solveur_pression Petsc Cholesky { impr }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 1. 0. 0.
+        }
+        boundary_conditions {
+            Cylindre paroi_fixe
+            Surfanz symetrie
+            Surfa  symetrie
+            Bas  symetrie
+            Haut symetrie
+            Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+            Entree frontiere_ouverte_vitesse_imposee Champ_front_Uniforme 3 1. 0. 0.
+        }
 
-	}
-	Post_processing
-	{
-	 fields dt_post 10
-	 {
-	    pression som
-	 }
-	}
+    }
+    Post_processing
+    {
+        fields dt_post 10
+        {
+            pression som
+        }
+    }
 }
 Solve pb

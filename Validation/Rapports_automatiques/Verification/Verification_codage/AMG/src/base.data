@@ -3,7 +3,7 @@ dimension 3
 Domaine interass
 
 # BEGIN MESH #
-Read_file interass collecteur_chaud.geom 
+Read_file interass collecteur_chaud.geom
 Modif_bord_to_raccord interass virole_IA
 Modif_bord_to_raccord interass virole_CC
 # END MESH #
@@ -11,7 +11,7 @@ Modif_bord_to_raccord interass virole_CC
 # BEGIN PARTITION
 Partition interass
 {
-   	Partition_tool metis { nb_parts 4 }
+    Partition_tool metis { nb_parts 4 }
     Larg_joint 2
     ecrire_lata mesh
     zones_name DOM_interass
@@ -19,7 +19,7 @@ Partition interass
 End
 END PARTITION #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM_interass.Zones interass
 END SCATTER #
 
@@ -29,31 +29,31 @@ VEFPREP1B dis
 Scheme_euler_implicit sch
 Read sch
 {
-	nb_pas_dt_max 2
-	tinit 0
-	tmax 1000.
-	dt_min 1.e-10
-	dt_max 1.0 
-	dt_start dt_fixe 0.001
-	dt_sauv 1000.
-	dt_impr 1.e-20
-	seuil_statio -1.
-        facsec 500.
-        Solveur implicite
-        {
-            solveur gmres { diag seuil 1e-6 nb_it_max 5 impr }
-        }
+    nb_pas_dt_max 2
+    tinit 0
+    tmax 1000.
+    dt_min 1.e-10
+    dt_max 1.0
+    dt_start dt_fixe 0.001
+    dt_sauv 1000.
+    dt_impr 1.e-20
+    seuil_statio -1.
+    facsec 500.
+    Solveur implicite
+    {
+        solveur gmres { diag seuil 1e-6 nb_it_max 5 impr }
+    }
 }
 
 
 Fluide_Incompressible sodium
 Read sodium
 {
-       mu Champ_Uniforme 1 .000245
-       rho Champ_Uniforme 1 840.
-       lambda Champ_Uniforme 1 66.
-       Cp champ_Uniforme 1 1270.
-       Beta_th Champ_uniforme 1 0.000276
+    mu Champ_Uniforme 1 .000245
+    rho Champ_Uniforme 1 840.
+    lambda Champ_Uniforme 1 66.
+    Cp champ_Uniforme 1 1270.
+    Beta_th Champ_uniforme 1 0.000276
 }
 
 
@@ -76,45 +76,45 @@ extraire_surface { domaine coupl_extraction probleme pb avec_certains_bords 1 co
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression petsc gcp { precond ssor { } rtol 1.e-6 impr }
-		convection { amont }
-		diffusion {  }
-  		initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
-		boundary_conditions {
-			sortie_coeur 	frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Uniforme 3 0. 0. 1.
-			echg		frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-			coupl		symetrie
-                        virole_CC       symetrie
-                        virole_IA       symetrie
-			defaut		symetrie
-			bas_coeur_int symetrie
-			}
-	}
-	Convection_diffusion_temperature
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc gcp { precond ssor { } rtol 1.e-6 impr }
+        convection { amont }
+        diffusion {  }
+        initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
+        boundary_conditions {
+            sortie_coeur 	frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Uniforme 3 0. 0. 1.
+            echg		frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            coupl		symetrie
+            virole_CC       symetrie
+            virole_IA       symetrie
+            defaut		symetrie
+            bas_coeur_int symetrie
+        }
+    }
+    Convection_diffusion_temperature
+    {
+        convection { amont }
+        diffusion { }
+        initial_conditions { temperature Champ_Uniforme 1 303.7 }
+        boundary_conditions {
+            sortie_coeur 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 400
+            echg		frontiere_ouverte T_ext Champ_Front_Uniforme 1 400
+            coupl		paroi_temperature_imposee Champ_front_fonc_XYZ 1 300+200*(z>1.5)
+            virole_CC       paroi_echange_externe_impose H_imp Champ_Front_Uniforme 1 1066 T_ext Champ_front_calc pb virole_IA temperature
+            virole_IA       paroi_echange_externe_impose H_imp Champ_Front_Uniforme 1 1066 T_ext Champ_front_calc pb virole_CC temperature
+            defaut		paroi_adiabatique
+            bas_coeur_int 	paroi_temperature_imposee champ_front_uniforme 1 400
+        }
+    }
+    Post_processing
+    {
+        format lml
+        fields dt_post 1.
         {
-		convection { amont }
-		diffusion { }
-		initial_conditions { temperature Champ_Uniforme 1 303.7 }
-		boundary_conditions {
-			sortie_coeur 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 400 
-			echg		frontiere_ouverte T_ext Champ_Front_Uniforme 1 400
-			coupl		paroi_temperature_imposee Champ_front_fonc_XYZ 1 300+200*(z>1.5)
-                        virole_CC       paroi_echange_externe_impose H_imp Champ_Front_Uniforme 1 1066 T_ext Champ_front_calc pb virole_IA temperature 
-                        virole_IA       paroi_echange_externe_impose H_imp Champ_Front_Uniforme 1 1066 T_ext Champ_front_calc pb virole_CC temperature
-			defaut		paroi_adiabatique		
-			bas_coeur_int 	paroi_temperature_imposee champ_front_uniforme 1 400
-			}
-	}
-	Post_processing
-	{
-		format lml
-		fields dt_post 1.
-		{
-			temperature elem
-		}
-	}
+            temperature elem
+        }
+    }
 }
 
 Solve pb

@@ -11,9 +11,9 @@ Read_file dom dom.geom
 
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 1 }  
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -28,20 +28,20 @@ VEFprep1b dis
 Scheme_euler_explicit sch
 Read sch
 {
-        tinit 0
+    tinit 0
 	nb_pas_dt_max 3
-        dt_min 5.e-8
-        dt_impr 5.e-1
-        
-        seuil_statio -1.e-6
-	dt_max 1
+    dt_min 5.e-8
+    dt_impr 5.e-1
+
+    seuil_statio -1.e-6
+    dt_max 1
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu  Champ_uniforme 1 1.
-	rho Champ_Uniforme 1 1000.
+    mu  Champ_uniforme 1 1.
+    rho Champ_Uniforme 1 1000.
 }
 
 Associate pb dom
@@ -52,45 +52,46 @@ Associate pb eau
 
 Discretize pb dis
 domaine IN
-extraire_surface { probleme pb domaine IN avec_certains_bords 1 IN } 
+extraire_surface { probleme pb domaine IN avec_certains_bords 1 IN }
 Read pb
 {
-	Navier_Stokes_standard
-	{
-methode_calcul_pression_initiale avec_sources
-		solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.e-8
-			impr
-		}
-		diffusion { negligeable }
-		convection { negligeable   }
-            
+    Navier_Stokes_standard
+    {
+        methode_calcul_pression_initiale avec_sources
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-8
+            impr
+        }
+        diffusion { negligeable }
+        convection { negligeable   }
 
-		initial_conditions {
-			vitesse Champ_fonc_xyz dom  3 0 0  0.26259
-			}
-		
-		boundary_conditions {
-			IN frontiere_ouverte_vitesse_imposee  Boundary_field_inward  { normal_value (1+4*t/10)/0.193136 }
-			sym symetrie
-			paroi symetrie
-			out frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
 
-		}
-	}
+        initial_conditions {
+            vitesse Champ_fonc_xyz dom  3 0 0  0.26259
+        }
 
-	Post_processing
-	{
+        boundary_conditions {
+            IN frontiere_ouverte_vitesse_imposee  Boundary_field_inward  { normal_value (1+4*t/10)/0.193136 }
+            sym symetrie
+            paroi symetrie
+            out frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
 
-	format lml
-		domaine IN
-		fields dt_post 1.3
-		{
-			
-			vitesse elem
+        }
+    }
 
-		}	}
+    Post_processing
+    {
+
+        format lml
+        domaine IN
+        fields dt_post 1.3
+        {
+
+            vitesse elem
+
+        }
+    }
 }
 Solve pb
 End

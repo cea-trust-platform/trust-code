@@ -6,18 +6,18 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 21 21
-		Longueurs 0.01 0.01
-		}
-		{
-		Bord Gauche X = 0.  0. <= Y <= 0.01
-		Bord Haut Y = 0.01  0. <= X <= 0.01
-		Bord Bas Y = 0.     0. <= X <= 0.01
-		Bord Droit X = 0.01 0. <= Y <= 0.01
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 21 21
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.01
+        Bord Haut Y = 0.01  0. <= X <= 0.01
+        Bord Bas Y = 0.     0. <= X <= 0.01
+        Bord Droit X = 0.01 0. <= Y <= 0.01
+    }
 }
 
 
@@ -25,9 +25,9 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -41,29 +41,29 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0.
-	tmax 5
-        nb_pas_dt_max 100
-	dt_min 1.e-8
-	dt_max 1e-1
-	dt_impr 1.e-8
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tinit 0.
+    tmax 5
+    nb_pas_dt_max 100
+    dt_min 1.e-8
+    dt_max 1e-1
+    dt_impr 1.e-8
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-	pression 93539.4608571
-	lambda Champ_Uniforme 1 0.0262
-	loi_etat gaz_parfait_QC {
-		Prandtl 0.71034351145038165942
+    mu Champ_Uniforme 1 1.85e-5
+    pression 93539.4608571
+    lambda Champ_Uniforme 1 0.0262
+    loi_etat gaz_parfait_QC {
+        Prandtl 0.71034351145038165942
 
-		Cp 1006.
-		gamma 1.4
-	}
-	Traitement_pth conservation_masse
+        Cp 1006.
+        gamma 1.4
+    }
+    Traitement_pth conservation_masse
 }
 
 Champ_Uniforme gravite
@@ -78,52 +78,52 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_QC
-	{
-		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-10 }
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Haut paroi_fixe
-			Bas paroi_fixe
-			Gauche paroi_fixe
-			Droit paroi_fixe
-		}
-	}
-	Convection_Diffusion_Chaleur_QC
-	{
-		diffusion { }
-		convection { amont }
-		boundary_conditions 
-		{
-			Haut paroi_adiabatique
-			Bas paroi_adiabatique
-                        Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 283.15 
-                        Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 273.15 
- 		}
-		initial_conditions { Temperature Champ_Uniforme 1 278.15 }
-	}
+    Navier_Stokes_QC
+    {
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-10 }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Gauche paroi_fixe
+            Droit paroi_fixe
+        }
+    }
+    Convection_Diffusion_Chaleur_QC
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 283.15
+            Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 273.15
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 278.15 }
+    }
 
-	Post_processing
-	{
-		Probes {
-			pression_tot pression_tot periode 0.001 point 1 0.005 0.005
-			pression pression periode 0.001 point 1 0.005 0.005
-                        vitesse vitesse periode 0.001 point 1 0.005 0.005
-                        temperature temperature periode 0.001 point 1 0.005 0.005
-                }
-		fields dt_post 10.
-		{
-			pression_tot som
-			pression som
-			vitesse som
-			temperature som
-			masse_volumique som
-		}
-	}
+    Post_processing
+    {
+        Probes {
+            pression_tot pression_tot periode 0.001 point 1 0.005 0.005
+            pression pression periode 0.001 point 1 0.005 0.005
+            vitesse vitesse periode 0.001 point 1 0.005 0.005
+            temperature temperature periode 0.001 point 1 0.005 0.005
+        }
+        fields dt_post 10.
+        {
+            pression_tot som
+            pression som
+            vitesse som
+            temperature som
+            masse_volumique som
+        }
+    }
 }
 
 Solve pb

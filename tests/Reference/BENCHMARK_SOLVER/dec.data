@@ -8,7 +8,7 @@ OrienteFacesBord dom
 Raffiner_isotrope dom
 Partition dom
 {
-	Partition_tool metis { nb_parts 4 }
-	Larg_joint 2
-	nom_zones dom
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    nom_zones dom
 }

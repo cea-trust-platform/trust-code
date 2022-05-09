@@ -1,25 +1,25 @@
 # Thermohydraulique 2D VEF couplee a conduction 2D avec flux impose sur une paroi #
 # PARALLEL RUNS #
-dimension 2    
+dimension 2
 
-Scheme_euler_implicit sch 
+Scheme_euler_implicit sch
 Read sch
 {
-        tinit 0.
-        tmax 0.5
-        dt_min 1.e-9
-	dt_start dt_calc
-        dt_impr 10.
-        dt_sauv 500.
-        seuil_statio 1.e-4
-	facsec 1000
-	
-	Solveur Simple
-	 {
-	   seuil_convergence_solveur 1e-10
-           seuil_convergence_implicite 1e-5
-	   relax_pression 0.6
-	 }
+    tinit 0.
+    tmax 0.5
+    dt_min 1.e-9
+    dt_start dt_calc
+    dt_impr 10.
+    dt_sauv 500.
+    seuil_statio 1.e-4
+    facsec 1000
+
+    Solveur Simple
+    {
+        seuil_convergence_solveur 1e-10
+        seuil_convergence_implicite 1e-5
+        relax_pression 0.6
+    }
 }
 
 Pb_conduction pb1
@@ -30,34 +30,34 @@ Domaine dom_fluide
 # BEGIN MESH #
 Mailler dom_fluide
 {
-        Pave Cavite
-                {
-                Origine 0. 0.
-                Nombre_de_Noeuds 4 2
-                Longueurs 0.05 0.05
-                }
-                {
-                Raccord local homogene Gauche   X = 0.    0. <= Y <= 0.05 
-                Bord Droit    			X = 0.05  0. <= Y <= 0.05
-                Bord Bas                        Y = 0.    0. <= X <= 0.05
-                Bord Haut                       Y = 0.05  0. <= X <= 0.05
-                }
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 4 2
+        Longueurs 0.05 0.05
+    }
+    {
+        Raccord local homogene Gauche   X = 0.    0. <= Y <= 0.05
+        Bord Droit    			X = 0.05  0. <= Y <= 0.05
+        Bord Bas                        Y = 0.    0. <= X <= 0.05
+        Bord Haut                       Y = 0.05  0. <= X <= 0.05
+    }
 }
 
 Mailler dom_solide
 {
-        Pave Solide_Gauche
-                {
-                Origine -0.01 0.
-                Nombre_de_Noeuds 2 2
-                Longueurs 0.01 0.05
-                }
-                {
-                Raccord local homogene Gauche    X = 0.       0. <= Y <= 0.05
-                Bord Gauche_Gauche               X = -0.01    0. <= Y <= 0.05
-                Bord Bas_Gauche                  Y = 0.    -0.01 <= X <= 0.  
-                Bord Haut_Gauche                 Y = 0.05  -0.01 <= X <= 0.
-                }
+    Pave Solide_Gauche
+    {
+        Origine -0.01 0.
+        Nombre_de_Noeuds 2 2
+        Longueurs 0.01 0.05
+    }
+    {
+        Raccord local homogene Gauche    X = 0.       0. <= Y <= 0.05
+        Bord Gauche_Gauche               X = -0.01    0. <= Y <= 0.05
+        Bord Bas_Gauche                  Y = 0.    -0.01 <= X <= 0.
+        Bord Haut_Gauche                 Y = 0.05  -0.01 <= X <= 0.
+    }
 }
 
 Trianguler_h dom_solide
@@ -71,18 +71,18 @@ Trianguler_h dom_fluide
 # BEGIN PARTITION
 Partition dom_solide
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM1
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM1
 }
 
 
 
 Partition dom_fluide
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM2
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM2
 }
 End
 END PARTITION #
@@ -97,19 +97,19 @@ VEFPrep1b dis
 Fluide_Incompressible fluide
 Read fluide
 {
-        mu Champ_Uniforme 1 0.001
-        rho Champ_Uniforme 1 1.
-        lambda Champ_Uniforme 1 1.
-        Cp Champ_Uniforme 1 1000.
-        beta_th Champ_Uniforme 1 0.0036
+    mu Champ_Uniforme 1 0.001
+    rho Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.
+    Cp Champ_Uniforme 1 1000.
+    beta_th Champ_Uniforme 1 0.0036
 }
 
 Solide sol
 Read sol
 {
- 	rho Champ_Uniforme 1 1.
-        lambda Champ_Uniforme 1 10.
-        Cp Champ_Uniforme 1 100.
+    rho Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 10.
+    Cp Champ_Uniforme 1 100.
 }
 
 Associate pb1 dom_solide
@@ -131,101 +131,105 @@ Discretize pbc dis
 
 Read pb2
 {
-        Navier_Stokes_standard
-        {       
-		
-      		solveur_pression gcp  { precond ssor { omega 1.5 } seuil 1.e-10 }       
-                convection { muscl }
-                diffusion { }
-                sources { boussinesq_temperature { T0 2. } }
-                initial_conditions {
-                        vitesse Champ_Uniforme 2 0. 0.
-                        }
-                boundary_conditions {
-                        Droit paroi_fixe
-                        Haut paroi_fixe
-                        Gauche  paroi_fixe
-                        Bas paroi_fixe
-                }
+    Navier_Stokes_standard
+    {
+
+        solveur_pression gcp  { precond ssor { omega 1.5 } seuil 1.e-10 }
+        convection { muscl }
+        diffusion { }
+        sources { boussinesq_temperature { T0 2. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
         }
-        Convection_Diffusion_Temperature
+        boundary_conditions {
+            Droit paroi_fixe
+            Haut paroi_fixe
+            Gauche  paroi_fixe
+            Bas paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
         {
-                diffusion { }
-                convection { muscl }
-                boundary_conditions 
-                {	
-		 	Droit Paroi_temperature_imposee Champ_Front_uniforme 1 0.
-                        Haut Paroi_adiabatique
-                        Gauche paroi_contact pb1 Gauche
-                        Bas Paroi_adiabatique
+            Droit Paroi_temperature_imposee Champ_Front_uniforme 1 0.
+            Haut Paroi_adiabatique
+            Gauche paroi_contact pb1 Gauche
+            Bas Paroi_adiabatique
+        }
+        initial_conditions {
+            Temperature champ_fonc_xyz dom_fluide 1
+            (x>0)*(18.31179308*SIN(30.79992798*x-1.539996399)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)+20.00-40.*x)
+        }
+    }
+
+    Post_processing
+    {
+        Definition_champs {
+            erreur Transformation {
+                methode formule expression 1 temp-((x>0)*(18.31179308*SIN(30.79992798*x-1.539996399)*EXP(-0.9486355639*t)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)*EXP(-0.9486355639*t)+20.00-40.*x))
+                source refChamp {
+                    Pb_Champ pb2 temperature nom_source temp
                 }
-                initial_conditions { Temperature champ_fonc_xyz dom_fluide 1 
-(x>0)*(18.31179308*SIN(30.79992798*x-1.539996399)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)+20.00-40.*x)  }
+                localisation elem
+            }
         }
-	
-        Post_processing
-        {		
-		Definition_champs {
-  	 		erreur Transformation {
-				methode formule expression 1 temp-((x>0)*(18.31179308*SIN(30.79992798*x-1.539996399)*EXP(-0.9486355639*t)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)*EXP(-0.9486355639*t)+20.00-40.*x)) 
-				source refChamp {
-					Pb_Champ pb2 temperature nom_source temp 
-				}
-				localisation elem
-			} 
-  		} 
-		
-		Format lml
-                fields dt_post 1.
-                 {
-		   erreur elem
-                   temperature elem
-		   vitesse elem
-                 }
-		 
-	  	Probes
-                 { 
-		  T_FLUIDE temperature periode 2.e-3 segment 10 2.5e-3 2.5e-2 4.75e-2 2.5e-2
-		  TEST1D_FLUIDE temperature periode 100. segment 5 5.e-3 5.e-3 5.e-3 4.5e-2
-		  erreur erreur periode 2.e-3 points 1 0.025 0.025
-		  T temperature periode 2.e-3 points 1 0.025 0.025
-                 }
+
+        Format lml
+        fields dt_post 1.
+        {
+            erreur elem
+            temperature elem
+            vitesse elem
         }
+
+        Probes
+        {
+            T_FLUIDE temperature periode 2.e-3 segment 10 2.5e-3 2.5e-2 4.75e-2 2.5e-2
+            TEST1D_FLUIDE temperature periode 100. segment 5 5.e-3 5.e-3 5.e-3 4.5e-2
+            erreur erreur periode 2.e-3 points 1 0.025 0.025
+            T temperature periode 2.e-3 points 1 0.025 0.025
+        }
+    }
 }
 
 Read pb1
 {
-        Conduction
-        {
-                diffusion { }
-                initial_conditions { Temperature champ_fonc_xyz dom_fluide 1 
-(x]0)*(18.31179308*SIN(30.79992798*x-1.539996399)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)+20.00-40.*x)  }
-                boundary_conditions {
-                       
-			Gauche Paroi_contact pb2 Gauche
-                        Gauche_Gauche Paroi_flux_impose Champ_front_Uniforme 1 400.
-                        Bas_Gauche paroi_adiabatique
-			Haut_Gauche paroi_adiabatique
-                }
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            Temperature champ_fonc_xyz dom_fluide 1
+            (x]0)*(18.31179308*SIN(30.79992798*x-1.539996399)+20.00-400.*x)+(x<0)*(-18.31179308*COS(3.079992798*x+.3079992798e-1)+20.00-40.*x)
         }
-	
-        Post_processing
-        {
-                Probes
-                 {
-                  T_SOLIDE_GAUCHE temperature periode 1.e-3 segment 2 -7.5e-3 2.5e-2 -2.5e-3 2.5e-2
-                  T_SOLIDE_DROITE temperature periode 100. segment 2 5.25e-2 2.5e-2 5.75e-2 2.5e-2
-		  TEST1D_SOLGAUCH temperature periode 100. segment 2 -2.5e-3 5.e-3 -2.5e-3 4.5e-2
-		  TEST1D_SOLDROIT temperature periode 100. segment 2 5.25e-2 5.e-3 5.25e-2 4.5e-2
-                 }
-		
-		Format lml
-                fields dt_post 1.
-                 {
-                  temperature elem
-                 }
+        boundary_conditions {
+
+            Gauche Paroi_contact pb2 Gauche
+            Gauche_Gauche Paroi_flux_impose Champ_front_Uniforme 1 400.
+            Bas_Gauche paroi_adiabatique
+            Haut_Gauche paroi_adiabatique
         }
-	sauvegarde xyz fichier.xyz
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            T_SOLIDE_GAUCHE temperature periode 1.e-3 segment 2 -7.5e-3 2.5e-2 -2.5e-3 2.5e-2
+            T_SOLIDE_DROITE temperature periode 100. segment 2 5.25e-2 2.5e-2 5.75e-2 2.5e-2
+            TEST1D_SOLGAUCH temperature periode 100. segment 2 -2.5e-3 5.e-3 -2.5e-3 4.5e-2
+            TEST1D_SOLDROIT temperature periode 100. segment 2 5.25e-2 5.e-3 5.25e-2 4.5e-2
+        }
+
+        Format lml
+        fields dt_post 1.
+        {
+            temperature elem
+        }
+    }
+    sauvegarde xyz fichier.xyz
 }
 
 Solve pbc

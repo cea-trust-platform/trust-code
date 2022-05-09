@@ -10,24 +10,24 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	nb_pas_dt_max 0
-	tinit 0.
-	tmax 1.2
-	dt_min 0.002
-	dt_max 0.002
-	dt_impr 0.01
-	dt_sauv 0.1
-	seuil_statio 1.e-8
+    nb_pas_dt_max 0
+    tinit 0.
+    tmax 1.2
+    dt_min 0.002
+    dt_max 0.002
+    dt_impr 0.01
+    dt_sauv 0.1
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-	rho Champ_Uniforme 1 1.17
-	lambda Champ_Uniforme 1 0.0262 
-	Cp Champ_Uniforme 1 1006
-	beta_th Champ_Uniforme 1 3.41e-3
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+    Cp Champ_Uniforme 1 1006
+    beta_th Champ_Uniforme 1 3.41e-3
 }
 
 Champ_Uniforme gravite
@@ -42,46 +42,46 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		projection_initiale 0
-		solveur_pression petsc cholesky { }
-		convection { quick }
-		diffusion { }
-		sources { boussinesq_temperature { T0 5. } }
-		initial_conditions {
-			vitesse Champ_Fonc_MEDFile use_existing_domain last_time decoup dom0.dec initial.med dom vitesse som 0 
-			}
-		boundary_conditions {
-			Haut paroi_fixe
-			Bas paroi_fixe
-			Gauche paroi_fixe
-			Droit paroi_fixe
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { quick }
-		boundary_conditions 
-		{
-			Haut paroi_adiabatique
-			Bas  paroi_adiabatique
- 			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10. 
-			Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.  
-		}
-		initial_conditions { Temperature Champ_Fonc_MEDFile use_existing_domain last_time single_file.med dom temperature som 0 }
-	}
-	Post_processings
-	{
-		lata {
-			fichier Champ_fonc_MED_Decoup format LATA fields dt_post 0.1
-			{
-				vitesse som
-				temperature som
-			}
-		}
-	}
+    Navier_Stokes_standard
+    {
+        projection_initiale 0
+        solveur_pression petsc cholesky { }
+        convection { quick }
+        diffusion { }
+        sources { boussinesq_temperature { T0 5. } }
+        initial_conditions {
+            vitesse Champ_Fonc_MEDFile use_existing_domain last_time decoup dom0.dec initial.med dom vitesse som 0
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Gauche paroi_fixe
+            Droit paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { quick }
+        boundary_conditions
+        {
+            Haut paroi_adiabatique
+            Bas  paroi_adiabatique
+            Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 10.
+            Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+        }
+        initial_conditions { Temperature Champ_Fonc_MEDFile use_existing_domain last_time single_file.med dom temperature som 0 }
+    }
+    Post_processings
+    {
+        lata {
+            fichier Champ_fonc_MED_Decoup format LATA fields dt_post 0.1
+            {
+                vitesse som
+                temperature som
+            }
+        }
+    }
 }
 Solve pb
 # Conversion du fichier LATA en un fichier lml #

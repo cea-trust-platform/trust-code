@@ -2,7 +2,7 @@
 # 1 maillage tetra dont les bords sont decoupes par un maillage hexa #
 # 1 maillage tetra dont les bords sont decoupes par un maillage tetra #
 # PARALLEL NOT #
-dimension 3    
+dimension 3
 
 Domaine dom_tetra
 Domaine dom_hexa_lache
@@ -16,10 +16,10 @@ Postraiter_domaine { domaine dom_hexa_lache format lata fichier dom_hexa_lache.l
 
 DecoupeBord_pour_rayonnement
 {
-            	Domaine 		dom_tetra
-		Domaine_grossier 	dom_hexa_lache
-		Nom_fichier_sortie 	dom_tetra_decoupe_par_hexa.geom
-		Bords_a_decouper 4  	Arriere_Droit Avant_Gauche Haut Bas
+    Domaine 		dom_tetra
+    Domaine_grossier 	dom_hexa_lache
+    Nom_fichier_sortie 	dom_tetra_decoupe_par_hexa.geom
+    Bords_a_decouper 4  	Arriere_Droit Avant_Gauche Haut Bas
 }
 System "sed 's?%?_?g'  -i dom_tetra_decoupe_par_hexa.geom"
 Domaine	dom_tetra_decoupe_par_hexa
@@ -34,10 +34,10 @@ Postraiter_domaine { domaine dom_tetra_fin format lata fichier dom_tetra_fin.lat
 
 DecoupeBord_pour_rayonnement
 {
-            	Domaine 		dom_tetra_fin
-		Domaine_grossier 	dom_tetra
-		Nom_fichier_sortie 	dom_tetra_decoupe_par_tetra.geom
-		Bords_a_decouper 4  	Arriere_Droit Avant_Gauche Haut Bas
+    Domaine 		dom_tetra_fin
+    Domaine_grossier 	dom_tetra
+    Nom_fichier_sortie 	dom_tetra_decoupe_par_tetra.geom
+    Bords_a_decouper 4  	Arriere_Droit Avant_Gauche Haut Bas
 }
 System "sed 's?%?_?g' -i dom_tetra_decoupe_par_tetra.geom"
 Domaine	dom_tetra_decoupe_par_tetra

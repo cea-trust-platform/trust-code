@@ -8,18 +8,18 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. -7.
-     	Nombre_de_Noeuds 57 29
-		Longueurs 28. 14.
-		}
-		{
-		Bord Perio X = 0.  -7. <= Y <= 7.
-		Bord Haut  Y = 7.   0. <= X <= 28.
-		Bord Bas   Y = -7.  0. <= X <= 28.
-		Bord Perio X = 28. -7. <= Y <= 7.
-		}
+    Pave Cavite
+    {
+        Origine 0. -7.
+        Nombre_de_Noeuds 57 29
+        Longueurs 28. 14.
+    }
+    {
+        Bord Perio X = 0.  -7. <= Y <= 7.
+        Bord Haut  Y = 7.   0. <= X <= 28.
+        Bord Bas   Y = -7.  0. <= X <= 28.
+        Bord Perio X = 28. -7. <= Y <= 7.
+    }
 }
 
 # END MESH #
@@ -27,10 +27,10 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 1 2 }
-	Larg_joint 2
-	zones_name dom
-	periodique 1 Perio
+    Partition_tool tranche { tranches 1 2 }
+    Larg_joint 2
+    zones_name dom
+    periodique 1 Perio
 }
 End
 END PARTITION #
@@ -44,20 +44,20 @@ VDF dis
 Runge_Kutta_ordre_3 sch
 Read sch
 {
-	tinit 0
-    	tmax 30.
-	dt_min 0.2
-	dt_max 0.2
-	dt_impr 0.1
-	dt_sauv 100
-	seuil_statio 1.e-10
+    tinit 0
+    tmax 30.
+    dt_min 0.2
+    dt_max 0.2
+    dt_impr 0.1
+    dt_sauv 100
+    seuil_statio 1.e-10
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 0.002
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2
 }
 Associate pb dom
 Associate pb sch
@@ -67,41 +67,41 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.650000 } 
-			seuil 1.000000e-12
-			impr 
-		}
-		diffusion { }
-                convection { quick }
-		initial_conditions {
-			vitesse Champ_Don_lu dom 2 periodique.rep
-			}
-		boundary_conditions {
-			Perio periodique 
-			Haut Symetrie
-           		Bas Symetrie
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.650000 }
+            seuil 1.000000e-12
+            impr
+        }
+        diffusion { }
+        convection { quick }
+        initial_conditions {
+            vitesse Champ_Don_lu dom 2 periodique.rep
+        }
+        boundary_conditions {
+            Perio periodique
+            Haut Symetrie
+            Bas Symetrie
+        }
+    }
 
-	Post_processing
-	{
-		fields dt_post 100.
-		{
-			vitesse som
-                        pression elem
-                        vorticite som 
-		}
-                Probes 
-                {
-			vitx_moyenne vitesse  periode 0.5 segment 57   0. 0.   28. 0.
-                        vit_sortie   vitesse  periode 0.5 segment 28   28. -7. 28. 7.
-                        vit_entree   vitesse  periode 0.5 segment 28   0. -7.   0. 7.
-                        sonde_p      pression periode 0.5 segment 56  0. 0.   28. 0.
-                }
-	}
+    Post_processing
+    {
+        fields dt_post 100.
+        {
+            vitesse som
+            pression elem
+            vorticite som
+        }
+        Probes
+        {
+            vitx_moyenne vitesse  periode 0.5 segment 57   0. 0.   28. 0.
+            vit_sortie   vitesse  periode 0.5 segment 28   28. -7. 28. 7.
+            vit_entree   vitesse  periode 0.5 segment 28   0. -7.   0. 7.
+            sonde_p      pression periode 0.5 segment 56  0. 0.   28. 0.
+        }
+    }
 }
 
 Solve pb

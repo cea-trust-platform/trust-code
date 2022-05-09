@@ -1,6 +1,6 @@
 # Creation de domaines a partir de sous_zone #
 # PARALLEL NOT #
-dimension 3  
+dimension 3
 domaine dom
 
 # BEGIN MESH #
@@ -9,20 +9,20 @@ Lire_Med dom all all.med
 Read_file dom_ssz.geo ;
 # END MESH #
 
-# BEGIN PARTITION 
+# BEGIN PARTITION
 Partition dom
 {
-   Partition_tool metis
-   {
-      nb_parts 2
-   } 
-   Larg_joint 1
-   zones_name DOM 
-} 
-End 
+    Partition_tool metis
+    {
+        nb_parts 2
+    }
+    Larg_joint 1
+    zones_name DOM
+}
+End
 END PARTITION #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones dom
 Read_file dom_ssz_par.geo ;
 END SCATTER #

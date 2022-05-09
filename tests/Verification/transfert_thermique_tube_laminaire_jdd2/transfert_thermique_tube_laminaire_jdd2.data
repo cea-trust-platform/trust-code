@@ -47,11 +47,11 @@ option_covimac {  }
 Fluide_Incompressible eau_liquide
 Read eau_liquide
 {
-	mu  Champ_Uniforme     1 .1
-	rho Champ_Uniforme     1 1.
-	lambda Champ_Uniforme  1 1.
-        Cp Champ_Uniforme      1 100.
-        beta_th Champ_Uniforme 1 0.
+    mu  Champ_Uniforme     1 .1
+    rho Champ_Uniforme     1 1.
+    lambda Champ_Uniforme  1 1.
+    Cp Champ_Uniforme      1 100.
+    beta_th Champ_Uniforme 1 0.
 }
 
 phases pb
@@ -81,12 +81,12 @@ Read pb
         }
         boundary_conditions
         {
-	    wall     paroi_fixe
+            wall     paroi_fixe
             bottom   frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 0 0 2*10.*(1-(X*X+Y*Y)/(0.05*0.05))
             top      frontiere_ouverte_pression_imposee       champ_front_uniforme 1 1e5
         }
-        sources 
-	{
+        sources
+        {
         }
     }
     Masse_Multiphase
@@ -99,9 +99,9 @@ Read pb
             bottom   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
             top      frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
         }
-        sources 
-	{
-	}
+        sources
+        {
+        }
     }
     Energie_Multiphase
     {
@@ -110,12 +110,12 @@ Read pb
         initial_conditions { temperature Champ_Uniforme 1 0 }
         boundary_conditions
         {
- 	    wall    paroi_flux_impose Champ_Front_Uniforme 1 -1
+            wall    paroi_flux_impose Champ_Front_Uniforme 1 -1
             bottom  frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
             top     frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
         }
-	sources
-	{   
+        sources
+        {
         }
     }
     Post_processing
@@ -128,13 +128,13 @@ Read pb
             }
             t_analytique_stationnaire transformation
             {
-                methode formule expression 1 2*1.*Z/(10.*100.*1.*0.05)+1.*0.05/1.*(-7/24-1/4*(X*X+Y*Y)*(X*X+Y*Y)/(0.05*0.05*0.05*0.05)+(X*X+Y*Y)/(0.05*0.05)) 
-                    localisation elem source refChamp { Pb_champ pb pression }
+                methode formule expression 1 2*1.*Z/(10.*100.*1.*0.05)+1.*0.05/1.*(-7/24-1/4*(X*X+Y*Y)*(X*X+Y*Y)/(0.05*0.05*0.05*0.05)+(X*X+Y*Y)/(0.05*0.05))
+                localisation elem source refChamp { Pb_champ pb pression }
             }
         }
         probes
         {
-            v_analytique   v_analytique_stationnaire periode 1e8 segment 50  0.0 0.0 1.9 0.05 0.0 1.9 
+            v_analytique   v_analytique_stationnaire periode 1e8 segment 50  0.0 0.0 1.9 0.05 0.0 1.9
             v_trust              vitesse_liquide_eau periode 1e8 segment 50  0.0 0.0 1.9 0.05 0.0 1.9
             t_analytique_r t_analytique_stationnaire periode 1e8 segment 50  0.0 0.0 1.9 0.05 0.0 1.9
             t_trust_r        temperature_liquide_eau periode 1e8 segment 50  0.0 0.0 1.9 0.05 0.0 1.9

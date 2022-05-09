@@ -1,14 +1,13 @@
 # PARALLEL OK #
-# Hydraulique 2D laminaire POISEUILLE_ALIGNED - Using BTD convection scheme in EF
-  Re = (rho*U_max*L)/mu
+# Hydraulique 2D laminaire POISEUILLE_ALIGNED - Using BTD convection scheme in EF #
+/*  Re = (rho*U_max*L)/mu
   rho = 1.0 kg/m^3
   U_max = 1 m/s
-  L = 2 m                  
+  L = 2 m
   Re = 1
   mu = (rho*U_max*L)/Re
   A.N.
-  mu = 2.0 
-#
+  mu = 2.0 */
 
 dimension 3
 Pb_Thermohydraulique pb
@@ -25,17 +24,17 @@ regroupebord dom Sortie { OUT }
 regroupebord dom Entree { IN }
 # FIN MAILLAGE #
 
-# DEBUT DECOUPAGE 
+# DEBUT DECOUPAGE
 Partition dom
 {
-	Partition_tool tranche { tranches 2 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 FIN DECOUPAGE #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones dom
 END SCATTER #
 
@@ -93,7 +92,7 @@ Read pb
         postraiter_gradient_pression_sans_masse
         methode_calcul_pression_initiale avec_sources
         solveur_pression petsc cholesky { }
-	convection { btd { btd 2. facteur 1. } }
+        convection { btd { btd 2. facteur 1. } }
         diffusion { option { grad_u_transpose_partout 1 } }
         initial_conditions
         {
@@ -107,32 +106,32 @@ Read pb
             Entree frontiere_ouverte_vitesse_imposee Champ_front_fonc_txyz 3 0. (-(x-1.0)*(x-1.0)+1.0) 0.
         }
     }
-	Convection_Diffusion_Temperature
-	{
-	    equation_non_resolue 1
-	    convection {  btd { btd 2. facteur 1. } }
-	    diffusion {  }
-	    conditions_initiales { temperature champ_uniforme 1 10.0 }
-	    conditions_limites {
-	    		       Wall paroi_adiabatique
-	    		       Symetrie symetrie
-			       Sortie frontiere_ouverte_temperature_imposee Champ_front_uniforme 1  10.0
-			       Entree frontiere_ouverte_temperature_imposee Champ_front_uniforme 1  10.0	
-			       }
-	}
+    Convection_Diffusion_Temperature
+    {
+        equation_non_resolue 1
+        convection {  btd { btd 2. facteur 1. } }
+        diffusion {  }
+        conditions_initiales { temperature champ_uniforme 1 10.0 }
+        conditions_limites {
+            Wall paroi_adiabatique
+            Symetrie symetrie
+            Sortie frontiere_ouverte_temperature_imposee Champ_front_uniforme 1  10.0
+            Entree frontiere_ouverte_temperature_imposee Champ_front_uniforme 1  10.0
+        }
+    }
 
     Post_processings
     {
-	lml
-	{
-		format lml fichier EF_BTD
-        	Champs dt_post 1e-1
-        	{
-            		pression elem
-            		vitesse som
-            		temperature som
-        	}
-	}
+        lml
+        {
+            format lml fichier EF_BTD
+            Champs dt_post 1e-1
+            {
+                pression elem
+                vitesse som
+                temperature som
+            }
+        }
     }
 }
 resoudre pb

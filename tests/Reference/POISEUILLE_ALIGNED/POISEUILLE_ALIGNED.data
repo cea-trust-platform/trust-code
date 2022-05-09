@@ -1,12 +1,12 @@
-# Hydraulique 2D laminaire POISEUILLE_ALIGNED
-  Re = (rho*U_max*L)/mu
-  rho = 1.0 kg/m^3
-  U_max = 1 m/s
-  L = 1 m                  
-  Re = 1
-  mu = (rho*U_max*L)/Re
-  A.N.
-  mu = 1.0 #
+# Hydraulique 2D laminaire POISEUILLE_ALIGNED #
+/* Re = (rho*U_max*L)/mu
+   rho = 1.0 kg/m^3
+   U_max = 1 m/s
+   L = 1 m
+   Re = 1
+   mu = (rho*U_max*L)/Re
+   A.N.
+   mu = 1.0 */
 
 dimension 3
 Pb_Hydraulique pb
@@ -117,24 +117,24 @@ Read pb
 
     Post_processings
     {
-	med {
-	        format med
-        	fichier results/postdom
-        	Champs binaire dt_post 1e0
-        	{
-            		pression elem
-            		vitesse som
-        	}
-	} 
-	lml
-	{
-		format lml fichier POISEUILLE_ALIGNED
-        	Champs dt_post 1e0
-        	{
-            		pression elem
-            		vitesse som
-        	}
-	}
+        med {
+            format med
+            fichier results/postdom
+            Champs binaire dt_post 1e0
+            {
+                pression elem
+                vitesse som
+            }
+        }
+        lml
+        {
+            format lml fichier POISEUILLE_ALIGNED
+            Champs dt_post 1e0
+            {
+                pression elem
+                vitesse som
+            }
+        }
     }
 }
 resoudre pb

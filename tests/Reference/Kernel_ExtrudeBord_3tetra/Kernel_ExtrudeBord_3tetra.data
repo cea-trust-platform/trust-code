@@ -5,12 +5,12 @@ Domaine dom
 Domaine canal
 Read_file dom domainComplet.geom
 ExtrudeBord {
-	domaine_init dom
-	direction 0. 0. 0.0403
-	domaine_final canal
-	nom_bord entree
-	nb_tranches 5
-	trois_tetra
+    domaine_init dom
+    direction 0. 0. 0.0403
+    domaine_final canal
+    nom_bord entree
+    nb_tranches 5
+    trois_tetra
 }
 RegroupeBord canal PERIO { devant derriere }
 

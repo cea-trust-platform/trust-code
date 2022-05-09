@@ -59,10 +59,10 @@ Read mon_schema
     facsec_max 300
     max_iter_implicite 50
     Solveur
-        Implicite
-         {
-              seuil_convergence_solveur 1.e-8
-         }
+    Implicite
+    {
+        seuil_convergence_solveur 1.e-8
+    }
 }
 
 Fluide_Incompressible milieu

@@ -12,9 +12,9 @@ Lire_med family_names_from_group_names dom mesh_tri_1 mesh_tri_1.med
 # BEGIN PARTITION
 Partition dom
 {
-        Partition_tool metis { nb_parts 2  }
-        Larg_joint 2
-        zones_name DOM
+    Partition_tool metis { nb_parts 2  }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -29,23 +29,23 @@ VEFPreP1B dis
 Schema_Euler_explicite sch2
 Lire sch2
 {
-	tinit 0
-	nb_pas_dt_max 0
-	dt_min 1e-6
-	dt_max 1e+6
-	dt_impr 1e-6
-	facsec 1
-	precision_impr 8
-	seuil_statio 1e-9
+    tinit 0
+    nb_pas_dt_max 0
+    dt_min 1e-6
+    dt_max 1e+6
+    dt_impr 1e-6
+    facsec 1
+    precision_impr 8
+    seuil_statio 1e-9
 }
 
 
 Solide sol
 Lire sol
 {
- 	rho champ_uniforme 1 1
-	lambda champ_uniforme 1 1
-	Cp champ_uniforme 1 1
+    rho champ_uniforme 1 1
+    lambda champ_uniforme 1 1
+    Cp champ_uniforme 1 1
 }
 
 
@@ -57,33 +57,33 @@ Discretiser pb2 dis
 
 Lire pb2
 {
-	Conduction
-	{
-		Diffusion		{ }
-		Conditions_initiales	{
-					temperature champ_uniforme 1 0
-					}
-		Conditions_limites	{
-					Gauche	frontiere_ouverte_temperature_imposee champ_front_uniforme 1 0
-					Droite	frontiere_ouverte_temperature_imposee champ_front_uniforme 1 0
-					Bas	frontiere_ouverte_temperature_imposee champ_front_uniforme 1 0
-					Haut	frontiere_ouverte_temperature_imposee champ_front_uniforme 1 0
-					}
-		Sources			{ puissance_thermique champ_fonc_xyz dom  1 10. }
-	}
-	Postraitement
-	{
-		Definition_champs	{
+    Conduction
+    {
+        Diffusion		{ }
+        Conditions_initiales	{
+            temperature champ_uniforme 1 0
+        }
+        Conditions_limites	{
+            Gauche	frontiere_ouverte_temperature_imposee champ_front_uniforme 1 0
+            Droite	frontiere_ouverte_temperature_imposee champ_front_uniforme 1 0
+            Bas	frontiere_ouverte_temperature_imposee champ_front_uniforme 1 0
+            Haut	frontiere_ouverte_temperature_imposee champ_front_uniforme 1 0
+        }
+        Sources			{ puissance_thermique champ_fonc_xyz dom  1 10. }
+    }
+    Postraitement
+    {
+        Definition_champs	{
 
-S Operateur_Eqn  { numero_source 0 sources { refChamp { pb_champ pb2 temperature }  } } 
+            S Operateur_Eqn  { numero_source 0 sources { refChamp { pb_champ pb2 temperature }  } }
 
-					}
-		Format lata
-		Champs binaire dt_post 1e+6
-					{
-					S faces
-					}
-	}
+        }
+        Format lata
+        Champs binaire dt_post 1e+6
+        {
+            S faces
+        }
+    }
 }
 
 Resoudre pb2

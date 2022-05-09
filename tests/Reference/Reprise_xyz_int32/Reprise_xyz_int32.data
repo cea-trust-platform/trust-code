@@ -4,13 +4,13 @@ dimension 2
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 1.010000e+02 
-	tmax 300.
-	dt_min 0.001
-	dt_max 10.
-	dt_impr 0.001
-	dt_sauv 400.
-	seuil_statio 1.e-20
+    tinit 1.010000e+02
+    tmax 300.
+    dt_min 0.001
+    dt_max 10.
+    dt_impr 0.001
+    dt_sauv 400.
+    seuil_statio 1.e-20
 }
 
 Pb_conduction pb1
@@ -27,19 +27,19 @@ VDF dis
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.002
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 1.0 
-	Cp Champ_Uniforme 1 500
-	beta_th Champ_Uniforme 1 0.0001
+    mu Champ_Uniforme 1 0.002
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 1.0
+    Cp Champ_Uniforme 1 500
+    beta_th Champ_Uniforme 1 0.0001
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 1000.
-	lambda Champ_Uniforme 1 250.    
-	Cp Champ_Uniforme 1 100.
+    rho Champ_Uniforme 1 1000.
+    lambda Champ_Uniforme 1 250.
+    Cp Champ_Uniforme 1 100.
 }
 
 Champ_Uniforme gravite
@@ -61,111 +61,111 @@ Discretize pbc dis
 
 Read pb1
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1 30.
-			}
-		boundary_conditions {
-			Gauche1 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 40.
-			Haut1 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 20.
-			Bas1 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 40.
-		 	Droit1 paroi_contact pb2  Droit1
-			Haut2 paroi_contact pb2  Haut2
-			Bas2 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 40.
-			Droit2 paroi_temperature_imposee
-				Champ_Front_Uniforme 1 20.
-		}
-	}
-	Post_processing
-	{
-		Probes
-		{
-			sonde_tsol temperature periode 1. points 2 
-				0.15 0.55 
-				0.55 0.15 
-		}
-		fields dt_post 10.
-		{
-			temperature elem
-			temperature som
-		}
-	}
-	resume_last_time xyz pb1_int32.xyz
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 30.
+        }
+        boundary_conditions {
+            Gauche1 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 40.
+            Haut1 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 20.
+            Bas1 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 40.
+            Droit1 paroi_contact pb2  Droit1
+            Haut2 paroi_contact pb2  Haut2
+            Bas2 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 40.
+            Droit2 paroi_temperature_imposee
+            Champ_Front_Uniforme 1 20.
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_tsol temperature periode 1. points 2
+            0.15 0.55
+            0.55 0.15
+        }
+        fields dt_post 10.
+        {
+            temperature elem
+            temperature som
+        }
+    }
+    resume_last_time xyz pb1_int32.xyz
 }
 
 Read pb2
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.500000 } 
-			seuil 1.000000e-12 
-		}
-		convection { amont }
-		diffusion { }
-		sources { boussinesq_temperature { T0 30. } }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Entree frontiere_ouverte_vitesse_imposee
-				Champ_front_Uniforme 2 0. -0.01
-			Sortie frontiere_ouverte_vitesse_imposee
-				Champ_front_Uniforme 2 0.01 0.
-			Droit1 paroi_fixe
-			Haut3 paroi_fixe
-			Haut2 paroi_fixe
-			Droit2 paroi_fixe
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { amont }
-		boundary_conditions 
-		{
-			Entree frontiere_ouverte_temperature_imposee
-				Champ_front_Uniforme 1 20.
-			Sortie frontiere_ouverte_temperature_imposee
-				Champ_front_Uniforme 1 20.
-			Droit1 paroi_contact pb1  Droit1
-			Haut3 paroi_temperature_imposee
-				Champ_front_Uniforme 1 20.
-			Haut2 paroi_contact pb1  Haut2
-			Droit2 paroi_temperature_imposee
-				Champ_front_Uniforme 1 20.
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 30. }
-	}
-	Post_processing
-	{
-		Probes
-		{
-			sonde_pression pression periode 1. points 1
-				0.55 0.55
-			sonde_vitesse vitesse periode 1. points 1
-				0.55 0.55
-			sonde_tflu temperature periode 1. points 1
-				0.55 0.55
-			sonde_seg temperature periode 5. segment 10 0. 0.75 1. 0.75
-		}
-		fields dt_post 10.
-		{
-			pression elem
-			pression som
-			vitesse elem
-			vitesse som
-			temperature elem
-			temperature som
-		}
-	}
-	resume_last_time xyz pb2_int32.xyz
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.500000 }
+            seuil 1.000000e-12
+        }
+        convection { amont }
+        diffusion { }
+        sources { boussinesq_temperature { T0 30. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Entree frontiere_ouverte_vitesse_imposee
+            Champ_front_Uniforme 2 0. -0.01
+            Sortie frontiere_ouverte_vitesse_imposee
+            Champ_front_Uniforme 2 0.01 0.
+            Droit1 paroi_fixe
+            Haut3 paroi_fixe
+            Haut2 paroi_fixe
+            Droit2 paroi_fixe
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            Entree frontiere_ouverte_temperature_imposee
+            Champ_front_Uniforme 1 20.
+            Sortie frontiere_ouverte_temperature_imposee
+            Champ_front_Uniforme 1 20.
+            Droit1 paroi_contact pb1  Droit1
+            Haut3 paroi_temperature_imposee
+            Champ_front_Uniforme 1 20.
+            Haut2 paroi_contact pb1  Haut2
+            Droit2 paroi_temperature_imposee
+            Champ_front_Uniforme 1 20.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 30. }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 1. points 1
+            0.55 0.55
+            sonde_vitesse vitesse periode 1. points 1
+            0.55 0.55
+            sonde_tflu temperature periode 1. points 1
+            0.55 0.55
+            sonde_seg temperature periode 5. segment 10 0. 0.75 1. 0.75
+        }
+        fields dt_post 10.
+        {
+            pression elem
+            pression som
+            vitesse elem
+            vitesse som
+            temperature elem
+            temperature som
+        }
+    }
+    resume_last_time xyz pb2_int32.xyz
 }
 Solve pbc
 

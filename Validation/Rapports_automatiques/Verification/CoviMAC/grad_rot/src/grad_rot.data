@@ -27,11 +27,11 @@ Read sch
 Fluide_Incompressible eau_liquide
 Read eau_liquide
 {
-	mu champ_uniforme 1 0.001
- 	rho champ_uniforme 1 1000
-	lambda Champ_Uniforme  1 1.
-        Cp Champ_Uniforme      1 1.
-        beta_th Champ_Uniforme 1 0.
+    mu champ_uniforme 1 0.001
+    rho champ_uniforme 1 1000
+    lambda Champ_Uniforme  1 1.
+    Cp Champ_Uniforme      1 1.
+    beta_th Champ_Uniforme 1 0.
 }
 Pb_Multiphase pb
 
@@ -60,27 +60,27 @@ Lire pb
         diffusion  { }
         initial_conditions
         {
-            vitesse  champ_fonc_xyz dom 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z) 
+            vitesse  champ_fonc_xyz dom 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z)
             pression Champ_Fonc_xyz dom 1 1e5
         }
-	conditions_limites	
-	{
-	    periox	frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z)
-	    perioy	frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z)
-	    perioz	frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z)
-	}
+        conditions_limites
+        {
+            periox	frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z)
+            perioy	frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z)
+            perioz	frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_xyz 3 -2*cos(2*3.14*x)*sin(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*cos(2*3.14*y)*sin(2*3.14*z) sin(2*3.14*x)*sin(2*3.14*y)*cos(2*3.14*z)
+        }
     }
     Masse_Multiphase
     {
         equation_non_resolue	(t>0)
         initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
         convection { amont }
-	conditions_limites	
-	{
-	    periox	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
-	    perioy	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
-	    perioz	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
-	}
+        conditions_limites
+        {
+            periox	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            perioy	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            perioz	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+        }
         sources { }
     }
     Energie_Multiphase
@@ -91,9 +91,9 @@ Lire pb
         initial_conditions { temperature Champ_Uniforme 1 0 }
         boundary_conditions
         {
-	    periox	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
-	    perioy	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
-	    perioz	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            periox	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            perioy	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            perioz	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
         }
         sources
         {
@@ -101,28 +101,28 @@ Lire pb
     }
 
     Postraitement
-	{
-		Definition_champs	{
-					}
-		sondes			{
-					vitesseX	vitesseX		periode 1 segment 100 0.005 0.005 0.005 0.995 0.995 0.995
-					vitesseY	vitesseY		periode 1 position_like vitesseX
-					vitesseZ	vitesseZ		periode 1 position_like vitesseX
+    {
+        Definition_champs	{
+        }
+        sondes			{
+            vitesseX	vitesseX		periode 1 segment 100 0.005 0.005 0.005 0.995 0.995 0.995
+            vitesseY	vitesseY		periode 1 position_like vitesseX
+            vitesseZ	vitesseZ		periode 1 position_like vitesseX
 
-					grad_v		gradient_vitesse_liquide_eau periode 1 position_like vitesseX
+            grad_v		gradient_vitesse_liquide_eau periode 1 position_like vitesseX
 
-					vorticiteX	vorticiteX		periode 1 position_like vitesseX
-					vorticiteY	vorticiteY		periode 1 position_like vitesseX					
-					vorticiteZ	vorticiteZ		periode 1 position_like vitesseX
-					}
-		format lata
-		champs binaire dt_post 1e6
-					{
-					vitesse elem
-					vorticite elem
-					gradient_vitesse_liquide_eau elem
-					}
-	}
+            vorticiteX	vorticiteX		periode 1 position_like vitesseX
+            vorticiteY	vorticiteY		periode 1 position_like vitesseX
+            vorticiteZ	vorticiteZ		periode 1 position_like vitesseX
+        }
+        format lata
+        champs binaire dt_post 1e6
+        {
+            vitesse elem
+            vorticite elem
+            gradient_vitesse_liquide_eau elem
+        }
+    }
 }
 
 

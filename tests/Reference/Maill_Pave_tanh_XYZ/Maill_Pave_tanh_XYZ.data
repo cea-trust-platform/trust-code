@@ -6,26 +6,26 @@ Domaine dom
 
 Mailler dom
 {
-	Pave Cavite
-	{
-		Origine 0. 0. 0.
-		Nombre_de_Noeuds 11 11 11
-		Longueurs 6.283185307 2.0 3.141592653
-		xtanh_dilatation 0 
-		xtanh_taille_premiere_maille 0.2
-		ytanh_dilatation 0
-		ytanh_taille_premiere_maille 0.01
-		ztanh_dilatation 0
-		ztanh_taille_premiere_maille 0.1
-	}
-	{
-		Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
-		Bord periox  X = 6.283185307   0. <= Y <= 2.0           0. <= Z <= 3.141592653 
-		Bord bas     Y = 0.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
-		Bord haut    Y = 2.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
-		Bord perioz  Z = 0.            0. <= X <= 6.283185307   0. <= Y <= 2.0
-		Bord perioz  Z = 3.141592653   0. <= X <= 6.283185307   0. <= Y <= 2.0   	
-	}
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 11 11 11
+        Longueurs 6.283185307 2.0 3.141592653
+        xtanh_dilatation 0
+        xtanh_taille_premiere_maille 0.2
+        ytanh_dilatation 0
+        ytanh_taille_premiere_maille 0.01
+        ztanh_dilatation 0
+        ztanh_taille_premiere_maille 0.1
+    }
+    {
+        Bord periox  X = 0.            0. <= Y <= 2.0           0. <= Z <= 3.141592653
+        Bord periox  X = 6.283185307   0. <= Y <= 2.0           0. <= Z <= 3.141592653
+        Bord bas     Y = 0.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+        Bord haut    Y = 2.            0. <= X <= 6.283185307   0. <= Z <= 3.141592653
+        Bord perioz  Z = 0.            0. <= X <= 6.283185307   0. <= Y <= 2.0
+        Bord perioz  Z = 3.141592653   0. <= X <= 6.283185307   0. <= Y <= 2.0
+    }
 }
 
 discretiser_domaine dom

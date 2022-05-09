@@ -8,39 +8,39 @@ dimension 3
 
 /* commentaire au milieu de la lecture */
 nom toto
-Read toto  # pourquoi pas # mais_si 
+Read toto  # pourquoi pas # mais_si
 ecrire toto
 Nom toto2
-Read toto2 /* mais si */ mais_non 
+Read toto2 /* mais si */ mais_non
 ecrire toto2
 
 Domaine dom
 # BEGIN MESH #
 Mailler dom {
-  Pave Entree
-  {
-    Origine -1.5 -1.5 -1.5
-      Nombre_de_Noeuds 11 11 11
-      Longueurs 3. 3. 3.
-      symx symy symz
-      }
-  {
-    bord CERCLE X = -1.5 -1.5 <= Y <= 1.5 -1.5 <= Z <= 1.5
-      bord CERCLE Y =  1.5 -1.5 <= X <= 1.5 -1.5 <= Z <= 1.5
-      bord CERCLE Y = -1.5 -1.5 <= X <= 1.5 -1.5 <= Z <= 1.5
-      bord CERCLE X =  1.5 -1.5 <= Y <= 1.5 -1.5 <= Z <= 1.5
-      bord CERCLE Z = -1.5 -1.5 <= X <= 1.5 -1.5 <= Y <= 1.5
-      bord CERCLE Z =  1.5 -1.5 <= X <= 1.5 -1.5 <= Y <= 1.5
-      }
+    Pave Entree
+    {
+        Origine -1.5 -1.5 -1.5
+        Nombre_de_Noeuds 11 11 11
+        Longueurs 3. 3. 3.
+        symx symy symz
+    }
+    {
+        bord CERCLE X = -1.5 -1.5 <= Y <= 1.5 -1.5 <= Z <= 1.5
+        bord CERCLE Y =  1.5 -1.5 <= X <= 1.5 -1.5 <= Z <= 1.5
+        bord CERCLE Y = -1.5 -1.5 <= X <= 1.5 -1.5 <= Z <= 1.5
+        bord CERCLE X =  1.5 -1.5 <= Y <= 1.5 -1.5 <= Z <= 1.5
+        bord CERCLE Z = -1.5 -1.5 <= X <= 1.5 -1.5 <= Y <= 1.5
+        bord CERCLE Z =  1.5 -1.5 <= X <= 1.5 -1.5 <= Y <= 1.5
+    }
 }
 Sous_Zone zone1
 Associate zone1 dom
 Read zone1
 {
-  Boite
+    Boite
     Origine -1. -0.1 -0.1
     Cotes 0.2 0.2 0.2
-    }
+}
 ecrire_fichier dom dom.geom
 Postraiter_domaine { domaine dom format lata fichier dom }
 # END MESH #
@@ -48,10 +48,10 @@ Postraiter_domaine { domaine dom format lata fichier dom }
 # BEGIN PARTITION
 Partition dom
 {
-  Partition_tool metis { Nb_parts 2 }
-  Larg_joint 1
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
     zones_name DOM
-    }
+}
 End
 END PARTITION #
 
@@ -60,7 +60,7 @@ Scatter DOM.Zones dom
 Sous_Zone zone1
 Associate zone1 dom
 Read zone1 { Fichier zone1.ssz }
-Postraiter_domaine { fichier PAR_Kernel.lata format lata domaine dom } 
+Postraiter_domaine { fichier PAR_Kernel.lata format lata domaine dom }
 END SCATTER #
 
 End

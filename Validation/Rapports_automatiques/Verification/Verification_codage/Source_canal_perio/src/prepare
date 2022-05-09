@@ -12,7 +12,7 @@ sed "s/champ_uniforme 2 1. 0./ champ_uniforme 2 2 0./;s/bord periox/ bord periox
 
 diff std.data debit.data > diff_deb.out
 
-sed "s/paroi_fixe/periodique/;s/champ_uniforme 2 1. 0../ champ_uniforme 2 2. 1./;s/bord periox/ bord periox debit_impose 2./;s/# balise #/sources { Canal_perio {  bord haut debit_impose 0 } }/"  std.data >  debit2.data
+sed "s/paroi_fixe/periodique/;s/champ_uniforme 2 1. 0./ champ_uniforme 2 2. 1./;s/bord periox/ bord periox debit_impose 2./;s/# balise #/sources { Canal_perio {  bord haut debit_impose 0 } }/"  std.data >  debit2.data
 
 
 diff std.data debit2.data | grep -v balise > diff_deb2.out

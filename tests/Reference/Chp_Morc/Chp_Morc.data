@@ -7,41 +7,41 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 2
-		Longueurs 1. 1.
-	}
-	{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-	}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 2
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
 }
 Sous_Zone zone1
 Associate zone1 dom
 Read zone1 {
-   Rectangle
-      Origine 0. 0.
-      Cotes 0.4 1.0
+    Rectangle
+    Origine 0. 0.
+    Cotes 0.4 1.0
 }
 Sous_Zone zone2
 Associate zone2 dom
 Read zone2 {
-   Rectangle
-      Origine 0.6 0.
-      Cotes 0.4 1.0
+    Rectangle
+    Origine 0.6 0.
+    Cotes 0.4 1.0
 }
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -55,32 +55,32 @@ Sous_Zone zone2
 Associate zone2 dom
 Read zone2 { Fichier zone2.ssz }
 END SCATTER #
-      
+
 VDF dis
 
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 1.
-	dt_min 0.001
-	dt_max 10.
-	dt_impr 0.001
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tinit 0
+    tmax 1.
+    dt_min 0.001
+    dt_max 10.
+    dt_impr 0.001
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme_Morceaux dom 1
-	{
-		defaut 0.5
-		zone1 2
-		zone2 1
-	}
-	Cp Champ_Uniforme 1 0.5
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme_Morceaux dom 1
+    {
+        defaut 0.5
+        zone1 2
+        zone2 1
+    }
+    Cp Champ_Uniforme 1 0.5
 }
 Associate pb dom
 Associate pb sch
@@ -90,36 +90,36 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1 0. 
-			}
-		boundary_conditions {
-			Haut paroi_adiabatique
-			Bas paroi_adiabatique
-			Droit  paroi_temperature_imposee
-			       Champ_Front_Uniforme 1 1.
-			Gauche  paroi_temperature_imposee 
-			       Champ_Front_Uniforme 1 0.
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 0.
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Droit  paroi_temperature_imposee
+            Champ_Front_Uniforme 1 1.
+            Gauche  paroi_temperature_imposee
+            Champ_Front_Uniforme 1 0.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde temperature periode 0.01 points 1 0.05 0.5
-		}
-		fields dt_post 1.
-		{
-			temperature elem
-			temperature som
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde temperature periode 0.01 points 1 0.05 0.5
+        }
+        fields dt_post 1.
+        {
+            temperature elem
+            temperature som
+        }
+    }
 }
 
 Solve pb
-Ecrire sol    
+Ecrire sol
 End

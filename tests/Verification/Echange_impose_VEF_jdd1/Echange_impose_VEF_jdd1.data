@@ -9,28 +9,28 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 11 
-		Longueurs 1. 1.
-	}
-	{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-	}
-} 
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
+}
 
 trianguler dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -44,36 +44,36 @@ VEFPreP1B dis
 Scheme_euler_explicit scheme_euler_explicit
 Read scheme_euler_explicit
 {
-	tinit 0
+    tinit 0
 	nb_pas_dt_max 3
-	dt_min 0.00001
-	dt_impr 0.1
-	dt_sauv 100
-	facsec 0.9375
-	seuil_statio 0.0001
-	# seuil_statio_relatif_deconseille 1 #
+    dt_min 0.00001
+    dt_impr 0.1
+    dt_sauv 100
+    facsec 0.9375
+    seuil_statio 0.0001
+    # seuil_statio_relatif_deconseille 1 #
 }
 
 Scheme_euler_implicit scheme_euler_implicit
 Read scheme_euler_implicit
 {
-	tinit 0
+    tinit 0
 	nb_pas_dt_max 3
-	dt_min 0.00001
-	dt_impr 0.1
-	dt_sauv 100
-	facsec 100
-	solveur implicite { solveur petsc gmres { precond diag { } seuil 1.e-10 } }
-	seuil_statio 0.0001
-	# seuil_statio_relatif_deconseille 1 #
+    dt_min 0.00001
+    dt_impr 0.1
+    dt_sauv 100
+    facsec 100
+    solveur implicite { solveur petsc gmres { precond diag { } seuil 1.e-10 } }
+    seuil_statio 0.0001
+    # seuil_statio_relatif_deconseille 1 #
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 0.01
-	Cp Champ_Uniforme 1 0.5
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.01
+    Cp Champ_Uniforme 1 0.5
 }
 Associate pb dom
 Associate pb scheme_euler_explicit
@@ -83,31 +83,31 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_Uniforme 1 0. 
-			}
-		boundary_conditions {
-			Haut paroi_adiabatique
-			Bas paroi_adiabatique
-			Droit paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 10. H_imp Champ_Front_Uniforme 1 0.01
-			Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 0
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 0.
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Droit paroi_echange_externe_impose T_ext Champ_Front_Uniforme 1 10. H_imp Champ_Front_Uniforme 1 0.01
+            Gauche paroi_temperature_imposee Champ_Front_Uniforme 1 0
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_T temperature periode 5. points 1 1.0 0.5
-		}
-		fields dt_post 30.
-		{
-			temperature som
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_T temperature periode 5. points 1 1.0 0.5
+        }
+        fields dt_post 30.
+        {
+            temperature som
+        }
+    }
 }
 Solve pb
 End

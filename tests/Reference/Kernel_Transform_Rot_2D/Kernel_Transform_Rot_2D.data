@@ -16,18 +16,18 @@ Domaine dom_rotz_dec_inv
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-     		Nombre_de_Noeuds 11 11
-		Longueurs 0.01 0.01
-		}
-		{
-		Bord Gauche X = 0.  0. <= Y <= 0.01
-		Bord Haut Y = 0.01  0. <= X <= 0.01
-		Bord Bas Y = 0.     0. <= X <= 0.01
-		Bord Droit X = 0.01 0. <= Y <= 0.01
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 0.01 0.01
+    }
+    {
+        Bord Gauche X = 0.  0. <= Y <= 0.01
+        Bord Haut Y = 0.01  0. <= X <= 0.01
+        Bord Bas Y = 0.     0. <= X <= 0.01
+        Bord Droit X = 0.01 0. <= Y <= 0.01
+    }
 }
 Ecrire_Fichier dom dom.geom
 # END MESH #
@@ -43,11 +43,11 @@ Rotation dom_rotz_dec Z -0.01 -0.01 90.
 Rotation dom_rotz_dec_inv Z -0.01 -0.01 -90.
 Postraiter_domaine { format lata fichier DOM.lata domaines { dom dom_rotz dom_rotzinv dom_rotz_dec dom_rotz_dec_inv } }
 
-Postraiter_domaine 
-  { 
+Postraiter_domaine
+{
     format lml
     domaines { dom dom_rotz dom_rotzinv dom_rotz_dec dom_rotz_dec_inv }
-  } 
-  
+}
+
 End
 

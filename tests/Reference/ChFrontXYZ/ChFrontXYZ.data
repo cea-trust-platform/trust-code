@@ -8,26 +8,26 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds 21 21
-		Longueurs 1. 1.
-	}
-	{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-	}
-} 
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 21 21
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
+}
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -40,23 +40,23 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-        tinit 0.
-        tmax .1
-        dt_min 0.01
-        dt_max 0.01
-        dt_impr 0.01
-        dt_sauv 100
-        seuil_statio 1.e-8
+    tinit 0.
+    tmax .1
+    dt_min 0.01
+    dt_max 0.01
+    dt_impr 0.01
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-        mu Champ_Uniforme 1 1.85e-5
-        rho Champ_Uniforme 1 1.17
-        lambda Champ_Uniforme 1 0.0262 
-        Cp Champ_Uniforme 1 1006
-        beta_th Champ_Uniforme 1 3.41e-3
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+    Cp Champ_Uniforme 1 1006
+    beta_th Champ_Uniforme 1 3.41e-3
 }
 
 Champ_Uniforme gravite
@@ -71,52 +71,52 @@ Discretize pb dis
 
 Read pb
 {
-        Navier_Stokes_standard
-        {
-                solveur_pression petsc cholesky { }
-                convection { amont }
-                diffusion { }
-                sources { boussinesq_temperature { T0 0. } }
-                initial_conditions {
-                        vitesse Champ_Uniforme 2 0. 0.
-                        }
-                boundary_conditions {
-                        Haut paroi_fixe
-                        Bas paroi_fixe
-                        Gauche frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz  2  5*y*(1-y)-cos(y) 0.
-                        Droit frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
-                }
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        sources { boussinesq_temperature { T0 0. } }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
         }
-        Convection_Diffusion_Temperature
-        {
-                diffusion { }
-                convection { quick }
-                boundary_conditions 
-                {
-                        Haut paroi_adiabatique
-                        Bas paroi_adiabatique
-			Gauche frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 10.
-                        Droit  frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
-                }
-                initial_conditions { Temperature Champ_Uniforme 1 0. }
+        boundary_conditions {
+            Haut paroi_fixe
+            Bas paroi_fixe
+            Gauche frontiere_ouverte_vitesse_imposee Champ_front_fonc_xyz  2  5*y*(1-y)-cos(y) 0.
+            Droit frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
         }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { quick }
+        boundary_conditions
+        {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Gauche frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 10.
+            Droit  frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 0. }
+    }
 
-        Post_processing
+    Post_processing
+    {
+        Probes
         {
-                Probes
-                {
-                        sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
-                        sonde_pression pression periode 0.01 points 1 0.0045 0.0045
-                        sonde_vitesse vitesse periode 0.01 points 1 0.004 0.0045
-                        sonde_temp temperature periode 0.01 points 1 0.0045 0.0045
-                }
-                fields dt_post 1.0
-                {
-                        pression elem
-                        vitesse som
-                        temperature elem
-                }
+            sonde_V vitesse periode 0.01 segment 10 0.0005 0.005 0.0095 0.005
+            sonde_pression pression periode 0.01 points 1 0.0045 0.0045
+            sonde_vitesse vitesse periode 0.01 points 1 0.004 0.0045
+            sonde_temp temperature periode 0.01 points 1 0.0045 0.0045
         }
+        fields dt_post 1.0
+        {
+            pression elem
+            vitesse som
+            temperature elem
+        }
+    }
 }
 
 Solve pb

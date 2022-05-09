@@ -8,31 +8,31 @@ Domaine dom2
 
 # BEGIN MESH #
 Mailler dom1 {
-  Pave Cavite1 {
-    Origine 0 0
-    Nombre_de_Noeuds 5 5
-    Longueurs 1 1
-  }
-  {
-    Bord Gauche1 X = 0  0 <= Y <= 1
-    Bord Haut1   Y = 1  0 <= X <= 1
-    Bord Bas1    Y = 0  0 <= X <= 1
-    raccord local homogene Droit1  X = 1  0 <= Y <= 1
-  }
+    Pave Cavite1 {
+        Origine 0 0
+        Nombre_de_Noeuds 5 5
+        Longueurs 1 1
+    }
+    {
+        Bord Gauche1 X = 0  0 <= Y <= 1
+        Bord Haut1   Y = 1  0 <= X <= 1
+        Bord Bas1    Y = 0  0 <= X <= 1
+        raccord local homogene Droit1  X = 1  0 <= Y <= 1
+    }
 }
 
 Mailler dom2 {
-  Pave Cavite2 {
-    Origine 1 0
-    Nombre_de_Noeuds 5 5
-    Longueurs 1 1
-  }
-  {
-    raccord local homogene Droit1   X = 1  0 <= Y <= 1
-    Bord Haut2     Y = 1  1 <= X <= 2
-    Bord Bas2      Y = 0  1 <= X <= 2
-    Bord Droit2    X = 2  0 <= Y <= 1
-  }
+    Pave Cavite2 {
+        Origine 1 0
+        Nombre_de_Noeuds 5 5
+        Longueurs 1 1
+    }
+    {
+        raccord local homogene Droit1   X = 1  0 <= Y <= 1
+        Bord Haut2     Y = 1  1 <= X <= 2
+        Bord Bas2      Y = 0  1 <= X <= 2
+        Bord Droit2    X = 2  0 <= Y <= 1
+    }
 }
 
 # END MESH #
@@ -40,15 +40,15 @@ Mailler dom2 {
 # BEGIN PARTITION
 Partition dom1
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM1
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM1
 }
 Partition dom2
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM2
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM2
 }
 End
 END PARTITION #
@@ -65,26 +65,26 @@ Pb_conduction pb2
 
 Sch_CN_iteratif sch
 Read sch {
-  tinit 0
-  nb_pas_dt_max 10
-  dt_start dt_calc
-  facsec_max 1.9
-  dt_impr 1
-  dt_sauv 1000
+    tinit 0
+    nb_pas_dt_max 10
+    dt_start dt_calc
+    facsec_max 1.9
+    dt_impr 1
+    dt_sauv 1000
 }
 
 Solide sol1
 Read sol1 {
-  rho Champ_Uniforme 1 10
-  lambda Champ_Uniforme 1 1 
-  Cp Champ_Uniforme 1 1000
+    rho Champ_Uniforme 1 10
+    lambda Champ_Uniforme 1 1
+    Cp Champ_Uniforme 1 1000
 }
 
 Solide sol2
 Read sol2 {
-  rho Champ_Uniforme 1 20
-  lambda Champ_Uniforme 1 1
-  Cp Champ_Uniforme 1 1000
+    rho Champ_Uniforme 1 20
+    lambda Champ_Uniforme 1 1
+    Cp Champ_Uniforme 1 1000
 }
 
 Associate pb1 dom1
@@ -100,45 +100,45 @@ Associate pbc sch
 Discretize pbc dis
 
 Read pb1 {
-  Conduction {
-    diffusion { }
-    initial_conditions {
-      temperature Champ_Uniforme 1 0
+    Conduction {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 0
+        }
+        boundary_conditions {
+            Gauche1 paroi_adiabatique
+            Haut1 paroi_adiabatique
+            Bas1 paroi_adiabatique
+            Droit1 Paroi_contact pb2 Droit1
+        }
     }
-    boundary_conditions {
-      Gauche1 paroi_adiabatique
-      Haut1 paroi_adiabatique
-      Bas1 paroi_adiabatique
-      Droit1 Paroi_contact pb2 Droit1
+    Post_processing {
+        fields dt_post 10 {
+            temperature elem
+        }
     }
-  }
-  Post_processing {
-    fields dt_post 10 {
-      temperature elem
-    }
-  }
-  sauvegarde xyz pb1.xyz
+    sauvegarde xyz pb1.xyz
 }
 
 Read pb2 {
-  Conduction {
-    diffusion { }
-    initial_conditions {
-      temperature Champ_Uniforme 1 30
+    Conduction {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_Uniforme 1 30
+        }
+        boundary_conditions {
+            Droit1 Paroi_contact pb1 Droit1
+            Haut2 paroi_adiabatique
+            Bas2 paroi_adiabatique
+            Droit2 paroi_adiabatique
+        }
     }
-    boundary_conditions {
-      Droit1 Paroi_contact pb1 Droit1
-      Haut2 paroi_adiabatique
-      Bas2 paroi_adiabatique
-      Droit2 paroi_adiabatique
+    Post_processing {
+        fields dt_post 10 {
+            temperature elem
+        }
     }
-  }
-  Post_processing {
-    fields dt_post 10 {
-      temperature elem
-    }
-  }
-  sauvegarde xyz pb2.xyz
+    sauvegarde xyz pb2.xyz
 }
 
 Solve pbc

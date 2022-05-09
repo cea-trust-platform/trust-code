@@ -11,9 +11,9 @@ Read_file dom_pb1 croix_Pb1.geom
 # BEGIN PARTITION
 Partition dom_pb1
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -28,20 +28,20 @@ Scheme_euler_explicit sch
 Read sch
 {
     nb_pas_dt_max 10
-	tinit 0.
-	tmax 1000.
-	dt_min 0.0001
-	dt_max 1.
-	dt_impr 0.0001
-	dt_sauv 1000
-	seuil_statio 0.01
+    tinit 0.
+    tmax 1000.
+    dt_min 0.0001
+    dt_max 1.
+    dt_impr 0.0001
+    dt_sauv 1000
+    seuil_statio 0.01
 }
 
 Fluide_Incompressible eau
 Read eau
 {
-	mu Champ_Uniforme 1 2
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 2
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom_pb1
@@ -52,40 +52,40 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression petsc cholesky { }
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 3 0. 0. 0.
-			}
-		boundary_conditions {
-nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
-entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 2.
-paroi Paroi_Knudsen_non_negligeable vitesse_paroi Champ_front_uniforme 3 0. 0.
-0. k Champ_front_uniforme 1 0.1
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0. 0. 0.
+        }
+        boundary_conditions {
+            nord frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            sud frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            bas frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            haut frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            droit frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            gauche frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            entree frontiere_ouverte_pression_imposee Champ_front_uniforme 1 2.
+            paroi Paroi_Knudsen_non_negligeable vitesse_paroi Champ_front_uniforme 3 0. 0.
+            0. k Champ_front_uniforme 1 0.1
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_pression pression periode 0.0001 
-				points 1 1. 0. 0.
-		}
-		fields dt_post 0.5
-		{
-			pression elem
-			vitesse som
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 0.0001
+            points 1 1. 0. 0.
+        }
+        fields dt_post 0.5
+        {
+            pression elem
+            vitesse som
+        }
+    }
 }
 
 Solve pb

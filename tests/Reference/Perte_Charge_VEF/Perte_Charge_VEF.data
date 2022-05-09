@@ -9,35 +9,35 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Entree
-                {
-                Origine 0. 0.
-                Nombre_de_Noeuds  3 6
-                Longueurs 1 1
-                }
-                {
-                bord Entree X = 0.   0. <= Y <= 1.0
-                bord Haut   Y = 1.0  0. <= X <= 1.0
-                bord Bas    Y = 0.   0. <= X <= 1.0
-                bord Sortie X = 1.0  0. <= Y <= 1.0
-                }
+    Pave Entree
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds  3 6
+        Longueurs 1 1
+    }
+    {
+        bord Entree X = 0.   0. <= Y <= 1.0
+        bord Haut   Y = 1.0  0. <= X <= 1.0
+        bord Bas    Y = 0.   0. <= X <= 1.0
+        bord Sortie X = 1.0  0. <= Y <= 1.0
+    }
 }
 Trianguler_h dom
 Sous_Zone SSZ
 Associate SSZ dom
-Read SSZ {  
-   Rectangle
-   Origine 0 0
-   Cotes 1 1
+Read SSZ {
+    Rectangle
+    Origine 0 0
+    Cotes 1 1
 }
 
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -53,20 +53,20 @@ VEFPrep1b dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 5000.
-	dt_min 0.0001
-	dt_start dt_calc
-	dt_sauv 100
-	seuil_statio 1.e-6
+    tinit 0
+    tmax 5000.
+    dt_min 0.0001
+    dt_start dt_calc
+    dt_sauv 100
+    seuil_statio 1.e-6
 }
 
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.001
-	rho Champ_Uniforme 1 2.
+    mu Champ_Uniforme 1 0.001
+    rho Champ_Uniforme 1 2.
 }
 
 Champ_Uniforme gravite
@@ -75,54 +75,52 @@ Associate pb dom
 Associate pb sch
 Associate pb fluide
 Discretize pb dis
-# Debog pb seq faces 1.e-6 0 #		
+# Debog pb seq faces 1.e-6 0 #
 
-#
-Sources { 
+/* Sources {
 			Perte_Charge_Directionnelle {
 				diam_hydr champ_uniforme 1 1
 				lambda 1
 				sous_zone SSZ
 				direction champ_uniforme 2 1 0
 			}
-		}
-#
+		} */
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP  { precond ssor { omega 1.65 } seuil 1e-10 impr }
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-			}
-		boundary_conditions {
-			Haut 	symetrie
-			Bas 	symetrie
-			Entree 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 100.
-			Sortie 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-		}
-	}
-	Post_processing
-	{
-		Probes
-		{
-		 seg_P pression periode 0.1 segment 20 0.025 0.5 0.975 0.5
-		 seg_U1 vitesse periode 0.1 segment 11 0. 0.5 1.0 0.5
-		 seg_U2 vitesse periode 0.1 segment 19 1.0 0.02631 1.0 0.9736
-		 sonde_pression pression periode 0.1 points 1 0.5 0.5
-		 sonde_vitesse  vitesse periode 0.1 points 1 0.5 0.5
-		}
-		format lml
-		fields dt_post .1
-		{
-			pression_pa elem
-			pression_pa som
-			vitesse elem
-			vitesse som
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP  { precond ssor { omega 1.65 } seuil 1e-10 impr }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut 	symetrie
+            Bas 	symetrie
+            Entree 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 100.
+            Sortie 	frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            seg_P pression periode 0.1 segment 20 0.025 0.5 0.975 0.5
+            seg_U1 vitesse periode 0.1 segment 11 0. 0.5 1.0 0.5
+            seg_U2 vitesse periode 0.1 segment 19 1.0 0.02631 1.0 0.9736
+            sonde_pression pression periode 0.1 points 1 0.5 0.5
+            sonde_vitesse  vitesse periode 0.1 points 1 0.5 0.5
+        }
+        format lml
+        fields dt_post .1
+        {
+            pression_pa elem
+            pression_pa som
+            vitesse elem
+            vitesse som
+        }
+    }
 }
 Solve pb
 End

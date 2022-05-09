@@ -1,13 +1,12 @@
-# Hydraulique 2D laminaire POISEUILLE 
-  Re = (rho*U_max*L)/mu
+# Hydraulique 2D laminaire POISEUILLE #
+/*  Re = (rho*U_max*L)/mu
   rho = 1.0 kg/m^3
   U_max = 1 m/s
   L = 1 m
   Re = 1
   mu = (rho*U_max*L)/Re
   A.N.
-  mu = 1.0 
-#
+  mu = 1.0 */
 # PARALLEL NOT #
 dimension 3
 Pb_Hydraulique pb
@@ -101,23 +100,23 @@ Lire pb
         diffusion { option { grad_u_transpose_partout 1 } }
         sources
         {
-	    # Attention: cas test qui verifie seulement que le code lit les mots cles prevus de cette interpolation #
+            # Attention: cas test qui verifie seulement que le code lit les mots cles prevus de cette interpolation #
             Source_PDF
             {
-		transpose_rotation 
+                transpose_rotation
                 aire Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh aire elem 0.
                 rotation Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh rotation elem 0.
                 modele
                 {
-		    echelle_relaxation_coefficient_pdf 1
-		    temps_relaxation_coefficient_pdf 1
+                    echelle_relaxation_coefficient_pdf 1
+                    temps_relaxation_coefficient_pdf 1
                     eta 1.E-10
                     local
                     vitesse_imposee_fonction 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
                 }
                 interpolation IBM_gradient_moyen
                 {
-		    est_dirichlet Champ_Uniforme 1 0
+                    est_dirichlet Champ_Uniforme 1 0
                     points_solides Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh projection_Solid som 0.
                     elements_solides Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh fl_elem_number som 0.
                     correspondance_elements Champ_Fonc_MED last_time res_domain_mesh_40_cyl_mesh_250fact12.med domain_mesh TRUST_SALOME_correspondance elem 0.
@@ -137,12 +136,12 @@ Lire pb
     }
     Post_processing
     {
-		format lml
-        	Champs dt_post 1e0
-        	{
-            		pression elem
-            		vitesse som
-        	}
+        format lml
+        Champs dt_post 1e0
+        {
+            pression elem
+            vitesse som
+        }
     }
 }
 resoudre pb

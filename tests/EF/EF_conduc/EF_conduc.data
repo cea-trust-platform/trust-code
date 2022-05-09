@@ -7,29 +7,29 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds  6 6
-		Longueurs 1. 1.
-	}
-	{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-	}
-} 
- trianguler_h dom
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds  6 6
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
+}
+trianguler_h dom
 # #
 ecrire_fichier dom dom.geom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -43,21 +43,21 @@ EF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 300.
-	dt_min 0.00001
-	dt_impr 1
-	dt_sauv 100
-	seuil_statio 1.e-8
-nb_pas_dt_max 1000
+    tinit 0
+    tmax 300.
+    dt_min 0.00001
+    dt_impr 1
+    dt_sauv 100
+    seuil_statio 1.e-8
+    nb_pas_dt_max 1000
 }
 
 Solide sol
 Read sol
 {
-	rho Champ_Uniforme 1 2
-	lambda Champ_Uniforme 1 0.01
-	Cp Champ_Uniforme 1 0.5
+    rho Champ_Uniforme 1 2
+    lambda Champ_Uniforme 1 0.01
+    Cp Champ_Uniforme 1 0.5
 }
 Associate pb dom
 Associate pb sch
@@ -67,45 +67,45 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		diffusion { }
-		initial_conditions {
-			temperature Champ_fonc_xyz dom  1 x*0 
-			}
-		boundary_conditions {
-			Haut paroi_adiabatique
-			Bas paroi_adiabatique
-			Droit paroi_temperature_imposee
-                                Champ_Front_Uniforme 1 1.
-			Gauche paroi_temperature_imposee
-                                Champ_Front_Uniforme 1 0.
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions {
+            temperature Champ_fonc_xyz dom  1 x*0
+        }
+        boundary_conditions {
+            Haut paroi_adiabatique
+            Bas paroi_adiabatique
+            Droit paroi_temperature_imposee
+            Champ_Front_Uniforme 1 1.
+            Gauche paroi_temperature_imposee
+            Champ_Front_Uniforme 1 0.
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde temperature periode 5. plan 10 10 0. 0.  0. 1. 1. 0.
-			seg temperature periode 5. segment 10  0. 0.   1. 0.
-		}
-		fields dt_post  1e5
-		{
-			temperature som
-		}
-	}
-	Post_processings
-	{
-	lata { 
-		format lata
-		 fields dt_post 1e5
-                {
-                        temperature som
-                }
+    Post_processing
+    {
+        Probes
+        {
+            sonde temperature periode 5. plan 10 10 0. 0.  0. 1. 1. 0.
+            seg temperature periode 5. segment 10  0. 0.   1. 0.
+        }
+        fields dt_post  1e5
+        {
+            temperature som
+        }
+    }
+    Post_processings
+    {
+        lata {
+            format lata
+            fields dt_post 1e5
+            {
+                temperature som
+            }
 
-	}
-	}
+        }
+    }
 }
 
 Solve pb

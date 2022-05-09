@@ -9,27 +9,27 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 11 
-		Longueurs 1. 1.
-		}
-		{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-		}
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
 }
 
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -43,33 +43,33 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 2.
-	dt_min 0.01
-	dt_max 0.01
-	dt_impr 0.01
-	dt_sauv 100
-	seuil_statio 1.e-8
+    tinit 0
+    tmax 2.
+    dt_min 0.01
+    dt_max 0.01
+    dt_impr 0.01
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 # For alcohol rho=800kg/m3 #
 # For water rho=1000kg/m3 #
-# beta=1-800/1000=0.2 So change beta if alcohol density changes # 
+# beta=1-800/1000=0.2 So change beta if alcohol density changes #
 # Use a fraction dependant law: mu=mu(water)+(mu(alcohol)-mu(water))*C #
 # 2.e-3 is an example, not the real value! #
 Fluide_Incompressible water_alcohol
 Read water_alcohol
 {
-	mu champ_fonc_tabule { pb concentration } 1 { 2 0 1 1.7e-3 2.e-3 }
-	rho Champ_Uniforme 1 1000
-	beta_co Champ_Uniforme 1 0.2
+    mu champ_fonc_tabule { pb concentration } 1 { 2 0 1 1.7e-3 2.e-3 }
+    rho Champ_Uniforme 1 1000
+    beta_co Champ_Uniforme 1 0.2
 }
 
 # We need the diffusivity of alocol in water (0.1 is an example, not the real value!) #
 Constituant alcohol
 Read alcohol
 {
-	coefficient_diffusion Champ_Uniforme 1 0.1
+    coefficient_diffusion Champ_Uniforme 1 0.1
 }
 
 Champ_Uniforme gravite
@@ -86,56 +86,56 @@ Discretize pb dis
 # Define initial condition: rather down for alcohol (C=1) and rather up for water (C=0) #
 Read pb
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.000000e-06 
-			impr 
-		}
-		convection { quick }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 0. 0.
-		}
-		boundary_conditions {
-			Haut paroi_fixe
-			Droit paroi_fixe
-			Bas paroi_fixe
-			Gauche paroi_fixe
-		}
-		Sources { Boussinesq_concentration { C0 1 0. } }
-	}
-	Convection_diffusion_Concentration {
-		diffusion { }
-		convection { quick }
-		boundary_conditions {
-			Haut Paroi
-			Droit  Paroi
-			Gauche  Paroi
-			Bas  Paroi
-		}
-		initial_conditions {
-			concentration champ_fonc_xyz dom 1 (x-y[0)
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.000000e-06
+            impr
+        }
+        convection { quick }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 0. 0.
+        }
+        boundary_conditions {
+            Haut paroi_fixe
+            Droit paroi_fixe
+            Bas paroi_fixe
+            Gauche paroi_fixe
+        }
+        Sources { Boussinesq_concentration { C0 1 0. } }
+    }
+    Convection_diffusion_Concentration {
+        diffusion { }
+        convection { quick }
+        boundary_conditions {
+            Haut Paroi
+            Droit  Paroi
+            Gauche  Paroi
+            Bas  Paroi
+        }
+        initial_conditions {
+            concentration champ_fonc_xyz dom 1 (x-y[0)
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_pres pression periode 0.01 points 1 0.45 0.45
-			sonde_vit vitesse periode 0.01 points 1 0.4 0.45
-			sonde_conc concentration periode 0.01 points 1 0.55 0.45
-		}
-		format lml
-		fields dt_post 0.1
-		{
-			viscosite_dynamique elem
-			vitesse elem
-			concentration elem
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_pres pression periode 0.01 points 1 0.45 0.45
+            sonde_vit vitesse periode 0.01 points 1 0.4 0.45
+            sonde_conc concentration periode 0.01 points 1 0.55 0.45
+        }
+        format lml
+        fields dt_post 0.1
+        {
+            viscosite_dynamique elem
+            vitesse elem
+            concentration elem
+        }
+    }
 }
 
 Solve pb

@@ -67,7 +67,7 @@ Read pb
             Sortie frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
             Entree frontiere_ouverte_vitesse_imposee  Champ_front_Uniforme 2  1. 0.
         }
-	# On compare le terme source generique avec le terme source qdm (doit etre identique) #
+        # On compare le terme source generique avec le terme source qdm (doit etre identique) #
         sources {
             Source_Generique Transformation { methode vecteur expression 2 x y localisation faces } ,
             Source_Qdm Champ_fonc_xyz dom 2 x y
@@ -97,15 +97,15 @@ Read pb
         Definition_champs {
             source_volumique_generique_P0         Operateur_Eqn { numero_source 0 sources { refChamp { pb_champ pb temperature } } }
             source_volumique_puissance_thermique  Operateur_Eqn { numero_source 1 sources { refChamp { pb_champ pb temperature } } }
-	    source_generique 			  Operateur_Eqn { numero_source 0 sources { refChamp { pb_champ pb vitesse } } } 
-	    source_qdm 				  Operateur_Eqn { numero_source 1 sources { refChamp { pb_champ pb vitesse } } } 
+            source_generique 			  Operateur_Eqn { numero_source 0 sources { refChamp { pb_champ pb vitesse } } }
+            source_qdm 				  Operateur_Eqn { numero_source 1 sources { refChamp { pb_champ pb vitesse } } }
         }
         fields dt_post 1e10
         {
             source_volumique_generique_P0 		elem
             source_volumique_puissance_thermique 	elem
- 	    source_generique 				elem
-	    source_qdm					elem
+            source_generique 				elem
+            source_qdm					elem
         }
     }
 }

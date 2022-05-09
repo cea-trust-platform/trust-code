@@ -9,27 +9,27 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds 11 11 
-		Longueurs 1.06066017177982 1.06066017177982
-	}
-	{
-		Bord Gauche X = 0.               0. <= Y <= 1.06066017177982
-		Bord Haut   Y = 1.06066017177982 0. <= X <= 1.06066017177982
-		Bord Bas    Y = 0.               0. <= X <= 1.06066017177982
-		Bord Droit  X = 1.06066017177982 0. <= Y <= 1.06066017177982
-	}
-} 
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1.06066017177982 1.06066017177982
+    }
+    {
+        Bord Gauche X = 0.               0. <= Y <= 1.06066017177982
+        Bord Haut   Y = 1.06066017177982 0. <= X <= 1.06066017177982
+        Bord Bas    Y = 0.               0. <= X <= 1.06066017177982
+        Bord Droit  X = 1.06066017177982 0. <= Y <= 1.06066017177982
+    }
+}
 
 # END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 }
-	Larg_joint 1
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -43,21 +43,21 @@ EF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	dt_min 0.00001
-	dt_sauv 100
-	seuil_statio 1.e-8
-	seuil_statio 2.22222e-07
+    tinit 0
+    dt_min 0.00001
+    dt_sauv 100
+    seuil_statio 1.e-8
+    seuil_statio 2.22222e-07
 }
 
 Fluide_incompressible fluide
 Read fluide
 {
-	rho Champ_Uniforme 1 2.
-	mu Champ_Uniforme 1 1.
-	lambda Champ_Uniforme 1 0.25
-	Cp Champ_Uniforme 1 2.
-	beta_th Champ_Uniforme 1 1.
+    rho Champ_Uniforme 1 2.
+    mu Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 0.25
+    Cp Champ_Uniforme 1 2.
+    beta_th Champ_Uniforme 1 1.
 }
 
 Associate pb dom
@@ -68,70 +68,70 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
-                methode_calcul_pression_initiale avec_sources_et_operateurs
-		solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.e-12 
-		}
-		convection { negligeable }
-		diffusion { negligeable }
-		initial_conditions {
-			vitesse Champ_Fonc_xyz dom 2 (0.147313912747197) (0.147313912747197)
-			}
-		boundary_conditions {
-			Gauche frontiere_ouverte_vitesse_imposee 
-				Champ_Front_Uniforme 2 0.147313912747197 0.147313912747197
-			Droit frontiere_ouverte_vitesse_imposee 
-				Champ_Front_Uniforme 2 0.147313912747197 0.147313912747197
-			Bas frontiere_ouverte_vitesse_imposee 
-				Champ_Front_Uniforme 2 0.147313912747197 0.147313912747197
-			Haut frontiere_ouverte_vitesse_imposee 
-				Champ_Front_Uniforme 2 0.147313912747197 0.147313912747197
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { generic amont }
-		initial_conditions {
-			temperature Champ_Fonc_xyz dom 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
-			}
-		boundary_conditions {
-			Haut frontiere_ouverte_temperature_imposee
-				Champ_Front_fonc_txyz 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
-			Bas  frontiere_ouverte_temperature_imposee
-				Champ_Front_fonc_txyz 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
-			Droit frontiere_ouverte_temperature_imposee
-				Champ_Front_fonc_txyz 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
-			Gauche frontiere_ouverte_temperature_imposee
-				Champ_Front_fonc_txyz 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
-		}
-	}
+    Navier_Stokes_standard
+    {
+        methode_calcul_pression_initiale avec_sources_et_operateurs
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-12
+        }
+        convection { negligeable }
+        diffusion { negligeable }
+        initial_conditions {
+            vitesse Champ_Fonc_xyz dom 2 (0.147313912747197) (0.147313912747197)
+        }
+        boundary_conditions {
+            Gauche frontiere_ouverte_vitesse_imposee
+            Champ_Front_Uniforme 2 0.147313912747197 0.147313912747197
+            Droit frontiere_ouverte_vitesse_imposee
+            Champ_Front_Uniforme 2 0.147313912747197 0.147313912747197
+            Bas frontiere_ouverte_vitesse_imposee
+            Champ_Front_Uniforme 2 0.147313912747197 0.147313912747197
+            Haut frontiere_ouverte_vitesse_imposee
+            Champ_Front_Uniforme 2 0.147313912747197 0.147313912747197
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { generic amont }
+        initial_conditions {
+            temperature Champ_Fonc_xyz dom 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
+        }
+        boundary_conditions {
+            Haut frontiere_ouverte_temperature_imposee
+            Champ_Front_fonc_txyz 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
+            Bas  frontiere_ouverte_temperature_imposee
+            Champ_Front_fonc_txyz 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
+            Droit frontiere_ouverte_temperature_imposee
+            Champ_Front_fonc_txyz 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
+            Gauche frontiere_ouverte_temperature_imposee
+            Champ_Front_fonc_txyz 1 (-0.0135673098126085+0.0135673098126085*exp(3.3333333333333333*(x+y)/sqrt(2.)))
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			temperature_x temperature periode 5. segment 100  0. 0. 1.06066017177982 1.06066017177982
-		}
-		fields dt_post 5.
-		{
-			temperature som
-			vitesse som
-			pression_pa elem
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            temperature_x temperature periode 5. segment 100  0. 0. 1.06066017177982 1.06066017177982
+        }
+        fields dt_post 5.
+        {
+            temperature som
+            vitesse som
+            pression_pa elem
+        }
+    }
 }
 
 Solve pb
 
 End
 
-                methode_calcul_pression_initiale avec_sources_et_operateurs
-		solveur_pression GCP { 
-			precond ssor { omega 1.5 } 
-			seuil 1.e-12 
-		}
+methode_calcul_pression_initiale avec_sources_et_operateurs
+solveur_pression GCP {
+    precond ssor { omega 1.5 }
+    seuil 1.e-12
+}
 

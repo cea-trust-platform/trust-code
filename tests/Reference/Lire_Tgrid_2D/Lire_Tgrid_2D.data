@@ -10,22 +10,22 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
- 	nb_pas_dt_max 2
-	tinit 0.
-	tmax 1200
-	dt_min 0.001
-	dt_max 1
-	dt_impr 0.01
-	dt_sauv 100
-	seuil_statio 1.e-3
+    nb_pas_dt_max 2
+    tinit 0.
+    tmax 1200
+    dt_min 0.001
+    dt_max 1
+    dt_impr 0.01
+    dt_sauv 100
+    seuil_statio 1.e-3
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-	rho Champ_Uniforme 1 1.17
-	lambda Champ_Uniforme 1 0.0262 
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
 }
 
 Pb_Hydraulique pb1
@@ -36,50 +36,50 @@ Discretize pb1 dis
 
 Read pb1
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression petsc cholesky { }
-		convection { muscl }
-		diffusion { }
-		initial_conditions {
-			vitesse Champ_Uniforme 2 1 0
-			}
-		boundary_conditions {
-			aiguille paroi_fixe
-			parois_basse frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1 0
-			parois_cotee paroi_fixe
-			parois_haute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0
-			axe paroi_fixe
-		}
-	}
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { muscl }
+        diffusion { }
+        initial_conditions {
+            vitesse Champ_Uniforme 2 1 0
+        }
+        boundary_conditions {
+            aiguille paroi_fixe
+            parois_basse frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2 1 0
+            parois_cotee paroi_fixe
+            parois_haute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0
+            axe paroi_fixe
+        }
+    }
 
-	Post_processings
-	{
-		lata
-		{
-			format lata
-			fichier Lire_Tgrid_2D
-			Probes
-			{
-				sonde_vit1 vitesse periode 0.01 point 1 0 0
-			}
-			fields dt_post 0.01
-			{
-				pression elem
-				vitesse som
-			}
-		}
-		lml
-		{
-			format lml
-			fichier Lire_Tgrid_2D
-			fields dt_post 0.01
-			{
-				pression elem
-				vitesse som
-			}
-		}		
-	}
+    Post_processings
+    {
+        lata
+        {
+            format lata
+            fichier Lire_Tgrid_2D
+            Probes
+            {
+                sonde_vit1 vitesse periode 0.01 point 1 0 0
+            }
+            fields dt_post 0.01
+            {
+                pression elem
+                vitesse som
+            }
+        }
+        lml
+        {
+            format lml
+            fichier Lire_Tgrid_2D
+            fields dt_post 0.01
+            {
+                pression elem
+                vitesse som
+            }
+        }
+    }
 }
 Solve pb1
 End

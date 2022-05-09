@@ -6,27 +6,27 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-  Pave Cavite
-  {
-    Origine 0. 0.
-    Nombre_de_Noeuds 201 50
-    Longueurs 4. 1.
-  }
-  {
-    Bord Gauche X = 0. 0. <= Y <= 1.
-    Bord Haut   Y = 1. 0. <= X <= 4.
-    Bord Bas    Y = 0. 0. <= X <= 4.
-    Bord Droit  X = 4. 0. <= Y <= 1.
-  }
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 201 50
+        Longueurs 4. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 4.
+        Bord Bas    Y = 0. 0. <= X <= 4.
+        Bord Droit  X = 4. 0. <= Y <= 1.
+    }
 }
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-  Partition_tool tranche { tranches 2 1 }
-  Larg_joint 1
-  zones_name DOM
+    Partition_tool tranche { tranches 2 1 }
+    Larg_joint 1
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -39,18 +39,18 @@ Sous_zone sz1
 Associate sz1 dom
 Read sz1
 {
-  rectangle
-  Origine 0.0 0.0
-  Cotes 2.0 1.0
+    rectangle
+    Origine 0.0 0.0
+    Cotes 2.0 1.0
 }
 
 Sous_zone sz2
 Associate sz2 dom
 Read sz2
 {
-  Rectangle
-  Origine 2. 0.0
-  Cotes 2.0 1.0
+    Rectangle
+    Origine 2. 0.0
+    Cotes 2.0 1.0
 }
 
 VDF dis
@@ -58,29 +58,29 @@ VDF dis
 Scheme_euler_implicit sch
 Read sch
 {
-  tinit 0
-  nb_pas_dt_max 30
-  tmax 300.
-  dt_min 0.00001
-  dt_max 1
-  dt_impr 0.00001
-  dt_sauv 100
-  seuil_statio 1.e-30
-  facsec_max 1000
-  facsec 100
-  solveur implicite { solveur gmres { diag seuil 1e-15 nb_it_max 5 impr } }
+    tinit 0
+    nb_pas_dt_max 30
+    tmax 300.
+    dt_min 0.00001
+    dt_max 1
+    dt_impr 0.00001
+    dt_sauv 100
+    seuil_statio 1.e-30
+    facsec_max 1000
+    facsec 100
+    solveur implicite { solveur gmres { diag seuil 1e-15 nb_it_max 5 impr } }
 }
 
 Solide sol
 Read sol
 {
-rho Champ_Uniforme 1 50
-Cp Champ_Uniforme 1 0.5
-lambda Champ_Fonc_Tabule_Morceaux dom 1
-{
-  sz1 { pb temperature } { 2 100 300 0.1 0.01 }
-  sz2 { pb temperature } {  2 100 300 0.001 0.5 }
-}
+    rho Champ_Uniforme 1 50
+    Cp Champ_Uniforme 1 0.5
+    lambda Champ_Fonc_Tabule_Morceaux dom 1
+    {
+        sz1 { pb temperature } { 2 100 300 0.1 0.01 }
+        sz2 { pb temperature } {  2 100 300 0.001 0.5 }
+    }
 }
 
 Associate pb dom
@@ -91,33 +91,33 @@ Discretize pb dis
 
 Read pb
 {
-  Conduction
-  {
-    diffusion { }
-    initial_conditions
+    Conduction
     {
-      temperature Champ_Fonc_Fonction_txyz_Morceaux pb rho 1
-      {
-        defaut 3000.0
-        sz1 val+3
-        sz2 val*2+2
-      }
+        diffusion { }
+        initial_conditions
+        {
+            temperature Champ_Fonc_Fonction_txyz_Morceaux pb rho 1
+            {
+                defaut 3000.0
+                sz1 val+3
+                sz2 val*2+2
+            }
+        }
+
+        boundary_conditions
+        {
+            Haut paroi_temperature_imposee Champ_Front_Uniforme 1 100.
+            Bas  paroi_temperature_imposee Champ_Front_Uniforme 1 300.
+            Droit paroi_adiabatique
+            Gauche paroi_adiabatique
+        }
     }
 
-    boundary_conditions
+    Post_processing
     {
-      Haut paroi_temperature_imposee Champ_Front_Uniforme 1 100.
-      Bas  paroi_temperature_imposee Champ_Front_Uniforme 1 300.
-      Droit paroi_adiabatique
-      Gauche paroi_adiabatique
+        format lml
+        fields dt_post 1000. { temperature elem }
     }
-  }
-
-  Post_processing
-  {
-    format lml
-    fields dt_post 1000. { temperature elem }
-  }
 }
 
 Solve pb

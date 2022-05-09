@@ -13,9 +13,9 @@ dilate DOM_FLUI 0.001
 # BEGIN PARTITION
 Partition DOM_FLUI
 {
-        Partition_tool metis { Nb_parts 2 }
-        Larg_joint 2
-        zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -34,29 +34,29 @@ VEFPreP1b dis
 Scheme_euler_implicit sch
 Read sch
 {
-	nb_pas_dt_max 1
-	tinit 0.
-	tmax 0.1
-	dt_min 0.000001
-	dt_max 0.01
-	dt_impr 0.0001
-	dt_sauv 0.05
-	seuil_statio 1.e-12
-	facsec 0.1
-	facsec_max 1.
-	max_iter_implicite 1000		
-        Solveur Simpler
-           {
-                seuil_convergence_implicite 5.e-6
-                seuil_convergence_solveur 1.e-8
-           }
+    nb_pas_dt_max 1
+    tinit 0.
+    tmax 0.1
+    dt_min 0.000001
+    dt_max 0.01
+    dt_impr 0.0001
+    dt_sauv 0.05
+    seuil_statio 1.e-12
+    facsec 0.1
+    facsec_max 1.
+    max_iter_implicite 1000
+    Solveur Simpler
+    {
+        seuil_convergence_implicite 5.e-6
+        seuil_convergence_solveur 1.e-8
+    }
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme	1 0.54613e-3
-	rho Champ_Uniforme	1 987.888
+    mu Champ_Uniforme	1 0.54613e-3
+    rho Champ_Uniforme	1 987.888
 }
 
 Associate pb DOM_FLUI
@@ -67,45 +67,47 @@ Discretize pb dis
 
 Read pb
 {
-     Navier_Stokes_standard
-     {
-	solveur_pression GCP { precond ssor { omega 1.5 } 
-		seuil 1.e-9 impr }
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP {
+            precond ssor { omega 1.5 }
+            seuil 1.e-9 impr
+        }
         convection { amont }
         diffusion  { }
         initial_conditions
-                {
-                vitesse Champ_don_lu DOM_FLUI 3 Vijk_P_XYZ.csv
-                }
+        {
+            vitesse Champ_don_lu DOM_FLUI 3 Vijk_P_XYZ.csv
+        }
         boundary_conditions
-                {
-		IN frontiere_ouverte_vitesse_imposee
-			Champ_Front_Uniforme 3 0. 0. 0.1                  
-	   	OUT frontiere_ouverte_pression_imposee
-			Champ_Front_Uniforme 1 0. 
-		PAR  paroi_fixe
-                }
-     }
-	Post_processing
-    	{	       
+        {
+            IN frontiere_ouverte_vitesse_imposee
+            Champ_Front_Uniforme 3 0. 0. 0.1
+            OUT frontiere_ouverte_pression_imposee
+            Champ_Front_Uniforme 1 0.
+            PAR  paroi_fixe
+        }
+    }
+    Post_processing
+    {
 
-	
-    	Probes
-    	  {
-    	  Sonde1 vitesse Periode 0.001
-   	  Points 1 0.005 0.015 0.020     
-    
-   	  Sonde2 vitesse Periode 0.001
-    	  Segment 6 0.02 0. 0. 0.01 0.01 0.
-    
-    	  Sonde3 vitesse Periode 0.001
-    	  Segment 6 0.01 0.01 0.02 0. 0.02 0.02
-    	  }
-	
-    	fields dt_post 0.001
-      	  {
-      	  vitesse elem
-      	  }	
+
+        Probes
+        {
+            Sonde1 vitesse Periode 0.001
+            Points 1 0.005 0.015 0.020
+
+            Sonde2 vitesse Periode 0.001
+            Segment 6 0.02 0. 0. 0.01 0.01 0.
+
+            Sonde3 vitesse Periode 0.001
+            Segment 6 0.01 0.01 0.02 0. 0.02 0.02
+        }
+
+        fields dt_post 0.001
+        {
+            vitesse elem
+        }
     }
 }
 

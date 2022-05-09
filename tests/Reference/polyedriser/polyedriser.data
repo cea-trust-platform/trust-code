@@ -8,54 +8,54 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0. 0.
-		Nombre_de_Noeuds 4 4 4
-		Longueurs 1. 1. 1.
-		}
-		{
-		Bord left X = 0.    0. <= Y <= 1. 0. <= Z <= 1.
-		Bord up   Y = 1.  0. <= X <= 1. 0. <= Z <= 1.
-		Bord down    Y = 0.    0. <= X <= 1. 0. <= Z <= 1.
-		Bord right  X = 1.  0. <= Y <= 1. 0. <= Z <= 1.
-		Bord front    Z = 0.    0. <= X <= 1. 0. <= Y <= 1.
-		Bord back   Z = 1. 0. <= X <= 1. 0. <= Y <= 1.
-		}
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 4 4 4
+        Longueurs 1. 1. 1.
+    }
+    {
+        Bord left X = 0.    0. <= Y <= 1. 0. <= Z <= 1.
+        Bord up   Y = 1.  0. <= X <= 1. 0. <= Z <= 1.
+        Bord down    Y = 0.    0. <= X <= 1. 0. <= Z <= 1.
+        Bord right  X = 1.  0. <= Y <= 1. 0. <= Z <= 1.
+        Bord front    Z = 0.    0. <= X <= 1. 0. <= Y <= 1.
+        Bord back   Z = 1. 0. <= X <= 1. 0. <= Y <= 1.
+    }
 }
-Polyedriser dom      
+Polyedriser dom
 # END MESH #
-# BEGIN PARTITION 
+# BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
- END PARTITION #
+END PARTITION #
 
-# BEGIN SCATTER 
+# BEGIN SCATTER
 Scatter DOM.Zones dom
- END SCATTER #
+END SCATTER #
 
 Polymac dis
 
 Schema_euler_implicite sch
 Read sch
 {
-	tinit 0.
-	tmax 1.2
-	dt_min 0.01
-	nb_pas_dt_max 3
-	dt_max 0.01
-	dt_impr 0.00001
-	dt_sauv 100
-	seuil_statio 1.e-8
-	no_check_disk_space
+    tinit 0.
+    tmax 1.2
+    dt_min 0.01
+    nb_pas_dt_max 3
+    dt_max 0.01
+    dt_impr 0.00001
+    dt_sauv 100
+    seuil_statio 1.e-8
+    no_check_disk_space
     solveur implicite
     {
-    solveur petsc cli
+        solveur petsc cli
         {
             -pc_type fieldsplit
             -pc_fieldsplit_0_field b1
@@ -72,11 +72,11 @@ Read sch
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-	rho Champ_Uniforme 1 1.17
-	lambda Champ_Uniforme 1 0.0262 
-	Cp Champ_Uniforme 1 1006
-	beta_th Champ_Uniforme 1 3.41e-3
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
+    lambda Champ_Uniforme 1 0.0262
+    Cp Champ_Uniforme 1 1006
+    beta_th Champ_Uniforme 1 3.41e-3
 }
 
 Champ_Uniforme gravite
@@ -91,62 +91,62 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_standard
-	{
+    Navier_Stokes_standard
+    {
 
-		solveur_pression petsc cholesky { }
-		convection { amont }
-		diffusion { }
-		sources { boussinesq_temperature { T0 5. } }
-		initial_conditions {
-			vitesse champ_fonc_xyz dom 3 y -x 0
-			}
-		boundary_conditions {
-			up paroi_fixe
-			down paroi_fixe
-			left paroi_fixe
-			right paroi_fixe
-			front Symetrie
-			back Symetrie
-		}
-	}
-	Convection_Diffusion_Temperature
-	{
-		diffusion { }
-		convection { amont }
-		boundary_conditions 
-		{
-			up paroi_adiabatique
-			down paroi_adiabatique
- 			left paroi_temperature_imposee  Champ_Front_Uniforme 1 10. 
-			right paroi_temperature_imposee  Champ_Front_Uniforme 1 0. 
-			front Symetrie
-			back Symetrie
-		}
-		initial_conditions { Temperature Champ_Uniforme 1 5. }
-	}
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        sources { boussinesq_temperature { T0 5. } }
+        initial_conditions {
+            vitesse champ_fonc_xyz dom 3 y -x 0
+        }
+        boundary_conditions {
+            up paroi_fixe
+            down paroi_fixe
+            left paroi_fixe
+            right paroi_fixe
+            front Symetrie
+            back Symetrie
+        }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { amont }
+        boundary_conditions
+        {
+            up paroi_adiabatique
+            down paroi_adiabatique
+            left paroi_temperature_imposee  Champ_Front_Uniforme 1 10.
+            right paroi_temperature_imposee  Champ_Front_Uniforme 1 0.
+            front Symetrie
+            back Symetrie
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 5. }
+    }
 
-	Post_processing
-	{
-		definition_champs
-		{
-			opconv_qdm Operateur_eqn { numero_op 0 source refChamp { Pb_champ pb vitesse } }
-			source_qdm Operateur_eqn { numero_source 0 source refChamp { Pb_champ pb vitesse } }
-			sum_source Reduction_0D { methode weighted_sum sources_reference { source_qdm } }
-		}
-		probes
-		{
-			probe_vit  vitesse     periode 1.e-2  segment 4  0.5 0.5 0.0  0.5 0.5 1.0
-			probe_opc  opconv_qdm  periode 1.e-2  position_like probe_vit
-			probe_src  source_qdm  periode 1.e-2  position_like probe_vit
-			# sourceQDM  sum_source  periode 1.e-2  numero_elem_sur_maitre 0 # # Not available in CoviMAC/PolyMAC yet #
-		}
-		format lml
-		fields dt_post 0.1
-		{
-			temperature elem
-		}
-	}
+    Post_processing
+    {
+        definition_champs
+        {
+            opconv_qdm Operateur_eqn { numero_op 0 source refChamp { Pb_champ pb vitesse } }
+            source_qdm Operateur_eqn { numero_source 0 source refChamp { Pb_champ pb vitesse } }
+            sum_source Reduction_0D { methode weighted_sum sources_reference { source_qdm } }
+        }
+        probes
+        {
+            probe_vit  vitesse     periode 1.e-2  segment 4  0.5 0.5 0.0  0.5 0.5 1.0
+            probe_opc  opconv_qdm  periode 1.e-2  position_like probe_vit
+            probe_src  source_qdm  periode 1.e-2  position_like probe_vit
+            # sourceQDM  sum_source  periode 1.e-2  numero_elem_sur_maitre 0 # # Not available in CoviMAC/PolyMAC yet #
+        }
+        format lml
+        fields dt_post 0.1
+        {
+            temperature elem
+        }
+    }
 }
 EcritureLectureSpecial 0
 Solve pb

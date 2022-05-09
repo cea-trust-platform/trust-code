@@ -6,40 +6,40 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0. 0.
-     		Nombre_de_Noeuds 51 51 51
-		Longueurs 1. 1. 1.
-		}
-		{
-		Bord Gauche	X = 0.	0. <= Y <= 1.	0. <= Z <= 1.
-		Bord Haut	Y = 1.	0. <= X <= 1.	0. <= Z <= 1.
-		Bord Bas	Y = 0.	0. <= X <= 1.	0. <= Z <= 1.
-		Bord Droit	X = 1.	0. <= Y <= 1.	0. <= Z <= 1.
-		Bord Avant	Z = 0.	0. <= X <= 1.	0. <= Y <= 1.
-		Bord Arriere	Z = 1.	0. <= X <= 1.	0. <= Y <= 1.
-		}
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 51 51 51
+        Longueurs 1. 1. 1.
+    }
+    {
+        Bord Gauche	X = 0.	0. <= Y <= 1.	0. <= Z <= 1.
+        Bord Haut	Y = 1.	0. <= X <= 1.	0. <= Z <= 1.
+        Bord Bas	Y = 0.	0. <= X <= 1.	0. <= Z <= 1.
+        Bord Droit	X = 1.	0. <= Y <= 1.	0. <= Z <= 1.
+        Bord Avant	Z = 0.	0. <= X <= 1.	0. <= Y <= 1.
+        Bord Arriere	Z = 1.	0. <= X <= 1.	0. <= Y <= 1.
+    }
 }
 Sous_Zone SSZ
 Associate SSZ dom
 Read SSZ
 {
-	Tube
-	Origine 0.5 0.5 0.4
-	DIR	Z
-	RI	0.1
-	RE	0.2
-	Hauteur	0.2
+    Tube
+    Origine 0.5 0.5 0.4
+    DIR	Z
+    RI	0.1
+    RE	0.2
+    Hauteur	0.2
 }
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool metis { Nb_parts 2 }
-	Larg_joint 2
-	zones_name DOM
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -56,21 +56,21 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit	0.
-	tmax	5.
-	dt_min	1.e-6
-	dt_max	0.1
-	dt_impr	0.01
-	dt_sauv	0.1
-	seuil_statio	1.e-5
+    tinit	0.
+    tmax	5.
+    dt_min	1.e-6
+    dt_max	0.1
+    dt_impr	0.01
+    dt_sauv	0.1
+    seuil_statio	1.e-5
 }
 
 Solide sol
 Read sol
 {
-	rho	Champ_Uniforme 1 1000.
-	lambda	Champ_Uniforme 1 250.    
-	Cp	Champ_Uniforme 1 100.
+    rho	Champ_Uniforme 1 1000.
+    lambda	Champ_Uniforme 1 250.
+    Cp	Champ_Uniforme 1 100.
 }
 
 Associate pb dom
@@ -81,29 +81,29 @@ Discretize pb dis
 
 Read pb
 {
-	Conduction
-	{
-		sources { Puissance_Thermique Champ_uniforme_Morceaux dom 1 { defaut 0. SSZ 1e5 } }
-		diffusion { }
-		initial_conditions { temperature Champ_Uniforme 1 30. }
-		boundary_conditions
-		{
-			Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
-			Haut	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
-			Bas	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
-		 	Droit	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
-			Avant	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
-			Arriere	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
-		}
-	}
-	Post_processing
-	{		
-		fields dt_post 5.
-		{
-			temperature elem
-			temperature som
-		}
-	}
+    Conduction
+    {
+        sources { Puissance_Thermique Champ_uniforme_Morceaux dom 1 { defaut 0. SSZ 1e5 } }
+        diffusion { }
+        initial_conditions { temperature Champ_Uniforme 1 30. }
+        boundary_conditions
+        {
+            Gauche	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
+            Haut	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
+            Bas	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
+            Droit	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
+            Avant	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
+            Arriere	paroi_temperature_imposee Champ_Front_Uniforme 1 30.
+        }
+    }
+    Post_processing
+    {
+        fields dt_post 5.
+        {
+            temperature elem
+            temperature som
+        }
+    }
 }
 Solve pb
 End

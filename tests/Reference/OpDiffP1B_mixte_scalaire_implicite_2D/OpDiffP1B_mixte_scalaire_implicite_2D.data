@@ -7,18 +7,18 @@ Domaine dom_pbF1
 # BEGIN MESH #
 Mailler dom_pbF1
 {
-       Pave domF
-               {
-               Origine 0. 0.
-               Nombre_de_Noeuds 11 11
-               Longueurs 1. 1.
-               }
-               {
-               bord perio X = 0.   0 <= Y <= 1.
-               bord HautF   Y = 0.  0 <= X <= 1.
-               bord BasF    Y = 1.  0 <= X <= 1.
-               bord perio X = 1.  0 <= Y <= 1.
-               }
+    Pave domF
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 11 11
+        Longueurs 1. 1.
+    }
+    {
+        bord perio X = 0.   0 <= Y <= 1.
+        bord HautF   Y = 0.  0 <= X <= 1.
+        bord BasF    Y = 1.  0 <= X <= 1.
+        bord perio X = 1.  0 <= Y <= 1.
+    }
 }
 trianguler dom_pbF1
 # END MESH #
@@ -26,10 +26,10 @@ trianguler dom_pbF1
 # BEGIN PARTITION
 Partition dom_pbF1
 {
-        Partition_tool tranche { tranches 1 4 }
-        Larg_joint 2
-        zones_name DOM
-	periodique 1 perio 
+    Partition_tool tranche { tranches 1 4 }
+    Larg_joint 2
+    zones_name DOM
+    periodique 1 perio
 }
 End
 END PARTITION #
@@ -43,21 +43,21 @@ Pb_Conduction pbF1
 Scheme_euler_implicit sch
 Read sch
 {
-        tinit 0.
-        tmax  20.
-        dt_min 1.E-4
-        dt_max 1.
-        dt_impr 0.01
-        dt_sauv 5000
-        seuil_statio 1.e-8
-        facsec 1.
-	nb_pas_dt_max 10
-        solveur simpler
-        {
-                no_qdm
-                seuil_convergence_solveur 1e-8
-                seuil_convergence_implicite 1e-6
-        }
+    tinit 0.
+    tmax  20.
+    dt_min 1.E-4
+    dt_max 1.
+    dt_impr 0.01
+    dt_sauv 5000
+    seuil_statio 1.e-8
+    facsec 1.
+    nb_pas_dt_max 10
+    solveur simpler
+    {
+        no_qdm
+        seuil_convergence_solveur 1e-8
+        seuil_convergence_implicite 1e-6
+    }
 }
 
 
@@ -66,59 +66,59 @@ VEFPreP1b cubesregu
 Solide eau
 Read eau
 {
-       rho Champ_Uniforme 1 1.
-       lambda Champ_Uniforme 1 1.                 
-       Cp Champ_Uniforme 1 1.
+    rho Champ_Uniforme 1 1.
+    lambda Champ_Uniforme 1 1.
+    Cp Champ_Uniforme 1 1.
 }
 
 
 Associate pbF1 dom_pbF1
-Associate pbF1 eau  
+Associate pbF1 eau
 Associate pbF1 sch
 Discretize pbF1 cubesregu
 # Debog pbF1 seq faces 1.e-6 0 #
 
 Read pbF1
 {
-Conduction
-       {
-               diffusion { 
-	                   P1NCP1B {  } 
-			  }
-               initial_conditions {
-                       temperature Champ_fonc_txyz dom_pbF1 1 0
-                       }
-               boundary_conditions {
-		   HautF   paroi_temperature_imposee  Champ_Front_fonc_txyz 1 y
-		   perio   periodique 
-		   BasF    Paroi_flux_impose champ_front_uniforme 1 1.
-               }
+    Conduction
+    {
+        diffusion {
+            P1NCP1B {  }
+        }
+        initial_conditions {
+            temperature Champ_fonc_txyz dom_pbF1 1 0
+        }
+        boundary_conditions {
+            HautF   paroi_temperature_imposee  Champ_Front_fonc_txyz 1 y
+            perio   periodique
+            BasF    Paroi_flux_impose champ_front_uniforme 1 1.
+        }
 
 
-       }
-       Post_processings
-       {
-       		lml
-       		{
-       			format lml
-       			fichier OpDiffP1B_mixte_scalaire_implicite_2D
-       			fields dt_post 1.e-1
-               		{
-                 	temperature elem
-               		}
-       		}
-		lata
-		{
-		       	format lata
-       			fields dt_post 1.e-1
-               		{
-                 	temperature faces
-               		}
-		}        
-       }      
-       sauvegarde formatte pbF.sauv
+    }
+    Post_processings
+    {
+        lml
+        {
+            format lml
+            fichier OpDiffP1B_mixte_scalaire_implicite_2D
+            fields dt_post 1.e-1
+            {
+                temperature elem
+            }
+        }
+        lata
+        {
+            format lata
+            fields dt_post 1.e-1
+            {
+                temperature faces
+            }
+        }
+    }
+    sauvegarde formatte pbF.sauv
 }
 
 
 Solve pbF1
-End 
+End

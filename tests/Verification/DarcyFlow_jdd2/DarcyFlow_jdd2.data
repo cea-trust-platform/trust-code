@@ -2,27 +2,27 @@
 # Isotherm in order to have the same results than the incompressible model #
 # PARALLEL OK #
 dimension 3
-domaine dom 
+domaine dom
 # BEGIN MESH #
 Read_file dom conic_Pb1.geom
 # END MESH #
-# BEGIN PARTITION 
-Partition dom 
-  { 
-    Partition_tool metis { Nb_parts 2 } 
-    Larg_joint 2 
-    zones_name DOM 
-  } 
-End 
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
 END PARTITION #
-# BEGIN SCATTER 
-Scatter DOM.Zones dom 
+# BEGIN SCATTER
+Scatter DOM.Zones dom
 END SCATTER #
 
-VDF dis 
-Scheme_euler_explicit sch 
+VDF dis
+Scheme_euler_explicit sch
 Read sch
-  { 
+{
     tinit 0.0
 	nb_pas_dt_max 3
     tmax 10.0
@@ -31,80 +31,80 @@ Read sch
     dt_sauv 100.0
     dt_impr 0.001
     seuil_statio 1e-10
-  }
-Champ_uniforme gravite 
-Read gravite 3 0.0 -9.81 0.0
-Fluide_quasi_compressible fluide 
-Read fluide
-{ 
-	pression 111582.205714
-	loi_etat gaz_parfait_QC 
-	{ 
-		Cp 1006.8
-		gamma 1.4
-		Prandtl 0.494112177122
-		rho_constant_pour_debug champ_uniforme 1 1.293
-	}
-	traitement_pth constant
-	traitement_rho_gravite moins_rho_moyen
-	mu champ_uniforme 1 1.33e-05
 }
-Pb_thermohydraulique_qc pb 
+Champ_uniforme gravite
+Read gravite 3 0.0 -9.81 0.0
+Fluide_quasi_compressible fluide
+Read fluide
+{
+    pression 111582.205714
+    loi_etat gaz_parfait_QC
+    {
+        Cp 1006.8
+        gamma 1.4
+        Prandtl 0.494112177122
+        rho_constant_pour_debug champ_uniforme 1 1.293
+    }
+    traitement_pth constant
+    traitement_rho_gravite moins_rho_moyen
+    mu champ_uniforme 1 1.33e-05
+}
+Pb_thermohydraulique_qc pb
 Associate pb dom
 Associate pb sch
 Associate pb fluide
 Discretize pb dis
 Read pb
-  { 
-    	Navier_stokes_qc 
-      	{ 
-        	solveur_pression petsc Cholesky { }
-        	convection { negligeable }
-       	 	diffusion { negligeable }
-        	initial_conditions 
-          	{
-            		vitesse champ_uniforme 3 0.0 0.2 0.0
-          	}
-        	boundary_conditions 
-          	{
-            		Entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 0.0 0.2 0.0
-            		Sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.0
-            		Bord paroi_fixe 
-          	}
-        	sources 
-          	{
-            		darcy { porosite 0.4 modele_K ErgunDarcy { diametre 1.5e-3 } } , 
-           		forchheimer { porosite 0.4 Cf 1. modele_K ErgunForchheimer { diametre 1.5e-3 } } 
-          	}
-      	}
-    	convection_diffusion_chaleur_qc 
-      	{ 
-        	convection { negligeable }
-        	diffusion { negligeable }
-        	initial_conditions 
-          	{
-            		temperature champ_uniforme 1 300.0
-          	}
-        	boundary_conditions 
-          	{
-			Entree frontiere_ouverte_temperature_imposee champ_front_uniforme 1 300.0
-			Sortie frontiere_ouverte T_ext champ_front_uniforme 1 300.0
-			Bord paroi_adiabatique 
-          	}
-      	}
-    	Post_processing 
-      	{ 
-        	Probes 
-          	{
-			sonde_vitesse 		nodes 	vitesse periode 0.0001 point 1 0.08 0.10 0.08 
-                        segment_pression 	grav 	pression_pa periode 0.0001 segment 50 0.08 0.05 0.08 0.08 0.20 0.08
-          	}
-        	Format lml fields dt_post 0.1 
-          	{
-            		pression_pa elem
-          	}
-      	}
+{
+    Navier_stokes_qc
+    {
+        solveur_pression petsc Cholesky { }
+        convection { negligeable }
+        diffusion { negligeable }
+        initial_conditions
+        {
+            vitesse champ_uniforme 3 0.0 0.2 0.0
+        }
+        boundary_conditions
+        {
+            Entree frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 0.0 0.2 0.0
+            Sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 0.0
+            Bord paroi_fixe
+        }
+        sources
+        {
+            darcy { porosite 0.4 modele_K ErgunDarcy { diametre 1.5e-3 } } ,
+            forchheimer { porosite 0.4 Cf 1. modele_K ErgunForchheimer { diametre 1.5e-3 } }
+        }
+    }
+    convection_diffusion_chaleur_qc
+    {
+        convection { negligeable }
+        diffusion { negligeable }
+        initial_conditions
+        {
+            temperature champ_uniforme 1 300.0
+        }
+        boundary_conditions
+        {
+            Entree frontiere_ouverte_temperature_imposee champ_front_uniforme 1 300.0
+            Sortie frontiere_ouverte T_ext champ_front_uniforme 1 300.0
+            Bord paroi_adiabatique
+        }
+    }
+    Post_processing
+    {
+        Probes
+        {
+            sonde_vitesse 		nodes 	vitesse periode 0.0001 point 1 0.08 0.10 0.08
+            segment_pression 	grav 	pression_pa periode 0.0001 segment 50 0.08 0.05 0.08 0.08 0.20 0.08
+        }
+        Format lml fields dt_post 0.1
+        {
+            pression_pa elem
+        }
+    }
 }
 Solve pb
-End 
+End
 

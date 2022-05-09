@@ -3,17 +3,17 @@ dimension 2
 Domaine dom_solide
 Read_file dom_solide dom_solide.geom
 Decouper_bord_coincident dom_solide Haut
-Ecrire_fichier dom_solide new_dom_solide.geom 
-Postraiter_domaine 
+Ecrire_fichier dom_solide new_dom_solide.geom
+Postraiter_domaine
 {
-   domaine dom_solide
-   fichier new_dom_solide.lata
-   format lata
+    domaine dom_solide
+    fichier new_dom_solide.lata
+    format lata
 }
 
-Postraiter_domaine 
+Postraiter_domaine
 {
-   domaine dom_solide
-   fichier Decouper_bord_coincident.lml
-   format lml
+    domaine dom_solide
+    fichier Decouper_bord_coincident.lml
+    format lml
 }

@@ -4,19 +4,19 @@ dimension 2
 Domaine dom
 Mailler dom
 {
-	Pave Cavite 
- 	{
-		Origine 0. 0.
-		Nombre_de_Noeuds  5 5    
-		Longueurs 1. 1.
-	}
-	{
-		Bord Gauche X = 0. 0. <= Y <= 1.
-		Bord Haut   Y = 1. 0. <= X <= 1.
-		Bord Bas    Y = 0. 0. <= X <= 1.
-		Bord Droit  X = 1. 0. <= Y <= 1.
-	}
-} 
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds  5 5
+        Longueurs 1. 1.
+    }
+    {
+        Bord Gauche X = 0. 0. <= Y <= 1.
+        Bord Haut   Y = 1. 0. <= X <= 1.
+        Bord Bas    Y = 0. 0. <= X <= 1.
+        Bord Droit  X = 1. 0. <= Y <= 1.
+    }
+}
 trianguler dom
 
 Extruder_en20 { domaine dom nb_tranches 20 direction 0 0 10 }
@@ -24,4 +24,4 @@ Extruder_en20 { domaine dom nb_tranches 20 direction 0 0 10 }
 dimension 3
 Postraiter_domaine { domaine dom format lml }
 discretiser_domaine dom
-End 
+End

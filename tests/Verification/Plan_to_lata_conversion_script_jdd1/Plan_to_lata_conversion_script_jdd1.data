@@ -9,20 +9,20 @@ Domaine dom
 # BEGIN MESH #
 Mailler dom
 {
-        Pave Cavite
-        {
-                Origine 0. 0. 0.
-                Nombre_de_Noeuds 11  5  6
-                Longueurs 10. 2.  5
-        }
-        {
-                Bord in   X = 0.  0. <= Y <= 2.   0. <= Z <= 5.
-                Bord out   X = 10. 0. <= Y <= 2.   0. <= Z <= 5.
-                Bord bas      Y = 0.  0. <= X <= 10.  0. <= Z <= 5.
-                Bord haut     Y = 2.  0. <= X <= 10.  0. <= Z <= 5.
-                Bord perioz   Z = 0.  0. <= X <= 10.  0. <= Y <= 2.
-                Bord perioz   Z = 5. 0. <= X <= 10.  0. <= Y <= 2.
-        }
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 11  5  6
+        Longueurs 10. 2.  5
+    }
+    {
+        Bord in   X = 0.  0. <= Y <= 2.   0. <= Z <= 5.
+        Bord out   X = 10. 0. <= Y <= 2.   0. <= Z <= 5.
+        Bord bas      Y = 0.  0. <= X <= 10.  0. <= Z <= 5.
+        Bord haut     Y = 2.  0. <= X <= 10.  0. <= Z <= 5.
+        Bord perioz   Z = 0.  0. <= X <= 10.  0. <= Y <= 2.
+        Bord perioz   Z = 5. 0. <= X <= 10.  0. <= Y <= 2.
+    }
 }
 Tetraedriser dom
 Corriger_frontiere_periodique { Domaine dom Bord perioz }
@@ -31,10 +31,10 @@ Corriger_frontiere_periodique { Domaine dom Bord perioz }
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 2 1 1 }
-	Larg_joint 1
-	zones_name DOM
-	Periodique 1 perioz
+    Partition_tool tranche { tranches 2 1 1 }
+    Larg_joint 1
+    zones_name DOM
+    Periodique 1 perioz
 }
 End
 END PARTITION #
@@ -48,21 +48,21 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-        tinit 0.
+    tinit 0.
 	nb_pas_dt_max 3
-        tmax 1.
-        dt_min 1.e-10
-        dt_max 1.
-        dt_impr 1.e-10
-        dt_sauv 100
-        seuil_statio 1.e-8
+    tmax 1.
+    dt_min 1.e-10
+    dt_max 1.
+    dt_impr 1.e-10
+    dt_sauv 100
+    seuil_statio 1.e-8
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 0.00514
-	rho Champ_Uniforme 1 2
+    mu Champ_Uniforme 1 0.00514
+    rho Champ_Uniforme 1 2
 }
 
 Associate pb dom
@@ -72,49 +72,50 @@ Associate pb fluide
 Discretize pb dis
 
 Read pb
-	{
+{
 
-        Navier_Stokes_standard
-		{
-                solveur_pression Gcp { precond ssor { omega 1.5 }
-                                        seuil 1.e-08
-                                     } 
+    Navier_Stokes_standard
+    {
+        solveur_pression Gcp {
+            precond ssor { omega 1.5 }
+            seuil 1.e-08
+        }
 
-                convection { amont }
-                diffusion  { }
-		initial_conditions
-			{
-                        vitesse Champ_fonc_xyz dom 3  20. 0. 0. 
-			}
-		boundary_conditions
-			{
-			in frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 20 0  0
-			out frontiere_ouverte_pression_imposee champ_front_uniforme 1  0
-			perioz periodique 
-			haut     paroi_fixe
-			bas      paroi_fixe
-			}
-	}
+        convection { amont }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse Champ_fonc_xyz dom 3  20. 0. 0.
+        }
+        boundary_conditions
+        {
+            in frontiere_ouverte_vitesse_imposee champ_front_uniforme 3 20 0  0
+            out frontiere_ouverte_pression_imposee champ_front_uniforme 1  0
+            perioz periodique
+            haut     paroi_fixe
+            bas      paroi_fixe
+        }
+    }
 
-	Post_processing
-	{
-		Probes
-		{
-			sonde_PX1Z pression periode 1e-10 plan 6 6   0. 1. 0.   10. 1. 0.   0. 1. 5.
-			sonde_PXY1 pression periode 1e-10 plan 6 6   0. 0. 1.   10. 0. 1.   0. 2. 1.
-			sonde_VXY0 vitesse periode 1e-10 plan 6 6 1.5 0. 0.  6. 0. 0.  1.5 2. 0.
-			sonde_pInclined pression periode 1e-10 plan 6 6 0. 0. 0   0. 2. 0.  10. 0. 5.
-			sonde_PXYZ pression periode 1e-10 plan 6 6   3. -1. 0.   3. 4. 0.    3. -1. 5.
-			sonde_V4YZ vitesse periode 1e-10 plan 12 17 4. 0. 0.   4. 2. 0.  4. 0. 5.
-		}
-		format lml  
-		fields dt_post 1e-10
-		{
-			vitesse elem
-			pression elem
-			}
-		}
-	}
+    Post_processing
+    {
+        Probes
+        {
+            sonde_PX1Z pression periode 1e-10 plan 6 6   0. 1. 0.   10. 1. 0.   0. 1. 5.
+            sonde_PXY1 pression periode 1e-10 plan 6 6   0. 0. 1.   10. 0. 1.   0. 2. 1.
+            sonde_VXY0 vitesse periode 1e-10 plan 6 6 1.5 0. 0.  6. 0. 0.  1.5 2. 0.
+            sonde_pInclined pression periode 1e-10 plan 6 6 0. 0. 0   0. 2. 0.  10. 0. 5.
+            sonde_PXYZ pression periode 1e-10 plan 6 6   3. -1. 0.   3. 4. 0.    3. -1. 5.
+            sonde_V4YZ vitesse periode 1e-10 plan 12 17 4. 0. 0.   4. 2. 0.  4. 0. 5.
+        }
+        format lml
+        fields dt_post 1e-10
+        {
+            vitesse elem
+            pression elem
+        }
+    }
+}
 
 Solve pb
 End

@@ -31,8 +31,8 @@ Domaine dom
 Domaine dom_TH
 Domaine dom_IA
 
-Read_file dom assemblage.geom 
-Read_file dom_TH TH.geom 
+Read_file dom assemblage.geom
+Read_file dom_TH TH.geom
 Read_file dom_IA inter.geom
 
 Modif_bord_to_raccord dom paroi
@@ -50,43 +50,43 @@ VeFprep1b dis
 Scheme_euler_explicit sch
 Read sch
 {
-	tinit 0
-	tmax 2.
-	dt_min 1.e-6
-	dt_start dt_calc
-	dt_max 1.0
-	dt_sauv 100
-	dt_impr 0.2
-	seuil_statio 1.e-10
-	nb_pas_dt_max 2
+    tinit 0
+    tmax 2.
+    dt_min 1.e-6
+    dt_start dt_calc
+    dt_max 1.0
+    dt_sauv 100
+    dt_impr 0.2
+    seuil_statio 1.e-10
+    nb_pas_dt_max 2
 }
 
 Fluide_Incompressible sodium1
 Read sodium1
 {
-       mu Champ_Uniforme 1 .000245
-       rho Champ_Uniforme 1 840.
-       lambda Champ_Uniforme 1 66.
-       Cp champ_Uniforme 1 1270.
-       Beta_th Champ_uniforme 1 0.000276
+    mu Champ_Uniforme 1 .000245
+    rho Champ_Uniforme 1 840.
+    lambda Champ_Uniforme 1 66.
+    Cp champ_Uniforme 1 1270.
+    Beta_th Champ_uniforme 1 0.000276
 }
 
 Fluide_Incompressible sodium3
 Read sodium3
 {
-       mu Champ_Uniforme 1 .000245
-       rho Champ_Uniforme 1 840.
-       lambda Champ_Uniforme 1 66.
-       Cp champ_Uniforme 1 1270.
-       Beta_th Champ_uniforme 1 0.000276
+    mu Champ_Uniforme 1 .000245
+    rho Champ_Uniforme 1 840.
+    lambda Champ_Uniforme 1 66.
+    Cp champ_Uniforme 1 1270.
+    Beta_th Champ_uniforme 1 0.000276
 }
 
 Solide acier
 Read acier
 {
-        rho     Champ_Uniforme 1 7800.
-        Cp      Champ_Uniforme 1 500.
-        lambda  Champ_Uniforme 1 16.
+    rho     Champ_Uniforme 1 7800.
+    Cp      Champ_Uniforme 1 500.
+    lambda  Champ_Uniforme 1 16.
 }
 
 Champ_Uniforme gravite
@@ -118,118 +118,118 @@ Discretize pbc dis
 porosites_champ pb1 champ_fonc_xyz dom 1 1-(z>1)*(z<2)*0.74
 Read pb1
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-8 impr }
-		convection { amont }
-		diffusion { }
-                sources {
-                        Perte_charge_directionnelle {
-                                diam_hydr champ_uniforme 1 0.0036
-                                lambda 0.2/Re^(0.18)
-                                direction champ_uniforme 3 0. 0. 1.
-                                }
-                        }
-  		initial_conditions {
-			vitesse Champ_Uniforme 3 0. 0. 1.
-			}
-		boundary_conditions {
-			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 1.
-			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-			paroi symetrie
-		}
-	}
-	Convection_diffusion_temperature
+    Navier_Stokes_standard
+    {
+        solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-8 impr }
+        convection { amont }
+        diffusion { }
+        sources {
+            Perte_charge_directionnelle {
+                diam_hydr champ_uniforme 1 0.0036
+                lambda 0.2/Re^(0.18)
+                direction champ_uniforme 3 0. 0. 1.
+            }
+        }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0. 0. 1.
+        }
+        boundary_conditions {
+            Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 1.
+            Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            paroi symetrie
+        }
+    }
+    Convection_diffusion_temperature
+    {
+        convection { amont }
+        diffusion { }
+        initial_conditions { temperature Champ_Uniforme 1 395. }
+        sources { Puissance_thermique Champ_fonc_xyz dom 1  (z>1)*(z<2)*226e6 }
+        boundary_conditions {
+            Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
+            Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 550
+            paroi  paroi_contact pb2 paroi_int
+        }
+    }
+    Post_processing
+    {
+        fields dt_post 1.
         {
-		convection { amont }
-		diffusion { }
-		initial_conditions { temperature Champ_Uniforme 1 395. }
-                sources { Puissance_thermique Champ_fonc_xyz dom 1  (z>1)*(z<2)*226e6 }
-		boundary_conditions {
-			Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
-			Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 550
-			paroi  paroi_contact pb2 paroi_int
-		}
-	}
-	Post_processing
-	{
-		fields dt_post 1.
-		{
-			pression_pa elem
-			vitesse elem
-			temperature elem
-		}
-	}
+            pression_pa elem
+            vitesse elem
+            temperature elem
+        }
+    }
 }
 
 Read pb2
 {
-        Conduction
-                {
-                diffusion { }
-                initial_conditions { Temperature Champ_fonc_xyz dom_TH 1 395 }
-                boundary_conditions
-                        {
-			Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
-			Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 450
-			paroi_int  paroi_contact pb1 paroi
-			paroi_ext  paroi_contact pb3 paroi
-                        }
-                }
-	Post_processing
-	{
-		fields dt_post 1.
-		{
-			temperature elem
-		}
-	}
+    Conduction
+    {
+        diffusion { }
+        initial_conditions { Temperature Champ_fonc_xyz dom_TH 1 395 }
+        boundary_conditions
+        {
+            Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
+            Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 450
+            paroi_int  paroi_contact pb1 paroi
+            paroi_ext  paroi_contact pb3 paroi
+        }
+    }
+    Post_processing
+    {
+        fields dt_post 1.
+        {
+            temperature elem
+        }
+    }
 }
 
 Read pb3
 {
-	Navier_Stokes_standard
-	{
-		solveur_pression petsc cholesky { }
-		convection { amont }
-		diffusion { }
-                sources {
-                        Perte_charge_directionnelle {
-                                diam_hydr champ_uniforme 1 0.006
-                                lambda 0.316/Re^(0.25)
-                                direction champ_uniforme 3 0. 0. 1.
-                                }
-                        }
-  		initial_conditions {
-			vitesse Champ_Uniforme 3 1. 0. 0.
-			}
-		boundary_conditions {
-			Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 5.94
-			Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
-			paroi  symetrie
-			sym    symetrie
-		}
-	}
-	Convection_diffusion_temperature
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        sources {
+            Perte_charge_directionnelle {
+                diam_hydr champ_uniforme 1 0.006
+                lambda 0.316/Re^(0.25)
+                direction champ_uniforme 3 0. 0. 1.
+            }
+        }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 1. 0. 0.
+        }
+        boundary_conditions {
+            Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3 0. 0. 5.94
+            Sortie frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
+            paroi  symetrie
+            sym    symetrie
+        }
+    }
+    Convection_diffusion_temperature
+    {
+        convection { amont }
+        diffusion { }
+        initial_conditions { temperature Champ_Uniforme 1 395. }
+        boundary_conditions {
+            Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
+            Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 550
+            paroi  paroi_contact pb2 paroi_ext
+            sym    paroi_adiabatique
+        }
+    }
+    Post_processing
+    {
+        fields dt_post 1.
         {
-		convection { amont }
-		diffusion { }
-		initial_conditions { temperature Champ_Uniforme 1 395. }
-		boundary_conditions {
-			Entree frontiere_ouverte_temperature_imposee Champ_Front_Uniforme 1 395.
-			Sortie frontiere_ouverte T_ext Champ_Front_Uniforme 1 550
-			paroi  paroi_contact pb2 paroi_ext
-			sym    paroi_adiabatique
-		}
-	}
-	Post_processing
-	{
-		fields dt_post 1.
-		{
-			pression_pa elem
-			vitesse elem
-			temperature elem
-		}
-	}
+            pression_pa elem
+            vitesse elem
+            temperature elem
+        }
+    }
 }
 
 

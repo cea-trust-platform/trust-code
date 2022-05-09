@@ -58,8 +58,8 @@ Read mon_schema
     facsec 50
     facsec_max 300
     max_iter_implicite 50
-    Solveur Implicite { 
-    	solveur amgx gcp { precond gs { } seuil 1.e-8 impr save_matrix_mtx_format } 
+    Solveur Implicite {
+        solveur amgx gcp { precond gs { } seuil 1.e-8 impr save_matrix_mtx_format }
     }
 }
 

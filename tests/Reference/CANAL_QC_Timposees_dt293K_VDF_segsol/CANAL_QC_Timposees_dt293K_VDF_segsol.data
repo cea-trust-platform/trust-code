@@ -8,23 +8,23 @@ Domaine dom
 
 # BEGIN MESH #
 Mailler dom
-        {
-        Pave Cavite
-                {
-                Origine 0. 0. 0.
-                Nombre_de_Noeuds 16 16 16
-                Longueurs  0.093764 0.029846 0.046882
-                ytanh_taille_premiere_maille 7.69e-5
-                }
-                {
-                Bord periox   X = 0.          0. <= Y <= 0.029846     0. <= Z <= 0.046882
-                Bord periox   X = 0.093764    0. <= Y <= 0.029846     0. <= Z <= 0.046882
-                Bord perioz   Z = 0.          0. <= X <= 0.093764     0. <= Y <= 0.029846
-                Bord perioz   Z = 0.046882    0. <= X <= 0.093764     0. <= Y <= 0.029846
-                Bord bas      Y = 0.          0. <= X <= 0.093764     0. <= Z <= 0.046882
-                Bord haut     Y = 0.029846    0. <= X <= 0.093764     0. <= Z <= 0.046882
-                }
-        }
+{
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 16 16 16
+        Longueurs  0.093764 0.029846 0.046882
+        ytanh_taille_premiere_maille 7.69e-5
+    }
+    {
+        Bord periox   X = 0.          0. <= Y <= 0.029846     0. <= Z <= 0.046882
+        Bord periox   X = 0.093764    0. <= Y <= 0.029846     0. <= Z <= 0.046882
+        Bord perioz   Z = 0.          0. <= X <= 0.093764     0. <= Y <= 0.029846
+        Bord perioz   Z = 0.046882    0. <= X <= 0.093764     0. <= Y <= 0.029846
+        Bord bas      Y = 0.          0. <= X <= 0.093764     0. <= Z <= 0.046882
+        Bord haut     Y = 0.029846    0. <= X <= 0.093764     0. <= Z <= 0.046882
+    }
+}
 
 
 # END MESH #
@@ -32,10 +32,10 @@ Mailler dom
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool tranche { tranches 1 4 1 }
-	Larg_joint 2
-	zones_name canalQCdt20K
-	Periodique 2 periox perioz
+    Partition_tool tranche { tranches 1 4 1 }
+    Larg_joint 2
+    zones_name canalQCdt20K
+    Periodique 2 periox perioz
 }
 End
 END PARTITION #
@@ -45,59 +45,59 @@ Scatter canalQCdt20K.Zones dom
 END SCATTER #
 VDF dis
 
-Scheme_euler_explicit sch_ex 
+Scheme_euler_explicit sch_ex
 Read sch_ex
 {
-        tinit 0.
-        tmax 50.
-        dt_min 1.e-11
-        dt_max 5.
-        dt_impr 1.e-7
-        dt_sauv 0.05
-	dt_start dt_calc
-        seuil_statio 1.e-8
-	facsec 1
-	diffusion_implicite 1
-	nb_pas_dt_max 20
+    tinit 0.
+    tmax 50.
+    dt_min 1.e-11
+    dt_max 5.
+    dt_impr 1.e-7
+    dt_sauv 0.05
+    dt_start dt_calc
+    seuil_statio 1.e-8
+    facsec 1
+    diffusion_implicite 1
+    nb_pas_dt_max 20
 }
 
 Scheme_euler_implicit sch
 Read sch
 {
-        tinit 0.
-        tmax 50.
-        dt_min 1.e-11
-        dt_max 5.
-        dt_impr 1.e-7
-        dt_sauv 0.05
-	dt_start dt_calc
-        seuil_statio 1.e-8
-	facsec 10
-	facsec_max 10
-	nb_pas_dt_max 5
-	
-	Solveur Simple
-	{ 
-	  seuil_convergence_solveur 1.e-8
-	  seuil_convergence_implicite 1.e-3
-	  relax_pression 0.2  
-	}
+    tinit 0.
+    tmax 50.
+    dt_min 1.e-11
+    dt_max 5.
+    dt_impr 1.e-7
+    dt_sauv 0.05
+    dt_start dt_calc
+    seuil_statio 1.e-8
+    facsec 10
+    facsec_max 10
+    nb_pas_dt_max 5
+
+    Solveur Simple
+    {
+        seuil_convergence_solveur 1.e-8
+        seuil_convergence_implicite 1.e-3
+        relax_pression 0.2
+    }
 }
 
 Fluide_Quasi_Compressible fluide
 Read fluide
 {
-        mu champ_fonc_fonction pb temperature 1 (1.461e-6*(val^1.5)/(val+111.))
-        pression 100000.
-        lambda champ_fonc_fonction pb temperature 1 (2.06803521126761000000e-3*(val^1.5)/(val+111.))
-        loi_etat gaz_parfait_qc 	
-	 {
-           Prandtl 0.71
-           Cp 1005
-           gamma 1.4
-         }
-	traitement_pth conservation_masse
-	Traitement_rho_gravite moins_rho_moyen
+    mu champ_fonc_fonction pb temperature 1 (1.461e-6*(val^1.5)/(val+111.))
+    pression 100000.
+    lambda champ_fonc_fonction pb temperature 1 (2.06803521126761000000e-3*(val^1.5)/(val+111.))
+    loi_etat gaz_parfait_qc
+    {
+        Prandtl 0.71
+        Cp 1005
+        gamma 1.4
+    }
+    traitement_pth conservation_masse
+    Traitement_rho_gravite moins_rho_moyen
 }
 
 Champ_Uniforme gravite
@@ -112,61 +112,61 @@ Discretize pb dis
 
 Read pb
 {
-        Navier_Stokes_QC
+    Navier_Stokes_QC
+    {
+        solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-13 impr }
+        projection_initiale 0
+        convection { amont }
+        diffusion { }
+        Sources
         {
-           solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-13 impr }        
-           projection_initiale 0
-	   convection { amont }
-           diffusion { }
-           Sources 
-	    { 
-	     Canal_perio { bord periox } 
-	    }	
-	   initial_conditions 
-	    {
-             vitesse champ_init_canal_sinal 3  { Ucent 10.06 h 0.0149  ampli_sin 0. omega 2. ampli_bruit 0.0 dir_wall 1 dir_flow 0 }
-            }
-           boundary_conditions 
-	    {
-             periox   periodique 
-	     perioz   periodique 
-	     haut     paroi_fixe
-	     bas      paroi_fixe
-            }
-	}
-				
-        Convection_Diffusion_Chaleur_QC
+            Canal_perio { bord periox }
+        }
+        initial_conditions
         {
-            diffusion { }
-            convection { amont }
-            Sources {	}	
-	    initial_conditions { Temperature Champ_Uniforme 1 400. }
-	    boundary_conditions 
-             {
-               periox periodique 
-	       perioz periodique 
- 	       haut paroi_temperature_imposee Champ_Front_Uniforme 1 586. 
-	       bas paroi_temperature_imposee Champ_Front_Uniforme 1 293. 
-	     }
+            vitesse champ_init_canal_sinal 3  { Ucent 10.06 h 0.0149  ampli_sin 0. omega 2. ampli_bruit 0.0 dir_wall 1 dir_flow 0 }
+        }
+        boundary_conditions
+        {
+            periox   periodique
+            perioz   periodique
+            haut     paroi_fixe
+            bas      paroi_fixe
+        }
+    }
+
+    Convection_Diffusion_Chaleur_QC
+    {
+        diffusion { }
+        convection { amont }
+        Sources {	}
+        initial_conditions { Temperature Champ_Uniforme 1 400. }
+        boundary_conditions
+        {
+            periox periodique
+            perioz periodique
+            haut paroi_temperature_imposee Champ_Front_Uniforme 1 586.
+            bas paroi_temperature_imposee Champ_Front_Uniforme 1 293.
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            sonde_vit vitesse periode 0.00005 segment 121  0.0469 0. 0.0234 0.0469 0.02984 0.0234
+            sonde_temp temperature periode 0.00005 segment 121	0.0469 0. 0.0234 0.0469 0.02984 0.0234
         }
 
-	Post_processing
+        Format lml
+        fields dt_post 0.01
         {
-            Probes
-             { 
-               sonde_vit vitesse periode 0.00005 segment 121  0.0469 0. 0.0234 0.0469 0.02984 0.0234
-               sonde_temp temperature periode 0.00005 segment 121	0.0469 0. 0.0234 0.0469 0.02984 0.0234 
-	     }
-		
-	    Format lml
-       	    fields dt_post 0.01
-             {
-               vitesse elem
-               masse_volumique elem
-               pression elem
-               temperature elem
-             }
+            vitesse elem
+            masse_volumique elem
+            pression elem
+            temperature elem
         }
+    }
 }
 
 Solve pb
