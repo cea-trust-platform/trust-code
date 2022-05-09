@@ -82,7 +82,7 @@ public:
   }
   inline const std::string& getSValue()
   {
-    return *sval;
+    return sval;
   }
 
 
@@ -90,8 +90,8 @@ public:
 private :
 
   double nval;
-  std::string* sval;
-  std::string* str;
+  std::string sval;
+  std::string str;
   char *reste;
 
 
