@@ -18,6 +18,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible\
 	-I$(TRUST_ROOT)/src/ThSol\
