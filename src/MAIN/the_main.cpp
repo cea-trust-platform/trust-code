@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,15 @@
 
 #include <MAIN.h>
 #include <mon_main.h>
+
+/*! \mainpage TRUST html documentation
+*
+* Welcome to the doxygen documentation of TRUST C++ sources.
+*
+* To visit CEA TRUST Platform's organization on Github, see:
+*
+* https://github.com/cea-trust-platform
+*/
 
 True_int main(True_int argc, char** argv)
 {
