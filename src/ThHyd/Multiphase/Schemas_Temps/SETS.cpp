@@ -163,11 +163,11 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
     }
 
   /* cas restant : equation thermique d'un Pb_Multi ou d'un Pb_conduction -> on regle semi_impl si necessaire, puis on resout */
-  const std::string& nom_inco = eqn.inconnue().le_nom().getString(), nom_pb_inco = eqn.probleme().le_nom().getString() + "_" + nom_inco;
+  const std::string& nom_inco = eqn.inconnue().le_nom().getString(), nom_pb_inco = eqn.probleme().le_nom().getString() + "/" + nom_inco;
   tabs_t semi_impl; /* en ICE, les temperatures de tous les problemes sont explicites */
   const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base, eqn.operateur(0).l_op_base());
   if (!sets_) for (auto &&op_ext : op_diff.op_ext)
-      semi_impl[nom_inco + (op_ext != &op_diff ? "_" + op_ext->equation().probleme().le_nom().getString() : "")] = op_ext->equation().inconnue().passe();
+      semi_impl[nom_inco + (op_ext != &op_diff ? "/" + op_ext->equation().probleme().le_nom().getString() : "")] = op_ext->equation().inconnue().passe();
 
   if (!mat_pred.count(nom_pb_inco)) /* matrice : dimensionnement au premier passage */
     eqn.dimensionner_blocs({{ nom_inco, &mat_pred[nom_pb_inco]}}, semi_impl);

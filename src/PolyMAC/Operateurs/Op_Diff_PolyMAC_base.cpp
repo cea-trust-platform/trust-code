@@ -294,7 +294,7 @@ void Op_Diff_PolyMAC_base::update_aux(double t) const
   for (i = 0; i < n_ext; i++) opp_ext[i] = &ref_cast(Op_Diff_PolyMAC_base, *op_ext[i]);
   std::vector<matrices_t> lines(n_ext); /* sous forme d'arguments pour dimensionner/assembler_blocs */
   for (i = 0; i < n_ext; i++) for (j = 0; j < n_ext; j++)
-      lines[i][nom_inco + (j == i ? "" : "_" + op_ext[j]->equation().probleme().le_nom().getString())] = &ref_cast(Matrice_Morse, mat_aux.get_bloc(i, j).valeur());
+      lines[i][nom_inco + (j == i ? "" : "/" + op_ext[j]->equation().probleme().le_nom().getString())] = &ref_cast(Matrice_Morse, mat_aux.get_bloc(i, j).valeur());
   if (first_run) for (i = 0; i < n_ext; i++) opp_ext[i]->dimensionner_blocs_ext(1, lines[i]); //dimensionnement
 
   /* inconnue / second membre */

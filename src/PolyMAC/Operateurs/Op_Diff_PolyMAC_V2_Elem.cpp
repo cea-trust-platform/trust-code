@@ -223,8 +223,8 @@ void Op_Diff_PolyMAC_V2_Elem::dimensionner_blocs(matrices_t matrices, const tabs
   int i, j, k, e, e_s, p_s, f, m, n, n_sten = 0;
   std::vector<Matrice_Morse *> mat(op_ext.size());
   for (i = 0; i < (int) op_ext.size(); i++) //une matrice potentielle a remplir par operateur de op_ext
-    mat[i] = matrices.count(i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco) ?
-             matrices.at(i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco) : NULL;
+    mat[i] = matrices.count(i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco) ?
+             matrices.at(i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco) : NULL;
 
   std::vector<int> N(op_ext.size()); //nombre de composantes par probleme de op_ext
   std::vector<IntTrav> stencil(op_ext.size()); //stencils par matrice
@@ -272,7 +272,7 @@ void Op_Diff_PolyMAC_V2_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   std::vector<std::reference_wrapper<const DoubleTab>> inco, nf, xp, xs, xv, diffu; //inconnues, normales aux faces, positions elems / faces / sommets
   for (i = 0, M = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
-      std::string nom_mat = i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
+      std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = !semi_impl.count(nom_inco) && matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
       zone.push_back(std::ref(ref_cast(Zone_PolyMAC_V2, op_ext[i]->equation().zone_dis().valeur())));
       f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces())), f_s.push_back(std::ref(zone[i].get().face_sommets()));

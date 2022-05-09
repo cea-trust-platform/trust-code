@@ -240,7 +240,7 @@ void Operateur_base::dimensionner_termes_croises(Matrice_Morse& mat, const Probl
 {
   if (!has_interface_blocs()) return;
   std::string nom_inco = equation().inconnue().le_nom().getString(),
-              nom = equation().probleme().le_nom() == autre_pb.le_nom() ? nom_inco : nom_inco + "_" + autre_pb.le_nom().getString(); //nom de bloc croise pour l'interface_blocs
+              nom = equation().probleme().le_nom() == autre_pb.le_nom() ? nom_inco : nom_inco + "/" + autre_pb.le_nom().getString(); //nom de bloc croise pour l'interface_blocs
   dimensionner_blocs({{ nom, &mat }}, {});
 }
 
@@ -255,7 +255,7 @@ void Operateur_base::contribuer_termes_croises(const DoubleTab& inco, const Prob
   if (!has_interface_blocs()) return;
   DoubleTrav secmem(inco); //on va le jeter
   std::string nom_inco = equation().inconnue().le_nom().getString(),
-              nom = equation().probleme().le_nom() == autre_pb.le_nom() ? nom_inco : nom_inco + "_" + autre_pb.le_nom().getString(); //nom de bloc croise pour l'interface_blocs
+              nom = equation().probleme().le_nom() == autre_pb.le_nom() ? nom_inco : nom_inco + "/" + autre_pb.le_nom().getString(); //nom de bloc croise pour l'interface_blocs
   ajouter_blocs({{ nom, &matrice}}, secmem, {});
 }
 

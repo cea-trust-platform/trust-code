@@ -135,7 +135,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
   std::vector<IntTrav> stencil(n_ext); //stencils par matrice
   for (i = 0, M = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
-      std::string nom_mat = i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
+      std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
       zone.push_back(std::ref(ref_cast(Zone_PolyMAC, op_ext[i]->equation().zone_dis().valeur())));
       f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces()));
@@ -213,7 +213,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   std::vector<const Flux_parietal_base *> corr; //correlations de flux parietal (si elles existent)
   for (i = 0, M = 0; i < n_ext; M = std::max(M, N[i]), i++)
     {
-      std::string nom_mat = i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
+      std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
       zone.push_back(std::ref(ref_cast(Zone_PolyMAC, op_ext[i]->equation().zone_dis().valeur())));
       f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces())), f_s.push_back(std::ref(zone[i].get().face_sommets()));

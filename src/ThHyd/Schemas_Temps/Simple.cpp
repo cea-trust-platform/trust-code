@@ -393,7 +393,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
       {
         Nom nom_i = eqs[j]->inconnue().le_nom();
         // champ d'un autre probleme : on ajoute un suffixe
-        if (eqs[i]->probleme().le_nom().getString() != eqs[j]->probleme().le_nom().getString()) nom_i += Nom("_") + eqs[j]->probleme().le_nom();
+        if (eqs[i]->probleme().le_nom().getString() != eqs[j]->probleme().le_nom().getString()) nom_i += Nom("/") + eqs[j]->probleme().le_nom();
         mats[i][nom_i.getString()] = &ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
       }
 
@@ -447,7 +447,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
                   Nom nom_j = eqs[j]->inconnue().le_nom();
                   if (eqs[i]->probleme().le_nom().getString() != eqs[j]->probleme().le_nom().getString())
                     {
-                      nom_j += Nom("_") + eqs[j]->probleme().le_nom();
+                      nom_j += Nom("/") + eqs[j]->probleme().le_nom();
                       mats[i][nom_j.getString()]->ajouter_multvect(inconnues_parts[j], residu_parts[i]);
                     }
                 }
