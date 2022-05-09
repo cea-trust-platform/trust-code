@@ -369,9 +369,9 @@ void Postraitement::set_param(Param& param)
   param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
   param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
   param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.
-  param.ajouter_non_std("Definition_champs_fichier|Definition_champs_file",(this));// XD_ADD_P Definition_champs_fichier  Definition_champs read from file.
   param.ajouter_non_std("Sondes|Probes",(this)); // XD_ADD_P sondes Probe.
   param.ajouter_non_std("Sondes_fichier|Probes_file",(this)); // XD_ADD_P sondes_fichier Probe read in a file.
+  param.ajouter("DeprecatedKeepDuplicatedProbes",&DeprecatedKeepDuplicatedProbes); // XD_ADD_P flag Flag to not remove duplicated probes in .son files
   param.ajouter_non_std("champs|fields",(this)); // XD_ADD_P champs_posts Field\'s write mode.
   param.ajouter_non_std("Statistiques",(this));  // XD_ADD_P stats_posts Statistics between two points fixed : start of integration time and end of integration time.
   param.ajouter_non_std("Sondes_Int",(this));

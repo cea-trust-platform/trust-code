@@ -120,6 +120,7 @@ Read pb
 
 	Post_processing
 	{
+		DeprecatedKeepDuplicatedProbes 1
 		Probes
 		{
 			sonde_p pression periode 0.1 points 1 0.45 1.15

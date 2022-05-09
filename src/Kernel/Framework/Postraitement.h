@@ -201,6 +201,7 @@ public:
   inline const double& tstat_deb() const;
   inline const double& tstat_fin() const;
   int cherche_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& ch, Motcle nom);
+  int DeprecatedKeepDuplicatedProbes=0; // Ancien format des sondes dans les .son qui autorise les sondes dupliquees
 
 protected:
 

@@ -1,3 +1,4 @@
+XX/XX/22 (TRUST)  New keyword : Post processing option "DeprecatedKeepDuplicatedProbes 1" to keep previous strategy when writing probes (keep duplicated points)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
