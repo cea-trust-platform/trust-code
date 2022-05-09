@@ -287,7 +287,7 @@ void Op_Diff_PolyMAC_V2_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
     }
   const Zone_PolyMAC_V2& zone0 = zone[0];
   q_pi_ = 0; //remise a zero du flux paroi-interface
-  d_nuc_ = -1; //remise a zero du diametre de nucleation ; flag pour ne pas etre gene s'il n'est pas calcule
+  d_nuc_ = 0; //remise a zero du diametre de nucleation
 
   /* avec phif : flux hors Echange_contact -> mat[0] seulement */
   DoubleTrav flux(N[0]);
@@ -518,8 +518,8 @@ void Op_Diff_PolyMAC_V2_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                                 Qec(i, t_e, k1, k2) += surf_fs[k] * qpi(k1, k2), Qf(i, i_efs(i, j, M), k1, k2) += surf_fs[k] * dTp_qpi(k1, k2);
                             for (m = 0; m < N[p]; m++) for (k1 = 0; k1 < N[p]; k1++) for (k2 = k1 + 1; k2 < N[p]; k2++)
                                   Qf(i, i_efs(i, j, m), k1, k2) += surf_fs[k] * dTf_qpi(k1, k2, m); //derivees en Tf
-                            if (d_nuc_.dimension(0)) for (k1 =0 ; k1 < N[p]; k1++)
-                                d_nuc_(e, k1) += d_nuc(k1);
+                            if ( (d_nuc_.dimension(0)) && (!d_nuc_a_jour_) ) for (k1 =0 ; k1 < N[p]; k1++) // d_nuc depends on the temperature so must only be updated once when the temperature input of the wall flux correlation is the old temperature
+                                d_nuc_(e, k1) += d_nuc(k1), d_nuc_a_jour_ = 1;
                           }
                         else for (n = 0; n < N[p]; n++) if ((i_eq = i_eq_cont(k, mix * n)) >= 0) /* pas d'inconnue de Tparoi -> continuite composante par composante */
                               B(!mix * n, t_e, i_eq) += sgn * Tefs(!mix * n, i_efs(i, j, mix * n)), A(!mix * n, i_efs(i, j, mix * n), i_eq) -= sgn;
@@ -586,8 +586,16 @@ const DoubleTab& Op_Diff_PolyMAC_V2_Elem::q_pi() const
   return q_pi_;
 }
 
+const DoubleTab& Op_Diff_PolyMAC_V2_Elem::d_nucleation() const
+{
+  if (!d_nuc_a_jour_) Cerr << "Op_Diff_PolyMAC_V2_Elem : attempt to access d_nucleation (nucleate bubble diameter) before ajouter_blocs() has been called!" << finl
+                             << "Please call assembler_blocs() on Energie_Multiphase before calling it on Masse_Multiphase." << finl, Process::exit();
+  return d_nuc_;
+}
+
 void Op_Diff_PolyMAC_V2_Elem::mettre_a_jour(double t)
 {
   Op_Diff_PolyMAC_V2_base::mettre_a_jour(t);
   q_pi_a_jour_ = 0; //q_pi devient inaccessible
+  d_nuc_a_jour_ = 0;
 }

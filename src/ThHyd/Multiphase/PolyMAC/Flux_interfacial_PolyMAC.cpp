@@ -58,14 +58,14 @@ void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
   int i, j, e, n, N = inco.line_size();
   if (N == 1) return;
   std::set<int> idx;
-  for (auto &&n_m : matrices) if (n_m.first.find("_") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
+  for (auto &&n_m : matrices) if (n_m.first.find("/") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
       {
         Matrice_Morse& mat = *n_m.second, mat2;
         const DoubleTab& dep = equation().probleme().get_champ(n_m.first).valeurs();
         int m, nc = dep.dimension_tot(0), M = dep.line_size();
         IntTrav sten(0, 2);
         sten.set_smart_resize(1);
-        if (n_m.first == "temperature" || n_m.first == "pression") /* temperature/pression: dependance locale */
+        if (n_m.first == "temperature" || n_m.first == "pression" || n_m.first == "alpha" || n_m.first == "interfacial_area" ) /* temperature/pression: dependance locale */
           for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) for (m = 0; m < M; m++) sten.append_line(N * e + n, M * e + m);
         else if (mat.nb_colonnes()) for (e = 0; e < zone.nb_elem(); e++) /* autres variables: on peut melanger les composantes*/
             {
@@ -79,6 +79,12 @@ void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
       }
 
 }
+
+void Flux_interfacial_PolyMAC::completer()
+{
+  if (!sub_type(Flux_interfacial_PolyMAC, equation().sources()(equation().sources().size()-1).valeur())) Process::exit(que_suis_je() + " : Flux_interfacial_PolyMAC must be the last source term in the source term declaration list of the " + equation().que_suis_je() + " equation ! ");
+}
+
 
 void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
@@ -115,7 +121,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   DoubleTrav sec_m(alpha); //residus
   std::map<std::string, Matrice_Morse> mat_m_stockees;
   matrices_t mat_m; //derivees
-  for (auto &&n_m : matrices) if (n_m.first.find("_") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
+  for (auto &&n_m : matrices) if (n_m.first.find("/") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
       {
         Matrice_Morse& dst = mat_m_stockees[n_m.first], &src = *n_m.second;
         dst.get_set_tab1().ref_array(src.get_set_tab1()); // memes stencils que celui de l'equation courante
@@ -130,7 +136,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   for (i = 0; i < eq_m.sources().size(); i++) if (!sub_type(Flux_interfacial_PolyMAC, eq_m.sources()(i).valeur())) /* toutes les sources sauf le flux interfacial */
       eq_m.sources()(i).valeur().ajouter_blocs(mat_m, sec_m, semi_impl);
   std::vector<std::array<Matrice_Morse *, 2>> vec_m; //vecteur "matrice source, matrice de destination"
-  for (auto &&n_m : matrices) if (n_m.first.find("_") == std::string::npos && mat_m[n_m.first]->get_tab1().size() > 1) vec_m.push_back({{ mat_m[n_m.first], n_m.second }});
+  for (auto &&n_m : matrices) if (n_m.first.find("/") == std::string::npos && mat_m[n_m.first]->get_tab1().size() > 1) vec_m.push_back({{ mat_m[n_m.first], n_m.second }});
 
   /* elements */
   //coefficients et plein de derivees...
