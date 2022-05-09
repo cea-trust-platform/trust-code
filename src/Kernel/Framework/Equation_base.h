@@ -211,10 +211,10 @@ public :
   void init_champ_conserve() const; //a appeller dans le completer() des operateurs/sources qui auront besoin de champ_conserve_
   /* fonction de calcul par defaut de champ_conserve */
   static void calculer_champ_conserve(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
-  /* renvoit le nom du champ conserve et la fonction pour le calculer -> a surcharger  */
+  /* renvoie le nom du champ conserve et la fonction pour le calculer -> a surcharger  */
   virtual std::pair<std::string, fonc_calc_t> get_fonc_champ_conserve() const
   {
-    return { "", calculer_champ_conserve};
+    return { inconnue().le_nom().getString(), calculer_champ_conserve};
   }
 
   virtual Champ_Inc_base& champ_convecte() const //par defaut le champ conserve
