@@ -98,7 +98,7 @@ int Neumann_paroi_flux_nul::compatible_avec_eqn(const Equation_base& eqn) const
   Motcle V2                 ="Transport_V2";
   Motcle Diphasique         ="Diphasique_moyenne";
   Motcle Fraction_volumique ="Fraction_volumique";
-  Motcle Aire_interfaciale ="Aire_interfaciale";
+  Motcle Aire_interfaciale  ="Interfacial_area";
   Motcle indetermine        ="indetermine";
 
   if ( (dom_app==Concentration) || (dom_app==K_Eps) || (dom_app==K_Eps_Rea) || (dom_app==K_Eps_V2) || (dom_app==V2) ||

@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Aire_interfaciale_Yao_Morel.h
+// File:        Aire_interfaciale.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Equations
 // Version:     /main/20
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Aire_interfaciale_Yao_Morel_included
-#define Aire_interfaciale_Yao_Morel_included
+#ifndef Aire_interfaciale_included
+#define Aire_interfaciale_included
 
 #include <Convection_Diffusion_std.h>
 #include <Fluide_base.h>
@@ -30,18 +30,18 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//     classe Aire_interfaciale_Yao_Morel
-//     Equation de transport de l'aire interfaciale de Yao Morel
+//     classe Aire_interfaciale
+//     Equation de transport de l'aire interfaciale
 // .SECTION voir aussi
 //     Conv_Diffusion_std Convection_Diffusion_Temperature
 //////////////////////////////////////////////////////////////////////////////
-class Aire_interfaciale_Yao_Morel : public Convection_Diffusion_std
+class Aire_interfaciale : public Convection_Diffusion_std
 {
-  Declare_instanciable_sans_constructeur(Aire_interfaciale_Yao_Morel);
+  Declare_instanciable_sans_constructeur(Aire_interfaciale);
 
 public :
 
-  Aire_interfaciale_Yao_Morel();
+  Aire_interfaciale();
 
   void associer_fluide(const Fluide_base& );
   inline const Champ_Inc& inconnue() const override;
@@ -53,9 +53,16 @@ public :
   int impr(Sortie& os) const override;
   void mettre_a_jour(double temps) override;
 
-  const Motcle& domaine_application() const override;
-
   int positive_unkown() override {return 1;};
+
+  int nombre_d_operateurs() const override //pas de diffusion
+  {
+    return 1;
+  }
+  const Operateur& operateur(int) const override;
+  Operateur& operateur(int) override;
+
+  const Motcle& domaine_application() const override;
 
 protected :
 
@@ -63,14 +70,16 @@ protected :
   Champ_Fonc diametre_bulles;
 
   REF(Fluide_base) le_fluide;
+
+  int n_l ; // Number of the liquid phase (the one where no IA is stored)
 };
 
-inline const Champ_Inc& Aire_interfaciale_Yao_Morel::inconnue() const
+inline const Champ_Inc& Aire_interfaciale::inconnue() const
 {
   return l_inco_ch;
 }
 
-inline Champ_Inc& Aire_interfaciale_Yao_Morel::inconnue()
+inline Champ_Inc& Aire_interfaciale::inconnue()
 {
   return l_inco_ch;
 }

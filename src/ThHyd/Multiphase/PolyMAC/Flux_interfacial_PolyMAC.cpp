@@ -31,7 +31,7 @@
 #include <Milieu_composite.h>
 #include <Op_Diff_PolyMAC_Elem.h>
 #include <Op_Diff_PolyMAC_V2_Elem.h>
-#include <Aire_interfaciale_Yao_Morel.h>
+#include <Aire_interfaciale.h>
 
 Implemente_instanciable(Flux_interfacial_PolyMAC,"Flux_interfacial_P0_PolyMAC|Flux_interfacial_P0_PolyMAC_V2", Source_base);
 
@@ -102,7 +102,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   Matrice_Morse *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
                  *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL,
                   *Ma = matrices.count("alpha") ? matrices.at("alpha") : NULL,
-                   *Mai = matrices.count("interfacialarea") ? matrices.at("interfacialarea") : NULL;
+                   *Mai = matrices.count("interfacial_area") ? matrices.at("interfacial_area") : NULL;
 
   int i, j, col, e, d, D = dimension, k, l, n, N = inco.line_size(), nf_tot = zone.nb_faces_tot(),
                        cL = lambda.dimension_tot(0) == 1, cM = mu.dimension_tot(0) == 1, cR = rho.dimension_tot(0) == 1, cCp = Cp.dimension_tot(0) == 1, is_therm;
@@ -140,10 +140,10 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
       //  double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e, 0), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
       // PL ToDo: Uniformiser diametre_hydraulique_elem (vecteur) pour C3D et F5
       double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
-      for (nv = 0, d = 0; d < D; d++) for (n = 0; n < N; n++) for (k = 0 ; k<N ; k++) nv(n, k) += std::pow( pvit(nf_tot + D * e + d, n) - ((n!=k) ? pvit(nf_tot + D * e + d, k) : 0) , 2);
+      for (nv = 0, d = 0; d < D; d++) for (n = 0; n < N; n++) for (k = 0 ; k<N ; k++) nv(n, k) += std::pow( pvit(nf_tot + D * e + d, n) - ((n!=k) ? pvit(nf_tot + D * e + d, k) : 0) , 2); // nv(n,n) = ||v(n)||, nv(n, k!=n) = ||v(n)-v(k)||
       for (n = 0; n < N; n++) for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
-      correlation_fi.coeffs(dh, &alpha(e, 0), &temp(e, 0), press(e, 0), &nv(0),
+      correlation_fi.coeffs(dh, &alpha(e, 0), &temp(e, 0), press(e, 0), &nv(0, 0),
                             &lambda(!cL * e, 0), &mu(!cM * e, 0), &rho(!cR * e, 0), &Cp(!cCp * e, 0), e, hi, dT_hi, da_hi, dP_hi);
 
       for (k = 0; k < N; k++) for (l = k + 1; l < N; l++)
@@ -211,7 +211,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                         for (col = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
                           (*s_d[1])(N * e + (i ? l : k), col) += (i ? -1 : 1) * hc * sgn * x;
                 }
-              else if (sub_type(Aire_interfaciale_Yao_Morel, equation())) //eq d'aire interfaciale ; looks like the mass equation ; not a conservation equation !
+              else if (sub_type(Aire_interfaciale, equation())) //eq d'aire interfaciale ; looks like the mass equation ; not a conservation equation !
                 if (k==0) // k est la phase porteuse
                   if (alpha(e, l) > alpha_min) // if the phase l is present
                     {

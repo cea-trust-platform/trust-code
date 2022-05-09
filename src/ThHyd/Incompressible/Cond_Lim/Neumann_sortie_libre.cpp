@@ -84,6 +84,7 @@ Entree& Neumann_sortie_libre::readOn(Entree& s )
     les_motcles[10] = "tau_ext";
     les_motcles[11] = "omega_ext";
     les_motcles[12] = "k_WIT_ext";
+    les_motcles[12] = "a_i_ext";
   }
   s >> motlu;
   int rang = les_motcles.search(motlu);
@@ -234,11 +235,12 @@ int Neumann_sortie_libre::compatible_avec_eqn(const Equation_base& eqn) const
   Motcle V2                 ="Transport_V2";
   Motcle indetermine        ="indetermine";
   Motcle turbulence         = "Turbulence";
+  Motcle aire_interfaciale  = "Interfacial_area";
 
   if ( (dom_app==KEPS) || (dom_app==K_Eps_Bas_Re) || (dom_app==K_Eps_Rea) || (dom_app==indetermine) ||
        (dom_app==Thermique) || (dom_app==Concentration) ||
        (dom_app==Thermique_H) || (dom_app==V2) || (dom_app==KEPS_V2) ||
-       (dom_app==Fraction_massique) || (dom_app==Fraction_volumique) || dom_app == turbulence)
+       (dom_app==Fraction_massique) || (dom_app==Fraction_volumique) || (dom_app == turbulence) || (dom_app == aire_interfaciale))
     return 1;
   else
     {
