@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,22 +14,19 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        ListeConstantes.h
+// File:        List_Constante.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math
 // Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef ListeConstantes_included
-#define ListeConstantes_included
+#ifndef List_Constante_included
+#define List_Constante_included
 
 #include <Constante.h>
 #include <List.h>
 
 Declare_liste(Constante);
+using ListeConstantes = List_Constante;
 
-class ListeConstantes : public LIST(Constante)
-{
-};
-
-#endif
+#endif /* List_Constante_included */

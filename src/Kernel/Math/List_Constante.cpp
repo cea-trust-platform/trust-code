@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,22 +14,11 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Liste_Noms.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/5
+// File:        List_Constante.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Math
+// Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Liste_Noms_included
-#define Liste_Noms_included
-
-#include <Noms.h>
-#include <List.h>
-
-Declare_liste(Noms);
-
-class Liste_Noms : public LIST(Noms)
-{
-};
-
-#endif
+#include <List_Constante.h>
+Implemente_liste(Constante);

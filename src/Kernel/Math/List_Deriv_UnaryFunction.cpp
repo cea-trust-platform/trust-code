@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,22 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        ListUnaryFunction.h
+// File:        List_Deriv_UnaryFunction.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/9
+// Version:     /main/4
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef ListUnaryFunction_included
-#define ListUnaryFunction_included
+#include <List_Deriv_UnaryFunction.h>
 
-#include <UnaryFunction.h>
-#include <List.h>
-Declare_deriv(UnaryFunction);
-Declare_liste(DERIV(UnaryFunction));
-
-class ListUnaryFunction : public LIST(DERIV(UnaryFunction))
-{
-};
-
-#endif
+Implemente_deriv(UnaryFunction);
+Implemente_liste(DERIV(UnaryFunction));

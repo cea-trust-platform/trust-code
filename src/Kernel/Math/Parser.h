@@ -23,10 +23,10 @@
 #ifndef Parser_included
 #define Parser_included
 
-#include <Stack.h>
+#include <List_Deriv_UnaryFunction.h>
+#include <List_Constante.h>
 #include <Variable.h>
-#include <ListeConstantes.h>
-#include <ListUnaryFunction.h>
+#include <Stack.h>
 #include <math.h>
 #include <string>
 class StringTokenizer;

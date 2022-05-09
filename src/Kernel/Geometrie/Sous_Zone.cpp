@@ -22,7 +22,7 @@
 
 #include <Sous_Zone.h>
 #include <Domaine.h>
-#include <Polynomes.h>
+#include <List_Polynome.h>
 #include <LecFicDistribue.h>
 #include <communications.h>
 #include <Parser_U.h>

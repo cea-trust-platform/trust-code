@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,31 +14,19 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Polynomes.h
-// Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/9
+// File:        List_Noms.h
+// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
+// Version:     /main/5
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Polynomes_included
-#define Polynomes_included
+#ifndef List_Noms_included
+#define List_Noms_included
 
-#include <Polynome.h>
+#include <Noms.h>
 #include <List.h>
 
+Declare_liste(Noms);
+using Liste_Noms = List_Noms;
 
-
-
-Declare_liste(Polynome);
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//     Une liste d'objets Polynome
-// .SECTION voir aussi
-//     Polynome
-//////////////////////////////////////////////////////////////////////////////
-class Polynomes : public LIST(Polynome)
-{
-};
-#endif
+#endif /* List_Noms_included */

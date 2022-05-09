@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,12 +14,19 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        ListeConstantes.cpp
+// File:        List_DoubleVect.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/4
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ListeConstantes.h>
+#ifndef List_DoubleVect_included
+#define List_DoubleVect_included
 
-Implemente_liste(Constante);
+#include <TRUSTVect.h>
+#include <List.h>
+
+Declare_liste(DoubleVect);
+using ListeDoubleVect = List_DoubleVect;
+
+#endif /* List_DoubleVect_included */

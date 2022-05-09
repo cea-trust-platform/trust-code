@@ -14,21 +14,19 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        ListeDoubleVect.h
+// File:        List_Polynome.h
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/6
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef ListeDoubleVect_included
-#define ListeDoubleVect_included
+#ifndef List_Polynome_included
+#define List_Polynome_included
 
-#include <TRUSTVect.h>
+#include <Polynome.h>
 #include <List.h>
 
-Declare_liste(DoubleVect);
+Declare_liste(Polynome);
+using Polynomes = List_Polynome;
 
-class ListeDoubleVect : public LIST(DoubleVect)
-{ };
-
-#endif
+#endif /* List_Polynome_included */

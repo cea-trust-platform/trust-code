@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,12 +14,11 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Liste_Noms.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/4
+// File:        List_DoubleVect.cpp
+// Directory:   $TRUST_ROOT/src/Kernel/Math
+// Version:     /main/3
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Liste_Noms.h>
-
-Implemente_liste(Noms);
+#include <List_DoubleVect.h>
+Implemente_liste(DoubleVect);

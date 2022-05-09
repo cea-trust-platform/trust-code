@@ -14,11 +14,12 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        ListeDoubleVect.cpp
+// File:        List_Polynome.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/3
+// Version:     /main/6
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <ListeDoubleVect.h>
-Implemente_liste(DoubleVect);
+#include <List_Polynome.h>
+
+Implemente_liste(Polynome);
