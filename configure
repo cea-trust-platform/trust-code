@@ -282,7 +282,7 @@ echo "[-disable-doxygen]                Disable doxygen installation and build. 
 echo "[-disable-tcl_tk]                 Disable Tcl/Tk detection/installation."
 echo "[-disable-vc]                     Disable VC installation, might be necessary for intel compilers with lower version than 17"
 echo "[-disable-gmsh]                   Disable Gmsh installation and build."
-echo "[-disable-plot2d]                 Disable PLOT2D and WIZZARD installation and build."
+echo "[-disable-plot2d]                 Disable PLOT2D installation and build."
 echo "[-disable-mpiio]                  Disable MPI-IO mode for writing of .xyz binary output file."
 echo "[-disable-check_sources]          No check sources before compiling."
 echo "[-disable-checks]                 Disable checks for external packages, sources, disk space and speed."

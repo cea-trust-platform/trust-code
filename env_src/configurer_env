@@ -871,7 +871,9 @@ then
 
     sys.exit(main())
 "
-   gawk -i inplace -v r="$s" '{gsub(/sys.exit\(main\(\)\)/,r)}1' $jupyter_nb_exe
+   $TRUST_Awk -v r="$s" '{gsub(/sys.exit\(main\(\)\)/,r)}1' $jupyter_nb_exe > jupyter-notebook_tmp
+   cat jupyter-notebook_tmp > $jupyter_nb_exe
+   rm -f jupyter-notebook_tmp
 fi
 
 
