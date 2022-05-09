@@ -837,7 +837,7 @@ void Zone_Poly_base::init_dist_paroi(const Conds_lim& conds_lim) // Methode insp
       else
         {
           y_elem_(fe-nf)  = std::sqrt(distance2);
-          for (int d = 0 ; d<D ; d++) n_y_elem_(fe, d) = ( local_xp(fe-nf,d)-remote_xv[proc](fe2,d) )/ y_elem_(fe-nf);
+          for (int d = 0 ; d<D ; d++) n_y_elem_(fe-nf, d) = ( local_xp(fe-nf,d)-remote_xv[proc](fe2,d) )/ y_elem_(fe-nf);
         }
     }
 
