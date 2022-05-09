@@ -23,35 +23,35 @@
 #ifndef Debog_included
 #define Debog_included
 
-#include <TRUSTTab.h>
-class Champ_Inc;
+#include <TRUSTTabs_forward.h>
+
 class Champ_Inc_base;
+class Matrice_Base;
+class Champ_Inc;
 class MD_Vector;
 class Nom;
-class Matrice_Base;
 
 class Debog
 {
 public:
   static int active();
-  static void verifier(const char* const msg, double);
-  static void verifier(const char* const msg, int);
-  static void verifier(const char* const msg, const DoubleVect&);
-  static void verifier(const char* const msg, const IntVect&);
-  static void verifier_bord(const char* const msg, const DoubleVect& arr, int num_deb);
-  static void verifier(const char* const msg, const Champ_Inc&);
-  static void verifier(const char* const msg, const Champ_Inc_base&);
-  static void verifier_indices_items(const char* const msg, const MD_Vector&, const IntVect&);
+  static void verifier(const char *const msg, double);
+  static void verifier(const char *const msg, int);
+  static void verifier(const char *const msg, const DoubleVect&);
+  static void verifier(const char *const msg, const IntVect&);
+  static void verifier_bord(const char *const msg, const DoubleVect& arr, int num_deb);
+  static void verifier(const char *const msg, const Champ_Inc&);
+  static void verifier(const char *const msg, const Champ_Inc_base&);
+  static void verifier_indices_items(const char *const msg, const MD_Vector&, const IntVect&);
   static void set_nom_pb_actuel(const Nom& nom);
 
-  static void verifier_getref(const char* const msg, double val, double& refval);
-  static void verifier_getref(const char* const msg, int val, int& refval);
-  static void verifier_getref(const char* const msg, const DoubleVect& val, DoubleVect& refval);
-  static void verifier_getref(const char* const msg, const IntVect& val, IntVect& refval);
+  static void verifier_getref(const char *const msg, double val, double& refval);
+  static void verifier_getref(const char *const msg, int val, int& refval);
+  static void verifier_getref(const char *const msg, const DoubleVect& val, DoubleVect& refval);
+  static void verifier_getref(const char *const msg, const IntVect& val, IntVect& refval);
 
-  static void verifier_Mat_elems(const char* const msg, const Matrice_Base& la_matrice);
-  static void verifier_matrice(const char * const msg, const Matrice_Base&,
-                               const MD_Vector& md_lignes, const MD_Vector& md_colonnes);
+  static void verifier_Mat_elems(const char *const msg, const Matrice_Base& la_matrice);
+  static void verifier_matrice(const char *const msg, const Matrice_Base&, const MD_Vector& md_lignes, const MD_Vector& md_colonnes);
 };
 
-#endif
+#endif /* Debog_included */

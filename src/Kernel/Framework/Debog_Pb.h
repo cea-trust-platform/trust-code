@@ -19,13 +19,19 @@
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
+
 #ifndef Debog_Pb_included
 #define Debog_Pb_included
 
+#include <MD_Vector_composite.h>
 #include <TRUSTTabs_forward.h>
 #include <Ref_Probleme_base.h>
+#include <Interprete_bloc.h>
+#include <MD_Vector_tools.h>
+#include <TRUSTTab_parts.h>
 #include <EcrFicCollecte.h>
 #include <VectMD_Vector.h>
+#include <MD_Vector_std.h>
 #include <TRUSTVects.h>
 #include <EFichier.h>
 #include <Motcle.h>
@@ -39,20 +45,21 @@ class Debog_Pb : public Objet_U
 {
   Declare_instanciable(Debog_Pb);
 public:
-  void verifier(const char *const msg, double, double *refvalue = 0);
-  void verifier(const char *const msg, const DoubleVect&, DoubleVect *refvalue = 0);
-  void verifier(const char *const msg, int, int *refvalue = 0);
-  void verifier(const char *const msg, const IntVect&, IntVect *refvalue = 0);
   void set_nom_pb_actuel(const Nom& nom);
   void verifier_matrice(const char *const msg, const Matrice_Base&, const MD_Vector& md_lignes, const MD_Vector& md_colonnes);
   void verifier_Mat_elems(const char *const msg, const Matrice_Base& la_matrice);
 
-  static REF(Debog_Pb)& get_debog_instance()
-  {
-    return instance_debog_;
-  }
+  static REF(Debog_Pb)& get_debog_instance() { return instance_debog_; }
+
+  template <typename _TYPE_>
+  typename std::enable_if< (std::is_convertible<_TYPE_, double>::value) || (std::is_convertible<_TYPE_, int>::value),void >::type
+  verifier(const char *const msg, _TYPE_, _TYPE_ *refvalue = 0);
+
+  template <typename _TYPE_>
+  void verifier(const char *const msg, const TRUSTVect<_TYPE_>&, TRUSTVect<_TYPE_> *refvalue = 0);
+
 protected:
-  Debog_Pb(const Debog_Pb&);
+  Debog_Pb(const Debog_Pb&) : Objet_U() { throw; /* pas delete car utiliser dans Objet_U */ }
 
   int test_ignore_msg(const char *const msg);
   void goto_msg(const char *const msg);
@@ -60,35 +67,41 @@ protected:
   void register_item(const MD_Vector& md, const Nom& id);
   void add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord_par, const MD_Vector& md, const Nom& id);
   void read_geometry_data();
-  void ecrire_partie(const DoubleVect& arr);
-  void ecrire_partie(const IntVect& arr);
-  void ecrire_gen(const char* const msg, const DoubleVect& arr, int num_deb = -1);
-  void ecrire_gen(const char* const msg, const IntVect& arr, int num_deb = -1);
   const IntVect& find_renum_vector(const MD_Vector&, Nom& id) const;
-  void verifier_partie_std(const DoubleVect& reference, const DoubleVect& arr, DoubleVect *arr_ref = 0);
-  void verifier_partie_std(const IntVect& reference, const IntVect& arr, IntVect *arr_ref = 0);
-  void verifier_partie(const DoubleVect& reference, const DoubleVect& arr, DoubleVect *arr_ref = 0);
-  void verifier_partie(const IntVect& reference, const IntVect& arr, IntVect *arr_ref = 0);
-  void verifier_gen(const char * const msg, const DoubleVect& arr, DoubleVect *arr_ref = 0);
-  void verifier_gen(const char * const msg, const IntVect& arr, IntVect *arr_ref = 0);
+
+  template <typename _TYPE_>
+  void ecrire_partie(const TRUSTVect<_TYPE_>& arr);
+
+  template <typename _TYPE_>
+  void ecrire_gen(const char* const msg, const TRUSTVect<_TYPE_>& arr, int num_deb = -1);
+
+  template <typename _TYPE_>
+  inline void verifier_partie_std(const TRUSTVect<_TYPE_>& reference, const TRUSTVect<_TYPE_>& arr, TRUSTVect<_TYPE_> *arr_ref = 0);
+
+  template <typename _TYPE_>
+  inline void verifier_partie(const TRUSTVect<_TYPE_>& reference, const TRUSTVect<_TYPE_>& arr, TRUSTVect<_TYPE_> *arr_ref = 0);
+
+  template <typename _TYPE_>
+  inline void verifier_gen(const char * const msg, const TRUSTVect<_TYPE_>& arr, TRUSTVect<_TYPE_> *arr_ref = 0);
+
   void error_function();
 
 
   // Nombre de messages ecrits dans le fichier
-  int debog_msg_count_;
+  int debog_msg_count_ = 0;
   Nom nom_pb_;
   REF(Probleme_base) ref_pb_;
   Nom fichier_domaine_;
   Nom fichier_faces_;
   Nom fichier_debog_; // fichier contenant les valeurs a relire
-  double seuil_absolu_;
-  double seuil_relatif_;
+  double seuil_absolu_ = 1e-10;
+  double seuil_relatif_ = 1e-10;
   // Liste de messages a ignorer (sauter ces messages si on les trouve dans le fichier debog)
   Motcles msg_a_ignorer_;
   // Mode: 0->ecrire, 1->lire et comparer
-  int mode_db_;
+  int mode_db_ = 0;
   // Faut-il faire exit des qu'on trouve une erreur ?
-  int exit_on_error_;
+  int exit_on_error_ = 0;
 
   // Liste des descripteurs connus (on ignore tous les tableaux qui n'auront pas
   //  leur descripteur dans known_md_)
@@ -114,4 +127,15 @@ protected:
 
   static REF(Debog_Pb) instance_debog_;
 };
-#endif
+
+// This is the interpreter (what we use in a data set TRUST).. it will instanciate a Debog_Pb object
+class Debog_Pb_Wrapper : public Interprete
+{
+  Declare_instanciable(Debog_Pb_Wrapper);
+public:
+  Entree& interpreter(Entree& is) override;
+};
+
+#include <Debog_Pb.tpp>
+
+#endif /* Debog_Pb_included */
