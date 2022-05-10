@@ -847,7 +847,7 @@ then
 fi
 
 # Adding utility package 'trustutils' in PYTHONPATH
-echo "export PYTHONPATH=\$TRUST_ROOT/Outils/IHM/TRUST_STATS_JUPYTER:\$PYTHONPATH" >> $env
+echo "export PYTHONPATH=\$TRUST_ROOT/Outils/TRUST_STATS_JUPYTER:\$PYTHONPATH" >> $env
 
 # Disable autosave in jupyter
 jupyter_config_js=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/notebook/static/custom/custom.js
