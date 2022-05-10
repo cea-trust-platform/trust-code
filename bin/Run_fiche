@@ -2,12 +2,22 @@
 # Script documente de creation d'une fiche de validation
 help()
 {
+   echo "For jupyter's validation forms (new formalism in v1.8.5):"
+   echo "Usage: `basename $0` [-help] [-export_pdf] [-exec binary_path] [-doc]"
+   echo "Script to build a PDF report file from a Jupyter validation form."
+   echo "-help                          : This description."
+   echo "-doc                           : Open jupyte's validation forms documentation (opens SampleFormJupyter notebook)."
+   echo "-export_pdf                    : Produce the PDF report direclty as 'build/rapport.pdf'. This is the default for PRM format, but not for Jupyter notebooks."
+   echo "-o name_report.pdf             : Change the default PDF report's name (default is rapport.pdf)"
+   echo "-exec binary_path              : Location of the TRUST binary to use (by default given by $exec)."
+   echo "-create                        : Build a minimal .ipynb with data files found in the src directory."
+   echo
+   echo "For .prm validation forms:"
    echo "Usage: `basename $0` [-help] [-not_run] [-post_run] [-parallel_run] [-parallel_sjob] [-nb_pas_dt_max N] [-visit_np np] [-dest path_build] [-d text|figure_number] [-o name_rapport.pdf] [-xpdf] [-remote login@machine:PATH] [-exec binary_path] [-save]"
    echo "Script to build a PDF report file from an automated validation test case (.prm file)." 
    echo "-help                          : This description."
-   echo "-doc                           : Open the prm file documentation."
+   echo "-doc_prm                       : Open the prm file documentation."
    echo "-dest path_build               : Change the default build directory."
-   echo "-export_pdf                    : Produce the PDF report direclty as 'build/rapport.pdf'. This is the default for PRM format, but not for Jupyter notebooks."
    echo "-not_run                       : Build the PDF report file without running the TRUST calculations and pre_run/post_run scripts."
    echo "-post_run                      : As -not_run except it runs the post_run scripts."
    echo "-parallel_run [n]              : Run/submit calculations in a parallel way on n cores (n=$TRUST_NB_PROCS by default). To disable this feature, add into the prm file: # DISABLE_PARALLEL_RUN #" 
@@ -26,15 +36,15 @@ help()
    echo "-compare path_build            : Build one PDF report which compares results from the default build directory and several ones specified by one or more -compare option."
    echo "-archive                       : Build a preserve.tgz file containing all the need files from the build directory to compare later, PDF reports each other." 
    echo "-save                          : If the build is processed remotely on a cluster, save the previous build in a different directory."
-   echo "-create                        : Build a minimal .prm with data files found in the src directory."
-   echo
-   echo "You could have a look at \$TRUST_ROOT/doc/TRUST/HowTo_Validation.pdf for the description of some (not all) of these options."
-   echo
-   $TRUST_ROOT/Validation/Outils/Genere_courbe/Run -help
-   echo
-   echo "You could get more information by executing the following command:"
-   echo "python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py --help"
-   echo
+   echo "-create_prm                    : Build a minimal .prm with data files found in the src directory."
+   #echo
+   #echo "You could have a look at \$TRUST_ROOT/doc/TRUST/HowTo_Validation.pdf for the description of some (not all) of these options."
+   #echo
+   #$TRUST_ROOT/Validation/Outils/Genere_courbe/Run -help
+   #echo
+   #echo "You could get more information by executing the following command:"
+   #echo "python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py --help"
+   #echo
 }
 # On verifie que pdflatex est installe sur la machine
 pdflatex --version 1>/dev/null 2>&1
@@ -70,6 +80,15 @@ do
       help
       exit 0
    elif [ "$1" = -doc ]
+   then
+      prm=$TRUST_ROOT/Validation/Rapports_automatiques/Verification/SampleFormJupyter/SampleFormJupyter.ipynb
+      echo "----------------------------------------------------------------------"
+      echo "Launching SampleFormJupyter in your web browser... hit Ctrl-C when you're done."
+      echo "  >  jupyter-notebook $prm"
+      echo "----------------------------------------------------------------------"
+      jupyter-notebook $prm 2>/dev/null
+      exit 0
+   elif [ "$1" = -doc_prm ]
    then
       $TRUST_WEBBROWSER $TRUST_ROOT/Validation/Outils/Genere_courbe/doc/manuel.xhtml &
       exit 0
@@ -161,7 +180,7 @@ do
    then
       save=1
       shift
-   elif [ "$1" = -create ]
+   elif [ "$1" = -create_prm ]
    then
       shift
       if [ "`basename $ici`" = src ]
