@@ -692,7 +692,7 @@ void Zone_Poly_base::init_som_elem() const
   is_init["som_elem"] = 1;
 }
 
-void Zone_Poly_base::init_dist_paroi(const Conds_lim& conds_lim) // Methode inspiree de Raccord_distant_homogene::initialise
+void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode inspiree de Raccord_distant_homogene::initialise
 {
   if(dist_paroi_initialisee_) return;
 

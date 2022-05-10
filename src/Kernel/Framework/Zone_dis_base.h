@@ -84,7 +84,7 @@ public :
   inline int nb_front_Cl() const ;
 
 // Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
-  virtual inline void init_dist_paroi(const Conds_lim& conds_lim) ;
+  virtual inline void init_dist_paroi_globale(const Conds_lim& conds_lim) ;
   virtual const DoubleTab& y_elem()  const {return y_elem_;} ;
   virtual const DoubleTab& y_faces() const {return y_faces_;} ;
 
@@ -167,9 +167,9 @@ inline int Zone_dis_base::nb_front_Cl() const
 {
   return zone().nb_front_Cl();
 }
-inline void Zone_dis_base::init_dist_paroi(const Conds_lim& conds_lim)
+inline void Zone_dis_base::init_dist_paroi_globale(const Conds_lim& conds_lim)
 {
-  Cerr << "Zone_dis_base::init_dist_paroi() does nothing ! " << que_suis_je() << "Needs to overload it !" << finl;
+  Cerr << "Zone_dis_base::init_dist_paroi_globale() does nothing ! " << que_suis_je() << "Needs to overload it !" << finl;
   Process::exit();
 }
 

@@ -95,7 +95,10 @@ public :
   void diametre_hydraulique_elem(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
   void diametre_hydraulique_face(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
   void section_passage(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
-  virtual void distance_paroi(const Schema_Temps_base& , Zone_dis&, Champ_Fonc&) const;
+
+  // cette methode permets de calculer/visualiser y dans tout le domaine : utile pour k-omega SST et les forces parois
+  virtual void distance_paroi_globale(const Schema_Temps_base& , Zone_dis&, Champ_Fonc&) const;
+
   virtual void y_plus(const Zone_dis& ,const Zone_Cl_dis&,  const Champ_Inc&, Champ_Fonc& ) const;
   virtual void grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl, const Champ_Inc& eqn,Champ_Fonc& ch) const;
   virtual void h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl, const Champ_Inc& eqn,Champ_Fonc& ch, Motcle& nom, int temp_ref) const;

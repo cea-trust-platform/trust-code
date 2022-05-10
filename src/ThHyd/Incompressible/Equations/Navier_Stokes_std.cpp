@@ -433,14 +433,14 @@ void Navier_Stokes_std::completer()
   assembleur_pression_.associer_zone_cl_dis_base(zone_Cl_dis().valeur());
   assembleur_pression_.completer(*this);
 
-  if (distance_paroi.non_nul())// On initialize la distance au bord au début du calcul si on en a besoin, ce ne sera plus mis a jour par la suite car le maillage est fixe ; on le fait tard car il faut avoir lu les CL
+  if (distance_paroi_globale.non_nul())// On initialize la distance au bord au début du calcul si on en a besoin, ce ne sera plus mis a jour par la suite car le maillage est fixe ; on le fait tard car il faut avoir lu les CL
     {
       Zone_dis_base& zone = zone_dis().valeur();
-      zone.init_dist_paroi(zone_Cl_dis().les_conditions_limites());
-      Cerr << "zone init" << finl;
+      zone.init_dist_paroi_globale(zone_Cl_dis().les_conditions_limites());
+      Cerr << "Initializing distance_paroi_globale ... " << finl;
       const DoubleTab& dist_calc = zone.y_elem();
-      for (int e = 0 ; e < zone.nb_elem() ; e++) distance_paroi->valeurs()(e, 0) = dist_calc(e);
-      distance_paroi->valeurs().echange_espace_virtuel();
+      for (int e = 0 ; e < zone.nb_elem() ; e++) distance_paroi_globale->valeurs()(e, 0) = dist_calc(e);
+      distance_paroi_globale->valeurs().echange_espace_virtuel();
     }
 
 }
@@ -1758,13 +1758,13 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
           champs_compris_.ajoute_champ(y_plus);
         }
     }
-  else if (motlu == "distance_paroi")
+  else if (motlu == "distance_paroi_globale")
     {
-      if (!distance_paroi.non_nul())
+      if (!distance_paroi_globale.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
-          dis.distance_paroi(schema_temps(), zone_dis(), distance_paroi);
-          champs_compris_.ajoute_champ(distance_paroi);
+          dis.distance_paroi_globale(schema_temps(), zone_dis(), distance_paroi_globale);
+          champs_compris_.ajoute_champ(distance_paroi_globale);
         }
     }
   else if (motlu == "reynolds_maille")

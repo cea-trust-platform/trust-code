@@ -53,27 +53,13 @@ public :
   //
   // Methodes surchargees de Discretisation_base
   //
-  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                         Nature_du_champ nature,
-                         const Noms& nom, const Noms& unite,
-                         int nb_comp, int nb_pas_dt, double temps,
-                         Champ_Inc& champ,
+  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
                          const Nom& sous_type = nom_vide) const override;
-  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                         Nature_du_champ nature,
-                         const Noms& nom, const Noms& unite,
-                         int nb_comp, double temps,
-                         Champ_Fonc& champ) const override;
-  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
-                         Nature_du_champ nature,
-                         const Noms& nom, const Noms& unite,
-                         int nb_comp, double temps,
-                         Champ_Don& champ) const override;
+  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Fonc& champ) const override;
+  void discretiser_champ(const Motcle& directive, const Zone_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const override;
   void zone_Cl_dis(Zone_dis& z, Zone_Cl_dis& zcl) const override;
-  void distance_paroi(const Schema_Temps_base& , Zone_dis&, Champ_Fonc&) const override;
-  void proprietes_physiques_fluide_Ostwald(const Zone_dis& ,Fluide_Ostwald& ,
-                                           const Navier_Stokes_std& ,
-                                           const Champ_Inc& ) const override;
+  void distance_paroi_globale(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const override;
+  void proprietes_physiques_fluide_Ostwald(const Zone_dis&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc&) const override;
 
   void vorticite(Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const;
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
@@ -99,10 +85,6 @@ private:
     Objet_U& champ) const;
 
   void modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const override;
-
-
-
 };
-
 
 #endif

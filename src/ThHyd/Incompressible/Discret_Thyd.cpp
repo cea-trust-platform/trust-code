@@ -170,7 +170,7 @@ void Discret_Thyd::creer_champ_vorticite(const Schema_Temps_base&, const Champ_I
 {
   Cerr << "Discret_Thyd::creer_champ_vorticite() does nothing" << finl;
   Cerr <<  que_suis_je() << "needs to overload it !" << finl;
-  exit();
+  Process::exit();
 }
 
 // Description:
@@ -204,7 +204,7 @@ void Discret_Thyd::critere_Q(const Zone_dis& ,const Zone_Cl_dis& ,const Champ_In
   // -->> on passe quand meme l argument mais on n en fait rien!!!
   Cerr << "Discret_Thyd::critere_Q() does nothing" << finl;
   Cerr <<  que_suis_je() << " needs to overload it !" << finl;
-  exit();
+  Process::exit();
 }
 
 // Description:
@@ -275,30 +275,28 @@ void Discret_Thyd::y_plus(const Zone_dis& ,const Zone_Cl_dis& ,const Champ_Inc& 
   // -->> on passe quand meme l argument mais on n en fait rien!!!
   Cerr << "Discret_Thyd::y_plus() does nothing" << finl;
   Cerr <<  que_suis_je() << " needs to overload it !" << finl;
-  exit();
+  Process::exit();
 }
 
-void Discret_Thyd::distance_paroi(const Schema_Temps_base& , Zone_dis&, Champ_Fonc& ) const
+void Discret_Thyd::distance_paroi_globale(const Schema_Temps_base& , Zone_dis&, Champ_Fonc& ) const
 {
-  // pour le VDF, on a besoin de la Zone_Cl_dis, mais pas pour le VEF
-  // -->> on passe quand meme l argument mais on n en fait rien!!!
   Cerr << "Discret_Thyd::distance_paroi() does nothing" << finl;
   Cerr <<  que_suis_je() << " needs to overload it !" << finl;
-  exit();
+  Process::exit();
 }
 
 void Discret_Thyd::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl, const Champ_Inc& eqn,Champ_Fonc& ch) const
 {
   Cerr << "Discret_Thyd::grad_T() does nothing" << finl;
   Cerr <<  que_suis_je() << " needs to overload it !" << finl;
-  exit();
+  Process::exit();
 }
 
 void Discret_Thyd::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl, const Champ_Inc& eqn,Champ_Fonc& ch, Motcle& nom,int temp_ref) const
 {
   Cerr << "Discret_Thyd::h_conv() does nothing" << finl;
   Cerr <<  que_suis_je() << " needs to overload it !" << finl;
-  exit();
+  Process::exit();
 }
 
 // Description:
@@ -337,7 +335,7 @@ void Discret_Thyd::proprietes_physiques_fluide_Ostwald(const Zone_dis& , Fluide_
 {
   Cerr << "Discret_Thyd::proprietes_physiques_fluide_Ostwald() does nothing" << finl;
   Cerr <<  que_suis_je() << " needs to overload it !" << finl;
-  exit();
+  Process::exit();
 }
 
 
@@ -345,7 +343,7 @@ void Discret_Thyd::grad_u(const Zone_dis& ,const Zone_Cl_dis&,  const Champ_Inc&
 {
   Cerr << "\nDiscret_Thyd::grad_u() does nothing" << finl;
   Cerr <<  que_suis_je() << " needs to overload it !" << finl;
-  exit();
+  Process::exit();
 }
 
 void Discret_Thyd::concentration(const Schema_Temps_base& sch,

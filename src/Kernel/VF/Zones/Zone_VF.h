@@ -200,9 +200,6 @@ public :
 
   virtual const DoubleTab& xv_bord() const;
 
-  // utile pour PolyMAC (pour l'instant ...)
-  inline void init_dist_paroi(const Conds_lim& conds_lim) override { /* Do nothing */ }
-
 private:
   DoubleVect face_surfaces_;                // surface des faces
 
