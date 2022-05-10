@@ -71,7 +71,7 @@ protected :
 
   REF(Fluide_base) le_fluide;
 
-  int n_l ; // Number of the liquid phase (the one where no IA is stored)
+  int n_l=-1 ; // Number of the liquid phase (the one where no IA is stored)
 };
 
 inline const Champ_Inc& Aire_interfaciale::inconnue() const

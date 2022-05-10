@@ -120,8 +120,8 @@ void Masse_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   for (e = 0; e < ne; e++) for (n = 0; n < N; n++)
       secmem(e, n) += pe(e) * ve(e) * (passe(e, n) - resoudre_en_increments * present(e, n)) / dt;
 
-  /* si on n'a pas d'operateur de diffusion, alors ajout des flux aux faces de Neumann */
-  if (sub_type(Op_Diff_negligeable, equation().operateur(0).l_op_base()))
+  /* si on n'a pas d'operateur de diffusion (operateur(0) negligeable ou operateur(0) convectif pour Masse_Multiphase), alors ajout des flux aux faces de Neumann */
+  if ( (sub_type(Op_Diff_negligeable, equation().operateur(0).l_op_base())) || (!sub_type(Operateur_Diff_base, equation().operateur(0).l_op_base())) )
     for (f = 0; f < zone.premiere_face_int(); f++) if (fcl(f, 0) == 4) for (e = f_e(f, 0), n = 0; n < N; n++)
           secmem(e, n) += fs(f) * ref_cast(Neumann_paroi, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), n);
 

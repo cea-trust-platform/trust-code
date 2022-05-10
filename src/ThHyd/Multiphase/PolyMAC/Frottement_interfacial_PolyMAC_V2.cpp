@@ -111,7 +111,7 @@ void Frottement_interfacial_PolyMAC_V2::ajouter_blocs(matrices_t matrices, Doubl
             for (n = 0; n < N; n++) T_l(n)   += vfd(f, c) / vf(f) * temp(e, n);
             for (n = 0; n < N; n++) rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
             for (n = 0; n < N; n++) mu_l(n)  += vfd(f, c) / vf(f) * mu(!cM * e, n);
-            for (n = 0; n < N; n++) for (k = 0; k < N; k++) if (milc.has_saturation(n,k))
+            for (n = 0; n < N; n++) for (k = 0; k < N; k++) if (milc.has_interface(n,k))
                   {
                     Interface_base& sat = milc.get_interface(n, k);
                     sigma_l(n,k) += vfd(f, c) / vf(f) * sat.sigma_(temp(e,n),press(e,n * (Np > 1)));

@@ -84,7 +84,7 @@ void grad_Champ_Face_PolyMAC_V2::update_tab_grad(int full_stencil)
   const Zone_PolyMAC_V2&       zone = ref_cast(Zone_PolyMAC_V2, zone_vf());
   const Champ_Face_PolyMAC_V2&   ch = ref_cast(Champ_Face_PolyMAC_V2, champ_a_deriver());
   const Conds_lim&           cls = ch.zone_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
-  zone.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, gradve_d, gradve_e, gradve_w);
+  zone.fgrad(champ_a_deriver().valeurs().line_size(), 0, cls, f_cl, NULL, NULL, 1, full_stencil, gradve_d, gradve_e, gradve_w);
 }
 
 void grad_Champ_Face_PolyMAC_V2::calc_gradfve()
@@ -115,12 +115,12 @@ void grad_Champ_Face_PolyMAC_V2::calc_gradfve()
                 if ( e < ne_tot) //contrib d'un element
                   {
                     double val_e = tab_ch(nf_tot+ d_U + e * D, n);
-                    val(f, d_U + n*D) += gradve_w(j) * val_e;
+                    val(f, d_U + n*D) += gradve_w(j, n) * val_e;
                   }
                 else if (fcl(f_bord = e - ne_tot, 0) == 3) //contrib d'un bord : seul Dirichlet contribue
                   {
                     double val_f_bord = ref_cast(Dirichlet, cls[fcl(f_bord, 1)].valeur()).val_imp(fcl(f_bord, 2), N * d_U + n);
-                    val(f, d_U + n*D) += gradve_w(j) * val_f_bord;
+                    val(f, d_U + n*D) += gradve_w(j, n) * val_f_bord;
                   }
               }
           }
