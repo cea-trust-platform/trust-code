@@ -497,11 +497,18 @@ do
       if [ "$CTEST" = 1 ]
       then
          # Lancement parallele avec ctest:
-	 liste_ctest=`mktemp_`
+         liste_ctest=`mktemp_`
+         tests=$option && [ -f $option ] && tests=`cat $option 2>/dev/null`
+         if [ "$project_directory" = "" ]
+         then # TRUST
+            cd $TRUST_ROOT/MonoDir_mpi_opt/src || cd $TRUST_ROOT/MonoDir_mpi/src
+         else # Baltik
+            cd $project_directory/build/src/exec_opt || cd $project_directory/build/src/exec
+         fi         
          ctest -N | sed "1,$ s/[#:]//g" > $liste_ctest
-         for test in `cat $option 2>/dev/null`
+         for test in $tests
          do
-	    # Format ctest assez particulier: 4,4,,5,6
+            # Format ctest assez particulier: 4,4,,5,6
             n=`awk -v test=$test '($3==test) {print $2}' $liste_ctest`
             if [ "$n" != "" ]
             then
@@ -514,12 +521,6 @@ do
             fi
          done
          rm -f $liste_ctest
-         if [ "$project_directory" = "" ]
-         then # TRUST
-            cd $TRUST_ROOT/MonoDir_mpi_opt/src || cd $TRUST_ROOT/MonoDir_mpi/src
-         else # Baltik
-            cd $project_directory/build/src/exec_opt || cd $project_directory/build/src/exec
-         fi
          ctest -j$TRUST_NB_PHYSICAL_CORES $I
          exit $?
       else
