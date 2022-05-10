@@ -10,6 +10,8 @@
 #include <Op_Diff_PolyMAC_Face.h>
 #include <Op_Diff_PolyMAC_V2_Elem.h>
 #include <Op_Diff_PolyMAC_V2_Face.h>
+#include <Op_Diff_Turbulent_PolyMAC_V2_Elem.h>
+#include <Op_Diff_Turbulent_PolyMAC_V2_Face.h>
 #include <Op_Div_PolyMAC.h>
 #include <Op_Div_PolyMAC_V2.h>
 #include <Op_Grad_PolyMAC_Face.h>
@@ -30,8 +32,10 @@ Op_Diff_PolyMAC_Face inst11;verifie_pere(inst11);
 Op_Diff_PolyMAC_V2_Elem inst12;verifie_pere(inst12);
 Op_Dift_PolyMAC_V2_Elem inst13;verifie_pere(inst13);
 Op_Diff_PolyMAC_V2_Face inst14;verifie_pere(inst14);
-Op_Div_PolyMAC inst15;verifie_pere(inst15);
-Op_Div_PolyMAC_V2 inst16;verifie_pere(inst16);
-Op_Grad_PolyMAC_Face inst17;verifie_pere(inst17);
-Op_Grad_PolyMAC_V2_Face inst18;verifie_pere(inst18);
+Op_Diff_Turbulent_PolyMAC_V2_Elem inst15;verifie_pere(inst15);
+Op_Diff_Turbulent_PolyMAC_V2_Face inst16;verifie_pere(inst16);
+Op_Div_PolyMAC inst17;verifie_pere(inst17);
+Op_Div_PolyMAC_V2 inst18;verifie_pere(inst18);
+Op_Grad_PolyMAC_Face inst19;verifie_pere(inst19);
+Op_Grad_PolyMAC_V2_Face inst20;verifie_pere(inst20);
 }

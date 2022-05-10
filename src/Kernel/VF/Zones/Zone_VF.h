@@ -193,21 +193,15 @@ public :
   virtual void creer_tableau_faces(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
   virtual void creer_tableau_aretes(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
   virtual void creer_tableau_faces_bord(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
-  virtual const MD_Vector& md_vector_faces_bord() const
-  {
-    return md_vector_faces_front_;
-  }
-  virtual const MD_Vector& md_vector_faces() const
-  {
-    return md_vector_faces_;
-  }
+  virtual const MD_Vector& md_vector_faces_bord() const { return md_vector_faces_front_; }
+  virtual const MD_Vector& md_vector_faces() const { return md_vector_faces_; }
   // Attention, si les aretes ne sont pas remplies, le md_vector_ est nul
-  virtual const MD_Vector& md_vector_aretes() const
-  {
-    return md_vector_aretes_;
-  }
+  virtual const MD_Vector& md_vector_aretes() const { return md_vector_aretes_; }
 
   virtual const DoubleTab& xv_bord() const;
+
+  // utile pour PolyMAC (pour l'instant ...)
+  inline void init_dist_paroi(const Conds_lim& conds_lim) override { /* Do nothing */ }
 
 private:
   DoubleVect face_surfaces_;                // surface des faces

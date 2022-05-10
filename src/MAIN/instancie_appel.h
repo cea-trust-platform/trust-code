@@ -77,6 +77,7 @@ void instancie_src_ThHyd_Multiphase_Milieu();
 void instancie_src_ThHyd_Multiphase_Operateurs();
 void instancie_src_ThHyd_Multiphase_PolyMAC();
 void instancie_src_ThHyd_Multiphase_Schemas_Temps();
+void instancie_src_ThHyd_Multiphase_Turbulence();
 void instancie_src_ThHyd_Schemas_Temps();
 void instancie_src_ThHyd_Turbulence();
 void instancie_src_ThSol();

@@ -44,6 +44,7 @@
 #include <Champ_front_tangentiel.h>
 #include <Champ_front_txyz.h>
 #include <Champ_front_uniforme.h>
+#include <Champ_front_vide.h>
 #include <Champ_front_xyz_debit.h>
 #include <Champ_input_P0.h>
 void instancie_src_Kernel_Champs() {
@@ -91,6 +92,7 @@ Champ_front_t inst40;verifie_pere(inst40);
 Champ_front_tangentiel inst41;verifie_pere(inst41);
 Champ_front_txyz inst42;verifie_pere(inst42);
 Champ_front_uniforme inst43;verifie_pere(inst43);
-Champ_front_xyz_debit inst44;verifie_pere(inst44);
-Champ_input_P0 inst45;verifie_pere(inst45);
+Champ_front_vide inst44;verifie_pere(inst44);
+Champ_front_xyz_debit inst45;verifie_pere(inst45);
+Champ_input_P0 inst46;verifie_pere(inst46);
 }
