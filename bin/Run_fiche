@@ -261,9 +261,9 @@ then
           fi
           echo "----------------------------------------------------------------------"
           echo "Converting Jupyter notebook into PDF: build/rapport.pdf"
-          echo "  >  jupyter nbconvert --to pdf --output $ici/build/rapport.pdf $opt_jy $prm"
+          echo "  >  jupyter nbconvert --to pdf --no-input --output $ici/build/rapport.pdf $opt_jy $prm"
           echo "----------------------------------------------------------------------"
-          jupyter nbconvert --to pdf --output "$ici/build/rapport.pdf" $opt_jy $prm
+          jupyter nbconvert --to pdf --no-input --output "$ici/build/rapport.pdf" $opt_jy $prm
           exit $?
       else
           echo "----------------------------------------------------------------------"

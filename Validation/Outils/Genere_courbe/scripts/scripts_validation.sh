@@ -196,7 +196,7 @@ comp_fiche()
     [ "$1" = "-batch" ] && batch_mode="-batch" && shift
     fiche=$1
     echo "Comparing $fiche"
-    [ "$fiche" = "" ] && exit -1
+    [ "$fiche" = "" ] && return -1
 
     mkdir -p new_rap/OK
     mkdir -p new_rap/KO
@@ -262,11 +262,34 @@ compare_new_rap_old_rap()
 echo def genere_new_rap_old_rap  [ -perf ] [-data] [-dt_ev]  newarchives oldarchives
 gen_fiche()
 {
-    cd preserve
-    python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p `ls *prm| grep -v test_lu.prm` --no_prereq
-    if [ "$?" != "0" ]; then return 1; fi
-    cd ..
-    return 0
+    status=0
+    # Test if Jupyter or PRM - first PRM case:
+    if ls preserve/*.prm  1>&2 2>/dev/null; then
+        cd preserve
+        python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p `ls *prm| grep -v test_lu.prm` --no_prereq
+        status=$?
+        cd ..
+    else
+        # Check Jupyter exists - for Jupyter, the build directory has to be called 'build'
+        mv preserve build
+        jy_nb=`ls build/*.ipynb 2>/dev/null`
+        if [ "$?" != "0" ]; then
+            echo "ERROR: scripts_validation.sh::gen_fiche() -- Strange - Jupyter notebook not found in archive!"
+            return 1
+        fi
+        # Make a dummy src directory (won't be actually used)
+        mkdir -p src
+        cp $jy_nb .
+        jy_nb=`ls *.ipynb 2>/dev/null`
+        curr_dir=`pwd`
+        env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter nbconvert --to pdf --no-input --output "$curr_dir/build/rapport.pdf" --execute $jy_nb
+        status=$?
+        rm -rf src
+        # Revert 'build' into 'preserve'
+        mv build preserve
+    fi
+
+    return $status
 }
 
 #
@@ -309,7 +332,7 @@ gen_rap_fiche()
     working_dir="rap_${fiche}"
     rm -rf $working_dir
     mkdir $working_dir
-    cd $working_dir || exit -1
+    cd $working_dir || return 1
     
     #
     # Building new report
@@ -319,7 +342,7 @@ gen_rap_fiche()
 
     tar zxf $new/$fiche
     gen_fiche
-    if [ "$?" != "0" ]; then cd ..; echo "gen_fiche FAILED!!!"; exit 1; fi
+    if [ "$?" != "0" ]; then cd ..; echo "gen_fiche FAILED!!!"; return 1; fi
 
     mv preserve new
     mv new/rapport.pdf ../new_rap/$pdf
@@ -365,7 +388,7 @@ gen_rap_fiche()
     fi
 
     gen_fiche
-    if [ "$?" != "0" ]; then cd ..; echo "gen_fiche FAILED!!!"; exit 1; fi
+    if [ "$?" != "0" ]; then cd ..; echo "gen_fiche FAILED!!!"; return 1; fi
     mv -f preserve/rapport.pdf ../old_rap/$pdf
     
     cd ..
@@ -385,8 +408,8 @@ genere_new_rap_old_rap()
     [ "$1" = "-dt_ev" ] && dt_ev=$1 && shift
     NEW=$1
     REF=$2
-    [ "$NEW" = "" ] && exit
-    [ "$REF" = "" ] && exit
+    [ "$NEW" = "" ] && return 1
+    [ "$REF" = "" ] && return 1
     cd $NEW/; fiches=`ls *.tgz`; cd -
 
     for fiche in $fiches

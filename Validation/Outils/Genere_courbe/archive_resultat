@@ -75,6 +75,12 @@ for f in `cat used_files`; do
        cp $f2 ../preserve/$f2
    done
 done
+
+# If Jupyter, take notebook with us:
+if $is_jupyter; then
+   cp ../$base_prm ../preserve
+fi
+
 cd ..
 
 # Compressing
@@ -89,21 +95,23 @@ rm -rf preserve all.tar
 #
 echo "ARCHIVE: Testing archive ..."
 tar zxf $archive.tgz
-cd preserve
-
 if ! $is_jupyter; then
+    cd preserve
     python $DIR/src/genererCourbes.py -p $base_prm --no_prereq -o ../old_rapport.pdf 1> ../$log_file 2>&1
     status=$?
+    cd ..
 else  # Jupyter notebook
+    # Build directory has to be called "build"
+    rm -r build/
+    mv preserve build
     curr_dir=`pwd`
-    env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter nbconvert --to pdf --output "$curr_dir/../old_rapport.pdf" --execute ../$base_prm 1>../$log_file 2>&1
+    env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter nbconvert --to pdf --no-input --output "$curr_dir/old_rapport.pdf" --execute $base_prm 1>$log_file 2>&1
     status=$?
 fi
 
-[ $status -ne 0 ] && echo "*** FAILED generating archive!! Last logs of (failed) report build can be seen in $log_file" &&  mv ../$archive.tgz ../${archive}_FAILED.tgz && exit 2
-cd ..
+[ $status -ne 0 ] && echo "*** FAILED generating archive!! Last logs of (failed) report build can be seen in $log_file" &&  mv $archive.tgz ${archive}_FAILED.tgz && exit 2
 gzip -f old_rapport.pdf
-rm -rf preserve 
+rm -rf preserve build
 
 echo "ARCHIVE: All done! Last logs of (successful) report build can be seen in $log_file"
 
