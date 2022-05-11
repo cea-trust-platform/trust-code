@@ -95,7 +95,7 @@ inline DoubleTab& Champ_P0_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTa
   DoubleTrav dst; //reconstruction du champ aux faces (on ne le remplit que sur le bord concerne)
   int i, n, e, f, N = src.nb_dim() > 1 ? src.dimension(1): 1, has_faces = src.dimension_tot(0) > zone.nb_elem_tot();
   if (!x.dimension(0) && !x.get_md_vector().non_nul()) x.resize(fvf.nb_faces(), N);
-  N > 1 ? dst.resize(zone.nb_faces(), N) : dst.resize(zone.nb_faces()); //aargh
+  dst.resize(zone.nb_faces(), N);
   for (i = 0; i < fvf.nb_faces(); i++) for (n = 0, f = fvf.num_face(i), e = f_e(f, 0); n < N; n++)
       dst(f, n) = src(has_faces ? zone.nb_elem_tot() + f : e, n);
 
