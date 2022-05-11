@@ -34,34 +34,34 @@
 // .SECTION voir aussi
 //////////////////////////////////////////////////////////////////////////////
 
-class Entree_complete : public Entree
+class Entree_complete: public Entree
 {
 public:
-  Entree_complete(const char* str, Entree& entree2);
+  Entree_complete(const char *str, Entree& entree2);
   ~Entree_complete() override;
 
   Entree& operator>>(int& ob) override;
 #ifndef INT_is_64_
-  Entree& operator>>(long&     ob) override;
+  Entree& operator>>(long& ob) override;
 #endif
-  Entree& operator>>(float&    ob) override;
-  Entree& operator>>(double&   ob) override;
+  Entree& operator>>(float& ob) override;
+  Entree& operator>>(double& ob) override;
 
-  int get(int* ob, int n) override;
+  int get(int *ob, int n) override;
 #ifndef INT_is_64_
-  int get(long* ob, int n) override;
+  int get(long *ob, int n) override;
 #endif
-  int get(float* ob, int n) override;
-  int get(double* ob, int n) override;
-  int get(char * buf, int bufsize) override;
+  int get(float *ob, int n) override;
+  int get(double *ob, int n) override;
+  int get(char *buf, int bufsize) override;
 
   int eof() override;
   int fail() override;
   int good() override;
 
   int set_bin(int bin) override;
-  void   set_error_action(Error_Action) override;
-  void   set_check_types(int flag) override;
+  void set_error_action(Error_Action) override;
+  void set_check_types(int flag) override;
 
 protected:
   Entree& get_input();
@@ -71,6 +71,34 @@ protected:
   EChaine chaine_str_;
   // Reference a la deuxieme entree (on n'est pas proprietaire de l'objet pointe)
   Entree *entree2_;
+
+private:
+  template <typename _TYPE_>
+  int get_template(_TYPE_ *ob, int n);
+
+  template <typename _TYPE_>
+  Entree& operator_template(_TYPE_&ob);
 };
 
-#endif
+template<typename _TYPE_>
+int Entree_complete::get_template(_TYPE_ *ob, int n)
+{
+  // Je fais une boucle pour permettre au tableau de valeurs d'etre a cheval sur les deux entrees:
+  for (int i = 0; i < n; i++)
+    {
+      Entree& is = get_input();
+      if (! is.get(ob+i, 1))
+        return 0;
+    }
+  return 1;
+}
+
+template<typename _TYPE_>
+Entree& Entree_complete::operator_template(_TYPE_& ob)
+{
+  Entree& is = get_input();
+  is >> ob;
+  return *this;
+}
+
+#endif /* Entree_complete_included */

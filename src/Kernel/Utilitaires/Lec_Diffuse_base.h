@@ -24,9 +24,8 @@
 #ifndef Lec_Diffuse_base_included
 #define Lec_Diffuse_base_included
 
+#include <communications.h>
 #include <EFichier.h>
-
-class Objet_U;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -45,7 +44,7 @@ class Objet_U;
 //////////////////////////////////////////////////////////////////////////////
 
 //    Since 1.7.0 version, Lec_Diffuse_base class inherits EFichier class not Entree class
-class Lec_Diffuse_base : public EFichier
+class Lec_Diffuse_base: public EFichier
 {
   Declare_base_sans_constructeur(Lec_Diffuse_base);
 public:
@@ -56,13 +55,13 @@ public:
   Entree& operator>>(float& ob) override;
   Entree& operator>>(double& ob) override;
 
-  int get(int* ob, int n) override;
+  int get(int *ob, int n) override;
 #ifndef INT_is_64_
-  int get(long*   ob, int n) override;
+  int get(long *ob, int n) override;
 #endif
-  int get(float*  ob, int n) override;
-  int get(double* ob, int n) override;
-  int get(char*   buf, int bufsize) override;
+  int get(float *ob, int n) override;
+  int get(double *ob, int n) override;
+  int get(char *buf, int bufsize) override;
 
   int eof() override;
   int good() override;
@@ -72,10 +71,69 @@ public:
   void set_check_types(int flag) override;
 
   void set_diffuse(int diffuse) override;
+
 protected:
   Lec_Diffuse_base();
   Lec_Diffuse_base(const Lec_Diffuse_base&) = default;
-  Lec_Diffuse_base& operator=(const Lec_Diffuse_base& );
+  Lec_Diffuse_base& operator=(const Lec_Diffuse_base&);
   virtual Entree& get_entree_master() = 0;
+
+private:
+  template <typename _TYPE_>
+  int get_template(_TYPE_ *ob, int n);
+
+  template <typename _TYPE_>
+  Entree& operator_template(_TYPE_&ob);
 };
+
+template <typename _TYPE_>
+int Lec_Diffuse_base::get_template(_TYPE_ *ob, int n)
+{
+  int ok = 0;
+  if (Process::je_suis_maitre())
+    {
+      Entree& is = get_entree_master();
+      assert(is.get_error_action() == ERROR_CONTINUE);
+      ok = is.get(ob, n);
+    }
+  else if (!diffuse_)
+    {
+      Cerr << "Lec_Diffuse_base::get(...) can't be used with diffuse_=0 on non master process." << finl;
+      Process::exit();
+    }
+  if (diffuse_)
+    {
+      envoyer_broadcast(ok, 0);
+      if (ok)
+        envoyer_broadcast_array(ob, n, 0);
+    }
+  return error_handle(!ok);
+}
+
+template <typename _TYPE_>
+Entree& Lec_Diffuse_base::operator_template(_TYPE_& ob)
+{
+  int ok = 0;
+  if (Process::je_suis_maitre())
+    {
+      Entree& is = get_entree_master();
+      assert(is.get_error_action() == ERROR_CONTINUE);
+      is >> ob;
+      ok = is.good();
+    }
+  else if (!diffuse_)
+    {
+      Cerr << "Lec_Diffuse_base::operator>> can't be used with diffuse_=0 on non master process." << finl;
+      Process::exit();
+    }
+  if (diffuse_)
+    {
+      envoyer_broadcast(ok, 0);
+      if (ok)
+        envoyer_broadcast(ob, 0);
+    }
+  error_handle(!ok);
+  return *this;
+}
+
 #endif
