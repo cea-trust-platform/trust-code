@@ -20,21 +20,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-// Fichiers comm.* renommes communications.* car
-// il existe des includes systemes nommes comm.h (eg: paradis)
-// qui peuvent creer des conflits en compilant avec mpiCC au lieu de g++
-#include <communications.h>
-#include <communications_array.h>
 #include <InOutCommBuffers.h>
-#include <Comm_Group.h>
-#include <PE_Groups.h>
+#include <communications.h>
 #include <Schema_Comm.h>
-#include <TRUSTTabs.h>
 #include <TRUSTArrays.h>
+#include <TRUSTTabs.h>
 #include <Motcle.h>
 #include <DerOu_.h>
 #include <TRUSTTab.h>
-#include <vector>
+
 // Description:
 //  Envoi de messages point-to-point synchrone entre la source et la cible.
 //  La fonction envoyer se termine au plus tard lorsque le message a ete
@@ -71,7 +65,8 @@
 // Dans l'implementation de envoyer_, on encapsule l'objet recu dans un buffer et on envoie le buffer.
 // Ca marche donc pour les types complexes pourvu que Entree et Sortie sachent lire et ecrire l'objet.
 // Chaque envoi necessite l'envoi de deux messages : d'abord la taille du buffer, puis le contenu.
-template <class T> int envoyer_buffered_(const T& objet, int source, int cible, int canal)
+template <typename T>
+int envoyer_buffered_(const T& objet, int source, int cible, int canal)
 {
   const int moi = Process::me();
   if (moi == cible)
@@ -106,7 +101,8 @@ template <class T> int envoyer_buffered_(const T& objet, int source, int cible, 
 }
 
 // Description: Reception d'un message en provenance du processeur source
-template <class T> int recevoir_buffered_(T& objet, int source, int cible, int canal)
+template <typename T>
+int recevoir_buffered_(T& objet, int source, int cible, int canal)
 {
   const int moi = Process::me();
   if (moi == source)
@@ -127,247 +123,10 @@ template <class T> int recevoir_buffered_(T& objet, int source, int cible, int c
   return 1;
 }
 
-// Attention: le template ne marche que pour les types simples (pas Objet_U !)
-// On ne passe pas par un buffer Entree / Sortie mais on envoie directement le tableau sous sa forme binaire.
-// Un seul message envoye, sauf en mode check() ou on envoie aussi la taille pour verifier.
-template <class T> int envoyer_array_(const T * objet, int n, int source, int cible, int canal)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  const int moi = grp.rank();
-  if (moi == cible)
-    return 0;
-
-  if (source != moi && source != -1)
-    return 0;
-
-  const char * data = (const char*) objet;
-  const int sz   = sizeof(T) * n;
-  if (cible < 0)
-    {
-      const int nbproc = grp.nproc();
-      for (int i = 0; i < nbproc; i++)
-        {
-          if (i != moi)
-            {
-              // En mode check, on verifie que n est bien le meme sur l'expediteur et le recepteur
-              if (grp.check_enabled())
-                grp.send(i, &sz, sizeof(int), canal);
-              if (sz > 0)
-                grp.send(i, data, sz, canal);
-            }
-        }
-    }
-  else
-    {
-      if (grp.check_enabled())
-        grp.send(cible, &sz, sizeof(int), canal);
-      if (sz > 0)
-        grp.send(cible, data, sz, canal);
-    }
-  return 1;
-}
-
-template <class T> int recevoir_array_(T * objet, int n, int source, int cible, int canal)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  const int moi = grp.rank();
-  if (moi == source)
-    return 0;
-
-  if (cible != moi && cible != -1)
-    return 0;
-
-  const int sz = sizeof(T) * n;
-  if (grp.check_enabled())
-    {
-      int sz_check;
-      grp.recv(source, &sz_check, sizeof(int), canal);
-      if (sz_check != sz)
-        {
-          Cerr << "Fatal error in template <class T> int recevoir_array_ : incorrect size\n"
-               << " sent=" << sz_check << " expected=" << sz << finl;
-          Process::exit();
-        }
-    }
-  char * data = (char*) objet;
-  if (sz > 0)
-    grp.recv(source, data, sz, canal);
-  return 1;
-}
-
-// Pour les types simples, on passe par envoyer_array_ qui n'utilise pas un buffer mais envoie directement les valeurs. Plus rapide.
-int envoyer(const int t, int source, int cible, int canal)
-{
-  return envoyer_array_(&t, 1, source, cible, canal);
-}
-
-#ifndef INT_is_64_
-int envoyer(const long t, int source, int cible, int canal)
-{
-  return envoyer_array_(&t, 1, source, cible, canal);
-}
-#endif
-
-int envoyer(const float t, int source, int cible, int canal)
-{
-  return envoyer_array_(&t, 1, source, cible, canal);
-}
-
-int envoyer(const double t, int source, int cible, int canal)
-{
-  return envoyer_array_(&t, 1, source, cible, canal);
-}
-
-int envoyer(const Objet_U& t, int source, int cible, int canal)
-{
-  return envoyer_buffered_(t, source, cible, canal);
-}
-
-int envoyer(const int t, int cible, int canal)
-{
-  return envoyer_array_(&t, 1, Process::me(), cible, canal);
-}
-
-#ifndef INT_is_64_
-int envoyer(const long t, int cible, int canal)
-{
-  return envoyer_array_(&t, 1, Process::me(), cible, canal);
-}
-#endif
-
-int envoyer(const float t, int cible, int canal)
-{
-  return envoyer_array_(&t, 1, Process::me(), cible, canal);
-}
-
-int envoyer(const double t, int cible, int canal)
-{
-  return envoyer_array_(&t, 1, Process::me(), cible, canal);
-}
-
-int envoyer(const Objet_U& t, int cible, int canal)
-{
-  return envoyer_buffered_(t, Process::me(), cible, canal);
-}
-
-int recevoir(int& t, int source, int cible, int canal)
-{
-  return recevoir_array_(&t, 1, source, cible, canal);
-}
-
-#ifndef INT_is_64_
-int recevoir(long& t, int source, int cible, int canal)
-{
-  return recevoir_array_(&t, 1, source, cible, canal);
-}
-#endif
-
-int recevoir(float& t, int source, int cible, int canal)
-{
-  return recevoir_array_(&t, 1, source, cible, canal);
-}
-
-int recevoir(double& t, int source, int cible, int canal)
-{
-  return recevoir_array_(&t, 1, source, cible, canal);
-}
-
-int recevoir(Objet_U& t, int source, int cible, int canal)
-{
-  return recevoir_buffered_(t, source, cible, canal);
-}
-
-int recevoir(int& t, int source, int canal)
-{
-  return recevoir_array_(&t, 1, source, Process::me(), canal);
-}
-
-#ifndef INT_is_64_
-int recevoir(long& t, int source, int canal)
-{
-  return recevoir_array_(&t, 1, source, Process::me(), canal);
-}
-#endif
-
-int recevoir(float& t, int source, int canal)
-{
-  return recevoir_array_(&t, 1, source, Process::me(), canal);
-}
-
-int recevoir(double& t, int source, int canal)
-{
-  return recevoir_array_(&t, 1, source, Process::me(), canal);
-}
-
-int recevoir(Objet_U& t, int source, int canal)
-{
-  return recevoir_buffered_(t, source, Process::me(), canal);
-}
-
-int envoyer_array(const int *t, int n, int source, int cible, int canal)
-{
-  return envoyer_array_(t, n, source, cible, canal);
-}
-
-#ifndef INT_is_64_
-int envoyer_array(const long *t, int n, int source, int cible, int canal)
-{
-  return envoyer_array_(t, n, source, cible, canal);
-}
-#endif
-
-int envoyer_array(const double *t, int n, int source, int cible, int canal)
-{
-  return envoyer_array_(t, n, source, cible, canal);
-}
-
-int envoyer_array(const float *t, int n, int source, int cible, int canal)
-{
-  return envoyer_array_(t, n, source, cible, canal);
-}
-
-int recevoir_array(const int *t, int n, int source, int cible, int canal)
-{
-  return recevoir_array_(t, n, source, cible, canal);
-}
-
-#ifndef INT_is_64_
-int recevoir_array(const long *t, int n, int source, int cible, int canal)
-{
-  return recevoir_array_(t, n, source, cible, canal);
-}
-#endif
-
-int recevoir_array(const double *t, int n, int source, int cible, int canal)
-{
-  return recevoir_array_(t, n, source, cible, canal);
-}
-
-int recevoir_array(const float *t, int n, int source, int cible, int canal)
-{
-  return recevoir_array_(t, n, source, cible, canal);
-}
-
-template <class T> int envoyer_broadcast_(T * objet, int n, int source)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  if (grp.check_enabled())
-    {
-      int copie_n = n;
-      grp.broadcast(&copie_n, sizeof(int), source);
-      if (copie_n != n)
-        {
-          Cerr << "Error in envoyer_broadcast_(T * objet, int n, int source)" << finl;
-          Process::exit();
-        }
-    }
-  grp.broadcast(objet, sizeof(T) * n, source);
-  return 1;
-}
-
 // Description: Broadcast de l'objet par le processeur source a tous les autres processeurs.
 //  Fonctionne pour des types complexes supportes par Entree ou Sortie.
-template <class T> int envoyer_broadcast_buffered_(T& objet, int source)
+template <typename T>
+int envoyer_broadcast_buffered_(T& objet, int source)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   if (grp.rank() == source)
@@ -393,31 +152,24 @@ template <class T> int envoyer_broadcast_buffered_(T& objet, int source)
   return 1;
 }
 
-int envoyer_broadcast(int& t, int source)
+int envoyer(const Objet_U& t, int source, int cible, int canal)
 {
-  return envoyer_broadcast_(&t, 1, source);
+  return envoyer_buffered_(t, source, cible, canal);
 }
 
-#ifndef INT_is_64_
-int envoyer_broadcast(long& t, int source)
+int envoyer(const Objet_U& t, int cible, int canal)
 {
-  return envoyer_broadcast_(&t, 1, source);
-}
-#endif
-
-int envoyer_broadcast(long long& t, int source)
-{
-  return envoyer_broadcast_(&t, 1, source);
+  return envoyer_buffered_(t, Process::me(), cible, canal);
 }
 
-int envoyer_broadcast(float& t, int source)
+int recevoir(Objet_U& t, int source, int cible, int canal)
 {
-  return envoyer_broadcast_(&t, 1, source);
+  return recevoir_buffered_(t, source, cible, canal);
 }
 
-int envoyer_broadcast(double& t, int source)
+int recevoir(Objet_U& t, int source, int canal)
 {
-  return envoyer_broadcast_(&t, 1, source);
+  return recevoir_buffered_(t, source, Process::me(), canal);
 }
 
 int envoyer_broadcast(Objet_U& t, int source)
@@ -425,34 +177,9 @@ int envoyer_broadcast(Objet_U& t, int source)
   return envoyer_broadcast_buffered_(t, source);
 }
 
-int envoyer_broadcast_array(int *t, int n, int source)
-{
-  return envoyer_broadcast_(t, n, source);
-}
-
-#ifndef INT_is_64_
-int envoyer_broadcast_array(long *t, int n, int source)
-{
-  return envoyer_broadcast_(t, n, source);
-}
-#endif
-
-int envoyer_broadcast_array(float *t, int n, int source)
-{
-  return envoyer_broadcast_(t, n, source);
-}
-int envoyer_broadcast_array(double *t, int n, int source)
-{
-  return envoyer_broadcast_(t, n, source);
-}
-
-int envoyer_broadcast_array(char *t, int n, int source)
-{
-  return envoyer_broadcast_(t, n, source);
-}
-
 // Template qui marche pour tout objet T qui ressemble a un vecteur (possede un operator[]) de taille nproc()
-template <class T> int envoyer_all_to_all_(const T& src, T& dest)
+template <typename T>
+int envoyer_all_to_all_(const T& src, T& dest)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   assert(src.size() == Process::nproc());
@@ -479,45 +206,14 @@ template <class T> int envoyer_all_to_all_(const T& src, T& dest)
   return 1;
 }
 
-// Description: On suppose que les tableaux en entree et en sortie sont de taille nproc() . On envoie src[0] au proc 0,
-//  src[1] au proc 1, etc... la valeur recue du processeur 0 et mise dans dest[0], processeur 1 dans dest[1], etc...
-//  Il est autorise d'appeler la fonction avec le meme tableau src et dest.
-template<typename _TYPE_>
-int envoyer_all_to_all_2_(const TRUSTArray<_TYPE_>& src, TRUSTArray<_TYPE_>& dest)
-{
-  const Comm_Group& grp = PE_Groups::current_group();
-  assert(src.size_array() == grp.nproc());
-  assert(dest.size_array() == grp.nproc());
-  if (src.addr() == dest.addr())
-    {
-      TRUSTArray<_TYPE_> tmp;
-      tmp.resize_array(grp.nproc(), Array_base::NOCOPY_NOINIT);
-      grp.all_to_all(src.addr(), tmp.addr(), sizeof(_TYPE_));
-      dest.inject_array(tmp);
-    }
-  else
-    grp.all_to_all(src.addr(), dest.addr(), sizeof(_TYPE_));
-  return 1;
-}
-
-int envoyer_all_to_all(const DoubleTabs& src, DoubleTabs& dest)
+int envoyer_all_to_all(const TRUST_Vector<TRUSTTab,double>& src, TRUST_Vector<TRUSTTab,double>& dest)
 {
   return envoyer_all_to_all_(src, dest);
 }
 
-int envoyer_all_to_all(const ArrsOfInt& src, ArrsOfInt& dest)
+int envoyer_all_to_all(const TRUST_Vector<TRUSTArray,int>& src, TRUST_Vector<TRUSTArray,int>& dest)
 {
   return envoyer_all_to_all_(src, dest);
-}
-
-int envoyer_all_to_all(const ArrOfInt& src, ArrOfInt& dest)
-{
-  return envoyer_all_to_all_2_(src,dest);
-}
-
-int envoyer_all_to_all(const ArrOfDouble& src, ArrOfDouble& dest)
-{
-  return envoyer_all_to_all_2_(src,dest);;
 }
 
 // Description: On suppose que les tableaux en entree et en sortie
@@ -599,23 +295,13 @@ int mp_operations_commun_(int x, Comm_Group::Collective_Op op)
 }
 
 // Description: renvoie le plus grand int i sur l'ensemble des processeurs du groupe courant.
-int mp_max(int x)
-{
-  return mp_operations_commun_(x,Comm_Group::COLL_MAX);
-}
+int mp_max(int x) { return mp_operations_commun_(x,Comm_Group::COLL_MAX); }
 
 // Description: renvoie le plus petit int i sur l'ensemble des processeurs du groupe courant.
-int mp_min(int x)
-{
-  return mp_operations_commun_(x,Comm_Group::COLL_MIN);
-}
+int mp_min(int x) { return mp_operations_commun_(x,Comm_Group::COLL_MIN); }
 
-// Description: Calul de la somme partielle de i sur les processeurs 0 a me()-1
-//  (renvoie 0 sur le processeur 0). Voir Comm_Group::mppartial_sum()
-int mppartial_sum(int x)
-{
-  return mp_operations_commun_(x,Comm_Group::COLL_PARTIAL_SUM);
-}
+// Description: Calul de la somme partielle de i sur les processeurs 0 a me()-1 (renvoie 0 sur le processeur 0). Voir Comm_Group::mppartial_sum()
+int mppartial_sum(int x) { return mp_operations_commun_(x,Comm_Group::COLL_PARTIAL_SUM); }
 
 void mpsum_multiple(double& x1, double& x2)
 {
@@ -627,52 +313,6 @@ void mpsum_multiple(double& x1, double& x2)
   grp.mp_collective_op(x, y, 2, Comm_Group::COLL_SUM);
   x1 = y[0];
   x2 = y[1];
-}
-
-template<typename _TYPE_>
-static void mp_collective_op(TRUSTArray<_TYPE_>& x, Comm_Group::Collective_Op op)
-{
-  int sz = x.size_array();
-  assert_parallel(sz);
-  if (sz > 0)
-    {
-      _TYPE_ *data = x.addr();
-      _TYPE_ *tmp = new _TYPE_[sz];
-      const Comm_Group& grp = PE_Groups::current_group();
-      grp.mp_collective_op(data, tmp, sz, op);
-      memcpy(data, tmp, sz * sizeof(_TYPE_));
-      delete [] tmp;
-    }
-}
-
-void mp_sum_for_each_item(ArrOfInt& x)
-{
-  mp_collective_op(x, Comm_Group::COLL_SUM);
-}
-
-void mp_sum_for_each_item(ArrOfDouble& x)
-{
-  mp_collective_op(x, Comm_Group::COLL_SUM);
-}
-
-void mp_min_for_each_item(ArrOfInt& x)
-{
-  mp_collective_op(x, Comm_Group::COLL_MIN);
-}
-
-void mp_min_for_each_item(ArrOfDouble& x)
-{
-  mp_collective_op(x, Comm_Group::COLL_MIN);
-}
-
-void mp_max_for_each_item(ArrOfInt& x)
-{
-  mp_collective_op(x, Comm_Group::COLL_MAX);
-}
-
-void mp_max_for_each_item(ArrOfDouble& x)
-{
-  mp_collective_op(x, Comm_Group::COLL_MAX);
 }
 
 // Description: On suppose que les tableaux en entree et en sortie
@@ -701,17 +341,10 @@ void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest)
     }
 }
 
-// Description: renvoie le drapeau Comm_Group::check_enabled().
-//  Ce drapeau indique si le code tourne en mode DEBUG du parallele.
-//  Dans ce cas, des communications supplementaires ont lieu pour
-//  verifier la coherence du parallelisme et le mode de communication
-//  est force en mode synchrone.
-//  Cette methode permet de tester le drapeau, et s'il est mis de
-//  realiser des verifications supplementaires
-int comm_check_enabled()
-{
-  return Comm_Group::check_enabled();
-}
+// Description: renvoie le drapeau Comm_Group::check_enabled(). Ce drapeau indique si le code tourne en mode DEBUG du parallele.
+//  Dans ce cas, des communications supplementaires ont lieu pour verifier la coherence du parallelisme et le mode de communication
+//  est force en mode synchrone. Cette methode permet de tester le drapeau, et s'il est mis de realiser des verifications supplementaires
+int comm_check_enabled() { return Comm_Group::check_enabled(); }
 
 // Description: renvoie 1 (sur tous les procs) si le parametre est identique sur tous les procs,
 //  sinon renvoie 0 (sur tous les procs)
@@ -734,38 +367,6 @@ int is_parallel_object(const double x)
   Comm_Group::Collective_Op tab_op[] = { Comm_Group::COLL_MIN, Comm_Group::COLL_MAX };
   grp.mp_collective_op(tab_x, tab_y, tab_op, 2);
   return tab_y[0] == tab_y[1];
-}
-
-// Description: en mode comm_check_enabled(), verifie que le parametre
-//  a la meme valeur sur tous les processeurs
-void assert_parallel(const int x)
-{
-  if (!Comm_Group::check_enabled())
-    return;
-  if (!is_parallel_object(x))
-    {
-      Cerr << "Fatal error in assert_parallel(const int x). See log files" << finl;
-      Process::Journal() << "Error in assert_parallel(const int x)          )"
-                         << "This processor has this value: " << x << finl;
-      Process::barrier();
-      Process::exit();
-    }
-}
-
-// Description: en mode comm_check_enabled(), verifie que le parametre
-//  a la meme valeur sur tous les processeurs
-void assert_parallel(const double x)
-{
-  if (!Comm_Group::check_enabled())
-    return;
-  if (!is_parallel_object(x))
-    {
-      Cerr << "Fatal error in assert_parallel(const double x). See log files" << finl;
-      Process::Journal() << "Error in assert_parallel(const double x)          )"
-                         << "This processor has this value: " << x << finl;
-      Process::barrier();
-      Process::exit();
-    }
 }
 
 template <class T> int compare(const Objet_U& a, const Objet_U& b, int& erreur)
@@ -835,10 +436,8 @@ int is_parallel_object(const Objet_U& obj)
   return !erreur;
 }
 
-// Description: en mode comm_check_enabled(), verifie que le parametre
-//  a la meme valeur sur tous les processeurs.
-//  Ne fonctionne pas pour tous les types !
-//  Pour l'instant ok pour Noms, Motcles et tableaux.
+// Description: en mode comm_check_enabled(), verifie que le parametre a la meme valeur sur tous les processeurs.
+//  Ne fonctionne pas pour tous les types ! Pour l'instant ok pour Noms, Motcles et tableaux.
 void assert_parallel(const Objet_U& obj)
 {
   if (!Comm_Group::check_enabled())

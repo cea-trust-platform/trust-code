@@ -20,76 +20,165 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef communications_H
-#define communications_H
+#ifndef communications_included
+#define communications_included
 
-// .DESCRIPTION Methodes de communications
-// Voir la documentation de envoyer_() dans communications.cpp
-
+#include <communications_array.h>
 #include <TRUSTTabs_forward.h>
 #include <Vect.h>
 #include <vector>
 
-class Objet_U;
-
-int envoyer(const int t, int source, int cible, int canal);
-int envoyer(const long t, int source, int cible, int canal);
-int envoyer(const float t, int source, int cible, int canal);
-int envoyer(const double t, int source, int cible, int canal);
+// Pour Objet_U ... on buffer !!
 int envoyer(const Objet_U& t, int source, int cible, int canal);
-
-int envoyer(const int t, int cible, int canal);
-int envoyer(const long t, int cible, int canal);
-int envoyer(const float t, int cible, int canal);
-int envoyer(const double t, int cible, int canal);
 int envoyer(const Objet_U& t, int cible, int canal);
-
-int recevoir(int& t, int source, int cible, int canal);
-int recevoir(long& t, int source, int cible, int canal);
-int recevoir(float& t, int source, int cible, int canal);
-int recevoir(double& t, int source, int cible, int canal);
 int recevoir(Objet_U& t, int source, int cible, int canal);
-
-int recevoir(int& t, int source, int canal);
-int recevoir(long& t, int source, int canal);
-int recevoir(float& t, int source, int canal);
-int recevoir(double& t, int source, int canal);
 int recevoir(Objet_U& t, int source, int canal);
-
-int envoyer_broadcast(int& t, int source);
-int envoyer_broadcast(long& t, int source);
-int envoyer_broadcast(long long& t, int source);
-int envoyer_broadcast(float& t, int source);
-int envoyer_broadcast(double& t, int source);
 int envoyer_broadcast(Objet_U& t, int source);
 
+void mpsum_multiple(double& x1, double& x2);
 int mppartial_sum(int i);
 int mp_max(int i);
 int mp_min(int i);
-void mpsum_multiple(double& x1, double& x2);
 
-void mp_sum_for_each_item(ArrOfInt&);
-void mp_sum_for_each_item(ArrOfDouble&);
-void mp_max_for_each_item(ArrOfInt&);
-void mp_max_for_each_item(ArrOfDouble&);
-void mp_min_for_each_item(ArrOfInt&);
-void mp_min_for_each_item(ArrOfDouble&);
+void assert_parallel(const Objet_U& obj);
+int is_parallel_object(const Objet_U& obj);
+int is_parallel_object(const double x);
+int is_parallel_object(const int x);
 
-int envoyer_all_to_all(const DoubleTabs& src, DoubleTabs& dest);
-int envoyer_all_to_all(const ArrsOfInt& src, ArrsOfInt& dest);
-int envoyer_all_to_all(const ArrOfInt& src, ArrOfInt& dest);
-int envoyer_all_to_all(const ArrOfDouble& src, ArrOfDouble& dest);
+int envoyer_all_to_all(const TRUST_Vector<TRUSTTab,double>& src, TRUST_Vector<TRUSTTab,double>& dest);
+int envoyer_all_to_all(const TRUST_Vector<TRUSTArray,int>& src, TRUST_Vector<TRUSTArray,int>& dest);
 int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest);
 void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest);
 
 int reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list);
-
 int comm_check_enabled();
-void assert_parallel(const double x);
-void assert_parallel(const int x);
-void assert_parallel(const Objet_U& obj);
-int is_parallel_object(const double x);
-int is_parallel_object(const int x);
-int is_parallel_object(const Objet_U& obj);
 
+/* ******************************************************************************************************** *
+ * FUNCTION TEMPLATE IMPLEMENTATIONS with SFINAE to avoid substitution failure because now IT IS AN ERROR ! *
+ * ******************************************************************************************************** */
+
+// Pour les types simples, on passe par envoyer_array_ qui n'utilise pas un buffer mais envoie directement les valeurs. Plus rapide.
+// TYPES SIMPLES => PAS Objet_U => SFINAE
+template<typename _TYPE_>
+typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, long>::value || std::is_same<_TYPE_, float>::value ||
+                         std::is_same<_TYPE_, double>::value || std::is_same<_TYPE_, long long>::value),int >::type
+inline envoyer(const _TYPE_ t, int source, int cible, int canal)
+{
+  return envoyer_array<_TYPE_>(&t, 1, source, cible, canal);
+}
+
+#ifndef INT_is_64_
+inline int envoyer(const long t, int source, int cible, int canal) { return envoyer_array<long>(&t, 1, source, cible, canal); }
 #endif
+
+template<typename _TYPE_>
+typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, long>::value || std::is_same<_TYPE_, float>::value ||
+                         std::is_same<_TYPE_, double>::value || std::is_same<_TYPE_, long long>::value),int >::type
+inline envoyer(const _TYPE_ t, int cible, int canal)
+{
+  return envoyer_array<_TYPE_>(&t, 1, Process::me(), cible, canal);
+}
+
+#ifndef INT_is_64_
+inline int envoyer(const long t, int cible, int canal) { return envoyer_array<long>(&t, 1, Process::me(), cible, canal); }
+#endif
+
+template<typename _TYPE_>
+typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, long>::value || std::is_same<_TYPE_, float>::value ||
+                         std::is_same<_TYPE_, double>::value || std::is_same<_TYPE_, long long>::value),int >::type
+inline recevoir(_TYPE_& t, int source, int cible, int canal)
+{
+  return recevoir_array<_TYPE_>(&t, 1, source, cible, canal);
+}
+
+#ifndef INT_is_64_
+inline int recevoir(long& t, int source, int cible, int canal) { return recevoir_array<long>(&t, 1, source, cible, canal); }
+#endif
+
+template<typename _TYPE_>
+typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, long>::value || std::is_same<_TYPE_, float>::value ||
+                         std::is_same<_TYPE_, double>::value || std::is_same<_TYPE_, long long>::value),int >::type
+inline recevoir(_TYPE_& t, int source, int canal)
+{
+  return recevoir_array<_TYPE_>(&t, 1, source, Process::me(), canal);
+}
+
+#ifndef INT_is_64_
+inline int recevoir(long& t, int source, int canal) { return recevoir_array<long>(&t, 1, source, Process::me(), canal); }
+#endif
+
+template<typename _TYPE_>
+typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, long>::value || std::is_same<_TYPE_, float>::value ||
+                         std::is_same<_TYPE_, double>::value || std::is_same<_TYPE_, long long>::value),int >::type
+inline envoyer_broadcast(_TYPE_& t, int source)
+{
+  return envoyer_broadcast_array<_TYPE_>(&t, 1, source);
+}
+
+#ifndef INT_is_64_
+inline int envoyer_broadcast(long& t, int source) { return envoyer_broadcast_array<long>(&t, 1, source); }
+#endif
+
+// Description: en mode comm_check_enabled(), verifie que le parametre a la meme valeur sur tous les processeurs
+template<typename _TYPE_>
+typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, double>::value),void >::type
+inline assert_parallel(const _TYPE_ x)
+{
+  if (!Comm_Group::check_enabled())
+    return;
+  if (!is_parallel_object(x))
+    {
+      Cerr << "Fatal error in template<typename _TYPE_>assert_parallel(const _TYPE_ x). See log files" << finl;
+      Process::Journal() << "Error in template<typename _TYPE_>assert_parallel(const _TYPE_ x)" << "This processor has this value: " << x << finl;
+      Process::barrier();
+      Process::exit();
+    }
+}
+
+template<typename _TYPE_>
+inline void mp_collective_op(TRUSTArray<_TYPE_>& x, Comm_Group::Collective_Op op)
+{
+  int sz = x.size_array();
+  assert_parallel<_TYPE_>(sz);
+  if (sz > 0)
+    {
+      _TYPE_ *data = x.addr();
+      _TYPE_ *tmp = new _TYPE_[sz];
+      const Comm_Group& grp = PE_Groups::current_group();
+      grp.mp_collective_op(data, tmp, sz, op);
+      memcpy(data, tmp, sz * sizeof(_TYPE_));
+      delete[] tmp;
+    }
+}
+
+template<typename _TYPE_>
+inline void mp_sum_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op(x, Comm_Group::COLL_SUM); }
+
+template<typename _TYPE_>
+inline void mp_max_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op(x, Comm_Group::COLL_MAX); }
+
+template<typename _TYPE_>
+inline void mp_min_for_each_item(TRUSTArray<_TYPE_>& x) { mp_collective_op(x, Comm_Group::COLL_MIN); }
+
+// Description: On suppose que les tableaux en entree et en sortie sont de taille nproc() . On envoie src[0] au proc 0,
+//  src[1] au proc 1, etc... la valeur recue du processeur 0 et mise dans dest[0], processeur 1 dans dest[1], etc...
+//  Il est autorise d'appeler la fonction avec le meme tableau src et dest.
+template<typename _TYPE_>
+inline int envoyer_all_to_all(const TRUSTArray<_TYPE_>& src, TRUSTArray<_TYPE_>& dest)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  assert(src.size_array() == grp.nproc());
+  assert(dest.size_array() == grp.nproc());
+  if (src.addr() == dest.addr())
+    {
+      TRUSTArray<_TYPE_> tmp;
+      tmp.resize_array(grp.nproc(), Array_base::NOCOPY_NOINIT);
+      grp.all_to_all(src.addr(), tmp.addr(), sizeof(_TYPE_));
+      dest.inject_array(tmp);
+    }
+  else
+    grp.all_to_all(src.addr(), dest.addr(), sizeof(_TYPE_));
+  return 1;
+}
+
+#endif /* communications_included */
