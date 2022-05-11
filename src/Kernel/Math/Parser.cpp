@@ -680,7 +680,8 @@ int Parser::searchCst(const std::string& v)
   while(curseur)
     {
       Constante& cst = ref_cast(Constante,curseur.valeur());
-      std::string ss(cst.le_nom());  // TODO a voir majuscules
+      std::string ss(cst.le_nom());
+      for (auto & c: ss) c = toupper(c);
       if (nv == Nom(ss.c_str())) return i;
       ++curseur;
       i++;
