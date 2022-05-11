@@ -501,9 +501,10 @@ do
          tests=$option && [ -f $option ] && tests=`cat $option 2>/dev/null`
          if [ "$project_directory" = "" ]
          then # TRUST
-            cd $TRUST_ROOT/MonoDir_mpi_opt/src || cd $TRUST_ROOT/MonoDir_mpi/src
+            OPT=`basename $exec` && OPT=${OPT#TRUST} && cd $TRUST_ROOT/MonoDir$OPT/src || exit -1
          else # Baltik
-            cd $project_directory/build/src/exec_opt || cd $project_directory/build/src/exec
+            name=`$TRUST_Awk '/^executable / && /:/ {print $3}' $project_directory/project.cfg`
+            OPT=`basename $exec` && OPT=${OPT#$name} && cd $project_directory/build/src/exec$OPT || exit -1
          fi         
          ctest -N | sed "1,$ s/[#:]//g" > $liste_ctest
          for test in $tests
