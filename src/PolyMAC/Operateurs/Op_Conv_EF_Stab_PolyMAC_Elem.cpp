@@ -44,29 +44,19 @@
 #include <cfloat>
 #include <vector>
 
-Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_Elem, "Op_Conv_EF_Stab_PolyMAC_Elem|Op_Conv_EF_Stab_PolyMAC_V2_Elem", Op_Conv_PolyMAC_base ) ;
-Implemente_instanciable( Op_Conv_Amont_PolyMAC_Elem, "Op_Conv_Amont_PolyMAC_Elem|Op_Conv_Amont_PolyMAC_V2_Elem", Op_Conv_EF_Stab_PolyMAC_Elem ) ;
-Implemente_instanciable( Op_Conv_Centre_PolyMAC_Elem, "Op_Conv_Centre_PolyMAC_Elem|Op_Conv_Centre_PolyMAC_V2_Elem", Op_Conv_EF_Stab_PolyMAC_Elem ) ;
+Implemente_instanciable(Op_Conv_EF_Stab_PolyMAC_Elem, "Op_Conv_EF_Stab_PolyMAC_Elem|Op_Conv_EF_Stab_PolyMAC_V2_Elem", Op_Conv_PolyMAC_base);
+Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_Elem, "Op_Conv_Amont_PolyMAC_Elem|Op_Conv_Amont_PolyMAC_V2_Elem", Op_Conv_EF_Stab_PolyMAC_Elem);
+Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyMAC_Elem, "Op_Conv_Centre_PolyMAC_Elem|Op_Conv_Centre_PolyMAC_V2_Elem", Op_Conv_EF_Stab_PolyMAC_Elem);
 
+Op_Conv_Amont_PolyMAC_Elem::Op_Conv_Amont_PolyMAC_Elem() { alpha = 1.0; }
+Op_Conv_Centre_PolyMAC_Elem::Op_Conv_Centre_PolyMAC_Elem() { alpha = 0.0; }
 
 // XD Op_Conv_EF_Stab_PolyMAC_Elem interprete Op_Conv_EF_Stab_PolyMAC_Elem 1 Class Op_Conv_EF_Stab_PolyMAC_Elem
-Sortie& Op_Conv_EF_Stab_PolyMAC_Elem::printOn( Sortie& os ) const
-{
-  Op_Conv_PolyMAC_base::printOn( os );
-  return os;
-}
-
-Sortie& Op_Conv_Amont_PolyMAC_Elem::printOn( Sortie& os ) const
-{
-  Op_Conv_PolyMAC_base::printOn( os );
-  return os;
-}
-
-Sortie& Op_Conv_Centre_PolyMAC_Elem::printOn( Sortie& os ) const
-{
-  Op_Conv_PolyMAC_base::printOn( os );
-  return os;
-}
+Sortie& Op_Conv_EF_Stab_PolyMAC_Elem::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_Amont_PolyMAC_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyMAC_Elem::printOn(os); }
+Sortie& Op_Conv_Centre_PolyMAC_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyMAC_Elem::printOn(os); }
+Entree& Op_Conv_Amont_PolyMAC_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyMAC_Elem::readOn(is); }
+Entree& Op_Conv_Centre_PolyMAC_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyMAC_Elem::readOn(is); }
 
 Entree& Op_Conv_EF_Stab_PolyMAC_Elem::readOn( Entree& is )
 {
@@ -95,19 +85,6 @@ Entree& Op_Conv_EF_Stab_PolyMAC_Elem::readOn( Entree& is )
   return is;
 }
 
-Entree& Op_Conv_Amont_PolyMAC_Elem::readOn( Entree& is )
-{
-  alpha = 1;
-  return Op_Conv_EF_Stab_PolyMAC_Elem::readOn( is );
-}
-
-Entree& Op_Conv_Centre_PolyMAC_Elem::readOn( Entree& is )
-{
-
-  alpha = 0;
-  return Op_Conv_EF_Stab_PolyMAC_Elem::readOn( is );
-}
-
 void Op_Conv_EF_Stab_PolyMAC_Elem::preparer_calcul()
 {
   Op_Conv_PolyMAC_base::preparer_calcul();
@@ -115,7 +92,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::preparer_calcul()
   /* au cas ou... */
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
   equation().init_champ_convecte();
-  flux_bords_.resize(zone.premiere_face_int(), equation().inconnue().valeurs().line_size());
+  flux_bords_.resize(zone.premiere_face_int(), (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs()).line_size());
 
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
     Cerr << "Op_Conv_EF_Stab_PolyMAC_Elem : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
@@ -177,7 +154,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
-  const Champ_Inc_base& cc = equation().champ_convecte();
+  const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
   const std::string& nom_cc = cc.le_nom().getString();
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = semi_impl.count(nom_cc) ? semi_impl.at(nom_cc) : cc.valeurs(), bcc = cc.valeur_aux_bords();
   int i, j, e, eb, f, n, m, N = vcc.line_size(), Mv = vit.line_size(), M;
@@ -238,9 +215,9 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
   Op_Conv_PolyMAC_base::mettre_a_jour(temps);
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
-  const Champ_Inc_base& cc = equation().champ_convecte();
+  const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().champ_convecte();
   const DoubleVect& pf = zone.porosite_face(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
-  const DoubleTab& vit = vitesse_->valeurs(), &vcc = equation().champ_convecte().valeurs(), bcc = cc.valeur_aux_bords(), &alp = equation().inconnue().valeurs(), &xv = zone.xv(), &xp = zone.xp();
+  const DoubleTab& vit = vitesse_->valeurs(), &vcc = cc.valeurs(), bcc = cc.valeur_aux_bords(), &xv = zone.xv(), &xp = zone.xp();
   DoubleTab balp;
   if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
 
@@ -267,6 +244,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
 
   if (vd_phases_.size()) for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (vd_phases_[n].non_nul()) /* mise a jour des champs de vitesse debitante */
         {
+          const DoubleTab& alp = equation().inconnue().valeurs();
           Champ_Face_PolyMAC& c_ph = ref_cast(Champ_Face_PolyMAC, vd_phases_[n].valeur());
           DoubleTab& v_ph = c_ph.valeurs();
           /* on remplit la partie aux faces, puis on demande au champ d'interpoler aux elements */
