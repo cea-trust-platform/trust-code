@@ -272,14 +272,14 @@ class Visu:
                 # ficPlot.write('ok=DrawPlots()\n')
                 # ficPlot.write('if (ok==0): 1/0\n')
                 if (plot[0]=="blackvector"):
-                    ficPlot.write('vb=VectorAttributes()\nvb.SetColorByMag(0)\nvb.SetUseLegend(0)\n')
+                    ficPlot.write('vb=VectorAttributes()\ntry:\n  SetColorByMagnitude=vb.SetColorByMagnitude\nexcept:\n  SetColorByMagnitude=vb.SetColorByMag\nSetColorByMagnitude(0)\nvb.SetUseLegend(0)\n')
                     if (len(plot)==2+decal):
                         ficPlot.write('vb.SetScale(%s)\n'%plot[decal+1])
                         pass
                     ficPlot.write('SetPlotOptions(vb)\n')
                     pass
                 if (plot[0]=="blackvector_with_nb"):
-                    ficPlot.write('vb=VectorAttributes()\nvb.SetColorByMag(0)\nvb.SetUseLegend(0)\n')
+                    ficPlot.write('vb=VectorAttributes()\ntry:\n  SetColorByMagnitude=vb.SetColorByMagnitude\nexcept:\n  SetColorByMagnitude=vb.SetColorByMag\nSetColorByMagnitude(0)\nvb.SetUseLegend(0)\n')
                     ficPlot.write('vb.SetUseStride(0)\nvb.SetNVectors(%s)\n'%plot[decal+1])
                     if (len(plot)==3+decal):
                         ficPlot.write('vb.SetScale(%s)\n'%plot[decal+2])
