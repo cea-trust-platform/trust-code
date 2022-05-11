@@ -1,7 +1,5 @@
-# PARALLEL OK #
-system "rm -rf lata; mkdir -p lata"
+# PARALLEL OK 4 #
 dimension 2
-
 Domaine dom
 
 # BEGIN MESH #
@@ -82,7 +80,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-    nb_pas_dt_max 0
+    nb_pas_dt_max 1
     solveur ice
     {
         criteres_convergence { alpha 1e-5 pression 1e8 vitesse 1e8 temperature 1e8 }
@@ -179,16 +177,16 @@ Read pb
     {
         probes
 	{
-	     Nord        distance_paroi  periode 1.e8 segment 40  -.975  1.5  	.975   1.5 
-	     Ouest       distance_paroi  periode 1.e8 segment 5    -1.9   0.  	-1.1   0.  
-	     Sud1	 distance_paroi   periode 1.e8 segment 5      0. -1.9  	 0.   -1.1 
-	     Sud2	 distance_paroi   periode 1.e8 segment 100  .025  -1.9	4.975 -1.9 
-	     Est	 distance_paroi   periode 1.e8 segment 60  2.025 1.975	4.975 -.975
+	     Nord        distance_paroi_globale  periode 1.e8 segment 40  -.975  1.5  	.975   1.5 
+	     Ouest       distance_paroi_globale  periode 1.e8 segment 5    -1.9   0.  	-1.1   0.  
+	     Sud1	 distance_paroi_globale   periode 1.e8 segment 5      0. -1.9  	 0.   -1.1 
+	     Sud2	 distance_paroi_globale   periode 1.e8 segment 100  .025  -1.9	4.975 -1.9 
+	     Est	 distance_paroi_globale   periode 1.e8 segment 60  2.025 1.975	4.975 -.975
         }
 	format lata
-        fields dt_post 1e-8
+        fields dt_post 1.
         {
-	    distance_paroi elem
+	    distance_paroi_globale elem
         }
     }
 }

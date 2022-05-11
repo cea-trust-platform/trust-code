@@ -47,7 +47,7 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-    nb_pas_dt_max 1
+	nb_pas_dt_max 1
     solveur ice
     {
         criteres_convergence { alpha 1e-5 pression 1e8 vitesse 1e8 temperature 1e8 }
@@ -132,7 +132,7 @@ Read pb
 		sondes			{
 					dist	distance_paroi_globale  periode 1.e8 segment 20  0.25  0.5  9.75   .5  
 					}
-		format lata
+		format lml
 		champs binaire dt_post 1e6
 					{
 					    distance_paroi_globale elem
