@@ -20,7 +20,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-
 #ifndef Pb_Multiphase_included
 #define Pb_Multiphase_included
 
@@ -51,11 +50,10 @@
 // .SECTION voir aussi
 //     Pb_Fluide_base QDM_Multiphase Masse_Multiphase Energie_Multiphase
 //////////////////////////////////////////////////////////////////////////////
+
 class Pb_Multiphase : public Pb_Fluide_base
 {
-
   Declare_instanciable(Pb_Multiphase);
-
 public:
   void discretiser(const Discretisation_base&) override;
   int nombre_d_equations() const override;
@@ -104,9 +102,6 @@ protected:
 class Pb_HEM : public Pb_Multiphase
 {
   Declare_instanciable(Pb_HEM);
-
-public:
-
 };
 
-#endif
+#endif /* Pb_Multiphase_included */

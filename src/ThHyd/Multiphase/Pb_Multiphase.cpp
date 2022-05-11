@@ -32,56 +32,18 @@
 #include <Loi_Fermeture_base.h>
 
 Implemente_instanciable(Pb_Multiphase, "Pb_Multiphase", Pb_Fluide_base);
-Implemente_instanciable(Pb_HEM, "Pb_HEM", Pb_Multiphase);
-
 // XD Pb_Multiphase Pb_base Pb_Multiphase -1 A problem that allows the resolution of N-phases with 3*N equations
 // XD attr correlations bloc_lecture correlations 1 List of correlations used in specific source terms (i.e. interfacial flux,  interfacial friction, ...)
 // XD attr QDM_Multiphase QDM_Multiphase QDM_Multiphase 0 Momentum conservation equation for a multi-phase problem where the unknown is the velocity
 // XD attr Masse_Multiphase Masse_Multiphase Masse_Multiphase 0 Mass consevation equation for a multi-phase problem where the unknown is the alpha (void fraction)
 // XD attr Energie_Multiphase Energie_Multiphase Energie_Multiphase 0 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature
-// XD Pb_HEM Pb_base Pb_Multiphase 0 A problem that allows the resolution of 2-phases mechanicaly and thermally coupled with 3 equations
 
+Implemente_instanciable(Pb_HEM, "Pb_HEM", Pb_Multiphase);
+// XD Pb_HEM Pb_Multiphase Pb_HEM -1 A problem that allows the resolution of 2-phases mechanicaly and thermally coupled with 3 equations
 
-// Description:
-//    Simple appel a: Pb_Fluide_base::printOn(Sortie&)
-//    Ecrit le probleme sur un flot de sortie.
-// Precondition:
-// Parametre: Sortie& os
-//    Signification: un flot de sortie
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Sortie&
-//    Signification: le flot de sortie modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
-Sortie& Pb_Multiphase::printOn(Sortie& os) const
-{
-  return Pb_Fluide_base::printOn(os);
-}
+Sortie& Pb_Multiphase::printOn(Sortie& os) const { return Pb_Fluide_base::printOn(os); }
 
-
-// Description:
-//    Simple appel a: Pb_Fluide_base::readOn(Entree&)
-//    Lit le probleme a partir d'un flot d'entree.
-// Precondition:
-// Parametre: Entree& is
-//    Signification: un flot d'entree
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: Entree&
-//    Signification: le flot d'entree modifie
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-Entree& Pb_Multiphase::readOn(Entree& is)
-{
-  return Pb_Fluide_base::readOn(is);
-}
+Entree& Pb_Multiphase::readOn(Entree& is) { return Pb_Fluide_base::readOn(is); }
 
 Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
 {
@@ -389,12 +351,6 @@ void Pb_Multiphase::completer()
 }
 
 // Pb_HEM stuffs
-Sortie& Pb_HEM::printOn(Sortie& os) const
-{
-  return Pb_Multiphase::printOn(os);
-}
+Sortie& Pb_HEM::printOn(Sortie& os) const { return Pb_Multiphase::printOn(os); }
 
-Entree& Pb_HEM::readOn(Entree& is)
-{
-  return Pb_Multiphase::readOn(is);
-}
+Entree& Pb_HEM::readOn(Entree& is) { return Pb_Multiphase::readOn(is); }
