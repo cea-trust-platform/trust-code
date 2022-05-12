@@ -35,7 +35,8 @@
 // On ne passe pas par un buffer Entree / Sortie mais on envoie directement le tableau sous sa forme binaire.
 // Un seul message envoye, sauf en mode check() ou on envoie aussi la taille pour verifier.
 template<typename _TYPE_>
-inline int envoyer_array(const _TYPE_ *objet, int n, int source, int cible, int canal)
+typename std::enable_if<std::is_arithmetic<_TYPE_>::value,int >::type
+inline envoyer_array(const _TYPE_ *objet, int n, int source, int cible, int canal)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   const int moi = grp.rank();
@@ -80,7 +81,8 @@ inline int envoyer_array(const long *t, int n, int source, int cible, int canal)
 #endif
 
 template<typename _TYPE_>
-inline int recevoir_array(const _TYPE_ *objet, int n, int source, int cible, int canal)
+typename std::enable_if<std::is_arithmetic<_TYPE_>::value,int >::type
+inline recevoir_array(const _TYPE_ *objet, int n, int source, int cible, int canal)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   const int moi = grp.rank();
@@ -115,7 +117,8 @@ inline int recevoir_array(const long *t, int n, int source, int cible, int canal
 #endif
 
 template<typename _TYPE_>
-inline int envoyer_broadcast_array(_TYPE_ *objet, int n, int source)
+typename std::enable_if<std::is_arithmetic<_TYPE_>::value,int >::type
+inline envoyer_broadcast_array(_TYPE_ *objet, int n, int source)
 {
   const Comm_Group& grp = PE_Groups::current_group();
   if (grp.check_enabled())

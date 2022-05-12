@@ -25,6 +25,7 @@
 
 #include <communications_array.h>
 #include <TRUSTTabs_forward.h>
+#include <type_traits>
 #include <Vect.h>
 #include <vector>
 
@@ -58,10 +59,9 @@ int comm_check_enabled();
  * ******************************************************************************************************** */
 
 // Pour les types simples, on passe par envoyer_array_ qui n'utilise pas un buffer mais envoie directement les valeurs. Plus rapide.
-// TYPES SIMPLES => PAS Objet_U => SFINAE
+// TYPES SIMPLES (std::is_arithmetic) => PAS Objet_U => SFINAE
 template<typename _TYPE_>
-typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, long>::value || std::is_same<_TYPE_, float>::value ||
-                         std::is_same<_TYPE_, double>::value || std::is_same<_TYPE_, long long>::value),int >::type
+typename std::enable_if<std::is_arithmetic<_TYPE_>::value,int >::type
 inline envoyer(const _TYPE_ t, int source, int cible, int canal)
 {
   return envoyer_array<_TYPE_>(&t, 1, source, cible, canal);
@@ -72,8 +72,7 @@ inline int envoyer(const long t, int source, int cible, int canal) { return envo
 #endif
 
 template<typename _TYPE_>
-typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, long>::value || std::is_same<_TYPE_, float>::value ||
-                         std::is_same<_TYPE_, double>::value || std::is_same<_TYPE_, long long>::value),int >::type
+typename std::enable_if<std::is_arithmetic<_TYPE_>::value,int >::type
 inline envoyer(const _TYPE_ t, int cible, int canal)
 {
   return envoyer_array<_TYPE_>(&t, 1, Process::me(), cible, canal);
@@ -84,8 +83,7 @@ inline int envoyer(const long t, int cible, int canal) { return envoyer_array<lo
 #endif
 
 template<typename _TYPE_>
-typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, long>::value || std::is_same<_TYPE_, float>::value ||
-                         std::is_same<_TYPE_, double>::value || std::is_same<_TYPE_, long long>::value),int >::type
+typename std::enable_if<std::is_arithmetic<_TYPE_>::value,int >::type
 inline recevoir(_TYPE_& t, int source, int cible, int canal)
 {
   return recevoir_array<_TYPE_>(&t, 1, source, cible, canal);
@@ -96,8 +94,7 @@ inline int recevoir(long& t, int source, int cible, int canal) { return recevoir
 #endif
 
 template<typename _TYPE_>
-typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, long>::value || std::is_same<_TYPE_, float>::value ||
-                         std::is_same<_TYPE_, double>::value || std::is_same<_TYPE_, long long>::value),int >::type
+typename std::enable_if<std::is_arithmetic<_TYPE_>::value,int >::type
 inline recevoir(_TYPE_& t, int source, int canal)
 {
   return recevoir_array<_TYPE_>(&t, 1, source, Process::me(), canal);
@@ -108,8 +105,7 @@ inline int recevoir(long& t, int source, int canal) { return recevoir_array<long
 #endif
 
 template<typename _TYPE_>
-typename std::enable_if<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, long>::value || std::is_same<_TYPE_, float>::value ||
-                         std::is_same<_TYPE_, double>::value || std::is_same<_TYPE_, long long>::value),int >::type
+typename std::enable_if<std::is_arithmetic<_TYPE_>::value,int >::type
 inline envoyer_broadcast(_TYPE_& t, int source)
 {
   return envoyer_broadcast_array<_TYPE_>(&t, 1, source);
