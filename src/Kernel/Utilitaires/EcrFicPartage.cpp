@@ -22,7 +22,6 @@
 
 #include <EcrFicPartage.h>
 #include <Statistiques.h>
-#include <OBuffer.h>
 #include <PE_Groups.h>
 #include <Comm_Group.h>
 #include <communications.h>
@@ -48,7 +47,6 @@ EcrFicPartage::EcrFicPartage() : SFichier()
 }
 
 // Description:
-//    Constructeur
 //    Ouvre le fichier avec les parametres mode et prot donnes
 //    Ces parametres sont les parametres de la methode open standard
 EcrFicPartage::EcrFicPartage(const char* name,IOS_OPEN_MODE mode)
@@ -103,14 +101,10 @@ int EcrFicPartage::ouvrir(const char* name,IOS_OPEN_MODE mode)
 //     Tous les processeurs doivent executer ceci simultanement !
 EcrFicPartage::~EcrFicPartage()
 {
-
   close();
   delete obuffer_ptr_;
   obuffer_ptr_ = 0;
-
-
 }
-
 
 void EcrFicPartage::close()
 {
@@ -146,18 +140,8 @@ void EcrFicPartage::close()
 //    Permet au processus appelant de bloquer en attente de la ressource commune a tous les processus qui est le fichier partage.
 //    Si le processus appelant cette methode n'est pas le premier, il atend du processus precedent l'endroit ou il doit se positionner dans le fichier pour effectuer sa prochaine ecriture.
 //    Cette methode est systematiquement appelee avant toute nouvelle ecriture dans le fichier.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
 // Retour: Sortie&
 //    Signification: *this
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Sortie& EcrFicPartage::lockfile()
 {
   return *this;
@@ -169,23 +153,12 @@ Sortie& EcrFicPartage::lockfile()
 //    Le processus appelant, sauf si c'est le premier processus du groupe, envoie
 //    sa position courante au precessus suivant dans le groupe. Cette methode est
 //    a appeler apres chaque ecriture dans le fichier.
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
 // Retour: Sortie&
 //    Signification: *this
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
 Sortie& EcrFicPartage::unlockfile()
 {
   return *this;
 }
-
 
 // Description:
 //  Provoque l'ecriture sur disque des donnees accumulees sur les differents processeurs
@@ -313,98 +286,36 @@ Sortie& EcrFicPartage::syncfile()
   return *this;
 }
 
-void EcrFicPartage::precision(int i)
-{
-  get_obuffer().precision(i);
-}
+void EcrFicPartage::precision(int i) { get_obuffer().precision(i); }
 
-int EcrFicPartage::get_precision()
-{
-  return get_obuffer().get_precision();
-}
-
-Sortie& EcrFicPartage::operator <<(const Separateur& s)
-{
-  get_obuffer() << s;
-  return *this;
-}
-
-Sortie& EcrFicPartage::operator <<(const Objet_U& ob)
-{
-  get_obuffer() << ob;
-  return *this;
-}
-
-Sortie& EcrFicPartage::operator <<(const int ob)
-{
-  get_obuffer() << ob;
-  return *this;
-}
-
-Sortie& EcrFicPartage::operator <<(const unsigned ob)
-{
-  get_obuffer() << ob;
-  return *this;
-}
-
-#ifndef INT_is_64_
-Sortie& EcrFicPartage::operator <<(const long ob)
-{
-  get_obuffer() << ob;
-  return *this;
-}
-#endif
-Sortie& EcrFicPartage::operator <<(const float ob)
-{
-  get_obuffer() << ob;
-  return *this;
-}
-Sortie& EcrFicPartage::operator <<(const double ob)
-{
-  get_obuffer() << ob;
-  return *this;
-}
-
-
-int EcrFicPartage::put(const unsigned* ob, int n, int pas)
-{
-  get_obuffer().put(ob,n,pas);
-  return 1;
-}
-
-#ifndef INT_is_64_
-int EcrFicPartage::put(const int* ob, int n, int pas)
-{
-  get_obuffer().put(ob,n,pas);
-  return 1;
-}
-#endif
-int EcrFicPartage::put(const long* ob, int n, int pas)
-{
-  get_obuffer().put(ob,n,pas);
-  return 1;
-}
-int EcrFicPartage::put(const float* ob, int n, int pas)
-{
-  get_obuffer().put(ob,n,pas);
-  return 1;
-}
-int EcrFicPartage::put(const double* ob, int n, int pas)
-{
-  get_obuffer().put(ob,n,pas);
-  return 1;
-}
+int EcrFicPartage::get_precision() { return get_obuffer().get_precision(); }
 
 Sortie& EcrFicPartage::operator <<(const char* ob)
 {
   get_obuffer() << ob;
   return *this;
 }
-Sortie& EcrFicPartage::operator <<(const std::string& str)
-{
-  get_obuffer() << str;
-  return *this;
-}
+
+Sortie& EcrFicPartage::operator <<(const std::string& str) { return operator_template<std::string>(str);}
+Sortie& EcrFicPartage::operator <<(const Separateur& s) { return operator_template<Separateur>(s);}
+Sortie& EcrFicPartage::operator <<(const Objet_U& ob) { return operator_template<Objet_U>(ob);}
+Sortie& EcrFicPartage::operator <<(const int ob) { return operator_template<int>(ob);}
+Sortie& EcrFicPartage::operator <<(const unsigned ob) { return operator_template<unsigned>(ob);}
+Sortie& EcrFicPartage::operator <<(const float ob) { return operator_template<float>(ob);}
+Sortie& EcrFicPartage::operator <<(const double ob) { return operator_template<double>(ob);}
+
+#ifndef INT_is_64_
+Sortie& EcrFicPartage::operator <<(const long ob) { return operator_template<long>(ob);}
+#endif
+
+int EcrFicPartage::put(const unsigned* ob, int n, int pas) { return put_template<unsigned>(ob,n,pas); }
+int EcrFicPartage::put(const int* ob, int n, int pas) { return put_template<int>(ob,n,pas); }
+int EcrFicPartage::put(const float* ob, int n, int pas) { return put_template<float>(ob,n,pas); }
+int EcrFicPartage::put(const double* ob, int n, int pas) { return put_template<double>(ob,n,pas); }
+
+#ifndef INT_is_64_
+int EcrFicPartage::put(const long* ob, int n, int pas) { return put_template<long>(ob,n,pas); }
+#endif
 
 int EcrFicPartage::set_bin(int bin)
 {
@@ -414,7 +325,4 @@ int EcrFicPartage::set_bin(int bin)
   return bin_;
 }
 
-Sortie& EcrFicPartage::flush()
-{
-  return (*this);
-}
+Sortie& EcrFicPartage::flush() { return (*this); }
