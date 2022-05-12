@@ -57,6 +57,12 @@ Entree& Diametre_hyd_champ::interpreter(Entree& is)
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
   Champ le_champ;
   is>>le_champ;
+  if (le_champ.nb_comp()!=1)
+    {
+      Cerr << "Diametre_hyd_champ field should be scalar !" << finl;
+      Cerr << "We detected nb_comp=" << le_champ.nb_comp() << finl;
+      Process::exit();
+    }
 
   // On passe par la zone_VF
   Zone_VF& zvf=ref_cast(Zone_VF, pb.equation(0).zone_dis().valeur());
