@@ -25,40 +25,37 @@
 
 #include <Sortie.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
 // .DESCRIPTION
 //   Classe derivee de Sortie qui ne sort les donnees nulle part (c'est une poubelle)
-//   Classe utilisee dans le Journal() si celui-ci est desactive.
-//   Le pointeur ostream_ est nul.
-//////////////////////////////////////////////////////////////////////////////
-
+//   Classe utilisee dans le Journal() si celui-ci est desactive. Le pointeur ostream_ est nul.
 class Sortie_Nulle : public Sortie
 {
 public:
-  Sortie_Nulle();
-  ~Sortie_Nulle() override;
-  Sortie& flush() override;
-  void setf(IOS_FORMAT) override;
-  void precision(int) override;
+  Sortie_Nulle() { }
+  ~Sortie_Nulle() override { }
+  Sortie& flush() override { return *this; }
+  void setf(IOS_FORMAT) override { }
+  void precision(int) override { }
 
-  Sortie& operator <<(const Separateur& ) override;
-  Sortie& operator <<(const Objet_U& ob) override;
-  Sortie& operator <<(const int ob) override;
-  Sortie& operator <<(const unsigned ob) override;
+  Sortie& operator <<(const Separateur& ob) override { return *this; }
+  Sortie& operator <<(const Objet_U& ob) override { return *this; }
+  Sortie& operator <<(const std::string& str) override { return *this; }
+  Sortie& operator <<(const int ob) override { return *this; }
+  Sortie& operator <<(const unsigned ob) override { return *this; };
+  Sortie& operator <<(const float ob) override { return *this; }
+  Sortie& operator <<(const double ob) override { return *this; }
+  Sortie& operator <<(const char* ob) override { return *this; }
 #ifndef INT_is_64_
-  Sortie& operator <<(const long ob) override;
+  Sortie& operator <<(const long ob) override { return *this; }
 #endif
-  Sortie& operator <<(const float ob) override;
-  Sortie& operator <<(const double ob) override;
-  Sortie& operator <<(const char* ob) override;
-  Sortie& operator <<(const std::string& str) override;
-  int put(const unsigned* ob, int n, int pas=1) override;
-  int put(const int* ob, int n, int pas=1) override;
+
+  int put(const unsigned* ob, int n, int pas=1) override { return 1; }
+  int put(const int* ob, int n, int pas=1) override { return 1; }
+  int put(const float* ob, int n, int pas=1) override { return 1; }
+  int put(const double* ob, int n, int pas=1) override { return 1; }
 #ifndef INT_is_64_
-  int put(const long* ob, int n, int pas=1) override;
+  int put(const long* ob, int n, int pas=1) override { return 1; }
 #endif
-  int put(const float* ob, int n, int pas=1) override;
-  int put(const double* ob, int n, int pas=1) override;
 };
-#endif
+
+#endif /* Sortie_Nulle_included */
