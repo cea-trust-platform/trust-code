@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.8.5_beta : Changes since version 1.8.4 :
 -------------------------------------------------------------
+11/05/22 (TRUST) String2 class has been removed from sources. It should be replaced by an uppercase std::string
 09/05/22 (TRUST) Add -ctest option to trust wrapper to parallel check tests with ctest
 03/05/22 (TRUST) Add three generic class templates (TRUSTChamp_Don_generique,TRUSTChamp_Morceaux_generique & TRUSTChamp_Divers_generique) + SFINAE methods to factorize the implementation of 12 classes that derive from Champ_Don_base.
 13/04/22 (TRUST) VDF operators/sources follow the Interface_Bloc architecture

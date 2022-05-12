@@ -372,7 +372,7 @@ void Postraitement::set_param(Param& param)
   param.ajouter_non_std("Definition_champs_fichier|Definition_champs_file",(this));// XD_ADD_P Definition_champs_fichier  Definition_champs read from file.
   param.ajouter_non_std("Sondes|Probes",(this)); // XD_ADD_P sondes Probe.
   param.ajouter_non_std("Sondes_fichier|Probes_file",(this)); // XD_ADD_P sondes_fichier Probe read in a file.
-  param.ajouter("DeprecatedKeepDuplicatedProbes",&DeprecatedKeepDuplicatedProbes); // XD_ADD_P flag Flag to not remove duplicated probes in .son files
+  param.ajouter("DeprecatedKeepDuplicatedProbes",&DeprecatedKeepDuplicatedProbes); // XD_ADD_P entier Flag to not remove duplicated probes in .son files (1: keep duplicate probes, 0: remove duplicate probes)
   param.ajouter_non_std("champs|fields",(this)); // XD_ADD_P champs_posts Field\'s write mode.
   param.ajouter_non_std("Statistiques",(this));  // XD_ADD_P stats_posts Statistics between two points fixed : start of integration time and end of integration time.
   param.ajouter_non_std("Sondes_Int",(this));
