@@ -1,6 +1,9 @@
 -------------------------------------------------------------
 Developer notes version 1.8.5_beta : Changes since version 1.8.4 :
 -------------------------------------------------------------
+13/05/22 (TRUST) NO MORE .P files in TRUST sources. All is implemented and factorized via "Real C++ templates"
+13/05/22 (TRUST) Template implementation for TRUSTTab_parts and ConstTRUSTTab_parts, the previous Int/DoubleTab_parts and ConstInt/DoubleTab_parts
+13/05/22 (TRUST) Add the class template TRUSTTab_Vector which replaces the VECT macro and can be used for TRUSTArray, TRUSTVect, TRUSTTab and TRUSTTrav template classes
 11/05/22 (TRUST) String2 class has been removed from sources. It should be replaced by an uppercase std::string
 09/05/22 (TRUST) Add -ctest option to trust wrapper to parallel check tests with ctest
 03/05/22 (TRUST) Add three generic class templates (TRUSTChamp_Don_generique,TRUSTChamp_Morceaux_generique & TRUSTChamp_Divers_generique) + SFINAE methods to factorize the implementation of 12 classes that derive from Champ_Don_base.
