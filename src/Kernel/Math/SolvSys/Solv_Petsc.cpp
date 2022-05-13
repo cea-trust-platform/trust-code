@@ -252,6 +252,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               else
                 {
                   if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=cli; // Activate direct solveur if using -ksp_preonly ...
+                  if (motlu == "-ksp_max_it") convergence_with_nb_it_max_ = 1; //pour avoir le meme comportement que l'option nb_it_max
                   add_option(motlu.suffix("-"), valeur, 1);
                   is >> motlu;
                 }
@@ -1674,9 +1675,10 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         }
       // Construit ou update la matrice
       if (nouveau_stencil_)
-        Create_objects(matrice_morse);
+        Create_objects(matrice_morse, secmem.line_size());
       else
         Update_matrix(MatricePetsc_, matrice_morse);
+      /* reglage de BlockSize avec le line_size() du second membre */
       if (limpr() == 1)
         {
           Cout << "Order of the PETSc matrix : " << nb_rows_tot_ << " (~ "
@@ -2061,7 +2063,7 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
     }
 }
 // Creation des objets PETSc
-void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
+void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
 {
   // Remplissage d'une matrice de preconditionnement non symetrique
   Mat MatricePrecondionnementPetsc;
@@ -2079,7 +2081,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
       if (MatricePetsc_!=NULL) MatDestroy(&MatricePetsc_);
       Create_MatricePetsc(MatricePetsc_, mataij_, mat);
     }
-
+  MatSetBlockSize(MatricePetsc_, blocksize);
   /* Seems petsc_decide=1 have no interest. On PETSC_GCP with n=2 (20000cell/n), the ratio is 99%-101% and petsc_decide is slower
   Even with n=9, ratio is 97%-103%, and petsc_decide is slower by 10%. Better load balance but increased MPI cost and lower convergence...
   Hope it will be better with GPU

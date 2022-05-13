@@ -103,7 +103,7 @@ protected :
   void Create_vectors(const DoubleVect&); // Construit les vecteurs Petsc x et b
   void Create_DM(const DoubleVect& ); // Construit un DM (Distributed Mesh)
   void Create_MatricePetsc(Mat&, int, const Matrice_Morse&); // Construit et remplit une matrice Petsc depuis la matrice_morse
-  virtual void Create_objects(const Matrice_Morse&); // Construit differents objets PETSC dont matrice
+  virtual void Create_objects(const Matrice_Morse&, int); // Construit differents objets PETSC dont matrice
   virtual void Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse); // Fill the (previously allocated) PETSc matrix with mat_morse coefficients
   virtual int solve(ArrOfDouble& residual); // Solve Ax=b and return residual
   virtual void finalize() {};
