@@ -55,7 +55,7 @@ public:
     const std::string& nom_inco = equation().inconnue().le_nom().getString();
     for (auto &&i_m : mats)
       {
-        std::string prefix = nom_inco + "_" ;
+        std::string prefix = nom_inco + "/" ;
         // pour la thermique monolithique: on traite uniquement notre inconnue
         if(Nom(i_m.first).debute_par(prefix)) continue;
         Matrice_Morse mat;

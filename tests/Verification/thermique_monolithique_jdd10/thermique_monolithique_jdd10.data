@@ -90,7 +90,7 @@ Read sch
     dt_impr 1e-30
     facsec 1e8
     seuil_statio 1.e-20
-    resolution_monolithique { _hydraulique thermique }
+    resolution_monolithique { -hydraulique thermique }
     solveur implicite { solveur petsc cholesky { } seuil_convergence_implicite 1e30 }
 }
 

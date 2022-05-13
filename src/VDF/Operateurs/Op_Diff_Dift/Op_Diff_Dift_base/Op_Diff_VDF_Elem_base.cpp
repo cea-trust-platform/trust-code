@@ -164,7 +164,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
     {
       N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
 
-      std::string nom_mat = i ? nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
+      std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
       if(!mat[i]) continue;
       Matrice_Morse mat2;
@@ -258,7 +258,7 @@ void Op_Diff_VDF_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
 
   for (int i = 1; i < n_ext; i++)
     {
-      std::string nom_mat = nom_inco + "_" + op_ext[i]->equation().probleme().le_nom().getString();
+      std::string nom_mat = nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString();
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
       if(mat[i])
         {

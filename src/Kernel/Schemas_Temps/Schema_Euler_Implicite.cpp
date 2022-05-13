@@ -369,7 +369,8 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
               std::set<std::string> doms_app, doms_mono;
               for(i = 0; i < pbc.nb_problemes(); i++) for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
                   doms_app.insert(ref_cast(Probleme_base,pbc.probleme(i)).equation(j).domaine_application().getString());
-              for (auto && s : resolution_monolithique_) for (auto &&d : s) doms_mono.insert((Nom(d)).getSuffix("/").getString());
+              for (auto && s : resolution_monolithique_) for (auto &&d : s) doms_mono.insert((Nom(d)).getSuffix("-").getString());
+
               if (doms_mono != doms_app)
                 {
                   Cerr << "Error : all the application domains should be given in the resolution_monolitique block to impose the order of resolution" << finl;
@@ -388,7 +389,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                       {
                         const Probleme_base& pb = ref_cast(Probleme_base,pbc.probleme(i));
                         const Motcle type = pb.equation(j).domaine_application();
-                        if ((s.count(type.getString()) || s.count((Nom("/") + type).getString())) && !pb.equation(j).equation_non_resolue()) eqs.add(pb.equation(j));
+                        if ((s.count(type.getString()) || s.count((Nom("-") + type).getString())) && !pb.equation(j).equation_non_resolue()) eqs.add(pb.equation(j));
                       }
                   if (eqs.size() == 0) continue; // equations non resolues
 
@@ -396,7 +397,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                   for (auto &&d : s) Cout << Nom(" ") + d;
                   Cout << " }" << finl;
                   Cout << "-------------------------" << finl;
-                  const bool mono = !(s.size() == 1 && Nom((*s.begin())).debute_par("/"));
+                  const bool mono = !(s.size() == 1 && Nom((*s.begin())).debute_par("-"));
                   if (mono)
                     {
                       Cout << "Resolution monolithique! the equations {";
