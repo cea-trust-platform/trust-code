@@ -58,8 +58,8 @@ void Op_Diff_PolyMAC_P0_Face::completer()
 {
   Op_Diff_PolyMAC_P0_base::completer();
   const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
-  const Equation_base& eq = equation();
-  const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, eq.inconnue().valeur());
+  Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
+  if (le_champ_inco.non_nul()) ch.init_auxiliary_variables(); // cas flica5 : ce n'est pas l'inconnue qui est utilisee, donc on cree les variables auxiliaires ici
   zone.init_equiv();
   flux_bords_.resize(zone.premiere_face_int(), dimension * ch.valeurs().line_size());
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)

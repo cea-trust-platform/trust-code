@@ -76,7 +76,8 @@ void Op_Diff_PolyMAC_P0_base::mettre_a_jour(double t)
 void Op_Diff_PolyMAC_P0_base::completer()
 {
   Operateur_base::completer();
-  int N = equation().inconnue().valeurs().line_size(), N_mil = equation().milieu().masse_volumique().non_nul() ? equation().milieu().masse_volumique().valeurs().line_size() : N;
+  const Equation_base& eq = equation();
+  int N = eq.inconnue().valeurs().line_size(), N_mil = eq.milieu().masse_volumique().non_nul() ? eq.milieu().masse_volumique().valeurs().line_size() : N;
   int N_diff = diffusivite().valeurs().line_size(), D = dimension, N_nu = std::max(N * dimension_min_nu(), N_diff);
   if ( (N_nu == N_mil) | (N_nu == N) ) nu_.resize(0, N); //isotrope
   else if ( (N_nu == N_mil * D) | (N_nu == N*D) ) nu_.resize(0, N, D); //diagonal
