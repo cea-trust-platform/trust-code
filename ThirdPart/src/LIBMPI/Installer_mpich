@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install MPICH (standard or Infiniband tuned version)
 
-if [ -f /usr/lib64/libibverbs.so ] && [ -f /usr/include/infiniband/verbs.h ] && [ -f /usr/include/infiniband/mad.h ]
+if [ -f /usr/lib64/libibverbs.so ] && [ -f /usr/include/infiniband/verbs.h ] && [ -f /usr/include/infiniband/mad.h ] && false
 then
   # Find infiniband so prefer mvapich to mpich: 
   echo $ECHO_OPTS "Detecting Infiniband. So installing mvapich...\c"
@@ -20,14 +20,14 @@ else
   # MPICH #
   #########
   default_version=3.2
-  latest_version=3.4.2 # Blocages MUMPS sur Fedora 34 avec 3.4.1
+  latest_version=4.0.2 # Blocages MUMPS sur Fedora 34 avec 3.4.1
   # Cas ou l'on force la version la plus recente:
   if [ "$TRUST_FORCE_LATEST_MPICH" = 1 ]
   then
      version=$latest_version
   else # ToDo remonter dans le configure ?
      version=$default_version
-     [ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="11.0.0") print -force_latest_mpich}'`" != "" ] && echo "Error, use -force_latest_mpich cause $version MPICH not supported with GNU compilers >= 11" && exit -1
+     [ "`grep 'Fedora release 3[4-8]' /etc/fedora-release 2>/dev/null`" != "" ] && echo "Error, use -force_latest_mpich cause $version MPICH not supported on Fedora 34." && exit -1
   fi
   package=mpich-$version.tar.gz
   src=${package%.tar.gz}
