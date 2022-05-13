@@ -36,7 +36,7 @@
 #include <Neumann_paroi.h>
 #include <Scalaire_impose_paroi.h>
 #include <Echange_global_impose.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 
 #define old_forme
 

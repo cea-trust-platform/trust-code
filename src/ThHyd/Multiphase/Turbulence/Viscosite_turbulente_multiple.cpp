@@ -24,7 +24,7 @@
 #include <Param.h>
 #include <Probleme_base.h>
 #include <Champ_base.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 #include <TRUSTTab.h>
 #include <TRUSTTrav.h>
 #include <MD_Vector_tools.h>

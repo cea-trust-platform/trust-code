@@ -45,7 +45,7 @@
 #include <deque>
 #include <functional>
 #include <Flux_parietal_base.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 
 Implemente_instanciable_sans_constructeur(Op_Diff_PolyMAC_Elem, "Op_Diff_PolyMAC_Elem|Op_Diff_PolyMAC_var_Elem", Op_Diff_PolyMAC_base);
 Implemente_ref(Op_Diff_PolyMAC_Elem);

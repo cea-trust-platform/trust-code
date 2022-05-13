@@ -20,23 +20,23 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Echange_contact_PolyMAC_V2.h>
 #include <Frottement_externe_impose.h>
 #include <Linear_algebra_tools_impl.h>
 #include <Frottement_global_impose.h>
 #include <Champ_implementation_P1.h>
-#include <Echange_contact_PolyMAC_V2.h>
 #include <Connectivite_som_elem.h>
-#include <ConstDoubleTab_parts.h>
 #include <MD_Vector_composite.h>
 #include <Dirichlet_homogene.h>
-#include <MD_Vector_tools.h>
-#include <Zone_Cl_PolyMAC.h>
 #include <Option_PolyMAC_V2.h>
+#include <MD_Vector_tools.h>
+#include <Zone_PolyMAC_V2.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <TRUSTTab_parts.h>
 #include <Comm_Group_MPI.h>
 #include <Quadrangle_VEF.h>
 #include <communications.h>
 #include <Statistiques.h>
-#include <Zone_PolyMAC_V2.h>
 #include <Hexaedre_VEF.h>
 #include <Matrix_tools.h>
 #include <unordered_map>

@@ -22,7 +22,6 @@
 
 #include <Parametre_diffusion_implicite.h>
 #include <Schema_Euler_explicite.h>
-#include <ConstDoubleTab_parts.h>
 #include <Source_dep_inco_base.h>
 #include <Operateur_Conv_base.h>
 #include <Op_Conv_negligeable.h>
@@ -32,6 +31,7 @@
 #include <Frontiere_dis_base.h>
 #include <Matrice_Morse_Sym.h>
 #include <Operateur_base.h>
+#include <TRUSTTab_parts.h>
 #include <Postraitement.h>
 #include <Equation_base.h>
 #include <Statistiques.h>

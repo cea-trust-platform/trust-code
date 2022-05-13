@@ -30,6 +30,7 @@
 #include <Mod_turb_hyd_base.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
+#include <TRUSTTab_parts.h>
 #include <MD_Vector_base.h>
 #include <Pb_Multiphase.h>
 #include <Synonyme_info.h>
@@ -39,7 +40,6 @@
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
-#include <ConstDoubleTab_parts.h>
 
 Implemente_instanciable( Op_Diff_PolyMAC_Face, "Op_Diff_PolyMAC_Face|Op_Dift_PolyMAC_Face_PolyMAC", Op_Diff_PolyMAC_base ) ;
 Add_synonym(Op_Diff_PolyMAC_Face, "Op_Diff_PolyMAC_var_Face");

@@ -32,7 +32,7 @@
 #include <Neumann_paroi.h>
 #include <Echange_contact_PolyMAC_V2.h>
 #include <Connectivite_som_elem.h>
-#include <ConstDoubleTab_parts.h>
+#include <TRUSTTab_parts.h>
 #include <Equation_base.h>
 #include <array>
 #include <cmath>
