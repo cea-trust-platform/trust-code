@@ -95,12 +95,12 @@ void Perte_Charge_Singuliere_PolyMAC_Face::dimensionner_blocs(matrices_t matrice
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   if (!matrices.count(nom_inco) || !sub_type(Zone_PolyMAC_V2, zone)) return;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
-  int i, e, f, n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot();
+  int i, j, e, f, n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot();
   DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
 
-  for (i = 0; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone.nb_faces() && fcl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) //elem amont / aval si PolyMAC V2
+  for (i = 0; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone.nb_faces() && fcl(f, 0) < 2) for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) //elem amont / aval si PolyMAC V2
         if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++) stencil.append_line(N * (nf_tot + D * e + d) + n, N * f + n);
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(equation().inconnue().valeurs().size_totale(), equation().inconnue().valeurs().size_totale(), stencil, mat2);
@@ -131,12 +131,12 @@ void Perte_Charge_Singuliere_PolyMAC_Face::ajouter_blocs(matrices_t matrices, Do
             for (n = 0; n < N; n++)  secmem(f, n) -= 0.5 * fac * aar_f(n) * vit(f, n) * std::fabs(vit(f, n));
             if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += fac * aar_f(n) * std::fabs(vit(f, n));
           }
-        if (poly_v2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) //elem amont / aval si PolyMAC V2
+        if (poly_v2) for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) if (e < zone.nb_elem()) //elem amont / aval si PolyMAC V2
               {
                 for (d = 0; d < D; d++) for (n = 0; n < N; n++) /* second membre */
-                    secmem(nf_tot + D * e + d, n) -= (i ? -1 : 1) * fs(f) * (xv(f, d) - xp(e, d)) * 0.5 * fac * aar_f(n) * vit(f, n) * std::fabs(vit(f, n));
+                    secmem(nf_tot + D * e + d, n) += (j ? -1 : 1) * fs(f) * (xv(f, d) - xp(e, d)) * 0.5 * fac * aar_f(n) * vit(f, n) * std::fabs(vit(f, n));
                 if (mat && !semi && fcl(f, 0) < 2) for (d = 0; d < D; d++) for (n = 0; n < N; n++) /* derivee (pas possible en semi-implicite) */
-                      (*mat)(N * (nf_tot + D * e + d) + n, N * f + n) += (i ? -1 : 1) * fs(f) * (xv(f, d) - xp(e, d)) * fac * aar_f(n) * std::fabs(vit(f, n));
+                      (*mat)(N * (nf_tot + D * e + d) + n, N * f + n) -= (j ? -1 : 1) * fs(f) * (xv(f, d) - xp(e, d)) * fac * aar_f(n) * std::fabs(vit(f, n));
               }
       }
 }
