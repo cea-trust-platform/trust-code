@@ -64,11 +64,11 @@ public:
 
   /* dimensionnement / assemblage de l'equation de continuite sum_k alpha_k = 1 en Pb_continuite */
   /* meme interface que dimensionner/assembler_blocs dans Equation_base */
-  virtual void dimensionner_continuite(matrices_t matrices) const
+  virtual void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const
   {
     Process::exit(Nom("dimensionner_continuite(...) must be overloaded by ") + que_suis_je());
   }
-  virtual void assembler_continuite(matrices_t matrices, DoubleTab& secmem) const
+  virtual void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const
   {
     Process::exit(Nom("assembler_continuite(...) must be overloaded by ") + que_suis_je());
   };

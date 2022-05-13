@@ -48,8 +48,8 @@ public:
   int assembler_rho_variable(Matrice&, const Champ_Don_base& rho) override;
   int assembler_QC(const DoubleTab&, Matrice&) override;
   int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
-  void dimensionner_continuite(matrices_t matrices) const override;
-  void assembler_continuite(matrices_t matrices, DoubleTab& secmem) const override;
+  void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
+  void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
   int modifier_secmem(DoubleTab&) override
   {
     return 1;

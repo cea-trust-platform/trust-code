@@ -37,8 +37,8 @@ class Assembleur_P_PolyMAC_V2 : public Assembleur_P_PolyMAC
 
 public:
   int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
-  void dimensionner_continuite(matrices_t matrices) const override;
-  void assembler_continuite(matrices_t matrices, DoubleTab& secmem) const override;
+  void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
+  void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
   void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override { } //rien a faire
 };
 

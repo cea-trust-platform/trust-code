@@ -110,8 +110,9 @@ int  Assembleur_P_PolyMAC_V2::assembler_mat(Matrice& la_matrice,const DoubleVect
 
 
 /* equation sum_k alpha_k = 1 en Pb_Multiphase */
-void Assembleur_P_PolyMAC_V2::dimensionner_continuite(matrices_t matrices) const
+void Assembleur_P_PolyMAC_V2::dimensionner_continuite(matrices_t matrices, int aux_only) const
 {
+  if (aux_only) return; //rien a faire
   int e, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), ne_tot = la_zone_PolyMAC->nb_elem_tot();
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
@@ -119,8 +120,9 @@ void Assembleur_P_PolyMAC_V2::dimensionner_continuite(matrices_t matrices) const
   Matrix_tools::allocate_morse_matrix(ne_tot, N * ne_tot, stencil, *matrices.at("alpha"));
 }
 
-void Assembleur_P_PolyMAC_V2::assembler_continuite(matrices_t matrices, DoubleTab& secmem) const
+void Assembleur_P_PolyMAC_V2::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
 {
+  if (aux_only) return;
   const DoubleTab& alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeurs();
   Matrice_Morse& mat = *matrices.at("alpha");
   const DoubleVect& ve = la_zone_PolyMAC->volumes(), &pe = la_zone_PolyMAC->porosite_elem();
