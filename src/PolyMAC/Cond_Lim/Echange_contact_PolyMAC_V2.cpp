@@ -102,12 +102,12 @@ void Echange_contact_PolyMAC_V2::init_fs_dist() const
   fdad->useExternalArrayWithRWAccess(xvf.addr(), nf_tot, D), o_fdad->useExternalArrayWithRWAccess(o_xvf.addr(), o_nf_tot, D);
   sdad->useExternalArrayWithRWAccess(xsf.addr(), ns_tot, D), o_sdad->useExternalArrayWithRWAccess(o_xsf.addr(), o_ns_tot, D);
   //point de o_{f,s}dad le plus proche de chaque point de {f,s}dad
-  MCAuto<DataArrayInt> f_idx(nf_tot ? o_fdad->findClosestTupleId(fdad) : NULL), s_idx(ns_tot ? o_sdad->findClosestTupleId(sdad) : NULL);
+  MCAuto<DataArrayInt> f_idx(nf_tot && o_nf_tot ? o_fdad->findClosestTupleId(fdad) : NULL), s_idx(ns_tot && o_ns_tot ? o_sdad->findClosestTupleId(sdad) : NULL);
 
   for (i = 0; i < nf_tot; i++) //remplissage de f_dist : face distante si coincidence, -1 sinon
     {
-      f = fvf->num_face(i), o_f = o_fvf->num_face(f_idx->getIJ(i, 0));
-      double d2 = zone.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0));
+      f = fvf->num_face(i), o_f = o_nf_tot ? o_fvf->num_face(f_idx->getIJ(i, 0)) : -1;
+      double d2 = o_f >= 0 ? zone.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0)) : 1e8;
       if (d2 < 1e-12) f_dist(i) = o_f;
       else f_dist(i) = -1;
       if (i < fvf->nb_faces() && d2 >= 1e-12)
@@ -116,8 +116,8 @@ void Echange_contact_PolyMAC_V2::init_fs_dist() const
     }
   for (i = 0; i < ns_tot; i++) //remplissage de s_dist
     {
-      s = som[i], o_s = o_som[s_idx->getIJ(i, 0)];
-      if (zone.dot(&xs(s, 0), &xs(s, 0), &o_xs(o_s, 0), &o_xs(o_s, 0)) < 1e-12) s_dist[s] = o_s;
+      s = som[i], o_s = o_ns_tot ? o_som[s_idx->getIJ(i, 0)] : -1;
+      if (o_s >= 0 && zone.dot(&xs(s, 0), &xs(s, 0), &o_xs(o_s, 0), &o_xs(o_s, 0)) < 1e-12) s_dist[s] = o_s;
     }
 
 #else

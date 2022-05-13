@@ -90,12 +90,12 @@ void Echange_contact_PolyMAC::init_f_dist() const
   MCAuto<DataArrayDouble> fdad(DataArrayDouble::New()), o_fdad(DataArrayDouble::New());
   fdad->useExternalArrayWithRWAccess(xvf.addr(), nf_tot, D), o_fdad->useExternalArrayWithRWAccess(o_xvf.addr(), o_nf_tot, D);
   //point de o_fdad le plus proche de chaque point de {f,s}dad
-  MCAuto<DataArrayInt> f_idx(nf_tot ? o_fdad->findClosestTupleId(fdad) : NULL);
+  MCAuto<DataArrayInt> f_idx(nf_tot && o_nf_tot ? o_fdad->findClosestTupleId(fdad) : NULL);
 
   for (i = 0; i < nf_tot; i++) //remplissage de f_dist : face distante si coincidence, -1 sinon
     {
-      f = fvf->num_face(i), o_f = o_fvf->num_face(f_idx->getIJ(i, 0));
-      double d2 = zone.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0));
+      f = fvf->num_face(i), o_f = o_nf_tot ? o_fvf->num_face(f_idx->getIJ(i, 0)) : -1;
+      double d2 = o_f >= 0 ? zone.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0)) : 1e8;
       if (d2 < 1e-12) f_dist(i) = o_f;
       else f_dist(i) = -1;
       if (i < fvf->nb_faces() && d2 >= 1e-12)
