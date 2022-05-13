@@ -91,9 +91,11 @@ int Champ_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
 
   // Probleme: nb_comp vaut 2 mais on ne veut qu'une dimension !!!
   // HACK :
-  nb_compo_ /= dimension;
+  const int old_nb_compo = nb_compo_;
+  if(nb_compo_ >= dimension) nb_compo_ /= dimension;
+
   creer_tableau_distribue(zone.md_vector_faces());
-  nb_compo_ *= dimension;
+  nb_compo_ = old_nb_compo;
   return n;
 
 }
