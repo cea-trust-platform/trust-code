@@ -183,7 +183,8 @@ int Assembleur_P_PolyMAC::assembler_QC(const DoubleTab& tab_rho, Matrice& matric
 void Assembleur_P_PolyMAC::dimensionner_continuite(matrices_t matrices, int aux_only) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
-  int i, j, e, f, fb, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size(), m, M = equation().get_champ("pression").valeurs().line_size(),
+                         ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &e_f = zone.elem_faces();
   IntTrav sten_a(0, 2), sten_p(0, 2), sten_v(0, 2);
   DoubleTrav w2;
@@ -195,37 +196,38 @@ void Assembleur_P_PolyMAC::dimensionner_continuite(matrices_t matrices, int aux_
       if ((f = e_f(e, i)) >= zone.nb_faces()) continue; //faces virtuelles
       else if (!fcl(f, 0)) for (sten_p.append_line(!aux_only * ne_tot + f, e), j = 0; j < w2.dimension(1); j++) //face interne
           {
-            if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) < 2) sten_p.append_line(!aux_only * ne_tot + f, ne_tot + fb);
+            if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) < 2) for (m = 0; m < M; m++)
+                sten_p.append_line(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) * m);
           }
-      else if (fcl(f, 0) == 1) sten_p.append_line(!aux_only * ne_tot + f, ne_tot + f); //Neumann
-      else for (n = 0; n < N; n++) sten_v.append_line(!aux_only * ne_tot + f, N * f + n); //Dirichlet
+      else if (fcl(f, 0) == 1) for (m = 0; m < M; m++) sten_p.append_line(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + f) + m); //Neumann
+      else for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten_v.append_line(M * (!aux_only * ne_tot + f) + m, N * f + n); //Dirichlet
 
   tableau_trier_retirer_doublons(sten_v), tableau_trier_retirer_doublons(sten_p);
   if (!aux_only) Matrix_tools::allocate_morse_matrix(ne_tot + nf_tot, N * ne_tot, sten_a, *matrices.at("alpha"));
-  Matrix_tools::allocate_morse_matrix(!aux_only * ne_tot + nf_tot, ne_tot + nf_tot, sten_p, *matrices.at("pression"));
-  Matrix_tools::allocate_morse_matrix(!aux_only * ne_tot + nf_tot, equation().inconnue()->valeurs().size_totale(), sten_v, *matrices.at("vitesse"));
+  Matrix_tools::allocate_morse_matrix(M * (!aux_only * ne_tot + nf_tot), M * (ne_tot + nf_tot), sten_p, *matrices.at("pression"));
+  Matrix_tools::allocate_morse_matrix(M * (!aux_only * ne_tot + nf_tot), equation().inconnue()->valeurs().size_totale(), sten_v, *matrices.at("vitesse"));
 }
 
 void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
 {
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
-  const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+  const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
   const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
-  const DoubleTab& alpha = pb.eq_masse.inconnue().valeurs(), &press = pb.eq_qdm.pression().valeurs(), &vit = pb.eq_qdm.inconnue().valeurs(),
-                   &alpha_rho = pb.eq_masse.champ_conserve().passe(), &nf = zone.face_normales();
+  const DoubleTab *alpha = pbm ? &pbm->eq_masse.inconnue().valeurs() : NULL, &press = equation().probleme().get_champ("pression").valeurs(),
+                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL, &nf = zone.face_normales();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &e_f = zone.elem_faces();
   const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
-  int i, j, e, f, fb, n, N = alpha.line_size(), ne_tot = zone.nb_elem_tot(), d, D = dimension;
-  Matrice_Morse *mat_a = aux_only ? NULL : matrices.at("alpha"), &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
-  DoubleTrav w2;
+  int i, j, e, f, fb, n, N = vit.line_size(), m, M = press.line_size(), ne_tot = zone.nb_elem_tot(), d, D = dimension;
+  Matrice_Morse *mat_a = alpha ? NULL : matrices.at("alpha"), &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
+  DoubleTrav w2, fac(N);
   double ar_tot, acc;
   w2.set_smart_resize(1);
-  secmem = 0;
+  secmem = 0, fac = 1;
 
   /* equations sum alpha_k = 1 */
   /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
   if (!aux_only) for (e = 0; e < zone.nb_elem(); e++)
-      for (secmem(e) = -pe(e) * ve(e) * cont_norm, n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * cont_norm * alpha(e, n);
+      for (secmem(e) = -pe(e) * ve(e) * cont_norm, n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * cont_norm * (*alpha)(e, n);
   /* matrice */
   if (!aux_only) for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) (*mat_a)(e, N * e + n) = -pe(e) * ve(e) * cont_norm;
 
@@ -234,20 +236,31 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
       if ((f = e_f(e, i)) >= zone.nb_faces()) continue; //faces virtuelles
       else if (!fcl(f, 0)) //face interne
         {
-          for (acc = 0, j = 0; j < w2.dimension(1); acc+= w2(i, j, 0), j++) //second membre
-            secmem(!aux_only * ne_tot + f) -= w2(i, j, 0) * (press(ne_tot + e_f(e, j), 0) - press(e, 0)) * cont_norm;
-          for (mat_p(!aux_only * ne_tot + f, e) -= acc * cont_norm, j = 0; j < w2.dimension(1); j++) //matrice (sauf bords de Meumann)
-            if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) != 1) mat_p(!aux_only * ne_tot + f, ne_tot + fb) += w2(i, j, 0) * cont_norm;
+          for (acc = 0, j = 0; j < w2.dimension(1); acc+= w2(i, j, 0), j++) for (m = 0; m < M; m++) //second membre
+              secmem(!aux_only * ne_tot + f, m) -= w2(i, j, 0) * (press(ne_tot + e_f(e, j), m) - press(e, m)) * cont_norm;
+          for (m = 0; m < M; m++) mat_p(M * (!aux_only * ne_tot + f) + m, M * e + m) -= acc * cont_norm;
+          for (j = 0; j < w2.dimension(1); j++) //matrice (sauf bords de Meumann)
+            if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) != 1) for (m = 0; m <M; m++)
+                mat_p(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) + m) += w2(i, j, 0) * cont_norm;
         }
-      else if (fcl(f, 0) == 1) //Neumann -> egalite p_f = p_imp
-        mat_p(!aux_only * ne_tot + f, ne_tot + f) = 1, secmem(!aux_only * ne_tot + f) = ref_cast(Neumann, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2)) - press(ne_tot + f);
+      else if (fcl(f, 0) == 1) //Neumann -> egalites p_f = p_imp
+        {
+          for (m = 0; m < M; m++) secmem(M * (!aux_only * ne_tot + f) + m) = ref_cast(Neumann, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), m) - press(ne_tot + f, m);
+          for (m = 0; m < M; m++) mat_p(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + f) + m) = 1;
+        }
       else  //Dirichlet -> egalite flux_tot_imp - flux_tot = 0
         {
-          for (ar_tot = 0, n = 0; n < N; n++) ar_tot += alpha_rho(e, n);
-          for (n = 0; n < N; n++) secmem(!aux_only * ne_tot + f) += alpha_rho(e, n) / ar_tot * vit(f, n);
-          if (fcl(f, 0) == 3) for (d = 0; d < D; d++) for (n = 0; n < N; n++) //contrib de la valeur imposee: Dirichlet non homogene seulement
-                secmem(!aux_only * ne_tot + f) -= alpha_rho(e, n) / ar_tot * nf(f, d) / fs(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
-          for (n = 0; n < N; n++)  mat_v(!aux_only * ne_tot + f, N * f + n) -= alpha_rho(e, n) / ar_tot;
+          if (M == 1 && N > 1) //une pression, plusieurs vitesses -> on ne peut imposer qu'une ponderation : on choisit celle ocrrespondant aux flux de masse total
+            {
+              for (ar_tot = 0, n = 0; n < N; n++) ar_tot += (*alpha_rho)(e, n);
+              for (n = 0; n < N; n++) fac(n) = (*alpha_rho)(e, n) / ar_tot;
+            }
+          else if (M != N) abort(); //sinon, il faut autant de pressions que de vitesses
+
+          for (n = 0, m = 0; n < N; n++, m += (M > 1)) secmem(!aux_only * ne_tot + f, m) += fac(n) * vit(f, n);
+          if (fcl(f, 0) == 3) for (d = 0; d < D; d++) for (n = 0, m = 0; n < N; n++, m += (M > 1)) //contrib de la valeur imposee: Dirichlet non homogene seulement
+                secmem(!aux_only * ne_tot + f, m) -= fac(n) * nf(f, d) / fs(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
+          for (n = 0, m = 0; n < N; n++, m += (M > 1))  mat_v(M * (!aux_only * ne_tot + f) + m, N * f + n) -= fac(n);
         }
 }
 
@@ -257,8 +270,9 @@ void Assembleur_P_PolyMAC::modifier_secmem_pour_incr_p(const DoubleTab& press, c
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
   const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
   const IntTab& fcl = ch.fcl();
-  for (int f = 0, ne_tot = zone.nb_elem_tot(); f < zone.premiere_face_int(); f++) if (fcl(f, 0) == 1)
-      secmem(ne_tot + f) = (ref_cast(Neumann_sortie_libre, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2)) - press(ne_tot + f)) / fac;
+  int f, ne_tot = zone.nb_elem_tot(), m, M = equation().probleme().get_champ("pression").valeurs().line_size();
+  for (f = 0; f < zone.premiere_face_int(); f++) if (fcl(f, 0) == 1) for (m = 0; m < M; m++)
+        secmem(ne_tot + f, m) = (ref_cast(Neumann_sortie_libre, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), m) - press(ne_tot + f, m)) / fac;
 }
 
 int Assembleur_P_PolyMAC::modifier_solution(DoubleTab& pression)
