@@ -14,15 +14,15 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Terme_Source_Decroissance_Radioactive_P0_PolyMAC.h
+// File:        Terme_Source_Decroissance_Radioactive_Elem_PolyMAC.h
 // Directory:   $TRUST_ROOT/src/PolyMAC/Sources
 // Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Terme_Source_Decroissance_Radioactive_P0_PolyMAC_included
-#define Terme_Source_Decroissance_Radioactive_P0_PolyMAC_included
+#ifndef Terme_Source_Decroissance_Radioactive_Elem_PolyMAC_included
+#define Terme_Source_Decroissance_Radioactive_Elem_PolyMAC_included
 
 #include <Source_base.h>
 #include <Ref_Zone_PolyMAC.h>
@@ -31,7 +31,7 @@
 // class Probleme_base;
 
 //
-// .DESCRIPTION class Terme_Source_Decroissance_Radioactive_P0_PolyMAC
+// .DESCRIPTION class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC
 //
 
 //
@@ -39,12 +39,12 @@
 //
 //
 
-class Terme_Source_Decroissance_Radioactive_P0_PolyMAC :  public Source_base
+class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC :  public Source_base
 
 
 {
 
-  Declare_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_P0_PolyMAC);
+  Declare_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC);
 
 public:
 

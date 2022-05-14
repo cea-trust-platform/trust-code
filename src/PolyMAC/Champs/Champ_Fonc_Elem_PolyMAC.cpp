@@ -14,17 +14,30 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Ref_Champ_P0_PolyMAC_V2.h
+// File:        Champ_Fonc_Elem_PolyMAC.cpp
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Ref_Champ_P0_PolyMAC_V2_included
-#define Ref_Champ_P0_PolyMAC_V2_included
+#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <Zone_VF.h>
 
-#include <Ref.h>
-class Champ_P0_PolyMAC_V2 ;
-Declare_ref( Champ_P0_PolyMAC_V2 ) ;
+Implemente_instanciable(Champ_Fonc_Elem_PolyMAC,"Champ_Fonc_Elem_PolyMAC",Champ_Fonc_P0_base);
 
-#endif /* Ref_Champ_P0_PolyMAC_V2_included */
+
+//     printOn()
+/////
+
+Sortie& Champ_Fonc_Elem_PolyMAC::printOn(Sortie& s) const
+{
+  return s << que_suis_je() << " " << le_nom();
+}
+
+//// readOn
+//
+
+Entree& Champ_Fonc_Elem_PolyMAC::readOn(Entree& s)
+{
+  return s ;
+}

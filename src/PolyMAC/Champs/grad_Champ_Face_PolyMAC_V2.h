@@ -25,7 +25,7 @@
 
 
 #include <Champ_Fonc_Face_PolyMAC.h>
-#include <Champ_Fonc_P0_PolyMAC.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Fonc.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC_V2.h>

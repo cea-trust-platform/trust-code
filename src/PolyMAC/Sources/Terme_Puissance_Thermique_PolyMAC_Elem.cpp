@@ -25,7 +25,7 @@
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem,"Puissance_Thermique_P0_PolyMAC|Puissance_Thermique_P0_PolyMAC_V2",Terme_Puissance_Thermique_PolyMAC_base);
+Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem,"Puissance_Thermique_Elem_PolyMAC|Puissance_Thermique_Elem_PolyMAC_V2",Terme_Puissance_Thermique_PolyMAC_base);
 implemente_It_Sou_PolyMAC_Elem(Eval_Puiss_Th_PolyMAC_Elem)
 
 Sortie& Terme_Puissance_Thermique_PolyMAC_Elem::printOn(Sortie& s ) const

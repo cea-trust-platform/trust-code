@@ -24,7 +24,7 @@
 #include <Zone_Cl_PolyMAC.h>
 #include <Zone_PolyMAC.h>
 #include <Debog.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Equation_base.h>
 #include <Conds_lim.h>
 #include <Neumann_paroi.h>
@@ -111,7 +111,7 @@ void Masse_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const Champ_Inc_base& cc = equation().champ_conserve();
   const Conds_lim& cls = equation().zone_Cl_dis()->les_conditions_limites();
-  const IntTab& fcl = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur()).fcl(), &f_e = zone.face_voisins();
+  const IntTab& fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur()).fcl(), &f_e = zone.face_voisins();
   const DoubleTab& present = cc.valeurs(), &passe = cc.passe();
   const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
   int e, f, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();

@@ -22,14 +22,14 @@
 
 #include <Travail_pression_PolyMAC.h>
 #include <Zone_PolyMAC.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <Pb_Multiphase.h>
 #include <Op_Conv_EF_Stab_PolyMAC_Elem.h>
 #include <cfloat>
 
-Implemente_instanciable(Travail_pression_PolyMAC,"Travail_pression_P0_PolyMAC|Travail_pression_P0_PolyMAC_V2", Source_base);
+Implemente_instanciable(Travail_pression_PolyMAC,"Travail_pression_Elem_PolyMAC|Travail_pression_Elem_PolyMAC_V2", Source_base);
 // XD travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
 
 Sortie& Travail_pression_PolyMAC::printOn(Sortie& os) const
@@ -74,7 +74,7 @@ void Travail_pression_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const Champ_Inc_base& ch_a = pbm.eq_masse.inconnue().valeur(), &ch_v = pbm.eq_qdm.inconnue().valeur(), &ch_p = pbm.eq_qdm.pression().valeur();
   /* trois tableaux de alpha : present / passe et champ convecte (peut etre semi-implicite) */
   const DoubleTab& alpha = ch_a.valeurs(), &c_alpha = semi_impl.count("alpha") ? semi_impl.at("alpha") : alpha, &p_alpha = ch_a.passe(), &press = ch_p.valeurs(), &vit = ch_v.valeurs();
-  const IntTab& fcl = ref_cast(Champ_P0_PolyMAC, ch_a).fcl(), &f_e = zone.face_voisins();
+  const IntTab& fcl = ref_cast(Champ_Elem_PolyMAC, ch_a).fcl(), &f_e = zone.face_voisins();
   DoubleTab b_alpha = ch_a.valeur_aux_bords();
   Matrice_Morse *Mp = matrices.count("pression") ? matrices.at("pression") : NULL,
                  *Ma = matrices.count("alpha") && !semi_impl.count("alpha") ? matrices.at("alpha") : NULL,

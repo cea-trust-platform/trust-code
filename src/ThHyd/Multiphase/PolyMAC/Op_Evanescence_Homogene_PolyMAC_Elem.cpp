@@ -22,7 +22,7 @@
 
 #include <Op_Evanescence_Homogene_PolyMAC_Elem.h>
 #include <Zone_PolyMAC.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Matrix_tools.h>
 #include <Pb_Multiphase.h>
@@ -50,7 +50,7 @@ Entree& Op_Evanescence_Homogene_PolyMAC_Elem::readOn(Entree& is)
 
 void Op_Evanescence_Homogene_PolyMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
 
@@ -78,7 +78,7 @@ void Op_Evanescence_Homogene_PolyMAC_Elem::dimensionner_blocs(matrices_t matrice
 void Op_Evanescence_Homogene_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
-  const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
   const DoubleTab& inco = ch.valeurs(), &alpha = pb.eq_masse.inconnue().valeurs(),

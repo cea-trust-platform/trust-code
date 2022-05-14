@@ -14,40 +14,69 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_Tabule_P0_PolyMAC.h
+// File:        Champ_Fonc_Elem_PolyMAC_V2_rot.h
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
+// Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Fonc_Tabule_P0_PolyMAC_included
-#define Champ_Fonc_Tabule_P0_PolyMAC_included
+#ifndef Champ_Fonc_Elem_PolyMAC_V2_rot_included
+#define Champ_Fonc_Elem_PolyMAC_V2_rot_included
 
-#include <Champ_Fonc_P0_PolyMAC.h>
-#include <Vect_Ref_Champ_base.h>
-#include <Ref_Table.h>
+#include <Champ_Fonc_Face_PolyMAC.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <Champ_Fonc.h>
+#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Ref_Champ_Face_PolyMAC_V2.h>
+#include <Champ_Face_PolyMAC_V2.h>
+#include <Champ_Fonc.h>
+#include <Ref_Champ_Fonc.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// CLASS: Champ_Fonc_Tabule_P0_PolyMAC
+// .DESCRIPTION
+//    class Champ_Fonc_Elem_PolyMAC_V2_rot for the calculation of the vorticity
+//      This field is a Champ_Fonc_Elem_PolyMAC_V2 with 1 value per element and per phase in 2D and 3 in 3D
+//      It isn't a Champ_Fonc_Face_PolyMAC_V2 as there is no physical justification to project the vorticity on a face
+//      In 3D, Champ_Fonc_Elem_PolyMAC_V2_TC::valeurs()(e, n*D + d) returns the value of phase n in element e along the d component
+//      The vorticity is calculated by hand in 2D and 3D using the values of the gradient
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Champ_Fonc_Tabule_P0_PolyMAC : public Champ_Fonc_P0_PolyMAC
+class Champ_Fonc_Elem_PolyMAC_V2_rot : public Champ_Fonc_Elem_PolyMAC
+
 {
-  Declare_instanciable(Champ_Fonc_Tabule_P0_PolyMAC);
+
+  Declare_instanciable(Champ_Fonc_Elem_PolyMAC_V2_rot);
 
 public:
 
-  void associer_param(const VECT(REF(Champ_base))&, const Table& );
-  void mettre_a_jour(double ) override;
-  int initialiser(const double temps) override;
+  void mettre_a_jour(double tps) override;
+  inline void associer_champ(const Champ_Face_PolyMAC_V2& cha);
+  void me_calculer_2D();
+  void me_calculer_3D();
+
+  inline virtual       Champ_Face_PolyMAC_V2& champ_a_deriver()      ;
+  inline virtual const Champ_Face_PolyMAC_V2& champ_a_deriver() const;
 
 protected:
 
-  VECT(REF(Champ_base)) les_ch_param;
-  REF(Table) la_table;
+  REF(Champ_Face_PolyMAC_V2) champ_;
 };
 
+inline void Champ_Fonc_Elem_PolyMAC_V2_rot::associer_champ(const Champ_Face_PolyMAC_V2& cha)
+{
+  Cout << "On associe la vorticite au champ de vitesse " << finl ;
+  champ_= cha;
+}
+
+inline Champ_Face_PolyMAC_V2& Champ_Fonc_Elem_PolyMAC_V2_rot::champ_a_deriver()
+{
+  return champ_.valeur();
+}
+inline const Champ_Face_PolyMAC_V2& Champ_Fonc_Elem_PolyMAC_V2_rot::champ_a_deriver() const
+{
+  return champ_.valeur();
+}
 
 #endif

@@ -24,7 +24,7 @@
 #include <Dispersion_bulles_base.h>
 #include <Zone_PolyMAC_V2.h>
 #include <Champ_Face_PolyMAC_V2.h>
-#include <Champ_P0_PolyMAC_V2.h>
+#include <Champ_Elem_PolyMAC_V2.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
@@ -116,7 +116,7 @@ void Dispersion_bulles_PolyMAC_V2::ajouter_blocs(matrices_t matrices, DoubleTab&
   const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, correlation_.valeur());
 
   /* calculaiton of the gradient of alpha at the face */
-  const Champ_P0_PolyMAC_V2& ch_a = ref_cast(Champ_P0_PolyMAC_V2, ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeur());
+  const Champ_Elem_PolyMAC_V2& ch_a = ref_cast(Champ_Elem_PolyMAC_V2, ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeur());
   DoubleTrav grad_f_a(equation().inconnue().valeurs());
   ch_a.init_grad(0);
   const IntTab& fg_d = ch_a.fgrad_d, &fg_e = ch_a.fgrad_e;  // Tables utilisees dans zone_PolyMAC_V2::fgrad pour le calcul du gradient

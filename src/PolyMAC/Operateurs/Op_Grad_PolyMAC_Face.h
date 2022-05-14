@@ -35,7 +35,7 @@
 //
 //  Cette classe represente l'operateur de gradient
 //  La discretisation est PolyMAC
-//  On calcule le gradient d'un champ_P0_PolyMAC (la pression)
+//  On calcule le gradient d'un champ_Elem_PolyMAC (la pression)
 //
 
 // .SECTION voir aussi

@@ -14,13 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Ref_Champ_P0_PolyMAC_V2.cpp
+// File:        Ref_Champ_Elem_PolyMAC_V2.h
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Ref_Champ_P0_PolyMAC_V2.h>
-#include <Champ_P0_PolyMAC_V2.h>
+#ifndef Ref_Champ_Elem_PolyMAC_V2_included
+#define Ref_Champ_Elem_PolyMAC_V2_included
 
-Implemente_ref( Champ_P0_PolyMAC_V2 ) ;
+#include <Ref.h>
+class Champ_Elem_PolyMAC_V2 ;
+Declare_ref( Champ_Elem_PolyMAC_V2 ) ;
+
+#endif /* Ref_Champ_Elem_PolyMAC_V2_included */

@@ -28,7 +28,7 @@
 #include <Op_Diff_PolyMAC_Elem.h>
 #include <Dirichlet_homogene.h>
 #include <Schema_Temps_base.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Champ_front_calc.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <MD_Vector_base.h>
@@ -69,7 +69,7 @@ void Op_Diff_PolyMAC_Elem::completer()
 {
   Op_Diff_PolyMAC_base::completer();
   Equation_base& eq = equation();
-  Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, eq.inconnue().valeur());
+  Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, eq.inconnue().valeur());
   ch.init_auxiliary_variables();
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
@@ -141,7 +141,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
       f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces()));
       cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_Elem, *op_ext[i]).nu());
-      const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, op_ext[i]->equation().inconnue().valeur());
+      const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, op_ext[i]->equation().inconnue().valeur());
       N.push_back(ch.valeurs().line_size()), fcl.push_back(std::ref(ch.fcl())), ne_tot.push_back(zone[i].get().nb_elem_tot());
       inco.push_back(ch.valeurs()), v_part.emplace_back(ch.valeurs());
       stencil[i].resize(0, 2), stencil[i].set_smart_resize(1);
@@ -222,7 +222,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
       pe.push_back(std::ref(zone[i].get().porosite_elem())), pf.push_back(std::ref(zone[i].get().porosite_face())), ve.push_back(std::ref(zone[i].get().volumes()));
       cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_Elem, *op_ext[i]).nu());
-      const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, op_ext[i]->equation().inconnue().valeur());
+      const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, op_ext[i]->equation().inconnue().valeur());
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs())), v_part.emplace_back(inco.back());
       corr.push_back(sub_type(Energie_Multiphase, op_ext[i]->equation()) && ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).has_correlation("flux_parietal")
                      ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal")) : NULL);

@@ -25,7 +25,7 @@
 #include <Pb_Multiphase.h>
 #include <Viscosite_turbulente_base.h>
 #include <Transport_turbulent_base.h>
-#include <Champ_P0_PolyMAC_V2.h>
+#include <Champ_Elem_PolyMAC_V2.h>
 #include <PolyMAC_V2_discretisation.h>
 
 Implemente_instanciable( Op_Diff_Turbulent_PolyMAC_V2_Elem, "Op_Diff_Turbulent_PolyMAC_V2_Elem|Op_Diff_Turbulente_PolyMAC_V2_Elem", Op_Diff_PolyMAC_V2_Elem ) ;

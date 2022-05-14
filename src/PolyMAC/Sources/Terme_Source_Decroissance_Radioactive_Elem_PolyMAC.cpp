@@ -14,13 +14,13 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Terme_Source_Decroissance_Radioactive_P0_PolyMAC.cpp
+// File:        Terme_Source_Decroissance_Radioactive_Elem_PolyMAC.cpp
 // Directory:   $TRUST_ROOT/src/PolyMAC/Sources
 // Version:     /main/13
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Terme_Source_Decroissance_Radioactive_P0_PolyMAC.h>
+#include <Terme_Source_Decroissance_Radioactive_Elem_PolyMAC.h>
 #include <Equation_base.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_PolyMAC.h>
@@ -29,14 +29,14 @@
 #include <Synonyme_info.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_P0_PolyMAC,"Decroissance_Radioactive_P0_PolyMAC|Decroissance_Radioactive_P0_PolyMAC_V2",Source_base);
-Add_synonym(Terme_Source_Decroissance_Radioactive_P0_PolyMAC,"radioactive_decay_P0_PolyMAC");
-Add_synonym(Terme_Source_Decroissance_Radioactive_P0_PolyMAC,"radioactive_decay_P0_PolyMAC_V2");
+Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC,"Decroissance_Radioactive_Elem_PolyMAC|Decroissance_Radioactive_Elem_PolyMAC_V2",Source_base);
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC,"radioactive_decay_Elem_PolyMAC");
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC,"radioactive_decay_Elem_PolyMAC_V2");
 
 //// printOn
 //
 
-Sortie& Terme_Source_Decroissance_Radioactive_P0_PolyMAC::printOn(Sortie& s ) const
+Sortie& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
 }
@@ -44,7 +44,7 @@ Sortie& Terme_Source_Decroissance_Radioactive_P0_PolyMAC::printOn(Sortie& s ) co
 //// readOn
 //
 
-Entree& Terme_Source_Decroissance_Radioactive_P0_PolyMAC::readOn(Entree& s )
+Entree& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::readOn(Entree& s )
 {
   double lambda_tmp;
   s >> nb_groupes;
@@ -59,25 +59,25 @@ Entree& Terme_Source_Decroissance_Radioactive_P0_PolyMAC::readOn(Entree& s )
   return s ;
 }
 
-void Terme_Source_Decroissance_Radioactive_P0_PolyMAC::completer()
+void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::completer()
 {
   Source_base::completer();
   const int N = equation().inconnue().valeurs().line_size();
   if (N != nb_groupes)
     {
-      Cerr << "Terme_Source_Decroissance_Radioactive_P0_PolyMAC : inconsistency between the number of radioactive decay constants ( " << nb_groupes << " ) and the number of components of the unknown of the equation ( " << N << " )" << finl;
+      Cerr << "Terme_Source_Decroissance_Radioactive_Elem_PolyMAC : inconsistency between the number of radioactive decay constants ( " << nb_groupes << " ) and the number of components of the unknown of the equation ( " << N << " )" << finl;
       Process::exit();
     }
 }
 
-void Terme_Source_Decroissance_Radioactive_P0_PolyMAC::associer_zones(const Zone_dis& zone_dis,
-                                                                      const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_zones(const Zone_dis& zone_dis,
+                                                                        const Zone_Cl_dis& zone_Cl_dis)
 {
-  Cerr << " Terme_Source_Decroissance_Radioactive_P0_PolyMAC::associer_zones " << finl ;
+  Cerr << " Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_zones " << finl ;
   la_zone_PolyMAC = ref_cast(Zone_PolyMAC, zone_dis.valeur());
 }
 
-void Terme_Source_Decroissance_Radioactive_P0_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
+void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Zone_VF& zone = la_zone_PolyMAC.valeur();
   const DoubleTab& inco = equation().inconnue().valeurs();
@@ -95,7 +95,7 @@ void Terme_Source_Decroissance_Radioactive_P0_PolyMAC::dimensionner_blocs(matric
       }
 }
 
-void Terme_Source_Decroissance_Radioactive_P0_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_VF& zone = la_zone_PolyMAC.valeur();
   const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes();

@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Grad_PolyMAC_V2_Face.h>
-#include <Champ_P0_PolyMAC_V2.h>
+#include <Champ_Elem_PolyMAC_V2.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC_V2.h>
 #include <Neumann_sortie_libre.h>

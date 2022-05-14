@@ -33,7 +33,7 @@
 #include <Symetrie.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Masse_PolyMAC_Elem.h>
 #include <Pb_Multiphase.h>
@@ -152,7 +152,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
 void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Zone_Poly_base& zone = la_zone_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
+  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
   const DoubleVect& fs = zone.face_surfaces(), &pf = zone.porosite_face();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
   const std::string& nom_cc = cc.le_nom().getString();

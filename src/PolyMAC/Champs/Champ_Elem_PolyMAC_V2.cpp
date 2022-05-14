@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,23 +14,34 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_P1_PolyMAC.cpp
+// File:        Champ_Elem_PolyMAC_V2.cpp
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
+// Version:     /main/1
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <Champ_Fonc_P1_PolyMAC.h>
-#include <Zone_PolyMAC.h>
+#include <Champ_Elem_PolyMAC_V2.h>
+#include <Zone_Cl_dis.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Zone_PolyMAC_V2.h>
 #include <Domaine.h>
+#include <Dirichlet.h>
+#include <Symetrie.h>
+#include <Dirichlet_homogene.h>
+#include <Neumann_paroi.h>
+#include <Echange_contact_PolyMAC_V2.h>
+#include <Connectivite_som_elem.h>
+#include <TRUSTTab_parts.h>
+#include <Equation_base.h>
+#include <array>
+#include <cmath>
 
-
-Implemente_instanciable(Champ_Fonc_P1_PolyMAC,"Champ_Fonc_P1_PolyMAC",Champ_Fonc_P1_base);
+Implemente_instanciable(Champ_Elem_PolyMAC_V2,"Champ_Elem_PolyMAC_V2",Champ_Elem_PolyMAC);
 
 // printOn
 
-Sortie& Champ_Fonc_P1_PolyMAC::printOn(Sortie& s) const
+Sortie& Champ_Elem_PolyMAC_V2::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
@@ -38,9 +49,9 @@ Sortie& Champ_Fonc_P1_PolyMAC::printOn(Sortie& s) const
 
 // readOn
 
-Entree& Champ_Fonc_P1_PolyMAC::readOn(Entree& s)
+Entree& Champ_Elem_PolyMAC_V2::readOn(Entree& s)
 {
-
+  lire_donnees(s) ;
   return s ;
 }
 
@@ -51,78 +62,38 @@ Entree& Champ_Fonc_P1_PolyMAC::readOn(Entree& s)
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces: entree/sortie
-// Retour:
+// Retour: la_zone_PolyMAC_V2_P0.valeur()
 //    Signification:
 //    Contraintes:
 // Exception:
 // Effets de bord:
 // Postcondition:
-const Zone_dis_base& Champ_Fonc_P1_PolyMAC::zone_dis_base() const
+const Zone_PolyMAC_V2& Champ_Elem_PolyMAC_V2::zone_PolyMAC_V2() const
 {
-  return la_zone_VF.valeur();
-}
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:  z_dis
-//    Signification: la zone discretise
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-void Champ_Fonc_P1_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
-{
-  la_zone_VF=ref_cast(Zone_VF, z_dis);
+  return ref_cast(Zone_PolyMAC_V2, la_zone_VF.valeur());
 }
 
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: la_zone_PolyMAC_P1.valeur()
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-const Zone_PolyMAC& Champ_Fonc_P1_PolyMAC::zone_PolyMAC() const
+inline void Champ_Elem_PolyMAC_V2::mettre_a_jour(double tps)
 {
-  return ref_cast(Zone_PolyMAC, la_zone_VF.valeur());
+  if (temps()!=tps) grad_a_jour = 0 ;
+  Champ_Inc_P0_base::mettre_a_jour(tps);
 }
 
-void Champ_Fonc_P1_PolyMAC::mettre_a_jour(double t)
+void Champ_Elem_PolyMAC_V2::init_grad(int full_stencil) const
 {
-  Champ_Fonc_base::mettre_a_jour(t);
+  if (fgrad_d.size()) return;
+  const IntTab&             f_cl = fcl();
+  const Zone_PolyMAC_V2&       zone = ref_cast(Zone_PolyMAC_V2, la_zone_VF.valeur());
+  const Conds_lim&           cls = zone_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
+  zone.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
 }
 
-int Champ_Fonc_P1_PolyMAC::imprime(Sortie& os, int ncomp) const
+void Champ_Elem_PolyMAC_V2::calc_grad(int full_stencil) const
 {
-  const Zone_dis_base& zone_dis = zone_dis_base();
-  const Zone& zone = zone_dis.zone();
-  const DoubleTab& coord=zone.domaine().coord_sommets();
-  const int nb_som = zone.domaine().nb_som();
-  const DoubleTab& val = valeurs();
-  int som;
-  os << nb_som << finl;
-  for (som=0; som<nb_som; som++)
-    {
-      if (dimension==3)
-        os << coord(som,0) << " " << coord(som,1) << " " << coord(som,2) << " " ;
-      if (dimension==2)
-        os << coord(som,0) << " " << coord(som,1) << " " ;
-      if (nb_compo_ == 1)
-        os << val(som) << finl;
-      else
-        os << val(som,ncomp) << finl;
-    }
-  os << finl;
-  Cout << "Champ_Fonc_P1_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
-  return 1;
+  if (grad_a_jour) return;
+  const IntTab&             f_cl = fcl();
+  const Zone_PolyMAC_V2&       zone = ref_cast(Zone_PolyMAC_V2, la_zone_VF.valeur());
+  const Conds_lim&           cls = zone_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
+  zone.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
+  grad_a_jour = 1;
 }

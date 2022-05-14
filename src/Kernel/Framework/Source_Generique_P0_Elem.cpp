@@ -25,8 +25,8 @@
 #include <Synonyme_info.h>
 
 Implemente_instanciable(Source_Generique_P0_Elem,"Source_Generique_VDF_P0_VDF",Source_Generique_base);
-Add_synonym(Source_Generique_P0_Elem, "Source_Generique_P0_PolyMAC");
-Add_synonym(Source_Generique_P0_Elem, "Source_Generique_P0_PolyMAC_V2");
+Add_synonym(Source_Generique_P0_Elem, "Source_Generique_Elem_PolyMAC");
+Add_synonym(Source_Generique_P0_Elem, "Source_Generique_Elem_PolyMAC_V2");
 
 Sortie& Source_Generique_P0_Elem::printOn(Sortie& os) const
 {

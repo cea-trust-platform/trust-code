@@ -37,7 +37,7 @@
 #include <EcrFicPartage.h>
 #include <Modele_turbulence_scal_base.h>
 #include <cfloat>
-#include <Champ_P0_PolyMAC_V2.h>
+#include <Champ_Elem_PolyMAC_V2.h>
 #include <Champ_Face_PolyMAC_V2.h>
 #include <Op_Diff_PolyMAC_V2_Face.h>
 #include <Pb_Multiphase.h>
@@ -279,7 +279,7 @@ void Op_Diff_PolyMAC_V2_base::update_phif(int full_stencil) const
 {
   if (!full_stencil && phif_a_jour_) return; //deja fait, sauf si on demande tout le stencil
   const Champ_Inc_base& ch = equation().inconnue().valeur();
-  const IntTab& fcl = sub_type(Champ_Face_PolyMAC_V2, ch) ? ref_cast(Champ_Face_PolyMAC_V2, ch).fcl() : ref_cast(Champ_P0_PolyMAC_V2, ch).fcl();
+  const IntTab& fcl = sub_type(Champ_Face_PolyMAC_V2, ch) ? ref_cast(Champ_Face_PolyMAC_V2, ch).fcl() : ref_cast(Champ_Elem_PolyMAC_V2, ch).fcl();
   la_zone_poly_->fgrad(ch.valeurs().line_size(), 0, la_zcl_poly_->les_conditions_limites(), fcl, &nu(), &som_ext, sub_type(Champ_Face_PolyMAC_V2, ch), full_stencil, phif_d, phif_e, phif_c);
   phif_a_jour_ = 1;
 }

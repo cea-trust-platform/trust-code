@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,23 +14,23 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_Q1_PolyMAC.cpp
+// File:        Champ_Som_PolyMAC.cpp
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <Champ_Fonc_Q1_PolyMAC.h>
+#include <Champ_Som_PolyMAC.h>
 #include <Zone_PolyMAC.h>
 #include <Domaine.h>
 
 
-Implemente_instanciable(Champ_Fonc_Q1_PolyMAC,"Champ_Fonc_Q1_PolyMAC",Champ_Fonc_Q1_base);
+Implemente_instanciable(Champ_Som_PolyMAC,"Champ_Som_PolyMAC",Champ_Inc_P1_base);
 
 // printOn
 
-Sortie& Champ_Fonc_Q1_PolyMAC::printOn(Sortie& s) const
+Sortie& Champ_Som_PolyMAC::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
@@ -38,9 +38,9 @@ Sortie& Champ_Fonc_Q1_PolyMAC::printOn(Sortie& s) const
 
 // readOn
 
-Entree& Champ_Fonc_Q1_PolyMAC::readOn(Entree& s)
+Entree& Champ_Som_PolyMAC::readOn(Entree& s)
 {
-
+  lire_donnees(s) ;
   return s ;
 }
 
@@ -57,7 +57,7 @@ Entree& Champ_Fonc_Q1_PolyMAC::readOn(Entree& s)
 // Exception:
 // Effets de bord:
 // Postcondition:
-const Zone_dis_base& Champ_Fonc_Q1_PolyMAC::zone_dis_base() const
+const Zone_dis_base& Champ_Som_PolyMAC::zone_dis_base() const
 {
   return la_zone_VF.valeur();
 }
@@ -74,7 +74,7 @@ const Zone_dis_base& Champ_Fonc_Q1_PolyMAC::zone_dis_base() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Champ_Fonc_Q1_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
+void Champ_Som_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
 {
   la_zone_VF=ref_cast(Zone_VF, z_dis);
 }
@@ -92,17 +92,12 @@ void Champ_Fonc_Q1_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
 // Exception:
 // Effets de bord:
 // Postcondition:
-const Zone_PolyMAC& Champ_Fonc_Q1_PolyMAC::zone_PolyMAC() const
+const Zone_PolyMAC& Champ_Som_PolyMAC::zone_PolyMAC() const
 {
   return ref_cast(Zone_PolyMAC, la_zone_VF.valeur());
 }
 
-void Champ_Fonc_Q1_PolyMAC::mettre_a_jour(double t)
-{
-  Champ_Fonc_base::mettre_a_jour(t);
-}
-
-int Champ_Fonc_Q1_PolyMAC::imprime(Sortie& os, int ncomp) const
+int Champ_Som_PolyMAC::imprime(Sortie& os, int ncomp) const
 {
   const Zone_dis_base& zone_dis = zone_dis_base();
   const Zone& zone = zone_dis.zone();
@@ -123,6 +118,6 @@ int Champ_Fonc_Q1_PolyMAC::imprime(Sortie& os, int ncomp) const
         os << val(som,ncomp) << finl;
     }
   os << finl;
-  Cout << "Champ_Fonc_Q1_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
+  Cout << "Champ_Som_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
   return 1;
 }

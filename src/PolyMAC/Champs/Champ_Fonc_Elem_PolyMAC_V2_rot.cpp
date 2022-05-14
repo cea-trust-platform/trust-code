@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_P0_PolyMAC_V2_rot.cpp
+// File:        Champ_Fonc_Elem_PolyMAC_V2_rot.cpp
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_Fonc_P0_PolyMAC_V2_rot.h>
-#include <Champ_Fonc_P0_PolyMAC.h>
+#include <Champ_Fonc_Elem_PolyMAC_V2_rot.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Face_PolyMAC_V2.h>
 #include <grad_Champ_Face_PolyMAC_V2.h>
 #include <Zone_Cl_PolyMAC.h>
@@ -31,13 +31,13 @@
 #include <Navier_Stokes_std.h>
 
 
-Implemente_instanciable(Champ_Fonc_P0_PolyMAC_V2_rot,"Champ_Fonc_P0_PolyMAC_V2_rot",Champ_Fonc_P0_PolyMAC);
+Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_V2_rot,"Champ_Fonc_Elem_PolyMAC_V2_rot",Champ_Fonc_Elem_PolyMAC);
 
 
 //     printOn()
 /////
 
-Sortie& Champ_Fonc_P0_PolyMAC_V2_rot::printOn(Sortie& s) const
+Sortie& Champ_Fonc_Elem_PolyMAC_V2_rot::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
@@ -45,12 +45,12 @@ Sortie& Champ_Fonc_P0_PolyMAC_V2_rot::printOn(Sortie& s) const
 //// readOn
 //
 
-Entree& Champ_Fonc_P0_PolyMAC_V2_rot::readOn(Entree& s)
+Entree& Champ_Fonc_Elem_PolyMAC_V2_rot::readOn(Entree& s)
 {
   return s ;
 }
 
-void Champ_Fonc_P0_PolyMAC_V2_rot::mettre_a_jour(double tps)
+void Champ_Fonc_Elem_PolyMAC_V2_rot::mettre_a_jour(double tps)
 {
   if (temps()!=tps)
     {
@@ -60,7 +60,7 @@ void Champ_Fonc_P0_PolyMAC_V2_rot::mettre_a_jour(double tps)
   Champ_Fonc_base::mettre_a_jour(tps);
 }
 
-void Champ_Fonc_P0_PolyMAC_V2_rot::me_calculer_2D()
+void Champ_Fonc_Elem_PolyMAC_V2_rot::me_calculer_2D()
 {
   const Champ_Face_PolyMAC_V2& vit = ref_cast(Champ_Face_PolyMAC_V2,champ_a_deriver());
   const Zone_PolyMAC_V2&          zone = ref_cast(Zone_PolyMAC_V2,vit.zone_vf());
@@ -81,7 +81,7 @@ void Champ_Fonc_P0_PolyMAC_V2_rot::me_calculer_2D()
   tab_rot.echange_espace_virtuel();
 }
 
-void Champ_Fonc_P0_PolyMAC_V2_rot::me_calculer_3D()
+void Champ_Fonc_Elem_PolyMAC_V2_rot::me_calculer_3D()
 {
   const Champ_Face_PolyMAC_V2& vit = ref_cast(Champ_Face_PolyMAC_V2,champ_a_deriver());
   const Zone_PolyMAC_V2& zone = ref_cast(Zone_PolyMAC_V2,vit.zone_vf());

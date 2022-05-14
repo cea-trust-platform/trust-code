@@ -14,16 +14,18 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_P0_PolyMAC.cpp
+// File:        Champ_Elem_PolyMAC.cpp
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#include <Echange_contact_PolyMAC_V2.h>
 #include <Echange_contact_PolyMAC.h>
 #include <Schema_Euler_Implicite.h>
+#include <Connectivite_som_elem.h>
 #include <Dirichlet_homogene.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <TRUSTTab_parts.h>
 #include <MD_Vector_base.h>
 #include <Neumann_paroi.h>
@@ -31,22 +33,13 @@
 #include <Zone_Cl_dis.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
-#include <Dirichlet_homogene.h>
-#include <Neumann_paroi.h>
-#include <Echange_contact_PolyMAC.h>
-#include <Echange_contact_PolyMAC_V2.h>
-#include <Connectivite_som_elem.h>
-#include <TRUSTTab_parts.h>
-#include <Schema_Euler_Implicite.h>
-#include <Equation_base.h>
-#include <MD_Vector_base.h>
 #include <array>
 
-Implemente_instanciable(Champ_P0_PolyMAC,"Champ_P0_PolyMAC",Champ_Inc_P0_base);
+Implemente_instanciable(Champ_Elem_PolyMAC,"Champ_Elem_PolyMAC",Champ_Inc_P0_base);
 
-Sortie& Champ_P0_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+Sortie& Champ_Elem_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_P0_PolyMAC::readOn(Entree& s)
+Entree& Champ_Elem_PolyMAC::readOn(Entree& s)
 {
   lire_donnees(s) ;
   return s ;
@@ -65,7 +58,7 @@ Entree& Champ_P0_PolyMAC::readOn(Entree& s)
 // Exception:
 // Effets de bord:
 // Postcondition:
-const Zone_dis_base& Champ_P0_PolyMAC::zone_dis_base() const
+const Zone_dis_base& Champ_Elem_PolyMAC::zone_dis_base() const
 {
   return la_zone_VF.valeur();
 }
@@ -82,7 +75,7 @@ const Zone_dis_base& Champ_P0_PolyMAC::zone_dis_base() const
 // Exception:
 // Effets de bord:
 // Postcondition:
-void Champ_P0_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
+void Champ_Elem_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
 {
   la_zone_VF=ref_cast(Zone_VF, z_dis);
 }
@@ -100,12 +93,12 @@ void Champ_P0_PolyMAC::associer_zone_dis_base(const Zone_dis_base& z_dis)
 // Exception:
 // Effets de bord:
 // Postcondition:
-const Zone_PolyMAC& Champ_P0_PolyMAC::zone_PolyMAC() const
+const Zone_PolyMAC& Champ_Elem_PolyMAC::zone_PolyMAC() const
 {
   return ref_cast(Zone_PolyMAC, la_zone_VF.valeur());
 }
 
-int Champ_P0_PolyMAC::imprime(Sortie& os, int ncomp) const
+int Champ_Elem_PolyMAC::imprime(Sortie& os, int ncomp) const
 {
   const Zone_dis_base& zone_dis = zone_dis_base();
   const Zone& zone = zone_dis.zone();
@@ -126,23 +119,23 @@ int Champ_P0_PolyMAC::imprime(Sortie& os, int ncomp) const
         os << val(som,ncomp) << finl;
     }
   os << finl;
-  Cout << "Champ_P0_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
+  Cout << "Champ_Elem_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
   return 1;
 }
 
-int Champ_P0_PolyMAC::fixer_nb_valeurs_nodales(int n)
+int Champ_Elem_PolyMAC::fixer_nb_valeurs_nodales(int n)
 {
   assert (n == zone_dis_base().zone().nb_elem() || n < 0); //on accepte a la fois les conventions VEF et VDF
   creer_tableau_distribue(zone_dis_base().zone().md_vector_elements());
   return n;
 }
 
-int Champ_P0_PolyMAC::nb_valeurs_nodales() const
+int Champ_Elem_PolyMAC::nb_valeurs_nodales() const
 {
   return la_zone_VF->nb_elem(); //on ignore les variables auxiliaires
 }
 
-void Champ_P0_PolyMAC::init_auxiliary_variables()
+void Champ_Elem_PolyMAC::init_auxiliary_variables()
 {
   const Zone_PolyMAC& zone = ref_cast( Zone_PolyMAC,la_zone_VF.valeur());
   const IntTab& f_e = zone.face_voisins();
@@ -159,7 +152,7 @@ void Champ_P0_PolyMAC::init_auxiliary_variables()
       }
 }
 
-int Champ_P0_PolyMAC::reprendre(Entree& fich)
+int Champ_Elem_PolyMAC::reprendre(Entree& fich)
 {
   const Zone_PolyMAC* zone = la_zone_VF.non_nul() ? &ref_cast( Zone_PolyMAC,la_zone_VF.valeur()) : NULL;
   valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
@@ -170,7 +163,7 @@ int Champ_P0_PolyMAC::reprendre(Entree& fich)
   return ret;
 }
 
-Champ_base& Champ_P0_PolyMAC::affecter_(const Champ_base& ch)
+Champ_base& Champ_Elem_PolyMAC::affecter_(const Champ_base& ch)
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,la_zone_VF.valeur());
   if (ch.valeurs().dimension_tot(0) > zone.nb_elem_tot())
@@ -185,7 +178,7 @@ Champ_base& Champ_P0_PolyMAC::affecter_(const Champ_base& ch)
 }
 
 //utilitaires pour CL
-void Champ_P0_PolyMAC::init_fcl() const
+void Champ_Elem_PolyMAC::init_fcl() const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,la_zone_VF.valeur());
   const Conds_lim& cls = ma_zone_cl_dis.valeur().les_conditions_limites();
@@ -199,14 +192,14 @@ void Champ_P0_PolyMAC::init_fcl() const
                 + 4 * sub_type(Neumann_paroi, cls[n].valeur())      + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_sortie_libre, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
                 + 6 * sub_type(Dirichlet, cls[n].valeur())          + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());
       if (sub_type(Echange_contact_PolyMAC, cls[n].valeur()) || sub_type(Echange_contact_PolyMAC_V2, cls[n].valeur())) idx = 3;
-      if (!idx) Cerr << "Champ_P0_PolyMAC : CL non codee rencontree!" << finl, Process::exit();
+      if (!idx) Cerr << "Champ_Elem_PolyMAC : CL non codee rencontree!" << finl, Process::exit();
       for (i = 0; i < fvf.nb_faces_tot(); i++)
         f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;
     }
   fcl_init_ = 1;
 }
 
-DoubleTab& Champ_P0_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
+DoubleTab& Champ_Elem_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
 {
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, zone_dis_base());
   const IntTab& f_e = zone.face_voisins();

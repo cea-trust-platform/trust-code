@@ -23,13 +23,15 @@
 #include <Echange_contact_PolyMAC.h>
 #include <Schema_Euler_Implicite.h>
 #include <Op_Diff_PolyMAC_Elem.h>
+#include <Op_Diff_PolyMAC_Elem.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Champ_front_calc.h>
-#include <Champ_P0_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Zone_PolyMAC.h>
 #include <Milieu_base.h>
+#include <Operateur.h>
 #include <Front_VF.h>
 #include <cmath>
 

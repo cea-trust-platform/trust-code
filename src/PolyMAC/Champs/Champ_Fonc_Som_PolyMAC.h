@@ -14,23 +14,23 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_P1_PolyMAC.h
+// File:        Champ_Fonc_Som_PolyMAC.h
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Fonc_P1_PolyMAC_included
-#define Champ_Fonc_P1_PolyMAC_included
+#ifndef Champ_Fonc_Som_PolyMAC_included
+#define Champ_Fonc_Som_PolyMAC_included
 
 #include <Champ_Fonc_P1_base.h>
 #include <Ref_Zone_VF.h>
 
 class Zone_PolyMAC;
 
-class Champ_Fonc_P1_PolyMAC : public Champ_Fonc_P1_base
+class Champ_Fonc_Som_PolyMAC : public Champ_Fonc_P1_base
 {
-  Declare_instanciable(Champ_Fonc_P1_PolyMAC);
+  Declare_instanciable(Champ_Fonc_Som_PolyMAC);
 
 public :
 

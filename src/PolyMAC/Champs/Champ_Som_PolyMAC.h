@@ -14,27 +14,40 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_P0_PolyMAC.h
+// File:        Champ_Som_PolyMAC.h
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef Champ_Som_PolyMAC_included
+#define Champ_Som_PolyMAC_included
 
-#ifndef Champ_Fonc_P0_PolyMAC_included
-#define Champ_Fonc_P0_PolyMAC_included
+#include <Champ_Inc_P1_base.h>
+#include <Ref_Zone_VF.h>
 
-#include <Champ_Fonc_P0_base.h>
+class Zone_PolyMAC;
 
-//.DESCRIPTION classe Champ_Fonc_P0_PolyMAC
-//
-
-//.SECTION voir aussi
-// Champ_Fonc_P0
-
-class Champ_Fonc_P0_PolyMAC: public Champ_Fonc_P0_base
+class Champ_Som_PolyMAC : public Champ_Inc_P1_base
 {
-  Declare_instanciable(Champ_Fonc_P0_PolyMAC);
+  Declare_instanciable(Champ_Som_PolyMAC);
+
+public :
+
+  const Zone_PolyMAC&        zone_PolyMAC() const;
+  void                         associer_zone_dis_base(const Zone_dis_base&) override;
+  const Zone_dis_base& zone_dis_base() const override;
+  int                       imprime(Sortie& , int ) const override;
+
+protected :
+
+  REF(Zone_VF) la_zone_VF;
+
+
 };
 
 #endif
+
+
+
+

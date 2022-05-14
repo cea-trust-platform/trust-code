@@ -120,7 +120,7 @@ void Zone_PolyMAC::discretiser()
         }
     }
 
-  //MD_vector pour Champ_P0_PolyMAC (elems + faces)
+  //MD_vector pour Champ_Elem_PolyMAC (elems + faces)
   MD_Vector_composite mdc_ef;
   mdc_ef.add_part(zone().md_vector_elements()), mdc_ef.add_part(md_vector_faces());
   mdv_elems_faces.copy(mdc_ef);

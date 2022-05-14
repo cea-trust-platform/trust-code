@@ -14,51 +14,57 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_P0_PolyMAC_V2.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
+// File:        Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/9
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_P0_PolyMAC_V2_included
-#define Champ_P0_PolyMAC_V2_included
 
-#include <Champ_P0_PolyMAC.h>
-#include <Ref_Zone_VF.h>
-#include <Zone_PolyMAC_V2.h>
-#include <Operateur.h>
+#ifndef Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_included
+#define Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_included
 
-class Zone_PolyMAC_V2;
+#include <Source_base.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_P0_PolyMAC_V2
-// .DESCRIPTION : class Champ_P0_PolyMAC_V2
+#include <Ref_Zone_PolyMAC.h>
+#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Champ_Don.h>
+
+class Probleme_base;
+
 //
-// Champ correspondant a une inconnue scalaire (type temperature ou pression)
-// Degres de libertes : valeur aux elements + flux aux faces
-/////////////////////////////////////////////////////////////////////////////
+// .DESCRIPTION class Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC
+//
 
-class Champ_P0_PolyMAC_V2 : public Champ_P0_PolyMAC
+//
+// .SECTION voir aussi Source_base
+//
+//
+
+class Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC :  public Source_base
+
+
 {
-  Declare_instanciable(Champ_P0_PolyMAC_V2);
 
-public :
+  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC);
 
-  const Zone_PolyMAC_V2&        zone_PolyMAC_V2() const;
+public:
+  int has_interface_blocs() const override
+  {
+    return 1;
+  };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void associer_pb(const Probleme_base& ) override { };
+  void mettre_a_jour(double ) override;
 
-  void init_auxiliary_variables() override { };
-  Champ_base& affecter_(const Champ_base& ch) override { return Champ_Inc_P0_base::affecter_(ch); }
+protected:
 
-  // Fonctions pour le calcul des coefficients du gradient
-  mutable IntTab fgrad_d, fgrad_e;             // Tables used in zone_PolyMAC_V2::fgrad
-  mutable DoubleTab fgrad_w;
-  void init_grad(int full_stencil) const;      // Call to initialise the tables ; no updates necessary
-  void calc_grad(int full_stencil) const;      // Call to calculate the tables ; updates necessary
-  void mettre_a_jour(double tps) override ;
+  REF(Zone_PolyMAC) la_zone_PolyMAC;
+  REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
+  Champ_Don himp_,Text_;
+  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
 
-protected :
-
-  mutable int grad_a_jour = 0;
 };
 
 #endif

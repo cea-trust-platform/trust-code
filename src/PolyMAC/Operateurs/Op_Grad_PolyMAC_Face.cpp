@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Grad_PolyMAC_Face.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Neumann_sortie_libre.h>
@@ -76,7 +76,7 @@ void Op_Grad_PolyMAC_Face::completer()
   Operateur_Grad_base::completer();
   const Zone_PolyMAC& zone = ref_zone.valeur();
   /* initialisation des inconnues auxiliaires de la pression... */
-  ref_cast(Champ_P0_PolyMAC, ref_cast(Navier_Stokes_std, equation()).pression().valeur()).init_auxiliary_variables();
+  ref_cast(Champ_Elem_PolyMAC, ref_cast(Navier_Stokes_std, equation()).pression().valeur()).init_auxiliary_variables();
   /* et de grad P si la vitesse en a */
   if (equation().inconnue().valeurs().get_md_vector() == zone.mdv_faces_aretes)
     ref_cast(Champ_Face_PolyMAC, ref_cast(Navier_Stokes_std, equation()).grad_P().valeur()).init_auxiliary_variables();

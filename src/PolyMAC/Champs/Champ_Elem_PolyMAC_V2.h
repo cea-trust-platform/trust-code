@@ -14,40 +14,51 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_Q1_PolyMAC.h
+// File:        Champ_Elem_PolyMAC_V2.h
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Fonc_Q1_PolyMAC_included
-#define Champ_Fonc_Q1_PolyMAC_included
+#ifndef Champ_Elem_PolyMAC_V2_included
+#define Champ_Elem_PolyMAC_V2_included
 
-#include <Champ_Fonc_Q1_base.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Ref_Zone_VF.h>
+#include <Zone_PolyMAC_V2.h>
+#include <Operateur.h>
 
-class Zone_PolyMAC;
+class Zone_PolyMAC_V2;
 
-class Champ_Fonc_Q1_PolyMAC : public Champ_Fonc_Q1_base
+/////////////////////////////////////////////////////////////////////////////
+// .NAME        : Champ_Elem_PolyMAC_V2
+// .DESCRIPTION : class Champ_Elem_PolyMAC_V2
+//
+// Champ correspondant a une inconnue scalaire (type temperature ou pression)
+// Degres de libertes : valeur aux elements + flux aux faces
+/////////////////////////////////////////////////////////////////////////////
+
+class Champ_Elem_PolyMAC_V2 : public Champ_Elem_PolyMAC
 {
-  Declare_instanciable(Champ_Fonc_Q1_PolyMAC);
+  Declare_instanciable(Champ_Elem_PolyMAC_V2);
 
 public :
 
-  const Zone_PolyMAC&        zone_PolyMAC() const;
-  void                         associer_zone_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  int                       imprime(Sortie& , int ) const override;
-  void mettre_a_jour(double ) override;
+  const Zone_PolyMAC_V2&        zone_PolyMAC_V2() const;
+
+  void init_auxiliary_variables() override { };
+  Champ_base& affecter_(const Champ_base& ch) override { return Champ_Inc_P0_base::affecter_(ch); }
+
+  // Fonctions pour le calcul des coefficients du gradient
+  mutable IntTab fgrad_d, fgrad_e;             // Tables used in zone_PolyMAC_V2::fgrad
+  mutable DoubleTab fgrad_w;
+  void init_grad(int full_stencil) const;      // Call to initialise the tables ; no updates necessary
+  void calc_grad(int full_stencil) const;      // Call to calculate the tables ; updates necessary
+  void mettre_a_jour(double tps) override ;
+
 protected :
 
-  REF(Zone_VF) la_zone_VF;
-
-
+  mutable int grad_a_jour = 0;
 };
 
 #endif
-
-
-
-

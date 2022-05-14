@@ -14,17 +14,17 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_P0_PolyMAC_V2_rot.h
+// File:        Champ_Fonc_Elem_PolyMAC_V2_TC.h
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     /main/7
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_Fonc_P0_PolyMAC_V2_rot_included
-#define Champ_Fonc_P0_PolyMAC_V2_rot_included
+#ifndef Champ_Fonc_Elem_PolyMAC_V2_TC_included
+#define Champ_Fonc_Elem_PolyMAC_V2_TC_included
 
 #include <Champ_Fonc_Face_PolyMAC.h>
-#include <Champ_Fonc_P0_PolyMAC.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Fonc.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC_V2.h>
@@ -35,26 +35,26 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 // .DESCRIPTION
-//    class Champ_Fonc_P0_PolyMAC_V2_rot for the calculation of the vorticity
-//      This field is a Champ_Fonc_P0_PolyMAC_V2 with 1 value per element and per phase in 2D and 3 in 3D
-//      It isn't a Champ_Fonc_Face_PolyMAC_V2 as there is no physical justification to project the vorticity on a face
-//      In 3D, Champ_Fonc_P0_PolyMAC_V2_TC::valeurs()(e, n*D + d) returns the value of phase n in element e along the d component
-//      The vorticity is calculated by hand in 2D and 3D using the values of the gradient
+//    class Champ_Fonc_Elem_PolyMAC_V2_TC for the calculation of the shear rate (taux de cisaillement)
+//      This field is a Champ_Fonc_Elem_PolyMAC_V2 with 1 value per element and per phase :
+//      Champ_Fonc_Elem_PolyMAC_V2_TC::valeurs()(e, n) returns the value of phase n in element e
+//      The shear rate is calculated using
+//        shear rate = sqrt(2*Sij*Sij)
+//        Sij = 1/2(grad(u)+t grad(u))
 //
 //////////////////////////////////////////////////////////////////////////////
 
-class Champ_Fonc_P0_PolyMAC_V2_rot : public Champ_Fonc_P0_PolyMAC
+class Champ_Fonc_Elem_PolyMAC_V2_TC : public Champ_Fonc_Elem_PolyMAC
 
 {
 
-  Declare_instanciable(Champ_Fonc_P0_PolyMAC_V2_rot);
+  Declare_instanciable(Champ_Fonc_Elem_PolyMAC_V2_TC);
 
 public:
 
-  void mettre_a_jour(double tps) override;
-  inline void associer_champ(const Champ_Face_PolyMAC_V2& cha);
-  void me_calculer_2D();
-  void me_calculer_3D();
+  inline void mettre_a_jour(double ) override;
+  inline void associer_champ(const Champ_Face_PolyMAC_V2& );
+  void me_calculer(double tps);
 
   inline virtual       Champ_Face_PolyMAC_V2& champ_a_deriver()      ;
   inline virtual const Champ_Face_PolyMAC_V2& champ_a_deriver() const;
@@ -64,17 +64,23 @@ protected:
   REF(Champ_Face_PolyMAC_V2) champ_;
 };
 
-inline void Champ_Fonc_P0_PolyMAC_V2_rot::associer_champ(const Champ_Face_PolyMAC_V2& cha)
+inline void Champ_Fonc_Elem_PolyMAC_V2_TC::mettre_a_jour(double tps)
 {
-  Cout << "On associe la vorticite au champ de vitesse " << finl ;
-  champ_= cha;
+  if (temps()!=tps) me_calculer(tps);
+  Champ_Fonc_base::mettre_a_jour(tps);
 }
 
-inline Champ_Face_PolyMAC_V2& Champ_Fonc_P0_PolyMAC_V2_rot::champ_a_deriver()
+inline void Champ_Fonc_Elem_PolyMAC_V2_TC::associer_champ(const Champ_Face_PolyMAC_V2& ch)
+{
+  Cerr << "On associe le taux de cisaillement au champ de vitesse " << finl ;
+  champ_= ch;
+}
+
+inline Champ_Face_PolyMAC_V2& Champ_Fonc_Elem_PolyMAC_V2_TC::champ_a_deriver()
 {
   return champ_.valeur();
 }
-inline const Champ_Face_PolyMAC_V2& Champ_Fonc_P0_PolyMAC_V2_rot::champ_a_deriver() const
+inline const Champ_Face_PolyMAC_V2& Champ_Fonc_Elem_PolyMAC_V2_TC::champ_a_deriver() const
 {
   return champ_.valeur();
 }

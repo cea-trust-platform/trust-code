@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <grad_Champ_Face_PolyMAC_V2.h>
-#include <Champ_Fonc_P0_PolyMAC.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Face_PolyMAC_V2.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Zone_Cl_dis_base.h>

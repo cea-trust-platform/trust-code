@@ -32,7 +32,6 @@
 #include <Champ_Face_PolyMAC.h>
 #include <Flux_parietal_base.h>
 #include <Schema_Temps_base.h>
-#include <Champ_P0_PolyMAC.h>
 #include <MD_Vector_tools.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
@@ -53,22 +52,9 @@
 
 Implemente_base(Op_Diff_PolyMAC_base,"Op_Diff_PolyMAC_base",Operateur_Diff_base);
 
-//// printOn
-//
+Sortie& Op_Diff_PolyMAC_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
-Sortie& Op_Diff_PolyMAC_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-
-//// readOn
-//
-
-Entree& Op_Diff_PolyMAC_base::readOn(Entree& s )
-{
-  return s ;
-}
+Entree& Op_Diff_PolyMAC_base::readOn(Entree& s ) { return s ; }
 
 void Op_Diff_PolyMAC_base::mettre_a_jour(double t)
 {

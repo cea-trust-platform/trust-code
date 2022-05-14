@@ -23,11 +23,11 @@
 #include <PolyMAC_V2_discretisation.h>
 #include <Zone_PolyMAC_V2.h>
 #include <Champ_Fonc_Tabule.h>
-//#include <Ch_Fonc_P1_PolyMAC_V2.h>
-#include <Champ_Fonc_P0_PolyMAC.h>
-#include <Champ_Fonc_P0_PolyMAC_V2_TC.h>
-#include <Champ_Fonc_P0_PolyMAC_V2_rot.h>
-#include <Champ_Fonc_Tabule_P0_PolyMAC.h>
+//#include <Ch_Fonc_Som_PolyMAC_V2.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <Champ_Fonc_Elem_PolyMAC_V2_TC.h>
+#include <Champ_Fonc_Elem_PolyMAC_V2_rot.h>
+#include <Champ_Fonc_Tabule_Elem_PolyMAC.h>
 #include <grad_Champ_Face_PolyMAC_V2.h>
 
 #include <Milieu_base.h>
@@ -60,11 +60,11 @@ void PolyMAC_V2_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,
 
 #ifdef dependance
   Cerr << "Discretisation de y_plus" << finl;
-  const Champ_P1_PolyMAC_V2& vit = ref_cast(Champ_P1_PolyMAC_V2,ch_vitesse.valeur());
+  const Champ_Som_PolyMAC_V2& vit = ref_cast(Champ_Som_PolyMAC_V2,ch_vitesse.valeur());
   const Zone_PolyMAC_V2& zone_PolyMAC_V2=ref_cast(Zone_PolyMAC_V2, z.valeur());
   const Zone_Cl_PolyMAC& Zone_Cl_PolyMAC=ref_cast(Zone_Cl_PolyMAC, zcl.valeur());
-  ch.typer("Y_plus_Champ_P1_PolyMAC_V2");
-  Y_plus_Champ_P1_PolyMAC_V2& ch_yp=ref_cast(Y_plus_Champ_P1_PolyMAC_V2,ch.valeur());
+  ch.typer("Y_plus_Champ_Som_PolyMAC_V2");
+  Y_plus_Champ_Som_PolyMAC_V2& ch_yp=ref_cast(Y_plus_Champ_Som_PolyMAC_V2,ch.valeur());
   ch_yp.associer_zone_dis_base(zone_PolyMAC_V2);
   ch_yp.associer_zone_Cl_dis_base(Zone_Cl_PolyMAC);
   ch_yp.associer_champ(vit);
@@ -119,8 +119,8 @@ void PolyMAC_V2_discretisation::taux_cisaillement(const Zone_dis& z, const Zone_
 //  const Zone_PolyMAC_V2&          zone_poly = ref_cast(Zone_PolyMAC_V2, z.valeur());
   const Zone_PolyMAC_V2&          zone = ref_cast(Zone_PolyMAC_V2, vit.zone_dis_base());
 
-  ch.typer("Champ_Fonc_P0_PolyMAC_V2_TC");
-  Champ_Fonc_P0_PolyMAC_V2_TC&   ch_grad_u = ref_cast(Champ_Fonc_P0_PolyMAC_V2_TC,ch.valeur()); //
+  ch.typer("Champ_Fonc_Elem_PolyMAC_V2_TC");
+  Champ_Fonc_Elem_PolyMAC_V2_TC&   ch_grad_u = ref_cast(Champ_Fonc_Elem_PolyMAC_V2_TC,ch.valeur()); //
 
   ch_grad_u.associer_zone_dis_base(zone);
   ch_grad_u.associer_champ(vit);
@@ -141,8 +141,8 @@ void PolyMAC_V2_discretisation::creer_champ_vorticite(const Schema_Temps_base& s
   const Zone_PolyMAC_V2&          zone = ref_cast(Zone_PolyMAC_V2, vit.zone_dis_base());
   int N = vit.valeurs().line_size();
 
-  ch.typer("Champ_Fonc_P0_PolyMAC_V2_rot");
-  Champ_Fonc_P0_PolyMAC_V2_rot&  ch_rot_u = ref_cast(Champ_Fonc_P0_PolyMAC_V2_rot,ch.valeur());
+  ch.typer("Champ_Fonc_Elem_PolyMAC_V2_rot");
+  Champ_Fonc_Elem_PolyMAC_V2_rot&  ch_rot_u = ref_cast(Champ_Fonc_Elem_PolyMAC_V2_rot,ch.valeur());
 
   ch_rot_u.associer_zone_dis_base(zone);
   ch_rot_u.associer_champ(vit);

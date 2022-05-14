@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_P0_PolyMAC.h
+// File:        Champ_Elem_PolyMAC.h
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Champ_P0_PolyMAC_included
-#define Champ_P0_PolyMAC_included
+#ifndef Champ_Elem_PolyMAC_included
+#define Champ_Elem_PolyMAC_included
 
 #include <Champ_Inc_P0_base.h>
 #include <Ref_Zone_VF.h>
@@ -32,16 +32,16 @@
 class Zone_PolyMAC;
 
 /////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_P0_PolyMAC
-// .DESCRIPTION : class Champ_P0_PolyMAC
+// .NAME        : Champ_Elem_PolyMAC
+// .DESCRIPTION : class Champ_Elem_PolyMAC
 //
 // Champ correspondant a une inconnue scalaire (type temperature ou pression)
 // Degres de libertes : valeur aux elements + flux aux faces
 /////////////////////////////////////////////////////////////////////////////
 
-class Champ_P0_PolyMAC : public Champ_Inc_P0_base
+class Champ_Elem_PolyMAC : public Champ_Inc_P0_base
 {
-  Declare_instanciable(Champ_P0_PolyMAC);
+  Declare_instanciable(Champ_Elem_PolyMAC);
 
 public :
 
@@ -84,7 +84,7 @@ protected :
   mutable int fcl_init_ = 0;
 };
 
-inline DoubleTab& Champ_P0_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
+inline DoubleTab& Champ_Elem_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
   /* dimensionnement du tableau de destination x si necessaire */
   const DoubleTab& src = valeurs();

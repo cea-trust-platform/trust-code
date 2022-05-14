@@ -22,7 +22,7 @@
 
 #include <Flux_interfacial_PolyMAC.h>
 #include <Zone_PolyMAC.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Matrix_tools.h>
 #include <Pb_Multiphase.h>
 #include <Champ_Uniforme.h>
@@ -33,7 +33,7 @@
 #include <Op_Diff_PolyMAC_V2_Elem.h>
 #include <Aire_interfaciale.h>
 
-Implemente_instanciable(Flux_interfacial_PolyMAC,"Flux_interfacial_P0_PolyMAC|Flux_interfacial_P0_PolyMAC_V2", Source_base);
+Implemente_instanciable(Flux_interfacial_PolyMAC,"Flux_interfacial_Elem_PolyMAC|Flux_interfacial_Elem_PolyMAC_V2", Source_base);
 
 Sortie& Flux_interfacial_PolyMAC::printOn(Sortie& os) const
 {
@@ -50,7 +50,7 @@ Entree& Flux_interfacial_PolyMAC::readOn(Entree& is)
 
 void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
 
@@ -89,7 +89,7 @@ void Flux_interfacial_PolyMAC::completer()
 void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
+  const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur());
   // Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());

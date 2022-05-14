@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -121,7 +121,7 @@ public :
   //anisotrope -> nu(n_e, N, D) (anisotrope diagonal) ou nu(n_e, N, D, D) (anisotrope complet)
   //la matrice en sortie est de taile (n_f, n_f, N) (pour M2/W2) ou (n_a, n_a, N) (pour M1 / W1)
 
-  //MD_Vectors pour Champ_P0_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
+  //MD_Vectors pour Champ_Elem_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
   mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
 
 private:

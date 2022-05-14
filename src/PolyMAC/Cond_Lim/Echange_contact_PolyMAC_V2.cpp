@@ -28,7 +28,7 @@
 #include <Milieu_base.h>
 #include <Zone_PolyMAC_V2.h>
 #include <Equation_base.h>
-#include <Champ_P0_PolyMAC_V2.h>
+#include <Champ_Elem_PolyMAC_V2.h>
 #include <Operateur.h>
 #include <Op_Diff_PolyMAC_V2_Elem.h>
 #include <Front_VF.h>

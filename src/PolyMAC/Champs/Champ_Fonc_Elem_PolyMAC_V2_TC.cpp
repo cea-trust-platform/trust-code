@@ -14,14 +14,14 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_P0_PolyMAC_V2_TC.cpp
+// File:        Champ_Fonc_Elem_PolyMAC_V2_TC.cpp
 // Directory:   $TRUST_ROOT/src/PolyMAC/Champs
 // Version:     /main/8
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_Fonc_P0_PolyMAC_V2_TC.h>
-#include <Champ_Fonc_P0_PolyMAC.h>
+#include <Champ_Fonc_Elem_PolyMAC_V2_TC.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Face_PolyMAC_V2.h>
 #include <grad_Champ_Face_PolyMAC_V2.h>
 #include <Zone_Cl_PolyMAC.h>
@@ -32,19 +32,19 @@
 #include <cmath>
 
 
-Implemente_instanciable(Champ_Fonc_P0_PolyMAC_V2_TC,"Champ_Fonc_P0_PolyMAC_V2_TC",Champ_Fonc_P0_PolyMAC);
+Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_V2_TC,"Champ_Fonc_Elem_PolyMAC_V2_TC",Champ_Fonc_Elem_PolyMAC);
 
-Sortie& Champ_Fonc_P0_PolyMAC_V2_TC::printOn(Sortie& s) const
+Sortie& Champ_Fonc_Elem_PolyMAC_V2_TC::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Champ_Fonc_P0_PolyMAC_V2_TC::readOn(Entree& s)
+Entree& Champ_Fonc_Elem_PolyMAC_V2_TC::readOn(Entree& s)
 {
   return s ;
 }
 
-void Champ_Fonc_P0_PolyMAC_V2_TC::me_calculer(double tps) //See Pope 2000 page 367 for ref
+void Champ_Fonc_Elem_PolyMAC_V2_TC::me_calculer(double tps) //See Pope 2000 page 367 for ref
 {
   const Champ_Face_PolyMAC_V2& vitesse = ref_cast(Champ_Face_PolyMAC_V2,champ_.valeur());
   const Zone_PolyMAC_V2& zone = ref_cast(Zone_PolyMAC_V2,vitesse.zone_vf());

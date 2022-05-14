@@ -31,7 +31,7 @@
 #include <Echange_externe_impose.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
-#include <Champ_P0_PolyMAC_V2.h>
+#include <Champ_Elem_PolyMAC_V2.h>
 #include <Champ_front_calc.h>
 #include <Modele_turbulence_scal_base.h>
 #include <Synonyme_info.h>
@@ -42,7 +42,7 @@
 #include <Flux_parietal_base.h>
 
 Implemente_instanciable_sans_constructeur(Op_Diff_PolyMAC_V2_Elem, "Op_Diff_PolyMAC_V2_Elem|Op_Diff_PolyMAC_V2_var_Elem", Op_Diff_PolyMAC_V2_base);
-Implemente_instanciable(Op_Dift_PolyMAC_V2_Elem, "Op_Dift_PolyMAC_V2_P0_PolyMAC_V2|Op_Dift_PolyMAC_V2_var_P0_PolyMAC_V2", Op_Diff_PolyMAC_V2_Elem);
+Implemente_instanciable(Op_Dift_PolyMAC_V2_Elem, "Op_Dift_PolyMAC_V2_Elem_PolyMAC_V2|Op_Dift_PolyMAC_V2_var_Elem_PolyMAC_V2", Op_Diff_PolyMAC_V2_Elem);
 Implemente_ref(Op_Diff_PolyMAC_V2_Elem);
 
 Op_Diff_PolyMAC_V2_Elem::Op_Diff_PolyMAC_V2_Elem()
@@ -74,7 +74,7 @@ void Op_Diff_PolyMAC_V2_Elem::completer()
 {
   Op_Diff_PolyMAC_V2_base::completer();
   const Equation_base& eq = equation();
-  const Champ_P0_PolyMAC_V2& ch = ref_cast(Champ_P0_PolyMAC_V2, eq.inconnue().valeur());
+  const Champ_Elem_PolyMAC_V2& ch = ref_cast(Champ_Elem_PolyMAC_V2, eq.inconnue().valeur());
   const Zone_PolyMAC_V2& zone = la_zone_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_V2_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
@@ -143,7 +143,7 @@ void Op_Diff_PolyMAC_V2_Elem::init_som_ext() const
   std::vector<std::reference_wrapper<const Zone_PolyMAC_V2>> zones;
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_s;
   for (auto &&op : op_ext) zones.push_back(std::ref(ref_cast(Zone_PolyMAC_V2, op->equation().zone_dis().valeur())));
-  for (auto &&op : op_ext) fcl.push_back(std::ref(ref_cast(Champ_P0_PolyMAC_V2, op->equation().inconnue().valeur()).fcl()));
+  for (auto &&op : op_ext) fcl.push_back(std::ref(ref_cast(Champ_Elem_PolyMAC_V2, op->equation().inconnue().valeur()).fcl()));
   for (auto &&zo : zones) zo.get().init_som_elem(), e_f.push_back(std::ref(zo.get().elem_faces())), f_s.push_back(std::ref(zo.get().face_sommets()));
 
   /* autres CLs (hors Echange_contact) devant etre traitees par som_ext : Echange_impose_base, tout si Pb_Multiphase avec Flux_parietal_base */
@@ -281,7 +281,7 @@ void Op_Diff_PolyMAC_V2_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
       cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_V2_Elem, *op_ext[i]).nu());
       const Champ_Inc& ch_inc = op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue();
-      const Champ_P0_PolyMAC_V2& ch = ref_cast(Champ_P0_PolyMAC_V2, ch_inc.valeur());
+      const Champ_Elem_PolyMAC_V2& ch = ref_cast(Champ_Elem_PolyMAC_V2, ch_inc.valeur());
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs()));
       N.push_back(inco[i].get().line_size()), fcl.push_back(std::ref(ch.fcl()));
     }
