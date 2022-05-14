@@ -289,7 +289,7 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       //Calcul de Un+1 = U* -delta_t*delta_P
       current -= gradP;
-      eqn.solv_masse().corriger_solution(current, current); //pour PolyMAC_V2 : sert a corriger ve
+      eqn.solv_masse().corriger_solution(current, current); //pour PolyMAC_P0 : sert a corriger ve
       current.echange_espace_virtuel();
       divergence.calculer(current,secmem);
 

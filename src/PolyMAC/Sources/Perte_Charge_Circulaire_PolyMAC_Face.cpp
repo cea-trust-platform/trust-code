@@ -33,7 +33,7 @@
 #include <Schema_Temps_base.h>
 #include <TRUSTTrav.h>
 
-Implemente_instanciable(Perte_Charge_Circulaire_PolyMAC_Face,"Perte_Charge_Circulaire_Face_PolyMAC|Perte_Charge_Circulaire_Face_PolyMAC_V2",Perte_Charge_PolyMAC);
+Implemente_instanciable(Perte_Charge_Circulaire_PolyMAC_Face,"Perte_Charge_Circulaire_Face_PolyMAC|Perte_Charge_Circulaire_Face_PolyMAC_P0",Perte_Charge_PolyMAC);
 
 
 Sortie& Perte_Charge_Circulaire_PolyMAC_Face::printOn(Sortie& s ) const

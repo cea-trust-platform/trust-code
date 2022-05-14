@@ -24,7 +24,7 @@
 #include <Champ_Uniforme.h>
 #include <Zone_Cl_dis.h>
 #include <Zone_PolyMAC.h>
-#include <Zone_PolyMAC_V2.h>
+#include <Zone_PolyMAC_P0.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Op_Grad_PolyMAC_Face.h>
@@ -32,7 +32,7 @@
 #include <Milieu_base.h>
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable(Terme_Source_Qdm_Face_PolyMAC,"Source_Qdm_face_PolyMAC|Source_Qdm_face_PolyMAC_V2",Source_base);
+Implemente_instanciable(Terme_Source_Qdm_Face_PolyMAC,"Source_Qdm_face_PolyMAC|Source_Qdm_face_PolyMAC_P0",Source_base);
 
 Sortie& Terme_Source_Qdm_Face_PolyMAC::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
@@ -63,7 +63,7 @@ void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab
   const DoubleVect& pe = zone.porosite_elem(), &ve = zone.volumes(), &pf = zone.porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
   int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = zone.nb_faces_tot(),
-               n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, calc_cl = !sub_type(Zone_PolyMAC_V2, zone); //en PolyMAC V1, on calcule aux CL
+               n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, calc_cl = !sub_type(Zone_PolyMAC_P0, zone); //en PolyMAC V1, on calcule aux CL
 
   /* contributions aux faces (par chaque voisin), aux elems */
   DoubleTrav a_f(N), rho_f(N), val_f(N), rho_m(2);
@@ -94,7 +94,7 @@ void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab
           secmem(f, n) += pf(f) * vf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
 
   /* en PolyMAC V2 : partie aux elements */
-  if (sub_type(Zone_PolyMAC_V2, zone)) for (e = 0; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+  if (sub_type(Zone_PolyMAC_P0, zone)) for (e = 0; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
           secmem(nf_tot + D * e + d, n) += pe(e) * ve(e) * (alp ? rho(!cR * e, n) * (*alp)(e, n) : 1) * vals(!cS * e, N * d + n);
 }
 

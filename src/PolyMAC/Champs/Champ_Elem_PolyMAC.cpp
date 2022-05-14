@@ -20,9 +20,16 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Echange_contact_PolyMAC_V2.h>
+#include <Champ_Elem_PolyMAC.h>
+#include <Zone_Cl_dis.h>
+#include <Zone_Cl_PolyMAC.h>
+#include <Domaine.h>
+#include <Dirichlet.h>
+#include <Symetrie.h>
+#include <Dirichlet_homogene.h>
+#include <Neumann_paroi.h>
 #include <Echange_contact_PolyMAC.h>
-#include <Schema_Euler_Implicite.h>
+#include <Echange_contact_PolyMAC_P0.h>
 #include <Connectivite_som_elem.h>
 #include <Dirichlet_homogene.h>
 #include <Champ_Elem_PolyMAC.h>
@@ -191,7 +198,7 @@ void Champ_Elem_PolyMAC::init_fcl() const
       int idx = sub_type(Echange_externe_impose, cls[n].valeur()) + 2 * sub_type(Echange_global_impose, cls[n].valeur())
                 + 4 * sub_type(Neumann_paroi, cls[n].valeur())      + 5 * (sub_type(Neumann_homogene, cls[n].valeur()) || sub_type(Neumann_sortie_libre, cls[n].valeur()) || sub_type(Symetrie, cls[n].valeur()))
                 + 6 * sub_type(Dirichlet, cls[n].valeur())          + 7 * sub_type(Dirichlet_homogene, cls[n].valeur());
-      if (sub_type(Echange_contact_PolyMAC, cls[n].valeur()) || sub_type(Echange_contact_PolyMAC_V2, cls[n].valeur())) idx = 3;
+      if (sub_type(Echange_contact_PolyMAC, cls[n].valeur()) || sub_type(Echange_contact_PolyMAC_P0, cls[n].valeur())) idx = 3;
       if (!idx) Cerr << "Champ_Elem_PolyMAC : CL non codee rencontree!" << finl, Process::exit();
       for (i = 0; i < fvf.nb_faces_tot(); i++)
         f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;

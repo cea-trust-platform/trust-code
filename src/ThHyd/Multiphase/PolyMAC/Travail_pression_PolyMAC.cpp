@@ -29,7 +29,7 @@
 #include <Op_Conv_EF_Stab_PolyMAC_Elem.h>
 #include <cfloat>
 
-Implemente_instanciable(Travail_pression_PolyMAC,"Travail_pression_Elem_PolyMAC|Travail_pression_Elem_PolyMAC_V2", Source_base);
+Implemente_instanciable(Travail_pression_PolyMAC,"Travail_pression_Elem_PolyMAC|Travail_pression_Elem_PolyMAC_P0", Source_base);
 // XD travail_pression source_base travail_pression 0 Source term which corresponds to the additional pressure work term that appears when dealing with compressible multiphase fluids
 
 Sortie& Travail_pression_PolyMAC::printOn(Sortie& os) const

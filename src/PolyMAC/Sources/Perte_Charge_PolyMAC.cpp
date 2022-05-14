@@ -25,7 +25,7 @@
 #include <Equation_base.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Zone_PolyMAC.h>
-#include <Zone_PolyMAC_V2.h>
+#include <Zone_PolyMAC_P0.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
 #include <Champ_Uniforme.h>
@@ -68,7 +68,7 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const Sous_Zone *pssz = sous_zone ? &la_sous_zone.valeur() : NULL;
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
-  int i, j, f, d, D = dimension, C_nu = nu.dimension(0) == 1, C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur()), n, N = vit.line_size(), poly_v2 = sub_type(Zone_PolyMAC_V2, zone), nf_tot = zone.nb_faces_tot();
+  int i, j, f, d, D = dimension, C_nu = nu.dimension(0) == 1, C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur()), n, N = vit.line_size(), poly_v2 = sub_type(Zone_PolyMAC_P0, zone), nf_tot = zone.nb_faces_tot();
   double t = equation().schema_temps().temps_courant();
   DoubleTrav pos(D), vit_e(D), dir(D), C(N);
 

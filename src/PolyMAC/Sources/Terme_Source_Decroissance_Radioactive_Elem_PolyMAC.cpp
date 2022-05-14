@@ -29,9 +29,9 @@
 #include <Synonyme_info.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC,"Decroissance_Radioactive_Elem_PolyMAC|Decroissance_Radioactive_Elem_PolyMAC_V2",Source_base);
+Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC,"Decroissance_Radioactive_Elem_PolyMAC|Decroissance_Radioactive_Elem_PolyMAC_P0",Source_base);
 Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC,"radioactive_decay_Elem_PolyMAC");
-Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC,"radioactive_decay_Elem_PolyMAC_V2");
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC,"radioactive_decay_Elem_PolyMAC_P0");
 
 //// printOn
 //

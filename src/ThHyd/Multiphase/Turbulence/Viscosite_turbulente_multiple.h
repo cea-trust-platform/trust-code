@@ -32,7 +32,7 @@
 //    classe Viscosite_turbulente_multiple
 //    Classe qui peut contenir plusieurs viscosites turbulentes pour faire de la turbulence monophasique + diphasique
 //    En pratique, la viscosite turbulente n'est que monophasique et l'operateur de diffusion reste identique
-//    La classe Source_BIF_PolyMAC_V2 appelle reynolds_stress_BIF et entre les termes de divergence du tenseur de Reynolds
+//    La classe Source_BIF_PolyMAC_P0 appelle reynolds_stress_BIF et entre les termes de divergence du tenseur de Reynolds
 //      en explicite dans la QDM
 //
 //////////////////////////////////////////////////////////////////////////////

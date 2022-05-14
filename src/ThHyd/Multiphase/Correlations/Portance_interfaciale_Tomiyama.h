@@ -29,7 +29,7 @@
 // .DESCRIPTION
 //    classe Portance_interfaciale_Tomiyama
 //      coefficients de portance interfaciale d'un ecoulement a bulles deformables
-//      Le coefficient renvoye par cette classe est toujours >0, c'est Portanc_interfaciale_PolyMAC_V2 qui gere les signes
+//      Le coefficient renvoye par cette classe est toujours >0, c'est Portanc_interfaciale_PolyMAC_P0 qui gere les signes
 //////////////////////////////////////////////////////////////////////////////
 
 class Portance_interfaciale_Tomiyama : public Portance_interfaciale_base

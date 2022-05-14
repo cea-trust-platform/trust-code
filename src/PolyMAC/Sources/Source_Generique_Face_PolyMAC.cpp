@@ -21,13 +21,13 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Source_Generique_Face_PolyMAC.h>
-#include <Zone_PolyMAC_V2.h>
+#include <Zone_PolyMAC_P0.h>
 #include <Zone_Cl_PolyMAC.h>
 #include <Zone_Cl_dis.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Equation_base.h>
 
-Implemente_instanciable(Source_Generique_Face_PolyMAC, "Source_Generique_Face_PolyMAC|Source_Generique_Face_PolyMAC_V2", Source_Generique_base);
+Implemente_instanciable(Source_Generique_Face_PolyMAC, "Source_Generique_Face_PolyMAC|Source_Generique_Face_PolyMAC_P0", Source_Generique_base);
 
 
 Sortie& Source_Generique_Face_PolyMAC::printOn(Sortie& os) const
@@ -63,7 +63,7 @@ DoubleTab& Source_Generique_Face_PolyMAC::ajouter(DoubleTab& resu) const
   const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
   const DoubleVect& pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
-  for (int f = 0, calc_cl = !sub_type(Zone_PolyMAC_V2, zone); f < zone.nb_faces(); f++) if (calc_cl || fcl(f, 0) < 2)
+  for (int f = 0, calc_cl = !sub_type(Zone_PolyMAC_P0, zone); f < zone.nb_faces(); f++) if (calc_cl || fcl(f, 0) < 2)
       resu(f) += pf(f) * vf(f) * la_source.valeurs()(f);
   return resu;
 }

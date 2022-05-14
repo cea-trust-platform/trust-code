@@ -220,11 +220,11 @@ int Cond_lim_utilisateur_base::is_pb_PolyMAC()
   else
     return 0;
 }
-int Cond_lim_utilisateur_base::is_pb_PolyMAC_V2()
+int Cond_lim_utilisateur_base::is_pb_PolyMAC_P0()
 {
   const Discretisation_base& discr=mon_equation->discretisation();
   Nom nom_discr=discr.que_suis_je();
-  if (nom_discr=="PolyMAC_V2")
+  if (nom_discr=="PolyMAC_P0")
     return 1;
   else
     return 0;
@@ -332,7 +332,7 @@ void paroi_contact::complement(Nom& ajout)
       exit();
     }
 
-  if (is_pb_VDF() || is_pb_PolyMAC() || is_pb_PolyMAC_V2())
+  if (is_pb_VDF() || is_pb_PolyMAC() || is_pb_PolyMAC_P0())
     {
       if (is_pb_VDF())
         {
@@ -343,7 +343,7 @@ void paroi_contact::complement(Nom& ajout)
             ajout = "Paroi_Echange_contact_rayo_semi_transp_VDF ";
         }
       else
-        ajout = is_pb_PolyMAC() ? "paroi_echange_contact_PolyMAC " : "paroi_echange_contact_PolyMAC_V2 ";
+        ajout = is_pb_PolyMAC() ? "paroi_echange_contact_PolyMAC " : "paroi_echange_contact_PolyMAC_P0 ";
 
       ajout += nom_autre_pb;
       ajout += " ";
@@ -419,10 +419,10 @@ void paroi_contact_fictif::complement(Nom& ajout)
       ajout+=" temperature ";
       ajout+=Nom(conduct_fictif/ep_fictif,"%e");
     }
-  else if (is_pb_PolyMAC_V2())
+  else if (is_pb_PolyMAC_P0())
     {
-      //paroi_echange_contact_PolyMAC_V2 pb2 Droit1 temperature conduc / ep
-      ajout= "paroi_echange_contact_PolyMAC_V2 ";
+      //paroi_echange_contact_PolyMAC_P0 pb2 Droit1 temperature conduc / ep
+      ajout= "paroi_echange_contact_PolyMAC_P0 ";
       ajout+=nom_autre_pb;
       ajout+=" ";
       ajout+=nom_autre_bord;

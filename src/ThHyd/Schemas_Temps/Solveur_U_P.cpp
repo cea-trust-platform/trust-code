@@ -151,7 +151,7 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
   pression += Inconnues_parts[1];
   //current.echange_espace_virtuel();
   Debog::verifier("Solveur_U_P::iterer_NS current",current);
-  eqn.solv_masse().corriger_solution(current, current);    //PolyMAC_V2 : mise en coherence de ve avec vf
+  eqn.solv_masse().corriger_solution(current, current);    //PolyMAC_P0 : mise en coherence de ve avec vf
   eqnNS.assembleur_pression().modifier_solution(pression);
 
   if (1)

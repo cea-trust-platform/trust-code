@@ -39,7 +39,7 @@
 #include <Operateur.h>
 #include <Op_Diff_PolyMAC_base.h>
 
-Implemente_instanciable(PolyMAC_discretisation,"PolyMAC|PolyMAC_V1",Discret_Thyd);
+Implemente_instanciable(PolyMAC_discretisation,"PolyMAC|PolyMAC_P0P1nc",Discret_Thyd);
 
 
 
@@ -232,7 +232,7 @@ void PolyMAC_discretisation::discretiser_champ_fonc_don(
       default_nb_comp = 3;
       break;
     case 6:
-      type = "Champ_Fonc_P1_PolyMAC";
+      type = "Champ_Fonc_Som_PolyMAC";
       default_nb_comp = 1;
       break;
     default:

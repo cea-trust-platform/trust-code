@@ -1043,7 +1043,7 @@ void Schema_Temps_base::ajouter_inertie(Matrice_Base& mat_morse,DoubleTab& secme
   // On ne penalise pas les matrices et les secmems meme dans les cas
   // dirichlet , symetrie
   int pen=0;
-  eqn.solv_masse().ajouter_masse(dt,mat_morse,pen); //ordre important pour PolyMAC_V2
+  eqn.solv_masse().ajouter_masse(dt,mat_morse,pen); //ordre important pour PolyMAC_P0
   eqn.solv_masse().ajouter_masse(dt,secmem,eqn.inconnue().passe(),pen);
 }
 

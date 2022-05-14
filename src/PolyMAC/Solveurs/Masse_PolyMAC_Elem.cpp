@@ -37,7 +37,7 @@
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem|Masse_PolyMAC_V2_Elem",Solveur_Masse_base);
+Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem|Masse_PolyMAC_P0_Elem",Solveur_Masse_base);
 
 
 //     printOn()

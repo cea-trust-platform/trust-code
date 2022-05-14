@@ -163,7 +163,7 @@
         const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis()); \
         int ndeb = le_bord.num_premiere_face();                                \
         int nfin = ndeb + le_bord.nb_faces();                                \
-        if ((sub_type(Zone_PolyMAC_V2, la_zone.valeur())) && ((sub_type(Dirichlet,la_cl.valeur())) \
+        if ((sub_type(Zone_PolyMAC_P0, la_zone.valeur())) && ((sub_type(Dirichlet,la_cl.valeur())) \
              ||                                                                \
              (sub_type(Dirichlet_homogene,la_cl.valeur())))                \
              )                                                                \
@@ -190,7 +190,7 @@
         const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis()); \
         int ndeb = le_bord.num_premiere_face();                                \
         int nfin = ndeb + le_bord.nb_faces();                                \
-          if ((sub_type(Zone_PolyMAC_V2, la_zone.valeur())) && ((sub_type(Dirichlet,la_cl.valeur())) \
+          if ((sub_type(Zone_PolyMAC_P0, la_zone.valeur())) && ((sub_type(Dirichlet,la_cl.valeur())) \
                ||                                                                \
                (sub_type(Dirichlet_homogene,la_cl.valeur())))                \
                )                                                                \

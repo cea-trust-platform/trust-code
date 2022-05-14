@@ -44,9 +44,9 @@
 #include <cfloat>
 #include <vector>
 
-Implemente_instanciable(Op_Conv_EF_Stab_PolyMAC_Elem, "Op_Conv_EF_Stab_PolyMAC_Elem|Op_Conv_EF_Stab_PolyMAC_V2_Elem", Op_Conv_PolyMAC_base);
-Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_Elem, "Op_Conv_Amont_PolyMAC_Elem|Op_Conv_Amont_PolyMAC_V2_Elem", Op_Conv_EF_Stab_PolyMAC_Elem);
-Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyMAC_Elem, "Op_Conv_Centre_PolyMAC_Elem|Op_Conv_Centre_PolyMAC_V2_Elem", Op_Conv_EF_Stab_PolyMAC_Elem);
+Implemente_instanciable(Op_Conv_EF_Stab_PolyMAC_Elem, "Op_Conv_EF_Stab_PolyMAC_Elem|Op_Conv_EF_Stab_PolyMAC_P0_Elem", Op_Conv_PolyMAC_base);
+Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_Elem, "Op_Conv_Amont_PolyMAC_Elem|Op_Conv_Amont_PolyMAC_P0_Elem", Op_Conv_EF_Stab_PolyMAC_Elem);
+Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyMAC_Elem, "Op_Conv_Centre_PolyMAC_Elem|Op_Conv_Centre_PolyMAC_P0_Elem", Op_Conv_EF_Stab_PolyMAC_Elem);
 
 Op_Conv_Amont_PolyMAC_Elem::Op_Conv_Amont_PolyMAC_Elem() { alpha = 1.0; }
 Op_Conv_Centre_PolyMAC_Elem::Op_Conv_Centre_PolyMAC_Elem() { alpha = 0.0; }

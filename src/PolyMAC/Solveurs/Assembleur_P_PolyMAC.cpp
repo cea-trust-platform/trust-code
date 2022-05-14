@@ -34,7 +34,6 @@
 #include <Array_tools.h>
 #include <Debog.h>
 #include <Static_Int_Lists.h>
-#include <Champ_Fonc_Q1_PolyMAC.h>
 #include <Operateur_Grad.h>
 #include <Matrice_Morse_Sym.h>
 #include <Matrix_tools.h>

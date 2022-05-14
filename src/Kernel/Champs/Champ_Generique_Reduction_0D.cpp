@@ -211,8 +211,8 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
 
   // dimension() sur le tableau de valeurs des champs PolyMAC renvoie -1 (plusieurs supports)
   // ToDo: reecrire completement cette methode (horrible, tres mal ecrite) en deportant les methodes min/max/sum/... pour chaque Champ !
-  if (source.que_suis_je()=="Champ_Face_PolyMAC" || source.que_suis_je()=="Champ_Face_PolyMAC_V2")
-    Process::exit("PolyMAC/PolyMAC_V2 face field not supported yet for Reduction_0D");
+  if (source.que_suis_je()=="Champ_Face_PolyMAC" || source.que_suis_je()=="Champ_Face_PolyMAC_P0")
+    Process::exit("PolyMAC/PolyMAC_P0 face field not supported yet for Reduction_0D");
 
   Champ_Fonc es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);

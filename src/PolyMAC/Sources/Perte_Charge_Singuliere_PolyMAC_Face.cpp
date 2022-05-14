@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Perte_Charge_Singuliere_PolyMAC_Face.h>
-#include <Zone_PolyMAC_V2.h>
+#include <Zone_PolyMAC_P0.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Pb_Multiphase.h>
@@ -34,7 +34,7 @@
 #include <Matrice_Morse.h>
 #include <Param.h>
 
-Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_Face,"Perte_Charge_Singuliere_Face_PolyMAC|Perte_Charge_Singuliere_Face_PolyMAC_V2",Perte_Charge_PolyMAC_Face);
+Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_Face,"Perte_Charge_Singuliere_Face_PolyMAC|Perte_Charge_Singuliere_Face_PolyMAC_P0",Perte_Charge_PolyMAC_Face);
 
 //// printOn
 //
@@ -93,7 +93,7 @@ void Perte_Charge_Singuliere_PolyMAC_Face::dimensionner_blocs(matrices_t matrice
   const Zone_Poly_base& zone = ref_cast(Zone_Poly_base, equation().zone_dis().valeur());
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  if (!matrices.count(nom_inco) || !sub_type(Zone_PolyMAC_V2, zone)) return;
+  if (!matrices.count(nom_inco) || !sub_type(Zone_PolyMAC_P0, zone)) return;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
   int i, j, e, f, n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot();
   DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
@@ -118,7 +118,7 @@ void Perte_Charge_Singuliere_PolyMAC_Face::ajouter_blocs(matrices_t matrices, Do
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
-  int i, j, e, f, n, N = equation().inconnue().valeurs().line_size(), poly_v2 = sub_type(Zone_PolyMAC_V2, zone), semi = semi_impl.count(nom_inco), d, D = dimension, nf_tot = zone.nb_faces_tot();
+  int i, j, e, f, n, N = equation().inconnue().valeurs().line_size(), poly_v2 = sub_type(Zone_PolyMAC_P0, zone), semi = semi_impl.count(nom_inco), d, D = dimension, nf_tot = zone.nb_faces_tot();
   DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
   for (i = 0; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone.nb_faces())
       {

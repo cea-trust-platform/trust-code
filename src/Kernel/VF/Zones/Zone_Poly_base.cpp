@@ -374,7 +374,7 @@ void Zone_Poly_base::discretiser()
         {
           Cerr << " Le type de l'element geometrique " <<
                elem_geom.que_suis_je() << " est incorrect" << finl;
-          Cerr << " Seul le type Triangle est compatible avec la discretisation PolyMAC_V2 en dimension 2" << finl;
+          Cerr << " Seul le type Triangle est compatible avec la discretisation PolyMAC_P0 en dimension 2" << finl;
           Cerr << " Il faut trianguler le domaine lorsqu'on utilise le mailleur interne" ;
           Cerr << " en utilisant l'instruction: Trianguler nom_dom" << finl;
           exit();
@@ -386,7 +386,7 @@ void Zone_Poly_base::discretiser()
         {
           Cerr << " Le type de l'element geometrique " <<
                elem_geom.que_suis_je() << " est incorrect" << finl;
-          Cerr << " Seul le type Tetraedre est compatible avec la discretisation PolyMAC_V2 en dimension 3" << finl;
+          Cerr << " Seul le type Tetraedre est compatible avec la discretisation PolyMAC_P0 en dimension 3" << finl;
           Cerr << " Il faut tetraedriser le domaine lorsqu'on utilise le mailleur interne";
           Cerr << " en utilisant l'instruction: Tetraedriser nom_dom" << finl;
           exit();

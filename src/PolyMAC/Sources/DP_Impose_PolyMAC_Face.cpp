@@ -28,7 +28,7 @@
 #include <Champ_Don_base.h>
 #include <cfloat>
 
-Implemente_instanciable(DP_Impose_PolyMAC_Face,"DP_Impose_Face_PolyMAC|DP_Impose_Face_PolyMAC_V2",Perte_Charge_PolyMAC_Face);
+Implemente_instanciable(DP_Impose_PolyMAC_Face,"DP_Impose_Face_PolyMAC|DP_Impose_Face_PolyMAC_P0",Perte_Charge_PolyMAC_Face);
 
 //// printOn
 //

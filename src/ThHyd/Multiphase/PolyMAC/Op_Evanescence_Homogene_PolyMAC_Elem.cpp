@@ -32,7 +32,7 @@
 #include <Param.h>
 #include <Milieu_composite.h>
 
-Implemente_instanciable(Op_Evanescence_Homogene_PolyMAC_Elem,"Op_Evanescence_Homogene_PolyMAC_Elem|Op_Evanescence_Homogene_PolyMAC_V2_Elem",Operateur_Evanescence_base);
+Implemente_instanciable(Op_Evanescence_Homogene_PolyMAC_Elem,"Op_Evanescence_Homogene_PolyMAC_Elem|Op_Evanescence_Homogene_PolyMAC_P0_Elem",Operateur_Evanescence_base);
 
 Sortie& Op_Evanescence_Homogene_PolyMAC_Elem::printOn(Sortie& os) const
 {
