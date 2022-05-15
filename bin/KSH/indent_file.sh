@@ -8,7 +8,7 @@ do
    if [ -f $file ]
    then
       #if [ "`head -4 $file | grep _ROOT | grep Directory:`" != "" ]
-      if [ "`head -20 $file | grep _ROOT | grep Directory`" != "" ]
+      if [ "`head -15 $file | grep Copyright | grep CEA`" != "" ]
       then
          # Source TRUST (en tete reconnu):
 	 tmp=`mktemp_`
