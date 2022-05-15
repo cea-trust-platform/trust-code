@@ -126,7 +126,7 @@ Read pb
             probe_vit  vitesse     periode 1.e-2  segment 4  0.5 0.5 0.0  0.5 0.5 1.0
             probe_opc  opconv_qdm  periode 1.e-2  position_like probe_vit
             probe_src  source_qdm  periode 1.e-2  position_like probe_vit
-            # sourceQDM  sum_source  periode 1.e-2  numero_elem_sur_maitre 0 # # Not available in CoviMAC/PolyMAC yet #
+            # sourceQDM  sum_source  periode 1.e-2  numero_elem_sur_maitre 0 # # Not available in PolyMAC_P0/PolyMAC yet #
         }
         format lml
         fields dt_post 0.1

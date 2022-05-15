@@ -48,7 +48,7 @@ Scatter DOM.Zones theDomain
 END SCATTER #
 
 # Discretization on hexa or tetra or poly mesh #
-CoviMAC theDiscretization
+PolyMAC_P0 theDiscretization
 # Option_VDF #
 
 # Time scheme explicit or implicit #

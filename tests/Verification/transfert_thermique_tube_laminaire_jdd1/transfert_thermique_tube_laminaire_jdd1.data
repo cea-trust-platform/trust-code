@@ -41,8 +41,8 @@ Read sch
     }
 }
 
-CoviMAC  dis
-option_covimac {  }
+PolyMAC_P0  dis
+Option_PolyMAC_P0 {  }
 
 Fluide_Incompressible eau_liquide
 Read eau_liquide

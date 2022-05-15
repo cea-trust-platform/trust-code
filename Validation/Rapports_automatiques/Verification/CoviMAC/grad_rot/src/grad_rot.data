@@ -38,8 +38,8 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-CoviMAC  dis
-option_covimac {  }
+PolyMAC_P0  dis
+Option_PolyMAC_P0 {  }
 
 Schema_euler_implicite sch
 Read sch

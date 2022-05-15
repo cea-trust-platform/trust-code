@@ -19,7 +19,7 @@ Scatter dom.Zones dom
 END SCATTER #
 
 Pb_thermohydraulique pb
-# CoviMAC dis #
+# PolyMAC_P0 dis #
 PolyMAC dis
 # VDF dis #
 
