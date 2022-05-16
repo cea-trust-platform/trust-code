@@ -373,45 +373,67 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
         }
     }//Fin for n_bord
 
-  // On traite les faces internes
+    // pointeur vers face_voisins et le passer dans le map                                            
+  const int * face_voisins_addr = zone_VEF.face_voisins().addr();
+  const int * elemfaces_addr = zone_VEF.elem_faces().addr();
+  double * resu_addr = resu.addr();
+  const double * inconnue_addr = inconnue.addr();
 
-  for (num_face=zone_VEF.premiere_face_int(); num_face<nb_faces; num_face++)
+  long nb_faces_total = zone_VEF.nb_faces_tot();  
+  int premiere_face_int = zone_VEF.premiere_face_int();
+  double valA_addr[nb_faces*nb_faces_elem*2];
+  
+  for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
       for (int k=0; k<2; k++)
         {
-          int elem = face_voisins(num_face,k);
+	  int elem = face_voisins(num_face,k);
+          for (i0=0; i0<nb_faces_elem; i0++)
+              if ( (j= elemfaces_addr[nb_faces_elem*elem+i0]) > num_face )
+                {
+                  int el1,el2;
+                  int contrib=1;
+                  if(contrib)
+                      valA_addr[(num_face*2+k)*nb_faces_elem+i0] = viscA(num_face,j,elem,nu(elem));
+		}
+	}
+    }
+  // On traite les faces internes
+
+#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()],elemfaces_addr[0:elemfaces.size_array()],inconnue_addr[0:inconnue.size_array()],valA_addr[0:nb_faces*nb_faces_elem*2]) map(tofrom:resu_addr[0:resu.size_array()])
+  for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
+    {
+      for (int k=0; k<2; k++)
+        {
+	  int elem = face_voisins_addr[2*num_face+k];
           for (i0=0; i0<nb_faces_elem; i0++)
             {
-              if ( (j= elemfaces(elem,i0)) > num_face )
+              if ( (j= elemfaces_addr[nb_faces_elem*elem+i0]) > num_face )
                 {
                   int el1,el2;
                   int contrib=1;
                   if(j>=nb_faces) // C'est une face virtuelle
                     {
-                      el1 = face_voisins(j,0);
-                      el2 = face_voisins(j,1);
+                      el1 = face_voisins_addr[j*2];
+                      el2 = face_voisins_addr[j*2+1];
                       if((el1==-1)||(el2==-1))
                         contrib=0;
                     }
                   if(contrib)
                     {
-                      valA = viscA(num_face,j,elem,nu(elem));
+		      valA = valA_addr[(num_face*2+k)*nb_faces_elem+i0]; 
                       for (int nc=0; nc<nb_comp; nc++)
                         {
-                          //resu(num_face,nc)+=valA*inconnue(j,nc)*porosite_face(num_face);
-                          //resu(num_face,nc)-=valA*inconnue(num_face,nc)*porosite_face(num_face);
-                          resu(num_face,nc)+=valA*inconnue(j,nc);
-                          resu(num_face,nc)-=valA*inconnue(num_face,nc);
+			  #pragma omp atomic
+                          resu_addr[num_face*nb_comp+nc]+=valA*inconnue_addr[j*nb_comp+nc];
+			  #pragma omp atomic
+                          resu_addr[num_face*nb_comp+nc]-=valA*inconnue_addr[num_face*nb_comp+nc];
                           if(j<nb_faces) // On traite les faces reelles
                             {
-                              // resu(j,nc)+=valA*inconnue(num_face,nc)*porosite_face(j);
-                              // resu(j,nc)-=valA*inconnue(j,nc)*porosite_face(j);
-                              resu(j,nc)+=valA*inconnue(num_face,nc);
-                              resu(j,nc)-=valA*inconnue(j,nc);
-                            }
-                          else
-                            {
-                              // La face j est virtuelle
+			      #pragma omp atomic
+                              resu_addr[j*nb_comp+nc]+=valA*inconnue_addr[num_face*nb_comp+nc];
+			      #pragma omp atomic
+                              resu_addr[j*nb_comp+nc]-=valA*inconnue_addr[j*nb_comp+nc];
                             }
                         }
                     }

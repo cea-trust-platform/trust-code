@@ -318,19 +318,12 @@ ajouter_elem(const DoubleTab& pre,
   ArrOfDouble sigma(dimension);
 
   const int * face_voisins_addr = zone_VEF.face_voisins().addr();
-  int face_voisins_size = zone_VEF.nb_faces_tot()*2;
-
   double * grad_addr = grad.addr();
-  int grad_size = zone_VEF.nb_faces_tot()*dimension;
-
   const double * pre_addr = pre.addr();
-  int pre_size = nb_elem_tot;
-
   const double* porosite_face_addr = porosite_face.addr();
   const double * face_normales_addr = face_normales.addr();
   long nb_faces_total = zone_VEF.nb_faces_tot();
-  
-#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins_size],pre_addr[0:nb_elem_tot], face_normales_addr[0:grad_size],porosite_face_addr[0:nb_faces_total]) map(tofrom:grad_addr[0:grad_size])
+#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()],pre_addr[0:pre.size_array()], face_normales_addr[0:face_normales.size_array()],porosite_face_addr[0:porosite_face.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
   for (face=0; face<nb_faces_total; face++)
     {
       for (int num_elem=0; num_elem<2; num_elem++)
@@ -340,8 +333,9 @@ ajouter_elem(const DoubleTab& pre,
 	    double pe = pre_addr[elem];
 	    double signe=1;
 	    if(elem!=face_voisins_addr[2*face]) signe=-1;
-	    for(comp=0; comp<dimension; comp++)
+	    for(comp=0; comp<dimension; comp++){
 	      grad_addr[dimension*face+comp] -= pe*signe*face_normales_addr[dimension*face+comp]*porosite_face_addr[face];
+	    }
 	  }
 	}
     }
@@ -365,30 +359,68 @@ ajouter_som(const DoubleTab& pre,
   int nps=zone_VEF.numero_premier_sommet();
   int nb_elem_tot=zone.nb_elem_tot();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-
   ArrOfDouble sigma(dimension);
-  for(int elem=0; elem<nb_elem_tot; elem++)
-    {
-      double coeff_som=calculer_coef_som(elem, zone_Cl_VEF, zone_VEF);
-      for(int indice=0; indice<nfe; indice++)
-        {
-          int som = nps+dom.get_renum_som_perio(som_elem(elem,indice));
-          double ps=pre(som);
-          int face = elem_faces(elem,indice);
-          double signe=1;
-          if(elem!=face_voisins(face,0))
-            signe=-1;
-          for(int comp=0; comp<dimension; comp++)
-            sigma[comp]=signe*face_normales(face,comp);
 
-          for(int indice2=0; indice2<nfe; indice2++)
-            {
-              int face2 = elem_faces(elem,indice2);
-              for(int comp=0; comp<dimension; comp++)
-                grad(face2,comp)-=coeff_som*ps*sigma[comp]*porosite_face(face2);
-            }
-        }
+  double * grad_addr = grad.addr();
+  const int* som_elem_addr = som_elem.addr();
+  const double * pre_addr = pre.addr();
+  const int * elem_faces_addr = elem_faces.addr();
+  const int * face_voisins_addr = zone_VEF.face_voisins().addr();
+  const double * face_normales_addr = face_normales.addr();
+  const double* porosite_face_addr = porosite_face.addr();
+
+  int nb_faces_total = zone_VEF.nb_faces_tot();
+  double * sigma_addr = sigma.addr();  
+  double coeff_som_addr[nb_elem_tot];
+  int som_addr[nb_elem_tot*nfe];
+  int elem,comp,indice,indice2, face2;
+  double ps;
+
+  // Pré-calcul: copie des structures TRUST dans des tableaux
+  for(int el=0; el<nb_elem_tot; el++)
+    {
+      coeff_som_addr[el]=calculer_coef_som(el, zone_Cl_VEF, zone_VEF);
+      for(int indice=0; indice<nfe; indice++)
+  	som_addr[el*nfe+indice] = nps+dom.get_renum_som_perio(som_elem(el,indice));
     }
+
+  
+  // boucle couteuse: A porter
+#if NDEBUG
+  #pragma omp target teams map(to:coeff_som_addr[0:nb_elem_tot],som_addr[0:nb_elem_tot*nfe],pre_addr[0:pre.size_array()],elem_faces_addr[0:elem_faces.size_array()],face_voisins_addr[0:face_voisins.size_array()],face_normales_addr[0:face_normales.size_array()],porosite_face_addr[0:porosite_face.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
+#endif
+  {
+    double sigma_addr[3];
+#if NDEBUG
+    #pragma omp distribute parallel for
+#endif
+    for(elem=0; elem<nb_elem_tot; elem++)
+    {
+      for(indice=0; indice<nfe; indice++)
+        {
+	  // int som = som_addr[nfe*elem+indice];
+	  // ps = pre_addr[som];
+      	  int face = elem_faces_addr[nfe*elem+indice];
+          double signe=1;
+          if(elem!=face_voisins_addr[face*2]) signe=-1;
+
+          for(comp=0; comp<dimension; comp++)
+      	    sigma_addr[comp]=face_normales_addr[face*dimension+comp]*signe;
+	  //          #pragma omp target update from(grad_addr[0:grad_size])
+          for(indice2=0; indice2<nfe; indice2++)
+            {
+              face2 = elem_faces_addr[elem*nfe+indice2];
+              for(comp=0; comp<dimension; comp++){
+  #if NDEBUG
+#pragma omp atomic update
+#endif
+		grad_addr[face2*dimension+comp] -= coeff_som_addr[elem]*pre_addr[som_addr[elem*nfe+indice]]*sigma_addr[comp]*porosite_face_addr[face2];
+      	      }
+            }
+	}
+    }
+  }
+
 
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
   const IntTab& face_sommets = zone_VEF.face_sommets();
