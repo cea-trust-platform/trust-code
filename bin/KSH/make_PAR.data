@@ -97,7 +97,7 @@ NB_CPUS=""
 for nom_zone in $nom_zones
 do
    #NB_CPUS_ZONE=`\ls $nom_zone"_"????.Zones 2>/dev/null | wc -l | $TRUST_Awk '{print $1}'`
-    NB_CPUS_ZONE=`\ls | grep -E "$nom_zone"_[0-9]+.Zones 2>/dev/null | wc -l | $TRUST_Awk '{print $1}'`
+    NB_CPUS_ZONE=`\ls | grep -E "^$nom_zone"_[0-9]+.Zones 2>/dev/null | wc -l | $TRUST_Awk '{print $1}'`
     
    # if there's a single .Zones file (written in HDF format), the grep above is wrong
     if [ $NB_CPUS_ZONE = 0 ]
