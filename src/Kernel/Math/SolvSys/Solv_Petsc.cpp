@@ -252,7 +252,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               else
                 {
                   if (motlu == "-ksp_type" && valeur=="preonly") solveur_direct_=cli; // Activate direct solveur if using -ksp_preonly ...
-                  if (motlu == "-ksp_max_it") convergence_with_nb_it_max_ = 1; //pour avoir le meme comportement que l'option nb_it_max
+                  if (motlu == "-ksp_max_it") ignore_nb_it_max_ = 1; //pour un comportement similaire a l'option nb_it_max
                   add_option(motlu.suffix("-"), valeur, 1);
                   is >> motlu;
                 }
@@ -1893,7 +1893,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
   // Analyse de la convergence par Petsc
   KSPConvergedReason Reason;
   KSPGetConvergedReason(SolveurPetsc_, &Reason);
-  if (Reason==KSP_DIVERGED_ITS && convergence_with_nb_it_max_) Reason = KSP_CONVERGED_ITS;
+  if (Reason==KSP_DIVERGED_ITS && (convergence_with_nb_it_max_ || ignore_nb_it_max_)) Reason = KSP_CONVERGED_ITS;
   if (Reason<0 && limpr()>-1)
     {
       Cerr << "No convergence on the resolution with the Petsc solver." << finl;

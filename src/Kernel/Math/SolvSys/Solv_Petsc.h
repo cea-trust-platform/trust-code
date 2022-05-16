@@ -142,6 +142,7 @@ protected :
   int preconditionnement_non_symetrique_; // Drapeau sur la symetrie de la matrice de preconditionnement
   int nb_it_max_;		// Maximal number of iterations
   int convergence_with_nb_it_max_; 	// Convergence decided with nb_it_max_ specified and not by seuil threshold
+  int ignore_nb_it_max_;
   int controle_residu_;         // Verification si le residu ||Ax-B||<seuil
   int block_size_;              // Block size for SBAIJ matrix
   int save_matrix_;             // Save constant matrix in a file
@@ -233,6 +234,7 @@ inline void Solv_Petsc::initialize()
   different_partition_ = 0;          // By default, same matrix partition
   petsc_decide_ = 0;                 // By default, 0. 1 is OK but does NOT improve performance (rather decrease)
   convergence_with_nb_it_max_ = 0;
+  ignore_nb_it_max_ = 0;
   nb_it_max_ = NB_IT_MAX_DEFINED;
   save_matrix_=0;
   mataij_=0;
