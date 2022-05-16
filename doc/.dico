@@ -940,6 +940,7 @@
  Schema_Predictor_Corrector Pred_Cor Pred_Cor.h
  Schema_Temps Schema_Temps Schema_Temps.h
  Schema_Temps_base Schema_Temps_base Schema_Temps_base.h
+ Schema_Temps_Inutile Schema_Temps_Inutile Schema_Temps_Inutile.h
  Sch_CN_EX_iteratif Sch_CN_EX_iteratif Sch_CN_EX_iteratif.h
  Sch_CN_iteratif Sch_CN_iteratif Sch_CN_iteratif.h
  Segment Segment Segment.h

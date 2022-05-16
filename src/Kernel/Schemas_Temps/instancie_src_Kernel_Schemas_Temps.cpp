@@ -15,6 +15,7 @@
 #include <Schema_RK_Classique.h>
 #include <Schema_RK_Rationnel.h>
 #include <Schema_RK_Williamson.h>
+#include <Schema_Temps_Inutile.h>
 void instancie_src_Kernel_Schemas_Temps() {
 Cerr << "src_Kernel_Schemas_Temps" << finl;
 Leap_frog inst1;verifie_pere(inst1);
@@ -33,4 +34,5 @@ RRK2 inst13;verifie_pere(inst13);
 RK2 inst14;verifie_pere(inst14);
 RK3 inst15;verifie_pere(inst15);
 RK4 inst16;verifie_pere(inst16);
+Schema_Temps_Inutile inst17;verifie_pere(inst17);
 }
