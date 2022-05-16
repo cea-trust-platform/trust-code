@@ -196,7 +196,7 @@ void Assembleur_P_PolyMAC::dimensionner_continuite(matrices_t matrices, int aux_
       else if (!fcl(f, 0)) for (sten_p.append_line(!aux_only * ne_tot + f, e), j = 0; j < w2.dimension(1); j++) //face interne
           {
             if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) < 2) for (m = 0; m < M; m++)
-                sten_p.append_line(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) * m);
+                sten_p.append_line(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) + m);
           }
       else if (fcl(f, 0) == 1) for (m = 0; m < M; m++) sten_p.append_line(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + f) + m); //Neumann
       else for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten_v.append_line(M * (!aux_only * ne_tot + f) + m, N * f + n); //Dirichlet
@@ -217,7 +217,7 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &e_f = zone.elem_faces();
   const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
   int i, j, e, f, fb, n, N = vit.line_size(), m, M = press.line_size(), ne_tot = zone.nb_elem_tot(), d, D = dimension;
-  Matrice_Morse *mat_a = alpha ? NULL : matrices.at("alpha"), &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
+  Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : NULL, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav w2, fac(N);
   double ar_tot, acc;
   w2.set_smart_resize(1);
