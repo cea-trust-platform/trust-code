@@ -373,7 +373,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
   Parametre_implicite& param = get_and_set_parametre_implicite(eqs[0]);
   SolveurSys& solveur = param.solveur();
   double seuil_convg = param.seuil_convergence_implicite();
-  int i, j;
+  int i, j, bs = 0; //bs : linesize commune des tableaux si > 0, 0 sinon
 
   /* cle pour la memoization */
   std::vector<intptr_t> key(eqs.size());
@@ -397,10 +397,14 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
         mats[i][nom_i.getString()] = &ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
       }
 
+  //Les inconues/residus ont-ils la meme forme?
+  for (bs = eqs[0]->inconnue().valeurs().line_size(), i = 1; i < eqs.size(); i++)
+    if (eqs[i]->inconnue().valeurs().line_size() != bs) bs = 0;
+
   //MD_Vector global
   MD_Vector_composite mdc; //version composite
   for (i = 0; i < eqs.size(); i++)
-    mdc.add_part(eqs[i]->inconnue().valeurs().get_md_vector(), eqs[i]->inconnue().valeurs().line_size());
+    mdc.add_part(eqs[i]->inconnue().valeurs().get_md_vector(), bs ? 0 : eqs[i]->inconnue().valeurs().line_size());
   MD_Vector mdv;
   mdv.copy(mdc);
 
@@ -425,6 +429,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
 
   //tableaux de travail
   DoubleTrav inconnues, residus, dudt;
+  if (bs) inconnues.resize(0, bs), residus.resize(0, bs), dudt.resize(0, bs); //pour que les tableaux aggreges aient la bonne line_size() si elle existe
   MD_Vector_tools::creer_tableau_distribue(mdv, inconnues);
   MD_Vector_tools::creer_tableau_distribue(mdv, residus);
   MD_Vector_tools::creer_tableau_distribue(mdv, dudt);
