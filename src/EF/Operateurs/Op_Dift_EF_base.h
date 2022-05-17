@@ -14,39 +14,42 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Interpolation_IBM_hybrid.h
-// Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
-// Version:     1
+// File:        Op_Dift_EF_base.h
+// Directory:   $TRUST_ROOT/src/EF/Operateurs
+// Version:     /main/12
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Interpolation_IBM_hybrid_included
-#define Interpolation_IBM_hybrid_included
-
-#include <Interpolation_IBM_elem_fluid.h>
-#include <Interpolation_IBM_mean_gradient_proto.h>
 
 
-/////////////////////////////////////////////////////////////////////////////
+#ifndef Op_Dift_EF_base_included
+#define Op_Dift_EF_base_included
+
+#include <Op_Diff_EF_base.h>
+#include <Op_Diff_Turbulent_base.h>
+#include <Mod_turb_hyd_base.h>
+#include <Ref_Modele_turbulence_scal_base.h>
+
+//////////////////////////////////////////////////////////////////////////////
 //
-// .DESCRIPTION : class Interpolation_IBM_hybrid
+// .DESCRIPTION class  Op_Dift_EF_base
 //
-// <Description of class Interpolation_IBM_hybrid>
-//
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
-class Interpolation_IBM_hybrid : public Interpolation_IBM_elem_fluid, public Interpolation_IBM_mean_gradient_proto
+class Op_Dift_EF_base : public Op_Diff_EF_base, public Op_Diff_Turbulent_base
 {
-  Declare_instanciable( Interpolation_IBM_hybrid ) ;
+  Declare_base(Op_Dift_EF_base);
 
-public :
-  void discretise(const Discretisation_base&, Zone_dis_base&) override;
-  inline IntList& getSommetsVoisinsOf(int i)
-  {
-    return sommets_voisins_[i];
-  };
-protected :
-  friend class Source_PDF_EF;
+public:
+
+  void associer_modele_turbulence(const Mod_turb_hyd_base& );
+  void mettre_a_jour(double temps) override;
+  void completer() override;
+  void calculer_borne_locale(DoubleVect& ,double ,double ) const override;
+
+protected:
+  REF(Mod_turb_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
+  DoubleTab tau_tan_;
 };
 
-#endif /* Interpolation_IBM_hybrid_included */
+#endif

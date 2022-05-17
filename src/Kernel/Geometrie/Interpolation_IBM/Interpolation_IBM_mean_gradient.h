@@ -42,7 +42,10 @@ class Interpolation_IBM_mean_gradient : public Interpolation_IBM_base, public In
 
 public :
   void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF) override;
-
+  inline IntList& getSommetsVoisinsOf(int i)
+  {
+    return sommets_voisins_[i];
+  };
 protected :
   friend class Source_PDF_EF;
 };

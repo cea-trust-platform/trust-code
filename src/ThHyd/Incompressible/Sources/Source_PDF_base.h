@@ -91,9 +91,11 @@ protected:
   virtual void calculer_vitesse_imposee_hybrid();
   virtual void calculer_vitesse_imposee_elem_fluid();
   virtual void calculer_vitesse_imposee_mean_grad();
+  virtual void calculer_vitesse_imposee_power_law_tbl();
   virtual void rotate_imposed_velocity(DoubleTab&);
   ArrOfDouble get_tuvw_local() const;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  virtual void compute_indicateur_nodal_champ_aire();
   int type_vitesse_imposee_;
   Champ_Don champ_rotation_lu_;
   Champ_Don champ_rotation_;
@@ -101,6 +103,7 @@ protected:
   Champ_Don champ_aire_;
   Champ_Don champ_rho_;
   int transpose_rotation_;
+  DoubleTab indicateur_nodal_champ_aire_;
   DoubleTab vitesse_imposee_;
   PDF_model modele_lu_;
   double temps_relax_;

@@ -35,10 +35,10 @@
 #include <Interpolation_IBM_elem_fluid.h>
 #include <Interpolation_IBM_mean_gradient.h>
 #include <Interpolation_IBM_hybrid.h>
+#include <Interpolation_IBM_power_law_tbl.h>
 #include <Dirichlet.h>
 #include <SFichier.h>
-
-
+#include <Navier_Stokes_std.h>
 #include <Op_Conv_EF.h>
 
 Implemente_instanciable(Source_PDF_EF,"Source_PDF_EF",Source_PDF_base);
@@ -117,7 +117,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
           if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_gradient_moyen")
             {
               const Interpolation_IBM_mean_gradient& interp = ref_cast(Interpolation_IBM_mean_gradient,interpolation_lue_.valeur());
-              this->compute_vitesse_imposee_projete(interp.solid_elems_.valeur().valeurs(), interp.solid_points_.valeur().valeurs(), -2, 1e-6);
+              this->compute_vitesse_imposee_projete(interp.solid_elems_.valeur().valeurs(), interp.solid_points_.valeur().valeurs(), -2.0, 1e-6);
             }
           else
             {
@@ -152,6 +152,33 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
   vitesse_imposee_.valeur().affecter(mod_.vitesse_imposee_);*/
   vitesse_imposee_ = modele_lu_.vitesse_imposee_.valeur().valeurs();
   pb.discretisation().discretiser_champ("champ_sommets",la_zone_EF,"","",1,0., champ_nodal_);
+
+  compute_indicateur_nodal_champ_aire();
+}
+
+void Source_PDF_EF::compute_indicateur_nodal_champ_aire()
+{
+  const DoubleTab& aire=champ_aire_.valeurs();
+  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  int nb_elems=zone_EF.zone().nb_elem_tot();
+  int nb_nodes=zone_EF.zone().nb_som_tot();
+  int nb_som_elem=zone_EF.zone().nb_som_elem();
+  const IntTab& elems= zone_EF.zone().les_elems() ;
+
+  DoubleTab indic(nb_nodes);
+  indic = 0.;
+  for (int num_elem=0; num_elem<nb_elems; num_elem++)
+    {
+      if (aire(num_elem)>0.)
+        {
+          for (int i=0; i<nb_som_elem; i++)
+            {
+              int s1=elems(num_elem,i);
+              indic(s1) = 1.;
+            }
+        }
+    }
+  indicateur_nodal_champ_aire_ = indic;
 }
 
 void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, const DoubleTab& points, double val, double eps)
@@ -411,7 +438,13 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
 void Source_PDF_EF::multiply_coeff_volume(DoubleTab& coeff) const
 {
   const DoubleVect& vol_som=ref_cast(Zone_EF, la_zone_EF.valeur()).volumes_sommets_thilde();
-  int n = vol_som.size();
+  int n = vol_som.size_totale();
+  int nc = coeff.dimension_tot(0) ;
+  if (n != nc)
+    {
+      Cerr<<" dimensions differentes n nc = "<<n<<" "<<nc<<finl;
+      exit();
+    }
   int ndim = coeff.dimension(1) ;
   for (int i=0; i<n; i++)
     {
@@ -683,6 +716,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
   DoubleTab xf(1, nb_comp);
   DoubleTab vf(1, nb_comp);
   ArrOfInt cells(1);
+  double eps = 1e-12;
 
   for (int i = 0; i < nb_som; i++)
     {
@@ -701,7 +735,9 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
             }
           d1 = sqrt(d1);
           d2 = sqrt(d2);
-          double inv_d = 1.0 / (d1 + d2);
+          double inv_d ;
+          if ( (d1 + d2) > eps ) inv_d = 1.0 / (d1 + d2);
+          else inv_d = 0. ;
           cells[0] = int(fluid_elems(i));
           champ_vitesse_inconnue.value_interpolation(xf,cells, val_vitesse_inconnue, vf);
           for (int j = 0; j < nb_comp; j++)
@@ -736,6 +772,9 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
   double eps = 1e-12;
   DoubleTab& vitesse_inconnue = equation().inconnue().valeur().valeurs();
 
+  vitesse_imposee_mod.echange_espace_virtuel();
+
+  DoubleTrav nb_vois(is_dirichlet);
   for (int i = 0; i < nb_som; i++)
     {
       if (is_dirichlet(i) > 0.0)
@@ -757,6 +796,8 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
                   ArrOfDouble mean_grad(nb_comp);
                   mean_grad = 0.0;
                   int taille = voisins.size();
+                  nb_vois(i) = taille * 1.0 ;
+                  int nb_contrib = 0;
                   for (int k = 0; k < taille; k++)
                     {
                       int num_som = voisins[k];
@@ -776,11 +817,12 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
                               double vf = vitesse_inconnue(num_som,j);
                               mean_grad[j] += (vf - vpf)/d1;
                             }
+                          nb_contrib += 1;
                         }
                     }
                   for (int j = 0; j < nb_comp; j++)
                     {
-                      mean_grad[j] /= taille;
+                      mean_grad[j] /= nb_contrib;
                       vitesse_imposee_calculee(i,j) += mean_grad[j]*d2;
                     }
                 }
@@ -788,6 +830,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
         }
     }
   //vitesse_imposee_calculee.echange_espace_virtuel();
+  //Cerr<<"Min/max/norme : nb_vois "<< mp_min_vect(nb_vois) << " " << mp_max_vect(nb_vois) << " " << mp_norme_vect(nb_vois) << finl;
 }
 
 void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
@@ -856,6 +899,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
                   ArrOfDouble mean_grad(nb_comp);
                   mean_grad = 0.0;
                   int taille = voisins.size();
+                  int nb_contrib = 0;
                   for (int k = 0; k < taille; k++)
                     {
                       int num_som = voisins[k];
@@ -875,11 +919,12 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
                               double vjf = vitesse_inconnue(num_som,j);
                               mean_grad[j] += (vjf - vpf)/d1;
                             }
+                          nb_contrib += 1;
                         }
                     }
                   for (int j = 0; j < nb_comp; j++)
                     {
-                      mean_grad[j] /= taille;
+                      mean_grad[j] /= nb_contrib;
                       vitesse_imposee_calculee(i,j) += mean_grad[j]*d2;
                     }
                 }
@@ -894,6 +939,191 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
         }
     }
   //vitesse_imposee_calculee.echange_espace_virtuel();
+}
+
+void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
+{
+  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  int nb_som=zone_EF.zone().nb_som();
+  int nb_comp = dimension;
+  const Domaine& dom = zone_EF.zone().domaine();
+  // const IntTab& elems= zone_EF.zone().les_elems();
+  DoubleTab& vitesse_imposee_mod = modele_lu_.vitesse_imposee_.valeur().valeurs();
+  DoubleTab& vitesse_imposee_calculee = vitesse_imposee_;
+  Interpolation_IBM_power_law_tbl& interp = ref_cast(Interpolation_IBM_power_law_tbl,interpolation_lue_.valeur());
+  DoubleTab& fluid_points = interp.fluid_points_.valeur().valeurs();
+  DoubleTab& solid_points = interp.solid_points_.valeur().valeurs();
+  DoubleTab& fluid_elems = interp.fluid_elems_.valeur().valeurs();
+  double A_pwl = interp.get_A_pwl();
+  double B_pwl = interp.get_B_pwl();
+  double y_c_p_pwl = interp.get_y_c_p_pwl();
+  int impr_yplus = interp.get_impr() ;
+  Champ_Q1_EF& champ_vitesse_inconnue = ref_cast(Champ_Q1_EF,equation().inconnue().valeur());
+  DoubleTab& val_vitesse_inconnue = champ_vitesse_inconnue.valeurs();
+
+  DoubleTab xf(1, nb_comp);
+  DoubleTab vf(1, nb_comp);
+  ArrOfInt cells(1);
+
+  // operateur(0) : diffusivite
+  if (equation().nombre_d_operateurs()<1)
+    {
+      Cerr << "Source_PDF_EF : nombre_d_operateurs = "<<equation().nombre_d_operateurs()<<" < 1"<<finl;
+      exit();
+    }
+  int flag = 0;
+  const Op_Diff_EF_base& opdiffu = ref_cast(Op_Diff_EF_base,equation().operateur(0).l_op_base());
+  flag = opdiffu.diffusivite().valeurs().dimension(0)>1 ? 1 : 0;
+
+  double eps = 1e-12;
+  double d1_min = 1.0e+10;
+  double d1_max = 0.0;
+  double d1_mean = 0.0;
+  double yplus_min = 1.0e+10;
+  double yplus_max = 0.0;
+  double yplus_mean = 0.0;
+  double u_tau_min = 1.0e+10;
+  double u_tau_max = 0.0;
+  double u_tau_mean = 0.0;
+  double yplus_ref_min = 1.0e+10;
+  double yplus_ref_max = 0.0;
+  double yplus_ref_mean = 0.0;
+  int yplus_count=0 ;
+
+  for (int i = 0; i < nb_som; i++)
+    {
+      int itisok = 1;
+      if (fluid_elems(i) >= 0.0)
+        {
+          double d1 = 0.0;
+          double d2 = 0.0;
+          DoubleTab normale(1, nb_comp);
+          double norme_de_la_normale= 0.0;
+          for(int j = 0; j < nb_comp; j++)
+            {
+              double xj = dom.coord(i,j);
+              double xjf = fluid_points(i,j);
+              xf(0, j) = xjf;
+              double xjs = solid_points(i,j);
+              d1 += (xj-xjs)*(xj-xjs);
+              d2 += (xjf-xj)*(xjf-xj);
+              normale(0,j) = xjf - xjs;
+              norme_de_la_normale += normale(0,j)*normale(0,j);
+            }
+          d1 = sqrt(d1);
+          d2 = sqrt(d2);
+
+          norme_de_la_normale = sqrt(norme_de_la_normale);
+          if ( norme_de_la_normale > eps )
+            for(int j = 0; j < nb_comp; j++) normale(0,j) /= norme_de_la_normale; // là on met la norme unité tout en gardant la direction, on normalise quoi
+          else
+            {
+              for(int j = 0; j < nb_comp; j++) normale(0,j) = 0.;
+              itisok = 0;
+            }
+          double y_ref= d1+d2;
+          if ( y_ref < eps )
+            {
+              y_ref = 1.;
+              itisok = 0;
+            }
+
+          cells(0) = int(fluid_elems(i));
+          champ_vitesse_inconnue.value_interpolation(xf,cells, val_vitesse_inconnue, vf); // vf la vitesse totale
+          double Vn = 0.;
+          for(int j = 0; j < nb_comp; j++) Vn +=vf(0, j) * normale(0,j);
+          DoubleTab v_ref_t(1, nb_comp);
+
+          for(int j = 0; j < nb_comp; j++) v_ref_t(0, j) =vf(0, j) - Vn*normale(0,j);
+
+          double norme_v_ref_t = 0.;
+          for(int j = 0; j < nb_comp; j++) norme_v_ref_t +=  v_ref_t(0, j)*v_ref_t(0,j)  ;
+          norme_v_ref_t = sqrt ( norme_v_ref_t );
+
+          double nu = (flag ? opdiffu.diffusivite().valeurs()(cells) : opdiffu.diffusivite().valeurs()(0,0));
+
+          // On calcule U_tau pour pouvoir calculer les quantitée adimensionées ( y+ ...)
+
+          double u_tau = pow ( norme_v_ref_t , (1/(1+B_pwl)) ) * pow ( A_pwl, (-1/(1+B_pwl)) )  * pow ( y_ref , (-B_pwl/(1+B_pwl)) ) * pow ( nu,(B_pwl/(1+B_pwl)) ) ;
+
+          double y_plus = u_tau * d1 / nu;
+          // Cerr<<"u_tau  d1  nu ="<<u_tau<<" "<<d1<<" "<<nu<<finl;;
+
+          double y_ref_p = y_ref * u_tau  / nu;  //là on a enfin tout ce qu'il faut pour établir la loi polynomiale pour y r+
+          double test_ref;
+
+          if ( y_ref_p > y_c_p_pwl)  // à partir de là commence l'expression de la loi de paroi polynomiale turbulente
+            {
+              for(int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) =  v_ref_t(0,j) * pow ( d1 / y_ref , B_pwl )  ;
+              test_ref = 1.;
+              // Cerr << "zone log/sous-couche inertielle" << finl;
+            }
+          else
+            {
+              for(int j = 0; j < nb_comp; j++) vitesse_imposee_calculee(i,j) =  v_ref_t(0,j) * ( d1 / y_ref )   ;
+              test_ref = -1. ;
+              // Cerr << "zone lineaire/sous-couche visqueuse" << finl;
+            }                   // Fin LdPturb
+
+          if (impr_yplus && itisok && (indicateur_nodal_champ_aire_(i)==1.))
+            {
+              if (d1 > d1_max) d1_max = d1;
+              if (d1 < d1_min) d1_min = d1;
+              d1_mean +=  d1;
+              if (y_plus > yplus_max) yplus_max = y_plus;
+              if (y_plus < yplus_min) yplus_min = y_plus;
+              yplus_mean +=  y_plus;
+              if (y_ref_p > yplus_ref_max) yplus_ref_max = y_ref_p;
+              if (y_ref_p < yplus_ref_min) yplus_ref_min = y_ref_p;
+              yplus_ref_mean += y_ref_p;
+              if (u_tau > u_tau_max) u_tau_max = u_tau;
+              if (u_tau < u_tau_min) u_tau_min = u_tau;
+              u_tau_mean += u_tau;
+              yplus_count += 1;
+            }
+
+          double test;  // ici on effectue le test pour savoir si le noeud de frontière et le point fluide se trouvent dans la même zone: si oui ok, si non on impose la vitesse
+          if (y_plus > y_c_p_pwl )
+            {
+              test = 1.;
+            }
+          else
+            {
+              test = -1.	 ;
+            }
+
+          // Traitement des exceptions
+          if ( (test * test_ref < 0) || (itisok == 0) )  //si non on impose la vitesse
+            {
+
+              for(int j = 0; j < nb_comp; j++)  vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
+
+              // Cerr << "erreur" << finl;
+
+            }
+        }
+      else
+        {
+          for(int j = 0; j < nb_comp; j++)
+            {
+              vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
+            }
+        }
+    }
+  //vitesse_imposee_calculee.echange_espace_virtuel();
+
+  if (impr_yplus && (yplus_count >= 1) )
+    {
+      d1_mean /= yplus_count;
+      yplus_mean /= yplus_count;
+      yplus_ref_mean /= yplus_count;
+      u_tau_mean /= yplus_count;
+      Cerr<<"min mean max y  = "<<d1_min<<" "<<d1_mean<<" "<<d1_max<<finl;
+      Cerr<<"min mean max y+ = "<<yplus_min<<" "<<yplus_mean<<" "<<yplus_max<<finl;
+      Cerr<<"min mean max y+_ref = "<<yplus_ref_min<<" "<<yplus_ref_mean<<" "<<yplus_ref_max<<finl;
+      Cerr<<"min mean u_tau = "<<u_tau_min<<" "<<u_tau_mean<<" "<<u_tau_max<<finl;
+      Cerr<<"Moyenne sur "<<yplus_count<<" points"<<finl;
+    }
 }
 
 void Source_PDF_EF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab& correction_en_pression) const
@@ -1058,23 +1288,25 @@ int Source_PDF_EF::impr(Sortie& os) const
         {
           const Schema_Temps_base& sch=equation().probleme().schema_temps();
           double temps=sch.temps_courant();
+          double pdtps = sch.pas_de_temps();
+          if (temps == pdtps) return 0;
           const DoubleTab& vitesse=equation().inconnue().valeurs();
-          int nb_som_tot=la_zone_EF.valeur().zone().nb_som_tot();
+          int nb_som=la_zone_EF.valeur().zone().nb_som();
           Nom espace=" \t";
 
-          Equation_base& eq_base = ref_cast_non_const(Equation_base, equation());
+          Navier_Stokes_std& eq_NS = ref_cast_non_const(Navier_Stokes_std, equation());
           DoubleTrav secmem_conv(vitesse);
           int transport_rhou=0;
-          if (eq_base.nombre_d_operateurs() > 1)
+          if (eq_NS.nombre_d_operateurs() > 1)
             {
-              const Op_Conv_EF& op_conv = ref_cast(Op_Conv_EF, eq_base.operateur(1).l_op_base());
-              Cerr << "///////////////////////// .vitesse() : " << op_conv.vitesse().le_nom() << finl ;
-              transport_rhou= (op_conv.vitesse().le_nom()=="rho_u"?1:0);
-              eq_base.derivee_en_temps_conv(secmem_conv , vitesse);
+              transport_rhou= (eq_NS.vitesse_pour_transport().le_nom()=="rho_u"?1:0);
+              eq_NS.derivee_en_temps_conv(secmem_conv , vitesse);
             }
 
-          int i_traitement_special = (transport_rhou==1?2:102);
-          DoubleTab resu(vitesse);
+          int pdf_dt_conv = 0;
+          if (!pdf_dt_conv) secmem_conv *= 0.;
+          int i_traitement_special = (pdf_dt_conv==1?(transport_rhou==1?2:102):0);
+          DoubleTrav resu(vitesse);
           calculer(resu, i_traitement_special);
 
           DoubleVect source_term[3];
@@ -1083,7 +1315,7 @@ int Source_PDF_EF::impr(Sortie& os) const
             {
               source_term[i] = champ_nodal_.valeurs();
               source_term[i] = 0.;
-              for (int j=0; j<nb_som_tot; j++)
+              for (int j=0; j<nb_som; j++)
                 {
                   int filter = (std::fabs(resu(j,i)) > 1.e-6?1:0);
                   source_term[i](j) = resu(j,i) - sec_mem_pdf(j,i) + secmem_conv(j,i)*filter;

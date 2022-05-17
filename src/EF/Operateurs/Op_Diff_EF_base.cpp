@@ -82,7 +82,7 @@ void Op_Diff_EF_base::associer(const Zone_dis& zone_dis,
   */
   la_zone_EF = zEF;
   la_zcl_EF = zclEF;
-
+  inconnue = ch_transporte;
 
   const Zone_EF& zone_EF = la_zone_EF.valeur();
 

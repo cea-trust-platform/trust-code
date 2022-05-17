@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,11 @@
 Implemente_base(Interpolation_IBM_base, "Interpolation_IBM_base", Objet_U);
 // XD interpolation_ibm_base objet_u interpolation_ibm_base 0 Base class for all the interpolation methods available in the Immersed Boundary Method (IBM).
 
+void Interpolation_IBM_base::discretise(const Discretisation_base&, Zone_dis_base&)
+{
+  return;
+}
+
 Sortie& Interpolation_IBM_base::printOn( Sortie& os ) const
 {
   return os;
@@ -35,7 +40,8 @@ Entree& Interpolation_IBM_base::readOn( Entree& is )
   return is;
 }
 
-void Interpolation_IBM_base::discretise(const Discretisation_base&, Zone_dis_base&)
+void Interpolation_IBM_base::set_param(Param& param)
 {
+  param.ajouter_flag("impr",&impr_);  // XD_ADD_P entier Flag to print IBM-related data
 }
 

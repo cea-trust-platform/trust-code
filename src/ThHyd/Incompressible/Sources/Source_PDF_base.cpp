@@ -48,6 +48,8 @@ Entree& Source_PDF_base::readOn(Entree& s)
   param.ajouter("rotation", &champ_rotation_lu_,Param::REQUIRED); // XD_ADD_P field_base volumic field with 9 components representing the change of basis on cells (local to global). Used for rotating cases for example.
   param.ajouter_flag("transpose_rotation", &transpose_rotation_,Param::OPTIONAL); // XD_ADD_P rien  whether to transpose the basis change matrix.
   param.ajouter("modele",&modele_lu_,Param::REQUIRED);   // XD_ADD_P bloc_pdf_model model used for the Penalized Direct Forcing
+  temps_relax_ = modele_lu_.temps_relax_;
+  echelle_relax_ =  modele_lu_.echelle_relax_;
   param.ajouter("interpolation",&interpolation_lue_,Param::OPTIONAL); // XD_ADD_P interpolation_ibm_base interpolation method
 
   param.lire_avec_accolades(s);
@@ -93,6 +95,12 @@ void Source_PDF_base::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
 
 void Source_PDF_base::associer_zones(const Zone_dis& zone_dis,
                                      const Zone_Cl_dis& zone_Cl_dis)
+{
+  Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
+  abort();
+}
+
+void Source_PDF_base::compute_indicateur_nodal_champ_aire()
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();
@@ -239,6 +247,12 @@ void Source_PDF_base::calculer_vitesse_imposee_hybrid()
   abort();
 }
 
+void Source_PDF_base::calculer_vitesse_imposee_power_law_tbl()
+{
+  Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
+  abort();
+}
+
 void Source_PDF_base::calculer_vitesse_imposee()
 {
   if (interpolation_bool_)
@@ -254,6 +268,10 @@ void Source_PDF_base::calculer_vitesse_imposee()
       else if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_hybride")
         {
           calculer_vitesse_imposee_hybrid();
+        }
+      else if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_power_law_tbl")
+        {
+          calculer_vitesse_imposee_power_law_tbl();
         }
     }
 }

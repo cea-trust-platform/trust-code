@@ -1,5 +1,5 @@
 # PARALLEL OK #
-# Hydraulique 2D laminaire POISEUILLE_ALIGNED
+# Hydraulique 2D laminaire POISEUILLE_ALIGNED_power_law
   Re = (rho*U_max*L)/mu
   rho = 1.0 kg/m^3
   U_max = 1 m/s
@@ -112,12 +112,13 @@ Read pb
                     eta 1.0e-12
                     vitesse_imposee_data champ_uniforme 3 0. 0. 0.
                 }
-                interpolation IBM_element_fluide
+                interpolation IBM_power_law_tbl
                 {
                     points_fluides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh projection_Fluid som 0.
                     points_solides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh projection_Solid som 0.
                     elements_fluides Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh fl_elem_number som 0.
                     correspondance_elements Champ_Fonc_MED last_time res_domain_mesh_40_pl_mesh_1.med domain_mesh TRUST_SALOME_correspondance elem 0.
+		    impr
                 }
             }
         }
@@ -132,24 +133,24 @@ Read pb
 
     Post_processings
     {
-        med {
-            format med
-            fichier results/postdom
-            Champs binaire dt_post 1e0
-            {
-                pression elem
-                vitesse som
-            }
-        }
-        lml
-        {
-            format lml fichier POISEUILLE_ALIGNED
-            Champs dt_post 1e0
-            {
-                pression elem
-                vitesse som
-            }
-        }
+	med {
+	        format med
+        	fichier results/postdom
+        	Champs binaire dt_post 1e0
+        	{
+            		pression elem
+            		vitesse som
+        	}
+	} 
+	lml
+	{
+		format lml fichier POISEUILLE_ALIGNED_power_law
+        	Champs dt_post 1e0
+        	{
+            		pression elem
+            		vitesse som
+        	}
+	}
     }
 }
 resoudre pb

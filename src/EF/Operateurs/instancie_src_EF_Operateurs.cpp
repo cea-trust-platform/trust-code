@@ -7,6 +7,7 @@
 #include <Op_Conv_EF.h>
 #include <Op_Conv_SUPG_EF.h>
 #include <Op_Diff_EF.h>
+#include <Op_Dift_EF_Q1.h>
 #include <Op_Div_EF.h>
 #include <Op_Grad_EF.h>
 void instancie_src_EF_Operateurs() {
@@ -17,6 +18,8 @@ Op_Conv_BTD_EF inst3;verifie_pere(inst3);
 Op_Conv_SUPG_EF inst4;verifie_pere(inst4);
 Op_Diff_EF inst5;verifie_pere(inst5);
 Op_Diff_option_EF inst6;verifie_pere(inst6);
-Op_Div_EF inst7;verifie_pere(inst7);
-Op_Grad_EF inst8;verifie_pere(inst8);
+Op_Dift_EF_Q1 inst7;verifie_pere(inst7);
+Op_Dift_EF_Q1_option inst8;verifie_pere(inst8);
+Op_Div_EF inst9;verifie_pere(inst9);
+Op_Grad_EF inst10;verifie_pere(inst10);
 }

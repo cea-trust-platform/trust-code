@@ -717,8 +717,27 @@ void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const D
   const Discretisation_base::type_calcul_du_residu& type_codage=probleme().discretisation().codage_du_calcul_du_residu();
   if (type_codage==Discretisation_base::VIA_CONTRIBUER_AU_SECOND_MEMBRE)
     {
-      Cerr << "VIA_CONTRIBUER_AU_SECOND_MEMBRE pas code pour " << que_suis_je() << ":assembler" << finl;
-      Process::exit();
+      if ( probleme().discretisation().que_suis_je() == "EF")
+        {
+          // On calcule somme(residu) par contribuer_au_second_membre (typiquement CL non implicitees)
+          // Cette approche necessite de coder 3 methodes (contribuer_a_avec, contribuer_au_second_membre et ajouter pour l'explicite)
+          sources().contribuer_a_avec(inco,matrice);
+          statistiques().end_count(assemblage_sys_counter_,0,0);
+          sources().ajouter(resu);
+          statistiques().begin_count(assemblage_sys_counter_);
+          matrice.ajouter_multvect(inco, resu); // Add source residual first
+          for (int op = 0; op < nombre_d_operateurs(); op++)
+            {
+              operateur(op).l_op_base().contribuer_a_avec(inco, matrice);
+              operateur(op).l_op_base().contribuer_au_second_membre(resu);
+            }
+        }
+      else
+        {
+          Cerr << "VIA_CONTRIBUER_AU_SECOND_MEMBRE pas code pour " << que_suis_je() << ":assembler" << finl;
+          Cerr << "avec discretisation " <<  probleme().discretisation().que_suis_je() << "" << finl;
+          Process::exit();
+        }
       // // On calcule somme(residu) par contribuer_au_second_membre (typiquement CL non implicitees)
       // // Cette approche necessite de coder 3 methodes (contribuer_a_avec, contribuer_au_second_membre et ajouter pour l'explicite)
       // sources().contribuer_a_avec(inco,matrice);

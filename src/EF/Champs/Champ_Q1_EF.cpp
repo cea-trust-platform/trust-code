@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -137,7 +137,7 @@ void Champ_Q1_EF::gradient(DoubleTab& gradient_elem)
   const DoubleVect& volume_thilde=zone_EF_.volumes_thilde();
   const DoubleTab& Bij_thilde=zone_EF_.Bij_thilde();
 
-  assert(gradient_elem.dimension(0) == nb_elems);
+  assert(gradient_elem.dimension_tot(0) == nb_elems);
   assert(gradient_elem.dimension(1) == dimension); // line
   assert(gradient_elem.dimension(2) == dimension); // column
 

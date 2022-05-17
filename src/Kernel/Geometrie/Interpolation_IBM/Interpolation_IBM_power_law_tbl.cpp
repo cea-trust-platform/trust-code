@@ -14,39 +14,25 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Interpolation_IBM_hybrid.h
+// File:        Interpolation_IBM_power_law_tbl.cpp
 // Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
 // Version:     1
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef Interpolation_IBM_hybrid_included
-#define Interpolation_IBM_hybrid_included
+#include <Interpolation_IBM_power_law_tbl.h>
 
-#include <Interpolation_IBM_elem_fluid.h>
-#include <Interpolation_IBM_mean_gradient_proto.h>
+Implemente_instanciable( Interpolation_IBM_power_law_tbl, "Interpolation_IBM_power_law_tbl|IBM_power_law_tbl", Interpolation_IBM_elem_fluid ) ;
+// XD interpolation_ibm_power_law_tbl interpolation_ibm_elem_fluid ibm_power_law_tbl 1 Immersed Boundary Method (IBM): power law interpolation.
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Interpolation_IBM_hybrid
-//
-// <Description of class Interpolation_IBM_hybrid>
-//
-/////////////////////////////////////////////////////////////////////////////
-
-class Interpolation_IBM_hybrid : public Interpolation_IBM_elem_fluid, public Interpolation_IBM_mean_gradient_proto
+Sortie& Interpolation_IBM_power_law_tbl::printOn( Sortie& os ) const
 {
-  Declare_instanciable( Interpolation_IBM_hybrid ) ;
+  Interpolation_IBM_elem_fluid::printOn( os );
+  return os;
+}
 
-public :
-  void discretise(const Discretisation_base&, Zone_dis_base&) override;
-  inline IntList& getSommetsVoisinsOf(int i)
-  {
-    return sommets_voisins_[i];
-  };
-protected :
-  friend class Source_PDF_EF;
-};
-
-#endif /* Interpolation_IBM_hybrid_included */
+Entree& Interpolation_IBM_power_law_tbl::readOn( Entree& is )
+{
+  Interpolation_IBM_elem_fluid::readOn( is );
+  return is;
+}

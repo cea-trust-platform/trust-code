@@ -68,11 +68,13 @@ protected:
   void calculer_vitesse_imposee_hybrid() override;
   void calculer_vitesse_imposee_elem_fluid() override;
   void calculer_vitesse_imposee_mean_grad() override;
+  void calculer_vitesse_imposee_power_law_tbl() override;
   void rotate_imposed_velocity(DoubleTab&) override;
   DoubleTab compute_pond(const DoubleTab&, const DoubleTab&, const DoubleVect&, int&, int&) const ;
   REF(Zone_EF) la_zone_EF;
   REF(Zone_Cl_EF) la_zone_Cl_EF;
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void compute_indicateur_nodal_champ_aire() override;
 };
 
 #endif
