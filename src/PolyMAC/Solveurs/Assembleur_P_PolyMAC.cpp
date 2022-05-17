@@ -79,7 +79,7 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
   const IntTab& e_f = zone.elem_faces(), &fcl = ch.fcl();
-  const DoubleVect& pf = zone.porosite_face(), &vf = zone.volumes_entrelaces();
+  const DoubleVect& pe = zone.porosite_elem();
   int i, j, e, f, fb, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot(), nf = zone.nb_faces(), nf_tot = zone.nb_faces_tot();
 
   DoubleTrav w2; //matrice W2 (de Zone_PolyMAC) par element
@@ -120,9 +120,9 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
           for (m_ef = 0, m_fe = 0, f = e_f(e, i), j = 0; j < w2.dimension(1); j++) if (w2(i, j, 0))
               {
                 fb = e_f(e, j);
-                if (f < zone.nb_faces() && fcl(f, 0) != 1) mat(ne_tot + f, ne_tot + fb) += w2(i, j, 0); //interne ou Dirichlet
+                if (f < zone.nb_faces() && fcl(f, 0) != 1) mat(ne_tot + f, ne_tot + fb) += pe(e) * w2(i, j, 0); //interne ou Dirichlet
                 else if (f < zone.nb_faces() && i == j) mat(ne_tot + f, ne_tot + fb) = 1; //f Neumann : ligne dpf = 0
-                m_ef += (diag.size() ? pf(fb) * vf(fb) / diag(fb) : 1) * w2(i, j, 0),  m_fe += w2(i, j, 0); //accumulation dans m_ef, m_fe
+                m_ef += pe(e) * w2(i, j, 0),  m_fe += pe(e) * w2(i, j, 0); //accumulation dans m_ef, m_fe
               }
           if (e < zone.nb_elem()) mat(e, ne_tot + f) -= m_ef;
           if (f < zone.nb_faces() && fcl(f, 0) != 1) mat(ne_tot + f, e) -= m_fe; //si f non Neumann : coef (face, elem)
@@ -235,12 +235,12 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
       if ((f = e_f(e, i)) >= zone.nb_faces()) continue; //faces virtuelles
       else if (!fcl(f, 0)) //face interne
         {
-          for (acc = 0, j = 0; j < w2.dimension(1); acc+= w2(i, j, 0), j++) for (m = 0; m < M; m++) //second membre
-              secmem(!aux_only * ne_tot + f, m) -= w2(i, j, 0) * (press(ne_tot + e_f(e, j), m) - press(e, m)) * cont_norm;
+          for (acc = 0, j = 0; j < w2.dimension(1); acc+= pe(e) * w2(i, j, 0), j++) for (m = 0; m < M; m++) //second membre
+              secmem(!aux_only * ne_tot + f, m) -= pe(e) * w2(i, j, 0) * (press(ne_tot + e_f(e, j), m) - press(e, m)) * cont_norm;
           for (m = 0; m < M; m++) mat_p(M * (!aux_only * ne_tot + f) + m, M * e + m) -= acc * cont_norm;
           for (j = 0; j < w2.dimension(1); j++) //matrice (sauf bords de Meumann)
             if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) != 1) for (m = 0; m <M; m++)
-                mat_p(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) + m) += w2(i, j, 0) * cont_norm;
+                mat_p(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) + m) += pe(e) * w2(i, j, 0) * cont_norm;
         }
       else if (fcl(f, 0) == 1) //Neumann -> egalites p_f = p_imp
         {

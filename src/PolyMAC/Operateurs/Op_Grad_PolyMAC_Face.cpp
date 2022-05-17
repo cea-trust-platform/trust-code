@@ -116,7 +116,7 @@ void Op_Grad_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const DoubleTab& vfd = zone.volumes_entrelaces_dir(), &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &pf = zone.porosite_face();
+  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &pe = zone.porosite_elem();
   int i, j, e, eb, f, fb, ne_tot = zone.nb_elem_tot(), n, N = secmem.line_size(), m, M = press.line_size();
 
   Matrice_Morse *mat = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : NULL;
@@ -126,7 +126,7 @@ void Op_Grad_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   for (e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++) if ((f = e_f(e, i)) < zone.nb_faces())
         {
           /* taux de vide a la face (identique a celui de Masse_PolyMAC_Face) */
-          double prefac = (e == f_e(f, 0) ? 1 : -1) * pf(f) * vfd(f, e != f_e(f, 0)) / fs(f); /* ponderation pour elimner p_f si on est en TPFA */
+          double prefac = (e == f_e(f, 0) ? 1 : -1) * pe(e) * vfd(f, e != f_e(f, 0)) / fs(f); /* ponderation pour elimner p_f si on est en TPFA */
           for (alpha = 0, j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) alpha(n) += vfd(f, j) * (alp ? (*alp)(eb, n) : 1) / vf(f);
           for (coeff_e = 0, j = 0; j < w2.dimension(1); j++) if (w2(i, j, 0)) for (fb = e_f(e, j), n = 0, m = 0; n < N; n++, m += (M > 1))
                 {
