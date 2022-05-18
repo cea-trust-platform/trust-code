@@ -348,18 +348,18 @@ void Discret_Thyd::grad_u(const Zone_dis& ,const Zone_Cl_dis&,  const Champ_Inc&
 
 void Discret_Thyd::concentration(const Schema_Temps_base& sch,
                                  Zone_dis& z, Champ_Inc& ch,
-                                 int nb_constituants) const
+                                 int nb_constituants, const Nom nom_champ) const
 {
   Cerr << "Concentration discretization " << finl;
-  discretiser_champ("temperature",z.valeur(),"concentration","%",nb_constituants,sch.nb_valeurs_temporelles(),sch.temps_courant(),ch);
-  ch->nommer("concentration");
+  discretiser_champ("temperature",z.valeur(),nom_champ,"%",nb_constituants,sch.nb_valeurs_temporelles(),sch.temps_courant(),ch);
+  ch->nommer(nom_champ);
   if (nb_constituants > 1)
     {
       ch->fixer_nature_du_champ(multi_scalaire);
       Noms noms(nb_constituants);
       for (int i=0; i<nb_constituants; i++)
         {
-          noms[i] = "concentration";
+          noms[i] = nom_champ;
           Nom param(i);
           noms[i] += param;
           ch->fixer_nom_compo(i, noms[i]);

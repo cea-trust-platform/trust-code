@@ -71,7 +71,7 @@ public :
   void divergence_U(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;
   void gradient_P(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;
   void concentration(const Schema_Temps_base&, Zone_dis&,
-                     Champ_Inc&, int =1) const;
+                     Champ_Inc&, int =1, const Nom nom_champ="concentration") const;
   virtual void creer_champ_vorticite(const Schema_Temps_base&,const Champ_Inc& ,
                                      Champ_Fonc& ) const;
   virtual void grad_u(const Zone_dis& ,const Zone_Cl_dis&,  const Champ_Inc&, Champ_Fonc&) const;
