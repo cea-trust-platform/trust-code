@@ -156,10 +156,10 @@ if __name__ == "__main__":
         for i, n in enumerate(["__rr__", "__vr__", "__pr__"]):
             filedata = filedata.replace(n, str(TCs[name]["WR"][i]))
         filedata = filedata.replace(
-            "__Tl__", str((TCs[name]["WL"][2] + TCs[name]["pinf"]) / (TCs[name]["WL"][0] * 8.31446261815324))
+            "__Tl__", str((TCs[name]["WL"][2] + TCs[name]["pinf"]) / (TCs[name]["WL"][0] * 8.31446261815324) -273.15 )
         )
         filedata = filedata.replace(
-            "__Tr__", str((TCs[name]["WR"][2] + TCs[name]["pinf"]) / (TCs[name]["WR"][0] * 8.31446261815324))
+            "__Tr__", str((TCs[name]["WR"][2] + TCs[name]["pinf"]) / (TCs[name]["WR"][0] * 8.31446261815324) -273.15 )
         )
         
         tab.addLigne( [[TCs[name]["gamma"], TCs[name]["pinf"]] + TCs[name]["WL"] + TCs[name]["WR"] + [TCs[name]["x"]]], name)

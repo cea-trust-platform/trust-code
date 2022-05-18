@@ -99,13 +99,13 @@ Read pb
     {
         diffusion { negligeable }
         convection { amont }
-        initial_conditions { temperature Champ_fonc_xyz dom 1 ((15500000.0*(x[0.5)+100000.0*(x>0.5))+353637173.0)/((700*(x[0.5)+700*(x>0.5))*8.31446261815324) }
+        initial_conditions { temperature Champ_fonc_xyz dom 1 ((15500000.0*(x[0.5)+100000.0*(x>0.5))+353637173.0)/((700*(x[0.5)+700*(x>0.5))*8.31446261815324)-273.15 }
         boundary_conditions
         {
             haut paroi_adiabatique
             bas paroi_adiabatique
-            gauche frontiere_ouverte T_ext Champ_Front_uniforme 1 63424.28161503455
-            droite frontiere_ouverte T_ext Champ_Front_uniforme 1 60778.28980409458
+            gauche frontiere_ouverte T_ext Champ_Front_uniforme 1 63151.13161503455
+            droite frontiere_ouverte T_ext Champ_Front_uniforme 1 60505.13980409458
         }
         sources { travail_pression }
     }
