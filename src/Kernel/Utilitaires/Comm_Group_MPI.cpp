@@ -25,6 +25,9 @@
 #include <stat_counters.h>
 #include <Statistiques.h>
 #include <vector>
+#ifdef INT_is_64_
+#include <algorithm>
+#endif
 
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Comm_Group_MPI,"Comm_Group_MPI",Comm_Group);

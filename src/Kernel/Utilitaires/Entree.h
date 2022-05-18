@@ -30,6 +30,7 @@
 #include <iostream>
 #include <assert.h>
 #include <Process.h>
+#include <arch.h> // pour LIBLATAFILTER int64
 using std::ios;
 using std::istream;
 class Objet_U;
