@@ -9,7 +9,6 @@ subdir:
 	(if [ -d TRUST ] && [ "`ls TRUST/*akefile 2>/dev/null`" != "" ]; then cd TRUST; $(MAKE); fi)
 	(if [ -d Coverage ] && [ "`ls Coverage/*akefile 2>/dev/null`" != "" ]; then cd Coverage; $(MAKE); fi)
 doc:
-	@echo "HTML documentation under $(HTML) will be updated in few minutes..."
 	@make_Doxyfile 
 
 ctags:

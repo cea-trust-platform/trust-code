@@ -1,6 +1,5 @@
 #!/bin/bash
 # Script to build HTML documentation with Doxygen
-
 if [ "$TRUST_LOGIN" != `whoami` ]
 then
    echo "You don't have rights to recreate the HTML documentation."
@@ -62,7 +61,7 @@ do
       fi
       echo "===================================================="
 
-      build=1
+      build=1 && [ "$TRUST_DISABLE_DOC_DOXYGEN" = "1" ] && build=0
       ################################################
       # Check if the tag and doc needs to be rebuilt #
       ################################################
