@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,21 +22,24 @@
 
 #include <StiffenedGas.h>
 
-Implemente_instanciable(StiffenedGas, "StiffenedGas", Fluide_reel_base);
+Implemente_instanciable_sans_constructeur(StiffenedGas, "StiffenedGas", Fluide_reel_base);
 // XD StiffenedGas fluide_reel_base StiffenedGas -1 Class for Stiffened Gas
 // XD attr gamma floattant gamma 1 Heat capacity ratio (Cp/Cv)
 // XD attr pinf floattant pinf 1 Stiffened gas pressure constant (if set to zero, the state law becomes identical to that of perfect gases)
 // XD attr mu floattant mu 1 Dynamic viscosity
 // XD attr lambda floattant lambda 1 Thermal conductivity
+// XD attr Cv floattant Cv 1 Not set TODO : FIXME
+// XD attr q floattant q 1 Not set TODO : FIXME
+// XD attr q_prim floattant q_prim 1 Not set TODO : FIXME
 
-Sortie& StiffenedGas::printOn(Sortie& os) const
-{
-  return os;
-}
+StiffenedGas::StiffenedGas() : pinf_(0.), Cv_(-1.), q_(0.), q_prim_(0.), gamma_(1.4), R_(8.31446261815324), mu__(0.), lambda__(0.) { }
+
+Sortie& StiffenedGas::printOn(Sortie& os) const { return os; }
 
 Entree& StiffenedGas::readOn(Entree& is)
 {
   Fluide_reel_base::readOn(is);
+  if (Cv_ == -1.) Cv_ = R_ / (gamma_ - 1.0);
   return is;
 }
 
@@ -47,27 +50,29 @@ void StiffenedGas::set_param(Param& param)
   param.ajouter("pinf",&pinf_);
   param.ajouter("mu",&mu__);
   param.ajouter("lambda",&lambda__);
+  param.ajouter("Cv",&Cv_);
+  param.ajouter("q",&q_);
+  param.ajouter("q_prim",&q_prim_);
 }
-
 
 double StiffenedGas::rho_(const double T, const double P) const
 {
-  return (P + pinf_) / R_ / T;
+  return  (P + pinf_) / (gamma_ - 1.0) / (T + 273.15) / Cv_;
 }
 
 double StiffenedGas::dT_rho_(const double T, const double P) const
 {
-  return -(P + pinf_) / R_ / T / T;
+  return -(P + pinf_) / (gamma_ - 1.0) / Cv_ / (T + 273.15) / (T + 273.15);
 }
 
 double StiffenedGas::dP_rho_(const double T, const double P) const
 {
-  return 1.0 / R_ / T;
+  return 1.0 / (gamma_ - 1.0) / Cv_ / (T + 273.15);
 }
 
 double StiffenedGas::h_(const double T, const double P) const
 {
-  return cp_(T, P) * T;
+  return gamma_ * Cv_  * (T + 273.15) + q_;
 }
 
 double StiffenedGas::dT_h_(const double T, const double P) const
@@ -82,7 +87,7 @@ double StiffenedGas::dP_h_(const double T, const double P) const
 
 double StiffenedGas::cp_(const double T, const double P) const
 {
-  return gamma_ * R_ / (gamma_ - 1.0);
+  return gamma_ * Cv_ ;
 }
 
 double StiffenedGas::mu_(const double T, const double P) const
@@ -97,5 +102,5 @@ double StiffenedGas::lambda_(const double T, const double P) const
 
 double StiffenedGas::beta_(const double T, const double P) const
 {
-  return 1.0 / T;
+  return 1.0 / (T + 273.15);
 }

@@ -25,16 +25,13 @@
 
 #include <Fluide_reel_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    Classe StiffenedGas
+// .DESCRIPTION : Classe StiffenedGas
 //    Cette classe represente un milieu reel
-//////////////////////////////////////////////////////////////////////////////
 class StiffenedGas: public Fluide_reel_base
 {
-  Declare_instanciable(StiffenedGas);
+  Declare_instanciable_sans_constructeur(StiffenedGas);
 public:
+  StiffenedGas();
   void set_param(Param& param) override;
 
 protected :
@@ -52,11 +49,7 @@ protected :
   double      mu_(const double T, const double P) const override;
   double  lambda_(const double T, const double P) const override;
 
-  double gamma_ = 1.4;
-  double pinf_ = 0.0;
-  double R_ = 8.31446261815324;
-  double mu__ = 0;
-  double lambda__ = 0;
+  double pinf_, Cv_, q_, q_prim_, gamma_, R_, mu__, lambda__;
 };
 
-#endif
+#endif /* StiffenedGas_included */
