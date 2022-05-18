@@ -645,6 +645,7 @@ rm -f $MESSAGES_NUIT $REP_NUIT/nuit_*.html
 rm -f $REP_NUIT/MESSAGES_LIVRAISON* $REP_NUIT/MESSAGES_NUIT
 rm -rf $REP_NUIT/Maintenance
 rm -f $REP_NUIT/.nfs*
+mv /home/trust_trio/CR_* /home/trust_trio/tmp_CR/
 # On cree :
 [ ! -d $REP_NUIT ] && mkdir $REP_NUIT
 [ ! -d $REP_NUIT/Maintenance ] && mkdir -p $REP_NUIT/Maintenance

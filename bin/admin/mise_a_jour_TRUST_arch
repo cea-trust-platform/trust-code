@@ -347,6 +347,7 @@ option_configure=" -disable-ccache"
 # Compilation minimale avec -disable
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi -without-visit -without-doc -disable-plot2d"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi " | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpi"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi4py " | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-mpi4py"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-optionals" | grep ^$HOST"\."`" != "" ] 		&& option_configure=" -disable-optionals"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-check_sources" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-check_sources"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpiio" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-mpiio"

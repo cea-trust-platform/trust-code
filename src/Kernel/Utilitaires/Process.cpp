@@ -34,8 +34,6 @@
 #include <TriouError.h>
 #include <Comm_Group_MPI.h>
 #include <unistd.h> // sleep() pour certaines machines
-//#include <stat_counters.h>
-
 #include <SChaine.h>
 #include <FichierHDFPar.h>
 
