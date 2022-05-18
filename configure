@@ -466,6 +466,7 @@ do
       export TRUST_WITHOUT_DOC=1
       # if no pdflatex installed, disable pdf doc build
       [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && export TRUST_WITHOUT_PDFLATEX=1
+      [ "`eval xelatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && export TRUST_WITHOUT_PDFLATEX=1
       THIRD_PARTY="DOC"
       REP_THIRD_PARTY=$TRUST_ROOT/doc
       ([ -d $REP_THIRD_PARTY ] && [ $first -eq 0 ] && cd $REP_THIRD_PARTY && echo "Disabling $THIRD_PARTY, so make clean:" && make clean)
@@ -657,10 +658,7 @@ source ./env_TRUST.sh 1>/dev/null 2>&1
 if [ "$TRUST_WITHOUT_DOC" != 1 ] && [ "$TRUST_WITHOUT_PDFLATEX" != 1 ]
 then
    texerror=0
-   if [ "`eval xelatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
-   then
-      echo "xelatex is missing... it is needed if you want to build pdf reports from Jupyter notebook format." >> NON_INSTALLED
-   fi
+
    if [ "`eval pdflatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
       echo "pdflatex is missing..." >> NON_INSTALLED
@@ -689,6 +687,27 @@ then
 
       cd $TRUST_ROOT
   fi
+  if [ "`eval xelatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
+  then
+     echo "xelatex is missing... it is needed if you want to build pdf reports from Jupyter notebook format using Run_fiche -export_pdf." >> NON_INSTALLED
+     texerror=3
+  else
+     dest2=$TRUST_TMP/tmp_xelatex
+     [ -d $dest2 ] && rm -r $dest2
+     mkdir $dest2
+     cd $dest2
+     cp $TRUST_ROOT/Outils/TexFiles/Makefile .
+     cp $TRUST_ROOT/Outils/TexFiles/mini_jupyter.tex .
+     make jupyter 1>LOG_FILE 2>&1
+     if [ $? != 0 ]
+     then
+        echo "Some latex packages are missing... see $dest2/LOG" >> $TRUST_ROOT/NON_INSTALLED
+        texerror=3
+     else
+        rm -r $dest2
+     fi
+     cd $TRUST_ROOT
+  fi
   if [ $texerror = 1 ]
   then
      echo "You cannot generate the PDF documentation of TRUST and its sub-projects unless you install metapackages equivalent to:" >> NON_INSTALLED
@@ -711,6 +730,19 @@ then
      echo "see $TRUST_TMP/Run.log " >> NON_INSTALLED
   fi
 
+  if [ $texerror = 3 ]
+  then
+     echo "You cannot run Run_fiche -export_pdf unless you install metapackages equivalent to:" >> NON_INSTALLED
+     echo "   sudo apt-get install texlive-xetex texlive-fonts-recommended texlive-plain-generic" >> NON_INSTALLED
+     echo " NOTE1: The names of these packages may differ if your OS is not one of Debian/Ubuntu" >> NON_INSTALLED
+     echo " For instance on Fedora, you can try: sudo dnf install texlive-scheme-full" >> NON_INSTALLED
+     echo " NOTE2: In the case you DO NOT WANT to install it, run: " >> NON_INSTALLED
+     Num_opts_configure=`tail -1 configure.log | awk '{print NF-1}'`
+     opts_configure=`tail -1 configure.log | cut -d ' ' -f 1-$Num_opts_configure`
+     echo "        $opts_configure -without-pdflatex" >> NON_INSTALLED
+     exiterror=1
+  fi
+  
 fi
 
 if [ "`grep 'Ubuntu 2[0-1]' /etc/issue 2>/dev/null`" != "" ]
