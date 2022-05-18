@@ -85,8 +85,8 @@ Read pb
         convection { amont }
         boundary_conditions
         {
-            up paroi_temperature_imposee Champ_Front_Uniforme 1 -100.
-            down paroi_temperature_imposee Champ_Front_Uniforme 1 100.
+            up paroi_temperature_imposee Champ_Front_fonc_xyz 1 -100.*x-50.
+            down paroi_temperature_imposee Champ_Front_fonc_xyz 1 -100.*x+150.
             left paroi_adiabatique
             right paroi_adiabatique
         }
