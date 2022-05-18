@@ -13,7 +13,7 @@ if __name__ == "__main__":
     lx, ly = 1, 1
     # assert (lx / ly).is_integer(), "lx must be a multiple of ly!"
     ny = 41
-    dic_dis = {"cartesian" : ["VDF", "PolyMAC", "CoviMAC"], "NCa" : ["PolyMAC", "CoviMAC"], "NCr" : ["PolyMAC", "CoviMAC"]}
+    dic_dis = {"cartesian" : ["VDF", "PolyMAC", "PolyMAC_P0"], "NCa" : ["PolyMAC", "PolyMAC_P0"], "NCr" : ["PolyMAC", "PolyMAC_P0"]}
     list_dis = []
     for k, v in dic_dis.items():
         for d in v:

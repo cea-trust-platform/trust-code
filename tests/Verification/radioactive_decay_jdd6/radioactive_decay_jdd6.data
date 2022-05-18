@@ -73,7 +73,7 @@ read precurseur
 }
 associate  pb_fluide precurseur
 
-CoviMAC  dis
+PolyMAC_P0  dis
 Discretize pb_fluide dis
 
 Read pb_fluide

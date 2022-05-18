@@ -22,7 +22,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-CoviMAC dis
+PolyMAC_P0 dis
 option_vdf { p_imposee_aux_faces oui }
 
 domaine surf1

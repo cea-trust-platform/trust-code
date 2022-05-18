@@ -5,12 +5,12 @@ source_const="source_Constituant champ_fonc_fonction pb_fluide concentration 2 -
 
 declare -A action_maillage=(["VEFPreP1B"]="tetraedriser_homogene_compact dom_fluide"
                            ["VDF"]=""
-                           ["CoviMAC"]="Polyedriser dom_fluide"
+                           ["PolyMAC_P0"]="Polyedriser dom_fluide"
                            ["PolyMAC"]="Polyedriser dom_fluide")
 
 for dt in "0.1" "1"
 do
-    for dis in "VEFPreP1B" "PolyMAC" "CoviMAC"
+    for dis in "VEFPreP1B" "PolyMAC" "PolyMAC_P0"
     do
         mkdir -p $dis/dt$dt
         sed "s~__dt__~${dt}~;s~__dis__~${dis}~;s~__action_maillage__~${action_maillage[$dis]}~;s~__decay__~$decay~"          jdd.data > ${dis}/dt${dt}/decay.data

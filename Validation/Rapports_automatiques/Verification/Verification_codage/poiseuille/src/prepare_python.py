@@ -15,13 +15,13 @@ if __name__ == "__main__":
     mu, vwall = 2.5, 1
     # assert (lx / ly).is_integer(), "lx must be a multiple of ly!"
     meshes = [6, 12, 24, 36]
-    # dic_dis = {"cartesian" : ["VDF", "PolyMAC", "CoviMAC"]}
+    # dic_dis = {"cartesian" : ["VDF", "PolyMAC", "PolyMAC_P0"]}
     solveur = {"VDF" : "solveur implicite { solveur petsc cholesky { } }",
     "VEFPreP1B" : "solveur implicite { solveur petsc cholesky { } }",
-    "CoviMAC" : "solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }",
+    "PolyMAC_P0" : "solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }",
     "PolyMAC" : "solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }",
     }
-    dic_dis = {"cartesian" : ["VDF", "PolyMAC", "CoviMAC"], "triangle" : ["VEFPreP1B", "PolyMAC", "CoviMAC"], "NCa" : ["PolyMAC", "CoviMAC"], "NCr" : ["PolyMAC", "CoviMAC"]}
+    dic_dis = {"cartesian" : ["VDF", "PolyMAC", "PolyMAC_P0"], "triangle" : ["VEFPreP1B", "PolyMAC", "PolyMAC_P0"], "NCa" : ["PolyMAC", "PolyMAC_P0"], "NCr" : ["PolyMAC", "PolyMAC_P0"]}
     list_dis, list_meshes = [], []
     for k, v in dic_dis.items():
         for d in v:
