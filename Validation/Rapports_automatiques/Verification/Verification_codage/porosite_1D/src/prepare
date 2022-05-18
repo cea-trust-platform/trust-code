@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for dir in "VDF" "PolyMAC" "CoviMAC"
+for dir in "VDF" "PolyMAC" "PolyMAC_P0"
 do
     ( mkdir -p $dir; cp jdd.data $dir )
     sed -i "s/__tetra__//;s/__dis__/$dir/" $dir/jdd.data

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for M in NCa/CoviMAC NCa/PolyMAC NCr/CoviMAC NCr/PolyMAC cartesian/CoviMAC cartesian/PolyMAC cartesian/VDF triangle/CoviMAC triangle/PolyMAC triangle/VEFPreP1B
+for M in NCa/PolyMAC_P0 NCa/PolyMAC NCr/PolyMAC_P0 NCr/PolyMAC cartesian/PolyMAC_P0 cartesian/PolyMAC cartesian/VDF triangle/PolyMAC_P0 triangle/PolyMAC triangle/VEFPreP1B
 do
     if [ "$M" = "triangle/VEFPreP1B" ]; then
         cat $M/maillage_*/conv_p | awk '{print 1./sqrt($1+$2),$3}'| sort -n> $M/conv_glob_p

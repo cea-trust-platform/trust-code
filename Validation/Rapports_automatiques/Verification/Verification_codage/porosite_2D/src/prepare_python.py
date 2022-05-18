@@ -12,7 +12,7 @@ def build_mesh(type_elem, xmin, xmax, ymin, ymax, nx, ny, path_to_folder):
 if __name__ == "__main__":
     lx, ly = 2, 3
     meshes = [30]
-    dic_dis = {"cartesian" : ["VDF", "PolyMAC", "CoviMAC"], "triangle" : ["VEFPreP1B", "PolyMAC", "CoviMAC"], "NCa" : ["PolyMAC", "CoviMAC"], "NCr" : ["PolyMAC", "CoviMAC"]}
+    dic_dis = {"cartesian" : ["VDF", "PolyMAC", "PolyMAC_P0"], "triangle" : ["VEFPreP1B", "PolyMAC", "PolyMAC_P0"], "NCa" : ["PolyMAC", "PolyMAC_P0"], "NCr" : ["PolyMAC", "PolyMAC_P0"]}
     list_dis, list_meshes = [], []
     for k, v in dic_dis.items():
         for d in v:
