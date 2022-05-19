@@ -230,7 +230,8 @@ public :
     init_champ_conserve();
   };
   //mise a jour de champ_conserve / champ_convecte : appele par Probleme_base::mettre_a_jour() apres avoir mis a jour le milieu
-  virtual void mettre_a_jour_champs_conserves(double temps);
+  //si reset = 1, force le calcul de toutes les valeurs temporelles (et pas seulement de la valeur courante)
+  virtual void mettre_a_jour_champs_conserves(double temps, int reset = 0);
 
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////

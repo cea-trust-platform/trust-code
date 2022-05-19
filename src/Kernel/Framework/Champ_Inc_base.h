@@ -140,6 +140,11 @@ public:
 
   //champ dependant d'autres Champ_Inc : reglage de la fonciton de calcul, initialisation de val_bord_
   void init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc);
+  //pour forcer le calcul de toutes les cases au prochain mettre_a_jour() (normalement fait une seule fois)
+  void reset_champ_calcule()
+  {
+    fonc_calc_init_ = 0;
+  }
 
   //utilise les conditions aux limites (au lieu de valeur_aux() dans Champ_base)
   //result n'est rempli que pour les faces de bord dont la CL impose une valeur (val_imp ou val_ext)

@@ -1091,7 +1091,7 @@ Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis()
 
 void Champ_Inc_base::init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc)
 {
-  obj_calc_ = obj, fonc_calc_ = fonc;
+  obj_calc_ = obj, fonc_calc_ = fonc, fonc_calc_init_ = 0;
   val_bord_.resize(ref_cast(Zone_VF, zone_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
 }
 

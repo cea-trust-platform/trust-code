@@ -1212,8 +1212,10 @@ void Equation_base::mettre_a_jour(double temps)
 }
 
 //mise a jour de champ_conserve / champ_convecte : appele par Probleme_base::mettre_a_jour() apres avoir mis a jour le milieu
-void Equation_base::mettre_a_jour_champs_conserves(double temps)
+void Equation_base::mettre_a_jour_champs_conserves(double temps, int reset)
 {
+  if (reset && champ_conserve_.non_nul()) champ_conserve_->reset_champ_calcule(); //force le calcul de toutes les cases
+  if (reset && champ_convecte_.non_nul()) champ_convecte_->reset_champ_calcule();
   if (champ_conserve_.non_nul()) champ_conserve_->mettre_a_jour(temps);
   if (champ_convecte_.non_nul()) champ_convecte_->mettre_a_jour(temps);
 }
