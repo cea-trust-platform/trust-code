@@ -267,14 +267,14 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, c
 
   if (val.nb_dim() > 2)
     {
-      Cerr << "Erreur TRUST dans Champ_Face_implementation::valeur_aux_elems()" << finl;
+      Cerr << "Erreur TRUST dans Champ_Face_PolyMAC_P0::valeur_aux_elems()" << finl;
       Cerr << "Le DoubleTab val a plus de 2 entrees" << finl;
       Process::exit();
     }
 
   if (nb_compo == 1)
     {
-      Cerr<<"Champ_Face_implementation::valeur_aux_elems"<<finl;
+      Cerr<<"Champ_Face_PolyMAC_P0::valeur_aux_elems"<<finl;
       Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
       Process::exit();
     }

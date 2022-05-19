@@ -247,6 +247,7 @@
  Deriv_ Deriv_ Deriv_.h
  Descripteur Descripteur Descripteur.h
  DescStructure DescStructure DescStructure.h
+ Diametre_bulles_champ Diametre_bulles_champ Diametre_bulles_champ.h
  Diametre_bulles_constant Diametre_bulles_constant Diametre_bulles_constant.h
  Diametre_hyd_champ Diametre_hyd_champ Diametre_hyd_champ.h
  Dilate Dilate Dilate.h

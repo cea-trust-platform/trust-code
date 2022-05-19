@@ -14,37 +14,35 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_Elem_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
+// File:        Diametre_bulles_champ.h
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Zone_VF.h>
+#ifndef Diametre_bulles_champ_included
+#define Diametre_bulles_champ_included
+#include <Correlation_base.h>
+#include <Champ_Fonc.h>
 
-Implemente_instanciable(Champ_Fonc_Elem_PolyMAC,"Champ_Fonc_Elem_PolyMAC",Champ_Fonc_P0_base);
-
-
-//     printOn()
-/////
-
-Sortie& Champ_Fonc_Elem_PolyMAC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
+//////////////////////////////////////////////////////////////////////////////
 //
+// .DESCRIPTION
+//    classe Diametre_bulles_champ
+//      Contient un champ de bulles de diametre defini dans un champ par l'utilisateur
+//////////////////////////////////////////////////////////////////////////////
 
-Entree& Champ_Fonc_Elem_PolyMAC::readOn(Entree& s)
+class Diametre_bulles_champ : public Correlation_base
 {
-  return s ;
-}
+  Declare_instanciable(Diametre_bulles_champ);
 
-Champ_base& Champ_Fonc_Elem_PolyMAC::affecter_(const Champ_base& ch)
-{
-  const Zone_VF& zone = ref_cast(Zone_VF,la_zone_VF.valeur());
-  ch.valeur_aux(zone.xp(), valeurs());
-  return *this;
-}
+public:
+
+  const Champ_base& get_champ(const Motcle& nom) const override;
+
+protected:
+  double d_bulle_;
+  Champ_Fonc diametres_;
+};
+
+#endif

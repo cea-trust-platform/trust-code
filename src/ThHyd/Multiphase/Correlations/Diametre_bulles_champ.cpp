@@ -14,37 +14,54 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Champ_Fonc_Elem_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
+// File:        Diametre_bulles_champ.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
+// Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Zone_VF.h>
+#include <Diametre_bulles_champ.h>
+#include <Ref_Champ_base.h>
+#include <Discret_Thyd.h>
+#include <Pb_Multiphase.h>
+#include <Zone_dis.h>
+#include <Champ_Don.h>
 
-Implemente_instanciable(Champ_Fonc_Elem_PolyMAC,"Champ_Fonc_Elem_PolyMAC",Champ_Fonc_P0_base);
+Implemente_instanciable(Diametre_bulles_champ, "Diametre_bulles_champ", Correlation_base);
 
-
-//     printOn()
-/////
-
-Sortie& Champ_Fonc_Elem_PolyMAC::printOn(Sortie& s) const
+Sortie& Diametre_bulles_champ::printOn(Sortie& os) const
 {
-  return s << que_suis_je() << " " << le_nom();
+  return os;
 }
 
-//// readOn
-//
-
-Entree& Champ_Fonc_Elem_PolyMAC::readOn(Entree& s)
+Entree& Diametre_bulles_champ::readOn(Entree& is)
 {
-  return s ;
+  Champ_Don diametres_don_;
+  is >> diametres_don_;
+
+  Pb_Multiphase& pb = ref_cast(Pb_Multiphase, pb_.valeur());
+  int N = pb.nb_phases();
+  const Discret_Thyd& dis=ref_cast(Discret_Thyd,pb.discretisation());
+  Noms noms(N), unites(N);
+  noms[0] = "diametre_bulles";
+  unites[0] = "m";
+  Motcle typeChamp = "champ_elem" ;
+  const Zone_dis& z = ref_cast(Zone_dis, pb.domaine_dis().zone_dis(0));
+  dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, N, 0, diametres_);
+
+  champs_compris_.ajoute_champ(diametres_);
+
+  diametres_->affecter(diametres_don_.valeur());
+
+  return is;
 }
 
-Champ_base& Champ_Fonc_Elem_PolyMAC::affecter_(const Champ_base& ch)
+const Champ_base& Diametre_bulles_champ::get_champ(const Motcle& nom) const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF,la_zone_VF.valeur());
-  ch.valeur_aux(zone.xp(), valeurs());
-  return *this;
+  REF(Champ_base) ref_champ;
+  if (nom=="diametre_bulles")
+    return champs_compris_.get_champ(nom);
+
+  throw Champs_compris_erreur();
+  return ref_champ;
 }

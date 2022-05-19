@@ -35,6 +35,9 @@
 class Champ_Fonc_Elem_PolyMAC: public Champ_Fonc_P0_base
 {
   Declare_instanciable(Champ_Fonc_Elem_PolyMAC);
+
+public :
+  Champ_base& affecter_(const Champ_base& ch) override;
 };
 
 #endif
