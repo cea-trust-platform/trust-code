@@ -92,10 +92,10 @@ fi
 if [ "`diff $TRUST_TMP/stb $TRUST_ROOT/doc/.dico`" != "" ]
 then
     echo "  Update of $TRUST_ROOT/doc/.dico file"
-    mv -f $TRUST_TMP/stb $TRUST_ROOT/doc/.dico
 else
     echo "  Not update of $TRUST_ROOT/doc/.dico file"
 fi
+mv -f $TRUST_TMP/stb $TRUST_ROOT/doc/.dico 1>/dev/null 2>&1
 rm -f $TRUST_TMP/st  $TRUST_TMP/st2 $TRUST_TMP/stb   $TRUST_TMP/st1 $TRUST_TMP/st2b 
 }
 verif $1

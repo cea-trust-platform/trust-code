@@ -24,15 +24,11 @@ cree_syno()
     done
     echo "}" 
 }
-cree_syno $* > syno_tmp
+exec=$*
+[ -f $exec ] && [ syno.py -nt $exec ] && exit 0
+cree_syno $exec > syno.py
 status=$?
 [ $status -ne 0 ] && echo $0 pb generation de syno_tmp && exit 2
-if [ "`diff syno.py syno_tmp 2>&1`" != "" ]
-then
- mv syno_tmp syno.py
- echo syno.py genere
-else
- rm syno_tmp
-fi
+echo syno.py genere
 exit 0
 

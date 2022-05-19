@@ -72,6 +72,7 @@ do
 	 [ "$GENERATE_TAGFILE" = 0 ] && echo "Yes. Documentation index is missing."
       else
 	 files=""
+         [ "$TRUST_DISABLE_DOC_DOXYGEN" = 1 ] && TARGET=$TRUST_ROOT/doc/.dico
 	 for rep in $PROJECT_DIRECTORIES
 	 do
 	    for file in `cd $PROJECT_ROOT/$rep;ls *.cpp *.h *.tpp 2>/dev/null`

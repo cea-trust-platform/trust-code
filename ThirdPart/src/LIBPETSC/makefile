@@ -4,11 +4,12 @@ package_petsc=petsc-3.14.1
 mpi=$(MPI_INCLUDE)/mpi.h
 path_include=$(PETSC_ROOT)/$(TRUST_ARCH)
 
-all:$(petsc) check
+all:$(petsc)
 
 $(petsc): install makefile $(mpi)
 	make clean;
 	./install $(package_petsc).tar.gz
+	./install check
 
 check:
 	./install check
