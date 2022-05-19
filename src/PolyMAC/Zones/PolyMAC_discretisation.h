@@ -61,6 +61,7 @@ public :
   void distance_paroi_globale(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const override;
   void proprietes_physiques_fluide_Ostwald(const Zone_dis&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc&) const override;
 
+  void residu(const Zone_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const override ;
   void vorticite(Zone_dis& ,const Champ_Inc& , Champ_Fonc& ) const;
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
   void critere_Q(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const override;

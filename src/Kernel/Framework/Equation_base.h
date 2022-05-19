@@ -37,6 +37,7 @@
 #include <List_Noms.h>
 #include <TRUSTList.h>
 #include <TRUSTTrav.h>
+#include <TRUSTTab_parts.h>
 #include <Parser_U.h>
 #include <Sources.h>
 #include <vector>
@@ -290,7 +291,14 @@ public :
   inline void set_residuals(DoubleTab r)
   {
     if(field_residu_.non_nul())
-      field_residu_.valeur().valeurs() = r;
+      {
+        if (field_residu_.valeur().valeurs().dimension_tot(0) == r.dimension_tot(0)) field_residu_.valeur().valeurs() = r;
+        else
+          {
+            DoubleTab_parts parts(r);
+            if (parts[0].dimension_tot(0) == field_residu_.valeur().valeurs().dimension_tot(0)) field_residu_.valeur().valeurs() = parts[0];
+          }
+      }
   };
   virtual int positive_unkown() {return 0;};
 
