@@ -100,42 +100,36 @@ static int verifier(const Op_Div_VEFP1B_Elem& op,
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,la_zone_vef.valeur());
-  assert(zone_VEF.get_alphaE());
-  //const Zone& zone = zone_VEF.zone();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  //const IntTab& elem_faces=zone_VEF.elem_faces();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  //int nfe=zone.nb_faces_elem();
-  //int nb_elem=zone.nb_elem();
-  int elem,face,comp;
-  double pscf;
-
-
-  int nb_faces_total = zone_VEF.nb_faces_tot();
-
-  double * div_addr = div.addr();
-  const int * face_voisins_addr = face_voisins.addr();
-  const double * face_normales_addr = face_normales.addr();
-  const double * vit_addr = vit.addr();
-#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()], face_normales_addr[0:face_normales.size_array()],vit_addr[0:vit.size_array()]) map(tofrom:div_addr[0:div.size_array()])
-  for (face=0; face<nb_faces_total; face++){
-      for (int num_elem=0; num_elem<2; num_elem++){
-	  pscf = 0;
-          elem = face_voisins_addr[2*face+num_elem];
-          if(elem >=0) {
-            double signe=1;
-            if(elem!=face_voisins_addr[2*face]) signe=-1;
-            for(comp=0; comp<dimension; comp++)
-	      pscf+=signe*vit_addr[face*dimension+comp]*face_normales_addr[dimension*face+comp];
-
-	    #pragma omp atomic
-	    div_addr[elem]+=pscf;
-	  }
-      }
-  }
-  assert_invalide_items_non_calcules(div);
-  return div;
+    const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,la_zone_vef.valeur());
+    assert(zone_VEF.get_alphaE());
+    const Zone& zone = zone_VEF.zone();
+    const DoubleTab& face_normales = zone_VEF.face_normales();
+    const IntTab& elem_faces=zone_VEF.elem_faces();
+    const IntTab& face_voisins=zone_VEF.face_voisins();
+    int nfe=zone.nb_faces_elem();
+    int nb_elem=zone.nb_elem();
+    double * div_addr = div.addr();
+    const int * face_voisins_addr = face_voisins.addr();
+    const double * face_normales_addr = face_normales.addr();
+    const int * elem_faces_addr = elem_faces.addr();
+    const double * vit_addr = vit.addr();
+#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()],elem_faces_addr[0:elem_faces.size_array()], face_normales_addr[0:face_normales.size_array()],vit_addr[0:vit.size_array()]) map(tofrom:div_addr[0:div.size_array()])
+    for(int elem=0; elem<nb_elem; elem++)
+    {
+        double pscf=0;
+        for(int indice=0; indice<nfe; indice++)
+        {
+            int face = elem_faces_addr[elem*nfe+indice];
+            int signe=1;
+            if(elem!=face_voisins_addr[face*2])
+                signe=-1;
+            for(int comp=0; comp<dimension; comp++)
+                pscf+=signe*vit_addr[face*dimension+comp]*face_normales_addr[face*dimension+comp];
+        }
+        div_addr[elem]+=pscf;
+    }
+    assert_invalide_items_non_calcules(div);
+    return div;
 }
 
 int find_cl_face(const Zone& zone, const int face)
@@ -341,54 +335,58 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   int * nb_degres_liberte_addr = nb_degres_liberte.addr();
   double * div_addr = div.addr();
 
-  for(elem=0; elem<nb_elem_tot; elem++){
+  for(elem=0; elem<nb_elem_tot; elem++)
+    {
       if (modif_traitement_diri)
-	coeff_som_addr[elem]=calculer_coef_som(elem,nb_face_diri,indice_diri,zcl,zone_VEF);
+        coeff_som_addr[elem]=calculer_coef_som(elem,nb_face_diri,indice_diri,zcl,zone_VEF);
       else
-	coeff_som_addr[elem]=coeff_som;
+        coeff_som_addr[elem]=coeff_som;
       for(indice=0; indice<nfe; indice++)
-	som_addr[elem*nfe+indice] = nps+dom.get_renum_som_perio(som_elem(elem,indice));
-  }
-
-  #pragma omp target teams map(to:som_addr[0:nb_elem_tot*nfe],elem_faces_addr[0:elem_faces.size_array()],face_voisins_addr[0:face_voisins.size_array()],face_normales_addr[0:face_normales.size_array()],vit_addr[0:vit.size_array()],indice_diri_addr[0:nb_face_diri],coeff_som_addr[0:nb_elem_tot]) map(tofrom:div_addr[0:div.size_array()],nb_degres_liberte_addr[0:nb_degres_liberte.size_array()])
-  {
-    double sigma_addr[3];
-    #pragma omp distribute parallel for
-    for(elem=0; elem<nb_elem_tot; elem++){
-
-      for(comp=0; comp<dimension; comp++)
-	sigma_addr[comp] = 0;
-      for(indice=0; indice<nfe; indice++){
-          face = elem_faces_addr[elem*nfe+indice];
-          for(comp=0; comp<dimension; comp++)
-	    sigma_addr[comp]+=vit_addr[face*dimension+comp];
-      }
-
-      // on retire la contribution des faces dirichlets
-      for (int fdiri=0; fdiri<nb_face_diri; fdiri++){
-          int indice2=indice_diri_addr[fdiri];
-          face = elem_faces_addr[elem*nb_face_diri+indice2];
-          for(comp=0; comp<dimension; comp++)
-	    sigma_addr[comp]-=vit_addr[face*dimension+comp];
-      }
-
-      for(indice=0; indice<nfe; indice++){
-	som = som_addr[elem*nfe+indice];
-	face = elem_faces_addr[elem*nfe+indice];
-	psc=0;
-	signe=1;
-	if(elem!=face_voisins_addr[face*2])
-	  signe=-1;
-	for(comp=0; comp<dimension; comp++)
-	  psc+=sigma_addr[comp]*face_normales_addr[face*dimension+comp];
-
-	#pragma omp atomic
-	div_addr[som]+=signe*coeff_som_addr[elem]*psc;
-	#pragma omp atomic
-	nb_degres_liberte_addr[som-nps]++;
-      }
+        som_addr[elem*nfe+indice] = nps+dom.get_renum_som_perio(som_elem(elem,indice));
     }
-  }
+
+#pragma omp target teams map(to:som_addr[0:nb_elem_tot*nfe],elem_faces_addr[0:elem_faces.size_array()],face_voisins_addr[0:face_voisins.size_array()],face_normales_addr[0:face_normales.size_array()],vit_addr[0:vit.size_array()],indice_diri_addr[0:nb_face_diri],coeff_som_addr[0:nb_elem_tot]) map(tofrom:div_addr[0:div.size_array()],nb_degres_liberte_addr[0:nb_degres_liberte.size_array()])
+    {
+        double sigma_addr[3];
+#pragma omp distribute parallel for
+        for(elem=0; elem<nb_elem_tot; elem++)
+        {
+
+            for(comp=0; comp<dimension; comp++)
+                sigma_addr[comp] = 0;
+            for(indice=0; indice<nfe; indice++)
+            {
+                face = elem_faces_addr[elem*nfe+indice];
+                for(comp=0; comp<dimension; comp++)
+                    sigma_addr[comp]+=vit_addr[face*dimension+comp];
+            }
+
+            // on retire la contribution des faces dirichlets
+            for (int fdiri=0; fdiri<nb_face_diri; fdiri++)
+            {
+                int indice2=indice_diri_addr[fdiri];
+                face = elem_faces_addr[elem*nb_face_diri+indice2];
+                for(comp=0; comp<dimension; comp++)
+                    sigma_addr[comp]-=vit_addr[face*dimension+comp];
+            }
+
+            for(indice=0; indice<nfe; indice++)
+            {
+                som = som_addr[elem*nfe+indice];
+                face = elem_faces_addr[elem*nfe+indice];
+                psc=0;
+                signe=1;
+                if(elem!=face_voisins_addr[face*2])
+                    signe=-1;
+                for(comp=0; comp<dimension; comp++)
+                    psc+=sigma_addr[comp]*face_normales_addr[face*dimension+comp];
+#pragma omp atomic
+                div_addr[som]+=signe*coeff_som_addr[elem]*psc;
+#pragma omp atomic
+                nb_degres_liberte_addr[som-nps]++;
+            }
+        }
+    }
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
   const IntTab& face_sommets = zone_VEF.face_sommets();

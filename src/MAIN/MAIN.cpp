@@ -190,10 +190,10 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         }
 #ifdef ROCALUTION_ROCALUTION_HPP_
       else if (strcmp(argv[i], "-disable_accelerator") == 0)
-      {
+        {
           disable_accelerator_rocalution();
           arguments_info += "-disable_accelerator => Disable the use of accelerator with rocALUTION solver\n";
-      }
+        }
 #endif
       else if (i == 1)
         {

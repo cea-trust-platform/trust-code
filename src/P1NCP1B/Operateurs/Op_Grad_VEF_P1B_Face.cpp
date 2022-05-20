@@ -282,13 +282,13 @@ ajouter_elem(const DoubleTab& pre,
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
                                              la_zone_vef.valeur());
   assert(zone_VEF.get_alphaE());
-  //const Zone& zone = zone_VEF.zone();
+  const Zone& zone = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const DoubleVect& porosite_face=zone_VEF.porosite_face();
-  //const IntTab& elem_faces=zone_VEF.elem_faces();
+  const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins=zone_VEF.face_voisins();
-  //int nfe=zone.nb_faces_elem();
-  //int nb_elem_tot=zone.nb_elem_tot();
+  int nfe=zone.nb_faces_elem();
+  int nb_elem_tot=zone.nb_elem_tot();
   // Si pas de support P1, on impose Neumann sur P0
   if (zone_VEF.get_alphaS()==0)
     {
@@ -314,30 +314,28 @@ ajouter_elem(const DoubleTab& pre,
             }
         }
     }
-  int elem,face,comp;
-  ArrOfDouble sigma(dimension);
 
   const int * face_voisins_addr = face_voisins.addr();
   double * grad_addr = grad.addr();
   const double * pre_addr = pre.addr();
   const double* porosite_face_addr = porosite_face.addr();
   const double * face_normales_addr = face_normales.addr();
-  long nb_faces_total = zone_VEF.nb_faces_tot();
-#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()],pre_addr[0:pre.size_array()], face_normales_addr[0:face_normales.size_array()],porosite_face_addr[0:porosite_face.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
-  for (face=0; face<nb_faces_total; face++)
+  const int * elem_faces_addr = elem_faces.addr();
+
+#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()],elem_faces_addr[0:elem_faces.size_array()],pre_addr[0:pre.size_array()], face_normales_addr[0:face_normales.size_array()],porosite_face_addr[0:porosite_face.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
+    for(int elem=0; elem<nb_elem_tot; elem++)
     {
-      for (int num_elem=0; num_elem<2; num_elem++)
-	{
-	  elem = face_voisins_addr[2*face+num_elem];
-	  if(elem >=0) {
-	    double pe = pre_addr[elem];
-	    double signe=1;
-	    if(elem!=face_voisins_addr[2*face]) signe=-1;
-	    for(comp=0; comp<dimension; comp++){
-	      grad_addr[dimension*face+comp] -= pe*signe*face_normales_addr[dimension*face+comp]*porosite_face_addr[face];
-	    }
-	  }
-	}
+        for(int indice=0; indice<nfe; indice++)
+        {
+            double pe=pre_addr[elem];
+            int face = elem_faces_addr[nfe*elem+indice];
+            double signe=1;
+            if(elem!=face_voisins_addr[2*face]) signe=-1;
+            for(int comp=0; comp<dimension; comp++){
+#pragma omp atomic update
+                grad_addr[dimension*face+comp] -= pe*signe*face_normales_addr[dimension*face+comp]*porosite_face_addr[face];
+            }
+        }
     }
   return grad;
 }
@@ -379,45 +377,46 @@ ajouter_som(const DoubleTab& pre,
     {
       coeff_som_addr[el]=calculer_coef_som(el, zone_Cl_VEF, zone_VEF);
       for(int indice=0; indice<nfe; indice++)
-  	    som_addr[el*nfe+indice] = nps+dom.get_renum_som_perio(som_elem(el,indice));
+        som_addr[el*nfe+indice] = nps+dom.get_renum_som_perio(som_elem(el,indice));
     }
 
-  
-  // boucle couteuse: A porter
-#if NDEBUG
-  #pragma omp target teams map(to:coeff_som_addr[0:nb_elem_tot],som_addr[0:nb_elem_tot*nfe],pre_addr[0:pre.size_array()],elem_faces_addr[0:elem_faces.size_array()],face_voisins_addr[0:face_voisins.size_array()],face_normales_addr[0:face_normales.size_array()],porosite_face_addr[0:porosite_face.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
-#endif
-  {
-    double sigma_addr[3];
-#if NDEBUG
-    #pragma omp distribute parallel for
-#endif
-    for(elem=0; elem<nb_elem_tot; elem++)
-    {
-      for(int indice=0; indice<nfe; indice++)
-        {
-	  // int som = som_addr[nfe*elem+indice];
-	  // ps = pre_addr[som];
-      	  int face = elem_faces_addr[nfe*elem+indice];
-          double signe=1;
-          if(elem!=face_voisins_addr[face*2]) signe=-1;
 
-          for(int comp=0; comp<dimension; comp++)
-      	    sigma_addr[comp]=face_normales_addr[face*dimension+comp]*signe;
-	  //          #pragma omp target update from(grad_addr[0:grad_size])
-          for(indice2=0; indice2<nfe; indice2++)
+    // boucle couteuse: A porter
+#if NDEBUG
+#pragma omp target teams map(to:coeff_som_addr[0:nb_elem_tot],som_addr[0:nb_elem_tot*nfe],pre_addr[0:pre.size_array()],elem_faces_addr[0:elem_faces.size_array()],face_voisins_addr[0:face_voisins.size_array()],face_normales_addr[0:face_normales.size_array()],porosite_face_addr[0:porosite_face.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
+#endif
+    {
+        double sigma_addr[3];
+#if NDEBUG
+#pragma omp distribute parallel for
+#endif
+        for(elem=0; elem<nb_elem_tot; elem++)
+        {
+            for(int indice=0; indice<nfe; indice++)
             {
-              face2 = elem_faces_addr[elem*nfe+indice2];
-              for(int comp=0; comp<dimension; comp++){
-  #if NDEBUG
+                // int som = som_addr[nfe*elem+indice];
+                // ps = pre_addr[som];
+                int face = elem_faces_addr[nfe*elem+indice];
+                double signe=1;
+                if(elem!=face_voisins_addr[face*2]) signe=-1;
+
+                for(int comp=0; comp<dimension; comp++)
+                    sigma_addr[comp]=face_normales_addr[face*dimension+comp]*signe;
+                //          #pragma omp target update from(grad_addr[0:grad_size])
+                for(indice2=0; indice2<nfe; indice2++)
+                {
+                    face2 = elem_faces_addr[elem*nfe+indice2];
+                    for(int comp=0; comp<dimension; comp++)
+                    {
+#if NDEBUG
 #pragma omp atomic update
 #endif
-		grad_addr[face2*dimension+comp] -= coeff_som_addr[elem]*pre_addr[som_addr[elem*nfe+indice]]*sigma_addr[comp]*porosite_face_addr[face2];
-      	      }
+                        grad_addr[face2*dimension+comp] -= coeff_som_addr[elem]*pre_addr[som_addr[elem*nfe+indice]]*sigma_addr[comp]*porosite_face_addr[face2];
+                    }
+                }
             }
-	}
+        }
     }
-  }
 
 
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();

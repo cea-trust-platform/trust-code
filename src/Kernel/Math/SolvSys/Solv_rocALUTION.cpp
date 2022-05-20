@@ -44,7 +44,8 @@ Entree& Solv_rocALUTION::readOn(Entree& is)
   return is;
 }
 
-Solv_rocALUTION::Solv_rocALUTION() {
+Solv_rocALUTION::Solv_rocALUTION()
+{
   initialize();
 }
 
@@ -56,152 +57,165 @@ Solv_rocALUTION::Solv_rocALUTION(const Solv_rocALUTION& org)
   readOn(recup);
 }
 
-Solv_rocALUTION::~Solv_rocALUTION() {
-    if (ls!=nullptr) {
-        ls->Clear();
-        delete ls;
-    }
-    if (sp_ls!=nullptr)
+Solv_rocALUTION::~Solv_rocALUTION()
+{
+  if (ls!=nullptr)
     {
-        sp_ls->Clear();
-        delete sp_ls;
+      ls->Clear();
+      delete ls;
     }
-    if (p!=nullptr)
+  if (sp_ls!=nullptr)
     {
-        p->Clear();
-        delete p;
+      sp_ls->Clear();
+      delete sp_ls;
     }
-    if (sp_p!=nullptr)
+  if (p!=nullptr)
     {
-        sp_p->Clear();
-        delete sp_p;
+      p->Clear();
+      delete p;
+    }
+  if (sp_p!=nullptr)
+    {
+      sp_p->Clear();
+      delete sp_p;
     }
 }
 
 void Solv_rocALUTION::initialize()
 {
-    ls = nullptr; sp_ls = nullptr; p = nullptr; sp_p = nullptr; write_system_ = false;
+  ls = nullptr;
+  sp_ls = nullptr;
+  p = nullptr;
+  sp_p = nullptr;
+  write_system_ = false;
 }
 
 double precond_option(Entree& is, const Motcle& motcle)
 {
-    Motcle motlu;
-    is >> motlu; Cerr << motlu << " ";
-    if (motlu!="{") Process::exit("\nWe are waiting {");
-    is >> motlu; Cerr << motlu << " ";
-    if (motlu==motcle)
+  Motcle motlu;
+  is >> motlu;
+  Cerr << motlu << " ";
+  if (motlu!="{") Process::exit("\nWe are waiting {");
+  is >> motlu;
+  Cerr << motlu << " ";
+  if (motlu==motcle)
     {
-        double val;
-        is >> val; Cerr << val << " ";
-        is >> motlu; Cerr << motlu << " ";
-        return val;
+      double val;
+      is >> val;
+      Cerr << val << " ";
+      is >> motlu;
+      Cerr << motlu << " ";
+      return val;
     }
-    if (motlu!="}") Process::exit("\nWe are waiting }");
-    return -1;
+  if (motlu!="}") Process::exit("\nWe are waiting }");
+  return -1;
 }
 
 // Fonction template pour la creation des precond simple ou double precision
 template <typename T>
 Solver<LocalMatrix<T>, LocalVector<T>, T>* create_rocALUTION_precond(EChaine& is)
 {
-    Solver<LocalMatrix<T>, LocalVector<T>, T>* p;
-    Motcle precond;
-    is >> precond; Cerr << precond << " ";
-    // Preconditioner
-    if (precond==(Motcle)"Jacobi" || precond==(Motcle)"diag") // OK en ~335 its
+  Solver<LocalMatrix<T>, LocalVector<T>, T>* p;
+  Motcle precond;
+  is >> precond;
+  Cerr << precond << " ";
+  // Preconditioner
+  if (precond==(Motcle)"Jacobi" || precond==(Motcle)"diag") // OK en ~335 its
     {
-        p = new Jacobi<LocalMatrix<T>, LocalVector<T>, T>();
-        precond_option(is, "");
+      p = new Jacobi<LocalMatrix<T>, LocalVector<T>, T>();
+      precond_option(is, "");
     }
-    else if (precond==(Motcle)"ILUT") // OK en 78 its
+  else if (precond==(Motcle)"ILUT") // OK en 78 its
     {
-        p = new ILUT<LocalMatrix<T>, LocalVector<T>, T>();
-        precond_option(is, "");
+      p = new ILUT<LocalMatrix<T>, LocalVector<T>, T>();
+      precond_option(is, "");
     }
-    else if (precond==(Motcle)"SPAI") // Converge pas
+  else if (precond==(Motcle)"SPAI") // Converge pas
     {
-        p = new SPAI<LocalMatrix<T>, LocalVector<T>, T>();
-        precond_option(is, "");
+      p = new SPAI<LocalMatrix<T>, LocalVector<T>, T>();
+      precond_option(is, "");
     }
-    else if (precond==(Motcle)"ILU") // OK en ~123 its (level 0), 76 its (level 1)
+  else if (precond==(Motcle)"ILU") // OK en ~123 its (level 0), 76 its (level 1)
     {
-        p = new ILU<LocalMatrix<T>, LocalVector<T>, T>();
-        int level = (int)precond_option(is, "level");
-        if (level>=0) dynamic_cast<ILU<LocalMatrix<T>, LocalVector<T>, T> &>(*p).Set(level, true);
+      p = new ILU<LocalMatrix<T>, LocalVector<T>, T>();
+      int level = (int)precond_option(is, "level");
+      if (level>=0) dynamic_cast<ILU<LocalMatrix<T>, LocalVector<T>, T> &>(*p).Set(level, true);
     }
-    else if (precond==(Motcle)"MultiColoredSGS") // OK en ~150 its (mais 183 omega 1.6!) (semble equivalent a GCP/SSOR mais 3 fois plus lent)
+  else if (precond==(Motcle)"MultiColoredSGS") // OK en ~150 its (mais 183 omega 1.6!) (semble equivalent a GCP/SSOR mais 3 fois plus lent)
     {
-        p = new MultiColoredSGS<LocalMatrix<T>, LocalVector<T>, T>();
-        double omega = precond_option(is, "omega");
-        if (omega>=0) dynamic_cast<MultiColoredSGS<LocalMatrix<T>, LocalVector<T>, T> &>(*p).SetRelaxation(omega);
+      p = new MultiColoredSGS<LocalMatrix<T>, LocalVector<T>, T>();
+      double omega = precond_option(is, "omega");
+      if (omega>=0) dynamic_cast<MultiColoredSGS<LocalMatrix<T>, LocalVector<T>, T> &>(*p).SetRelaxation(omega);
     }
-    else if (precond==(Motcle)"GS") // Converge pas
+  else if (precond==(Motcle)"GS") // Converge pas
     {
-        p = new GS<LocalMatrix<T>, LocalVector<T>, T>();
-        precond_option(is, "");
+      p = new GS<LocalMatrix<T>, LocalVector<T>, T>();
+      precond_option(is, "");
     }
-    else if (precond==(Motcle)"MultiColoredGS") // Converge pas
+  else if (precond==(Motcle)"MultiColoredGS") // Converge pas
     {
-        p = new MultiColoredGS<LocalMatrix<T>, LocalVector<T>, T>();
-        double omega = ::precond_option(is, "omega");
-        if (omega>=0) dynamic_cast<MultiColoredGS<LocalMatrix<T>, LocalVector<T>, T> &>(*p).SetRelaxation(omega);
+      p = new MultiColoredGS<LocalMatrix<T>, LocalVector<T>, T>();
+      double omega = ::precond_option(is, "omega");
+      if (omega>=0) dynamic_cast<MultiColoredGS<LocalMatrix<T>, LocalVector<T>, T> &>(*p).SetRelaxation(omega);
     }
-    else if (precond==(Motcle)"SGS") // Converge pas
+  else if (precond==(Motcle)"SGS") // Converge pas
     {
-        p = new SGS<LocalMatrix<T>, LocalVector<T>, T>();
-        precond_option(is, "");
+      p = new SGS<LocalMatrix<T>, LocalVector<T>, T>();
+      precond_option(is, "");
     }
-    else if (precond==(Motcle)"BlockPreconditioner") { // ToDo: See page 67
-        p = new BlockPreconditioner<LocalMatrix<T>, LocalVector<T>, T>();
-        precond_option(is, "");
-    }
-    else if (precond==(Motcle)"SAAMG" || precond==(Motcle)"SA-AMG")  // Converge en 100 its
+  else if (precond==(Motcle)"BlockPreconditioner")   // ToDo: See page 67
     {
-        p = new SAAMG<LocalMatrix<T>, LocalVector<T>, T>();
-        precond_option(is, "");
+      p = new BlockPreconditioner<LocalMatrix<T>, LocalVector<T>, T>();
+      precond_option(is, "");
     }
-    else if (precond==(Motcle)"UAAMG" || precond==(Motcle)"UA-AMG")  // Converge en 120 its
+  else if (precond==(Motcle)"SAAMG" || precond==(Motcle)"SA-AMG")  // Converge en 100 its
     {
-        p = new UAAMG<LocalMatrix<T>, LocalVector<T>, T>();
-        precond_option(is, "");
-        dynamic_cast<UAAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*p).Verbose(0);
+      p = new SAAMG<LocalMatrix<T>, LocalVector<T>, T>();
+      precond_option(is, "");
     }
-    else if (precond==(Motcle)"PairwiseAMG")  // Converge pas
+  else if (precond==(Motcle)"UAAMG" || precond==(Motcle)"UA-AMG")  // Converge en 120 its
     {
-        p = new PairwiseAMG<LocalMatrix<T>, LocalVector<T>, T>();
-        precond_option(is, "");
-        dynamic_cast<PairwiseAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*p).Verbose(0);
+      p = new UAAMG<LocalMatrix<T>, LocalVector<T>, T>();
+      precond_option(is, "");
+      dynamic_cast<UAAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*p).Verbose(0);
     }
-    else if (precond==(Motcle)"RugeStuebenAMG" || precond==(Motcle)"C-AMG")  // Converge en 57 its (equivalent a C-AMG ?)
+  else if (precond==(Motcle)"PairwiseAMG")  // Converge pas
     {
-        p = new RugeStuebenAMG<LocalMatrix<T>, LocalVector<T>, T>();
-        precond_option(is, "");
+      p = new PairwiseAMG<LocalMatrix<T>, LocalVector<T>, T>();
+      precond_option(is, "");
+      dynamic_cast<PairwiseAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*p).Verbose(0);
     }
-    else {
-        Cerr << "Error! Unknown rocALUTION preconditionner: " << precond << finl;
-        Process::exit();
-        return nullptr;
+  else if (precond==(Motcle)"RugeStuebenAMG" || precond==(Motcle)"C-AMG")  // Converge en 57 its (equivalent a C-AMG ?)
+    {
+      p = new RugeStuebenAMG<LocalMatrix<T>, LocalVector<T>, T>();
+      precond_option(is, "");
     }
-    return p;
+  else
+    {
+      Cerr << "Error! Unknown rocALUTION preconditionner: " << precond << finl;
+      Process::exit();
+      return nullptr;
+    }
+  return p;
 }
 
 // Fonction template pour la creation des solveurs simple ou double precision
 template <typename T>
 IterativeLinearSolver<LocalMatrix<T>, LocalVector<T>, T>* create_rocALUTION_solver(const Motcle& solver)
 {
-    if (solver==(Motcle)"GCP")
+  if (solver==(Motcle)"GCP")
     {
-        return new CG<LocalMatrix<T>, LocalVector<T>, T>();
+      return new CG<LocalMatrix<T>, LocalVector<T>, T>();
     }
-    else if (solver==(Motcle)"GMRES")
+  else if (solver==(Motcle)"GMRES")
     {
-        return new GMRES<LocalMatrix<T>, LocalVector<T>, T>();
+      return new GMRES<LocalMatrix<T>, LocalVector<T>, T>();
     }
-    else
+  else
     {
-        Cerr << solver << " solver not recognized for rocALUTION." << finl;
-        Process::exit();
-        return nullptr;
+      Cerr << solver << " solver not recognized for rocALUTION." << finl;
+      Process::exit();
+      return nullptr;
     }
 }
 
@@ -233,63 +247,67 @@ void Solv_rocALUTION::create_solver(Entree& entree)
   is >> motlu;
   while (motlu!=accolade_fermee)
     {
-        if (motlu==(Motcle)"impr")
+      if (motlu==(Motcle)"impr")
         {
-            fixer_limpr(1);
+          fixer_limpr(1);
         }
-        else if (motlu==(Motcle)"seuil" || motlu==(Motcle)"atol")
+      else if (motlu==(Motcle)"seuil" || motlu==(Motcle)"atol")
         {
-            is >> atol_;
+          is >> atol_;
         }
-        else if (motlu==(Motcle)"rtol")
+      else if (motlu==(Motcle)"rtol")
         {
-            is >> rtol_;
+          is >> rtol_;
         }
-        else if (motlu==(Motcle)"precond")
+      else if (motlu==(Motcle)"precond")
         {
-            Nom str("");
-            is >> motlu;
-            while (motlu!=accolade_fermee) {
-                str+=motlu+" ";
-                is >> motlu;
+          Nom str("");
+          is >> motlu;
+          while (motlu!=accolade_fermee)
+            {
+              str+=motlu+" ";
+              is >> motlu;
             }
-            str+=motlu;
-            precond.init(str);
+          str+=motlu;
+          precond.init(str);
         }
-        else if (motlu==(Motcle)"save_matrix")
+      else if (motlu==(Motcle)"save_matrix")
         {
-            write_system_ = true;
+          write_system_ = true;
         }
-        else if (motlu==(Motcle)"mixed_precision") {
-            // Mixed precision
-            mixed_precision = true;
-        }
-        else
+      else if (motlu==(Motcle)"mixed_precision")
         {
-            Cerr << motlu << " keyword not recognized for rocALUTION solver " << solver << finl;
-            Process::exit();
+          // Mixed precision
+          mixed_precision = true;
         }
-        is >> motlu;
+      else
+        {
+          Cerr << motlu << " keyword not recognized for rocALUTION solver " << solver << finl;
+          Process::exit();
+        }
+      is >> motlu;
     }
 
-    // Creation des solveurs et precond rocALUTION
-    if (mixed_precision) {
-        ls = new MixedPrecisionDC<LocalMatrix<double>, LocalVector<double>, double, LocalMatrix<float>, LocalVector<float>, float>();
-        sp_p = create_rocALUTION_precond<float>(precond);
-        sp_ls = create_rocALUTION_solver<float>(solver);
-        sp_ls->SetPreconditioner(*sp_p);
-        sp_ls->InitTol(atol_, rtol_, div_tol); // ToDo "The stopping criteria for the inner solver has to be tuned well for good performance."
+  // Creation des solveurs et precond rocALUTION
+  if (mixed_precision)
+    {
+      ls = new MixedPrecisionDC<LocalMatrix<double>, LocalVector<double>, double, LocalMatrix<float>, LocalVector<float>, float>();
+      sp_p = create_rocALUTION_precond<float>(precond);
+      sp_ls = create_rocALUTION_solver<float>(solver);
+      sp_ls->SetPreconditioner(*sp_p);
+      sp_ls->InitTol(atol_, rtol_, div_tol); // ToDo "The stopping criteria for the inner solver has to be tuned well for good performance."
     }
-    else {
-        p = create_rocALUTION_precond<double>(precond);
-        ls = create_rocALUTION_solver<double>(solver);
-        ls->SetPreconditioner(*p);
+  else
+    {
+      p = create_rocALUTION_precond<double>(precond);
+      ls = create_rocALUTION_solver<double>(solver);
+      ls->SetPreconditioner(*p);
     }
-    ls->InitTol(atol_, rtol_, div_tol);
-    //p->FlagPrecond();
-    //ls->Clear();
-    //ls->InitMaxIter(500);
-    //ls->InitMinIter(20);
+  ls->InitTol(atol_, rtol_, div_tol);
+  //p->FlagPrecond();
+  //ls->Clear();
+  //ls->InitMaxIter(500);
+  //ls->InitMinIter(20);
 #endif
 }
 
@@ -310,70 +328,71 @@ void MorseSymToMorseToMatrice_Morse(const Matrice_Morse_Sym& MS, Matrice_Morse& 
 
 void write_matrix(const Matrice_Base& a)
 {
-    // Save matrix
-    if (Process::nproc() > 1) Process::exit("Error, matrix market format is not available yet in parallel.");
-    Nom filename(Objet_U::nom_du_cas());
-    filename += "_trust_matrix";
-    filename += ".mtx";
-    SFichier mtx(filename);
-    mtx.precision(14);
-    mtx.setf(ios::scientific);
-    int rows = a.nb_lignes();
-    mtx << "%%MatrixMarket matrix coordinate real " << (sub_type(Matrice_Morse_Sym, a) ? "symmetric" : "general") << finl;
-    Cerr << "Matrix (" << rows << " lines) written into file: " << filename << finl;
-    mtx << "%%matrix" << finl;
-    Matrice_Morse csr = ref_cast(Matrice_Morse, a);
-    mtx << rows << " " << rows << " " << csr.get_tab1()[rows] << finl;
-    for (int row=0; row<rows; row++)
-        for (int j=csr.get_tab1()[row]; j<csr.get_tab1()[row+1]; j++)
-            mtx << row+1 << " " << csr.get_tab2()[j-1] << " " << csr.get_coeff()[j-1] << finl;
+  // Save matrix
+  if (Process::nproc() > 1) Process::exit("Error, matrix market format is not available yet in parallel.");
+  Nom filename(Objet_U::nom_du_cas());
+  filename += "_trust_matrix";
+  filename += ".mtx";
+  SFichier mtx(filename);
+  mtx.precision(14);
+  mtx.setf(ios::scientific);
+  int rows = a.nb_lignes();
+  mtx << "%%MatrixMarket matrix coordinate real " << (sub_type(Matrice_Morse_Sym, a) ? "symmetric" : "general") << finl;
+  Cerr << "Matrix (" << rows << " lines) written into file: " << filename << finl;
+  mtx << "%%matrix" << finl;
+  Matrice_Morse csr = ref_cast(Matrice_Morse, a);
+  mtx << rows << " " << rows << " " << csr.get_tab1()[rows] << finl;
+  for (int row=0; row<rows; row++)
+    for (int j=csr.get_tab1()[row]; j<csr.get_tab1()[row+1]; j++)
+      mtx << row+1 << " " << csr.get_tab2()[j-1] << " " << csr.get_coeff()[j-1] << finl;
 }
 void write_vectors(const LocalVector<double>& rhs, const LocalVector<double>& sol)
 {
-    Nom filename(Objet_U::nom_du_cas());
-    filename = Objet_U::nom_du_cas();
-    filename += "_rocalution_rhs";
-    filename += ".vec";
-    Cout << "Write rhs into " << filename << finl;
-    rhs.WriteFileASCII(filename.getString());
-    filename = Objet_U::nom_du_cas();
-    filename += "_rocalution_sol";
-    filename += ".vec";
-    Cout << "Write initial solution into " << filename << finl;
-    sol.WriteFileASCII(filename.getString());
+  Nom filename(Objet_U::nom_du_cas());
+  filename = Objet_U::nom_du_cas();
+  filename += "_rocalution_rhs";
+  filename += ".vec";
+  Cout << "Write rhs into " << filename << finl;
+  rhs.WriteFileASCII(filename.getString());
+  filename = Objet_U::nom_du_cas();
+  filename += "_rocalution_sol";
+  filename += ".vec";
+  Cout << "Write initial solution into " << filename << finl;
+  sol.WriteFileASCII(filename.getString());
 }
 void write_matrix(const LocalMatrix<double>& mat)
 {
-    Nom filename(Objet_U::nom_du_cas());
-    filename += "_rocalution_matrix";
-    filename += ".mtx";
-    Cout << "Writing rocALUTION matrix into " << filename << finl;
-    mat.WriteFileMTX(filename.getString());
+  Nom filename(Objet_U::nom_du_cas());
+  filename += "_rocalution_matrix";
+  filename += ".mtx";
+  Cout << "Writing rocALUTION matrix into " << filename << finl;
+  mat.WriteFileMTX(filename.getString());
 }
 
 void check(const DoubleVect& t, LocalVector<double>& r, const Nom& nom)
 {
-    double norm_t = t.mp_norme_vect();
-    double norm_r = r.Norm();
-    double difference = std::abs((norm_t - norm_r)/(norm_t+norm_r+DMINFLOAT));
-    if (difference>1.e-8)
+  double norm_t = t.mp_norme_vect();
+  double norm_r = r.Norm();
+  double difference = std::abs((norm_t - norm_r)/(norm_t+norm_r+DMINFLOAT));
+  if (difference>1.e-8)
     {
-        Cerr << nom << " Trust " << norm_t << " rocALUTION " << norm_t << " difference " << difference << finl;
-        Process::exit();
+      Cerr << nom << " Trust " << norm_t << " rocALUTION " << norm_t << " difference " << difference << finl;
+      Process::exit();
     }
 }
 double residual(const Matrice_Base& a, const DoubleVect& b, const DoubleVect& x)
 {
-    DoubleVect e(b);
-    e*=-1;
-    a.ajouter_multvect(x, e);
-    return e.mp_norme_vect();
+  DoubleVect e(b);
+  e*=-1;
+  a.ajouter_multvect(x, e);
+  return e.mp_norme_vect();
 }
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)
 {
 //#ifdef ROCALUTION_ROCALUTION_HPP_
   double tick;
-  if (nouvelle_matrice()) {
+  if (nouvelle_matrice())
+    {
       // Build matrix
       tick = rocalution_time();
 
@@ -386,12 +405,12 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       int N = csr.get_tab1().size_array() - 1;
       ArrOfInt tab1_c(N+1); // Passage Fortran->C
       for (int i = 0; i < N+1; i++)
-          tab1_c(i) = csr.get_tab1()[i] - 1;
+        tab1_c(i) = csr.get_tab1()[i] - 1;
 
       int nnz = csr.get_coeff().size_array();
       ArrOfInt tab2_c(nnz); // Passage Fortran->C
       for (int i = 0; i < nnz; i++)
-          tab2_c(i) = csr.get_tab2()[i] - 1;
+        tab2_c(i) = csr.get_tab2()[i] - 1;
 
       // Copie de la matrice TRUST dans une matrice rocALUTION
       Cout << "[rocALUTION] Build a matrix with N= " << N << " and nnz=" << nnz << finl;
@@ -406,26 +425,30 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 
       tick = rocalution_time();
       ls->SetOperator(mat);
-      if (sp_ls!=nullptr) {  // Important: Inner solver for mixed-precision solver set after SetOperator and before Build
+      if (sp_ls!=nullptr)    // Important: Inner solver for mixed-precision solver set after SetOperator and before Build
+        {
           auto& mp_ls = dynamic_cast<MixedPrecisionDC<LocalMatrix<double>, LocalVector<double>, double, LocalMatrix<float>, LocalVector<float>, float> &>(*ls);
           mp_ls.Set(*sp_ls);
-      }
+        }
       // C-AMG:
-      try {
+      try
+        {
           // ToDo: tuning C-AMG (pas efficace encore). On doit le faire apres le SetOperator(mat) pour avoir les differentes grilles:
-          auto &mg = dynamic_cast<RugeStuebenAMG<LocalMatrix<double>, LocalVector<double>, double> &>(*p);
+          auto& mg = dynamic_cast<RugeStuebenAMG<LocalMatrix<double>, LocalVector<double>, double> &>(*p);
           //mg.Verbose(2);
           // Specify coarsest grid solver:
           bool ChangeDefaultCoarsestSolver = false; // Default ?
-          if (ChangeDefaultCoarsestSolver) {
+          if (ChangeDefaultCoarsestSolver)
+            {
               mg.SetManualSolver(true);
               Solver<LocalMatrix<double>, LocalVector<double>, double> *cgs;
               cgs = new CG<LocalMatrix<double>, LocalVector<double>, double>();
               //cgs = new LU<LocalMatrix<T>, LocalVector<T>, T>();
               mg.SetSolver(*cgs);
-          }
+            }
           bool ChangeDefaultSmoothers = false; // Default: FixedPoint/Jacobi ?
-          if (ChangeDefaultSmoothers) {
+          if (ChangeDefaultSmoothers)
+            {
               // Specify smoothers:
               mg.SetManualSmoothers(true);
               mg.SetOperator(mat);
@@ -436,7 +459,8 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
               int levels = mg.GetNumLevels();
               auto **sm = new IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
               auto **gs = new Preconditioner<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
-              for (int i = 0; i < levels - 1; ++i) {
+              for (int i = 0; i < levels - 1; ++i)
+                {
                   // Smooth with (ToDo ameliorer car pas efficace...)
                   FixedPoint<LocalMatrix<double>, LocalVector<double>, double> *fp;
                   fp = new FixedPoint<LocalMatrix<double>, LocalVector<double>, double>;
@@ -444,12 +468,12 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
                   gs[i] = new MultiColoredSGS<LocalMatrix<double>, LocalVector<double>, double>;
                   sm[i]->SetPreconditioner(*gs[i]);
                   sm[i]->Verbose(0);
-              }
+                }
               mg.SetSmoother(sm);
-          }
-      }
+            }
+        }
       catch(const std::bad_cast& e)
-      { };
+        { };
 
       ls->Build();
       ls->Print();
@@ -461,7 +485,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 
       // Save rocALUTION matrix to check
       if (write_system_) write_matrix(mat);
-  }
+    }
   long N = mat.GetN();
   assert(N==b.size_array());
   assert(N==x.size_array());
@@ -516,20 +540,20 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   // Check residual e=||Ax-rhs|| with TRUST
   double res_final = residual(a, b, x);
   if (res_final>atol_)
-  {
+    {
       Cerr << "Solution not correct ! ||Ax-b|| = " << res_final << finl;
       Process::exit();
-  }
+    }
   if (limpr()>-1)
-  {
+    {
       double residu_relatif=(res_initial>0?res_final/res_initial:res_final);
       Cout << finl << "Final residue: " << res_final << " ( " << residu_relatif << " )"<<finl;
-  }
+    }
   fixer_nouvelle_matrice(0);
   sol.Clear();
   rhs.Clear();
   return nb_iter;
-/* #else
-    return -1;
-#endif */
+  /* #else
+      return -1;
+  #endif */
 }

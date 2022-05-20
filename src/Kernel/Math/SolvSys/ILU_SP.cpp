@@ -19,7 +19,7 @@
 #include <SPV2.h>
 #include <Param.h>
 
-Implemente_instanciable(ILU_SP, "ILU_SP", Precond_base);
+Implemente_instanciable(ILU_SP, "ILU", Precond_base);
 //
 // printOn et readOn
 
@@ -108,9 +108,9 @@ void ILU_SP::prepare_(const Matrice_Base& la_matrice, const DoubleVect& v)
 /*! @brief Calcule la solution du systeme lineaire: A * solution = b avec la methode de relaxation ILU.
  *
  */
-int ILU::preconditionner_(const Matrice_Base& la_matrice,
-                          const DoubleVect& u,
-                          DoubleVect& s)
+int ILU_SP::preconditionner_(const Matrice_Base& la_matrice,
+                             const DoubleVect& u,
+                             DoubleVect& s)
 {
   int n = u.size();
   return ilu(n,u,s);
