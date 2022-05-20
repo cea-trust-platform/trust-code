@@ -1,5 +1,6 @@
 # Thermalhydraulic 2D : Boussinesq approximation #
 # PARALLEL OK 9 #
+# OpenMP NOT #
 # lance_test 1 ecarts #
 dimension 2
 Pb_Thermohydraulique pb
@@ -119,7 +120,7 @@ Read pb
     Post_processings
     {
         med_post {
-            fichier modif_div_face_dirichlet
+            fichier div_face_dirichlet
             format med
             fields dt_post 0.01
             {
@@ -140,7 +141,7 @@ Read pb
                 sonde_temp temperature periode 0.01 segment 21 0. 0.0055 0.01 0.0055
 
             }
-            fichier modif_div_face_dirichlet
+            fichier div_face_dirichlet
             Definition_champs
             {
                 Moyenne_temperature 	        Moyenne	      { t_deb 0. t_fin 0.011 source refChamp { Pb_champ pb temperature } }

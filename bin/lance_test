@@ -389,7 +389,7 @@ add_test_case_from_validation()
       #############################################################################
       # Creation eventuelle de nouveaux cas tests depuis les fiches de validation #
       #############################################################################
-	  
+
       for FICHE_ROOT in `cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.prm | $TRUST_Awk -F/src '!/build/ {print $1}';
 	                     cd ${Rapports_auto_root} 2>/dev/null && find  Validation/Rapports_automatiques -follow -name '*'.ipynb -not -path "*/.ipynb_checkpoints*" | xargs dirname`
       do
@@ -852,8 +852,15 @@ then
 	    [ "${PAR_F}" != "" ] && PAR=${PAR_F} && export PAR
 	fi
 	REP=`dirname $file`
+	# Discard test case with OpenMP #
+  if [ "`grep -i "# OPENMP NOT #" $file 2>/dev/null`" != "" ]
+	then
+     echo "Test $i skipped (Not supported with OpenMP)"
+	   liste_skipped=$liste_skipped" $i"
+	   i=""
+  fi
 	# Discard test case from Valgrind #
-        if [ "$VALGRIND" = 1 ]
+  if [ "$VALGRIND" = 1 ]
 	then
 	   if [ "`grep -i "# VALGRIND NOT #" $file 2>/dev/null`" != "" ]
            then

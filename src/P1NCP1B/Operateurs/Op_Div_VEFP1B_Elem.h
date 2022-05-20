@@ -46,6 +46,7 @@ public:
   inline void contribuer_au_second_membre(DoubleTab& ) const override {};
 private:
   mutable IntVect nb_degres_liberte;
+  mutable IntTab som_;
 };
 
 #endif

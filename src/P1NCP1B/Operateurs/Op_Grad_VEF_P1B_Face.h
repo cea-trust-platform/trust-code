@@ -63,9 +63,9 @@ public:
   static double calculer_coef_som(int elem,  const Zone_Cl_VEF& zcl,
                                   const Zone_VEF_PreP1b& zone_VEF) ;
 private:
-
+    mutable ArrOfDouble coeff_som_;
+    mutable IntTab som_;
 protected:
-
 
 };
 
