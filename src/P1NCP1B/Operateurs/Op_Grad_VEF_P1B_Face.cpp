@@ -282,13 +282,13 @@ ajouter_elem(const DoubleTab& pre,
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
                                              la_zone_vef.valeur());
   assert(zone_VEF.get_alphaE());
-  const Zone& zone = zone_VEF.zone();
+  //const Zone& zone = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const DoubleVect& porosite_face=zone_VEF.porosite_face();
-  const IntTab& elem_faces=zone_VEF.elem_faces();
+  //const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins=zone_VEF.face_voisins();
-  int nfe=zone.nb_faces_elem();
-  int nb_elem_tot=zone.nb_elem_tot();
+  //int nfe=zone.nb_faces_elem();
+  //int nb_elem_tot=zone.nb_elem_tot();
   // Si pas de support P1, on impose Neumann sur P0
   if (zone_VEF.get_alphaS()==0)
     {
@@ -314,10 +314,10 @@ ajouter_elem(const DoubleTab& pre,
             }
         }
     }
-  int elem,indice,face,comp;
+  int elem,face,comp;
   ArrOfDouble sigma(dimension);
 
-  const int * face_voisins_addr = zone_VEF.face_voisins().addr();
+  const int * face_voisins_addr = face_voisins.addr();
   double * grad_addr = grad.addr();
   const double * pre_addr = pre.addr();
   const double* porosite_face_addr = porosite_face.addr();
@@ -362,26 +362,24 @@ ajouter_som(const DoubleTab& pre,
   ArrOfDouble sigma(dimension);
 
   double * grad_addr = grad.addr();
-  const int* som_elem_addr = som_elem.addr();
   const double * pre_addr = pre.addr();
   const int * elem_faces_addr = elem_faces.addr();
-  const int * face_voisins_addr = zone_VEF.face_voisins().addr();
+  const int * face_voisins_addr = face_voisins.addr();
   const double * face_normales_addr = face_normales.addr();
   const double* porosite_face_addr = porosite_face.addr();
 
-  int nb_faces_total = zone_VEF.nb_faces_tot();
-  double * sigma_addr = sigma.addr();  
-  double coeff_som_addr[nb_elem_tot];
-  int som_addr[nb_elem_tot*nfe];
-  int elem,comp,indice,indice2, face2;
-  double ps;
-
+  //int nb_faces_total = zone_VEF.nb_faces_tot();
+  ArrOfDouble coeff_som(nb_elem_tot);
+  double * coeff_som_addr = coeff_som.addr();
+  ArrOfInt sommet(nb_elem_tot*nfe);
+  int * som_addr = sommet.addr();
+  int elem,indice2, face2;
   // Pré-calcul: copie des structures TRUST dans des tableaux
   for(int el=0; el<nb_elem_tot; el++)
     {
       coeff_som_addr[el]=calculer_coef_som(el, zone_Cl_VEF, zone_VEF);
       for(int indice=0; indice<nfe; indice++)
-  	som_addr[el*nfe+indice] = nps+dom.get_renum_som_perio(som_elem(el,indice));
+  	    som_addr[el*nfe+indice] = nps+dom.get_renum_som_perio(som_elem(el,indice));
     }
 
   
@@ -396,7 +394,7 @@ ajouter_som(const DoubleTab& pre,
 #endif
     for(elem=0; elem<nb_elem_tot; elem++)
     {
-      for(indice=0; indice<nfe; indice++)
+      for(int indice=0; indice<nfe; indice++)
         {
 	  // int som = som_addr[nfe*elem+indice];
 	  // ps = pre_addr[som];
@@ -404,13 +402,13 @@ ajouter_som(const DoubleTab& pre,
           double signe=1;
           if(elem!=face_voisins_addr[face*2]) signe=-1;
 
-          for(comp=0; comp<dimension; comp++)
+          for(int comp=0; comp<dimension; comp++)
       	    sigma_addr[comp]=face_normales_addr[face*dimension+comp]*signe;
 	  //          #pragma omp target update from(grad_addr[0:grad_size])
           for(indice2=0; indice2<nfe; indice2++)
             {
               face2 = elem_faces_addr[elem*nfe+indice2];
-              for(comp=0; comp<dimension; comp++){
+              for(int comp=0; comp<dimension; comp++){
   #if NDEBUG
 #pragma omp atomic update
 #endif

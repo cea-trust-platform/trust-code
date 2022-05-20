@@ -102,20 +102,20 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
 {
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,la_zone_vef.valeur());
   assert(zone_VEF.get_alphaE());
-  const Zone& zone = zone_VEF.zone();
+  //const Zone& zone = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
-  const IntTab& elem_faces=zone_VEF.elem_faces();
+  //const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins=zone_VEF.face_voisins();
-  int nfe=zone.nb_faces_elem();
-  int nb_elem=zone.nb_elem();
-  int elem,indice,face,comp;
-  double pscf,signe;
+  //int nfe=zone.nb_faces_elem();
+  //int nb_elem=zone.nb_elem();
+  int elem,face,comp;
+  double pscf;
 
 
   int nb_faces_total = zone_VEF.nb_faces_tot();
 
   double * div_addr = div.addr();
-  const int * face_voisins_addr = zone_VEF.face_voisins().addr();
+  const int * face_voisins_addr = face_voisins.addr();
   const double * face_normales_addr = face_normales.addr();
   const double * vit_addr = vit.addr();
 #pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()], face_normales_addr[0:face_normales.size_array()],vit_addr[0:vit.size_array()]) map(tofrom:div_addr[0:div.size_array()])
@@ -328,13 +328,15 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   const Zone_Cl_VEF& zcl=ref_cast(Zone_Cl_VEF,la_zcl_vef.valeur());
   ArrOfInt indice_diri(dimension+1);
 
-  double coeff_som_addr[nb_elem_tot];
-  int som_addr[nb_elem_tot*nfe];
+  ArrOfDouble coeff_sommet(nb_elem_tot);
+  double * coeff_som_addr = coeff_sommet.addr();
+  ArrOfInt sommet(nb_elem_tot*nfe);
+  int * som_addr = sommet.addr();
 
   const int * elem_faces_addr = elem_faces.addr();
   const int * indice_diri_addr = indice_diri.addr();
   const double * vit_addr = vit.addr();
-  const int * face_voisins_addr = zone_VEF.face_voisins().addr();
+  const int * face_voisins_addr = face_voisins.addr();
   const double * face_normales_addr = face_normales.addr();
   int * nb_degres_liberte_addr = nb_degres_liberte.addr();
   double * div_addr = div.addr();

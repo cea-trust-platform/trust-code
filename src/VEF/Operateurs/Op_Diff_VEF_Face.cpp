@@ -379,9 +379,10 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   double * resu_addr = resu.addr();
   const double * inconnue_addr = inconnue.addr();
 
-  long nb_faces_total = zone_VEF.nb_faces_tot();  
+  //long nb_faces_total = zone_VEF.nb_faces_tot();
   int premiere_face_int = zone_VEF.premiere_face_int();
-  double valA_addr[nb_faces*nb_faces_elem*2];
+  ArrOfDouble val(nb_faces*nb_faces_elem*2);
+  double * valA_addr = val.addr();
   
   for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
@@ -391,7 +392,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
           for (i0=0; i0<nb_faces_elem; i0++)
               if ( (j= elemfaces_addr[nb_faces_elem*elem+i0]) > num_face )
                 {
-                  int el1,el2;
+                  //int el1,el2;
                   int contrib=1;
                   if(contrib)
                       valA_addr[(num_face*2+k)*nb_faces_elem+i0] = viscA(num_face,j,elem,nu(elem));
