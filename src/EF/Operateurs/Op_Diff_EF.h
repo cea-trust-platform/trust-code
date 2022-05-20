@@ -24,17 +24,12 @@
 #ifndef Op_Diff_EF_included
 #define Op_Diff_EF_included
 
-#include <Neumann_sortie_libre.h>
 #include <Op_Diff_EF_base.h>
 #include <Ref_Zone_Cl_EF.h>
 #include <Matrice_Morse.h>
 #include <Ref_Zone_EF.h>
 #include <Op_EF_base.h>
 #include <Champ_Don.h>
-#include <Zone_Cl_EF.h>
-
-enum class AJOUTE_SCAL { GEN , D3_8 , D2_4 };
-enum class AJOUTE_VECT { GEN , D3_8 , D2_4 };
 
 // .DESCRIPTION class Op_Diff_EF
 //  Cette classe represente l'operateur de diffusion
@@ -93,37 +88,6 @@ class Op_Diff_option_EF : public Op_Diff_EF
 {
   Declare_instanciable(Op_Diff_option_EF);
 };
-
-inline void remplir_marqueur_sommet_neumann(ArrOfInt& marqueur,const Zone_EF& zone_EF,const Zone_Cl_EF& zone_Cl_EF , int transpose_partout)
-{
-  marqueur.resize_array(zone_EF.nb_som_tot());
-  if ( transpose_partout) return;
-  // Neumann :
-  int n_bord;
-  int nb_bords=zone_EF.nb_front_Cl();
-  const IntTab& face_sommets=zone_EF.face_sommets();
-  int nb_som_face=zone_EF.nb_som_face();
-  for (n_bord=0; n_bord<nb_bords; n_bord++)
-    {
-      const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
-
-      if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
-        {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int nfin =le_bord.nb_faces_tot();
-          for (int ind_face=0; ind_face<nfin; ind_face++)
-            {
-              int face=le_bord.num_face(ind_face);
-              for (int i1=0; i1<nb_som_face; i1++)
-                {
-                  int glob2=face_sommets(face,i1);
-                  marqueur[glob2]=1;
-
-                }
-            }
-        }
-    }
-}
 
 template<AJOUTE_SCAL _T_>
 DoubleTab& Op_Diff_EF::ajouter_scalaire_template(const DoubleTab& tab_inconnue, DoubleTab& resu) const
