@@ -197,7 +197,8 @@ void Champ_Face_PolyMAC::init_fcl() const
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
       int idx = sub_type(Neumann, cls[n].valeur())
                 + 2 * sub_type(Navier, cls[n].valeur())
-                + 3 * sub_type(Dirichlet, cls[n].valeur()) + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
+                + 3 * sub_type(Dirichlet, cls[n].valeur()) + 3 * sub_type(Neumann_homogene, cls[n].valeur())
+                + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
       if (!idx) Cerr << "Champ_Face_PolyMAC : CL non codee rencontree!" << finl, Process::exit();
       for (i = 0; i < fvf.nb_faces_tot(); i++)
         f = fvf.num_face(i), fcl_(f, 0) = idx, fcl_(f, 1) = n, fcl_(f, 2) = i;

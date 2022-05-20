@@ -247,7 +247,8 @@ void Champ_Face_PolyMAC_P0::update_ve2(DoubleTab& val, int incr) const
 
           /* partie "faces de bord de Dirichlet" (sauf si on fait des increments) */
           if (!incr) for (j = ve2d(ed, 1); j < ve2d(ed + 1, 1); j++)
-              val(i, n) += ve2bc(j) * ref_cast(Dirichlet, cls[fcl_(ve2bj(j, 0), 1)].valeur()).val_imp(fcl_(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
+              if (sub_type(Dirichlet, cls[fcl_(ve2bj(j, 0), 1)].valeur()))
+                val(i, n) += ve2bc(j) * ref_cast(Dirichlet, cls[fcl_(ve2bj(j, 0), 1)].valeur()).val_imp(fcl_(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
         }
 
   val.echange_espace_virtuel();
