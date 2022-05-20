@@ -141,7 +141,7 @@ Entree& Zone_Poly_base::readOn(Entree& is)
 void Zone_Poly_base::reordonner(Faces& les_faces)
 {
   if (Process::je_suis_maitre())
-    Cerr << "Zone_Poly_base::reordonner les_faces " << finl;
+    Cerr << "Zone_Poly_base::reordonner faces " << finl;
 
   // Construction de rang_elem_non_std_ :
   //  C'est un vecteur indexe par les elements du domaine.
@@ -364,32 +364,30 @@ void Zone_Poly_base::discretiser()
     {
       if (!sub_type(Segment,elem_geom))
         {
-          Cerr << " Le type de l'element geometrique " << elem_geom.que_suis_je() << " est incorrect" << finl;
-          exit();
+          Cerr << " The type of the element " << elem_geom.que_suis_je() << " is incorrect" << finl;
+          Process::exit();
         }
     }
   else if (sub_type(Tri_poly,type_elem_.valeur()))
     {
       if (!sub_type(Triangle,elem_geom))
         {
-          Cerr << " Le type de l'element geometrique " <<
-               elem_geom.que_suis_je() << " est incorrect" << finl;
-          Cerr << " Seul le type Triangle est compatible avec la discretisation PolyMAC_P0 en dimension 2" << finl;
-          Cerr << " Il faut trianguler le domaine lorsqu'on utilise le mailleur interne" ;
-          Cerr << " en utilisant l'instruction: Trianguler nom_dom" << finl;
-          exit();
+          Cerr << " The type of the element " << elem_geom.que_suis_je() << " is incorrect" << finl;
+          Cerr << " Only the Triangle type is compatible with the PolyMAC_P0 discretisation in dimension 2" << finl;
+          Cerr << " You must triangulate the domain when using the TRUST mesher" ;
+          Cerr << " This can be done by adding : Trianguler nom_dom" << finl;
+          Process::exit();
         }
     }
   else if (sub_type(Tetra_poly,type_elem_.valeur()))
     {
       if (!sub_type(Tetraedre,elem_geom))
         {
-          Cerr << " Le type de l'element geometrique " <<
-               elem_geom.que_suis_je() << " est incorrect" << finl;
-          Cerr << " Seul le type Tetraedre est compatible avec la discretisation PolyMAC_P0 en dimension 3" << finl;
-          Cerr << " Il faut tetraedriser le domaine lorsqu'on utilise le mailleur interne";
-          Cerr << " en utilisant l'instruction: Tetraedriser nom_dom" << finl;
-          exit();
+          Cerr << " The type of the element " << elem_geom.que_suis_je() << " is incorrect" << finl;
+          Cerr << " Only the Tetrahedral type is compatible with the PolyMAC_P0 discretisation in dimension 3" << finl;
+          Cerr << " You must tetrahedrize the domain when using the TRUST mesher" ;
+          Cerr << " This can be done by adding : Tetraedriser nom_dom" << finl;
+          Process::exit();
         }
     }
 
@@ -398,8 +396,8 @@ void Zone_Poly_base::discretiser()
 
       if (!sub_type(Quadrangle_VEF,elem_geom))
         {
-          Cerr << " Le type de l'element geometrique " << elem_geom.que_suis_je() << " est incorrect" << finl;
-          exit();
+          Cerr << " The type of the element " << elem_geom.que_suis_je() << " is incorrect" << finl;
+          Process::exit();
         }
     }
   else if (sub_type(Hexa_poly,type_elem_.valeur()))
@@ -407,8 +405,8 @@ void Zone_Poly_base::discretiser()
 
       if (!sub_type(Hexaedre_VEF,elem_geom))
         {
-          Cerr << " Le type de l'element geometrique " << elem_geom.que_suis_je() << " est incorrect" << finl;
-          exit();
+          Cerr << " The type of the element " << elem_geom.que_suis_je() << " is incorrect" << finl;
+          Process::exit();
         }
     }
 
@@ -450,7 +448,7 @@ void Zone_Poly_base::discretiser()
               if (!est_egal(old(num_face,d),-face_normales_(num_face,d)))
                 {
                   Cerr<<"pb in faces_normales" <<finl;
-                  exit();
+                  Process::exit();
                 }
             }
         if (id==0)
@@ -532,7 +530,7 @@ void Zone_Poly_base::detecter_faces_non_planes() const
   double theta = asin(sqrt(sin2)) * 180 / M_PI;
   Cerr << "Zone_Poly_base : angle sommet/face max " << theta << " deg (proc " << j << " , face ";
   Cerr << face(j) << " , elems " << elem1(j) << " / " << elem2(j) << " )" << finl;
-  if (theta > 1) Cerr << "Zone_Poly_base : face non plane detectee! Veuillez reparer votre maillage..." << finl, Process::exit();
+  if (theta > 1) Cerr << "Zone_Poly_base : non-planar face detected ! Please fix your mesh or call 911 ..." << finl, Process::exit();
 }
 
 void Zone_Poly_base::calculer_h_carre()
@@ -671,7 +669,7 @@ void Zone_Poly_base::init_equiv() const
   IntTrav ntot, nequiv;
   creer_tableau_faces(ntot), creer_tableau_faces(nequiv);
   equiv.resize(nb_faces_tot(), 2, e_f.dimension(1));
-  Cerr << zone().domaine().le_nom() << " : initialisation de equiv... ";
+  Cerr << zone().domaine().le_nom() << " : intializing equiv... ";
   for (f = 0, equiv = -1; f < nb_faces_tot(); f++) if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
@@ -681,7 +679,7 @@ void Zone_Poly_base::init_equiv() const
             if (!ok) continue;
             equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++; //si oui, on a equivalence
           }
-  Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de faces equivalentes!" << finl;
+  Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% equivalent faces !" << finl;
   is_init["equiv"] = 1;
 }
 

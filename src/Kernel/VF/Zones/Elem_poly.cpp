@@ -53,7 +53,7 @@ Entree& Elem_poly::readOn(Entree& s )
     *this =  Hexa_poly();
   else
     {
-      Cerr << type << " n'est pas un Elem_poly" << finl;
+      Cerr << type << " is not an Elem_poly" << finl;
       exit();
     }
   return s ;
@@ -82,7 +82,7 @@ void Elem_poly::typer(Nom type_elem_geom)
     type="Polyedre_poly";
   else
     {
-      Cerr << "probleme de typage dans Elem_poly::typer" << finl;
+      Cerr << "problem in Elem_poly::typer" << finl;
       exit();
     }
   DERIV(Elem_poly_base)::typer(type);

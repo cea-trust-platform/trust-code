@@ -105,7 +105,7 @@ Entree& Decouper_multi::interpreter(Entree& is)
 
 #ifdef MEDCOUPLING_
   /* concatenation des coordonnees et recherche de sommets coincidents */
-  Cerr << "Decouper_multi: recherche de sommets coincidants... ";
+  Cerr << "Decouper_multi: searching for coinciding vertices ... ";
   MCAuto<DataArrayDouble> da(DataArrayDouble::Aggregate(v_pda)); //tous les sommets!
   DataArrayInt* S_i = NULL, *S = NULL; //groupes de sommets coincidants : S([S_i(i), S_i(i + 1)[)
   da->findCommonTuples(tolerance, -1, S, S_i); // * heavy lifting *
