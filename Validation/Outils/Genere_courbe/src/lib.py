@@ -413,18 +413,25 @@ def chaine2Tex(chaine):
 
 
         mots=suite[:fin].split(",")
+        fname = mots.pop(0)
+        ff = fname.replace("\"","")
+        morekeywords = filter(lambda x : not x.lstrip().startswith('lstset:'), mots)
+        extra_lstset = filter(lambda x : x.lstrip().startswith('lstset:'), mots)
+        lstset=['basicstyle=\small', 'numbers=none', 'tabsize=2', 'extendedchars=true', 'linewidth=16cm', 'emptylines=0', 'breaklines=true', 'language=perso']
         res+="\n\lstdefinelanguage{perso}{morekeywords={"
-        res+=",".join(mots[1:]).replace('"','')
+        res+=",".join(morekeywords).replace('"','')
         res+="}, sensitive=false}"
-        res+="\n\lstset{\n basicstyle=\small, numbers=none, tabsize=2, extendedchars=true, linewidth=16cm, emptylines=0, breaklines=true,language=perso}\n"
+        res+="\n\lstset{\n basicstyle=\small, numbers=none, tabsize=2, extendedchars=true, linewidth=16cm, emptylines=0, breaklines=true,language=perso"
+        if extra_lstset:
+            res+= "," + ",".join(extra_lstset).replace('lstset:','').replace('"','')
+        res+="}\n"
         import os.path
         print(os.path.abspath(os.curdir ))
-        ff=mots[0].replace("\"","")
         if not(os.path.exists(ff)):
             print("in prm, incluce_text_file can't read data file :",ff)
         FileAccumulator.Append(ff)
 
-        res+="\lstinputlisting{\orig/%s}\n"%mots[0]
+        res+="\lstinputlisting{\orig/%s}\n"%fname
         res+=chaine2Tex(suite[fin+len(separateur_fin):])
         return res
     res = chaine.replace('"','')
