@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -630,7 +630,7 @@ Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const 
     {
       Cerr<<class_operateur<< " not understood in get_name_of_type_for of  "<<que_suis_je()<<finl;
       Cerr<<__FILE__<<" "<<(int)__LINE__<<finl;
-      exit();
+      Process::exit();
     }
   return type;
 }
@@ -657,16 +657,16 @@ int Discretisation_base::verifie_sous_type(Nom& type, const Nom& sous_type, cons
           type = sous_type;
           return 0;
         }
-      Cerr << "Error in VDF_discretisation::discretiser_champ" << finl;
+      Cerr << "Error in " << que_suis_je() << " ::discretiser_champ" << finl;
       Cerr << sous_type << " is not a sub type of " << type << " for " << que_suis_je() << " discretization";
       Cerr << "( directive : \""<< directive << "\")"<<finl;
-      exit();
+      Process::exit();
     }
   else
     {
-      Cerr << "Error in VDF_discretisation::discretiser_champ" << finl;
+      Cerr << "Error in " << que_suis_je() << "::discretiser_champ" << finl;
       Cerr << "Unknown class type " << sous_type << finl;
-      exit();
+      Process::exit();
     }
   return -1;
 }
