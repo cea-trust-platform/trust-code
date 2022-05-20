@@ -1091,16 +1091,26 @@ do
                else
 	          Run_fiche 1>$log 2>&1
 	       fi
-	       Run_fiche_KO=$?
+	       Run_fiche_KO_prm=$?
 	    else
 	       echo "VisIt is not working under $TRUST_ROOT/Outils/VisIt" 1>$log 2>&1
-	       Run_fiche_KO=1
+	       Run_fiche_KO_prm=1
 	    fi
-	    if [ $Run_fiche_KO = 0 ]
+	    cd - 1>/dev/null 2>&1
+	    if [ $visit_erreur = 0 ] && [ $TRUST_DISABLE_JUPYTER = 0 ]
 	    then
-	       echo "Script Run_fiche=OK"
+	       rm -rf $Build/SampleFormJupyter
+	       cp -r $TRUST_ROOT/Validation/Rapports_automatiques/Verification/SampleFormJupyter $Build/.
+	       cd $Build/SampleFormJupyter
+	       log2=`pwd`/Run_fiche.log
+	        Run_fiche -export_pdf 1>$log2 2>&1
+	        Run_fiche_KO_jupyter=$?
+	    fi
+	    if [ $Run_fiche_KO_prm = 0 ] && [ $Run_fiche_KO_jupyter = 0 ]
+	    then
+	       echo "Script Run_fiche=OK (prm + jupyter)"
 	    else
-	       echo "Script Run_fiche=KO -> See $log"
+	       echo "Script Run_fiche=KO `[ $Run_fiche_KO_jupyter = 0 ] && echo 'prm -> See '$log ` `[ $Run_fiche_KO_prm = 0 ] && echo 'jupyter -> See '$log2`"
 	    fi
 	    cd - 1>/dev/null 2>&1
          fi	

@@ -209,6 +209,21 @@ check_size_lml()
    fi
 }
 
+is_link_or_double_link()
+{
+    # Detect whether:
+    # 1. we are in TRUST and the form is a symbolic link
+    # 2. or we are in a baltik (in which case the form directories are already all sym links inside the build directory)
+    # and the directory of the form is a double sym link.
+
+    if [ -L $1 ];
+    then
+      echo "yes"
+    else
+      echo "no"
+    fi
+}
+
 add_test_case_from_validation()
 {
    erreur=0
@@ -256,7 +271,8 @@ add_test_case_from_validation()
 	        	basename_fiche=`basename $FICHE_ROOT`
 	        	NEW_FICHE_ROOT=`cd ${Rapports_auto_root};find Validation/Rapports_automatiques -follow -name $basename_fiche`
 	        	[ "$NEW_FICHE_ROOT" = "$FICHE_ROOT" ] && echo "Erreur dans lance_test !" && echo $NEW_FICHE_ROOT" "$FICHE_ROOT && exit -1
-	        	if [ -d ${Rapports_auto_root}/$NEW_FICHE_ROOT/src ]
+	        	pth=${Rapports_auto_root}/$NEW_FICHE_ROOT
+	        	if [ -d ${Rapports_auto_root}/$NEW_FICHE_ROOT/src ] && [ `is_link_or_double_link($pth)` = "no" ]
 	        	then
 	                   # On l'a retrouvee !
 	                   echo $ECHO_OPTS "\nValidation form $FICHE_ROOT has moved to $NEW_FICHE_ROOT"
@@ -380,7 +396,8 @@ add_test_case_from_validation()
      ####################
 	 # Nouveau cas test #
 	 ####################
-	 if [ "`grep " $FICHE_ROOT " $FICHES`" = "" ] && [ ! -f ${Rapports_auto_root}/$FICHE_ROOT/src/fiche_exclu_nr ]
+	 pth=${Rapports_auto_root}/$FICHE_ROOT
+	 if [ "`grep " $FICHE_ROOT " $FICHES`" = "" ] && [ ! -f $pth/src/fiche_exclu_nr ] && [ `is_link_or_double_link $pth` = "no" ]
 	 then   
            msg="\nThe validation form $FICHE_ROOT is new or its number of test cases has changed ...\n"
            msg_warning="\n-----------------------------Warning--------------------------------------\n"

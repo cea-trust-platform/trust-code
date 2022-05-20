@@ -1001,16 +1001,9 @@ fi
          rm tmp.log 1>/dev/null 2>&1
       elif [[ "$Composant" == "flica5" ]]
       then
-         git remote update
-         git checkout .
-         git checkout portage
-         git pull 1>tmp.log 2>&1
-         if [ $? != 0 ]
-         then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage KO \" $TRUST_MAIL
-         else
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull portage OK \" $TRUST_MAIL
-         fi
+         git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
+         cat tmp.log
+         [ "`cat tmp.log`" != "Everything up-to-date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
          git remote update

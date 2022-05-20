@@ -168,7 +168,7 @@ taches=""
 cpus_per_task=""
 gpus_per_node=""
 hintnomultithread=""
-queue_choisie=""
+#queue_choisie=""  # possible de surcharger la queue sans option trust, mais avec export queue_choisie=xxx
 [ "$prod" = "" ] && prod=0
 [ "$bigmem" = "" ] && bigmem=0
 [ "$gpu" = "" ] && gpu=0
