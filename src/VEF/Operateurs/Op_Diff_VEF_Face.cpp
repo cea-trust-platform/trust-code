@@ -372,57 +372,45 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
             }
         }
     }//Fin for n_bord
-
+  const DoubleTab& face_normales=zone_VEF.face_normales();
+  const DoubleVect& inverse_volumes=zone_VEF.inverse_volumes();
   // pointeur vers face_voisins et le passer dans le map
   const int * face_voisins_addr = zone_VEF.face_voisins().addr();
-  const int * elemfaces_addr = zone_VEF.elem_faces().addr();
+  const int * elem_faces_addr = zone_VEF.elem_faces().addr();
   double * resu_addr = resu.addr();
   const double * inconnue_addr = inconnue.addr();
+  const double * face_normales_addr = face_normales.addr();
+  const double * nu_addr = nu.addr();
+  const double * inverse_volumes_addr = inverse_volumes.addr();
 
-  //long nb_faces_total = zone_VEF.nb_faces_tot();
   int premiere_face_int = zone_VEF.premiere_face_int();
-  ArrOfDouble val(nb_faces*nb_faces_elem*2);
-  double * valA_addr = val.addr();
-
-  for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
-    {
-      for (int k=0; k<2; k++)
-        {
-          int elem = face_voisins(num_face,k);
-          for (i0=0; i0<nb_faces_elem; i0++)
-            if ( (j= elemfaces_addr[nb_faces_elem*elem+i0]) > num_face )
-              {
-                //int el1,el2;
-                int contrib=1;
-                if(contrib)
-                  valA_addr[(num_face*2+k)*nb_faces_elem+i0] = viscA(num_face,j,elem,nu(elem));
-              }
-        }
-    }
   // On traite les faces internes
 
-#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()],elemfaces_addr[0:elemfaces.size_array()],inconnue_addr[0:inconnue.size_array()],valA_addr[0:nb_faces*nb_faces_elem*2]) map(tofrom:resu_addr[0:resu.size_array()])
-    for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
+#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()],face_normales_addr[0:face_normales.size_array()],elem_faces_addr[0:elemfaces.size_array()],inverse_volumes_addr[0:inverse_volumes.size_array()],nu_addr[0:nu.size_array()],inconnue_addr[0:inconnue.size_array()]) map(tofrom:resu_addr[0:resu.size_array()])
+ for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
         for (int k=0; k<2; k++)
         {
             int elem = face_voisins_addr[2*num_face+k];
             for (i0=0; i0<nb_faces_elem; i0++)
             {
-                if ( (j= elemfaces_addr[nb_faces_elem*elem+i0]) > num_face )
+                if ( (j= elem_faces_addr[nb_faces_elem*elem+i0]) > num_face )
                 {
-                    int el1,el2;
                     int contrib=1;
                     if(j>=nb_faces) // C'est une face virtuelle
                     {
-                        el1 = face_voisins_addr[j*2];
-                        el2 = face_voisins_addr[j*2+1];
+                        int el1 = face_voisins_addr[j*2];
+                        int el2 = face_voisins_addr[j*2+1];
                         if((el1==-1)||(el2==-1))
                             contrib=0;
                     }
                     if(contrib)
                     {
-                        valA = valA_addr[(num_face*2+k)*nb_faces_elem+i0];
+                        double pscal = 0;
+                        for (int dim=0; dim<dimension;dim++)
+                            pscal += face_normales_addr[num_face*dimension+dim]*face_normales_addr[j*dimension+dim];
+                        int signe = (face_voisins_addr[num_face*2] == face_voisins_addr[j*2]) || (face_voisins_addr[num_face*2+1] == face_voisins_addr[j*2+1]) ? -1 : 1;
+                        valA = signe*(pscal*nu_addr[elem])*inverse_volumes_addr[elem];
                         for (int nc=0; nc<nb_comp; nc++)
                         {
 #pragma omp atomic
