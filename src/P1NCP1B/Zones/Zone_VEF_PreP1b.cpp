@@ -83,6 +83,22 @@ void Zone_VEF_PreP1b::discretiser()
         }
     }
   volumes_som.echange_espace_virtuel();
+
+  // Provisoire, tableaux constants sur device:
+  // ToDo remonter dans Zone_VEF ou/et Zone_VF::discretiser()
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic push
+  const int *elem_faces_addr = elem_faces().addr();
+#pragma omp target enter data map(to:elem_faces_addr[0:elem_faces().size_array()])
+  const int *face_voisins_addr = face_voisins().addr();
+#pragma omp target enter data map(to:face_voisins_addr[0:face_voisins().size_array()])
+  const double *face_normales_addr = face_normales().addr();
+#pragma omp target enter data map(to:face_normales_addr[0:face_normales().size_array()])
+  const double *porosite_face_addr = porosite_face().addr();
+#pragma omp target enter data map(to:porosite_face_addr[0:porosite_face().size_array()])
+  const double *inverse_volumes_addr = inverse_volumes().addr();
+#pragma omp target enter data map(to:inverse_volumes_addr[0:inverse_volumes().size_array()])
+#pragma GCC diagnostic pop
 }
 
 void Zone_VEF_PreP1b::discretiser_suite(const VEFPreP1B& discr)

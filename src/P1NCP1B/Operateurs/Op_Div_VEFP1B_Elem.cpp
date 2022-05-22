@@ -322,6 +322,11 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
                 nb_degres_liberte(som - nps)++;
                 som_(elem, indice) = som;
             }
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic push
+        const int *som_addr = som_.addr();
+#pragma omp target enter data map(to:som_addr[0:som_.size_array()])
+#pragma GCC diagnostic pop
     }
 
     int modif_traitement_diri = zone_VEF.get_modif_div_face_dirichlet();
