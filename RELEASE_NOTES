@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
+23/05/22 (TRUST)  New feature : Add a new turbulent boundary layer model (WW) that can be used for an immersed boundary condition (IBC) with the finite element discretization
 10/05/22 (TRUST)  New keyword : Post processing option "DeprecatedKeepDuplicatedProbes 1" to keep previous strategy when writing probes (keep duplicated points)
 09/05/22 (TRUST)  Fix         : Option Correction_visco_turb_pour_controle_pas_de_temps wasn't correctly implemented producing residual jumps during restart
 09/05/22 (TRUST)  V&V         : New verification sheet for GPU solver with semi-implicit scheme added under Validation/Rapports_automatiques/Verification/Solveurs/GPU directory
