@@ -474,7 +474,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                               /* equations de continuite : on y contribue si on est l'amont d'un Echange_contact pour prendre en compte son coeff d'echange */
                               if (sgn > 0 && (type_f[k] && type_f[k] < 4) && ((i_eq = i_eq_cont(k, mix * n)) >= 0 || (i_eq = i_eq_cont(k, 0)) >= 0))
                                 {
-                                  double h = ref_cast(Echange_impose_base, cls[p].get()[fcl[p](f, 1)].valeur()).h_imp(fcl[p](f, 1), !mix || i_eq == i_eq_cont(k, n) ? n : 0),
+                                  double h = type_f[k] == 3 ? -1 /* inutile */ : ref_cast(Echange_impose_base, cls[p].get()[fcl[p](f, 1)].valeur()).h_imp(fcl[p](f, 1), !mix || i_eq == i_eq_cont(k, n) ? n : 0),
                                          invh = type_f[k] == 3 ? ref_cast(Echange_contact_PolyMAC_P0, cls[p].get()[fcl[p](f, 1)].valeur()).invh_paroi : 1. / std::max(h, 1e-10);
                                   B(!mix * n, t_e, i_eq) += invh * x * (Tefs(!mix * n, i_efs(i, l, mix * n)) - inco[p](e, n));
                                   A(!mix * n, i_efs(i, l, mix * n), i_eq) -= invh * x, B(!mix * n, i_e(i, mix * n), i_eq) -= invh * x;
