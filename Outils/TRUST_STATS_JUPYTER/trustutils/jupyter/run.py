@@ -403,16 +403,16 @@ class TRUSTSuite(object):
         @param preventConcurrent: run the cases in the order they were provided, even if the Sserver is up and running, and the -parallel_sjob option
         was passed.
         """
-        opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
+        opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
         # Very specific to the validation process. Sometimes we want the core
         # method 'runCases()' not to do anything ... see script 'archive_resultat' for example.
-        if not opt is None and "-not_run" in opt:
+        if "-not_run" in opt:
             return
         ## Check run environment - should we run // ?
         ## We do so if JUPYTER_RUN_OPTIONS is not there, or if it is there with value '-parallel_sjob'
         ## Hence, s.o. who runs the Sserver on its machine will benefit from it directly, and on the other hand
         ## the validation process can control this finely.
-        runParallel = not preventConcurrent and ((opt is None or "-parallel_sjob" in opt.split(" ")) and self.detectSserver())
+        runParallel = not preventConcurrent and ((opt == "" or "-parallel_sjob" in opt.split(" ")) and self.detectSserver())
         extra = {True: "**with Sserver**", False: ""}[runParallel]
         print("Running %s..." % extra)
 
@@ -461,7 +461,11 @@ class TRUSTSuite(object):
                     raise e
         t1 = time()
         if allOK:
-            print("  => A total of %d cases were (successfully) run in %.1fs." % (len(lstC), t1 - t0))
+            dt = t1 - t0
+            # Validation process - we do not output variable information:
+            if os.environ.get("JUPYTER_IS_VALIDATION", False):
+                dt = 0
+            print("  => A total of %d cases were (successfully) run in %.1fs." % (len(lstC), dt))
 
 def readFile(data):
     """
@@ -501,7 +505,9 @@ def introduction(auteur, creationDate=None):
 
     format = "%d/%m/%Y"
     today = datetime.today()
-    dat = today.strftime(format)
+    # Validation process - we do not output variable information:
+    if os.environ.get("JUPYTER_IS_VALIDATION", False): dat = ""
+    else:                                              dat = today.strftime(format)
 
     displayMD("## Introduction \n Validation made by : " + auteur + "\n")
     if creationDate:
@@ -525,12 +531,16 @@ def TRUST_parameters(version="", param=[]):
     @param version : str : version of trust - if void TRUST_VERSION read
     @param : str list : List of Parameter used in this test case
     """
-    if version == "":
-        binary, version = os.environ.get("exec", "[UNKNOWN]"), os.environ.get("TRUST_VERSION", "[UNKNOWN]")
+    # Validation process - we do not output variable information:
+    builtOn = BUILD_DIRECTORY
+    if os.environ.get("JUPYTER_IS_VALIDATION", False):
+        binary, version, builtOn = "BINARY", "VERSION", "BUILDDIR"
+    elif version == "":
+        binary, version = os.environ.get("exec", "UNKNOWN"), os.environ.get("TRUST_VERSION", "UNKNOWN")
     else:
-        binary = os.environ.get("exec", "[UNKNOWN]")
+        binary = os.environ.get("exec", "UNKNOWN")
 
-    text = "### TRUST parameters \n * Version TRUST: " + version + "\n * Binary used: " + binary + " (built on TRUST " + BUILD_DIRECTORY + ")"
+    text = "### TRUST parameters \n * Version TRUST: " + version + "\n * Binary used: " + binary + " (built in directory " + builtOn + ")"
     for i in param:
         text = text + "\n" + i
     displayMD(text)
