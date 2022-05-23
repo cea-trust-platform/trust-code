@@ -49,9 +49,9 @@ public:
   Motcle& operator+=(const char * const);
   int selftest();
 
-  int debute_par(const char* const) const override;
-  int finit_par(const char* const) const override;
-  int find(const char * n) const override;
+  int debute_par(const char* const n) const override;
+  int finit_par(const char* const n) const override;
+  int find(const char* const n) const override;
 
   friend int operator ==(const Motcle& , const Motcle& ) ;
   friend int operator !=(const Motcle& , const Motcle& ) ;

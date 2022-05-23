@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,8 +36,6 @@ void Nom::sed_check_case_non_sensitive(int i)
 {
   check_case_non_sensitive_=i;
 }
-
-int sz = 0;
 
 // Description:
 //    Surcharge Objet_U::printOn(Sortie&)
@@ -118,9 +116,6 @@ Nom::Nom()
 Nom::Nom(char c)
 {
   nb_noms++;
-  /* nom_=new char[2];
-  nom_[0]=c;
-  nom_[1]='\0';*/
   nom_=c;
 }
 
@@ -297,35 +292,10 @@ Nom::~Nom()
 // Postcondition:
 Nom& Nom::majuscule()
 {
-  /*
-    char * es=strdup(nom_.c_str()); -> valgrind error with $exec_opt binary
-    convertit_en_majuscule(es);
-    nom_=es;
-    free(es); */
   int length = nom_.size();
   for(int p = 0; p < length; p++)
     nom_[p] = toupper(nom_[p]);
   return *this;
-}
-
-
-// Description:
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
-char intochar(int i)
-{
-  assert( (0<=i) && (i<=9) );
-  return ('0'+i);
 }
 
 // Description:
@@ -334,7 +304,7 @@ char intochar(int i)
 //    Exemple : Nom("hello").longueur() == 6
 int Nom::longueur() const
 {
-  return (strlen(nom_.c_str())+1);
+  return nom_.size()+1;
 }
 
 // Description:
@@ -362,7 +332,7 @@ Nom& Nom::operator=(const char* const nom)
 // Postcondition:
 Nom& Nom::operator=(const Nom& nom)
 {
-  operator=(nom.nom_.c_str());
+  nom_ = nom.nom_;
   return *this;
 }
 
@@ -382,7 +352,7 @@ Nom& Nom::operator=(const Nom& nom)
 // Postcondition:
 Nom& Nom::operator +=(const Nom& x)
 {
-  operator+=(x.nom_.c_str());
+  nom_ += x.nom_;
   return *this;
 }
 
@@ -404,12 +374,6 @@ Nom& Nom::operator +=(char x)
 }
 
 // Description:
-// extraction de suffix :
-// Nom x("azerty");
-// x.suffix("aze")
-// x contient "rty".
-
-// Description:
 //     Extraction de suffixe :
 //     Nom x("azerty");
 //     x.suffix("aze")
@@ -428,10 +392,8 @@ Nom& Nom::operator +=(char x)
 // Postcondition:
 Nom& Nom::suffix(const char* const s)
 {
-
   if (debute_par(s))
     {
-      //int n = strlen(s_.c_str());
       int n2 = strlen(s);
       nom_.erase(0,n2);
     }
@@ -445,52 +407,55 @@ const Nom Nom::getSuffix(const char* const s) const
       const int n1 = strlen(s);
       const int n2 = nom_.size();
       const std::string str1 = nom_.substr(n1,n2);
-      return Nom(str1.c_str());
+      return Nom(str1);
 
     }
   return *this;
 }
 
-int Nom::debute_par(const char* const ch) const
+int Nom::debute_par(const std::string& ch) const
 {
-  int result = 1;
-  const char * const s = nom_.c_str();
-  int i;
-  for (i = 0; ch[i] != 0; i++)
-    {
-      // (note: ca marche aussi si nom_ est plus court que ch)
-      if (ch[i] != s[i])
-        {
-          result = 0;
-          break;
-        }
-    }
-  return result;
+  return (nom_.rfind(ch, 0) == 0);
 }
 
-int Nom::finit_par(const char* const s) const
+int Nom::finit_par(const std::string& s) const
 {
-  const int l1 = longueur()-1;
-  const int l2 = strlen(s);
-  return (l1>=l2) ? (strncmp(nom_.c_str()+(l1-l2), s, l2) == 0) : 0;
-
+  auto l = nom_.size(), e = s.size();
+  if (l >= e)
+    return (0 == nom_.compare(l - e, e, s));
+  else
+    return 0;
 }
-int Nom::find(const char * n) const
+
+int Nom::find(const std::string& n) const
 {
-  std::string s_(nom_);
-  std::size_t x = s_.find(n);
+  std::size_t x = nom_.find(n);
   return (x != std::string::npos) ? x : -1;
+}
+
+int Nom::find(const char* const n ) const
+{
+  return find(std::string(n));
+}
+
+int Nom::debute_par(const char* const n) const
+{
+  return debute_par(std::string(n));
+}
+
+int Nom::finit_par(const char* const n) const
+{
+  return finit_par(std::string(n));
 }
 
 Nom& Nom::prefix(const char* const s)
 {
   if (finit_par(s))
     {
-      int n = strlen(nom_.c_str());
+      int n = nom_.size();
       int n2 = strlen(s);
       nom_.erase(n-n2,n2);
     }
-
   return *this;
 }
 
@@ -498,16 +463,15 @@ const Nom Nom::getPrefix(const char* const s) const
 {
   if (finit_par(s))
     {
-      //int n = strlen(s_.c_str());
-
       const int n1 = nom_.size();
       const int n2 = strlen(s);
       const std::string str1 = nom_.substr(0,n1-n2);
-      return Nom(str1.c_str());
+      return Nom(str1);
 
     }
   return *this;
 }
+
 // Description:
 //    Concatenation avec un Nom
 // Precondition:
@@ -566,10 +530,9 @@ int Nom::est_egal_a(const Objet_U& x) const
 // Postcondition:
 Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
 {
-  // char* newname = new char[strlen(nom_.c_str())+6];
-  int compteur=strlen(nom_.c_str());
+  int compteur=nom_.size();
   const char* ptr=nom_.c_str()+compteur;
-  while((*ptr!='.') && (*ptr!='/')&&(compteur>0))
+  while((*ptr!='.') && (*ptr!='/')&&(compteur>0))  // backward loop
     {
       ptr--;
       compteur--;
@@ -581,7 +544,7 @@ Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
   int pas_de_point=0;
   if(compteur==0)
     {
-      compteur=strlen(nom_.c_str());
+      compteur=nom_.size();
       pas_de_point=1 ;
     }
   std::string newname=nom_.substr(0,compteur);
@@ -643,7 +606,7 @@ Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
   newname+=c_numero;
   if (pas_de_point==0)
     newname+=ptr;
-  Nom new_name=newname.c_str();
+  Nom new_name(newname);
   delete[] c_numero;
   return new_name;
 }
@@ -655,8 +618,8 @@ Nom Nom::substr_old(const int deb, const int la_longueur) const
 {
 
   assert(deb > 0);
-  assert(deb - 1 + la_longueur <= (int) strlen(nom_.c_str()));
-  Nom nouveau(nom_.substr(deb-1,la_longueur).c_str());
+  assert(deb - 1 + la_longueur <= (int) nom_.size());
+  Nom nouveau(nom_.substr(deb-1,la_longueur));
   return nouveau;
 }
 
@@ -676,14 +639,13 @@ Nom Nom::substr_old(const int deb, const int la_longueur) const
 // Postcondition:
 Nom Nom::basename() const
 {
-  const char* nom=nom_.c_str();
   Nom dirname("");
-  Nom the_basename(nom);
-  int iLength = strlen(nom);
+  Nom the_basename(nom_);
+  int iLength = nom_.size();
   for (int i=0; i<iLength; i++)
     {
-      dirname+=nom[i];
-      if (nom[i]==47 || nom[i]==92) /* 47:/ 92:\ */
+      dirname+=nom_[i];
+      if (nom_[i]=='/' || nom_[i]=='\\')    // slash or backslash
         {
           the_basename.suffix(dirname);
           dirname="";
@@ -692,11 +654,6 @@ Nom Nom::basename() const
   return the_basename;
 }
 
-int Nom::selftest()
-{
-  exit();
-  return 0;
-}
 // Description:
 //    Retourne un pointeur sur la chaine de caractere du nom
 // Precondition:
@@ -715,6 +672,7 @@ Nom::operator const char*() const
 {
   return nom_.c_str();
 }
+
 // Description:
 //     Comparaison d'un nom avec une chaine de caractere
 //     Utilise strcmp
@@ -758,7 +716,6 @@ int operator ==(const Nom& un_nom, const Nom& un_autre)
 {
   return (un_nom==un_autre.getChar());
 }
-
 
 int operator ==(const char* const un_autre, const Nom& un_nom)
 {

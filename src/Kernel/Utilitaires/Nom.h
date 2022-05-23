@@ -51,13 +51,12 @@ public:
   Nom(double );
   Nom(double le_reel, const char* format);
   ~Nom() override;
-  virtual int find(const char * n) const;
 
   operator const char*() const;
+
   Nom&   majuscule();
   int est_egal_a(const Objet_U&) const override;
   int longueur() const ;
-  static int selftest();
   const Nom& le_nom() const override;
 
   Nom& operator=(const char* const);
@@ -73,14 +72,21 @@ public:
   Nom nom_me(int, const char* prefix=0, int without_padding=0) const;
   Nom substr_old(const int, const int) const;
   Nom basename() const;
-  virtual int debute_par(const char* const) const;
+
+  virtual int find(const char* const n) const;
+  virtual int debute_par(const char* const n) const;
+  virtual int finit_par(const char* const n) const;
+
+  int find(const std::string& n) const;
+  int debute_par(const std::string&) const;
+  int finit_par(const std::string&) const;
+
   friend int operator ==(const Nom& , const char* const) ;
   friend int operator !=(const Nom& , const char* ) ;
   friend int operator ==(const Nom& , const Nom&) ;
   friend int operator !=(const Nom& , const Nom& ) ;
   friend int operator ==(const char* const, const Nom&) ;
   friend int operator !=(const char* const, const Nom&) ;
-  virtual int finit_par(const char* const) const;
   inline bool contient(const Nom& nom)
   {
     std::size_t found = getString().find(nom.getString());
