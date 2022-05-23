@@ -687,11 +687,12 @@ then
 
       cd $TRUST_ROOT
   fi
-  if [ "`eval xelatex --version 1>/dev/null 2>&1;echo $?`" != 0 ]
+  if [ "`eval xelatex --version 1>/dev/null 2>&1;echo $?`" != 0 ] && [ $TRUST_DISABLE_JUPYTER = 0 ]
   then
      echo "xelatex is missing... it is needed if you want to build pdf reports from Jupyter notebook format using Run_fiche -export_pdf." >> NON_INSTALLED
      texerror=3
-  else
+  elif [ $TRUST_DISABLE_JUPYTER = 0 ]
+  then
      dest2=$TRUST_TMP/tmp_xelatex
      [ -d $dest2 ] && rm -r $dest2
      mkdir $dest2
