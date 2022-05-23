@@ -170,12 +170,16 @@ Nom::Nom(int i)
 // Exception:
 // Effets de bord:
 // Postcondition:
-Nom::Nom(const char* nom)
+Nom::Nom(const char* nom) : nom_(nom)
 {
   nb_noms++;
-  nom_ = "";
-  operator=(nom);
 }
+
+Nom::Nom(const std::string& nom) : nom_(nom)
+{
+  nb_noms++;
+}
+
 
 // Description:
 //    Constructeur par copie d'un nom
@@ -191,11 +195,9 @@ Nom::Nom(const char* nom)
 // Exception:
 // Effets de bord:
 // Postcondition:
-Nom::Nom(const Nom& nom) : Objet_U(nom)
+Nom::Nom(const Nom& nom) : Objet_U(nom), nom_(nom.nom_)
 {
   nb_noms++;
-  nom_ = "";
-  operator=(nom);
 }
 
 // Description:
@@ -276,7 +278,6 @@ Nom::Nom(double le_reel, const char* format)
 Nom::~Nom()
 {
   nb_noms--;
-
 }
 
 // Description:

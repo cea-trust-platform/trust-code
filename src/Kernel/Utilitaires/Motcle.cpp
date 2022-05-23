@@ -134,6 +134,11 @@ Motcle::Motcle(const char* const nom) : Nom(nom)
   majuscule();
 }
 
+Motcle::Motcle(const std::string& nom) : Nom(nom)
+{
+  majuscule();
+}
+
 Motcle::Motcle(const Nom& nom) : Nom(nom)
 {
   majuscule();

@@ -42,6 +42,7 @@ public:
   Motcle& operator=(const Motcle& );
 
   Motcle(const char * const nom);
+  Motcle(const std::string& nom);
   Motcle(const Nom&);
   Motcle& operator=(const char * const);
   Motcle& operator=(const Nom&);

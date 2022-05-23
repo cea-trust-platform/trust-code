@@ -45,6 +45,7 @@ public:
   Nom();                                         // construit "??"
   Nom(int i);                                // Nom(485)="485"
   Nom(const char* nom);
+  Nom(const std::string& nom);
   Nom(const Nom&);
   Nom(char c);
   Nom(double );
