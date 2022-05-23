@@ -327,11 +327,6 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       /* convergence? */
       cv = corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"], err_a_sum) < crit_conv["alpha"];
-      for (i = 0 ; i < pb.nombre_d_equations(); i++) if (pb.equation(i).positive_unkown()==1)
-          {
-            std::string nom_inco = pb.equation(i).inconnue().le_nom().getString() ;
-            cv &= (unknown_positivation(inco[nom_inco]->valeurs(), incr[nom_inco]) < crit_conv[nom_inco]);
-          }
       for (auto && n_v : incr) if (crit_conv.count(n_v.first)) cv &= mp_max_abs_vect(n_v.second) < crit_conv.at(n_v.first);
 
       /* mises a jour : inconnues -> milieu -> champs/conserves -> sources */
@@ -345,6 +340,12 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //ha ha ha
   if (ok && cv)
     {
+      for (i = 0 ; i < pb.nombre_d_equations(); i++) if (pb.equation(i).positive_unkown()==1)
+          {
+            std::string nom_inco = pb.equation(i).inconnue().le_nom().getString() ;
+            unknown_positivation(inco[nom_inco]->valeurs(), incr[nom_inco]) ;
+          }
+
       pb.mettre_a_jour(t); //inconnues -> milieu -> champs conserves
       for (auto && n_i : inco) n_i.second->futur() = n_i.second->valeurs();
       eq_qdm.pression().futur() = eq_qdm.pression().valeurs();
