@@ -369,12 +369,12 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
               std::set<std::string> doms_app, doms_mono;
               for(i = 0; i < pbc.nb_problemes(); i++) for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
                   doms_app.insert(ref_cast(Probleme_base,pbc.probleme(i)).equation(j).domaine_application().getString());
-              for (auto && s : resolution_monolithique_) for (auto &&d : s) doms_mono.insert((Nom(d.c_str())).getSuffix("_").getString());
+              for (auto && s : resolution_monolithique_) for (auto &&d : s) doms_mono.insert((Nom(d)).getSuffix("_").getString());
               if (doms_mono != doms_app)
                 {
                   Cerr << "Error : all the application domains should be given in the resolution_monolitique block to impose the order of resolution" << finl;
                   Cerr << "and some are missing among :";
-                  for (auto &&n: doms_app) Cerr << Nom(" ") + n.c_str();
+                  for (auto &&n: doms_app) Cerr << Nom(" ") + n;
                   Cerr << finl << "(an underscore can be put at the begining of the application domains for which a standard resolution is wanted)" << finl;
                   Process::exit();
                 }
@@ -392,10 +392,10 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                       }
 
                   Cout << "RESOLUTION {";
-                  for (auto &&d : s) Cout << Nom(" ") + d.c_str();
+                  for (auto &&d : s) Cout << Nom(" ") + d;
                   Cout << " }" << finl;
                   Cout << "-------------------------" << finl;
-                  const bool mono = !(s.size() == 1 && Nom((*s.begin()).c_str()).debute_par("_"));
+                  const bool mono = !(s.size() == 1 && Nom((*s.begin())).debute_par("_"));
                   if (mono)
                     {
                       Cout << "Resolution monolithique! the equations {";

@@ -77,9 +77,9 @@ Entree& Champ_front_Tabule_lu::readOn(Entree& is)
             Cerr << "The file " << column_file << " should contain " << nb_comp_ + 1 << " columns but " << nb_col_lues << " have been detected on line " << l << finl;
             Process::exit();
           }
-        liste_temps += Nom(" ") + result[0].c_str();
+        liste_temps += Nom(" ") + result[0];
         for (int n = 0; n < nb_comp_; n++)
-          liste_vals += Nom(" ") + result[1 + n].c_str();
+          liste_vals += Nom(" ") + result[1 + n];
       }
 
   // send to the parent class readOn

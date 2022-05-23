@@ -485,7 +485,7 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
 #ifdef MEDCOUPLING_
       nom_post.prefix("_FACES_");
       nom_post.prefix("_faces_");
-      nom_dom = dom.getUFacesMesh()->getName().c_str();
+      nom_dom = dom.getUFacesMesh()->getName();
       for (int i = 0; i < noms_compo.size(); ++i)
         noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getPrefix("_FACES_");
 #else

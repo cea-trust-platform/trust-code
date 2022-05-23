@@ -264,10 +264,10 @@ MEDDoubleField build_medfield(TrioField& triofield)
   field->setNature(MEDCoupling::IntensiveMaximum);
   MEDCoupling::MCAuto<MEDCoupling::DataArrayDouble> fieldArr(MEDCoupling::DataArrayDouble::New());
   fieldArr->alloc(field->getNumberOfTuplesExpected(),triofield._nb_field_components);
-  field->setName(triofield.getName().c_str());
+  field->setName(triofield.getName());
   std::string meshName("SupportOf_");
   meshName+=triofield.getName();
-  mesh->setName(meshName.c_str());
+  mesh->setName(meshName);
   field->setTime(triofield._time1,0,triofield._itnumber);
   if (triofield._field!=0)
     {

@@ -1313,7 +1313,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           Cerr << "Mesh " << nom_dom << " not found in the med file " << nom_fic << " !" << finl;
           Cerr << "List of meshes found:" << finl;
           for(unsigned int i = 0; i<meshes_names.size(); i++)
-            Cerr << meshes_names[i].c_str() << finl;
+            Cerr << meshes_names[i] << finl;
           Process::exit(-1);
         }
       const MEDFileMesh* mfmesh = data->getMeshWithName(meshName);
@@ -1477,7 +1477,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
             {
               MCAuto<DataArrayInt> ids(file->getGroupArr(0, groups[i], false));
               int nb_elems = (int) ids->getNbOfElems();
-              const Nom& nom_sous_zone = groups[i].c_str(); // We take the name of the group for the subzone name
+              const Nom& nom_sous_zone = groups[i]; // We take the name of the group for the subzone name
               Cerr << "Detecting a sub-zone (group name="<< nom_sous_zone << ") with " << nb_elems << " cells." << finl;
               if (nb_elems > 0)
                 {
@@ -1589,7 +1589,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                   MCAuto<DataArrayInt> ids(file->getGroupArr(-1, groups[i], false));
                   int nb_faces = (int) ids->getNbOfElems();
                   int nb_families = file->getFamiliesIdsOnGroup(groups[i]).size();
-                  Cerr << "group_name=" << groups[i].c_str() << " with " << nb_faces << " faces on ";
+                  Cerr << "group_name=" << groups[i] << " with " << nb_faces << " faces on ";
                   Cerr << nb_families << " families (";
                   for (int j=0; j<nb_families; j++)
                     Cerr << file->getFamiliesIdsOnGroup(groups[i])[j] << " ";
@@ -1604,10 +1604,10 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                   int nb_faces = (int) ids->getNbOfElems();
                   int nb_groups = file->getGroupsOnFamily(families[i]).size();
                   int family_id = file->getFamilyId(families[i]);
-                  Cerr << "family_name=" << families[i].c_str() << " (family id=" << family_id << ") with " << nb_faces << " faces on ";
+                  Cerr << "family_name=" << families[i] << " (family id=" << family_id << ") with " << nb_faces << " faces on ";
                   Cerr << nb_groups << " groups (";
                   for (int j=0; j<nb_groups; j++)
-                    Cerr << file->getGroupsOnFamily(families[i])[j].c_str() << " ";
+                    Cerr << file->getGroupsOnFamily(families[i])[j] << " ";
                   Cerr << ")" << finl;
                 }
             }
@@ -1625,10 +1625,10 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                   int family_id = file->getFamilyId(families[i]);
                   Nom nom_bord="";
                   if (isfamilyshort == 0) // Par defaut, boundary name = family name
-                    nom_bord = families[i].c_str();
+                    nom_bord = families[i];
                   else if (isfamilyshort == 1) // Suppress FAM_*_ from family name
                     {
-                      Nom family_name = families[i].c_str();
+                      Nom family_name = families[i];
                       Nom tmp="FAM_";
                       tmp+=(Nom)family_id;
                       tmp+="_";
@@ -1638,12 +1638,12 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                     {
                       // Cherche le nom du groupe
                       if (groups.size()==1)
-                        nom_bord = groups[0].c_str();
+                        nom_bord = groups[0];
                       else
                         for (unsigned long k=0; k<groups.size(); k++)
                           {
                             int nb_families = file->getFamiliesIdsOnGroup(groups[k]).size();
-                            if (nb_families==1) nom_bord = groups[k].c_str();
+                            if (nb_families==1) nom_bord = groups[k];
                           }
                     }
                   if (nom_bord!="")

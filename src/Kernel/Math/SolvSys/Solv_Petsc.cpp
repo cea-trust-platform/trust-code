@@ -224,8 +224,8 @@ void Solv_Petsc::create_solver(Entree& entree)
                             std::getline(config_amgx.get_ifstream(), line);
                             if (line.find("#") && line.find("config_version"))
                               {
-                                Cerr << line.c_str() << finl;
-                                amgx_option+=line.c_str();
+                                Cerr << line << finl;
+                                amgx_option+=line;
                                 amgx_option+="\n";
                               }
                           }
@@ -2401,7 +2401,7 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
       for (auto &&kv : champ)
         {
           PetscSectionSetFieldName(sec, idx, kv.first.c_str());
-          Cerr << "Field " << kv.first.c_str() << " available for PCFieldsplit." << finl;
+          Cerr << "Field " << kv.first << " available for PCFieldsplit." << finl;
           for (int j = 0; j < (int) kv.second.size(); j++)
             PetscSectionSetDof(sec, kv.second[j], 1), PetscSectionSetFieldDof(sec, kv.second[j], idx, 1);
           idx++;

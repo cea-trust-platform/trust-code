@@ -342,7 +342,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
           double dt = temps_sauv_[nb_dt - 1];
           if (((nb_dt == 1) && (!est_egal(dt, t))) || ((last_time_only_ == 1) && (!est_egal(tmax, t))))
             {
-              Cout << "We assume that the field " << fieldName.c_str() << " is stationary." << finl;
+              Cout << "We assume that the field " << fieldName << " is stationary." << finl;
               search_field = false;
             }
         }
@@ -357,7 +357,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
                 if (est_egal(temps_sauv_[given_it], t)) break;
               if (given_it == (int)nn)
                 {
-                  Cerr << "Error. Time " << t << " not found in the times list of the " << fileName.c_str() << " file" << finl;
+                  Cerr << "Error. Time " << t << " not found in the times list of the " << fileName << " file" << finl;
                   for (unsigned int n=0; n<nn; n++)
                     Cerr << temps_sauv_[n] << finl;
                   Process::exit();
@@ -576,15 +576,15 @@ int Champ_Fonc_MED::creer(const Nom& nom_fic, const Domaine& un_dom, const Motcl
         }
       if (!ok)
         {
-          Cerr << "Unable to find into file " << fileName.c_str() << " a field named like :" << finl;
+          Cerr << "Unable to find into file " << fileName << " a field named like :" << finl;
           Cerr << fieldNamesGuess << finl;
           Cerr << "This file contains the field(s) named:" << finl;
           for (unsigned i=0; i<fieldNames.size(); i++)
-            Cerr << fieldNames[i].c_str() << finl;
+            Cerr << fieldNames[i] << finl;
           Process::exit();
         }
       else
-        Cerr << "Ok, we find into file " << fileName.c_str() << " a field named " << nom_champ_dans_fichier_med_ << finl;
+        Cerr << "Ok, we find into file " << fileName << " a field named " << nom_champ_dans_fichier_med_ << finl;
 
       std::string fieldName = nom_champ_dans_fichier_med_.getString();
       lire_donnees_champ(fileName,meshName,fieldName,temps_sauv,size,nbcomp,type_champ);
@@ -660,8 +660,8 @@ ArrOfDouble Champ_Fonc_MED::lire_temps_champ(const std::string& fileName, const 
 MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, const int iteration, const int order)
 {
   // Flag pour lecture plus rapide du field sans lecture du mesh si le maillage MED est deja disponible:
-  bool fast = meshName.c_str() == domaine().le_nom() && domaine().getUMesh() != NULL;
-  Cerr << "Reading" << (fast ? " (fast)" : "") << " the field " << fieldName.c_str() << " on the " << meshName.c_str() << " mesh into " << fileName.c_str() << " file";
+  bool fast = meshName == domaine().le_nom() && domaine().getUMesh() != NULL;
+  Cerr << "Reading" << (fast ? " (fast)" : "") << " the field " << fieldName << " on the " << meshName << " mesh into " << fileName << " file";
   MCAuto<MEDCouplingField> ffield;
   if (fast)
     {

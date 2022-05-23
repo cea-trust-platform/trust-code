@@ -1404,7 +1404,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                           if(zones_index[part] == -1)
                             {
                               std::string dname = "/zone_"  + std::to_string(part);
-                              Nom dataset_name(dname.c_str());
+                              Nom dataset_name(dname);
                               dataset_names.add(dataset_name);
                             }
                           else
@@ -1414,7 +1414,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                                   if(zones_indices[proc][part] >=0)
                                     {
                                       std::string dname = "/zone_"  + std::to_string(part) + "_" + std::to_string(zones_indices[proc][part]);
-                                      Nom dataset_name(dname.c_str());
+                                      Nom dataset_name(dname);
                                       dataset_names.add(dataset_name);
                                     }
                                 }
@@ -1538,7 +1538,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   std::string dname = "/zone_" + std::to_string(i_part);
                   if(zones_index[i_part] >=0)
                     dname += "_" + std::to_string(zones_index[i_part]);
-                  Nom datasetname(dname.c_str());
+                  Nom datasetname(dname);
                   if(Process::nproc() > 1)
                     fic_hdf.fill_dataset(datasetname, os_hdf);
                   else

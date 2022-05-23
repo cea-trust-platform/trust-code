@@ -537,7 +537,7 @@ vector<string> ProblemTrio::getInputFieldsNames() const
 // ProblemTrio unchanged
 void ProblemTrio::getInputFieldTemplate(const std::string& name, TrioField& afield) const
 {
-  Nom nom(name.c_str());
+  Nom nom(name);
   pb->getInputFieldTemplate(nom,afield);
 }
 
@@ -558,13 +558,13 @@ void ProblemTrio::getInputFieldTemplate(const std::string& name, TrioField& afie
 // Values of afield have been used (copied inside the ProblemTrio).
 void ProblemTrio::setInputField(const std::string& name, const TrioField& afield)
 {
-  Nom nom(name.c_str());
+  Nom nom(name);
   pb->setInputField(nom,afield);
 }
 
 void ProblemTrio::setInputDoubleValue(const std::string& name, const double& val)
 {
-  Nom mot(name.c_str());
+  Nom mot(name);
   pb->setInputDoubleValue(mot,val);
 }
 
@@ -618,7 +618,7 @@ ICoCo::ValueType ProblemTrio::getFieldType(const std::string& name) const
 
 void ProblemTrio::getOutputField(const std::string& name_, TrioField& afield) const
 {
-  Motcle name(name_.c_str());
+  Motcle name(name_);
   pb->getOutputField(name,afield);
 }
 
@@ -672,11 +672,11 @@ void ProblemTrio::setInputMEDDoubleField(const std::string& name, const MEDDoubl
   const unsigned int nbcomp = fieldArr->getNumberOfComponents();
   std::vector<std::string> compo_names = fieldArr->getInfoOnComponents();
 
-  REF(Field_base) ch = pb->findInputField(Nom(name.c_str()));
+  REF(Field_base) ch = pb->findInputField(Nom(name));
   assert(nbcomp == (unsigned)ch->nb_comp());
   for (unsigned int i = 0; i < nbcomp; i++)
     {
-      Nom compo_name(compo_names[i].c_str());
+      Nom compo_name(compo_names[i]);
       ch->fixer_nom_compo((int)i, compo_name);
     }
 #else

@@ -130,7 +130,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
         Matrice_Morse mat;
         IntTrav stencil(0, 2);
         stencil.set_smart_resize(1);
-        int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
+        int m, M = equation().probleme().get_champ(i_m.first).valeurs().line_size();
         if (i_m.first == "vitesse") /* vitesse */
           {
             for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
@@ -160,7 +160,7 @@ void Op_Conv_EF_Stab_CoviMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
   Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL;
   std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>> d_cc; //liste des derivees de cc a renseigner : couples (derivee de cc, matrice, nb de compos de la variable)
   if (!semi_impl.count(nom_cc)) for (auto &i_m : mats) if (cc.derivees().count(i_m.first))
-        d_cc.push_back(std::make_tuple(&cc.derivees().at(i_m.first), i_m.second, equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size()));
+        d_cc.push_back(std::make_tuple(&cc.derivees().at(i_m.first), i_m.second, equation().probleme().get_champ(i_m.first).valeurs().line_size()));
 
   DoubleTrav dv_flux(N), dc_flux(2, N); //derivees du flux convectif a la face par rapport a la vitesse / au champ convecte amont / aval
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -441,76 +441,6 @@ Motcle& Motcle::operator+=(const char * const mot)
   return *this;
 }
 
-// Description: Identique a try_map_to_int, mais en cas d'echec
-//  affiche un message d'erreur et quitte le programme.
-int Motcle::map_to_int(const char * keywords_list) const
-{
-  int resu = try_map_to_int(keywords_list);
-  if (resu < 0)
-    {
-      Cerr << "Error in Motcle::map_to_int : the keyword " << nom_.c_str()
-           << "\n has not been found in the following list :\n"
-           << keywords_list << finl;
-      exit();
-    }
-  return resu;
-}
-
-// Description: cherche si le motcle se trouve dans la liste keywords_list
-//  et si oui renvoie le numero associe au nom.
-//  keywords_list est une chaine de caracteres terminee par '\0' de la forme suivante:
-//   farine:5,oeuf:1,beurre:2,levure:3,lait:4,kougelopf:15
-//  Les entiers associes aux noms doivent etre positifs ou nuls.
-//  Si le motcle contient "beurre", try_map_to_int renvoie 2.
-//  Si le motcle n'est pas trouve, renvoie -1;
-int Motcle::try_map_to_int(const char * keywords_list) const
-{
-  // Pointeur dans la chaine keywords_list
-  const char * map_ptr = keywords_list;
-  const char * src = nom_.c_str();
-  int resultat = -1;
-
-  while (*map_ptr)   // Tant qu'on n'est pas a la fin de la chaine
-    {
-      // Combien de caracteres identiques ?
-      const int count = strcmp_uppercase(src, map_ptr);
-      int ok = 0;
-      if (map_ptr[count] == ':' && src[count] == 0)
-        ok = 1;
-      // On avance jusqu'au prochain ":"
-      while (*map_ptr != ':')
-        {
-          if (*map_ptr == 0 || *map_ptr == ',')
-            {
-              Cerr << "Error in Motcle::try_map_to_int(\"" << keywords_list << "\")\n"
-                   << " invalid string, we expected a ':'" << finl;
-              exit();
-            }
-          map_ptr++;
-        }
-      map_ptr++;
-      // Lecture de l'entier correspondant
-      int intval = 0;
-      while (*map_ptr != ',' || *map_ptr != 0)
-        {
-          const int c = (int) (*map_ptr);
-          int i = c - '0';
-          if (i < 0 || i > 9)
-            {
-              Cerr << "Error in Motcle::try_map(\"" << keywords_list << "\")\n"
-                   << " invalid string, we expect a positive integer or null between : and ," << finl;
-              exit();
-            }
-          intval = intval * 10 + i;
-        }
-      if (ok)
-        {
-          resultat = intval;
-          break;
-        }
-    }
-  return resultat;
-}
 Motcles noms_to_motcles(const Noms& a)
 {
   int n = a.size();

@@ -233,8 +233,8 @@ int Champ_Fonc_Tabule_Morceaux::initialiser(const double time)
     for (unsigned int i = 0; i < ch.noms_champs_parametre_.size(); i++)
       {
         REF(Champ_base) champ;
-        const Probleme_base& pb_ch = ref_cast(Probleme_base, Interprete::objet(Nom(ch.noms_pbs_[i].c_str())));
-        champ = pb_ch.get_champ(Nom(ch.noms_champs_parametre_[i].c_str()));
+        const Probleme_base& pb_ch = ref_cast(Probleme_base, Interprete::objet(Nom(ch.noms_pbs_[i])));
+        champ = pb_ch.get_champ(Nom(ch.noms_champs_parametre_[i]));
         ch.champs_parametre_.add(champ);
       }
   init_ = true;

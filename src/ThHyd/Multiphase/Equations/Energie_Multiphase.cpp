@@ -466,5 +466,5 @@ void Energie_Multiphase::init_champ_convecte() const
   discretisation().creer_champ(champ_convecte_, zone_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_convecte_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_convecte();
-  champ_convecte_->nommer(nom_fonc.first.c_str()), champ_convecte_->init_champ_calcule(*this, nom_fonc.second);
+  champ_convecte_->nommer(nom_fonc.first), champ_convecte_->init_champ_calcule(*this, nom_fonc.second);
 }

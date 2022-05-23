@@ -81,13 +81,13 @@ public:
 
   const Correlation& get_correlation(std::string nom_correlation) const
   {
-    Motcle mot(nom_correlation.c_str());
+    Motcle mot(nom_correlation);
     return correlations.at(mot.getString());
   }
 
   int has_correlation(std::string nom_correlation) const
   {
-    Motcle mot(nom_correlation.c_str());
+    Motcle mot(nom_correlation);
     return correlations.count(mot.getString());
   }
 

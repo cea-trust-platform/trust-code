@@ -59,7 +59,7 @@ void Flux_interfacial_CoviMAC::dimensionner_blocs(matrices_t matrices, const tab
   for (auto &&n_m : matrices) if (n_m.first.find("_") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
       {
         Matrice_Morse& mat = *n_m.second, mat2;
-        const DoubleTab& dep = equation().probleme().get_champ(n_m.first.c_str()).valeurs();
+        const DoubleTab& dep = equation().probleme().get_champ(n_m.first).valeurs();
         int m, nc = dep.dimension_tot(0), M = dep.line_size();
         IntTrav sten(0, 2);
         sten.set_smart_resize(1);

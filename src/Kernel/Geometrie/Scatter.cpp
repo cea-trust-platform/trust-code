@@ -551,7 +551,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
               bool exists = fic_hdf.exists(tmp.c_str());
               if(exists)
                 {
-                  Nom dataset_name(dname.c_str());
+                  Nom dataset_name(dname);
                   fic_hdf.read_dataset(dataset_name, i, data_part);
                   readDomainWithoutCollComm( part_dom, data_part );
                   mergeDomains(dom, part_dom);
@@ -597,7 +597,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
               tmp += "_";
               tmp += std::to_string(i);
               tmp += ".Zones";
-              Nom nomentree_part(tmp.c_str());
+              Nom nomentree_part(tmp);
               int ok = fichier_binaire_part.ouvrir(nomentree_part);
               if(ok)
                 {

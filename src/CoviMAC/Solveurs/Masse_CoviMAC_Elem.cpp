@@ -86,7 +86,7 @@ void Masse_CoviMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& s
   for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
       {
         /* nombre de composantes de la variable : autant que le champ par defaut, mais peut etre different pour la pression */
-        int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
+        int m, M = equation().probleme().get_champ(i_m.first).valeurs().line_size();
 
         IntTrav stencil(0, 2);
         stencil.set_smart_resize(1);
@@ -113,7 +113,7 @@ void Masse_CoviMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   /* matrices */
   for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
       {
-        int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
+        int m, M = equation().probleme().get_champ(i_m.first).valeurs().line_size();
         const DoubleTab& der = cc.derivees().at(i_m.first);
         for (e = 0; e < ne; e++) for (n = 0, m = 0; n < N; n++, m += (M > 1))
             (*i_m.second)(N * e + n, M * e + m) += pe(e) * ve(e) * der(e, n) / dt;

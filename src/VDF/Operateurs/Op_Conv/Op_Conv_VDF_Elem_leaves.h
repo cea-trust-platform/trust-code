@@ -57,7 +57,7 @@ public:
       {
         std::string prefix = nom_inco + "_" ;
         // pour la thermique monolithique: on traite uniquement notre inconnue
-        if(Nom(i_m.first.c_str()).debute_par(prefix.c_str())) continue;
+        if(Nom(i_m.first).debute_par(prefix)) continue;
         Matrice_Morse mat;
         if (i_m.first == "vitesse") dimensionner_bloc_vitesse_elem(mat);
         else dimensionner_elem(mat);

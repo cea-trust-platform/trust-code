@@ -90,7 +90,7 @@ void Terme_Source_Decroissance_Radioactive_P0_CoviMAC::dimensionner_blocs(matric
         sten.set_smart_resize(1);
         for (int e = 0; e < ne; e++) for (int n = 0; n < N; n++) sten.append_line(N * e + n, N * e + n);
         tableau_trier_retirer_doublons(sten);
-        Matrix_tools::allocate_morse_matrix(inco.size_totale(), equation().probleme().get_champ(n_m.first.c_str()).valeurs().size_totale(), sten, mat2);
+        Matrix_tools::allocate_morse_matrix(inco.size_totale(), equation().probleme().get_champ(n_m.first).valeurs().size_totale(), sten, mat2);
         mat.nb_colonnes() ? mat += mat2 : mat = mat2;
       }
 }

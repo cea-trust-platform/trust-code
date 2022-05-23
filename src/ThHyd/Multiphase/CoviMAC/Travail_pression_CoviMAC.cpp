@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ void Travail_pression_CoviMAC::dimensionner_blocs(matrices_t matrices, const tab
         else for (e = 0; e < ne; e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
                 for (n = 0; n < N; n++) sten.append_line(N * e + n, N * eb + n);
         tableau_trier_retirer_doublons(sten);
-        Matrix_tools::allocate_morse_matrix(inco.size_totale(), equation().probleme().get_champ(n_m.first.c_str()).valeurs().size_totale(), sten, mat2);
+        Matrix_tools::allocate_morse_matrix(inco.size_totale(), equation().probleme().get_champ(n_m.first).valeurs().size_totale(), sten, mat2);
         mat.nb_colonnes() ? mat += mat2 : mat = mat2;
       }
 }

@@ -676,13 +676,13 @@ int Parser::searchCst(const std::string& v)
 {
   LIST_CURSEUR(Constante) curseur(les_cst);
   int i=0;
-  Nom nv(v.c_str());
+  Nom nv(v);
   while(curseur)
     {
       Constante& cst = ref_cast(Constante,curseur.valeur());
       std::string ss(cst.le_nom());
       for (auto & c: ss) c = toupper(c);
-      if (nv == Nom(ss.c_str())) return i;
+      if (nv == Nom(ss)) return i;
       ++curseur;
       i++;
     }
@@ -694,7 +694,7 @@ int Parser::searchFunc(const std::string& v)
 {
   LIST_CURSEUR(DERIV(UnaryFunction)) curseur(unary_func);
   int i=0;
-  Nom nv(v.c_str());
+  Nom nv(v);
   nv.majuscule();
   while(curseur)
     {

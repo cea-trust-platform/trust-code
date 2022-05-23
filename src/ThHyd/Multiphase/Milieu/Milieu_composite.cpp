@@ -63,7 +63,7 @@ Entree& Milieu_composite::readOn(Entree& is)
         {
           const std::string espn = especes[n].first, espm = especes[m].first;
           const int pn = especes[n].second, pm = especes[m].second;
-          mot = Nom((std::string("saturation_") + especes[n].first).c_str());
+          mot = Nom((std::string("saturation_") + especes[n].first));
           if (espn == espm && pn != pm && Interprete::objet_existant(mot))
             {
               Cerr << "Saturation between fluid " << n << " : " << fluides[n].le_nom() << " and " << m << " : " << fluides[m].le_nom() << finl;
@@ -154,8 +154,8 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   /* champs de quantites melange */
   for (auto &&kv : phases_melange)
     {
-      dis.discretiser_champ("champ_elem", zone_dis,   Nom("masse_volumique_") + kv.first.c_str() + "_melange", "kg/m^3", 1, temps, rho_m);
-      dis.discretiser_champ("champ_elem", zone_dis,         Nom("enthalpie_") + kv.first.c_str() + "_melange",  "J/m^3", 1, temps,   h_m);
+      dis.discretiser_champ("champ_elem", zone_dis,   Nom("masse_volumique_") + kv.first + "_melange", "kg/m^3", 1, temps, rho_m);
+      dis.discretiser_champ("champ_elem", zone_dis,         Nom("enthalpie_") + kv.first + "_melange",  "J/m^3", 1, temps,   h_m);
       champs_compris_.ajoute_champ(rho_m);
       champs_compris_.ajoute_champ(h_m);
     }

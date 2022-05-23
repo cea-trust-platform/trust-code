@@ -116,7 +116,7 @@ void crit_err_hdlr(True_int sig_num, siginfo_t * info, void * ucontext)
         Process::Journal() << "(Unable to execute 'addr2line' to get line number in source ...)" << finl;
       else
         Process::Journal() << "[proc " << Process::me() << "]: (" << i << ") ----> "
-                           << output.c_str() << finl;
+                           << output << finl;
     }
   Process::Journal() << finl;
   free(messages);

@@ -475,10 +475,10 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
               if (type=="moment")
                 {
                   if (dimension==2)
-                    os.add_col((ch + comp_m[2].c_str()).getChar());
+                    os.add_col((ch + comp_m[2]).getChar());
                   else
                     for (int d = 0; d < dimension; ++d)
-                      os.add_col((ch + comp_m[d].c_str()).getChar());
+                      os.add_col((ch + comp_m[d]).getChar());
                 }
               else
                 {

@@ -89,21 +89,13 @@ public:
   friend int operator !=(const char* const, const Nom&) ;
   inline bool contient(const Nom& nom)
   {
-    std::size_t found = getString().find(nom.getString());
+    std::size_t found = nom_.find(nom.nom_);
     return found!=std::string::npos;
   }
-  inline const char* getChar() const
-  {
-    return nom_.c_str();
-  }
-  inline const std::string& getString() const
-  {
-    return nom_;
-  }
-  inline std::string& getString()
-  {
-    return nom_;
-  }
+  inline const char* getChar() const  {  return nom_.c_str();  }
+  inline const std::string& getString() const  {    return nom_;   }
+  inline std::string& getString()  {  return nom_;   }
+
   static void sed_check_case_non_sensitive(int i) ;
 protected :
 
@@ -113,20 +105,4 @@ protected :
   static int check_case_non_sensitive_; // pour descativer dans ==
 };
 
-char intochar(int i);
-
-// Conversion en majuscule
-inline void convertit_en_majuscule(char* s)
-{
-  const char decal='a'-'A';
-  char c;
-  do
-    {
-      c = *s;
-      if (c >= 'a' && c <= 'z')
-        *s = c - decal;
-      s++;
-    }
-  while (c);
-}
 #endif // NOM_H

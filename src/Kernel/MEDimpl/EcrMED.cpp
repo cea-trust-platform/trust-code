@@ -1396,7 +1396,7 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
                 {
                   std::ostringstream oss;
                   oss << "ReadUMeshFromFile : With fileName=\""<< file_name << "\", meshName=\""<< mesh_name << "\" exists but it is not an unstructured mesh !";
-                  throw INTERP_KERNEL::Exception(oss.str().c_str());
+                  throw INTERP_KERNEL::Exception(oss.str());
                 }
 
               //const MCAuto<MEDCouplingUMesh> umesh_particles = file_mesh->getMeshAtLevel(1);

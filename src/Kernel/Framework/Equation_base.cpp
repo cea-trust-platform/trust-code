@@ -2460,7 +2460,7 @@ void Equation_base::init_champ_conserve() const
   discretisation().creer_champ(champ_conserve_, zone_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_conserve_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_conserve();
-  champ_conserve_->nommer(nom_fonc.first.c_str());
+  champ_conserve_->nommer(nom_fonc.first);
   champ_conserve_->init_champ_calcule(*this, nom_fonc.second);
 }
 

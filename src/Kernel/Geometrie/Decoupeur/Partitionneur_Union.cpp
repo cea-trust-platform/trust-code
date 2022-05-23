@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,7 +80,7 @@ void Partitionneur_Union::construire_partition(IntVect& elem_part, int& nb_parts
   for (auto &&kv : fic_ssz)
     {
       //on recupere la sous-zone par son nom et le decoupage en ouvrant le fichier...
-      const Sous_Zone& ssz = ref_cast(Sous_Zone, Interprete::objet(kv.first.c_str()));
+      const Sous_Zone& ssz = ref_cast(Sous_Zone, Interprete::objet(kv.first));
       EFichier file;
       file.ouvrir(kv.second.c_str());
       IntVect dec_ssz;
@@ -89,7 +89,7 @@ void Partitionneur_Union::construire_partition(IntVect& elem_part, int& nb_parts
       //... et on remplit un morceau de elem_part avec
       if (dec_ssz.size_array() != ssz.nb_elem_tot())
         {
-          Cerr << "Partitionneur_Union : incoherent element number for sub-zone " << kv.first.c_str() << finl;
+          Cerr << "Partitionneur_Union : incoherent element number for sub-zone " << kv.first << finl;
           Process::exit();
         }
       for (int i = 0; i < ssz.nb_elem_tot(); i++)

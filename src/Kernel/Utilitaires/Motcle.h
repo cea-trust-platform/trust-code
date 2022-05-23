@@ -63,9 +63,6 @@ public:
   friend int operator !=(const Motcle& , const Nom& ) ;
   friend int operator ==(const Nom& , const Motcle& ) ;
   friend int operator !=(const Nom& , const Motcle& ) ;
-
-  virtual int map_to_int(const char * keywords_list) const;
-  virtual int try_map_to_int(const char * keywords_list) const;
 };
 
 Declare_vect(Motcle);

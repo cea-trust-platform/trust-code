@@ -367,7 +367,7 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
         {
           /* verification de la compatibilite des inconnues du bloc -> avec les MD_Vector renseignes dans sec */
           for (auto &&i_b : bloc) if (dims[i_b0][0] != dims[i_b][0])
-              Cerr << "SETS::eliminer() : discretisation des inconnues" << i_b0.first.c_str() << "/" << i_b0.second << " et " << i_b.first.c_str()
+              Cerr << "SETS::eliminer() : discretisation des inconnues" << i_b0.first << "/" << i_b0.second << " et " << i_b.first
                    << "/" << i_b.second << " incompatibles!" << finl, Process::exit();
 
           std::vector<std::set<int>> stencil(calc.size_array()); //stencil[i] -> stencil de l'item i (a demultiplier par le line_size() de chaque variable)
@@ -392,12 +392,12 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
                               else if (e_ib.count({ v_m.first, k }))  //(variable, bloc) elimine -> dependance en inco_p dans A_p
                                 for (l = A->get_tab1()(jb) - 1; l < A->get_tab1()(jb + 1) - 1; l++)
                                   stencil[i].insert(A->get_tab2()(l) - 1);
-                              else Cerr << "SETS::eliminer() : dependance ( " << i_b.first.c_str() << "/" << i_b.second << " , "
-                                          << v_m.first.c_str() << "/" << k << " ) interdite!" << finl, Process::exit();
+                              else Cerr << "SETS::eliminer() : dependance ( " << i_b.first << "/" << i_b.second << " , "
+                                          << v_m.first << "/" << k << " ) interdite!" << finl, Process::exit();
                             }
                     }
-                  else Cerr << "SETS::eliminer() : dependance ( " << i_b.first.c_str() << "/" << i_b.second << " , "
-                              << v_m.first.c_str() << " ) interdite!" << finl, Process::exit();
+                  else Cerr << "SETS::eliminer() : dependance ( " << i_b.first << "/" << i_b.second << " , "
+                              << v_m.first << " ) interdite!" << finl, Process::exit();
                 }
 
           for (auto &&i_bl : bloc) //stencil par inconnue -> en demultipliant
