@@ -254,6 +254,13 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                         Meb(n, i, k) -= surf_fs[k] * ref_cast(Frottement_global_impose, *cl).coefficient_frottement(fcl(f, 2), n);
                       else if (sub_type(Frottement_externe_impose, *cl)) //Frottement_externe_impose -> flux =  - coeff * v_f
                         Mf(n, k, k) += surf_fs[k] * ref_cast(Frottement_global_impose, *cl).coefficient_frottement(fcl(f, 2), n);
+                      else if (sub_type(Echange_impose_base, *cl)) //Echange_impose_base -> flux =  - h * (T_{e,f} - T_ext)
+                        {
+                          double h = ref_cast(Echange_impose_base, *cl).h_imp(fcl(f, 2), n);
+                          Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) += surf_fs[k] * h; //partie h * T_ext
+                          if (sub_type(Echange_externe_impose, *cl)) Mf(n, k, k) += surf_fs[k] * h; //Echange_externe_impose : partie h * T_f
+                          else Meb(n, i, k) -= surf_fs[k] * h; //Echange_global_impose : partie h * T_e
+                        }
                     }
                 }
             /* resolution de Mf.u_fs = Meb.u_eb : DGELSY, au cas ou */

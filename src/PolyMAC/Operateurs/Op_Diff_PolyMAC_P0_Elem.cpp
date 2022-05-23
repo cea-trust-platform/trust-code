@@ -149,7 +149,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_som_ext() const
   /* autres CLs (hors Echange_contact) devant etre traitees par som_ext : Echange_impose_base, tout si Pb_Multiphase avec Flux_parietal_base */
   const Conds_lim& cls = equation().zone_Cl_dis()->les_conditions_limites();
   int has_flux = sub_type(Energie_Multiphase, equation()) && ref_cast(Pb_Multiphase, equation().probleme()).has_correlation("flux_parietal");
-  for (i = 0; i < cls.size(); i++) if (has_flux || sub_type(Echange_impose_base, cls[i].valeur()))
+  for (i = 0; i < cls.size(); i++) if (has_flux || sub_type(Echange_contact_PolyMAC_P0, cls[i].valeur()))
       for (j = 0; j < ref_cast(Front_VF, cls[i]->frontiere_dis()).nb_faces(); j++)
         for (f = ref_cast(Front_VF, cls[i]->frontiere_dis()).num_face(j), k = 0; k < f_s[0].get().dimension(1) && (s = f_s[0](f, k)) >= 0; k++)
           if (!s_dist_full.count(s)) s_dist_full[s] = { }; //dans le std::map, mais pas d'operateurs distants!
@@ -474,8 +474,8 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                               /* equations de continuite : on y contribue si on est l'amont d'un Echange_contact pour prendre en compte son coeff d'echange */
                               if (sgn > 0 && (type_f[k] && type_f[k] < 4) && ((i_eq = i_eq_cont(k, mix * n)) >= 0 || (i_eq = i_eq_cont(k, 0)) >= 0))
                                 {
-                                  double invh = type_f[k] == 3 ? ref_cast(Echange_contact_PolyMAC_P0, cls[p].get()[fcl[p](f, 1)].valeur()).invh_paroi
-                                                : 1. / ref_cast(Echange_impose_base, cls[p].get()[fcl[p](f, 1)].valeur()).h_imp(fcl[p](f, 1), !mix || i_eq == i_eq_cont(k, n) ? n : 0);
+                                  double h = ref_cast(Echange_impose_base, cls[p].get()[fcl[p](f, 1)].valeur()).h_imp(fcl[p](f, 1), !mix || i_eq == i_eq_cont(k, n) ? n : 0),
+                                         invh = type_f[k] == 3 ? ref_cast(Echange_contact_PolyMAC_P0, cls[p].get()[fcl[p](f, 1)].valeur()).invh_paroi : 1. / std::max(h, 1e-10);
                                   B(!mix * n, t_e, i_eq) += invh * x * (Tefs(!mix * n, i_efs(i, l, mix * n)) - inco[p](e, n));
                                   A(!mix * n, i_efs(i, l, mix * n), i_eq) -= invh * x, B(!mix * n, i_e(i, mix * n), i_eq) -= invh * x;
                                 }
