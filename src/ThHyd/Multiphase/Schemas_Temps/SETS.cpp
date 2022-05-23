@@ -96,6 +96,7 @@ Entree& SETS::lire(const Motcle& mot, Entree& is)
     }
   else if (mot == "iter_min") is >> iter_min_;
   else if (mot == "iter_max") is >> iter_max_;
+  else if (mot == "pression_degeneree") is >> p_degen;
   else return Simpler::lire(mot, is); //la classe mere connait-elle ce mot cle?
   return is;
 }
@@ -256,10 +257,9 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       for (auto &&i_eq : eqs) i_eq.second->dimensionner_blocs(mats[i_eq.first], semi_impl); //option semi-implicite
       eq_qdm.assembleur_pression()->dimensionner_continuite(mats["pression"]);
 
-      /* si incompressible sans CLs de pression imposee, alors la pression est degeneree */
-      p_degen = sub_type(Fluide_base, eq_qdm.milieu());
-      for (i = 0; i < eq_qdm.zone_Cl_dis().nb_cond_lim(); i++)
-        p_degen &= !sub_type(Neumann_val_ext, eq_qdm.zone_Cl_dis().les_conditions_limites(i).valeur());
+      /* reglage de p_degen si non lu : si incompressible sans CLs de pression imposee, alors la pression est degeneree */
+      if (p_degen < 0) for (p_degen = sub_type(Fluide_base, eq_qdm.milieu()), i = 0; i < eq_qdm.zone_Cl_dis().nb_cond_lim(); i++)
+          p_degen &= !sub_type(Neumann_val_ext, eq_qdm.zone_Cl_dis().les_conditions_limites(i).valeur());
     }
 
   /* Newton : assemblage de mat_semi_impl -> assemblage de la matrice en pression -> resolution -> substitution */

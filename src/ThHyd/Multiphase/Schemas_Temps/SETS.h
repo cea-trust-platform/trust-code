@@ -85,7 +85,7 @@ public :
   }
 
   int iteration;  //numero de l'iteration en cours (pour les operateurs d'evanescence)
-  int p_degen;    //1 si la pression est degeneree (milieu incompressible + pas de CLs de pression imposee)
+  int p_degen = -1;    //1 si la pression est degeneree (milieu incompressible + pas de CLs de pression imposee)
   int sets_;      // 1 si on fait l'etape de prediction des vitesses
 
   double unknown_positivation(const DoubleTab& uk, DoubleTab& incr); // brings to 0 unknowns that should stay positive
