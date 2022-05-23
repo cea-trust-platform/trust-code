@@ -116,7 +116,7 @@ genere_fiche()
          echo "@@@ Done executing Run script."
       else    # Jupyter format
          echo "@@@ About to execute and export Jupyter notebook to PDF ..."
-         env JUPYTER_RUN_OPTIONS="$opt" jupyter nbconvert --to pdf --no-input --output "$curr_dir/build/rapport.pdf" --execute $prm 1>run$OPTIONS_PRM.log 2>&1
+         env JUPYTER_RUN_OPTIONS="$opt" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$curr_dir/build/rapport.pdf" --execute $prm 1>run$OPTIONS_PRM.log 2>&1
          status=$?
          echo "@@@ Done processing Jupyter notebook with exit status $status."
       fi

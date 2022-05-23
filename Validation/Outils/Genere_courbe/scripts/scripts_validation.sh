@@ -282,7 +282,7 @@ gen_fiche()
         cp $jy_nb .
         jy_nb=`ls *.ipynb 2>/dev/null`
         curr_dir=`pwd`
-        env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter nbconvert --to pdf --no-input --output "$curr_dir/build/rapport.pdf" --execute $jy_nb
+        env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$curr_dir/build/rapport.pdf" --execute $jy_nb
         status=$?
         rm -rf src
         # Revert 'build' into 'preserve'

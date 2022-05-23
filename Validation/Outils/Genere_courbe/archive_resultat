@@ -102,10 +102,10 @@ if ! $is_jupyter; then
     cd ..
 else  # Jupyter notebook
     # Build directory has to be called "build"
-    rm -r build/
+    mv build build_init
     mv preserve build
     curr_dir=`pwd`
-    env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter nbconvert --to pdf --no-input --output "$curr_dir/old_rapport.pdf" --execute $base_prm 1>$log_file 2>&1
+    env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$curr_dir/old_rapport.pdf" --execute $base_prm 1>$log_file 2>&1
     status=$?
 fi
 
