@@ -6,4 +6,3 @@ sed "s/preconditionnement_diag 0/preconditionnement_diag 1/" ${cas}/${cas}00.dat
 sed "s/preconditionnement_diag 0/preconditionnement_diag 1/" ${cas}/${cas}10.data >${cas}/${cas}11.data
 sed "s/diffusion_implicite 1/solveur implicite { solveur gmres { diag seuil 1e-14 impr } }/;s/euler_explicit/euler_implicit/"  ${cas}/${cas}00.data | grep -v parametre_equation>${cas}/${cas}_impl.data
 done
-sed "s/PCS/PCR/g" PCS/post_run > PCR/post_run
