@@ -130,7 +130,7 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     {
       if (mot=="dt_impr_ustar")
         {
-          nom_fichier_=Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_ustar";
+//          nom_fichier_=Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_ustar";
           is >>  dt_impr_ustar;
         }
       else if (mot=="dt_impr_ustar_mean_only")
