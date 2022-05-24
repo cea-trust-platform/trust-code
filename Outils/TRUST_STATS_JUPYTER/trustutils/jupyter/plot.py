@@ -3,6 +3,7 @@ Victor Banon Garcia
 CEA Saclay - DM2S/STMF/LGLS
 Mars 2021 - Stage 6 mois
 
+
 We provide here a python package that can be used to graph and plot TRUSt data within jupyterlab.
 This work is based on the files package (a TRUST package that reads the son files).
 
@@ -16,7 +17,7 @@ import os
 import re
 import math
 from trustutils.jupyter.filelist import FileAccumulator
-from trustutils.jupyter.run import BUILD_DIRECTORY, origin
+from trustutils.jupyter.run import BUILD_DIRECTORY
 
 pd.set_option("display.notebook_repr_html", True)
 pd.set_option("display.max_rows", None)
@@ -106,7 +107,7 @@ def readFile(name):
     ------- 
     list of lines
     """
-
+    origin = os.getcwd()
     os.chdir(BUILD_DIRECTORY)
 
     f = open(name, "r")
@@ -236,12 +237,12 @@ class Graph:
         """
         plt.rc("xtick", labelsize=14)  # Font size
         plt.rc("ytick", labelsize=14)
-        plt.rcParams.update({"font.size": 14})
+        #plt.rcParams.update({"font.size": 14})
         self.fig, self.axs = plt.subplots(self.nX, self.nY, figsize=(self.size[0] * self.nY, self.size[1] * self.nX))
         if self.nX * self.nY != 1:
             for ax in self.axs.reshape(-1):
                 ax.axis("off")
-            self.fig.suptitle(self.subtitle)
+            self.fig.suptitle(self.subtitle, fontsize=24)
         self.addPlot(self.coordonee())
 
     def add(self, x, y, marker="-", label=None, title=None, xIndice=None, yIndice=None, **kwargs):
@@ -341,16 +342,12 @@ class Graph:
             properties of line for matplotlib.pyplot.plot
 
         """
-
-        if label == "":
-            label = data.split(".")[0]
-
         path = os.path.join(BUILD_DIRECTORY, data)
         donne = tf.SonPOINTFile(path, None)
 
         saveFileAccumulator(data)
 
-        ### On recupere le nom des variables ### 
+        ### On recupere le nom des variables ###
         entries = donne.getEntries()
 
         nCompo = donne.getnCompo()
@@ -359,7 +356,7 @@ class Graph:
         for k in range(nPoints):
             entry = donne.getEntries()[k*nCompo + compo]
             self.y_label = entry.split()[0]
-            label = entry.split()[1][1:-1]
+            zeLabel = label if label != "" else entry.split()[1][1:-1]
             self.x_label = donne.getXLabel()
 
             X, Y = donne.getValues(entry)
@@ -367,10 +364,10 @@ class Graph:
             if not func is None:
                 Y = func(X, Y)
 
-            ### On plot les données ###
-            self.subplot.plot(X, Y, marker, label=label, **kwargs)
+            ### On plot les donnees ###
+            self.subplot.plot(X, Y, marker, label=zeLabel, **kwargs)
 
-        if not label is None:
+        if label != "":
             self.subplot.legend()
 
         ## On ajoute des titres
@@ -486,7 +483,7 @@ class Graph:
 
         r = r[(r["Time"] <= end) & (r["Time"] >= start)]
 
-        ### On plot les données ###
+        ### On plot les donn��es ###
         self.subplot.plot(list(r["Time"]), list(r[self.y_label]), marker, label=label, **kwargs)
 
         if not label is None:
@@ -680,5 +677,14 @@ class Table:  # ancien tableau
         row[index] = total
         self.addLigne([row], "Total")
 
-    def print(self):
-        return display(self.df)
+    def _repr_latex_(self):
+        """ This method is invoked by 'display()' when generating a PDF """
+        # Note the escape=False to preserve math formulas ...
+        s= self.df.to_latex(escape=False)
+        s = s.replace("$$", "$")
+        return s
+
+    def _repr_html_(self):
+        """ This method is invoked by 'display()' when generating the HTML view of
+        the notebook. """
+        return self.df.to_html()

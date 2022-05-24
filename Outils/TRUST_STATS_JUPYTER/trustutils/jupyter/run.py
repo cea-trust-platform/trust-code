@@ -14,10 +14,6 @@ import os
 import subprocess
 from string import Template
 
-defaultSuite_ = None  # a TRUSTSuite instance
-
-origin = os.getcwd()
-BUILD_DIRECTORY = os.path.join(origin,"build")  # Directory where the cases are run.
 
 def saveFormOutput():
     """ Dummy method to indicate that the output of the notebook should be saved.
@@ -67,6 +63,47 @@ def useMEDCoupling():
     except:
         raise Exception("Could not load MEDCoupling environment!")
 
+######## PRIVATE STUFF #########
+ORIGIN_DIRECTORY = os.getcwd()
+
+def _initBuildDir():
+    """
+    Private. Initialize build directory: this can be overriden with the "-dest" option in env variable JUPYTER_OPTIONS
+    Change the build directory if -dest option provided. This is mostly for NR test and validation
+    """
+    ret = os.path.join(ORIGIN_DIRECTORY,"build")
+    # Compute correct build directory if overriden:
+    opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
+    a = opt.split(" ")
+    if "-dest" in a:
+        idx = a.index("-dest")
+        if idx >= 0 and len(a) >= idx + 2:
+            ret = os.path.join(a[idx + 1], "build")
+    return ret
+
+defaultSuite_ = None  # a TRUSTSuite instance
+BUILD_DIRECTORY = _initBuildDir()
+
+def _runCommand(cmd, verbose):
+    """ Private method to run a command, print the logs if verbose or if it fails, and throw an exception
+    if it fails.
+    """
+    # Run by redirecting stderr to stdout
+    complProc = subprocess.run(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    if verbose or complProc.returncode != 0:
+        print(cmd)
+        print(complProc.stdout.decode('utf-8'))
+    # Throw if return code non-zero:
+    if complProc.returncode:
+        # Display message through a custom exception so that jupyter-nbconvert also shows it properly in the console:
+        msg = "\nExecution of following command failed!!\n"
+        msg += "  " + cmd
+        msg += "\nwith return code %d\n" % complProc.returncode
+        msg += "and with following output:\n\n"
+        msg += complProc.stdout.decode('utf-8')
+        raise RuntimeError(msg)
+
+######## End PRIVATE STUFF #########
 
 class TRUSTCase(object):
     """ Class which allows the user to load and execute a validation case
@@ -86,7 +123,6 @@ class TRUSTCase(object):
         self.dir_ = os.path.normpath(directory)
         self.name_ = datasetName.split(".data")[0]  # always w/o the trailing .data
         self.nbProcs_ = nbProcs
-        self.buildDir_ = ""  # Initialized when the test case is added to the TRUSTSuite instance
         self.last_run_ok_ = -255  # exit status of the last run of the case
         self.last_run_err_ = ""  # error message returned when last running the case
         if record:
@@ -96,7 +132,7 @@ class TRUSTCase(object):
         """
         @return full directory of the test case
         """
-        return os.path.normpath(os.path.join(self.buildDir_, self.dir_))
+        return os.path.normpath(os.path.join(BUILD_DIRECTORY, self.dir_))
 
     def fullPath(self):
         """
@@ -134,10 +170,10 @@ class TRUSTCase(object):
         if directory is None:
             directory = self.dir_
         # Create the directory if not there:
-        fullDir2 = os.path.join(self.buildDir_, directory)
+        fullDir2 = os.path.join(BUILD_DIRECTORY, directory)
         if not os.path.exists(fullDir2):
             os.makedirs(fullDir2, exist_ok=True)
-        pthTgt = os.path.join(self.buildDir_, directory, targetName)
+        pthTgt = os.path.join(BUILD_DIRECTORY, directory, targetName)
         # And copy the .data file:TRUSTSuite
         from shutil import copyfile
 
@@ -217,10 +253,7 @@ class TRUSTCase(object):
         if os.path.exists(pth):
             subprocess.check_output("chmod u+x %s" % pth, shell=True)
             cmd = "%s %s" % (pth, self.name_)
-            output = subprocess.run(cmd, shell=True, executable="/bin/bash", stderr=subprocess.STDOUT)
-            if verbose or output.returncode != 0:
-                print(pth)
-                # print(output.stdout.decode('ascii'))
+            _runCommand(cmd, verbose)
 
     def preRun(self, verbose):
         self._runScript("pre_run", verbose)
@@ -289,8 +322,8 @@ class TRUSTCase(object):
         if ok:
             self.postRun(verbose)
 
-        ### Root in build ###
-        os.chdir(origin)
+        ### Return to initial directory ###
+        os.chdir(ORIGIN_DIRECTORY)
         self.last_run_ok_, self.last_run_err_ = ok, err
         return ok, err
 
@@ -306,7 +339,7 @@ class TRUSTCase(object):
             cmd = '.'
         else:
             cmd = os.environ["TRUST_ROOT"] + "/Validation/Outils/Genere_courbe/scripts/extract_perf " + self.name_
-            subprocess.run(cmd, shell=True)
+            _runCommand(cmd, False)
 
         f = open(self.name_ + ".perf", "r")
         row = f.readlines()[0].replace("\n", "").split(" ")[1:]
@@ -318,7 +351,7 @@ class TRUSTCase(object):
             row = row_arrange
 
         zeTable.addLigne([row], self.dir_ + "/" + self.name_)
-        os.chdir(origin)
+        os.chdir(ORIGIN_DIRECTORY)
         
         ## Save the file
         saveFileAccumulator(self.dir_ + "/" + self.name_ + ".perf")
@@ -327,26 +360,12 @@ class TRUSTCase(object):
 class TRUSTSuite(object):
     """ A set of TRUST cases to be run for the validation form.
     """
-
-    def __init__(self, buildDirectory=BUILD_DIRECTORY, runPrepare=True):
+    def __init__(self, runPrepare=True):
         self.cases_ = []
-        # Compute correct build directory:
-        self.buildDir_ = buildDirectory
-        opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
-        a = opt.split(" ")
-        # Change the build directory if -dest option provided. This is mostly for NR test:
-        if "-dest" in a:
-            idx = a.index("-dest")
-            if idx >= 0 and len(a) >= idx + 2:
-                self.buildDir_ = os.path.join(a[idx + 1], "build")
 
         self.copySrc()
-
         if runPrepare:
             self.executeScript("prepare")
-
-    def getBuildDirectory(self):
-        return self.buildDir_
 
     def copySrc(self):
         """ Copy content of src directory into build directory.
@@ -355,34 +374,28 @@ class TRUSTSuite(object):
         if not os.path.exists("src"):
             raise Exception("Not a coherent validation form directory: 'src' subdirectory not found.")
         # Mimick what is done in 'prepare_gen' TRUST script:
-        subprocess.run("mkdir -p %s && cp -a src/* %s" % (self.buildDir_, self.buildDir_), shell=True)  # Note the '*' !!
+        subprocess.run("mkdir -p %s && cp -a src/* %s" % (BUILD_DIRECTORY, BUILD_DIRECTORY), shell=True)  # Note the '*' !!
 
     def executeScript(self, scriptName, verbose=False):
         """ Execute scriptName if any.
         """
-        os.chdir(self.buildDir_)
+        os.chdir(BUILD_DIRECTORY)
         pth = "./" + scriptName
         if os.path.exists(pth):
             cmd = pth
             subprocess.check_output("chmod u+x %s" % pth, shell=True)
-            output = subprocess.run(cmd, shell=True, executable="/bin/bash")
-            if verbose or output.returncode != 0:
-                print(cmd)
-        os.chdir(origin)
-    
+            _runCommand(cmd, verbose)
+        os.chdir(ORIGIN_DIRECTORY)
+
     def executeCommand(self, cmd, verbose=False):
-        """ Execute bash command.
+        """ Execute bash command (in the build directory)
         """
-        os.chdir(self.buildDir_)
-        output = subprocess.run(cmd, shell=True, executable="/bin/bash")
-        if verbose or output.returncode != 0:
-            print(cmd)
-        os.chdir(origin)
+        os.chdir(BUILD_DIRECTORY)
+        _runCommand(cmd, verbose)
+        os.chdir(ORIGIN_DIRECTORY)
 
     def addCase(self, case):
         self.cases_.append(case)
-        # Important, the build directory of the test case is inherited from the suite:
-        case.buildDir_ = self.buildDir_
 
     def getCases(self):
         return self.cases_
@@ -457,7 +470,7 @@ class TRUSTSuite(object):
                         print(err_msg % (case.dir_, case.name_))
                         print(case.last_run_err_)
                 except Exception as e:
-                    os.chdir(origin)  # Restore initial directory
+                    os.chdir(ORIGIN_DIRECTORY)  # Restore initial directory
                     raise e
         t1 = time()
         if allOK:
@@ -623,13 +636,16 @@ def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1):
         if datasetName == "":
             raise ValueError("addCase() method can either be called with a single argument (a TRUSTCase object) or with at least 2 arguments (directory and case name)")
         tc = TRUSTCase(directoryOrTRUSTCase, datasetName, nbProcs)
-    # Instantiate a default suite of cases
-    if defaultSuite_ is None:
-        # When called for the first time, will copy src to build, and execute 'prepare' script if any
-        defaultSuite_ = TRUSTSuite()
+    initCaseSuite()
     defaultSuite_.addCase(tc)
     return tc
 
+def initCaseSuite():
+    """ Instantiate a default suite of cases """
+    global defaultSuite_
+    if defaultSuite_ is None:
+        # When called for the first time, will copy src to build, and execute 'prepare' script if any
+        defaultSuite_ = TRUSTSuite()
 
 def reset():
     """ Wipe out build directory completly and reset default suite.
@@ -653,23 +669,16 @@ def getCases():
         return []
     return defaultSuite_.getCases()
 
-
-def getCases():
-    global defaultSuite_
-    if defaultSuite_ is None:
-        return []
-    return defaultSuite_.getCases()
-
-
 def executeScript(scriptName, verbose=False):
     """ Execute a script shell in the BUILD_DIRECTORY
     """
     global defaultSuite_
-        
+    
     opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
     if not opt is None and "-not_run" in opt:
         return []
     if defaultSuite_ is None:
+        print("ERROR: defaultSuite_ is not initialized. Please call initCaseSuite() first.")
         return []
     opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
     # No additional modification of the results file with new script
@@ -682,6 +691,7 @@ def executeCommand(cmd, verbose=False):
     """
     global defaultSuite_
     if defaultSuite_ is None:
+        print("ERROR: defaultSuite_ is not initialized. Please call initCaseSuite() first.")
         return []
     opt = os.environ.get("JUPYTER_RUN_OPTIONS", None)
     # No additional modification of the results file with new script
@@ -785,4 +795,4 @@ def extractHistogram(domain, Out, file):
     f.write(tmp)
     f.close()
 
-    os.chdir(origin)
+    os.chdir(ORIGIN_DIRECTORY)

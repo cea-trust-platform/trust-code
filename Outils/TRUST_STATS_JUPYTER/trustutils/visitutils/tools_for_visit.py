@@ -299,7 +299,8 @@ class Show(object):
         s += "  print(e)\n"
         s += "  exit(-1)\n"
         if arg3 == -1:  # last frame
-            s += "SetTimeSliderState(TimeSliderGetNStates()-1)\n"
+            s += "if (TimeSliderGetNStates() != 1):\n" 
+            s += "  SetTimeSliderState(TimeSliderGetNStates()-1)\n"
         else:
             s += "SetTimeSliderState(%s)\n" % (str(arg3))
         return s
@@ -488,6 +489,7 @@ class Show(object):
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print("VisIt execution error!! See tail of the VisIt output below.")
             print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
             self._dumpLogTail()
         if self.visitLog:
             self._dumpLogTail()
@@ -1087,7 +1089,8 @@ class export_lata_base:
         s += "  print(e)\n"
         s += "  exit(-1)\n"
         if arg3 == -1:  # last frame
-            s += "SetTimeSliderState(TimeSliderGetNStates()-1)\n"
+            s += "if (TimeSliderGetNStates() != 1):\n" 
+            s += "  SetTimeSliderState(TimeSliderGetNStates()-1)\n"
         else:
             s += "SetTimeSliderState(%s)\n" % (str(arg3))
 

@@ -277,8 +277,8 @@ gen_fiche()
             echo "ERROR: scripts_validation.sh::gen_fiche() -- Strange - Jupyter notebook not found in archive!"
             return 1
         fi
-        # Make a dummy src directory (won't be actually used)
-        mkdir -p src
+        # Make a dummy src directory pointing to build ... (some images are expected there) 
+        ln -nsf build src
         cp $jy_nb .
         jy_nb=`ls *.ipynb 2>/dev/null`
         curr_dir=`pwd`
