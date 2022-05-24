@@ -1082,18 +1082,18 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
               yplus_count += 1;
             }
 
-          double test;  // ici on effectue le test pour savoir si le noeud de frontière et le point fluide se trouvent dans la même zone: si oui ok, si non on impose la vitesse
+          double test_;  // ici on effectue le test pour savoir si le noeud de frontière et le point fluide se trouvent dans la même zone: si oui ok, si non on impose la vitesse
           if (y_plus > y_c_p_pwl )
             {
-              test = 1.;
+              test_ = 1.;
             }
           else
             {
-              test = -1.	 ;
+              test_ = -1.	 ;
             }
 
           // Traitement des exceptions
-          if ( (test * test_ref < 0) || (itisok == 0) )  //si non on impose la vitesse
+          if ( (test_ * test_ref < 0) || (itisok == 0) )  //si non on impose la vitesse
             {
 
               for(int j = 0; j < nb_comp; j++)  vitesse_imposee_calculee(i,j) = vitesse_imposee_mod(i,j);
