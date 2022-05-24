@@ -266,7 +266,7 @@ void Op_Diff_PolyMAC_base::update_nu() const
 /* calcul des variables auxiliaires en semi-implicite */
 void Op_Diff_PolyMAC_base::update_aux(double t) const
 {
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur()).le_nom().getString();
   int i, j, n_ext = op_ext.size(), first_run = mat_aux.nb_lignes() == 0; /* nombre d'operateurs */
   if (first_run) for (mat_aux.dimensionner(n_ext, n_ext), i = 0; i < n_ext; i++) for (j = 0; j < n_ext; j++)
         mat_aux.get_bloc(i, j).typer("Matrice_Morse");
@@ -279,7 +279,7 @@ void Op_Diff_PolyMAC_base::update_aux(double t) const
 
   /* inconnue / second membre */
   std::deque<ConstDoubleTab_parts> v_part;
-  for (i = 0; i < n_ext; i++) v_part.emplace_back(op_ext[i]->equation().inconnue().valeurs());
+  for (i = 0; i < n_ext; i++) v_part.emplace_back(op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeurs() : op_ext[i]->equation().inconnue().valeurs());
   MD_Vector_composite mdc; //MD_Vector composite : a partir de tous les seconds blocs
   for (i = 0; i < n_ext; i++) mdc.add_part(v_part[i][1].get_md_vector(), v_part[i][1].line_size());
   MD_Vector mdv;

@@ -62,7 +62,7 @@ void Op_Diff_PolyMAC_Face::completer()
   Op_Diff_PolyMAC_base::completer();
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   Equation_base& eq = equation();
-  Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, eq.inconnue().valeur());
+  Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue().valeur());
   ch.init_auxiliary_variables(); /* ajout des inconnues auxiliaires (vorticites aux aretes) */
   flux_bords_.resize(zone.premiere_face_int(), dimension * ch.valeurs().line_size());
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
@@ -97,7 +97,7 @@ double Op_Diff_PolyMAC_Face::calculer_dt_stab() const
 
 void Op_Diff_PolyMAC_Face::dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const IntTab& e_f = zone.elem_faces(), &f_s = zone.face_sommets(), &e_a = zone.zone().elem_aretes(), &fcl = ch.fcl();
   const std::string& nom_inco = ch.le_nom().getString();
@@ -156,7 +156,7 @@ void Op_Diff_PolyMAC_Face::dimensionner_blocs_ext(int aux_only, matrices_t matri
 // renvoie resu
 void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
+  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
   const Conds_lim& cls = ch.zone_Cl_dis().les_conditions_limites();
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   const IntTab& e_f = zone.elem_faces(), &f_s = zone.face_sommets(), &e_a = zone.zone().elem_aretes(), &fcl = ch.fcl(), &f_e = zone.face_voisins();

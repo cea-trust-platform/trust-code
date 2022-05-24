@@ -69,7 +69,7 @@ void Op_Diff_PolyMAC_Elem::completer()
 {
   Op_Diff_PolyMAC_base::completer();
   Equation_base& eq = equation();
-  Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, eq.inconnue().valeur());
+  Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue().valeur());
   ch.init_auxiliary_variables();
   const Zone_PolyMAC& zone = la_zone_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
@@ -123,7 +123,7 @@ double Op_Diff_PolyMAC_Elem::calculer_dt_stab() const
 void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl) const
 {
   init_op_ext();
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
   int i, j, k, l, e, o_e, f, o_f, fb, m, n, M, n_ext = op_ext.size(), n_sten = 0, p, semi = semi_impl.count(nom_inco);
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes, nombre d'elements total par pb
@@ -141,7 +141,8 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
       f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces()));
       cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_Elem, *op_ext[i]).nu());
-      const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, op_ext[i]->equation().inconnue().valeur());
+      const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());
+
       N.push_back(ch.valeurs().line_size()), fcl.push_back(std::ref(ch.fcl())), ne_tot.push_back(zone[i].get().nb_elem_tot());
       inco.push_back(ch.valeurs()), v_part.emplace_back(ch.valeurs());
       stencil[i].resize(0, 2), stencil[i].set_smart_resize(1);
@@ -200,7 +201,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
 void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   init_op_ext();
-  const std::string& nom_inco = equation().inconnue().le_nom().getString();
+  const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
   int i, j, k1, k2, e, f, fb, n, M, n_ext = op_ext.size(), semi = semi_impl.count(nom_inco), d, D = dimension;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes
@@ -222,7 +223,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
       pe.push_back(std::ref(zone[i].get().porosite_elem())), pf.push_back(std::ref(zone[i].get().porosite_face())), ve.push_back(std::ref(zone[i].get().volumes()));
       cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_Elem, *op_ext[i]).nu());
-      const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, op_ext[i]->equation().inconnue().valeur());
+      const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs())), v_part.emplace_back(inco.back());
       corr.push_back(sub_type(Energie_Multiphase, op_ext[i]->equation()) && ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).has_correlation("flux_parietal")
                      ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal")) : NULL);
@@ -272,7 +273,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   //contributions restantes aux equations aux faces
   for (f = 0; f < zone[0].get().nb_faces(); f++)
     if (!aux_only && semi && mat[0]) for (n = 0; n < N[0]; n++) //semi-implicite : T_f^+ = var_aux
-        secmem(ne_tot[0] + f, n) += v_aux[0](f, n) - equation().inconnue().valeurs()(ne_tot[0] + f, n), (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + f) + n)++;
+        secmem(ne_tot[0] + f, n) += v_aux[0](f, n) - (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs())(ne_tot[0] + f, n), (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + f) + n)++;
     else if (fcl[0](f, 0) == 0) continue; //face interne -> rien
     else if (corr[0]) //Pb_Multiphase avec flux parietal -> on ne traite (pour le moment) que Dirichlet et Echange_contact
       {
