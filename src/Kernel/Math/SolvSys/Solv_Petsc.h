@@ -91,7 +91,10 @@ public :
 #endif
   static int instance;               // Nombre d'instances en cours de la classe
   static int numero_solveur;         // Compte les solveurs crees et utilises pour le prefix des options
-
+  void set_rtol(const double& rtol)
+  {
+    seuil_relatif_ = rtol;
+  }
 protected :
 #ifdef PETSCKSP_H
   void construit_renum(const DoubleVect&);

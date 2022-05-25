@@ -86,7 +86,7 @@ static bool is_number(const std::string& s)
 // Lecture et creation du solveur
 void Solv_Petsc::create_solver(Entree& entree)
 {
-  if (amgx_) verbose = true;
+  if (amgx_ || std::getenv("TRUST_PETSC_VERBOSE")) verbose = true;
 #ifdef PETSCKSP_H
   lecture(entree);
   EChaine is(get_chaine_lue());
@@ -1282,9 +1282,6 @@ void Solv_Petsc::create_solver(Entree& entree)
           add_option("ksp_check_norm_iteration",(Nom)(nb_it_max_-1));
           nb_it_max_ = NB_IT_MAX_DEFINED;
         }
-      // Convergence si residu(it) < MAX (seuil_relatif_ * residu(0), seuil_);
-      if (seuil_==0 && seuil_relatif_==0) seuil_=1.e-12; // Si aucun seuil defini, on prend un seuil absolu de 1.e-12 (comme avant)
-      KSPSetTolerances(SolveurPetsc_, seuil_relatif_, seuil_, (divtol_==0 ? PETSC_DEFAULT : divtol_), nb_it_max_);
     }
 // Change le calcul du test de convergence relative (||Ax-b||/||Ax(0)-b|| au lieu de ||Ax-b||/||b||)
 // Peu utilisee dans TRUST car on utilise la convergence sur la norme absolue
@@ -1653,7 +1650,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                << finl;
           exit();
         }
-      if (verbose) Cout << "[Petsc] Time to convert matrix: " << Statistiques::get_time_now() - start << finl;
+      if (verbose) Cout << "[Petsc] Time to convert matrix: \t" << Statistiques::get_time_now() - start << finl;
 
       // Verification stockage de la matrice
       check_aij(matrice_morse_intermediaire);
@@ -1707,7 +1704,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   VecAssemblyEnd(SecondMembrePetsc_);
   VecAssemblyBegin(SolutionPetsc_);
   VecAssemblyEnd(SolutionPetsc_);
-  if (verbose) Cout << "[Petsc] Time to update vectors: " << Statistiques::get_time_now() - start << finl;
+  if (verbose) Cout << "[Petsc] Time to update vectors: \t" << Statistiques::get_time_now() - start << finl;
 
 //  VecView(SecondMembrePetsc_,PETSC_VIEWER_STDOUT_WORLD);
 //  VecView(SolutionPetsc_,PETSC_VIEWER_STDOUT_WORLD);
@@ -1789,7 +1786,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
               PetscViewerDestroy(&viewer);
             }
         }
-      if (save_matrix_ && verbose) Cout << "[Petsc] Time to write matrix: " << Statistiques::get_time_now() - start << finl;
+      if (save_matrix_ && verbose) Cout << "[Petsc] Time to write matrix: \t" << Statistiques::get_time_now() - start << finl;
     }
   //////////////////////////
   // Solve the linear system
@@ -1830,7 +1827,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     }
   solution.echange_espace_virtuel();
   fixer_nouvelle_matrice(0);
-  if (verbose) Cout << finl << "[Petsc] Time to update solution: " << Statistiques::get_time_now() - start << finl;
+  if (verbose) Cout << finl << "[Petsc] Time to update solution: \t" << Statistiques::get_time_now() - start << finl;
   // Calcul du vrai residu sur matrice initiale sur GPU:
   if (amgx_ || gpu_ || controle_residu_)
     {
@@ -1864,7 +1861,10 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
   // Affichage par MyKSPMonitor
   if (!solveur_direct_)
     {
-      if (limpr() == 1)
+        // Convergence si residu(it) < MAX (seuil_relatif_ * residu(0), seuil_);
+        if (seuil_==0 && seuil_relatif_==0) seuil_=1.e-12; // Si aucun seuil defini, on prend un seuil absolu de 1.e-12 (comme avant)
+        KSPSetTolerances(SolveurPetsc_, seuil_relatif_, seuil_, (divtol_==0 ? PETSC_DEFAULT : divtol_), nb_it_max_);
+        if (limpr() == 1)
         {
           KSPMonitorSet(SolveurPetsc_, MyKSPMonitor, PETSC_NULL, PETSC_NULL);
         }
@@ -1936,7 +1936,7 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
           VecNorm(SecondMembrePetsc_, NORM_2, &residu[nbiter]);
         }
     }
-  if (verbose) Cout << "[Petsc] Time to solve system: " << Statistiques::get_time_now() - start << finl;
+  if (verbose) Cout << finl << "[Petsc] Time to solve system:    \t" << Statistiques::get_time_now() - start << finl;
   return Reason < 0 ? (int)Reason : nbiter;
 }
 #endif
@@ -2301,7 +2301,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat)
   /*************************************/
   double start = Statistiques::get_time_now();
   KSPSetUp(SolveurPetsc_);
-  if (verbose) Cout << "[Petsc] Time to setup solver: " << Statistiques::get_time_now() - start << finl;
+  if (verbose) Cout << "[Petsc] Time to setup solver:    \t" << Statistiques::get_time_now() - start << finl;
 }
 
 void Solv_Petsc::Create_vectors(const DoubleVect& b)
@@ -2614,7 +2614,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
   if (ignore_new_nonzero_)
     MatSetOption(MatricePetsc, MAT_USE_HASH_TABLE, PETSC_TRUE);
 
-  if (verbose) Cout << "[Petsc] Time to create the matrix: " << Statistiques::get_time_now() - start << finl;
+  if (verbose) Cout << "[Petsc] Time to create the matrix: \t" << Statistiques::get_time_now() - start << finl;
 
   // Fill the matrix
   Solv_Petsc::Update_matrix(MatricePetsc, mat_morse);
@@ -2714,7 +2714,7 @@ void Solv_Petsc::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse
       MatGetInfo(MatricePetsc,MAT_GLOBAL_MAX,&info);
       Cerr << "Max memory used by matrix on a MPI rank: " << (int)(info.memory/1024/1024) << " MB" << finl;
     }*/
-  if (verbose) Cout << "[Petsc] Time to fill the matrix: " << Statistiques::get_time_now() - start << finl;
+  if (verbose) Cout << "[Petsc] Time to fill the matrix: \t" << Statistiques::get_time_now() - start << finl;
 }
 
 bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
@@ -2795,7 +2795,7 @@ bool Solv_Petsc::check_stencil(const Matrice_Morse& mat_morse)
       if (Process::nproc()>1) MatDestroy(&localA);
       new_stencil = mp_max(new_stencil);
     }
-  if (verbose) Cout << "[Petsc] Time to check stencil: " << Statistiques::get_time_now() - start << finl;
+  if (verbose) Cout << "[Petsc] Time to check stencil:   \t" << Statistiques::get_time_now() - start << finl;
   return new_stencil;
 }
 #endif
