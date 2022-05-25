@@ -1037,7 +1037,7 @@ then
       if [ "$TRUST_USE_CUDA" = 1 ]
       then
          export TRUST_FORCE_LATEST_OPENMPI=1 # OpenMPI Cuda-Aware
-      elif [ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="11.0.0") print -force_latest_mpich}'`" != "" ]
+      elif [ "`echo $TRUST_VERSION_GNU | awk -F. '{if ($1*100+$2*10+$3>=1100) print -force_latest_mpich}'`" != "" ]
       then
          export TRUST_FORCE_LATEST_MPICH=1
       else
@@ -1577,7 +1577,7 @@ OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
    linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
-	TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk '{if (($1<="9.9.0" && $1>="4.8.5") || ($1<="12.0.1" && $1>"10.0.0")) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+	TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=485 && ver<=1201) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux

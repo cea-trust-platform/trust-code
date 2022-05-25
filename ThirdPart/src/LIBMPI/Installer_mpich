@@ -27,7 +27,11 @@ else
      version=$latest_version
   else # ToDo remonter dans le configure ?
      version=$default_version
-     [ "`grep 'Fedora release 3[4-8]' /etc/fedora-release 2>/dev/null`" != "" ] && echo "Error, use -force_latest_mpich cause $version MPICH not supported on Fedora 34." && exit -1
+     # Ubuntu 22 et Fedora 34, GNU>=11.0.0
+     if [ "`echo $TRUST_VERSION_GNU | awk -F. '{if ($1*100+$2*10+$3>=1100) print -force_latest_mpich}'`" != "" ]
+     then
+        echo "Error, use -force_latest_mpich cause $version MPICH not supported with GNU compilers >= 11" && exit -1
+     fi
   fi
   package=mpich-$version.tar.gz
   src=${package%.tar.gz}
