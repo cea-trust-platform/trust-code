@@ -61,7 +61,7 @@ do
       fi
       echo "===================================================="
 
-      build=1 && [ "$TRUST_DISABLE_DOC_DOXYGEN" = "1" ] && build=0
+      build=1 && [ "$TRUST_ENABLE_DOC_DOXYGEN" = "0" ] && build=0
       ################################################
       # Check if the tag and doc needs to be rebuilt #
       ################################################

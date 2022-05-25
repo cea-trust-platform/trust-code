@@ -289,6 +289,7 @@ echo "[-disable-checks]                 Disable checks for external packages, so
 echo "[-without-host_file]              Do not load the environnement variables specified in an env_src/HOST_`hostname | awk -F. '{print $1}'`.sh file."
 echo "[-without-doc]                    Do not build the documentation."
 echo "[-without-pdflatex]               Do not build the pdf documentation."
+echo "[-with-doxygen-doc]               Enable the build of HTML documentation of TRUST sources."
 echo "[-without-visit]                  Do not install VisIt."
 echo "[-download-visit]                 Download a version of VisIt rather trying to build a version."
 #echo "[-download-salome]                Download the Salome `awk -F= '/version_salome=/ {print $2}' env_src/configurer_env` version in the TRUST environment."
@@ -350,6 +351,7 @@ export TRUST_WITHOUT_VISIT=0
 export TRUST_DOWNLOAD_VISIT=0
 export TRUST_DOWNLOAD_SALOME=0
 export TRUST_WITHOUT_HOST=0
+export TRUST_ENABLE_DOC_DOXYGEN=0
 unset TRUST_USE_EXTERNAL_HDF
 unset TRUST_USE_EXTERNAL_MED
 unset TRUST_USE_EXTERNAL_MEDCOUPLING
@@ -476,6 +478,10 @@ do
    then
       export TRUST_WITHOUT_PDFLATEX=1
 
+   elif [ "${1#-with-doxygen-doc}" != "$1" ]
+   then
+      export TRUST_ENABLE_DOC_DOXYGEN=1
+
    elif [ "${1#-without-visit}" != "$1" ]
    then
       export TRUST_WITHOUT_VISIT=1
@@ -578,6 +584,7 @@ echo "TRUST_INT64=$TRUST_INT64 && export TRUST_INT64	# Build in 64 bits integer 
 echo "TRUST_DISABLE_MPI4PY=$TRUST_DISABLE_MPI4PY && export TRUST_DISABLE_MPI4PY  # disable mpi4py build." >> $var
 echo "TRUST_WITHOUT_DOC=$TRUST_WITHOUT_DOC && export TRUST_WITHOUT_DOC		# Disable/enable Documentation"	>> $var
 echo "TRUST_WITHOUT_PDFLATEX=$TRUST_WITHOUT_PDFLATEX && export TRUST_WITHOUT_PDFLATEX		# Disable/enable pdf Documentation build only"	>> $var
+echo "TRUST_ENABLE_DOC_DOXYGEN=$TRUST_ENABLE_DOC_DOXYGEN && export TRUST_ENABLE_DOC_DOXYGEN      # Disable/enable the build of HTML doc" >> $var
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
 echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME # Download Salome" 		>> $var
@@ -817,7 +824,7 @@ then
    done
    echo $ECHO_OPTS "clean:\n\t(source ./env_TRUST.sh && compile clean)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "depend:\n\t#fait_makefile" 			>> $TRUST_ROOT/Makefile
-   echo $ECHO_OPTS "doxygen:\n\t(source ./env_TRUST.sh && make_Doxyfile)" 			>> $TRUST_ROOT/Makefile
+   echo $ECHO_OPTS "doxygen:\n\t(source ./env_TRUST.sh && env TRUST_ENABLE_DOC_DOXYGEN=1 make_Doxyfile)" 			>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "validation:\n\t(source ./env_TRUST.sh && cd Validation/Rapports_automatiques && ./lance_tout)" >> $TRUST_ROOT/Makefile
    #echo $ECHO_OPTS "init:\n\tsource ./env_TRUST.sh" 		>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "check:\n\t(source ./env_TRUST.sh && echo 0 | lance_test \${exec_opt} \${TRUST_ROOT}/build )" >> $TRUST_ROOT/Makefile

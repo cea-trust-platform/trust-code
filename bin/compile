@@ -46,7 +46,6 @@ make_tools()
    [ "$TRUST_DISABLE_VALGRIND" != 1 ] && reps=$reps" Outils/valgrind"
    reps=$reps" Outils/TRIOXDATA"
    [ "$TRUST_DISABLE_DOXYGEN" != 1 ] && reps=$reps" Outils/doxygen"
-   export TRUST_DISABLE_DOC_DOXYGEN=1 # Documentation doxygen desactivee par defaut
    [ "$TRUST_WITHOUT_DOC" != 1 ] && reps=$reps" doc"
    [ "$TRUST_DISABLE_GNUPLOT" != 1 ] && reps=$reps" Outils/gnuplot"
    [ "$TRUST_DISABLE_GMSH" != 1 ] && reps=$reps" Outils/Gmsh"
