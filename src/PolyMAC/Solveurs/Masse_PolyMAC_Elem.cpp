@@ -72,7 +72,7 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
   const DoubleTab& der = equation().champ_conserve().derivees().at(equation().inconnue().le_nom().getString());
 
   int e, ne_tot = zone.nb_elem_tot(), n, N = sm.line_size();
-  assert(sm.dimension_tot(0) == ne_tot && N == der.line_size());
+  assert(sm.dimension_tot(0) >= ne_tot && N == der.line_size());
 
   /* partie elem */
   for (e = 0; e < ne_tot; e++) for (n = 0; n < N; n++)
