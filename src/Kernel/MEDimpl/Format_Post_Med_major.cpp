@@ -41,11 +41,3 @@ Entree& Format_Post_Med_major::readOn(Entree& is)
   Format_Post_Med::readOn(is);
   return is;
 }
-
-EcrMED Format_Post_Med_major::getEcrMED() const
-{
-  EcrMED e;
-  e.setMajorMode(true);
-  e.setMEDCoupling(false);
-  return e;
-}

@@ -22,7 +22,7 @@
 #include <Format_Post_Medfile.h>
 #include <EcrMED.h>
 
-Implemente_instanciable(Format_Post_Medfile,"Format_Post_Medfile",Format_Post_Med);
+Implemente_instanciable_sans_constructeur(Format_Post_Medfile,"Format_Post_Medfile",Format_Post_Med);
 
 Sortie& Format_Post_Medfile::printOn(Sortie& os) const
 {
@@ -35,14 +35,6 @@ Entree& Format_Post_Medfile::readOn(Entree& is)
   Format_Post_Med::readOn(is);
   return is;
 }
-
-EcrMED Format_Post_Medfile::getEcrMED() const
-{
-  EcrMED e;
-  e.setMEDCoupling(false);
-  return e;
-}
-
 
 
 

@@ -54,6 +54,7 @@ Format_Post_Med::Format_Post_Med()
 void Format_Post_Med::reset()
 {
   med_basename_ = "??";
+  ecr_med.setMajorMode(false);
 }
 
 // Description: erreur => exit
@@ -94,13 +95,6 @@ int Format_Post_Med::initialize(const Nom& file_basename, const int format, cons
   med_basename_= file_basename;
 
   return 1;
-}
-
-EcrMED Format_Post_Med::getEcrMED() const
-{
-  EcrMED e;
-  e.setMajorMode(false);
-  return e;
 }
 
 int Format_Post_Med::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
@@ -407,7 +401,6 @@ int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2
 
 int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_fic,const int est_le_premier_post,Nom& nom_fich)
 {
-  EcrMED ecr_med(getEcrMED());
   int dim = domaine.les_sommets().dimension(1);
   int mode=-1;
   if (est_le_premier_post==0)  mode=0;
@@ -500,7 +493,6 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
       os << "champ: " << nom_post << " " << nom_dom << " " << loc_post << finl;
     }
 
-  EcrMED ecr_med(getEcrMED());
   Nom type_elem = dom.zone(0).type_elem()->que_suis_je();
 
   // modif noms compo

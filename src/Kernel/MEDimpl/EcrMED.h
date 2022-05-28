@@ -27,7 +27,7 @@
 #include <Ref_Zone_dis_base.h>
 #include <Interprete.h>
 #include <med++.h>
-
+#include <map>
 class Domaine;
 class Nom;
 class Noms;
@@ -75,6 +75,7 @@ protected:
 private:
   ///! False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)
   bool major_mode;
+  std::map<std::string, int> timestep_;
 };
 
 #endif /* EcrMED_included */

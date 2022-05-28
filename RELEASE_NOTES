@@ -1,3 +1,4 @@
+XX/XX/22 (TRUST)  Fix         : High frequency writing MED files were slower and slower
 XX/XX/22 (TRUST)  Build       : Add configure option -force_system_mpi to use system MPI library (provided MPICH library by default on PC)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :

@@ -27,13 +27,12 @@
 
 class Format_Post_Medfile : public Format_Post_Med
 {
-  Declare_instanciable(Format_Post_Medfile);
+  Declare_instanciable_sans_constructeur(Format_Post_Medfile);
 
 public:
+    Format_Post_Medfile() { ecr_med.setMEDCoupling(false); }
 
 protected:
-
-  EcrMED getEcrMED() const override;
 
 };
 

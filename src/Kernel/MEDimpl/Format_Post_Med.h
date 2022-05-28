@@ -94,8 +94,7 @@ protected:
   virtual int completer_post_med(const Nom& nom_fich2, const Nom& nom1, const Nom& nom2);
   virtual int preparer_post_med(const Nom& nom_fich1, const Nom& nom_fich2, const Nom& nom_fich3, const Nom& id_du_domaine, const int est_le_premier_post);
 
-  virtual EcrMED getEcrMED() const;
-
+  EcrMED ecr_med;
 };
 
 #endif
