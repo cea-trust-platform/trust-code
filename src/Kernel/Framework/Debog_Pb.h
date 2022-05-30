@@ -96,6 +96,7 @@ protected:
   Nom fichier_debog_; // fichier contenant les valeurs a relire
   double seuil_absolu_ = 1e-10;
   double seuil_relatif_ = 1e-10;
+  int noeuds_doubles_ignores_ = 0; // Noeuds doubles
   // Liste de messages a ignorer (sauter ces messages si on les trouve dans le fichier debog)
   Motcles msg_a_ignorer_;
   // Mode: 0->ecrire, 1->lire et comparer

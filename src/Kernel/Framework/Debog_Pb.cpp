@@ -66,6 +66,7 @@ Entree& Debog_Pb::readOn(Entree& is)
   param.ajouter("seuil_absolu", &seuil_absolu_);
   param.ajouter("seuil_relatif", &seuil_relatif_);
   param.ajouter("ignorer_messages", &msg_a_ignorer_);
+  param.ajouter("noeuds_doubles_ignores",&noeuds_doubles_ignores_);
   param.ajouter("mode_db", &mode_db_, Param::REQUIRED);
   param.dictionnaire("write", 0);
   param.dictionnaire("read", 1);
@@ -252,7 +253,16 @@ void Debog_Pb::add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord
           Cerr << "Debog::add_renum_item: Error. Id=" << id
                << "\n Item with following coordinates was found " << k << " times within epsilon=" << epsilon
                << "\n in the reference geometry: " << center << finl;
-          Process::exit();
+          if (noeuds_doubles_ignores_==0)
+            {
+              Cerr << "If you wan't to discard nodes comparison in the mesh, add 'noeuds_doubles_ignores 1' option in debog_pb keyword." << finl;
+              exit();
+            }
+          else
+            {
+              Cerr << "Warning, this item will be ignored during the comparison..." << finl;
+              renum[i] = -1;
+            }
         }
       // renum[i] is the index of the i-th local item in the reference geometry
       renum[i] = elements[0];
