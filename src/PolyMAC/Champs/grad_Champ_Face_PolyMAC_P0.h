@@ -32,7 +32,7 @@
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Champ_Fonc.h>
 #include <Ref_Champ_Fonc.h>
-
+#include <Conds_lim.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -71,19 +71,22 @@ public:
   inline virtual       Champ_Face_PolyMAC_P0& champ_a_deriver()      ;
   inline virtual const Champ_Face_PolyMAC_P0& champ_a_deriver() const;
 
-
   // Interpolation du gradient de la vitesse
   mutable IntTab gradve_d, gradve_e;           // Tables utilisees dans fgrad pour obtenir le grad aux faces de la vitesse aux elems
   mutable DoubleTab gradve_w;
   void update_tab_grad(int full_stencil);      // Mise a jour des tables utilisees dans fgrad
   void calc_gradfve()     ;                  // Mise a jour du gradient aux faces de la vitesse aux elements
   void update_ge() ;                           // Calcul du gradient aux elements a partir du gradient aux faces ; base sur la methode similaire de Champ_Face_PolyMAC_P0
+  void init_grad() ;
 
 protected:
 
   REF(Zone_Cl_PolyMAC) la_Zone_Cl_PolyMAC;
   REF(Champ_Face_PolyMAC_P0) champ_;
 
+  Conds_lim cls_g ;
+  IntTab fcl_g ;
+  int is_init = 0;
 };
 
 inline void grad_Champ_Face_PolyMAC_P0::mettre_a_jour(double tps)

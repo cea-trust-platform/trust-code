@@ -72,7 +72,7 @@ public:
 protected:
   REF(Correlation) correlation_loi_paroi_;
   REF(Frontiere_dis_base) la_frontiere_dis;
-  double mon_temps = -1;
+  double mon_temps = -1.e8;
 };
 
 #endif

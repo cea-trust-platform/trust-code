@@ -48,8 +48,8 @@ public:
 
   // Methodes inlines
   // Renvoie le champ T_ext de temperature imposee a la frontiere.
-  inline Champ_front& T_ext() { return le_champ_front; }
-  inline const Champ_front& T_ext() const { return le_champ_front; }
+  inline Champ_front& T_ext() override { return le_champ_front; }
+  inline const Champ_front& T_ext() const override { return le_champ_front; }
 
 protected :
   REF(Fluide_Dilatable_base) le_fluide;

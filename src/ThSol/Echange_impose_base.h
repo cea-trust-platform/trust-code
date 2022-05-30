@@ -75,8 +75,8 @@ public:
   int reculer(double temps) override;
   void associer_fr_dis_base(const Frontiere_dis_base& ) override ;
 
-  inline Champ_front& T_ext();
-  inline const Champ_front& T_ext() const;
+  inline virtual Champ_front& T_ext();
+  inline virtual const Champ_front& T_ext() const;
   inline virtual Champ_front& h_imp();
   inline virtual const Champ_front& h_imp() const;
 

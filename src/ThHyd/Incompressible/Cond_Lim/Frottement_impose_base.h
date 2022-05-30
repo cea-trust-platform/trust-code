@@ -55,7 +55,7 @@ public:
   void associer_zone_cl_dis_base(const Zone_Cl_dis_base& zcl) override { ma_zone_cl_dis=zcl;};
   virtual double coefficient_frottement(int i) const=0;
   virtual double coefficient_frottement(int i,int j) const=0;
-
+  virtual void is_grad_v() {is_calc_qdm = 0;};
 
   // fonctions de cond_lim_base qui necessitent le champ_front qu'on met a zero car on fait abstraction du champ_front
   void completer() override {};
@@ -67,10 +67,10 @@ public:
   void calculer_coeffs_echange(double temps) override {};
   void verifie_ch_init_nb_comp() const override {};
 
-
 protected:
   REF(Frontiere_dis_base) la_frontiere_dis;
   double mon_temps = -1e10;
+  int is_calc_qdm = 1 ;
 };
 
 #endif
