@@ -1,8 +1,8 @@
-XX/XX/22 (TRUST)  Fix         : High frequency writing MED files were slower and slower
-XX/XX/22 (TRUST)  Build       : Add configure option -force_system_mpi to use system MPI library (provided MPICH library by default on PC)
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
+30/05/22 (TRUST)  Fix         : High frequency writing MED files were slower and slower
+30/05/22 (TRUST)  Build       : Add configure option -force_system_mpi to use system MPI library (provided MPICH library by default on PC)
 23/05/22 (TRUST)  New feature : Add a new turbulent boundary layer model (WW) that can be used for an immersed boundary condition (IBC) with the finite element discretization
 10/05/22 (TRUST)  New keyword : Post processing option "DeprecatedKeepDuplicatedProbes 1" to keep previous strategy when writing probes (keep duplicated points)
 09/05/22 (TRUST)  Fix         : Option Correction_visco_turb_pour_controle_pas_de_temps wasn't correctly implemented producing residual jumps during restart

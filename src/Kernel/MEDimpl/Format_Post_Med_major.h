@@ -32,9 +32,10 @@ class Format_Post_Med_major : public Format_Post_Med
 {
   Declare_instanciable_sans_constructeur(Format_Post_Med_major);
 public:
-  Format_Post_Med_major() {
-      ecr_med.setMajorMode(true);
-      ecr_med.setMEDCoupling(false);
+  Format_Post_Med_major()
+  {
+    ecr_med.setMajorMode(true);
+    ecr_med.setMEDCoupling(false);
   }
 
 protected:

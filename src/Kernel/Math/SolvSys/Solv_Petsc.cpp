@@ -1861,10 +1861,10 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
   // Affichage par MyKSPMonitor
   if (!solveur_direct_)
     {
-        // Convergence si residu(it) < MAX (seuil_relatif_ * residu(0), seuil_);
-        if (seuil_==0 && seuil_relatif_==0) seuil_=1.e-12; // Si aucun seuil defini, on prend un seuil absolu de 1.e-12 (comme avant)
-        KSPSetTolerances(SolveurPetsc_, seuil_relatif_, seuil_, (divtol_==0 ? PETSC_DEFAULT : divtol_), nb_it_max_);
-        if (limpr() == 1)
+      // Convergence si residu(it) < MAX (seuil_relatif_ * residu(0), seuil_);
+      if (seuil_==0 && seuil_relatif_==0) seuil_=1.e-12; // Si aucun seuil defini, on prend un seuil absolu de 1.e-12 (comme avant)
+      KSPSetTolerances(SolveurPetsc_, seuil_relatif_, seuil_, (divtol_==0 ? PETSC_DEFAULT : divtol_), nb_it_max_);
+      if (limpr() == 1)
         {
           KSPMonitorSet(SolveurPetsc_, MyKSPMonitor, PETSC_NULL, PETSC_NULL);
         }

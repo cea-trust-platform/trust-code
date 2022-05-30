@@ -1357,17 +1357,18 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
       std::string field_name = nom_cha1.getString();
       // Get the previous timestep:
       if (timestep_.find(field_name)==timestep_.end())
-      {
+        {
           int timestep = 0;
           std::vector<std::string> field_names = GetAllFieldNames(file_name);
-          if (std::find(field_names.begin(), field_names.end(), field_name) != field_names.end()) {
+          if (std::find(field_names.begin(), field_names.end(), field_name) != field_names.end())
+            {
               std::vector<std::pair<std::pair<int, int>, double> > ts = GetAllFieldIterations(file_name, field_name);
               timestep = ts[ts.size() - 1].first.first + 1;
-          }
+            }
           timestep_.insert({field_name,timestep});
-      }
+        }
       else
-          timestep_.at(field_name)++;
+        timestep_.at(field_name)++;
       MCAuto<MEDCouplingFieldDouble> field(MEDCouplingFieldDouble::New(field_type, MEDCoupling::ONE_TIME));
       field->setName(field_name);
       field->setTime(time, timestep_.at(field_name), -1);

@@ -162,36 +162,42 @@ void Debog_Pb::verifier_partie_std(const TRUSTVect<_TYPE_>& reference, const TRU
 
       for (; i < n; i++)
         {
-          if (renum[i]>=0) {
+          if (renum[i]>=0)
+            {
               const int i1 = i * ls; // indice dans "arr"
               const int i2 = renum[i] * ls; // indice dans "reference"
-              for (int j = 0; j < ls; j++) {
+              for (int j = 0; j < ls; j++)
+                {
                   const _TYPE_ x = arr_ptr[i1 + j]; // ne pas passer par operator[] pour ne pas planter sur DMAXFLOAT
                   const _TYPE_ y = reference[i2 + j];
                   // Comparaison de x et y
-                  if (IS_DOUBLE) {
+                  if (IS_DOUBLE)
+                    {
                       const _TYPE_ delta = std::fabs(x - y) / adim;
                       max_err = std::max(max_err, delta);
                       // pour les items reels, indiquer si on est hors bornes:
                       if (step == 0 && !(x >= -DMAXFLOAT && x <= DMAXFLOAT))
-                          outbounds = 1;
-                      if (delta > seuil_relatif_) {
+                        outbounds = 1;
+                      if (delta > seuil_relatif_)
+                        {
                           detailed_log_file_ << " ECART reference[" << i2 + j << "]=" << y << " calcul[" << i1 + j
                                              << "]=" << x;
                           detailed_log_file_ << " relative error=" << delta << " (adim=" << adim << ")" << message
                                              << finl;
-                      }
-                  } else // int
-                  {
+                        }
+                    }
+                  else   // int
+                    {
                       // For integers, values must match exactly !
-                      if (x != y) {
+                      if (x != y)
+                        {
                           detailed_log_file_ << " ECART reference[" << i2 + j << "]=" << y << " calcul[" << i1 + j
                                              << "]=" << x << message << finl;
                           max_err = 1;
-                      }
-                  }
-              }
-          }
+                        }
+                    }
+                }
+            }
         }
 
       if (IS_DOUBLE) max_err = Process::mp_max(max_err);
@@ -253,14 +259,16 @@ void Debog_Pb::verifier_partie_std(const TRUSTVect<_TYPE_>& reference, const TRU
       _TYPE_ *arr_ptr = arr_ref.addr();
       for (int ibis = 0; ibis < n; ibis++)
         {
-          if (renum[ibis]>=0) {
+          if (renum[ibis]>=0)
+            {
               const int i1 = ibis * ls; // indice dans "arr"
               const int i2 = renum[ibis] * ls; // indice dans "reference"
-              for (int j = 0; j < ls; j++) {
+              for (int j = 0; j < ls; j++)
+                {
                   const _TYPE_ y = reference[i2 + j];
                   arr_ptr[i1 + j] = y; // ne pas passer par operator[] pour ne pas planter sur DMAXFLOAT
-              }
-          }
+                }
+            }
         }
     }
 }

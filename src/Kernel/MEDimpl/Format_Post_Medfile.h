@@ -30,7 +30,7 @@ class Format_Post_Medfile : public Format_Post_Med
   Declare_instanciable_sans_constructeur(Format_Post_Medfile);
 
 public:
-    Format_Post_Medfile() { ecr_med.setMEDCoupling(false); }
+  Format_Post_Medfile() { ecr_med.setMEDCoupling(false); }
 
 protected:
 
