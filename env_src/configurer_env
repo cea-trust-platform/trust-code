@@ -631,9 +631,13 @@ case $arch in
 	TRUST_EDITOR="gedit nedit kate kedit xemacs xedit emacs"
 	# On met Intel en 1er/GNU car plus rapide que GNU
 	cuda="" && [ "$TRUST_USE_CUDA" = 1 ] && cuda="cuda-" # Uniquement si on demande Cuda, recherche en priorite des wrappers pour les compilateurs GNU
-	TRUST_CC_BASE=" crayCC  nvc++     FCC icpc  armclang++ "$cuda"g++      g++"
-	TRUST_F77_BASE="crayftn nvfortran frt ifort armflang   "$cuda"gfortran gfortran"
-	TRUST_cc_BASE=" craycc  nvc       fc  icc   armclang   "$cuda"gcc      gcc"
+	# Pas prudent de mettre les compilateurs NVidia en premier... Sauf si -openmp ou -openacc ?
+        #TRUST_CC_BASE=" nvc++     FCC icpc  armclang++ "$cuda"g++      g++"
+	#TRUST_F77_BASE="nvfortran frt ifort armflang   "$cuda"gfortran gfortran"
+	#TRUST_cc_BASE=" nvc       fc  icc   armclang   "$cuda"gcc      gcc"
+	TRUST_CC_BASE=" crayCC  FCC icpc  armclang++ "$cuda"g++      g++"
+	TRUST_F77_BASE="crayftn frt ifort armflang   "$cuda"gfortran gfortran"
+	TRUST_cc_BASE=" craycc  fc  icc   armclang   "$cuda"gcc      gcc"
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"

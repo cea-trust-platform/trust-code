@@ -9,15 +9,21 @@
 define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
-   # Initialisation de l environnement module $MODULE_PATH 
+   # Initialisation de l environnement module $MODULE_PATH
    echo "source /etc/profile.d/modules.sh " >> $env
    # Load modules
-   module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # OpenMPI plante TRUST de facon bizarre sur cette machine...
-   module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3 texlive/2020"
+
+   if [ "$TRUST_USE_CUDA" = 1 ]
+   then
+      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 nvidia_hpc_sdk/21.2 texlive/2020"
+   else
+      module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # OpenMPI plante TRUST de facon bizarre sur cette machine...
+      module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3 texlive/2020"
+   fi
    echo "# Module $module detected and loaded on $HOST." 
    echo "module purge 1>/dev/null" >> $env   
    echo "module load $module 1>/dev/null" >> $env
-   echo "source mpivars.sh release -ofi_internal" >> $env # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
+   [ "`echo $module | grep intelmpi`" != "" ] && echo "source mpivars.sh release -ofi_internal" >> $env # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
    . $env
    # Creation wrapper qstat -> squeue
    echo "#!/bin/bash
@@ -30,11 +36,12 @@ squeue" > $TRUST_ROOT/bin/qstat
 ##############################
 define_soumission_batch()
 {
-   soumission=2 && [ "$prod" = 1 ] && soumission=1
+   soumission=2
+   [ "$prod" = 1 ] && soumission=1
+   [ "$gpu"  = 1 ] && soumission=1
    # sinfo :
    # PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
-   # amdq         up   infinite     34  alloc n[002-035]
-   # amdq         up   infinite      2   idle n[001,036]
+   # amdq*         up   infinite     34  alloc n[002-035]
    # intelq*      up   infinite      4  alloc n[101-104]
    # intelq*      up   infinite     11   idle n[105-115]
    # gpuq         up   infinite      1   idle gpu01   
@@ -42,6 +49,7 @@ define_soumission_batch()
    # On se base sur la frontale pour selectionner la queue par defaut:  
    queue=intelq_6226 # Plus rapide en sequentiel (frequence+, cache+) mais scale moins bien (bizarre)
    queue=intelq_5118
+   [ "$gpu" = 1 ] && queue=gpuq_5118 && [ "`sinfo | grep $queue | grep idle`" = "" ] && queue=gpuq_5218
 
    # sacctmgr list qos
    # qos	prority		walltime	ntasks_max 
