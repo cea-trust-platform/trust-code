@@ -47,6 +47,7 @@
 #include <TRUSTTrav.h>
 #include <Vecteur3.h>
 #include <SFichier.h>
+#include <EChaine.h>
 #include <cfloat>
 #include <deque>
 
@@ -295,7 +296,18 @@ void Op_Diff_PolyMAC_base::update_aux(double t) const
   /* passage incremente/inconnues */
   mat_aux.ajouter_multvect(inco, secmem);
   /* resolution */
-  if (first_run) solv_aux = ref_cast(Parametre_implicite, equation().parametre_equation().valeur()).solveur(), solv_aux->fixer_limpr(-1); //on copie le solveur de l'equation
+  if (first_run)
+    {
+      if (equation().parametre_equation().non_nul())
+        solv_aux = ref_cast(Parametre_implicite, equation().parametre_equation().valeur()).solveur(); //on copie le solveur de l'equation
+      else
+        {
+          EChaine chl("petsc cholesky { }");
+          chl >> solv_aux;
+        }
+      solv_aux->fixer_limpr(-1);
+    }
+
   solv_aux.valeur().reinit();
   solv_aux.resoudre_systeme(mat_aux, secmem, inco);
   /* maj de var_aux / t_last_aux dans tous les operateurs */

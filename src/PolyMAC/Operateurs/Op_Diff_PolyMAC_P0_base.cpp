@@ -86,7 +86,7 @@ void Op_Diff_PolyMAC_P0_base::completer()
   else Process::exit(Nom("Op_Diff_PolyMAC_P0_base : diffusivity component count ") + Nom(N_nu) + " not among (" + Nom(N) + ", " + Nom(N * D) + ", " + Nom(N * D * D)  + ")!");
   const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
   zone.zone().creer_tableau_elements(nu_);
-  const Conds_lim& cls = equation().zone_Cl_dis().les_conditions_limites();
+  const Conds_lim& cls = eq.zone_Cl_dis().les_conditions_limites();
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) ;
   if (nu_constant_) for (int i = 0; i < cls.size(); i++) if (sub_type(Echange_impose_base, cls[i].valeur()) || sub_type(Frottement_impose_base, cls[i].valeur()))
         nu_constant_ = 0;
