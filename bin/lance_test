@@ -272,7 +272,7 @@ add_test_case_from_validation()
 	        	NEW_FICHE_ROOT=`cd ${Rapports_auto_root};find Validation/Rapports_automatiques -follow -name $basename_fiche`
 	        	[ "$NEW_FICHE_ROOT" = "$FICHE_ROOT" ] && echo "Erreur dans lance_test !" && echo $NEW_FICHE_ROOT" "$FICHE_ROOT && exit -1
 	        	pth=${Rapports_auto_root}/$NEW_FICHE_ROOT
-	        	if [ -d ${Rapports_auto_root}/$NEW_FICHE_ROOT/src ] && [ `is_link_or_double_link($pth)` = "no" ]
+	        	if [ -d ${Rapports_auto_root}/$NEW_FICHE_ROOT/src ] && [ `is_link_or_double_link $pth` = "no" ]
 	        	then
 	                   # On l'a retrouvee !
 	                   echo $ECHO_OPTS "\nValidation form $FICHE_ROOT has moved to $NEW_FICHE_ROOT"
