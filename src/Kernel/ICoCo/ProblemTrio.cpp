@@ -41,6 +41,10 @@
 #include <stat_counters.h>
 #include <Field_base.h>
 
+#include <Champ_Inc.h>
+#include <Equation_base.h>
+
+
 using ICoCo::Problem;
 using ICoCo::ProblemTrio;
 using ICoCo::TrioField;
@@ -721,6 +725,48 @@ bool ProblemTrio::isMEDCoupling64Bits() const
   return sizeof(mcIdType) == 8;
 #endif
 }
+
+// Specific to TRUST, and outside the ICoCo standard
+// Get a direct access to the unknown array of an equation, wrapped into a dummy
+// MEDDoubleField. The mesh and other field information are irrelevant, only the underlying
+// array should be considered.
+ICoCo::MEDDoubleField ProblemTrio::getDirectAccessToUnknown(const std::string& unk_name, bool isFuture)
+{
+  using namespace MEDCoupling;
+
+  if(sub_type(Probleme_base,*pb))
+    {
+      Probleme_base& pb_base = ref_cast(Probleme_base,*pb);
+      double * ptr = nullptr;
+      size_t nbTup = -1, nbCompo = -1;
+      for (int i=0; i < pb_base.nombre_d_equations(); i++)
+        {
+          Champ_Inc& ci = pb_base.equation(i).inconnue();
+          assert(ci.valeurs().nb_dim() == 2);
+          if (Motcle(ci.le_nom()) == Motcle(unk_name))
+            {
+              DoubleTab& t = isFuture ? ci.futur() : ci.valeurs() ;
+              ptr = t.addr();
+              nbTup = t.dimension_tot(0);
+              nbCompo = t.dimension_tot(1);
+              break;
+            }
+        }
+      if (ptr == nullptr)
+        throw WrongArgument((*my_params).problem_name,"getDirectAccessToUnknown","unk_name","invalid unknown name!!");
+
+      // Now wrap the underlying array in a dummy MEDDoubleField, with no valid mesh and no valid field information.
+      MCAuto<DataArrayDouble> da = DataArrayDouble::New();
+      da->useExternalArrayWithRWAccess(ptr, nbTup, nbCompo);
+      MCAuto<MEDCouplingFieldDouble> f = MEDCouplingFieldDouble::New(ON_CELLS,ONE_TIME);
+      f->setArray(da);
+      MEDDoubleField ret(f);
+      return ret;
+    }
+  else
+    throw WrongArgument((*my_params).problem_name,"getDirectAccessToUnknown","","Problem type must derive from Probleme_base!!");
+}
+
 
 // Miscellaneous
 Objet_U& get_obj(const char* chr)

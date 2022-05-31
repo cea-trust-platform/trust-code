@@ -93,6 +93,10 @@ class trusticoco_test(unittest.TestCase):
                 ok = pb.solveTimeStep()
                 if ok:
                     pb.validateTimeStep()
+                    # Try manipulating the unknown directly
+                    mdf = pb.getDirectAccessToUnknown("TEMPERATURE", True)
+                    arr = mdf.getMCField().getArray()
+                    arr *= 1.1
                     t = pb.presentTime()
                     if pb.isStationary():
                         print("pb stationary -> stop")

@@ -110,8 +110,13 @@ public :
   double getOutputDoubleValue(const std::string& name) const override;
   void setInputDoubleValue(const std::string& name, const double& val) override;
 
-  void setInputIntValue(const std::string& name, const int& val) override;
-  int getOutputIntValue(const std::string& name) const override;
+  ////////////////////////////////////////////////////////////////////////////////////
+  // Specific to TRUST, and outside the ICoCo standard
+  ////////////////////////////////////////////////////////////////////////////////////
+
+  // Get a direct access to the TRUST underlying array holding the unknown of a given
+  // equation.
+  MEDDoubleField getDirectAccessToUnknown(const std::string& unk_name, bool isFuture);
 
 protected :
 
