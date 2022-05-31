@@ -69,7 +69,10 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
         {
           ch_lu.noms_champs_parametre_.push_back(nom.getString());
           old_table_syntax_ = 1;
-          Process::exit("old syntax nor supported!!");
+          Cerr << "Errror reading old syntax: " << que_suis_je() << " " << domaine().le_nom() << " " << nbcomp << " { " << ssz.le_nom() << " " << nom << " 1 { ... } ... }" << finl;
+          Cerr << "New syntax is like :       " << que_suis_je() << " " << domaine().le_nom() << " " << nbcomp << " { " << ssz.le_nom() << " { problem_name " << nom << " } { ... } ... }" << finl;
+          Cerr << "Check the doc or release notes." << finl;
+          Process::exit();
         }
       else
         {
