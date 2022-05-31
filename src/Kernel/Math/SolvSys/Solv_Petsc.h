@@ -94,6 +94,7 @@ public :
   void set_rtol(const double& rtol)
   {
     seuil_relatif_ = rtol;
+    KSPSetTolerances(SolveurPetsc_, seuil_relatif_, seuil_, (divtol_==0 ? PETSC_DEFAULT : divtol_), nb_it_max_);
   }
 protected :
 #ifdef PETSCKSP_H
