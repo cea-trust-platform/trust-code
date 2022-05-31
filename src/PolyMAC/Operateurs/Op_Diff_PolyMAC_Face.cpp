@@ -221,7 +221,7 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
                       secmem(!aux_only * nf_tot + a, n) += sgn * coeff * inco(fb, n) * fs(fb) * (e == f_e(fb, 0) ? 1 : -1);
                       if (!aux_only) (*mat)(N * (nf_tot + a) + n, N * fb + n) -= sgn * coeff * fs(fb) * (e == f_e(fb, 0) ? 1 : -1);
                     }
-                if (fcl(f, 0) == 3) for (n = 0; n < N; n++) //si bord de Dirichlet : partie x_f -> x_a avec la vitesse donnee par la CL
+                if (fcl(f, 0) == 3 && sub_type(Dirichlet, cls[fcl(f, 1)].valeur())) for (n = 0; n < N; n++) //si bord de Dirichlet : partie x_f -> x_a avec la vitesse donnee par la CL
                     {
                       for (d = 0; d < D; d++) v_cl[d] = ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n); //v impose
                       secmem(!aux_only * nf_tot + a, n) += sgn * zone.nu_dot(&inu, 0, n, &xa(a, 0), v_cl, &xv(f, 0));

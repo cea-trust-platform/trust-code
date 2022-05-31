@@ -185,7 +185,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                   for (n = 0; n < N; n++) fac(n) = coeff(n) * phif_c(k, n);
                   if ((e_s = phif_e(k)) >= ne_tot) /* contrib. d'un bord : seul Dirichlet fait quelque chose */
                     {
-                      if (fcl(f_s = e_s - ne_tot, 0) == 3) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+                      if (fcl(f_s = e_s - ne_tot, 0) == 3 && sub_type(Dirichlet, cls[fcl(f_s, 1)].valeur())) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
                             secmem(f, n) -= fac(n) * ref_cast(Dirichlet, cls[fcl(f_s, 1)].valeur()).val_imp(fcl(f_s, 2), N * d + n) * nf(f, d) / fs(f);
                     }
                   else if (tpfa && (fc = zone.equiv(fb, c, i_f)) >= 0) /* amont/aval si equivalence : operateur entre faces */
@@ -218,7 +218,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
               for (d = 0; d < D; d++) for (n = 0; n < N; n++) secmem(nf_tot + D * e + d, n) -= coeff(n) * inco(nf_tot + D * e_s + d, n);
               if (mat) for (d = 0; d < D; d++) for (n = 0; n < N; n++) (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e_s + d) + n) += coeff(n);
             }
-          else if (fcl(f_s = e_s - ne_tot, 0) == 3) //contrib d'un bord : seul Dirichlet contribue
+          else if (fcl(f_s = e_s - ne_tot, 0) == 3 && sub_type(Dirichlet, cls[fcl(f_s, 1)].valeur())) //contrib d'un bord : seul Dirichlet contribue
             for (d = 0; d < D; d++) for (n = 0; n < N; n++) secmem(nf_tot + D * e + d, n) -= coeff(n) * ref_cast(Dirichlet, cls[fcl(f_s, 1)].valeur()).val_imp(fcl(f_s, 2), N * d + n);
         }
 }
