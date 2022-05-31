@@ -191,6 +191,7 @@ b721c134f138620824347930f0333ceb  petsc/superlu-5.2.1.tar.gz
 cfa3a57cadd5b6df544bbb88942015b3  petsc/superlu_dist-6.3.0.tar.gz
 5ddaf8169771ad50cd2f4a0b4ee8730d  petsc/viennacl-dc552a8.tar.gz
 bd1e284ae6bcb07fa862763ec924af89  pip/mpi4py-3.0.3.tar.gz
+7d6870f35116d7590dab6cbfc462f89c  pip/psutil-5.9.1.tar.gz
 fa3a9bf9b2d6ed2431f1baa46f4058b8  tcl_tk/tcl8.5.13-src.tar.gz
 1fc7dbb7495160756dbc805224afa360  tcl_tk/tk8.5.13-src.tar.gz
 d44b5dddebd8a7a7309aea6c36fda117  utils/bc-1.06.tar.gz

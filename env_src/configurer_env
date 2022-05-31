@@ -753,7 +753,7 @@ then
    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
    INSTALL_OK=1
    # list of packages already-installed/to-install in conda, we ignore mpi4py since installed with pip
-   $TRUST_ROOT/exec/python/bin/conda list | grep -v mpi4py > conda_list.check
+   $TRUST_ROOT/exec/python/bin/conda list | grep -v mpi4py | grep -v psutil > conda_list.check
    if [ "$system" = "Linux" ] && [ $model = "x86_64" ] #&& [ -f $TRUST_ROOT/exec/conda_list.ref ]
    then
       # Strict check of conda packages
@@ -769,7 +769,7 @@ then
          echo "# The current miniconda install contains some supplementary or missing packages, we clean it..."
          INSTALL_OK=0
       else
-         rm -f conda_lis.ref
+         rm -f conda_list.ref
       fi
    else
       for pkg in $pkgs
@@ -1373,6 +1373,7 @@ fi
 # Intallation des packages supplementaires avec pip de conda #
 ##############################################################
 pkgs="" # now, we install only mpi4py with pip if mpi enabled, so umpty list
+[ "$TRUST_DISABLE_JUPYTER" != 1 ] && pkgs="psutil"
 if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "`basename $TRUST_CC_BASE`" != nvc++ ] && [ "$TRUST_DISABLE_MPI4PY" != 1 ]
 then
    pkgs="mpi4py "$pkgs
@@ -1403,8 +1404,7 @@ then
      fi   
    done
 fi
-# create reference list for conda
-$TRUST_ROOT/exec/python/bin/conda list > $TRUST_ROOT/exec/conda_list.ref
+
 # If a package has not been correctly installed, we exit with an error
 [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep ' pip' $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 
