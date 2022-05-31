@@ -517,23 +517,13 @@ void PolyMAC_discretisation::critere_Q(const Zone_dis& z,const Zone_Cl_dis& zcl,
 
 void PolyMAC_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
-
-#ifdef dependance
-  Cerr << "Discretisation de y_plus" << finl;
-  const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse.valeur());
-  const Zone_PolyMAC& zone_PolyMAC=ref_cast(Zone_PolyMAC, z.valeur());
-  const Zone_Cl_PolyMAC& zone_cl_PolyMAC=ref_cast(Zone_Cl_PolyMAC, zcl.valeur());
-  ch.typer("Y_plus_Champ_Som_PolyMAC");
-  Y_plus_Champ_Som_PolyMAC& ch_yp=ref_cast(Y_plus_Champ_Som_PolyMAC,ch.valeur());
-  ch_yp.associer_zone_dis_base(zone_PolyMAC);
-  ch_yp.associer_zone_Cl_dis_base(zone_cl_PolyMAC);
-  ch_yp.associer_champ(vit);
-  ch_yp.nommer("Y_plus");
-  ch_yp.fixer_nb_comp(1);
-  ch_yp.fixer_nb_valeurs_nodales(zone_PolyMAC.nb_elem());
-  ch_yp.fixer_unite("adimensionnel");
-  ch_yp.changer_temps(ch_vitesse.temps());
-#endif
+  Cerr << "Discretisation de y plus" << finl; // Utilise comme modele distance paroi globale
+  Noms noms(1), unites(1);
+  noms[0] = Nom("y_plus");
+  unites[0] = Nom("m");
+  discretiser_champ(Motcle("champ_elem"), z.valeur(), scalaire, noms , unites, 1, 0, ch);
+  DoubleTab& tab_y_p = ch->valeurs();
+  for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++) for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = -1.;
 }
 
 void PolyMAC_discretisation::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch) const

@@ -359,3 +359,11 @@ int QDM_Multiphase::preparer_calcul()
 {
   return Equation_base::preparer_calcul(); //pour eviter Navier_Stokes_std::preparer_calcul() !
 }
+
+void QDM_Multiphase::update_y_plus(const DoubleTab& tab)
+{
+  if (!y_plus.non_nul()) Process::exit(que_suis_je() + " : y_plus must be initialised so it can be updated") ;
+  DoubleTab& tab_y_p = y_plus->valeurs();
+  if (tab.nb_dim()==2) for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++) for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,n);
+  if (tab.nb_dim()==3) for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++) for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,0,n);
+}

@@ -80,6 +80,8 @@ public :
   void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) override;
   void creer_champ(const Motcle& motlu) override;
 
+  void update_y_plus(const DoubleTab& tab) ;
+
 protected:
   Entree& lire_cond_init(Entree&) override; //pour lire la pression
   int preparer_calcul() override; //appelle la methode de Equation_base

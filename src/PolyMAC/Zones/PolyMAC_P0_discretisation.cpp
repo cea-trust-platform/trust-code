@@ -56,27 +56,6 @@ Sortie& PolyMAC_P0_discretisation::printOn(Sortie& s) const
   return s ;
 }
 
-void PolyMAC_P0_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
-{
-
-#ifdef dependance
-  Cerr << "Discretisation de y_plus" << finl;
-  const Champ_Som_PolyMAC_P0& vit = ref_cast(Champ_Som_PolyMAC_P0,ch_vitesse.valeur());
-  const Zone_PolyMAC_P0& zone_PolyMAC_P0=ref_cast(Zone_PolyMAC_P0, z.valeur());
-  const Zone_Cl_PolyMAC& Zone_Cl_PolyMAC=ref_cast(Zone_Cl_PolyMAC, zcl.valeur());
-  ch.typer("Y_plus_Champ_Som_PolyMAC_P0");
-  Y_plus_Champ_Som_PolyMAC_P0& ch_yp=ref_cast(Y_plus_Champ_Som_PolyMAC_P0,ch.valeur());
-  ch_yp.associer_zone_dis_base(zone_PolyMAC_P0);
-  ch_yp.associer_zone_Cl_dis_base(Zone_Cl_PolyMAC);
-  ch_yp.associer_champ(vit);
-  ch_yp.nommer("Y_plus");
-  ch_yp.fixer_nb_comp(1);
-  ch_yp.fixer_nb_valeurs_nodales(zone_PolyMAC_P0.nb_elem());
-  ch_yp.fixer_unite("adimensionnel");
-  ch_yp.changer_temps(ch_vitesse.temps());
-#endif
-}
-
 void PolyMAC_P0_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
 {
   const Champ_Face_PolyMAC_P0&          vit = ref_cast(Champ_Face_PolyMAC_P0,ch_vitesse.valeur());

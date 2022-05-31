@@ -1878,6 +1878,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     }
   if (nom=="y_plus")
     {
+      if (!y_plus.non_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,y_plus.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());

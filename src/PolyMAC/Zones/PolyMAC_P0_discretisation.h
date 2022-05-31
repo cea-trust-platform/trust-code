@@ -49,7 +49,6 @@ public :
   //
   // Methodes surchargees de Discretisation_base
   //
-  void y_plus(const Zone_dis& z,const Zone_Cl_dis&,const Champ_Inc& vitesse, Champ_Fonc& ch) const override;
   void grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const override;
   void taux_cisaillement(const Zone_dis&, const Zone_Cl_dis& ,const Champ_Inc&, Champ_Fonc&) const override;
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
