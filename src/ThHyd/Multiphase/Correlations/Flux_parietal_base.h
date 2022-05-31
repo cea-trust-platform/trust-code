@@ -70,7 +70,7 @@ public:
                   const double *alpha, const double *T, const double p, const double *v, const double Tp,
                   const double *lambda, const double *mu, const double *rho, const double *Cp,
                   DoubleTab *qpk, DoubleTab *da_qpk, DoubleTab *dp_qpk, DoubleTab *dv_qpk, DoubleTab *dTf_qpk, DoubleTab *dTp_qpk,
-                  DoubleTab *qpi, DoubleTab *da_DoubleTabqpi, DoubleTab *dp_qpi, DoubleTab *dv_qpi, DoubleTab *dTf_qpi, DoubleTab *dTp_qpi,
+                  DoubleTab *qpi, DoubleTab *da_qpi, DoubleTab *dp_qpi, DoubleTab *dv_qpi, DoubleTab *dTf_qpi, DoubleTab *dTp_qpi,
                   DoubleTab *d_nucleation, int& nonlinear) const = 0;
 
   virtual int calculates_bubble_nucleation_diameter() const {return 0;};
