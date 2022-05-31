@@ -1588,8 +1588,8 @@ case $TRUST_ARCH_CC in
 	FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
 	CppFlags="-O3 $FPIC $PTHREAD -std=c++11 -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0"
-	# flag -Wsuggest-override available on gcc version >= 5.1
-	[ "`echo $TRUST_VERSION_GNU | awk '{split($1,a,".");print (a[1]>5||(a[1]==5&&(a[2]>=1))?1:0)}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds -Wsuggest-override"
+	# flag -Wsuggest-override available on gcc version >= 5.1; on gcc 5.4.0 (ub 16) this flag suggests to fix mpich 3.2, so we do not add this flag
+	[ "`echo $TRUST_VERSION_GNU | awk '{split($1,a,".");print (a[1]>5||(a[1]==5&&(a[2]>4))?1:0)}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds -Wsuggest-override"
 	# include <sstream> fait un warning sur gcc 2.96, impossible d'utiliser #pragma supporte dans 4.2.x:
 	# Idem OpenMPI 1.3.2 sur certaines clusters provoque un warning: type-punning to incomplete type might break strict-aliasing rules
 	[ $TRUST_ARCH_CC = linux_g++ ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"

@@ -1,6 +1,6 @@
 arch	maj		recup	hostname		Update	lance_test	baltiks						Tasks		Options	
 linux	rsync_ssh	tache	altair-valgrind.intra.cea.fr    -limited  			 		    -ctest_valgrind 	-force_provided_mpich			# CentOS 7.9 serveur rackable pour TRUST titania 
-linux	rsync_ssh	tache	is245213.intra.cea.fr		-all 		   							-force_provided_mpich 		# Ubuntu 20 titania Elie
+linux	rsync_ssh	tache	is245213_desactivee.intra.cea.fr		-all 		   							-force_provided_mpich 		# Ubuntu 20 titania Elie
 linux	rsync_ssh	cible	is245198.intra.cea.fr		-all 		-TRUST -TrioCFD -GENEPI3 -STT -PEMFC -FLICA5 -C3D  				-force_provided_mpich 		# Ubuntu 20 titania TMA F4
 linux	rsync_ssh	tache	is221559.intra.cea.fr				-TRUST -MPCube -TrioCFD -GENEPI3 -FLICA5 				-force_provided_mpich -without-pdflatex 		# Debian 9	Bat 451 LGLS	 titania ancienne Gauthier Fauchet (Couplage Cathare/TRUST) Gilles Arnaud
 linux	scp_ssh		tache	is241479.intra.cea.fr		-all 		 -TrioCFD 					-force_provided_mpich -disable-valgrind -disable-plot2d -without-pdflatex	# CentOS 7.9 salle de formation
