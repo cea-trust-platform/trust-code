@@ -59,7 +59,8 @@ public:
 
 protected:
   Motcle type_lim;
-
+  enum type_lim_type{type_lim_minmod,type_lim_vanleer,type_lim_vanalbada,type_lim_chakravarthy,type_lim_superbee};
+  type_lim_type type_lim_int;
   int ordre;
   double alpha_;
   enum type_operateur { amont, muscl, centre };

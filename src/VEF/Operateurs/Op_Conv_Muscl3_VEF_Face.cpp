@@ -33,6 +33,7 @@ Entree& Op_Conv_Muscl3_VEF_Face::readOn(Entree& s )
 
   type_op=muscl;
   LIMITEUR=&vanleer;
+  type_lim_int = type_lim_vanleer;
   ordre=3;
   alpha_=1;
   // Lecture eventuelle de alpha_
@@ -64,18 +65,23 @@ Entree& Op_Conv_Muscl3_VEF_Face::readOn(Entree& s )
           break;
         case 1 :
           LIMITEUR=&minmod;
+	  type_lim_int = type_lim_minmod;
           break;
         case 2 :
           LIMITEUR=&vanleer;
+	  type_lim_int = type_lim_vanleer;
           break;
         case 3 :
           LIMITEUR=&vanalbada;
+	  type_lim_int = type_lim_vanalbada;
           break;
         case 4 :
           LIMITEUR=&chakravarthy;
+	  type_lim_int = type_lim_chakravarthy;
           break;
         case 5 :
           LIMITEUR=&superbee;
+	  type_lim_int = type_lim_superbee;
           break;
         default:
           Cerr << "Keyword " << motlu << " not recognized. List of keywords available:" << finl;

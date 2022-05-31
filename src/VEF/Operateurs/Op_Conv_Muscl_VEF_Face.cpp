@@ -33,6 +33,7 @@ Entree& Op_Conv_Muscl_VEF_Face::readOn(Entree& s )
 
   type_op=muscl;
   LIMITEUR=&vanleer;
+  type_lim_int=type_lim_vanleer;
   ordre=2;
   return s ;
 }
