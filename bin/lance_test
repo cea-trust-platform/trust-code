@@ -163,7 +163,7 @@ liste()
    add_test_case_from_validation || exit -1
    echo " "
    echo "Searching test cases in $ref. Please wait..."
-   testslist=`find $ref -follow -name *.lml.gz -print 2>/dev/null | sed 's#'"$ref/"'##' | sort`
+   testslist=`find $ref -follow -name *.lml.gz -print 2>/dev/null | sed 's#'"$ref/*"'##' | sort`
    # Pour eviter les problemes des .lml.gz sortis de gestion de conf
    if [ "`element_gere_en_configuration.sh $ref`" = git ]
    then
