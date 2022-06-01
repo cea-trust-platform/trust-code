@@ -165,7 +165,7 @@ inline _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_
           if (IS_MAX_ABS || IS_MIN_ABS)
             {
               _TYPE_ xx;
-              xx = std::is_same<_TYPE_, double>::value ? std::fabs(x) : abs(x);
+              xx = std::is_same<_TYPE_, double>::value ? std::fabs(x) : std::abs(x);
               if ((IS_MAX_ABS && xx > min_max_val) || (IS_MIN_ABS && xx < min_max_val)) min_max_val = xx;
             }
 
@@ -635,7 +635,7 @@ inline void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x
           if (IS_MULT) p_resu *= x;
           if (IS_EGAL) p_resu = x;
           if (IS_NEGATE) p_resu = -p_resu;
-          if (IS_ABS) p_resu = std::is_same<_TYPE_,double>::value ? std::fabs(p_resu) : abs(p_resu);
+          if (IS_ABS) p_resu = std::is_same<_TYPE_,double>::value ? std::fabs(p_resu) : std::abs(p_resu);
           if (IS_RACINE_CARRE) p_resu = sqrt(p_resu);
           if (IS_CARRE) p_resu *= p_resu;
 
