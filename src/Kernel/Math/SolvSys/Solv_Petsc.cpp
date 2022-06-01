@@ -1333,8 +1333,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 const Nom Solv_Petsc::config()
 {
   Nom str(Objet_U::nom_du_cas());
-  str+="_solver";
-  str+=(Nom)instance;
+  str+=option_prefix_.prefix("_");
   str+=amgx_ ? ".amgx" : ".petsc";
   return str;
 }
