@@ -6,32 +6,32 @@ Domaine dom
 # BEGIN MESH
 Mailler dom
 {
-	Pave Cavite 
-		{
-		Origine 0. 0. 0.
-     		Nombre_de_Noeuds 10 10 10
-		Longueurs 0.02 0.01 0.006
-		Facteurs 1. 1.1 1.1
-		Symy Symz
-		}
-		{
-		Bord Inlet X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.006
-		Bord Wall   Y = 0.01  0. <= X <= 0.02 0. <= Z <= 0.006
-		Bord Wall    Y = 0.    0. <= X <= 0.02 0. <= Z <= 0.006
-		Bord Outlet  X = 0.02  0. <= Y <= 0.01 0. <= Z <= 0.006
-		Bord Symmetry    Z = 0.    0. <= X <= 0.02 0. <= Y <= 0.01
-		Bord Symmetry   Z = 0.006 0. <= X <= 0.02 0. <= Y <= 0.01
-		}
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 10 10 10
+        Longueurs 0.02 0.01 0.006
+        Facteurs 1. 1.1 1.1
+        Symy Symz
+    }
+    {
+        Bord Inlet X = 0.    0. <= Y <= 0.01 0. <= Z <= 0.006
+        Bord Wall   Y = 0.01  0. <= X <= 0.02 0. <= Z <= 0.006
+        Bord Wall    Y = 0.    0. <= X <= 0.02 0. <= Z <= 0.006
+        Bord Outlet  X = 0.02  0. <= Y <= 0.01 0. <= Z <= 0.006
+        Bord Symmetry    Z = 0.    0. <= X <= 0.02 0. <= Y <= 0.01
+        Bord Symmetry   Z = 0.006 0. <= X <= 0.02 0. <= Y <= 0.01
+    }
 }
 Tetraedriser_homogene dom
 END MESH #
 # BEGIN PARTITION
 Partition dom
 {
-	Partition_tool Metis { Nb_parts 2 }
-	Larg_joint 2
-	ecrire_lata mesh
-	zones_name DOM
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    ecrire_lata mesh
+    zones_name DOM
 }
 End
 END PARTITION #
@@ -45,20 +45,20 @@ VEFPreP1B dis
 Schema_euler_implicite sch
 Read sch
 {
-	tinit 0.
+    tinit 0.
 	nb_pas_dt_max 3
-	facsec 1000
-	solveur implicite { solveur amgx gcp   		{ precond gs 	{ } impr rtol  1.e-3 } } 
-	seuil_statio 1.e-2
-	seuil_statio_relatif_deconseille 1
-	dt_impr 1.e-10
+    facsec 1000
+    solveur implicite { solveur amgx gcp   		{ precond gs 	{ } impr rtol  1.e-3 } }
+    seuil_statio 1.e-2
+    seuil_statio_relatif_deconseille 1
+    dt_impr 1.e-10
 }
 
 Fluide_Incompressible fluide
 Read fluide
 {
-	mu Champ_Uniforme 1 1.85e-5
-	rho Champ_Uniforme 1 1.17
+    mu Champ_Uniforme 1 1.85e-5
+    rho Champ_Uniforme 1 1.17
 }
 Associate pb dom
 Associate pb sch
@@ -68,29 +68,29 @@ Discretize pb dis
 
 Read pb
 {
-	Navier_Stokes_Standard
-	{
-		solveur_pression Petsc cholesky { }
-		convection { amont }
-		diffusion { }
-		initial_conditions {
-			vitesse champ_fonc_xyz dom 3 y*(0.01-y) 0. 0. 
-			}
-		boundary_conditions {
-			Wall 		paroi_fixe
-			Inlet		frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 y*(0.01-y) 0. 0. 
-			Outlet 		frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
-			Symmetry 	Symetrie
-		}
-	}
-	Post_processing
-	{
-		format lml
-		fields dt_post 1000
-		{
-			pression elem
-		}
-	}
+    Navier_Stokes_Standard
+    {
+        solveur_pression Petsc cholesky { }
+        convection { amont }
+        diffusion { }
+        initial_conditions {
+            vitesse champ_fonc_xyz dom 3 y*(0.01-y) 0. 0.
+        }
+        boundary_conditions {
+            Wall 		paroi_fixe
+            Inlet		frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 y*(0.01-y) 0. 0.
+            Outlet 		frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+            Symmetry 	Symetrie
+        }
+    }
+    Post_processing
+    {
+        format lml
+        fields dt_post 1000
+        {
+            pression elem
+        }
+    }
 }
 
 Solve pb

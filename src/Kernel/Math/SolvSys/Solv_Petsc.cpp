@@ -1008,7 +1008,7 @@ void Solv_Petsc::create_solver(Entree& entree)
             case 2:
               {
                 PCSetType(PreconditionneurPetsc_, PCSOR);
-                if (amgx_) Process::exit("SSOR is not available on GPU, try GC (Gauss Seidel)");
+                if (amgx_) Process::exit("SSOR is not available on GPU, try GS (Gauss Seidel)");
                 if (omega.value()>=1. && omega.value()<=2.)
                   {
                     PCSORSetOmega(PreconditionneurPetsc_, omega.value());
