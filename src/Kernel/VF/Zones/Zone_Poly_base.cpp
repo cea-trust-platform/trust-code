@@ -592,16 +592,16 @@ void disp_it(const IntTab& A)
       for (j = 0, fprintf(stderr, i ? "}}},{" : "{{"); j < A.dimension(1); j++)
         for (k = 0, fprintf(stderr, j ? "}},{" : "{"); k < A.dimension(2); k++)
           for (l = 0, fprintf(stderr, k ? "},{" : "{"); l < A.dimension(3); l++)
-            fprintf(stderr, "%d%s ", A.addr()[A.dimension(3) * (A.dimension(2) * (i * A.dimension(1) + j) + k) + l], l + 1 < A.dimension(3) ? "," : "");
+            fprintf(stderr, "%d%s ", (True_int)A.addr()[A.dimension(3) * (A.dimension(2) * (i * A.dimension(1) + j) + k) + l], l + 1 < A.dimension(3) ? "," : "");
   else if (A.nb_dim() == 3) for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "}},{" : "{{"); j < A.dimension(1); j++)
         for (k = 0, fprintf(stderr, j ? "},{" : "{"); k < A.dimension(2); k++)
-          fprintf(stderr, "%d%s ", A.addr()[A.dimension(2) * (i * A.dimension(1) + j) + k], k + 1 < A.dimension(2) ? "," : "");
+          fprintf(stderr, "%d%s ", (True_int)A.addr()[A.dimension(2) * (i * A.dimension(1) + j) + k], k + 1 < A.dimension(2) ? "," : "");
   else if (A.nb_dim() == 2) for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "},{" : "{{"); j < A.dimension(1); j++)
-        fprintf(stderr, "%d%s ", A.addr()[i * A.dimension(1) + j], j + 1 < A.dimension(1) ? "," : "");
+        fprintf(stderr, "%d%s ", (True_int)A.addr()[i * A.dimension(1) + j], j + 1 < A.dimension(1) ? "," : "");
   else for (i = 0, fprintf(stderr, "{"); i < A.dimension_tot(0); i++)
-      fprintf(stderr, "%d%s ", A.addr()[i], i + 1 < A.dimension_tot(0) ? "," : "");
+      fprintf(stderr, "%d%s ", (True_int)A.addr()[i], i + 1 < A.dimension_tot(0) ? "," : "");
   fprintf(stderr, A.nb_dim() == 4 ? "}}}}\n" : A.nb_dim() == 3 ? "}}}\n" : A.nb_dim() == 2 ? "}}\n" : "}\n");
 }
 
@@ -609,7 +609,7 @@ void disp_ia(const ArrOfInt& A)
 {
   int i;
   for (i = 0, fprintf(stderr, "{"); i < A.size_array(); i++)
-    fprintf(stderr, "%d%s ", A.addr()[i], i + 1 < A.size_array() ? "," : "");
+    fprintf(stderr, "%d%s ", (True_int)A.addr()[i], i + 1 < A.size_array() ? "," : "");
   fprintf(stderr, "}\n");
 }
 

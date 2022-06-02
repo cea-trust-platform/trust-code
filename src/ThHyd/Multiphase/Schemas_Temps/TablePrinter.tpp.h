@@ -24,6 +24,8 @@
 namespace karma = boost::spirit::karma;
 #endif
 
+#include <arch.h>
+
 namespace bprinter
 {
 #if defined(USE_BOOST_KARMA)
@@ -54,14 +56,14 @@ template<typename T> void TablePrinter::OutputDecimalNumber(T input)
 {
 
   // determine what precision we need
-  int precision = column_widths_.at(j_) - 1; // leave room for the decimal point
+  True_int precision = column_widths_.at(j_) - 1; // leave room for the decimal point
   if (input < 0)
     --precision; // leave room for the minus sign
 
   // leave room for digits before the decimal?
   if (input < -1 || input > 1)
     {
-      int num_digits_before_decimal = 1 + (int)log10(std::abs(input));
+      True_int num_digits_before_decimal = 1 + (True_int)log10(std::abs(input));
       precision -= num_digits_before_decimal;
     }
   else

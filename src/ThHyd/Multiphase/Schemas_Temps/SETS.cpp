@@ -270,7 +270,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   if (!Process::me())
     {
       tp.AddColumn("it", 5);
-      for (auto &&n_i : inco) tp.AddColumn(n_i.first, std::max(12, (int) n_i.first.length()));
+      for (auto &&n_i : inco) tp.AddColumn(n_i.first, std::max(12, (True_int) n_i.first.length()));
       tp.PrintHeader();
     }
 
