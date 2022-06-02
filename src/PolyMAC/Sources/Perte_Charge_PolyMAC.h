@@ -51,6 +51,7 @@ public:
   {
     return 1;
   };
+  void check_multiphase_compatibility() const override {};
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
   void associer_pb(const Probleme_base&) override;  //!< associe le_fluide et la_vitesse
