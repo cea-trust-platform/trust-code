@@ -129,7 +129,7 @@ void Assembleur_P_PolyMAC_P0::assembler_continuite(matrices_t matrices, DoubleTa
   int e, n, N = alpha.line_size();
   /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
   for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++)
-    for (secmem(e) = -pe(e) * ve(e) * cont_norm, n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * cont_norm * alpha(e, n);
+    for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * alpha(e, n);
   /* matrice */
-  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++) for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e) * cont_norm;
+  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++) for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e);
 }

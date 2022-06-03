@@ -120,9 +120,9 @@ static inline double corriger_incr_alpha(const DoubleTab& alpha, DoubleTab& incr
   DoubleTrav n_a(N);
   for (i = 0, err_a_sum = 0; i < alpha.dimension_tot(0); i++)
     {
-      for (n = 0; n < N; n++) n_a(n) = alpha(i, n) + incr(i, n);
-      for (a_sum = 0, n = 0; n < N; n++) n_a(n) = std::max(n_a(n), 0.), a_sum += n_a(n);
+      for (a_sum = 0, n = 0; n < N; n++) n_a(n) = alpha(i, n) + incr(i, n), a_sum += n_a(n);
       err_a_sum = std::max(err_a_sum, std::abs(a_sum - 1));
+      for (a_sum = 0, n = 0; n < N; n++) n_a(n) = std::max(n_a(n), 0.), a_sum += n_a(n);
       if (a_sum) for (n = 0; n < N; n++) n_a(n) /= a_sum;
       else for (n = 0; n < N; n++) n_a(n) = 1. / N;
       for (n = 0; n < N; n++) corr_max = std::max(corr_max, std::fabs(alpha(i, n) + incr(i, n) - n_a(n))), incr(i, n) = n_a(n) - alpha(i, n);
@@ -142,6 +142,55 @@ double SETS::unknown_positivation(const DoubleTab& uk, DoubleTab& incr)
         }
   return Process::mp_max(corr_max);
 }
+
+#ifdef PETSCKSP_H
+void SETS::init_cv_ctx(const DoubleTab& secmem, const DoubleVect& norme)
+{
+  cv_ctx = (SETS::cv_test_t *) calloc(1, sizeof(SETS::cv_test_t));
+  cv_ctx->obj = this, cv_ctx->eps_alpha = crit_conv["alpha"];
+  norm = norme, residu = secmem, cv_ctx->t = NULL, cv_ctx->v = NULL;
+  /* numerotation pour recuperer le residu : on fait comme dans Solv_Petsc */
+  ArrOfBit items_to_keep;
+  int i, size = secmem.size_array(), idx = mppartial_sum(MD_Vector_tools::get_sequential_items_flags(secmem.get_md_vector(), items_to_keep, secmem.line_size()));
+  for (ix.resize(size), i = 0; i < size; i++)
+    if (items_to_keep[i]) ix[i] = idx, idx++;
+    else ix[i] = -1;
+  KSPConvergedDefaultCreate(&cv_ctx->defctx);
+}
+
+PetscErrorCode destroy_cvctx(void *mctx)
+{
+  SETS::cv_test_t *ctx = (SETS::cv_test_t *)mctx;
+  if (ctx->v) VecDestroy(&ctx->v);
+  if (ctx->t) VecDestroy(&ctx->t);
+  PetscErrorCode err =  KSPConvergedDefaultDestroy(ctx->defctx);
+  free(ctx);
+  return err;
+}
+
+/* test de convergence */
+PetscErrorCode convergence_test(KSP ksp, PetscInt it, PetscReal rnorm, KSPConvergedReason *reason,void *mctx)
+{
+  SETS::cv_test_t *ctx = (SETS::cv_test_t *)mctx;
+  PetscErrorCode ret = KSPConvergedDefault(ksp, it, rnorm, reason, &ctx->defctx); //on appelle le test par defaut
+  if (ret || *reason <= 0) return ret; //pas encore converge -> rien a faire
+  /* sinon -> on verfie que sum alpha = 1 est aussi OK */
+  Vec resi;
+  if (ctx->t == NULL) /* ctx->t, ctx-v non initialises -> on les cree */
+    {
+      Mat m;
+      KSPGetOperators(ksp,&m,NULL);
+      MatCreateVecs(m, &ctx->v, &ctx->t);
+    }
+  KSPBuildResidual(ksp, ctx->t, ctx->v, &resi);//residu
+  VecGetValues(resi, ctx->obj->ix.size_array(), ctx->obj->ix.addr(), ctx->obj->residu.addr());
+  bool ok = true;
+  for (int i = 0; ok && i < ctx->obj->norm.size(); i++) if (ctx->obj->ix[i] >= 0)
+      ok &= std::abs(ctx->obj->residu[i]) < ctx->obj->norm[i] * ctx->eps_alpha;
+  if (!Process::mp_and(ok)) *reason = KSP_CONVERGED_ITERATING;
+  return ret;
+}
+#endif
 
 bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& current, double dt, int numero_iteration, int& ok)
 {
@@ -295,15 +344,23 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       /* assemblage du systeme en pression */
       DoubleTrav secmem_pression;
       assembler("pression", A_p, b_p, mats, sec, matrice_pression, secmem_pression, p_degen);
+      SolveurSys& solv_p = eq_qdm.solveur_pression();
+#ifdef PETSCKSP_H
+      if (!cv_ctx && sub_type(Solv_Petsc, solv_p.valeur()))
+        {
+          init_cv_ctx(secmem_pression, eq_qdm.assembleur_pression()->norme_continuite());
+          ref_cast(Solv_Petsc, solv_p.valeur()).set_convergence_test(convergence_test, cv_ctx, destroy_cvctx);
+        }
+#endif
 
       /* resolution : seulement si l'erreur en alpha (dans secmem_pression) depasse un seuil */
       if (mp_max_abs_vect(secmem_pression) > 1e-16)
         {
           matrice_pression.ajouter_multvect(inco["pression"]->valeurs(), secmem_pression); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
-          SolveurSys& solv_p = eq_qdm.solveur_pression();
           solv_p.valeur().reinit(), solv_p.valeur().set_return_on_error(1); /* pour eviter un exit() en cas d'echec */
           ok = (solv_p.resoudre_systeme(matrice_pression, secmem_pression, incr["pression"]) >= 0);
           if (!ok) break; //le solveur a echoue -> on sort
+          incr["pression"].echange_espace_virtuel();
           incr["pression"] -= inco["pression"]->valeurs();
         }
       else incr["pression"] = 0;

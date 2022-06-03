@@ -50,6 +50,7 @@ public:
   int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
   void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
   void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
+  DoubleTab norme_continuite() const override;
   int modifier_secmem(DoubleTab&) override
   {
     return 1;
@@ -68,7 +69,6 @@ protected :
   int has_P_ref;
   int stencil_done;
   IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)
-  double cont_norm = 0; //facteur multiplicatif a mettre dans l'equation de continuite
 };
 
 inline const Equation_base& Assembleur_P_PolyMAC::equation() const

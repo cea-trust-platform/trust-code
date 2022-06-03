@@ -226,9 +226,9 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
   /* equations sum alpha_k = 1 */
   /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
   if (!aux_only) for (e = 0; e < zone.nb_elem(); e++)
-      for (secmem(e) = -pe(e) * ve(e) * cont_norm, n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * cont_norm * (*alpha)(e, n);
+      for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * (*alpha)(e, n);
   /* matrice */
-  if (!aux_only) for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) (*mat_a)(e, N * e + n) = -pe(e) * ve(e) * cont_norm;
+  if (!aux_only) for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) (*mat_a)(e, N * e + n) = -pe(e) * ve(e);
 
   /* equations sur les p_f : continuite du gradient si interne, p = p_f si Neumann, sum_k alpha_k v_k = sum_k alpha_k v_k,imp si Dirichlet */
   for (mat_p.get_set_coeff() = 0, mat_v.get_set_coeff() = 0, e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
@@ -236,11 +236,11 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
       else if (!fcl(f, 0)) //face interne
         {
           for (acc = 0, j = 0; j < w2.dimension(1); acc+= pe(e) * w2(i, j, 0), j++) for (m = 0; m < M; m++) //second membre
-              secmem(!aux_only * ne_tot + f, m) -= pe(e) * w2(i, j, 0) * (press(ne_tot + e_f(e, j), m) - press(e, m)) * cont_norm;
-          for (m = 0; m < M; m++) mat_p(M * (!aux_only * ne_tot + f) + m, M * e + m) -= acc * cont_norm;
+              secmem(!aux_only * ne_tot + f, m) -= pe(e) * w2(i, j, 0) * (press(ne_tot + e_f(e, j), m) - press(e, m));
+          for (m = 0; m < M; m++) mat_p(M * (!aux_only * ne_tot + f) + m, M * e + m) -= acc;
           for (j = 0; j < w2.dimension(1); j++) //matrice (sauf bords de Meumann)
             if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) != 1) for (m = 0; m <M; m++)
-                mat_p(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) + m) += pe(e) * w2(i, j, 0) * cont_norm;
+                mat_p(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) + m) += pe(e) * w2(i, j, 0);
         }
       else if (fcl(f, 0) == 1) //Neumann -> egalites p_f = p_imp
         {
@@ -274,6 +274,15 @@ void Assembleur_P_PolyMAC::modifier_secmem_pour_incr_p(const DoubleTab& press, c
         secmem(ne_tot + f, m) = (ref_cast(Neumann_sortie_libre, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), m) - press(ne_tot + f, m)) / fac;
 }
 
+/* norme pour assembler_continuite */
+DoubleTab Assembleur_P_PolyMAC::norme_continuite() const
+{
+  const DoubleVect& pe= la_zone_PolyMAC->porosite_elem(), &ve = la_zone_PolyMAC->volumes();
+  DoubleTab norm(la_zone_PolyMAC->nb_elem());
+  for (int e = 0; e < la_zone_PolyMAC->nb_elem(); e++) norm(e) = pe(e) * ve(e);
+  return norm;
+}
+
 int Assembleur_P_PolyMAC::modifier_solution(DoubleTab& pression)
 {
   Debog::verifier("pression dans modifier solution in",pression);
@@ -305,8 +314,4 @@ void Assembleur_P_PolyMAC::completer(const Equation_base& Eqn)
 {
   mon_equation=Eqn;
   stencil_done = 0;
-  /* norme pour assembler_continuite */
-  const DoubleVect& pe= la_zone_PolyMAC->porosite_elem(), &ve = la_zone_PolyMAC->volumes();
-  for (int e = 0; e < la_zone_PolyMAC->nb_elem(); e++) cont_norm = std::max(cont_norm, 1. / (pe(e) * ve(e)));
-  cont_norm = Process::mp_max(cont_norm);
 }

@@ -29,11 +29,13 @@
 #include <utility>
 #include <set>
 #include <vector>
+#include <Solv_Petsc.h>
+
+
 
 //Description
 
 // SETS (semi-implicite + etapes de stabilisation, a la TRACE)
-
 class SETS : public Simpler
 {
 
@@ -89,6 +91,21 @@ public :
   int sets_;      // 1 si on fait l'etape de prediction des vitesses
 
   double unknown_positivation(const DoubleTab& uk, DoubleTab& incr); // brings to 0 unknowns that should stay positive
+
+#ifdef PETSCKSP_H
+  /* contexte pour le test de convergence */
+  struct cv_test_t
+  {
+    void *defctx; //contexte du test de convergence standard
+    SETS *obj;    //l'objet
+    double eps_alpha; //critere de convergence en alpha
+    Vec t, v; //vecteurs Petsc
+  };
+  DoubleVect norm, residu; //chaque ligne vaut norm * sum alpha, espace pour le residu
+  ArrOfInt ix; //indices pour recuperer le residu
+  cv_test_t *cv_ctx = NULL;
+  void init_cv_ctx(const DoubleTab& secmem, const DoubleVect& norm);
+#endif
 
 protected :
 

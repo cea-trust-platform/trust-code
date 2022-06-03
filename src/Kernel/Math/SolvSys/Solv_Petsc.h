@@ -86,6 +86,10 @@ public :
     return amgx_initialized_;
   };
   void lecture(Entree&);
+  PetscErrorCode set_convergence_test(PetscErrorCode (*converge)(KSP,PetscInt,PetscReal,KSPConvergedReason*,void*),void *cctx,PetscErrorCode (*destroy)(void*))
+  {
+    return KSPSetConvergenceTest(SolveurPetsc_, converge, cctx, destroy);
+  }
   // Timers:
   static PetscLogStage KSPSolve_Stage_;
 #endif

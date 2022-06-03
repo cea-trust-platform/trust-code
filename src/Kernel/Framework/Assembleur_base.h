@@ -72,6 +72,11 @@ public:
   {
     Process::exit(Nom("assembler_continuite(...) must be overloaded by ") + que_suis_je());
   };
+  virtual DoubleTab norme_continuite() const
+  {
+    Process::exit(Nom("norme_continuite(...) must be overloaded by ") + que_suis_je());
+    return DoubleTab();
+  };
 
 private:
   // Drapeau, indique si le solveur resout un increment de pression ou
