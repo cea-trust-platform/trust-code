@@ -59,7 +59,8 @@ void Flux_interfacial_Ranz_Marshall::coeffs(const double dh, const double *alpha
         double Re_b = rho[n_l] * nv[N * n_l + k] * d_bulles(e,k)/mu[n_l];
         double Pr = mu[n_l] * Cp[n_l]/lambda[n_l];
         double Nu = 2 + 0.6* std::pow(Re_b, .5)*std::pow(Pr, .3);
-        hi(n_l, k) = Nu * lambda[n_l] / d_bulles(e,k) * 6 * std::max(alpha[k], 1.e-6) / d_bulles(e,k) ; // std::max() pour que le flux interfacial sont non nul
-        hi(k, n_l) = hi(n_l, k) * 1.e6;
+        hi(n_l, k) = Nu * lambda[n_l] / d_bulles(e,k) * 6 * std::max(alpha[k], 1e-3) / d_bulles(e,k) ; // std::max() pour que le flux interfacial sont non nul
+        da_hi(n_l, k, k) = alpha[k] > 1e-3 ? Nu * lambda[n_l] * 6. / (d_bulles(e,k)*d_bulles(e, k)) : 0;
+        hi(k, n_l) = 1e8;
       }
 }
