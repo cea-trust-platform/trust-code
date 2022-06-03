@@ -694,14 +694,14 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
 {
   if(dist_paroi_initialisee_) return;
 
-  const Zone_Poly_base& zone = *this;
-  int D=Objet_U::dimension, nf = zone.nb_faces(), ne = zone.nb_elem();
+  const Zone_Poly_base& zone_ = *this;
+  int D=Objet_U::dimension, nf = zone_.nb_faces(), ne = zone_.nb_elem();
   const IntTab& f_s = face_sommets();
-  const DoubleTab& xs = zone.zone().domaine().coord_sommets();
+  const DoubleTab& xs = zone_.zone().domaine().coord_sommets();
 
   // On initialise les tables y_faces_ et y_elem_
-  zone.creer_tableau_faces(y_faces_);
-  zone.zone().creer_tableau_elements(y_elem_);
+  zone_.creer_tableau_faces(y_faces_);
+  zone_.zone().creer_tableau_elements(y_elem_);
 
   n_y_elem_.resize(0,D);
   n_y_faces_.resize(0,D);
@@ -715,7 +715,7 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
   DoubleTabs remote_xv(parts);
 
   // On initialise la table de faces/sommets/aretes de bords locale, on cree une table de sommets locale et on compte les aretes
-  int nb_faces_bord = 0;
+  int nb_faces_bord_ = 0;
   int nb_aretes = 0;
   std::set<int> soms;
   for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
@@ -724,7 +724,7 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
         int num_face_1_cl = conds_lim(ind_cl).frontiere_dis().frontiere().num_premiere_face();
         int nb_faces_cl   = conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
 
-        nb_faces_bord += conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
+        nb_faces_bord_ += conds_lim(ind_cl).frontiere_dis().frontiere().nb_faces();
 
         for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
           {
@@ -737,7 +737,7 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
             nb_aretes += (D == 3 ? nb_som_loc : 0)  ; // Autant d'aretes autour d'une face que de sommets !
           }
       }
-  remote_xv[moi].resize(nb_faces_bord + soms.size() + nb_aretes,D);
+  remote_xv[moi].resize(nb_faces_bord_ + soms.size() + nb_aretes,D);
 
   // On remplit les coordonnes des faces et aretes de bord locales
   int ind_tab = 0 ; // indice de la face/sommet/arete dans le tableau
@@ -749,7 +749,7 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
 
         for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
           {
-            for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = zone.xv(f, d); // Remplissage des faces
+            for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = zone_.xv(f, d); // Remplissage des faces
             ind_tab++;
 
             if (D==3) // Remplissage des aretes
@@ -786,8 +786,8 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
   // On traite les informations, chaque proc connait tous les XV
 
   // On boucle sur toutes les faces puis tous les elems
-  const DoubleTab& local_xv = zone.xv(),
-                   & local_xp = zone.xp();
+  const DoubleTab& local_xv = zone_.xv(),
+                   & local_xp = zone_.xp();
 
   //DataArrayDoubles des xv locaux et de tous les remote_xv (a la suite)
   std::vector<MCAuto<DataArrayDouble> > vxv(parts);
@@ -866,5 +866,5 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
   y_faces_.echange_espace_virtuel();
   y_elem_.echange_espace_virtuel();
   dist_paroi_initialisee_ = 1;
-  Cerr <<"Initialize the y table " << zone.zone().domaine().le_nom();
+  Cerr <<"Initialize the y table " << zone_.zone().domaine().le_nom();
 }

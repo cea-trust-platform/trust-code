@@ -106,16 +106,16 @@ void Viscosite_turbulente_multiple::k_over_eps(DoubleTab& k_sur_eps) const
 
 }
 
-void Viscosite_turbulente_multiple::eps(DoubleTab& eps) const
+void Viscosite_turbulente_multiple::eps(DoubleTab& eps_) const
 {
-  eps = 0;
-  DoubleTrav eps_loc = DoubleTrav(eps);
+  eps_ = 0;
+  DoubleTrav eps_loc = DoubleTrav(eps_);
   for (auto &&corr : viscs_turbs)
     {
       eps_loc = 0;
       ref_cast(Viscosite_turbulente_base, corr.second.valeur()).eps(eps_loc);
-      for (int i = 0; i < eps.dimension_tot(0); i++) for (int n = 0; n < eps.dimension(1); n++)
-          eps(i, n) += eps_loc(i,n);
+      for (int i = 0; i < eps_.dimension_tot(0); i++) for (int n = 0; n < eps_.dimension(1); n++)
+          eps_(i, n) += eps_loc(i,n);
     }
 
 }
