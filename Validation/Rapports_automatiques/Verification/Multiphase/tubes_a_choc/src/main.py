@@ -143,7 +143,7 @@ if __name__ == "__main__":
     for n in meshes:
         os.system("mkdir n{}".format(n))
 
-    columns = [r"$\gamma$", r"$p_\infty$", r"$\rho_L$", r"$u_L$", r"$p_L$", r"$\rho_R$", r"$u_R$", r"$p_R$",r"$x_d$"]
+    columns = ["$$\gamma$$", "$$p_\infty$$", "$$\rho_L$$", "$$u_L$$", "$$p_L$$", "$$\rho_R$$", "$$u_R$$", "$$p_R$$","$$x_d$$"]
     tab = plot.Table(columns)
     for name in ["Toro1", "Toro2", "Toro3", "Toro4", "Toro5", "Toro6", "Toro7", "PWR1", "PWR2", "PWR3"]:
 
