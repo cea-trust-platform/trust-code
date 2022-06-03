@@ -65,7 +65,7 @@ void Frottement_interfacial_Tomiyama::coefficient(const DoubleTab& alpha, const 
     if (k!=n_l)
       {
 
-        double Re = rho(n_l) * ndv(n_l,k) * d_bulles(k)/mu(n_l) + 1.e-6;
+        double Re = rho(n_l) * ndv(n_l,k) * d_bulles(k)/mu(n_l) + 1.e-10;
         double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(n_l,k);
         double Cd = -1;
         if (contamination_==0) Cd = std::max( std::min( 16./Re*(1+0.15*std::pow(Re, 0.687)) , 48./Re )   , 8.*Eo/(3.*(Eo+4.)));
@@ -76,5 +76,6 @@ void Frottement_interfacial_Tomiyama::coefficient(const DoubleTab& alpha, const 
         coeff(k, n_l, 0) = coeff(k, n_l, 1) * ndv(n_l,k);
         coeff(n_l, k, 0) =  coeff(k, n_l, 0);
         coeff(n_l, k, 1) =  coeff(k, n_l, 1);
+
       }
 }

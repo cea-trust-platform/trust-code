@@ -84,7 +84,7 @@ DoubleTab& Masse_PolyMAC_P0_Face::appliquer_impl(DoubleTab& sm) const
       }
 
   //vitesses aux elements
-  if (sm.dimension_tot(0) > N * nf_tot)
+  if (sm.dimension_tot(0) > nf_tot)
     for (e = 0; e < zone.nb_elem(); e++)
       for (d = 0; d < D; d++)
         for (n = 0; n < N; n++)

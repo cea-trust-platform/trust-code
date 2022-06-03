@@ -86,12 +86,12 @@ void Dispersion_bulles_PolyMAC_P0::dimensionner_blocs(matrices_t matrices, const
 void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
+//  Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
   const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, equation().zone_dis().valeur());
   const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl(), &e_f = zone.elem_faces();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
   const DoubleTab& vf_dir = zone.volumes_entrelaces_dir(), &xp = zone.xp(), &xv = zone.xv();
-  const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(),
+  const DoubleTab& pvit = ch.passe(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
                     &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
                      &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
@@ -108,22 +108,22 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
       ref_cast(Viscosite_turbulente_base, ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, equation().operateur(0).l_op_base()).correlation().valeur()).eddy_viscosity(nut); //remplissage par la correlation
     }
 
-  int N = inco.line_size() , Np = press.line_size(), D = dimension, nf_tot = zone.nb_faces_tot(), nf = zone.nb_faces(), ne_tot = zone.nb_elem_tot(),  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Nk = (k_turb) ? (*k_turb).dimension(1) : 1;
+  int N = pvit.line_size() , Np = press.line_size(), D = dimension, nf_tot = zone.nb_faces_tot(), nf = zone.nb_faces(), ne_tot = zone.nb_elem_tot(),  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Nk = (k_turb) ? (*k_turb).dimension(1) : 1;
   DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), dv(N, N), ddv(N, N, 4), ddv_c(4), nut_l(N), k_l(Nk), d_b_l(N), coeff(N, N, 2); //arguments pour coeff
 
   const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, correlation_.valeur());
 
   /* calculaiton of the gradient of alpha at the face */
   const Champ_Elem_PolyMAC_P0& ch_a = ref_cast(Champ_Elem_PolyMAC_P0, ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeur());
-  DoubleTrav grad_f_a(equation().inconnue().valeurs());
+  DoubleTrav grad_f_a(pvit);
   ch_a.init_grad(0);
   const IntTab& fg_d = ch_a.fgrad_d, &fg_e = ch_a.fgrad_e;  // Tables utilisees dans zone_PolyMAC_P0::fgrad pour le calcul du gradient
-  const DoubleTab& fg_w = ch_a.fgrad_w;
-  const Conds_lim&    cls_a = ch_a.zone_Cl_dis().les_conditions_limites(); 		// conditions aux limites du champ k
-  const IntTab&       fcl_a = ch_a.fcl();	// tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
+  const DoubleTab&  fg_w = ch_a.fgrad_w;
+  const Conds_lim& cls_a = ch_a.zone_Cl_dis().les_conditions_limites(); 		// conditions aux limites du champ alpha
+  const IntTab&    fcl_a = ch_a.fcl();	// tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
 
   for (int n = 0; n < N; n++)
-    for (int f = 0; f < nf; f++)
+    for (int f = 0; f < nf_tot; f++)
       {
         grad_f_a(f, n) = 0;
         for (int j = fg_d(f); j < fg_d(f+1) ; j++)
@@ -144,9 +144,12 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   /* Calcul du grad aux elems */
   for (int n = 0; n < N; n++)
     for (int e = 0; e < ne_tot; e++)
-      for (int j = 0, f; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-        for (int d = 0; d < D; d++)
-          grad_f_a(nf_tot + D*e +d, n) += (e == f_e(f, 0) ? 1 : -1) * fs(f) * (xv(f, d) - xp(e, d)) / ve(e) * grad_f_a(f, n);
+      for (int d = 0; d < D; d++)
+        {
+          grad_f_a(nf_tot + D*e +d, n) = 0 ;
+          for (int j = 0, f; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+            grad_f_a(nf_tot + D*e +d, n) += (e == f_e(f, 0) ? 1 : -1) * fs(f) * (xv(f, d) - xp(e, d)) / ve(e) * grad_f_a(f, n);
+        }
 
   /* faces */
   for (int f = 0; f < nf; f++)
@@ -157,6 +160,8 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
         T_l = 0 ;
         rho_l = 0;
         mu_l = 0 ;
+        nut_l = 0 ;
+        k_l = 0 ;
         d_b_l=0;
         sigma_l=0;
         dv = 0, ddv = 0 ;
@@ -181,9 +186,9 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
             for (int k = 0; k < N; k++)
               for (int l = 0; l < N; l++)
                 {
-                  double dv_c = ch.v_norm(pvit, pvit, e, f, k, l, NULL, &ddv_c(0));
-                  int i ;
-                  for (i = 0, dv(k, l) = dv_c; i < 4; i++) ddv(k, l, i) = ddv_c(i);
+                  dv(k, l) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, l, NULL, &ddv_c(0));
+//                  int i ;
+//                  for (i = 0, dv(k, l) = dv_c; i < 4; i++) ddv(k, l, i) = ddv_c(i);
                 }
           }
         correlation_db.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, nut_l, k_l, d_b_l, dv, coeff); // correlation identifies the liquid phase
@@ -194,9 +199,8 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
               {
                 double fac = pf(f) * vf(f);
                 secmem(f, k) += fac * ( - coeff(k, l, 0) * grad_f_a(f, k) + coeff(l, k, 0) * grad_f_a(f, l));
-                if (mat)
-                  for (int j = 0; j < 2; j++)
-                    (*mat)(N * f + k, N * f + (j ? l : k)) -= fac * (j ? -1 : 1) * ( - coeff(k, l, 1) * grad_f_a(f, k) + coeff(l, k, 1) * grad_f_a(f, l)) * ddv(k, l, 3);
+//                if (mat) for (int j = 0; j < 2; j++)
+//                    (*mat)(N * f + k, N * f + (j ? l : k)) -= fac * (j ? -1 : 1) * ( - coeff(k, l, 1) * grad_f_a(f, k) + coeff(l, k, 1) * grad_f_a(f, l)) * ddv(k, l, 3);
               }
       }
 
@@ -209,15 +213,15 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
       for (int n = 0; n < N; n++) T_l(n)   =  temp(e, n);
       for (int n = 0; n < N; n++) rho_l(n) =   rho(!cR * e, n);
       for (int n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
-      for (int n = 0; n < N; n++) nut_l(n) += is_turb    ? nut(e,n) : 0;
-      for (int n = 0; n <Nk; n++) k_l(n)   += (k_turb)   ? (*k_turb)(e,0) : 0;
-      for (int n = 0; n < N; n++) d_b_l(n) += (d_bulles) ? (*d_bulles)(e,n) : 0;
+      for (int n = 0; n < N; n++) nut_l(n) = is_turb    ? nut(e,n) : 0;
+      for (int n = 0; n <Nk; n++) k_l(n)   = (k_turb)   ? (*k_turb)(e,0) : 0;
+      for (int n = 0; n < N; n++) d_b_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
       for (int n = 0; n < N; n++)
         for (int k = 0; k < N; k++)
           if (milc.has_interface(n,k))
             {
               Interface_base& sat = milc.get_interface(n, k);
-              sigma_l(n,k) += sat.sigma(temp(e,n),press(e,n * (Np > 1)));
+              sigma_l(n,k) = sat.sigma(temp(e,n),press(e,n * (Np > 1)));
             }
 
       for (int k = 0; k < N; k++)
@@ -231,9 +235,8 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
               {
                 double fac = pe(e) * ve(e);
                 secmem(i, k) += fac * ( - coeff(k, l, 0) * grad_f_a(i, k) + coeff(l, k, 0) * grad_f_a(i, l));
-                if (mat)
-                  for (int j = 0; j < 2; j++)
-                    (*mat)(N * i + k, N * i + l) -= fac * (j ? -1 : 1) * ( - coeff(k, l, 1) * grad_f_a(i, k) + coeff(l, k, 1) * grad_f_a(i, l)) * ddv(k, l, d);
+//                if (mat) for (int j = 0; j < 2; j++)
+//                    (*mat)(N * i + k, N * i + l) -= fac * (j ? -1 : 1) * ( - coeff(k, l, 1) * grad_f_a(i, k) + coeff(l, k, 1) * grad_f_a(i, l)) * ddv(k, l, d);
               }
     }
 }
