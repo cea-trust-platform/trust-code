@@ -12,7 +12,7 @@ define_modules_config()
    # Initialisation de l environnement module $MODULE_PATH
    echo "source /etc/profile.d/modules.sh " >> $env
    # Load modules
-   intel=0 # On continue a garder intel/intelmpi meme si aocc/hpcx plus scalable (voir avec AG)
+   intel=1 # On continue a garder intel/intelmpi meme si aocc/hpcx plus scalable (voir avec AG)
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
       module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 nvidia_hpc_sdk/20.7" # Marche pas, libcuda.so non trouvee !

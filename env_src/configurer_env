@@ -409,6 +409,13 @@ print_GNU_VERSION()
    # Verifie que le compilateur est bien GNU:
    [ "${TRUST_CC_BASE%g++}" != "$TRUST_CC_BASE" ] && $TRUST_CC_BASE -v 2>&1 | awk '/gcc / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'
 }
+
+########################################################
+print_CLANG_VERSION()
+{
+   # Renvoi la version CLANG si utilise pour configurer TRUST: Pour aocc, clang++ -v renvoi AOCCxxx clang version x.y.z donc je retire AOCCxxx du resultat
+   [ "${TRUST_CC_BASE%clang++}" != "$TRUST_CC_BASE" ] && $TRUST_CC_BASE -v 2>&1 | grep -o "clang.*" | awk '/clang / && /version / {i=1;while(split($(i),a,".")==1) i++;print $(i)}'
+}
 ########################################################
 clean_previous_install()
 {
@@ -1631,7 +1638,10 @@ case $TRUST_ARCH_CC in
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
 	CppFlags="-O3 -fPIC $ArmFlags $AoccFlags -std=c++11 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
-	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter -Wsuggest-override" #  -Wno-infinite-recursion"
+	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter " #  -Wno-infinite-recursion"
+	TRUST_VERSION_CLANG=`print_CLANG_VERSION`
+	clangFlags="-Wsuggest-override" && [ "`echo $TRUST_VERSION_CLANG | awk '{split($1,a,".");print (a[1]<11?1:0)}'`" = 1 ] && clangFlags=""
+	CppFlags=$CppFlags" "$clangFlags
 	# GF pas convaincu des erreurs trouvees
 	#CppFlags=$CppFlags" -pedantic" # mis en commentaire au passage de clang 4.0.0 car sinon erreur compilation en mode debug
 	CppFlags=$CppFlags" -Wno-tautological-compare -Werror"
