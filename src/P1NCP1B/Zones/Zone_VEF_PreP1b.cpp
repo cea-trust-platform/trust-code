@@ -90,11 +90,15 @@ void Zone_VEF_PreP1b::discretiser()
   copyToDevice(elem_faces());
   copyToDevice(face_voisins());
   copyToDevice(face_normales());
+  copyToDevice(zone().les_elems());
   copyToDevice(facette_normales());
   copyToDevice(porosite_face());
   copyToDevice(porosite_elem());
   copyToDevice(inverse_volumes());
   copyToDevice(rang_elem_non_std());
+  copyToDevice(vecteur_face_facette());
+  copyToDevice(xv());
+  copyToDevice(zone().domaine().coord_sommets());
 }
 
 void Zone_VEF_PreP1b::discretiser_suite(const VEFPreP1B& discr)
