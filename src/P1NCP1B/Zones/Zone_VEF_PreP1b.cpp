@@ -94,10 +94,17 @@ void Zone_VEF_PreP1b::discretiser()
 #pragma omp target enter data map(to:face_voisins_addr[0:face_voisins().size_array()])
   const double *face_normales_addr = face_normales().addr();
 #pragma omp target enter data map(to:face_normales_addr[0:face_normales().size_array()])
+  const double *facette_normales_addr = facette_normales().addr();
+#pragma omp target enter data map(to:facette_normales_addr[0:facette_normales().size_array()])
   const double *porosite_face_addr = porosite_face().addr();
 #pragma omp target enter data map(to:porosite_face_addr[0:porosite_face().size_array()])
+  const double *porosite_elem_addr = porosite_elem().addr();
+#pragma omp target enter data map(to:porosite_elem_addr[0:porosite_elem().size_array()])
   const double *inverse_volumes_addr = inverse_volumes().addr();
 #pragma omp target enter data map(to:inverse_volumes_addr[0:inverse_volumes().size_array()])
+  const int *rang_elem_non_std_addr = rang_elem_non_std().addr();
+#pragma omp target enter data map(to:rang_elem_non_std_addr[0:rang_elem_non_std().size_array()])
+
 #pragma GCC diagnostic pop
 }
 
