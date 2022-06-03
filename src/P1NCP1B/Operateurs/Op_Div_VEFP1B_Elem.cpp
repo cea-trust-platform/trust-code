@@ -114,7 +114,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
     const double * face_normales_addr = face_normales.addr();
     const int * elem_faces_addr = elem_faces.addr();
     const double * vit_addr = vit.addr();
-#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()],elem_faces_addr[0:elem_faces.size_array()], face_normales_addr[0:face_normales.size_array()],vit_addr[0:vit.size_array()]) map(tofrom:div_addr[0:div.size_array()])
+#pragma omp target teams distribute parallel for map(to:vit_addr[0:vit.size_array()]) map(tofrom:div_addr[0:div.size_array()])
     for(int elem=0; elem<nb_elem; elem++)
     {
         double pscf=0;
@@ -374,7 +374,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
         const int *som_addr = som_.addr();
         double *div_addr = div.addr();
 
-#pragma omp target teams map(to:som_addr[0:som_.size_array()], elem_faces_addr[0:elem_faces.size_array()], face_voisins_addr[0:face_voisins.size_array()], face_normales_addr[0:face_normales.size_array()], vit_addr[0:vit.size_array()]) map(tofrom:div_addr[0:div.size_array()])
+#pragma omp target teams map(to:vit_addr[0:vit.size_array()]) map(tofrom:div_addr[0:div.size_array()])
         {
             double sigma[3];
 #pragma omp distribute parallel for

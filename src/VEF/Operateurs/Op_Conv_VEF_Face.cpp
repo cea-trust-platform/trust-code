@@ -946,7 +946,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
         }
 
       // Need offload
-  #pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()],traitement_pres_bord_addr[0:traitement_pres_bord_.size_array()],gradient_elem_addr[0:gradient_elem.size_array()]) map(tofrom:gradient_addr[0:gradient.size_array()])
+  #pragma omp target teams distribute parallel for map(to:traitement_pres_bord_addr[0:traitement_pres_bord_.size_array()],gradient_elem_addr[0:gradient_elem.size_array()]) map(tofrom:gradient_addr[0:gradient.size_array()])
       for (fac=premiere_face_int; fac<nb_faces_; fac++)
         {
           elem1=face_voisins_addr[fac*2];
@@ -1810,7 +1810,7 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
         int vsom_dim = vsom.size_array();
         ArrOfDouble vsom2(nb_elem_tot * vsom_dim);
         double *vsom_addr2 = vsom2.addr();
-#pragma omp target teams map(to:vsom_addr2[0:vsom2.size_array()], elem_faces_addr[0:elem_faces.size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], porosite_face_addr[0:porosite_face.size_array()], type_elem_Cl_addr[0:type_elem_Cl_.size_array()], porosite_elem_addr[0:porosite_elem.size_array()], KEL_addr[0:KEL.size_array()], facette_normales_addr[0:facette_normales.size_array()], normales_facettes_Cl_addr[0:normales_facettes_Cl.size_array()], rang_elem_non_std_addr[0:rang_elem_non_std.size_array()], vitesse_addr[0:la_vitesse.valeurs().size_array()]) map(tofrom:fluent_addr[0:fluent_.size_array()])
+#pragma omp target teams map(to:vsom_addr2[0:vsom2.size_array()], vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()], KEL_addr[0:KEL.size_array()], normales_facettes_Cl_addr[0:normales_facettes_Cl.size_array()], vitesse_addr[0:la_vitesse.valeurs().size_array()]) map(tofrom:fluent_addr[0:fluent_.size_array()])
         {
             int face[4];
             double vs[3];

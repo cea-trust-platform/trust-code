@@ -323,7 +323,7 @@ ajouter_elem(const DoubleTab& pre,
   const double * face_normales_addr = face_normales.addr();
   const int * elem_faces_addr = elem_faces.addr();
 
-#pragma omp target teams distribute parallel for map(to:face_voisins_addr[0:face_voisins.size_array()],elem_faces_addr[0:elem_faces.size_array()],pre_addr[0:pre.size_array()], face_normales_addr[0:face_normales.size_array()],porosite_face_addr[0:porosite_face.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
+#pragma omp target teams distribute parallel for map(to:pre_addr[0:pre.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
     for(int elem=0; elem<nb_elem_tot; elem++)
     {
         for(int indice=0; indice<nfe; indice++)
@@ -383,7 +383,7 @@ ajouter_som(const DoubleTab& pre,
   const int * som_addr = som_.addr();
 
     // boucle couteuse: A porter
-#pragma omp target teams map(to:coeff_som_addr[0:coeff_som_.size_array()],som_addr[0:som_.size_array()],pre_addr[0:pre.size_array()],elem_faces_addr[0:elem_faces.size_array()],face_voisins_addr[0:face_voisins.size_array()],face_normales_addr[0:face_normales.size_array()],porosite_face_addr[0:porosite_face.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
+#pragma omp target teams map(to:pre_addr[0:pre.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
     {
         double sigma[3];
 #pragma omp distribute parallel for
