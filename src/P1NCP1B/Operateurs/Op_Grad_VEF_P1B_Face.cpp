@@ -28,6 +28,7 @@
 #include <Schema_Temps_base.h>
 #include <EcrFicPartage.h>
 #include <communications.h>
+#include <Device.h>
 
 Implemente_instanciable(Op_Grad_VEF_P1B_Face,"Op_Grad_VEFPreP1B_P1NC",Op_Grad_VEF_Face);
 
@@ -369,13 +370,8 @@ ajouter_som(const DoubleTab& pre,
           for(int indice=0; indice<nfe; indice++)
               som_(el,indice) = nps+dom.get_renum_som_perio(som_elem(el,indice));
       }
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic push
-      const int *som_addr = som_.addr();
-#pragma omp target enter data map(to:som_addr[0:som_.size_array()])
-      const double *coeff_som_addr = coeff_som_.addr();
-#pragma omp target enter data map(to:coeff_som_addr[0:coeff_som_.size_array()])
-#pragma GCC diagnostic pop
+      copyToDevice(som_);
+      copyToDevice(coeff_som_);
   }
   double * grad_addr = grad.addr();
   const double * pre_addr = pre.addr();

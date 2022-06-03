@@ -24,6 +24,7 @@
 #include <Symetrie.h>
 #include <Neumann_sortie_libre.h>
 
+#include <Device.h>
 Implemente_instanciable_sans_constructeur(Op_Conv_VEF_Face,"Op_Conv_Generic_VEF_P1NC",Op_Conv_VEF_base);
 
 
@@ -1715,13 +1716,6 @@ void Op_Conv_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
             }
         }
     }
-}
-template <typename T> void copyToDevice(T tab) {
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic push
-    const int *tab_addr = tab.addr();
-#pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
-#pragma GCC diagnostic pop
 }
 
 void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
