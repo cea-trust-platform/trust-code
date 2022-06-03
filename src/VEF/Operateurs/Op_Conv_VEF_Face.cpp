@@ -140,6 +140,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 0: // le tetraedre n'a pas de Face de Dirichlet
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.25*vs[comp];
         break;
@@ -147,6 +148,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 1: // le tetraedre a une Face de Dirichlet : KEL3
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vitesse[Face[3]*3+comp]*porosite_face[Face[3]];
         break;
@@ -154,6 +156,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 2: // le tetraedre a une Face de Dirichlet : KEL2
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vitesse[Face[2]*3+comp]*porosite_face[Face[2]];
         break;
@@ -161,6 +164,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 4: // le tetraedre a une Face de Dirichlet : KEL1
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vitesse[Face[1]*3+comp]*porosite_face[Face[1]];
         break;
@@ -168,6 +172,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 8: // le tetraedre a une Face de Dirichlet : KEL0
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vitesse[Face[0]*3+comp]*porosite_face[Face[0]];
         break;
@@ -175,6 +180,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 3: // le tetraedre a deux faces de Dirichlet : KEL3 et KEL2
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5* (vsom[comp] + vsom[3+comp]);
         break;
@@ -182,6 +188,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 5: // le tetraedre a deux faces de Dirichlet : KEL3 et KEL1
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5* (vsom[comp] + vsom[6+comp]);
         break;
@@ -189,6 +196,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 6: // le tetraedre a deux faces de Dirichlet : KEL1 et KEL2
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5* (vsom[comp] + vsom[9+comp]);
         break;
@@ -196,6 +204,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 9: // le tetraedre a deux faces de Dirichlet : KEL0 et KEL3
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5* (vsom[3+comp] + vsom[6+comp]);
         break;
@@ -203,6 +212,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 10: // le tetraedre a deux faces de Dirichlet : KEL0 et KEL2
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5* (vsom[3+comp] + vsom[9+comp]);
         break;
@@ -210,6 +220,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 12: // le tetraedre a deux faces de Dirichlet : KEL0 et KEL1
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5*(vsom[6+comp] + vsom[9+comp]);
         break;
@@ -217,6 +228,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 7: // le tetraedre a trois faces de Dirichlet : KEL1, KEL2 et KEL3
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vsom[comp];
         break;
@@ -224,6 +236,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 11: // le tetraedre a trois faces de Dirichlet : KEL0,KEL2 et KEL3
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vsom[3+comp];
         break;
@@ -231,6 +244,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 13: // le tetraedre a trois faces de Dirichlet : KEL0, KEL1 et KEL3
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vsom[6+comp];
         break;
@@ -238,6 +252,7 @@ void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const doubl
 
     case 14: // le tetraedre a trois faces de Dirichlet : KEL0, KEL1 et KEL2
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vsom[9+comp];
         break;
@@ -258,6 +273,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 0: // le tetraedre n'a pas de Face de Dirichlet
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.25*vs[comp];
         break;
@@ -265,6 +281,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 1: // le tetraedre a une Face de Dirichlet : KEL3
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vitesse[Face[3]*3+comp]*porosite_face[Face[3]];
         break;
@@ -272,6 +289,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 2: // le tetraedre a une Face de Dirichlet : KEL2
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vitesse[Face[2]*3+comp]*porosite_face[Face[2]];
         break;
@@ -279,6 +297,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 4: // le tetraedre a une Face de Dirichlet : KEL1
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vitesse[Face[1]*3+comp]*porosite_face[Face[1]];
         break;
@@ -286,6 +305,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 8: // le tetraedre a une Face de Dirichlet : KEL0
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vitesse[Face[0]*3+comp]*porosite_face[Face[0]];
         break;
@@ -293,6 +313,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 3: // le tetraedre a deux faces de Dirichlet : KEL3 et KEL2
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5* (vsom[poly_i+comp] + vsom[poly_i+3+comp]);
         break;
@@ -300,6 +321,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 5: // le tetraedre a deux faces de Dirichlet : KEL3 et KEL1
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5* (vsom[poly_i+comp] + vsom[poly_i+6+comp]);
         break;
@@ -307,6 +329,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 6: // le tetraedre a deux faces de Dirichlet : KEL1 et KEL2
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5* (vsom[poly_i+comp] + vsom[poly_i+9+comp]);
         break;
@@ -314,6 +337,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 9: // le tetraedre a deux faces de Dirichlet : KEL0 et KEL3
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5* (vsom[poly_i+3+comp] + vsom[poly_i+6+comp]);
         break;
@@ -321,6 +345,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 10: // le tetraedre a deux faces de Dirichlet : KEL0 et KEL2
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5* (vsom[poly_i+3+comp] + vsom[poly_i+9+comp]);
         break;
@@ -328,6 +353,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 12: // le tetraedre a deux faces de Dirichlet : KEL0 et KEL1
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = 0.5*(vsom[poly_i+6+comp] + vsom[poly_i+9+comp]);
         break;
@@ -335,6 +361,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 7: // le tetraedre a trois faces de Dirichlet : KEL1, KEL2 et KEL3
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vsom[poly_i+comp];
         break;
@@ -342,6 +369,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 11: // le tetraedre a trois faces de Dirichlet : KEL0,KEL2 et KEL3
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vsom[poly_i+3+comp];
         break;
@@ -349,6 +377,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 13: // le tetraedre a trois faces de Dirichlet : KEL0, KEL1 et KEL3
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vsom[poly_i+6+comp];
         break;
@@ -356,6 +385,7 @@ void calcul_vc_tetra2(const int* Face, double *vc, const double * vs, const doub
 
     case 14: // le tetraedre a trois faces de Dirichlet : KEL0, KEL1 et KEL2
       {
+	#pragma omp target teams distribute parallel for
         for (comp=0; comp<3; comp++)
           vc[comp] = vsom[poly_i+9+comp];
         break;
@@ -374,6 +404,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
 
     case 0:  // le tetraedre n'a pas de Face de Dirichlet. Il a 6 Facettes
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]=0.25*(x[j]+x[dim+j]+x[2*dim+j]+x[3*dim+j]);
 
@@ -390,6 +421,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // les 3 autres Facettes sont sur la Face 3
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]=(x[j]+x[dim+j]+x[2*dim+j])/3.;
 
@@ -406,6 +438,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       //                           4   aux noeuds 2 0 xg
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]=(x[j]+x[dim+j]+x[3*dim+j])/3.;
 
@@ -421,6 +454,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       //                           5   aux noeuds 1 0 xg
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]=(x[j]+x[2*dim+j]+x[3*dim+j])/3.;
 
@@ -436,6 +470,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       //                           5   aux noeuds 1 0 xg
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]=(x[dim+j]+x[2*dim+j]+x[3*dim+j])/3.;
 
@@ -448,6 +483,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // Il a 1 Facette nulle: 5
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]= 0.5*(x[j]+x[dim+j]);
 
@@ -462,6 +498,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // Il a 1 Facette  nulle  : 4
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]= 0.5*(x[j]+x[2*dim+j]);
 
@@ -475,6 +512,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // Il a 1 Facette  nulle: 3
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]= 0.5*(x[j]+x[3*dim+j]);
 
@@ -488,6 +526,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // Il a 1 Facette  nulle: 2
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]= 0.5*(x[dim+j]+x[2*dim+j]);
 
@@ -501,6 +540,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // Il a 1 Facette  nulle: 1
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]= 0.5*(x[dim+j]+x[3*dim+j]);
 
@@ -515,6 +555,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // Il a 1 Facette  nulle
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]= 0.5*(x[2*dim+j]+x[3*dim+j]);
 
@@ -527,6 +568,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // il y 3 Facettes nulles: 3,4,5
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]= x[j];
 
@@ -542,6 +584,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // il y 3 Facettes nulles: 1, 2, 5
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]= x[dim+j];
 
@@ -557,6 +600,7 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // il y 3 Facettes nulles: 0, 2, 4
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]= x[2*dim+j];
 
@@ -571,8 +615,243 @@ void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& 
       // il y 3 Facettes nulles: 0, 1, 3
 
       {
+	#pragma omp target teams distribute parallel for
         for (int j=0; j<dim; j++)
           xg[j]= x[3*dim+j];
+
+        n1=0;
+        n2=1;
+        n3=3;
+        idirichlet=3;
+        break;
+
+      }
+    }
+}
+#pragma omp end declare target
+
+#pragma omp declare target
+void calcul_xg_tetra2(double * xg, const double *x, const int type_elem_Cl, int& idirichlet,int& n1,int& n2,int& n3, int dim, const int poly)
+{
+  switch(type_elem_Cl)
+    {
+
+    case 0:  // le tetraedre n'a pas de Face de Dirichlet. Il a 6 Facettes
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]=0.25*(x[poly+j]+x[poly+dim+j]+x[poly+2*dim+j]+x[poly+3*dim+j]);
+
+        idirichlet=0;
+        break;
+      }
+
+    case 1:  // le tetraedre a une Face de Dirichlet.  Le 'centre'
+      // du tetraedre est au milieu de la Face 3 qui a pour sommets
+      // 0, 1, 2
+      // Il a 3 Facettes reelles : 0   aux noeuds 2 3 xg
+      //                           1   aux noeuds 1 3 xg
+      //                           3   aux noeuds 3 0 xg
+      // les 3 autres Facettes sont sur la Face 3
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]=(x[poly+j]+x[poly+dim+j]+x[poly+2*dim+j])/3.;
+
+        idirichlet=1;
+        break;
+
+      }
+
+    case 2:  // le tetraedre a une Face de Dirichlet.  Le 'centre'
+      // du tetraedre est au milieu de la Face 2 qui a pour sommets
+      // 0, 1, 3
+      // Il a 3 Facettes reelles : 0   aux noeuds 2 3 xg
+      //                           2   aux noeuds 1 2 xg
+      //                           4   aux noeuds 2 0 xg
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]=(x[poly+j]+x[poly+dim+j]+x[poly+3*dim+j])/3.;
+
+        idirichlet=1;
+        break;
+      }
+
+    case 4:  // le tetraedre a une Face de Dirichlet.  Le 'centre'
+      // du tetraedre est au milieu de la Face 1 qui a pour sommets
+      // 0, 2, 3
+      // Il a 3 Facettes reelles : 1   aux noeuds 1 3 xg
+      //                           2   aux noeuds 1 2 xg
+      //                           5   aux noeuds 1 0 xg
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]=(x[poly+j]+x[poly+2*dim+j]+x[poly+3*dim+j])/3.;
+
+        idirichlet=1;
+        break;
+      }
+
+    case 8:  // le tetraedre a une Face de Dirichlet.  Le 'centre'
+      // du tetraedre est au milieu de la Face 0 qui a pour sommets
+      // 1, 2, 3
+      // Il a 3 Facettes reelles : 3   aux noeuds 3 0 xg
+      //                           4   aux noeuds 2 0 xg
+      //                           5   aux noeuds 1 0 xg
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]=(x[poly+dim+j]+x[poly+2*dim+j]+x[poly+3*dim+j])/3.;
+
+        idirichlet=1;
+        break;
+      }
+
+    case 3:  // le tetraedre a deux faces de Dirichlet 2 et 3. Le 'centre'
+      // du tetraedre est au milieu de l'arete qui a pour extremites 0, 1.
+      // Il a 1 Facette nulle: 5
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]= 0.5*(x[poly+j]+x[poly+dim+j]);
+
+        n1=5;
+        idirichlet=2;
+        break;
+      }
+
+
+    case 5:  // le tetraedre a deux faces de Dirichlet 3 et 1. Le 'centre'
+      // du tetraedre est au milieu de l'arete qui a pour extremites 0, 2.
+      // Il a 1 Facette  nulle  : 4
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]= 0.5*(x[poly+j]+x[poly+2*dim+j]);
+
+        n1=4;
+        idirichlet=2;
+        break;
+      }
+
+    case 6:  // le tetraedre a deux faces de Dirichlet 1 et 2. Le 'centre'
+      // du tetraedre est au milieu de l'arete qui a pour extremites 0, 3.
+      // Il a 1 Facette  nulle: 3
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]= 0.5*(x[poly+j]+x[poly+3*dim+j]);
+
+        n1=3;
+        idirichlet=2;
+        break;
+      }
+
+    case 9:  // le tetraedre a deux faces de Dirichlet 0 et 3. Le 'centre'
+      // du tetraedre est au milieu de l'arete qui a pour extremites 1, 2
+      // Il a 1 Facette  nulle: 2
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]= 0.5*(x[poly+dim+j]+x[poly+2*dim+j]);
+
+        n1=2;
+        idirichlet=2;
+        break;
+      }
+
+    case 10:  // le tetraedre a deux faces de Dirichlet 0 et 2. Le 'centre'
+      // du tetraedre est au milieu de l'arete qui a pour extremites 1, 3.
+      // Il a 1 Facette  nulle: 1
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]= 0.5*(x[poly+dim+j]+x[poly+3*dim+j]);
+
+        n1=1;
+        idirichlet=2;
+        break;
+      }
+
+
+    case 12:  // le tetraedre a deux faces de Dirichlet 0 et 1. Le 'centre'
+      // du tetraedre est au milieu de l'arete qui a pour sommets 2, 3.
+      // Il a 1 Facette  nulle
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]= 0.5*(x[poly+2*dim+j]+x[poly+3*dim+j]);
+
+        n1=0;
+        idirichlet=2;
+        break;
+      }
+
+    case 7:  // trois faces de Dirichlet : 1,2,3. Le centre est au sommet 0
+      // il y 3 Facettes nulles: 3,4,5
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]= x[poly+j];
+
+        n1=3;
+        n2=4;
+        n3=5;
+        idirichlet=3;
+        break;
+
+      }
+
+    case 11:  // trois faces de Dirichlet : 0,2,3. Le centre est au sommet 1
+      // il y 3 Facettes nulles: 1, 2, 5
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]= x[poly+dim+j];
+
+        n1=1;
+        n2=2;
+        n3=5;
+        idirichlet=3;
+        break;
+
+      }
+
+    case 13:  // trois faces de Dirichlet : 0,1,3. Le centre est au sommet 2
+      // il y 3 Facettes nulles: 0, 2, 4
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]= x[poly+2*dim+j];
+
+        n1=0;
+        n2=2;
+        n3=4;
+        idirichlet=3;
+        break;
+
+      }
+    case 14:  // trois faces de Dirichlet : 0,1,2. Le centre est au sommet 3
+      // il y 3 Facettes nulles: 0, 1, 3
+
+      {
+	#pragma omp target teams distribute parallel for
+        for (int j=0; j<dim; j++)
+          xg[j]= x[poly+3*dim+j];
 
         n1=0;
         n2=1;
@@ -899,6 +1178,58 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const Domaine& domaine=zone.domaine();
   const DoubleTab& coord_sommets=domaine.coord_sommets();
 
+  const int * rang_elem_non_std_addr = rang_elem_non_std.addr();
+  int * face_addr = face.addr();
+  const int * elem_faces_addr = elem_faces.addr();
+  //    const int * traitement_pres_bord_addr = traitement_pres_bord_.addr();
+
+
+  const double * vitesse_face_absolue_addr = vitesse_face_absolue.addr();
+  const double * porosite_face_addr = porosite_face.addr();
+  const double * porosite_elem_addr = porosite_elem.addr();
+  double * vs_addr = vs.addr();
+  double * vc_addr = vc.addr();
+  double * vsom_addr = vsom.addr();
+  int vsom_size = nb_elem_tot*vsom.size_array();
+  int vsom_dim = vsom.size_array();
+  int vc_size = vc.size_array();
+  //    int itypcl_addr[nb_elem_tot];
+  int type_elem_Cl_addr[nb_elem_tot];
+  const int * sommet_elem_addr = sommet_elem.addr();
+  double * xsom_addr = xsom.addr();
+  const double * coord_sommets_addr = coord_sommets.addr();
+  const int * les_elems_addr = les_elems.addr();
+  double * xc_addr = xc.addr();
+  int xc_size = xc.size();
+  const int * KEL_addr = type_elemvef.KEL().addr();
+  int KEL_size= type_elemvef.KEL().size_array();
+  double * cc_addr = cc.addr();
+  const double * facette_normales_addr = facette_normales.addr();
+  const double * normales_facettes_Cl_addr = normales_facettes_Cl.addr();
+  const int * est_une_face_de_dirichlet_addr = est_une_face_de_dirichlet_.addr();
+
+  const double * transporte_face_addr = transporte_face.addr();
+  // const double * gradient_addr = gradient.addr();
+  gradient_addr = gradient.addr();
+  const double * vecteur_face_facette_addr = vecteur_face_facette.addr();
+  const double * vecteur_face_facette_Cl_addr = vecteur_face_facette_Cl.addr();
+
+  const double * vitesse_addr=la_vitesse.valeurs().addr();
+  int vitesse_size = la_vitesse.valeurs().size_array();
+  const double * xv_addr = xv.addr();
+  double * resu_addr = resu.addr();
+  double * flux_b_addr = flux_b.addr();
+
+  for (poly=0; poly<nb_elem_tot; poly++)
+    {
+      rang = rang_elem_non_std(poly);
+      type_elem_Cl_addr[rang] = zone_Cl_VEF.type_elem_Cl(rang);
+    }
+
+  double vsom_addr2[nb_elem_tot*12];
+  double xsom_addr2[nb_elem_tot*xsom.size_array()];
+  int xsom_dim = vsom.size_array();
+
   // Boucle ou non selon la valeur de alpha (uniquement a l'ordre 3 pour le moment)
   // Si alpha=1, la boucle se limite a une simple passe avec le schema choisi (muscl, amont, centre)
   // Si alpha<1, la boucle se compose de 2 passes:
@@ -920,82 +1251,101 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       // On traite les polyedres en suivant l'ordre dans lequel ils figurent
       // dans la zone
       // boucle sur les polys
-      for (poly=0; poly<nb_elem_tot; poly++)
+      // Need offload
+
+#pragma omp target teams map(to:vsom_addr2[0:nb_elem_tot*vsom_dim],xsom_addr[0:xsom.size_array()],elem_faces_addr[0:elem_faces.size_array()],rang_elem_non_std_addr[0:rang_elem_non_std.size_array()],vitesse_face_absolue_addr[0:vitesse_face_absolue.size_array()],porosite_face_addr[0:porosite_face.size_array()],type_elem_Cl_addr[0:nb_elem_tot],porosite_elem_addr[0:porosite_elem.size_array()],KEL_addr[0:KEL_size],facette_normales_addr[0:facette_normales.size_array()],normales_facettes_Cl_addr[0:normales_facettes_Cl.size_array()],vitesse_addr[0:vitesse_size],sommet_elem_addr[0:sommet_elem.size_array()],traitement_pres_bord_addr[0:traitement_pres_bord_.size_array()],est_une_face_de_dirichlet_addr[0:est_une_face_de_dirichlet_.size_array()],gradient_addr[0:gradient.size_array()],transporte_face_addr[0:transporte_face.size_array()],vecteur_face_facette_addr[0:vecteur_face_facette.size_array()],vecteur_face_facette_Cl_addr[0:vecteur_face_facette_Cl.size_array()],xv_addr[0:xv.size_array()],coord_sommets_addr[0:coord_sommets.size_array()],les_elems_addr[0:les_elems.size_array()]) map(tofrom:flux_b_addr[0:flux_b.size_array()],resu_addr[0:resu.size_array()])
+      {
+	int face_addr2[4];
+	double cc_addr2[3];
+	double vs_addr2[3];
+	double vc_addr2[3];
+	double xc_addr[3];
+#pragma omp distribute parallel for private(num10,num20,rang,fa7,i,j,comp0,rang) firstprivate(alpha)
+	for (poly=0; poly<nb_elem_tot; poly++)
         {
           int contrib = 0;
           // calcul des numeros des faces du polyedre
           for (face_adj=0; face_adj<nfac; face_adj++)
             {
-              int face_ = elem_faces(poly,face_adj);
-              face[face_adj]= face_;
+              int face_ = elem_faces_addr[poly*nfac+face_adj];
+              face_addr2[face_adj]= face_;
               if (face_<nb_faces_) contrib=1; // Une face reelle sur l'element virtuel
             }
           //
           if (contrib)
             {
-              int calcul_flux_en_un_point = (ordre != 3) && (ordre==1 || traitement_pres_bord_[poly]);
+              int calcul_flux_en_un_point = (ordre != 3) && (ordre==1 || traitement_pres_bord_addr[poly]);
               for (j=0; j<dimension; j++)
                 {
-                  vs[j] = vitesse_face_absolue(face[0],j)*porosite_face[face[0]];
+                  vs_addr2[j] = vitesse_face_absolue_addr[face_addr2[0]*dimension+j]*porosite_face_addr[face_addr2[0]];
                   for (i=1; i<nfac; i++)
-                    vs[j]+= vitesse_face_absolue(face[i],j)*porosite_face[face[i]];
+		    vs_addr2[j]+= vitesse_face_absolue_addr[face_addr2[i]*dimension+j]*porosite_face_addr[face_addr2[i]];
                 }
               // calcul de la vitesse aux sommets des polyedres
               // On va utliser les fonctions de forme implementees dans la classe Champs_P1_impl ou Champs_Q1_impl
               if (istetra==1)
                 {
                   for (i=0; i<nsom; i++)
-                    for (j=0; j<dimension; j++)
-                      vsom(i,j) = (vs[j] - dimension*vitesse_face_absolue(face[i],j)*porosite_face[face[i]]);
+                    for (j=0; j<dimension; j++){
+		      vsom_addr2[poly*vsom_dim+i*dimension+j] = (vs_addr2[j] - dimension*vitesse_face_absolue_addr[face_addr2[i]*dimension+j]*porosite_face_addr[face_addr2[i]]);
+		    }
                 }
-              else
+              else // Mettre un Abort
                 {
+// #if defined(_OPENMP)
+// 		  Process::exit("Non portée sur GPU! ",201);
+// #endif
                   // pour que cela soit valide avec les hexa (c'est + lent a calculer...)
-                  for (j=0; j<nsom; j++)
-                    {
-                      num_som = sommet_elem(poly,j);
-                      for (int ncomp=0; ncomp<dimension; ncomp++)
-                        vsom(j,ncomp) = la_vitesse.valeur_a_sommet_compo(num_som,poly,ncomp);
-                    }
+                  // for (j=0; j<nsom; j++)
+                  //   {
+                  //     num_som = sommet_elem(poly,j);
+                  //     for (int ncomp=0; ncomp<dimension; ncomp++)
+                  //       vsom(j,ncomp) = la_vitesse.valeur_a_sommet_compo(num_som,poly,ncomp);
+                  //   }
+
                 }
 
               // Determination du type de CL selon le rang
-              rang = rang_elem_non_std(poly);
-              int itypcl = (rang==-1 ? 0 : zone_Cl_VEF.type_elem_Cl(rang));
+	      rang = rang_elem_non_std_addr[poly];
+	      int itypcl = (rang==-1 ? 0 : type_elem_Cl_addr[rang]);
 
-              // calcul de vc (a l'intersection des 3 facettes) vc vs vsom proportionnelles a la porosite
-              type_elemvef.calcul_vc(face,vc,vs,vsom,vitesse(),itypcl,porosite_face);
-
+	      calcul_vc_tetra2(face_addr2,vc_addr2,vs_addr2,vsom_addr2,vitesse_addr,itypcl,porosite_face_addr,poly*vsom_dim);
               // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
-              if (ordre==3)
+              if (ordre==3) // A optimiser! Risque de mauvais resultats en parallel si ordre=3
                 {
                   int idirichlet;
                   int n1,n2,n3;
                   for (i=0; i<nsom; i++)
-                    for (j=0; j<dimension; j++)
-                      xsom(i,j) = coord_sommets(les_elems(poly,i),j);
-                  type_elemvef.calcul_xg(xc,xsom,itypcl,idirichlet,n1,n2,n3);
+                    for (j=0; j<dimension; j++){
+		      xsom_addr[i*dimension+j] = coord_sommets_addr[les_elems_addr[poly*nsom+i]*dimension+j];
+		      // xsom_addr2[poly*xsom_dim+i*dimension+j] = coord_sommets_addr[les_elems_addr[poly*nsom+i]*dimension+j];
+		    }
+		  calcul_xg_tetra(xc_addr,xsom_addr,itypcl,idirichlet,n1,n2,n3,xc_size);
+		  //		  calcul_xg_tetra2(xc_addr2,xsom_addr2,itypcl,idirichlet,n1,n2,n3,xc_size,poly*xsom_dim);
                 }
 
               // Gestion de la porosite
               if (marq==0)
                 {
-                  double coeff=1./porosite_elem(poly);
-                  vsom*=coeff;
-                  vc*=coeff;
+                  double coeff=1./porosite_elem_addr[poly];
+		  for(int l=0; l<vsom_size; l++){
+		    vsom_addr2[l]*=coeff;
+		  }
+		  for(int l=0; l<vc_size; l++)
+		    vc_addr2[l]*=coeff;
                 }
               // Boucle sur les facettes du polyedre non standard:
-              for (fa7=0; fa7<nfa7; fa7++)
+	      for (fa7=0; fa7<nfa7; fa7++)
                 {
-                  num10 = face[KEL(0,fa7)];
-                  num20 = face[KEL(1,fa7)];
+                  num10 = face_addr2[KEL_addr[fa7]];
+                  num20 = face_addr2[KEL_addr[nfa7+fa7]];
                   // normales aux facettes
                   if (rang==-1)
                     for (i=0; i<dimension; i++)
-                      cc[i] = facette_normales(poly, fa7, i);
+		      cc_addr2[i] = facette_normales_addr[(poly*nfa7+fa7)*dimension+i];
                   else
                     for (i=0; i<dimension; i++)
-                      cc[i] = normales_facettes_Cl(rang,fa7,i);
+		      cc_addr2[i] = normales_facettes_Cl_addr[(rang*nfa7+fa7)*dimension+i];
 
                   // Calcul des vitesses en C,S,S2 les 3 extremites de la fa7 et M le centre de la fa7
                   double psc_c=0,psc_s=0,psc_m,psc_s2=0;
@@ -1003,8 +1353,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                     {
                       for (i=0; i<2; i++)
                         {
-                          psc_c+=vc[i]*cc[i];
-                          psc_s+=vsom(KEL(2,fa7),i)*cc[i];
+			  psc_c+=vc_addr2[i]*cc_addr[i];
+			  psc_s+=vsom_addr2[poly*vsom_dim+KEL_addr[2*nfa7+fa7]*2+i]*cc_addr2[i];
                         }
                       psc_m=(psc_c+psc_s)/2.;
                     }
@@ -1012,9 +1362,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                     {
                       for (i=0; i<3; i++)
                         {
-                          psc_c+=vc[i]*cc[i];
-                          psc_s+=vsom(KEL(2,fa7),i)*cc[i];
-                          psc_s2+=vsom(KEL(3,fa7),i)*cc[i];
+                          psc_c+=vc_addr2[i]*cc_addr2[i];
+                          psc_s+=vsom_addr2[poly*vsom_dim+KEL_addr[2*nfa7+fa7]*3+i]*cc_addr2[i];
+                          psc_s2+=vsom_addr2[poly*vsom_dim+KEL_addr[3*nfa7+fa7]*3+i]*cc_addr2[i];
                         }
                       psc_m=(psc_c+psc_s+psc_s2)/3.;
                     }
@@ -1022,7 +1372,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   // auquel cas la fa7 coincide avec la face num1 ou num2 -> C est au centre de la face
                   int appliquer_cl_dirichlet=0;
                   if (option_appliquer_cl_dirichlet)
-                    if (est_une_face_de_dirichlet_[num10] || est_une_face_de_dirichlet_[num20])
+		    if (est_une_face_de_dirichlet_addr[num10] || est_une_face_de_dirichlet_addr[num20])
                       {
                         appliquer_cl_dirichlet = 1;
                         psc_m = psc_c;
@@ -1066,7 +1416,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   for (comp0=0; comp0<ncomp_ch_transporte; comp0++)
                     {
                       double flux;
-                      double inco_m = (ncomp_ch_transporte==1?transporte_face(face_amont_m):transporte_face(face_amont_m,comp0));
+                      double inco_m = (ncomp_ch_transporte==1?transporte_face_addr[face_amont_m]:transporte_face_addr[face_amont_m*ncomp_ch_transporte+comp0]);
                       if (type_op_boucle==amont || appliquer_cl_dirichlet)
                         {
                           flux = inco_m*psc_m;
@@ -1075,26 +1425,31 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                         {
                           // Calcul de l'inconnue au centre M de la fa7
                           if (rang==-1)
-                            for (j=0; j<dimension; j++)
-                              inco_m+= gradient(item_m,comp0,j)*vecteur_face_facette(poly,fa7,j,dir);
-                          else
-                            for (j=0; j<dimension; j++)
-                              inco_m+= gradient(item_m,comp0,j)*vecteur_face_facette_Cl(rang,fa7,j,dir);
+                            for (j=0; j<dimension; j++){
+			      inco_m+= gradient_addr[(item_m*ncomp_ch_transporte+comp0)*dimension+j]*vecteur_face_facette_addr[((poly*nfa7+fa7)*dimension+j)*2+dir];
+			    }
 
+                          else
+                            for (j=0; j<dimension; j++){
+                              inco_m+= gradient_addr[(item_m*ncomp_ch_transporte+comp0)*dimension+j]*vecteur_face_facette_Cl_addr[((rang*nfa7+fa7)*dimension+j)*2+dir];
+			    }
                           // Calcul de l'inconnue au sommet S, une premiere extremite de la fa7
-                          double inco_s = (ncomp_ch_transporte==1?transporte_face(face_amont_s):transporte_face(face_amont_s,comp0));
-                          int sommet_s = sommet_elem(poly,KEL(2,fa7));
-                          for (j=0; j<dimension; j++)
-                            inco_s+= gradient(item_s,comp0,j)*(-xv(face_amont_s,j)+coord_sommets(sommet_s,j));
+			  double inco_s = (ncomp_ch_transporte==1?transporte_face_addr[face_amont_s]:transporte_face_addr[face_amont_s*ncomp_ch_transporte+comp0]);
+			  //                          int sommet_s = sommet_elem(poly,KEL(2,fa7));
+                          int sommet_s = sommet_elem_addr[poly*nsom+KEL_addr[2*nfa7+fa7]];
+                          for (j=0; j<dimension; j++){
+                            inco_s+= gradient_addr[(item_s*ncomp_ch_transporte+comp0)*dimension+j]*(-xv_addr[face_amont_s*dimension+j]+coord_sommets_addr[sommet_s*dimension+j]);
+			  }
 
                           // Calcul de l'inconnue au sommet S2, la derniere extremite de la fa7 en 3D
                           double inco_s2=0;
                           if (dimension==3)
                             {
-                              inco_s2 = (ncomp_ch_transporte==1?transporte_face(face_amont_s2):transporte_face(face_amont_s2,comp0));
-                              int sommet_s2 = sommet_elem(poly,KEL(3,fa7));
-                              for (j=0; j<dimension; j++)
-                                inco_s2+= gradient(item_s2,comp0,j)*(-xv(face_amont_s2,j)+coord_sommets(sommet_s2,j));
+                              inco_s2 = (ncomp_ch_transporte==1?transporte_face_addr[face_amont_s2]:transporte_face_addr[face_amont_s2*ncomp_ch_transporte+comp0]);
+                              int sommet_s2 = sommet_elem_addr[poly*nsom+KEL_addr[3*nfa7+fa7]];
+                              for (j=0; j<dimension; j++){
+                                inco_s2+= gradient_addr[(item_s2*ncomp_ch_transporte+comp0)*dimension+j]*(-xv_addr[face_amont_s2*dimension+j]+coord_sommets_addr[sommet_s2*dimension+j]);
+			      }
                             }
 
                           // Calcul de l'inconnue a C, une autre extremite de la fa7, intersection avec les autres fa7
@@ -1103,9 +1458,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                           double inco_c;
                           if (ordre==3)
                             {
-                              inco_c = (ncomp_ch_transporte==1?transporte_face(face_amont_c):transporte_face(face_amont_c,comp0));
+                              inco_c = (ncomp_ch_transporte==1?transporte_face_addr[face_amont_c]:transporte_face_addr[face_amont_c*ncomp_ch_transporte+comp0]);
                               for (j=0; j<dimension; j++)
-                                inco_c+= gradient(item_c,comp0,j)*(-xv(face_amont_c,j)+xc(j));
+                                inco_c+= gradient_addr[(item_c*ncomp_ch_transporte+comp0)*dimension+j]*(-xv_addr[face_amont_c*dimension+j]+xc_addr[j]);
                             }
                           else
                             {
@@ -1130,25 +1485,46 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 
                       if (ncomp_ch_transporte == 1)
                         {
-                          resu(num10) -= flux;
-                          resu(num20) += flux;
-                          if (num10<nb_faces_bord) flux_b(num10,0) += flux;
-                          if (num20<nb_faces_bord) flux_b(num20,0) -= flux;
+			  #pragma omp atomic
+                          resu_addr[num10] -= flux;
+			  #pragma omp atomic
+                          resu_addr[num20] += flux;
+                          if (num10<nb_faces_bord){
+                            #pragma omp atomic
+			    flux_b_addr[num10*ncomp_ch_transporte] += flux;
+			  }
+                          if (num20<nb_faces_bord){
+                            #pragma omp atomic
+			    flux_b_addr[num20*ncomp_ch_transporte] -= flux;
+			  }
                         }
                       else
                         {
-                          resu(num10,comp0) -= flux;
-                          resu(num20,comp0) += flux;
-                          if (num10<nb_faces_bord) flux_b(num10,comp0) += flux;
-                          if (num20<nb_faces_bord) flux_b(num20,comp0) -= flux;
+			  #pragma omp atomic
+                          resu_addr[num10*ncomp_ch_transporte+comp0] -= flux;
+			  #pragma omp atomic
+                          resu_addr[num20*ncomp_ch_transporte+comp0] += flux;
+                          if (num10<nb_faces_bord){
+			    #pragma omp atomic
+			    flux_b_addr[num10*ncomp_ch_transporte+comp0] += flux;
+			  }
+                          if (num20<nb_faces_bord){
+			    #pragma omp atomic
+			    flux_b_addr[num20*ncomp_ch_transporte+comp0] -= flux;
+			  }
                         }
 
                     }// boucle sur comp
                 } // fin de la boucle sur les facettes
             }
         } // fin de la boucle
+ }
       alpha = 1 - alpha;
     } // fin de la boucle
+
+
+
+
   //statistiques().end_count(m2);
   //statistiques().begin_count(m3);
   int voisine;
