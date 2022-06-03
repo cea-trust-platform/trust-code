@@ -129,92 +129,6 @@ Entree& Op_Conv_VEF_Face::readOn(Entree& s )
 ////////////////////////////////////////////////////////////////////
 
 // Need offload: target declare: à extraire hors classe. Calcul_vc juste pour les tetra
-#pragma omp declare target
-double minmod_gpu(const double grad1, const double grad2)
-{
-  double gradlim=0.;
-  if(grad1*grad2>0.) (abs(grad1)<abs(grad2)) ? gradlim=grad1 : gradlim=grad2 ;
-  return gradlim;
-}
-#pragma omp end declare target
-
-#pragma omp declare target
-double vanleer_gpu(double grad1, double grad2)
-{
-  double gradlim=0.;
-  if(grad1*grad2>0.) gradlim=2.*grad1*grad2/(grad1+grad2) ;
-  return gradlim;
-}
-#pragma omp end declare target
-
-
-#pragma omp declare target
-double vanalbada_gpu(double grad1, double grad2)
-{
-  double gradlim=0.;
-  if(grad1*grad2>0.) gradlim=grad1*grad2*(grad1+grad2)/(grad1*grad1+grad2*grad2) ;
-  return gradlim;
-}
-#pragma omp end declare target
-
-#pragma omp declare target
-double chakravarthy_gpu(double grad1, double grad2)
-{
-  /*
-    Cerr << " limiteur chakavarthy non preconise (non symetrique) " << finl;
-    exit();
-    return 0;
-  */
-  double gradlim=0.;
-  if ((grad1*grad2)>0)
-    {
-      gradlim=dmin(grad1/grad2,1.8); // 1<<beta<<2
-      gradlim=dmax(gradlim,0.);
-      gradlim*=grad2;
-    }
-  return gradlim;
-}
-#pragma omp end declare target
-
-#pragma omp declare target
-double superbee_gpu(double grad1, double grad2)
-{
-  /*
-    Cerr << " limiteur superbee non preconise (source d'instabilites) " << finl;
-    exit();
-    return 0;
-  */
-  double gradlim=0.;
-  if ((grad1*grad2)>0)
-    {
-      double gradlim1,gradlim2;
-      gradlim1=dmin(2*(grad1/grad2),1);
-      gradlim2=dmin(grad1/grad2,2);
-      gradlim=dmax(gradlim1,gradlim2);
-      gradlim=dmax(gradlim,0.);
-      gradlim*=grad2;
-    }
-  return gradlim;
-}
-#pragma omp end declare target
-
-#pragma omp declare target
-double LIMITEUR_GPU(double grad1, double grad2, int cas)
-{
-  double LIMIT=-1;
-  if (cas==1) //cas "minmod"
-    LIMIT = minmod_gpu(grad1,grad2);
-  if (cas==2) //"vanleer"
-    LIMIT = vanleer_gpu(grad1,grad2);
-  if (cas==3)  //"vanalbada"
-    LIMIT = vanalbada_gpu(grad1,grad2);
-  if (cas==4) //"chakravarthy"
-    LIMIT = chakravarthy_gpu(grad1,grad2);
-  if (cas==5) //"superbee"
-    LIMIT = superbee_gpu(grad1,grad2);
-  return LIMIT;
-}
-#pragma omp end declare target
 
 #pragma omp declare target
 void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const double * vsom,
@@ -959,9 +873,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 double grad1=gradient_elem_addr[(elem1*ncomp_ch_transporte+comp0)*dimension+i];
                 double grad2=gradient_elem_addr[(elem2*ncomp_ch_transporte+comp0)*dimension+i];
                 if (minmod_pres_du_bord)
-		  gradient_addr[(fac*ncomp_ch_transporte+comp0)*dimension+i] = minmod_gpu(grad1, grad2);
+		  gradient_addr[(fac*ncomp_ch_transporte+comp0)*dimension+i] = minmod(grad1, grad2);
                 else
-		  gradient_addr[(fac*ncomp_ch_transporte+comp0)*dimension+i] = LIMITEUR_GPU(grad1, grad2,cas);
+		  gradient_addr[(fac*ncomp_ch_transporte+comp0)*dimension+i] = LIMITEUR_GPU(grad1, grad2, cas);
               }
         } // fin du for faces
       gradient.echange_espace_virtuel();
