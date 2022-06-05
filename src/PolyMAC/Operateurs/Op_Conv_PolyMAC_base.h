@@ -27,6 +27,8 @@
 #include <Operateur_Conv.h>
 #include <Ref_Zone_Poly_base.h>
 #include <Ref_Zone_Cl_PolyMAC.h>
+#include <SFichier.h>
+
 //
 // .DESCRIPTION class Op_Conv_PolyMAC_base
 //
@@ -70,6 +72,7 @@ protected:
   REF(Zone_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) vitesse_;
 
+  mutable SFichier Flux, Flux_moment, Flux_sum;
 };
 
 //
