@@ -81,9 +81,46 @@ void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
 
 void Flux_interfacial_PolyMAC::completer()
 {
-  if (!sub_type(Flux_interfacial_PolyMAC, equation().sources()(equation().sources().size()-1).valeur())) Process::exit(que_suis_je() + " : Flux_interfacial_PolyMAC must be the last source term in the source term declaration list of the " + equation().que_suis_je() + " equation ! ");
+  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, equation().zone_dis().valeur());
+  int N = equation().inconnue().valeurs().line_size();
+  if (!sub_type(Flux_interfacial_PolyMAC, equation().sources().dernier()->valeur())) Process::exit(que_suis_je() + " : Flux_interfacial_PolyMAC must be the last source term in the source term declaration list of the " + equation().que_suis_je() + " equation ! ");
+  if (sub_type(Energie_Multiphase, equation()))
+    {
+      qpi_.resize(0, N, N), zone.zone().creer_tableau_elements(qpi_);
+      dT_qpi_.resize(0, N, N, N), zone.zone().creer_tableau_elements(dT_qpi_);
+      da_qpi_.resize(0, N, N, N), zone.zone().creer_tableau_elements(da_qpi_);
+      dp_qpi_.resize(0, N, N), zone.zone().creer_tableau_elements(dp_qpi_);
+    }
 }
 
+DoubleTab& Flux_interfacial_PolyMAC::qpi() const
+{
+  if (sub_type(Energie_Multiphase, equation())) return qpi_;
+  return ref_cast(Flux_interfacial_PolyMAC, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur().valeur()).qpi();
+}
+
+DoubleTab& Flux_interfacial_PolyMAC::dT_qpi() const
+{
+  if (sub_type(Energie_Multiphase, equation())) return dT_qpi_;
+  return ref_cast(Flux_interfacial_PolyMAC, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur().valeur()).dT_qpi();
+}
+
+DoubleTab& Flux_interfacial_PolyMAC::da_qpi() const
+{
+  if (sub_type(Energie_Multiphase, equation())) return da_qpi_;
+  return ref_cast(Flux_interfacial_PolyMAC, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur().valeur()).da_qpi();
+}
+
+DoubleTab& Flux_interfacial_PolyMAC::dp_qpi() const
+{
+  if (sub_type(Energie_Multiphase, equation())) return dp_qpi_;
+  return ref_cast(Flux_interfacial_PolyMAC, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur().valeur()).dp_qpi();
+}
+
+void Flux_interfacial_PolyMAC::mettre_a_jour(double temps)
+{
+  qpi_ = 0, dT_qpi_ = 0, da_qpi_ = 0, dp_qpi_ = 0;
+}
 
 void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
@@ -101,9 +138,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &pvit = ch_vit.passe(),
                    &h = milc.enthalpie().valeurs(), *dP_h = der_h.count("pression") ? &der_h.at("pression") : NULL, *dT_h = der_h.count("temperature") ? &der_h.at("temperature") : NULL,
                     &lambda = milc.conductivite().passe(), &mu = milc.viscosite_dynamique().passe(), &rho = milc.masse_volumique().passe(), &Cp = milc.capacite_calorifique().passe(),
-                     &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs(),
-                      *q_pi = sub_type(Op_Diff_PolyMAC_Elem, pbm.eq_energie.operateur(0).l_op_base()) ? &ref_cast(Op_Diff_PolyMAC_Elem, pbm.eq_energie.operateur(0).l_op_base()).q_pi() :
-                              (sub_type(Op_Diff_PolyMAC_P0_Elem, pbm.eq_energie.operateur(0).l_op_base()) ? &ref_cast(Op_Diff_PolyMAC_P0_Elem, pbm.eq_energie.operateur(0).l_op_base()).q_pi() : NULL) ;
+                     &p_ar = ch_a_r.passe(), &a_r = ch_a_r.valeurs(), &qi = qpi(), &dTqi = dT_qpi(), &daqi = da_qpi(), &dpqi = dp_qpi();
   Matrice_Morse *Mp = matrices.count("pression")    ? matrices.at("pression")    : NULL,
                  *Mt = matrices.count("temperature") ? matrices.at("temperature") : NULL,
                   *Ma = matrices.count("alpha") ? matrices.at("alpha") : NULL,
@@ -167,7 +202,7 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                                             sat, dT_G, da_G, dP_G);
               /* limite thermique */
               double Tk = temp(e, k), Tl = temp(e, l), p = press(e, 0), Ts = sat.Tsat(p), dP_Ts = sat.dP_Tsat(p), //temperature de chaque cote + Tsat + derivees
-                     phi = hi(k, l) * (Tk - Ts) + hi(l, k) * (Tl - Ts) + (q_pi ? (*q_pi)(e, k, l) : 0), L = (phi < 0 ? h(e, l) : sat.Hvs(p)) - (phi > 0 ? h(e, k) : sat.Hls(p));
+                     phi = hi(k, l) * (Tk - Ts) + hi(l, k) * (Tl - Ts) + qi(e, k, l) / vol, L = (phi < 0 ? h(e, l) : sat.Hvs(p)) - (phi > 0 ? h(e, k) : sat.Hls(p));
               if ((is_therm = !correlation_G || std::fabs(G) > std::fabs(phi / L))) G = phi / L;
               /* enthalpies des phases (dans le sens correspondant au mode choisi pour G) */
 
@@ -181,10 +216,11 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                        hl = G < 0 ? h(e, l) : sat.Hvs(p), dTl_hl = G < 0 && dT_h ? (*dT_h)(e, l) : 0, dP_hl = G < 0 ? (dP_h ? (*dP_h)(e, l) : 0) : sat.dP_Hvs(p);
               if (n_lim < 0 && is_therm) /* derivees de G en limite thermique */
               {
-                  double dP_phi = dP_hi(k, l) * (Tk - Ts) + dP_hi(l, k) * (Tl - Ts) - (hi(k, l) + hi(l, k)) * dP_Ts, dTk_L = -dTk_hk, dTl_L = dTl_hl, dP_L = dP_hl - dP_hk;
+                  double dP_phi = dP_hi(k, l) * (Tk - Ts) + dP_hi(l, k) * (Tl - Ts) - (hi(k, l) + hi(l, k)) * dP_Ts + dpqi(e, k, l) / vol,
+                         dTk_L = -dTk_hk, dTl_L = dTl_hl, dP_L = dP_hl - dP_hk;
                   dP_G = (dP_phi - G * dP_L) / L;
-                  for (n = 0; n < N; n++) dT_G(n) = ((n == k) * (hi(k, l) - G * dTk_L) + (n == l) * (hi(l, k) - G * dTl_L) + dT_hi(k, l, n) * (Tk - Ts) + dT_hi(l, k, n) * (Tl - Ts)) / L;
-                  for (n = 0; n < N; n++) da_G(n) = (da_hi(k, l, n) * (Tk - Ts) + da_hi(l, k, n) * (Tl - Ts)) / L;
+                  for (n = 0; n < N; n++) dT_G(n) = ((n == k) * (hi(k, l) - G * dTk_L) + (n == l) * (hi(l, k) - G * dTl_L) + dT_hi(k, l, n) * (Tk - Ts) + dT_hi(l, k, n) * (Tl - Ts) + dTqi(e, k, l, n)) / L;
+                  for (n = 0; n < N; n++) da_G(n) = (da_hi(k, l, n) * (Tk - Ts) + da_hi(l, k, n) * (Tl - Ts) + daqi(e, k, l, n)) / L;
                 }
 
 
@@ -215,19 +251,19 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                   //on suppose que la limite thermique s'applique d'un cote : c (=0,1) / n_c (=k,l) / signe du flux sortant de la phase k : s_c (=1,-1)
                   int c = (a_r(e, k) > a_r(e, l)), n_c = c ? l : k, n_d = c ? k : l, s_c = c ? -1 : 1;
                   double Tc = c ? Tl : Tk, hc = c ? hl : hk, dT_hc = c ? dTl_hl : dTk_hk, dP_hc = c ? dP_hl : dP_hk;
-                  for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * (s_c * hi(n_c, n_d) * (Tc - Ts) + (c || !q_pi ? 0 : (*q_pi)(e, k, l)) + G * hc);
+                  for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * (s_c * hi(n_c, n_d) * (Tc - Ts) + G * hc) - (i != c) * qi(e, k, l);
                   /* derivees (y compris celles en G, sauf dans le cas limite)*/
                   if (Ma)
                     for (i = 0; i < 2; i++)
                       for (n = 0; n < N; n++) //derivees en alpha
-                        (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * da_hi(n_c, n_d, n) * (Tc - Ts) + (n_lim < 0) * da_G(n) * hc);
+                        (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * da_hi(n_c, n_d, n) * (Tc - Ts) + (n_lim < 0) * da_G(n) * hc) - (i != c) * daqi(e, k, l, n);
                   if (Mt)
                     for (i = 0; i < 2; i++)
                       for (n = 0; n < N; n++) //derivees en T
-                        (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * (dT_hi(n_c, n_d, n) * (Tc - Ts) + (n == n_c) * hi(n_c, n_d)) + (n_lim < 0) * dT_G(n) * hc + G * (n == n_c) * dT_hc);
+                        (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * (dT_hi(n_c, n_d, n) * (Tc - Ts) + (n == n_c) * hi(n_c, n_d)) + (n_lim < 0) * dT_G(n) * hc + G * (n == n_c) * dT_hc) - (i != c) * dTqi(e, k, l, n);
                   if (Mp)
                     for (i = 0; i < 2; i++) //derivees en p
-                      (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * (s_c * (dP_hi(n_c, n_d) * (Tc - Ts) - hi(n_c, n_d) * dP_Ts) + (n_lim < 0) * dP_G * hc + G * dP_hc);
+                      (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * (s_c * (dP_hi(n_c, n_d) * (Tc - Ts) - hi(n_c, n_d) * dP_Ts) + (n_lim < 0) * dP_G * hc + G * dP_hc) - (i != c) * dpqi(e, k, l);
                   if (n_lim >= 0)
                     for (auto &s_d : vec_m) /* derivees de G dans le cas evanescent */
                       for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)

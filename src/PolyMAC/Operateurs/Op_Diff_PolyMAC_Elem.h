@@ -42,17 +42,8 @@ public :
   double calculer_dt_stab() const override;
   void dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void mettre_a_jour(double t) override;
-
-  /* flux paroi_interface : q_pi(e, k, l) : flux de chaleur contribuant au changement de phase k->l dans l'element e */
-  const DoubleTab& q_pi() const;
 
   void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override { };
-
-private:
-  /* tableau renvoye par q_pi(), rempli lors de ajouter_blocs() */
-  mutable DoubleTab q_pi_;
-  mutable int q_pi_a_jour_ = 0; //q_pi() est utilisable ("a jour") entre le moment ou on a appelle ajouter_blocs() et le mettre_a_jour() suivant
 };
 
 Declare_ref(Op_Diff_PolyMAC_Elem);

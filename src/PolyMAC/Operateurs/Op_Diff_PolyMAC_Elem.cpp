@@ -12,10 +12,8 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #include <Modele_turbulence_scal_base.h>
-
-
-
 #include <Echange_contact_PolyMAC.h>
 #include <Echange_externe_impose.h>
 #include <Op_Diff_PolyMAC_Elem.h>
@@ -68,10 +66,6 @@ void Op_Diff_PolyMAC_Elem::completer()
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
   flux_bords_.resize(zone.premiere_face_int(), ch.valeurs().line_size());
-
-  /* tableau q_pi */
-  if (sub_type(Energie_Multiphase, eq))
-    q_pi_.resize(0, ch.valeurs().line_size(), ch.valeurs().line_size()), zone.zone().creer_tableau_elements(q_pi_);
 }
 
 void Op_Diff_PolyMAC_Elem::init_op_ext() const
@@ -239,7 +233,6 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
                      ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal")) : NULL);
       N.push_back(inco[i].get().line_size()), ne_tot.push_back(zone[i].get().nb_elem_tot()), fcl.push_back(std::ref(ch.fcl()));
     }
-  q_pi_ = 0; //remise a zero du flux paroi-interface
 
   /* que faire avec les variables auxiliaires ? */
   double t = equation().schema_temps().temps_courant(), dt = equation().schema_temps().pas_de_temps();
@@ -323,10 +316,6 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
         //appel : on n'est implicite qu'en les temperatures
         corr[0]->qp(N[0], f, dh(e), dh(e), &alpha(e, 0), &v_aux[0](f, 0), press(e), nv.addr(), Tp, &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
                     &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi, NULL, j);
-        /* on ajoute qpi(k, l) a la qpk(k) (sera ensuite retire par Flux_interfacial_PolyMAC) */
-        for (k1 = 0; k1 < N[0]; k1++)
-          for (k2 = k1 + 1; k2 < N[0]; k2++)
-            for (qpk(k1) += qpi(k1, k2), dTp_qpk(k1) += dTp_qpi(k1, k2), n = 0; n < N[0]; n++) dTf_qpk(k1, n) += dTf_qpi(k1, k2, n);
         for (n = 0; n < N[0]; n++) secmem(!aux_only * ne_tot[0] + f, n) += fs[0](f) * qpk(n);//second membre
         if (mat[0])
           for (k1 = 0; k1 < N[0]; k1++)
@@ -363,10 +352,6 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
             //appel : on n'est implicite qu'en les temperatures
             corr[o_p]->qp(N[o_p], o_f, dh(o_e), dh(o_e), &alpha(o_e, 0), &v_aux[o_p](o_f, 0), press(e), nv.addr(), v_aux[0](f, 0), &lambda(o_e, 0), &mu(o_e, 0), &rho(o_e, 0), &Cp(o_e, 0),
                           &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi, NULL, j);
-            /* on ajoute qpi(k, l) a qpk(k) (sera ensuite retire par Flux_interfacial_PolyMAC) */
-            for (k1 = 0; k1 < N[0]; k1++)
-              for (k2 = k1 + 1; k2 < N[0]; k2++)
-                for (qpk(k1) += qpi(k1, k2), dTp_qpk(k1) += dTp_qpi(k1, k2), n = 0; n < N[0]; n++) dTf_qpk(k1, n) += dTf_qpi(k1, k2, n);
             for (n = 0; n < N[o_p]; n++) secmem(!aux_only * ne_tot[0] + f, 0) -= fs[0](f) * qpk(n);//second membre
             if (mat[o_p])
               for (k1 = 0; k1 < N[o_p]; k1++)
@@ -407,18 +392,4 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
           if (mat[0] && fcl[0](f, 0) == 1) (*mat[0])(N[0] * (!aux_only * ne_tot[0] + f) + n, N[0] * (!aux_only * ne_tot[0] + f) + n) += h * fs[0](f);
           if (mat[0] && fcl[0](f, 0) == 2 && !aux_only) (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * e + n) += h * fs[0](f);
         }
-  q_pi_a_jour_ = 1; //on peut maintenant demander q_pi
-}
-
-const DoubleTab& Op_Diff_PolyMAC_Elem::q_pi() const
-{
-  if (!q_pi_a_jour_) Cerr << "Op_Diff_PolyMAC_Elem : attempt to access q_pi (nucleate heat flux) before ajouter_blocs() has been called!" << finl
-                            << "Please call assembler_blocs() on Energie_Multiphase before calling it on Masse_Multiphase." << finl, Process::exit();
-  return q_pi_;
-}
-
-void Op_Diff_PolyMAC_Elem::mettre_a_jour(double t)
-{
-  Op_Diff_PolyMAC_base::mettre_a_jour(t);
-  q_pi_a_jour_ = 0; //q_pi devient inaccessible
 }

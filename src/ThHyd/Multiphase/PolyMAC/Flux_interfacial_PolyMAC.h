@@ -43,10 +43,19 @@ public :
 
   void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
   void associer_pb(const Probleme_base& ) override { };
-  void mettre_a_jour(double temps) override { };
+  void mettre_a_jour(double temps) override;
   void completer() override;
 
+  /* flux paroi-interface (par maille) et ses derivees */
+  /* ces tableaux ne sont appelables que dans le terme associe a l'equation d'energie et sont utilises par les autres */
+  /* ils peuvent etre remplis par l'operateur de diffusion (flux en paroi), un module de thermique crayon, etc */
+  DoubleTab& qpi() const;    //qpi(e, k, l) : puissance deposee dans l'element e de la phase k vers l'interface (k, l)
+  DoubleTab& dT_qpi() const; //dT_qpi(e, k, l, n) : sa derivee en T[n]
+  DoubleTab& da_qpi() const; //da_qpi(e, k, l, n) : sa derivee en alpha[n]
+  DoubleTab& dp_qpi() const; //da_qpi(e, k, l)    : sa derivee en p
+
 private:
+  mutable DoubleTab qpi_, dT_qpi_, da_qpi_, dp_qpi_;
   REF(Correlation) correlation_; //correlation donnant le coeff de flux interfacial
 };
 

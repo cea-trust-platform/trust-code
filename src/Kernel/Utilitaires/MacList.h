@@ -179,6 +179,9 @@
   inline LIST(_TYPE_)& LIST(_TYPE_)::suivant() {                        \
     return (LIST(_TYPE_)&) (liste::suivant());                                \
   }                                                                        \
+  inline const LIST(_TYPE_)& LIST(_TYPE_)::dernier() const {                 \
+    return (LIST(_TYPE_)&) (liste::dernier());                                \
+  }                                                                        \
   inline LIST(_TYPE_)& LIST(_TYPE_)::dernier() {                        \
     return (LIST(_TYPE_)&) (liste::dernier());                                \
   }                                                                        \

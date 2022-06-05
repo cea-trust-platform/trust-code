@@ -12,6 +12,7 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #include <Op_Diff_PolyMAC_P0_Elem.h>
 #include <Pb_Multiphase.h>
 #include <Schema_Temps_base.h>
@@ -33,6 +34,7 @@
 #include <cmath>
 #include <functional>
 #include <Flux_parietal_base.h>
+#include <Flux_interfacial_PolyMAC.h>
 
 Implemente_instanciable_sans_constructeur(Op_Diff_PolyMAC_P0_Elem, "Op_Diff_PolyMAC_P0_Elem|Op_Diff_PolyMAC_P0_var_Elem", Op_Diff_PolyMAC_P0_base);
 Implemente_instanciable(Op_Dift_PolyMAC_P0_Elem, "Op_Dift_PolyMAC_P0_Elem_PolyMAC_P0|Op_Dift_PolyMAC_P0_var_Elem_PolyMAC_P0", Op_Diff_PolyMAC_P0_Elem);
@@ -72,10 +74,6 @@ void Op_Diff_PolyMAC_P0_Elem::completer()
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_P0_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
   flux_bords_.resize(zone.premiere_face_int(), ch.valeurs().line_size());
-
-  /* tableau q_pi */
-  if (sub_type(Energie_Multiphase, eq))
-    q_pi_.resize(0, ch.valeurs().line_size(), ch.valeurs().line_size()), zone.zone().creer_tableau_elements(q_pi_);
 
   const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, eq.probleme()) ? &ref_cast(Pb_Multiphase, eq.probleme()) : NULL;
   if (sub_type(Energie_Multiphase, eq))
@@ -300,7 +298,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
       N.push_back(inco[i].get().line_size()), fcl.push_back(std::ref(ch.fcl()));
     }
   const Zone_PolyMAC_P0& zone0 = zone[0];
-  q_pi_ = 0; //remise a zero du flux paroi-interface
+  DoubleTab *pqpi = equation().sources().size() && sub_type(Flux_interfacial_PolyMAC, equation().sources().dernier().valeur().valeur()) ? &ref_cast(Flux_interfacial_PolyMAC, equation().sources().dernier().valeur().valeur()).qpi() : NULL;
   d_nuc_ = 0; //remise a zero du diametre de nucleation
 
   /* avec phif : flux hors Echange_contact -> mat[0] seulement */
@@ -556,27 +554,24 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             //appel : on n'est implicite qu'en les temperatures
                             corr.qp(N[p], f, dh(e), dh(e), &alpha(e, 0), &Tefs(0, i_efs(i, j, 0)), press(e), nv.addr(), Tefs(0, i_efs(i, j, M)), &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
                                     &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi,  &d_nuc, nonlinear);
-                            /* on ajoute qpi(k, l) a la qpk(k) (sera ensuite retire par Flux_interfacial_PolyMAC_P0) */
-                            for (k1 = 0; k1 < N[p]; k1++)
-                              for (k2 = k1 + 1; k2 < N[p]; k2++)
-                                for (qpk(k1) += qpi(k1, k2), dTp_qpk(k1) += dTp_qpi(k1, k2), n = 0; n < N[p]; n++) dTf_qpk(k1, n) += dTf_qpi(k1, k2, n);
 
-                            for (n = 0; n < N[p]; n++) //partie constante, derivees en Tp
-                              i_eq = i_eq_pbm(i_efs(i, j, n)), B(0, t_e, i_eq) -= qpk(n), A(0, i_efs(i, j, M), i_eq) += dTp_qpk(n);
+                            /* qpk : contributions aux equations sur les Tkp */
                             for (n = 0; n < N[p]; n++)
-                              for (i_eq = i_eq_pbm(i_efs(i, j, n)), m = 0; m < N[p]; m++) //derivees en Tf
-                                A(0, i_efs(i, j, m), i_eq_pbm(i_efs(i, j, n))) += dTf_qpk(n, m);
+                              for (i_eq = i_eq_pbm(i_efs(i, j, n)), B(0, t_e, i_eq) -= qpk(n), A(0, i_efs(i, j, M), i_eq) += dTp_qpk(n), m = 0; m < N[p]; m++)
+                                A(0, i_efs(i, j, m), i_eq) += dTf_qpk(n, m);
 
-                            /* contributions de q_pi au tableau de flux paroi-interface */
+                            /* qpi : contribution a l'equation de flux a la face (si elle existe), contributions au tableau de flux paroi-interface */
+                            if ((i_eq = i_eq_flux(k, 0)) >= 0)
+                              for (k1 = 0; k1 < N[p]; k1++)
+                                for (k2 = k1 + 1; k2 < N[p]; k2++) //partie constante, derivee en Tp
+                                  for (B(0, t_e, i_eq) -= qpi(k1, k2), A(0, i_efs(i, j, M), i_eq) += dTp_qpi(k1, k2), n = 0; n < N[p]; n++)
+                                    A(0, i_efs(i, j, n), i_eq) += dTf_qpi(k1, k2, n);
                             for (k1 = 0; k1 < N[p]; k1++)
                               for (k2 = k1 + 1; k2 < N[p]; k2++) //partie constante, derivee en Tp
-                                Qec(i, t_e, k1, k2) += surf_fs[k] * qpi(k1, k2), Qf(i, i_efs(i, j, M), k1, k2) += surf_fs[k] * dTp_qpi(k1, k2);
-                            for (m = 0; m < N[p]; m++)
-                              for (k1 = 0; k1 < N[p]; k1++)
-                                for (k2 = k1 + 1; k2 < N[p]; k2++)
+                                for (Qec(i, t_e, k1, k2) += surf_fs[k] * qpi(k1, k2), Qf(i, i_efs(i, j, M), k1, k2) += surf_fs[k] * dTp_qpi(k1, k2), m = 0; m < N[p]; m++)
                                   Qf(i, i_efs(i, j, m), k1, k2) += surf_fs[k] * dTf_qpi(k1, k2, m); //derivees en Tf
-                            if ( (d_nuc_.dimension(0)) && (!d_nuc_a_jour_) )
-                              for (k1 =0 ; k1 < N[p]; k1++) // d_nuc depends on the temperature so must only be updated once when the temperature input of the wall flux correlation is the old temperature
+                            if (d_nuc_.dimension(0) && !d_nuc_a_jour_)
+                              for (k1 = 0; k1 < N[p]; k1++) // d_nuc depends on the temperature so must only be updated once when the temperature input of the wall flux correlation is the old temperature
                                 d_nuc_(e, k1) += d_nuc(k1), d_nuc_a_jour_ = 1;
                           }
                         else for (n = 0; n < N[p]; n++)
@@ -616,7 +611,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                 for (j = 0; j < t_ec; j++)
                   for (k = 0; k < t_eq; k++)
                     Fec(n, i, j) += Ff(n, i, k) * B(n, j, k);
-            if (q_pi_.dimension(0))
+            if (mix)
               for (i = 0; i < n_e; i++)
                 for (j = 0; j < t_ec; j++)
                   for (k = 0; k < t_eq; k++)
@@ -654,22 +649,14 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                       for (eb = s_pe[k][1], m = (mix ? 0 : n); m < (mix ? N[p] : n + 1); m++) //derivees : si on a la matrice
                         (*mat[p])(N[0] * e + n, N[p] * eb + m) -= Fec(!mix * n, i_efs(i, j, mix * n), i_e(k, mix * m));
                 }
-        /* contributions a q_pi : partie constante seulement pour le moment */
-        if (q_pi_.dimension(0))
+        /* contributions a qpi : partie constante seulement pour le moment */
+        if (pqpi)
           for (i = 0; i < n_e; i++)
             if (s_pe[i][0] == 0)
               for (e = s_pe[i][1], k1 = 0; k1 < N[0]; k1++)
                 for (k2 = k1 + 1; k2 < N[0]; k2++)
-                  q_pi_(e, k1, k2) += Qec(i, t_e, k1, k2);
+                  (*pqpi)(e, k1, k2) += Qec(i, t_e, k1, k2);
       }
-  q_pi_a_jour_ = 1; //on peut maintenant demander q_pi
-}
-
-const DoubleTab& Op_Diff_PolyMAC_P0_Elem::q_pi() const
-{
-  if (!q_pi_a_jour_) Cerr << "Op_Diff_PolyMAC_P0_Elem : attempt to access q_pi (nucleate heat flux) before ajouter_blocs() has been called!" << finl
-                            << "Please call assembler_blocs() on Energie_Multiphase before calling it on Masse_Multiphase." << finl, Process::exit();
-  return q_pi_;
 }
 
 const DoubleTab& Op_Diff_PolyMAC_P0_Elem::d_nucleation() const
@@ -682,6 +669,5 @@ const DoubleTab& Op_Diff_PolyMAC_P0_Elem::d_nucleation() const
 void Op_Diff_PolyMAC_P0_Elem::mettre_a_jour(double t)
 {
   Op_Diff_PolyMAC_P0_base::mettre_a_jour(t);
-  q_pi_a_jour_ = 0; //q_pi devient inaccessible
   d_nuc_a_jour_ = 0;
 }
