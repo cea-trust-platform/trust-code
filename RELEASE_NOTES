@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
+07/06/22 (TRUST)  Major Change: Much more functionalities and developpements for Pb_Multiphase. The problem supports now additional equations for turbulence modelling !
+07/06/22 (TRUST)  Major Change: Huge refactoring/reformulation of the discretizations PolyMAC & PolyMAC_P0 (previous CoviMAC). Schemes are now more stable and compatible with Pb_Multiphase
 30/05/22 (TRUST)  Fix         : High frequency writing MED files were slower and slower
 30/05/22 (TRUST)  Build       : Add configure option -force_system_mpi to use system MPI library (provided MPICH library by default on PC)
 23/05/22 (TRUST)  New feature : Add a new turbulent boundary layer model (WW) that can be used for an immersed boundary condition (IBC) with the finite element discretization
