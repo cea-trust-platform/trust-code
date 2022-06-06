@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Diff_VEF_Face_Stab_Var.cpp
-// Directory:   $TRUST_ROOT/src/VEF/Operateurs
-// Version:     /main/3
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Diff_VEF_Face_Stab_Var.h>
 

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Schema_Implicite_Multi_TimeStep_base.h
-// Directory:   $TRUST_ROOT/src/Kernel/Schemas_Temps
-// Version:     /main/1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Schema_Implicite_Multi_TimeStep_base_included
 #define Schema_Implicite_Multi_TimeStep_base_included

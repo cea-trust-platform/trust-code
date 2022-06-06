@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Precond_local.h
-// Directory:   $TRUST_ROOT/src/Kernel/Math/SolvSys
-// Version:     /main/10
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Precond_local_included
 #define Precond_local_included

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        info_atelier.cpp
-// Directory:   $TRUST_ROOT/src/MAIN
-// Version:     /main/2
-//
-//////////////////////////////////////////////////////////////////////////////
 
 // fichier genere en cas d'atelier par cree_info_atelier.sh
 #include <info_atelier.h>

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Pb_WC_base.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Weakly_Compressible/Problems
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Pb_WC_base_included
 #define Pb_WC_base_included

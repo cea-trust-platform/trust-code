@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Convection_Diffusion_std.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Incompressible/Equations
-// Version:     /main/17
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Convection_Diffusion_std.h>
 #include <Probleme_base.h>

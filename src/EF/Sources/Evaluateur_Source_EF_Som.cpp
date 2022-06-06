@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Evaluateur_Source_EF_Som.cpp
-// Directory:   $TRUST_ROOT/src/EF/Sources
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Evaluateur_Source_EF_Som.h>
 #include <Zone_EF.h>

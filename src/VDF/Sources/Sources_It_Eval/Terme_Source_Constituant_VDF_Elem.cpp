@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Terme_Source_Constituant_VDF_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Sources/Sources_It_Eval
-// Version:     /main/20
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Convection_Diffusion_Concentration.h>
 #include <Terme_Source_Constituant_VDF_Elem.h>

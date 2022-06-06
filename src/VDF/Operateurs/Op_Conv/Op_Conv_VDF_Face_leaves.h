@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Conv_VDF_Face_leaves.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Conv
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Op_Conv_VDF_Face_leaves_included
 #define Op_Conv_VDF_Face_leaves_included

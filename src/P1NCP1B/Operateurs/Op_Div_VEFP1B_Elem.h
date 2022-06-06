@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Div_VEFP1B_Elem.h
-// Directory:   $TRUST_ROOT/src/P1NCP1B/Operateurs
-// Version:     /main/13
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Op_Div_VEFP1B_Elem_included
 #define Op_Div_VEFP1B_Elem_included

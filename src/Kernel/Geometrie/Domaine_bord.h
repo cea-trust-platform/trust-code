@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Domaine_bord.h
-// Directory:   $TRUST_ROOT/src/Kernel/Geometrie
-// Version:     /main/5
-//
-//////////////////////////////////////////////////////////////////////////////
 #ifndef Domaine_bord_included
 #define Domaine_bord_included
 #include <Domaine.h>

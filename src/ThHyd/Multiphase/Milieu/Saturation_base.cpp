@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Saturation_base.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Milieu
-// Version:     /main/18
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Saturation_base.h>
 Implemente_base(Saturation_base, "Saturation_base", Interface_base);

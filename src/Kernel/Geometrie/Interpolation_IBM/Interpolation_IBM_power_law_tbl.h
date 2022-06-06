@@ -13,13 +13,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Interpolation_IBM_power_law_tbl.h
-// Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Interpolation_IBM
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Interpolation_IBM_power_law_tbl_included
 #define Interpolation_IBM_power_law_tbl_included

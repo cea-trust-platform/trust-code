@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_front_pression_from_u.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Incompressible/Champs
-// Version:     /main/3
-//
-//////////////////////////////////////////////////////////////////////////////
 
 // .NOM champ_front_normal : Champ a la frontiere uniforme normal
 // .ENTETE Trio_U VEF/Champs

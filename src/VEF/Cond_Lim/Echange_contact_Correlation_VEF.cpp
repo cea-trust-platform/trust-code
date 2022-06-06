@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Echange_contact_Correlation_VEF.cpp
-// Directory:   $TRUST_ROOT/src/VEF/Cond_Lim
-// Version:     /main/30
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Echange_contact_Correlation_VEF.h>
 #include <Champ_front_calc.h>

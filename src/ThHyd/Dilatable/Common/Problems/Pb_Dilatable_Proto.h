@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Pb_Dilatable_Proto.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common/Problems
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Pb_Dilatable_Proto_included
 #define Pb_Dilatable_Proto_included

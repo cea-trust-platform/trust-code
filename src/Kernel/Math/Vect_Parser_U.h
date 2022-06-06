@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Vect_Parser_U.h
-// Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/8
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Vect_Parser_U_included
 #define Vect_Parser_U_included

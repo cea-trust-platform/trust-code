@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Echange_contact_PolyMAC_P0.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Cond_Lim
-// Version:     /main/17
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Echange_contact_PolyMAC_P0_included
 #define Echange_contact_PolyMAC_P0_included

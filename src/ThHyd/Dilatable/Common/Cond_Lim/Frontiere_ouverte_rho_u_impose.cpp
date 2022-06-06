@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Frontiere_ouverte_rho_u_impose.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common/Cond_Lim
-// Version:     /main/5
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Frontiere_ouverte_rho_u_impose.h>
 #include <Fluide_Dilatable_base.h>

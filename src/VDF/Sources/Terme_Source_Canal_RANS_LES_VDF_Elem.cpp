@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Terme_Source_Canal_RANS_LES_VDF_Elem.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Sources
-// Version:     /main/18
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Terme_Source_Canal_RANS_LES_VDF_Elem.h>
 #include <Champ_Uniforme.h>

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Solveur_non_lineaire.h
-// Directory:   $TRUST_ROOT/src/Kernel/Solveurs
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Solveur_non_lineaire_included
 #define Solveur_non_lineaire_included

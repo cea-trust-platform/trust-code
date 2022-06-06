@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Evanescence_Homogene_PolyMAC_P0_Face.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/PolyMAC
-// Version:     /main/12
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Op_Evanescence_Homogene_PolyMAC_P0_Face_included
 #define Op_Evanescence_Homogene_PolyMAC_P0_Face_included

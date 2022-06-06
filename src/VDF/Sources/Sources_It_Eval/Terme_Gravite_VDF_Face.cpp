@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Terme_Gravite_VDF_Face.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Sources/Sources_It_Eval
-// Version:     /main/15
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Terme_Gravite_VDF_Face.h>
 #include <Probleme_base.h>

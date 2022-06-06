@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Entree_complete.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/2
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Entree_complete.h>
 #include <Process.h>

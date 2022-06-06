@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Source_Generique_P0_Elem.h
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/5
-//
-//////////////////////////////////////////////////////////////////////////////
 
 
 #ifndef Source_Generique_P0_Elem_included

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Zone_Cl_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Zones
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Zone_Cl_PolyMAC.h>
 #include <Zone_PolyMAC.h>

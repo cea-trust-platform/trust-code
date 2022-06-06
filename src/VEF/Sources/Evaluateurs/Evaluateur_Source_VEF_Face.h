@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Evaluateur_Source_VEF_Face.h
-// Directory:   $TRUST_ROOT/src/VEF/Sources/Evaluateurs
-// Version:     /main/10
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Evaluateur_Source_VEF_Face_included
 #define Evaluateur_Source_VEF_Face_included

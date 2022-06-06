@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Div_VDF_Elem.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Op_Divers
-// Version:     /main/8
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Op_Div_VDF_Elem_included
 #define Op_Div_VDF_Elem_included

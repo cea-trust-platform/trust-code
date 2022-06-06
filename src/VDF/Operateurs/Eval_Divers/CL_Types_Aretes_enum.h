@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        CL_Types_Aretes_enum.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Eval_Divers
-// Version:     /main/12
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef CL_Types_Aretes_enum_included
 #define CL_Types_Aretes_enum_included

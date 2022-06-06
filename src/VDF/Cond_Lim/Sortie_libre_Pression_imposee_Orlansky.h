@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Sortie_libre_Pression_imposee_Orlansky.h
-// Directory:   $TRUST_ROOT/src/VDF/Cond_Lim
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Sortie_libre_Pression_imposee_Orlansky_included
 #define Sortie_libre_Pression_imposee_Orlansky_included

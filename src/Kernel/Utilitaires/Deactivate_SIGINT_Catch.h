@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Deactivate_SIGINT_Catch.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Deactivate_SIGINT_Catch_included
 #define Deactivate_SIGINT_Catch_included

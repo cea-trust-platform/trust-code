@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_P1_isoP1Bulle.cpp
-// Directory:   $TRUST_ROOT/src/P1NCP1B/Champs
-// Version:     /main/26
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_P1_isoP1Bulle.h>
 #include <Domaine.h>

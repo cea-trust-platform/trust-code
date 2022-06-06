@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        MacRef.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/18
-//
-//////////////////////////////////////////////////////////////////////////////
 // Modification B.Mathieu 07/2004 :
 //  But :
 //   Avoir un pointeur direct vers l'objet pour que .valeur() soit

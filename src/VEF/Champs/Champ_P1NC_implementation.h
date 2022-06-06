@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_P1NC_implementation.h
-// Directory:   $TRUST_ROOT/src/VEF/Champs
-// Version:     /main/26
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Champ_P1NC_implementation_included
 #define Champ_P1NC_implementation_included

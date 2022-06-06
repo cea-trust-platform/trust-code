@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Sortie_libre_Gradient_Pression_libre_VEFPreP1B.h
-// Directory:   $TRUST_ROOT/src/P1NCP1B/Cond_Lim
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Sortie_libre_Gradient_Pression_libre_VEFPreP1B_included
 #define Sortie_libre_Gradient_Pression_libre_VEFPreP1B_included

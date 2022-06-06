@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Taux_cisaillement_P0_VEF.h
-// Directory:   $TRUST_ROOT/src/VEF/Champs
-// Version:     /main/4
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Taux_cisaillement_P0_VEF_included
 #define Taux_cisaillement_P0_VEF_included

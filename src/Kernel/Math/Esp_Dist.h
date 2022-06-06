@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Esp_Dist.h
-// Directory:   $TRUST_ROOT/src/Kernel/Math
-// Version:     /main/12
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Esp_Dist_included
 #define Esp_Dist_included

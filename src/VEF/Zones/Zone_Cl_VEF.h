@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Zone_Cl_VEF.h
-// Directory:   $TRUST_ROOT/src/VEF/Zones
-// Version:     /main/15
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Zone_Cl_VEF_included
 #define Zone_Cl_VEF_included

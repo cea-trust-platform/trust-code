@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Conv_negligeable.h
-// Directory:   $TRUST_ROOT/src/Kernel/Operateurs
-// Version:     /main/12
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Op_Conv_negligeable_included
 #define Op_Conv_negligeable_included

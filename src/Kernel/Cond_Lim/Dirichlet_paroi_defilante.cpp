@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Dirichlet_paroi_defilante.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Cond_Lim
-// Version:     /main/15
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Dirichlet_paroi_defilante.h>
 #include <Motcle.h>

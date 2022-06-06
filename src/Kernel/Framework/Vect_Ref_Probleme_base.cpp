@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Vect_Ref_Probleme_base.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/5
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Vect_Ref_Probleme_base.h>
 Implemente_vect(REF(Probleme_base));

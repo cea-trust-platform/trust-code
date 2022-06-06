@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Imprimer_flux_sum.h
-// Directory:   $TRUST_ROOT/src/Kernel/Geometrie
-// Version:     /main/8
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Imprimer_flux_sum_included
 #define Imprimer_flux_sum_included

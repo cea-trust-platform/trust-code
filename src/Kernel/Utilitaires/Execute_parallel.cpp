@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Execute_parallel.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/16
-//
-//////////////////////////////////////////////////////////////////////////////
 #include <Execute_parallel.h>
 #include <PE_Groups.h>
 #include <Vect_Deriv_Comm_Group.h>

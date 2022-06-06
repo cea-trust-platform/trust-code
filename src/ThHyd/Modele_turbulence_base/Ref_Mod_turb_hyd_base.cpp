@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Ref_Mod_turb_hyd_base.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Modele_turbulence_base
-// Version:     /main/7
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Ref_Mod_turb_hyd_base.h>
 #include <Mod_turb_hyd_base.h>

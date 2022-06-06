@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Ref_Champ_Q1_EF.cpp
-// Directory:   $TRUST_ROOT/src/EF/Champs
-// Version:     /main/4
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Ref_Champ_Q1_EF.h>
 #include <Champ_Q1_EF.h>

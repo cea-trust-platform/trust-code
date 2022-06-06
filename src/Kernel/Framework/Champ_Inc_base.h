@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_Inc_base.h
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/28
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Champ_Inc_base_included
 #define Champ_Inc_base_included

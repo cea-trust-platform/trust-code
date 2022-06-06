@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        PE_Groups.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/12
-//
-//////////////////////////////////////////////////////////////////////////////
 #include <PE_Groups.h>
 #include <Comm_Group.h>
 #include <Ref_Comm_Group.h>

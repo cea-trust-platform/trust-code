@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Ch_front_ana_elarg.h
-// Directory:   $TRUST_ROOT/src/Kernel/Champs
-// Version:     /main/4
-//
-//////////////////////////////////////////////////////////////////////////////
 //   fichier a inclure dans Ch_front_ana.cpp
 //   il contient les tableaux des profils de vitesse d'entree
 //   pour le cas test du canal 2D-Axi avec elargissement brusque.

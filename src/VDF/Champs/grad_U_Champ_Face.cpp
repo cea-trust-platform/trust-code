@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        grad_U_Champ_Face.cpp
-// Directory:   $TRUST_ROOT/src/VDF/Champs
-// Version:     /main/8
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <grad_U_Champ_Face.h>
 #include <Champ_Face.h>

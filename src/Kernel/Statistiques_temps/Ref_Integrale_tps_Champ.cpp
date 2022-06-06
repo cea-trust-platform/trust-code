@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Ref_Integrale_tps_Champ.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Statistiques_temps
-// Version:     /main/5
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Ref_Integrale_tps_Champ.h>
 #include <Integrale_tps_Champ.h>

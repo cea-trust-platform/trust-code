@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Echange_contact_VDF_Plaque_Flux_Cte.h
-// Directory:   $TRUST_ROOT/src/VDF/Cond_Lim
-// Version:     /main/10
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Echange_contact_VDF_Plaque_Flux_Cte_included
 #define Echange_contact_VDF_Plaque_Flux_Cte_included

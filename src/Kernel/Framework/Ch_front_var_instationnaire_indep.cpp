@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Ch_front_var_instationnaire_indep.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Framework
-// Version:     /main/5
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Ch_front_var_instationnaire_indep.h>
 

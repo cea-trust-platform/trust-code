@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Dift_EF_Q1.h
-// Directory:   $TRUST_ROOT/src/EF/Operateurs
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Op_Dift_EF_Q1_included
 #define Op_Dift_EF_Q1_included

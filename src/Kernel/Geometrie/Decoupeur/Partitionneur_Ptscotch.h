@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Partitionneur_Ptscotch.h
-// Directory:   $TRUST_ROOT/src/Kernel/Geometrie/Decoupeur
-// Version:     /main/15
-//
-//////////////////////////////////////////////////////////////////////////////
 #ifndef Partitionneur_Ptscotch_included
 #define Partitionneur_Ptscotch_included
 

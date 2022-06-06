@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Discret_Thyd.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Incompressible
-// Version:     /main/29
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Discret_Thyd.h>
 #include <Schema_Temps_base.h>

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Assembleur_P_VDF_Q4.h
-// Directory:   $TRUST_ROOT/src/VDF/Solveurs
-// Version:     /main/8
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Assembleur_P_VDF_Q4_included
 #define Assembleur_P_VDF_Q4_included

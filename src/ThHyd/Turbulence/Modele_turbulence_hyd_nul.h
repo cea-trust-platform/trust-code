@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Modele_turbulence_hyd_nul.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Turbulence
-// Version:     /main/10
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Modele_turbulence_hyd_nul_included
 #define Modele_turbulence_hyd_nul_included

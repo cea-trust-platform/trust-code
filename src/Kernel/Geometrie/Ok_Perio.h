@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Ok_Perio.h
-// Directory:   $TRUST_ROOT/src/Kernel/Geometrie
-// Version:     /main/1
-//
-//////////////////////////////////////////////////////////////////////////////
 #ifndef Ok_Perio_H
 #define Ok_Perio_H
 // Definition pro_visoire (B.Mathieu) pour coder les integrales volumique comme avant (donc fausses en periodique !)

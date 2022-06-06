@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        VEFPreP1B.cpp
-// Directory:   $TRUST_ROOT/src/P1NCP1B/Zones
-// Version:     /main/24
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <VEFPreP1B.h>
 #include <Domaine_dis.h>

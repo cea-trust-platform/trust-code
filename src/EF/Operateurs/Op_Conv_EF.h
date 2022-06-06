@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Conv_EF.h
-// Directory:   $TRUST_ROOT/src/EF/Operateurs
-// Version:     /main/11
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Op_Conv_EF_included
 #define Op_Conv_EF_included

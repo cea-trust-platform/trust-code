@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        LecFicDiffuse_JDD.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/6
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef LecFicDiffuse_JDD_included
 #define LecFicDiffuse_JDD_included

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Portance_interfaciale_PolyMAC_P0.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/PolyMAC
-// Version:     /main/13
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Portance_interfaciale_PolyMAC_P0.h>
 #include <Portance_interfaciale_base.h>

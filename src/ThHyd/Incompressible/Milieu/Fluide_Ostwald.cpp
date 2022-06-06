@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Fluide_Ostwald.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Incompressible/Milieu
-// Version:     /main/16
-//
-//////////////////////////////////////////////////////////////////////////////
 // Nouveau fluide. c'est un fluide incompressible non newtonien. Il derive donc
 //   de fluide_Incompressible et possede quelques proprietes de plus (K, N)
 //   mu depend de K, N, et de grad(U)

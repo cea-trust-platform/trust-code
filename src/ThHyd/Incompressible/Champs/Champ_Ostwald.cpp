@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_Ostwald.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Incompressible/Champs
-// Version:     /main/11
-//
-//////////////////////////////////////////////////////////////////////////////
 //   Classe mere qui gere le champ utilise pour le fluide d'Ostwald dans les deux
 //   discretisations.
 //   Possede les fonctions generiques aux deux discretisations.

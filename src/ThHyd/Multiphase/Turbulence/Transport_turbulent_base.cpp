@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Transport_turbulent_base.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Turbulence
-// Version:     /main/18
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Transport_turbulent_base.h>
 Implemente_base(Transport_turbulent_base, "Transport_turbulent_base", Correlation_base);

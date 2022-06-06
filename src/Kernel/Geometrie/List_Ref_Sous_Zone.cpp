@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        List_Ref_Sous_Zone.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Geometrie
-// Version:     /main/7
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <List_Ref_Sous_Zone.h>
 Implemente_liste(REF(Sous_Zone));

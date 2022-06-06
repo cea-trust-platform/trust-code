@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Vect_Deriv_Comm_Group.h
-// Directory:   $TRUST_ROOT/src/Kernel/Utilitaires
-// Version:     /main/5
-//
-//////////////////////////////////////////////////////////////////////////////
 #ifndef Vect_Deriv_Comm_Group_included
 #define Vect_Deriv_Comm_Group_included
 #include <Vect.h>

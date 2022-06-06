@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Ensemble_Lagrange_base.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Geometrie
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
 #include <Ensemble_Lagrange_base.h>
 #include <Sous_Zone.h>
 #include <Domaine.h>

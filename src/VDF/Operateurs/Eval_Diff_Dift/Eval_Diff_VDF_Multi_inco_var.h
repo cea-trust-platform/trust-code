@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Eval_Diff_VDF_Multi_inco_var.h
-// Directory:   $TRUST_ROOT/src/VDF/Operateurs/Eval_Diff_Dift
-// Version:     /main/13
-//
-//////////////////////////////////////////////////////////////////////////////
 
 
 #ifndef Eval_Diff_VDF_Multi_inco_var_included

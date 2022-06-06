@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Temperature_imposee_paroi_H.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Common/Cond_Lim
-// Version:     /main/7
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Temperature_imposee_paroi_H_included
 #define Temperature_imposee_paroi_H_included

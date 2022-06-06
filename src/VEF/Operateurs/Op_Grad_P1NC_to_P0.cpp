@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Grad_P1NC_to_P0.cpp
-// Directory:   $TRUST_ROOT/src/VEF/Operateurs
-// Version:     /main/5
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Grad_P1NC_to_P0.h>
 #include <Champ_P1NC.h>

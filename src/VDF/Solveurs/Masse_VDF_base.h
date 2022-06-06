@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Masse_VDF_base.h
-// Directory:   $TRUST_ROOT/src/VDF/Solveurs
-// Version:     /main/2
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Masse_VDF_base_included
 #define Masse_VDF_base_included

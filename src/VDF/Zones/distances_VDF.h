@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        distances_VDF.h
-// Directory:   $TRUST_ROOT/src/VDF/Zones
-// Version:     /main/7
-//
-//////////////////////////////////////////////////////////////////////////////
 #include <Zone_VDF.h>
 
 void moy_2D_vit(const DoubleVect& ,int ,int ,const Zone_VDF& ,double& );

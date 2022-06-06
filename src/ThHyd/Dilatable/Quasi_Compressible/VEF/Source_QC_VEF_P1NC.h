@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Source_QC_VEF_P1NC.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Dilatable/Quasi_Compressible/VEF
-// Version:     /main/fauchet_beta/1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Source_QC_VEF_P1NC_included
 #define Source_QC_VEF_P1NC_included

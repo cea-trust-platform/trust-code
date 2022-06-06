@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Solveur_U_P.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Schemas_Temps
-// Version:     /main/48
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Solveur_U_P.h>
 #include <Navier_Stokes_std.h>

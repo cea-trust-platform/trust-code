@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-/////////////////////////////////////////////////////////////////////////////
-//
-// File      : EF_axi_discretisation.cpp
-// Directory : $TRUST_FIXES     # NAME OF THE PROJECT    (REQUIRED)_ROOT/src/TO_MOVE_TO_TRUST
-//
-/////////////////////////////////////////////////////////////////////////////
 
 #include <EF_axi_discretisation.h>
 

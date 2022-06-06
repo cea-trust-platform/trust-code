@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Matrice_Morse_Sym.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Math/Matrices
-// Version:     /main/38
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Matrice_Morse_Sym.h>
 #include <TRUSTArrays.h>

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_Generique_Reduction_0D.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Champs
-// Version:     /main/25
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Champ_Generique_Reduction_0D.h>
 #include <Probleme_base.h>

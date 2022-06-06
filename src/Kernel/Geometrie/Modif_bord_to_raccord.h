@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Modif_bord_to_raccord.h
-// Directory:   $TRUST_ROOT/src/Kernel/Geometrie
-// Version:     /main/7
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Modif_bord_to_raccord_included
 #define Modif_bord_to_raccord_included

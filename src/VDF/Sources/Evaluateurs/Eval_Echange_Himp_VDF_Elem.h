@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Eval_Echange_Himp_VDF_Elem.h
-// Directory:   $TRUST_ROOT/src/VDF/Sources/Evaluateurs
-// Version:     /main/6
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Eval_Echange_Himp_VDF_Elem_included
 #define Eval_Echange_Himp_VDF_Elem_included
