@@ -410,17 +410,20 @@ void Energie_Multiphase::calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val
 
   /* valeurs du champ */
   int i, n, N = val.line_size(), Nl = val.dimension_tot(0), cR = sub_type(Champ_Uniforme, ch_rho);
-  for (i = 0; i < Nl; i++) for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * en(i, n);
+  for (i = 0; i < Nl; i++)
+    for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * en(i, n);
 
   /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_en = ch_en.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
   if (ch_rho.a_une_zone_dis_base()) b_rho = ch_rho.valeur_aux_bords();
   else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), b_rho);
-  for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_en(i, n);
+  for (i = 0; i < Nb; i++)
+    for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_en(i, n);
 
   DoubleTab& d_a = deriv["alpha"];//derivee en alpha : rho * en
-  for (d_a.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++) d_a(i, n) = rho(!cR * i, n) * en(i, n);
+  for (d_a.resize(Nl, N), i = 0; i < Nl; i++)
+    for (n = 0; n < N; n++) d_a(i, n) = rho(!cR * i, n) * en(i, n);
 
   /* derivees a travers rho et en */
   const tabs_t d_vide = {}, &d_rho = pch_rho ? pch_rho->derivees() : d_vide, &d_en = ch_en.derivees();
@@ -432,7 +435,8 @@ void Energie_Multiphase::calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val
     {
       const DoubleTab *dr = d_rho.count(var) ? &d_rho.at(var) : NULL, *de = d_en.count(var) ? &d_en.at(var) : NULL;
       DoubleTab& d_v = deriv[var];
-      for (d_v.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++)
+      for (d_v.resize(Nl, N), i = 0; i < Nl; i++)
+        for (n = 0; n < N; n++)
           d_v(i, n) = alpha(i, n) * ((dr ? (*dr)(i, n) * en(i, n) : 0) + (de ? rho(!cR * i, n) * (*de)(i, n) : 0));
     }
 }
@@ -449,17 +453,20 @@ void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val
 
   /* valeurs du champ */
   int i, n, N = val.line_size(), Nl = val.dimension_tot(0), cR = sub_type(Champ_Uniforme, ch_rho);
-  for (i = 0; i < Nl; i++) for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * h(i, n);
+  for (i = 0; i < Nl; i++)
+    for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * h(i, n);
 
   /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_h = ch_h.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
   if (ch_rho.a_une_zone_dis_base()) b_rho = ch_rho.valeur_aux_bords();
   else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), b_rho);
-  for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_h(i, n);
+  for (i = 0; i < Nb; i++)
+    for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_h(i, n);
 
   DoubleTab& d_a = deriv["alpha"];//derivee en alpha : rho * h
-  for (d_a.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++) d_a(i, n) = rho(!cR * i, n) * h(i, n);
+  for (d_a.resize(Nl, N), i = 0; i < Nl; i++)
+    for (n = 0; n < N; n++) d_a(i, n) = rho(!cR * i, n) * h(i, n);
 
   /* derivees a travers rho et en */
   const tabs_t d_vide = {}, &d_rho = pch_rho ? pch_rho->derivees() : d_vide, &d_h = ch_h.derivees();
@@ -471,7 +478,8 @@ void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val
     {
       const DoubleTab *dr = d_rho.count(var) ? &d_rho.at(var) : NULL, *dh = d_h.count(var) ? &d_h.at(var) : NULL;
       DoubleTab& d_v = deriv[var];
-      for (d_v.resize(Nl, N), i = 0; i < Nl; i++) for (n = 0; n < N; n++)
+      for (d_v.resize(Nl, N), i = 0; i < Nl; i++)
+        for (n = 0; n < N; n++)
           d_v(i, n) = alpha(i, n) * ((dr ? (*dr)(i, n) * h(i, n) : 0) + (dh ? rho(!cR * i, n) * (*dh)(i, n) : 0));
     }
 }

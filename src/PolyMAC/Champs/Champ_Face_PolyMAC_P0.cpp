@@ -112,7 +112,9 @@ Champ_base& Champ_Face_PolyMAC_P0::affecter_(const Champ_base& ch)
 
       if (unif) eval = ch.valeurs();
       else eval.resize(val.dimension_tot(0), N * D), ch.valeur_aux(xv,eval);
-      for (f = 0; f < zone.nb_faces_tot(); f++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+      for (f = 0; f < zone.nb_faces_tot(); f++)
+        for (d = 0; d < D; d++)
+          for (n = 0; n < N; n++)
             val(f, n) += eval(unif ? 0 : f, N * d + n) * nf(f, d) / fs(f);
       update_ve(val);
       //copie dans toutes les cases
@@ -134,8 +136,10 @@ void Champ_Face_PolyMAC_P0::update_ve(DoubleTab& val) const
   double fac;
   for (e = 0; e < ne_tot; e++)
     {
-      for (d = 0; d < D; d++) for (n = 0; n < N; n++) val(nf_tot + D * e + d, n) = 0;
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) for (fac = (e == f_e(f, 0) ? 1 : -1) * pf(f) * fs(f) / (pe(e) * ve(e)), d = 0; d < D; d++)
+      for (d = 0; d < D; d++)
+        for (n = 0; n < N; n++) val(nf_tot + D * e + d, n) = 0;
+      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+        for (fac = (e == f_e(f, 0) ? 1 : -1) * pf(f) * fs(f) / (pe(e) * ve(e)), d = 0; d < D; d++)
           for (n = 0; n < N; n++) val(nf_tot + D * e + d, n) += fac * (xv(f, d) - xp(e, d)) * val(f, n);
     }
 }
@@ -161,18 +165,22 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
   DoubleTrav xfb(zone.nb_faces_tot(), D), ve2, ve2i, A, B, P, W(1);
   IntTrav pvt;
   ve2.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), P.set_smart_resize(1), W.set_smart_resize(1), pvt.set_smart_resize(1);
-  for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl_(f, 0) == 1 || fcl_(f, 0) == 2) //Neumann / Symetrie
+  for (f = 0; f < zone.nb_faces_tot(); f++)
+    if (fcl_(f, 0) == 1 || fcl_(f, 0) == 2) //Neumann / Symetrie
       {
         double scal = zone.dot(&xv(f, 0), &nf(f, 0), &xp(e = f_e(f, 0), 0)) / (fs(f) * fs(f));
         for (d = 0; d < D; d++) xfb(f, d) = xp(e, d) + scal * nf(f, d);
       }
-    else if (fcl_(f, 0)) for (d = 0; d < D; d++) xfb(f, d) = xv(f, d); //Dirichlet
+    else if (fcl_(f, 0))
+      for (d = 0; d < D; d++) xfb(f, d) = xv(f, d); //Dirichlet
 
   /* connectivites som-elem et elem-elem */
   std::vector<std::set<int>> s_f(zone.zone().nb_som()), e_s_f(zone.nb_elem());
-  for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+  for (f = 0; f < zone.nb_faces_tot(); f++)
+    for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
       if (s < zone.zone().nb_som()) s_f[s].insert(f);
-  for (e = 0; e < zone.nb_elem(); e++) for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
+  for (e = 0; e < zone.nb_elem(); e++)
+    for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
       for (auto &&fa : s_f[s]) e_s_f[e].insert(fa);
 
   ve2d.resize(1, 2), ve2d.set_smart_resize(1), ve2j.set_smart_resize(1), ve2bj.resize(0, 2), ve2bj.set_smart_resize(1);
@@ -182,13 +190,17 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
   for (e = 0; e < zone.nb_elem(); e++, v_i.clear(), i_v.clear())
     {
       /* stencil : faces de l'element et de ses voisins par som-elem + toutes composantes a ses faces de bord */
-      for (auto &&fa : e_s_f[e]) if (!v_i.count({{ fa, -1 }})) v_i[ {{fa, -1}}] = i_v.size(), i_v.push_back({{fa, -1}});
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) if (fcl_(f, 0)) for (d = 0; d < D; d++)
+      for (auto &&fa : e_s_f[e])
+        if (!v_i.count({{ fa, -1 }})) v_i[ {{fa, -1}}] = i_v.size(), i_v.push_back({{fa, -1}});
+      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+        if (fcl_(f, 0))
+          for (d = 0; d < D; d++)
             v_i[ {{f, d }}] = i_v.size(), i_v.push_back({{f, d}});
 
       /* coeffs de l'interpolation d'ordre 1, ponderations (comme dans Zone_PolyMAC_P0::{e,f}grad)  */
       ve2.resize(nc = i_v.size(), D), A.resize(nc, nl), B.resize(nc), P.resize(nc), pvt.resize(nc);
-      for (ve2 = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (fac = (e == f_e(f, 0) ? 1 : -1) * fs(f) / ve(e), j = v_i.at({{ f, -1 }}), d = 0; d < D; d++)
+      for (ve2 = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+        for (fac = (e == f_e(f, 0) ? 1 : -1) * fs(f) / ve(e), j = v_i.at({{ f, -1 }}), d = 0; d < D; d++)
       ve2(j, d) += fac * (xv(f, d) - xp(e, d));
       for (i = 0; i < nc; i++) f = i_v[i][0], xf = i_v[i][1] < 0 ? &xv(f, 0) : &xfb(f, 0), P(i) = 1. / sqrt(zone.dot(xf, xf, &xp(e, 0), &xp(e, 0)));
 
@@ -196,7 +208,9 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
       for (d = 0; d < D; d++)
         {
           /* systeme A.x = b */
-          for (B = 0, pvt = 0, i = 0; i < nc; i++) for (f = i_v[i][0], db = i_v[i][1], xf = db < 0 ? &xv(f, 0) : &xfb(f, 0), j = 0, jb = 0; j < D; j++) for (k = 0; k <= D; k++, jb++)
+          for (B = 0, pvt = 0, i = 0; i < nc; i++)
+            for (f = i_v[i][0], db = i_v[i][1], xf = db < 0 ? &xv(f, 0) : &xfb(f, 0), j = 0, jb = 0; j < D; j++)
+              for (k = 0; k <= D; k++, jb++)
                 {
                   fac = (db < 0 ? nf(f, j) / fs(f) : (db == j)) * (k < D ? xf[k] - xp(e, k) : 1);
                   A(i, jb) = fac * P(i);
@@ -213,14 +227,20 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
 
       /* implicitation des CLs de Neumann / Symetrie */
       Matrice33 M(1, 0, 0, 0, 1, 0, 0, 0, 1), iM;
-      for (i = 0; i < nc; i++) if (i_v[i][1] >= 0 && fcl_(i_v[i][0], 0) < 2) for (j = 0; j < D; j++)
+      for (i = 0; i < nc; i++)
+        if (i_v[i][1] >= 0 && fcl_(i_v[i][0], 0) < 2)
+          for (j = 0; j < D; j++)
             M(j, i_v[i][1]) -= ve2(i, j);
       Matrice33::inverse(M, iM);
-      for (ve2i.resize(nc, D), i = 0; i < nc; i++) for (j = 0; j < D; j++) for (ve2i(i, j) = 0, k = 0; k < D; k++)
+      for (ve2i.resize(nc, D), i = 0; i < nc; i++)
+        for (j = 0; j < D; j++)
+          for (ve2i(i, j) = 0, k = 0; k < D; k++)
             ve2i(i, j) += iM(j, k) * ve2(i, k);
 
       /* stockage */
-      for (d = 0; d < D; d++, ve2d.append_line(ve2c.size(), ve2bc.size())) for (i = 0; i < nc; i++) if (std::fabs(ve2i(i, d)) > 1e-6 && (i_v[i][1] < 0 || fcl_(i_v[i][0], 0) == 3))
+      for (d = 0; d < D; d++, ve2d.append_line(ve2c.size(), ve2bc.size()))
+        for (i = 0; i < nc; i++)
+          if (std::fabs(ve2i(i, d)) > 1e-6 && (i_v[i][1] < 0 || fcl_(i_v[i][0], 0) == 3))
             {
               i_v[i][1] < 0 ? ve2j.append_line(i_v[i][0])  : ve2bj.append_line(i_v[i][0], i_v[i][1]);
               (i_v[i][1] < 0 ? &ve2c : &ve2bc)->append_line(ve2i(i, d) * pf(i_v[i][0]) / pe(e));
@@ -239,14 +259,17 @@ void Champ_Face_PolyMAC_P0::update_ve2(DoubleTab& val, int incr) const
   int i, j, e, ed, d, D = dimension, n, N = val.line_size(), nf_tot = zone.nb_faces_tot();
   init_ve2(), init_fcl();
 
-  for (e = 0, ed = 0, i = nf_tot; e < zone.nb_elem(); e++) for (d = 0; d < D; d++, ed++, i++) for (n = 0; n < N; n++)
+  for (e = 0, ed = 0, i = nf_tot; e < zone.nb_elem(); e++)
+    for (d = 0; d < D; d++, ed++, i++)
+      for (n = 0; n < N; n++)
         {
           /* partie "interne" */
           for (val(i, n) = 0, j = ve2d(ed, 0); j < ve2d(ed + 1, 0); j++)
             val(i, n) += ve2c(j) * val(ve2j(j), n);
 
           /* partie "faces de bord de Dirichlet" (sauf si on fait des increments) */
-          if (!incr) for (j = ve2d(ed, 1); j < ve2d(ed + 1, 1); j++)
+          if (!incr)
+            for (j = ve2d(ed, 1); j < ve2d(ed + 1, 1); j++)
               if (sub_type(Dirichlet, cls[fcl_(ve2bj(j, 0), 1)].valeur()))
                 val(i, n) += ve2bc(j) * ref_cast(Dirichlet, cls[fcl_(ve2bj(j, 0), 1)].valeur()).val_imp(fcl_(ve2bj(j, 0), 2), N * ve2bj(j, 1) + n);
         }
@@ -279,7 +302,9 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, c
       Process::exit();
     }
 
-  for (int p = 0, e; p < les_polys.size(); p++) for (e = les_polys(p), d = 0; e < zone.nb_elem() && d < D; d++) for (n = 0; n < N; n++)
+  for (int p = 0, e; p < les_polys.size(); p++)
+    for (e = les_polys(p), d = 0; e < zone.nb_elem() && d < D; d++)
+      for (n = 0; n < N; n++)
         val(p, N * d + n) = valeurs()(nf_tot + D * e + d, n);
   return val;
 }

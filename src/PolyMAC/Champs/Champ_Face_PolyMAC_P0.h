@@ -74,9 +74,11 @@ public :
     const DoubleVect& fs = zone.face_surfaces();
     double scal = 0, vf = f >= 0 ? val_f(f, k) - (l >= 0 ? val_f(f, l) : 0) : 0, v_temp[3], *v = v_ext ? v_ext : v_temp;
     for (d = 0; d < D; d++) v[d] = val(nf_tot + D * e + d, k) - (l >= 0 ? val(nf_tot + D * e + d, l) : 0);
-    if (f >= 0) for (d = 0, scal = zone.dot(v, &nf(f, 0)) / fs(f); d < D; d++) v[d] += (vf - scal) * nf(f, d) / fs(f);
+    if (f >= 0)
+      for (d = 0, scal = zone.dot(v, &nf(f, 0)) / fs(f); d < D; d++) v[d] += (vf - scal) * nf(f, d) / fs(f);
     double nv = sqrt(zone.dot(v, v));
-    if (dnv) for (d = 0; d < D; d++) dnv[d] = nv ? (v[d] - (f >= 0 ? vf * nf(f, d) / fs(f) : 0)) / nv : 0;
+    if (dnv)
+      for (d = 0; d < D; d++) dnv[d] = nv ? (v[d] - (f >= 0 ? vf * nf(f, d) / fs(f) : 0)) / nv : 0;
     if (dnv) dnv[3] = f >= 0 && nv ? vf / nv : 0;
     return nv;
   }

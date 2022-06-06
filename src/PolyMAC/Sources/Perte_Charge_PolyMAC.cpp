@@ -87,13 +87,18 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 
       /* vecteur vitesse en e */
       double dh_e = C_dh ? dh(0, 0) : dh->valeur_a_compo(pos, 0);
-      if (poly_v2) for (d = 0; d < D; d++) for (n = 0; n < N; n++) v(n, d) = pvit(nf_tot + D * e + d, n); //vitesse par variable auxiliaire
-      else for (v = 0, j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) /* PolyMAC V1 : vitesse a reconstruire */
+      if (poly_v2)
+        for (d = 0; d < D; d++)
+          for (n = 0; n < N; n++) v(n, d) = pvit(nf_tot + D * e + d, n); //vitesse par variable auxiliaire
+      else for (v = 0, j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+          for (n = 0; n < N; n++)
+            for (d = 0; d < D; d++) /* PolyMAC V1 : vitesse a reconstruire */
               v(n, d) += fs(f) * pf(f) / (ve(e) * pe(e)) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * pvit(f, n);
       /* norme de v (avec seuil), debit surfacique par phase et total */
       for (n = 0, Gm = 0; n < N; Gm += G(n), n++)
         nv(n) = std::max(v_min, sqrt(zone.dot(&v(n, 0), &v(n, 0)))), G(n) = (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n) * nv(n);
-      for (arm = 0, n = 0; n < N; n++) for (arm += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n), d = 0; d < D; d++)
+      for (arm = 0, n = 0; n < N; n++)
+        for (arm += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n), d = 0; d < D; d++)
           vm(d) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n) * v(n, d);
       for (d = 0; d < D; d++) vm(d) /= arm;
       nvm = std::max(v_min, sqrt(zone.dot(&vm(0), &vm(0))));
@@ -125,16 +130,20 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                      fac_n = fac * mult(n, 0) * Cf(n) * G(n) / rho(!cR * e, n),
                      fac_m = fac * mult(n, 1) * Cf_t(n) * Gm / rho(!cR * e, n);
               for (m = 0; m < N; m++) secmem(f, n) -= ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1) * vit(f, m);
-              if (mat) for (m = 0; m < N; m++) (*mat)(N * f + n, N * f + m) += ((m == n) * fac_n +  fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1);
+              if (mat)
+                for (m = 0; m < N; m++) (*mat)(N * f + n, N * f + m) += ((m == n) * fac_n +  fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1);
             }
 
-      if (poly_v2) for (d = 0, k = nf_tot + D * e; d < D; d++, k++) for (n = 0; n < N; n++) /* PolyMAC V2: contributions aux equations aux elements */
+      if (poly_v2)
+        for (d = 0, k = nf_tot + D * e; d < D; d++, k++)
+          for (n = 0; n < N; n++) /* PolyMAC V2: contributions aux equations aux elements */
             {
               double fac = pe(e) * ve(e) * 0.5 / dh_e,
                      fac_n = fac * mult(n, 0) * Cf(n) * G(n) / rho(!cR * e, n),
                      fac_m = fac * mult(n, 1) * Cf_t(n) * Gm / rho(!cR * e, n);
               for (m = 0; m < N; m++) secmem(k, n) -= ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1) * vit(k, m);
-              if (mat) for (m = 0; m < N; m++) (*mat)(N * k + n, N * k + m) += ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1);
+              if (mat)
+                for (m = 0; m < N; m++) (*mat)(N * k + n, N * k + m) += ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1);
             }
     }
 }

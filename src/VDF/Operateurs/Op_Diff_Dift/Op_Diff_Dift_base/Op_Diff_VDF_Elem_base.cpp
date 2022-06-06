@@ -132,7 +132,8 @@ void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, 
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
-  for (i = 0; i < cls.size(); i++) if (sub_type(Echange_contact_VDF, cls[i].valeur()))
+  for (i = 0; i < cls.size(); i++)
+    if (sub_type(Echange_contact_VDF, cls[i].valeur()))
       {
         const Echange_contact_VDF& cl = ref_cast(Echange_contact_VDF, cls[i].valeur());
         if (cl.nom_autre_pb() != autre_pb.le_nom()) continue; //not our problem

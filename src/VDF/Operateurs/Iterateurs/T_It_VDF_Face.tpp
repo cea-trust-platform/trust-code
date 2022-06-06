@@ -144,7 +144,8 @@ int T_It_VDF_Face<_TYPE_>::impr(Sortie& os) const
             }
           if (dimension==3)
             {
-              for (k=0; k<tab_flux_bords.dimension(1); k++) if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,k));
+              for (k=0; k<tab_flux_bords.dimension(1); k++)
+                if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,k));
             }
           else if (impr_mom) Flux_moment.add_col(flux_bords2(4,num_cl,0));
         } /* fin for num_cl */
@@ -232,7 +233,8 @@ inline void T_It_VDF_Face<_TYPE_>::multiply_by_rho_if_hydraulique(DoubleTab& tab
         {
           const double coef = rho(0,0);
           const int nb_faces_bord = la_zone->nb_faces_bord();
-          for (int face = 0; face < nb_faces_bord; face++) for(int k = 0; k < tab_flux_bords.line_size(); k++) tab_flux_bords(face,k) *= coef;
+          for (int face = 0; face < nb_faces_bord; face++)
+            for(int k = 0; k < tab_flux_bords.line_size(); k++) tab_flux_bords(face,k) *= coef;
         }
     }
 }
@@ -543,8 +545,10 @@ T_It_VDF_Face<_TYPE_>::ajouter_aretes_bords_(const int n_arete, const int ncomp,
 
       if (is_FLUIDE || is_PAROI_FL) // TODO : FIXME : Yannick help :/ j'ai fait comme le cas scalaire
         {
-          if (fac1 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac1,orientation(fac3)) -= 0.5*signe*flux3[k];
-          if (fac2 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac2,orientation(fac3)) -= 0.5*signe*flux3[k];
+          if (fac1 < n)
+            for (int k=0; k<ncomp; k++) tab_flux_bords(fac1,orientation(fac3)) -= 0.5*signe*flux3[k];
+          if (fac2 < n)
+            for (int k=0; k<ncomp; k++) tab_flux_bords(fac2,orientation(fac3)) -= 0.5*signe*flux3[k];
         }
     }
 }
@@ -627,13 +631,17 @@ void T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes_(const int n_arete, const int 
         {
           if (fac4 < n2)
             {
-              if (fac1 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac1,orientation(fac3)) -= flux[k];
-              if (fac2 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac2,orientation(fac4)) -= flux[k];
+              if (fac1 < n)
+                for (int k=0; k<ncomp; k++) tab_flux_bords(fac1,orientation(fac3)) -= flux[k];
+              if (fac2 < n)
+                for (int k=0; k<ncomp; k++) tab_flux_bords(fac2,orientation(fac4)) -= flux[k];
             }
           if (fac3 < n2)
             {
-              if (fac1 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac1,orientation(fac3)) += flux[k];
-              if (fac2 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac2,orientation(fac4)) += flux[k];
+              if (fac1 < n)
+                for (int k=0; k<ncomp; k++) tab_flux_bords(fac1,orientation(fac3)) += flux[k];
+              if (fac2 < n)
+                for (int k=0; k<ncomp; k++) tab_flux_bords(fac2,orientation(fac4)) += flux[k];
             }
         }
 
@@ -643,13 +651,17 @@ void T_It_VDF_Face<_TYPE_>::ajouter_aretes_mixtes_(const int n_arete, const int 
         {
           if (fac2 < n2)
             {
-              if (fac3 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac3,orientation(fac1)) -= flux[k];
-              if (fac4 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac4,orientation(fac2)) -= flux[k];
+              if (fac3 < n)
+                for (int k=0; k<ncomp; k++) tab_flux_bords(fac3,orientation(fac1)) -= flux[k];
+              if (fac4 < n)
+                for (int k=0; k<ncomp; k++) tab_flux_bords(fac4,orientation(fac2)) -= flux[k];
             }
           if (fac1 < n2)
             {
-              if (fac3 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac3,orientation(fac1)) += flux[k];
-              if (fac4 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac4,orientation(fac2)) += flux[k];
+              if (fac3 < n)
+                for (int k=0; k<ncomp; k++) tab_flux_bords(fac3,orientation(fac1)) += flux[k];
+              if (fac4 < n)
+                for (int k=0; k<ncomp; k++) tab_flux_bords(fac4,orientation(fac2)) += flux[k];
             }
         }
     }
@@ -664,8 +676,10 @@ void T_It_VDF_Face<_TYPE_>::ajouter_fa7_sortie_libre_(const int ndeb, const int 
       for (int face = ndeb; face < nfin; face++)
         {
           flux_evaluateur.template flux_fa7<Fa7_Type>(inco,face,cl,ndeb,flux);
-          if ( (elem(face,0)) > -1) for (int k=0; k<ncomp; k++) resu(face,k) += flux[k];
-          if ( (elem(face,1)) > -1) for (int k=0; k<ncomp; k++) resu(face,k) -= flux[k];
+          if ( (elem(face,0)) > -1)
+            for (int k=0; k<ncomp; k++) resu(face,k) += flux[k];
+          if ( (elem(face,1)) > -1)
+            for (int k=0; k<ncomp; k++) resu(face,k) -= flux[k];
           // if (!is_SCALAIRE) for (int k=0; k<ncomp; k++) if (face<n) tab_flux_bords(face,k) -= flux(k); // TODO : FIXME : Yannick help :/
         }
     }
@@ -681,8 +695,10 @@ void T_It_VDF_Face<_TYPE_>::ajouter_fa7_elem_(const int num_elem, const int ncom
       int fac1 = elem_faces(num_elem,fa7), fac2 = elem_faces(num_elem,fa7+dimension);
       flux_evaluateur.template flux_fa7<Fa7_Type>(inco, num_elem, fac1, fac2,flux);
       fill_resu_tab<Type_Double>(fac1,fac2,ncomp,flux,resu);
-      if (fac1 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac1,orientation(fac1)) += flux[k]; // TODO : FIXME : Yannick help :/ j'ai fait comme le cas scalaire (pas code a la base pour vect)
-      if (fac2 < n) for (int k=0; k<ncomp; k++) tab_flux_bords(fac2,orientation(fac2)) -= flux[k];
+      if (fac1 < n)
+        for (int k=0; k<ncomp; k++) tab_flux_bords(fac1,orientation(fac1)) += flux[k]; // TODO : FIXME : Yannick help :/ j'ai fait comme le cas scalaire (pas code a la base pour vect)
+      if (fac2 < n)
+        for (int k=0; k<ncomp; k++) tab_flux_bords(fac2,orientation(fac2)) -= flux[k];
     }
 }
 
@@ -843,13 +859,21 @@ void T_It_VDF_Face<_TYPE_>::corriger_coeffs_fa7_elem_periodicite_(const int ncom
   // XXX : Elie Saikali : j'ai fait comme le codage initial pour le cas Scalaire...
   if (signe>0) /* on a oublie a droite  la contribution de la gche */
     {
-      for (int i = 0; i < ncomp; i++ ) for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++) if (tab2[k]-1==face*ncomp+i) coeff[k] += aii[i];
-      for (int i = 0; i < ncomp; i++ ) for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++) if (tab2[k]-1==fac2*ncomp+i) coeff[k] -= ajj[i];
+      for (int i = 0; i < ncomp; i++ )
+        for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++)
+          if (tab2[k]-1==face*ncomp+i) coeff[k] += aii[i];
+      for (int i = 0; i < ncomp; i++ )
+        for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++)
+          if (tab2[k]-1==fac2*ncomp+i) coeff[k] -= ajj[i];
     }
   else /* on a oublie a gauche  la contribution de la droite */
     {
-      for (int i = 0; i < ncomp; i++ ) for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++) if (tab2[k]-1==fac1*ncomp+i) coeff[k] -= aii[i];
-      for (int i = 0; i < ncomp; i++ ) for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++) if (tab2[k]-1==face*ncomp+i) coeff[k] += ajj[i];
+      for (int i = 0; i < ncomp; i++ )
+        for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++)
+          if (tab2[k]-1==fac1*ncomp+i) coeff[k] -= aii[i];
+      for (int i = 0; i < ncomp; i++ )
+        for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++)
+          if (tab2[k]-1==face*ncomp+i) coeff[k] += ajj[i];
     }
 }
 
@@ -917,7 +941,8 @@ T_It_VDF_Face<_TYPE_>::ajouter_contribution_aretes_coins_(const int n_arete, con
       flux_evaluateur.template coeffs_arete<Arete_Type>(fac1, fac2, fac3, signe, aii1_2, aii3_4, ajj1_2);
 
       for (int i = 0; i < ncomp; i++) fill_coeff_matrice_morse(fac3,i,ncomp,signe,aii3_4,matrice);
-      if(is_COIN_FL) for (int i = 0; i < ncomp; i++) fill_coeff_matrice_morse<Type_Double>(fac1,i,ncomp,1,aii1_2,matrice);
+      if(is_COIN_FL)
+        for (int i = 0; i < ncomp; i++) fill_coeff_matrice_morse<Type_Double>(fac1,i,ncomp,1,aii1_2,matrice);
     }
 }
 
@@ -959,8 +984,10 @@ void T_It_VDF_Face<_TYPE_>::ajouter_contribution_fa7_sortie_libre_(const int nde
       for (int face = ndeb; face < nfin; face++)
         {
           flux_evaluateur.template coeffs_fa7<Fa7_Type>(face,cl, aii, ajj);
-          if ( (elem(face,0)) > -1) for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse<Type_Double>(face,i,ncomp,1,aii,matrice);
-          if ( (elem(face,1)) > -1) for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse<Type_Double>(face,i,ncomp,1,ajj,matrice);
+          if ( (elem(face,0)) > -1)
+            for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse<Type_Double>(face,i,ncomp,1,aii,matrice);
+          if ( (elem(face,1)) > -1)
+            for (int i = 0; i < ncomp; i++ ) fill_coeff_matrice_morse<Type_Double>(face,i,ncomp,1,ajj,matrice);
         }
     }
 }
@@ -982,7 +1009,8 @@ void T_It_VDF_Face<_TYPE_>::fill_coeff_matrice_morse(const int face, const int i
 {
   const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
-  for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++) if (tab2[k]-1 == face*ncomp+i) coeff[k] += signe*A[i]; // equivalent a matrice(face,face) += signe*A(i)
+  for (int k = tab1[face*ncomp+i]-1; k < tab1[face*ncomp+1+i]-1; k++)
+    if (tab2[k]-1 == face*ncomp+i) coeff[k] += signe*A[i]; // equivalent a matrice(face,face) += signe*A(i)
 }
 
 template <class _TYPE_> template <typename Type_Double>
@@ -1253,8 +1281,10 @@ void T_It_VDF_Face<_TYPE_>::contribuer_au_second_membre_fa7_sortie_libre_(const 
       for (int face = ndeb; face < nfin; face++)
         {
           flux_evaluateur.template secmem_fa7<Fa7_Type>(face,cl, ndeb, flux);
-          if ( (elem(face,0)) > -1) for (int k = 0; k < ncomp; k++) resu(face,k) += flux[k];
-          if ( (elem(face,1)) > -1) for (int k = 0; k < ncomp; k++) resu(face,k) -= flux[k];
+          if ( (elem(face,0)) > -1)
+            for (int k = 0; k < ncomp; k++) resu(face,k) += flux[k];
+          if ( (elem(face,1)) > -1)
+            for (int k = 0; k < ncomp; k++) resu(face,k) -= flux[k];
         }
     }
 }

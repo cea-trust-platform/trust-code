@@ -84,12 +84,14 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::dimensionner_blocs(matr
   const int ne = zone.nb_elem(), N = inco.line_size();
   std::string nom_inco = equation().inconnue().le_nom().getString();
 
-  for (auto &&n_m : matrices) if (n_m.first == nom_inco)
+  for (auto &&n_m : matrices)
+    if (n_m.first == nom_inco)
       {
         Matrice_Morse& mat = *n_m.second, mat2;
         IntTrav sten(0, 2);
         sten.set_smart_resize(1);
-        for (int e = 0; e < ne; e++) for (int n = 0; n < N; n++) sten.append_line(N * e + n, N * e + n);
+        for (int e = 0; e < ne; e++)
+          for (int n = 0; n < N; n++) sten.append_line(N * e + n, N * e + n);
         tableau_trier_retirer_doublons(sten);
         Matrix_tools::allocate_morse_matrix(inco.size_totale(), equation().probleme().get_champ(n_m.first.c_str()).valeurs().size_totale(), sten, mat2);
         mat.nb_colonnes() ? mat += mat2 : mat = mat2;
@@ -105,7 +107,8 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::ajouter_blocs(matrices_
   Matrice_Morse *Mc = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
   const int N = c.line_size();
 
-  for (int e = 0; e < zone.nb_elem(); e++) for (int l = 0; l < N; l++)
+  for (int e = 0; e < zone.nb_elem(); e++)
+    for (int l = 0; l < N; l++)
       {
         const double fac = pe(e) * ve(e) * lambda[l];
         secmem(e, l) -= fac * c(e, l);

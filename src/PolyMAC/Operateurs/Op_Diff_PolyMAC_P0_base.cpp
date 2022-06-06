@@ -88,7 +88,9 @@ void Op_Diff_PolyMAC_P0_base::completer()
   zone.zone().creer_tableau_elements(nu_);
   const Conds_lim& cls = eq.zone_Cl_dis().les_conditions_limites();
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) ;
-  if (nu_constant_) for (int i = 0; i < cls.size(); i++) if (sub_type(Echange_impose_base, cls[i].valeur()) || sub_type(Frottement_impose_base, cls[i].valeur()))
+  if (nu_constant_)
+    for (int i = 0; i < cls.size(); i++)
+      if (sub_type(Echange_impose_base, cls[i].valeur()) || sub_type(Frottement_impose_base, cls[i].valeur()))
         nu_constant_ = 0;
 }
 
@@ -261,16 +263,26 @@ void Op_Diff_PolyMAC_P0_base::update_nu() const
   assert(N_nu % N == 0);
 
   /* nu_ : si necessaire, on doit etendre la champ source */
-  if (N_nu == N && N_nu_src == N_mil) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) nu_.addr()[N_nu * e +  n] = nu_src(!c_nu * e, n); //facile
-  else if (N_nu == N * D && N_nu_src == N_mil) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //diagonal
+  if (N_nu == N && N_nu_src == N_mil)
+    for (e = 0; e < zone.nb_elem_tot(); e++)
+      for (n = 0; n < N; n++) nu_.addr()[N_nu * e +  n] = nu_src(!c_nu * e, n); //facile
+  else if (N_nu == N * D && N_nu_src == N_mil)
+    for (e = 0; e < zone.nb_elem_tot(); e++)
+      for (n = 0; n < N; n++)
+        for (d = 0; d < D; d++) //diagonal
           nu_(e, n, d) = nu_src(!c_nu * e, n);
-  else if (N_nu == N * D * D && (N_nu_src == N_mil || N_nu_src == N_mil * D)) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) //complet
-        for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N_mil ? n : D * n + d);
+  else if (N_nu == N * D * D && (N_nu_src == N_mil || N_nu_src == N_mil * D))
+    for (e = 0; e < zone.nb_elem_tot(); e++)
+      for (n = 0; n < N; n++) //complet
+        for (d = 0; d < D; d++)
+          for (db = 0; db < D; db++) nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N_mil ? n : D * n + d);
   else abort();
 
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
   const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0, i = 0; n < N; n++) for (m = 0; m < mult; m++, i++)
+  for (e = 0; e < zone.nb_elem_tot(); e++)
+    for (n = 0, i = 0; n < N; n++)
+      for (m = 0; m < mult; m++, i++)
         nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? std::max((*alp)(e, n), 1e-8) : 1);
 
   /* modification par une classe fille */

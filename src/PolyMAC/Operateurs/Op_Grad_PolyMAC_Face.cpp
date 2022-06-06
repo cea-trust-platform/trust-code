@@ -97,10 +97,13 @@ void Op_Grad_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
   IntTrav sten(0, 2);
   DoubleTrav w2;
   sten.set_smart_resize(1), w2.set_smart_resize(1);
-  for (e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++) if ((f = e_f(e, i)) < zone.nb_faces()) /* faces reelles seulement */
+  for (e = 0; e < ne_tot; e++)
+    for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
+      if ((f = e_f(e, i)) < zone.nb_faces()) /* faces reelles seulement */
         {
           for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten.append_line(N * f + n, M * e + m); /* bloc (face, elem )*/
-          for (j = 0; j < w2.dimension(1); j++) if (fcl(fb = e_f(e, j), 0) != 1 && w2(i, j, 0)) /* bloc (face, face) */
+          for (j = 0; j < w2.dimension(1); j++)
+            if (fcl(fb = e_f(e, j), 0) != 1 && w2(i, j, 0)) /* bloc (face, face) */
               for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten.append_line(N * f + n, M * (ne_tot + fb) + m);
         }
 
@@ -123,19 +126,25 @@ void Op_Grad_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   DoubleTrav w2, alpha(N), coeff_e(N); //matrice W2 dans chaque element, taux de vide a la face
   w2.set_smart_resize(1);
 
-  for (e = 0; e < ne_tot; e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++) if ((f = e_f(e, i)) < zone.nb_faces())
+  for (e = 0; e < ne_tot; e++)
+    for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
+      if ((f = e_f(e, i)) < zone.nb_faces())
         {
           /* taux de vide a la face (identique a celui de Masse_PolyMAC_Face) */
           double prefac = (e == f_e(f, 0) ? 1 : -1) * pe(e) * vfd(f, e != f_e(f, 0)) / fs(f); /* ponderation pour elimner p_f si on est en TPFA */
-          for (alpha = 0, j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) alpha(n) += vfd(f, j) * (alp ? (*alp)(eb, n) : 1) / vf(f);
-          for (coeff_e = 0, j = 0; j < w2.dimension(1); j++) if (w2(i, j, 0)) for (fb = e_f(e, j), n = 0, m = 0; n < N; n++, m += (M > 1))
+          for (alpha = 0, j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
+            for (n = 0; n < N; n++) alpha(n) += vfd(f, j) * (alp ? (*alp)(eb, n) : 1) / vf(f);
+          for (coeff_e = 0, j = 0; j < w2.dimension(1); j++)
+            if (w2(i, j, 0))
+              for (fb = e_f(e, j), n = 0, m = 0; n < N; n++, m += (M > 1))
                 {
                   double fac = alpha(n) * w2(i, j, 0) * prefac;
                   secmem(f, n) -= fac * (press(ne_tot + fb, m) - press(e, m));
                   if (mat && fcl(fb, 0) != 1) (*mat)(N * f + n, M * (ne_tot + fb) + m) += fac; /* bloc (face, face) */
                   coeff_e(n) += fac;
                 }
-          if (mat) for (n = 0, m = 0; n < N; n++, m += (M > 1)) (*mat)(N * f + n, M * e + m) -= coeff_e(n); /* bloc (face, elem) */
+          if (mat)
+            for (n = 0, m = 0; n < N; n++, m += (M > 1)) (*mat)(N * f + n, M * e + m) -= coeff_e(n); /* bloc (face, elem) */
         }
 }
 

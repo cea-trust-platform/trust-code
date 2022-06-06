@@ -85,8 +85,10 @@ void Echange_contact_PolyMAC::init_f_dist() const
   f_dist.resize(nf_tot);
 
   DoubleTrav xvf(nf_tot, D), o_xvf(o_nf_tot, D); //positions locales/distantes -> pour calcul de correspondance
-  for (i = 0; i <   nf_tot; i++) for (d = 0; d < D; d++)   xvf(i, d) =   xv(  fvf->num_face(i), d);
-  for (i = 0; i < o_nf_tot; i++) for (d = 0; d < D; d++) o_xvf(i, d) = o_xv(o_fvf->num_face(i), d);
+  for (i = 0; i <   nf_tot; i++)
+    for (d = 0; d < D; d++)   xvf(i, d) =   xv(  fvf->num_face(i), d);
+  for (i = 0; i < o_nf_tot; i++)
+    for (d = 0; d < D; d++) o_xvf(i, d) = o_xv(o_fvf->num_face(i), d);
 
 #ifdef MEDCOUPLING_
   MCAuto<DataArrayDouble> fdad(DataArrayDouble::New()), o_fdad(DataArrayDouble::New());

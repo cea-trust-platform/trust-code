@@ -127,7 +127,8 @@ static void construire_liste_sommets_sousdomaine(const int nb_sommets,
         }
     }
   //sommets a ajouter a cause de som_raccord
-  if (som_raccord) for (int s = 0; s < som_raccord->get_nb_lists(); s++)
+  if (som_raccord)
+    for (int s = 0; s < som_raccord->get_nb_lists(); s++)
       for (int i = 0; i < som_raccord->get_list_size(s); i++)
         if ((*som_raccord)(s, i) == i_part && !drapeau_sommet.testsetbit(s)) //le sommet est demande par ce proc
           nb_sommets_part++; //si on ne l'a pas deja, on le rajoute
@@ -687,7 +688,8 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
             joints_sommets[PEvoisin].append_array(sommet);
         }
       //boucle sur les procs connectes au sommet par un raccord
-      if (som_raccord) for (i = 0; i < som_raccord->get_list_size(sommet); i++)
+      if (som_raccord)
+        for (i = 0; i < som_raccord->get_list_size(sommet); i++)
           if ((*som_raccord)(sommet, i) != partie) joints_sommets[(*som_raccord)(sommet, i)].append_array(sommet);
     }
 

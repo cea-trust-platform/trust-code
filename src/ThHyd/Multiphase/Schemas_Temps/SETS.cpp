@@ -123,7 +123,8 @@ static inline double corriger_incr_alpha(const DoubleTab& alpha, DoubleTab& incr
       for (a_sum = 0, n = 0; n < N; n++) n_a(n) = alpha(i, n) + incr(i, n), a_sum += n_a(n);
       err_a_sum = std::max(err_a_sum, std::abs(a_sum - 1));
       for (a_sum = 0, n = 0; n < N; n++) n_a(n) = std::max(n_a(n), 0.), a_sum += n_a(n);
-      if (a_sum) for (n = 0; n < N; n++) n_a(n) /= a_sum;
+      if (a_sum)
+        for (n = 0; n < N; n++) n_a(n) /= a_sum;
       else for (n = 0; n < N; n++) n_a(n) = 1. / N;
       for (n = 0; n < N; n++) corr_max = std::max(corr_max, std::fabs(alpha(i, n) + incr(i, n) - n_a(n))), incr(i, n) = n_a(n) - alpha(i, n);
     }
@@ -135,7 +136,9 @@ double SETS::unknown_positivation(const DoubleTab& uk, DoubleTab& incr)
 {
   double corr_max = 0;
   int N = uk.line_size();
-  for (int i=0 ; i<uk.dimension_tot(0) ; i++) for (int n = 0 ; n<N ; n++) if (uk(i, n) + incr(i, n) < 0)
+  for (int i=0 ; i<uk.dimension_tot(0) ; i++)
+    for (int n = 0 ; n<N ; n++)
+      if (uk(i, n) + incr(i, n) < 0)
         {
           if (- uk(i, n) - incr(i, n) > corr_max) corr_max =  std::abs(uk(i, n) + incr(i, n));
           incr(i, n) = -uk(i, n);
@@ -185,7 +188,8 @@ PetscErrorCode convergence_test(KSP ksp, PetscInt it, PetscReal rnorm, KSPConver
   KSPBuildResidual(ksp, ctx->t, ctx->v, &resi);//residu
   VecGetValues(resi, ctx->obj->ix.size_array(), ctx->obj->ix.addr(), ctx->obj->residu.addr());
   bool ok = true;
-  for (int i = 0; ok && i < ctx->obj->norm.size(); i++) if (ctx->obj->ix[i] >= 0)
+  for (int i = 0; ok && i < ctx->obj->norm.size(); i++)
+    if (ctx->obj->ix[i] >= 0)
       ok &= std::abs(ctx->obj->residu[i]) < ctx->obj->norm[i] * ctx->eps_alpha;
   if (!Process::mp_and(ok)) *reason = KSP_CONVERGED_ITERATING;
   return ret;
@@ -216,7 +220,8 @@ bool SETS::iterer_eqn(Equation_base& eqn, const DoubleTab& inut, DoubleTab& curr
   const std::string& nom_inco = eqn.inconnue().le_nom().getString(), nom_pb_inco = eqn.probleme().le_nom().getString() + "/" + nom_inco;
   tabs_t semi_impl; /* en ICE, les temperatures de tous les problemes sont explicites */
   const Operateur_Diff_base& op_diff = ref_cast(Operateur_Diff_base, eqn.operateur(0).l_op_base());
-  if (!sets_) for (auto &&op_ext : op_diff.op_ext)
+  if (!sets_)
+    for (auto &&op_ext : op_diff.op_ext)
       semi_impl[nom_inco + (op_ext != &op_diff ? "/" + op_ext->equation().probleme().le_nom().getString() : "")] = op_ext->equation().inconnue().passe();
 
   if (!mat_pred.count(nom_pb_inco)) /* matrice : dimensionnement au premier passage */
@@ -273,7 +278,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
   /* valeurs semi-implicites : inconnues (alpha, v, T, ..) et champs conserves (alpha_rho, alpha_rho_e, ..) */
   tabs_t semi_impl;
-  for (auto &&i_eq : eqs) if (i_eq.second != &eq_qdm)
+  for (auto &&i_eq : eqs)
+    if (i_eq.second != &eq_qdm)
       {
         semi_impl[i_eq.first] = i_eq.second->inconnue().passe();
         if (i_eq.second->has_champ_conserve()) semi_impl[i_eq.second->champ_conserve().le_nom().getString()] = i_eq.second->champ_conserve().passe();
@@ -301,13 +307,15 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   if (!mat_semi_impl.nb_lignes())
     {
       mat_semi_impl.dimensionner(n_eq + 1, n_eq + 1);//derniere ligne -> continuite
-      for (i = 0; i <= n_eq; i++) for (j = 0; j <= n_eq; j++)
+      for (i = 0; i <= n_eq; i++)
+        for (j = 0; j <= n_eq; j++)
           mat_semi_impl.get_bloc(i, j).typer("Matrice_Morse"), mats[noms[i]][noms[j]] = &ref_cast(Matrice_Morse, mat_semi_impl.get_bloc(i, j).valeur());
       for (auto &&i_eq : eqs) i_eq.second->dimensionner_blocs(mats[i_eq.first], semi_impl); //option semi-implicite
       eq_qdm.assembleur_pression()->dimensionner_continuite(mats["pression"]);
 
       /* reglage de p_degen si non lu : si incompressible sans CLs de pression imposee, alors la pression est degeneree */
-      if (p_degen < 0) for (p_degen = sub_type(Fluide_base, eq_qdm.milieu()), i = 0; i < eq_qdm.zone_Cl_dis().nb_cond_lim(); i++)
+      if (p_degen < 0)
+        for (p_degen = sub_type(Fluide_base, eq_qdm.milieu()), i = 0; i < eq_qdm.zone_Cl_dis().nb_cond_lim(); i++)
           p_degen &= !sub_type(Neumann_val_ext, eq_qdm.zone_Cl_dis().les_conditions_limites(i).valeur());
     }
 
@@ -329,7 +337,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       //equation d'energie en premier pour pouvoir utiliser q_pi dans d'autres equations
       eqs["temperature"]->assembler_blocs_avec_inertie(mats["temperature"], sec["temperature"], semi_impl);
       //les autres
-      for (auto &n_e : eqs) if (n_e.first != "temperature") n_e.second->assembler_blocs_avec_inertie(mats[n_e.first], sec[n_e.first], semi_impl);
+      for (auto &n_e : eqs)
+        if (n_e.first != "temperature") n_e.second->assembler_blocs_avec_inertie(mats[n_e.first], sec[n_e.first], semi_impl);
       //equation de continuite sum_k alpha_k = 1
       eq_qdm.assembleur_pression()->assembler_continuite(mats["pression"], sec["pression"]);
 
@@ -338,7 +347,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       std::vector<std::set<std::pair<std::string, int>>> ordre;
       if (eq_qdm.zone_dis().valeur().le_nom() == "PolyMAC_P0") ordre.push_back({{ "vitesse", 1 }}); //si PolyMAC_P0: on commence par ve
       ordre.push_back({{ "vitesse", 0 }}), ordre.push_back({}); //puis vf, puis toutes les autres inconnues simultanément
-      for (auto &&nom : noms) if (nom != "vitesse" && nom != "pression") ordre.back().insert({{ nom, 0 }});
+      for (auto &&nom : noms)
+        if (nom != "vitesse" && nom != "pression") ordre.back().insert({{ nom, 0 }});
       eliminer(ordre, "pression", mats, sec, A_p, b_p);
 
       /* assemblage du systeme en pression */
@@ -384,7 +394,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       /* convergence? */
       cv = corriger_incr_alpha(inco["alpha"]->valeurs(), incr["alpha"], err_a_sum) < crit_conv["alpha"];
-      for (auto && n_v : incr) if (crit_conv.count(n_v.first)) cv &= mp_max_abs_vect(n_v.second) < crit_conv.at(n_v.first);
+      for (auto && n_v : incr)
+        if (crit_conv.count(n_v.first)) cv &= mp_max_abs_vect(n_v.second) < crit_conv.at(n_v.first);
 
       /* mises a jour : inconnues -> milieu -> champs/conserves -> sources */
       for (auto && n_i : inco) n_i.second->valeurs() += incr[n_i.first];
@@ -397,7 +408,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   //ha ha ha
   if (ok && cv)
     {
-      for (i = 0 ; i < pb.nombre_d_equations(); i++) if (pb.equation(i).positive_unkown()==1)
+      for (i = 0 ; i < pb.nombre_d_equations(); i++)
+        if (pb.equation(i).positive_unkown()==1)
           {
             std::string nom_inco = pb.equation(i).inconnue().le_nom().getString() ;
             unknown_positivation(inco[nom_inco]->valeurs(), incr[nom_inco]) ;
@@ -449,7 +461,9 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
     {
       std::set<std::string> i_bloc, dep; //variables du bloc, variables deja eliminees dont le bloc depend
       for (auto &&i_b : bloc) i_bloc.insert(i_b.first);
-      for (auto &&i_b : bloc) for (auto && v_m : mats.at(i_b.first)) if (v_m.second->nb_colonnes() && v_m.first != inco_p && e_i.count(v_m.first) && !i_bloc.count(v_m.first))
+      for (auto &&i_b : bloc)
+        for (auto && v_m : mats.at(i_b.first))
+          if (v_m.second->nb_colonnes() && v_m.first != inco_p && e_i.count(v_m.first) && !i_bloc.count(v_m.first))
             dep.insert(v_m.first);
 
       /* lignes du bloc a traiter */
@@ -461,24 +475,29 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
       if (prems) //premier passage -> dimensionnement des A_p
         {
           /* verification de la compatibilite des inconnues du bloc -> avec les MD_Vector renseignes dans sec */
-          for (auto &&i_b : bloc) if (dims[i_b0][0] != dims[i_b][0])
+          for (auto &&i_b : bloc)
+            if (dims[i_b0][0] != dims[i_b][0])
               Cerr << "SETS::eliminer() : discretisation des inconnues" << i_b0.first << "/" << i_b0.second << " et " << i_b.first
                    << "/" << i_b.second << " incompatibles!" << finl, Process::exit();
 
           std::vector<std::set<int>> stencil(calc.size_array()); //stencil[i] -> stencil de l'item i (a demultiplier par le line_size() de chaque variable)
-          for (auto &&i_b : bloc) for (auto &&v_m : mats.at(i_b.first)) if (v_m.second->nb_colonnes())
+          for (auto &&i_b : bloc)
+            for (auto &&v_m : mats.at(i_b.first))
+              if (v_m.second->nb_colonnes())
                 {
                   oMg = offs[i_b], M = dims[i_b][1];
                   if (v_m.first == inco_p) //dependance directe en inco_p
                     {
-                      for (i = 0; i < calc.size_array(); i++) if (calc[i])
+                      for (i = 0; i < calc.size_array(); i++)
+                        if (calc[i])
                           for (j = v_m.second->get_tab1()(oMg + M * i) - 1; j < v_m.second->get_tab1()(oMg + M * (i + 1)) - 1; j++) //dependances de toutes les lignes
                             stencil[i].insert(v_m.second->get_tab2()(j) - 1);
                     }
                   else if (e_i.count(v_m.first) || i_bloc.count(v_m.first)) //dependance en une variable partiellement / totalement eliminee
                     {
                       A = A_p.count(v_m.first) ? &A_p.at(v_m.first) : NULL;
-                      for (i = 0; i < calc.size_array(); i++) if (calc[i])
+                      for (i = 0; i < calc.size_array(); i++)
+                        if (calc[i])
                           for (j = v_m.second->get_tab1()(oMg + M * i) - 1; j < v_m.second->get_tab1()(oMg + M * (i + 1)) - 1; j++)
                             {
                               for (jb = v_m.second->get_tab2()(j) - 1, k = 0; offs.count({ v_m.first, k + 1}) && jb >= offs.at({ v_m.first, k + 1 }); ) k++; //l : bloc de l'inconnue dont on depend
@@ -499,8 +518,10 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
             {
               IntTrav sten(0, 2);
               sten.set_smart_resize(1);
-              for (oMg = offs[i_bl], M = dims[i_bl][1], i = 0; i < calc.size_array(); i++) if (calc[i])
-                  for (m = 0; m < M; m++) for (auto &&col : stencil[i]) sten.append_line(oMg + M * i + m, col);
+              for (oMg = offs[i_bl], M = dims[i_bl][1], i = 0; i < calc.size_array(); i++)
+                if (calc[i])
+                  for (m = 0; m < M; m++)
+                    for (auto &&col : stencil[i]) sten.append_line(oMg + M * i + m, col);
               Matrice_Morse mat2;
               Matrix_tools::allocate_morse_matrix(sec.at(i_bl.first).size_totale(), sec.at(inco_p).size_totale(), sten, mat2);
               A_p[i_bl.first].nb_colonnes() ? A_p[i_bl.first] += mat2 : A_p[i_bl.first] = mat2; //A_p peut deja etre partiellement creee
@@ -534,17 +555,22 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
       DoubleTrav D(nb, nb), S; //bloc diagonal, seconds membres
       S.set_smart_resize(1);
       IntTrav piv(nb);
-      for (i = 0; i < calc.size_array(); i++) if (calc[i])
+      for (i = 0; i < calc.size_array(); i++)
+        if (calc[i])
           {
             int deb = Ap[0]->get_tab1()(off_g[0] + size[0] * i) - 1, fin = Ap[0]->get_tab1()(off_g[0] + size[0] * i + 1) - 1, ic = fin - deb, nc = ic + 1, pos, col;
             S.resize(nc, nb), S = 0; //second membre : 5(i, .) -> dependance en la i-eme colonne du stencil des Ap du bloc, S(ic, .) -> partie constante
             //partie "second membre des equations"
-            for (j = 0; j < nv; j++) for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++) S(ic, oMl + m) = vsec[j]->addr()[oMg + M * i + m];
+            for (j = 0; j < nv; j++)
+              for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++) S(ic, oMl + m) = vsec[j]->addr()[oMg + M * i + m];
 
             /* remplissage par les matrices du bloc : diagonale, second membre (si partie d'une variable deja eliminee) */
-            for (D = 0, j = 0; j < nv; j++) for (M = size[j], oMg = off_g[j], oMl = off_l[j], k = 0; k < nv; k++) if (mat[j][k])
+            for (D = 0, j = 0; j < nv; j++)
+              for (M = size[j], oMg = off_g[j], oMl = off_l[j], k = 0; k < nv; k++)
+                if (mat[j][k])
                   {
-                    for (N = size[k], oNg = off_g[k], oNl = off_l[k], m = 0; m < M; m++) for (l = mat[j][k]->get_tab1()(oMg + M * i + m) - 1; l < mat[j][k]->get_tab1()(oMg + M * i + m + 1) - 1; l++)
+                    for (N = size[k], oNg = off_g[k], oNl = off_l[k], m = 0; m < M; m++)
+                      for (l = mat[j][k]->get_tab1()(oMg + M * i + m) - 1; l < mat[j][k]->get_tab1()(oMg + M * i + m + 1) - 1; l++)
                         if ((n = (jb = mat[j][k]->get_tab2()(l) - 1) - oNg - N * i) >= 0 && n < N) //on est dans le bloc diagonal
                           D(oMl + m, oNl + n) = mat[j][k]->get_coeff()(l);
                         else //dependance en un bloc deja elimine
@@ -561,7 +587,9 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
                   }
 
             //partie "dependance directe en inco_p" -> dans S([0, ic[, .)
-            for (j = 0; j < nv; j++) if (pmat[j]) for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
+            for (j = 0; j < nv; j++)
+              if (pmat[j])
+                for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
                   for (k = pmat[j]->get_tab1()(oMg + M * i + m) - 1, pos = deb - 1; k < pmat[j]->get_tab1()(oMg + M * i + m + 1) - 1; k++)
                     {
                       for (col = pmat[j]->get_tab2()(k), pos++; Ap[0]->get_tab2()(pos) != col && pos < fin; ) pos++;
@@ -569,7 +597,10 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
                       S(pos - deb, oMl + m) -= pmat[j]->get_coeff()(k);
                     }
             //partie "dependance en une variable hors bloc eliminee" -> b_p contribue a S(0, .), A_p contribue a S(1..nc, .)
-            for (j = 0; j < nv; j++) for (k = 0; k < nd; k++) if (dmat[j][k]) for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
+            for (j = 0; j < nv; j++)
+              for (k = 0; k < nd; k++)
+                if (dmat[j][k])
+                  for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
                     for (l = dmat[j][k]->get_tab1()(oMg + M * i + m) - 1; l < dmat[j][k]->get_tab1()(oMg + M * i + m + 1) - 1; l++)
                       {
                         double coeff = dmat[j][k]->get_coeff()(l);
@@ -588,7 +619,8 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
             F77NAME(dgetrs)(&trans, &nb, &nc, &D(0, 0), &nb, &piv(0), &S(0, 0), &nb, &infoo);
 
             /* stockage : S(0, .) dans b_p, S(1..nc, .) dans A_p */
-            for (j = 0; j < nv; j++) for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
+            for (j = 0; j < nv; j++)
+              for (M = size[j], oMg = off_g[j], oMl = off_l[j], m = 0; m < M; m++)
                 for (bp[j]->addr()[oMg + M * i + m] = S(ic, oMl + m), k = 0, l = Ap[j]->get_tab1()(oMg + M * i + m) - 1; k < ic; k++, l++)
                   Ap[j]->get_set_coeff()(l) = S(k, oMl + m);
           }
@@ -612,10 +644,14 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
     {
       IntTrav stencil(0, 2);
       stencil.set_smart_resize(1);
-      for (auto &&n_m : mats.at(inco_p)) if (n_m.second && n_m.second->nb_colonnes())
+      for (auto &&n_m : mats.at(inco_p))
+        if (n_m.second && n_m.second->nb_colonnes())
           {
             const Matrice_Morse& Mp = *n_m.second, *Ap = n_m.first != inco_p ? &A_p.at(n_m.first) : NULL;
-            for (i = 0; i < np; i++) if (calc[i]) for (ib = M * i, m = 0; m < M; m++, ib++) for (j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
+            for (i = 0; i < np; i++)
+              if (calc[i])
+                for (ib = M * i, m = 0; m < M; m++, ib++)
+                  for (j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
                     for (k = Mp.get_tab2()(j) - 1, l = (Ap ? Ap->get_tab1()(k) - 1 : 0); l < (Ap ? Ap->get_tab1()(k + 1) - 1 : 1); l++)
                       stencil.append_line(ib, Ap ? Ap->get_tab2()(l) - 1 : k);
           }
@@ -631,7 +667,9 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
       {
         const Matrice_Morse& Mp = *n_m.second, &Ap = A_p.at(n_m.first);
         const DoubleTab& bp = b_p.at(n_m.first);
-        for (i = 0; i < np; i++) if (calc[i]) for (ib = M * i, m = 0; m < M; m++, ib++)
+        for (i = 0; i < np; i++)
+          if (calc[i])
+            for (ib = M * i, m = 0; m < M; m++, ib++)
               for (deb = P.get_tab1()(ib) - 1, fin = P.get_tab1()(ib + 1) - 1, j = Mp.get_tab1()(ib) - 1; j < Mp.get_tab1()(ib + 1) - 1; j++)
                 for (k = Mp.get_tab2()(j) - 1, secmem(i, m) -= Mp.get_coeff()(j) * bp.addr()[k], l = Ap.get_tab1()(k) - 1, pos = deb - 1; l < Ap.get_tab1()(k + 1) - 1; l++)
                   {
@@ -642,5 +680,6 @@ void SETS::assembler(const std::string inco_p, const std::map<std::string, Matri
 
       }
   double diag = P.get_coeff()(0);
-  if (p_degen && !Process::me()) for (i = 0; i < P.get_tab1()(1) - 1; i++) P.get_set_coeff()(i) += diag; //de-degeneration de la matrice
+  if (p_degen && !Process::me())
+    for (i = 0; i < P.get_tab1()(1) - 1; i++) P.get_set_coeff()(i) += diag; //de-degeneration de la matrice
 }

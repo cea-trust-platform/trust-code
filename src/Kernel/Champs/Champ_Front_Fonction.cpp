@@ -95,7 +95,8 @@ void Champ_Front_Fonction::mettre_a_jour(double temps)
   DoubleTab tab_ch(tab), pos(tab.dimension_tot(0), dimension);
   ch.trace(frontiere_dis(),tab_ch,temps,0);
   assert(tab.dimension(0)==tab_ch.dimension(0));
-  for (int i = 0, j; i < fvf.nb_faces_tot(); i++) for (j = 0; j < dimension; j++) pos(i, j) = zvf.xv(fvf.num_face(i), j);
+  for (int i = 0, j; i < fvf.nb_faces_tot(); i++)
+    for (j = 0; j < dimension; j++) pos(i, j) = zvf.xv(fvf.num_face(i), j);
   la_table.valeurs(tab_ch, pos, temps, tab);
 }
 

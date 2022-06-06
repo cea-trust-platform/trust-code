@@ -91,7 +91,8 @@ void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
       //le seul moyen qu'on a d'eviter que des polygones soient pris pour des quadrilateres est d'avoir un tableau de connectivite de largeur > 4...
       afield._nodes_per_elem = std::max(conn.dimension(1), type_elem == "POLYGONE" || type_elem == "POLYGONE_3D"  || type_elem == "POLYEDRE"  ? (int) 5 : 0);
       afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
-      for (int i = 0; i < afield._nb_elems; i++) for (int j = 0; j < afield._nodes_per_elem; j++)
+      for (int i = 0; i < afield._nb_elems; i++)
+        for (int j = 0; j < afield._nodes_per_elem; j++)
           afield._connectivity[afield._nodes_per_elem * i + j] = j < conn.dimension(1) ? conn(i, j) : -1;
     }
   else //maillage de polyedres -> connectivite au format MEDCoupling, a faire a la main

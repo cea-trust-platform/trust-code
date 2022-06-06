@@ -67,7 +67,8 @@ void Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::mettre_a_jour(double
 
   bilan().resize(N), bilan() = 0;
 
-  for (int e = 0; e < nb_elem; e++) for (n = 0; n < N; n++)
+  for (int e = 0; e < nb_elem; e++)
+    for (n = 0; n < N; n++)
       bilan()(n) += himp(!c_h * e, n) * volumes(e) * (Text(!c_T * e, n) - T(e, n));
 
   himp_.mettre_a_jour(temps);
@@ -101,7 +102,8 @@ void Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::ajouter_blocs(matric
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
-  for (int e = 0; e < nb_elem; e++) for (n = 0; n < N; n++)
+  for (int e = 0; e < nb_elem; e++)
+    for (n = 0; n < N; n++)
       {
         secmem(e, n) -= volumes(e) * himp(!c_h * e, n) * (T(e, n) - Text(!c_T * e, n));
         if (mat) (*mat)(N * e + n, N * e + n) += volumes(e) * himp(!c_h * e, n);

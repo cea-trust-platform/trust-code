@@ -56,7 +56,9 @@ Entree& Diametre_bulles_constant::readOn(Entree& is)
   if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
 
   DoubleTab& tab_diametres = diametres_->valeurs();
-  for (int i = 0 ; i < tab_diametres.dimension_tot(0) ; i++) for (int n = 0 ; n <N ; n++) if (n!=n_l) tab_diametres(i, n) = d_bulle_;
+  for (int i = 0 ; i < tab_diametres.dimension_tot(0) ; i++)
+    for (int n = 0 ; n <N ; n++)
+      if (n!=n_l) tab_diametres(i, n) = d_bulle_;
 
   return is;
 }

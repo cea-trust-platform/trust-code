@@ -32,7 +32,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
 {
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
-  if (i != -1) for (int k = 0; k < ncomp; k++) flux[k] = (psc > 0) ? -psc*inco(i,k) : -psc*la_cl.val_imp(face-num1,k);
+  if (i != -1)
+    for (int k = 0; k < ncomp; k++) flux[k] = (psc > 0) ? -psc*inco(i,k) : -psc*la_cl.val_imp(face-num1,k);
   else for (int k = 0; k < ncomp; k++) flux[k] = (psc > 0) ? -psc*la_cl.val_imp(face-num1,k) : -psc*inco(j,k); /* j != -1 */
 }
 
@@ -41,7 +42,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_face(const DoubleTab& inco, cons
 {
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double psc = dt_vitesse(face)*surface_porosite(face);
-  if (i != -1) for (int k = 0; k < ncomp; k++) flux[k] = (psc > 0) ? -psc*inco(i,k) : -psc*la_cl.val_ext(face-num1,k);
+  if (i != -1)
+    for (int k = 0; k < ncomp; k++) flux[k] = (psc > 0) ? -psc*inco(i,k) : -psc*la_cl.val_ext(face-num1,k);
   else for (int k = 0; k < ncomp; k++) flux[k] = (psc > 0) ? -psc*la_cl.val_ext(face-num1,k) : -psc*inco(j,k); /* j != -1 */
 }
 
@@ -78,7 +80,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& i
         }
       else if (DERIVED_T::IS_CENTRE4)
         {
-          if ( (i_0 == -1) || (j_1 == -1) ) for (int k=0; k<ncomp; k++) flux[k] = -psc*(inco(i,k)+inco(j,k))/2.; // on applique le schema centre2
+          if ( (i_0 == -1) || (j_1 == -1) )
+            for (int k=0; k<ncomp; k++) flux[k] = -psc*(inco(i,k)+inco(j,k))/2.; // on applique le schema centre2
           else // on applique le schema centre4
             {
               qcentre_<Type_Double>(psc,i,j,i_0,j_1,face,inco,flux);
@@ -95,7 +98,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::flux_faces_interne(const DoubleTab& i
            * Pierre L. 14/10/04: Correction car le centre explose sur le cas VALIDA On revient au quick en essayant d'ameliorer: on prend le quick si psc est
            * encore favorable pour avoir les 3 points necessaires au calcul du quick. Cela est deja ce qui est fait pour le quick-sharp de l'evaluateur aux faces.
            * *****************************************************************************************************************************************************/
-          if ( (i_0 == -1 && psc >= 0 ) || (j_1 == -1 && psc <= 0 ) ) for (int k=0; k<ncomp; k++) flux[k] = (psc > 0) ? -psc*inco(i,k) : -psc*inco(j,k);
+          if ( (i_0 == -1 && psc >= 0 ) || (j_1 == -1 && psc <= 0 ) )
+            for (int k=0; k<ncomp; k++) flux[k] = (psc > 0) ? -psc*inco(i,k) : -psc*inco(j,k);
           else // on applique le schema Quick
             {
               quick_fram_(psc,i,j,i_0,j_1,face,inco,flux);
@@ -120,7 +124,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_common(const int face, Ty
     {
       if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4)
         {
-          if (psc > 0) for (int k = 0; k < ncomp; k++) aii[k] = -psc; // TODO : FIXME : Yannick help :/
+          if (psc > 0)
+            for (int k = 0; k < ncomp; k++) aii[k] = -psc; // TODO : FIXME : Yannick help :/
         }
       else
         for (int k = 0; k < ncomp; k++)
@@ -133,7 +138,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_common(const int face, Ty
     {
       if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4)
         {
-          if (psc < 0) for (int k = 0; k < ncomp; k++) ajj[k] = -psc;
+          if (psc < 0)
+            for (int k = 0; k < ncomp; k++) ajj[k] = -psc;
         }
       else
         for (int k = 0; k < ncomp; k++)
@@ -167,7 +173,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face(const int face, const int
       Type_Double flux(ncomp);
       const int i = elem_(face,0), j = elem_(face,1), i_0 = amont_amont_(face,0), j_1 = amont_amont_(face,1);
       qcentre_<Type_Double>(psc,i,j,i_0,j_1,face,inconnue->valeurs(),flux); // on applique le schema centre 2 ou 4
-      if (psc > 0) for (int k = 0; k < ncomp; k++) aii[k] = -flux[k];
+      if (psc > 0)
+        for (int k = 0; k < ncomp; k++) aii[k] = -flux[k];
       else for (int k = 0; k < ncomp; k++) ajj[k] = -flux[k];
     }
   else
@@ -189,14 +196,16 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_faces_interne(const int face, 
       const int i = elem_(face,0), j = elem_(face,1), i_0 = amont_amont_(face,0), j_1 = amont_amont_(face,1);
       if ( ((i_0 == -1) || (j_1 == -1)) &&  DERIVED_T::IS_CENTRE4) // TODO : FIXME : Yannick help :/ pourquoi pas pour centre2 egalement ?
         {
-          if (psc > 0) for (int k = 0; k < ncomp; k++) aii[k] = -psc;
+          if (psc > 0)
+            for (int k = 0; k < ncomp; k++) aii[k] = -psc;
           else for (int k = 0; k < ncomp; k++) ajj[k] = -psc;
         }
       else
         {
           Type_Double flux(ncomp);
           qcentre_<Type_Double>(psc,i,j,i_0,j_1,face,inconnue->valeurs(),flux); // on applique le schema centre 2 ou 4
-          if (psc > 0) for (int k = 0; k < ncomp; k++) aii[k] = -flux[k];
+          if (psc > 0)
+            for (int k = 0; k < ncomp; k++) aii[k] = -flux[k];
           else for (int k = 0; k < ncomp; k++) ajj[k] = -flux[k];
         }
     }
@@ -216,7 +225,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const Double
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   double psc = surface_porosite(face), val_imp = la_cl.val_imp(face-num1);
 
-  if (i != -1) for (int k = 0; k < ncomp; k++) flux[k] = (dt_vitesse(face) > 0) ? psc*inco(i,k) : psc*val_imp;
+  if (i != -1)
+    for (int k = 0; k < ncomp; k++) flux[k] = (dt_vitesse(face) > 0) ? psc*inco(i,k) : psc*val_imp;
   else for (int k = 0; k < ncomp; k++) flux[k] = (dt_vitesse(face)>0) ? psc*val_imp : psc*inco(j,k); // j != -1
 }
 
@@ -228,7 +238,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::coeffs_face_bloc_vitesse(const Double
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
   const double psc = surface_porosite(face), val_ext = la_cl.val_ext(face-num1);
 
-  if (i != -1) for (int k = 0; k < ncomp; k++) flux[k] = (dt_vitesse(face) > 0) ? psc*inco(i,k) : psc*val_ext;
+  if (i != -1)
+    for (int k = 0; k < ncomp; k++) flux[k] = (dt_vitesse(face) > 0) ? psc*inco(i,k) : psc*val_ext;
   else for (int k = 0; k < ncomp; k++) flux[k] = (dt_vitesse(face) > 0) ?  psc*val_ext : psc*inco(j,k); // j != -1
 
 }
@@ -273,7 +284,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Dir
     {
       if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4) // TODO : FIXME : Yannick help :/ c'est quoi ca ? on a jamais fait ca pour le scalaire ...
         {
-          if (psc < 0) for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_imp(face-num1,k);
+          if (psc < 0)
+            for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_imp(face-num1,k);
         }
       else for (int k = 0; k < ncomp; k++) flux[k] = (psc < 0) ? -psc*la_cl.val_imp(face-num1,k) : 0.;
     }
@@ -281,7 +293,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Dir
     {
       if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4)
         {
-          if (psc > 0) for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_imp(face-num1,k);
+          if (psc > 0)
+            for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_imp(face-num1,k);
         }
       else for (int k = 0; k < ncomp; k++) flux[k] = (psc > 0) ? -psc*la_cl.val_imp(face-num1,k) : 0.;
     }
@@ -296,7 +309,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Neu
     {
       if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4) // TODO : FIXME : Yannick help :/ c'est quoi ca ? on a jamais fait ca pour le scalaire ...
         {
-          if (psc < 0) for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,k);
+          if (psc < 0)
+            for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,k);
         }
       else for (int k = 0; k < ncomp; k++) flux[k] = (psc < 0) ? -psc*la_cl.val_ext(face-num1,k) : 0.;
     }
@@ -304,7 +318,8 @@ inline void Eval_Conv_VDF_Elem<DERIVED_T>::secmem_face(const int face, const Neu
     {
       if (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4)
         {
-          if (psc > 0) for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,k);
+          if (psc > 0)
+            for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,k);
         }
       else for (int k = 0; k < ncomp; k++) flux[k] = (psc > 0) ? -psc*la_cl.val_ext(face-num1,k) : 0.;
     }

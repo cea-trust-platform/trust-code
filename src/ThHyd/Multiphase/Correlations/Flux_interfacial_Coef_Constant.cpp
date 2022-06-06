@@ -47,6 +47,7 @@ void Flux_interfacial_Coef_Constant::coeffs(const double dh, const double *alpha
                                             DoubleTab& hi, DoubleTab& dT_hi, DoubleTab& da_hi, DoubleTab& dp_hi) const
 {
   int k, l, N = hi.dimension(0);
-  for (k = 0; k < N; k++) for (l = 0; l < N; l++) hi(k, l) = h_phase(k); //ne depend que de la phase de depart
+  for (k = 0; k < N; k++)
+    for (l = 0; l < N; l++) hi(k, l) = h_phase(k); //ne depend que de la phase de depart
   dT_hi = 0, da_hi = 0, dp_hi = 0; //pas trop dur
 }

@@ -90,7 +90,8 @@ void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zo
 
   // on balaye les elements pour dimensionner tab1 et tab2
   tab1(0) = 1;
-  for(int i = 0; i < n1; i++) for (int k = 0; k < nb_comp; k++) tab1(i*nb_comp+1+k) = rang_voisin(i) +  tab1(i*nb_comp+k);
+  for(int i = 0; i < n1; i++)
+    for (int k = 0; k < nb_comp; k++) tab1(i*nb_comp+1+k) = rang_voisin(i) +  tab1(i*nb_comp+k);
 
   la_matrice.dimensionner(n1*nb_comp,tab1(n1*nb_comp)-1);
 

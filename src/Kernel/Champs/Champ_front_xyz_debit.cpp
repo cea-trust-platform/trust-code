@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -129,7 +129,9 @@ void Champ_front_xyz_debit::calculer_champ_vitesse(const Front_VF& le_bord, Doub
 {
   const int N = flow_rate_.nb_comp();
 
-  for(int i = 0; i < le_bord.nb_faces_tot(); i++) for (int n = 0; n < N; ++n) for(int j = 0; j < dimension; j++)
+  for(int i = 0; i < le_bord.nb_faces_tot(); i++)
+    for (int n = 0; n < N; ++n)
+      for(int j = 0; j < dimension; j++)
         {
           double v_mult = flow_rate_.valeur().valeurs_au_temps(temps)(0, n) / integrale_(n) ; //the profile/normals must be multiplied by this to get the correct inward flow
           double n_mult = flow_rate_alone_ ? normal_vectors_(i,j) : (velocity_user(velocity_user.size() > dimension ? i : 0, j));

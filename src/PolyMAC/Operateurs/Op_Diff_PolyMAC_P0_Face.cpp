@@ -83,12 +83,14 @@ double Op_Diff_PolyMAC_P0_Face::calculer_dt_stab() const
   DoubleTrav flux(N), vol(N);
   for (e = 0; e < zone.nb_elem(); e++)
     {
-      for (flux = 0, vol = pe(e) * ve(e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
+      for (flux = 0, vol = pe(e) * ve(e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+        for (n = 0; n < N; n++)
           {
             flux(n) += zone.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
             if (fcl(f, 0) < 2) vol(n) = std::min(vol(n), pf(f) * vf(f) / vfd(f, e != f_e(f, 0)) * vf(f)); //cf. Op_Conv_EF_Stab_PolyMAC_P0_Face.cpp
           }
-      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 0.25) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
+      for (n = 0; n < N; n++)
+        if ((!alp || (*alp)(e, n) > 0.25) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
           dt = std::min(dt, vol(n) * (a_r ? (*a_r)(e, n) : 1) / flux(n));
     }
   return Process::mp_min(dt);
@@ -115,10 +117,13 @@ void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
   update_phif(!nu_constant_); //si nu variable, stencil complet
   Cerr << "Op_Diff_PolyMAC_P0_Face::dimensionner() : ";
 
-  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) /* op. aux faces : contrib de l'elem e */
+  for (f = 0; f < zone.nb_faces(); f++)
+    if (fcl(f, 0) < 2)
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) /* op. aux faces : contrib de l'elem e */
         {
           //recherche de i_f : indice de f dans l'element e
-          for (i_f = -1, j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) if (fb == f) i_f = j;
+          for (i_f = -1, j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+            if (fb == f) i_f = j;
           //contribution de la diffusion a la face fb
           for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
             {
@@ -128,20 +133,28 @@ void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
                   if ((fc = zone.equiv(fb, c, i_f)) >= 0 && fcl(f_s = e_s == e ? f : fc, 0) < 2) /* amont/aval si equivalence : operateur entre faces */
                     for (n = 0; n < N; n++) stencil.append_line(N * f + n, N * f_s + n);
                   /* sinon : elem -> face, avec un traitement particulier de e_s == e pour eviter les modes en echiquier dans la diffusion */
-                  for (d = 0; d < D; d++) if (std::fabs(nf(f, d)) > 1e-6 * fs(f)) for (n = 0; n < N; n++)
+                  for (d = 0; d < D; d++)
+                    if (std::fabs(nf(f, d)) > 1e-6 * fs(f))
+                      for (n = 0; n < N; n++)
                         stencil.append_line(N * f + n, N * (nf_tot + D * e_s + d) + n);
-                  if (e_s == e) for (n = 0; n < N; n++) stencil.append_line(N * f + n, N * f + n);
+                  if (e_s == e)
+                    for (n = 0; n < N; n++) stencil.append_line(N * f + n, N * f + n);
                 }
 
             }
         }
 
-  for (e = 0; e < ne_tot; e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* aux elements : on doit traiter aussi les elems virtuels */
-      for (j = phif_d(f); j < phif_d(f + 1); j++) if ((e_s = phif_e(j)) < ne_tot) //contrib d'un element
-          for (d = 0; d < D; d++) for (n = 0; n < N; n++) stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e_s + d) + n);
+  for (e = 0; e < ne_tot; e++)
+    for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* aux elements : on doit traiter aussi les elems virtuels */
+      for (j = phif_d(f); j < phif_d(f + 1); j++)
+        if ((e_s = phif_e(j)) < ne_tot) //contrib d'un element
+          for (d = 0; d < D; d++)
+            for (n = 0; n < N; n++) stencil.append_line(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e_s + d) + n);
 
-  for (tpfa = 1, f = 0; f < zone.nb_faces(); f++) for (i = phif_d(f); i < phif_d(f + 1); i++)
-      if ((e_s = phif_e(i)) < ne_tot && e_s != f_e(f, 0) && e_s != f_e(f, 1)) for (n = 0; n < N; n++)
+  for (tpfa = 1, f = 0; f < zone.nb_faces(); f++)
+    for (i = phif_d(f); i < phif_d(f + 1); i++)
+      if ((e_s = phif_e(i)) < ne_tot && e_s != f_e(f, 0) && e_s != f_e(f, 1))
+        for (n = 0; n < N; n++)
           if (phif_c(i, n)) tpfa(f, n) = 0;
 
   tableau_trier_retirer_doublons(stencil);
@@ -169,15 +182,19 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   update_phif();
 
   DoubleTrav coeff(N), fac(N);
-  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) /* op. aux faces : contrib de l'elem e */
+  for (f = 0; f < zone.nb_faces(); f++)
+    if (fcl(f, 0) < 2)
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) /* op. aux faces : contrib de l'elem e */
         {
           //recherche de i_f : indice de f dans l'element e
-          for (i_f = -1, j = 0; i_f < 0 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++) if (fb == f) i_f = j;
+          for (i_f = -1, j = 0; i_f < 0 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
+            if (fb == f) i_f = j;
           //contribution de la diffusion a la face fb
           for (j = 0; j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
             {
               int tpfa = 1;
-              for (k = phif_d(fb); k < phif_d(fb + 1); k++) if ((e_s = phif_e(k)) < ne_tot && e_s != f_e(fb, 0) && e_s != f_e(fb, 1)) tpfa = 0;
+              for (k = phif_d(fb); k < phif_d(fb + 1); k++)
+                if ((e_s = phif_e(k)) < ne_tot && e_s != f_e(fb, 0) && e_s != f_e(fb, 1)) tpfa = 0;
               double df_sur_d = tpfa && fcl(fb, 0) ? std::max(std::fabs(zone.dot(&xv(fb, 0), &nf(fb, 0), &xv(f, 0)) / zone.dot(&xv(fb, 0), &nf(fb, 0), &xp(e, 0))) , 1.) : 1;
               for (c = (e != f_e(fb, 0)), n = 0; n < N; n++) coeff(n) = vfd(f, i) / ve(e) * fs(fb) * (c ? 1 : -1) / df_sur_d; /* prefacteur diff elem -> diff face */
               for (k = phif_d(fb); k < phif_d(fb + 1); k++)
@@ -185,40 +202,53 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                   for (n = 0; n < N; n++) fac(n) = coeff(n) * phif_c(k, n);
                   if ((e_s = phif_e(k)) >= ne_tot) /* contrib. d'un bord : seul Dirichlet fait quelque chose */
                     {
-                      if (fcl(f_s = e_s - ne_tot, 0) == 3 && sub_type(Dirichlet, cls[fcl(f_s, 1)].valeur())) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+                      if (fcl(f_s = e_s - ne_tot, 0) == 3 && sub_type(Dirichlet, cls[fcl(f_s, 1)].valeur()))
+                        for (d = 0; d < D; d++)
+                          for (n = 0; n < N; n++)
                             secmem(f, n) -= fac(n) * ref_cast(Dirichlet, cls[fcl(f_s, 1)].valeur()).val_imp(fcl(f_s, 2), N * d + n) * nf(f, d) / fs(f);
                     }
                   else if (tpfa && (fc = zone.equiv(fb, c, i_f)) >= 0) /* amont/aval si equivalence : operateur entre faces */
                     {
                       f_s = e_s == e ? f : fc, sgn = zone.dot(&nf(f_s, 0), &nf(f, 0)) > 0 ? 1 : -1; //sgn = 1 si f et f_s ont la meme orientation par rapport a e / e_s
                       for (n = 0; n < N; n++) secmem(f, n) -= fac(n) * sgn * pf(f_s) / pe(e_s) * inco(f_s, n);
-                      if (mat && fcl(f_s, 0) < 2) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f_s + n) += fac(n) * sgn * pf(f_s) / pe(e_s);
+                      if (mat && fcl(f_s, 0) < 2)
+                        for (n = 0; n < N; n++) (*mat)(N * f + n, N * f_s + n) += fac(n) * sgn * pf(f_s) / pe(e_s);
                     }
                   else /* sinon : elem -> face, avec un traitement particulier de e_s == e pour eviter les modes en echiquier dans la diffusion */
                     {
                       double f_eps = e_s != e ? 0 : tpfa && fcl(fb, 0) ? 1 : std::min(eps, 1000 * std::pow(vf(f) / fs(f), 2));
-                      for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+                      for (d = 0; d < D; d++)
+                        for (n = 0; n < N; n++)
                           secmem(f, n) -= fac(n) * (1 - f_eps) * inco(nf_tot + D * e_s + d, n) * nf(f, d) / fs(f);
-                      if (mat) for (d = 0; d < D; d++) if (std::fabs(nf(f, d)) > 1e-6 * fs(f)) for (n = 0; n < N; n++)
+                      if (mat)
+                        for (d = 0; d < D; d++)
+                          if (std::fabs(nf(f, d)) > 1e-6 * fs(f))
+                            for (n = 0; n < N; n++)
                               (*mat)(N * f + n, N * (nf_tot + D * e_s + d) + n) += fac(n) * (1 - f_eps) * nf(f, d) / fs(f);
                       if (!f_eps) continue;
                       for (n = 0; n < N; n++) secmem(f, n) -= fac(n) * f_eps * inco(f, n);
-                      if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += fac(n) * f_eps;
+                      if (mat)
+                        for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += fac(n) * f_eps;
                     }
                 }
             }
         }
 
-  for (e = 0; e < ne_tot; e++) for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* aux elements : on doit traiter aussi les elems virtuels */
+  for (e = 0; e < ne_tot; e++)
+    for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* aux elements : on doit traiter aussi les elems virtuels */
       for (c = (e != f_e(f, 0)), j = phif_d(f); j < phif_d(f + 1); j++)
         {
           for (n = 0; n < N; n++) coeff(n) = fs(f) * (c ? 1 : -1) * phif_c(j, n);
           if ((e_s = phif_e(j)) < ne_tot) //contrib d'un element
             {
-              for (d = 0; d < D; d++) for (n = 0; n < N; n++) secmem(nf_tot + D * e + d, n) -= coeff(n) * inco(nf_tot + D * e_s + d, n);
-              if (mat) for (d = 0; d < D; d++) for (n = 0; n < N; n++) (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e_s + d) + n) += coeff(n);
+              for (d = 0; d < D; d++)
+                for (n = 0; n < N; n++) secmem(nf_tot + D * e + d, n) -= coeff(n) * inco(nf_tot + D * e_s + d, n);
+              if (mat)
+                for (d = 0; d < D; d++)
+                  for (n = 0; n < N; n++) (*mat)(N * (nf_tot + D * e + d) + n, N * (nf_tot + D * e_s + d) + n) += coeff(n);
             }
           else if (fcl(f_s = e_s - ne_tot, 0) == 3 && sub_type(Dirichlet, cls[fcl(f_s, 1)].valeur())) //contrib d'un bord : seul Dirichlet contribue
-            for (d = 0; d < D; d++) for (n = 0; n < N; n++) secmem(nf_tot + D * e + d, n) -= coeff(n) * ref_cast(Dirichlet, cls[fcl(f_s, 1)].valeur()).val_imp(fcl(f_s, 2), N * d + n);
+            for (d = 0; d < D; d++)
+              for (n = 0; n < N; n++) secmem(nf_tot + D * e + d, n) -= coeff(n) * ref_cast(Dirichlet, cls[fcl(f_s, 1)].valeur()).val_imp(fcl(f_s, 2), N * d + n);
         }
 }

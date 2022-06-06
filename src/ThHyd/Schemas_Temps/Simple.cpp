@@ -382,14 +382,16 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
   int init = !mbloc.count(key); //premier passage
   Matrice_Bloc& Mglob = mbloc[key];
 
-  if (init) for (Mglob.dimensionner(eqs.size(), eqs.size()), i = 0; i < eqs.size(); i++)
+  if (init)
+    for (Mglob.dimensionner(eqs.size(), eqs.size()), i = 0; i < eqs.size(); i++)
       for (j = 0; j < eqs.size(); j++) Mglob.get_bloc(i, j).typer("Matrice_Morse");
 
   /* pour interface_blocs : si toutes les equations ont cette interface, on l'utilise */
   int interface_blocs_ok = 1;
   for (i = 0; i < eqs.size(); i++) interface_blocs_ok &= eqs[i]->has_interface_blocs();
   std::vector<matrices_t> mats(eqs.size()); //ligne de matrices de l'equation i
-  for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
+  for (i = 0; i < eqs.size(); i++)
+    for (j = 0; j < eqs.size(); j++)
       {
         Nom nom_i = eqs[j]->inconnue().le_nom();
         // champ d'un autre probleme : on ajoute un suffixe
@@ -411,8 +413,10 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
   if (init) //1er passage -> dimensionnement des MD_Vector et des matrices
     {
       /* dimensionnement de la matrice globale */
-      if (interface_blocs_ok) for (i = 0; i < eqs.size(); i++) eqs[i]->dimensionner_blocs(mats[i], {});
-      else for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
+      if (interface_blocs_ok)
+        for (i = 0; i < eqs.size(); i++) eqs[i]->dimensionner_blocs(mats[i], {});
+      else for (i = 0; i < eqs.size(); i++)
+          for (j = 0; j < eqs.size(); j++)
             {
               Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()), mat2;
               int nl = eqs[i]->inconnue().valeurs().size_totale(), nc = eqs[j]->inconnue().valeurs().size_totale();
@@ -421,7 +425,8 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
               if (i == j) mat += mat2;
             }
     }
-  else for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++) //passages suivantes -> il suffit de reallouer les tableaux coeff()
+  else for (i = 0; i < eqs.size(); i++)
+      for (j = 0; j < eqs.size(); j++) //passages suivantes -> il suffit de reallouer les tableaux coeff()
         {
           Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
           mat.get_set_coeff().resize(mat.get_set_tab2().size());
@@ -460,7 +465,8 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
         }
       if (eqs[0]->discretisation().que_suis_je().debute_par("PolyMAC")) Mglob.ajouter_multvect(inconnues, residus); //pour ne pas resoudre en increments
     }
-  else for(i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++)
+  else for(i = 0; i < eqs.size(); i++)
+      for (j = 0; j < eqs.size(); j++)
         {
           Matrice_Morse& mat = ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur());
           eqs[i]->ajouter_termes_croises(inconnues_parts[i], eqs[j]->probleme(), inconnues_parts[j], residu_parts[i]);
@@ -500,7 +506,8 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
   for(i = 0; i < eqs.size(); i++) eqs[i]->probleme().mettre_a_jour(eqs[i]->schema_temps().temps_courant());
 
   //on desalloue les tableaux de coeffs
-  for (i = 0; i < eqs.size(); i++) for (j = 0; j < eqs.size(); j++) ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()).get_set_coeff().reset();
+  for (i = 0; i < eqs.size(); i++)
+    for (j = 0; j < eqs.size(); j++) ref_cast(Matrice_Morse, Mglob.get_bloc(i, j).valeur()).get_set_coeff().reset();
 
   return converge;
 }

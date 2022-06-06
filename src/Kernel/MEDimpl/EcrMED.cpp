@@ -1420,7 +1420,8 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
           array->useArray(val.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, size, nb_comp);
           // Units:
 
-          if (nb_comp > 1) for (int i = 0; i < nb_comp; i++)
+          if (nb_comp > 1)
+            for (int i = 0; i < nb_comp; i++)
               array->setInfoOnComponent(i, noms_compo[i].getString() + "[" + unite[i].getString() + "]");
           else
             array->setInfoOnComponent(0, "[" + unite[0].getString() + "]");

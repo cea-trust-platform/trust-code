@@ -304,14 +304,17 @@ static inline DoubleTab prod(DoubleTab a, DoubleTab b)
   int i, j, k, m = a.dimension(0), n = a.dimension(1), p = b.dimension(1);
   assert(n == b.dimension(0));
   DoubleTab r(m, p);
-  for (i = 0; i < m; i++) for (j = 0; j < n; j++) for (k = 0; k < p; k++) r(i, k) += a(i, j) * b(j, k);
+  for (i = 0; i < m; i++)
+    for (j = 0; j < n; j++)
+      for (k = 0; k < p; k++) r(i, k) += a(i, j) * b(j, k);
   return r;
 }
 static inline DoubleTab transp(DoubleTab a)
 {
   int i, j, m = a.dimension(0), n = a.dimension(1);
   DoubleTab r(n, m);
-  for (i = 0; i < m; i++) for (j = 0; j < n; j++) r(j, i) = a(i, j);
+  for (i = 0; i < m; i++)
+    for (j = 0; j < n; j++) r(j, i) = a(i, j);
   return r;
 }
 
@@ -327,8 +330,10 @@ static inline double kersol(const DoubleTab& M, DoubleTab& b, double eps, Double
   F77NAME(dgesvd)(&a, &a, &n, &m, A.addr(), &n, S.addr(), Vt.addr(), &n, U.addr(), &m, W.addr(), &w, &info);
   for (i = 0, nk = n; i < k && S(i) > eps * S(0); i++) nk--;
   if (P) P->resize(n, nk);
-  for (i = 0, jP = -1; i < n; i++) if (i < k && S(i) > eps * S(0)) iS(i, i) = 1 / S(i); //terme diagonal de iS
-    else if (P) for (iP = 0, jP++; iP < n; iP++) (*P)(iP, jP) = Vt(i, iP); //colonne de V -> colonne de P
+  for (i = 0, jP = -1; i < n; i++)
+    if (i < k && S(i) > eps * S(0)) iS(i, i) = 1 / S(i); //terme diagonal de iS
+    else if (P)
+      for (iP = 0, jP++; iP < n; iP++) (*P)(iP, jP) = Vt(i, iP); //colonne de V -> colonne de P
   x = prod(transp(Vt), prod(iS, prod(transp(U), b)));
   DoubleTab res = prod(M, x);
   for (i = 0; i < m; i++) res2 += std::pow(res(i, 0) - b(i, 0), 2);
@@ -376,9 +381,11 @@ inline double Zone_Poly_base::nu_dot(const DoubleTab* nu, int e, int n, const do
   int d, db, D = dimension;
   double resu = 0;
   if (nu->nb_dim() == 2) resu += (*nu)(e, n) * dot(a, b, ma, mb); //isotrope
-  else if (nu->nb_dim() == 3) for (d = 0; d < D; d++) //anisotrope diagonal
+  else if (nu->nb_dim() == 3)
+    for (d = 0; d < D; d++) //anisotrope diagonal
       resu += (*nu)(e, n, d) * (a[d] - (ma ? ma[d] : 0)) * (b[d] - (mb ? mb[d] : 0));
-  else for (d = 0; d < D; d++) for (db = 0; db < D; db++)
+  else for (d = 0; d < D; d++)
+      for (db = 0; db < D; db++)
         resu += (*nu)(e, n, d, db) * (a[d] - (ma ? ma[d] : 0)) * (b[db] - (mb ? mb[db] : 0));
   return resu;
 }

@@ -364,7 +364,8 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
     {
       sgn.resize(compteur);
       DoubleTrav xvf(compteur, Objet_U::dimension), ori(compteur, Objet_U::dimension);
-      for (int i = 0; i < compteur; i++) for (int j = 0; j < Objet_U::dimension; j++) xvf(i, j) = xv(les_faces(i), j);
+      for (int i = 0; i < compteur; i++)
+        for (int j = 0; j < Objet_U::dimension; j++) xvf(i, j) = xv(les_faces(i), j);
       orientation.valeur().valeur_aux(xvf, ori);
       for (int i = 0; i < compteur; i++)
         {
@@ -390,7 +391,9 @@ double Perte_Charge_Singuliere::calculate_Q(const Equation_base& eqn, const IntV
   for (i = 0; i < num_faces.size(); i++)
     {
       int f = num_faces(i), e = f_e(f, f_e(f, 0) < 0); //todo : evaluer fac du bon cote
-      if (vit.line_size() > N) for (d = 0; d < D; d++) for (n = 0; n < N; n++) deb_vect(f) += zvf.face_normales(f, d) * vit(f, N * d + n) * fac(!cF * e, n); //vecteur complet : v . nf
+      if (vit.line_size() > N)
+        for (d = 0; d < D; d++)
+          for (n = 0; n < N; n++) deb_vect(f) += zvf.face_normales(f, d) * vit(f, N * d + n) * fac(!cF * e, n); //vecteur complet : v . nf
       else for (n = 0; n < N; n++) deb_vect(f) += fs(f) * vit(f, n) * fac(!cF * e, n); //normale aux faces seule
       deb_vect(f) *= pf(f) * (sgn.size() ? sgn(i) : deb_vect(f) > 0 ? 1 : -1) ; //produit par la porosite + orientation (si elle n'est pas definie, on compte tout en positif)
     }

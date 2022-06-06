@@ -119,7 +119,8 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
       //le seul moyen qu'on a d'eviter que des polygones soient pris pour des quadrilateres est d'avoir un tableau de connectivite de largeur > 4...
       afield._nodes_per_elem = std::max(conn.dimension(1), type_elem == "POLYGONE" ? (int) 5 : 0);
       afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
-      for (int i = 0; i < afield._nb_elems; i++) for (int j = 0; j < afield._nodes_per_elem; j++)
+      for (int i = 0; i < afield._nb_elems; i++)
+        for (int j = 0; j < afield._nodes_per_elem; j++)
           {
             const int e = ma_sous_zone.non_nul() ? ma_sous_zone.valeur()[i] : i; //numero de l'element
             afield._connectivity[afield._nodes_per_elem * i + j] = j < conn.dimension(1) ? conn(e, j) : -1;

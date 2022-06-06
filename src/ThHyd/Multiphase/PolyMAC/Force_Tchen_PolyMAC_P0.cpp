@@ -65,12 +65,16 @@ void Force_Tchen_PolyMAC_P0::dimensionner_blocs(matrices_t matrices, const tabs_
   int N = inco.line_size(), D = dimension, nf_tot = zone.nb_faces_tot(), nf = zone.nb_faces();
 
   /* faces */
-  for (int f = 0; f < nf; f++) if (fcl(f, 0) < 2)
-      for (int k = 0 ; k<N ; k++) if (k != n_l) //phase gazeuse
+  for (int f = 0; f < nf; f++)
+    if (fcl(f, 0) < 2)
+      for (int k = 0 ; k<N ; k++)
+        if (k != n_l) //phase gazeuse
           stencil.append_line( N * f +  k , N * f + n_l) ;
   /* elements */
   for (int e = 0; e < zone.nb_elem_tot(); e++)
-    for (int d = 0 ; d <D ; d++) for (int k = 0 ; k<N ; k++) if (k != n_l) //phase gazeuse
+    for (int d = 0 ; d <D ; d++)
+      for (int k = 0 ; k<N ; k++)
+        if (k != n_l) //phase gazeuse
           stencil.append_line(  N *(nf_tot + D * e + d) + k  , N *(nf_tot + D * e + d) + n_l) ;
 
   tableau_trier_retirer_doublons(stencil);
@@ -98,7 +102,9 @@ void Force_Tchen_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secme
 
   /* elements */
   for (int e = 0; e < zone.nb_elem_tot(); e++)
-    for (int d = 0 ; d <D ; d++) for (int k = 0 ; k<N ; k++) if (k != n_l) //phase gazeuse
+    for (int d = 0 ; d <D ; d++)
+      for (int k = 0 ; k<N ; k++)
+        if (k != n_l) //phase gazeuse
           {
             double fac = pe(e) * ve(e) * alpha(e, k) * rho(e, n_l) ;
 
@@ -112,8 +118,10 @@ void Force_Tchen_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secme
           }
 
   /* faces */
-  for (int f = 0; f < nf; f++) if (fcl(f, 0) < 2)
-      for (int k = 0 ; k<N ; k++) if (k != n_l) //phase gazeuse
+  for (int f = 0; f < nf; f++)
+    if (fcl(f, 0) < 2)
+      for (int k = 0 ; k<N ; k++)
+        if (k != n_l) //phase gazeuse
           {
             double alpha_loc = f_e(f, 1)>=0 ? alpha(f_e(f, 0), k) * vf_dir(f, 0)/vf(f) +  alpha(f_e(f, 1), k) * vf_dir(f, 1)/vf(f) : alpha(f_e(f, 0), k) ;
             double rho_loc   = f_e(f, 1)>=0 ? rho(f_e(f, 0), n_l) * vf_dir(f, 0)/vf(f) + rho(f_e(f, 1), n_l)  * vf_dir(f, 1)/vf(f) : rho(f_e(f, 0), n_l) ;

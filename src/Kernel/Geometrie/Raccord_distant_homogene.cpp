@@ -311,7 +311,8 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
         }
       MCAuto<DataArrayDouble> remote_xvs(DataArrayDouble::Aggregate(cvxv)), local_xvs(DataArrayDouble::New());
       local_xvs->alloc(nb_face1, dim);
-      for (int ind_face = 0; ind_face < nb_face1; ind_face++) for (int j = 0; j < dim; j++)
+      for (int ind_face = 0; ind_face < nb_face1; ind_face++)
+        for (int j = 0; j < dim; j++)
           local_xvs->setIJ(ind_face, j, local_xv(prem_face1 + ind_face, j));
 
       //indices des points de remote_xvs les plus proches de chaque point de local_xv

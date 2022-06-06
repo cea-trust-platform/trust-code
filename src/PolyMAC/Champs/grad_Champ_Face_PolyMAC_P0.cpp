@@ -128,7 +128,8 @@ void grad_Champ_Face_PolyMAC_P0::calc_gradfve()
 
   for (f = 0; f < nf; f++)
     {
-      for (d_U = 0; d_U < D; d_U++) for (n = 0; n < N; n++) // Coordonnees de la vitesse et phase
+      for (d_U = 0; d_U < D; d_U++)
+        for (n = 0; n < N; n++) // Coordonnees de la vitesse et phase
           {
             val(f, d_U + n*D) = 0;
             for (int j = gradve_d(f); j < gradve_d(f+1) ; j++)
@@ -163,8 +164,11 @@ void grad_Champ_Face_PolyMAC_P0::update_ge()
 
   for (e = 0; e < ne_tot; e++)
     {
-      for (d = 0; d < D; d++) for (n = 0; n < N; n++) val(nf_tot + D * e + d, n) = 0;
-      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++) for (fac = (e == f_e(f, 0) ? 1 : -1) * fs(f) / ve(e), d = 0; d < D; d++) for (n = 0; n < N; n++)
+      for (d = 0; d < D; d++)
+        for (n = 0; n < N; n++) val(nf_tot + D * e + d, n) = 0;
+      for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+        for (fac = (e == f_e(f, 0) ? 1 : -1) * fs(f) / ve(e), d = 0; d < D; d++)
+          for (n = 0; n < N; n++)
             val(nf_tot + D * e + d, n) += fac * (xv(f, d) - xp(e, d)) * val(f, n);
     }
 }

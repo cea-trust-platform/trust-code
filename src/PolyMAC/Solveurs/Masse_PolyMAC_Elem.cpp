@@ -75,7 +75,8 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
   assert(sm.dimension_tot(0) >= ne_tot && N == der.line_size());
 
   /* partie elem */
-  for (e = 0; e < ne_tot; e++) for (n = 0; n < N; n++)
+  for (e = 0; e < ne_tot; e++)
+    for (n = 0; n < N; n++)
       if (der(e, n) > 1e-10) sm(e, n) /= pe(e) * ve(e) * der(e, n);
       else sm(e, n) = 0; //cas d'une evanescence
 
@@ -90,7 +91,8 @@ void Masse_PolyMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& s
   const Champ_Inc_base& cc = equation().champ_conserve();
   int e, ne = zone.nb_elem(), n, N = cc.valeurs().line_size();
 
-  for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
+  for (auto &&i_m : matrices)
+    if (cc.derivees().count(i_m.first))
       {
         /* nombre de composantes de la variable : autant que le champ par defaut, mais peut etre different pour la pression */
         const DoubleTab& col = equation().probleme().get_champ(i_m.first.c_str()).valeurs(); //tableau de l'inconnue par rapport a laquelle on derive
@@ -99,7 +101,8 @@ void Masse_PolyMAC_Elem::dimensionner_blocs(matrices_t matrices, const tabs_t& s
         IntTrav stencil(0, 2);
         stencil.set_smart_resize(1);
 
-        for (e = 0; e < ne; e++) for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * e + m);
+        for (e = 0; e < ne; e++)
+          for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * e + m);
         Matrice_Morse mat;
         Matrix_tools::allocate_morse_matrix(N * equation().inconnue().valeurs().dimension_tot(0), M * col.dimension_tot(0), stencil, mat);
         i_m.second->nb_colonnes() ? *i_m.second += mat : *i_m.second = mat;
@@ -117,20 +120,25 @@ void Masse_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   int e, f, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();
 
   /* second membre : avec ou sans resolution en increments*/
-  for (e = 0; e < ne; e++) for (n = 0; n < N; n++)
+  for (e = 0; e < ne; e++)
+    for (n = 0; n < N; n++)
       secmem(e, n) += pe(e) * ve(e) * (passe(e, n) - resoudre_en_increments * present(e, n)) / dt;
 
   /* si on n'a pas d'operateur de diffusion (operateur(0) negligeable ou operateur(0) convectif pour Masse_Multiphase), alors ajout des flux aux faces de Neumann */
   if ( (sub_type(Op_Diff_negligeable, equation().operateur(0).l_op_base())) || (!sub_type(Operateur_Diff_base, equation().operateur(0).l_op_base())) )
-    for (f = 0; f < zone.premiere_face_int(); f++) if (fcl(f, 0) == 4) for (e = f_e(f, 0), n = 0; n < N; n++)
+    for (f = 0; f < zone.premiere_face_int(); f++)
+      if (fcl(f, 0) == 4)
+        for (e = f_e(f, 0), n = 0; n < N; n++)
           secmem(e, n) += fs(f) * ref_cast(Neumann_paroi, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), n);
 
   /* matrices */
-  for (auto &&i_m : matrices) if (cc.derivees().count(i_m.first))
+  for (auto &&i_m : matrices)
+    if (cc.derivees().count(i_m.first))
       {
         int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
         const DoubleTab& der = cc.derivees().at(i_m.first);
-        for (e = 0; e < ne; e++) for (n = 0, m = 0; n < N; n++, m += (M > 1))
+        for (e = 0; e < ne; e++)
+          for (n = 0, m = 0; n < N; n++, m += (M > 1))
             (*i_m.second)(N * e + n, M * e + m) += pe(e) * ve(e) * der(e, n) / dt;
       }
 }

@@ -153,7 +153,8 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
 
   // check whether valeur_aux_elems is needed
   bool calc_centers = false;
-  for (auto && ch : champs_lus) for (int i = 0; i < ch.champs_parametre_.size(); i++)
+  for (auto && ch : champs_lus)
+    for (int i = 0; i < ch.champs_parametre_.size(); i++)
       {
         assert(ch.champs_parametre_[i]->valeurs().dimension(1) == 1 || ch.champs_parametre_[i]->valeurs().dimension(1) == tab.dimension(1));
         if (tab.get_md_vector() != ch.champs_parametre_[i]->valeurs().get_md_vector())
@@ -182,7 +183,8 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
       for(int elem = 0; elem < nb_elem_tot; elem++) les_polys(elem) = elem;
 
       // Estimate the field parameter on cells:
-      for (auto && ch : champs_lus) for (int i = 0; i < ch.champs_parametre_.size(); i++)
+      for (auto && ch : champs_lus)
+        for (int i = 0; i < ch.champs_parametre_.size(); i++)
           {
             std::string nc = ch.noms_pbs_[i] + "_" + ch.noms_champs_parametre_[i];
             if (!val_params_aux_elems.count(nc))
@@ -201,7 +203,8 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
   else
     {
       // Estimate the field parameter on cells:
-      for (auto && ch : champs_lus) for (int i = 0; i < ch.champs_parametre_.size(); i++)
+      for (auto && ch : champs_lus)
+        for (int i = 0; i < ch.champs_parametre_.size(); i++)
           {
             std::string nc = ch.noms_pbs_[i] + "_" + ch.noms_champs_parametre_[i];
             if (!val_params_aux_elems.count(nc)) val_params_aux_elems[nc] = ch.champs_parametre_[i]->valeurs();

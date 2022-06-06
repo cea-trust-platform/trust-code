@@ -87,7 +87,8 @@ Entree& Diametre_hyd_champ::interpreter(Entree& is)
   for (int f = 0; f < nb_face_tot; f++)
     {
       double nv = 0.0;
-      for (int i = 0; i < 2; i++) if ((e = f_e(f, i)) > -1)
+      for (int i = 0; i < 2; i++)
+        if ((e = f_e(f, i)) > -1)
           {
             dh_face(f) += dh_elem(e);
             nv += 1.0;

@@ -83,14 +83,18 @@ DoubleTab& Masse_PolyMAC_P0_Face::appliquer_impl(DoubleTab& sm) const
   double fac;
 
   //vitesses aux faces
-  for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++)
+  for (f = 0; f < zone.nb_faces(); f++)
+    for (n = 0; n < N; n++)
       {
         for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += vfd(f, i) / vf(f) * (a_r ? (*a_r)(e, n) : 1);
         sm(f, n) /= pf(f) * vf(f) * fac; //vitesse calculee
       }
 
   //vitesses aux elements
-  if (sm.dimension_tot(0) > N * nf_tot) for (e = 0; e < zone.nb_elem(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+  if (sm.dimension_tot(0) > N * nf_tot)
+    for (e = 0; e < zone.nb_elem(); e++)
+      for (d = 0; d < D; d++)
+        for (n = 0; n < N; n++)
           sm(nf_tot + D * e + d, n) /= pe(e) * ve(e) * (a_r ? (*a_r)(e, n) : 1);
 
   sm.echange_espace_virtuel();
@@ -110,11 +114,16 @@ void Masse_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t
 
   IntTrav sten(0, 2);
   sten.set_smart_resize(1);
-  for (f = 0, i = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++, i++) //faces reelles
-      if (corr) for (m = 0; m < N; m++) sten.append_line(i, N * f + m);
+  for (f = 0, i = 0; f < zone.nb_faces(); f++)
+    for (n = 0; n < N; n++, i++) //faces reelles
+      if (corr)
+        for (m = 0; m < N; m++) sten.append_line(i, N * f + m);
       else sten.append_line(i, i);
-  for (e = 0, i = N * nf_tot; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++, i++) //tous les elems (pour Op_Grad_PolyMAC_P0_Face)
-        if (corr) for (m = 0; m < N; m++) sten.append_line(i, N * (nf_tot + D * e + d) + m);
+  for (e = 0, i = N * nf_tot; e < zone.nb_elem_tot(); e++)
+    for (d = 0; d < D; d++)
+      for (n = 0; n < N; n++, i++) //tous les elems (pour Op_Grad_PolyMAC_P0_Face)
+        if (corr)
+          for (m = 0; m < N; m++) sten.append_line(i, N * (nf_tot + D * e + d) + m);
         else sten.append_line(i, i);
   Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), sten, mat2);
   mat.nb_colonnes() ? mat += mat2 : mat = mat2;
@@ -138,21 +147,27 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   DoubleTrav masse(N, N), masse_e(N, N); //masse alpha * rho, contribution
   for (f = 0; f < zone.nb_faces(); f++) //faces reelles
     {
-      if (!pbm || fcl(f, 0) >= 2) for (masse = 0, n = 0; n < N; n++) masse(n, n) = 1; //pas Pb_Multiphase ou CL -> pas de alpha * rho
+      if (!pbm || fcl(f, 0) >= 2)
+        for (masse = 0, n = 0; n < N; n++) masse(n, n) = 1; //pas Pb_Multiphase ou CL -> pas de alpha * rho
       else for (masse = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           {
             for (masse_e = 0, n = 0; n < N; n++) masse_e(n, n) = (*a_r)(e, n); //partie diagonale
             if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse_e); //partie masse ajoutee
-            for (n = 0; n < N; n++) for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) / vf(f) * masse_e(n, m); //contribution au alpha * rho de la face
+            for (n = 0; n < N; n++)
+              for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) / vf(f) * masse_e(n, m); //contribution au alpha * rho de la face
           }
       for (n = 0; n < N; n++)
         {
           double fac = pf(f) * vf(f) / dt;
           for (m = 0; m < N; m++) secmem(f, n) -= fac * resoudre_en_increments * masse(n, m) * inco(f, m);
-          if (fcl(f, 0) < 2) for (m = 0; m < N; m++) secmem(f, n) += fac * masse(n, m) * passe(f, m);
-          else if (fcl(f, 0) == 3) for (d = 0; d < D; d++)
+          if (fcl(f, 0) < 2)
+            for (m = 0; m < N; m++) secmem(f, n) += fac * masse(n, m) * passe(f, m);
+          else if (fcl(f, 0) == 3)
+            for (d = 0; d < D; d++)
               secmem(f, n) += fac * masse(n, n) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n) * nf(f, d) / fs(f);
-          if (mat) for (m = 0; m < N; m++) if (masse(n, m)) (*mat)(N * f + n, N * f + m) += fac * masse(n, m);
+          if (mat)
+            for (m = 0; m < N; m++)
+              if (masse(n, m)) (*mat)(N * f + n, N * f + m) += fac * masse(n, m);
         }
     }
 
@@ -160,11 +175,14 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
     {
       for (masse = 0, n = 0; n < N; n++) masse(n, n) = a_r ? (*a_r)(e, n) : 1; //partie diagonale
       if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse); //partie masse ajoutee
-      for (d = 0; d < D; d++, i++) for (n = 0; n < N; n++)
+      for (d = 0; d < D; d++, i++)
+        for (n = 0; n < N; n++)
           {
             double fac = pe(e) * ve(e) / dt;
             for (m = 0; m < N; m++) secmem(i, n) -= fac * masse(n, m) * (resoudre_en_increments * inco(i, m) - passe(i, m));
-            if (mat) for (m = 0; m < N; m++) if (masse(n, m)) (*mat)(N * i + n, N * i + m) += fac * masse(n, m);
+            if (mat)
+              for (m = 0; m < N; m++)
+                if (masse(n, m)) (*mat)(N * i + n, N * i + m) += fac * masse(n, m);
           }
     }
   i++;

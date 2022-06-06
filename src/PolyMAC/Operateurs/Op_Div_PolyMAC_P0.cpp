@@ -75,7 +75,8 @@ void Op_Div_PolyMAC_P0::dimensionner(Matrice_Morse& matrice) const
 
   IntTab stencil(0,2);
   stencil.set_smart_resize(1);
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+  for (f = 0; f < zone.nb_faces(); f++)
+    for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
       for (n = 0; n < N; n++) stencil.append_line(N * e + n, N * f + n);
 
   tableau_trier_retirer_doublons(stencil);
@@ -96,9 +97,11 @@ DoubleTab& Op_Div_PolyMAC_P0::ajouter(const DoubleTab& vit, DoubleTab& div) cons
 
   for (f = 0; f < zone.nb_faces(); f++)
     {
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++)
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        for (n = 0; n < N; n++)
           div(e, n) += (i ? -1 : 1) * fs(f) * pf(f) * vit(f, n);
-      if (f < zone.premiere_face_int()) for (n = 0; n < N; n++) tab_flux_bords(f, n) = fs(f) * pf(f) * vit(f, n);
+      if (f < zone.premiere_face_int())
+        for (n = 0; n < N; n++) tab_flux_bords(f, n) = fs(f) * pf(f) * vit(f, n);
     }
 
   div.echange_espace_virtuel();
@@ -113,7 +116,8 @@ void Op_Div_PolyMAC_P0::contribuer_a_avec(const DoubleTab&,Matrice_Morse& mat) c
   const IntTab& f_e = zone.face_voisins();
   int i, e, f, n, N = ch.valeurs().line_size();
 
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+  for (f = 0; f < zone.nb_faces(); f++)
+    for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
       for (n = 0; n < N; n++) mat(N * e + n, N * f + n) += (i ? 1 : -1) * fs(f) * pf(f);
 }
 

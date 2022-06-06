@@ -54,7 +54,8 @@ void Flux_interfacial_Ranz_Marshall::coeffs(const double dh, const double *alpha
 {
   int k, N = hi.dimension(0);
   const DoubleTab& d_bulles = pb_->get_champ("diametre_bulles").valeurs() ;
-  for (k = 0; k < N; k++) if (k != n_l)
+  for (k = 0; k < N; k++)
+    if (k != n_l)
       {
         double Re_b = rho[n_l] * nv[N * n_l + k] * d_bulles(e,k)/mu[n_l];
         double Pr = mu[n_l] * Cp[n_l]/lambda[n_l];

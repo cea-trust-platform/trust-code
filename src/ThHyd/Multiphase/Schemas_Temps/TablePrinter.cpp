@@ -80,7 +80,8 @@ void TablePrinter::PrintHorizontalLine(int updown)
 {
   *out_stream_ << (updown > 0 ? "┌" : updown < 0 ? "└" : "├"); // the left bar
 
-  for (int i = 0; i < (int) column_widths_.size(); i++) for (int j = 0; j < column_widths_[i]; j++)
+  for (int i = 0; i < (int) column_widths_.size(); i++)
+    for (int j = 0; j < column_widths_[i]; j++)
       *out_stream_ << (!i || j ? "─" : updown > 0 ? "┬─" : updown < 0 ? "┴─" : "┼─");
 
   *out_stream_ << (updown > 0 ? "┐" : updown < 0 ? "┘" : "┤"); // the right bar

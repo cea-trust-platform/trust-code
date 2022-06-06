@@ -246,16 +246,26 @@ void Op_Diff_PolyMAC_base::update_nu() const
   assert(N_nu % N == 0);
 
   /* nu_ : si necessaire, on doit etendre la champ source */
-  if (N_nu == N_nu_src) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N_nu; n++) nu_.addr()[N_nu * e +  n] = nu_src(!c_nu * e, n); //facile
-  else if (N_nu == N * D && N_nu_src == N) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) //diagonal
+  if (N_nu == N_nu_src)
+    for (e = 0; e < zone.nb_elem_tot(); e++)
+      for (n = 0; n < N_nu; n++) nu_.addr()[N_nu * e +  n] = nu_src(!c_nu * e, n); //facile
+  else if (N_nu == N * D && N_nu_src == N)
+    for (e = 0; e < zone.nb_elem_tot(); e++)
+      for (n = 0; n < N; n++)
+        for (d = 0; d < D; d++) //diagonal
           nu_(e, n, d) = nu_src(!c_nu * e, n);
-  else if (N_nu == N * D * D && (N_nu_src == N || N_nu_src == N * D)) for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0; n < N; n++) //complet
-        for (d = 0; d < D; d++) for (db = 0; db < D; db++) nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N ? n : D * n + d);
+  else if (N_nu == N * D * D && (N_nu_src == N || N_nu_src == N * D))
+    for (e = 0; e < zone.nb_elem_tot(); e++)
+      for (n = 0; n < N; n++) //complet
+        for (d = 0; d < D; d++)
+          for (db = 0; db < D; db++) nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N ? n : D * n + d);
   else abort();
 
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
   const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  for (e = 0; e < zone.nb_elem_tot(); e++) for (n = 0, i = 0; n < N; n++) for (m = 0; m < mult; m++, i++)
+  for (e = 0; e < zone.nb_elem_tot(); e++)
+    for (n = 0, i = 0; n < N; n++)
+      for (m = 0; m < mult; m++, i++)
         nu_.addr()[N_nu * e + i] *= zone.porosite_elem()(e) * (alp ? std::max((*alp)(e, n), 1e-8) : 1);
 
   /* modification par une classe fille */
@@ -269,14 +279,18 @@ void Op_Diff_PolyMAC_base::update_aux(double t) const
 {
   const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur()).le_nom().getString();
   int i, j, n_ext = op_ext.size(), first_run = mat_aux.nb_lignes() == 0; /* nombre d'operateurs */
-  if (first_run) for (mat_aux.dimensionner(n_ext, n_ext), i = 0; i < n_ext; i++) for (j = 0; j < n_ext; j++)
+  if (first_run)
+    for (mat_aux.dimensionner(n_ext, n_ext), i = 0; i < n_ext; i++)
+      for (j = 0; j < n_ext; j++)
         mat_aux.get_bloc(i, j).typer("Matrice_Morse");
   std::vector<const Op_Diff_PolyMAC_base *> opp_ext(n_ext);
   for (i = 0; i < n_ext; i++) opp_ext[i] = &ref_cast(Op_Diff_PolyMAC_base, *op_ext[i]);
   std::vector<matrices_t> lines(n_ext); /* sous forme d'arguments pour dimensionner/assembler_blocs */
-  for (i = 0; i < n_ext; i++) for (j = 0; j < n_ext; j++)
+  for (i = 0; i < n_ext; i++)
+    for (j = 0; j < n_ext; j++)
       lines[i][nom_inco + (j == i ? "" : "/" + op_ext[j]->equation().probleme().le_nom().getString())] = &ref_cast(Matrice_Morse, mat_aux.get_bloc(i, j).valeur());
-  if (first_run) for (i = 0; i < n_ext; i++) opp_ext[i]->dimensionner_blocs_ext(1, lines[i]); //dimensionnement
+  if (first_run)
+    for (i = 0; i < n_ext; i++) opp_ext[i]->dimensionner_blocs_ext(1, lines[i]); //dimensionnement
 
   /* inconnue / second membre */
   std::deque<ConstDoubleTab_parts> v_part;
@@ -291,7 +305,9 @@ void Op_Diff_PolyMAC_base::update_aux(double t) const
   for (i = 0; i < n_ext; i++) p_inc[i] = v_part[i][1];
 
   /* assemblage */
-  if (!first_run) for (i = 0; i < n_ext; i++) for (j = 0; j < n_ext; j++) ref_cast(Matrice_Morse, mat_aux.get_bloc(i, j).valeur()).get_set_coeff() = 0;
+  if (!first_run)
+    for (i = 0; i < n_ext; i++)
+      for (j = 0; j < n_ext; j++) ref_cast(Matrice_Morse, mat_aux.get_bloc(i, j).valeur()).get_set_coeff() = 0;
   for (i = 0; i < n_ext; i++) opp_ext[i]->ajouter_blocs_ext(1, lines[i], p_sec[i]);
   /* passage incremente/inconnues */
   mat_aux.ajouter_multvect(inco, secmem);

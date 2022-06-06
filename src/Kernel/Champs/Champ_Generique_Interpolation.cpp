@@ -287,7 +287,8 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
       const DoubleTab& val_temp= source.valeurs();
       int dim0 = espace_valeurs.dimension(0);
       for (int i=0; i<dim0; i++)
-        if (ncomp==-1) for (int j=0; j<nb_comp; j++)
+        if (ncomp==-1)
+          for (int j=0; j<nb_comp; j++)
             {
               int n=renumerotation_maillage_[i];
               if (n>=0)

@@ -348,7 +348,8 @@ void Masse_Multiphase::calculer_alpha_rho(const Objet_U& obj, DoubleTab& val, Do
   int i, nl = val.dimension_tot(0), n, N = val.line_size(), cR = sub_type(Champ_Uniforme, ch_rho);
 
   /* valeurs du champ */
-  for (i = 0; i < nl; i++) for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n);
+  for (i = 0; i < nl; i++)
+    for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n);
 
   /* valeur aux bords */
   /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
@@ -357,10 +358,13 @@ void Masse_Multiphase::calculer_alpha_rho(const Objet_U& obj, DoubleTab& val, Do
 
   /* derivees */
   DoubleTab& d_a = deriv["alpha"]; //derivee en alpha : rho
-  for (d_a.resize(nl, N), i = 0; i < nl; i++) for (n = 0; n < N; n++) d_a(i, n) = rho(!cR * i , n);
-  if (pch_rho) for (auto &&d_c : pch_rho->derivees()) //derivees en les dependances de rho
+  for (d_a.resize(nl, N), i = 0; i < nl; i++)
+    for (n = 0; n < N; n++) d_a(i, n) = rho(!cR * i , n);
+  if (pch_rho)
+    for (auto &&d_c : pch_rho->derivees()) //derivees en les dependances de rho
       {
         DoubleTab& der = deriv[d_c.first];
-        for (der.resize(nl, N), i = 0; i < nl; i++) for (n = 0; n < N; n++) der(i, n) = d_c.second(i, n) * alpha(i, n);
+        for (der.resize(nl, N), i = 0; i < nl; i++)
+          for (n = 0; n < N; n++) der(i, n) = d_c.second(i, n) * alpha(i, n);
       }
 }

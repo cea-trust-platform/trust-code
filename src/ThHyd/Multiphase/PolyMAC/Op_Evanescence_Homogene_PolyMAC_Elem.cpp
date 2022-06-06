@@ -57,7 +57,8 @@ void Op_Evanescence_Homogene_PolyMAC_Elem::dimensionner_blocs(matrices_t matrice
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
   int i, j, e, n, N = inco.line_size();
   if (N == 1) return; //pas d'evanescence en simple phase!
-  for (auto &&n_m : matrices) if (n_m.second->nb_colonnes())
+  for (auto &&n_m : matrices)
+    if (n_m.second->nb_colonnes())
       {
         Matrice_Morse& mat = *n_m.second, mat2;
         IntTrav sten(0, 2);
@@ -66,9 +67,11 @@ void Op_Evanescence_Homogene_PolyMAC_Elem::dimensionner_blocs(matrices_t matrice
         std::set<int> idx;
         for (e = 0; e < zone.nb_elem(); e++, idx.clear())
           {
-            for (i = N * e, n = 0; n < N; n++, i++) for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
+            for (i = N * e, n = 0; n < N; n++, i++)
+              for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
                 idx.insert(mat.get_tab2()(j) - 1);
-            for (i = N * e, n = 0; n < N; n++, i++) for (auto &&c : idx) sten.append_line(i, c);
+            for (i = N * e, n = 0; n < N; n++, i++)
+              for (auto &&c : idx) sten.append_line(i, c);
           }
         Matrix_tools::allocate_morse_matrix(mat.nb_lignes(), mat.nb_colonnes(), sten, mat2);
         mat = mat2; //pour forcer l'ordre des coefficients dans la matrice (accelere les operations ligne a ligne)
@@ -100,12 +103,14 @@ void Op_Evanescence_Homogene_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, Do
   for (e = 0; e < zone.nb_elem(); e++)
     {
       /* phase majoritaire */
-      for (a_max = 0, k = -1, n = 0; n < N; n++) if ((a_m = alpha(e, n)) > a_max) k = n, a_max = a_m;
+      for (a_max = 0, k = -1, n = 0; n < N; n++)
+        if ((a_m = alpha(e, n)) > a_max) k = n, a_max = a_m;
       if (k >= 0) maj(e) = k;
       else abort();
 
       /* coeff d'evanescence, second membre */
-      for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (n != k && (a_m = alpha(e, n)) < a_eps)
+      for (n = 0, m = 0; n < N; n++, m += (M > 1))
+        if (n != k && (a_m = alpha(e, n)) < a_eps)
           {
             double val = is_m ? 0 : milc.has_saturation(n, k) ? milc.get_saturation(n, k).Tsat(p(e, m)) : inco(e, k); //valeur a laquelle on veut ramener inco(e, n)
             coeff(e, n, 0) = (a_eps == a_eps_min ? (a_m < a_eps) : std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
@@ -116,11 +121,14 @@ void Op_Evanescence_Homogene_PolyMAC_Elem::ajouter_blocs(matrices_t matrices, Do
     }
 
   /* lignes de matrices */
-  for (auto &&n_m : matrices) if (n_m.second->nb_colonnes())
+  for (auto &&n_m : matrices)
+    if (n_m.second->nb_colonnes())
       {
         int diag = (n_m.first == ch.le_nom().getString()), press = (n_m.first == "pression"); //est-on sur le bloc diagonal, sur le bloc pression?
         Matrice_Morse& mat = *n_m.second;
-        for (e = 0; e < zone.nb_elem(); e++) for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (coeff(e, n, 0))
+        for (e = 0; e < zone.nb_elem(); e++)
+          for (n = 0, m = 0; n < N; n++, m += (M > 1))
+            if (coeff(e, n, 0))
               {
                 k = maj(e); //phase majoritaire
                 double dval = is_m ? 0 : milc.has_saturation(n, k) ? (press ? milc.get_saturation(n, k).dP_Tsat(p(e, m)) : 0) : diag; //derivee de val (nulle si on n'est pas sur le bon bloc)

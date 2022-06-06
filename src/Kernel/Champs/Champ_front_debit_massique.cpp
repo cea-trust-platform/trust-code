@@ -58,6 +58,7 @@ void Champ_front_debit_massique::update_coeff(double temps)
   DoubleTab rho_bord = cR ? ch_rho->valeurs() : ch_rho->valeur_aux_bords(); /* si rho uniforme, on ne peut pas appeler valeur_aux_bords() */
   const Zone_VF& zone = ref_cast(Zone_VF, zone_dis());
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
-  for(i = 0; i < le_bord.nb_faces_tot(); i++) for (fb = zone.fbord(le_bord.num_face(i)), n = 0; n < N; ++n)
+  for(i = 0; i < le_bord.nb_faces_tot(); i++)
+    for (fb = zone.fbord(le_bord.num_face(i)), n = 0; n < N; ++n)
       coeff_(i, n) = 1. / rho_bord(!cR * fb, n);
 }

@@ -531,7 +531,8 @@ void Op_Dift_EF_Q1::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,
                           for (int isom=0; isom<nb_som_face; isom++)
                             if (num_som == som_CL(isom)) iok = 0;
                           nb_iok += iok;
-                          if (iok) for (int nc=0; nc<dimension; nc++)
+                          if (iok)
+                            for (int nc=0; nc<dimension; nc++)
                               resu(num_som,nc)+= effort_elem(nc)/(nb_som_free);
                         }
                       if (nb_iok != nb_som_free)

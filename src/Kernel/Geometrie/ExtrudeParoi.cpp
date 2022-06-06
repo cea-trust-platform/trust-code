@@ -284,7 +284,8 @@ void ExtrudeParoi::extrude(Domaine& dom)
               for(int j=0; j<4; j++)
                 {
                   int ok=0;
-                  for(int k=0; k<3; k++) if(som_elem[j]==som_face[k]) ok=1;
+                  for(int k=0; k<3; k++)
+                    if(som_elem[j]==som_face[k]) ok=1;
                   if(ok==0)
                     {
                       som_ext=som_elem[j] ;

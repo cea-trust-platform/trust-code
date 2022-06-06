@@ -47,7 +47,8 @@ Entree& Frottement_interfacial_Tomiyama::readOn(Entree& is)
     if (pbm->nom_phase(n).debute_par("liquide") && (n_l < 0 || pbm->nom_phase(n).finit_par("continu")))  n_l = n;
   if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
 
-  for (int k = 0; k < pbm->nb_phases(); k++) if (k != n_l)
+  for (int k = 0; k < pbm->nb_phases(); k++)
+    if (k != n_l)
       if (!(ref_cast(Milieu_composite, pbm->milieu()).has_interface(n_l, k))) Process::exit("Frottement_interfacial_Tomiyama : one must define an interface and have a surface tension !");
 
   return is;
@@ -67,7 +68,8 @@ void Frottement_interfacial_Tomiyama::coefficient(const DoubleTab& alpha, const 
 
   coeff = 0;
 
-  for (int k = 0; k < N; k++) if (k!=n_l)
+  for (int k = 0; k < N; k++)
+    if (k!=n_l)
       {
 
         double Re = rho(n_l) * ndv(n_l,k) * d_bulles(k)/mu(n_l) + 1.e-6;

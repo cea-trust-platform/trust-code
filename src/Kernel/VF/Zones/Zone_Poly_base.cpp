@@ -464,12 +464,14 @@ void Zone_Poly_base::discretiser()
   for (int face = 0; dimension == 3 && face < nb_faces(); face++)
     {
       double xs[3] = { 0, }, S = 0;
-      for (int k = 0; k < face_sommets_.dimension(1); k++) if (face_sommets_(face, k) >= 0)
+      for (int k = 0; k < face_sommets_.dimension(1); k++)
+        if (face_sommets_(face, k) >= 0)
           {
             int s0 = face_sommets_(face, 0), s1 = face_sommets_(face, k),
                 s2 = k + 1 < face_sommets_.dimension(1) && face_sommets_(face, k + 1) >= 0 ? face_sommets_(face, k +1) : s0;
             double s = 0;
-            for (int r = 0; r < 3; r++) for (int i = 0; i < 2; i++)
+            for (int r = 0; r < 3; r++)
+              for (int i = 0; i < 2; i++)
                 s += (i ? -1 : 1) * face_normales_(face, r) * (coords(s2, (r + 1 +  i) % 3) - coords(s0, (r + 1 +  i) % 3))
                      * (coords(s1, (r + 1 + !i) % 3) - coords(s0, (r + 1 + !i) % 3));
             for (int r = 0; r < 3; r++) xs[r] += s * (coords(s0, r) + coords(s1, r) + coords(s2, r)) / 3;
@@ -521,12 +523,14 @@ void Zone_Poly_base::detecter_faces_non_planes() const
   IntTab face(np), elem1(np), elem2(np);
 
   //sur chaque proc : on cherche l'angle le plus grand entre un sommet et le plan de sa face
-  for (f = 0; f < nb_faces(); f++) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+  for (f = 0; f < nb_faces(); f++)
+    for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
       if ((sin2 = std::pow(dot(&xs(s, 0), &nf(f, 0), &xv_(f, 0)) / fs(f), 2) / dot(&xs(s, 0), &xs(s, 0), &xv_(f, 0), &xv_(f, 0))) > val[rk])
         val[rk] = sin2, face(rk) = f, elem1(rk) = f_e(f, 0), elem2(rk) = f_e(f, 1);
   envoyer_all_to_all(val, val), envoyer_all_to_all(face, face), envoyer_all_to_all(elem1, elem1), envoyer_all_to_all(elem2, elem2);
 
-  for (i = j = sin2 = 0; i < Process::nproc(); i++) if (val[i] > sin2) sin2 = val[i], j = i;
+  for (i = j = sin2 = 0; i < Process::nproc(); i++)
+    if (val[i] > sin2) sin2 = val[i], j = i;
   double theta = asin(sqrt(sin2)) * 180 / M_PI;
   Cerr << "Zone_Poly_base : angle sommet/face max " << theta << " deg (proc " << j << " , face ";
   Cerr << face(j) << " , elems " << elem1(j) << " / " << elem2(j) << " )" << finl;
@@ -560,16 +564,19 @@ void Zone_Poly_base::calculer_h_carre()
 void disp_dt(const DoubleTab& A)
 {
   int i, j, k, l;
-  if (A.nb_dim() == 4) for (i = 0; i < A.dimension_tot(0); i++)
+  if (A.nb_dim() == 4)
+    for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "}}},{" : "{{"); j < A.dimension(1); j++)
         for (k = 0, fprintf(stderr, j ? "}},{" : "{"); k < A.dimension(2); k++)
           for (l = 0, fprintf(stderr, k ? "},{" : "{"); l < A.dimension(3); l++)
             fprintf(stderr, "%.10E%s ", A.addr()[A.dimension(3) * (A.dimension(2) * (i * A.dimension(1) + j) + k) + l], l + 1 < A.dimension(3) ? "," : "");
-  else if (A.nb_dim() == 3) for (i = 0; i < A.dimension_tot(0); i++)
+  else if (A.nb_dim() == 3)
+    for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "}},{" : "{{"); j < A.dimension(1); j++)
         for (k = 0, fprintf(stderr, j ? "},{" : "{"); k < A.dimension(2); k++)
           fprintf(stderr, "%.10E%s ", A.addr()[A.dimension(2) * (i * A.dimension(1) + j) + k], k + 1 < A.dimension(2) ? "," : "");
-  else if (A.nb_dim() == 2) for (i = 0; i < A.dimension_tot(0); i++)
+  else if (A.nb_dim() == 2)
+    for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "},{" : "{{"); j < A.dimension(1); j++)
         fprintf(stderr, "%.10E%s ", A.addr()[i * A.dimension(1) + j], j + 1 < A.dimension(1) ? "," : "");
   else for (i = 0, fprintf(stderr, "{"); i < A.dimension_tot(0); i++)
@@ -588,16 +595,19 @@ void disp_da(const ArrOfDouble& A)
 void disp_it(const IntTab& A)
 {
   int i, j, k, l;
-  if (A.nb_dim() == 4) for (i = 0; i < A.dimension_tot(0); i++)
+  if (A.nb_dim() == 4)
+    for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "}}},{" : "{{"); j < A.dimension(1); j++)
         for (k = 0, fprintf(stderr, j ? "}},{" : "{"); k < A.dimension(2); k++)
           for (l = 0, fprintf(stderr, k ? "},{" : "{"); l < A.dimension(3); l++)
             fprintf(stderr, "%d%s ", (True_int)A.addr()[A.dimension(3) * (A.dimension(2) * (i * A.dimension(1) + j) + k) + l], l + 1 < A.dimension(3) ? "," : "");
-  else if (A.nb_dim() == 3) for (i = 0; i < A.dimension_tot(0); i++)
+  else if (A.nb_dim() == 3)
+    for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "}},{" : "{{"); j < A.dimension(1); j++)
         for (k = 0, fprintf(stderr, j ? "},{" : "{"); k < A.dimension(2); k++)
           fprintf(stderr, "%d%s ", (True_int)A.addr()[A.dimension(2) * (i * A.dimension(1) + j) + k], k + 1 < A.dimension(2) ? "," : "");
-  else if (A.nb_dim() == 2) for (i = 0; i < A.dimension_tot(0); i++)
+  else if (A.nb_dim() == 2)
+    for (i = 0; i < A.dimension_tot(0); i++)
       for (j = 0, fprintf(stderr, i ? "},{" : "{{"); j < A.dimension(1); j++)
         fprintf(stderr, "%d%s ", (True_int)A.addr()[i * A.dimension(1) + j], j + 1 < A.dimension(1) ? "," : "");
   else for (i = 0, fprintf(stderr, "{"); i < A.dimension_tot(0); i++)
@@ -670,7 +680,8 @@ void Zone_Poly_base::init_equiv() const
   creer_tableau_faces(ntot), creer_tableau_faces(nequiv);
   equiv.resize(nb_faces_tot(), 2, e_f.dimension(1));
   Cerr << zone().domaine().le_nom() << " : intializing equiv... ";
-  for (f = 0, equiv = -1; f < nb_faces_tot(); f++) if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
+  for (f = 0, equiv = -1; f < nb_faces_tot(); f++)
+    if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
       for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
         for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
           {
@@ -800,9 +811,11 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
     }
   MCAuto<DataArrayDouble> remote_xvs(DataArrayDouble::Aggregate(cvxv)), local_xs(DataArrayDouble::New());
   local_xs->alloc(nf+ne, D);
-  for (int f = 0; f < nf; f++) for (int d = 0; d < D; d++)
+  for (int f = 0; f < nf; f++)
+    for (int d = 0; d < D; d++)
       local_xs->setIJ(f, d, local_xv(f, d));
-  for (int e = 0; e < ne; e++) for (int d = 0; d < D; d++)
+  for (int e = 0; e < ne; e++)
+    for (int d = 0; d < D; d++)
       local_xs->setIJ(nf+e, d, local_xp(e, d));
 
   //indices des points de remote_xvs les plus proches de chaque point de local_xv
@@ -830,7 +843,8 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
       if (fe<nf)
         {
           y_faces_(fe) = std::sqrt(distance2);
-          if (y_faces_(fe)>1.e-8) for (int d = 0 ; d<D ; d++) n_y_faces_(fe, d) = ( local_xv(fe,d)-remote_xv[proc](fe2,d) )/ y_faces_(fe);
+          if (y_faces_(fe)>1.e-8)
+            for (int d = 0 ; d<D ; d++) n_y_faces_(fe, d) = ( local_xv(fe,d)-remote_xv[proc](fe2,d) )/ y_faces_(fe);
         }
       else
         {

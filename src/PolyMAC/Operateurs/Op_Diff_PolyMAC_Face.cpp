@@ -87,9 +87,11 @@ double Op_Diff_PolyMAC_Face::calculer_dt_stab() const
   DoubleTrav flux(N), vol(N);
   for (e = 0; e < zone.nb_elem(); e++)
     {
-      for (flux = 0, vol = pe(e) * ve(e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
+      for (flux = 0, vol = pe(e) * ve(e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+        for (n = 0; n < N; n++)
           flux(n) += zone.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
-      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 0.25) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
+      for (n = 0; n < N; n++)
+        if ((!alp || (*alp)(e, n) > 0.25) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
           dt = std::min(dt, vol(n) * (a_r ? (*a_r)(e, n) : 1) / flux(n));
     }
   return Process::mp_min(dt);
@@ -112,7 +114,9 @@ void Op_Diff_PolyMAC_Face::dimensionner_blocs_ext(int aux_only, matrices_t matri
   Cerr << "Op_Diff_PolyMAC_Face::dimensionner() : ";
 
   /* bloc (faces, aretes) : rot [(lambda grad)^u]*/
-  if (!semi && !aux_only) for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+  if (!semi && !aux_only)
+    for (f = 0; f < zone.nb_faces(); f++)
+      for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
         for (a = D < 3 ? s : zone.som_arete[s].at(f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0)), n = 0; n < N; n++)
           stencil.append_line(N * f + n, N * (nf_tot + a) + n);
 
@@ -121,30 +125,43 @@ void Op_Diff_PolyMAC_Face::dimensionner_blocs_ext(int aux_only, matrices_t matri
   DoubleTrav inu, m2, w1; //au format compris par zone.nu_dot
   nu_.nb_dim() == 2 ? inu.resize(1, N) : nu_.nb_dim() == 3 ? inu.resize(1, N, D) : inu.resize(1, N, D, D);
   m2.set_smart_resize(1), w1.set_smart_resize(1);
-  if (!semi) for (e = 0; e < zone.nb_elem_tot(); e++)
+  if (!semi)
+    for (e = 0; e < zone.nb_elem_tot(); e++)
       {
         //tenseur de diffusion diagonal ou anisotrope diagonal : inverse faciles!
-        if (nu_.nb_dim() < 4) for (i = 0; i < N_nu; i++) inu.addr()[i] = 1. / nu_.addr()[N_nu * e + i];
+        if (nu_.nb_dim() < 4)
+          for (i = 0; i < N_nu; i++) inu.addr()[i] = 1. / nu_.addr()[N_nu * e + i];
         else for (n = 0; n < N; n++) //sinon : une matrice a inverser par composante
             {
-              for (d = 0; d < D; d++) for (db = 0; db < D; db++) L(d, db) = nu_(e, n, d, db);
+              for (d = 0; d < D; d++)
+                for (db = 0; db < D; db++) L(d, db) = nu_(e, n, d, db);
               Matrice33::inverse(L, iL);
-              for (d = 0; d < D; d++) for (db = 0; db < D; db++) inu(0, n, d, db) = iL(d, db);
+              for (d = 0; d < D; d++)
+                for (db = 0; db < D; db++) inu(0, n, d, db) = iL(d, db);
             }
         zone.M2(&inu, e, m2);
         if (D > 2) zone.W1(&nu_, e, w1); //uniquement en 3D: en 2D, matrice diagonale
 
         //bloc (aretes, faces): en parcourant les aretes de chaque face
-        if (!aux_only) for (i = 0; i < m2.dimension(0); i++) for (f = e_f(e, i), j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
+        if (!aux_only)
+          for (i = 0; i < m2.dimension(0); i++)
+            for (f = e_f(e, i), j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
               if ((a = D < 3 ? s : zone.som_arete[s].at(f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0))) < (D < 3 ? zone.zone().nb_som() : zone.zone().nb_aretes()))
-                for (k = 0; k < m2.dimension(1); k++) for (fb = e_f(e, k), n = 0; n < N; n++)
+                for (k = 0; k < m2.dimension(1); k++)
+                  for (fb = e_f(e, k), n = 0; n < N; n++)
                     if (fcl(f, 0) == 2 || m2(i, k, n)) //si f est Symetrie, alors il y a aussi une partie en ve -> dependance complete
                       stencil.append_line(N * (nf_tot + a) + n, N * fb + n);
         //bloc (aretes, aretes) : avec m1 si D = 3 (sinon, fait ensuite)
-        if (D > 2) for (i = 0; i < w1.dimension(0); i++) if ((a = e_a(e, i)) < zone.zone().nb_aretes()) for (j = 0; j < w1.dimension(1); j++) for (ab = e_a(e, j), n = 0; n < N; n++)
+        if (D > 2)
+          for (i = 0; i < w1.dimension(0); i++)
+            if ((a = e_a(e, i)) < zone.zone().nb_aretes())
+              for (j = 0; j < w1.dimension(1); j++)
+                for (ab = e_a(e, j), n = 0; n < N; n++)
                   if (w1(i, j, n)) stencil.append_line(N * (!aux_only * nf_tot + a) + n, N * (!aux_only * nf_tot + ab) + n);
       }
-  if (semi || D < 3) for (s = 0; s < (D < 3 ? zone.nb_som() : zone.zone().nb_aretes()); s++) for (n = 0; n < N; n++) stencil.append_line(N * (!aux_only * nf_tot + s) + n, N * (!aux_only * nf_tot + s) + n);
+  if (semi || D < 3)
+    for (s = 0; s < (D < 3 ? zone.nb_som() : zone.zone().nb_aretes()); s++)
+      for (n = 0; n < N; n++) stencil.append_line(N * (!aux_only * nf_tot + s) + n, N * (!aux_only * nf_tot + s) + n);
 
   tableau_trier_retirer_doublons(stencil);
   Cerr << "OK" << finl;
@@ -177,13 +194,16 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   const DoubleTab& omega = use_aux_ ? var_aux : p_inco[1]; /* les variables auxiliaires peuvent etre soit dans inco/semi_impl (cas 1), soit dans var_aux (cas 2) */
 
   /* bloc (faces, aretes) : rot [(lambda grad)^u]*/
-  if (!aux_only) for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+  if (!aux_only)
+    for (f = 0; f < zone.nb_faces(); f++)
+      for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
         {
           a = D < 3 ? s : zone.som_arete[s].at(f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0)); //indice d'arete
           auto vec = zone.cross(3, D, D < 3 ? vecz : &ta(a, 0), &xv(f, 0), NULL, &xa(a, 0));
           int sgn = zone.dot(&nf(f, 0), &vec[0]) > 0 ? 1 : -1; //orientation arete-face
           for (n = 0; n < N; n++) secmem(f, n) -= sgn * vf(f) / fs(f) * (D < 3 ? 1 : la(a)) * omega(a, n);
-          if (mat && !semi) for (n = 0; n < N; n++) (*mat)(N * f + n, N * (nf_tot + a) + n) += sgn * vf(f) / fs(f) * (D < 3 ? 1 : la(a));
+          if (mat && !semi)
+            for (n = 0; n < N; n++) (*mat)(N * f + n, N * (nf_tot + a) + n) += sgn * vf(f) / fs(f) * (D < 3 ? 1 : la(a));
         }
 
   /* blocs (aretes, faces) et (aretes, aretes) : avec M2 et W1 dans chaque element */
@@ -191,37 +211,49 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   DoubleTrav dL(N), inu, m2, w1; //determinant, inverse (au format compris par zone.nu_dot), matrices M2(iL) / W1(L)
   nu_.nb_dim() == 2 ? inu.resize(1, N) : nu_.nb_dim() == 3 ? inu.resize(1, N, D) : inu.resize(1, N, D, D);
   m2.set_smart_resize(1), w1.set_smart_resize(1);
-  if (!aux_only && mat && semi) for (a = 0; a < xa.dimension(0); a++) for (n = 0; n < N; n++) /* en semi-implicite : egalites w_a^+ = var_aux */
+  if (!aux_only && mat && semi)
+    for (a = 0; a < xa.dimension(0); a++)
+      for (n = 0; n < N; n++) /* en semi-implicite : egalites w_a^+ = var_aux */
         secmem(nf_tot + a, n) += omega(a, n) - ch.valeurs()(nf_tot + a, n), (*mat)(N * (nf_tot + a) + n, N * (nf_tot + a) + n)++;
-  else if (mat && !semi) for (e = 0; e < zone.nb_elem_tot(); e++) /* en implicite : vraies equations */
+  else if (mat && !semi)
+    for (e = 0; e < zone.nb_elem_tot(); e++) /* en implicite : vraies equations */
       {
         //tenseur de diffusion diagonal ou anisotrope diagonal : inverses faciles!
-        if (nu_.nb_dim() == 2) for (n = 0; n < N; n++) inu(0, n) = 1. / nu_(e, n), dL(n) = std::pow(nu_(e, n), D);
-        else if (nu_.nb_dim() == 3) for (n = 0; n < N; n++) for (d = 0, dL(n) = 1; d < D; d++) inu(0, n, d) = 1. / nu_(e, n, d), dL(n) *= nu_(e, n, d);
-        if (nu_.nb_dim() < 4) for (i = 0; i < N_nu; i++) inu.addr()[i] = 1. / nu_.addr()[N_nu * e + i];
+        if (nu_.nb_dim() == 2)
+          for (n = 0; n < N; n++) inu(0, n) = 1. / nu_(e, n), dL(n) = std::pow(nu_(e, n), D);
+        else if (nu_.nb_dim() == 3)
+          for (n = 0; n < N; n++)
+            for (d = 0, dL(n) = 1; d < D; d++) inu(0, n, d) = 1. / nu_(e, n, d), dL(n) *= nu_(e, n, d);
+        if (nu_.nb_dim() < 4)
+          for (i = 0; i < N_nu; i++) inu.addr()[i] = 1. / nu_.addr()[N_nu * e + i];
         else for (n = 0; n < N; n++) //sinon : une matrice a inverser par composante
             {
-              for (d = 0; d < D; d++) for (db = 0; db < D; db++) L(d, db) = nu_(e, n, d, db);
+              for (d = 0; d < D; d++)
+                for (db = 0; db < D; db++) L(d, db) = nu_(e, n, d, db);
               dL(n) = Matrice33::inverse(L, iL); //renvoie le determinant!
-              for (d = 0; d < D; d++) for (db = 0; db < D; db++) inu(0, n, d, db) = iL(d, db);
+              for (d = 0; d < D; d++)
+                for (db = 0; db < D; db++) inu(0, n, d, db) = iL(d, db);
             }
         zone.M2(&inu, e, m2);
         if (D > 2) zone.W1(&nu_, e, w1); //uniquement en 3D: en 2D, matrice diagonale
 
         //bloc (aretes, faces): en parcourant les aretes de chaque face
-        for (i = 0; i < m2.dimension(0); i++) for (f = e_f(e, i), j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
+        for (i = 0; i < m2.dimension(0); i++)
+          for (f = e_f(e, i), j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++)
             if ((a = D < 3 ? s : zone.som_arete[s].at(f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0))) < (D < 3 ? zone.zone().nb_som() : zone.zone().nb_aretes()))
               {
                 auto vec = zone.cross(3, D, D < 3 ? vecz : &ta(a, 0), &xv(f, 0), NULL, &xa(a, 0));
                 int sgn = (e == f_e(f, 0) ? 1 : -1) * zone.dot(&nf(f, 0), &vec[0]) > 0 ? 1 : -1; //orientation arete-face (dans le sens sortant de e)
-                for (k = 0; k < m2.dimension(1); k++) for (fb = e_f(e, k), n = 0; n < N; n++)//partie x_e -> x_f avec m2 + partie x_f -> x_a avec v_e si bord de Neumann / Symetrie
+                for (k = 0; k < m2.dimension(1); k++)
+                  for (fb = e_f(e, k), n = 0; n < N; n++)//partie x_e -> x_f avec m2 + partie x_f -> x_a avec v_e si bord de Neumann / Symetrie
                     {
                       double coeff = m2(i, k, n) + (fcl(f, 0) == 2 ? zone.nu_dot(&inu, 0, n, &xa(a, 0), &xv(fb, 0), &xv(f, 0), &xp(e, 0)) / ve(e) : 0);
                       if (!coeff) continue;
                       secmem(!aux_only * nf_tot + a, n) += sgn * coeff * inco(fb, n) * fs(fb) * (e == f_e(fb, 0) ? 1 : -1);
                       if (!aux_only) (*mat)(N * (nf_tot + a) + n, N * fb + n) -= sgn * coeff * fs(fb) * (e == f_e(fb, 0) ? 1 : -1);
                     }
-                if (fcl(f, 0) == 3 && sub_type(Dirichlet, cls[fcl(f, 1)].valeur())) for (n = 0; n < N; n++) //si bord de Dirichlet : partie x_f -> x_a avec la vitesse donnee par la CL
+                if (fcl(f, 0) == 3 && sub_type(Dirichlet, cls[fcl(f, 1)].valeur()))
+                  for (n = 0; n < N; n++) //si bord de Dirichlet : partie x_f -> x_a avec la vitesse donnee par la CL
                     {
                       for (d = 0; d < D; d++) v_cl[d] = ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n); //v impose
                       secmem(!aux_only * nf_tot + a, n) += sgn * zone.nu_dot(&inu, 0, n, &xa(a, 0), v_cl, &xv(f, 0));
@@ -231,7 +263,9 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
         //bloc (aretes, aretes) : avec m1 si D = 3, diagonale * surface si D = 2
         if (D == 2)
           {
-            for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (j = 0; j < 2; j++) if ((s = f_s(f, j)) < zone.nb_som())
+            for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+              for (j = 0; j < 2; j++)
+                if ((s = f_s(f, j)) < zone.nb_som())
                   {
                     auto vec = zone.cross(D, D, &xv(f, 0), &xs(s, 0), &xp(e, 0), &xp(e, 0));
                     double surf = std::abs(vec[2]) / 2; //surface du triangle (e, f, s)
@@ -239,8 +273,11 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
                     for (n = 0; n < N; n++) (*mat)(N * (!aux_only * nf_tot + s) + n, N * (!aux_only * nf_tot + s) + n) += surf / dL(n);
                   }
           }
-        else for (i = 0; i < w1.dimension(0); i++) if ((a = e_a(e, i)) < zone.zone().nb_aretes()) for (j = 0; j < w1.dimension(1); j++)
-                for (ab = e_a(e, j), n = 0; n < N; n++) if (w1(i, j, n))
+        else for (i = 0; i < w1.dimension(0); i++)
+            if ((a = e_a(e, i)) < zone.zone().nb_aretes())
+              for (j = 0; j < w1.dimension(1); j++)
+                for (ab = e_a(e, j), n = 0; n < N; n++)
+                  if (w1(i, j, n))
                     {
                       secmem(!aux_only * nf_tot + a, n) -= w1(i, j, n) * la(ab) * inco(nf_tot + ab, n) / dL(n);
                       (*mat)(N * (!aux_only * nf_tot + a) + n, N * (!aux_only * nf_tot + ab) + n) += w1(i, j, n) * la(ab) / dL(n);

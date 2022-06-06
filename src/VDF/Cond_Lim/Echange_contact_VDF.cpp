@@ -321,7 +321,8 @@ int Echange_contact_VDF::initialiser(double temps)
 
   //remplissage
   item.resize(fvf.nb_faces()), item = -1;
-  for (int i = 0; i < fvf.nb_faces(); i++) if (l_item(i) >= 0)
+  for (int i = 0; i < fvf.nb_faces(); i++)
+    if (l_item(i) >= 0)
       {
         if (proc(i) == Process::me()) item(i) = l_item(i);                     //item local (reel)
         else

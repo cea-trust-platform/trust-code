@@ -111,10 +111,12 @@ double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
 
   for (e = 0; e < zone.nb_elem(); e++)
     {
-      for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++)
+      for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+        for (n = 0; n < N; n++)
           flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
 
-      for (n = 0; n < N; n++) if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = std::min(dt, pe(e) * ve(e) / flux(n));
+      for (n = 0; n < N; n++)
+        if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = std::min(dt, pe(e) * ve(e) / flux(n));
     }
 
   return Process::mp_min(dt);
@@ -127,7 +129,8 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
   int i, j, e, eb, f, n, N = equation().inconnue().valeurs().line_size();
   const Champ_Inc_base& cc = equation().champ_convecte();
 
-  for (auto &&i_m : mats) if (i_m.first == "vitesse" || (cc.derivees().count(i_m.first) && !semi_impl.count(cc.le_nom().getString())))
+  for (auto &&i_m : mats)
+    if (i_m.first == "vitesse" || (cc.derivees().count(i_m.first) && !semi_impl.count(cc.le_nom().getString())))
       {
         Matrice_Morse mat;
         IntTrav stencil(0, 2);
@@ -135,11 +138,17 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
         int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
         if (i_m.first == "vitesse") /* vitesse */
           {
-            for (f = 0; f < zone.nb_faces_tot(); f++) if (fcl_v(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem())
+            for (f = 0; f < zone.nb_faces_tot(); f++)
+              if (fcl_v(f, 0) < 2)
+                for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+                  if (e < zone.nb_elem())
                     for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
           }
-        else for (f = 0; f < zone.nb_faces_tot(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* inconnues scalaires */
-                for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++) for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * eb + m);
+        else for (f = 0; f < zone.nb_faces_tot(); f++)
+            for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+              if (e < zone.nb_elem()) /* inconnues scalaires */
+                for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
+                  for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * eb + m);
 
         tableau_trier_retirer_doublons(stencil);
         Matrix_tools::allocate_morse_matrix(equation().inconnue().valeurs().size_totale(), i_m.first == "vitesse" ? vitesse_->valeurs().size_totale() : cc.derivees().at(i_m.first).size_totale(), stencil, mat);
@@ -161,15 +170,19 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
 
   Matrice_Morse *m_vit = mats.count("vitesse") ? mats.at("vitesse") : NULL;
   std::vector<std::tuple<const DoubleTab *, Matrice_Morse *, int>> d_cc; //liste des derivees de cc a renseigner : couples (derivee de cc, matrice, nb de compos de la variable)
-  if (!semi_impl.count(nom_cc)) for (auto &i_m : mats) if (cc.derivees().count(i_m.first))
+  if (!semi_impl.count(nom_cc))
+    for (auto &i_m : mats)
+      if (cc.derivees().count(i_m.first))
         d_cc.push_back(std::make_tuple(&cc.derivees().at(i_m.first), i_m.second, equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size()));
 
   DoubleTrav dv_flux(N), dc_flux(2, N); //derivees du flux convectif a la face par rapport a la vitesse / au champ convecte amont / aval
 
   /* convection aux faces internes (fcl(f, 0) == 0), de Neumann_val_ext ou de Dirichlet */
-  for (f = 0; f < zone.nb_faces(); f++) if (!fcl(f, 0) || (fcl(f, 0) > 4 && fcl(f, 0) < 7))
+  for (f = 0; f < zone.nb_faces(); f++)
+    if (!fcl(f, 0) || (fcl(f, 0) > 4 && fcl(f, 0) < 7))
       {
-        for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (Mv > 1))
+        for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++)
+          for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (Mv > 1))
             {
               double v = vit(f, m) ? vit(f, m) : DBL_MIN, fac = pf(f) * fs(f) * (1. + (v * (i ? -1 : 1) > 0 ? 1. : -1) * alpha) / 2;
               dv_flux(n) += fac * (e >= 0 ? vcc(e, n) : bcc(f, n)); //f est reelle -> indice trivial dans bcc
@@ -177,13 +190,21 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
             }
 
         //second membre
-        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
+        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+          if (e < zone.nb_elem())
+            for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
               secmem(e, n) -= (i ? -1 : 1) * dv_flux(n) * vit(f, m);
         //derivees : vitesse
-        if (m_vit && fcl_v(f, 0) < 2) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
+        if (m_vit && fcl_v(f, 0) < 2)
+          for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+            if (e < zone.nb_elem())
+              for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
                 (*m_vit)(N * e + n, Mv * f + m) += (i ? -1 : 1) * dv_flux(n);
         //derivees : champ convecte
-        for (auto &&d_m_i : d_cc) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
+        for (auto &&d_m_i : d_cc)
+          for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+            if (e < zone.nb_elem())
+              for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
                 for (n = 0, m = 0, M = std::get<2>(d_m_i); n < N; n++, m += (M > 1))
                   (*std::get<1>(d_m_i))(N * e + n, M * eb + m) += (i ? -1 : 1) * dc_flux(j, n) * (*std::get<0>(d_m_i))(eb, m);
       }
@@ -227,13 +248,16 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
   /* flux aux bords */
   for (f = 0; f < zone.premiere_face_int(); f++)
     {
-      for (cc_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (M > 1))
+      for (cc_f = 0, i = 0; i < 2; i++)
+        for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (M > 1))
           cc_f(n) +=  (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * (e >= 0 ? vcc(e, n) : bcc(f, n));
 
       for (n = 0, m = 0; n < N; n++, m += (M > 1)) flux_bords_(f, n) = pf(f) * fs(f) * vit(f, m) * cc_f(n);
     }
 
-  if (cc_phases_.size()) for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (cc_phases_[n].non_nul()) /* mise a jour des champs de debit */
+  if (cc_phases_.size())
+    for (n = 0, m = 0; n < N; n++, m += (M > 1))
+      if (cc_phases_[n].non_nul()) /* mise a jour des champs de debit */
         {
           Champ_Face_PolyMAC& c_ph = ref_cast(Champ_Face_PolyMAC, cc_phases_[n].valeur());
           DoubleTab& v_ph = c_ph.valeurs();
@@ -242,7 +266,9 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
           c_ph.changer_temps(temps);
         }
 
-  if (vd_phases_.size()) for (n = 0, m = 0; n < N; n++, m += (M > 1)) if (vd_phases_[n].non_nul()) /* mise a jour des champs de vitesse debitante */
+  if (vd_phases_.size())
+    for (n = 0, m = 0; n < N; n++, m += (M > 1))
+      if (vd_phases_[n].non_nul()) /* mise a jour des champs de vitesse debitante */
         {
           const DoubleTab& alp = equation().inconnue().valeurs();
           Champ_Face_PolyMAC& c_ph = ref_cast(Champ_Face_PolyMAC, vd_phases_[n].valeur());
@@ -255,13 +281,19 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
 
   DoubleTrav G(N), v(N, D);
   double Gt;
-  if (x_phases_.size()) for (e = 0; e < zone.nb_elem(); e++) //titre : aux elements
+  if (x_phases_.size())
+    for (e = 0; e < zone.nb_elem(); e++) //titre : aux elements
       {
-        for (v = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) for (n = 0; n < N; n++) for (d = 0; d < D; d++)
+        for (v = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+          for (n = 0; n < N; n++)
+            for (d = 0; d < D; d++)
               v(n, d) += fs(f) * pf(f) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * vit(f, n) / (pe(e) * ve(e));
         for (Gt = 0, n = 0; n < N; Gt += G(n), n++) G(n) = vcc(e, n) * sqrt(zone.dot(&v(n, 0), &v(n, 0)));
-        for (n = 0; n < N; n++) if (x_phases_[n].non_nul()) x_phases_[n]->valeurs()(e) = Gt ? G(n) / Gt : 0;
+        for (n = 0; n < N; n++)
+          if (x_phases_[n].non_nul()) x_phases_[n]->valeurs()(e) = Gt ? G(n) / Gt : 0;
       }
-  if (x_phases_.size()) for (n = 0; n < N; n++) if (x_phases_[n].non_nul()) x_phases_[n]->changer_temps(temps);
+  if (x_phases_.size())
+    for (n = 0; n < N; n++)
+      if (x_phases_[n].non_nul()) x_phases_[n]->changer_temps(temps);
 }
 

@@ -57,7 +57,8 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matr
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
   int i, j, l, e, f, n, N = inco.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot();
   if (N == 1) return; //pas d'evanescence en simple phase!
-  for (auto &&n_m : matrices) if (n_m.second->nb_colonnes())
+  for (auto &&n_m : matrices)
+    if (n_m.second->nb_colonnes())
       {
         IntTrav sten(0, 2);
         sten.set_smart_resize(1);
@@ -65,21 +66,27 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matr
         std::set<int> idx;
         Matrice_Morse& mat = *n_m.second, mat2;
         /* equations aux faces : celles calculees seulement */
-        for (f = 0; f < zone.nb_faces(); f++, idx.clear()) if (fcl(f, 0) < 2)
+        for (f = 0; f < zone.nb_faces(); f++, idx.clear())
+          if (fcl(f, 0) < 2)
             {
-              for (i = N * f, n = 0; n < N; n++, i++) for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
+              for (i = N * f, n = 0; n < N; n++, i++)
+                for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
                   idx.insert(mat.get_tab2()(j) - 1);
-              for (i = N * f, n = 0; n < N; n++, i++) for (auto &&c : idx) sten.append_line(i, c);
+              for (i = N * f, n = 0; n < N; n++, i++)
+                for (auto &&c : idx) sten.append_line(i, c);
             }
           else if (n_m.first == ch.le_nom().getString()) /* CLs a valeur imposee : diagonale */
             for (n = 0, i = N * f; n < N; n++, i++) sten.append_line(i, i);
 
         /* equations aux elements */
-        for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++, l++, idx.clear())
+        for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++)
+          for (d = 0; d < D; d++, l++, idx.clear())
             {
-              for (i = N * l, n = 0; n < N; n++, i++) for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
+              for (i = N * l, n = 0; n < N; n++, i++)
+                for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
                   idx.insert(mat.get_tab2()(j) - 1);
-              for (i = N * l, n = 0; n < N; n++, i++) for (auto &&c : idx) sten.append_line(i, c);
+              for (i = N * l, n = 0; n < N; n++, i++)
+                for (auto &&c : idx) sten.append_line(i, c);
             }
         Matrix_tools::allocate_morse_matrix(mat.nb_lignes(), mat.nb_colonnes(), sten, mat2);
         mat = mat2; //pour forcer l'ordre des coefficients dans la matrice (accelere les operations ligne a ligne)
@@ -104,7 +111,8 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices,
   IntTrav maj(inco.dimension_tot(0)); //maj(i) : phase majoritaire de la ligne i
   DoubleTrav coeff(inco.dimension_tot(0), inco.line_size(), 2); //coeff(i, n, 0/1) : coeff a appliquer a l'equation existante / a l'eq. "inco = v_maj"
   Matrice_Morse& mat_diag = *matrices.at(ch.le_nom().getString());
-  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2)
+  for (f = 0; f < zone.nb_faces(); f++)
+    if (fcl(f, 0) < 2)
       {
         /* phase majoritaire : avec alpha interpole par defaut, avec alpha amont pour les ierations de SETS / ICE */
         for (a_max = 0, k = -1, n = 0; n < N; n++)
@@ -134,12 +142,16 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices,
   for (e = 0; e < zone.nb_elem_tot(); e++) /* elements : a faire D fois par element */
     {
       /* phase majoritaire : directement dans l'element */
-      for (a_max = 0, k = -1, n = 0; n < N; n++) if ((a_m = alpha(e, n)) > a_max) k = n, a_max = a_m;
-      if (k >= 0) for (i = nf_tot + D * e, d = 0; d < D; d++, i++) maj(i) = k;
+      for (a_max = 0, k = -1, n = 0; n < N; n++)
+        if ((a_m = alpha(e, n)) > a_max) k = n, a_max = a_m;
+      if (k >= 0)
+        for (i = nf_tot + D * e, d = 0; d < D; d++, i++) maj(i) = k;
       else abort();
 
       /* coeff d'evanescence */
-      for (i = nf_tot + D * e, d = 0; d < D; d++, i++) for (n = 0; n < N; n++) if (n != k && (a_m = alpha(e, n)) < a_eps)
+      for (i = nf_tot + D * e, d = 0; d < D; d++, i++)
+        for (n = 0; n < N; n++)
+          if (n != k && (a_m = alpha(e, n)) < a_eps)
             {
               coeff(i, n, 1) = mat_diag(N * i + k, N * i + k) * (coeff(i, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
               double flux = coeff(i, n, 0) * secmem(i, n) + coeff(i, n, 1) * (inco(i, n) - inco(i, k));
@@ -148,12 +160,16 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices,
     }
 
   /* lignes de matrices */
-  for (auto &&n_m : matrices) if (n_m.second->nb_colonnes())
+  for (auto &&n_m : matrices)
+    if (n_m.second->nb_colonnes())
       {
         int diag = (n_m.first == ch.le_nom().getString()); //est-on sur le bloc diagonal?
         Matrice_Morse& mat = *n_m.second;
         /* faces */
-        for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2) for (n = 0; n < N; n++) if (coeff(f, n, 0))
+        for (f = 0; f < zone.nb_faces(); f++)
+          if (fcl(f, 0) < 2)
+            for (n = 0; n < N; n++)
+              if (coeff(f, n, 0))
                 for (k = maj(f), i = mat.get_tab1()(N * f + n) - 1, j = mat.get_tab1()(N * f + k) - 1; i < mat.get_tab1()(N * f + n + 1) - 1; i++, j++)
                   {
                     assert(mat.get_tab2()(i) == mat.get_tab2()(j));
@@ -162,7 +178,10 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices,
                     mat.get_set_coeff()(i) += -coeff(f, n, 0) * mat.get_set_coeff()(i) + coeff(f, n, 1) * ((c == N * f + n) - (c == N * f + k));
                   }
         /* elements : l est l'indice de ligne */
-        for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++, l++) for (n = 0; n < N; n++) if (coeff(l, n, 0))
+        for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++)
+          for (d = 0; d < D; d++, l++)
+            for (n = 0; n < N; n++)
+              if (coeff(l, n, 0))
                 for (k = maj(l), i = mat.get_tab1()(N * l + n) - 1, j = mat.get_tab1()(N * l + k) - 1; i < mat.get_tab1()(N * l + n + 1) - 1; i++, j++)
                   {
                     assert(mat.get_tab2()(i) == mat.get_tab2()(j));

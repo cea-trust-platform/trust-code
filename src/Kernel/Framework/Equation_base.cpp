@@ -1379,7 +1379,8 @@ bool Equation_base::updateGivenFields()
   zone_Cl_dis()->Gpoint(temps_present,temps_futur);
 
   //MaJ des operateurs
-  for (int i = 0; i < nombre_d_operateurs(); i++) if (operateur(i).op_non_nul())
+  for (int i = 0; i < nombre_d_operateurs(); i++)
+    if (operateur(i).op_non_nul())
       operateur(i).l_op_base().mettre_a_jour(temps_present);
 
   // Mise a jour des sources au temps present

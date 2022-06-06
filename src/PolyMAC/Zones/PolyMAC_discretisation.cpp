@@ -523,7 +523,8 @@ void PolyMAC_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,con
   unites[0] = Nom("m");
   discretiser_champ(Motcle("champ_elem"), z.valeur(), scalaire, noms , unites, 1, 0, ch);
   DoubleTab& tab_y_p = ch->valeurs();
-  for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++) for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = -1.;
+  for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)
+    for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = -1.;
 }
 
 void PolyMAC_discretisation::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch) const

@@ -73,7 +73,8 @@ void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_2D()
   const grad_Champ_Face_PolyMAC_P0& grad = ref_cast(grad_Champ_Face_PolyMAC_P0, eq.get_champ("gradient_vitesse"));
   const DoubleTab& tab_grad = grad.valeurs();
 
-  for (n = 0 ; n<N ; n++) for (e = 0; e < ne; e++)
+  for (n = 0 ; n<N ; n++)
+    for (e = 0; e < ne; e++)
       {
         tab_rot(e, n) = tab_grad(nf_tot + D * e + 0 , 1 + n * D) - tab_grad(nf_tot + D * e + 1 , 0 + n * D); // dUy/dx - dUx/dy
       }
@@ -94,7 +95,8 @@ void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_3D()
   const grad_Champ_Face_PolyMAC_P0& grad = ref_cast(grad_Champ_Face_PolyMAC_P0, eq.get_champ("gradient_vitesse"));
   const DoubleTab& tab_grad = grad.valeurs();
 
-  for (n = 0 ; n<N ; n++) for (e = 0; e < ne; e++)
+  for (n = 0 ; n<N ; n++)
+    for (e = 0; e < ne; e++)
       {
         tab_rot(e, 0 + n * D) = tab_grad(nf_tot + D * e + 1 , 2 + n * D) - tab_grad(nf_tot + D * e + 2 , 1 + n * D); // dUz/dy - dUy/dz
         tab_rot(e, 1 + n * D) = tab_grad(nf_tot + D * e + 2 , 0 + n * D) - tab_grad(nf_tot + D * e + 0 , 2 + n * D); // dUx/dz - dUz/dx

@@ -432,7 +432,8 @@ void  T_It_VDF_Elem<_TYPE_>::modifier_flux() const
         {
           const Operateur_base& op=op_base.valeur();
           is_rho_u=0;
-          if (sub_type(Op_Conv_VDF_base,op)) if (ref_cast(Op_Conv_VDF_base,op).vitesse().le_nom()=="rho_u") is_rho_u = 1;
+          if (sub_type(Op_Conv_VDF_base,op))
+            if (ref_cast(Op_Conv_VDF_base,op).vitesse().le_nom()=="rho_u") is_rho_u = 1;
         }
       double Cp_=0,rho_=0;
       const int nb_faces_bords = la_zone_vdf.nb_faces_bord();
@@ -527,8 +528,10 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const BC& cl, const int ndeb, co
           const int elem1 = elem(face,0), elem2 = elem(face,1);
           flux_evaluateur.flux_face(donnee, face, cl, ndeb,flux); //Generic
 
-          if ( elem1 > -1) for (int k = 0; k < ncomp; k++) flux_bords(face,k) += flux[k];
-          if ( elem2 > -1) for (int k = 0; k < ncomp; k++) flux_bords(face,k) -= flux[k];
+          if ( elem1 > -1)
+            for (int k = 0; k < ncomp; k++) flux_bords(face,k) += flux[k];
+          if ( elem2 > -1)
+            for (int k = 0; k < ncomp; k++) flux_bords(face,k) -= flux[k];
         }
     }
 }
@@ -544,8 +547,12 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Periodique& cl, const int 
         {
           const int elem1 = elem(face,0), elem2 = elem(face,1);
           flux_evaluateur.flux_face(donnee, face, cl, ndeb,flux);
-          if ( elem1 > -1 ) for (int k = 0; k < ncomp; k++) if ( face < (ndeb + frontiere_dis.nb_faces()/2) ) flux_bords(face,k) += flux[k];
-          if ( elem2 > -1 ) for (int k = 0; k < ncomp; k++) if ( (ndeb + frontiere_dis.nb_faces()/2) <= face ) flux_bords(face,k) -= flux[k];
+          if ( elem1 > -1 )
+            for (int k = 0; k < ncomp; k++)
+              if ( face < (ndeb + frontiere_dis.nb_faces()/2) ) flux_bords(face,k) += flux[k];
+          if ( elem2 > -1 )
+            for (int k = 0; k < ncomp; k++)
+              if ( (ndeb + frontiere_dis.nb_faces()/2) <= face ) flux_bords(face,k) -= flux[k];
         }
     }
 }
@@ -564,8 +571,10 @@ void T_It_VDF_Elem<_TYPE_>::calculer_flux_bord_(const Echange_externe_impose& cl
           int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face);
           const int elem1 = elem(face,0), elem2 = elem(face,1);
           flux_evaluateur.flux_face(donnee, boundary_index,face,local_face, cl, ndeb,flux);
-          if ( elem1 > -1) for (int k = 0; k < ncomp; k++) flux_bords(face,k) += flux[k];
-          if ( elem2 > -1) for (int k = 0; k < ncomp; k++) flux_bords(face,k) -= flux[k];
+          if ( elem1 > -1)
+            for (int k = 0; k < ncomp; k++) flux_bords(face,k) += flux[k];
+          if ( elem2 > -1)
+            for (int k = 0; k < ncomp; k++) flux_bords(face,k) -= flux[k];
         }
     }
 }
@@ -654,8 +663,10 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const BC& cl, const int 
         {
           const int elem1 = elem(face,0), elem2 = elem(face,1);
           flux_evaluateur.coeffs_face(face,ndeb, cl, aii, ajj); // Generic code
-          if ( elem1 > -1) for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,elem1*ncomp+i) += aii[i];
-          if ( elem2 > -1) for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,elem2*ncomp+i) += ajj[i];
+          if ( elem1 > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,elem1*ncomp+i) += aii[i];
+          if ( elem2 > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,elem2*ncomp+i) += ajj[i];
         }
     }
 }
@@ -695,8 +706,10 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_(const Echange_externe_im
         {
           const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face), elem1 = elem(face,0), elem2 = elem(face,1);
           flux_evaluateur.coeffs_face(boundary_index,face,local_face,ndeb, cl, aii, ajj);
-          if ( elem1 > -1) for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,elem1*ncomp+i) += aii[i];
-          if ( elem2 > -1) for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,elem2*ncomp+i) += ajj[i];
+          if ( elem1 > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,elem1*ncomp+i) += aii[i];
+          if ( elem2 > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,elem2*ncomp+i) += ajj[i];
         }
     }
 }
@@ -778,8 +791,10 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const BC& cl, co
         {
           const int elem1 = elem(face, 0), elem2 = elem(face, 1);
           flux_evaluateur.coeffs_face_bloc_vitesse(inco, face, cl, ndeb,aef);
-          if ( elem1 > -1) for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,face*ncomp+i) += aef[i];
-          if ( elem2 > -1) for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,face*ncomp+i) -= aef[i];
+          if ( elem1 > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,face*ncomp+i) += aef[i];
+          if ( elem2 > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,face*ncomp+i) -= aef[i];
         }
     }
 }
@@ -794,8 +809,12 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Periodique
         {
           const int elem1 = elem(face, 0), elem2 = elem(face, 1);
           flux_evaluateur.coeffs_face_bloc_vitesse(inco, face, cl, ndeb,aef);
-          if ( elem1 > -1) for (int i = 0; i < ncomp; i++) if ( face < (ndeb + frontiere_dis.nb_faces()/2) ) matrice(elem1*ncomp+i,face*ncomp+i) += aef[i];
-          if ( elem2 > -1) for (int i = 0; i < ncomp; i++) if ( (ndeb + frontiere_dis.nb_faces()/2) <= face ) matrice(elem2*ncomp+i,face*ncomp+i) -= aef[i];
+          if ( elem1 > -1)
+            for (int i = 0; i < ncomp; i++)
+              if ( face < (ndeb + frontiere_dis.nb_faces()/2) ) matrice(elem1*ncomp+i,face*ncomp+i) += aef[i];
+          if ( elem2 > -1)
+            for (int i = 0; i < ncomp; i++)
+              if ( (ndeb + frontiere_dis.nb_faces()/2) <= face ) matrice(elem2*ncomp+i,face*ncomp+i) -= aef[i];
         }
     }
 }
@@ -812,8 +831,10 @@ void T_It_VDF_Elem<_TYPE_>::ajouter_contribution_bords_vitesse_(const Echange_ex
         {
           const int local_face = la_zone.valeur().front_VF(boundary_index).num_local_face(face), elem1 = elem(face, 0), elem2 = elem(face, 1);
           flux_evaluateur.coeffs_face_bloc_vitesse(inco, boundary_index, face, local_face, cl, ndeb,aef);
-          if ( elem1 > -1) for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,face*ncomp+i) += aef[i];
-          if ( elem2 > -1) for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,face*ncomp+i) -= aef[i]; // BUG FIX !! c'etait elem1 et pas elem 2!!
+          if ( elem1 > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem1*ncomp+i,face*ncomp+i) += aef[i];
+          if ( elem2 > -1)
+            for (int i = 0; i < ncomp; i++) matrice(elem2*ncomp+i,face*ncomp+i) -= aef[i]; // BUG FIX !! c'etait elem1 et pas elem 2!!
         }
     }
 }

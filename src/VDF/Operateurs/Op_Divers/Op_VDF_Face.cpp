@@ -67,7 +67,8 @@ void Op_VDF_Face::dimensionner(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zo
 
   // on balaye les faces pour dimensionner tab1 et tab2
   tab1(0) = 1;
-  for (int num_face = ndeb; num_face < nfin; num_face++) for (int k = 0; k < nb_comp; k++) tab1(num_face*nb_comp+1+k) = rang_voisin(num_face) + tab1(num_face*nb_comp+k);
+  for (int num_face = ndeb; num_face < nfin; num_face++)
+    for (int k = 0; k < nb_comp; k++) tab1(num_face*nb_comp+1+k) = rang_voisin(num_face) + tab1(num_face*nb_comp+k);
 
   la_matrice.dimensionner(nfin*nb_comp,tab1(nfin*nb_comp)-1);
 

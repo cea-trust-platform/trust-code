@@ -58,7 +58,8 @@ void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
   int i, j, e, n, N = inco.line_size();
   if (N == 1) return;
   std::set<int> idx;
-  for (auto &&n_m : matrices) if (n_m.first.find("/") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
+  for (auto &&n_m : matrices)
+    if (n_m.first.find("/") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
       {
         Matrice_Morse& mat = *n_m.second, mat2;
         const DoubleTab& dep = equation().probleme().get_champ(n_m.first).valeurs();
@@ -66,12 +67,17 @@ void Flux_interfacial_PolyMAC::dimensionner_blocs(matrices_t matrices, const tab
         IntTrav sten(0, 2);
         sten.set_smart_resize(1);
         if (n_m.first == "temperature" || n_m.first == "pression" || n_m.first == "alpha" || n_m.first == "interfacial_area" ) /* temperature/pression: dependance locale */
-          for (e = 0; e < zone.nb_elem(); e++) for (n = 0; n < N; n++) for (m = 0; m < M; m++) sten.append_line(N * e + n, M * e + m);
-        else if (mat.nb_colonnes()) for (e = 0; e < zone.nb_elem(); e++) /* autres variables: on peut melanger les composantes*/
+          for (e = 0; e < zone.nb_elem(); e++)
+            for (n = 0; n < N; n++)
+              for (m = 0; m < M; m++) sten.append_line(N * e + n, M * e + m);
+        else if (mat.nb_colonnes())
+          for (e = 0; e < zone.nb_elem(); e++) /* autres variables: on peut melanger les composantes*/
             {
-              for (idx.clear(), n = 0, i = N * e; n < N; n++, i++) for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
+              for (idx.clear(), n = 0, i = N * e; n < N; n++, i++)
+                for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
                   idx.insert(mat.get_tab2()(j) - 1); //idx : ensemble des colonnes dont depend au moins une ligne des N composantes en e
-              for (n = 0, i = N * e; n < N; n++, i++) for (auto &&x : idx) sten.append_line(i, x); //ajout de cette depedance a toutes les lignes
+              for (n = 0, i = N * e; n < N; n++, i++)
+                for (auto &&x : idx) sten.append_line(i, x); //ajout de cette depedance a toutes les lignes
             }
         else continue;
         Matrix_tools::allocate_morse_matrix(N * zone.nb_elem_tot(), M * nc, sten, mat2);
@@ -121,7 +127,8 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   DoubleTrav sec_m(alpha); //residus
   std::map<std::string, Matrice_Morse> mat_m_stockees;
   matrices_t mat_m; //derivees
-  for (auto &&n_m : matrices) if (n_m.first.find("/") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
+  for (auto &&n_m : matrices)
+    if (n_m.first.find("/") == std::string::npos) /* pour ignorer les inconnues venant d'autres problemes */
       {
         Matrice_Morse& dst = mat_m_stockees[n_m.first], &src = *n_m.second;
         dst.get_set_tab1().ref_array(src.get_set_tab1()); // memes stencils que celui de l'equation courante
@@ -133,10 +140,12 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
   const Masse_Multiphase& eq_m = pbm.eq_masse;
   for (i = 0; i < eq_m.nombre_d_operateurs(); i++) /* tous les operateurs */
     eq_m.operateur(i).l_op_base().ajouter_blocs(mat_m, sec_m, semi_impl);
-  for (i = 0; i < eq_m.sources().size(); i++) if (!sub_type(Flux_interfacial_PolyMAC, eq_m.sources()(i).valeur())) /* toutes les sources sauf le flux interfacial */
+  for (i = 0; i < eq_m.sources().size(); i++)
+    if (!sub_type(Flux_interfacial_PolyMAC, eq_m.sources()(i).valeur())) /* toutes les sources sauf le flux interfacial */
       eq_m.sources()(i).valeur().ajouter_blocs(mat_m, sec_m, semi_impl);
   std::vector<std::array<Matrice_Morse *, 2>> vec_m; //vecteur "matrice source, matrice de destination"
-  for (auto &&n_m : matrices) if (n_m.first.find("/") == std::string::npos && mat_m[n_m.first]->get_tab1().size() > 1) vec_m.push_back({{ mat_m[n_m.first], n_m.second }});
+  for (auto &&n_m : matrices)
+    if (n_m.first.find("/") == std::string::npos && mat_m[n_m.first]->get_tab1().size() > 1) vec_m.push_back({{ mat_m[n_m.first], n_m.second }});
 
   /* elements */
   //coefficients et plein de derivees...
@@ -146,13 +155,17 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
       //  double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e, 0), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
       // PL ToDo: Uniformiser diametre_hydraulique_elem (vecteur) pour C3D et F5
       double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = zone.diametre_hydraulique_elem()(e), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
-      for (nv = 0, d = 0; d < D; d++) for (n = 0; n < N; n++) for (k = 0 ; k<N ; k++) nv(n, k) += std::pow( pvit(nf_tot + D * e + d, n) - ((n!=k) ? pvit(nf_tot + D * e + d, k) : 0) , 2); // nv(n,n) = ||v(n)||, nv(n, k!=n) = ||v(n)-v(k)||
-      for (n = 0; n < N; n++) for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
+      for (nv = 0, d = 0; d < D; d++)
+        for (n = 0; n < N; n++)
+          for (k = 0 ; k<N ; k++) nv(n, k) += std::pow( pvit(nf_tot + D * e + d, n) - ((n!=k) ? pvit(nf_tot + D * e + d, k) : 0) , 2); // nv(n,n) = ||v(n)||, nv(n, k!=n) = ||v(n)-v(k)||
+      for (n = 0; n < N; n++)
+        for (k = 0 ; k<N ; k++) nv(n, k) = std::max(sqrt(nv(n, k)), dv_min);
       //coeffs d'echange vers l'interface (explicites)
       correlation_fi.coeffs(dh, &alpha(e, 0), &temp(e, 0), press(e, 0), &nv(0, 0),
                             &lambda(!cL * e, 0), &mu(!cM * e, 0), &rho(!cR * e, 0), &Cp(!cCp * e, 0), e, hi, dT_hi, da_hi, dP_hi);
 
-      for (k = 0; k < N; k++) for (l = k + 1; l < N; l++)
+      for (k = 0; k < N; k++)
+        for (l = k + 1; l < N; l++)
           if (milc.has_saturation(k, l)) //flux phase k <-> phase l si saturation
             {
               Saturation_base& sat = milc.get_saturation(k, l);
@@ -187,11 +200,16 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                   for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * G;
                   if (n_lim < 0) /* G par limite thermique */
                     {
-                      if (Ma) for (i = 0; i < 2; i++) for (n = 0; n < N; n++)  //derivees en alpha
+                      if (Ma)
+                        for (i = 0; i < 2; i++)
+                          for (n = 0; n < N; n++)  //derivees en alpha
                             (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * da_G(n);
-                      if (Mt) for (i = 0; i < 2; i++) for (n = 0; n < N; n++)  //derivees en T
+                      if (Mt)
+                        for (i = 0; i < 2; i++)
+                          for (n = 0; n < N; n++)  //derivees en T
                             (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * dT_G(n);
-                      if (Mp) for (i = 0; i < 2; i++) //derivees en p
+                      if (Mp)
+                        for (i = 0; i < 2; i++) //derivees en p
                           (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * dP_G;
                     }
                   else for (auto &s_d : vec_m) /* G par evanescence */
@@ -206,13 +224,19 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
                   double Tc = c ? Tl : Tk, hc = c ? hl : hk, dT_hc = c ? dTl_hl : dTk_hk, dP_hc = c ? dP_hl : dP_hk;
                   for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * (s_c * hi(n_c, n_d) * (Tc - Ts) + (c || !q_pi ? 0 : (*q_pi)(e, k, l)) + G * hc);
                   /* derivees (y compris celles en G, sauf dans le cas limite)*/
-                  if (Ma) for (i = 0; i < 2; i++) for (n = 0; n < N; n++) //derivees en alpha
+                  if (Ma)
+                    for (i = 0; i < 2; i++)
+                      for (n = 0; n < N; n++) //derivees en alpha
                         (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * da_hi(n_c, n_d, n) * (Tc - Ts) + (n_lim < 0) * da_G(n) * hc);
-                  if (Mt) for (i = 0; i < 2; i++) for (n = 0; n < N; n++) //derivees en T
+                  if (Mt)
+                    for (i = 0; i < 2; i++)
+                      for (n = 0; n < N; n++) //derivees en T
                         (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * (dT_hi(n_c, n_d, n) * (Tc - Ts) + (n == n_c) * hi(n_c, n_d)) + (n_lim < 0) * dT_G(n) * hc + G * (n == n_c) * dT_hc);
-                  if (Mp) for (i = 0; i < 2; i++) //derivees en p
+                  if (Mp)
+                    for (i = 0; i < 2; i++) //derivees en p
                       (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * (s_c * (dP_hi(n_c, n_d) * (Tc - Ts) - hi(n_c, n_d) * dP_Ts) + (n_lim < 0) * dP_G * hc + G * dP_hc);
-                  if (n_lim >= 0) for (auto &s_d : vec_m) /* derivees de G dans le cas evanescent */
+                  if (n_lim >= 0)
+                    for (auto &s_d : vec_m) /* derivees de G dans le cas evanescent */
                       for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)
                         for (col = s_d[0]->get_tab2()(j) - 1, x = -s_d[0]->get_coeff()(j), i = 0; i < 2; i++)
                           (*s_d[1])(N * e + (i ? l : k), col) += (i ? -1 : 1) * hc * sgn * x;
@@ -260,7 +284,8 @@ void Flux_interfacial_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& sec
               //flux sortant de la phase k : hm * (Tk - Tl)
               double hm = 1. / (1. / hi(k, l) + 1. / hi(l, k)), Tk = temp(e, k), Tl = temp(e, l);
               for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * hm * (Tk - Tl);
-              if (Mt) for (i = 0; i < 2; i++) //juste des derivees en T
+              if (Mt)
+                for (i = 0; i < 2; i++) //juste des derivees en T
                   {
                     (*Mt)(N * e + (i ? l : k), N * e + k) += vol * (i ? -1 : 1) * hm;
                     (*Mt)(N * e + (i ? l : k), N * e + l) += vol * (i ? 1 : -1) * hm;

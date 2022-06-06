@@ -74,14 +74,16 @@ void Terme_Boussinesq_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab
   // Verifie la validite de T0:
   check();
   int e, i, f, n, calc_cl = !sub_type(Zone_PolyMAC_P0, zone), nb_dim = param.line_size(), cR = (rho.dimension_tot(0) == 1), d, D = dimension, nf_tot = zone.nb_faces_tot();
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; (calc_cl || fcl(f, 0) < 2) && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
+  for (f = 0; f < zone.nb_faces(); f++)
+    for (i = 0; (calc_cl || fcl(f, 0) < 2) && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
       {
         double coeff = 0;
         for (n = 0; n < nb_dim; n++) coeff += (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));
         secmem(f) += coeff * zone.dot(&nf(f, 0), g.addr()) / fs(f) * vfd(f, i) * pf(f);
       }
 
-  if (sub_type(Zone_PolyMAC_P0, zone)) for (e = 0; e < zone.nb_elem_tot(); e++)
+  if (sub_type(Zone_PolyMAC_P0, zone))
+    for (e = 0; e < zone.nb_elem_tot(); e++)
       {
         double coeff = 0;
         for (n = 0; n < nb_dim; n++) coeff += (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));

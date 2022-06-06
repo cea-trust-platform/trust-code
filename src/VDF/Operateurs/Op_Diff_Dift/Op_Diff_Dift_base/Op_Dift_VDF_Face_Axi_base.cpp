@@ -421,14 +421,16 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_contribution_aretes_bords(const DoubleVe
               {
                 // XXX j'ai supprime le if
                 const double flux1 = (d_visco_lam+ d_visco_turb)*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
-                for (int l = tab1[fac3]-1; l < tab1[fac3+1]-1; l++) if (tab2[l]-1 == fac3) coeff[l] += signe*flux1;
+                for (int l = tab1[fac3]-1; l < tab1[fac3+1]-1; l++)
+                  if (tab2[l]-1 == fac3) coeff[l] += signe*flux1;
               }
             else if (ori1b == 1) // bord d'equation teta = cte
               {
                 if (ori3b == 0)
                   {
                     const double flux2 = (d_visco_lam + d_visco_turb)*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
-                    for (int l = tab1[fac3]-1; l < tab1[fac3+1]-1; l++) if (tab2[l]-1 == fac3) coeff[l] += signe*flux2;
+                    for (int l = tab1[fac3]-1; l < tab1[fac3+1]-1; l++)
+                      if (tab2[l]-1 == fac3) coeff[l] += signe*flux2;
 
                     // Termes supplementaires dans le laplacien en axi : Ils sont integres comme des termes sources
                     const double coef_laplacien_axi = 0.5*(d_visco_lam + d_visco_turb);
@@ -442,13 +444,15 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_contribution_aretes_bords(const DoubleVe
                 else if (ori3b == 2) // flux de tau23 a travers le bord
                   {
                     const double flux3 = (d_visco_lam + d_visco_turb)*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
-                    for (int l = tab1[fac3]-1; l < tab1[fac3+1]-1; l++) if (tab2[l]-1 == fac3) coeff[l] += signe*flux3;
+                    for (int l = tab1[fac3]-1; l < tab1[fac3+1]-1; l++)
+                      if (tab2[l]-1 == fac3) coeff[l] += signe*flux3;
                   }
               }
             else // (ori1 == 2) bord d'equation Z = cte
               {
                 const double flux4 = (d_visco_lam + d_visco_turb)*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
-                for (int l = tab1[fac3]-1; l < tab1[fac3+1]-1; l++) if (tab2[l]-1 == fac3) coeff[l] += signe*flux4;
+                for (int l = tab1[fac3]-1; l < tab1[fac3+1]-1; l++)
+                  if (tab2[l]-1 == fac3) coeff[l] += signe*flux4;
               }
             break;
           }

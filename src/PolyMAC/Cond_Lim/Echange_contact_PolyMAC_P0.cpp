@@ -86,16 +86,22 @@ void Echange_contact_PolyMAC_P0::init_fs_dist() const
   f_dist.resize(nf_tot);
 
   std::set<int> s_som, s_o_som; //sommets de chaque cote
-  for (i = 0; i <   nf_tot; i++) for (f =   fvf->num_face(i), j = 0; j <   f_s.dimension(1) && (s =   f_s(f, j)) >= 0; j++)   s_som.insert(s);
-  for (i = 0; i < o_nf_tot; i++) for (f = o_fvf->num_face(i), j = 0; j < o_f_s.dimension(1) && (s = o_f_s(f, j)) >= 0; j++) s_o_som.insert(s);
+  for (i = 0; i <   nf_tot; i++)
+    for (f =   fvf->num_face(i), j = 0; j <   f_s.dimension(1) && (s =   f_s(f, j)) >= 0; j++)   s_som.insert(s);
+  for (i = 0; i < o_nf_tot; i++)
+    for (f = o_fvf->num_face(i), j = 0; j < o_f_s.dimension(1) && (s = o_f_s(f, j)) >= 0; j++) s_o_som.insert(s);
   std::vector<int> som(s_som.begin(), s_som.end()), o_som(s_o_som.begin(), s_o_som.end()); //en vecteur
   int ns_tot = som.size(), o_ns_tot = o_som.size();
 
   DoubleTrav xvf(nf_tot, D), o_xvf(o_nf_tot, D), xsf(ns_tot, D), o_xsf(o_ns_tot, D); //positions locales/distantes -> pour calcul de correspondance
-  for (i = 0; i <   nf_tot; i++) for (d = 0; d < D; d++)   xvf(i, d) =   xv(  fvf->num_face(i), d);
-  for (i = 0; i < o_nf_tot; i++) for (d = 0; d < D; d++) o_xvf(i, d) = o_xv(o_fvf->num_face(i), d);
-  for (i = 0; i <   ns_tot; i++) for (d = 0; d < D; d++)   xsf(i, d) =   xs(  som[i], d);
-  for (i = 0; i < o_ns_tot; i++) for (d = 0; d < D; d++) o_xsf(i, d) = o_xs(o_som[i], d);
+  for (i = 0; i <   nf_tot; i++)
+    for (d = 0; d < D; d++)   xvf(i, d) =   xv(  fvf->num_face(i), d);
+  for (i = 0; i < o_nf_tot; i++)
+    for (d = 0; d < D; d++) o_xvf(i, d) = o_xv(o_fvf->num_face(i), d);
+  for (i = 0; i <   ns_tot; i++)
+    for (d = 0; d < D; d++)   xsf(i, d) =   xs(  som[i], d);
+  for (i = 0; i < o_ns_tot; i++)
+    for (d = 0; d < D; d++) o_xsf(i, d) = o_xs(o_som[i], d);
 
 #ifdef MEDCOUPLING_
   MCAuto<DataArrayDouble> fdad(DataArrayDouble::New()), o_fdad(DataArrayDouble::New()), sdad(DataArrayDouble::New()), o_sdad(DataArrayDouble::New());

@@ -121,7 +121,8 @@ void Fluide_reel_base::mettre_a_jour(double t)
   int i, Ni = mu.valeurs().dimension_tot(0);
   DoubleTab& tab_Cp = Cp.valeurs(), &tab_mu = mu.valeurs(), &tab_lambda = lambda.valeurs(), &tab_nu = nu.valeurs(), &tab_alpha = alpha.valeurs();
   const DoubleTab& tab_rho = masse_volumique().valeurs();
-  if (t > tp || first_maj_) for (i = 0; i < Ni; i++) /* maj uniquement en fin de pas de temps */
+  if (t > tp || first_maj_)
+    for (i = 0; i < Ni; i++) /* maj uniquement en fin de pas de temps */
       {
         const double T = (T_ref_ > 0) ? T_ref_ : temp(i, id_composite), P = (P_ref_ > 0) ? P_ref_ : pres(i);
         tab_Cp(i) = cp_(T, P);
@@ -162,7 +163,8 @@ bool Fluide_reel_base::initTimeStep(double dt)
 
   /* champs dont on doit creer des cases */
   std::vector<Champ_Inc_base *> vch = { &ref_cast(Champ_Inc_base, rho.valeur()), &ref_cast(Champ_Inc_base, e_int.valeur()), &ref_cast(Champ_Inc_base, h.valeur()) };
-  for (auto &&pch : vch) for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
+  for (auto &&pch : vch)
+    for (int i = 1; i <= sch.nb_valeurs_futures(); i++)
       pch->changer_temps_futur(sch.temps_futur(i), i), pch->futur(i) = pch->valeurs();
   return true;
 }
@@ -207,7 +209,8 @@ void Fluide_reel_base::calculer_enthalpie(const Objet_U& obj, DoubleTab& val, Do
   for (i = 0; i < Nb; i++) bval(i) = hc(bT(i, n), bp(i, m));
 
   DoubleTab  *dp_h = incomp ? NULL : &deriv["pression"], &dT_h = deriv["temperature"];//une seule derivee en incompressible
-  if (dp_h) for (dp_h->resize(Ni, 1), i = 0; i < Ni; i++) (*dp_h)(i) = fl.dP_h_(T(i, n), p(i, m));
+  if (dp_h)
+    for (dp_h->resize(Ni, 1), i = 0; i < Ni; i++) (*dp_h)(i) = fl.dP_h_(T(i, n), p(i, m));
   for (dT_h.resize(Ni, 1), i = 0; i < Ni; i++) dT_h(i) = incomp ? Cp0 : fl.dT_h_(T(i, n), p(i, m));
 }
 

@@ -178,7 +178,8 @@ void QDM_Multiphase::mettre_a_jour(double temps)
   pression_pa().mettre_a_jour(temps);
 
   int i, j, n, N = ref_cast(Pb_Multiphase, probleme()).nb_phases(), d, D = dimension;
-  for (n = 0; n < N; n++) if (vit_phases_[n].non_nul())
+  for (n = 0; n < N; n++)
+    if (vit_phases_[n].non_nul())
       {
         vit_phases_[n].mettre_a_jour(temps);
         DoubleTab_parts psrc(inconnue().valeurs()), pdst(vit_phases_[n].valeurs());
@@ -188,7 +189,8 @@ void QDM_Multiphase::mettre_a_jour(double temps)
             if (src.line_size() == N) /* une colonne par composante */
               for (j = 0; j < src.dimension_tot(0); j++) dst(j) = src(j, n);
             else if (src.line_size() == N * D) /* stockage N * d + n */
-              for (j = 0; j < src.dimension_tot(0); j++) for (d = 0; d < D; d++)
+              for (j = 0; j < src.dimension_tot(0); j++)
+                for (d = 0; d < D; d++)
                   dst(j, d, 0) = src(j, d, n);
             else abort(); //on ne connait pas
           }
@@ -197,18 +199,21 @@ void QDM_Multiphase::mettre_a_jour(double temps)
   if (grad_u.non_nul()) grad_u.mettre_a_jour(temps);
   if (la_vorticite.non_nul()) la_vorticite.mettre_a_jour(temps);
   if (Taux_cisaillement.non_nul()) Taux_cisaillement.mettre_a_jour(temps);
-  for (n = 0; n < N; n++) if (grad_vit_phases_[n].non_nul())
+  for (n = 0; n < N; n++)
+    if (grad_vit_phases_[n].non_nul())
       {
         grad_vit_phases_[n].mettre_a_jour(temps);
         DoubleTab_parts psrc(grad_u->valeurs()), pdst(grad_vit_phases_[n].valeurs());
         int copied = 0;
-        for (i = 0; i < psrc.size(); i++) for (j = 0; j < pdst.size(); j++)
+        for (i = 0; i < psrc.size(); i++)
+          for (j = 0; j < pdst.size(); j++)
             {
               DoubleTab& src = psrc[i], &dst = pdst[j];
               if (src.line_size() == N * D * D && dst.line_size() == D * D) /* une colonne par composante */
                 {
                   for (int k = 0; k < src.dimension_tot(0); k++)
-                    for (int dU = 0; dU < D; dU++) for (int dX = 0; dX < D; dX++)
+                    for (int dU = 0; dU < D; dU++)
+                      for (int dX = 0; dX < D; dX++)
                         dst(k, dX + D * dU) = src(k, dX, dU + n * D);// Les lignes et les colonnes sont inversees quand on passe dans DoubleTab_parts
                   copied += 1;
                 }
@@ -296,8 +301,10 @@ void QDM_Multiphase::completer()
 void QDM_Multiphase::creer_champ(const Motcle& motlu)
 {
   Navier_Stokes_std::creer_champ(motlu);
-  if (Taux_cisaillement.non_nul()) if (!grad_u.non_nul()) creer_champ("gradient_vitesse");
-  if (la_vorticite.non_nul())      if (!grad_u.non_nul()) creer_champ("gradient_vitesse");
+  if (Taux_cisaillement.non_nul())
+    if (!grad_u.non_nul()) creer_champ("gradient_vitesse");
+  if (la_vorticite.non_nul())
+    if (!grad_u.non_nul()) creer_champ("gradient_vitesse");
   int i = noms_vit_phases_.rang(motlu);
   if (i >= 0 && !(vit_phases_[i].non_nul()))
     {
@@ -311,7 +318,8 @@ void QDM_Multiphase::creer_champ(const Motcle& motlu)
       Noms noms(D * D), unites(D * D);
       std::vector<Nom> composantsVitesse({Nom("dU"), Nom("dV"), Nom("dW")});
       std::vector<Nom> composantsDerivee({Nom("dx"), Nom("dy"), Nom("dz")});
-      for (int dU = 0 ; dU< D ; dU++) for (int dX = 0 ; dX < D ; dX++)
+      for (int dU = 0 ; dU< D ; dU++)
+        for (int dX = 0 ; dX < D ; dX++)
           {
             noms[ D * dU + dX]=Nom(composantsVitesse[dU] + "/" + composantsDerivee[dX]);
             unites[ D * dU + dX] = Nom("m2/s");
@@ -364,6 +372,10 @@ void QDM_Multiphase::update_y_plus(const DoubleTab& tab)
 {
   if (!y_plus.non_nul()) Process::exit(que_suis_je() + " : y_plus must be initialised so it can be updated") ;
   DoubleTab& tab_y_p = y_plus->valeurs();
-  if (tab.nb_dim()==2) for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++) for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,n);
-  if (tab.nb_dim()==3) for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++) for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,0,n);
+  if (tab.nb_dim()==2)
+    for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)
+      for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,n);
+  if (tab.nb_dim()==3)
+    for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)
+      for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = tab(i,0,n);
 }

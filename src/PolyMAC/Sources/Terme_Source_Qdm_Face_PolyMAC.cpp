@@ -67,19 +67,26 @@ void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab
 
   /* contributions aux faces (par chaque voisin), aux elems */
   DoubleTrav a_f(N), rho_f(N), val_f(N), rho_m(2);
-  for (a_f = 1, f = 0; f < zone.nb_faces(); f++) if (!fcl(f, 0)) //face interne
+  for (a_f = 1, f = 0; f < zone.nb_faces(); f++)
+    if (!fcl(f, 0)) //face interne
       {
         if (1)
           {
-            for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) for (d = 0; d < D; d++)
+            for (i = 0; i < 2; i++)
+              for (e = f_e(f, i), n = 0; n < N; n++)
+                for (d = 0; d < D; d++)
                   secmem(f, n) += vfd(f, i) * pf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
           }
 
         if (0)
           {
-            if (alp) for (a_f = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) a_f(n) += vfd(f, i) / vf(f) * (*alp)(e, n);
-            for (rho_m = 0, i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++) rho_m(i) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n);
-            for (i = 0; i < 2; i++) for (e = f_e(f, i), n = 0; n < N; n++)
+            if (alp)
+              for (a_f = 0, i = 0; i < 2; i++)
+                for (e = f_e(f, i), n = 0; n < N; n++) a_f(n) += vfd(f, i) / vf(f) * (*alp)(e, n);
+            for (rho_m = 0, i = 0; i < 2; i++)
+              for (e = f_e(f, i), n = 0; n < N; n++) rho_m(i) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n);
+            for (i = 0; i < 2; i++)
+              for (e = f_e(f, i), n = 0; n < N; n++)
                 {
                   double vnf = 0;
                   for (d = 0; d < D; d++) vnf += nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
@@ -90,11 +97,16 @@ void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab
                 }
           }
       }
-    else if (calc_cl || fcl(f, 0) < 2) for (e = f_e(f, 0), n = 0; n < N; n++) for (d = 0; d < D; d++) //face de bord non imposee -> avec le (alpha rho) de la maille
+    else if (calc_cl || fcl(f, 0) < 2)
+      for (e = f_e(f, 0), n = 0; n < N; n++)
+        for (d = 0; d < D; d++) //face de bord non imposee -> avec le (alpha rho) de la maille
           secmem(f, n) += pf(f) * vf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
 
   /* en PolyMAC V2 : partie aux elements */
-  if (sub_type(Zone_PolyMAC_P0, zone)) for (e = 0; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++) for (n = 0; n < N; n++)
+  if (sub_type(Zone_PolyMAC_P0, zone))
+    for (e = 0; e < zone.nb_elem_tot(); e++)
+      for (d = 0; d < D; d++)
+        for (n = 0; n < N; n++)
           secmem(nf_tot + D * e + d, n) += pe(e) * ve(e) * (alp ? rho(!cR * e, n) * (*alp)(e, n) : 1) * vals(!cS * e, N * d + n);
 }
 

@@ -81,7 +81,8 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::mettre_a_jour(double temps)
   Op_Diff_PolyMAC_P0_Face::mettre_a_jour(temps);
 
   int N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases();
-  for (int n = 0; n < N; n++) if (nu_t_post_[n].non_nul()) //viscosite turbulente : toujours scalaire
+  for (int n = 0; n < N; n++)
+    if (nu_t_post_[n].non_nul()) //viscosite turbulente : toujours scalaire
       {
         const DoubleTab& rho = equation().milieu().masse_volumique().passe() ;
         DoubleTab& val = nu_t_post_[n]->valeurs();
@@ -102,11 +103,16 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::modifier_nu(DoubleTab& mu) const
   DoubleTrav nu_t(nl, N); //viscosite turbulente : toujours scalaire
   ref_cast(Viscosite_turbulente_base, corr.valeur()).eddy_viscosity(nu_t); //remplissage par la correlation
   if (mu.nb_dim() == 2) //nu scalaire
-    for (i = 0; i < nl; i++) for (n = 0; n < N; n++) mu(i, n) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t(i, n);
+    for (i = 0; i < nl; i++)
+      for (n = 0; n < N; n++) mu(i, n) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t(i, n);
   else if (mu.nb_dim() == 3) //nu anisotrope diagonal
-    for (i = 0; i < nl; i++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) mu(i, n, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t(i, n);
+    for (i = 0; i < nl; i++)
+      for (n = 0; n < N; n++)
+        for (d = 0; d < D; d++) mu(i, n, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t(i, n);
   else if (mu.nb_dim() == 4) //nu anisotrope complet
-    for (i = 0; i < nl; i++) for (n = 0; n < N; n++) for (d = 0; d < D; d++) mu(i, n, d, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t(i, n);
+    for (i = 0; i < nl; i++)
+      for (n = 0; n < N; n++)
+        for (d = 0; d < D; d++) mu(i, n, d, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t(i, n);
   else abort();
   mu.echange_espace_virtuel();
 }

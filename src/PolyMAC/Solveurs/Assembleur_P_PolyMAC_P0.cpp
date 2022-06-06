@@ -82,7 +82,10 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
     {
       IntTrav stencil(0, 2);
       stencil.set_smart_resize(1);
-      for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < ne) for (j = fgrad_d(f); j < fgrad_d(f + 1); j++)
+      for (f = 0; f < zone.nb_faces(); f++)
+        for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+          if (e < ne)
+            for (j = fgrad_d(f); j < fgrad_d(f + 1); j++)
               if ((eb = fgrad_e(j)) < ne_tot) stencil.append_line(e, eb);
 
       tableau_trier_retirer_doublons(stencil);
@@ -100,7 +103,11 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
     }
 
   /* 2. remplissage des coefficients : style Op_Diff_PolyMAC_Elem */
-  for (f = 0; f < zone.nb_faces(); f++) for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < ne) for (j = fgrad_d(f); j < fgrad_d(f + 1); j++) if ((eb = fgrad_e(j)) < ne_tot)
+  for (f = 0; f < zone.nb_faces(); f++)
+    for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+      if (e < ne)
+        for (j = fgrad_d(f); j < fgrad_d(f + 1); j++)
+          if ((eb = fgrad_e(j)) < ne_tot)
             mat(e, eb) += (i ? 1 : -1) * pf(f) * fs(f) * fgrad_c(j, 0);
 
   if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
@@ -116,7 +123,8 @@ void Assembleur_P_PolyMAC_P0::dimensionner_continuite(matrices_t matrices, int a
   int e, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), ne_tot = la_zone_PolyMAC->nb_elem_tot();
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
-  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++) for (n = 0; n < N; n++) stencil.append_line(e, N * e + n);
+  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++)
+    for (n = 0; n < N; n++) stencil.append_line(e, N * e + n);
   Matrix_tools::allocate_morse_matrix(ne_tot, N * ne_tot, stencil, *matrices.at("alpha"));
 }
 
@@ -131,5 +139,6 @@ void Assembleur_P_PolyMAC_P0::assembler_continuite(matrices_t matrices, DoubleTa
   for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++)
     for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * alpha(e, n);
   /* matrice */
-  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++) for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e);
+  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++)
+    for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e);
 }

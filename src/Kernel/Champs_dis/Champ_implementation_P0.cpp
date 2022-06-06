@@ -176,7 +176,8 @@ DoubleTab& Champ_implementation_P0::valeur_aux_sommets_impl(DoubleTab& result) c
               for (int k=0; k<nb_components; k++) result(node,k) += values(i,k);
           }
       }
-  for (int i=0; i<nb_nodes; i++) for (int j=0; j<nb_components; j++) result(i,j) /= count[i];
+  for (int i=0; i<nb_nodes; i++)
+    for (int j=0; j<nb_components; j++) result(i,j) /= count[i];
 
   return result;
 }

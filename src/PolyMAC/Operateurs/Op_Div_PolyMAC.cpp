@@ -82,13 +82,17 @@ void Op_Div_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_
 
   for (f = 0; matv && f < zone.nb_faces(); f++) /* dependance en v : divergence par elem + v = v_imp aux faces de Dirichlet */
     if (fcl(f, 0) > 1) sten_v.append_line(ne_tot + f, f); /* v impose par CLs : contribution a l'equation v = v_imp a la paroi */
-    else for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) sten_v.append_line(e, f); /* v calcule : contribution a la divergence aux elems */
+    else for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        if (e < zone.nb_elem()) sten_v.append_line(e, f); /* v calcule : contribution a la divergence aux elems */
 
-  for (e = 0; matp && e < zone.nb_elem_tot(); e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++) /* dependance en p : equation sur p_f */
+  for (e = 0; matp && e < zone.nb_elem_tot(); e++)
+    for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++) /* dependance en p : equation sur p_f */
       if (fcl(f = e_f(e, i), 0) == 1) sten_p.append_line(ne_tot + f, ne_tot + f); /* aux faces de Neumann : p_f = p_imp */
-      else if (!fcl(f, 0)) for (sten_p.append_line(ne_tot + f, e), j = 0; j < w2.dimension(1); j++) /* aux faces internes : egalite des deux gradients */
+      else if (!fcl(f, 0))
+        for (sten_p.append_line(ne_tot + f, e), j = 0; j < w2.dimension(1); j++) /* aux faces internes : egalite des deux gradients */
           if (w2(i, j, 0)) sten_p.append_line(ne_tot + f, ne_tot + e_f(e, j));
-  if (matp) for (e = 0; e < zone.nb_elem(); e++) sten_p.append_line(e, e); //diagonale du vide!
+  if (matp)
+    for (e = 0; e < zone.nb_elem(); e++) sten_p.append_line(e, e); //diagonale du vide!
 
   if (matv) tableau_trier_retirer_doublons(sten_v), Matrix_tools::allocate_morse_matrix(press.size_totale(), inco.size_totale(), sten_v, matv2);
   if (matp) tableau_trier_retirer_doublons(sten_p), Matrix_tools::allocate_morse_matrix(press.size_totale(), press.size_totale(), sten_p, matp2);
@@ -112,7 +116,8 @@ void Op_Div_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const
 
   for (f = 0; f < zone.nb_faces(); f++) /* divergence aux elements + equations aux bords */
     {
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* divergence aux elems */
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        if (e < zone.nb_elem()) /* divergence aux elems */
           {
             secmem(e) -= (i ? 1 : -1) * fs(f) * pf(f) * inco(f);
             if (fcl(f, 0) < 2 && matv) (*matv)(e, f) += (i ? 1 : -1) * fs(f) * pf(f);
@@ -120,7 +125,8 @@ void Op_Div_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const
       /* equations v = v_imp ou p = p_imp aux faces de bord */
       if (fcl(f, 0) > 1)
         {
-          if (fcl(f, 0) == 3) for (d = 0; d < D; d++) secmem(ne_tot + f) += nf(f, d) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), d);
+          if (fcl(f, 0) == 3)
+            for (d = 0; d < D; d++) secmem(ne_tot + f) += nf(f, d) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), d);
           secmem(ne_tot + f) -= fs(f) * pf(f) * inco(f);
           if (matv) (*matv)(ne_tot + f, f) += fs(f) * pf(f);
         }
@@ -132,10 +138,13 @@ void Op_Div_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const
     }
 
   /* equations aux faces internes : egalite des gradients */
-  for (e = 0; e < zone.nb_elem_tot(); e++) for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++) if ((f = e_f(e, i)) < zone.nb_faces() && !fcl(f, 0))
+  for (e = 0; e < zone.nb_elem_tot(); e++)
+    for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
+      if ((f = e_f(e, i)) < zone.nb_faces() && !fcl(f, 0))
         {
           double coeff_e = 0;
-          for (j = 0; j < w2.dimension(1); j++) if (w2(i, j, 0))
+          for (j = 0; j < w2.dimension(1); j++)
+            if (w2(i, j, 0))
               {
                 fb = e_f(e, j);
                 secmem(ne_tot + f) -= pf(f) * w2(i, j, 0) * (press(ne_tot + fb) - press(e));
@@ -160,12 +169,14 @@ DoubleTab& Op_Div_PolyMAC::ajouter(const DoubleTab& vit, DoubleTab& div) const
 
   for (f = 0; f < zone.nb_faces(); f++)
     {
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) if (e < zone.nb_elem()) /* aux elements */
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        if (e < zone.nb_elem()) /* aux elements */
           div(e) += (i ? -1 : 1) * fs(f) * pf(f) * vit(f);
       if (f >= zone.premiere_face_int()) continue;
       /* si "div" a des valeurs aux faces : bilan de masse avec la CL imposee aux faces de bord de Dirichlet */
       if (has_f && fcl(f, 0) != 1) div(ne_tot + f) -= fs(f) * pf(f) * vit(f);
-      if (has_f && fcl(f, 0) == 3) for (d = 0; d < D; d++) div(ne_tot + f) += nf(f, d) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), d);
+      if (has_f && fcl(f, 0) == 3)
+        for (d = 0; d < D; d++) div(ne_tot + f) += nf(f, d) * pf(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), d);
       /* a toutes les faces de bord : contribution a tab_flux_bords */
       tab_flux_bords(f) = fs(f) * pf(f) * vit(f); //flux aux bords
     }

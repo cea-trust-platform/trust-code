@@ -57,7 +57,8 @@ void Portance_interfaciale_Tomiyama::coefficient(const DoubleTab& alpha, const D
 
   coeff = 0;
 
-  for (k = 0; k < N; k++) if (k!=n_l) // k gas phase
+  for (k = 0; k < N; k++)
+    if (k!=n_l) // k gas phase
       {
         double Re = rho(n_l) * ndv(n_l,k) * diametres(e, k)/mu(n_l);
         double Eo = g_ * std::abs(rho(n_l)-rho(k)) * diametres(e, k)*diametres(e, k)/sigma(n_l,k);

@@ -96,12 +96,14 @@ void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
 
   //valeurs du champ de DP
   DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
-  for (int i = 0; i < num_faces.size(); i++) for (int j = 0; j < dimension; j++) xvf(i, j) = zone_poly.xv()(num_faces(i), j);
+  for (int i = 0; i < num_faces.size(); i++)
+    for (int j = 0; j < dimension; j++) xvf(i, j) = zone_poly.xv()(num_faces(i), j);
   DP_.valeur().valeur_aux(xvf, DP);
 
   double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;
 
-  for (int i = 0, f; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone_poly.nb_faces())
+  for (int i = 0, f; i < num_faces.size(); i++)
+    if ((f = num_faces(i)) < zone_poly.nb_faces())
       {
         secmem(f) += fs(f) * pf(f) * sgn(i) * (DP(i, 0) + DP(i, 1) * (surf * sgn(i) * vit(f) - DP(i, 2))) * fac_rho;
         if (mat) (*mat)(f, f) -= fs(f) * pf(f) * DP(i, 1) * surf * fac_rho;

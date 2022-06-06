@@ -115,7 +115,8 @@ Entree& Decouper_multi::interpreter(Entree& is)
   std::vector<std::set<int>> procs; //processeurs possedant chaque sommet du groupe...
   std::set<int> u_procs; //et leur union
   std::vector<std::array<int, 2>> v_ds; //liste (domaine, sommet)
-  for (i = 0; i + 1 < S_i->getNumberOfTuples(); i++) if ((ns = S_i->getIJ(i + 1, 0) - S_i->getIJ(i, 0)) > 1) //pas besoin de traiter les sommets seuls
+  for (i = 0; i + 1 < S_i->getNumberOfTuples(); i++)
+    if ((ns = S_i->getIJ(i + 1, 0) - S_i->getIJ(i, 0)) > 1) //pas besoin de traiter les sommets seuls
       {
         for (count++, procs.resize(ns), v_ds.resize(ns), j = S_i->getIJ(i, 0), k = 0; j < S_i->getIJ(i + 1, 0); j++, k++)
           {

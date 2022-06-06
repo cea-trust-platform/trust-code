@@ -95,21 +95,24 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
       for (n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
       for (n = 0; n < N; n++)
         {
-          for (k = 0; k < N; k++) if(milc.has_interface(n, k))
+          for (k = 0; k < N; k++)
+            if(milc.has_interface(n, k))
               {
                 Interface_base& sat = milc.get_interface(n, k);
                 sigma_l(n,k) = sat.sigma_(temp(e,n), press(e,n * (Np > 1)));
               }
         }
 
-      for (k = 0; k < N; k++) for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
+      for (k = 0; k < N; k++)
+        for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
       correlation_pi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dv, e, coeff);
 
       fac_e = pe(e) * ve(e);
 
       if (D==2)
         {
-          for (k = 0; k < N; k++) if (k!= n_l) // gas phase
+          for (k = 0; k < N; k++)
+            if (k!= n_l) // gas phase
               {
                 i = zone.nb_faces_tot() + D * e;
                 secmem(i, n_l) += fac_e * coeff(n_l, k) * (pvit(i+1, k) -pvit(i+1, n_l)) * vort(e, 0) ;
@@ -118,11 +121,14 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
                 secmem(i+1, k )+= fac_e * coeff(n_l, k) * (pvit(i  , k) -pvit(i  , n_l)) * vort(e, 0) ;
               } // 100% explicit
 
-          for (b = 0; b < e_f.dimension(1) && (f = e_f(e, b)) >= 0; b++) if (f<zone.nb_faces()) if (fcl(f, 0) < 2)
+          for (b = 0; b < e_f.dimension(1) && (f = e_f(e, b)) >= 0; b++)
+            if (f<zone.nb_faces())
+              if (fcl(f, 0) < 2)
                 {
                   c = (e == f_e(f,0)) ? 0 : 1 ;
                   fac_f = pf(f) * vf(f);
-                  for (k = 0; k < N; k++) if (k!= n_l) // gas phase
+                  for (k = 0; k < N; k++)
+                    if (k!= n_l) // gas phase
                       {
                         secmem(f, n_l) += fac_f * vf_dir(f, c)/vf(f) * n_f(f, 0)/fs(f) * coeff(n_l, k) * (pvit(i+1, k) -pvit(i+1, n_l)) * vort(e, 0) ;
                         secmem(f,  k ) -= fac_f * vf_dir(f, c)/vf(f) * n_f(f, 0)/fs(f) * coeff(n_l, k) * (pvit(i+1, k) -pvit(i+1, n_l)) * vort(e, 0) ;
@@ -135,7 +141,8 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
 
       if (D==3)
         {
-          for (k = 0; k < N; k++) if (k!= n_l) // gas phase
+          for (k = 0; k < N; k++)
+            if (k!= n_l) // gas phase
               {
                 i = zone.nb_faces_tot() + D * e;
                 secmem(i, n_l) += fac_e * coeff(n_l, k) * ((pvit(i+1, k) -pvit(i+1, n_l)) * vort(e, n_l*D+ 2) - (pvit(i+2, k) -pvit(i+2, n_l)) * vort(e, n_l*D+ 1)) ;
@@ -146,11 +153,14 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
                 secmem(i+2, k )-= fac_e * coeff(n_l, k) * ((pvit(i+0, k) -pvit(i+0, n_l)) * vort(e, n_l*D+ 1) - (pvit(i+1, k) -pvit(i+1, n_l)) * vort(e, n_l*D+ 0)) ;
               } // 100% explicit
 
-          for (b = 0; b < e_f.dimension(1) && (f = e_f(e, b)) >= 0; b++) if (f<zone.nb_faces()) if (fcl(f, 0) < 2)
+          for (b = 0; b < e_f.dimension(1) && (f = e_f(e, b)) >= 0; b++)
+            if (f<zone.nb_faces())
+              if (fcl(f, 0) < 2)
                 {
                   c = (e == f_e(f,0)) ? 0 : 1 ;
                   fac_f = pf(f) * vf(f);
-                  for (k = 0; k < N; k++) if (k!= n_l) // gas phase
+                  for (k = 0; k < N; k++)
+                    if (k!= n_l) // gas phase
                       {
                         secmem(f, n_l) += fac_f * vf_dir(f, c)/vf(f) * n_f(f, 0)/fs(f) * coeff(n_l, k) * ((pvit(i+1, k) -pvit(i+1, n_l)) * vort(e, n_l*D+ 2) - (pvit(i+2, k) -pvit(i+2, n_l)) * vort(e, n_l*D+ 1)) ;
                         secmem(f,  k ) -= fac_f * vf_dir(f, c)/vf(f) * n_f(f, 0)/fs(f) * coeff(n_l, k) * ((pvit(i+1, k) -pvit(i+1, n_l)) * vort(e, n_l*D+ 2) - (pvit(i+2, k) -pvit(i+2, n_l)) * vort(e, n_l*D+ 1)) ;

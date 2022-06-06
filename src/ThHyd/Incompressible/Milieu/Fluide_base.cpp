@@ -324,7 +324,8 @@ void Fluide_base::calculer_nu()
   int cRho = sub_type(Champ_Uniforme, rho.valeur()), cMu = sub_type(Champ_Uniforme, mu.valeur()),
       i, j, n, Nl = tabnu.dimension_tot(0), N = tabnu.line_size();
   /* valeurs : mu / rho */
-  for (i = j = 0; i < Nl; i++) for (n = 0; n < N; n++, j++) tabnu.addr()[j] = tabmu.addr()[cMu ? n : j] / tabrho.addr()[cRho ? n : j];
+  for (i = j = 0; i < Nl; i++)
+    for (n = 0; n < N; n++, j++) tabnu.addr()[j] = tabmu.addr()[cMu ? n : j] / tabrho.addr()[cRho ? n : j];
 }
 
 
@@ -501,14 +502,17 @@ void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& 
   int i, zero = 0, Ni = T.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = fl.id_composite >= 0 ? 1 : Cp.dimension(1),
          n0 = std::max(fl.id_composite, zero), cCp = Cp.dimension_tot(0) == 1;
 
-  for (i = 0; i < Ni; i++) for (n = 0; n < N; n++) val(i, n) = fl.h0_ + Cp(!cCp * i, n) * (T(i, n0 + n) - fl.T0_);
+  for (i = 0; i < Ni; i++)
+    for (n = 0; n < N; n++) val(i, n) = fl.h0_ + Cp(!cCp * i, n) * (T(i, n0 + n) - fl.T0_);
   DoubleTab bT = ch_T.valeur_aux_bords(), bCp;
   if (ch_Cp.a_une_zone_dis_base()) bCp = ch_Cp.valeur_aux_bords();
   else bCp.resize(bval.dimension_tot(0), N), ch_Cp.valeur_aux(ref_cast(Zone_VF, ch_T.zone_dis_base()).xv_bord() , bCp);
-  for (i = 0; i < Nb; i++) for (n = 0; n < N; n++) bval(i, n) = fl.h0_ + bCp(i, n) * (bT(i, n0 + n) - fl.T0_);
+  for (i = 0; i < Nb; i++)
+    for (n = 0; n < N; n++) bval(i, n) = fl.h0_ + bCp(i, n) * (bT(i, n0 + n) - fl.T0_);
 
   DoubleTab& der_T = deriv[ch_T.le_nom().getString()];
-  for (der_T.resize(Ni, N), i = 0; i < Ni; i++) for (n = 0; n < N; n++) der_T(i, n) = Cp(!cCp * i, n);
+  for (der_T.resize(Ni, N), i = 0; i < Ni; i++)
+    for (n = 0; n < N; n++) der_T(i, n) = Cp(!cCp * i, n);
 }
 
 const Champ_base& Fluide_base::energie_interne() const

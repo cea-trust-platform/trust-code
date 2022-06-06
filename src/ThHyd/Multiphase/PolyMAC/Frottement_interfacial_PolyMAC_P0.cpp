@@ -63,15 +63,20 @@ void Frottement_interfacial_PolyMAC_P0::dimensionner_blocs(matrices_t matrices, 
   stencil.set_smart_resize(1);
   int i, j, e, f, k, l, N = inco.line_size(), d, db, D = dimension, nf_tot = zone.nb_faces_tot();
   /* faces */
-  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2)
+  for (f = 0; f < zone.nb_faces(); f++)
+    if (fcl(f, 0) < 2)
       {
-        for (k = 0; k < N; k++) for (l = 0; l < N; l++) stencil.append_line(N * f + k, N * f + l);
+        for (k = 0; k < N; k++)
+          for (l = 0; l < N; l++) stencil.append_line(N * f + k, N * f + l);
         // for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (d = 0, j = nf_tot + D * e; d < D; d++, j++)
         //     for (k = 0; k < N; k++) for (l = 0; l < N; l++) stencil.append_line(N * f + k, N * j + l);
       }
   /* elements */
-  for (e = 0, i = nf_tot; e < zone.nb_elem_tot(); e++) for (d = 0; d < D; d++, i++) for (db = 0, j = nf_tot + D * e; db < D; db++, j++)
-        for (k = 0; k < N; k++) for (l = 0; l < N; l++) stencil.append_line(N * i + k, N * j + l);
+  for (e = 0, i = nf_tot; e < zone.nb_elem_tot(); e++)
+    for (d = 0; d < D; d++, i++)
+      for (db = 0, j = nf_tot + D * e; db < D; db++, j++)
+        for (k = 0; k < N; k++)
+          for (l = 0; l < N; l++) stencil.append_line(N * i + k, N * j + l);
 
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), stencil, mat2);
@@ -102,7 +107,8 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
   /* faces */
-  for (f = 0; f < zone.nb_faces(); f++) if (fcl(f, 0) < 2)
+  for (f = 0; f < zone.nb_faces(); f++)
+    if (fcl(f, 0) < 2)
       {
         for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, sigma_l = 0, dv = dv_min, ddv = 0, d_bulles_l=0, c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
           {
@@ -111,31 +117,40 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
             for (n = 0; n < N; n++) T_l(n)   += vfd(f, c) / vf(f) * temp(e, n);
             for (n = 0; n < N; n++) rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
             for (n = 0; n < N; n++) mu_l(n)  += vfd(f, c) / vf(f) * mu(!cM * e, n);
-            for (n = 0; n < N; n++) for (k = 0; k < N; k++) if (milc.has_interface(n,k))
+            for (n = 0; n < N; n++)
+              for (k = 0; k < N; k++)
+                if (milc.has_interface(n,k))
                   {
                     Interface_base& sat = milc.get_interface(n, k);
                     sigma_l(n,k) += vfd(f, c) / vf(f) * sat.sigma_(temp(e,n),press(e,n * (Np > 1)));
                   }
 
             for (n = 0; n < N; n++) dh += vfd(f, c) / vf(f) * alpha(e, n) * dh_e(e);
-            for (k = 0; k < N; k++) for (l = 0; l < N; l++)
+            for (k = 0; k < N; k++)
+              for (l = 0; l < N; l++)
                 {
                   double dv_c = ch.v_norm(pvit, pvit, e, f, k, l, NULL, &ddv_c(0));
-                  if (dv_c > dv(k, l)) for (dv(k, l) = dv_c, i = 0; i < 4; i++) ddv(k, l, i) = ddv_c(i);
+                  if (dv_c > dv(k, l))
+                    for (dv(k, l) = dv_c, i = 0; i < 4; i++) ddv(k, l, i) = ddv_c(i);
                 }
             for (n=0; n<N; n++) d_bulles_l(n) += (d_bulles) ? vfd(f, c) / vf(f) * (*d_bulles)(e,n) : 0;
           }
         correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh, dv, d_bulles_l, coeff);
-        for (k = 0; k < N; k++) for (l = 0; l < N; l++) for (j = 0; j < 2; j++)
+        for (k = 0; k < N; k++)
+          for (l = 0; l < N; l++)
+            for (j = 0; j < 2; j++)
               coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res, -exp_res) : 0);
 
         /* contributions : on prend le max entre les deux cotes */
-        for (k = 0; k < N; k++) for (l = 0; l < N; l++) if (k != l)
+        for (k = 0; k < N; k++)
+          for (l = 0; l < N; l++)
+            if (k != l)
               {
                 double fac = pf(f) * vf(f);
                 /* on essaie d'impliciter coeff sans ralentir la convergence en en faisant un developpement limite autour de pvit (dans la direction d'interet seulement) */
                 secmem(f, k) -= fac * (coeff(k, l, 0) * (inco(f, k) - inco(f, l)) + coeff(k, l, 1) * ddv(k, l, 3) * (pvit(f, k) - pvit(f, l)) * ((inco(f, k) - inco(f, l)) - (pvit(f, k) - pvit(f, l))));
-                if (mat) for (j = 0; j < 2; j++) (*mat)(N * f + k, N * f + (j ? l : k)) += fac * (j ? -1 : 1) * (coeff(k, l, 0) + coeff(k, l, 1) * ddv(k, l, 3) * (pvit(f, k) - pvit(f, l)));
+                if (mat)
+                  for (j = 0; j < 2; j++) (*mat)(N * f + k, N * f + (j ? l : k)) += fac * (j ? -1 : 1) * (coeff(k, l, 0) + coeff(k, l, 1) * ddv(k, l, 3) * (pvit(f, k) - pvit(f, l)));
               }
       }
 
@@ -150,7 +165,8 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
       for (n = 0; n < N; n++) mu_l(n)  =    mu(!cM * e, n);
       for (n = 0; n < N; n++)
         {
-          for (k = 0; k < N; k++) if(milc.has_interface(n, k))
+          for (k = 0; k < N; k++)
+            if(milc.has_interface(n, k))
               {
                 Interface_base& sat = milc.get_interface(n, k);
                 sigma_l(n,k) = sat.sigma_(temp(e,n), press(e,n * (Np > 1)));
@@ -158,18 +174,26 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
         }
       for (n=0; n<N; n++) d_bulles_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
 
-      for (k = 0; k < N; k++) for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
+      for (k = 0; k < N; k++)
+        for (l = 0; l < N; l++) dv(k, l) = std::max(ch.v_norm(pvit, pvit, e, -1, k, l, NULL, &ddv(k, l, 0)), dv_min);
       correlation_fi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, dh_e(e), dv, d_bulles_l, coeff);
-      for (k = 0; k < N; k++) for (l = 0; l < N; l++) coeff(k, l, 1) *= (dv(k, l) > dv_min); //pas de derivee si dv < dv_min
-      for (k = 0; k < N; k++) for (l = 0; l < N; l++) for (j = 0; j < 2; j++)
+      for (k = 0; k < N; k++)
+        for (l = 0; l < N; l++) coeff(k, l, 1) *= (dv(k, l) > dv_min); //pas de derivee si dv < dv_min
+      for (k = 0; k < N; k++)
+        for (l = 0; l < N; l++)
+          for (j = 0; j < 2; j++)
             coeff(k, l, j) *= 1 + (a_l(k) > 1e-8 ? std::pow(a_l(k) / a_res, -exp_res) : 0) + (a_l(l) > 1e-8 ? std::pow(a_l(l) / a_res, -exp_res) : 0);
 
-      for (d = 0, i = nf_tot + D * e; d < D; d++, i++) for (k = 0; k < N; k++) for (l = 0; l < N; l++) if (k != l)
+      for (d = 0, i = nf_tot + D * e; d < D; d++, i++)
+        for (k = 0; k < N; k++)
+          for (l = 0; l < N; l++)
+            if (k != l)
               {
                 double fac = pe(e) * ve(e);
                 /* on essaie d'impliciter coeff sans ralentir la convergence en en faisant un developpement limite autour de pvit (dans la direction d'interet seulement) */
                 secmem(i, k) -= fac * (coeff(k, l, 0) * (inco(i, k) - inco(i, l)) + coeff(k, l, 1) * ddv(k, l, d) * (pvit(i, k) - pvit(i, l)) * ((inco(i, k) - inco(i, l)) - (pvit(i, k) - pvit(i, l))));
-                if (mat) for (j = 0; j < 2; j++) (*mat)(N * i + k, N * i + (j ? l : k)) += fac * (j ? -1 : 1) * (coeff(k, l, 0) + coeff(k, l, 1) * ddv(k, l, d) * (pvit(i, k) - pvit(i, l)));
+                if (mat)
+                  for (j = 0; j < 2; j++) (*mat)(N * i + k, N * i + (j ? l : k)) += fac * (j ? -1 : 1) * (coeff(k, l, 0) + coeff(k, l, 1) * ddv(k, l, d) * (pvit(i, k) - pvit(i, l)));
               }
     }
 }

@@ -157,7 +157,9 @@ void Aire_interfaciale::mettre_a_jour(double temps)
 
   diametre_bulles.mettre_a_jour(temps);
 
-  for (n = 0; n < N; n++) for (i = 0; i < d_b.dimension_tot(0); i++) if (n != n_l)
+  for (n = 0; n < N; n++)
+    for (i = 0; i < d_b.dimension_tot(0); i++)
+      if (n != n_l)
         d_b(i, n) = std::max(1.e-8, ((a_i(i, n)>1.e-6) ? 6 * alpha(i, n)/a_i(i, n) : 0));
 
   for (i = 0; i < d_b.dimension_tot(0); i++) d_b(i, n_l) = 0;

@@ -34,12 +34,14 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int face, const N
   const double psc = dt_vitesse(face)*surface(face);
   if (elem1 != -1)
     {
-      if (psc > 0) for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(face,k)*porosite(face);
+      if (psc > 0)
+        for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(face,k)*porosite(face);
       else for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k); // TODO : FIXME : Yannick help :/
     }
   else
     {
-      if (psc < 0) for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(face,k)*porosite(face);
+      if (psc < 0)
+        for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(face,k)*porosite(face);
       else for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k);
     }
 }
@@ -51,17 +53,20 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int num_elem, int
   const double psc = 0.25*(dt_vitesse(fac1)+dt_vitesse(fac2))*(surface(fac1)+surface(fac2));
   if (DERIVED_T::IS_AMONT)
     {
-      if (psc>0) for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac1,k)*porosite(fac1);
+      if (psc>0)
+        for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac1,k)*porosite(fac1);
       else for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac2,k)*porosite(fac2);
     }
-  else if (DERIVED_T::IS_CENTRE) for (int k = 0; k < ncomp; k++) flux[k] = -psc*0.5*(inco(fac1,k)*porosite(fac1)+inco(fac2,k)*porosite(fac2));
+  else if (DERIVED_T::IS_CENTRE)
+    for (int k = 0; k < ncomp; k++) flux[k] = -psc*0.5*(inco(fac1,k)*porosite(fac1)+inco(fac2,k)*porosite(fac2));
   else
     {
       const int num0_0 = face_amont_princ_(fac1,0), num1_1 = face_amont_princ_(fac2,1);
       if (DERIVED_T::IS_CENTRE4)
         {
           const int ori = orientation(fac1);
-          if  ( (num0_0 == -1) || (num1_1== -1) ) for (int k = 0; k < ncomp; k++) flux[k] = -psc*0.5*(inco(fac1,k)*porosite(fac1)+inco(fac2,k)*porosite(fac2)); // Schema centre 2
+          if  ( (num0_0 == -1) || (num1_1== -1) )
+            for (int k = 0; k < ncomp; k++) flux[k] = -psc*0.5*(inco(fac1,k)*porosite(fac1)+inco(fac2,k)*porosite(fac2)); // Schema centre 2
           else // Schema centre 4
             {
               Type_Double vit_0(ncomp),vit_0_0(ncomp),vit_1_1(ncomp),vit_1(ncomp);
@@ -82,7 +87,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int num_elem, int
         {
           if  (psc > 0)
             {
-              if (num0_0 == -1) for (int k=0; k<ncomp; k++) flux[k] = -psc*inco(fac1,k)*porosite(fac1); // Schema amont
+              if (num0_0 == -1)
+                for (int k=0; k<ncomp; k++) flux[k] = -psc*inco(fac1,k)*porosite(fac1); // Schema amont
               else
                 {
                   Type_Double vit_0(ncomp), vit_0_0(ncomp), vit_1(ncomp);
@@ -99,7 +105,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_fa7(const DoubleTab& inco, int num_elem, int
             }
           else // (psc < 0)
             {
-              if (num1_1 == -1) for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac2,k)*porosite(fac2); // Schema amont
+              if (num1_1 == -1)
+                for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac2,k)*porosite(fac2); // Schema amont
               else
                 {
                   Type_Double vit_0(ncomp), vit_1(ncomp), vit_1_1(ncomp);
@@ -125,16 +132,19 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fa
   const double psc = 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
   if (DERIVED_T::IS_AMONT)
     {
-      if (psc>0) for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac3,k);
+      if (psc>0)
+        for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac3,k);
       else for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac4,k);
     }
-  else if (DERIVED_T::IS_CENTRE) for (int k = 0; k < ncomp; k++) flux[k] = -0.5*(inco(fac3,k)+inco(fac4,k))*psc ;
+  else if (DERIVED_T::IS_CENTRE)
+    for (int k = 0; k < ncomp; k++) flux[k] = -0.5*(inco(fac3,k)+inco(fac4,k))*psc ;
   else
     {
       const int ori = orientation(fac1), num0_0 = face_amont_conj_(fac3,ori,0), num1_1 = face_amont_conj_(fac4,ori,1);
       if (DERIVED_T::IS_CENTRE4)
         {
-          if ( (num0_0 == -1)||(num1_1== -1) ) for (int k = 0; k < ncomp; k++) flux[k] = -0.5*(inco(fac3,k)+inco(fac4,k))*psc ; // Schema centre 2 (pas assez de faces)
+          if ( (num0_0 == -1)||(num1_1== -1) )
+            for (int k = 0; k < ncomp; k++) flux[k] = -0.5*(inco(fac3,k)+inco(fac4,k))*psc ; // Schema centre 2 (pas assez de faces)
           else  // Schema Centre 4
             {
               Type_Double vit_0(ncomp), vit_0_0(ncomp), vit_1_1(ncomp), vit_1(ncomp);
@@ -156,7 +166,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fa
         {
           if (psc > 0)
             {
-              if (num0_0 == -1) for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac3,k); // Schema amont
+              if (num0_0 == -1)
+                for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac3,k); // Schema amont
               else // Schema quick
                 {
                   Type_Double vit_0(ncomp), vit_0_0(ncomp), vit_1(ncomp);
@@ -172,7 +183,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fa
             }
           else // (psc <= 0)
             {
-              if (num1_1 == -1) for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac4,k); // Schema amont
+              if (num1_1 == -1)
+                for (int k = 0; k < ncomp; k++) flux[k] = -psc*inco(fac4,k); // Schema amont
               else // Schema quick
                 {
                   Type_Double vit_0(ncomp), vit_1(ncomp), vit_1_1(ncomp);
@@ -194,10 +206,12 @@ template <typename DERIVED_T> template<Type_Flux_Arete Arete_Type, typename Type
 Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fac2,int fac3, int fac4, Type_Double& flux) const
 {
   const double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if (DERIVED_T::IS_CENTRE) for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
+  if (DERIVED_T::IS_CENTRE)
+    for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
   else
     {
-      if (psc>0) for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(fac3,k);
+      if (psc>0)
+        for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(fac3,k);
       else for (int k = 0; k < flux.size_array(); k++) flux[k] = -psc*inco(fac4,k);
     }
 }
@@ -212,7 +226,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fa
   const int ncomp = flux3.size_array();
 
   double psc = 0.25*((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)>0) for (int k = 0; k < ncomp; k++) flux3[k] = -inco(fac3,k)*psc ;
+  if ((psc*signe)>0)
+    for (int k = 0; k < ncomp; k++) flux3[k] = -inco(fac3,k)*psc ;
   else
     {
       const int pfb = premiere_face_bord(), ori = orientation(fac3), rang1 = DERIVED_T::IS_QUICK ? fac1 : (fac1-pfb), rang2 = DERIVED_T::IS_QUICK ? fac2 :(fac2-pfb); // TODO : FIXME : euh ? pourquoi ca ?
@@ -222,7 +237,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco,int fac1, int fa
     }
 
   psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
-  if (psc>0) for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc*inco(fac1,k);
+  if (psc>0)
+    for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc*inco(fac1,k);
   else for (int k = 0; k < ncomp; k++) flux1_2[k] = (DERIVED_T::IS_CENTRE || DERIVED_T::IS_CENTRE4) ? -psc*0.5*(inco(fac1,k)+inco(fac2,k)) : -psc*inco(fac2,k);
 }
 
@@ -240,11 +256,13 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
   const int ncomp = flux3_4.size_array();
 
   double psc = 0.25*(dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1) +surface(fac2));
-  if (DERIVED_T::IS_CENTRE) for (int k = 0; k < ncomp; k++) flux3_4[k] = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
+  if (DERIVED_T::IS_CENTRE)
+    for (int k = 0; k < ncomp; k++) flux3_4[k] = -psc*0.5*(inco(fac3,k)+inco(fac4,k));
   else if (DERIVED_T::IS_CENTRE4)
     {
       const int ori = orientation(fac1), num0_0 = face_amont_conj_(fac3,ori,0),num1_1 = face_amont_conj_(fac4,ori,1);
-      if ( (num0_0 == -1)||(num1_1== -1) ) for (int k = 0; k < ncomp; k++) flux3_4[k] = -psc*0.5*(inco(fac3,k)+inco(fac4,k)); // Schema centre 2 (pas assez de faces)
+      if ( (num0_0 == -1)||(num1_1== -1) )
+        for (int k = 0; k < ncomp; k++) flux3_4[k] = -psc*0.5*(inco(fac3,k)+inco(fac4,k)); // Schema centre 2 (pas assez de faces)
       else // Schema Centre4
         {
           Type_Double vit_0(ncomp), vit_0_0(ncomp), vit_1_1(ncomp), vit_1(ncomp);
@@ -263,17 +281,20 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
     }
   else
     {
-      if (psc>0) for (int k = 0; k < ncomp; k++) flux3_4[k] = -psc*inco(fac3,k);
+      if (psc>0)
+        for (int k = 0; k < ncomp; k++) flux3_4[k] = -psc*inco(fac3,k);
       else for (int k = 0; k < ncomp; k++) flux3_4[k] = -psc*inco(fac4,k);
     }
 
   psc = 0.25*(dt_vitesse(fac3)*porosite(fac3)+dt_vitesse(fac4)*porosite(fac4))*(surface(fac3)+surface(fac4));
-  if (DERIVED_T::IS_CENTRE) for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc*0.5*(inco(fac1,k)+inco(fac2,k));
+  if (DERIVED_T::IS_CENTRE)
+    for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc*0.5*(inco(fac1,k)+inco(fac2,k));
   else if (DERIVED_T::IS_CENTRE4)
     {
       const int ori = orientation(fac3), num0_0 = face_amont_conj_(fac1,ori,0), num1_1 = face_amont_conj_(fac2,ori,1);
 
-      if ( (num0_0 == -1)||(num1_1== -1) ) for (int k=0; k<ncomp; k++)  flux1_2[k] = -psc*0.5*(inco(fac1,k)+inco(fac2,k)); // Schema centre 2 (pas assez de faces)
+      if ( (num0_0 == -1)||(num1_1== -1) )
+        for (int k=0; k<ncomp; k++)  flux1_2[k] = -psc*0.5*(inco(fac1,k)+inco(fac2,k)); // Schema centre 2 (pas assez de faces)
       else // Schema Centre4
         {
           Type_Double vit_0(ncomp), vit_0_0(ncomp), vit_1_1(ncomp), vit_1(ncomp);
@@ -292,7 +313,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int f
     }
   else
     {
-      if (psc>0) for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc*inco(fac1,k);
+      if (psc>0)
+        for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc*inco(fac1,k);
       else for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc*inco(fac2,k);
     }
 }
@@ -308,7 +330,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int ,
     }
   const int ncomp = flux3.size_array();
   double psc = 0.5 * dt_vitesse(fac1) * porosite(fac1) * surface(fac1);
-  if ((psc * signe) > 0) for (int k = 0; k < ncomp; k++) flux3[k] = -inco(fac3,k) * psc;
+  if ((psc * signe) > 0)
+    for (int k = 0; k < ncomp; k++) flux3[k] = -inco(fac3,k) * psc;
   else
     {
       const int pfb = premiere_face_bord(), rang1 = (fac1 - pfb), ori = orientation(fac3);
@@ -316,7 +339,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, int fac1, int ,
     }
 
   psc = 0.5 * dt_vitesse(fac3) * surface(fac3) * porosite(fac3);
-  if (psc > 0) for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc * inco(fac1,k);
+  if (psc > 0)
+    for (int k = 0; k < ncomp; k++) flux1_2[k] = -psc * inco(fac1,k);
   else
     {
       const int pfb = premiere_face_bord(), rang3 = (fac3 - pfb), ori = orientation(fac1);
@@ -370,7 +394,8 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(int fac1, int fac2,int fac3,int sign
   const int ncomp = aii1_2.size_array();
 
   double psc = is_COIN ? 0.5*dt_vitesse(fac1)*porosite(fac1)*surface(fac1) : 0.25 * ((dt_vitesse(fac1)*porosite(fac1)+dt_vitesse(fac2)*porosite(fac2))*(surface(fac1)+surface(fac2)));
-  if ((psc*signe)>0) for (int k = 0; k < ncomp; k++) aii3_4[k] = psc ;
+  if ((psc*signe)>0)
+    for (int k = 0; k < ncomp; k++) aii3_4[k] = psc ;
   else for (int k = 0; k < ncomp; k++) aii3_4[k] = 0.;
 
   psc = 0.5*dt_vitesse(fac3)*surface(fac3)*porosite(fac3);
@@ -405,12 +430,14 @@ Eval_Conv_VDF_Face<DERIVED_T>::secmem_fa7(int face, const Neumann_sortie_libre& 
   const double psc = dt_vitesse(face)*surface(face);
   if (i != -1)
     {
-      if (psc < 0) for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k); // TODO : FIXME : Yannick help :/
+      if (psc < 0)
+        for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k); // TODO : FIXME : Yannick help :/
       else for (int k = 0; k < ncomp; k++) flux[k] = 0.;
     }
   else // (elem2 != -1)
     {
-      if (psc > 0) for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k);
+      if (psc > 0)
+        for (int k = 0; k < ncomp; k++) flux[k] = -psc*la_cl.val_ext(face-num1,orientation(face)); // : -psc*la_cl.val_ext(face-num1,k);
       else for (int k = 0; k < ncomp; k++) flux[k] = 0.;
     }
 }

@@ -251,7 +251,8 @@ void Op_Grad_VDF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& sem
   stencil_p.set_smart_resize(1);
 
   int e;
-  for (int f = 0; f < zvdf.nb_faces(); f++) for (int i = 0; i < 2; i++)
+  for (int f = 0; f < zvdf.nb_faces(); f++)
+    for (int i = 0; i < 2; i++)
       if ((e = zvdf.face_voisins(f, i)) >= 0) stencil_p.append_line(f, e);
   tableau_trier_retirer_doublons(stencil_p);
   if (mat_p)

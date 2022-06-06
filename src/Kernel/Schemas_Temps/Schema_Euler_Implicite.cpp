@@ -367,9 +367,11 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
             {
               //make sure all application domains are in resolution_monolithique_
               std::set<std::string> doms_app, doms_mono;
-              for(i = 0; i < pbc.nb_problemes(); i++) for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
+              for(i = 0; i < pbc.nb_problemes(); i++)
+                for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
                   doms_app.insert(ref_cast(Probleme_base,pbc.probleme(i)).equation(j).domaine_application().getString());
-              for (auto && s : resolution_monolithique_) for (auto &&d : s) doms_mono.insert((Nom(d)).getSuffix("-").getString());
+              for (auto && s : resolution_monolithique_)
+                for (auto &&d : s) doms_mono.insert((Nom(d)).getSuffix("-").getString());
 
               if (doms_mono != doms_app)
                 {
@@ -617,6 +619,7 @@ int Schema_Euler_Implicite::reprendre(Entree&)
 
 int Schema_Euler_Implicite::resolution_monolithique(const Nom& nom) const
 {
-  for (auto &&s : resolution_monolithique_) if (s.count(nom.getString())) return 1;
+  for (auto &&s : resolution_monolithique_)
+    if (s.count(nom.getString())) return 1;
   return 0;
 }

@@ -1065,7 +1065,8 @@ int verifier_modifier_type_elem(Nom& type_elem,const IntTab& les_elems,const Dou
 
                   double npos=sommets(les_elems(elem,s),dir);
                   int trouve=0;
-                  for (int i=0; i<n; i++) if (est_egal(npos,pos[i])) trouve=1;
+                  for (int i=0; i<n; i++)
+                    if (est_egal(npos,pos[i])) trouve=1;
 
                   if (trouve==0)
                     {

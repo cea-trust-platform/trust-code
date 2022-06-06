@@ -146,14 +146,16 @@ void Champ_Elem_PolyMAC::init_auxiliary_variables()
 {
   const Zone_PolyMAC& zone = ref_cast( Zone_PolyMAC,la_zone_VF.valeur());
   const IntTab& f_e = zone.face_voisins();
-  for (int n = 0; n < nb_valeurs_temporelles(); n++) if (futur(n).size_reelle_ok())
+  for (int n = 0; n < nb_valeurs_temporelles(); n++)
+    if (futur(n).size_reelle_ok())
       {
         DoubleTab& vals = futur(n);
         vals.set_md_vector(MD_Vector()); //on enleve le MD_Vector...
         vals.resize_dim0(zone.mdv_elems_faces.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
         vals.set_md_vector(zone.mdv_elems_faces); //...et on remet le bon MD_Vector
         /* initialisation des variables aux faces : par celle de l'elem amont */
-        for (int f = 0, ne_tot = zone.nb_elem_tot(); f < zone.nb_faces(); f++) for (int m = 0, e = f_e(f, 0); m < vals.dimension(1); m++)
+        for (int f = 0, ne_tot = zone.nb_elem_tot(); f < zone.nb_faces(); f++)
+          for (int m = 0, e = f_e(f, 0); m < vals.dimension(1); m++)
             vals(ne_tot + f, m) = vals(e, m);
         vals.echange_espace_virtuel();
       }
@@ -217,9 +219,11 @@ DoubleTab& Champ_Elem_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
   assert(dst.dimension(0) == zone.xv().dimension(0) && N == (dst.nb_dim() == 1 ? 1 : dst.dimension(1)));
 
   if (src.dimension_tot(0) > zone.nb_elem_tot()) //on a les valeurs aux faces
-    for (f = 0; f < dst.dimension(0); f++) for (n = 0; n < N; n++) dst(f, n) = src(zone.nb_elem_tot() + f, n);
+    for (f = 0; f < dst.dimension(0); f++)
+      for (n = 0; n < N; n++) dst(f, n) = src(zone.nb_elem_tot() + f, n);
   else for (f = 0; f < dst.dimension(0); f++) //on prend (amont + aval) / 2
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) for (n = 0; n < N; n++)
+      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+        for (n = 0; n < N; n++)
           dst(f, n) += src(e, n) * (f < zone.premiere_face_int() ? 1 : 0.5);
 
   return dst;

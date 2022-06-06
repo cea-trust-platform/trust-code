@@ -65,7 +65,8 @@ const Zone_VEF_PreP1b& Op_Rot_VEFP1B::zone_Vef() const
 
 int est_un_coin(int num, const ArrOfInt& coins)
 {
-  for(int i=0; i<coins.size_array(); i++) if(num==coins[i]) return 1;
+  for(int i=0; i<coins.size_array(); i++)
+    if(num==coins[i]) return 1;
   return 0;
 }
 

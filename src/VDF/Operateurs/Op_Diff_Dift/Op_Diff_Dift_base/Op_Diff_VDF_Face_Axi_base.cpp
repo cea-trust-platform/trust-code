@@ -396,7 +396,8 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_bords(Matrice_Morse&
                     flux1 = db_diffusivite*tau13*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
                   }
 
-                for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++) if (tab2[k]-1 == fac3) coeff[k] += signe*flux1;
+                for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++)
+                  if (tab2[k]-1 == fac3) coeff[k] += signe*flux1;
               }
             else if (ori1 == 1) // bord d'equation teta = cte
               {
@@ -416,7 +417,8 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_bords(Matrice_Morse&
 
                     const double flux2 = db_diffusivite*tau21*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
 
-                    for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++) if (tab2[k]-1 == fac3) coeff[k] += signe*flux2;
+                    for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++)
+                      if (tab2[k]-1 == fac3) coeff[k] += signe*flux2;
 
                     // Termes supplementaires dans le laplacien en axi : Ils sont integres comme des termes sources
                     const double coef_laplacien_axi = 0.5*db_diffusivite*tau21;
@@ -432,7 +434,8 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_bords(Matrice_Morse&
                     assert(ori3 == 2);
                     const double tau23 = 1/dist3;
                     const double flux3 = db_diffusivite*tau23*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
-                    for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++) if (tab2[k]-1 == fac3) coeff[k] += signe*flux3;
+                    for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++)
+                      if (tab2[k]-1 == fac3) coeff[k] += signe*flux3;
                   }
               }
             else // (ori1 == 2) bord d'equation Z = cte
@@ -454,7 +457,8 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_bords(Matrice_Morse&
                     flux4 = db_diffusivite*tau32*0.25*(surface(fac1)+surface(fac2))*(porosite(fac1)+porosite(fac2));
                   }
 
-                for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++) if (tab2[k]-1 == fac3) coeff[k] += signe*flux4;
+                for (int k = tab1[fac3]-1; k < tab1[fac3+1]-1; k++)
+                  if (tab2[k]-1 == fac3) coeff[k] += signe*flux4;
               }
             break;
           }

@@ -78,7 +78,8 @@ DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
   double fac;
 
   //vitesses aux faces
-  for (f = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++)
+  for (f = 0; f < zone.nb_faces(); f++)
+    for (n = 0; n < N; n++)
       {
         for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += vfd(f, i) * (a_r ? (*a_r)(e, n) : 1);
         sm(f, n) /= pf(f) * fac; //vitesse calculee
@@ -101,8 +102,10 @@ void Masse_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
 
   IntTrav sten(0, 2);
   sten.set_smart_resize(1);
-  for (f = 0, i = 0; f < zone.nb_faces(); f++) for (n = 0; n < N; n++, i++) //faces reelles
-      if (corr) for (m = 0; m < N; m++) sten.append_line(i, N * f + m);
+  for (f = 0, i = 0; f < zone.nb_faces(); f++)
+    for (n = 0; n < N; n++, i++) //faces reelles
+      if (corr)
+        for (m = 0; m < N; m++) sten.append_line(i, N * f + m);
       else sten.append_line(i, i);
 
   Matrix_tools::allocate_morse_matrix(inco.size_totale(), inco.size_totale(), sten, mat2);
@@ -126,17 +129,21 @@ void Masse_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
   DoubleTrav masse(N, N), masse_e(N, N); //masse alpha * rho, contribution
   for (f = 0; f < zone.nb_faces(); f++) //faces reelles
     {
-      if (!pbm) for (masse = 0, n = 0; n < N; n++) masse(n, n) = vf(f); //pas Pb_Multiphase ou CL -> pas de alpha * rho
+      if (!pbm)
+        for (masse = 0, n = 0; n < N; n++) masse(n, n) = vf(f); //pas Pb_Multiphase ou CL -> pas de alpha * rho
       else for (masse = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           {
             for (masse_e = 0, n = 0; n < N; n++) masse_e(n, n) = (*a_r)(e, n); //partie diagonale
             if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse_e); //partie masse ajoutee
-            for (n = 0; n < N; n++) for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) * masse_e(n, m); //contribution au alpha * rho de la face
+            for (n = 0; n < N; n++)
+              for (m = 0; m < N; m++) masse(n, m) += vfd(f, i) * masse_e(n, m); //contribution au alpha * rho de la face
           }
       for (n = 0; n < N; n++)
         {
           for (m = 0; m < N; m++) secmem(f, n) += pf(f) / dt * masse(n, m) * (passe(f, m) - resoudre_en_increments * inco(f, m));
-          if (mat) for (m = 0; m < N; m++) if (masse(n, m)) (*mat)(N * f + n, N * f + m) += pf(f) / dt * masse(n, m);
+          if (mat)
+            for (m = 0; m < N; m++)
+              if (masse(n, m)) (*mat)(N * f + n, N * f + m) += pf(f) / dt * masse(n, m);
         }
     }
 }
@@ -163,8 +170,11 @@ DoubleTab& Masse_PolyMAC_Face::corriger_solution(DoubleTab& x, const DoubleTab& 
   int f, n, N = x.line_size(), d, D = dimension;
 
   for (f = 0; f < zone.nb_faces_tot(); f++)
-    if (fcl(f, 0) == 2 || fcl(f, 0) == 4) for (n = 0; n < N; n++) x(f, n) = incr ? -vit(f, n) : 0; //Dirichlet homogene / Symetrie: on revient a 0
-    else if (fcl(f, 0) == 3) for (n = 0; n < N; n++) for (x(f, n) = incr ? -vit(f, n) : 0, d = 0; d < D; d++) //Dirichlet : valeur de la CL
+    if (fcl(f, 0) == 2 || fcl(f, 0) == 4)
+      for (n = 0; n < N; n++) x(f, n) = incr ? -vit(f, n) : 0; //Dirichlet homogene / Symetrie: on revient a 0
+    else if (fcl(f, 0) == 3)
+      for (n = 0; n < N; n++)
+        for (x(f, n) = incr ? -vit(f, n) : 0, d = 0; d < D; d++) //Dirichlet : valeur de la CL
           x(f, n) += nf(f, d) / fs(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
 
   return x;

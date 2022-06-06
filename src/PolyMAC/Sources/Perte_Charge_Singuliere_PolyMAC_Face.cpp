@@ -100,8 +100,12 @@ void Perte_Charge_Singuliere_PolyMAC_Face::dimensionner_blocs(matrices_t matrice
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
 
-  for (i = 0; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone.nb_faces() && fcl(f, 0) < 2) for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) //elem amont / aval si PolyMAC V2
-        if (e < zone.nb_elem()) for (d = 0; d < D; d++) for (n = 0; n < N; n++) stencil.append_line(N * (nf_tot + D * e + d) + n, N * f + n);
+  for (i = 0; i < num_faces.size(); i++)
+    if ((f = num_faces(i)) < zone.nb_faces() && fcl(f, 0) < 2)
+      for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) //elem amont / aval si PolyMAC V2
+        if (e < zone.nb_elem())
+          for (d = 0; d < D; d++)
+            for (n = 0; n < N; n++) stencil.append_line(N * (nf_tot + D * e + d) + n, N * f + n);
   tableau_trier_retirer_doublons(stencil);
   Matrix_tools::allocate_morse_matrix(equation().inconnue().valeurs().size_totale(), equation().inconnue().valeurs().size_totale(), stencil, mat2);
   mat.nb_colonnes() ? mat += mat2 : mat = mat2;
@@ -120,22 +124,31 @@ void Perte_Charge_Singuliere_PolyMAC_Face::ajouter_blocs(matrices_t matrices, Do
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
   int i, j, e, f, n, N = equation().inconnue().valeurs().line_size(), poly_v2 = sub_type(Zone_PolyMAC_P0, zone), semi = semi_impl.count(nom_inco), d, D = dimension, nf_tot = zone.nb_faces_tot();
   DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
-  for (i = 0; i < num_faces.size(); i++) if ((f = num_faces(i)) < zone.nb_faces())
+  for (i = 0; i < num_faces.size(); i++)
+    if ((f = num_faces(i)) < zone.nb_faces())
       {
         double fac = (direction_perte_charge() < 0 ? fs(f) : std::fabs(nf(f,direction_perte_charge()))) * pf(f) * K();
-        if (pbm) for (aar_f = 0, j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) for (n = 0; n < N; n++) aar_f(n) += vfd(f, j) / vf(f) * (*a_r)(e, n) * (*alpha)(e, n);
+        if (pbm)
+          for (aar_f = 0, j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++)
+            for (n = 0; n < N; n++) aar_f(n) += vfd(f, j) / vf(f) * (*a_r)(e, n) * (*alpha)(e, n);
         else aar_f = 1;
 
         if (!poly_v2 || fcl(f, 0) < 2) //contrib a la face : sauf si face de Dirichlet/Neumann en V2
           {
             for (n = 0; n < N; n++)  secmem(f, n) -= 0.5 * fac * aar_f(n) * vit(f, n) * std::fabs(vit(f, n));
-            if (mat) for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += fac * aar_f(n) * std::fabs(vit(f, n));
+            if (mat)
+              for (n = 0; n < N; n++) (*mat)(N * f + n, N * f + n) += fac * aar_f(n) * std::fabs(vit(f, n));
           }
-        if (poly_v2) for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++) if (e < zone.nb_elem()) //elem amont / aval si PolyMAC V2
+        if (poly_v2)
+          for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++)
+            if (e < zone.nb_elem()) //elem amont / aval si PolyMAC V2
               {
-                for (d = 0; d < D; d++) for (n = 0; n < N; n++) /* second membre */
+                for (d = 0; d < D; d++)
+                  for (n = 0; n < N; n++) /* second membre */
                     secmem(nf_tot + D * e + d, n) += (j ? -1 : 1) * fs(f) * (xv(f, d) - xp(e, d)) * 0.5 * fac * aar_f(n) * vit(f, n) * std::fabs(vit(f, n));
-                if (mat && !semi && fcl(f, 0) < 2) for (d = 0; d < D; d++) for (n = 0; n < N; n++) /* derivee (pas possible en semi-implicite) */
+                if (mat && !semi && fcl(f, 0) < 2)
+                  for (d = 0; d < D; d++)
+                    for (n = 0; n < N; n++) /* derivee (pas possible en semi-implicite) */
                       (*mat)(N * (nf_tot + D * e + d) + n, N * f + n) -= (j ? -1 : 1) * fs(f) * (xv(f, d) - xp(e, d)) * fac * aar_f(n) * std::fabs(vit(f, n));
               }
       }

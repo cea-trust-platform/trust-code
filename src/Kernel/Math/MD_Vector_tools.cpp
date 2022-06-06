@@ -698,14 +698,16 @@ MD_Vector MD_Vector_tools::extend(const MD_Vector& src, extra_item_t& items)
     }
 
   /* ajout de ce qu'on doit envoyer/recevoir en plus */
-  for (p = 0; p < Process::nproc(); p++) for (i = 0; i < send[p].size_array(); i++) map[p][0].push_back(send[p][i]);
+  for (p = 0; p < Process::nproc(); p++)
+    for (i = 0; i < send[p].size_array(); i++) map[p][0].push_back(send[p][i]);
   for (p = 0, idx = nb_items_tot; p < Process::nproc(); idx += nrecv[p], p++)
     if (nrecv[p]) map[p][2].insert(map[p][2].end(), { idx, idx + nrecv[p] });
 
   /* reconstruction de tableaux pour MD_Vector_std */
   ArrOfInt pe_voisins(map.size());
   ArrsOfInt items_to_send(map.size()), items_to_recv(map.size()), blocs_to_recv(map.size());
-  for (p = 0, i = 0; p < Process::nproc(); nb_items_tot += nrecv[p],  p++) if (map.count(p))
+  for (p = 0, i = 0; p < Process::nproc(); nb_items_tot += nrecv[p],  p++)
+    if (map.count(p))
       {
         pe_voisins[i] = p;
         items_to_send[i].resize(map[p][0].size()), std::copy(map[p][0].begin(), map[p][0].end(), items_to_send[i].addr());

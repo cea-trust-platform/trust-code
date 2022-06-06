@@ -119,7 +119,8 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
-              for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
+              for (num_face=ndeb; num_face<nfin; num_face++)
+                for (n = 0; n < N; n++)
                   ch_tab(num_face, n) = 0;
             }
           else if ( sub_type(Dirichlet_entree_fluide,la_cl) )
@@ -129,7 +130,8 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
 
-              for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
+              for (num_face=ndeb; num_face<nfin; num_face++)
+                for (n = 0; n < N; n++)
                   {
                     // WEC : optimisable (pour chaque face recherche le bon temps !)
                     // vn
@@ -145,7 +147,8 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
-              for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
+              for (num_face=ndeb; num_face<nfin; num_face++)
+                for (n = 0; n < N; n++)
                   ch_tab(num_face, n) = 0;
             }
           else if ( sub_type(Dirichlet_paroi_defilante,la_cl) )
@@ -153,7 +156,8 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
-              for (num_face=ndeb; num_face<nfin; num_face++) for (n = 0; n < N; n++)
+              for (num_face=ndeb; num_face<nfin; num_face++)
+                for (n = 0; n < N; n++)
                   ch_tab(num_face, n) = 0;
             }
         }

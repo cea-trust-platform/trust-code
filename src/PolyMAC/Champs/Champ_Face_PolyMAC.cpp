@@ -103,7 +103,8 @@ int Champ_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
 void Champ_Face_PolyMAC::init_auxiliary_variables()
 {
   const Zone_PolyMAC& zone = ref_cast( Zone_PolyMAC,ref_zone_vf_.valeur());
-  for (int n = 0; n < nb_valeurs_temporelles(); n++) if (futur(n).size_reelle_ok())
+  for (int n = 0; n < nb_valeurs_temporelles(); n++)
+    if (futur(n).size_reelle_ok())
       {
         DoubleTab& vals = futur(n);
         vals.set_md_vector(MD_Vector()); //on enleve le MD_Vector...
@@ -216,7 +217,8 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
   int e, f, j, r;
 
   val = 0;
-  for (e = 0; e < val.dimension(0); e++) for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+  for (e = 0; e < val.dimension(0); e++)
+    for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
       {
         const double coef = is_vit ? pf(f) / pe(e) : 1.0;
         for (r = 0; r < dimension; r++) val(e, r) += fs(f) / ve(e) * (xv(f, r) - xp(e, r)) * (e == f_e(f, 0) ? 1 : -1) * inco(f) * coef;
@@ -233,13 +235,15 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_pol
   int e, f, j, d, D = dimension, n, N = inco.line_size();
   assert(ve.line_size() == N * D);
 
-  for (int poly = 0; poly < les_polys.size(); poly++) if ((e = les_polys(poly)) != -1)
+  for (int poly = 0; poly < les_polys.size(); poly++)
+    if ((e = les_polys(poly)) != -1)
       {
         for (n = 0; n < N * D; n++) val(e, n) = 0;
         for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
           {
             const double coef = is_vit ? pf(f) / pe(e) : 1.0;
-            for (d = 0; d < D; d++) for (n = 0; n < N; n++) val(e, N * d + n) += fs(f) / ve(e) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * inco(f, n) * coef;
+            for (d = 0; d < D; d++)
+              for (n = 0; n < N; n++) val(e, N * d + n) += fs(f) / ve(e) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * inco(f, n) * coef;
           }
       }
 }
@@ -274,7 +278,8 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, cons
   zone.zone().domaine().creer_tableau_elements(ve);
   bool is_vit = cha.le_nom().debute_par("vitesse") && !cha.le_nom().debute_par("vitesse_debitante");
   interp_ve(cha.valeurs(), ve, is_vit);
-  for (int p = 0; p < les_polys.size(); p++) for (int r = 0, e = les_polys(p); e < zone.nb_elem() && r < N * D; r++) val(p, r) = (e==-1) ? 0. : ve(e, r);
+  for (int p = 0; p < les_polys.size(); p++)
+    for (int r = 0, e = les_polys(p); e < zone.nb_elem() && r < N * D; r++) val(p, r) = (e==-1) ? 0. : ve(e, r);
   return val;
 }
 
@@ -324,7 +329,8 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_faces(DoubleTab& val) const
   val.resize(zone.nb_faces(), N * D);
 
   for (int f = 0; f < zone.nb_faces(); f++)
-    for (d = 0; d < D; d++) for (n = 0; n < N; n++) val(f, N * d + n) = cha.valeurs()(f, n) * zone.face_normales(f, d) / zone.face_surfaces(f);
+    for (d = 0; d < D; d++)
+      for (n = 0; n < N; n++) val(f, N * d + n) = cha.valeurs()(f, n) * zone.face_normales(f, d) / zone.face_surfaces(f);
   return val;
 }
 
@@ -357,7 +363,8 @@ DoubleTab& Champ_Face_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x,
           const int elem = face_voisins(face, dir);
           if (elem != -1)
             {
-              for (d = 0; d < dim; d++) for (n = 0; n < N; n++) x(i, N * d + n) = vectoriel ? ve(elem, N * d + n) : val(face, n);
+              for (d = 0; d < dim; d++)
+                for (n = 0; n < N; n++) x(i, N * d + n) = vectoriel ? ve(elem, N * d + n) : val(face, n);
             }
         }
     }

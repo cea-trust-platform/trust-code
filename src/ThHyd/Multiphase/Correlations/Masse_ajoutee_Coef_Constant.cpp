@@ -50,7 +50,8 @@ Entree& Masse_ajoutee_Coef_Constant::readOn(Entree& is)
 void Masse_ajoutee_Coef_Constant::ajouter(const double *alpha, const double *rho, DoubleTab& a_r) const
 {
   int k, N = a_r.dimension(0);
-  for (k = 0; k < N; k++) if (n_l != k)
+  for (k = 0; k < N; k++)
+    if (n_l != k)
       {
         a_r(k,  k ) += beta * rho[n_l] * alpha[k];
         a_r(k, n_l) -= beta * rho[n_l] * alpha[k];

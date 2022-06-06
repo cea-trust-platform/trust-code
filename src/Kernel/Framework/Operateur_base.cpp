@@ -148,7 +148,8 @@ void Operateur_base::completer()
   // Time cl1_compo1  cl1_compo2 ...
   // on prend en compte la longueur de compo1, compo2, etc...
   Noms noms_compo_courts(inco->noms_compo());
-  if (noms_compo_courts.size() > 1) for (int i = 0; i < noms_compo_courts.size(); ++i)
+  if (noms_compo_courts.size() > 1)
+    for (int i = 0; i < noms_compo_courts.size(); ++i)
       {
         noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(eqn.inconnue().le_nom());
         w_suffix = std::max(w_suffix, noms_compo_courts[i].longueur());
@@ -459,7 +460,8 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
       int nb_compo = flux_bords_.line_size();
       if (type=="moment" && dimension == 2) nb_compo=1;
       Noms noms_compo_courts(eqn.inconnue()->noms_compo());
-      if (nb_compo > 1) for (int i = 0; i < noms_compo_courts.size(); ++i)
+      if (nb_compo > 1)
+        for (int i = 0; i < noms_compo_courts.size(); ++i)
           noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(eqn.inconnue().le_nom());
 
       // ecriture de l'entete des colonnes de la forme
@@ -482,7 +484,8 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
                 }
               else
                 {
-                  if (nb_compo > 1) for (int d = 0; d < nb_compo; ++d)
+                  if (nb_compo > 1)
+                    for (int d = 0; d < nb_compo; ++d)
                       {
                         os.add_col((ch + "_" + noms_compo_courts[d]).getChar());
                       }
@@ -490,7 +493,8 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
                   // if periodic BC, we write the boundary name twice on the header of .out files
                   if ((sub_type(Periodique,les_cls[num_cl].valeur())) && (Objet_U::nom_du_cas()+"_"+eqn.probleme().le_nom()+"_Force_pression"!=out_))
                     {
-                      if (nb_compo > 1) for (int d = 0; d < nb_compo; ++d)
+                      if (nb_compo > 1)
+                        for (int d = 0; d < nb_compo; ++d)
                           {
                             os.add_col((ch + "_" + noms_compo_courts[d]).getChar());
                           }
@@ -499,9 +503,11 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
                 }
             }
         }
-      if (type!="sum" && type!="moment") if (Objet_U::nom_du_cas()+"_"+eqn.probleme().le_nom()+"_Force_pression"!=out_)
+      if (type!="sum" && type!="moment")
+        if (Objet_U::nom_du_cas()+"_"+eqn.probleme().le_nom()+"_Force_pression"!=out_)
           {
-            if (nb_compo > 1) for (int d = 0; d < nb_compo; ++d)
+            if (nb_compo > 1)
+              for (int d = 0; d < nb_compo; ++d)
                 os.add_col((Nom("Total_") + noms_compo_courts[d]).getChar());
             else os.add_col("Total");
           }
