@@ -17,7 +17,7 @@
       subroutine inittaillecommon(nreact,ncons)
       implicit none
       integer nreact,ncons,ii,jj
-#Pinclude(common_chimie.h)
+#Pinclude(common_chimie.def)
       nr=nreact
       ncs=ncons
       marqueur_espece_en_competition=-1
@@ -36,7 +36,7 @@
       integer ir,pactivite(*),contrereac
       double precision pstochio(*)
       integer ic
-#Pinclude(common_chimie.h)
+#Pinclude(common_chimie.def)
       aveccontrereaction(ir)=contrereac
       do ic=1,ncs
          stochio(ir,ic)=pstochio(ic)
@@ -46,17 +46,17 @@
       subroutine setcwreaction(ir,rcw)
       double precision rcw
       integer ir
-#Pinclude(common_chimie.h)
+#Pinclude(common_chimie.def)
       cw(ir)=rcw
       end
       subroutine setmarqueur(marqueur)
-#Pinclude(common_chimie.h)
+#Pinclude(common_chimie.def)
 c     il faut decaler de 1 a cause du fortran....      
       marqueur_espece_en_competition=marqueur+1
       end
       subroutine printcommon()
       integer ir,ic
-#Pinclude(common_chimie.h)
+#Pinclude(common_chimie.def)
       print *,'nr',nr, 'ncs',ncs
       print *,'marqueur',marqueur_espece_en_competition
       do ir=1,nr
@@ -93,7 +93,7 @@ c      call print_common()
       subroutine dlsodechimies(neq,y,t,tout,t_mel,itol,rtol,atol,
      1     rwork,lrw,iwork,liw)
       implicit none
-#Pinclude(common_chimie.h)
+#Pinclude(common_chimie.def)
       external f_chim_2,jac_chim_2
       INTEGER NEQ, ITOL, ITASK, ISTATE, IOPT, LRW, IWORK, LIW, MF
       DOUBLE PRECISION Y, T, TOUT, RTOL, ATOL, RWORK,t_mel
@@ -120,7 +120,7 @@ c      call print_common()
       double precision t, y, ydot, isto,cmin
       double precision  w1,cmin1
       dimension y(neq), ydot(neq)
-#Pinclude(common_chimie.h)
+#Pinclude(common_chimie.def)
       double precision w
       
       mcr=0
@@ -201,7 +201,7 @@ c     if (isto.ne.0)
       integer neq, ir,ii,ic,ia
       double precision t, y, ydot, isto
       dimension y(neq), ydot(neq)
-#Pinclude(common_chimie.h)
+#Pinclude(common_chimie.def)
    
       double precision w
       do ic=1,neq
@@ -233,7 +233,7 @@ c            if (isto.ne.0)
       integer neq, ml,mu, nrowpd,ic,jc,ir,ii
       double precision t, y, pd,isto
       dimension y(neq), pd(nrowpd,neq)
-#Pinclude(common_chimie.h)
+#Pinclude(common_chimie.def)
       integer ia
   
       double precision w
@@ -274,7 +274,7 @@ c            if (isto.ne.0)
       integer neq, ml,mu, nrowpd,ic,jc,ir,ii
       double precision t, y, pd,isto
       dimension y(neq), pd(nrowpd,neq)
-#Pinclude(common_chimie.h)
+#Pinclude(common_chimie.def)
       integer ia
   
       double precision w
