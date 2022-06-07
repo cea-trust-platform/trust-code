@@ -34,7 +34,7 @@ public:
 protected :
 #ifdef PETSCKSP_H
 #ifdef PETSC_HAVE_CUDA
-  void Create_objects(const Matrice_Morse&) override;
+  void Create_objects(const Matrice_Morse&, int blocksize) override;
   void Update_matrix(Mat&, const Matrice_Morse&) override;
   bool check_stencil(const Matrice_Morse&) override;
   int solve(ArrOfDouble& residual) override;

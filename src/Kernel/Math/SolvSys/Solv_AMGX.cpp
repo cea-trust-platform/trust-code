@@ -53,7 +53,7 @@ void Solv_AMGX::initialize()
 }
 
 // Creation des objets
-void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse)
+void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse, int blocksize))
 {
   initialize();
   if (read_matrix_)
