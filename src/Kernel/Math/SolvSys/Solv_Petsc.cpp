@@ -1327,7 +1327,11 @@ void Solv_Petsc::create_solver(Entree& entree)
 const Nom Solv_Petsc::config()
 {
   Nom str(Objet_U::nom_du_cas());
+#ifdef PETSCKSP_H
   str+=option_prefix_.prefix("_");
+#else
+  Process::exit("ToDo fix Solv_Petsc::config(): build config filename with numero_solve in the constructor!");
+#endif
   str+=amgx_ ? ".amgx" : ".petsc";
   return str;
 }

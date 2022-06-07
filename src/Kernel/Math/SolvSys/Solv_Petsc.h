@@ -85,14 +85,14 @@ public :
   }
   // Timers:
   static PetscLogStage KSPSolve_Stage_;
-#endif
-  static int instance;               // Nombre d'instances en cours de la classe
-  static int numero_solveur;         // Compte les solveurs crees et utilises pour le prefix des options
   void set_rtol(const double& rtol)
   {
     seuil_relatif_ = rtol;
     KSPSetTolerances(SolveurPetsc_, seuil_relatif_, seuil_, (divtol_==0 ? PETSC_DEFAULT : divtol_), nb_it_max_);
   }
+#endif
+  static int instance;               // Nombre d'instances en cours de la classe
+  static int numero_solveur;         // Compte les solveurs crees et utilises pour le prefix des options
 protected :
 #ifdef PETSCKSP_H
   void construit_renum(const DoubleVect&);
