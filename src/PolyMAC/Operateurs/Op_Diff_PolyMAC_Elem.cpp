@@ -230,12 +230,12 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
       const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs())), v_part.emplace_back(inco.back());
       corr.push_back(sub_type(Energie_Multiphase, op_ext[i]->equation()) && ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).has_correlation("flux_parietal")
-                     ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal")) : NULL);
+                     ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal").valeur()) : NULL);
       N.push_back(inco[i].get().line_size()), ne_tot.push_back(zone[i].get().nb_elem_tot()), fcl.push_back(std::ref(ch.fcl()));
     }
 
   /* que faire avec les variables auxiliaires ? */
-  double t = equation().schema_temps().temps_courant(), dt = equation().schema_temps().pas_de_temps();
+  double t = equation().schema_temps().temps_courant(), dt = equation().schema_temps().pas_de_temps(), fac, prefac;
   if (aux_only) use_aux_ = 0; /* 1) on est en train d'assembler le systeme de resolution des variables auxiliaires lui-meme */
   else if (mat[0] && !semi) t_last_aux_ = t + dt, use_aux_ = 0; /* 2) on est en implicite complet : pas besoin de mat_aux / var_aux, on aura les variables a t + dt */
   else if (t_last_aux_ < t) update_aux(t); /* 3) premier pas a ce temps en semi-implicite : on calcule les variables auxiliaires a t et on les stocke dans var_aux */
@@ -294,10 +294,10 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
     if (!aux_only && semi && mat[0])
       for (n = 0; n < N[0]; n++) //semi-implicite : T_f^+ = var_aux
         secmem(ne_tot[0] + f, n) += v_aux[0](f, n) - (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs())(ne_tot[0] + f, n), (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + f) + n)++;
-    else if (fcl[0](f, 0) == 0) continue; //face interne -> rien
+    else if (fcl[0](f, 0) == 0 || fcl[0](f, 0) == 5) continue; //face interne ou Neumann_val_ext -> rien
     else if (corr[0]) //Pb_Multiphase avec flux parietal -> on ne traite (pour le moment) que Dirichlet et Echange_contact
       {
-        if (fcl[0](f, 0) != 3 && fcl[0](f, 0) < 6) abort();
+        if (fcl[0](f, 0) == 2) abort(); //Echange_global_impose -> on ne sait pas faire (que vaut T_paroi dans l'element?)
         const Echange_contact_PolyMAC *ech = fcl[0](f, 0) == 3 ? &ref_cast(Echange_contact_PolyMAC, cls[0].get()[fcl[0](f, 1)].valeur()) : NULL;
         int o_p = ech ? ech->o_idx : -1, o_f = ech ? ech->f_dist(fcl[0](f, 2)) : -1;
         const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
@@ -306,16 +306,24 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
                           &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
         DoubleTrav qpk(N[0]), dTf_qpk(N[0], N[0]), dTp_qpk(N[0]), qpi(N[0], N[0]), dTf_qpi(N[0], N[0], N[0]), dTp_qpi(N[0], N[0]), v(N[0], D), nv(N[0]);
         for (e = f_e[0](f, 0), i = 0; i < e_f[0].get().dimension(1) && (fb = e_f[0](e, i)) >= 0; i++)
-          for (d = 0; d < D; d++)
-            for (n = 0; n < N[0]; n++)
-              v(n, d) += fs[0](fb) * (xv[0](fb, d) - xp[0](e, d)) * pf[0](fb) * (e == f_e[0](fb, 0) ? 1 : -1) * vit(fb, n) / (pe[0](e) * ve[0](e));
-        for (n = 0; n < N[0]; n++)
-          for (d = 0; d < D; d++) nv(n) += v(n, d) * v(n, d);
-        for (n = 0; n < N[0]; n++) nv(n) = sqrt(nv(n));
-        double Tp = ech ? v_aux[o_p](o_f, 0) : fcl[0](f, 0) == 6 ? ref_cast(Dirichlet, cls[0].get()[fcl[0](f, 1)].valeur()).val_imp(fcl[0](f, 2), 0) : 0;
+          for (prefac = fs[0](fb) * pf[0](fb) * (e == f_e[0](fb, 0) ? 1 : -1) / (pe[0](e) * ve[0](e)), n = 0; n < N[0]; n++)
+            for (fac = prefac * vit(fb, n), d = 0; d < D; d++)
+              v(n, d) += fac * (xv[0](fb, d) - xp[0](e, d));
+        for (n = 0; n < N[0]; n++) nv(n) = sqrt(zone[0].get().dot(&v(n, 0), &v(n, 0)));
+        //Tparoi : estimation initiale + Newton si on ne la connait pas
+        double h_imp = fcl[0](f, 0) == 1 ? ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur()).h_imp(fcl[0](f, 2), 0) : 0,
+               T_ext = fcl[0](f, 0) == 1 ? ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur()).T_ext(fcl[0](f, 2), 0) : 0,
+               Tp = ech ? v_aux[o_p](o_f, 0) : fcl[0](f, 0) == 5 ? 0 : fcl[0](f, 0) == 6 ? ref_cast(Dirichlet, cls[0].get()[fcl[0](f, 1)].valeur()).val_imp(fcl[0](f, 2), 0)
+                    :  fcl[0](f, 0) == 1 ? T_ext : v_aux[0](f, 0), dTp, FT, dFTp;
         //appel : on n'est implicite qu'en les temperatures
-        corr[0]->qp(N[0], f, dh(e), dh(e), &alpha(e, 0), &v_aux[0](f, 0), press(e), nv.addr(), Tp, &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
-                    &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi, NULL, j);
+        for (int it = 0; it < 10 && (!it || std::abs(dTp) > 1e-5); Tp += dTp, it++)
+          {
+            corr[0]->qp(N[0], f, dh(e), dh(e), &alpha(e, 0), &v_aux[0](f, 0), press(e), nv.addr(), Tp, &lambda(e, 0), &mu(e, 0), &rho(e, 0), &Cp(e, 0),
+                        &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi, NULL, j);
+            for (FT = 0, dFTp = 0; n < N[0]; n++) FT += qpk(n), dFTp += dTp_qpk(n);
+            dTp = fcl[0](f, 0) == 5 ? (ref_cast(Neumann, cls[0].get()[fcl[0](f, 1)].valeur()).flux_impose(fcl[0](f, 2), 0) - FT) / dFTp :
+                  fcl[0](f, 0) == 1 ? (h_imp * (T_ext - Tp) - FT) / (dFTp + h_imp) : 0;
+          }
         for (n = 0; n < N[0]; n++) secmem(!aux_only * ne_tot[0] + f, n) += fs[0](f) * qpk(n);//second membre
         if (mat[0])
           for (k1 = 0; k1 < N[0]; k1++)
@@ -338,17 +346,15 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
         if (corr[o_p] || N[o_p] != N[0]) /* correlation de l'autre cote */
           {
             const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[o_p]->equation().probleme());
-            const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = zone[0].get().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
+            const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = zone[o_p].get().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(),
                              &vit = pbm.eq_qdm.inconnue().passe(), &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(),
                               &rho = pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
             DoubleTrav qpk(N[o_p]), dTf_qpk(N[o_p], N[o_p]), dTp_qpk(N[o_p]), qpi(N[o_p], N[o_p]), dTf_qpi(N[o_p], N[o_p], N[o_p]), dTp_qpi(N[o_p], N[o_p]), v(N[o_p], D), nv(N[o_p]);
             for (i = 0; i < e_f[o_p].get().dimension(1) && (fb = e_f[o_p](o_e, i)) >= 0; i++)
-              for (d = 0; d < D; d++)
-                for (n = 0; n < N[o_p]; n++)
-                  v(n, d) += fs[o_p](fb) * (xv[o_p](fb, d) - xp[o_p](e, d)) * pf[o_p](fb) * (e == f_e[o_p](fb, 0) ? 1 : -1) * vit(fb, n) / (pe[o_p](e) * ve[o_p](e));
-            for (n = 0; n < N[o_p]; n++)
-              for (d = 0; d < D; d++) nv(n) += v(n, d) * v(n, d);
-            for (n = 0; n < N[o_p]; n++) nv(n) = sqrt(nv(n));
+              for (prefac = fs[o_p](fb) * pf[o_p](fb) * (o_e == f_e[o_p](fb, 0) ? 1 : -1) / (pe[o_p](o_e) * ve[o_p](o_e)), n = 0; n < N[o_p]; n++)
+                for (fac = prefac * vit(fb, n), d = 0; d < D; d++)
+                  v(n, d) += fac * (xv[o_p](fb, d) - xp[o_p](o_e, d));
+            for (n = 0; n < N[o_p]; n++) nv(n) = sqrt(zone[0].get().dot(&v(n, 0), &v(n, 0)));
             //appel : on n'est implicite qu'en les temperatures
             corr[o_p]->qp(N[o_p], o_f, dh(o_e), dh(o_e), &alpha(o_e, 0), &v_aux[o_p](o_f, 0), press(e), nv.addr(), v_aux[0](f, 0), &lambda(o_e, 0), &mu(o_e, 0), &rho(o_e, 0), &Cp(o_e, 0),
                           &qpk, NULL, NULL, NULL, &dTf_qpk, &dTp_qpk, &qpi, NULL, NULL, NULL, &dTf_qpi, &dTp_qpi, NULL, j);

@@ -196,7 +196,7 @@ void Assembleur_P_PolyMAC::dimensionner_continuite(matrices_t matrices, int aux_
       else if (!fcl(f, 0))
         for (sten_p.append_line(!aux_only * ne_tot + f, e), j = 0; j < w2.dimension(1); j++) //face interne
           {
-            if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) < 2)
+            if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) != 1)
               for (m = 0; m < M; m++)
                 sten_p.append_line(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) + m);
           }
@@ -218,7 +218,7 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
   const DoubleTab *alpha = pbm ? &pbm->eq_masse.inconnue().valeurs() : NULL, &press = equation().probleme().get_champ("pression").valeurs(),
                    &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL, &nf = zone.face_normales();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &e_f = zone.elem_faces();
-  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces();
+  const DoubleVect& ve = zone.volumes(), &pe = zone.porosite_elem(), &fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces();
   int i, j, e, f, fb, n, N = vit.line_size(), m, M = press.line_size(), ne_tot = zone.nb_elem_tot(), d, D = dimension;
   Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : NULL, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav w2, fac(N);
@@ -242,19 +242,19 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
       if ((f = e_f(e, i)) >= zone.nb_faces()) continue; //faces virtuelles
       else if (!fcl(f, 0)) //face interne
         {
-          for (acc = 0, j = 0; j < w2.dimension(1); acc+= pe(e) * w2(i, j, 0), j++)
+          for (acc = 0, j = 0; j < w2.dimension(1); acc+= pe(e) * vf(f) * w2(i, j, 0), j++)
             for (m = 0; m < M; m++) //second membre
-              secmem(!aux_only * ne_tot + f, m) -= pe(e) * w2(i, j, 0) * (press(ne_tot + e_f(e, j), m) - press(e, m));
+              secmem(!aux_only * ne_tot + f, m) -= pe(e) * vf(f) * w2(i, j, 0) * (press(ne_tot + e_f(e, j), m) - press(e, m));
           for (m = 0; m < M; m++) mat_p(M * (!aux_only * ne_tot + f) + m, M * e + m) -= acc;
           for (j = 0; j < w2.dimension(1); j++) //matrice (sauf bords de Meumann)
             if (w2(i, j, 0) && fcl(fb = e_f(e, j), 0) != 1)
               for (m = 0; m <M; m++)
-                mat_p(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) + m) += pe(e) * w2(i, j, 0);
+                mat_p(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + fb) + m) += pe(e) * vf(f) * w2(i, j, 0);
         }
       else if (fcl(f, 0) == 1) //Neumann -> egalites p_f = p_imp
         {
-          for (m = 0; m < M; m++) secmem(M * (!aux_only * ne_tot + f) + m) = ref_cast(Neumann, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), m) - press(ne_tot + f, m);
-          for (m = 0; m < M; m++) mat_p(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + f) + m) = 1;
+          for (m = 0; m < M; m++) secmem(M * (!aux_only * ne_tot + f) + m) = fs(f) * (ref_cast(Neumann, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), m) - press(ne_tot + f, m));
+          for (m = 0; m < M; m++) mat_p(M * (!aux_only * ne_tot + f) + m, M * (ne_tot + f) + m) = fs(f);
         }
       else  //Dirichlet -> egalite flux_tot_imp - flux_tot = 0
         {
@@ -265,12 +265,12 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
             }
           else if (M != N) abort(); //sinon, il faut autant de pressions que de vitesses
 
-          for (n = 0, m = 0; n < N; n++, m += (M > 1)) secmem(!aux_only * ne_tot + f, m) += fac(n) * vit(f, n);
+          for (n = 0, m = 0; n < N; n++, m += (M > 1)) secmem(!aux_only * ne_tot + f, m) += vf(f) * fac(n) * vit(f, n);
           if (fcl(f, 0) == 3)
             for (d = 0; d < D; d++)
               for (n = 0, m = 0; n < N; n++, m += (M > 1)) //contrib de la valeur imposee: Dirichlet non homogene seulement
-                secmem(!aux_only * ne_tot + f, m) -= fac(n) * nf(f, d) / fs(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
-          for (n = 0, m = 0; n < N; n++, m += (M > 1))  mat_v(M * (!aux_only * ne_tot + f) + m, N * f + n) -= fac(n);
+                secmem(!aux_only * ne_tot + f, m) -= vf(f) * fac(n) * nf(f, d) / fs(f) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n);
+          for (n = 0, m = 0; n < N; n++, m += (M > 1)) mat_v(M * (!aux_only * ne_tot + f) + m, N * f + n) -= vf(f) * fac(n);
         }
 }
 
