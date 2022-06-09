@@ -5,3 +5,4 @@ if [ -f "Cas.data" ]; then
 elif [ -f "Cas2.data" ]; then
   make_PAR.data Cas2.data 2 > decoup.out
 fi
+exit 0

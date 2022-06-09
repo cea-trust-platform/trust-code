@@ -347,7 +347,9 @@ class TRUSTCase(object):
 
         if len(row) == 6:
             row_arrange = row[0:5]
-            row_arrange[4] = str(row[4]) + "-" + str(row[5])
+            row_arrange[4] = str(row[4])
+            if (row[5] != row[4]):
+                row_arrange[4] += "-" + str(row[5])
             row = row_arrange
 
         zeTable.addLigne([row], self.dir_ + "/" + self.name_)
@@ -705,7 +707,7 @@ def printCases():
     for c in getCases():
         text += "* " + c.dir_ + "/" + c.name_ + ".data : \n"
     displayMD(text)
-
+    
 
 def extractNRCases():
     """ Prints out the list of cases in a suitable format for processing by validation and lance_test
@@ -748,7 +750,6 @@ def tablePerf():
     """ Prints the table of performance
     """
     from . import plot
-
     columns = ["host", "system", "Total CPU Time", "CPU time/step", "number of cells"]
     zeTable = plot.Table(columns)
     for case in getCases():
