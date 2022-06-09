@@ -39,7 +39,6 @@
 #include <Schema_Implicite_base.h>
 #include <Solveur_Implicite_Base.h>
 #include <Param.h>
-#include <String2.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id diffusion_implicite_counter_;
@@ -67,8 +66,8 @@ Equation_base::Equation_base()
 
 int Equation_base::equation_non_resolue() const
 {
-  String2 str= equation_non_resolue_.getString();
-  String2 str2("input_int_value");
+  std::string str= equation_non_resolue_.getString();
+  std::string str2("INPUT_INT_VALUE");
   if (str.compare(str2)==0)
     {
       Nom name = eq_non_resolue_input_.getName();
