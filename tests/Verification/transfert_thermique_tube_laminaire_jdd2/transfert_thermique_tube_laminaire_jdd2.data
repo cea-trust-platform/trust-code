@@ -42,7 +42,7 @@ Read sch
 }
 
 PolyMAC_P0  dis
-option_PolyMAC_P0 {  }
+Option_PolyMAC_P0 {  }
 
 Fluide_Incompressible eau_liquide
 Read eau_liquide
@@ -110,7 +110,7 @@ Read pb
         initial_conditions { temperature Champ_Uniforme 1 0 }
         boundary_conditions
         {
-            wall    paroi_flux_impose Champ_Front_Uniforme 1 -1
+            wall    paroi_flux_impose Champ_Front_Uniforme 1 1
             bottom  frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
             top     frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
         }
