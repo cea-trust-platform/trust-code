@@ -30,29 +30,29 @@ diff -r bin/BUILD64/patch/ThirdPart/src/LIBMFFT_C/jmfft.h ./ThirdPart/src/LIBMFF
 > #define INTEGER int
 Only in bin/BUILD64/patch/ThirdPart/src/LIBSKIT/patch: color.f
 diff -r bin/BUILD64/patch/src/Kernel/Utilitaires/arch.h ./src/Kernel/Utilitaires/arch.h
-58,59c58,59
+51,52c51,52
 < #define IOS_OPEN_MODE long
 < #define IOS_FORMAT long
 ---
 > #define IOS_OPEN_MODE int
 > #define IOS_FORMAT int
-64c64
+57c57
 < void srand48(long) ;
 ---
 > void srand48(int) ;
-82,83c82,83
+75,76c75,76
 < // on definit les integer comme des long (4 octets)
 < // et non plus des long long (4 octets sur 32bits ou 8 octets sur 64bits)
 ---
 > // on definit les integer comme des int (4 octets)
 > // et non plus des long int (4 octets sur 32bits ou 8 octets sur 64bits)
-85,86c85,86
+78,79c78,79
 < typedef long entier;
 < typedef long integer;
 ---
 > typedef int entier;
 > typedef int integer;
-88c88
+81c81
 < #define INT_is_64_
 ---
 > //#define INT_is_64_
