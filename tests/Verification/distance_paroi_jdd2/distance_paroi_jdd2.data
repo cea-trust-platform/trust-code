@@ -81,8 +81,8 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 
-PolyMAC_V2  dis
-option_polymac_v2 {  }
+PolyMAC_P0  dis
+option_polymac_P0 {  }
 
 Schema_euler_implicite sch
 Read sch
