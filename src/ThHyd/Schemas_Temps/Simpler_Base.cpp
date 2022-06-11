@@ -253,7 +253,7 @@ void Simpler_Base::assembler_matrice_pression_implicite(Equation_base& eqn_NS,co
   else
     {
       DoubleTab vol2(present);
-      int ns = vol2.dimension(0);
+      int ns = vol2.dimension_tot(0);
       for (int i=0; i<ns; i++)
         for (int c=0; c<nb_comp; c++)
           vol2(i,c) = matrice(i*nb_comp+c,i*nb_comp+c);

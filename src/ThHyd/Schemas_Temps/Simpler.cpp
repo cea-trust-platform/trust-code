@@ -52,7 +52,8 @@ int inverser_par_diagonale(const Matrice_Morse& matrice,const DoubleTrav& resu,c
       deux_entrees=1;
       nb_comp=resu.dimension(1);
     }
-  int nb_ligne_reel=correction_en_vitesse.dimension(0);
+  ConstDoubleTab_parts part(correction_en_vitesse);
+  int nb_ligne_reel=part[0].dimension(0);
   // Determine U^
   if (deux_entrees==0)
     {

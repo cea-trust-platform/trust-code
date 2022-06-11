@@ -514,8 +514,8 @@ void Simple::calculer_correction_en_vitesse(const DoubleTrav& correction_en_pres
   if(deux_entrees)
     nb_comp = correction_en_vitesse.dimension(1);
 
-  int nb_ligne_reel = correction_en_vitesse.dimension(0);
-  if ((Process::nproc()==1)&& (nb_ligne_reel!=matrice.ordre()/nb_comp)) abort();
+  ConstDoubleTab_parts part(correction_en_vitesse);
+  int nb_ligne_reel = part[0].dimension(0);
   if (deux_entrees==0)
     {
       // D(Uk-1)^-1 resu
