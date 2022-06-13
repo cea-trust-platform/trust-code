@@ -68,7 +68,7 @@ AmgX,AmgXWrapper_331eba32db693528749bd2c46158073079d80972.tar.gz,,PL,MIT,https:/
 AmgX,AmgX_6dba8067ca.tar.gz,,PL,BSD 3,https://github.com/NVIDIA/AMGX
 AmgX,nvc_get_devices.tgz,,GF,LGPL,http://files.salome-platform.org,http://downloads.sourceforge.net/project/trust-platform/1.7.3/extra/nvc_get_devices.tgz,
 gnuplot,gnuplot-5.2.7.tar.gz,outil,AC,specifique,http://gnuplot.sourceforge.net/,http://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.7/gnuplot-5.2.7.tar.gz/download,
-SALOME,medcoupling-9.8.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,,
+SALOME,medcoupling-9.9.0.tar.gz,,abn,LGPL,http://files.salome-platform.org,,
 utils,bc-1.06.tar.gz,outil,GF,GPL,http://www.gnu.org/software/bc,http://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz,
 utils,gawk-4.1.4.tar.gz,outil,GF,GPL,http://www.gnu.org/software/gawk,http://ftp.gnu.org/gnu/gawk/gawk-4.1.4.tar.gz,
 utils,ed-1.13.tar.lz,outil,GF,GPL,http://www.gnu.org/software/ed,http://ftp.gnu.org/gnu/ed/ed-1.13.tar.lz,
