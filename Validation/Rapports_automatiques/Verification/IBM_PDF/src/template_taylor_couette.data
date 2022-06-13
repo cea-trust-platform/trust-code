@@ -1,4 +1,4 @@
-# Hydraulique 2D laminaire TAYLOR_COUETTE #
+# Hydraulique 2D laminaire TAYLOR_COUETTE  #
 /*  Re = rho*w*(R1*R1)/mu
   mu = rho*w*(R1*R1)/Re
   w = 1
@@ -106,11 +106,13 @@ Lire pb
                     local
                     vitesse_imposee_fonction 0. -(((x*x)+(y*y))_LE_(0.75*0.75))*0.5+(((x*x)+(y*y))_GE_(0.75*0.75))*1.0 0.
                 }
-                interpolation IBM_gradient_moyen
+                interpolation @INTERP_TYPE@
                 {
-                    est_dirichlet Champ_Fonc_MED last_time ../MESHES_TAYLOR_COUETTE/res_domain_mesh_80_exact.med domain_mesh is_node_dirichlet som 0.
-                    points_solides Champ_Fonc_MED last_time ../MESHES_TAYLOR_COUETTE/res_domain_mesh_80_exact.med domain_mesh projection_Solid som 0.
-                    elements_solides Champ_Fonc_MED last_time ../MESHES_TAYLOR_COUETTE/res_domain_mesh_80_exact.med domain_mesh so_elem_number som 0.
+                    @EST_DIRICHLET@ est_dirichlet Champ_Fonc_MED last_time ../MESHES_TAYLOR_COUETTE/res_domain_mesh_80_exact.med domain_mesh is_node_dirichlet som 0. @EST_DIRICHLET@
+                    @POINTS_FLUIDES@ points_fluides Champ_Fonc_MED last_time ../MESHES_TAYLOR_COUETTE/res_domain_mesh_80_exact.med domain_mesh projection_Fluid som 0. @POINTS_FLUIDES@
+                    @POINTS_SOLIDES@ points_solides Champ_Fonc_MED last_time ../MESHES_TAYLOR_COUETTE/res_domain_mesh_80_exact.med domain_mesh projection_Solid som 0. @POINTS_SOLIDES@
+                    @ELEMENTS_FLUIDES@ elements_fluides Champ_Fonc_MED last_time ../MESHES_TAYLOR_COUETTE/res_domain_mesh_80_exact.med domain_mesh fl_elem_number som 0. @ELEMENTS_FLUIDES@
+                    @ELEMENTS_SOLIDES@ elements_solides Champ_Fonc_MED last_time ../MESHES_TAYLOR_COUETTE/res_domain_mesh_80_exact.med domain_mesh so_elem_number som 0. @ELEMENTS_SOLIDES@
                     correspondance_elements Champ_Fonc_MED last_time ../MESHES_TAYLOR_COUETTE/res_domain_mesh_80_exact.med domain_mesh TRUST_SALOME_correspondance elem 0.
                 }
             }

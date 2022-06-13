@@ -13,7 +13,7 @@ Pb_Hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-read_MED short_family_names dom domain_mesh ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_45.med
+read_MED short_family_names dom domain_mesh ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med
 regroupebord dom Wall { TOP }
 regroupebord dom Postpro { BOTTOM }
 regroupebord dom Sortie { OUT UP }
@@ -87,21 +87,21 @@ Lire pb
         {
             Source_PDF
             {
-                aire Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_45.med domain_mesh aire elem 0.
-                rotation Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_45.med domain_mesh rotation elem 0.
+                aire Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med domain_mesh aire elem 0.
+                rotation Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med domain_mesh rotation elem 0.
                 modele
                 {
                     eta 1.0e-12
                     vitesse_imposee_data champ_uniforme 3 0. 0. 0.
                 }
-                interpolation IBM_hybride
+                interpolation @INTERP_TYPE@
                 {
-                    points_fluides Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_45.med domain_mesh projection_Fluid som 0.
-                    points_solides Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_45.med domain_mesh projection_Solid som 0.
-                    elements_fluides Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_45.med domain_mesh fl_elem_number som 0.
-                    correspondance_elements Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_45.med domain_mesh TRUST_SALOME_correspondance elem 0.
-                    est_dirichlet Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_45.med domain_mesh is_node_dirichlet som 0.
-                    elements_solides Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_45.med domain_mesh so_elem_number som 0.
+                    @EST_DIRICHLET@ est_dirichlet Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med domain_mesh is_node_dirichlet som 0. @EST_DIRICHLET@
+                    @POINTS_FLUIDES@ points_fluides Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med domain_mesh projection_Fluid som 0. @POINTS_FLUIDES@
+                    @POINTS_SOLIDES@ points_solides Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med domain_mesh projection_Solid som 0. @POINTS_SOLIDES@
+                    @ELEMENTS_FLUIDES@ elements_fluides Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med domain_mesh fl_elem_number som 0. @ELEMENTS_FLUIDES@
+                    @ELEMENTS_SOLIDES@ elements_solides Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med domain_mesh so_elem_number som 0. @ELEMENTS_SOLIDES@
+                    correspondance_elements Champ_Fonc_MED last_time ../MESHES_POISEUILLE/res_domain_mesh_80_pl_mesh_1_theta_@TILT@.med domain_mesh TRUST_SALOME_correspondance elem 0.
                 }
             }
         }
@@ -113,8 +113,8 @@ Lire pb
         {
             Wall Symetrie
             Postpro Symetrie
-            Entree frontiere_ouverte_vitesse_imposee Champ_front_MED champ_fonc_MED last_time ../MESHES_POISEUILLE/velocity_BC_80_theta_45.med domain_mesh velocity som 0.
-            Sortie frontiere_ouverte_pression_imposee Champ_front_MED champ_fonc_MED last_time ../MESHES_POISEUILLE/pressure_BC_80_theta_45.med domain_mesh pressure elem 0.
+            Entree frontiere_ouverte_vitesse_imposee Champ_front_MED champ_fonc_MED last_time ../MESHES_POISEUILLE/velocity_BC_80_theta_@TILT@.med domain_mesh velocity som 0.
+            Sortie frontiere_ouverte_pression_imposee Champ_front_MED champ_fonc_MED last_time ../MESHES_POISEUILLE/pressure_BC_80_theta_@TILT@.med domain_mesh pressure elem 0.
         }
     }
 

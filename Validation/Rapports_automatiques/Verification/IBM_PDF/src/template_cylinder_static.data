@@ -1,12 +1,12 @@
-# Hydraulique 2D laminaire CYLINDER ROTATING RE 20 #
+# Hydraulique 2D laminaire CYLINDER ROTATING RE @REYNOLDS@ #
 /*  Re = rho*w*(R1*R1)/mu
   mu = rho*w*(R1*R1)/Re
   U = 1 m/s
   w = 2
   r = 0.5 m
-  Re = 20
+  Re = @REYNOLDS@
   rho = 1
-  mu = rho*U*2*r/Reynolds = 1*1*2*0.5/20 = 0.05 */
+  mu = rho*U*2*r/Reynolds = 1*1*2*0.5/@REYNOLDS@ = @MU_VAL@ */
 # PARALLEL OK #
 dimension 3
 Pb_Hydraulique pb
@@ -64,7 +64,7 @@ Fluide_Incompressible fluid
 
 Read fluid
 {
-    mu  Champ_Uniforme 1 0.05
+    mu  Champ_Uniforme 1 @MU_VAL@
     rho Champ_Uniforme 1 1.0
 }
 
@@ -92,15 +92,8 @@ Lire pb
 {
     Navier_Stokes_standard
     {
-        correction_matrice_projection_initiale 0
-        correction_calcul_pression_initiale 0
-        correction_vitesse_projection_initiale 1
         projection_initiale 0
         methode_calcul_pression_initiale avec_sources
-        correction_matrice_pression 1
-        correction_vitesse_modifie 1
-        gradient_pression_qdm_modifie 0
-        correction_pression_modifie 0
         convection { generic btd }
         solveur_pression petsc cholesky { }
         diffusion { option { grad_u_transpose_partout 1 } }
@@ -113,17 +106,16 @@ Lire pb
                 modele
                 {
                     eta 1.E-12
-                    local
-                    vitesse_imposee_fonction 0. 1. 0.
+                    vitesse_imposee_fonction 0. 0. 0.
                 }
-                interpolation IBM_hybride
+                interpolation @INTERP_TYPE@
                 {
-                    points_fluides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh projection_Fluid som 0.
-                    points_solides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh projection_Solid som 0.
-                    elements_fluides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh fl_elem_number som 0.
+                    @EST_DIRICHLET@ est_dirichlet Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh is_node_dirichlet som 0. @EST_DIRICHLET@
+                    @POINTS_FLUIDES@ points_fluides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh projection_Fluid som 0. @POINTS_FLUIDES@
+                    @POINTS_SOLIDES@ points_solides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh projection_Solid som 0. @POINTS_SOLIDES@
+                    @ELEMENTS_FLUIDES@ elements_fluides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh fl_elem_number som 0. @ELEMENTS_FLUIDES@
+                    @ELEMENTS_SOLIDES@ elements_solides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh so_elem_number som 0. @ELEMENTS_SOLIDES@
                     correspondance_elements Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh TRUST_SALOME_correspondance elem 0.
-                    est_dirichlet Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh is_node_dirichlet som 0.
-                    elements_solides Champ_Fonc_MED last_time ../MESHES_CYLINDER/res_domain_mesh_160_exact.med domain_mesh so_elem_number som 0.
                 }
             }
         }
