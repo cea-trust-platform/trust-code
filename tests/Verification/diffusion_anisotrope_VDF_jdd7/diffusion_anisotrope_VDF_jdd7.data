@@ -1,5 +1,5 @@
 # 2D heat conduction with a NonUniform anisotropic conductivity tensor #
-# PARALLEL ONLY 2 #
+# PARALLEL OK 4 #
 
 dimension 2
 
@@ -7,7 +7,7 @@ DOMaine DOM
 
 Pb_conduction pb
 
-# BEGIN MESH
+# BEGIN MESH #
 Mailler DOM
 {
     Pave pave1
@@ -23,7 +23,7 @@ Mailler DOM
         bord paroi Y = 1.      0 <= X <= 1
     }
 }
-END MESH #
+# END MESH #
 
 # BEGIN PARTITION
 Partition DOM
@@ -35,9 +35,9 @@ Partition DOM
 End
 END PARTITION #
 
-# BEGIN SCATTER #
+# BEGIN SCATTER
 Scatter dom.Zones DOM
-# END SCATTER #
+END SCATTER #
 
 
 vdf dis

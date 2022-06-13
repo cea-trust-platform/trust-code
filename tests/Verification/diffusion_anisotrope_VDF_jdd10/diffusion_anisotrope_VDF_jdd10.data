@@ -1,5 +1,5 @@
 # 2D heat conduction with a NonUniform anisotropic conductivity tensor #
-# PARALLEL OK 4 #
+# PARALLEL ONLY 2 #
 
 dimension 2
 
@@ -7,7 +7,7 @@ DOMaine DOM
 
 Pb_conduction pb
 
-# BEGIN MESH #
+# BEGIN MESH
 Mailler DOM
 {
     Pave pave1
@@ -23,7 +23,7 @@ Mailler DOM
         bord paroi Y = 1.      0 <= X <= 1
     }
 }
-# END MESH #
+END MESH #
 
 # BEGIN PARTITION
 Partition DOM
@@ -35,9 +35,9 @@ Partition DOM
 End
 END PARTITION #
 
-# BEGIN SCATTER
+# BEGIN SCATTER #
 Scatter dom.Zones DOM
-END SCATTER #
+# END SCATTER #
 
 
 vdf dis
@@ -65,7 +65,7 @@ solide sol
 read sol
 {
     rho champ_uniforme 1 1.0
-    lambda champ_fonc_xyz DOM 2 (y*y+0.001*x*x)  (x*x+0.001*y*y)
+    lambda champ_fonc_xyz DOM 2 (y*y+0.01*x*x)  (x*x+0.01*y*y)
     Cp champ_uniforme 1 1.0
 }
 
@@ -84,7 +84,7 @@ read pb
         boundary_conditions { paroi paroi_temperature_imposee champ_front_uniforme 1 0.0 }
         sources {
 
-            Puissance_thermique Champ_Fonc_XYZ DOM 1 (-0.004*pi*x*sin(pi*x)*sin(pi*y)*sin(pi*y)*cos(pi*x)-0.004*pi*y*sin(pi*x)*sin(pi*x)*sin(pi*y)*cos(pi*y)+2*pi*pi*(0.001*x*x+y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(0.001*x*x+y*y)*sin(pi*y)*sin(pi*y)*cos(pi*x)*cos(pi*x)+2*pi*pi*(x*x+0.001*y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(x*x+0.001*y*y)*sin(pi*x)*sin(pi*x)*cos(pi*y)*cos(pi*y))
+            Puissance_thermique Champ_Fonc_XYZ DOM 1 (-0.04*pi*x*sin(pi*x)*sin(pi*y)*sin(pi*y)*cos(pi*x)-0.04*pi*y*sin(pi*x)*sin(pi*x)*sin(pi*y)*cos(pi*y)+2*pi*pi*(0.01*x*x+y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(0.01*x*x+y*y)*sin(pi*y)*sin(pi*y)*cos(pi*x)*cos(pi*x)+2*pi*pi*(x*x+0.01*y*y)*sin(pi*x)*sin(pi*x)*sin(pi*y)*sin(pi*y)-2*pi*pi*(x*x+0.01*y*y)*sin(pi*x)*sin(pi*x)*cos(pi*y)*cos(pi*y))
 
         }
 

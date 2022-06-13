@@ -1,0 +1,98 @@
+# PARALLEL NOT #
+dimension 2
+Pb_hydraulique pb
+Domaine dom
+
+Mailler dom
+{
+    Pave Entree
+    {
+        Origine -1.0 0.0
+        Nombre_de_Noeuds 81 81
+        Longueurs 2.0 2.0
+    }
+
+    {
+        bord left  X = -1.0  0.0 <= Y <= 2.0
+        bord right X =  1.0  0.0 <= Y <= 2.0
+        bord down  Y =  0.0 -1.0 <= X <= 1.0
+        bord up    Y =  2.0 -1.0 <= X <= 1.0
+    }
+}
+
+PolyMAC_P0 dis
+option_vdf { traitement_coins oui }
+
+Fluide_incompressible fluide
+Lire fluide
+{
+    rho champ_uniforme 1 1.0
+    mu	champ_uniforme 1 1.0
+}
+
+Schema_Euler_Implicite sch
+Lire sch
+{
+    tinit 0.0
+	nb_pas_dt_max 3
+    facsec 1
+    seuil_statio 1.e-7
+    Solveur implicite { solveur petsc cli { } }
+}
+
+Associer pb dom
+Associer pb fluide
+Associer pb sch
+Discretiser pb dis
+
+Lire pb
+{
+
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion { negligeable }
+        conditions_initiales { vitesse champ_fonc_xyz dom 2 (cos(0)+sin(0))*exp((cos(0)-sin(0))*x-(sin(0)+cos(0))*y)
+                                                            (cos(0)-sin(0))*exp((cos(0)-sin(0))*x-(sin(0)+cos(0))*y) }
+        conditions_limites
+        {
+           left  frontiere_ouverte_vitesse_imposee 	champ_front_fonc_txyz 2 (cos(0)+sin(0))*exp((cos(0)-sin(0))*x-(sin(0)+cos(0))*y)
+                                                                            (cos(0)-sin(0))*exp((cos(0)-sin(0))*x-(sin(0)+cos(0))*y)
+           right frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+           down  frontiere_ouverte_vitesse_imposee champ_front_fonc_txyz 2 exp(x-y) exp(x-y)
+           up    frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+        }
+    }
+    Postraitement
+    {
+        format lml
+        Definition_champs
+        {
+            vx transformation { methode composante numero 0 localisation elem source refchamp { pb_champ pb vitesse } }
+            vy transformation { methode composante numero 1 localisation elem source refchamp { pb_champ pb vitesse } }
+            erreur_v_x    transformation { methode formule expression 1 vx-((cos(0)+sin(0))*exp((cos(0)-sin(0))*x-(sin(0)+cos(0))*y)) sources_reference { vx } }
+            erreur_v_y    transformation { methode formule expression 1 vy-((cos(0)-sin(0))*exp((cos(0)-sin(0))*x-(sin(0)+cos(0))*y)) sources_reference { vy } }
+            erreur_mx Reduction_0d { methode max sources_reference { erreur_v_x } }
+            erreur_my Reduction_0d { methode max sources_reference { erreur_v_y } }
+            erreur_Lx Reduction_0d { methode L2_norm sources_reference { erreur_v_x } }
+            erreur_Ly Reduction_0d { methode L2_norm sources_reference { erreur_v_y } }
+        }
+        format lml
+        Sondes
+        {
+            Lmax_x erreur_mx periode 1e10 numero_elem_sur_maitre 0
+            Lmax_y erreur_my periode 1e10 numero_elem_sur_maitre 0
+            L2_x   erreur_Lx periode 1e10 numero_elem_sur_maitre 0
+            L2_y   erreur_Ly periode 1e10 numero_elem_sur_maitre 0
+        }
+        champs dt_post 1e10
+        {
+            erreur_v_x
+            erreur_v_y
+    	    pression elem
+	        vitesse elem
+        }
+    }
+}
+Resoudre pb
