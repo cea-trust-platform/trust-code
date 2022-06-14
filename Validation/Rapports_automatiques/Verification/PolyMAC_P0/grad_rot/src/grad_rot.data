@@ -71,8 +71,6 @@ phases pb
     liquide { eau }
 }
 
-associate  pb dom
-
 Associate  pb dom
 Associate  pb sch
 Discretize pb dis
