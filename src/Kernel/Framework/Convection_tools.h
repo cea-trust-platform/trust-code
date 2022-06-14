@@ -21,14 +21,11 @@
 //   Fonctions limiteurs de MUSCL
 ////////////////////////////////////////////////////////////////
 
-#ifndef Convection_tools_included
-#define Convection_tools_included
-
 #pragma omp declare target
 inline double minmod(double grad1, double grad2)
 {
     double gradlim=0.;
-    if(grad1*grad2>0.) (dabs(grad1)<dabs(grad2)) ? gradlim=grad1 : gradlim=grad2 ;
+    if(grad1*grad2>0.) (std::fabs(grad1)<std::fabs(grad2)) ? gradlim=grad1 : gradlim=grad2 ;
     return gradlim;
 }
 #pragma omp end declare target
@@ -62,8 +59,8 @@ inline double chakravarthy(double grad1, double grad2)
     double gradlim=0.;
     if ((grad1*grad2)>0)
     {
-        gradlim=dmin(grad1/grad2,1.8); // 1<<beta<<2
-        gradlim=dmax(gradlim,0.);
+        gradlim=std::min(grad1/grad2,1.8); // 1<<beta<<2
+        gradlim=std::max(gradlim,0.);
         gradlim*=grad2;
     }
     return gradlim;
@@ -82,10 +79,10 @@ inline double superbee(double grad1, double grad2)
     if ((grad1*grad2)>0)
     {
         double gradlim1,gradlim2;
-        gradlim1=dmin(2*(grad1/grad2),1);
-        gradlim2=dmin(grad1/grad2,2);
-        gradlim=dmax(gradlim1,gradlim2);
-        gradlim=dmax(gradlim,0.);
+        gradlim1=std::min(2*(grad1/grad2),1.);
+        gradlim2=std::min(grad1/grad2,2.);
+        gradlim=std::max(gradlim1,gradlim2);
+        gradlim=std::max(gradlim,0.);
         gradlim*=grad2;
     }
     return gradlim;
