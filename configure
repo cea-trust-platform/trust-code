@@ -849,12 +849,29 @@ then
    echo $ECHO_OPTS "File Makefile created."
    echo $ECHO_OPTS "File configure.log created."
    echo
+   echo $ECHO_OPTS "=========================================="
+   echo $ECHO_OPTS "*  RECOMMENDATIONS FOR USERS/DEVELOPERS  *"
+   echo $ECHO_OPTS "=========================================="
+   echo
    echo $ECHO_OPTS "# To initialize the TRUST environment, run:"
    echo $ECHO_OPTS "source env_TRUST.sh"
-   echo $ECHO_OPTS "# To build TRUST, run:"
+   echo
+   echo $ECHO_OPTS "# To initialize the TRUST python environment (medcoupling, swig and ICoCo python), run:"
+   echo $ECHO_OPTS "source env_for_python.sh"
+   echo
+   echo $ECHO_OPTS "# To build TRUST as a user application (optimized mode only), run:"
+   echo $ECHO_OPTS "make optim"
+   echo
+   echo $ECHO_OPTS "# To build TRUST as a developer (optimized + debug modes), run:"
    echo $ECHO_OPTS "make"
-   echo $ECHO_OPTS "# To check TRUST, run:"
+   echo
+   echo $ECHO_OPTS "# To check TRUST in a parallel way (more than one test case at a time), run:"
+   echo $ECHO_OPTS "make ctest_optim"
+   echo
+   echo $ECHO_OPTS "# To check TRUST in a sequential way (one test case at a time), run:"
    echo $ECHO_OPTS "make check"
+   echo
+
 fi
 
 exit 0
