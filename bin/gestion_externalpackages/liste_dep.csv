@@ -23,7 +23,7 @@ Gmsh,fltk-1.3.5-source.tar.gz,,abn,LGPL,http://www.fltk.org/index.php,https://ww
 MED,med-4.1.1.tar.gz,lib,AK,LGPL,http://files.salome-platform.org,http://files.salome-platform.org/Salome/other/med-4.1.1.tar.gz,
 MED,hdf5-1.10.3.tar.gz,lib,SV,BSD,http://www.hdfgroup.org/HDF5/,https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.3/src/hdf5-1.10.3.tar.gz,
 SALOME,CurvePlot-9.4.0.tar.gz,lib,abn,LGPL,,https://sourceforge.net/projects/trust-platform/files/1.8.3/extra/CurvePlot-9.4.0.tar.gz,
-SALOME,configuration-9.8.0.tar.gz,lib,AK,,
+SALOME,configuration-9.9.0.tar.gz,lib,AK,,
 SALOME,xdata-9.6.0.tar.gz,lib,abn,LGPL,
 VisIt,zlib-1.2.7.tar.gz,,SV,"free zlib/libpng license",http://www.zlib.net/,http://sourceforge.net/projects/libpng/files/zlib/1.2.7/zlib-1.2.7.tar.gz/download,"pour la licence voir : http://opensource.org/licenses/Zlib pour plus d'infos ou http://www.zlib.net/zlib_license.html"
 VisIt,VTK-6.1.0.tar.gz,,SV,BSD,http://www.vtk.org/,http://www.vtk.org/files/release/6.1/VTK-6.1.0.tar.gz,

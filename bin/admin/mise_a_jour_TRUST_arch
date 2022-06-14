@@ -1110,6 +1110,8 @@ do
 	    elif [ $TRUST_DISABLE_JUPYTER = 1 ] || [ $TRUST_WITHOUT_PDFLATEX = 1 ]
 	    then
 	        Run_fiche_KO_jupyter=0
+	    else
+	        Run_fiche_KO_jupyter=1
 	    fi
 	    if [ $Run_fiche_KO_prm = 0 ] && [ $Run_fiche_KO_jupyter = 0 ]
 	    then

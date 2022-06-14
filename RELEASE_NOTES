@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.8.5_beta : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
-07/06/22 (TRUST)  Tools       : Upgrade to MEDCoupling 9.9.0       
+14/06/22 (TRUST)  Tools       : Upgrade to MEDCoupling 9.9.0
 07/06/22 (TRUST)  Major Change: Much more functionalities and developpements for Pb_Multiphase. The problem supports now additional equations for turbulence modelling !
 07/06/22 (TRUST)  Major Change: Huge refactoring/reformulation of the discretizations PolyMAC & PolyMAC_P0 (previous CoviMAC). Schemes are now more stable and compatible with Pb_Multiphase
 30/05/22 (TRUST)  Fix         : High frequency writing MED files were slower and slower
