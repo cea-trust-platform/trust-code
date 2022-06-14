@@ -97,7 +97,7 @@ protected:
   /* liste de sommets traites directement par l'operateur et non par Zone_PolyMAC_P0::fgrad() (cf. Op_Diff_PolyMAC_P0_Elem) */
   mutable IntTab som_ext;
 
-  mutable int nu_constant_, nu_a_jour_ = 0, s_dist_init_ = 0, som_ext_init_ = 0, phif_a_jour_ = 0; //nu constant / nu a jour / phif a jour
+  mutable int nu_constant_ = 0 /* Elie : pour valgrind */, nu_a_jour_ = 0, s_dist_init_ = 0, som_ext_init_ = 0, phif_a_jour_ = 0; //nu constant / nu a jour / phif a jour
 
   mutable SFichier Flux, Flux_moment, Flux_sum;
 };

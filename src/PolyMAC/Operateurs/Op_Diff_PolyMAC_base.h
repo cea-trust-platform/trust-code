@@ -104,7 +104,7 @@ protected:
   void update_nu() const; //mise a jour
   mutable DoubleTab nu_;
 
-  mutable int nu_constant_, nu_a_jour_ = 0; //nu constant / nu a jour / phif a jour
+  mutable int nu_constant_ = 0 /* Elie : pour valgrind */, nu_a_jour_ = 0; //nu constant / nu a jour / phif a jour
 
   /* gestion des variables auxiliaires en semi-implicite */
   void update_aux(double t) const;
