@@ -212,6 +212,7 @@ static void verifier(const Op_Grad_VEF_P1B_Face& op,
 DoubleTab& Op_Grad_VEF_P1B_Face::
 modifier_grad_pour_Cl(DoubleTab& grad ) const
 {
+  start_timer();
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
                                              la_zone_vef.valeur());
   const DoubleTab& face_normales = zone_VEF.face_normales();
@@ -274,6 +275,7 @@ modifier_grad_pour_Cl(DoubleTab& grad ) const
           }
       }
     }
+  end_timer("Boundary loop in Op_Grad_VEF_P1B_Face::modifier_grad_pour_Cl");
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::
@@ -293,6 +295,7 @@ ajouter_elem(const DoubleTab& pre,
   // Si pas de support P1, on impose Neumann sur P0
   if (zone_VEF.get_alphaS()==0)
     {
+      start_timer();
       const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
       const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
       int nb_bords =les_cl.size();
@@ -314,6 +317,7 @@ ajouter_elem(const DoubleTab& pre,
                 }
             }
         }
+        end_timer("Boundary loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
     }
 
   const int * face_voisins_addr = face_voisins.addr();
@@ -322,7 +326,7 @@ ajouter_elem(const DoubleTab& pre,
   const double* porosite_face_addr = porosite_face.addr();
   const double * face_normales_addr = face_normales.addr();
   const int * elem_faces_addr = elem_faces.addr();
-
+  start_timer();
 #pragma omp target teams distribute parallel for map(to:pre_addr[0:pre.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
     for(int elem=0; elem<nb_elem_tot; elem++)
     {
@@ -338,6 +342,7 @@ ajouter_elem(const DoubleTab& pre,
             }
         }
     }
+  end_timer("Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::
@@ -383,6 +388,7 @@ ajouter_som(const DoubleTab& pre,
   const int * som_addr = som_.addr();
 
     // boucle couteuse: A porter
+    start_timer();
 #pragma omp target teams map(to:pre_addr[0:pre.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
     {
         double sigma[3];
@@ -410,8 +416,8 @@ ajouter_som(const DoubleTab& pre,
             }
         }
     }
-
-
+    end_timer("Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
+    start_timer();
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
   const IntTab& face_sommets = zone_VEF.face_sommets();
   int nb_bords = les_cl.size();
@@ -438,6 +444,7 @@ ajouter_som(const DoubleTab& pre,
             } //fin du if sur "Neumann_sortie_libre"
         }
     }
+    end_timer("Boundary loop in Op_Grad_VEF_P1B_Face::ajouter_som");
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::
