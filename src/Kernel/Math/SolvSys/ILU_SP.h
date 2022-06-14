@@ -46,18 +46,4 @@ protected:
   Matrice_Morse MLOC;
 };
 
-
-
-inline int ILU_SP::a_un_interet()
-{
-  return 1;
-}
-
-inline int ILU_SP::type_precond()
-{
-  return precond_;
-}
-
-
-
 #endif

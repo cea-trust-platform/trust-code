@@ -12,18 +12,10 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Solv_rocALUTION.cpp
-// Directory:   $TRUST_ROOT/src/Kernel/Math/SolvSys
-// Version:     /main/0
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Solv_rocALUTION.h>
-#include <Matrice_Morse.h>
 #include <Matrice_Morse_Sym.h>
-#include <DoubleVect.h>
+#include <TRUSTVect.h>
 #include <EChaine.h>
 #include <Motcle.h>
 #include <SFichier.h>
@@ -326,12 +318,14 @@ void MorseSymToMorseToMatrice_Morse(const Matrice_Morse_Sym& MS, Matrice_Morse& 
   M = mattmp + M;
 }
 
+static int save=0;
 void write_matrix(const Matrice_Base& a)
 {
   // Save matrix
   if (Process::nproc() > 1) Process::exit("Error, matrix market format is not available yet in parallel.");
   Nom filename(Objet_U::nom_du_cas());
   filename += "_trust_matrix";
+  filename += (Nom)save;
   filename += ".mtx";
   SFichier mtx(filename);
   mtx.precision(14);
@@ -351,11 +345,13 @@ void write_vectors(const LocalVector<double>& rhs, const LocalVector<double>& so
   Nom filename(Objet_U::nom_du_cas());
   filename = Objet_U::nom_du_cas();
   filename += "_rocalution_rhs";
+  filename += (Nom)save;
   filename += ".vec";
   Cout << "Write rhs into " << filename << finl;
   rhs.WriteFileASCII(filename.getString());
   filename = Objet_U::nom_du_cas();
   filename += "_rocalution_sol";
+  filename += (Nom)save;
   filename += ".vec";
   Cout << "Write initial solution into " << filename << finl;
   sol.WriteFileASCII(filename.getString());
@@ -364,6 +360,7 @@ void write_matrix(const LocalMatrix<double>& mat)
 {
   Nom filename(Objet_U::nom_du_cas());
   filename += "_rocalution_matrix";
+  filename += (Nom)save;
   filename += ".mtx";
   Cout << "Writing rocALUTION matrix into " << filename << finl;
   mat.WriteFileMTX(filename.getString());
@@ -382,14 +379,22 @@ void check(const DoubleVect& t, LocalVector<double>& r, const Nom& nom)
 }
 double residual(const Matrice_Base& a, const DoubleVect& b, const DoubleVect& x)
 {
-  DoubleVect e(b);
-  e*=-1;
-  a.ajouter_multvect(x, e);
-  return e.mp_norme_vect();
+    DoubleVect e(b);
+    e *= -1;
+    a.ajouter_multvect(x, e);
+    return e.mp_norme_vect();
 }
+double residual_device(const LocalMatrix<double>& a, const LocalVector<double>& b, const LocalVector<double>& x, LocalVector<double>& e)
+{
+    a.Apply(x, &e);
+    e.ScaleAdd(-1.0, b);
+    return e.Norm();
+}
+
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)
 {
 //#ifdef ROCALUTION_ROCALUTION_HPP_
+  if (write_system_) save++;
   double tick;
   if (nouvelle_matrice())
     {
@@ -399,6 +404,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       // Conversion matrice stockage symetrique vers matrice stockage general:
       Matrice_Morse csr;
       MorseSymToMorseToMatrice_Morse(ref_cast(Matrice_Morse_Sym, a), csr);
+
       // Save TRUST matrix to check:
       if (write_system_) write_matrix(a);
 
@@ -494,16 +500,19 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   tick = rocalution_time();
   LocalVector<double> sol;
   LocalVector<double> rhs;
+  LocalVector<double> e;
   sol.Allocate("a", N);
   sol.CopyFromData(x.addr());
   rhs.Allocate("rhs", N);
   rhs.CopyFromData(b.addr());
   Cout << "[rocALUTION] Time to build vectors: " << (rocalution_time() - tick) / 1e6 << finl;
-  if (write_system_) write_vectors(rhs, sol); // Provisoire debug
   tick = rocalution_time();
   sol.MoveToAccelerator();
   rhs.MoveToAccelerator();
+  e.MoveToAccelerator();
+  e.Allocate("e", N);
   Cout << "[rocALUTION] Time to move vectors on device: " << (rocalution_time() - tick) / 1e6 << finl;
+  if (write_system_) write_vectors(rhs, sol);
   sol.Info();
 
 #ifndef NDEBUG
@@ -520,25 +529,26 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 
   // Solve A x = rhs
   tick = rocalution_time();
-  double res_initial = residual(a, b, x);
+  // Calcul des residus sur le host la premiere fois (plus sur) puis sur device ensuite (plus rapide)
+  double res_initial = first_solve_ ? residual(a, b, x) : residual_device(mat, rhs, sol, e);
   ls->Solve(rhs, &sol);
   if (ls->GetSolverStatus()==3) Process::exit("Divergence for solver.");
   if (ls->GetSolverStatus()==4) Cout << "Maximum number of iterations reached." << finl;
   Cout << "[rocALUTION] Time to solve: " << (rocalution_time() - tick) / 1e6 << finl;
 
   int nb_iter = ls->GetIterationCount();
-  //double res_final = ls->GetCurrentResidual();
+  double res_final = ls->GetCurrentResidual();
 
   // Recupere la solution
   sol.MoveToHost();
   sol.CopyToData(x.addr());
+  if (first_solve_) res_final = residual(a, b, x); // Securite a la premiere resolution
 #ifndef NDEBUG
   check(x, sol, "After ||x||");
   check(b, rhs, "After ||b||");
 #endif
 
-  // Check residual e=||Ax-rhs|| with TRUST
-  double res_final = residual(a, b, x);
+  // Check residual e=||Ax-rhs||:
   if (res_final>atol_)
     {
       Cerr << "Solution not correct ! ||Ax-b|| = " << res_final << finl;
@@ -552,6 +562,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   fixer_nouvelle_matrice(0);
   sol.Clear();
   rhs.Clear();
+  if (nb_iter>1) first_solve_ = false;
   return nb_iter;
   /* #else
       return -1;

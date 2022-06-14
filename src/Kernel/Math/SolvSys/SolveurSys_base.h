@@ -19,7 +19,6 @@
 #include <TRUSTTabs_forward.h>
 #include <Objet_U.h>
 #include <Nom.h>
-class DoubleVect;
 class Matrice_Base;
 
 class SolveurSys_base : public Objet_U
