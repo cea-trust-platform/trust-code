@@ -177,6 +177,7 @@ PetscErrorCode convergence_test(KSP ksp, PetscInt it, PetscReal rnorm, KSPConver
       Mat m;
       KSPGetOperators(ksp,&m,NULL);
       MatCreateVecs(m, &ctx->v, &ctx->t);
+      VecSetOption(ctx->v, VEC_IGNORE_NEGATIVE_INDICES,PETSC_TRUE);
     }
   KSPBuildResidual(ksp, ctx->t, ctx->v, &resi);//residu
   VecGetValues(resi, ctx->obj->ix.size_array(), ctx->obj->ix.addr(), ctx->obj->residu.addr());
