@@ -173,7 +173,7 @@ bd30e9cf5523cdfc019b94f5e1d7fd19  cppunit-1.12.1.tar.gz
 2cf02a542c1933de95bdbe3f42188ffa  doxygen-1.7.4.linux.bin.tar.gz
 065cef54eb09cdb54614e1ed353ddbd1  doxygen-1.9.3.src.tar.gz
 27c5022f697e2522c0dbab439b9573b9  gnuplot/gnuplot-5.2.7.tar.gz
-1f9f9155682fe8946a97c08896109508  hwloc-1.9.tar.gz
+4fa24da17c99b122a56cb8808b6eb78b  hwloc-2.7.1.tar.gz
 4727a1333a380b67c8d7c7787a3d9c9a  lapack/OpenBLAS-0.3.10.tar.gz
 44c3869c38c8335c2b9c2a8bb276eb55  lapack/lapack-3.4.1.tgz
 b5e558f981326d9ca1bfdb841640721a  make-4.0.tar.gz
