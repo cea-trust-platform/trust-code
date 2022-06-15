@@ -10,11 +10,11 @@ install=$(TRUST_ROOT)/exec/VisIt
 cible=$(install)/bin/$(name)
 #cible=bin/$(name)
 check=$(TRUST_ROOT)/build/Outils/VisIt/test/ok
-sonde=$(TRUST_ROOT)/exec/VisIt/current/linux-x86_64/plugins/databases/libEsondeDatabase_ser.so
+plugins=$(TRUST_ROOT)/exec/VisIt/current/linux-x86_64/plugins/databases/libEsondeDatabase_ser.so
 
-all: $(cible) $(sonde)
+all: $(cible) $(plugins)
 
-$(sonde): ./plugins/Sondes/build_plugin ./plugins/lata/build_plugin plugins/triofield/build_plugin
+$(plugins): ./plugins/Sondes/build_plugin ./plugins/lata/build_plugin plugins/triofield/build_plugin $(TRUST_ROOT)/exec/lata2dx
 	./install plugins
 	make $(check)
 
