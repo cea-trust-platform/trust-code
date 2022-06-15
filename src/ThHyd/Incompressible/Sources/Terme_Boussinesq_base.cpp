@@ -13,24 +13,16 @@
 *
 *****************************************************************************/
 
-#include <Terme_Boussinesq_base.h>
-#include <Motcle.h>
 #include <Convection_Diffusion_std.h>
-#include <Fluide_base.h>
+#include <Terme_Boussinesq_base.h>
+#include <Milieu_composite.h>
+#include <Motcle.h>
 
 Implemente_base(Terme_Boussinesq_base,"Terme_Boussinesq_base",Source_base);
 
-//// printOn
-Sortie& Terme_Boussinesq_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Terme_Boussinesq_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
-//// readOn
-Entree& Terme_Boussinesq_base::readOn(Entree& s )
-{
-  return lire_donnees(s);
-}
+Entree& Terme_Boussinesq_base::readOn(Entree& s ) { return lire_donnees(s); }
 
 // Description :
 // Cherche dans le probleme l'equation scalaire
@@ -54,8 +46,11 @@ void Terme_Boussinesq_base::associer_pb(const Probleme_base& pb)
     }
 
   // Fill la_gravite_ and beta_ attributes
-  const Fluide_base& fluide=ref_cast(Fluide_base,equation().milieu());
-  la_gravite_=fluide.gravite();
+  // Elie Saikali : compat with pb_multiphase
+  const Fluide_base& fluide = equation().milieu().que_suis_je() == "Milieu_composite" ? ref_cast(Milieu_composite,equation().milieu()).get_medium_for_incompressible() :
+                              ref_cast(Fluide_base, equation().milieu());
+
+  la_gravite_ = fluide.gravite();
 
   //this variable indicates if the beta field is valid or not
   int valid_beta_field = 0; // by default it is invalid

@@ -17,8 +17,8 @@
 #define Milieu_composite_included
 
 #include <List_Fluide_base.h>
-#include <Interface.h>
 #include <Saturation_base.h>
+#include <Interface.h>
 #include <vector>
 #include <set>
 
@@ -57,6 +57,7 @@ public :
   int check_unknown_range() const override;
 
   LIST(Fluide_base) fluides;
+  inline const Fluide_base& get_medium_for_incompressible() const { return fluides[0]; }
 
 protected :
   Champ_Fonc rho_m, h_m;
