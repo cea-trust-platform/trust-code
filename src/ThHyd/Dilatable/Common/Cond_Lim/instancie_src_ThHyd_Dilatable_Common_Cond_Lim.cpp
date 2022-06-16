@@ -1,6 +1,7 @@
 //
 // Warning : DO NOT EDIT !
 // To update this file, run: make depend
+// TRUST_NO_INDENT
 //
 #include <verifie_pere.h>
 #include <Echange_externe_impose_H.h>

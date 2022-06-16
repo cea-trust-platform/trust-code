@@ -1,6 +1,7 @@
 //
 // Warning : DO NOT EDIT !
 // To update this file, run: make depend
+// TRUST_NO_INDENT
 //
 #include <verifie_pere.h>
 #include <Perte_Charge_Anisotrope_VEF_P1NC.h>
