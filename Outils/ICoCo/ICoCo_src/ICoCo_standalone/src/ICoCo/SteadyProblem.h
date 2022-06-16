@@ -16,11 +16,12 @@
 using std::string;
 using std::vector;
 
-namespace ICoCo {
+namespace ICoCo
+{
 
-  class TrioField;
+class TrioField;
 
-  class Init_Params ;
+class Init_Params ;
 //////////////////////////////////////////////////////////////////////////////
 //
 //     class SteadyProblem
@@ -32,44 +33,45 @@ namespace ICoCo {
 //
 //////////////////////////////////////////////////////////////////////////////
 //class SteadyProblem : public Problem {
-class SteadyProblem  {
+class SteadyProblem
+{
 
-  public :
+public :
 
-     // interface Problem
-    SteadyProblem();
+  // interface Problem
+  SteadyProblem();
 
-    SteadyProblem(void* data);
-    void set_data(void* data);
-    void set_data_file(const std::string& file);
+  SteadyProblem(void* data);
+  void set_data(void* data);
+  void set_data_file(const std::string& file);
 
-    virtual ~SteadyProblem() ;
-    virtual bool initialize();
-    virtual void terminate();
+  virtual ~SteadyProblem() ;
+  virtual bool initialize();
+  virtual void terminate();
 
-    // interface SteadyProblem
+  // interface SteadyProblem
 
-    virtual bool solve();
+  virtual bool solve();
 
-    // interface IterativeSteadyProblem
+  // interface IterativeSteadyProblem
 
-    virtual bool iterate(bool& converged);
+  virtual bool iterate(bool& converged);
 
-    // interface FieldIO
+  // interface FieldIO
 
-    virtual vector<string> getInputFieldsNames() const;
-    virtual void getInputFieldTemplate(const string& name, TrioField& afield) const;
-    virtual void setInputField(const string& name, const TrioField& afield);
-    virtual vector<string> getOutputFieldsNames() const;
-    virtual void getOutputField(const string& name, TrioField& afield) const;
+  virtual vector<string> getInputFieldsNames() const;
+  virtual void getInputFieldTemplate(const string& name, TrioField& afield) const;
+  virtual void setInputField(const string& name, const TrioField& afield);
+  virtual vector<string> getOutputFieldsNames() const;
+  virtual void getOutputField(const string& name, TrioField& afield) const;
 
-  protected :
+protected :
 
-    Init_Params* my_params;
-    //     Probleme_U* pb;
-    mon_main* p;
+  Init_Params* my_params;
+  //     Probleme_U* pb;
+  mon_main* p;
 
-  };
+};
 
 }
 #endif

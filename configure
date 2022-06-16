@@ -854,10 +854,10 @@ then
    echo $ECHO_OPTS "=========================================="
    echo
    echo $ECHO_OPTS "# To initialize the TRUST environment, run:"
-   echo $ECHO_OPTS "source env_TRUST.sh"
+   echo $ECHO_OPTS "source ./env_TRUST.sh"
    echo
    echo $ECHO_OPTS "# To initialize the TRUST python environment (medcoupling, swig and ICoCo python), run:"
-   echo $ECHO_OPTS "source env_for_python.sh"
+   echo $ECHO_OPTS "source ./env_for_python.sh"
    echo
    echo $ECHO_OPTS "# To build TRUST as a user application (optimized mode only), run:"
    echo $ECHO_OPTS "make optim"

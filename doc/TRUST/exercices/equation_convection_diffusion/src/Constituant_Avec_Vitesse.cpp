@@ -12,7 +12,7 @@ Sortie& Constituant_Avec_Vitesse::printOn(Sortie& os) const
   return os;
 }
 
-Entree& Constituant_Avec_Vitesse::readOn(Entree& is) 
+Entree& Constituant_Avec_Vitesse::readOn(Entree& is)
 {
   Constituant::readOn(is);
   return is;
@@ -24,8 +24,8 @@ void Constituant_Avec_Vitesse::set_param(Param& param)
   param.ajouter("vitesse_convection",&C,Param::REQUIRED); // XD_ADD_P field_base not_set
 }
 
-void Constituant_Avec_Vitesse::discretiser(const Probleme_base& pb, 
-                                      const Discretisation_base& dis)
+void Constituant_Avec_Vitesse::discretiser(const Probleme_base& pb,
+                                           const Discretisation_base& dis)
 {
   const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
   dis.nommer_completer_champ_physique(zone_dis,"coefficient_diffusion","m2/s",D.valeur(),pb);
@@ -41,10 +41,10 @@ void Constituant_Avec_Vitesse::discretiser(const Probleme_base& pb,
   if (C.non_nul())
     vitesse_transport.valeur().affecter_(C.valeur());
   else
-  {
-    Cerr<<"To must read "<<que_suis_je()<<" before discretiser "<<finl;
-    exit();
-  }
+    {
+      Cerr<<"To must read "<<que_suis_je()<<" before discretiser "<<finl;
+      exit();
+    }
 }
 
 const Champ_base& Constituant_Avec_Vitesse::vitesse_pour_transport()

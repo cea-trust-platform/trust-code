@@ -12,7 +12,8 @@
 
 using namespace ICoCo;
 
-SteadyProblem::~SteadyProblem()   {
+SteadyProblem::~SteadyProblem()
+{
   //  if(p) delete p;p=0;
   delete (my_params);
 }
@@ -22,7 +23,8 @@ SteadyProblem::~SteadyProblem()   {
 //   interface SteadyProblem   //
 //                             //
 /////////////////////////////////
-SteadyProblem::SteadyProblem() {
+SteadyProblem::SteadyProblem()
+{
 
   my_params=new Init_Params;
   (*my_params).problem_name="default_vvvvv";
@@ -36,12 +38,13 @@ SteadyProblem::SteadyProblem() {
 
 void SteadyProblem::set_data_file(const string& file)
 {
- (*my_params).data_file=file;
- (*my_params).is_mpi=0;
- std::cout<<" fata file "<<(*my_params).data_file<<std::endl;
+  (*my_params).data_file=file;
+  (*my_params).is_mpi=0;
+  std::cout<<" fata file "<<(*my_params).data_file<<std::endl;
 }
 
-SteadyProblem::SteadyProblem(void* data) {
+SteadyProblem::SteadyProblem(void* data)
+{
   my_params=new Init_Params;
   set_data(data);
 }
@@ -53,7 +56,8 @@ void SteadyProblem::set_data(void* data)
   (*my_params)=params;
 }
 
-bool SteadyProblem::initialize() {
+bool SteadyProblem::initialize()
+{
 
   // exception if I don't belong to comm !
   True_int rank_in_comm=0;
@@ -105,7 +109,8 @@ bool SteadyProblem::initialize() {
 // Effets de bord:
 // Postcondition:
 // The object is ready to be destroyed.
-void SteadyProblem::terminate() {
+void SteadyProblem::terminate()
+{
 //   pb->postraiter(1);
 //   pb->terminate();
   // Detruire le mon_main
@@ -137,7 +142,8 @@ void SteadyProblem::terminate() {
 // Effets de bord:
 // Postcondition:
 // The unknowns are updated over the next time step.
-bool SteadyProblem::solve() {
+bool SteadyProblem::solve()
+{
   return false;
 }
 
@@ -171,7 +177,8 @@ bool SteadyProblem::solve() {
 // Effets de bord:
 // Postcondition:
 // The unknowns are updated over the next time step.
-bool SteadyProblem::iterate(bool& converged) {
+bool SteadyProblem::iterate(bool& converged)
+{
   converged=false;
   return false;
 }
@@ -191,7 +198,8 @@ bool SteadyProblem::iterate(bool& converged) {
 // Effets de bord:
 // Postcondition:
 // Problem unchanged
-vector<string> SteadyProblem::getInputFieldsNames() const {
+vector<string> SteadyProblem::getInputFieldsNames() const
+{
   vector<string> v;
   return v;
 }
@@ -213,7 +221,8 @@ vector<string> SteadyProblem::getInputFieldsNames() const {
 // afield contains a field with values neither allocated nor filled, describing the
 // field expected by setInputField for that name.
 // Problem unchanged
-void SteadyProblem::getInputFieldTemplate(const string& name, TrioField& afield) const {
+void SteadyProblem::getInputFieldTemplate(const string& name, TrioField& afield) const
+{
   throw WrongArgument((*my_params).problem_name,"getInputFieldTemplate","name","should be an input field");
 }
 
@@ -232,15 +241,18 @@ void SteadyProblem::getInputFieldTemplate(const string& name, TrioField& afield)
 // Effets de bord:
 // Postcondition:
 // Values of afield have been used (copied inside the Problem).
-void SteadyProblem::setInputField(const string& name, const TrioField& afield) {
+void SteadyProblem::setInputField(const string& name, const TrioField& afield)
+{
   throw WrongArgument((*my_params).problem_name,"setInputField","name","should be an input field");
 }
 
-vector<string> SteadyProblem::getOutputFieldsNames() const {
+vector<string> SteadyProblem::getOutputFieldsNames() const
+{
   vector<string> output_fields;
   return output_fields;
 }
 
-void SteadyProblem::getOutputField(const string& name, TrioField& afield) const {
+void SteadyProblem::getOutputField(const string& name, TrioField& afield) const
+{
   throw WrongArgument((*my_params).problem_name,"getOutputField","name","should be an output field of the Problem");
 }
