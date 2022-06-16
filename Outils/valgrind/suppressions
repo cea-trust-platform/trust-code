@@ -4,6 +4,152 @@
 #     - the name of the test case involved
 #     - the OS of the machine involved (and the hostname if you want)
 
+######
+###### Cas test upwind seq et parallele
+######
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:*alloc
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0
+   ...
+   fun:MPII_hwtopo_init
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:*alloc
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.470.103.01
+   ...
+   fun:MPII_hwtopo_init
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libpciaccess.so.0.11.1
+   ...
+   fun:MPII_hwtopo_init
+   ...
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:_dl_open
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.470.103.01
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:_dl_open
+   ...
+   obj:/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0
+}
+
+
+## PARALLEL upwind
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:verbs_register_driver_25
+   fun:call_init.part.0
+   fun:call_init
+   fun:_dl_init
+   obj:/usr/lib/x86_64-linux-gnu/ld-2.31.so
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:MPIDI_OFI_mpi_init_hook
+   ...
+   fun:MPID_Init
+   ...
+   fun:PetscInitialize
+}
+
+####
+#### EF_Conduc_S_lin_1D_jdd1
+####
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:_dl_open
+   ...
+   fun:getpwuid
+}
+
+####
+#### QC_verifP_jdd25
+####
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:sock_cq_readerr
+   fun:MPIDI_OFI_handle_cq_error
+   fun:MPIDI_OFI_progress
+   fun:PMPI_Iprobe
+   fun:mpi_iprobe
+   fun:__dmumps_load_MOD_dmumps_load_recv_msgs
+   fun:dmumps_try_recvtreat_
+   fun:__dmumps_fac_par_m_MOD_dmumps_fac_par
+   fun:dmumps_fac_b_
+   fun:dmumps_fac_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatFactorNumeric_MUMPS
+   fun:MatCholeskyFactorNumeric
+}
+####
+#### cavite_entrainee_2D_jdd2
+####
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:sock_cq_readerr
+   fun:MPIDI_OFI_handle_cq_error
+   fun:MPIDI_OFI_progress
+   fun:PMPI_Iprobe
+   fun:mpi_iprobe
+   fun:__dmumps_load_MOD_dmumps_load_recv_msgs
+   fun:dmumps_try_recvtreat_
+   fun:__dmumps_fac_par_m_MOD_dmumps_fac_par
+   fun:dmumps_fac_b_
+   fun:dmumps_fac_driver_
+   fun:dmumps_
+   fun:dmumps_f77_
+   fun:dmumps_c
+   fun:MatFactorNumeric_MUMPS
+   fun:MatLUFactorNumeric
+}
+
 
 ###
 ### SCOTCH
