@@ -285,7 +285,8 @@ class Show(object):
             plt.rc("xtick", labelsize=14)  # Font size
             plt.rc("ytick", labelsize=14)
             plt.rcParams.update({"font.size": 14})
-            self.fig, self.axs = plt.subplots(self.nX, self.nY, figsize=(self.size * self.nY, self.size * self.nX))
+            self.fig, self.axs = plt.subplots(self.nX, self.nY, figsize=(self.size * self.nY, self.size * self.nX), dpi=300)
+            plt.subplots_adjust(left=0, right=1, top=1, bottom=0, hspace=0, wspace=0)
             if self.nX * self.nY != 1:
                 for ax in self.axs.reshape(-1):
                     ax.axis("off")

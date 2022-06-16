@@ -22,11 +22,6 @@ from trustutils.jupyter.run import BUILD_DIRECTORY
 pd.set_option("display.notebook_repr_html", True)
 pd.set_option("display.max_rows", None)
 
-def _repr_latex_(self):
-    return "\\begin{center} \n %s \n \end{center}" % self.to_latex()
-
-pd.DataFrame._repr_latex_ = _repr_latex_ # To display pandas table as latex table into report
-
 def saveFileAccumulator(data):
     """
     Method for saving files.
@@ -588,7 +583,7 @@ class Table:  # ancien tableau
     def _reset(self):
         """ 
         
-        Methode to reinitialice the board 
+        Methode to reinitialize the board 
         
         """
         self.df = pd.DataFrame(columns=self.columns)
@@ -682,6 +677,12 @@ class Table:  # ancien tableau
         # Note the escape=False to preserve math formulas ...
         s= self.df.to_latex(escape=False)
         s = s.replace("$$", "$")
+        s = s.replace("_", "\_")
+        formula = re.findall(r'\$[^\$]*\$',s)
+        for l in formula:
+            out = re.sub(r'(.*?)(\\_)(.*?)',r'\1_\3',l)
+            s = s.replace(l,out)
+        s = "\\begin{center} \n %s \n \end{center}" % s
         return s
 
     def _repr_html_(self):
