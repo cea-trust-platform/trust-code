@@ -480,6 +480,15 @@ class TRUSTSuite(object):
             # Validation process - we do not output variable information:
             if os.environ.get("JUPYTER_IS_VALIDATION", False):
                 dt = 0
+                # Extract total time for all the runs of datasets
+                tr = os.environ.get("TRUST_ROOT", "")
+                gtt = os.path.join(tr, "Validation", "Outils", "Genere_courbe", "scripts", "get_total_time")
+                l = [c.fullPath() for c in lstC]
+                cmd = gtt + " " + " ".join(l)
+                os.chdir(BUILD_DIRECTORY)
+                _runCommand(cmd, False)
+                os.chdir(ORIGIN_DIRECTORY)
+
             print("  => A total of %d cases were (successfully) run in %.1fs." % (len(lstC), dt))
 
 def readFile(data):
