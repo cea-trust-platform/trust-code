@@ -87,7 +87,7 @@ Lire pb
     {
         Projection_initiale	0
         Solveur_pression	PETSC Cholesky { }
-        Convection		{ quick }
+        Convection		{ amont }
         Diffusion		{  }
         Conditions_initiales	{ vitesse champ_fonc_xyz dom 2 2+sin(2*pi*x)*sin(2*pi*y) 0 }
         Conditions_limites

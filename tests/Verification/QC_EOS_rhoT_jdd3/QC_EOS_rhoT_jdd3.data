@@ -87,7 +87,7 @@ Lire pb
     {
         Projection_initiale	0
         Solveur_pression	PETSC Cholesky { }
-        Convection		{ quick }
+        Convection		{ centre }
         Diffusion		{  }
         Conditions_initiales	{ vitesse champ_fonc_xyz dom 2 2+sin(2*pi*x)*sin(2*pi*y) 0 }
         Conditions_limites
@@ -98,8 +98,8 @@ Lire pb
         Sources
         {
             source_qdm champ_fonc_xyz dom 2
-            ((8*0*pi^2+16*pi^2-16/3*0*pi^2+(8*0*1*pi^2+16*1*pi^2-16/3*0*1*pi^2)*cos(2*pi*x)*cos(2*pi*y))*sin(2*pi*x)*sin(2*pi*y)-2*pi*sin(2*pi*x)*cos(2*pi*y)+2*0*pi*cos(2*pi*x)*sin(2*pi*y))/(1/(2+sin(2*pi*x)*sin(2*pi*y)))
-            (4*0*1*pi^2*sin(2*pi*x)^2*cos(2*pi*y)^2+(-2*pi-8/3*0*1*pi^2*cos(2*pi*x)*sin(2*pi*y))*cos(2*pi*x)*sin(2*pi*y)+(-8*0*pi^2+16/3*0*pi^2+(-4*0*1*pi^2+8/3*0*1*pi^2)*cos(2*pi*x)*cos(2*pi*y))*cos(2*pi*x)*cos(2*pi*y))/(1/(2+sin(2*pi*x)*sin(2*pi*y))) ,
+            ((8*1*pi^2+16*pi^2-16/3*0*pi^2+(8*1*1*pi^2+16*1*pi^2-16/3*0*1*pi^2)*cos(2*pi*x)*cos(2*pi*y))*sin(2*pi*x)*sin(2*pi*y)-2*pi*sin(2*pi*x)*cos(2*pi*y)+2*0*pi*cos(2*pi*x)*sin(2*pi*y))/(1/(2+sin(2*pi*x)*sin(2*pi*y)))
+            (4*1*1*pi^2*sin(2*pi*x)^2*cos(2*pi*y)^2+(-2*pi-8/3*0*1*pi^2*cos(2*pi*x)*sin(2*pi*y))*cos(2*pi*x)*sin(2*pi*y)+(-8*1*pi^2+16/3*0*pi^2+(-4*1*1*pi^2+8/3*0*1*pi^2)*cos(2*pi*x)*cos(2*pi*y))*cos(2*pi*x)*cos(2*pi*y))/(1/(2+sin(2*pi*x)*sin(2*pi*y))) ,
             canal_perio { bord periox debit_impose 1 } ,
             canal_perio { bord perioy debit_impose 0 }
         }

@@ -16,13 +16,9 @@ source2='4*_BETA_*_M_*pi^2*sin(2*pi*x)^2*cos(2*pi*y)^2+(-2*pi-8/3*_GAMMA_*_M_*pi
 # points_VDF = nombre de points de maillage le long d'un cote du carre en VDF
 
 liste_dis=(VDF)
-liste_calculs_VDF="1000_amont 1000_quick 1000_centre 1110_amont 1110_quick 1110_centre"
-points_VDF=(5 9 17 33 65 129 257)
-# points_VDF=(3 5 9 17 33 65 129 257)
-
-
-dernier_calcul=VDF_maillage_7_1110_centre
-#dernier_calcul=VDF_maillage_8_1110_centre
+liste_calculs_VDF="1010_amont 1010_quick 1010_centre 1110_amont 1110_quick 1110_centre"
+points_VDF=(5 9 17 33 65 129)
+dernier_calcul=VDF_maillage_6_1110_centre
 
 schema_temps='sch_impl'
 schema_diff=''
