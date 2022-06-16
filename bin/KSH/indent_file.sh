@@ -11,7 +11,9 @@ do
       #if [ "`head -15 $file | grep Copyright | grep CEA`" != "" ]
       if [ ${file%.cpp} != $file ] || [ ${file%.tpp} != $file ] || [ ${file%.h} != $file ]  # Source code file 
       then
-         # Source TRUST (en tete reconnu):
+         # Skip file if the tag is found in the first 10 lines
+         if [ "`head -10 $file | grep TRUST_NO_INDENT`" != "" ]; then exit 0; fi
+         
          tmp=`mktemp_`
          cp $file $tmp
          # Skip lines that start with a comment (//) and then replace all patterns with a 'for' or an 'if' placed after a ')' to break the line.
