@@ -891,7 +891,7 @@ fi
 jy_kernel_app=$TRUST_ROOT/exec/python/lib/python3.7/site-packages/ipykernel/kernelapp.py
 if [ "$TRUST_DISABLE_JUPYTER" != 1 ] && [ -f $jy_kernel_app ]
 then
-    sed -i "s@max_attempts = 1 if port else 100@max_attempts = 10 if port else 100@" $jy_kernel_app
+    sed -i "s@max_attempts = 1 if port else 100@max_attempts = 100 if port else 100@" $jy_kernel_app
 fi
 
 ####################
