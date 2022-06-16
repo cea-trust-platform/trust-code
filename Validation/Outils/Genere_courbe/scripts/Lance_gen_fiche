@@ -20,14 +20,14 @@ get_list_prm_from_Times()
     if [ ! -f $cadt/skip_prm ] && [ ! -f $cadt/src/skip_prm ]; then
       list=$list" "$cadt
     fi
-    done
+  done
   
   # Complete with other PRM (to get new ones) at top of the list
   lst_full=`get_list_prm`
   extras=""
   for p in $lst_full
     do
-    echo $list | grep -q $p
+		echo $list" " | grep -q "$p[ ]"
     if [ $? != 0 ]
       then extras=$extras" "$p
       fi
