@@ -723,7 +723,8 @@ fi
 #############################
 if [ "$jupyter" = 1 ]
 then
-   create_basic_jupyter_notebook.sh $NOM
+	 tutorial=1
+   create_basic_jupyter_notebook.sh $NOM $tutorial
    exit $?
 fi
 

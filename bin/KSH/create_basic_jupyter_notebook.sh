@@ -1,8 +1,7 @@
 #!/bin/bash
 
-echo "Usage: $0 file"
+#echo "Usage: $0 file"
 
-data=$1.data
 result=${PWD##*/}
 
 if [ -d "src/" ] 
@@ -19,16 +18,14 @@ else
 	exit
 fi
 
-if [ "$1" = "" ] || [ ! -f $data ]
+datas=`ls *.data 2>/dev/null`
+if [ "$datas" = "" ]
 then
-	echo "$data does not exists in src."
-else
-	echo "=========================="
-	echo "$data exists."
+	echo "no datafile in src."
+	exit
 fi
 cd ../
-
-python $TRUST_ROOT/bin/KSH/create_initial_notebook.py -i $1
+python $TRUST_ROOT/bin/KSH/create_initial_notebook.py -n $1 -d $datas -t $2
 
 echo "-> Generate jupyter notebook... OK"
 echo "=========================="

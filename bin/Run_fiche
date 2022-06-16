@@ -6,7 +6,7 @@ help()
    echo "Usage: `basename $0` [-help] [-export_pdf] [-exec binary_path] [-doc]"
    echo "Script to build a PDF report file from a Jupyter validation form."
    echo "-help                          : This description."
-   echo "-doc                           : Open jupyte's validation forms documentation (opens SampleFormJupyter notebook)."
+   echo "-doc                           : Open jupyter's validation forms documentation (opens SampleFormJupyter notebook)."
    echo "-export_pdf                    : Produce the PDF report direclty as 'build/rapport.pdf'. This is the default for PRM format, but not for Jupyter notebooks."
    echo "-o name_report.pdf             : Change the default PDF report's name (default is rapport.pdf)"
    echo "-exec binary_path              : Location of the TRUST binary to use (by default given by $exec)."
@@ -202,7 +202,7 @@ do
          prm=`cd ..;basename $PWD`.prm
       else
          prm=`cd ../..;basename $PWD`.prm
-	 cd src
+	 			 cd src
       fi
       datas=`ls *.data 2>/dev/null`
       echo "Parameters {" > $prm
@@ -218,6 +218,18 @@ do
       echo "	Tableau_performance {" >> $prm
       echo "	}" >> $prm
       echo "}" >> $prm
+   elif [ "$1" = -create ]
+   then
+      shift
+      if [ "`basename $ici`" = src ]
+      then
+         jy=`cd ..;basename $PWD`
+      else
+         jy=`basename $PWD`
+      fi
+			tutorial=0
+   		create_basic_jupyter_notebook.sh $jy $tutorial
+			exit 0
    else
       options=$options" "$1
       echo "=================================================="
