@@ -624,7 +624,7 @@ do
             cd ..
 	    echo "make install done"
 	    # On allege encore l'installation:
-	    rm -r -f $PETSC_ROOT/../build
+	    [ "$TRUST_ENABLE_PETSC_DEBUG" = 0 ] && rm -r -f $PETSC_ROOT/../build
 	    find $PETSC_ROOT -name '*'.html | xargs rm -f  
 	    [ "$TRUST_WITHOUT_HOST" = 0 ] && find $PETSC_ROOT -name '*'.out | xargs rm -f 
 	 else
