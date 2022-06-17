@@ -176,6 +176,8 @@ public :
   virtual Entree& lire_nb_pas_dt_max(Entree&);
   virtual Entree& lire_periode_sauvegarde_securite_en_heures(Entree&);
   virtual Entree& lire_temps_cpu_max(Entree&);
+  Entree& lire_residuals(Entree&);
+
   virtual void completer() =0;
 
   inline double temps_init() const ;
@@ -266,7 +268,6 @@ public :
     return disable_dt_ev_ ;
   };
 protected :
-
   REF(Probleme_base) mon_probleme;
   Nom nom_;
   double dt_;                                // Pas de temps de calcul
@@ -290,6 +291,7 @@ protected :
   double facsec_;
   double seuil_statio_;
   int seuil_statio_relatif_deconseille_;                // Drapeau pour specifier si seuil_statio_ est une valeur absolue (defaut) ou relative
+  Nom norm_residu_;
   double dt_sauv_;
   double limite_cpu_sans_sauvegarde_;
   double periode_cpu_sans_sauvegarde_;

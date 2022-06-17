@@ -317,7 +317,7 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter( "dt_impr",&dt_impr_); // XD_ADD_P double Scheme parameter printing time step in time (1e30s by default). The time steps and the flux balances are printed (incorporated onto every side of processed domains) into the .out file.
   param.ajouter( "facsec",&facsec_); // XD_ADD_P double Value assigned to the safety factor for the time step (1. by default). The time step calculated is multiplied by the safety factor. The first thing to try when a calculation does not converge with an explicit time scheme is to reduce the facsec to 0.5. NL2 Warning: Some schemes needs a facsec lower than 1 (0.5 is a good start), for example Schema_Adams_Bashforth_order_3.
   param.ajouter( "seuil_statio",&seuil_statio_); // XD_ADD_P double Value of the convergence threshold (1e-12 by default). Problems using this type of time scheme converge when the derivatives dGi/dt NL1 of all the unknown transported values Gi have a combined absolute value less than this value. This is the keyword used to set the permanent rating threshold.
-  param.ajouter( "seuil_statio_relatif_deconseille",&seuil_statio_relatif_deconseille_); // XD_ADD_P int not_set
+  param.ajouter_non_std("residuals", (this));    // XD_ADD_P bloc_lecture To specify how the residuals will be computed. This bloc takes 2 parameters : the first one is seuil_statio_relatif_deconseille. If it is set to 1, it will normalize the residuals with the residuals of the first 5 timesteps (default is 0). The second parameter allows to choose the norm we want to use (max norm by default).
   param.ajouter( "diffusion_implicite",&ind_diff_impl_); // XD_ADD_P int Keyword to make the diffusive term in the Navier-Stokes equations implicit (in this case, it should be set to 1). The stability time step is then only based on the convection time step (dt=facsec*dt_convection). Thus, in some circumstances, an important gain is achieved with respect to the time step (large diffusion with respect to convection on tightened meshes). Caution: It is however recommended that the user avoids exceeding the convection time step by selecting a too large facsec value. Start with a facsec value of 1 and then increase it gradually if you wish to accelerate calculation. In addition, for a natural convection calculation with a zero initial velocity, in the first time step, the convection time is infinite and therefore dt=facsec*dt_max.
   param.ajouter( "seuil_diffusion_implicite",&seuil_diff_impl_); // XD_ADD_P double This keyword changes the default value (1e-6) of convergency criteria for the resolution by conjugate gradient used for implicit diffusion.
   param.ajouter( "impr_diffusion_implicite",&impr_diff_impl_); // XD_ADD_P int Unactivate (default) or not the printing of the convergence during the resolution of the conjugate gradient.
@@ -358,6 +358,7 @@ Sortie& Schema_Temps_base::printOn(Sortie& os) const
   os << "facsec " << facsec_ << finl;
   os << "seuil_statio" << seuil_statio_ << finl;
   os << "seuil_statio_relatif_deconseille" << seuil_statio_relatif_deconseille_ << finl;
+  os << "norm_residu" << norm_residu_ << finl;
   os << "dt_sauv " << dt_sauv_ << finl;
   os << "limite_cpu_sans_sauvegarde " << limite_cpu_sans_sauvegarde_ << finl;
   os << "dt_impr " << dt_impr_ << finl;
@@ -418,6 +419,8 @@ Entree& Schema_Temps_base::readOn(Entree& is)
       dt_max_fn_.parseString();
       dt_max_ = dt_max_fn_.eval();
     }
+
+
   return is ;
 }
 
@@ -465,6 +468,8 @@ int Schema_Temps_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     lire_temps_cpu_max(is);
   else if (mot=="no_check_disk_space")
     file_allocation_=0;
+  else if (mot == "residuals")
+    lire_residuals(is);
   else
     retval = -1;
 
@@ -491,7 +496,6 @@ Entree& Schema_Temps_base::lire_periode_sauvegarde_securite_en_heures(Entree& is
   limite_cpu_sans_sauvegarde_ = periode_cpu_sans_sauvegarde_;
   return is;
 }
-
 
 Entree& Schema_Temps_base::lire_temps_cpu_max(Entree& is)
 {
@@ -527,6 +531,7 @@ Schema_Temps_base::Schema_Temps_base()
   nb_pas_dt_max_ = (int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
   seuil_statio_ = 1.e-12;
   seuil_statio_relatif_deconseille_ = 0;
+  norm_residu_ = "max";
   facsec_ = 1.;
   ind_tps_final_atteint=0;
   ind_nb_pas_dt_max_atteint=0;
@@ -547,6 +552,39 @@ Schema_Temps_base::Schema_Temps_base()
   gnuplot_header_ = 0;
   dt_gf_ = DMAXFLOAT;
 }
+
+Entree& Schema_Temps_base::lire_residuals(Entree& is)
+{
+  Motcle m;
+  is >> m;
+  assert (m == "{");
+  is >> m;
+  while (m != "}")
+    {
+      Motcles residuals_mots(2);
+      residuals_mots[0]="relative";
+      residuals_mots[1]="norm";
+      int res_rang=residuals_mots.search(m);
+      switch(res_rang)
+        {
+        case 0:
+          is >> seuil_statio_relatif_deconseille_;
+          break;
+        case 1:
+          is >> norm_residu_;
+          break;
+        default :
+          {
+            Cerr<<" We do not understand "<<m <<"in Schema_Temps_base::lire_motcle_non_standard"<<finl;
+            Cerr<<" keywords understood "<<residuals_mots<<finl;
+            exit();
+          }
+        }
+      is >> m;
+    }
+  return is;
+}
+
 /*! @brief Impression du numero du pas de temps, la valeur du pas de temps.
  *
  * et du temps courant.
@@ -918,12 +956,32 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
           }
     }
   else if (size==1)
-    residu_equation(0) = mp_max_abs_vect(tab_critere);
+    {
+      if(norm_residu_ == "max")
+        residu_equation(0) = mp_max_abs_vect(tab_critere);
+      else if (norm_residu_ == "L2" || norm_residu_ == "l2")
+        residu_equation(0) = mp_norme_vect(tab_critere);
+      else
+        {
+          Cerr << "Schema_Temps_base::update_critere_statio : only norm max and norm L2 are allowed to compute residuals ("
+               << norm_residu_ << " not understood)" << finl;
+          Process::exit();
+        }
+    }
   else
-    mp_max_abs_tab(tab_critere, residu_equation);
-
+    {
+      if(norm_residu_ == "max")
+        mp_max_abs_tab(tab_critere, residu_equation);
+      else if (norm_residu_ == "L2" || norm_residu_ == "l2")
+        mp_norme_tab(tab_critere, residu_equation);
+      else
+        {
+          Cerr << "Schema_Temps_base::update_critere_statio : only norm max and norm L2 are allowed to compute residuals ("
+               << norm_residu_ << " not understood)" << finl;
+          Process::exit();
+        }
+    }
   equation.set_residuals(tab_critere);
-
   // On calcule le residu_initial_equation sur les 5 premiers pas de temps
   if (seuil_statio_relatif_deconseille_)
     {
