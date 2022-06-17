@@ -14,7 +14,6 @@ MPI,openmpi-2.0.4.tar.gz,,GF,BSD,https://www.open-mpi.org/,https://download.open
 MPI,mpich-3.2.tar.gz,,SV,"BSD-like license",https://www.mpich.org/,http://www.mpich.org/static/downloads/3.2/mpich-3.2.tar.gz,"pour la licence, verifiez. j'ai tire l'info de http://lists.mpich.org/pipermail/discuss/2014-October/003306.html"
 MPI,osu-micro-benchmarks-3.8.tar,,SV,BSD,https://www.nersc.gov/,https://www.nersc.gov/assets/Trinity--NERSC-8-RFP/Benchmarks/July12/osu-micro-benchmarks-3.8-July12.tar,"Note : pour le site je ne sais si celui ci est mieux ou pas : https://www.nersc.gov/users/computational-systems/cori/nersc-8-procurement/trinity-nersc-8-rfp/nersc-8-trinity-benchmarks/omb-mpi-tests et pour la licence j'ai regarde sur http://mvapich.cse.ohio-state.edu/benchmarks/ "
 pip,mpi4py-3.0.3.tar.gz,,AB,BSD,https://pypi.org/project/mpi4py,https://files.pythonhosted.org/packages/ec/8f/bbd8de5ba566dd77e408d8136e2bab7fdf2b97ce06cab830ba8b50a2f588/mpi4py-3.0.3.tar.gz,
-pip,psutil-5.9.1.tar.gz,,ND,BSD,https://pypi.org/project/psutil/,https://files.pythonhosted.org/packages/d6/de/0999ea2562b96d7165812606b18f7169307b60cd378bc29cf3673322c7e9/psutil-5.9.1.tar.gz,
 SKIT,SPARSKIT2.tar.gz,,SV,"LGPL ",http://www-users.cs.umn.edu/~saad/software/SPARSKIT/,http://www-users.cs.umn.edu/~saad/software/SPARSKIT/SPARSKIT2.tar.gz,"Pour la license, voir : https://launchpad.net/ubuntu/vivid/+source/sparskit/+copyright"
 tcl_tk,tk8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk/,http://sourceforge.net/projects/tcl/files/Tcl/8.5.13/tk8.5.13-src.tar.gz/download,
 tcl_tk,tcl8.5.13-src.tar.gz,outil,SV,"BSD style tcl/tk license",http://www.tcl.tk/,http://sourceforge.net/projects/tcl/files/Tcl/8.5.13/tcl8.5.13-src.tar.gz/download,
@@ -184,6 +183,7 @@ MinicondaLocChannLinux,pandas-1.2.4-py37h2531618_0.conda,,ND,BSD-3,,https://repo
 MinicondaLocChannLinux,pandoc-2.12-h06a4308_0.conda,,ND,GPL-2.0,,https://repo.anaconda.com/pkgs/main/linux-64/pandoc-2.12-h06a4308_0.conda,
 MinicondaLocChannLinux,pcre-8.44-he6710b0_0.conda,outil,ND,BSD,,https://repo.anaconda.com/pkgs/main/linux-64/pcre-8.44-he6710b0_0.conda,
 MinicondaLocChannLinux,pillow-8.2.0-py37he98fc37_0.conda,,ND,LicenseRef-PIL,,https://repo.anaconda.com/pkgs/main/linux-64/pillow-8.2.0-py37he98fc37_0.conda,
+MinicondaLocChannLinux,psutil-5.8.0-py37h27cfd23_1.conda,,ND,BSD,https://pypi.org/project/psutil/,https://repo.anaconda.com/pkgs/main/linux-64/psutil-5.8.0-py37h27cfd23_1.conda,
 MinicondaLocChannLinux,pyqt-5.9.2-py37h05f1152_2.conda,outil,ND,BSD3,,https://repo.anaconda.com/pkgs/main/linux-64/pyqt-5.9.2-py37h05f1152_2.conda,
 MinicondaLocChannLinux,pyrsistent-0.18.0-py37heee7806_0.conda,,ND,MIT,,https://repo.anaconda.com/pkgs/main/linux-64/pyrsistent-0.18.0-py37heee7806_0.conda,
 MinicondaLocChannLinux,pyzmq-22.3.0-py37h295c915_2.conda,,ND,BSD3,,https://repo.anaconda.com/pkgs/main/linux-64/pyzmq-22.3.0-py37h295c915_2.conda,

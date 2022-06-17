@@ -78,6 +78,7 @@ c765c13d62fa029d197c36ab61fc9cde  Miniconda/local_channel/linux-64/pandas-1.2.4-
 b1de5a57d2bd761d1bf03bb89a12a933  Miniconda/local_channel/linux-64/pandoc-2.12-h06a4308_0.conda
 e337926bb92177a2a3aded95a895470d  Miniconda/local_channel/linux-64/pcre-8.44-he6710b0_0.conda
 1b751499942fd67bd70a541a475810fe  Miniconda/local_channel/linux-64/pillow-8.2.0-py37he98fc37_0.conda
+81d7a9224b14d8ae07be8042d2118fbc  Miniconda/local_channel/linux-64/psutil-5.8.0-py37h27cfd23_1.conda
 22e969c53ead5594414fdd72194df83b  Miniconda/local_channel/linux-64/pyqt-5.9.2-py37h05f1152_2.conda
 827f40764d912374672d6e609efe7fff  Miniconda/local_channel/linux-64/pyrsistent-0.18.0-py37heee7806_0.conda
 eaa3c47436b2637fda64adcc3bbd93fd  Miniconda/local_channel/linux-64/pyzmq-22.3.0-py37h295c915_2.conda
@@ -191,7 +192,6 @@ b721c134f138620824347930f0333ceb  petsc/superlu-5.2.1.tar.gz
 cfa3a57cadd5b6df544bbb88942015b3  petsc/superlu_dist-6.3.0.tar.gz
 5ddaf8169771ad50cd2f4a0b4ee8730d  petsc/viennacl-dc552a8.tar.gz
 bd1e284ae6bcb07fa862763ec924af89  pip/mpi4py-3.0.3.tar.gz
-7d6870f35116d7590dab6cbfc462f89c  pip/psutil-5.9.1.tar.gz
 fa3a9bf9b2d6ed2431f1baa46f4058b8  tcl_tk/tcl8.5.13-src.tar.gz
 1fc7dbb7495160756dbc805224afa360  tcl_tk/tk8.5.13-src.tar.gz
 d44b5dddebd8a7a7309aea6c36fda117  utils/bc-1.06.tar.gz

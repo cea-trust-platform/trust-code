@@ -752,10 +752,10 @@ unset PYTHONPATH # We get a warning from Miniconda if we do not unset this varia
 # check the previous install of conda and conda packages if it exists
 model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
-pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`"
+pkgs="pyqt nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
-[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0 `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
-[ "$model" = arm64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc`" # internet OK sous Mac
+[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0 `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
+[ "$model" = arm64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`" # internet OK sous Mac
 
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
 then
@@ -764,7 +764,7 @@ then
    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
    INSTALL_OK=1
    # list of packages already-installed/to-install in conda, we ignore mpi4py since installed with pip
-   $TRUST_ROOT/exec/python/bin/conda list | grep -v mpi4py | grep -v psutil > conda_list.check
+   $TRUST_ROOT/exec/python/bin/conda list | grep -v mpi4py > conda_list.check
    if [ "$system" = "Linux" ] && [ $model = "x86_64" ] #&& [ -f $TRUST_ROOT/exec/conda_list.ref ]
    then
       # Strict check of conda packages
@@ -1390,7 +1390,6 @@ fi
 # Intallation des packages supplementaires avec pip de conda #
 ##############################################################
 pkgs="" # now, we install only mpi4py with pip if mpi enabled, so umpty list
-[ "$TRUST_DISABLE_JUPYTER" != 1 ] && pkgs="psutil"
 if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "`basename $TRUST_CC_BASE`" != nvc++ ] && [ "$TRUST_DISABLE_MPI4PY" != 1 ]
 then
    pkgs="mpi4py "$pkgs
