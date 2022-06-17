@@ -37,7 +37,7 @@ class Write_notebook:
     def write_text_sans_nl(self,titi):
         return chaine2Tex(titi)
     def write_text(self,titi):
-        text = write_text_sans_nl(titi)
+        text = self.write_text_sans_nl(titi)
         text += '\n'
         return text
     def write_description_sans_nl(self,description):
@@ -45,7 +45,7 @@ class Write_notebook:
         text = self.write_text_sans_nl(self.Textojupyter(description[0])) + "\n"
         for i in range(1,len(description)):
             text += self.write_text_sans_nl(self.Textojupyter(description[i]))
-            text += '\n'
+            text += '\n '
             pass
         text += '\n'
         return text
@@ -104,12 +104,14 @@ class Write_notebook:
                 if (courbe.points!='Undefined'):
                     param = courbe.segment.split()
                     ficSon = get_nom_cas(param[0]) + '_' + (param[1]).upper() + '.son'
-                    code += "fig.addPoint(\"" + ficSon + "\",label=\"" + chaine2Tex(courbe.legende) + "\""+ style +") \n" 
+                    label = courbe.legende.replace('"','')
+                    code += "fig.addPoint(\"" + ficSon + "\",label=\"" + label + "\""+ style +") \n" 
                 elif (courbe.segment!='Undefined'):
                     param = courbe.segment.split()
                     ficSon = get_nom_cas(param[0]) + '_' + (param[1]).upper() + '.son'
                     
-                    code += "fig.addSegment(\"" + ficSon + "\",label=\"" + chaine2Tex(courbe.legende) + "\"" + style +") \n" 
+                    label = courbe.legende.replace('"','')
+                    code += "fig.addSegment(\"" + ficSon + "\",label=\"" + label + "\"" + style +") \n" 
                 else:
                     if (courbe.fichier!="Undefined"):
                         code += "data = plot.loadText(\"%s\")\n"%(courbe.fichier)
@@ -130,7 +132,7 @@ class Write_notebook:
                         code += "x = np.linspace(min(data[0]),max(data[0]),100) \n" #TODO pb avec les limites
                         fonction = self.replace_fonction(courbe.fonction)
                         code += "y = " + fonction + " \n"
-                        code += "fig.add(x,y,label=" + chaine2Tex(courbe.legende) + style + ") \n" 
+                        code += "fig.add(x,y,label=r" + chaine2Tex(courbe.legende) + style + ") \n" 
             if figure.labelX!="Undefined" or figure.labelY!="Undefined":
                 code += "\nfig.label(%s,%s)\n"%(figure.labelX,figure.labelY)
             if figure.rangeX!="auto" or figure.rangeY!="auto":
@@ -157,7 +159,7 @@ class Write_notebook:
             self.nb['cells'] += [nbf.v4.new_code_cell(code)]
         else:
             #motcle picture/image
-            path = os.path.join("build",figure.image)
+            path = os.path.join("src",figure.image)
             title += "![](%s)"%(path)
             self.nb['cells'] += [nbf.v4.new_markdown_cell(title)] 
         pass
@@ -223,8 +225,8 @@ class Write_notebook:
 
         if len(tableau.listeLignes)==0: return
 
-        from Tableau import Tableau_performance
-        if (isinstance(tableau,Tableau_performance)): 
+        from Tableau import Tableau_performance, Tableau_performance_nvellevalid
+        if (isinstance(tableau,Tableau_performance) or isinstance(tableau,Tableau_performance_nvellevalid)): 
             code = "run.tablePerf()"
             self.nb['cells'] += [nbf.v4.new_code_cell(code)]
             return
@@ -236,7 +238,7 @@ class Write_notebook:
         #tableau.printFichierParametres()
 
         code = "from trustutils import plot \n \n"
-        columns = tableau.label.split('|')
+        columns = chaine2Tex(tableau.label).split('|')
         code += "columns=%s \n" %(columns)
         code += "tab = plot.Table(columns)\n" 
         
@@ -247,7 +249,8 @@ class Write_notebook:
                     try:
                         valeur_f[i]=eval(valeur_f[i])
                     except:
-                        pass
+                        valeur_f[i]=chaine2Tex(valeur_f[i])
+                        #pass
                 code += "tab.addLigne([%s],\"%s\")\n"%(valeur_f,chaine2Tex(ligne.legende))
         
             elif ligne.fichier!='Undefined':
@@ -279,7 +282,7 @@ class Write_notebook:
             except:
                 ligne.gestMsg.ecrire(GestionMessages._ERR, 'unable to read %d values in file %s.'% (nb_colonnes_f,ligne.fichier))
 
-        code += "tab.df"
+        code += "display(tab)"
         self.nb['cells'] += [nbf.v4.new_code_cell(code)]
         pass
     def inclureObjet(self,maitre,figure):
@@ -316,22 +319,22 @@ class Write_notebook:
         fin = False
 
         if sousChapitre.titre!='Undefined':
-            title = "###%s \n" % chaine2Tex(sousChapitre.titre)
+            title = "### %s \n" % chaine2Tex(sousChapitre.titre)
             self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
 #
         for k,i in sousChapitre.dicosschap.items():
             for k2, v2 in i.items():
                 if v2 == 'description': 
-                    desc = write_text_sans_nl(i["valeur"])
-                    desc += write_Tex('\n')
+                    desc = self.write_text_sans_nl(i["valeur"])
+                    desc += '\n'
                     self.nb['cells'] += [nbf.v4.new_markdown_cell(desc)]
                 if v2 == 'figure':
                     self.inclureObjet(maitre,i["valeur"])
 #
     def inclurePurposeNotebook(self,maitre,purpose):
         '''Inclusion du paragraphe Purpose dans le fichier latex du rapport de validation.'''
-        purpose = "## Purpose \n" 
-        purpose += write_description(purpose.description)
+        purp = "## Purpose \n \n" 
+        if len(purpose.description)!=0: purp += self.write_description(purpose.description)
         iter = 0
 
         #ajout des figures
@@ -340,18 +343,18 @@ class Write_notebook:
             pass
 #        fichier.write_Tex('\\\\')
         # fichier.write_Tex_sans_nl('\n \vspace{0.3cm}')
-        suite_entete=''' Validation made by : __AUTEUR__.\\\\Report generated  __DATE__.'''
+        suite_entete=' Validation made by : __AUTEUR__ \n \n Report generated  __DATE__'
         suite_entete = suite_entete.replace('__AUTEUR__',chaine2Tex(maitre.auteur))
         import time
         date = time.strftime('%d/%m/%Y')
         suite_entete = suite_entete.replace('__DATE__',chaine2Tex(date))
-        purpose += write_text(suite_entete)
-        self.nb['cells'] = [nbf.v4.new_markdown_cell(purpose)]
+        purp += self.write_text(suite_entete)
+        self.nb['cells'] = [nbf.v4.new_markdown_cell(purp)]
 #
     def inclurePbDescriptionNotebook(self,maitre,pbdescription):
         '''Inclusion du paragraphe Problem Description dans le fichier latex du rapport de validation.'''
-        desc = '## Problem Description \n'
-        desc += write_description(pbdescription.description)
+        desc = '## Problem Description \n \n'
+        if len(pbdescription.description)!=0: desc += self.write_description(pbdescription.description)
         iter = 0
         
         self.nb['cells'] += [nbf.v4.new_markdown_cell(desc)]
@@ -366,8 +369,8 @@ class Write_notebook:
 #
     def inclureCaseSetupNotebook(self,maitre,casesetup):
         '''Inclusion du paragraphe Case Setup dans le fichier latex du rapport de validation.'''
-        setup = "## Case Setup \n"
-        setup += self.write_description(casesetup.description)
+        setup = "## Case Setup \n \n"
+        if len(casesetup.description)!=0: setup += self.write_description(casesetup.description)
         self.nb['cells'] += [nbf.v4.new_markdown_cell(setup)]
 
         #ajout des figures
@@ -378,47 +381,54 @@ class Write_notebook:
         for sousChapitre in casesetup.listeSSChap:
             self.inclureSSChapitreTex(maitre,sousChapitre)
 #
-    def inclureResultsTex(self,maitre,results,fichier):
+    def inclureResultsTex(self,maitre,results):
         '''Inclusion du paragraphe Results dans le fichier latex du rapport de validation.'''
-        results = "## Results \n"
-        results += "### Validation Specific Informations \n"
+        res = "## Results \n"
+        res += "### Validation Specific Informations \n"
         version=maitre.versionTrioU
-        results += '* Version %s : %s \n' % (maitre.code,chaine2Tex(version))
-        try:
-            from os import popen
-            a=os.popen('egrep "code|version : " version_utilisee | awk \'{printf("%s " ,$NF)}\'') #| awk \'{print "\""$1 " ("$2")\""}\' `')
-            chaine=a.read().split()
-            version=chaine[0]+" (built on TRUST v"+chaine[1]+")"
-#            fichier.write_Tex('\item Binary: %s' % chaine2Tex(version))
-        except:
-            pass
+        res += '* Version %s : %s \n' % (maitre.code,chaine2Tex(version))
 #
         for param in maitre.parametresTrioU:
-            results += write_Tex_sans_nl('* ') + write_text(param)
+            res += '* ' + self.write_text(param)
             pass
 #
         if maitre.casTest:
-            results += '* Generated Test cases : \n'
+            res += '* Generated Test cases : \n'
             for cas in maitre.casTest:
                 from lib import get_detail_cas
                 nomcas,dir,nb_proc,comment=get_detail_cas(cas)
                 ficData=nomcas+'.data'
-                results += write_Tex('$\rightarrow$ %s : *%s*\n' % (chaine2Tex(dir+"/"+ficData), chaine2Tex(comment)))
-        self.nb['cells'] += [nbf.v4.new_markdown_cell(results)]
+                res += '\t- %s : %s \n' % (chaine2Tex(dir+"/"+ficData), chaine2Tex(comment))
+        self.nb['cells'] += [nbf.v4.new_markdown_cell(res)]
+
+        testCases = "from trustutils import run\n \n"
+        for cas in maitre.casTest:
+            from lib import get_detail_cas
+            nomcas,dir,nb_proc,comment=get_detail_cas(cas)
+            ficData=nomcas+'.data'
+            testCases += "run.addCase(\""+ dir + "\",\"" + ficData
+            if nb_proc>1:
+                testCases += "\",nbProcs=" + str(nb_proc) + ")\n"
+            else:
+                testCases += "\")\n"
+            pass
+        testCases += "run.runCases()"
+        self.nb['cells'] += [nbf.v4.new_code_cell(testCases)]
 
         from Tableau import Tableau_performance_nvellevalid
         Tableau_perf=Tableau_performance_nvellevalid(verbose=0, output='')
+        fichier=nomcas+'.perf'
         Tableau_perf.lireParametres(fichier,maitre.casTest)
         Tableau_perf.titre='Performance Chart'
         self.inclureTableauNotebook(maitre,Tableau_perf)
         pass
         iter = 0
-        data = "### Plot Data \n"
+        data = "### Plot Data \n \n"
         self.nb['cells'] += [nbf.v4.new_markdown_cell(data)]
         for k,i in results.dicoresult.items():
             for k2, v2 in i.items():
                 if v2 == 'description': 
-                    desc = write_text(i["valeur"])
+                    desc = self.write_text(i["valeur"])
                     self.nb['cells'] += [nbf.v4.new_markdown_cell(desc)]
                 if v2 == 'figure':
                     self.inclureObjet(maitre,i["valeur"])
@@ -426,8 +436,8 @@ class Write_notebook:
     def inclureConclusionTex(self,maitre,conclusion):
         '''Inclusion du paragraphe Conclusion dans le fichier latex du rapport de validation.'''
 ##        if not conclusion.description:   - a faire : tester existance du paragrpahe
-        ccl = "## Conclusion \n"
-        ccl += write_description(conclusion.description)
+        ccl = "## Conclusion \n \n"
+        ccl += self.write_description(conclusion.description)
         iter = 0
         self.nb['cells'] += [nbf.v4.new_markdown_cell(ccl)]
 
@@ -460,9 +470,9 @@ class Write_notebook:
     def write_liste_ref(self,maitre):
         if maitre.reference:
             if maitre.nvellevalid==2:
-                liste_ref = "### References: \n"
+                liste_ref = "### References: \n \n"
             else:
-                liste_ref = "## References: \n"
+                liste_ref = "## References: \n \n"
             for ref in maitre.reference:
                 liste_ref += "* : %s \n"% (chaine2Tex(ref))
                 pass
@@ -511,14 +521,13 @@ class Write_notebook:
                 self.inclureResultsTex(maitre,resu)
             for conc in maitre.conclusion:
                 self.inclureConclusionTex(maitre,conc)
-            self.write_liste_ref(maitre,ficTex)
+            self.write_liste_ref(maitre)
 #
 ##############################
         ## inclusion des fichiers.data
         self.include_data(maitre)
 
         nbf.write(self.nb, self.notebook)
-        #ficTex.close()
 
         pass
 #
@@ -528,14 +537,14 @@ class Write_notebook:
 
         date = time.strftime('%d/%m/%Y')
         
-        intro = "## Introduction\n Validation made by: " + chaine2Tex(maitre.auteur) + "\n \n"
+        intro = "## Introduction\n \n Validation made by: " + chaine2Tex(maitre.auteur) + "\n \n"
         intro += " Report generated " + chaine2Tex(date)
 
-        description = "### Description\n" + self.write_description(maitre.description)
+        description = "### Description\n \n" + self.write_description(maitre.description)
 
         #parameter = "from trustutils import run\nrun.TRUST_parameters()" #TODO option parametre
        
-        parameter = "### TRUST parameters\n"
+        parameter = "### TRUST parameters\n \n"
 
         version=maitre.versionTrioU
         parameter += ('* Version %s : %s \n' % (maitre.code,chaine2Tex(version)))
