@@ -301,7 +301,7 @@ def chaine2Ascii(chaine):
     res = res.replace('_',' ')
     return res
 def chaine2File(titi):
-    ''' ajoute des antislash pour que la chaine soi correctement ecrise dans le fichier '''
+    ''' ajoute des antislash pour que la chaine soit correctement ecrite dans le fichier '''
     titi2=titi.replace('\a','\\a')
     titi2=titi2.replace('\b','\\b')
     titi2=titi2.replace('\f','\\f')

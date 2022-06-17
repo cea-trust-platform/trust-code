@@ -220,16 +220,21 @@ do
       echo "}" >> $prm
    elif [ "$1" = -create ]
    then
-      shift
-      if [ "`basename $ici`" = src ]
-      then
-         jy=`cd ..;basename $PWD`
-      else
-         jy=`basename $PWD`
-      fi
-			tutorial=0
-   		create_basic_jupyter_notebook.sh $jy $tutorial
-			exit 0
+		 shift
+     if [ "$1" != "" ]
+		 then
+			 jy=$1
+		 else
+			 if [ "`basename $ici`" = src ]
+			 then
+				 jy=`cd ..;basename $PWD`
+			 else
+				 jy=`basename $PWD`
+			 fi
+		 fi
+		 tutorial=0
+		 create_basic_jupyter_notebook.sh $jy $tutorial
+		 exit 0
    else
       options=$options" "$1
       echo "=================================================="

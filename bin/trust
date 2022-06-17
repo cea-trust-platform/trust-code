@@ -163,7 +163,6 @@ mesh=""
 monitor=""
 probes=""
 prm=""
-jupyter=""
 copy=""
 gdb=""
 taches=""
@@ -459,7 +458,21 @@ do
       prm=1 
    elif [ "$1" = "-jupyter" ]
    then
-      jupyter=1 
+		 shift
+     if [ "$1" != "" ]
+		 then
+			 jy=$1
+		 else
+			 if [ "`basename $ici`" = src ]
+			 then
+				 jy=`cd ..;basename $PWD`
+			 else
+				 jy=`basename $PWD`
+			 fi
+		 fi
+		 tutorial=0
+		 create_basic_jupyter_notebook.sh $jy $tutorial
+		 exit $?
    elif [ "$1" = "-search" ]
    then
       shift
@@ -715,16 +728,6 @@ fi
 if [ "$prm" = 1 ]
 then
    create_basic_prm_from_lata.sh $NOM
-   exit $?
-fi
-
-#############################
-# Generate jupyter notebook #
-#############################
-if [ "$jupyter" = 1 ]
-then
-	 tutorial=1
-   create_basic_jupyter_notebook.sh $NOM $tutorial
    exit $?
 fi
 
