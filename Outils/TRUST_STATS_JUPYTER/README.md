@@ -52,5 +52,5 @@ Examples of usage can be checked from the **tests** repository.
 
 More details on how to write TRUST validation form using Jupyter can be found in 
 
-        Validation/Rapports_automatiques/README_Jupyter.md
+        $TRUST_ROOT/Validation/Rapports_automatiques/README_Jupyter.md
 

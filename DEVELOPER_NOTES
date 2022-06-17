@@ -1,5 +1,5 @@
 -------------------------------------------------------------
-Developer notes version 1.8.5_beta : Changes since version 1.8.4 :
+Developer notes version 1.9.0_beta : Changes since version 1.8.4 :
 -------------------------------------------------------------
 16/06/22 (TRUST) File indentation is now applied to all c, cpp, h, and tpp files. It can be avoided by placing the tag TRUST_NO_INDENT in the first ten lines of the file.
 25/05/22 (TRUST) Nom et Motcle can now be built from std::string (avoiding painful usage of c_str() method ...)
