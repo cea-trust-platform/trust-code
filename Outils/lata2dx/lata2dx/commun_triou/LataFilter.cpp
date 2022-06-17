@@ -549,10 +549,11 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
                                 "??");
     // It is regularizable ?
     entier regularizable = (((element_type == Domain::quadri)&&(data.dimension_==2)) || ((element_type == Domain::hexa)&&(data.dimension_==3)))
-      && (lata_geom.elem_type_ != "HEXAEDRE_AXI") && (lata_geom.elem_type_ != "RECTANGLE_AXI");
+      && (lata_geom.elem_type_ != "HEXAEDRE_AXI") && (lata_geom.elem_type_ != "RECTANGLE_AXI")
+      && (lata_geom.elem_type_ != "QUADRANGLE") && (lata_geom.elem_type_ != "QUADRANGLE_3D");
     Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says regularizable=" << regularizable << endl;
     // It is dualizable ?
-    entier dualizable = element_type == Domain::triangle || element_type == Domain::tetra;
+    entier dualizable = (regularizable && opt_.regularize) || element_type == Domain::triangle || element_type == Domain::tetra;
     Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says dualizable=" << dualizable << endl;
     if (regularizable && ((opt_.regularize_tolerance < 0) || (!opt_.regularize))) {
       regularizable = 0;
