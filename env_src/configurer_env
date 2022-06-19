@@ -1002,10 +1002,10 @@ then
    # MKL: Math Kernel Library d'INTEL detecte (seems to work with Intel or Gnu compilers)
    TRUST_BLAS_LAPACK=`ls $MKLROOT/lib/*64*/libmkl_core.a $MKL_BASE/lib/*64*/libmkl_core.a 2>/dev/null | head -1`
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
-elif [ "$CRAY_LIBSCI_PREFIX" != "" ]
+elif [ "$CRAY_LIBSCI_PREFIX" != "" ] || [ "$CRAY_LIBSCI_PREFIX_DIR" != "" ]
 then
    # CRAY blas
-   TRUST_BLAS_LAPACK=`ls $CRAY_LIBSCI_PREFIX/lib/libsci_cray.a 2>/dev/null | head -1`
+   TRUST_BLAS_LAPACK=`ls $CRAY_LIBSCI_PREFIX/lib/libsci_cray.a $CRAY_LIBSCI_PREFIX_DIR/lib/libsci_cray.a 2>/dev/null | head -1`
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
 fi
 m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && export TRUST_BLAS_LAPACK";ecrit $m"|"$e"|"$env
@@ -1692,7 +1692,7 @@ case $TRUST_ARCH_CC in
 	;;
    linux_crayCC) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
-	CppFlags="-O3 -fPIC -std=c++11 -Wno-inconsistent-missing-override"
+	CppFlags="-O3 -fPIC -std=c++11 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter -Wno-tautological-compare -Werror"
 	SYSLIBS="-lrt "
 	F77Flags="-O3 -fPIC"
 	ccFLAGS="-O3 -fPIC"
@@ -1929,15 +1929,25 @@ then
    then
       openmp="-openmp" # Take care, "man icpc" says if -openmp misunderstood, it creates an object name penmp so:
       openmp="-fopenmp -mkl=parallel" # Ajout de -mkl=parallel pour etre sur de linker avec Mkl BLAS parallele et non sequential (Vu sur sagittarius)
-   elif [ "`basename $TRUST_CC_BASE`" = crayCC ]
+   elif [ "`basename $TRUST_CC_BASE`" = crayCC ] || [ "`basename $TRUST_CC_BASE`" = clang++ ]
    then
-      openmp="-fopenmp "
-      # Device AMD Radeon:
-      openmp_target="-fopenmp-targets=amdgcn-amd-amdhsa -Xopenmp-target=amdgcn-amd-amdhsa -march=gfx908 -fsave-loopmark "
-   else
-      openmp="-fopenmp "
-      # Pas de device: See https://gcc.gnu.org/wiki/Offloading
-      openmp_target="-foffload=disable "
+      openmp="-fopenmp"
+      [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx64-nvidia-cuda && march=""
+      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amd-amdhsa   && march="-march=gfx908" # Device AMD Radeon MI100
+      # -fsave-loopmark est une option pour creer un .lst a la compilation mais il faut aussi le retirer pour eviter un crash du compilateur
+      openmp_target="-fopenmp-targets=$target -Xopenmp-target=$target $march "   
+   elif [ "`basename $TRUST_CC_BASE`" = g++ ]
+   then
+      openmp="-fopenmp"
+      target=disable # Pas de carte See https://gcc.gnu.org/wiki/Offloading
+      [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx-none 	&& march=""
+      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amdhsa	&& march="-march=gfx908" # Device AMD Radeon MI100
+      openmp_target="-foffload=$target $march"
+   elif [ "`basename $TRUST_CC_BASE`" = nvc++ ]
+   then
+      openmp="-mp"
+      #march="-gpu=??"     
+      openmp_target="-mp=gpu $march"
    fi
    CppFlags=$CppFlags" "$openmp" "$openmp_target
    SYSLIBS=$SYSLIBS" "$openmp

@@ -40,7 +40,7 @@ public:\
    DoubleTab& calculer(DoubleTab& ) const override;\
    DoubleTab& ajouter(DoubleTab& ) const override;\
    inline void completer_() override;\
-   inline int impr(Sortie&) const override;\
+   int impr(Sortie&) const override;\
    \
 protected:\
    \
