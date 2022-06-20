@@ -597,7 +597,10 @@ void ProblemTrio::setInputIntValue(const std::string& name, const int& val)
 int ProblemTrio::getOutputIntValue(const std::string& name) const
 {
   const Nom nom(name.c_str());
-  return pb->getOutputIntValue(nom);
+  // [ABN] A bit ugly: we force cast to int to handle the 64b situation.
+  // In 64b the ScalarRegister will become long, but the final ICoCo interface will be int.
+  // Hopefully soon we will have a clean 64-bits version...
+  return (int)pb->getOutputIntValue(nom);
 }
 
 vector<string> ProblemTrio::getOutputFieldsNames() const

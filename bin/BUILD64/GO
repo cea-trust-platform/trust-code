@@ -11,7 +11,8 @@ cp bin/BUILD64/Modifie bin/BUILD64/replace_int_entier.py bin/BUILD64/GO .
 
 # Apply Modifie script and exclude many file extensions that should not be edited if possible
 # arch.h is already compatible with BUILD64, it provides from patch, so we do not edit it
-./Modifie $(find src -type f -not -name "*.f" -not -name "*.txt" -not -name "*.include" -not -name "*.sh" -not -name "arch.h")
+# ICoCo should also remain out of the process.
+./Modifie $(find src -type f -not -name "*.f" -not -name "*.txt" -not -name "*.include" -not -name "*.sh" -not -name "arch.h" -not -name "ProblemTrio.*")
 
 ./Modifie $(find Outils/lata2dx/lata2dx -not -name "*.py" )
 ./Modifie Outils/lata2dx/lata_dx_filter.cpp
@@ -41,8 +42,6 @@ sed -i "s/std::vector< std::pair< std::pair< long, long >, double > > ts = GetAl
 #sed -i "s/long \*pf = p + afield._nodes_per_elem; \/\/fin de la ligne/int *pf = p + afield._nodes_per_elem; \/\/fin de la ligne/" src/Kernel/Champs/Champ_input_P0.cpp
 
 #sed -i "s/long \*p = afield._connectivity = new True_int\[afield._nb_elems \* afield._nodes_per_elem\];/int *p = afield._connectivity = new True_int[afield._nb_elems * afield._nodes_per_elem];/" src/Kernel/ICoCo/Convert_ICoCoTrioField.cpp
-sed -i "s/long getMEDCouplingMajorVersion/int getMEDCouplingMajorVersion/" src/Kernel/ICoCo/ProblemTrio.h
-sed -i "s/long ProblemTrio::getMEDCouplingMajorVersion/int ProblemTrio::getMEDCouplingMajorVersion/" src/Kernel/ICoCo/ProblemTrio.cpp
 
 sed -i "s/Cerr << \"Detecting a \" << mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/Cerr << \"Detecting a \" << (long)mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/" src/Kernel/MEDimpl/LireMED.cpp
 
