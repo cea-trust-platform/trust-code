@@ -30,6 +30,15 @@ Implemente_instanciable(Pb_Multiphase, "Pb_Multiphase", Pb_Fluide_base);
 // XD attr QDM_Multiphase QDM_Multiphase QDM_Multiphase 0 Momentum conservation equation for a multi-phase problem where the unknown is the velocity
 // XD attr Masse_Multiphase Masse_Multiphase Masse_Multiphase 0 Mass consevation equation for a multi-phase problem where the unknown is the alpha (void fraction)
 // XD attr Energie_Multiphase Energie_Multiphase Energie_Multiphase 0 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature
+// XD attr Energie_cinetique_turbulente Energie_cinetique_turbulente Energie_cinetique_turbulente 1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature (available in TrioCFD)
+// XD attr Echelle_temporelle_turbulente Echelle_temporelle_turbulente Echelle_temporelle_turbulente 1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature (available in TrioCFD)
+// XD attr Energie_cinetique_turbulente_WIT Energie_cinetique_turbulente_WIT Energie_cinetique_turbulente_WIT 1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature (available in TrioCFD)
+// XD attr Taux_dissipation_turbulent Taux_dissipation_turbulent Taux_dissipation_turbulent 1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature (available in TrioCFD)
+
+// XD Energie_cinetique_turbulente eqn_base Energie_cinetique_turbulente 1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature (available in TrioCFD)
+// XD Echelle_temporelle_turbulente eqn_base Echelle_temporelle_turbulente -1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature (available in TrioCFD)
+// XD Energie_cinetique_turbulente_WIT eqn_base Energie_cinetique_turbulente_WIT -1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature (available in TrioCFD)
+// XD Taux_dissipation_turbulent eqn_base Taux_dissipation_turbulent -1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature (available in TrioCFD)
 
 Implemente_instanciable(Pb_HEM, "Pb_HEM", Pb_Multiphase);
 // XD Pb_HEM Pb_Multiphase Pb_HEM -1 A problem that allows the resolution of 2-phases mechanicaly and thermally coupled with 3 equations

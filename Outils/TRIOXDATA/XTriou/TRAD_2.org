@@ -368,6 +368,7 @@ sets piso sets -1 Stability-Enhancing Two-Step solver which is useful for a mult
   attr iter_min entier iter_min 1 Number of minimum iterations
 bloc_criteres_convergence bloc_lecture nul 0 Not set
 ice sets ice -1 Implicit Continuous-fluid Eulerian solver which is useful for a multiphase problem. Robust pressure reduction resolution.
+  attr pression_degeneree entier pression_degeneree 1 val for pression degeneree
 criteres_convergence interprete nul 0 convergence criteria
   attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
   attr inco chaine inco 1 Unknown (i.e: alpha, temperature, velocity and pressure)
@@ -502,7 +503,7 @@ frontiere_ouverte_pression_imposee_orlansky neumann frontiere_ouverte_pression_i
 frontiere_ouverte_pression_moyenne_imposee neumann frontiere_ouverte_pression_moyenne_imposee 0 Class for open boundary with pressure mean level imposed.
   attr pext floattant pext 0 Mean pressure.
 frontiere_ouverte neumann frontiere_ouverte -1 Boundary outlet condition on the boundary called bord (edge) (diffusion flux zero). This condition must be associated with a boundary outlet hydraulic condition.
-  attr var_name chaine(into=["T_ext","C_ext","Y_ext","K_Eps_ext","Fluctu_Temperature_ext","Flux_Chaleur_Turb_ext","V2_ext","a_ext"]) var_name 0 Field name.
+  attr var_name chaine(into=["T_ext","C_ext","Y_ext","K_Eps_ext","Fluctu_Temperature_ext","Flux_Chaleur_Turb_ext","V2_ext","a_ext","tau_ext","k_ext","omega_ext"]) var_name 0 Field name.
   attr ch front_field_base ch 0 Boundary field type.
 frontiere_ouverte_temperature_imposee dirichlet frontiere_ouverte_temperature_imposee -1 Imposed temperature condition at the open boundary called bord (edge) (in the case of fluid inlet). This condition must be associated with an imposed inlet velocity condition. The imposed temperature value is expressed in oC or K.
   attr ch front_field_base ch 0 Boundary field type.

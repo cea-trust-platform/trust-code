@@ -20,7 +20,7 @@
 
 Implemente_instanciable(Option_PolyMAC_P0,"Option_PolyMAC_P0|Option_CoviMAC",Interprete);
 Add_synonym(Option_PolyMAC_P0,"Option_PolyMAC_V2");
-// XD Option_PolyMAC_P0 interprete Option_PolyMAC_P0 1 Class of PolyMAC_P0 options.
+// XD Option_PolyMAC_P0 interprete Option_Covimac 1 Class of PolyMAC_P0 options.
 // XD attr interp_ve1 entier interp_ve1 1 Flag to enable a first order velocity face-to-element interpolation (the default value is 0 which means a second order interpolation)
 
 int Option_PolyMAC_P0::interp_ve1 = 0;
