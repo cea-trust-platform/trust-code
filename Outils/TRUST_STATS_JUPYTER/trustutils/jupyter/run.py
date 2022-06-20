@@ -768,7 +768,6 @@ def tablePerf():
             raise e
 
     zeTable.sum("Total CPU Time")
-    display(zeTable)
 
     return zeTable.df
 

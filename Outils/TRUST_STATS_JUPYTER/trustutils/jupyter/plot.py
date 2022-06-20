@@ -22,6 +22,12 @@ from trustutils.jupyter.run import BUILD_DIRECTORY
 pd.set_option("display.notebook_repr_html", True)
 pd.set_option("display.max_rows", None)
 
+def _repr_latex_(self):
+    return "\\begin{center} \n %s \n \end{center}" % self.to_latex()
+
+pd.DataFrame._repr_latex_ = _repr_latex_ # To display pandas table as latex table into report
+
+
 def saveFileAccumulator(data):
     """
     Method for saving files.
