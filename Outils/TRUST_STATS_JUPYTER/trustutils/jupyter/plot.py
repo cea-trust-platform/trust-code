@@ -75,7 +75,7 @@ def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", 
     matrix : array
         matrix.
     """
-
+    origin = os.getcwd()
     os.chdir(BUILD_DIRECTORY)
 
     if nb_column == -1:
@@ -92,6 +92,8 @@ def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", 
         matrix = np.loadtxt(data, dtype=dtype, skiprows=skiprows)
 
     saveFileAccumulator(data)
+    os.chdir(origin)
+
     return matrix
 
 
