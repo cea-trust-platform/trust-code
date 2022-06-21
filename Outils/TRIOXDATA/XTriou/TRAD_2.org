@@ -368,7 +368,7 @@ sets piso sets -1 Stability-Enhancing Two-Step solver which is useful for a mult
   attr iter_min entier iter_min 1 Number of minimum iterations
 bloc_criteres_convergence bloc_lecture nul 0 Not set
 ice sets ice -1 Implicit Continuous-fluid Eulerian solver which is useful for a multiphase problem. Robust pressure reduction resolution.
-  attr pression_degeneree entier pression_degeneree 1 val for pression degeneree
+  attr pression_degeneree entier pression_degeneree 1 set to 1 if the pressure field is degenerate (ex. : incompressible fluid with no imposed-pressure BCs). Default: autodetected
 criteres_convergence interprete nul 0 convergence criteria
   attr aco chaine(into=["{"]) aco 0 Opening curly bracket.
   attr inco chaine inco 1 Unknown (i.e: alpha, temperature, velocity and pressure)

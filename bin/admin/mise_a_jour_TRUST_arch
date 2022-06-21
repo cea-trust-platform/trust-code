@@ -927,7 +927,8 @@ do
 	       echo "Search memory errors with ctest_valgrind at "`date '+%H:%M:%S'`
 	       cd $TRUST_ROOT/MonoDir_mpi_opt/src
 	       export VALGRIND=1
-	       ctest -j$TRUST_NB_PHYSICAL_CORES &> ctest_valgrind.log
+	       #ctest -j$TRUST_NB_PHYSICAL_CORES &> ctest_valgrind.log
+	       ctest -j10 &> ctest_valgrind.log
 	       export VALGRIND=0
 	       nb_tests_tot=`grep "tests failed out of" ctest_valgrind.log  | cut -d' ' -f 9`
 	       nb_tests_ok=`grep Passed ctest_valgrind.log | wc -l`
