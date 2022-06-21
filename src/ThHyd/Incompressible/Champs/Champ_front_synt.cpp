@@ -198,7 +198,7 @@ Entree& Champ_front_synt::readOn(Entree& is)
             if (motlu == "p")
               {
                 Cerr << "Error while reading Champ_front_synt:" << finl;
-                Cerr << "  Parameter " << motlu << " has been renamed to KeOverKmin since TRUST v1.8.5"<< finl;
+                Cerr << "  Parameter " << motlu << " has been renamed to KeOverKmin since TRUST v1.9.0"<< finl;
                 Cerr << "  Update your datafile."<< finl;
               }
             else

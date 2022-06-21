@@ -574,12 +574,15 @@ do
       ######################
       MPI_NATIF=0
       OpenMPI=0
+      Latest_MPICH=0
       if [ "${MPI_ROOT#$TRUST_ROOT}" != "$MPI_ROOT" ]
       then
          $Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "MPI=OpenMPI "$NF} /Version:/ {print "MPI=MPICH "$NF}'
          OpenMPIversion=`$Mpirun --version 2>&1 | awk '/Open MPI/ {i=1;while(split($(i),a,".")==1) i++;print $(i)}'`
          #[ `echo $OpenMPIversion | awk -F. '{print $1>=3}'` = 1 ] && LatestOpenMPI=1
          [ "$OpenMPIversion" != "" ] && OpenMPI=1
+         MPICHVersion=`$Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "MPI=OpenMPI "$NF} /Version:/ {print "MPICH "$NF}'`
+         [ "$MPICHVersion" != "MPICH 3.2" ] && Latest_MPICH=1
       elif [ "$MPI_ROOT" != "" ]
       then
          MPI_VERSION=`$Mpirun --version 2>&1 | $TRUST_Awk '/Open MPI/ {print "OpenMPI "$NF} /Version:/ {print "MPICH "$NF} /Intel\(R\) MPI/ {print "Intel MPI "$8}'`
@@ -798,7 +801,7 @@ do
 	 then
             echo "--------------------------------------------------------" 
 	    echo "Test case in valgrind mode at "`date '+%H:%M:%S'`
-            if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ] || [ $MPI_NATIF = 1 ] || [ $OpenMPI = 1 ]
+            if [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-valgrind" | grep ^$HOST_BUILD"\."`" != "" ] || [ $MPI_NATIF = 1 ] || [ $OpenMPI = 1 ] || [ $Latest_MPICH = 1 ]
             then
 	      OK="NOT"
             else

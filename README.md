@@ -22,7 +22,7 @@ BSD3 license
     $> cd TRUST-1.8.4
     $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.8.4.tar
     $> tar xf externalpackages-1.8.4.tar
-    $> ./configure -help # To see the possible configure options. On various OS, we configure TRUST with OPTIONS -force_provided_mpich (DO NOT use it on HPC clusters!)
+    $> ./configure -help # To see the possible configure options.
     $> ./configure $OPTIONS  # At the end of configure, file env/machine.env will be created. You can then edit it and some others (env/make.linux*) to change some default values.
     $> make
 

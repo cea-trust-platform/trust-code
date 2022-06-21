@@ -34,6 +34,7 @@ Version	Qui				Tache
 1.9.0   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
 1.9.0   trust@cea.fr            LDC: envoyer BDL
 1.9.0   trust@cea.fr            LDC: Creer new RELEASE dans TRUST et TrioCFD 
+1.9.0   trust@cea.fr            LDC: mettre a jour depot doc html sur github
 1.9.0   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
 
 
