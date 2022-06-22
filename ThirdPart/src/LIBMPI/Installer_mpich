@@ -5,7 +5,11 @@
 # MPICH #
 #########
 default_version=3.2
-latest_version=4.0.2 # Blocages MUMPS sur Fedora 34 avec 3.4.1
+# latest_version=3.4.2 # Blocages MUMPS sur Fedora 34
+# 3.4.2 : 4mn pour installer, 4.0.2 : 31mn pour installer. Donc uniquement Darwin pour cette derniere !
+# PL NB1: Pour tous, changer de version de MPI n'est pas anodin: portabilite, temps de build, temps de run, valgrind error free, tout cela doit etre soupese pour remplacement MPICH 3.2
+# PL NB2: Evaluer conda install mpich (3.3?)
+latest_version=3.4.2 && [ `uname -s` = Darwin ] && latest_version=4.0.2
 # Cas ou l'on force la version la plus recente:
 if [ "$TRUST_FORCE_LATEST_MPICH" = 1 ]
 then
@@ -24,7 +28,9 @@ http=http://www.mpich.org/static/downloads/$version
 src=${package%.tar.gz}
 if [ "$TRUST_FORCE_LATEST_MPICH" = 1 ]
 then
-   option_configure="--enable-shared --enable-g=meminit --enable-fast=all,O3 --enable-yield=sched_yield --with-device=ch4:ofi"
+     #option_configure="--disable-dependency-tracking --enable-shared --enable-g=meminit --enable-fast=all,O3 --enable-yield=sched_yield --with-device=ch4:ofi"
+     # --with-device= obligatoire...
+     option_configure="--disable-dependency-tracking --enable-shared --enable-g=meminit --enable-fast=all,O3 --enable-yield=sched_yield --with-device=ch3:nemesis"
 else
   # --enable-g=meminit,dbg,mem pour debugger MPICH avec valgrind (ce n'est pas ce que l'on veut)
   # --enable-shared (pour utiliser le MPI wrapper de valgrind)
@@ -48,7 +54,7 @@ fi
 #[ "`file $package 2>&1 | grep gzip`" = "" ] && rm -f $package
 
 # On telecharge le package s'il n'est pas la
-[ ! -f $package ] && wget_ $http/$package
+[ ! -f $package ] && package=$TRUST_TMP/$package && [ ! -f $package ] && wget_ $http/`basename $package` -P $TRUST_TMP
 
 install=`pwd`/mpich
 install=$MPI_ROOT
