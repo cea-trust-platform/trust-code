@@ -12,11 +12,9 @@ Version	Qui				Tache
 1.9.1   adrien.bruneton@cea.fr  Nettoyer le vieux code med fichier
 1.9.1   adrien.bruneton@cea.fr  Revoir LireMED pour ne pas utiliser les familles mais que les groupes
 1.9.1   adrien.bruneton@cea.fr  Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
-1.9.1   pierre.ledac@cea.fr     Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
-1.9.1   pierre.ledac@cea.fr     Doxygen update + remove #ifdef DOXYGEN_SHOULD_SKIP_THIS from Eval_DiffF22_VDF_const_Elem.h
 1.9.1   pierre.ledac@cea.fr     Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
-1.9.1   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
-1.9.1   pierre.ledac@cea.fr	Fedora 36 et GNU 11.?
+1.9.1   pierre.ledac@cea.fr     VisIt sur Ubuntu 22
+1.9.1   pierre.ledac@cea.fr     Supprimer OSQP dans le futur des que PolyMAC_old disparait
 1.9.1   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE Canal_172M_PE_4913 sur un cluster
 1.9.1   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 185" (cf DI 188128)
 1.9.1   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
