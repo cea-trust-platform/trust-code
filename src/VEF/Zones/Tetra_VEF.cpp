@@ -639,7 +639,7 @@ void Tetra_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
                           const ArrOfDouble& vs,const DoubleTab& vsom,
                           const Champ_Inc_base& vitesse,int type_cl, const DoubleVect& porosite_face) const
 {
-    calcul_vc_tetra(Face.addr(), vc.addr(), vs.addr(), vsom.addr(), vitesse.valeurs().addr(), type_cl, porosite_face.addr());
+  calcul_vc_tetra(Face.addr(), vc.addr(), vs.addr(), vsom.addr(), vitesse.valeurs().addr(), type_cl, porosite_face.addr());
 }
 
 /*! @brief calcule les coord xg du centre d'un element non standard calcule aussi idirichlet=nb de faces de Dirichlet de l'element
@@ -648,7 +648,7 @@ void Tetra_VEF::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
 void Tetra_VEF::calcul_xg(DoubleVect& xg,const DoubleTab& x, const int type_elem_Cl,
                           int& idirichlet,int& n1,int& n2,int& n3) const
 {
-    calcul_xg_tetra(xg.addr(), x.addr(), type_elem_Cl, idirichlet, n1, n2, n3);
+  calcul_xg_tetra(xg.addr(), x.addr(), type_elem_Cl, idirichlet, n1, n2, n3);
 }
 
 void Tetra_VEF::modif_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,

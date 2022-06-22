@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -379,16 +379,16 @@ void check(const DoubleVect& t, LocalVector<double>& r, const Nom& nom)
 }
 double residual(const Matrice_Base& a, const DoubleVect& b, const DoubleVect& x)
 {
-    DoubleVect e(b);
-    e *= -1;
-    a.ajouter_multvect(x, e);
-    return e.mp_norme_vect();
+  DoubleVect e(b);
+  e *= -1;
+  a.ajouter_multvect(x, e);
+  return e.mp_norme_vect();
 }
 double residual_device(const LocalMatrix<double>& a, const LocalVector<double>& b, const LocalVector<double>& x, LocalVector<double>& e)
 {
-    a.Apply(x, &e);
-    e.ScaleAdd(-1.0, b);
-    return e.Norm();
+  a.Apply(x, &e);
+  e.ScaleAdd(-1.0, b);
+  return e.Norm();
 }
 
 int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2020, CEA
+* Copyright (c) 2022, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,52 +29,58 @@ static std::clock_t start;
 static char* clock_on=NULL;
 inline void start_timer()
 {
-    clock_on = getenv ("TRUST_CLOCK_ON");
-    if (clock_on!=NULL) start = std::clock();
+  clock_on = getenv ("TRUST_CLOCK_ON");
+  if (clock_on!=NULL) start = std::clock();
 }
 inline void end_timer(const std::string& str) // Return in [ms]
 {
-    if (clock_on!=NULL) {
-	    printf("[clock] %7.3f ms %s\n", 1000*(std::clock() - start) / (double) CLOCKS_PER_SEC ,str.c_str());
-	    fflush(stdout);
+  if (clock_on!=NULL)
+    {
+      printf("[clock] %7.3f ms %s\n", 1000*(std::clock() - start) / (double) CLOCKS_PER_SEC ,str.c_str());
+      fflush(stdout);
     }
 }
 inline void end_timer(const std::string& str, int size) // Return in [ms]
 {
-    if (clock_on!=NULL) {
-	    double ms = 1000*(std::clock() - start) / (double) CLOCKS_PER_SEC;
-	    int mo = size/1024/1024;
-	    printf("[clock] %7.3f ms %s %6d Mo %4.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
-	    fflush(stdout);
+  if (clock_on!=NULL)
+    {
+      double ms = 1000*(std::clock() - start) / (double) CLOCKS_PER_SEC;
+      int mo = size/1024/1024;
+      printf("[clock] %7.3f ms %s %6d Mo %4.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
+      fflush(stdout);
     }
 }
 
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #pragma GCC diagnostic push
 
-inline void copyToDevice(const ArrOfInt& tab) {
-    start_timer();
-    const int *tab_addr = tab.addr();
-#pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
-    end_timer((std::string)"copyToDevice ArrOfInt ",sizeof(int)*tab.size_array());
+inline void copyToDevice(const ArrOfInt& tab)
+{
+  start_timer();
+  const int *tab_addr = tab.addr();
+  #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
+  end_timer((std::string)"copyToDevice ArrOfInt ",sizeof(int)*tab.size_array());
 }
-inline void copyToDevice(ArrOfInt& tab) {
-    start_timer();
-    int *tab_addr = tab.addr();
-#pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
-    end_timer((std::string)"copyToDevice ArrOfInt ",sizeof(int)*tab.size_array());
+inline void copyToDevice(ArrOfInt& tab)
+{
+  start_timer();
+  int *tab_addr = tab.addr();
+  #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
+  end_timer((std::string)"copyToDevice ArrOfInt ",sizeof(int)*tab.size_array());
 }
-inline void copyToDevice(const ArrOfDouble& tab) {
-    start_timer();
-    const double *tab_addr = tab.addr();
-#pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
-    end_timer((std::string)"copyToDevice ArrOfDouble ",sizeof(double)*tab.size_array());
+inline void copyToDevice(const ArrOfDouble& tab)
+{
+  start_timer();
+  const double *tab_addr = tab.addr();
+  #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
+  end_timer((std::string)"copyToDevice ArrOfDouble ",sizeof(double)*tab.size_array());
 }
-inline void copyToDevice(ArrOfDouble& tab) {
-    start_timer();
-    double *tab_addr = tab.addr();
-#pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
-    end_timer((std::string)"copyToDevice ArrOfInt ",sizeof(double)*tab.size_array());
+inline void copyToDevice(ArrOfDouble& tab)
+{
+  start_timer();
+  double *tab_addr = tab.addr();
+  #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
+  end_timer((std::string)"copyToDevice ArrOfInt ",sizeof(double)*tab.size_array());
 }
 
 #pragma GCC diagnostic pop

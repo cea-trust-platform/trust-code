@@ -386,43 +386,43 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   int premiere_face_int = zone_VEF.premiere_face_int();
   // On traite les faces internes
 
-#pragma omp target teams distribute parallel for map(to:nu_addr[0:nu.size_array()],inconnue_addr[0:inconnue.size_array()]) map(tofrom:resu_addr[0:resu.size_array()])
- for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
+  #pragma omp target teams distribute parallel for map(to:nu_addr[0:nu.size_array()],inconnue_addr[0:inconnue.size_array()]) map(tofrom:resu_addr[0:resu.size_array()])
+  for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
-        for (int k=0; k<2; k++)
+      for (int k=0; k<2; k++)
         {
-            int elem = face_voisins_addr[2*num_face+k];
-            for (i0=0; i0<nb_faces_elem; i0++)
+          int elem = face_voisins_addr[2*num_face+k];
+          for (i0=0; i0<nb_faces_elem; i0++)
             {
-                if ( (j= elem_faces_addr[nb_faces_elem*elem+i0]) > num_face )
+              if ( (j= elem_faces_addr[nb_faces_elem*elem+i0]) > num_face )
                 {
-                    int contrib=1;
-                    if(j>=nb_faces) // C'est une face virtuelle
+                  int contrib=1;
+                  if(j>=nb_faces) // C'est une face virtuelle
                     {
-                        int el1 = face_voisins_addr[j*2];
-                        int el2 = face_voisins_addr[j*2+1];
-                        if((el1==-1)||(el2==-1))
-                            contrib=0;
+                      int el1 = face_voisins_addr[j*2];
+                      int el2 = face_voisins_addr[j*2+1];
+                      if((el1==-1)||(el2==-1))
+                        contrib=0;
                     }
-                    if(contrib)
+                  if(contrib)
                     {
-                        double pscal = 0;
-                        for (int dim=0; dim<dimension;dim++)
-                            pscal += face_normales_addr[num_face*dimension+dim]*face_normales_addr[j*dimension+dim];
-                        int signe = (face_voisins_addr[num_face*2] == face_voisins_addr[j*2]) || (face_voisins_addr[num_face*2+1] == face_voisins_addr[j*2+1]) ? -1 : 1;
-                        valA = signe*(pscal*nu_addr[elem])*inverse_volumes_addr[elem];
-                        for (int nc=0; nc<nb_comp; nc++)
+                      double pscal = 0;
+                      for (int dim=0; dim<dimension; dim++)
+                        pscal += face_normales_addr[num_face*dimension+dim]*face_normales_addr[j*dimension+dim];
+                      int signe = (face_voisins_addr[num_face*2] == face_voisins_addr[j*2]) || (face_voisins_addr[num_face*2+1] == face_voisins_addr[j*2+1]) ? -1 : 1;
+                      valA = signe*(pscal*nu_addr[elem])*inverse_volumes_addr[elem];
+                      for (int nc=0; nc<nb_comp; nc++)
                         {
-#pragma omp atomic
-                            resu_addr[num_face*nb_comp+nc]+=valA*inconnue_addr[j*nb_comp+nc];
-#pragma omp atomic
-                            resu_addr[num_face*nb_comp+nc]-=valA*inconnue_addr[num_face*nb_comp+nc];
-                            if(j<nb_faces) // On traite les faces reelles
+                          #pragma omp atomic
+                          resu_addr[num_face*nb_comp+nc]+=valA*inconnue_addr[j*nb_comp+nc];
+                          #pragma omp atomic
+                          resu_addr[num_face*nb_comp+nc]-=valA*inconnue_addr[num_face*nb_comp+nc];
+                          if(j<nb_faces) // On traite les faces reelles
                             {
-#pragma omp atomic
-                                resu_addr[j*nb_comp+nc]+=valA*inconnue_addr[num_face*nb_comp+nc];
-#pragma omp atomic
-                                resu_addr[j*nb_comp+nc]-=valA*inconnue_addr[j*nb_comp+nc];
+                              #pragma omp atomic
+                              resu_addr[j*nb_comp+nc]+=valA*inconnue_addr[num_face*nb_comp+nc];
+                              #pragma omp atomic
+                              resu_addr[j*nb_comp+nc]-=valA*inconnue_addr[j*nb_comp+nc];
                             }
                         }
                     }
