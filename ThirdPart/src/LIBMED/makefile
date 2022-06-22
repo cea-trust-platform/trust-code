@@ -1,5 +1,5 @@
 ext_pkg=$(TRUST_ROOT)/externalpackages/MED
-
+mpi=$(MPI_INCLUDE)/mpi.h
 HDF5_ARCHIVE=$(ext_pkg)/hdf5-1.10.3.tar.gz
 MED_ARCHIVE=$(ext_pkg)/med-4.1.1.tar.gz
 
@@ -10,7 +10,7 @@ install_dir=$(TRUST_MED_ROOT)
 
 all : $(HDF5) $(MED)
 
-$(MED) : $(HDF5) $(MED_ARCHIVE) makefile install_med.sh
+$(MED) : $(HDF5) $(MED_ARCHIVE) makefile install_med.sh $(mpi)
 	make clean_med
 	@rm -f `readlink -f $(MED)`
 	@./install_med.sh $(MED_ARCHIVE)
