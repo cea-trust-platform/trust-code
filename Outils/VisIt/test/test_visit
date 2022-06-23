@@ -14,7 +14,7 @@ then
    cp -f $TRUST_ROOT/Outils/VisIt/test/*.med .
    gunzip -f -c $TRUST_ROOT/Outils/VisIt/test/test.tar.gz | tar -xf -
    lata=`ls -rt *.lata`
-   echo -e "OpenDatabase(\"$TRUST_ROOT/exec/VisIt/data/rect3d.silo\", 0)\nquit()" > quit.py
+   echo -e "OpenDatabase(\"$lata\", 0)\nquit()" > quit.py
    echo -e "OpenDatabase(\"$lata\", 0)\nquit()" > LATA.py
    echo -e "OpenDatabase(\"mesh.med\", 0)\nquit()" > MED.py
    visit=$TRUST_ROOT/exec/VisIt/bin/visit
