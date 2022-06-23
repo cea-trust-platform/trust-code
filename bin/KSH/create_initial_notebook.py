@@ -21,7 +21,7 @@ intro += " Report generated " + datetime.now().strftime("%d/%m/%Y")
 description = "### Description\n \n"
 
 description += "Sketch of a classic jupyter validation form with main example of validation.\n\n"
-description += "For additional information, please consult validation form documentation with <code>Run_fiche -doc</code> and report to the more detailed tutorial in $TRUST_ROOT/Validation/Rapport_automatiques/Verification/SampleFormJupyter."
+description += "For additional information, please consult validation form documentation with <code>Run_fiche -doc</code> and report to the more detailed tutorial in $TRUST_ROOT/Validation/Rapports_automatiques/Verification/SampleFormJupyter."
 
 binary, version = os.environ.get("exec", "[UNKNOWN]"), os.environ.get("TRUST_VERSION", "[UNKNOWN]")
 
