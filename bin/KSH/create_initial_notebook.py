@@ -6,7 +6,7 @@ import os
 parser = argparse.ArgumentParser(description="Create jupyter notebook")
 parser.add_argument('-n','--namefile', required=True, metavar="File", help = "jupyter notebook name")
 parser.add_argument('-d','--datafile', nargs="+", required=True, metavar="File"   , help = "List of data files")
-parser.add_argument('-t','--tutorial', required=True, type=int, help = "print more examples")
+parser.add_argument('-t','--tutorial', required=False, type=int, help = "print more examples")
 args = parser.parse_args()
 
 Files = args.datafile

@@ -232,8 +232,7 @@ do
 				 jy=`basename $PWD`
 			 fi
 		 fi
-		 tutorial=0
-		 create_basic_jupyter_notebook.sh $jy $tutorial
+		 create_basic_jupyter_notebook.sh $jy
 		 exit 0
    else
       options=$options" "$1

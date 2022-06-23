@@ -25,7 +25,7 @@ then
 	exit
 fi
 cd ../
-python $TRUST_ROOT/bin/KSH/create_initial_notebook.py -n $1 -d $datas -t $2
+python $TRUST_ROOT/bin/KSH/create_initial_notebook.py -n $1 -d $datas
 
 echo "-> Generate jupyter notebook... OK"
 echo "=========================="
