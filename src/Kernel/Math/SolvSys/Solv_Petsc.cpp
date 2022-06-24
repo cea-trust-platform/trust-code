@@ -340,20 +340,6 @@ void Solv_Petsc::create_solver(Entree& entree)
         // Si MUMPS est present, on le prend par defaut (solveur_direct_=1) sinon SuperLU (solveur_direct_=2):
 #ifdef PETSC_HAVE_MUMPS
         solveur_direct_ = mumps;
-        // Ajout de l'option
-        // Par defaut le cas PAR_Canal_incline_VEF plante sur 4 processeurs si -mat_mumps_icntl_14 inferieur a 35...
-        // On revient a 75 car parfois VEF_258 plante... C'est pas clair au niveau memoire...
-        // Passage a Petsc 3.3 necessite d'augmenter a plus de 75 car sinon Aero_192 crashe...
-        // A 90, le cas les_Re180Pr071_T0Q_jdd2 plante sur forchat (32bits)
-        // On differencie sequentiel (peu de memoire, mais estimation juste)
-        // et le calcul parallele (voir peut etre une separation entre plus et moins de 16 processeurs...)
-        // Peut etre equiper le script trust d'une detection des erreurs INFO(1)=-9 ...
-        // On passe de 35 a 40 pour faire passer le cas cavite_entrainee_2D_jdd2 (suite passage a MUMPS 5.2.0)
-        if (Process::nproc() == 1)
-          add_option("mat_mumps_icntl_14", "40");
-        else
-          add_option("mat_mumps_icntl_14", "90");
-
         // Option out_of_core
         if (rang == 4) add_option("mat_mumps_icntl_22", "1");
 
@@ -491,7 +477,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(28);
+      Motcles les_parametres_solveur(29);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil"; // Seuil absolu (atol)
@@ -521,6 +507,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[25] = "clean_matrix";
         les_parametres_solveur[26] = "save_matrix_mtx_format";
         les_parametres_solveur[27] = "reuse_precond";
+        les_parametres_solveur[28] = "reduce_ram";
       }
       option_double omega("omega",amgx_ ? 0.9 : 1.5);
       option_int    level("level",1);
@@ -898,6 +885,9 @@ void Solv_Petsc::create_solver(Entree& entree)
               break;
             case 27:
               set_reuse_preconditioner(true);
+              break;
+            case 28:
+              reduce_ram_ = true;
               break;
             default:
               {
@@ -1500,6 +1490,13 @@ bool Solv_Petsc::enable_ksp_view( void )
   return enable ;
 }
 
+int Solv_Petsc::add_option(const Nom& astring, const double& value, int cli)
+{
+  char nom_value[80];
+  sprintf(nom_value,"%e",value);
+  return add_option(astring, (Nom)nom_value, cli);
+}
+
 int Solv_Petsc::add_option(const Nom& astring, const Nom& value, int cli)
 {
   Nom option="-";
@@ -2100,7 +2097,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
   /*****************************************************************************/
   if (matrice_symetrique_)
     {
-      MatSetOption(MatricePetsc_, MAT_SYMMETRIC, PETSC_TRUE); // Utile ?
+      MatSetOption(MatricePetsc_, MAT_SYMMETRIC, PETSC_TRUE); // ToDo: ajout option spd pour MAT_SPD ?
       if (type_pc_ == PCLU)
         {
           // PCCHOLESKY is only supported for sbaij format or since PETSc 3.9.2, SUPERLU, CHOLMOD
@@ -2126,6 +2123,9 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
               << "If the decomposition fails/crashes cause a lack of memory, then increase the number of CPUs for your calculation"
               << finl;
           Cout
+              << "or add reduce_ram option (syntax: cholesky { reduce_ram }) to suppress preventive memory increase (INCTL(14))"
+              << finl;
+          Cout
               << "or use Cholesky_out_of_core keyword to write the decomposition on the disk, thus saving memory but with an extra CPU cost during solve."
               << finl;
           Cout
@@ -2137,6 +2137,22 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
           message_affi = 0;
         }
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERMUMPS);
+      if (!reduce_ram_)
+        {
+          // Securite pour MUMPS avec augmentation de la memoire:
+          // Par defaut le cas PAR_Canal_incline_VEF plante sur 4 processeurs si -mat_mumps_icntl_14 inferieur a 35...
+          // On revient a 75 car parfois VEF_258 plante... C'est pas clair au niveau memoire...
+          // Passage a Petsc 3.3 necessite d'augmenter a plus de 75 car sinon Aero_192 crashe...
+          // A 90, le cas les_Re180Pr071_T0Q_jdd2 plante sur forchat (32bits)
+          // On differencie sequentiel (peu de memoire, mais estimation juste)
+          // et le calcul parallele (voir peut etre une separation entre plus et moins de 16 processeurs...)
+          // Peut etre equiper le script trust d'une detection des erreurs INFO(1)=-9 ...
+          // On passe de 35 a 40 pour faire passer le cas cavite_entrainee_2D_jdd2 (suite passage a MUMPS 5.2.0)
+          if (Process::nproc() == 1)
+            add_option("mat_mumps_icntl_14", "40");
+          else
+            add_option("mat_mumps_icntl_14", "90");
+        }
     }
   else if (solveur_direct_ == superlu_dist)
     {

@@ -1,3 +1,4 @@
+XX/XX/22 (TRUST)  New option  : Add reduce_ram option for some PETSc direct solvers (MUMPS) to suppress preventive RAM increase  
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
 --------------------------------------------------------------------------------------------------

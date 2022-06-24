@@ -110,6 +110,7 @@ protected :
     return nouveau_stencil_;
   }; // ToDo: Remonter dans Solveur_Sys avec nouvelle_matrice
   bool enable_ksp_view( void );
+  int add_option(const Nom& option, const double& value, int cli = 0);
   int add_option(const Nom& option, const Nom& value, int cli = 0);
   void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M);
   void SaveObjectsToFile();
@@ -168,6 +169,7 @@ protected :
   bool rebuild_matrix_;
   bool allow_realloc_;
   bool clean_matrix_;
+  bool reduce_ram_;
   bool verbose = false; // Timing
 };
 
@@ -255,6 +257,7 @@ inline void Solv_Petsc::initialize()
   rebuild_matrix_ = false;
   allow_realloc_ = true;
   clean_matrix_ = true;
+  reduce_ram_ = false;
   if (instance==-1)
     {
       // First initialization:
