@@ -1466,8 +1466,8 @@ $\rightarrow$ Search for "Debog" keyword.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\section{{\bf{PRM file and validation test case}}}
-\subsection{{\bf{"trust -prm"}}}
+\section{{\bf{Validation form and test cases}}}
+\subsection{{\bf{"Run\_fiche"}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \begin{columns}[c] 
@@ -1484,22 +1484,22 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{block}{Baltik commands}
 
 \begin{itemize}
-\item Create a new prm file:\\
+\item Create a new Jupyter validation form:\\
 \texttt{\$ cd Formation\_TRUST/yourname/upwind}\\
-\texttt{\$ trust -prm upwind}
-\item Now you have a upwind.prm file.
+\texttt{\$ trust -jupyter}
+\item Now you have a upwind.ipynb file (i.e. a new Jupyter notebook).
 
-\item You have to add this prm validation file in your baltik:\\
+\item You have to add this notebook into your baltik:\\
 \texttt{\$ cd \$project\_directory}\\
 \texttt{\$ cd share/Validation/Rapports\_automatiques}
 
-\item Create a new repository for your new prm validation form:\\
+\item Create a new directory for your new validation form:\\
 \texttt{\$ mkdir -p upwind/src}
 
-\item Add the needed files (data file, mesh \& .prm file):\\
+\item Add the needed files (data file, mesh \& .ipynb file):\\
 \texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.data upwind/src}\\
 \texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.geo upwind/src}\\
-\texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.prm upwind/src}
+\texttt{\$ cp Formation\_TRUST/yourname/upwind/upwind.ipynb upwind/}
 \end{itemize}
 
 \end{block}
@@ -1513,15 +1513,17 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{itemize}
 \item Add it to your git repository:\\
 \texttt{\$ git add upwind}\\
-\texttt{\$ git commit -m "New prm"}
+\texttt{\$ git commit -m "New validation notebook"}
 \end{itemize}
 \end{alertblock}
 
 \begin{block}{Baltik commands}
 \begin{itemize}
-\item Run this prm:\\
+\item Run this Jupyter notebook:\\
 \texttt{\$ cd upwind/}\\
 \texttt{\$ Run\_fiche}\\
+\item Build directly a PDF report from the notebook:\\
+\texttt{\$ Run\_fiche -export\_pdf}\\
 \item Open the pdf report:\\
 \texttt{\$ evince build/rapport.pdf \&}\\
 %\item You can see that the pdf contains all the fields and probes post-processed in the data file.
@@ -1572,7 +1574,7 @@ $\rightarrow$ Search for "Debog" keyword.
 \begin{itemize}
 \item Lets check the git status before solving this problem:\\
 \texttt{\$ git status -uno}\\
-\item A new test case based on your PRM file has been created in the directory:\\
+\item A new test case based on your validation form has been created in the directory:\\
 \$project\_directory/tests/Reference/Validation/upwind\_jdd1
 \end{itemize}
 \end{alertblock}

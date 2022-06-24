@@ -24,7 +24,7 @@
 %% TO IMPRESS 
 % select scale : 180%
 
-\documentclass[10pt, hyperref={unicode=true,pdfusetitle, bookmarks=true,bookmarksnumbered=false,bookmarksopen=false, breaklinks=false,pdfborder={0 0 1},backref=true,colorlinks=true,linkcolor=darkblue,pageanchor}]{beamer}
+\documentclass[10pt, hyperref={unicode=true,pdfusetitle, bookmarks=true,bookmarksnumbered=false,bookmarksopen=false, breaklinks=false,pdfborder={0 0l 1},backref=true,colorlinks=true,linkcolor=darkblue,pageanchor}]{beamer}
 
 \mode<presentation> {
 
@@ -3606,243 +3606,249 @@ The radius of the cylinders is 0.2m and the distances between cylinders are 0.2m
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{Validation form}
-\begin{block}{Here is an example of Validation forms:}
-
-\begin{figure}
-\includegraphics[width=0.3\textwidth]{PICTURES/valid1.jpg}
-\includegraphics[width=0.3\textwidth]{PICTURES/valid2.jpg}
-\includegraphics[width=0.3\textwidth]{PICTURES/valid3.jpg}
-%\caption{Obstacle}
-\end{figure}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Validation form}
 \begin{block}{}
 
-\begin{itemize}
-\item First copy the validation form named Source\_canal\_perio:\\
-{\small{
-\textbf{mkdir -p Formation\_TRUST/yourname/validation} \\
-\textbf{cd  Formation\_TRUST/yourname/validation} \\
-\textbf{VERIF=\$TRUST\_ROOT/Validation/Rapports\_automatiques/Verification} \\
-\textbf{cp -r \$VERIF/Verification\_codage/Source\_canal\_perio \, .} \\
-\textbf{cd Source\_canal\_perio}
- }}\\
+The prefered route to build a validation form in TRUST and its baltiks is to build a Jupyter notebook. \\
+\vspace{0.5cm}
 
-\item Display Run\_fiche script options:\\
-\textbf{Run\_fiche -help\index{Run\_fiche -help}}
-
-\item Build the report with:\\
-\textbf{Run\_fiche\index{Run\_fiche} -xpdf} \\
-or\\
-\textbf{Run\_fiche\index{Run\_fiche}} \\
-\textbf{evince build/rapport.pdf \&} 
-\end{itemize}
+See an example of notebook in \\
+\small{\$TRUST\_ROOT/Validation/Rapports\_automatiques/Verification/SampleFormJupyter/} \\
+or run on terminal:\\
+Run\_fiche -doc
+%\begin{figure}
+%\includegraphics[width=0.3\textwidth]{PICTURES/valid1.jpg}
+%\includegraphics[width=0.3\textwidth]{PICTURES/valid2.jpg}
+%\includegraphics[width=0.3\textwidth]{PICTURES/valid3.jpg}
+%%\caption{Obstacle}
+%\end{figure}
 
 \end{block}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Validation form}
-\begin{block}{}
-
-\begin{itemize}
-\item Now, we are going to change the validation form (Examples are given in pages 10 \& 11 of the HowTo\_Validation.pdf note):\\
-\textbf{nedit src/Canal.prm \&}
-    \begin{itemize}
-    \item [$\circ$] Add the mesh plot in the report. For this, at end of .prm file, introduce a new block with "visu" keyword:\\
-    \textbf{Chapter \{ }  \\
-    \hspace{0.3cm} \textbf{Title "Additional information"} \\
-    \hspace{0.3cm} \textbf{Visu \{ } \\
-    \hspace{0.6cm} \textbf{Title "Mesh visualization" } \\
-    \hspace{0.6cm} \textbf{Mesh} \textit {lata\_file\_name  domain\_name [color]} \\
-    \hspace{0.3cm} \textbf{\} } \\
-    \textbf{\} } \\
-    \item [$\circ$] You can help with:
-        \begin{itemize}
-        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramVisu}}
-        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/exemples/visu.prm}}
-        \end{itemize}
-    \item [$\circ$] Save the .prm file and re-build the report without running the calculations:\\
-    \textbf{Run\_fiche\index{Run\_fiche} \, -not\_run} \\
-    \end{itemize}
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Validation form}
-\begin{block}{}
-
-\begin{itemize}
-\item Add the evolution of residuals in the report in log scale (see .dt\_ev file). For this, introduce a new block with "Figure" and "Curve" keywords:
-    \begin{itemize}
-    \item [$\circ$] Complete the chapter "Additional information" with a new block "Figure":\\
-    {\scriptsize{
-%    \textbf{Chapter \{}  \\
-%    \hspace{.3cm} \textbf{Title "Additional information"}  \\
-    \hspace{.3cm} \textbf{Figure \{}  \\
-    \hspace{.6cm} \textbf{Title "Residuals evolution"}  \\
-    \hspace{.6cm} \textbf{LabelX "Time (s)"}  \\
-    \hspace{.6cm} \textbf{LabelY "Residual"}  \\
-    \hspace{.6cm} \textbf{LogX}  \\
-    \hspace{.6cm} \textbf{LogY}  \\
-    \hspace{.6cm} \textbf{Include\_description\_Curves 0}  \\
-    \hspace{.6cm} \textbf{Curve \{ }  \\
-    \hspace{.8cm} \textbf{legend} \textit{data\_file\_name.data}  \\
-    \hspace{.8cm} \textbf{file} \textit{data\_file\_name.dt\_ev} \\
-    \hspace{.8cm} \textbf{columns \, \$}\textit{column\_number\_for\_x} \, \textbf{\$}\textit{column\_number\_for\_y }  \\
-    \hspace{.8cm} \textbf{style lines} \\
-    \hspace{0.6cm} \textbf{\}}  \\
-    \hspace{0.6cm} \textbf{...}  \\
-    \hspace{.3cm} \textbf{\}}  \\
-%    \textbf{\}}  \\
-    }}
-    \item [$\circ$] If you need help, see:
-        \begin{itemize}
-        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramFigure}}
-        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramCourbe}}
-        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/exemples/impl.prm}}
-        \end{itemize}
-    \end{itemize}
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Validation form}
-\begin{block}{}
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{Visualize the pressure field at the last time: complete the chapter "Additional \\
-\hspace{1.3cm} information" with a new block "Visu" using "PseudoColor" keywords. The \\
-\hspace{1.3cm} name of the field and its localization must be uppercase letter: }}
-
-{\footnotesize{
-%\hspace{1.5cm} \textbf{Chapter \{ } \\
-%\hspace{1.8cm} \textbf{Title “Additional information”} \\
-\hspace{1.3cm} \textbf{Visu \{ } \\
-\hspace{1.6cm} \textbf{Title "Visualization of pressure field at the last time" } \\
-\hspace{1.6cm} \textbf{Description "Pressure field..."} \\
-\hspace{1.6cm} \textbf{Pseudocolor} \textit{data\_file\_name.lata domain\_name FIELD POSITION} \\
-\hspace{1.6cm} \textbf{Cycles}  \textit{cycle\_numbers}\\
-\hspace{1.6cm} \textbf{Width} \textit{size\_in\_cm} \\
-\hspace{1.3cm} \textbf{\}} \\
-%\hspace{1.5cm} \textbf{\}} \\
-}}
-{\small{
-\hspace{1.3cm} NB: Cycle '-1' correspond to the last time. \\
-\hspace{1.3cm} NB: You can use the "magnitude" keyword to visualize the velocity field \\
-\hspace{1.3cm} without using arrows (\small{Syntax: Pseudocolor data\_file\_name.lata dom\_magnitude VITESSE SOM}).
-}}
-\vspace{0.2cm}
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{ Save and close the .prm file and build the report with the options:\\
-\hspace{1.3cm} (Options are given in page 7 of the HowTo\_Validation.pdf note) }}\\
-\hspace{1.3cm} {\small{\textbf{Run\_fiche\index{Run\_fiche} -xpdf -not\_run}}}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Validation form}
-\begin{block}{}
-
-\begin{itemize}
-\item Now, we are going to extract the number of cells and the last time from three .err files and write it in .dat files via a post\_run script.
-
-    \begin{itemize}
-    \item [$\circ$] Create a "post\_run" file in the src directory containing:\\
-    {\footnotesize{
-    \textbf{nb1=\` \,grep "Total number of elements" std.err $|$ awk '\{print \$NF\}' \`} \\
-    \textbf{nb2=\` \,grep "Total number of elements" debit.err $|$ awk '\{print \$NF\}' \`} \\
-    \textbf{nb3=\` \,grep "Total number of elements" debit2.err $|$ awk '\{print \$NF\}' \`} \\
-    \textbf{echo \$nb1 \$nb2 \$nb3 $>$ nbcells.dat} \\
-    \textbf{tp1=\` \,grep "Backup of the field" std.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
-    \textbf{tp2=\` \,grep "Backup of the field" debit.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
-    \textbf{tp3=\` \,grep "Backup of the field" debit2.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
-    \textbf{echo \$tp1 \$tp2 \$tp3 $>$ lasttime.dat} \\
-    }}
-
-    \item [$\circ$] Add a table to display the results of .dat files: complete the chapter "Additional information" by introducing a new block with "table" and "line" keywords.\\
-    If you need help, see:
-        \begin{itemize}
-        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramTableau}}
-        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramLigne}}
-        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/exemples/tableau.prm}}
-        \end{itemize}
-    \end{itemize}
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Validation form}
-\begin{block}{}
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{ The table block will look like:\\
-{\footnotesize{
-%\textbf{Chapter \{ } \\
-%\hspace{0.3cm} \textbf{Title "Additional information"} \\
-\hspace{1.4cm} \textbf{Table \{} \\
-\hspace{1.7cm} \textbf{Title "Number of cells and last time results"} \\
-\hspace{1.7cm} \textbf{Nb\_columns} number\_of\_colomns\_without\_the\_first\_one \\
-\hspace{1.7cm} \textbf{Label} label\_of\_the\_first\_column $|$ label\_of\_the\_second\_column ...\\
-\hspace{1.7cm} \textbf{Line \{} \\
-\hspace{2cm} \textbf{legend} title\_of\_the\_first\_line\\
-\hspace{2cm} \textbf{file} name\_of\_the\_file.dat\\
-\hspace{1.7cm} \textbf{\}} \\
-\hspace{1.7cm} \textbf{...} \\
-\hspace{1.4cm} \textbf{\}} \\
-%\textbf{\}} \\
-}}
-}}
-
-\hspace{1cm} $\color{darkblue}\circ$ {\small{ Save the .prm file in src directory and build the report with a new option:\\
-\hspace{1.4cm} \textbf{Run\_fiche\index{Run\_fiche} -xpdf -post\_run}
-}}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Validation form}
-\begin{block}{}
-
-\begin{itemize}
-\item Now we are going to modify the "prepare" file in "src" directory in order to add a fourth test case: "debit4"
-    \begin{itemize}
-    \item [$\circ$] "debit4" correspond to "std" test case with zero initial velocity and imposed flow rate to $2 m^3/s$ on "periox" boundary.
-    \item [$\circ$] Add a line in the "prepare" file using the "sed" command to create the new data file like the other ones:\\
-    \textbf{nedit src/prepare \& }
-    \end{itemize}
-
-\item We are going to update the validation form.
-    \begin{itemize}
-    \item [$\circ$] Modify the "Canal.prm" file in "src" directory to take into account the new test case debit4. Add in the \textbf{Parameters} block:\\
-    \hspace{0.3cm} \textbf{TestCase . Debit4.data}\\
-
-    \item [$\circ$] Build the report by running the 4 test cases simultaneously (not sequentially):\\
-    \textbf{Run\_fiche\index{Run\_fiche} -parallel\_run -xpdf}
-    \item [$\circ$] You can add the results of this test case to your "visu" and "table".
-    \end{itemize}
-
-\end{itemize}
-
-\end{block}
-\end{frame}
+%\begin{frame}
+%\frametitle{Validation form}
+%\begin{block}{}
+%
+%\begin{itemize}
+%\item First copy the validation form named Source\_canal\_perio:\\
+%{\small{
+%\textbf{mkdir -p Formation\_TRUST/yourname/validation} \\
+%\textbf{cd  Formation\_TRUST/yourname/validation} \\
+%\textbf{VERIF=\$TRUST\_ROOT/Validation/Rapports\_automatiques/Verification} \\
+%\textbf{cp -r \$VERIF/Verification\_codage/Source\_canal\_perio \, .} \\
+%\textbf{cd Source\_canal\_perio}
+% }}\\
+%
+%\item Display Run\_fiche script options:\\
+%\textbf{Run\_fiche -help\index{Run\_fiche -help}}
+%
+%\item Build the report with:\\
+%\textbf{Run\_fiche\index{Run\_fiche} -xpdf} \\
+%or\\
+%\textbf{Run\_fiche\index{Run\_fiche}} \\
+%\textbf{evince build/rapport.pdf \&} 
+%\end{itemize}
+%
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{Validation form}
+%\begin{block}{}
+%
+%\begin{itemize}
+%\item Now, we are going to change the validation form (Examples are given in pages 10 \& 11 of the HowTo\_Validation.pdf note):\\
+%\textbf{nedit src/Canal.prm \&}
+%    \begin{itemize}
+%    \item [$\circ$] Add the mesh plot in the report. For this, at end of .prm file, introduce a new block with "visu" keyword:\\
+%    \textbf{Chapter \{ }  \\
+%    \hspace{0.3cm} \textbf{Title Additional information} \\
+%    \hspace{0.3cm} \textbf{Visu \{ } \\
+%    \hspace{0.6cm} \textbf{Title "Mesh visualization" } \\
+%    \hspace{0.6cm} \textbf{Mesh} \textit {lata\_file\_name  domain\_name [color]} \\
+%    \hspace{0.3cm} \textbf{\} } \\
+%    \textbf{\} } \\
+%    \item [$\circ$] You can help with:
+%        \begin{itemize}
+%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramVisu}}
+%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/exemples/visu.prm}}
+%        \end{itemize}
+%    \item [$\circ$] Save the .prm file and re-build the report without running the calculations:\\
+%    \textbf{Run\_fiche\index{Run\_fiche} \, -not\_run} \\
+%    \end{itemize}
+%\end{itemize}
+%
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{Validation form}
+%\begin{block}{}
+%
+%\begin{itemize}
+%\item Add the evolution of residuals in the report in log scale (see .dt\_ev file). For this, introduce a new block with "Figure" and "Curve" keywords:
+%    \begin{itemize}
+%    \item [$\circ$] Complete the chapter "Additional information" with a new block "Figure":\\
+%    {\scriptsize{
+%%    \textbf{Chapter \{}  \\
+%%    \hspace{.3cm} \textbf{Title "Additional information"}  \\
+%    \hspace{.3cm} \textbf{Figure \{}  \\
+%    \hspace{.6cm} \textbf{Title "Residuals evolution"}  \\
+%    \hspace{.6cm} \textbf{LabelX "Time (s)"}  \\
+%    \hspace{.6cm} \textbf{LabelY "Residual"}  \\
+%    \hspace{.6cm} \textbf{LogX}  \\
+%    \hspace{.6cm} \textbf{LogY}  \\
+%    \hspace{.6cm} \textbf{Include\_description\_Curves 0}  \\
+%    \hspace{.6cm} \textbf{Curve \{ }  \\
+%    \hspace{.8cm} \textbf{legend} \textit{data\_file\_name.data}  \\
+%    \hspace{.8cm} \textbf{file} \textit{data\_file\_name.dt\_ev} \\
+%    \hspace{.8cm} \textbf{columns \, \$}\textit{column\_number\_for\_x} \, \textbf{\$}\textit{column\_number\_for\_y }  \\
+%    \hspace{.8cm} \textbf{style lines} \\
+%    \hspace{0.6cm} \textbf{\}}  \\
+%    \hspace{0.6cm} \textbf{...}  \\
+%    \hspace{.3cm} \textbf{\}}  \\
+%%    \textbf{\}}  \\
+%    }}
+%    \item [$\circ$] If you need help, see:
+%        \begin{itemize}
+%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramFigure}}
+%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramCourbe}}
+%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/exemples/impl.prm}}
+%        \end{itemize}
+%    \end{itemize}
+%\end{itemize}
+%
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{Validation form}
+%\begin{block}{}
+%
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{Visualize the pressure field at the last time: complete the chapter "Additional \\
+%\hspace{1.3cm} information" with a new block "Visu" using "PseudoColor" keywords. The \\
+%\hspace{1.3cm} name of the field and its localization must be uppercase letter: }}
+%
+%{\footnotesize{
+%%\hspace{1.5cm} \textbf{Chapter \{ } \\
+%\hspace{1.3cm} \textbf{Visu \{ } \\
+%\hspace{1.6cm} \textbf{Title "Visualization of pressure field at the last time" } \\
+%\hspace{1.6cm} \textbf{Description "Pressure field..."} \\
+%\hspace{1.6cm} \textbf{Pseudocolor} \textit{data\_file\_name.lata domain\_name FIELD POSITION} \\
+%\hspace{1.6cm} \textbf{Cycles}  \textit{cycle\_numbers}\\
+%\hspace{1.6cm} \textbf{Width} \textit{size\_in\_cm} \\
+%\hspace{1.3cm} \textbf{\}} \\
+%%\hspace{1.5cm} \textbf{\}} \\
+%}}
+%{\small{
+%\hspace{1.3cm} NB: Cycle '-1' correspond to the last time. \\
+%\hspace{1.3cm} NB: You can use the "magnitude" keyword to visualize the velocity field \\
+%\hspace{1.3cm} without using arrows (\small{Syntax: Pseudocolor data\_file\_name.lata dom\_magnitude VITESSE SOM}).
+%}}
+%\vspace{0.2cm}
+%
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{ Save and close the .prm file and build the report with the options:\\
+%\hspace{1.3cm} (Options are given in page 7 of the HowTo\_Validation.pdf note) }}\\
+%\hspace{1.3cm} {\small{\textbf{Run\_fiche\index{Run\_fiche} -xpdf -not\_run}}}
+%
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{Validation form}
+%\begin{block}{}
+%
+%\begin{itemize}
+%\item Now, we are going to extract the number of cells and the last time from three .err files and write it in .dat files via a post\_run script.
+%
+%    \begin{itemize}
+%    \item [$\circ$] Create a "post\_run" file in the src directory containing:\\
+%    {\footnotesize{
+%    \textbf{nb1=\` \,grep "Total number of elements" std.err $|$ awk '\{print \$NF\}' \`} \\
+%    \textbf{nb2=\` \,grep "Total number of elements" debit.err $|$ awk '\{print \$NF\}' \`} \\
+%    \textbf{nb3=\` \,grep "Total number of elements" debit2.err $|$ awk '\{print \$NF\}' \`} \\
+%    \textbf{echo \$nb1 \$nb2 \$nb3 $>$ nbcells.dat} \\
+%    \textbf{tp1=\` \,grep "Backup of the field" std.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
+%    \textbf{tp2=\` \,grep "Backup of the field" debit.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
+%    \textbf{tp3=\` \,grep "Backup of the field" debit2.err $|$ awk '\{print \$NF\}' $|$ head -n 1 \`} \\
+%    \textbf{echo \$tp1 \$tp2 \$tp3 $>$ lasttime.dat} \\
+%    }}
+%
+%    \item [$\circ$] Add a table to display the results of .dat files: complete the chapter "Additional information" by introducing a new block with "table" and "line" keywords.\\
+%    If you need help, see:
+%        \begin{itemize}
+%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramTableau}}
+%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/manuel.xhtml\#paramLigne}}
+%        \item [$\diamond$] {\scriptsize{\$TRUST\_ROOT/Validation/Outils/Genere\_courbe/doc/exemples/tableau.prm}}
+%        \end{itemize}
+%    \end{itemize}
+%\end{itemize}
+%
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{Validation form}
+%\begin{block}{}
+%
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{ The table block will look like:\\
+%{\footnotesize{
+%%\textbf{Chapter \{ } \\
+%%\hspace{0.3cm} \textbf{Title "Additional information"} \\
+%\hspace{1.4cm} \textbf{Table \{} \\
+%\hspace{1.7cm} \textbf{Title "Number of cells and last time results"} \\
+%\hspace{1.7cm} \textbf{Nb\_columns} number\_of\_colomns\_without\_the\_first\_one \\
+%\hspace{1.7cm} \textbf{Label} label\_of\_the\_first\_column $|$ label\_of\_the\_second\_column ...\\
+%\hspace{1.7cm} \textbf{Line \{} \\
+%\hspace{2cm} \textbf{legend} title\_of\_the\_first\_line\\
+%\hspace{2cm} \textbf{file} name\_of\_the\_file.dat\\
+%\hspace{1.7cm} \textbf{\}} \\
+%\hspace{1.7cm} \textbf{...} \\
+%\hspace{1.4cm} \textbf{\}} \\
+%%\textbf{\}} \\
+%}}
+%}}
+%
+%\hspace{1cm} $\color{darkblue}\circ$ {\small{ Save the .prm file in src directory and build the report with a new option:\\
+%\hspace{1.4cm} \textbf{Run\_fiche\index{Run\_fiche} -xpdf -post\_run}
+%}}
+%
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{Validation form}
+%\begin{block}{}
+%
+%\begin{itemize}
+%\item Now we are going to modify the "prepare" file in "src" directory in order to add a fourth test case: "debit4"
+%    \begin{itemize}
+%    \item [$\circ$] "debit4" correspond to "std" test case with zero initial velocity and imposed flow rate to $2 m^3/s$ on "periox" boundary.
+%    \item [$\circ$] Add a line in the "prepare" file using the "sed" command to create the new data file like the other ones:\\
+%    \textbf{nedit src/prepare \& }
+%    \end{itemize}
+%
+%\item We are going to update the validation form.
+%    \begin{itemize}
+%    \item [$\circ$] Modify the "Canal.prm" file in "src" directory to take into account the new test case debit4. Add in the \textbf{Parameters} block:\\
+%    \hspace{0.3cm} \textbf{TestCase . Debit4.data}\\
+%
+%    \item [$\circ$] Build the report by running the 4 test cases simultaneously (not sequentially):\\
+%    \textbf{Run\_fiche\index{Run\_fiche} -parallel\_run -xpdf}
+%    \item [$\circ$] You can add the results of this test case to your "visu" and "table".
+%    \end{itemize}
+%
+%\end{itemize}
+%
+%\end{block}
+%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

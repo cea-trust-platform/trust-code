@@ -122,7 +122,7 @@ help()
    echo "-probes                       : Monitor the TRUST calculation only."
    echo "-evol                         : Monitor the TRUST calculation (GUI)."
 #   echo "-wiz                          : Create a TRUST datafile from a MED file (new GUI)."
-   echo "-prm                          : Write a prm file."
+   echo "-prm                          : Write a prm file (deprecated)."
    echo "-jupyter                      : Create basic jupyter notebook file."
    echo "-clean                        : Clean the current directory from all the generated files by TRUST."
    echo "-search keywords              : Know the list of test cases from the data bases which contain keywords."
