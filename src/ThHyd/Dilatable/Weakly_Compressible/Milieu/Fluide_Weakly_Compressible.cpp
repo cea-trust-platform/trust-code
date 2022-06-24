@@ -313,7 +313,7 @@ void Fluide_Weakly_Compressible::calculer_pression_tot()
 
 void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot)
 {
-  P_NS_ = PHydro;
+  P_NS_elem_ = PHydro; // pressure on elem for vdf & vef ...
   if ( use_pth_xyz() )
     for (int i=0 ; i<n ; i++) PTot(i,0) = PHydro(i,0) + Pth_tab_(i,0);
   else
@@ -353,7 +353,33 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
       double t0= le_probleme_->schema_temps().temps_courant(), t1 = le_probleme_->schema_temps().temps_futur(1);
       // time to activate ptot and change the eos pressure
       if ( t0 < time_activate_ptot_ && t1 > time_activate_ptot_ )
-        for (int i=0 ; i<Pth_tab_.dimension_tot(0) ; i++) Pth_tab_(i,0) = P_NS_(i,0) + Pth_;
+        {
+          if (Pth_tab_.dimension_tot(0) == P_NS_elem_.dimension_tot(0)) // VDF
+            for (int i=0 ; i<Pth_tab_.dimension_tot(0) ; i++) Pth_tab_(i,0) = P_NS_elem_(i,0) + Pth_;
+          else // VEF : on verra le jour ou on fait du polyMAC
+            {
+              // on a P_NS_elem_ aux elems et Pth_tab_ comme rho, i.e aux faces
+              const Zone_VF& zvf = ref_cast(Zone_VF, inco_chaleur()->zone_dis_base());
+              assert(Pth_tab_.dimension_tot(0) == zvf.nb_faces_tot());
+
+              const IntTab& elem_faces = zvf.elem_faces();
+              const DoubleVect& volumes = zvf.volumes();
+              const int nb_face_elem = elem_faces.dimension(1), nb_elem_tot = zvf.nb_elem_tot();
+
+              Pth_tab_ = 0.;
+              DoubleTab vol_tot(Pth_tab_);
+              for (int ele = 0; ele < nb_elem_tot; ele++)
+                for (int s = 0; s < nb_face_elem; s++)
+                  {
+                    Pth_tab_(elem_faces(ele, s)) += P_NS_elem_(ele, 0) * volumes(ele);
+                    vol_tot(elem_faces(ele, s)) += volumes(ele);
+                  }
+              for (int f = 0; f < zvf.nb_faces(); f++) Pth_tab_(f) /= vol_tot(f);
+
+              // enfin ajoute Pth_ !
+              Pth_tab_ += Pth_;
+            }
+        }
     }
   else if (use_hydrostatic_pressure())
     {
