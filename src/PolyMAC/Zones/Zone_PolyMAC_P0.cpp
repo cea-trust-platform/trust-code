@@ -265,9 +265,9 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                       else if (is_p ? !is_dir : sub_type(Neumann, *cl)) //Neumann -> ajout du flux au bord
                         Meb(n, (int)(std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin()), k) += surf_fs[k];
                       else if (sub_type(Frottement_global_impose, *cl)) //Frottement_global_impose -> flux =  - coeff * v_e
-                        Meb(n, i, k) -= surf_fs[k] * ref_cast(Frottement_global_impose, *cl).coefficient_frottement(fcl(f, 2), n);
+                        Meb(n, i, k) -= surf_fs[k] * ((nu) ? ref_cast(Frottement_global_impose, *cl).coefficient_frottement(fcl(f, 2), n) : ref_cast(Frottement_global_impose, *cl).coefficient_frottement_grad(fcl(f, 2), n) ) ;
                       else if (sub_type(Frottement_externe_impose, *cl)) //Frottement_externe_impose -> flux =  - coeff * v_f
-                        Mf(n, k, k) += surf_fs[k] * ref_cast(Frottement_global_impose, *cl).coefficient_frottement(fcl(f, 2), n);
+                        Mf(n, k, k) += surf_fs[k] * ((nu) ? ref_cast(Frottement_externe_impose, *cl).coefficient_frottement(fcl(f, 2), n) : ref_cast(Frottement_externe_impose, *cl).coefficient_frottement_grad(fcl(f, 2), n) );
                       else if (sub_type(Echange_impose_base, *cl)) //Echange_impose_base -> flux =  - h * (T_{e,f} - T_ext)
                         {
                           double h = ref_cast(Echange_impose_base, *cl).h_imp(fcl(f, 2), n);

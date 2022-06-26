@@ -76,9 +76,15 @@ protected:
   REF(Zone_Cl_PolyMAC) la_Zone_Cl_PolyMAC;
   REF(Champ_Face_PolyMAC_P0) champ_;
 
-  Conds_lim cls_g ;
-  IntTab fcl_g ;
+//  Conds_lim cls_g ;
+//  IntTab fcl_g ;
   int is_init = 0;
+
+  void init_ge2() const; //ordre 2 -> avec une matrice
+  mutable IntTab ve2d, ve2j, ve2bj;
+  mutable DoubleTab ve2c, ve2bc;
+  void update_ge2(DoubleTab& val, int incr = 0) const;
+
 };
 
 inline void grad_Champ_Face_PolyMAC_P0::mettre_a_jour(double tps)

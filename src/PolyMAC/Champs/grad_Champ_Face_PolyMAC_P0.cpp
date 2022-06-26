@@ -65,22 +65,23 @@ int grad_Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
 
 void grad_Champ_Face_PolyMAC_P0::init_grad()
 {
-  const IntTab&                fcl = champ_a_deriver().fcl();
-// const Zone_PolyMAC_P0&      zone = ref_cast(Zone_PolyMAC_P0, zone_vf());
-//  int nf_tot = zone.nb_faces_tot();
+  /*
+    const IntTab&                fcl = champ_a_deriver().fcl();
+  // const Zone_PolyMAC_P0&      zone = ref_cast(Zone_PolyMAC_P0, zone_vf());
+  //  int nf_tot = zone.nb_faces_tot();
 
-  const Champ_Face_PolyMAC_P0&   ch = ref_cast(Champ_Face_PolyMAC_P0, champ_a_deriver());
-  const Conds_lim&              cls = ch.zone_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
+    const Champ_Face_PolyMAC_P0&   ch = ref_cast(Champ_Face_PolyMAC_P0, champ_a_deriver());
+    const Conds_lim&              cls = ch.zone_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
 
-  cls_g = cls ; // volontairement une copie
-  fcl_g = fcl ; // volontairement une copie
+    cls_g = cls ; // volontairement une copie
+    fcl_g = fcl ; // volontairement une copie
 
-  for (int j = 0 ; j<cls.size(); j++)
-    {
-      Cond_lim& cond_lim_loc = cls_g(j);
-      if sub_type(Frottement_impose_base, cond_lim_loc.valeur()) ref_cast(Frottement_impose_base, cond_lim_loc.valeur()).is_grad_v();
-    }
-
+    for (int j = 0 ; j<cls.size(); j++)
+      {
+        Cond_lim& cond_lim_loc = cls_g(j);
+        if sub_type(Frottement_impose_base, cond_lim_loc.valeur()) ref_cast(Frottement_impose_base, cond_lim_loc.valeur()).is_grad_v();
+      }
+  */
   is_init = 1 ;
   return ;
 }
@@ -88,8 +89,8 @@ void grad_Champ_Face_PolyMAC_P0::init_grad()
 void grad_Champ_Face_PolyMAC_P0::me_calculer(double tps)
 {
   if (!is_init) init_grad();
-  for (int j = 0 ; j<cls_g.size(); j++)
-    cls_g(j)->mettre_a_jour(tps);
+//  for (int j = 0 ; j<cls_g.size(); j++)
+//    cls_g(j)->mettre_a_jour(tps);
   update_tab_grad(0); // calcule les coefficients de fgrad requis pour le calcul du champ aux faces
   calc_gradfve();
   update_ge(); // calcule le champ aux elements a partir du champ aux faces
@@ -98,9 +99,14 @@ void grad_Champ_Face_PolyMAC_P0::me_calculer(double tps)
 
 void grad_Champ_Face_PolyMAC_P0::update_tab_grad(int full_stencil)
 {
-  const IntTab&                f_cl = fcl_g;
+  /*  const IntTab&                f_cl = fcl_g;
+    const Zone_PolyMAC_P0&       zone = ref_cast(Zone_PolyMAC_P0, zone_vf());
+    const Conds_lim&              cls = cls_g; // CAL du champ a deriver
+  */
+  const IntTab&                f_cl = champ_a_deriver().fcl();
   const Zone_PolyMAC_P0&       zone = ref_cast(Zone_PolyMAC_P0, zone_vf());
-  const Conds_lim&              cls = cls_g; // CAL du champ a deriver
+  const Conds_lim&              cls = champ_a_deriver().zone_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
+
   zone.fgrad(champ_a_deriver().valeurs().line_size(), 0, cls, f_cl, NULL, NULL, 1, full_stencil, gradve_d, gradve_e, gradve_w);
 }
 
@@ -108,8 +114,12 @@ void grad_Champ_Face_PolyMAC_P0::calc_gradfve()
 {
   const Zone_PolyMAC_P0&            zone = ref_cast(Zone_PolyMAC_P0,zone_vf());
   const Champ_Face_PolyMAC_P0&        ch = ref_cast(Champ_Face_PolyMAC_P0, champ_a_deriver());
-  const IntTab&                   fcl = fcl_g;
-  const Conds_lim&                cls = cls_g;
+
+  const IntTab&                 fcl = champ_a_deriver().fcl();
+  const Conds_lim&              cls = ch.zone_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
+
+  /*  const IntTab&                   fcl = fcl_g;
+    const Conds_lim&                cls = cls_g;*/
   int f, n;
   int d_U ; //coordonnee de la vitesse
   int D = dimension;
@@ -166,3 +176,10 @@ void grad_Champ_Face_PolyMAC_P0::update_ge()
     }
 }
 
+void grad_Champ_Face_PolyMAC_P0::init_ge2() const
+{
+}
+
+void grad_Champ_Face_PolyMAC_P0::update_ge2(DoubleTab& val, int incr) const
+{
+}
