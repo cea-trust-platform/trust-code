@@ -80,7 +80,8 @@ DoubleTab& Masse_PolyMAC_P0_Face::appliquer_impl(DoubleTab& sm) const
     for (n = 0; n < N; n++)
       {
         for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += vfd(f, i) / vf(f) * (a_r ? (*a_r)(e, n) : 1);
-        sm(f, n) /= pf(f) * vf(f) * fac; //vitesse calculee
+        if (fac > 1e-10) sm(f, n) /= pf(f) * vf(f) * fac; //vitesse calculee
+        else sm(f, n) = 0; //cas d'une evanescence
       }
 
   //vitesses aux elements
@@ -88,7 +89,10 @@ DoubleTab& Masse_PolyMAC_P0_Face::appliquer_impl(DoubleTab& sm) const
     for (e = 0; e < zone.nb_elem(); e++)
       for (d = 0; d < D; d++)
         for (n = 0; n < N; n++)
-          sm(nf_tot + D * e + d, n) /= pe(e) * ve(e) * (a_r ? (*a_r)(e, n) : 1);
+          {
+            if ( (a_r ? (*a_r)(e, n) : 1) > 1e-10) sm(nf_tot + D * e + d, n) /= pe(e) * ve(e) * (a_r ? (*a_r)(e, n) : 1);
+            else sm(nf_tot + D * e + d, n) = 0; //cas d'une evanescence
+          }
 
   sm.echange_espace_virtuel();
   return sm;
