@@ -48,7 +48,9 @@ public:
   static void   barrier();
   static double mp_sum(double);
   static double mp_max(double);
+  static int mp_max(int);
   static double mp_min(double);
+  static int mp_min(int);
   static int mp_sum(int);
   static bool mp_and(bool);
 

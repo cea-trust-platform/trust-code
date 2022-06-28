@@ -152,6 +152,20 @@ double Process::mp_max(double x)
 }
 
 // Description:
+//  Calcule le max de x sur tous les processeurs du groupe courant.
+//  Remarques :
+//   Cette methode doit etre appelee sur tous les processeurs du groupe.
+//   La valeur renvoyee est identique sur tous les processeurs.
+int Process::mp_max(int x)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  int y;
+  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_MAX);
+  return y;
+}
+
+
+// Description:
 //  Calcule le min de x sur tous les processeurs du groupe courant.
 //  Voir aussi mp_max()
 double Process::mp_min(double x)
@@ -161,6 +175,15 @@ double Process::mp_min(double x)
   grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_MIN);
   return y;
 }
+
+int Process::mp_min(int x)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+  int y;
+  grp.mp_collective_op(&x, &y, 1, Comm_Group::COLL_MIN);
+  return y;
+}
+
 
 // Description:
 //  Calcule la somme de x sur tous les processeurs du groupe courant.
