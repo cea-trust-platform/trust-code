@@ -86,6 +86,7 @@ inline void TRUSTArray<_TYPE_>::set_mem_storage(const Storage storage)
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::ref_data(_TYPE_* ptr, int size)
 {
+  // ToDo Device
   assert(ptr != 0 || size == 0);
   assert(size >= 0);
   detach_array();
@@ -105,6 +106,7 @@ inline void TRUSTArray<_TYPE_>::ref_data(_TYPE_* ptr, int size)
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::ref_array(TRUSTArray& m, int start, int size)
 {
+  // ToDo Device
   assert(&m != this);
   // La condition 'm n'est pas de type "ref_data"' est necessaire pour attach_array().
   detach_array();
@@ -138,6 +140,7 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(const TRUSTArray& m)
 template<typename _TYPE_>
 inline _TYPE_& TRUSTArray<_TYPE_>::operator[](int i)
 {
+  checkDataOnHost(*this);
   assert(i >= 0 && i < size_array_);
   return data_[i];
 }
@@ -151,6 +154,7 @@ inline _TYPE_& TRUSTArray<_TYPE_>::operator[](int i)
 template<>
 inline double& TRUSTArray<double>::operator[](int i)
 {
+  checkDataOnHost(*this);
   assert(i >= 0 && i < size_array_);
   assert(data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT);
   return data_[i];
@@ -160,6 +164,7 @@ inline double& TRUSTArray<double>::operator[](int i)
 template<typename _TYPE_>
 inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](int i) const
 {
+  checkDataOnHost(*this);
   assert(i >= 0 && i < size_array_);
   return data_[i];
 }
@@ -168,6 +173,7 @@ inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](int i) const
 template<>
 inline const double& TRUSTArray<double>::operator[](int i) const
 {
+  checkDataOnHost(*this);
   assert(i >= 0 && i < size_array_);
   assert(data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT);
   return data_[i];
@@ -215,6 +221,7 @@ inline int TRUSTArray<_TYPE_>::ref_count() const
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
 {
+  checkDataOnHost(*this);
   assert(smart_resize_);
   const int n = size_array_;
   resize_array(size_array_+1, COPY_NOINIT);
@@ -239,6 +246,7 @@ inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
 template <typename _TYPE_>
 inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& source, int nb_elements, int first_element_dest, int first_element_source)
 {
+  checkDataOnHost(source);
   assert(&source != this && nb_elements >= -1);
   assert(first_element_dest >= 0 && first_element_source >= 0);
 
@@ -292,6 +300,7 @@ static True_int fonction_compare_arrofint_ordonner(const void * data1, const voi
 template <typename _TYPE_ /* double ou float */ >
 inline void TRUSTArray<_TYPE_>::ordonne_array()
 {
+  checkDataOnHost(*this);
   const int size = size_array_;
   if (size > 1)
     {
@@ -302,6 +311,7 @@ inline void TRUSTArray<_TYPE_>::ordonne_array()
 template <>
 inline void TRUSTArray<int>::ordonne_array()
 {
+  checkDataOnHost(*this);
   const int size = size_array_;
   if (size > 1)
     {
@@ -315,6 +325,7 @@ inline void TRUSTArray<int>::ordonne_array()
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
 {
+  checkDataOnHost(*this);
   const int size_ = size_array_;
   if (size_ <= 0) return;
 
@@ -349,6 +360,7 @@ inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int size)
 {
+  checkDataOnHost(*this);
   // Le tableau doit etre detache
   assert(data_ == 0 && p_ == 0);
   // Le tableau doit etre different de *this
@@ -395,6 +407,7 @@ inline void TRUSTArray<_TYPE_>::attach_array(const TRUSTArray& m, int start, int
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::fill_default_value(Array_base::Resize_Options opt, int first, int nb)
 {
+  checkDataOnHost(*this);
   assert((nb == 0) || (first >= 0 && first < memory_size_));
   assert((nb == 0) || (nb > 0 && nb <= memory_size_ - first));
   _TYPE_ * data = data_;
@@ -416,6 +429,7 @@ inline void TRUSTArray<_TYPE_>::fill_default_value(Array_base::Resize_Options op
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, Array_base::Resize_Options opt)
 {
+  // ToDo Device
   assert(new_size >= 0);
   // Soit le tableau est detache (data_==0), soit il est normal (p_!=0)
   // S'il est normal, il ne faut pas qu'il y ait d'autre reference au tableau, ou alors la taille ne doit pas changer.
@@ -444,6 +458,7 @@ inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, Array_base::Resize_O
 template <typename _TYPE_>
 inline int TRUSTArray<_TYPE_>::detach_array()
 {
+  // ToDo Device
   int retour = 0;
   if (p_)
     {
@@ -478,6 +493,7 @@ inline int TRUSTArray<_TYPE_>::detach_array()
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::memory_resize(int new_size, Array_base::Resize_Options opt)
 {
+  // ToDo Device
   assert(new_size >= 0);
 
   // Si new_size==size_array_, on ne fait rien, c'est toujours autorise

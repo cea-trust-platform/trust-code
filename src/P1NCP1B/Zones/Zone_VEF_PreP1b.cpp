@@ -85,7 +85,7 @@ void Zone_VEF_PreP1b::discretiser()
     }
   volumes_som.echange_espace_virtuel();
 
-  // Provisoire, tableaux constants sur device:
+  // Provisoire, tableaux constants sur device (on laisse pour ne pas faire des le premier operateur):
   // ToDo remonter dans Zone_VEF ou/et Zone_VF::discretiser()
   copyToDevice(elem_faces());
   copyToDevice(face_voisins());

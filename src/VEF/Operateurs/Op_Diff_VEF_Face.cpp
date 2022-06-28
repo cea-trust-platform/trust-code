@@ -31,7 +31,7 @@
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Porosites_champ.h>
-
+#include <Device.h>
 #include <Echange_couplage_thermique.h>
 
 #include <Champ_front_calc_interne.h>
@@ -374,14 +374,15 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
     }//Fin for n_bord
   const DoubleTab& face_normales=zone_VEF.face_normales();
   const DoubleVect& inverse_volumes=zone_VEF.inverse_volumes();
+
   // pointeur vers face_voisins et le passer dans le map
-  const int * face_voisins_addr = zone_VEF.face_voisins().addr();
-  const int * elem_faces_addr = zone_VEF.elem_faces().addr();
-  double * resu_addr = resu.addr();
-  const double * inconnue_addr = inconnue.addr();
-  const double * face_normales_addr = face_normales.addr();
+  const int * face_voisins_addr = copyToDevice(zone_VEF.face_voisins());
+  const int * elem_faces_addr = copyToDevice(zone_VEF.elem_faces());
+  const double * inverse_volumes_addr = copyToDevice(inverse_volumes);
+  const double * face_normales_addr = copyToDevice(face_normales);
   const double * nu_addr = nu.addr();
-  const double * inverse_volumes_addr = inverse_volumes.addr();
+  const double * inconnue_addr = inconnue.addr();
+  double * resu_addr = resu.addr();
 
   int premiere_face_int = zone_VEF.premiere_face_int();
   // On traite les faces internes

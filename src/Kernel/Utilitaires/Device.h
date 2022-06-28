@@ -25,18 +25,19 @@
 // Timer:
 #include <ctime>
 #include <string>
-static std::clock_t start;
+#include <Array_base.h>
+static std::clock_t clock_start;
 static char* clock_on=NULL;
 inline void start_timer()
 {
   clock_on = getenv ("TRUST_CLOCK_ON");
-  if (clock_on!=NULL) start = std::clock();
+  if (clock_on!=NULL) clock_start = std::clock();
 }
 inline void end_timer(const std::string& str) // Return in [ms]
 {
   if (clock_on!=NULL)
     {
-      printf("[clock] %7.3f ms %s\n", 1000*(std::clock() - start) / (double) CLOCKS_PER_SEC ,str.c_str());
+      printf("[clock] %7.3f ms %s\n", 1000*(std::clock() - clock_start) / (double) CLOCKS_PER_SEC ,str.c_str());
       fflush(stdout);
     }
 }
@@ -44,45 +45,48 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
 {
   if (clock_on!=NULL)
     {
-      double ms = 1000*(std::clock() - start) / (double) CLOCKS_PER_SEC;
+      double ms = 1000*(std::clock() - clock_start) / (double) CLOCKS_PER_SEC;
       int mo = size/1024/1024;
       printf("[clock] %7.3f ms %s %6d Mo %4.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
       fflush(stdout);
     }
 }
 
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic push
-
-inline void copyToDevice(const ArrOfInt& tab)
+template <typename _TYPE_>
+inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab)
 {
-  start_timer();
-  const int *tab_addr = tab.addr();
-  #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
-  end_timer((std::string)"copyToDevice ArrOfInt ",sizeof(int)*tab.size_array());
+  const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab));
+  tab.set_dataLocation(Array_base::HostDevice); // const array will matches on host and device
+  return tab_addr;
 }
-inline void copyToDevice(ArrOfInt& tab)
+/* ToDo conflit possible avec const _TYPE_* copyToDevice(TRUSTArray<_TYPE_>& tab)
+ // Appeler computeOnDevice ?
+template <typename _TYPE_>
+inline _TYPE_* copyToDevice(TRUSTArray<_TYPE_>& tab)
 {
-  start_timer();
-  int *tab_addr = tab.addr();
-  #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
-  end_timer((std::string)"copyToDevice ArrOfInt ",sizeof(int)*tab.size_array());
-}
-inline void copyToDevice(const ArrOfDouble& tab)
+  _TYPE_ *tab_addr = copyToDevice_(tab);
+  tab.set_dataLocation(Array_base::Device); // non-const array will be modified on device
+  return tab_addr;
+} */
+template <typename _TYPE_>
+inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab)
 {
+  _TYPE_* tab_addr = tab.addr();
+#ifdef _OPENMP
   start_timer();
-  const double *tab_addr = tab.addr();
-  #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
-  end_timer((std::string)"copyToDevice ArrOfDouble ",sizeof(double)*tab.size_array());
+  if (tab.dataLocation()==Array_base::HostOnly)
+    {
+      #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
+      end_timer((std::string) "copyToDevice Array ", sizeof(_TYPE_) * tab.size_array());
+    }
+  else if (tab.dataLocation()==Array_base::Host)
+    {
+      #pragma omp target update to(tab_addr[0:tab.size_array()])
+      end_timer((std::string) "updateToDevice Array ", sizeof(_TYPE_) * tab.size_array());
+    }
+  else
+    end_timer((std::string) "presentOnDevice Array ", sizeof(_TYPE_) * tab.size_array());
+#endif
+  return tab_addr;
 }
-inline void copyToDevice(ArrOfDouble& tab)
-{
-  start_timer();
-  double *tab_addr = tab.addr();
-  #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
-  end_timer((std::string)"copyToDevice ArrOfInt ",sizeof(double)*tab.size_array());
-}
-
-#pragma GCC diagnostic pop
-
 #endif

@@ -110,9 +110,9 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
   int nfe=zone.nb_faces_elem();
   int nb_elem=zone.nb_elem();
   double * div_addr = div.addr();
-  const int * face_voisins_addr = face_voisins.addr();
-  const double * face_normales_addr = face_normales.addr();
-  const int * elem_faces_addr = elem_faces.addr();
+  const int * face_voisins_addr = copyToDevice(face_voisins);
+  const double * face_normales_addr = copyToDevice(face_normales);
+  const int * elem_faces_addr = copyToDevice(elem_faces);
   const double * vit_addr = vit.addr();
   #pragma omp target teams distribute parallel for map(to:vit_addr[0:vit.size_array()]) map(tofrom:div_addr[0:div.size_array()])
   for(int elem=0; elem<nb_elem; elem++)
@@ -326,7 +326,6 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
             nb_degres_liberte(som - nps)++;
             som_(elem, indice) = som;
           }
-      copyToDevice(som_);
     }
 
   int modif_traitement_diri = zone_VEF.get_modif_div_face_dirichlet();
@@ -377,11 +376,11 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   else
     {
       double coeff_som = 1. / (dimension * (dimension + 1));
-      const int *elem_faces_addr = elem_faces.addr();
+      const int *elem_faces_addr = copyToDevice(elem_faces);
+      const int *face_voisins_addr = copyToDevice(face_voisins);
+      const double *face_normales_addr = copyToDevice(face_normales);
+      const int *som_addr = copyToDevice(som_);
       const double *vit_addr = vit.addr();
-      const int *face_voisins_addr = face_voisins.addr();
-      const double *face_normales_addr = face_normales.addr();
-      const int *som_addr = som_.addr();
       double *div_addr = div.addr();
 
       #pragma omp target teams map(to:vit_addr[0:vit.size_array()]) map(tofrom:div_addr[0:div.size_array()])

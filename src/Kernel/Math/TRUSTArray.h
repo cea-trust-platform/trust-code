@@ -99,13 +99,21 @@ public:
 
   virtual ~TRUSTArray()
   {
+    if (dataLocation()!=HostOnly)
+      {
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic push
+        _TYPE_ *tab_addr = addr();
+        #pragma omp target exit data map(from:tab_addr[0:size_array()])
+#pragma GCC diagnostic pop
+      }
     detach_array();
     size_array_ = -1; // Paranoia: si size_array_==-1, c'est un zombie
   }
 
-  TRUSTArray() : p_(0), data_(0), size_array_(0), memory_size_(0), smart_resize_(0), storage_type_(STANDARD) { }
+  TRUSTArray() : p_(0), data_(0), size_array_(0), memory_size_(0), smart_resize_(0), storage_type_(STANDARD), dataLocation_(HostOnly) { }
 
-  TRUSTArray(int n): p_(0), data_(0), size_array_(n), memory_size_(n), smart_resize_(0), storage_type_(STANDARD)
+  TRUSTArray(int n): p_(0), data_(0), size_array_(n), memory_size_(n), smart_resize_(0), storage_type_(STANDARD), dataLocation_(HostOnly)
   {
     if (n)
       {
@@ -123,6 +131,7 @@ public:
       {
         // Creation d'un tableau "normal"
         storage_type_ = STANDARD;
+        dataLocation_ = HostOnly;
         p_ = new VTRUSTdata<_TYPE_>(size, STANDARD);
         data_ = p_->get_data();
         size_array_ = size;
@@ -139,6 +148,7 @@ public:
         memory_size_ = 0;
         smart_resize_ = 0;
         storage_type_ = STANDARD;
+        dataLocation_ = HostOnly;
       }
   }
 
@@ -161,6 +171,7 @@ public:
   // Remplit le tableau avec la x en parametre (x est affecte a toutes les cases du tableau)
   inline TRUSTArray& operator=(_TYPE_ x)
   {
+    checkDataOnHost(*this);
     const int n = size_array_;
     _TYPE_ *data = data_;
     for (int i = 0; i < n; i++) data[i] = x;
@@ -189,6 +200,8 @@ public:
   // Addition case a case sur toutes les cases du tableau : la taille de y doit etre au moins egale a la taille de this
   TRUSTArray& operator+=(const TRUSTArray& y)
   {
+    checkDataOnHost(y);
+    checkDataOnHost(*this);
     assert(size_array()==y.size_array());
     _TYPE_* dx = data_;
     const _TYPE_* dy = y.data_;
@@ -198,6 +211,7 @@ public:
   // ajoute la meme valeur a toutes les cases du tableau
   TRUSTArray& operator+=(const _TYPE_ dy)
   {
+    checkDataOnHost(*this);
     _TYPE_ * data = data_;
     for(int i = 0; i < size_array(); i++) data[i] += dy;
     return *this;
@@ -206,6 +220,8 @@ public:
   // Soustraction case a case sur toutes les cases du tableau : tableau de meme taille que *this
   TRUSTArray& operator-=(const TRUSTArray& y)
   {
+    checkDataOnHost(y);
+    checkDataOnHost(*this);
     assert(size_array() == y.size_array());
     _TYPE_ * data = data_;
     const _TYPE_ * data_y = y.data_;
@@ -216,6 +232,7 @@ public:
   // soustrait la meme valeur a toutes les cases
   TRUSTArray& operator-=(const _TYPE_ dy)
   {
+    checkDataOnHost(*this);
     _TYPE_ * data = data_;
     for(int i = 0; i < size_array(); i++) data[i] -= dy;
     return *this;
@@ -224,6 +241,7 @@ public:
   // muliplie toutes les cases par dy
   TRUSTArray& operator*= (const _TYPE_ dy)
   {
+    checkDataOnHost(*this);
     _TYPE_ * data = data_;
     for(int i=0; i < size_array(); i++) data[i] *= dy;
     return *this;
@@ -232,6 +250,7 @@ public:
   // divise toutes les cases par dy (pas pour TRUSTArray<int>)
   TRUSTArray& operator/= (const _TYPE_ dy)
   {
+    checkDataOnHost(*this);
     if (std::is_same<_TYPE_,int>::value) throw;
     const _TYPE_ i_dy = 1. / dy;
     operator*=(i_dy);
@@ -257,6 +276,10 @@ public:
   inline virtual void reset() { detach_array(); }
   inline virtual void ref_array(TRUSTArray&, int start = 0, int sz = -1);
   inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
+  inline Location dataLocation() { return dataLocation_; }
+  inline Location dataLocation() const { return dataLocation_; }
+  inline void set_dataLocation(Location flag) { dataLocation_ = flag; }
+  inline void set_dataLocation(Location flag) const { dataLocation_ = flag; }
 
 protected:
   inline void attach_array(const TRUSTArray& a, int start = 0, int size = -1);
@@ -289,6 +312,39 @@ private:
 
   // Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de Trio
   Storage storage_type_;
+
+  // Drapeau du statut du array sur le Device:
+  // -1: non alloue sur le device sinon                     HostOnly
+  //  0: A jour sur le host pas sur le device               Host
+  //  1: A jour sur le device mais pas sur le host          Device
+  //  2: A jour sur le host et le device                    HostDevice
+  mutable Location dataLocation_ = HostOnly;
+  inline void checkDataOnHost(const TRUSTArray& tab) const
+  {
+#ifdef _OPENMP
+#ifndef NDEBUG
+    if (tab.dataLocation()==Device)
+      {
+        Cerr << "Error! A const TRUSTArray tab is used on the host whereas its dataLocation=Device" << finl;
+        Cerr << "In order to copy data from device to host,add a call like: copyToHost(tab);" << finl;
+        Process::exit();
+      }
+#endif
+#endif
+  }
+  inline void checkDataOnHost(TRUSTArray& tab)
+  {
+#ifdef _OPENMP
+#ifndef NDEBUG
+    if (tab.dataLocation()==Device)
+      {
+        Cerr << "Error! A non-const TRUSTArray tab is computed on the host whereas its dataLocation=Device" << finl;
+        Cerr << "In order to copy data from device to hist,add a call like: copyToHost(tab);" << finl;
+        Process::exit();
+      }
+#endif
+#endif
+  }
 };
 
 using ArrOfDouble = TRUSTArray<double>;

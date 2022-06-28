@@ -320,12 +320,12 @@ ajouter_elem(const DoubleTab& pre,
       end_timer("Boundary loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
     }
 
-  const int * face_voisins_addr = face_voisins.addr();
-  double * grad_addr = grad.addr();
+  const int * face_voisins_addr = copyToDevice(face_voisins);
+  const double* porosite_face_addr = copyToDevice(porosite_face);
+  const double * face_normales_addr = copyToDevice(face_normales);
+  const int * elem_faces_addr = copyToDevice(elem_faces);
   const double * pre_addr = pre.addr();
-  const double* porosite_face_addr = porosite_face.addr();
-  const double * face_normales_addr = face_normales.addr();
-  const int * elem_faces_addr = elem_faces.addr();
+  double * grad_addr = grad.addr();
   start_timer();
   #pragma omp target teams distribute parallel for map(to:pre_addr[0:pre.size_array()]) map(tofrom:grad_addr[0:grad.size_array()])
   for(int elem=0; elem<nb_elem_tot; elem++)
@@ -376,17 +376,15 @@ ajouter_som(const DoubleTab& pre,
           for(int indice=0; indice<nfe; indice++)
             som_(el,indice) = nps+dom.get_renum_som_perio(som_elem(el,indice));
         }
-      copyToDevice(som_);
-      copyToDevice(coeff_som_);
     }
-  double * grad_addr = grad.addr();
+  const int * elem_faces_addr = copyToDevice(elem_faces);
+  const int * face_voisins_addr = copyToDevice(face_voisins);
+  const double * face_normales_addr = copyToDevice(face_normales);
+  const double* porosite_face_addr = copyToDevice(porosite_face);
+  const double * coeff_som_addr = copyToDevice(coeff_som_);
+  const int * som_addr = copyToDevice(som_);
   const double * pre_addr = pre.addr();
-  const int * elem_faces_addr = elem_faces.addr();
-  const int * face_voisins_addr = face_voisins.addr();
-  const double * face_normales_addr = face_normales.addr();
-  const double* porosite_face_addr = porosite_face.addr();
-  const double * coeff_som_addr = coeff_som_.addr();
-  const int * som_addr = som_.addr();
+  double * grad_addr = grad.addr();
 
   // boucle couteuse: A porter
   start_timer();

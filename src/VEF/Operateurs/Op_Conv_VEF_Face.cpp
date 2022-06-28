@@ -250,8 +250,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 }
             }
         }
-      copyToDevice(est_une_face_de_dirichlet_);
-      copyToDevice(traitement_pres_bord_);
     }
 
   // Pour le traitement de la convection on distingue les polyedres
@@ -324,10 +322,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       Champ_P1NC::calcul_gradient(transporte_face,gradient_elem,zone_Cl_VEF);
     }
   DoubleTab gradient;
-  const int * traitement_pres_bord_addr = traitement_pres_bord_.addr();
-
-  const int * face_voisins_addr = face_voisins.addr();
-  const double * gradient_elem_addr = gradient_elem.addr();
   int cas;
   if (type_lim_int==type_lim_minmod) cas=1;
   if (type_lim_int==type_lim_vanleer) cas=2;
@@ -401,7 +395,11 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
         }
 
       // Need offload
-      #pragma omp target teams distribute parallel for map(to:traitement_pres_bord_addr[0:traitement_pres_bord_.size_array()],gradient_elem_addr[0:gradient_elem.size_array()]) map(tofrom:gradient_addr[0:gradient.size_array()])
+      const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
+      const int * face_voisins_addr = copyToDevice(face_voisins);
+      const double * gradient_elem_addr = gradient_elem.addr();
+
+      #pragma omp target teams distribute parallel for map(to:gradient_elem_addr[0:gradient_elem.size_array()]) map(tofrom:gradient_addr[0:gradient.size_array()])
       for (int fac=premiere_face_int; fac<nb_faces_; fac++)
         {
           int elem1=face_voisins_addr[fac*2];
@@ -434,27 +432,27 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const Domaine& domaine=zone.domaine();
   const DoubleTab& coord_sommets=domaine.coord_sommets();
 
-  const int * rang_elem_non_std_addr = rang_elem_non_std.addr();
-  const int * elem_faces_addr = elem_faces.addr();
-  const double * vitesse_face_absolue_addr = vitesse_face_absolue.addr();
-  const double * porosite_face_addr = porosite_face.addr();
-  const double * porosite_elem_addr = porosite_elem.addr();
-  const double * coord_sommets_addr = coord_sommets.addr();
-  const int * les_elems_addr = les_elems.addr();
-  const int * KEL_addr = type_elemvef.KEL().addr();
+  const int * rang_elem_non_std_addr = copyToDevice(rang_elem_non_std);
+  const int * elem_faces_addr = copyToDevice(elem_faces);
+  const double * porosite_face_addr = copyToDevice(porosite_face);
+  const double * porosite_elem_addr = copyToDevice(porosite_elem);
+  const double * coord_sommets_addr = copyToDevice(coord_sommets);
+  const int * les_elems_addr = copyToDevice(les_elems);
   const double * facette_normales_addr = facette_normales.addr();
+  const int * est_une_face_de_dirichlet_addr = copyToDevice(est_une_face_de_dirichlet_);
+  const double * vecteur_face_facette_addr = copyToDevice(vecteur_face_facette);
+  const double * xv_addr = copyToDevice(xv);
+  const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
+  const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
+
+  const int * KEL_addr = type_elemvef.KEL().addr();
   const double * normales_facettes_Cl_addr = normales_facettes_Cl.addr();
-  const int * est_une_face_de_dirichlet_addr = est_une_face_de_dirichlet_.addr();
-
-  const double * transporte_face_addr = transporte_face.addr();
-  const double * vecteur_face_facette_addr = vecteur_face_facette.addr();
   const double * vecteur_face_facette_Cl_addr = vecteur_face_facette_Cl.addr();
-
   const double * vitesse_addr=la_vitesse.valeurs().addr();
-  const double * xv_addr = xv.addr();
+  const double * vitesse_face_absolue_addr = vitesse_face_absolue.addr();
+  const double * transporte_face_addr = transporte_face.addr();
   double * resu_addr = resu.addr();
   double * flux_b_addr = flux_b.addr();
-  const int *type_elem_Cl_addr = type_elem_Cl_.addr();
 
   // Boucle ou non selon la valeur de alpha (uniquement a l'ordre 3 pour le moment)
   // Si alpha=1, la boucle se limite a une simple passe avec le schema choisi (muscl, amont, centre)
@@ -1547,14 +1545,15 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   // dans la zone
   if (nom_elem=="Tetra_VEF")
     {
-      const int *rang_elem_non_std_addr = rang_elem_non_std.addr();
-      const int *elem_faces_addr = elem_faces.addr();
-      const double *vitesse_face_addr = vitesse_face.addr();
-      const double *porosite_face_addr = porosite_face.addr();
-      const double *porosite_elem_addr = porosite_elem.addr();
+      const int *rang_elem_non_std_addr = copyToDevice(rang_elem_non_std);
+      const int *elem_faces_addr = copyToDevice(elem_faces);
+      const double *porosite_face_addr = copyToDevice(porosite_face);
+      const double *porosite_elem_addr = copyToDevice(porosite_elem);
+      const double *facette_normales_addr = copyToDevice(facette_normales);
+
       const int *KEL_addr = KEL.addr();
-      const double *facette_normales_addr = facette_normales.addr();
       const double *normales_facettes_Cl_addr = normales_facettes_Cl.addr();
+      const double *vitesse_face_addr = vitesse_face.addr();
       double *fluent_addr = fluent_.addr();
 
       // On cherche, pour un elem qui n'est pas de bord (rang==-1),
@@ -1567,9 +1566,8 @@ void  Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
               int rang = rang_elem_non_std(poly);
               type_elem_Cl_[poly] = rang == -1 ? 0 : zone_Cl_VEF.type_elem_Cl(rang);
             }
-          copyToDevice(type_elem_Cl_);
         }
-      const int *type_elem_Cl_addr = type_elem_Cl_.addr();
+      const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
       #pragma omp target teams map(to:KEL_addr[0:KEL.size_array()], normales_facettes_Cl_addr[0:normales_facettes_Cl.size_array()], vitesse_face_addr[0:vitesse_face.size_array()]) map(tofrom:fluent_addr[0:fluent_.size_array()])
       {
         int face[4];
