@@ -9,7 +9,7 @@ trust docond_VEF_3D_mesh2.data 1>docond_VEF_3D_mesh2.out 2>docond_VEF_3D_mesh2.e
 
 ### Run ICoCo
 # Only if MPI is installed
-if [ "$TRUST_DISABLE_MPI" != 1 ]
+if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "$TRUST_DISABLE_MPI4PY" != 1 ]
 then
     source $TRUST_MEDCOUPLING_ROOT/env.sh
     source $TRUST_ROOT/Outils/ICoCo/ICoCo_src/share/swig/env.sh

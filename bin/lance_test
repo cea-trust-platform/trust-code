@@ -892,6 +892,16 @@ then
 	      i=""
            fi
 	fi
+	# Discard MPI4PY test case
+	if [ "$i" != "" ] && [ "$TRUST_DISABLE_MPI4PY" = 1 ]
+	then
+	   if [ "`grep "TRUST_DISABLE_MPI4PY " $REP/*.data 2>/dev/null`" != "" ]
+	   then
+              echo "Test $i skipped (no mpi4py)"
+	      liste_skipped=$liste_skipped" $i"
+	      i=""
+           fi	   
+	fi
 	# Discard PARALLEL ONLY test case if no MPI capabilities
 	if [ "$i" != "" ] && [ "$TRUST_DISABLE_MPI" = 1 ]
 	then
