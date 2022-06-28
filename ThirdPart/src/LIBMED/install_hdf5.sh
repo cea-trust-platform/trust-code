@@ -47,7 +47,7 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
   # All of those options are already set with the following values by default, but just to be sure force them again ...:
   # -DHDF5_BUILD_CPP_LIB=OFF because parallel and c++ are mutually exclusive
   BUILD_SHARED=ON && [ `uname -s` = "Darwin" ] && BUILD_SHARED=OFF
-  export CFLAGS="-Wno-implicit-function-declaration -Wno-error -fPIC"
+  export CFLAGS="-Wno-implicit-function-declaration -Wno-error -fPIC" && [ "`basename $TRUST_CC_BASE`" = nvc++ ] && CFLAGS=-fPIC
   options="-DCMAKE_C_COMPILER=$TRUST_cc -DHDF5_BUILD_CPP_LIB=OFF -DCMAKE_CXX_COMPILER=$TRUST_CC -DCMAKE_FC_COMPILER=$TRUST_F77"
   options="$options -DBUILD_SHARED_LIBS=$BUILD_SHARED -DHDF5_BUILD_HL_LIB=ON"
   TOOLS=OFF

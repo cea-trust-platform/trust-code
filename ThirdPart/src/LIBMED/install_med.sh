@@ -47,9 +47,10 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   sed -i 's/GET_PROPERTY(_lib_lst TARGET hdf5 PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)/SET(_lib_lst)/' $(find . -name FindMedfileHDF5.cmake)
 
   # fPIC is not there by default in MED autotools ...
-  CFLAGS="${CFLAGS} -fPIC -Wno-error -Wno-implicit-function-declaration"
-  CPPFLAGS="${CPPFLAGS} -fPIC -Wno-error -Wno-implicit-function-declaration"
-  CXXFLAGS="${CXXFLAGS} -fPIC -Wno-error -Wno-implicit-function-declaration"
+  Wno="-Wno-error -Wno-implicit-function-declaration" && [ "`basename $TRUST_CC_BASE`" = nvc++ ] && Wno=""
+  CFLAGS="${CFLAGS} -fPIC $Wno"
+  CPPFLAGS="${CPPFLAGS} -fPIC $Wno"
+  CXXFLAGS="${CXXFLAGS} -fPIC $Wno"
   FFLAGS="${FFLAGS} -fPIC"
   #LDFLAGS from TRUST
   fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC`[ "$debug" = "0" ] && echo _opt`
@@ -58,12 +59,13 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
 
 
   # PL: On utilise cmake par defaut pour MED (merci Adrien). Cela evite des problemes avec libtool
-  USE_CMAKE=1
+  USE_CMAKE=1 && [ "`basename $TRUST_CC_BASE`" = nvc++ ] && USE_CMAKE=0
   if [ "$USE_CMAKE" = 0 ]
   then
      echo "Configuring with autotools  ..."  # [ABN] CMake is there too in MED, but for how long?? Eric prefers autotools ...
      # Options: no Python, static libraries and path to HDF5
      options="--enable-static --disable-python --enable-installtest --with-hdf5=$TRUST_MED_ROOT"  # TRUST_MED_ROOT is also HDF5 root ...
+     [ "`basename $TRUST_CC_BASE`" = nvc++ ] &&  options="$options -disable-fortran -disable-fc"
      #INT64
      if [ "$TRUST_INT64" = "1" ]
      then
@@ -72,7 +74,7 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
      # Ajout de python/lib car parfois zlib pas installe sur la machine (Ubuntu 20)
      LDFLAGS="" && [ ! -f /usr/lib64/libz.so ] && LDFLAGS="LDFLAGS=-L$TRUST_ROOT/exec/python/lib"
      #LDFLAGS="--allow-shlib-undefined"
-     env $LDFLAGS CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 ./configure --prefix="$actual_install_dir" $options #   For debug, add:CFLAGS="-g -O0" CXXFLAGS="-g -O0"
+     env $LDFLAGS CC=$TRUST_cc CXX=$TRUST_CC F77=$TRUST_F77 FC=$TRUST_F77 ./configure --prefix="$actual_install_dir" $options  #   For debug, add:CFLAGS="-g -O0" CXXFLAGS="-g -O0"
      # Hack sur irene-arm (libtool embarque ne marche pas)
      [ ${HOST#irene-arm} != $HOST ] && ln -s -f /usr/bin/libtool .
   else ## With CMAKE

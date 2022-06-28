@@ -1015,7 +1015,7 @@ m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && expo
 ########
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
-   [ "$TRUST_DISABLE_PETSC" = 1 ] && echo "Error, you need PETSc with -cuda option." && exit -1
+   #[ "$TRUST_DISABLE_PETSC" = 1 ] && echo "Error, you need PETSc with -cuda option." && exit -1
    check_nvidia_cuda
    [ "$CUDA_ROOT" = "" ] && echo "CUDA libraries not found!" && exit -1
    m="# PATH to CUDA";
@@ -1936,18 +1936,20 @@ then
       [ "$ROCM_PATH" != "" ]    && target=amdgcn-amd-amdhsa   && march="-march=gfx908" # Device AMD Radeon MI100
       # -fsave-loopmark est une option pour creer un .lst a la compilation mais il faut aussi le retirer pour eviter un crash du compilateur
       openmp_target="-fopenmp-targets=$target -Xopenmp-target=$target $march "   
-   elif [ "`basename $TRUST_CC_BASE`" = g++ ]
+   elif [ "`basename $TRUST_CC_BASE`" = g++ ] || [ "`basename $TRUST_CC_BASE`" = cuda-g++ ]
    then
       openmp="-fopenmp"
       target=disable # Pas de carte See https://gcc.gnu.org/wiki/Offloading
-      [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx-none 	&& march=""
+      [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx-none 	&& march="" # Complique gcc a recompiler: voir https://gist.github.com/matthiasdiener/e318e7ed8815872e9d29feb3b9c8413f
       [ "$ROCM_PATH" != "" ]    && target=amdgcn-amdhsa	&& march="-march=gfx908" # Device AMD Radeon MI100
       openmp_target="-foffload=$target $march"
    elif [ "`basename $TRUST_CC_BASE`" = nvc++ ]
    then
       openmp="-mp"
       #march="-gpu=??"     
-      openmp_target="-mp=gpu $march"
+      openmp_target="-target=gpu $march"
+   else
+      echo "-openmp not supported for $TRUST_CC_BASE" && exit -1
    fi
    CppFlags=$CppFlags" "$openmp" "$openmp_target
    SYSLIBS=$SYSLIBS" "$openmp
