@@ -168,11 +168,11 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
 
       // Calcul de la taille memoire requise:
       int mem_size = 0;
-      mem_size += sz_tot * sizeof(double); //  vecteurs avec espace virtuel (tmp_p_)
-      mem_size += sz * sizeof(double) * 3; // vecteurs sans espace virtuel
+      mem_size += sz_tot * (int)sizeof(double); //  vecteurs avec espace virtuel (tmp_p_)
+      mem_size += sz * (int)sizeof(double) * 3; // vecteurs sans espace virtuel
       const int nb_lignes_mat = sz;
       // matrice reel/reel
-      mem_size += (sz + 1) * sizeof(int); // pour tab1_
+      mem_size += (sz + 1) * (int)sizeof(int); // pour tab1_
       int nnz_reel_reel = 0;
       assert(mat.get_tab1().size_array() == sz + 1);
       assert(mat.get_tab2().size_array() == mat.get_coeff().size_array());
@@ -185,16 +185,16 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
           // On ne stocke pas les coefficients diagonaux:
           nnz_reel_reel = mat.get_coeff().size_array() - sz;
         }
-      mem_size += nnz_reel_reel * sizeof(double); // pour les coefficients
-      mem_size += nnz_reel_reel * sizeof(int); // pour les indices
+      mem_size += nnz_reel_reel * (int)sizeof(double); // pour les coefficients
+      mem_size += nnz_reel_reel * (int)sizeof(int); // pour les indices
       // matrice reel/virtuel
-      mem_size += (nb_lignes_mat_virt+1) * sizeof(int); // pour tab1_
+      mem_size += (nb_lignes_mat_virt+1) * (int)sizeof(int); // pour tab1_
       const int nnz_reel_virtuel = mat_virt.get_coeff().size_array();
       assert(mat_virt.get_tab2().size_array() == nnz_reel_virtuel);
-      mem_size += nnz_reel_virtuel * sizeof(double); // pour les coefficients
-      mem_size += nnz_reel_virtuel * sizeof(int); // pour les indices
+      mem_size += nnz_reel_virtuel * (int)sizeof(double); // pour les coefficients
+      mem_size += nnz_reel_virtuel * (int)sizeof(int); // pour les indices
       // taille de tmp_mat_virt_.lignes_non_vides_
-      mem_size += nb_lignes_mat_virt * sizeof(int);
+      mem_size += nb_lignes_mat_virt * (int)sizeof(int);
       // aligner la taille sur un multiple de 8
       if (mem_size % 8 != 0)
         mem_size = (mem_size/8+1)*8;

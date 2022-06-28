@@ -83,7 +83,7 @@ public:
   int has_correlation(std::string nom_correlation) const
   {
     Motcle mot(nom_correlation);
-    return correlations.count(mot.getString());
+    return (int)correlations.count(mot.getString());
   }
 
 protected:

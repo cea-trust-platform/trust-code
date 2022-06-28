@@ -210,8 +210,9 @@ inline double Matrice_Morse::operator()(int i, int j) const
           || (symetrique_==2 && que_suis_je()=="Matrice_Morse_Diag") );
   if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
   int k1=tab1_[i]-1;
-  int k2=tab1_[i+1]-1, k;
-  if (sorted_ && (k = std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr()) < k2 && tab2_[k] == j + 1)
+  int k2=tab1_[i+1]-1;
+  int k = (int)(std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr());
+  if (sorted_ && k < k2 && tab2_[k] == j + 1)
     return coeff_[k];
   else if (!sorted_)
     for (k=k1; k<k2; k++)
@@ -228,8 +229,9 @@ inline double& Matrice_Morse::operator()(int i, int j)
   //if (symetrique_==1 && j<i) std::swap(i,j); // Do not use, possible error during compile: "signed overflow does not occur when assuming that (X + c) < X is always false"
   if ((symetrique_==1) && ((j-i)<0)) std::swap(i,j);
   int k1=tab1_[i]-1;
-  int k2=tab1_[i+1]-1, k;
-  if (sorted_ && (k = std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr()) < k2 && tab2_[k] == j + 1)
+  int k2=tab1_[i+1]-1;
+  int k = (int) (std::lower_bound(tab2_.addr() + k1, tab2_.addr() + k2, j + 1) - tab2_.addr());
+  if (sorted_ && k < k2 && tab2_[k] == j + 1)
     return coeff_[k];
   else if (!sorted_)
     for (k=k1; k<k2; k++)

@@ -321,9 +321,9 @@ void Champ_Post_Operateur_Eqn::nommer_source()
       Nom nom_post_source, nom_champ_source;
       //const Noms nom = get_source(0).get_property("nom");
       nom_post_source = "Eqn_s";
-      nom_post_source +=  numero_source_ ;
+      nom_post_source += Nom(numero_source_);
       nom_post_source += "_o" ;
-      nom_post_source += numero_op_ ;
+      nom_post_source += Nom(numero_op_);
       if (compo_!=-1)
         {
           Nom nume(compo_);

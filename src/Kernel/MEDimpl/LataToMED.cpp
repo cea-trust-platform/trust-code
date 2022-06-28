@@ -221,7 +221,7 @@ Entree& latatoother::interpreter(Entree& is)
       opt.faces_mesh = false;
       // on ne veut jamais creer le domaine IJK
       opt.regularize = 0;
-      opt.regularize_tolerance = 1e-7;
+      opt.regularize_tolerance = 1e-7f;
       read_any_format_options(filename, opt);
       // Read the source file to the lata database
       read_any_format(filename, opt.path_prefix, lata_db);

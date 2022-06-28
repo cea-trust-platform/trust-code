@@ -47,7 +47,7 @@ void OBuffer::precision(int i)
 
 int OBuffer::get_precision()
 {
-  return buf_->precision();
+  return (int)buf_->precision();
 }
 // Description:
 //    Force l'ecriture sur disque des donnees dans le tampon
@@ -91,7 +91,7 @@ const char* OBuffer::str()
 // Renvoie le nombre d'octets contenus dans le buffer.
 int OBuffer::len()
 {
-  return buf_->tellp();
+  return (int)buf_->tellp();
 }
 
 int OBuffer::set_bin(int bin)

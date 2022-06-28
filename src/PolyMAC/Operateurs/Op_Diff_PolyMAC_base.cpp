@@ -271,7 +271,7 @@ void Op_Diff_PolyMAC_base::update_nu() const
 void Op_Diff_PolyMAC_base::update_aux(double t) const
 {
   const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur()).le_nom().getString();
-  int i, j, n_ext = op_ext.size(), first_run = mat_aux.nb_lignes() == 0; /* nombre d'operateurs */
+  int i, j, n_ext = (int)op_ext.size(), first_run = mat_aux.nb_lignes() == 0; /* nombre d'operateurs */
   if (first_run)
     for (mat_aux.dimensionner(n_ext, n_ext), i = 0; i < n_ext; i++)
       for (j = 0; j < n_ext; j++)

@@ -184,14 +184,14 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
     {
       /* stencil : faces de l'element et de ses voisins par som-elem + toutes composantes a ses faces de bord */
       for (auto &&fa : e_s_f[e])
-        if (!v_i.count({{ fa, -1 }})) v_i[ {{fa, -1}}] = i_v.size(), i_v.push_back({{fa, -1}});
+        if (!v_i.count({{ fa, -1 }})) v_i[ {{fa, -1}}] = (int)i_v.size(), i_v.push_back({{fa, -1}});
       for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
         if (fcl_(f, 0))
           for (d = 0; d < D; d++)
-            v_i[ {{f, d }}] = i_v.size(), i_v.push_back({{f, d}});
+            v_i[ {{f, d }}] = (int)i_v.size(), i_v.push_back({{f, d}});
 
       /* coeffs de l'interpolation d'ordre 1, ponderations (comme dans Zone_PolyMAC_P0::{e,f}grad)  */
-      ve2.resize(nc = i_v.size(), D), A.resize(nc, nl), B.resize(nc), P.resize(nc), pvt.resize(nc);
+      ve2.resize(nc = (int)i_v.size(), D), A.resize(nc, nl), B.resize(nc), P.resize(nc), pvt.resize(nc);
       for (ve2 = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
         for (fac = (e == f_e(f, 0) ? 1 : -1) * fs(f) / ve(e), j = v_i.at({{ f, -1 }}), d = 0; d < D; d++)
       ve2(j, d) += fac * (xv(f, d) - xp(e, d));
@@ -212,7 +212,7 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
 
           /* x de norme L2 minimale par dgels */
           nw = -1,             F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
-          W.resize(nw = W(0)), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
+          W.resize(nw = (int)std::lround(W(0))), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
           assert(infoo == 0);
           /* ajout dans ve2 */
           for (i = 0; i < nc; i++) ve2(i, d) += P(i) * B(i);

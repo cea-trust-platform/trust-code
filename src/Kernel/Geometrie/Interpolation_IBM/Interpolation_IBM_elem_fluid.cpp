@@ -88,7 +88,7 @@ void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& la_zone_EF)
       int nb_tag_max = -1;
       for (int i = 0 ; i < nb_elem_tot ; i++)
         {
-          int int_cor_elem = lrint(corresp_elems_ref(i));
+          int int_cor_elem = (int)lrint(corresp_elems_ref(i));
           if (int_cor_elem > nb_tag_max) nb_tag_max = int_cor_elem;
         }
       int dimtag = nb_tag_max+1;
@@ -96,7 +96,7 @@ void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& la_zone_EF)
       elems_fluid_trust = -1.e+10;
       for (int i = 0 ; i < nb_elem_tot ; i++)
         {
-          int indextag = lrint(corresp_elems_ref(i)) ;
+          int indextag = (int)lrint(corresp_elems_ref(i)) ;
           //Cerr << indextag << ", " << dimtag << ", " << nb_elem << ", " << nb_elem_tot << ", " << nb_som << ", " << nb_som_tot << finl;
           //abort();
           if (indextag < dimtag && indextag >= 0)
@@ -113,7 +113,7 @@ void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& la_zone_EF)
         {
           if (elems_fluid_ref(i) >= 0.0)
             {
-              int indexr = lrint(elems_fluid_ref(i));
+              int indexr = (int)lrint(elems_fluid_ref(i));
               if (indexr < dimtag && indexr >= 0)
                 {
                   if (elems_fluid_trust(indexr) >= 0.)

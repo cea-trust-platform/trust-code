@@ -45,7 +45,7 @@ const char* Sortie_Brute::get_data() const
 unsigned Sortie_Brute::get_size() const
 {
   const ostringstream& os = static_cast< const ostringstream& >(get_ostream());
-  return os.str().size();
+  return (unsigned)os.str().size();
 }
 
 int Sortie_Brute::set_bin(int bin)

@@ -130,9 +130,9 @@ void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_pa
   options[2] = 0; //random seed
 
   idx_t ncon=1;
-  real_t ubvec = 1.05; //recommanded value
+  real_t ubvec = 1.05f; //recommanded value
   idx_t numflag = 0; //numerotation C
-  std::vector<real_t> tpwgts(ncon*int_parts, 1./int_parts); //we want the weight to be equally distributed on each sub_somain
+  std::vector<real_t> tpwgts(ncon*int_parts, (real_t)(1.0/int_parts)); //we want the weight to be equally distributed on each sub_somain
   MPI_Comm comm = Comm_Group_MPI::get_trio_u_world();
   int status = ParMETIS_V3_PartKway(graph.vtxdist.addr(), graph.xadj.addr(), graph.adjncy.addr(),
                                     graph.vwgts.addr(), graph.ewgts.addr(), &graph.weightflag,

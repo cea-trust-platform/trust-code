@@ -1762,6 +1762,6 @@ void OctreeFloor::construire(Octree* pe, const ArrOfInt& Tab, const OctreeLoc& l
 // Postcondition: la methode ne modifie pas l'objet
 int OctreeFloor::taille() const
 {
-  return sizeof(OctreeFloor)+num_elem.size_array()*sizeof(int);
+  return (int)sizeof(OctreeFloor)+num_elem.size_array()*(int)sizeof(int);
 }
 

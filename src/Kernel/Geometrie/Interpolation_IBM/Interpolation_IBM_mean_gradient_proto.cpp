@@ -70,7 +70,7 @@ void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Zone_dis_base&
       int nb_tag_max = -1;
       for (int i = 0 ; i < nb_elem_tot ; i++)
         {
-          int int_cor_elem = lrint(corresp_elemsref(i));
+          int int_cor_elem = (int)lrint(corresp_elemsref(i));
           if (int_cor_elem > nb_tag_max) nb_tag_max = int_cor_elem;
         }
       int dimtag = nb_tag_max+1;
@@ -78,7 +78,7 @@ void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Zone_dis_base&
       elems_solid_trust = -0.1*DMAXFLOAT;
       for (int i = 0 ; i < nb_elem_tot ; i++)
         {
-          int indextag = lrint(corresp_elemsref(i)) ;
+          int indextag = (int)lrint(corresp_elemsref(i)) ;
           if (indextag < dimtag && indextag >= 0)
             {
               elems_solid_trust(indextag) = i*1.0;
@@ -93,7 +93,7 @@ void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Zone_dis_base&
         {
           if (elems_solid_ref(i) >= 0.0)
             {
-              int indexr = lrint(elems_solid_ref(i));
+              int indexr = (int)lrint(elems_solid_ref(i));
               if (indexr < dimtag && indexr >= 0)
                 {
                   if (elems_solid_trust(indexr) >= 0.) elems_solid_ref(i) = elems_solid_trust(indexr);
@@ -149,7 +149,7 @@ void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Zone_dis_base&
                       if (is_dirichlet(num_som_2) < 0.0 && d > 0.0 && (4.0*d2) < d1 && is_node_voisin_elem_fluide(num_som_2) == 1.0)
                         {
                           // Element contenant le projete du point fluide
-                          int elems_xpf = lrint(elems_solid_ref(num_som_2));
+                          int elems_xpf = (int)lrint(elems_solid_ref(num_som_2));
                           bool flag_xpf = true;
                           //bool flag_prt_nodes = false;
                           int elem_found = la_zone_EF.zone().chercher_elements(xpf1,xpf2,xpf3);

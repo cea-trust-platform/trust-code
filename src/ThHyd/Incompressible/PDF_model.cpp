@@ -22,7 +22,7 @@
 
 #include <PDF_model.h>
 #include <Param.h>
-
+#include <algorithm>
 
 Implemente_instanciable(PDF_model,"PDF_model",Objet_U) ;
 // (xdata documentation is in the TRAD_2.org because we need a special bloc_lecture object)
@@ -72,7 +72,7 @@ int PDF_model::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
         {
           is >> expr_vit_imp;
           std::string sx(expr_vit_imp);
-          for (auto & c: sx) c = toupper(c);
+          std::transform(sx.begin(), sx.end(), sx.begin(), ::toupper);
           parsers_[i].setString(sx);
           parsers_[i].setNbVar(4);
           parsers_[i].addVar("x");

@@ -40,7 +40,7 @@ const char * OutputCommBuffer::get_buffer()
 
 int OutputCommBuffer::get_buffer_size()
 {
-  return stream_.tellp();
+  return (int)stream_.tellp();
 }
 
 void OutputCommBuffer::clear()

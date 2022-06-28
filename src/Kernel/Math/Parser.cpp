@@ -16,6 +16,7 @@
 #include <Parser.h>
 #include <StdFunction.h>
 #include <StringTokenizer.h>
+#include <algorithm>
 
 void debug(StringTokenizer*);
 
@@ -674,7 +675,7 @@ int Parser::searchCst(const std::string& v)
     {
       Constante& cst = ref_cast(Constante,curseur.valeur());
       std::string ss(cst.le_nom());
-      for (auto & c: ss) c = toupper(c);
+      std::transform(ss.begin(), ss.end(), ss.begin(), ::toupper);
       if (nv == Nom(ss)) return i;
       ++curseur;
       i++;

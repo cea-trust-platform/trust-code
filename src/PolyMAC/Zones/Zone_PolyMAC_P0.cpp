@@ -144,6 +144,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
   const DoubleTab& nf = face_normales(), &xs = zone().domaine().coord_sommets(), &vfd = volumes_entrelaces_dir();
   const DoubleVect& fs = face_surfaces(), &vf = volumes_entrelaces();
   int i, i_s, j, k, l, e, f, s, sb, n_f, n_m, n_ef, n_e, n_eb, m, n, ne_tot = nb_elem_tot(), sgn, nw, infoo, d, db, D = dimension, rk, nl, nc, un = 1, il, ok, essai;
+  unsigned long ll;
   double x, eps_g = 1e-6, eps = 1e-10, i3[3][3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }}, fac[3], vol_s;
   init_som_elem(), init_stencils();
   phif_d.set_smart_resize(1), phif_e.set_smart_resize(1), phif_e.resize(0), phif_c.resize(fsten_eb.dimension(0), N), phif_c = 0;
@@ -174,26 +175,26 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
               if (fbord(f) >= 0) s_eb.insert(std::lower_bound(s_eb.begin(), s_eb.end(), ne_tot + f), ne_tot + f); //si f est de bord, on ajoute l'indice correspondant a s_eb
               else ok &= (f_e(f, 0) >= 0 && f_e(f, 1) >= 0); //si f est interne, alors l'amont/aval doivent etre presents
               se_f[i].push_back(f); //faces connectees a e et s
-              if ((l = std::lower_bound(s_f.begin(), s_f.end(), f) - s_f.begin()) == (int) s_f.size() || s_f[l] != f) /* si f n'est pas dans s_f, on l'ajoute */
+              if ((ll = std::lower_bound(s_f.begin(), s_f.end(), f) - s_f.begin()) == s_f.size() || s_f[ll] != f) /* si f n'est pas dans s_f, on l'ajoute */
                 {
-                  s_f.insert(s_f.begin() + l, f); //face -> dans s_f
-                  if (D < 3) surf_fs.insert(surf_fs.begin() + l, fs(f) / 2), vec_fs.insert(vec_fs.begin() + l, {{{ xs(s, 0) - xv_(f, 0), xs(s, 1) - xv_(f, 1), 0}, { 0, 0, 0 }}}); //2D -> facile
-                  else for (surf_fs.insert(surf_fs.begin() + l, 0), vec_fs.insert(vec_fs.begin() + l, {{{ 0, 0, 0}, {0, 0, 0 }}}), m = 0; m < 2; m++) //3D -> deux sous-triangles
+                  s_f.insert(s_f.begin() + ll, f); //face -> dans s_f
+                  if (D < 3) surf_fs.insert(surf_fs.begin() + ll, fs(f) / 2), vec_fs.insert(vec_fs.begin() + ll, {{{ xs(s, 0) - xv_(f, 0), xs(s, 1) - xv_(f, 1), 0}, { 0, 0, 0 }}}); //2D -> facile
+                  else for (surf_fs.insert(surf_fs.begin() + ll, 0), vec_fs.insert(vec_fs.begin() + ll, {{{ 0, 0, 0}, {0, 0, 0 }}}), m = 0; m < 2; m++) //3D -> deux sous-triangles
                   {
                     if (m == 1 || k > 0) sb = f_s(f, m ? (k + 1 < f_s.dimension(1) && f_s(f, k + 1) >= 0 ? k + 1 : 0) : k - 1); //sommet suivant (m = 1) ou precedent avec k > 0 -> facile
                     else for (n = f_s.dimension(1) - 1; (sb = f_s(f, n)) == -1; ) n--; //sommet precedent avec k = 0 -> on cherche a partir de la fin
                     auto v = cross(D, D, &xs(s, 0), &xs(sb, 0), &xv_(f, 0), &xv_(f, 0));//produit vectoriel (xs - xf)x(xsb - xf)
-                    surf_fs[l] += std::fabs(dot(&v[0], &nf(f, 0))) / fs(f) / 4; //surface a ajouter
-                    for (d = 0; d < D; d++) vec_fs[l][m][d] = (xs(s, d) + xs(sb, d)) / 2 - xv_(f, d); //vecteur face -> arete
+                    surf_fs[ll] += std::fabs(dot(&v[0], &nf(f, 0))) / fs(f) / 4; //surface a ajouter
+                    for (d = 0; d < D; d++) vec_fs[ll][m][d] = (xs(s, d) + xs(sb, d)) / 2 - xv_(f, d); //vecteur face -> arete
                   }
                 }
             }
         if (!ok) continue; //au moins un voisin manquant
-        n_eb = s_eb.size(), n_f = s_f.size();
+        n_eb = (int)s_eb.size(), n_f = (int)s_f.size();
 
         /* conversion de se_f en indices dans s_f */
         for (i = 0; i < n_e; i++)
-          for (j = 0; j < (int) se_f[i].size(); j++) se_f[i][j] = std::lower_bound(s_f.begin(), s_f.end(), se_f[i][j]) - s_f.begin();
+          for (j = 0; j < (int) se_f[i].size(); j++) se_f[i][j] = (int)(std::lower_bound(s_f.begin(), s_f.end(), se_f[i][j]) - s_f.begin());
         for (vol_es.resize(n_e), vol_s = 0, i = 0; i < n_e; vol_s += vol_es[i], i++)
           for (e = s_eb[i], vol_es[i] = 0, j = 0; j < (int) se_f[i].size(); j++)
             f = s_f[k = se_f[i][j]], vol_es[i] += surf_fs[k] * vfd(f, e != f_e(f, 0)) / fs(f) / D;
@@ -216,7 +217,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
 
                 /* resolution -> DEGLSY */
                 nw = -1, piv.resize(nc), F77NAME(dgelsy)(&nl, &nc, &un, &M(0, 0, 0), &nl, &B(0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
-                for (W.resize(nw = W(0)), n = 0; n < N; n++) piv = 0, F77NAME(dgelsy)(&nl, &nc, &un, &M(n, 0, 0), &nl, &B(n, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
+                for (W.resize(nw = (int)std::lround(W(0))), n = 0; n < N; n++) piv = 0, F77NAME(dgelsy)(&nl, &nc, &un, &M(n, 0, 0), &nl, &B(n, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
                 /* x_fs = xf + corrections */
                 for (x_fs.resize(N, n_f, D), n = 0; n < N; n++)
                   for (i = 0; i < n_f; i++)
@@ -227,7 +228,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
             /* gradients par maille en fonctions des (u_eb, u_fs), flux F = Ff.u_fs + Feb.u_eb, et systeme Mf.u_fs = Feb.u_eb */
             Ff.resize(n_f, n_f, N), Feb.resize(n_f, n_eb, N), Mf.resize(N, n_f, n_f), Meb.resize(N, n_eb, n_f);
             for (Ff = 0, Feb = 0, Mf = 0, Meb = 0, i = 0; i < n_e; i++)
-              for (e = s_eb[i], M.resize(n_ef = se_f[i].size(), D), B.resize(D, n_m = std::max(D, n_ef)), X.resize(n_ef, D), piv.resize(n_ef), n = 0; n < N; n++)
+              for (e = s_eb[i], M.resize(n_ef = (int)se_f[i].size(), D), B.resize(D, n_m = std::max(D, n_ef)), X.resize(n_ef, D), piv.resize(n_ef), n = 0; n < N; n++)
                 {
                   if (essai < 2) /* essais 0 et 1 : gradient consistant donne par (u_e, (u_fs)_{f v e, s})*/
                     {
@@ -236,7 +237,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                         for (f = s_f[k = se_f[i][j]], d = 0; d < D; d++) M(j, d) = (essai ? x_fs(n, k, d) : xv_(f, d)) - xp_(e, d);
                       for (B = 0, d = 0; d < D; d++) B(d, d) = 1;
                       nw = -1, piv = 0, F77NAME(dgelsy)(&D, &n_ef, &D, &M(0, 0), &D, &B(0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
-                      W.resize(nw = W(0)), F77NAME(dgelsy)(&D, &n_ef, &D, &M(0, 0), &D, &B(0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
+                      W.resize(nw = (int)std::lround(W(0))), F77NAME(dgelsy)(&D, &n_ef, &D, &M(0, 0), &D, &B(0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
                       for (j = 0; j < n_ef; j++)
                         for (d = 0; d < D; d++) X(j, d) = B(d, j); /* pour pouvoir utiliser nu_dot */
                     }
@@ -257,9 +258,9 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                           if (!is_dir) Mf(n, se_f[i][l], k) += x, Meb(n, i, k) += x; //equation sur u_fs (sauf si CL Dirichlet)
                         }
                       if (!cl) continue; //rien de l'autre cote
-                      else if (is_dir) Mf(n, k, k) = Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) = 1; //Dirichlet -> equation u_fs = u_b
+                      else if (is_dir) Mf(n, k, k) = Meb(n, (int)(std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin()), k) = 1; //Dirichlet -> equation u_fs = u_b
                       else if (is_p ? !is_dir : sub_type(Neumann, *cl)) //Neumann -> ajout du flux au bord
-                        Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) += surf_fs[k];
+                        Meb(n, (int)(std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin()), k) += surf_fs[k];
                       else if (sub_type(Frottement_global_impose, *cl)) //Frottement_global_impose -> flux =  - coeff * v_e
                         Meb(n, i, k) -= surf_fs[k] * ref_cast(Frottement_global_impose, *cl).coefficient_frottement(fcl(f, 2), n);
                       else if (sub_type(Frottement_externe_impose, *cl)) //Frottement_externe_impose -> flux =  - coeff * v_f
@@ -267,7 +268,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                       else if (sub_type(Echange_impose_base, *cl)) //Echange_impose_base -> flux =  - h * (T_{e,f} - T_ext)
                         {
                           double h = ref_cast(Echange_impose_base, *cl).h_imp(fcl(f, 2), n);
-                          Meb(n, std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin(), k) += surf_fs[k] * h; //partie h * T_ext
+                          Meb(n, (int)(std::find(s_eb.begin(), s_eb.end(), ne_tot + f) - s_eb.begin()), k) += surf_fs[k] * h; //partie h * T_ext
                           if (sub_type(Echange_externe_impose, *cl)) Mf(n, k, k) += surf_fs[k] * h; //Echange_externe_impose : partie h * T_f
                           else Meb(n, i, k) -= surf_fs[k] * h; //Echange_global_impose : partie h * T_e
                         }
@@ -275,7 +276,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                 }
             /* resolution de Mf.u_fs = Meb.u_eb : DGELSY, au cas ou */
             nw = -1, piv.resize(n_f), F77NAME(dgelsy)(&n_f, &n_f, &n_eb, &Mf(0, 0, 0), &n_f, &Meb(0, 0, 0), &n_f, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
-            for (W.resize(nw = W(0)), n = 0; n < N; n++)
+            for (W.resize(nw = (int)std::lround(W(0))), n = 0; n < N; n++)
               piv = 0, F77NAME(dgelsy)(&n_f, &n_f, &n_eb, &Mf(n, 0, 0), &n_f, &Meb(n, 0, 0), &n_f, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
 
             /* substitution dans Feb */
@@ -298,7 +299,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                 for (j = 0; j <= i; j++) A(n, i, j) = A(n, j, i) = (A(n, i, j) + A(n, j, i)) / 2;
             /* v.p. la plus petite : DSYEV */
             nw = -1, F77NAME(DSYEV)("N", "U", &n_e, &A(0, 0, 0), &n_e, S.addr(), &W(0), &nw, &infoo);
-            for (W.resize(nw = W(0)), S.resize(n_e), n = 0, ok = 1; n < N; n++)
+            for (W.resize(nw = (int)std::lround(W(0))), S.resize(n_e), n = 0, ok = 1; n < N; n++)
               F77NAME(DSYEV)("N", "U", &n_e, &A(n, 0, 0), &n_e, &S(0), &W(0), &nw, &infoo), ok &= S(0) > -1e-8 * vol_s;
             if (ok) break; //pour qu' "essai" ait la bonne valeur en sortie
           }
@@ -307,7 +308,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
         /* stockage dans phif_c */
         for (i = 0; i < n_f; i++)
           for (f = s_f[i], j = 0; j < n_eb; j++)
-            for (k = std::lower_bound(fsten_eb.addr() + fsten_d(f), fsten_eb.addr() + fsten_d(f + 1), s_eb[j]) - fsten_eb.addr(), n = 0; n < N; n++)
+            for (k = (int)(std::lower_bound(fsten_eb.addr() + fsten_d(f), fsten_eb.addr() + fsten_d(f + 1), s_eb[j]) - fsten_eb.addr()), n = 0; n < N; n++)
               phif_c(k, n) += Feb(i, j, n) / fs(f);
       }
 

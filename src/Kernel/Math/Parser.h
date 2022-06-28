@@ -22,6 +22,7 @@
 #include <Stack.h>
 #include <math.h>
 #include <string>
+#include <algorithm>
 class StringTokenizer;
 
 /////////////////////////////////////////////////////////////////////////=
@@ -183,7 +184,7 @@ inline void Parser::setVar(int i, double val)
 inline int Parser::searchVar(const char * sv)
 {
   std::string s(sv);
-  for (auto & c: s) c = toupper(c);
+  std::transform(s.begin(), s.end(), s.begin(), ::toupper);
   for (int i=0; i<ivar; i++)
     if ((les_var[i]->getString()).compare(s) == 0 ) return i;
   return -1;
@@ -192,7 +193,7 @@ inline int Parser::searchVar(const char * sv)
 inline int Parser::searchVar(const std::string& v)
 {
   std::string s(v);
-  for (auto & c: s) c = toupper(c);
+  std::transform(s.begin(), s.end(), s.begin(), ::toupper);
   for (int i=0; i<ivar; i++)
     if ((les_var[i]->getString()).compare(s) == 0 ) return i;
   return -1;

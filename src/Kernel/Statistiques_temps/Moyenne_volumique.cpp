@@ -21,6 +21,7 @@
 #include <Ref_Zone_VF.h>
 #include <Octree_Double.h>
 #include <communications.h>
+#include <algorithm>
 
 Implemente_instanciable(Moyenne_volumique,"Moyenne_volumique",Interprete);
 
@@ -81,7 +82,7 @@ Entree& Moyenne_volumique::readOn(Entree& is )
         }
       {
         std::string s(expression_parser_);
-        for (auto & c: s) c = toupper(c);
+        std::transform(s.begin(), s.end(), s.begin(), ::toupper);
         parser_.setString(s);
         parser_.setNbVar(Objet_U::dimension);
         parser_.addVar("x");

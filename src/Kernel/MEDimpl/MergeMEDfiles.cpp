@@ -210,7 +210,7 @@ Entree& MergeMEDfiles::interpreter(Entree& is)
   // Sort the iterations incrementally ...
   std::sort(lst_dt.begin(), lst_dt.end(), less_than_key());
 
-  int nb_steps = lst_dt.size();
+  int nb_steps = (int)lst_dt.size();
   Cerr << "Number of iterations detected : " << nb_steps << finl;
   Cerr << "Number of meshes detected : " <<  (int)meshes_names.size() << finl;
 
@@ -247,8 +247,8 @@ Entree& MergeMEDfiles::interpreter(Entree& is)
           cell_fields = GetCellFieldNamesOnMesh(listmed[0],meshes_names[msh]);
           node_fields = GetNodeFieldNamesOnMesh(listmed[0],meshes_names[msh]);
 
-          mergeFields(cell_fields,meshes_names,listmed,lst_dt,msh,iter,out_file,first_time, true);
-          mergeFields(node_fields,meshes_names,listmed,lst_dt,msh,iter,out_file,first_time, false);
+          mergeFields(cell_fields,meshes_names,listmed,lst_dt,(int)msh,(int)iter,out_file,first_time, true);
+          mergeFields(node_fields,meshes_names,listmed,lst_dt,(int)msh,(int)iter,out_file,first_time, false);
         }
     }
 

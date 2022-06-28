@@ -166,7 +166,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_som_ext() const
         for (auto &&op_sb : s_op_sb.second) //cotes distants
           {
             const Zone_PolyMAC_P0& o_zone = ref_cast(Zone_PolyMAC_P0, op_sb.first->equation().zone_dis().valeur());
-            for (iop = std::find(op_ext.begin(), op_ext.end(), op_sb.first) - op_ext.begin(), i = 0; i < o_zone.som_elem.get_list_size(op_sb.second); i++)
+            for (iop = (int)(std::find(op_ext.begin(), op_ext.end(), op_sb.first) - op_ext.begin()), i = 0; i < o_zone.som_elem.get_list_size(op_sb.second); i++)
               {
                 std::array<int, 2> arr = { iop, o_zone.som_elem(op_sb.second, i) };
                 s_pe.insert({arr});
@@ -179,7 +179,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_som_ext() const
               for (ok = 0, j = 0; !ok && j < f_s[iop].get().dimension(1) && (sb = f_s[iop](f, j)) >= 0; j++) ok |= sb == s_l;
               if (!ok || fcl[iop](f, 0) != 3) continue; //face ne touchant pas le sommet ou non Echange_contact
               const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, op_ext[iop]->equation().zone_Cl_dis()->les_conditions_limites()[fcl[iop](f, 1)].valeur());
-              int o_iop = std::find(op_ext.begin(), op_ext.end(), &cl.o_diff.valeur()) - op_ext.begin(), o_f = cl.f_dist(fcl[iop](f, 2)); //operateur / face de l'autre cote
+              int o_iop = (int)(std::find(op_ext.begin(), op_ext.end(), &cl.o_diff.valeur()) - op_ext.begin()), o_f = cl.f_dist(fcl[iop](f, 2)); //operateur / face de l'autre cote
               std::array<int, 4> arr = { iop < o_iop ? iop : o_iop, iop < o_iop ? f : o_f, iop < o_iop ? o_iop : iop, iop < o_iop ? o_f : f};
               s_pf.insert({arr}); //stocke dans l'ordre
             }
@@ -274,7 +274,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 {
   init_som_ext(), update_phif();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  int i, i_eq, i_s, il, j, k, k1, k2, kb, l, e, eb, f, fb, s, sb, sp, m, n, M, n_ext = op_ext.size(), p, pb, n_e, n_ef, nc, nl, n_m, d, db, D = dimension, sgn, sgn_l, nw, un = 1, rk, infoo, it, cv, nonlinear;
+  int i, i_eq, i_s, il, j, k, k1, k2, kb, l, e, eb, f, fb, s, sb, sp, m, n, M, n_ext = (int)op_ext.size(), p, pb, n_e, n_ef, nc, nl, n_m, d, db, D = dimension, sgn, sgn_l, nw, un = 1, rk, infoo, it, cv, nonlinear;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N; //composantes
   std::vector<std::reference_wrapper<const Zone_PolyMAC_P0>> zone; //zones
@@ -370,7 +370,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
               se_f[i].push_back(f); //faces connectees a (p, e)
               //couple (p, f) de la face : si la face est un Echange_contact, alors on choisit le couple du pb d'indice le plus bas
               std::array<int, 2> pf0 = {{ p, f }}, pf = m_pf.count(pf0) && m_pf[pf0] < pf0 ? m_pf[pf0] : pf0;
-              if ((l = std::lower_bound(s_pf.begin(), s_pf.end(), pf) - s_pf.begin()) == (int) s_pf.size() || s_pf[l] != pf) /* si (p, f) n'est pas dans s_pf, on l'ajoute */
+              if ((l = (int)(std::lower_bound(s_pf.begin(), s_pf.end(), pf) - s_pf.begin())) == (int) s_pf.size() || s_pf[l] != pf) /* si (p, f) n'est pas dans s_pf, on l'ajoute */
                 {
                   s_pf.insert(s_pf.begin() + l, pf); //(pb, face) -> dans s_pf
                   if (D < 3) surf_fs.insert(surf_fs.begin() + l, fs[p](f) / 2), vec_fs.insert(vec_fs.begin() + l, {{{ xs[p](sp, 0) - xv[p](f, 0), xs[p](sp, 1) - xv[p](f, 1), 0 }, { 0, 0, 0 }}}); //2D -> facile
@@ -384,14 +384,14 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                   }
                 }
             }
-        int n_f = s_pf.size(); //nombre de faces
+        int n_f = (int)s_pf.size(); //nombre de faces
 
         /* conversion de se_f en indices dans s_f */
         for (i = 0; i < n_e; i++)
           for (p = s_pe[i][0], j = 0; j < (int) se_f[i].size(); j++)
             {
               std::array<int, 2> pf0 = { p, se_f[i][j] }, pf = m_pf.count(pf0) && m_pf[pf0] < pf0 ? m_pf[pf0] : pf0;
-              se_f[i][j] = std::lower_bound(s_pf.begin(), s_pf.end(), pf) - s_pf.begin();
+              se_f[i][j] = (int)(std::lower_bound(s_pf.begin(), s_pf.end(), pf) - s_pf.begin());
             }
 
         /* volumes */
@@ -458,7 +458,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                           }
                 /* resolution -> DEGLSY */
                 nw = -1, F77NAME(dgelsy)(&nl, &nc, &un, &C(0, 0, 0), &nl, &Y(0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
-                for (W.resize(nw = W(0)), piv.resize(nc), n = 0; n < Nm; n++)
+                for (W.resize(nw = (int)(std::lround(W(0)))), piv.resize(nc), n = 0; n < Nm; n++)
                   piv = 0, F77NAME(dgelsy)(&nl, &nc, &un, &C(n, 0, 0), &nl, &Y(n, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
                 /* x_fs = xf + corrections */
                 for (x_fs.resize(Nm, n_f, D), n = 0; n < Nm; n++)
@@ -480,7 +480,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
               {
                 for (A = 0, B = 0, Ff = 0, Fec = 0, Qf = 0, Qec = 0, i = 0; i < n_e; i++)
                   {
-                    p = s_pe[i][0], e = s_pe[i][1], n_ef = se_f[i].size();
+                    p = s_pe[i][0], e = s_pe[i][1], n_ef = (int)se_f[i].size();
                     C.resize(Nm, n_ef, D), Y.resize(Nm, D, n_m = std::max(D, n_ef)), X.resize(Nm, n_ef, D);
                     /* gradient dans e */
                     if (essai < 2) /* essais 0 et 1 : gradient consistant */
@@ -492,7 +492,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                         for (Y = 0, n = 0; n < Nm; n++)
                           for (d = 0; d < D; d++) Y(n, d, d) = 1;
                         nw = -1, F77NAME(dgelsy)(&D, &n_ef, &D, &C(0, 0, 0), &D, &Y(0, 0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
-                        for (W.resize(nw = W(0)), piv.resize(n_m), n = 0; n < Nm; n++)
+                        for (W.resize(nw = (int)(std::lround(W(0)))), piv.resize(n_m), n = 0; n < Nm; n++)
                           piv = 0, F77NAME(dgelsy)(&D, &n_ef, &D, &C(n, 0, 0), &D, &Y(n, 0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
                         for (n = 0; n < Nm; n++)
                           for (j = 0; j < n_ef; j++)
@@ -595,7 +595,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                   }
                 /* resolution(s) -> DGELSY */
                 nw = -1, F77NAME(dgelsy)(&t_eq, &t_eq, &t_ec, &A(0, 0, 0), &t_eq, &B(0, 0, 0), &t_eq, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
-                for (piv.resize(t_eq), W.resize(nw = W(0)), n = 0; n < Nm; n++)
+                for (piv.resize(t_eq), W.resize(nw = (int)(std::lround(W(0)))), n = 0; n < Nm; n++)
                   piv = 0, F77NAME(dgelsy)(&t_eq, &t_eq, &t_ec, &A(n, 0, 0), &t_eq, &B(n, 0, 0), &t_eq, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
 
                 /* mise a jour des Tefs et convergence. Si nonlinear = 0, tout est lineaire -> pas besoin d'autres iterations */
@@ -631,7 +631,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                 for (j = 0; j <= i; j++) A(n, i, j) = A(n, j, i) = (A(n, i, j) + A(n, j, i)) / 2;
             /* v.p. la plus petite : DSYEV */
             nw = -1, F77NAME(DSYEV)("N", "U", &t_e, &A(0, 0, 0), &t_e, S.addr(), &W(0), &nw, &infoo);
-            for (W.resize(nw = W(0)), S.resize(t_e), cv = 1, n = 0; n < Nm; n++)
+            for (W.resize(nw = (int)(std::lround(W(0)))), S.resize(t_e), cv = 1, n = 0; n < Nm; n++)
               F77NAME(DSYEV)("N", "U", &t_e, &A(n, 0, 0), &t_e, &S(0), &W(0), &nw, &infoo), cv &= S(0) > -1e-8 * vol_s;
             if (cv) break;
           }

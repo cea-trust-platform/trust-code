@@ -113,7 +113,7 @@ Char_ptr::~Char_ptr()
 //    Exemple : Char_ptr("hello").longueur() == 6
 int Char_ptr::longueur() const
 {
-  return (strlen(nom_)+1);
+  return ((int)strlen(nom_)+1);
 }
 
 // Description:

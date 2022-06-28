@@ -87,7 +87,7 @@ const char* SChaine::get_str() const
 unsigned SChaine::get_size() const
 {
   const ostringstream& os = static_cast< const ostringstream& >(get_ostream());
-  return os.str().size();
+  return (unsigned)os.str().size();
 }
 
 int SChaine::set_bin(int bin)

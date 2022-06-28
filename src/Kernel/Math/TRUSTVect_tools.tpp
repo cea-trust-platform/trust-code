@@ -158,7 +158,7 @@ inline _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_
           if (IS_MAX_ABS || IS_MIN_ABS)
             {
               _TYPE_ xx;
-              xx = std::is_same<_TYPE_, double>::value ? std::fabs(x) : std::abs(x);
+              xx = std::is_same<_TYPE_, double>::value ? (_TYPE_)std::fabs(x) : (_TYPE_)std::abs(x);
               if ((IS_MAX_ABS && xx > min_max_val) || (IS_MIN_ABS && xx < min_max_val)) min_max_val = xx;
             }
 

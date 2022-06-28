@@ -187,7 +187,8 @@ Entree& Entree::operator_template(_TYPE_& ob)
               std::cerr << "Can't read this int64 binary file with an int32 binary: overflow." << std::endl;
               Process::exit();
             }
-          ob = pr;
+          // It's ok, we passed the check above, we can safely downcast:
+          ob = (_TYPE_)pr;
 #endif
         }
       else

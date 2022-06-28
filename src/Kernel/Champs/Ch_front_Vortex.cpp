@@ -116,7 +116,7 @@ int Ch_front_Vortex::my_rand( )
 {
   if (first_rand == 1)
     {
-      srand(time (NULL));
+      srand((int)time (NULL));
       first_rand = 0;
     }
   return (rand ());

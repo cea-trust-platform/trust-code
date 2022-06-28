@@ -92,7 +92,7 @@ int htoi(const char * szChaine)
   if (szChaine == NULL)
     return -1;
   // On calcule la longueur de la chaine
-  iLength = strlen(szChaine);
+  iLength = (int)strlen(szChaine);
 
   // On met la chaine en majuscule dans une nouvelle chaine (allouee par strdup)
   char * szHexaString = strdup(szChaine);
@@ -170,8 +170,8 @@ inline void va_a_la_parenthese_fermante(EFichier& fic)
       fic >> lu;
       const char* chaine = lu.getChar();
       Process::Journal()<<"|"<<chaine<<"|"<<finl;
-      int iLength = strlen(chaine);
-      for (int i=0; i<iLength; i++)
+      size_t iLength = strlen(chaine);
+      for (size_t i=0; i<iLength; i++)
         {
           char c = chaine[i];
           switch(c)
@@ -201,8 +201,8 @@ inline void va_a_la_parenthese_ouvrante(EFichier& fic)
     {
       fic >> lu;
       const char* chaine = lu.getChar();
-      int iLength = strlen(chaine);
-      for (int i=0; i<iLength; i++)
+      size_t iLength = strlen(chaine);
+      for (size_t i=0; i<iLength; i++)
         {
           char c = chaine[i];
           switch(c)

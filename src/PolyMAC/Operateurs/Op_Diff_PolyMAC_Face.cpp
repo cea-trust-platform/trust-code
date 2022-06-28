@@ -100,7 +100,7 @@ void Op_Diff_PolyMAC_Face::dimensionner_blocs_ext(int aux_only, matrices_t matri
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
   update_nu();
   ConstDoubleTab_parts p_inco(ch.valeurs());
-  int i, j, k, e, f, fb, a, ab, s, n, N = ch.valeurs().line_size(), nf_tot = zone.nb_faces_tot(), d, db, D = dimension, N_nu = nu_.line_size(), semi = semi_impl.count(nom_inco);
+  int i, j, k, e, f, fb, a, ab, s, n, N = ch.valeurs().line_size(), nf_tot = zone.nb_faces_tot(), d, db, D = dimension, N_nu = nu_.line_size(), semi = (int)semi_impl.count(nom_inco);
 
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
@@ -173,7 +173,7 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   const std::string& nom_inco = ch.le_nom().getString();
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
   update_nu();
-  int i, j, k, e, f, fb, a, ab, s, n, N = ch.valeurs().line_size(), nf_tot = zone.nb_faces_tot(), d, db, D = dimension, N_nu = nu_.line_size(), semi = semi_impl.count(nom_inco);
+  int i, j, k, e, f, fb, a, ab, s, n, N = ch.valeurs().line_size(), nf_tot = zone.nb_faces_tot(), d, db, D = dimension, N_nu = nu_.line_size(), semi = (int)semi_impl.count(nom_inco);
   double vecz[3] = { 0, 0, 1 }, v_cl[3], t = equation().schema_temps().temps_courant();
   const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &xs = zone.zone().domaine().coord_sommets(), &xa = D < 3 ? xs : zone.xa(), &ta = zone.ta(), &nf = zone.face_normales(),
                    &inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : ch.valeurs();

@@ -64,7 +64,7 @@ Entree& Champ_front_Tabule_lu::readOn(Entree& is)
             Cerr << "The file " << column_file << " contains non double values at line " << l << " !" << finl;
             Process::exit();
           }
-        const int nb_col_lues = result.size();
+        const int nb_col_lues = (int)result.size();
         if (nb_col_lues != (nb_comp_ + 1))
           {
             Cerr << "The file " << column_file << " should contain " << nb_comp_ + 1 << " columns but " << nb_col_lues << " have been detected on line " << l << finl;

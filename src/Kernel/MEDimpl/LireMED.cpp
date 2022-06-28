@@ -223,7 +223,7 @@ void test_version(Nom& nom)
   Nom nom2 ;
 
   char* nomtmp = new char[strlen(nom)+1];
-  int compteur=strlen(nom);
+  int compteur=(int)strlen(nom);
 
   strcpy(nomtmp,nom);
 
@@ -1459,7 +1459,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
 
 
       // Detect Subzones (based on group of volumes);
-      unsigned nb_volume_groups = file->getGroupsOnSpecifiedLev(0).size();
+      unsigned nb_volume_groups = (unsigned)file->getGroupsOnSpecifiedLev(0).size();
       if (nb_volume_groups>0 && Process::je_suis_maitre() && nom_dom_trio!=Nom())
         {
           SFichier jdd_seq(nom_dom_trio + "_ssz.geo");
@@ -1577,30 +1577,30 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
             {
               Cerr << "Reading groups at level -1:" << finl;
               std::vector<std::string> groups = file->getGroupsOnSpecifiedLev(-1);
-              int size = groups.size();
-              for (int i=0; i<size; i++)
+              size_t size = groups.size();
+              for (size_t i=0; i<size; i++)
                 {
                   MCAuto<DataArrayInt> ids(file->getGroupArr(-1, groups[i], false));
                   int nb_faces = (int) ids->getNbOfElems();
-                  int nb_families = file->getFamiliesIdsOnGroup(groups[i]).size();
+                  size_t nb_families = file->getFamiliesIdsOnGroup(groups[i]).size();
                   Cerr << "group_name=" << groups[i] << " with " << nb_faces << " faces on ";
                   Cerr << nb_families << " families (";
-                  for (int j=0; j<nb_families; j++)
+                  for (size_t j=0; j<nb_families; j++)
                     Cerr << file->getFamiliesIdsOnGroup(groups[i])[j] << " ";
                   Cerr << ")" << finl;
                 }
               Cerr << "Reading families at level -1:" << finl;
               std::vector<std::string> families = file->getFamiliesNames();
               size = families.size();
-              for (int i = 0; i < size; i++)
+              for (size_t i = 0; i < size; i++)
                 {
                   MCAuto<DataArrayInt> ids(file->getFamilyArr(-1 /* faces */, families[i], false));
                   int nb_faces = (int) ids->getNbOfElems();
-                  int nb_groups = file->getGroupsOnFamily(families[i]).size();
+                  size_t nb_groups = file->getGroupsOnFamily(families[i]).size();
                   int family_id = file->getFamilyId(families[i]);
                   Cerr << "family_name=" << families[i] << " (family id=" << family_id << ") with " << nb_faces << " faces on ";
                   Cerr << nb_groups << " groups (";
-                  for (int j=0; j<nb_groups; j++)
+                  for (size_t j=0; j<nb_groups; j++)
                     Cerr << file->getGroupsOnFamily(families[i])[j] << " ";
                   Cerr << ")" << finl;
                 }
@@ -1608,8 +1608,8 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
           Cerr << "Reading boundaries:" << finl;
           // Lecture des familles
           std::vector<std::string> families = file->getFamiliesNames();
-          int size = families.size();
-          for (int i = 0; i < size; i++)
+          size_t size = families.size();
+          for (size_t i = 0; i < size; i++)
             {
               MCAuto<DataArrayInt> ids(file->getFamilyArr(-1 /* faces */, families[i], false));
               int nb_faces = (int) ids->getNbOfElems();
@@ -1636,7 +1636,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
                       else
                         for (unsigned long k=0; k<groups.size(); k++)
                           {
-                            int nb_families = file->getFamiliesIdsOnGroup(groups[k]).size();
+                            size_t nb_families = file->getFamiliesIdsOnGroup(groups[k]).size();
                             if (nb_families==1) nom_bord = groups[k];
                           }
                     }

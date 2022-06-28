@@ -523,7 +523,7 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
         }
 
       std::vector<std::string> vbloc(i_bloc.begin(), i_bloc.end()), vdep(dep.begin(), dep.end()); //sous forme de liste
-      int nv = vbloc.size(), nd = vdep.size(), nb = 0; //nombre de variables du bloc, de dependances, taille totale
+      int nv = (int)vbloc.size(), nd = (int)vdep.size(), nb = 0; //nombre de variables du bloc, de dependances, taille totale
       std::vector<int> size, off_l, off_g; //par (variable, bloc) : taille dans le systeme local, offset dans le systeme local, offset dans les systemes globaux
       for (auto && i_b : bloc) off_l.push_back(nb), size.push_back(dims[i_b][1]), off_g.push_back(offs[i_b]), nb += size.back();
 

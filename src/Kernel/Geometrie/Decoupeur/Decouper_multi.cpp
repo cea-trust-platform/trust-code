@@ -139,7 +139,7 @@ Entree& Decouper_multi::interpreter(Entree& is)
       Static_Int_Lists som_raccord;
       ArrOfInt sizes(v_dom[d]->nb_som()); //tailles des listes par sommet
       sizes = 0;
-      for (auto && s_p : v_sp[d]) sizes[s_p.first] = s_p.second.size();
+      for (auto && s_p : v_sp[d]) sizes[s_p.first] = (int)s_p.second.size();
       som_raccord.set_list_sizes(sizes);
       for (auto && s_p : v_sp[d])
         {

@@ -292,7 +292,7 @@ void Zone_PolyMAC::M1(const DoubleTab *nu, int e, DoubleTab& m1) const
       for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++) //3D: une contribution par couple (f, a)
         {
           sb = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0); //autre sommet
-          a = som_arete[s].at(sb), k = std::find(&e_a(e, 0), &e_a(e, 0) + n_a, a) - &e_a(e, 0); //arete, son indice dans e_a
+          a = som_arete[s].at(sb), k = (int)(std::find(&e_a(e, 0), &e_a(e, 0) + n_a, a) - &e_a(e, 0)); //arete, son indice dans e_a
           auto vec = cross(D, D, &xf(f, 0), &xa_(a, 0), &xe(e, 0), &xe(e, 0)); //non oriente
           for (sgn = dot(&vec[0], &ta_(a, 0)) >= 0 ? 1 : -1, d = 0; d < D; d++) S_ea(k, d) += sgn * vec[d] / 2;
         }
@@ -337,7 +337,7 @@ void Zone_PolyMAC::W1(const DoubleTab *nu, int e, DoubleTab& w1) const
       for (j = 0; j < f_s.dimension(1) && (s = f_s(f, j)) >= 0; j++) //3D: une contribution par couple (f, a)
         {
           sb = f_s(f, j + 1 < f_s.dimension(1) && f_s(f, j + 1) >= 0 ? j + 1 : 0); //autre sommet
-          a = som_arete[s].at(sb), k = std::find(&e_a(e, 0), &e_a(e, 0) + n_a, a) - &e_a(e, 0); //arete, son indice dans e_a
+          a = som_arete[s].at(sb), k = (int)(std::find(&e_a(e, 0), &e_a(e, 0) + n_a, a) - &e_a(e, 0)); //arete, son indice dans e_a
           auto vec = cross(D, D, &xf(f, 0), &xa_(a, 0), &xe(e, 0), &xe(e, 0)); //non oriente
           for (sgn = dot(&vec[0], &ta_(a, 0)) >= 0 ? 1 : -1, d = 0; d < D; d++) S_ea(k, d) += sgn * vec[d] / 2;
         }

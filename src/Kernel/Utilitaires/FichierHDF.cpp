@@ -80,7 +80,7 @@ void FichierHDF::create(Nom filename)
 void FichierHDF::open(Nom filename, bool readOnly)
 {
   prepare_file_props();
-  hid_t st = readOnly ? H5F_ACC_RDONLY : H5F_ACC_RDWR;
+  unsigned st = readOnly ? H5F_ACC_RDONLY : H5F_ACC_RDWR;
   file_id_ = H5Fopen(filename, st, file_access_plst_);
   hdf5_error<hid_t>(file_id_);
   Cerr << "HDF5 " << filename << " file opened !" << finl;
@@ -138,7 +138,7 @@ void FichierHDF::read_dataset(Nom dataset_basename, int proc_rank, Entree_Brute&
 
   // Put extracted data in a standard Entree_Brute from TRUST, that we then use to feed TRUST objects
   entree.set_different_int_size(is_different_int_size_);
-  entree.set_data(dset_data, sz);  // data are copied into the Entree
+  entree.set_data(dset_data, (unsigned) sz);  // data are copied into the Entree
 
   delete[] dset_data;
   H5Dclose(dataset_id);

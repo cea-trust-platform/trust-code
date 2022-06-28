@@ -407,8 +407,8 @@ ArrOfInt& Zone::chercher_elements(const DoubleTab& positions,
       // Met en cache
       cached_positions_.add(positions);
       cached_elements_.add(elements);
-      cached_memory += positions.size_array() * sizeof(double);
-      cached_memory += elements.size_array() * sizeof(int);
+      cached_memory += positions.size_array() * (int)sizeof(double);
+      cached_memory += elements.size_array() * (int)sizeof(int);
       if (cached_memory>1e7)   // 10Mo
         {
           Cerr << 2 * cached_positions_.size() << " arrays cached in memory for Zone::chercher_elements(...): ";

@@ -150,7 +150,7 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
 {
   if (!op_ext_init_) init_op_ext();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  int n_ext = op_ext.size(); //pour la thermique monolithique
+  int n_ext = (int)op_ext.size(); //pour la thermique monolithique
 
   std::vector<Matrice_Morse *> mat(n_ext);
   std::vector<int> N(n_ext); //nombre de composantes par probleme de op_ext
@@ -179,7 +179,7 @@ void Op_Diff_VDF_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   if (!op_ext_init_) init_op_ext();
 
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
-  int n_ext = op_ext.size(); //pour la thermique monolithique
+  int n_ext = (int)op_ext.size(); //pour la thermique monolithique
   std::vector<Matrice_Morse *> mat(n_ext);
   std::vector<const DoubleTab *> inco(n_ext); //inconnues
 

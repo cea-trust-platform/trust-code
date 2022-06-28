@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_t.h>
+#include <algorithm>
 
 Implemente_instanciable(Champ_Fonc_t,"Champ_Fonc_t",Champ_Uniforme_inst);
 
@@ -60,7 +61,7 @@ Entree& Champ_Fonc_t::readOn(Entree& is)
       is >> expression;
       const char* s = expression.getChar();
       std::string ss(s);
-      for (auto & c: ss) c = toupper(c);
+      std::transform(ss.begin(), ss.end(), ss.begin(), ::toupper);
       ft[i_parser].setNbVar(1);
       ft[i_parser].setString(ss);
       ft[i_parser].addVar("t");

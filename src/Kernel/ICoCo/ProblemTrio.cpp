@@ -682,7 +682,7 @@ void ProblemTrio::setInputMEDDoubleField(const std::string& name, const MEDDoubl
   //fieldArr->decrRef();
 
   // Assigning proper component names
-  const unsigned int nbcomp = fieldArr->getNumberOfComponents();
+  const unsigned int nbcomp = (int)fieldArr->getNumberOfComponents();
   std::vector<std::string> compo_names = fieldArr->getInfoOnComponents();
 
   REF(Field_base) ch = pb->findInputField(Nom(name));

@@ -19,6 +19,7 @@
 #include <math.h>
 #include <string.h>
 #include <sstream>
+#include <algorithm>
 
 //using namespace std;
 using std::stringstream;
@@ -102,7 +103,7 @@ int StringTokenizer::check_GRP()
   const char* ch = str.c_str();
   int nb_o=0;
   int nb_f=0;
-  int sz = strlen(ch);
+  int sz = (int)strlen(ch);
   for (int i=0; i<sz; i++)
     {
       if (*(ch+i)=='(')
@@ -131,7 +132,7 @@ int StringTokenizer::nextToken(void)
           if ( ((reste[0] >= '0') && ( reste[0] <= '9')) || (reste[0] == '.')  )
             {
               // ajout OC pour provoquer une erreur avec 2x
-              int ind=strlen(reste)-1;
+              int ind=(int)strlen(reste)-1;
               if ( ((reste[ind] < '0') || (reste[ind] > '9')) && (reste[ind] != '.') )
                 {
                   Cerr << "The syntax " << reste << " is not allowed." << finl;
@@ -151,7 +152,7 @@ int StringTokenizer::nextToken(void)
             {
               type=STRING;
               sval = reste;
-              for (auto & c: sval) c = toupper(c);
+              std::transform(sval.begin(), sval.end(), sval.begin(), ::toupper);
             }
           while ((*reste++) != '\0') ;
           reste--;
@@ -165,7 +166,7 @@ int StringTokenizer::nextToken(void)
   else
     {
       Char_ptr token;
-      token.allocate(tmp-reste);
+      token.allocate((int)(tmp-reste));
 
       char* tok = token.getChar();;
       int j=0;
@@ -181,7 +182,7 @@ int StringTokenizer::nextToken(void)
 
           type = NUMBER;
           stringstream stream;
-          ind = tmp-reste-1;
+          ind = (int)(tmp-reste-1l);
           reste = tmp;
           if (tok[ind] == 'e' || tok[ind] == 'E' )
             {
@@ -256,7 +257,7 @@ int StringTokenizer::nextToken(void)
         {
           type=STRING;
           sval = tok;
-          for (auto & c: sval) c = toupper(c);
+          std::transform(sval.begin(), sval.end(), sval.begin(), ::toupper);
           reste=tmp;
         }
       // delete[] tok;
@@ -298,7 +299,7 @@ char* StringTokenizer::find_sep(char* ch, int& type_sep, int& length)
   int pos=100000;
   if (trouve_tmp != NULL)
     {
-      pos = trouve_tmp-ch;
+      pos = (int)(trouve_tmp-ch);
       type_sep=GRP;
       length=1;
       trouve=trouve_tmp;
@@ -306,7 +307,7 @@ char* StringTokenizer::find_sep(char* ch, int& type_sep, int& length)
   trouve_tmp = strstr(ch, ")");
   if ((trouve_tmp != NULL) && (trouve_tmp-ch<pos))
     {
-      pos = trouve_tmp-ch;
+      pos = (int)(trouve_tmp-ch);
       type_sep=ENDGRP;
       length=1;
       trouve=trouve_tmp;
@@ -316,20 +317,20 @@ char* StringTokenizer::find_sep(char* ch, int& type_sep, int& length)
       trouve_tmp = strstr(ch, op_sep[i]);
       if ((trouve_tmp != NULL) && (trouve_tmp-ch<pos))
         {
-          pos = trouve_tmp-ch;
+          pos = (int)(trouve_tmp-ch);
           type_sep=i;
-          length=strlen(op_sep[i]);
+          length=(int)strlen(op_sep[i]);
           trouve=trouve_tmp;
         }
     }
   for (int i=0; i<StringTokenizer::nb_op_bis; i++)
     {
       trouve_tmp = strstr(ch, keyword_op_bis[i]);
-      if ((trouve_tmp != NULL) && (trouve_tmp-ch<pos))
+      if ((trouve_tmp != NULL) && ((int)(trouve_tmp-ch)<pos))
         {
-          pos = trouve_tmp-ch;
+          pos = (int)(trouve_tmp-ch);
           type_sep=i;
-          length=strlen(keyword_op_bis[i]);
+          length=(int)strlen(keyword_op_bis[i]);
           trouve=trouve_tmp;
         }
     }

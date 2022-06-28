@@ -35,7 +35,7 @@ TablePrinter::~TablePrinter()
 
 int TablePrinter::get_num_columns() const
 {
-  return column_headers_.size();
+  return (int)column_headers_.size();
 }
 
 void TablePrinter::set_separator(const std::string& separator)

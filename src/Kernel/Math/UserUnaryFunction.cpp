@@ -15,6 +15,7 @@
 #include <UserUnaryFunction.h>
 // il faut include LecFicDiffuse.h pour la definition du label AVEC_PARSER
 #include <LecFicDiffuse.h>
+#include <algorithm>
 
 Implemente_instanciable(UserUnaryFunction,"UserUnaryFunction",UnaryFunction);
 
@@ -92,7 +93,7 @@ void UserUnaryFunction::setFunction(Nom& name, Nom& inco, Nom& func)
   inconnue = inco;
 
   std::string sfunc(func.getString());
-  for (auto & c: sfunc) c = toupper(c);
+  std::transform(sfunc.begin(), sfunc.end(), sfunc.begin(), ::toupper);
 
   p.setString(sfunc);
   p.addVar(inco.getChar());

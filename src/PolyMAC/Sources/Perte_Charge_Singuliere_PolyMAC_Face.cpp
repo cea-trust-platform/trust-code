@@ -115,7 +115,8 @@ void Perte_Charge_Singuliere_PolyMAC_Face::ajouter_blocs(matrices_t matrices, Do
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
-  int i, j, e, f, n, N = equation().inconnue().valeurs().line_size(), poly_v2 = sub_type(Zone_PolyMAC_P0, zone), semi = semi_impl.count(nom_inco), d, D = dimension, nf_tot = zone.nb_faces_tot();
+  int i, j, e, f, n, N = equation().inconnue().valeurs().line_size();
+  int poly_v2 = sub_type(Zone_PolyMAC_P0, zone), semi = (int)semi_impl.count(nom_inco), d, D = dimension, nf_tot = zone.nb_faces_tot();
   DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
   for (i = 0; i < num_faces.size(); i++)
     if ((f = num_faces(i)) < zone.nb_faces())

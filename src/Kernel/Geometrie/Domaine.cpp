@@ -574,7 +574,7 @@ void Domaine::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
   faces_mesh_ = mesh_->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx);
   // Renumber faces to have the same numbering than Domaine_dis
   std::size_t size = faces_mesh_->getNumberOfCells();
-  IntVect renum(size);
+  IntVect renum((int)size);
   // Compute Center of Mass
   MCAuto<DataArrayDouble> xv_med = faces_mesh_->computeCellCenterOfMass();
   // On boucle sur les elements des tableaux Zone_VF::elem_faces et desc

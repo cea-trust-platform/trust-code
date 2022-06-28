@@ -153,7 +153,7 @@ void ArrOfFloat::invalidate(int first_element, int nb_elements)
      int __l __attribute__((__mode__(__DI__)));
      float __d; }) { __l: 0x7ff7ffffffffffffULL }).__d);; */
   // static const float VALEUR_INVALIDE = 0x7ff7ffffffffffffULL ;
-  static const float VALEUR_INVALIDE = nan("1");
+  static const float VALEUR_INVALIDE = (float)nan("1");
 
   const int n = first_element + nb_elements;
   assert(first_element >= 0 && n <= memory_size_);

@@ -177,7 +177,7 @@ inline void Parser_U::setString(const Nom& nom)
 {
   const char *s =  nom.getChar();
   std::string ss(s);
-  for (auto & c: ss) c = toupper(c);
+  std::transform(ss.begin(), ss.end(), ss.begin(), ::toupper);
   setString(ss);
 }
 

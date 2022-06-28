@@ -66,7 +66,7 @@ int Lec_Diffuse_base::get(char *buf, int bufsize)
       assert(is.get_error_action() == ERROR_CONTINUE);
       int ok = is.get(buf, bufsize);
       if (ok)
-        l = strlen(buf) + 1;
+        l = (int)strlen(buf) + 1;
     }
   else if (!diffuse_)
     {

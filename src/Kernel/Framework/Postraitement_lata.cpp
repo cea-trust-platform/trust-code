@@ -51,7 +51,7 @@ const Nom& Postraitement_lata::extension_lata()
 //  on enleve les caracteres avant le dernier /
 const char * Postraitement_lata::remove_path(const char * filename)
 {
-  int i = strlen(filename);
+  int i = (int)strlen(filename);
   while (i > 0 && filename[i-1] != '/')
     i--;
   return filename + i;

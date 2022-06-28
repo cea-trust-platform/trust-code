@@ -217,7 +217,7 @@ const char * Format_Post_Lata::extension_lata()
 //  on enleve les caracteres avant le dernier /
 const char * Format_Post_Lata::remove_path(const char * filename)
 {
-  int i = strlen(filename);
+  int i = (int)strlen(filename);
   while (i > 0 && filename[i-1] != '/')
     i--;
   return filename + i;
@@ -352,7 +352,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
       auto *tmp = new float[tab_size]; // No ArrOfFloat in TRUST
       const double *data = tab.addr();
       for (int i = 0; i < tab_size; i++)
-        tmp[i] = data[i];
+        tmp[i] = (float)data[i];       // downcast to float
       sfichier.put(tmp, tab_size, line_size);
       delete[] tmp;
       // Fin de bloc fortran
@@ -375,7 +375,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
 
           // Conversion du bloc en float:
           for (int j = 0; j < j_max; j++)
-            tmp[j] = data[i + j];
+            tmp[j] = (float)data[i + j];
 
           // Ecriture avec retour a la ligne a chaque ligne du tableau
           sfichier.put(tmp, j_max, line_size);

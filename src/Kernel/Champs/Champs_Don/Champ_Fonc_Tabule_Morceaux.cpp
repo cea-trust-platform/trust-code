@@ -79,7 +79,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
               ch_lu.noms_champs_parametre_.push_back(nom.getString());
             }
         }
-      const int nb_param = ch_lu.noms_champs_parametre_.size();
+      const int nb_param = (int)ch_lu.noms_champs_parametre_.size();
 
       if (old_table_syntax_ && ch_lu.noms_pbs_.size() != 0 && nb_param != 1)
         {
@@ -125,7 +125,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
           Process::exit();
         }
 
-      for (int e = 0; e < ssz.nb_elem_tot(); e++) table_idx(ssz(e)) = champs_lus.size();
+      for (int e = 0; e < ssz.nb_elem_tot(); e++) table_idx(ssz(e)) = (int)champs_lus.size();
       champs_lus.push_back(ch_lu);
       is >> nom;
     }

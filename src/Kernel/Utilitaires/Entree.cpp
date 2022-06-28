@@ -171,7 +171,7 @@ void convert_to(const char *s, int& ob)
 {
   errno = 0;
   char * errorptr = 0;
-  ob = strtol(s, &errorptr, 0 /* base 10 par defaut */);
+  ob = (int)strtol(s, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0) error_convert(s,"int");
 }
 

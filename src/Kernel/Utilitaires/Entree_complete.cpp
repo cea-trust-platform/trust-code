@@ -22,7 +22,7 @@
 Entree_complete::Entree_complete(const char* str_entree1, Entree& entree2)
 {
   num_entree_ = 0;
-  str_size_ = strlen(str_entree1);
+  str_size_ = (int)strlen(str_entree1);
   chaine_str_.init(str_entree1);
   Process::Journal() << "Construction of a Entree_complete with : " << str_entree1 << finl;
   entree2_ = &entree2;
@@ -41,7 +41,7 @@ Entree& Entree_complete::get_input()
 {
   if (num_entree_ == 0)
     {
-      int pos = chaine_str_.get_istream().tellg();
+      int pos = (int)chaine_str_.get_istream().tellg();
       if (pos < str_size_ && pos >= 0)
         return chaine_str_;
       num_entree_ = 1;

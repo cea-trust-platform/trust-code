@@ -671,7 +671,7 @@ void Mod_turb_hyd_base::limiter_viscosite_turbulente()
       mp_sum_for_each_item(tmp);
       /*      compt=mp_sum(compt);
             size=mp_sum(size); */
-      double pourcent = 100*(float(tmp[0])/tmp[1]);
+      double pourcent = 100.0*(double(tmp[0])/double(tmp[1]));
       if (je_suis_maitre() && pourcent>0)
         Cout<<"\nTurbulent viscosity has been limited on "<<pourcent<<" % of cells mesh."<<finl;
     }

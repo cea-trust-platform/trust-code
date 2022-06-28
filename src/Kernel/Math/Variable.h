@@ -16,6 +16,7 @@
 #define Variable_included
 
 #include <string>
+#include <algorithm>
 #include <Nom.h>
 
 class Variable
@@ -54,7 +55,7 @@ public:
     value = 0.;
     s = new std::string(ss);
     // int length = s->size();
-    for (auto & c: *s) c = toupper(c);
+    std::transform(s->begin(), s->end(), s->begin(), ::toupper);
   }
 
 

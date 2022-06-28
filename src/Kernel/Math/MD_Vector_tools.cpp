@@ -662,7 +662,7 @@ void MD_Vector_tools::restore_vector_with_md(DoubleVect& v, Entree& is)
 
 MD_Vector MD_Vector_tools::extend(const MD_Vector& src, extra_item_t& items)
 {
-  if (Process::mp_max(items.size()) == 0) return src; //rien a faire
+  if (Process::mp_max((int)items.size()) == 0) return src; //rien a faire
   /* remplissage de : recep[p] -> liste des items qu'on veut recevoir du processeur p
                       items[{p, i}] -> ou on va placer chaque item dans le MD_Vector elargi */
   int i, j, p, nb_items_tot = src.valeur().get_nb_items_tot(), idx = nb_items_tot;
@@ -697,15 +697,15 @@ MD_Vector MD_Vector_tools::extend(const MD_Vector& src, extra_item_t& items)
     if (nrecv[p]) map[p][2].insert(map[p][2].end(), { idx, idx + nrecv[p] });
 
   /* reconstruction de tableaux pour MD_Vector_std */
-  ArrOfInt pe_voisins(map.size());
-  ArrsOfInt items_to_send(map.size()), items_to_recv(map.size()), blocs_to_recv(map.size());
+  ArrOfInt pe_voisins((int)map.size());
+  ArrsOfInt items_to_send((int)map.size()), items_to_recv((int)map.size()), blocs_to_recv((int)map.size());
   for (p = 0, i = 0; p < Process::nproc(); nb_items_tot += nrecv[p],  p++)
     if (map.count(p))
       {
         pe_voisins[i] = p;
-        items_to_send[i].resize(map[p][0].size()), std::copy(map[p][0].begin(), map[p][0].end(), items_to_send[i].addr());
-        items_to_recv[i].resize(map[p][1].size()), std::copy(map[p][1].begin(), map[p][1].end(), items_to_recv[i].addr());
-        blocs_to_recv[i].resize(map[p][2].size()), std::copy(map[p][2].begin(), map[p][2].end(), blocs_to_recv[i].addr());
+        items_to_send[i].resize((int)map[p][0].size()), std::copy(map[p][0].begin(), map[p][0].end(), items_to_send[i].addr());
+        items_to_recv[i].resize((int)map[p][1].size()), std::copy(map[p][1].begin(), map[p][1].end(), items_to_recv[i].addr());
+        blocs_to_recv[i].resize((int)map[p][2].size()), std::copy(map[p][2].begin(), map[p][2].end(), blocs_to_recv[i].addr());
         i++;
       }
 

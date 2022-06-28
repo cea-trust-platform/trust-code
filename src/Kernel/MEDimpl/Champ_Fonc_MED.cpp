@@ -643,7 +643,7 @@ ArrOfDouble Champ_Fonc_MED::lire_temps_champ(const std::string& fileName, const 
   MCAuto<MEDFileFieldMultiTS> ft1(MEDFileFieldMultiTS::New(fileName, fieldName));
   std::vector<double> tps;
   time_steps_ = ft1->getTimeSteps(tps);
-  unsigned int nn = tps.size();
+  unsigned int nn = (unsigned)tps.size();
   temps_sauv.resize_array(nn);
   for (unsigned it = 0; it < nn; it++)
     temps_sauv[it] = tps[it];

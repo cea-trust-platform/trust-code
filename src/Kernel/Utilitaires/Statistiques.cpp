@@ -156,7 +156,7 @@ public:
   }
   double second() const
   {
-    return (double) time_.tv_sec + 0.000001 * time_.tv_usec;
+    return (double) time_.tv_sec + 0.000001 * (double) time_.tv_usec;
   }
 
 private:
@@ -409,8 +409,8 @@ Stat_Counter_Id Statistiques::new_counter(int level,
       assert(0);
       Process::exit();
     }
-  int length = strlen(description);
-  if (family) length += strlen(family);
+  int length = (int)strlen(description);
+  if (family) length += (int)strlen(family);
   if (length > BUFLEN - 10)
     {
       Cerr << "Statistiques::new_counter : description or family : string too long"
@@ -729,8 +729,8 @@ void Statistiques::dump(const char * message, int mode_append)
       else
         {
           time = si.counter_time[i].second();
-          nb = si.counter_nb[i];
-          quantity = si.counter_quantity[i];
+          nb = (double) si.counter_nb[i];
+          quantity = (double) si.counter_quantity[i];
         }
 
       int level = si.counter_level[i];
@@ -807,8 +807,8 @@ void Statistiques::dump(const char * message, int mode_append)
                   else
                     {
                       time += si.counter_time[i].second();
-                      nb += si.counter_nb[i];
-                      quantity += si.counter_quantity[i];
+                      nb += (double) si.counter_nb[i];
+                      quantity += (double) si.counter_quantity[i];
                     }
 
                   avg_time_per_step += si.counters_avg_min_max_var_per_step[i][1];
@@ -923,8 +923,8 @@ void Statistiques::get_stats(const Stat_Counter_Id& counter_id,
   int id = counter_id.id_;
   assert(id < si.nb_counters);
   result.time = si.counter_time[id].second();
-  result.count = si.counter_nb[id];
-  result.quantity = si.counter_quantity[id];
+  result.count = (double) si.counter_nb[id];
+  result.quantity = (double) si.counter_quantity[id];
   result.compute_min_max_avg();
 }
 
@@ -943,8 +943,8 @@ void Statistiques::get_stats_familly(const char * familly, Stat_Results& result)
           if (strcmp(si.family[i], familly) == 0)
             {
               result.time += si.counter_time[i].second();
-              result.count += si.counter_nb[i];
-              result.quantity += si.counter_quantity[i];
+              result.count += (double) si.counter_nb[i];
+              result.quantity += (double) si.counter_quantity[i];
             }
         }
     }
@@ -957,8 +957,8 @@ void Statistiques::cumulate_stats(int counter_id, Stat_Results& result)
   Stat_Internals& si = *stat_internals;
   assert(counter_id < si.nb_counters);
   result.time += si.counter_time[counter_id].second();
-  result.count += si.counter_nb[counter_id];
-  result.quantity += si.counter_quantity[counter_id];
+  result.count += (double) si.counter_nb[counter_id];
+  result.quantity += (double) si.counter_quantity[counter_id];
 }
 
 
@@ -1128,7 +1128,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
       tot_avg_communication_in_zone_i /= Process::nproc();
 
       double tot_time_in_zone_i = si.counter_time[i].second();
-      int comm_pourcent = tot_time_in_zone_i != 0.0 ? tot_communication_in_zone_i / tot_time_in_zone_i * 100 : 0.0;
+      int comm_pourcent = tot_time_in_zone_i != 0.0 ?  (int)std::lround(tot_communication_in_zone_i / tot_time_in_zone_i * 100) : 0;
       int avg_comm_pourcent = Process::mp_sum(comm_pourcent) / Process::nproc();
 
       if (tot_avg_communication_in_zone_i)
@@ -1146,7 +1146,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
                   double avg_communication_of_type_j = Process::mp_sum(communication_of_type_j.time);
                   avg_communication_of_type_j /= Process::nproc();
 
-                  int communication_type_pourcentage = tot_communication_in_zone_i != 0.0 ? communication_of_type_j.time / tot_communication_in_zone_i * 100 : 0.0;
+                  int communication_type_pourcentage = tot_communication_in_zone_i != 0.0 ? (int)std::lround(communication_of_type_j.time / tot_communication_in_zone_i * 100) : 0;
                   int avg_communication_type_pourcentage = Process::mp_sum(communication_type_pourcentage);
                   avg_communication_type_pourcentage /= Process::nproc();
 
@@ -1208,7 +1208,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
           double avg_communication_in_zone_j = Process::mp_sum(communication_in_zone_j);
           avg_communication_in_zone_j /= Process::nproc();
 
-          int pourcentage = total_time_of_communication_i != 0.0 ? communication_in_zone_j / total_time_of_communication_i * 100 : 0.0;
+          int pourcentage = total_time_of_communication_i != 0.0 ? (int)std::lround(communication_in_zone_j / total_time_of_communication_i * 100) : 0;
           int avg_pourcentage = Process::mp_sum(pourcentage);
           avg_pourcentage /= Process::nproc();
           if(avg_pourcentage)
@@ -1247,7 +1247,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
       double avg_all_reduce_in_zone_i = Process::mp_sum(all_reduce_family[i]);
       avg_all_reduce_in_zone_i /= Process::nproc();
 
-      int pourcentage = all_reduce_family[0] != 0.0 ? all_reduce_family[i] / all_reduce_family[0] * 100 : 0.0;
+      int pourcentage = all_reduce_family[0] != 0.0 ? (int)std::lround(all_reduce_family[i] / all_reduce_family[0] * 100) : 0;
       int avg_pourcentage = Process::mp_sum(pourcentage);
       avg_pourcentage /= Process::nproc();
 
@@ -1276,7 +1276,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
       double avg_send_recv_in_zone_i = Process::mp_sum(send_recv_family[i]);
       avg_send_recv_in_zone_i /= Process::nproc();
 
-      int pourcentage = send_recv_family[0] != 0.0 ? send_recv_family[i] / send_recv_family[0] * 100 : 0.0;
+      int pourcentage = send_recv_family[0] != 0.0 ? (int)std::lround(send_recv_family[i] / send_recv_family[0] * 100) : 0;
       int avg_pourcentage = Process::mp_sum(pourcentage);
       avg_pourcentage /= Process::nproc();
 

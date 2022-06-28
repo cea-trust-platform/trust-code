@@ -2392,7 +2392,7 @@ void Solv_Petsc::Create_DM(const DoubleVect& b)
       /* PetscSection : indique a quel champ appartient chaque variable */
       PetscSection sec;
       PetscSectionCreate(PETSC_COMM_WORLD, &sec);
-      PetscSectionSetNumFields(sec, champ.size());
+      PetscSectionSetNumFields(sec, (int)champ.size());
       PetscSectionSetChart(sec, decalage_local_global_,
                            decalage_local_global_ + b.line_size() * b.get_md_vector().valeur().nb_items_seq_local());
       int idx = 0;
@@ -2589,7 +2589,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
       if (clean_matrix_) MatSetOption(MatricePetsc, MAT_IGNORE_ZERO_ENTRIES, PETSC_TRUE); // Ne stocke pas les zeros
       if (verbose)
         {
-          ArrOfDouble nonzeros(2); // Pas ArrOfInt car nonzeros peut depasser 2^32 facilement
+          ArrOfDouble nonzeros(2); // Pas ArrOfInt car nonzeros peut depasser 2^32 facilement - on n'a pas besoin d'un compte exact
           nonzeros[0] = 0;
           nonzeros[1] = mat_morse.nb_coeff();
           for (int i=0; i<nonzeros[1]; i++)
@@ -2601,7 +2601,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
               double ratio = 1 - (double) nonzeros[0] / (double) nonzeros[1];
               if (ratio > 0.2) Cout << "Warning! Trust matrix contains a lot of useless stored zeros: " << (int) (ratio * 100) << "% (" << nonzeros[0] << "/" << nonzeros[1] << ")" << finl;
             }
-          int zero_discarded = nonzeros[1] - nonzeros[0];
+          int zero_discarded = (int)(std::lround(nonzeros[1] - nonzeros[0]));
           if (zero_discarded) Cout << "[Petsc] Discarding " << zero_discarded << " zeros from TRUST matrix into the PETSc matrix ..." << finl;
         }
     }

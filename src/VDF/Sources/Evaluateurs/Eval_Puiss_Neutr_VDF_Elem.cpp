@@ -18,6 +18,7 @@
 #include <Champ_Don.h>
 #include <Sous_Zone.h>
 #include <Parser.h>
+#include <algorithm>
 
 void Eval_Puiss_Neutr_VDF_Elem::associer_champs(const Champ_Don& Q)
 {
@@ -34,7 +35,7 @@ void Eval_Puiss_Neutr_VDF_Elem::associer_repartition(const Nom& n, const Nom& no
   fxyz = n;
 
   std::string sfxyz(fxyz.getString());
-  for (auto & c: sfxyz) c = toupper(c);
+  std::transform(sfxyz.begin(), sfxyz.end(), sfxyz.begin(), ::toupper);
   Parser p(sfxyz,3);
   p.addVar("x");
   p.addVar("y");

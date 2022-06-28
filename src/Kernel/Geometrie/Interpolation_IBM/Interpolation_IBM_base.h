@@ -37,7 +37,7 @@ class Interpolation_IBM_base : public Objet_U
 
 public:
   virtual void discretise(const Discretisation_base&, Zone_dis_base&);
-  inline double get_impr()
+  inline int get_impr()
   {
     return impr_;
   };

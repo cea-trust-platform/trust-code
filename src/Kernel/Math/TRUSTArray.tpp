@@ -330,7 +330,7 @@ inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
           last_value = x;
         }
     }
-  int new_size_ = dest - data_;
+  int new_size_ = (int)(dest - data_);
   resize_array(new_size_);
 }
 

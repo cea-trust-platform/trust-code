@@ -317,7 +317,8 @@ int Echange_contact_VDF::initialiser(double temps)
   for (int i = 0; i < fvf.nb_faces(); i++)
     if (l_item(i) >= 0)
       {
-        if (proc(i) == Process::me()) item(i) = l_item(i);                     //item local (reel)
+        if (proc(i) == Process::me())
+          item(i) = (int)std::lround(l_item(i));                     //item local (reel)
         else
           {
             if (o_zone.virt_e_map.count({{ (int) proc(i), (int) l_item(i) }}))   //item local (virtuel)

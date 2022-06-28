@@ -142,7 +142,7 @@ void Sortie_Fichier_base::precision(int pre)
 
 int Sortie_Fichier_base::get_precision()
 {
-  return ofstream_->precision();
+  return (int)ofstream_->precision();
 }
 
 void Sortie_Fichier_base::setf(IOS_FORMAT code)

@@ -80,7 +80,7 @@ void Op_Diff_PolyMAC_Elem::init_op_ext() const
         cl.init_op();
         const Op_Diff_PolyMAC_Elem *o_op = &cl.o_diff.valeur();
         if (std::find(op_ext.begin(), op_ext.end(), o_op) == op_ext.end()) op_ext.push_back(o_op);
-        cl.o_idx = std::find(op_ext.begin(), op_ext.end(), o_op) - op_ext.begin();
+        cl.o_idx = (int)(std::find(op_ext.begin(), op_ext.end(), o_op) - op_ext.begin());
       }
 }
 
@@ -114,7 +114,8 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
 {
   init_op_ext();
   const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
-  int i, j, k, l, e, o_e, f, o_f, fb, m, n, M, n_ext = op_ext.size(), n_sten = 0, p, semi = semi_impl.count(nom_inco);
+  int i, j, k, l, e, o_e, f, o_f, fb, m, n, M, n_ext = (int)op_ext.size(), n_sten = 0, semi = (int)semi_impl.count(nom_inco);
+  long p;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes, nombre d'elements total par pb
   std::vector<std::reference_wrapper<const Zone_PolyMAC>> zone; //zones
@@ -176,7 +177,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
           {
             f = pcl->fvf->num_face(j), o_f = pcl->f_dist(j), o_e = f_e[p](o_f, 0); //faces cote local/distant, elem cote distant
             zone[p].get().W2(&diffu[p].get(), o_e, w2); //matrice w2 de l'autre cote
-            k = std::find(&e_f[p](o_e, 0), &e_f[p](o_e, 0) + w2.dimension(0), o_f) - &e_f[p](o_e, 0); //indice de o_f dans o_e
+            k = (int)(std::find(&e_f[p](o_e, 0), &e_f[p](o_e, 0) + w2.dimension(0), o_f) - &e_f[p](o_e, 0)); //indice de o_f dans o_e
             if (!aux_only)
               for (n = 0; n < N[0]; n++)
                 for (m = (N[0] == N[p]) * n; m < (N[0] == N[p] ? n + 1 : N[p]); m++)
@@ -206,7 +207,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
 {
   init_op_ext();
   const std::string& nom_inco = (le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue()).le_nom().getString();
-  int i, j, k1, k2, e, f, fb, n, M, n_ext = op_ext.size(), semi = semi_impl.count(nom_inco), d, D = dimension;
+  int i, j, k1, k2, e, f, fb, n, M, n_ext = (int)op_ext.size(), semi = (int)semi_impl.count(nom_inco), d, D = dimension;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes
   std::vector<std::reference_wrapper<const Zone_PolyMAC>> zone; //zones

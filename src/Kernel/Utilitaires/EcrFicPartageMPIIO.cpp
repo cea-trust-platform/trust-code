@@ -161,7 +161,7 @@ Sortie& EcrFicPartageMPIIO::operator <<(const Separateur& ob)
 
 Sortie& EcrFicPartageMPIIO::operator <<(const char* ob)
 {
-  int size=strlen(ob) + 1;
+  int size=(int)strlen(ob) + 1;
   //int size=strlen(ob);
   for (int i=0; i<size; i++)
     write(MPI_CHAR, &ob[i]);

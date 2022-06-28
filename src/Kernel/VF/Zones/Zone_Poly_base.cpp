@@ -522,7 +522,7 @@ void Zone_Poly_base::detecter_faces_non_planes() const
         val[rk] = sin2, face(rk) = f, elem1(rk) = f_e(f, 0), elem2(rk) = f_e(f, 1);
   envoyer_all_to_all(val, val), envoyer_all_to_all(face, face), envoyer_all_to_all(elem1, elem1), envoyer_all_to_all(elem2, elem2);
 
-  for (i = j = sin2 = 0; i < Process::nproc(); i++)
+  for (i = j = 0, sin2=0.0; i < Process::nproc(); i++)
     if (val[i] > sin2) sin2 = val[i], j = i;
   double theta = asin(sqrt(sin2)) * 180 / M_PI;
   Cerr << "Zone_Poly_base : angle sommet/face max " << theta << " deg (proc " << j << " , face ";
@@ -741,7 +741,7 @@ void Zone_Poly_base::init_dist_paroi_globale(const Conds_lim& conds_lim) // Meth
             nb_aretes += (D == 3 ? nb_som_loc : 0)  ; // Autant d'aretes autour d'une face que de sommets !
           }
       }
-  remote_xv[moi].resize(nb_faces_bord_ + soms.size() + nb_aretes,D);
+  remote_xv[moi].resize(nb_faces_bord_ + (int)soms.size() + nb_aretes,D);
 
   // On remplit les coordonnes des faces et aretes de bord locales
   int ind_tab = 0 ; // indice de la face/sommet/arete dans le tableau

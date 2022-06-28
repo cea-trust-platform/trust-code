@@ -17,6 +17,7 @@
 #include <Terme_Boussinesq_base.h>
 #include <Milieu_composite.h>
 #include <Motcle.h>
+#include <algorithm>
 
 Implemente_base(Terme_Boussinesq_base,"Terme_Boussinesq_base",Source_base);
 
@@ -85,7 +86,7 @@ void read(Entree& is, Parser_U& fct_Scalaire0_)
   Nom expression;
   is >> expression;
   std::string ss(expression.getString());
-  for (auto & c: ss) c = toupper(c);
+  std::transform(ss.begin(), ss.end(), ss.begin(), ::toupper);
   fct_Scalaire0_.setNbVar(1);
   fct_Scalaire0_.setString(ss);
   fct_Scalaire0_.addVar("t");

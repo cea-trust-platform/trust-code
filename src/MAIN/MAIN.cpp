@@ -191,7 +191,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
       else if (i == 2)
         {
           errno = 0;
-          int nprocs = strtol(argv[2], (char **)NULL, 10);
+          int nprocs = (int) strtol(argv[2], (char **)NULL, 10);
           if (!errno && nprocs)
             {
               nproc = nprocs;

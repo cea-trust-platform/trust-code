@@ -84,7 +84,7 @@ void Echange_contact_PolyMAC_P0::init_fs_dist() const
   for (i = 0; i < o_nf_tot; i++)
     for (f = o_fvf->num_face(i), j = 0; j < o_f_s.dimension(1) && (s = o_f_s(f, j)) >= 0; j++) s_o_som.insert(s);
   std::vector<int> som(s_som.begin(), s_som.end()), o_som(s_o_som.begin(), s_o_som.end()); //en vecteur
-  int ns_tot = som.size(), o_ns_tot = o_som.size();
+  int ns_tot = (int)som.size(), o_ns_tot = (int)o_som.size();
 
   DoubleTrav xvf(nf_tot, D), o_xvf(o_nf_tot, D), xsf(ns_tot, D), o_xsf(o_ns_tot, D); //positions locales/distantes -> pour calcul de correspondance
   for (i = 0; i <   nf_tot; i++)
