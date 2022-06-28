@@ -343,7 +343,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       ordre.push_back({{ "vitesse", 0 }}), ordre.push_back({}); //puis vf, puis toutes les autres inconnues simultanement
       for (auto &&nom : noms)
         if (nom != "vitesse" && nom != "pression") ordre.back().insert({{ nom, 0 }});
-      eliminer(ordre, "pression", mats, sec, A_p, b_p);
+      if (!(ok = eliminer(ordre, "pression", mats, sec, A_p, b_p))) break; //si l'elimination echoue, on sort
 
       /* assemblage du systeme en pression */
       DoubleTrav secmem_pression;
@@ -428,8 +428,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   return;
 }
 
-void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordre, const std::string inco_p, const std::map<std::string, matrices_t>& mats,
-                    const tabs_t& sec, std::map<std::string, Matrice_Morse>& A_p, tabs_t& b_p)
+int SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordre, const std::string inco_p, const std::map<std::string, matrices_t>& mats,
+                   const tabs_t& sec, std::map<std::string, Matrice_Morse>& A_p, tabs_t& b_p)
 {
   int i, j, jb, k, l, lb, m, oMl, oMg, M, n, oNl, oNg, N, prems = !A_p.size(), infoo = 0; //si A_p est vide, premier passage -> on doit dimensionner
   const Matrice_Morse * A;
@@ -610,6 +610,7 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
             /* factorisation et resolution */
             // DoubleTrav D_back = D;
             F77NAME(dgetrf)(&nb, &nb, &D(0, 0), &nb, &piv(0), &infoo);
+            if (infoo > 0) return 0; //singularite rencontree -> on sort avant de diviser par 0
             F77NAME(dgetrs)(&trans, &nb, &nc, &D(0, 0), &nb, &piv(0), &S(0, 0), &nb, &infoo);
 
             /* stockage : S(0, .) dans b_p, S(1..nc, .) dans A_p */
@@ -621,6 +622,7 @@ void SETS::eliminer(const std::vector<std::set<std::pair<std::string, int>>> ord
 
       for (auto &&i_b : bloc) e_ib.insert(i_b), e_i.insert(i_b.first);
     }
+  return 1;
 }
 
 void SETS::assembler(const std::string inco_p, const std::map<std::string, Matrice_Morse>& A_p, const tabs_t& b_p,

@@ -54,13 +54,13 @@ public :
   //
   //
   // sortie : A_p / b_p t.q. d{inco} = A_p.d{inco_p} + b_p
-  //
+  //          valeur retour -> 1 si eliminsation reussie, 0 si singularite rencontree
   // contraintes :  - les inconnues du meme bloc doivent partager un meme MD_Vector
   //                - pour chaque bloc { i_1, i_2 }, la matrice { mats[i_j][i_k] } doit etre diagonale par blocs par rapport a ce MD_Vector
   //                - hors cette diagonale, les inconnues d'un blocs ne peuvent dependre que des blocs precedents et de inco_p
 
-  static void eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordre, const std::string inco_p, const std::map<std::string, matrices_t>& mats, const tabs_t& sec,
-                       std::map<std::string, Matrice_Morse>& A_p, tabs_t& b_p);
+  static int eliminer(const std::vector<std::set<std::pair<std::string, int>>> ordre, const std::string inco_p, const std::map<std::string, matrices_t>& mats, const tabs_t& sec,
+                      std::map<std::string, Matrice_Morse>& A_p, tabs_t& b_p);
 
   /* assemblage d'un systeme en inco_p a partir des expressions d.{inco} : A_p[inco].d{inco_p} + b_p[inco] */
   //entree : - inco_p -> l'inconnue principale
