@@ -276,10 +276,10 @@ public:
   inline virtual void reset() { detach_array(); }
   inline virtual void ref_array(TRUSTArray&, int start = 0, int sz = -1);
   inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
-  inline Location dataLocation() { return dataLocation_; }
-  inline Location dataLocation() const { return dataLocation_; }
-  inline void set_dataLocation(Location flag) { dataLocation_ = flag; }
-  inline void set_dataLocation(Location flag) const { dataLocation_ = flag; }
+  inline dataLocation get_dataLocation() { return dataLocation_; }
+  inline dataLocation get_dataLocation() const { return dataLocation_; }
+  inline void set_dataLocation(dataLocation flag) { dataLocation_ = flag; }
+  inline void set_dataLocation(dataLocation flag) const { dataLocation_ = flag; }
 
 protected:
   inline void attach_array(const TRUSTArray& a, int start = 0, int size = -1);
@@ -318,15 +318,15 @@ private:
   //  0: A jour sur le host pas sur le device               Host
   //  1: A jour sur le device mais pas sur le host          Device
   //  2: A jour sur le host et le device                    HostDevice
-  mutable Location dataLocation_ = HostOnly;
+  mutable dataLocation dataLocation_ = HostOnly;
   inline void checkDataOnHost(const TRUSTArray& tab) const
   {
 #ifdef _OPENMP
 #ifndef NDEBUG
-    if (tab.dataLocation()==Device)
+    if (tab.get_dataLocation()==Device)
       {
         Cerr << "Error! A const TRUSTArray tab is used on the host whereas its dataLocation=Device" << finl;
-        Cerr << "In order to copy data from device to host,add a call like: copyToHost(tab);" << finl;
+        Cerr << "In order to copy data from device to host,add a call like: copyFromDevice(tab);" << finl;
         Process::exit();
       }
 #endif
@@ -336,12 +336,13 @@ private:
   {
 #ifdef _OPENMP
 #ifndef NDEBUG
-    if (tab.dataLocation()==Device)
+    if (tab.get_dataLocation()==Device)
       {
         Cerr << "Error! A non-const TRUSTArray tab is computed on the host whereas its dataLocation=Device" << finl;
-        Cerr << "In order to copy data from device to hist,add a call like: copyToHost(tab);" << finl;
+        Cerr << "In order to copy data from device to hist,add a call like: copyFromDevice(tab);" << finl;
         Process::exit();
       }
+    //set_dataLocation(Host); // Plante severement sur Device dans Op_Grad::ajouter_elem: pourquoi ?
 #endif
 #endif
   }

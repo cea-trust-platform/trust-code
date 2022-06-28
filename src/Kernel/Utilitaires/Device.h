@@ -37,7 +37,7 @@ inline void end_timer(const std::string& str) // Return in [ms]
 {
   if (clock_on!=NULL)
     {
-      printf("[clock] %7.3f ms %s\n", 1000*(std::clock() - clock_start) / (double) CLOCKS_PER_SEC ,str.c_str());
+      printf("[clock] %7.3f ms %15s\n", 1000*(std::clock() - clock_start) / (double) CLOCKS_PER_SEC ,str.c_str());
       fflush(stdout);
     }
 }
@@ -47,7 +47,7 @@ inline void end_timer(const std::string& str, int size) // Return in [ms]
     {
       double ms = 1000*(std::clock() - clock_start) / (double) CLOCKS_PER_SEC;
       int mo = size/1024/1024;
-      printf("[clock] %7.3f ms %s %6d Mo %4.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
+      printf("[clock] %7.3f ms %15s %6d Mo %4.1f Go/s\n", ms ,str.c_str(), mo, mo/ms);
       fflush(stdout);
     }
 }
@@ -59,34 +59,48 @@ inline const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab)
   tab.set_dataLocation(Array_base::HostDevice); // const array will matches on host and device
   return tab_addr;
 }
-/* ToDo conflit possible avec const _TYPE_* copyToDevice(TRUSTArray<_TYPE_>& tab)
- // Appeler computeOnDevice ?
-template <typename _TYPE_>
-inline _TYPE_* copyToDevice(TRUSTArray<_TYPE_>& tab)
-{
-  _TYPE_ *tab_addr = copyToDevice_(tab);
-  tab.set_dataLocation(Array_base::Device); // non-const array will be modified on device
-  return tab_addr;
-} */
+
 template <typename _TYPE_>
 inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab)
 {
   _TYPE_* tab_addr = tab.addr();
 #ifdef _OPENMP
   start_timer();
-  if (tab.dataLocation()==Array_base::HostOnly)
+  if (tab.get_dataLocation()==Array_base::HostOnly)
     {
       #pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
       end_timer((std::string) "copyToDevice Array ", sizeof(_TYPE_) * tab.size_array());
     }
-  else if (tab.dataLocation()==Array_base::Host)
+  else if (tab.get_dataLocation()==Array_base::Host)
     {
       #pragma omp target update to(tab_addr[0:tab.size_array()])
       end_timer((std::string) "updateToDevice Array ", sizeof(_TYPE_) * tab.size_array());
     }
-  else
-    end_timer((std::string) "presentOnDevice Array ", sizeof(_TYPE_) * tab.size_array());
 #endif
   return tab_addr;
 }
+
+template <typename _TYPE_>
+inline _TYPE_* computeOnDevice(TRUSTArray<_TYPE_>& tab)
+{
+  _TYPE_ *tab_addr = copyToDevice_(tab);
+  tab.set_dataLocation(Array_base::Device); // non-const array will be modified on device
+  return tab_addr;
+}
+
+template <typename _TYPE_>
+inline void copyFromDevice(TRUSTArray<_TYPE_>& tab)
+{
+#ifdef _OPENMP
+  _TYPE_* tab_addr = tab.addr();
+  if (tab.get_dataLocation()==Array_base::Device)
+    {
+      start_timer();
+      #pragma omp target update from(tab_addr[0:tab.size_array()])
+      end_timer((std::string) "copyFromDevice Array ", sizeof(_TYPE_) * tab.size_array());
+      tab.set_dataLocation(Array_base::HostDevice);
+    }
+#endif
+}
+
 #endif
