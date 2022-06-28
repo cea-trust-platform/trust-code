@@ -140,7 +140,7 @@ Entree& Table::readOn(Entree& s )
 // The shapes should be (n) for x, (n, 2) for gridpoints and (2, 2, 2, ..., 2) n times for data (stored as a single vector here)
 double nlinear_interpolation(const std::vector<double>& x, const std::vector<std::pair<double, double>>& gridpoints, const std::vector<double>& data)
 {
-  const int n = x.size();
+  const int n = (int)x.size();
 
   // on construit les poids pour chaque sommet de l'hyper-rectangle
   std::vector<std::pair<double, double>> Wvecs;
@@ -161,7 +161,8 @@ double nlinear_interpolation(const std::vector<double>& x, const std::vector<std
       for (int i = 0; i < n; i++) prodw *= index[i] ? Wvecs[i].second : Wvecs[i].first;
       // for (int i = 0; i < n; i++) prodw *= std::get<index[i]>(Wvecs[i]);
       int k = index.back();
-      for (int i = 0; i < n - 1; i++) k += pow(2, n - i - 1) * index[i];
+      for (int i = 0; i < n - 1; i++)
+        k += (1 << (n - i - 1)) * index[i]; // 2**(n-i-1) * index[i]
       interpolant += data[k] * prodw;
     }
   return interpolant;
