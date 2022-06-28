@@ -172,10 +172,15 @@ export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=${TRUST_CREATE_TESTS_FROM_VALIDA
 
 #err=0 
 
-status_cppunit=0
-#test_cpp_unit 
-test_basic cppunit_proj 0
-status_cppunit=$status_tot
+if [ "${TRUST_CC_BASE%clang++}" != "$TRUST_CC_BASE" ]
+then
+   echo "Test de cppunit_proj (skipped on clang)"
+else
+   status_cppunit=0
+   #test_cpp_unit 
+   test_basic cppunit_proj 0
+   status_cppunit=$status_tot
+fi
 
 # test dependance kernel
 voulu=1

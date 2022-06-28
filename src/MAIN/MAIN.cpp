@@ -363,7 +363,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
         Cerr<<"Localisation etude: " << ::pwd() << finl;
         Cerr<<"Nom du cas " << data_file << finl;
         Cerr<<" code : "<< argv[0] << finl;
-        Cerr<<" version : 1.9.0_beta " << finl;
+        Cerr<<" version : 1.9.0 " << finl;
       }
 
     main_process->dowork(data_file);

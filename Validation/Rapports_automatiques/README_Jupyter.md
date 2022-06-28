@@ -30,10 +30,16 @@ To run a Jupyter validation forms, you need a specific environment:
         jupyter-notebook
 ```
 
-  - or alternatively you can directly go inside a form folder and execute :
+  - or alternatively you can directly go inside a form folder and execute:
 ```sh
         cd Verification/SampleFormJupyter
         Run_fiche
+```
+    This will open a browser showing you the form.
+    
+  - or you can run:
+```sh
+        Run_fiche -doc
 ```
     This will open a browser showing you the form.
 

@@ -14,14 +14,14 @@ BSD3 license
 
 ```
 
-# **How to install TRUST-1.8.4 version ?**
+# **How to install TRUST-1.9.0 version ?**
 
 ### **First method**
 
-    $> git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.8.4
-    $> cd TRUST-1.8.4
-    $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.8.4.tar
-    $> tar xf externalpackages-1.8.4.tar
+    $> git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.9.0
+    $> cd TRUST-1.9.0
+    $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.0.tar
+    $> tar xf externalpackages-1.9.0.tar
     $> ./configure -help # To see the possible configure options.
     $> ./configure $OPTIONS  # At the end of configure, file env/machine.env will be created. You can then edit it and some others (env/make.linux*) to change some default values.
     $> make
@@ -34,9 +34,9 @@ Run the following command, mpicxx should be found into the bin directory of the 
 
 ### **Second method**
 
-    $> wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.8.4/TRUST-1.8.4.tar.gz
-    $> tar xzf TRUST-1.8.4.tar.gz
-    $> cd TRUST-1.8.4
+    $> wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.0/TRUST-1.9.0.tar.gz
+    $> tar xzf TRUST-1.9.0.tar.gz
+    $> cd TRUST-1.9.0
     $> ./configure $OPTIONS
     $> make
 

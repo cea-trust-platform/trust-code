@@ -3134,7 +3134,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=81.98 #81.40 v1.8.4 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=81.42 #81.40 v1.8.4 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
@@ -4035,19 +4035,19 @@ then
 	    echo "from `pwd`"
 	    # On pose le meme tag sur les BALTIK
             echo "    Call git commit --all -m Commit for an official Release $label version."
-	    if [ "$Composant" = triocfd ]
-	    then
-	       cp share/doc_auto/TRUST_Generic_Guide.pdf share/doc/TRUST_Generic_Guide.pdf
-	       if [ -f "share/doc_auto/TrioCFD_Reference_Manual.pdf" ]
-	       then
-	          cp share/doc_auto/TrioCFD_Reference_Manual.pdf share/doc/TrioCFD_Reference_Manual.pdf
-	       #else
-	       #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
-	       fi
-	       git checkout -- Multiphase/Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
-	       # Update the version in README.md file (displayed on github)
-	       sed -i "s/$old/$new/g" README.md
-	    fi
+	    #if [ "$Composant" = triocfd ]
+	    #then
+	    #   cp share/doc_auto/TRUST_Generic_Guide.pdf share/doc/TRUST_Generic_Guide.pdf
+	    #   if [ -f "share/doc_auto/TrioCFD_Reference_Manual.pdf" ]
+	    #   then
+	    #      cp share/doc_auto/TrioCFD_Reference_Manual.pdf share/doc/TrioCFD_Reference_Manual.pdf
+	    #   #else
+	    #   #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
+	    #   fi
+	    #   git checkout -- Multiphase/Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
+	    #   # Update the version in README.md file (displayed on github)
+	    #   sed -i "s/$old/$new/g" README.md
+	    #fi
             git commit --all -m"Commit for an official Release $label version."
             echo "    Call git tag $label"
 	    git tag $label_pose
@@ -4065,10 +4065,10 @@ then
 	       git push origin Livraison:triou/TMA
 	       git push origin Livraison:triou/$label
             fi
-	    if [ "$Composant" = triocfd ] # || [ "$Composant" = mpcube ]
-            then
-	       git push --tags origin Livraison:master
-            fi
+	    #if [ "$Composant" = triocfd ] # || [ "$Composant" = mpcube ]
+            #then
+	    #   git push --tags origin Livraison:master
+            #fi
 	    git fetch --all
 	    # Appel du make distrib
 	    echo "    Call make distrib"
@@ -4081,19 +4081,19 @@ then
             else
 	       cp -f $Composant.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz
             fi
-	    if [ $Composant = "triocfd" ]
-            then
-	       # Appel du Create_Light_archive.sh
-	       echo "    Call Create_Light_archive.sh"
-	       rm -rf Prov
-	       ./share/Distribution/Create_light_archive.sh
-               if [ $? != 0 ]
-               then
-                  mail_ -s\"[lance_test_nuit] Error with Create_Light_archive.sh v$new for $Composant\" $TRUST_MAIL
-               else
-	          cp -f TrioCFD_light.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant"_light"-$new.tar.gz
-               fi
-	    fi
+	    #if [ $Composant = "triocfd" ]
+            #then
+	    #   # Appel du Create_Light_archive.sh
+	    #   echo "    Call Create_Light_archive.sh"
+	    #   rm -rf Prov
+	    #   ./share/Distribution/Create_light_archive.sh
+            #   if [ $? != 0 ]
+            #   then
+            #      mail_ -s\"[lance_test_nuit] Error with Create_Light_archive.sh v$new for $Composant\" $TRUST_MAIL
+            #   else
+	    #      cp -f TrioCFD_light.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant"_light"-$new.tar.gz
+            #   fi
+	    #fi
 	    echo | mail_ -s\"[lance_test_nuit] $Composant v$new is released under $WORKDIR/archives/ARCHIVES_$Composant\" $TRUST_MAIL	 
 	    # Changement de la vue Maintenance
             if [ -d $WORKDIR/tuleap/Maintenance/Composants/$Composant ]
