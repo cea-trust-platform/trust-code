@@ -1425,11 +1425,12 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   construire_sous_domaine(ipart, dc_correspondance, dom_tmp);
                   Sortie_Brute os_tmp;
                   writeData(dom_tmp, os_tmp);
-                  long sz_ = os_tmp.get_size();
+                  double sz_ = (double)os_tmp.get_size();
                   sz_ *= 1.5;
                   sz_ = Process::mp_max(sz_);
                   envoyer_broadcast(dataset_names,0);
-                  fic_hdf.create_datasets(dataset_names, sz_);
+                  long sz_l = lround(sz_);
+                  fic_hdf.create_datasets(dataset_names, sz_l);
                 }
             }
 
