@@ -2,7 +2,7 @@ import numpy as np
 import re
 
 class TrustFile(object):
-    _COMPO_NAMES = ["X", "Y", "Z", "4", "5", "6", "7", "8", "9"]
+    _COMPO_NAMES = ["X", "Y", "Z"] + [f"{i}" for i in range(4, 50)]
     """ Parsing and value extraction from a Trust file. Assumption: all valid (=completly written) line
     of data terminate with a new line char """
 
@@ -342,7 +342,7 @@ class SonFile(TrustFile):
         if not len(self._entries):
             hdr = self._populateFromHeader()
         return self._ncompo
-    
+
     def getnPoints(self):
         status = self._queryAndUpdateStatus(update=False)
         if status == "invalid":
