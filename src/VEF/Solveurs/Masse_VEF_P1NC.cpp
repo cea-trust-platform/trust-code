@@ -63,6 +63,12 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
   int num_int = zone_VEF.premiere_face_int();
   int face,comp,elem;
   int nbcomp = sm.line_size();
+
+  const double * porosite_face_addr = porosite_face.addr();
+  const double * volumes_entrelaces_Cl_addr = volumes_entrelaces_Cl.addr();
+  const double * volumes_entrelaces_addr = volumes_entrelaces.addr();
+  double * sm_addr = sm.addr();
+
   if (nfa != sm.dimension(0))
     {
       Cerr << "erreur dans Masse_VEF_P1NC : ";
@@ -72,13 +78,13 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
     }
 
   // On traite les faces standard qui ne portent pas de conditions aux limites
-
+  #pragma omp target teams distribute parallel for map(to:volumes_entrelaces_addr[0:volumes_entrelaces.size_array()]) map(tofrom:sm_addr[0:sm.size_array()])
   for (face=num_std; face<nfa; face++)
     {
       //elem1 = face_voisins(face,0);
       //elem2 = face_voisins(face,1);
       for (comp=0; comp<nbcomp; comp++)
-        sm(face,comp) /= (volumes_entrelaces(face)*porosite_face(face)) ;
+        sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
     }
   // On traite les faces non standard
   // les faces des bord sont des faces non standard susceptibles de porter des C.L
@@ -141,13 +147,13 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
     }
 
   // On traite les faces internes non standard
+  #pragma omp target teams distribute parallel for map(to:volumes_entrelaces_Cl_addr[0:volumes_entrelaces_Cl.size_array()]) map(tofrom:sm_addr[0:sm.size_array()])
   for (face=num_int; face<num_std; face++)
     {
       //elem1 = face_voisins(face,0);
       //elem2 = face_voisins(face,1);
       for (comp=0; comp<nbcomp; comp++)
-        sm(face,comp) /= (volumes_entrelaces_Cl(face)*porosite_face(face)) ;
-
+        sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_Cl_addr[face]*porosite_face_addr[face]);
     }
   //sm.echange_espace_virtuel();
   //Debog::verifier("Masse_VEF_P1NC::appliquer, sm=",sm);
