@@ -1015,7 +1015,7 @@ m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && expo
 ########
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
-   #[ "$TRUST_DISABLE_PETSC" = 1 ] && echo "Error, you need PETSc with -cuda option." && exit -1
+   [ "$TRUST_DISABLE_PETSC" = 1 ] && echo "Error, you need PETSc with -cuda option to build AmgXWrapper/AmgX." && exit -1
    check_nvidia_cuda
    [ "$CUDA_ROOT" = "" ] && echo "CUDA libraries not found!" && exit -1
    m="# PATH to CUDA";
@@ -1953,6 +1953,28 @@ then
    fi
    CppFlags=$CppFlags" "$openmp" "$openmp_target
    SYSLIBS=$SYSLIBS" "$openmp
+   # Test offloading:
+   if [ "$openmp_target" != "" ]
+   then
+      echo "int main()
+{
+double a[3];
+double b[3];
+#pragma omp target
+   for (int i=0;i<3;i++)
+      a[i]=b[i]+1;
+
+  return 0;
+}" > offload_openmp.cpp && $TRUST_CC $openmp $openmp_target -o offload_openmp offload_openmp.cpp && ./offload_openmp
+      if [ $? != 0 ]
+      then
+         echo "Error, $TRUST_CC_BASE compiler doesn't support OpenMP offloading."
+         [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_VERSION_GNU" != "" ] && echo "Try adding the feature to your GNU compiler for instance on Fedora: sudo dnf install gcc-offload-nvptx"
+         exit -1
+      else
+         echo "$TRUST_CC_BASE support OpenMP offloading..."
+      fi
+   fi
 fi
 
 ############
