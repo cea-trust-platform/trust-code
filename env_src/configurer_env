@@ -1022,11 +1022,11 @@ then
    TRUST_USE_AMGX=1
    if [ ${TRUST_CC_BASE%nvc++} != $TRUST_CC_BASE ] # Plusieurs librairies ne compilent pas encore avec NVidia HPC/SDK
    then
-      [ "$TRUST_DISABLE_VC"       != 1 ] && echo "Add -disable-vc with nvc++ compiler"       && exit=-1  
+      [ "$TRUST_DISABLE_VC"       != 1 ] && echo "Add -disable-vc with nvc++ compiler"       && exit=-1
       [ "$TRUST_FORCE_SYSTEM_MPI" != 1 ] && echo "Add -force_system_mpi with nvc++ compiler" && exit=-1
       [ "$TRUST_DISABLE_MPI4PY"   != 1 ] && echo "Add -disable-mpi4py with nvc++ compiler"   && exit=-1
       [ "$exit" = -1 ] && exit $exit
-   fi   
+   fi
    e="TRUST_USE_AMGX=\"$TRUST_USE_AMGX\" && export TRUST_USE_AMGX" && m="# Use AmgX ?" && ecrit $m"|"$e"|"$env && eval $e
    [ "$TRUST_USE_AMGX" = 1 ] && [ "$TRUST_DISABLE_PETSC" = 1 ] && echo "Error, you need PETSc with -cuda option to build AmgXWrapper/AmgX." && exit -1
    check_nvidia_cuda
@@ -1939,7 +1939,7 @@ then
          openmp_target=$openmp_target" -Wno-unsequenced" # Hmmm... Operation suspecte pour les classes tableaux de TRUST...
          # Bidouille car clang++ compile pour offload OpenMP
          openmp_target=$openmp_target" -lomptarget -L`dirname $TRUST_CC_BASE`/../lib"
-      fi       
+      fi
    elif [ "`basename $TRUST_CC_BASE`" = g++ ] || [ "`basename $TRUST_CC_BASE`" = cuda-g++ ]
    then
       openmp="-fopenmp"
@@ -1952,7 +1952,7 @@ then
       # See https://www.openmp.org/wp-content/uploads/20210924-OpenMP-update-for-DOE.pdf
       openmp="-mp"
       if [ "$TRUST_USE_CUDA" = 1 ]
-      then 
+      then
          # A partir de HPC SDK 21.3 !
          openmp_target="-target=gpu $march"
          #export NVCOMPILER_ACC_NOTIFY = 1|2|3
@@ -1975,7 +1975,7 @@ double b[3];
    for (int i=0;i<3;i++)
       a[i]=b[i]+1;
    for (int i=0;i<3;i++)
-      std::cout << a[i] << std::endl;      
+      std::cout << a[i] << std::endl;
   return 0;
 }" > offload_openmp.cpp && echo $cmd && eval $cmd
       if [ $? != 0 ]
