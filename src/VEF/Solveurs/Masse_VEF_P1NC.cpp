@@ -21,6 +21,7 @@
 #include <Symetrie.h>
 #include <Equation_base.h>
 #include <Matrice_Morse.h>
+#include <Device.h>
 
 Implemente_instanciable(Masse_VEF_P1NC,"Masse_VEF_P1NC",Solveur_Masse_base);
 
@@ -61,13 +62,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
   int nfa = zone_VEF.nb_faces();
   int num_std = zone_VEF.premiere_face_std();
   int num_int = zone_VEF.premiere_face_int();
-  int face,comp,elem;
   int nbcomp = sm.line_size();
-
-  const double * porosite_face_addr = porosite_face.addr();
-  const double * volumes_entrelaces_Cl_addr = volumes_entrelaces_Cl.addr();
-  const double * volumes_entrelaces_addr = volumes_entrelaces.addr();
-  double * sm_addr = sm.addr();
 
   if (nfa != sm.dimension(0))
     {
@@ -78,14 +73,15 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
     }
 
   // On traite les faces standard qui ne portent pas de conditions aux limites
-  #pragma omp target teams distribute parallel for map(to:volumes_entrelaces_addr[0:volumes_entrelaces.size_array()]) map(tofrom:sm_addr[0:sm.size_array()])
-  for (face=num_std; face<nfa; face++)
-    {
-      //elem1 = face_voisins(face,0);
-      //elem2 = face_voisins(face,1);
-      for (comp=0; comp<nbcomp; comp++)
-        sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
-    }
+  const double * porosite_face_addr = copyToDevice(porosite_face);
+  const double * volumes_entrelaces_Cl_addr = copyToDevice(volumes_entrelaces_Cl);
+  const double * volumes_entrelaces_addr = copyToDevice(volumes_entrelaces);
+  double * sm_addr = sm.addr();
+  #pragma omp target teams distribute parallel for map(tofrom:sm_addr[0:sm.size_array()])
+  for (int face=num_std; face<nfa; face++)
+    for (int comp=0; comp<nbcomp; comp++)
+      sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
+
   // On traite les faces non standard
   // les faces des bord sont des faces non standard susceptibles de porter des C.L
   // les faces internes non standard ne portent pas de C.L
@@ -105,25 +101,25 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
            (sub_type(Dirichlet_homogene,la_cl.valeur()))
          )
         // Pour les faces de Dirichlet on met sm a 0
-        for (face=num1; face<num2; face++)
-          for (comp=0; comp<nbcomp; comp++)
+        for (int face=num1; face<num2; face++)
+          for (int comp=0; comp<nbcomp; comp++)
             sm(face,comp) =0;
       else
 
         if ((sub_type(Symetrie,la_cl.valeur()))&&(zone_Cl_VEF.equation().inconnue()->nature_du_champ()==vectoriel))
           {
             const DoubleTab& normales = zone_VEF.face_normales();
-            for (face=num1; face<num2; face++)
+            for (int face=num1; face<num2; face++)
               {
                 double psc=0;
                 double surf=0;
-                for (comp=0; comp<nbcomp; comp++)
+                for (int comp=0; comp<nbcomp; comp++)
                   {
                     psc+=sm(face,comp)*normales(face,comp);
                     surf+=normales(face,comp)*normales(face,comp);
                   }
                 psc/=surf;
-                for(comp=0; comp<dimension; comp++)
+                for(int comp=0; comp<dimension; comp++)
                   {
                     sm(face,comp)-=psc*normales(face,comp);
                     sm(face,comp) /= (volumes_entrelaces_Cl(face)*
@@ -134,27 +130,24 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
 
         else
 
-          for (face=num1; face<num2; face++)
+          for (int face=num1; face<num2; face++)
             {
-              elem = face_voisins(face,0);
+              int elem = face_voisins(face,0);
               if ( elem == -1 )
                 {
                   elem = face_voisins(face,1);
                 }
-              for (comp=0; comp<nbcomp; comp++)
+              for (int comp=0; comp<nbcomp; comp++)
                 sm(face,comp) /= (volumes_entrelaces_Cl(face)*porosite_face(face));
             }
     }
 
   // On traite les faces internes non standard
-  #pragma omp target teams distribute parallel for map(to:volumes_entrelaces_Cl_addr[0:volumes_entrelaces_Cl.size_array()]) map(tofrom:sm_addr[0:sm.size_array()])
-  for (face=num_int; face<num_std; face++)
-    {
-      //elem1 = face_voisins(face,0);
-      //elem2 = face_voisins(face,1);
-      for (comp=0; comp<nbcomp; comp++)
-        sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_Cl_addr[face]*porosite_face_addr[face]);
-    }
+  #pragma omp target teams distribute parallel for map(tofrom:sm_addr[0:sm.size_array()])
+  for (int face=num_int; face<num_std; face++)
+    for (int comp=0; comp<nbcomp; comp++)
+      sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_Cl_addr[face]*porosite_face_addr[face]);
+
   //sm.echange_espace_virtuel();
   //Debog::verifier("Masse_VEF_P1NC::appliquer, sm=",sm);
   return sm;

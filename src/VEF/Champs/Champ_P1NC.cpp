@@ -31,6 +31,7 @@
 #include <Schema_Temps_base.h>
 #include <SFichier.h>
 #include <Probleme_base.h>
+#include <Device.h>
 
 Implemente_instanciable(Champ_P1NC,"Champ_P1NC",Champ_Inc_base);
 
@@ -158,19 +159,16 @@ void calculer_gradientP1NC(const DoubleTab& variable,
   const int nb_comp = variable.line_size();
 
   gradient_elem=0.;
-  int icomp,fac,i,elem1,elem2,elem,num_face;
-  int n_bord;
-  int ind_face;
 
-  const int * face_voisins_addr = face_voisins.addr();
-  double * gradient_elem_addr = gradient_elem.addr();
-  const double * face_normales_addr = face_normales.addr();
+  const int * face_voisins_addr = copyToDevice(face_voisins);
+  const double * face_normales_addr = copyToDevice(face_normales);
   const double * variable_addr = variable.addr();
+  double * gradient_elem_addr = gradient_elem.addr();
   int gradient_elem_nb_dim = gradient_elem.nb_dim();
   // Cas du calcul du gradient d'un tableau de vecteurs
   if (nb_comp!=1)
     {
-      for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
         {
           const Cond_lim& la_cl =
             zone_Cl_VEF.les_conditions_limites(n_bord);
@@ -182,13 +180,13 @@ void calculer_gradientP1NC(const DoubleTab& variable,
 
           if (sub_type(Periodique,la_cl.valeur()))
             {
-              for (ind_face=num1; ind_face<num2; ind_face++)
+              for (int ind_face=num1; ind_face<num2; ind_face++)
                 {
-                  num_face = le_bord.num_face(ind_face);
-                  elem1=face_voisins(num_face,0);
-                  elem2=face_voisins(num_face,1);
-                  for (icomp=0; icomp<nb_comp; icomp++)
-                    for (i=0; i<dimension; i++)
+                  int num_face = le_bord.num_face(ind_face);
+                  int elem1=face_voisins(num_face,0);
+                  int elem2=face_voisins(num_face,1);
+                  for (int icomp=0; icomp<nb_comp; icomp++)
+                    for (int i=0; i<dimension; i++)
                       {
                         if (ind_face<nb_faces_bord)
                           {
@@ -212,29 +210,29 @@ void calculer_gradientP1NC(const DoubleTab& variable,
                 }
             }
           else
-            for (ind_face=num1; ind_face<nb_faces_bord; ind_face++)
+            for (int ind_face=num1; ind_face<nb_faces_bord; ind_face++)
               {
-                fac = le_bord.num_face(ind_face);
-                elem1=face_voisins(fac,0);
-                for (icomp=0; icomp<nb_comp; icomp++)
-                  for (i=0; i<dimension; i++)
+                int fac = le_bord.num_face(ind_face);
+                int elem1=face_voisins(fac,0);
+                for (int icomp=0; icomp<nb_comp; icomp++)
+                  for (int i=0; i<dimension; i++)
                     {
                       gradient_elem(elem1, icomp, i) +=
                         face_normales(fac,i)* variable(fac,icomp);
                     }
               }
         }
-      #pragma omp target teams distribute parallel for map(to:face_normales_addr[0:face_normales.size_array()],variable_addr[0:variable.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
-      for (fac=premiere_face_int; fac<nb_faces; fac++)
+      #pragma omp target teams distribute parallel for map(to:variable_addr[0:variable.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
+      for (int fac=premiere_face_int; fac<nb_faces; fac++)
         {
-          elem1=face_voisins_addr[fac*2];
-          elem2=face_voisins_addr[fac*2+1];
+          int elem1=face_voisins_addr[fac*2];
+          int elem2=face_voisins_addr[fac*2+1];
           // Deroulement de la boucle pour optimiser un peu (-20% sur 12000 mailles):
           if (elem1>=0 && elem2>=0)
             {
               if (dimension==2)
                 {
-                  for (icomp=0; icomp<nb_comp; icomp++)
+                  for (int icomp=0; icomp<nb_comp; icomp++)
                     {
                       double var = variable_addr[fac*nb_comp+icomp];
                       #pragma omp atomic
@@ -249,7 +247,7 @@ void calculer_gradientP1NC(const DoubleTab& variable,
                 }
               else
                 {
-                  for (icomp=0; icomp<nb_comp; icomp++)
+                  for (int icomp=0; icomp<nb_comp; icomp++)
                     {
                       double var = variable_addr[fac*nb_comp+icomp];
                       #pragma omp atomic
@@ -269,8 +267,8 @@ void calculer_gradientP1NC(const DoubleTab& variable,
             }
           else
             {
-              for (icomp=0; icomp<nb_comp; icomp++)
-                for (i=0; i<dimension; i++)
+              for (int icomp=0; icomp<nb_comp; icomp++)
+                for (int i=0; i<dimension; i++)
                   {
                     if (elem1>=0)
                       {
@@ -291,7 +289,7 @@ void calculer_gradientP1NC(const DoubleTab& variable,
   // Cas du calcul du gradient d'un tableau de scalaire dans un tableau gradient_elem(,,)
   else if (gradient_elem.nb_dim()==3)
     {
-      for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
         {
           const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -301,12 +299,12 @@ void calculer_gradientP1NC(const DoubleTab& variable,
 
           if (sub_type(Periodique,la_cl.valeur()))
             {
-              for (ind_face=num1; ind_face<num2; ind_face++)
+              for (int ind_face=num1; ind_face<num2; ind_face++)
                 {
-                  num_face = le_bord.num_face(ind_face);
-                  elem1=face_voisins(num_face,0);
-                  elem2=face_voisins(num_face,1);
-                  for (i=0; i<dimension; i++)
+                  int num_face = le_bord.num_face(ind_face);
+                  int elem1=face_voisins(num_face,0);
+                  int elem2=face_voisins(num_face,1);
+                  for (int i=0; i<dimension; i++)
                     {
                       if (ind_face<nb_faces_bord)
                         {
@@ -331,27 +329,29 @@ void calculer_gradientP1NC(const DoubleTab& variable,
                 }
             }
           else
-            for (ind_face=num1; ind_face<nb_faces_bord; ind_face++)
+            for (int ind_face=num1; ind_face<nb_faces_bord; ind_face++)
               {
-                fac = le_bord.num_face(ind_face);
-                elem1=face_voisins(fac,0);
-                for (i=0; i<dimension; i++)
+                int fac = le_bord.num_face(ind_face);
+                int  elem1=face_voisins(fac,0);
+                for (int i=0; i<dimension; i++)
                   {
                     gradient_elem(elem1, 0, i) +=
                       face_normales(fac,i)* variable(fac);
                   }
               }
         }
-      #pragma omp target teams distribute parallel for map(to:face_normales_addr[0:face_normales.size_array()],variable_addr[0:variable.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
-      for (fac=premiere_face_int; fac<nb_faces; fac++)
+      #pragma omp target teams distribute parallel for map(to:variable_addr[0:variable.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
+      for (int fac=premiere_face_int; fac<nb_faces; fac++)
         {
-          elem1=face_voisins_addr[fac*2];
-          elem2=face_voisins_addr[fac*2+1];
-          for (i=0; i<dimension; i++)
+          int elem1=face_voisins_addr[fac*2];
+          int elem2=face_voisins_addr[fac*2+1];
+          for (int i=0; i<dimension; i++)
             {
               if (elem1>=0)
+#pragma omp atomic
                 gradient_elem_addr[(elem1*nb_comp)*dimension+i] += face_normales_addr[fac*dimension+i]*variable_addr[fac];
               if (elem2>=0)
+#pragma omp atomic
                 gradient_elem_addr[(elem2*nb_comp)*dimension+i] -= face_normales_addr[fac*dimension+i]*variable_addr[fac];
             }
         }
@@ -359,7 +359,7 @@ void calculer_gradientP1NC(const DoubleTab& variable,
   // Cas du calcul du gradient d'un tableau de scalaire dans un tableau gradient_elem(,)
   else
     {
-      for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
         {
           const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -369,12 +369,12 @@ void calculer_gradientP1NC(const DoubleTab& variable,
 
           if (sub_type(Periodique,la_cl.valeur()))
             {
-              for (ind_face=num1; ind_face<num2; ind_face++)
+              for (int ind_face=num1; ind_face<num2; ind_face++)
                 {
-                  num_face = le_bord.num_face(ind_face);
-                  elem1=face_voisins(num_face,0);
-                  elem2=face_voisins(num_face,1);
-                  for (i=0; i<dimension; i++)
+                  int num_face = le_bord.num_face(ind_face);
+                  int elem1=face_voisins(num_face,0);
+                  int elem2=face_voisins(num_face,1);
+                  for (int i=0; i<dimension; i++)
                     {
                       if (ind_face<nb_faces_bord)
                         {
@@ -397,45 +397,46 @@ void calculer_gradientP1NC(const DoubleTab& variable,
                 }
             }
           else
-            for (ind_face=num1; ind_face<nb_faces_bord; ind_face++)
+            for (int ind_face=num1; ind_face<nb_faces_bord; ind_face++)
               {
-                fac = le_bord.num_face(ind_face);
-                elem1=face_voisins(fac,0);
-                for (i=0; i<dimension; i++)
+                int fac = le_bord.num_face(ind_face);
+                int elem1=face_voisins(fac,0);
+                for (int i=0; i<dimension; i++)
                   {
                     gradient_elem(elem1, i) +=
                       face_normales(fac,i)* variable(fac);
                   }
               }
         }
-      #pragma omp target teams distribute parallel for map(to:face_normales_addr[0:face_normales.size_array()],variable_addr[0:variable.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
-      for (fac=premiere_face_int; fac<nb_faces; fac++)
+      #pragma omp target teams distribute parallel for map(to:variable_addr[0:variable.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
+      for (int fac=premiere_face_int; fac<nb_faces; fac++)
         {
-          elem1=face_voisins_addr[fac*2];
-          elem2=face_voisins_addr[fac*2+1];
-          for (i=0; i<dimension; i++)
+          int elem1=face_voisins_addr[fac*2];
+          int elem2=face_voisins_addr[fac*2+1];
+          for (int i=0; i<dimension; i++)
             {
               if (elem1>=0)
+#pragma omp atomic
                 gradient_elem_addr[(elem1*nb_comp)*dimension+i] += face_normales_addr[fac*dimension+i]*variable_addr[fac];
               if (elem2>=0)
+#pragma omp atomic
                 gradient_elem_addr[(elem2*nb_comp)*dimension+i] -= face_normales_addr[fac*dimension+i]*variable_addr[fac];
             }
         }
     }
 
-  const DoubleVect& inverse_volumes = zone_VEF.inverse_volumes();
-  const double * inverse_volumes_addr = inverse_volumes.addr();
+  const double * inverse_volumes_addr = copyToDevice(zone_VEF.inverse_volumes());
 
   if (gradient_elem_nb_dim==3)
-    #pragma omp target teams distribute parallel for map(to:inverse_volumes_addr[0:inverse_volumes.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
-    for ( elem=0; elem<nb_elem; elem++)
-      for (icomp=0; icomp<nb_comp; icomp++)
-        for (i=0; i<dimension; i++)
+    #pragma omp target teams distribute parallel for map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
+    for (int elem=0; elem<nb_elem; elem++)
+      for (int icomp=0; icomp<nb_comp; icomp++)
+        for (int i=0; i<dimension; i++)
           gradient_elem_addr[(elem*nb_comp+icomp)*dimension+i] *= inverse_volumes_addr[elem];
   else
-    #pragma omp target teams distribute parallel for map(to:inverse_volumes_addr[0:inverse_volumes.size_array()]) map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
-    for ( elem=0; elem<nb_elem; elem++)
-      for (i=0; i<dimension; i++)
+    #pragma omp target teams distribute parallel for map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
+    for (int elem=0; elem<nb_elem; elem++)
+      for (int i=0; i<dimension; i++)
         gradient_elem_addr[(elem*nb_comp)*dimension+i] *= inverse_volumes_addr[elem];
 }
 
