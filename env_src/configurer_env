@@ -567,7 +567,7 @@ echo "Looking for system directories..."
 #liste="/bin /etc /lib /opt /product /sbin /usr /var"
 # Rajout /usr/lpp pour IBM Orleans (14/10/03)
 # On supprime /usr/local et /usr/lpp trop longs sur IBM Orleans
-liste=$TRUST_FORCE_SEARCH" /bin /sbin /usr/bin /usr/ibmcxx /usr/sbin /usr/dt /usr/bsd /usr/etc /usr/X11R6 /usr/freeware /usr/ccs /usr/lib /usr/lib32 /usr/lib64"
+liste=$TRUST_FORCE_SEARCH" /bin /sbin /usr/bin /usr/ibmcxx /usr/sbin /usr/dt /usr/bsd /usr/etc /usr/X11R6 /usr/freeware /usr/ccs /usr/lib /usr/lib32 /usr/lib64 /usr/local"
 for rep in $liste
 do
    # Essai avec -follow ?
