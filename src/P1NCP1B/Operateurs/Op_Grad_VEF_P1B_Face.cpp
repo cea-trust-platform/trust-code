@@ -338,7 +338,7 @@ ajouter_elem(const DoubleTab& pre,
           if(elem!=face_voisins_addr[2*face]) signe=-1;
           for(int comp=0; comp<dimension; comp++)
             {
-              #pragma omp atomic update
+              #pragma omp atomic
               grad_addr[dimension*face+comp] -= pe*signe*face_normales_addr[dimension*face+comp]*porosite_face_addr[face];
             }
         }
@@ -408,7 +408,7 @@ ajouter_som(const DoubleTab& pre,
                 int face2 = elem_faces_addr[elem*nfe+indice2];
                 for(int comp=0; comp<dimension; comp++)
                   {
-                    #pragma omp atomic update
+                    #pragma omp atomic
                     grad_addr[face2*dimension+comp] -= coeff_som_addr[elem]*pre_addr[som_addr[elem*nfe+indice]]*sigma[comp]*porosite_face_addr[face2];
                   }
               }
