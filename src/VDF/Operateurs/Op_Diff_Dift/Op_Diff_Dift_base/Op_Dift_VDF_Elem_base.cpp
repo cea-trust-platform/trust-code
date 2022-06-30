@@ -123,14 +123,18 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_var_axi() const
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
   const int D = dimension;
 
-  DoubleVect numfa(2 * D), h(D);
+  IntVect numfa(2 * D);
+  DoubleVect h(D);
 
   for (int e = 0; e < zone_VDF.nb_elem(); e++)
     {
-      for (int i = 0; i < 2 * D; i++) numfa(i) = elem_faces(e, i);
-      for (int d = 0; d < D; d++) h(d) = zone_VDF.dist_face_axi(numfa(d), numfa(d + D), d);
+      for (int i = 0; i < 2 * D; i++)
+        numfa(i) = elem_faces(e, i);
+      for (int d = 0; d < D; d++)
+        h(d) = zone_VDF.dist_face_axi(numfa(d), numfa(d + D), d);
       double invh = 0.;
-      for (int d = 0; d < D; d++) invh += 1. / (h(d) * h(d));
+      for (int d = 0; d < D; d++)
+        invh += 1. / (h(d) * h(d));
       const double alpha_local = (alpha_(e) + alpha_t(e)) * invh;
       coef = std::max(coef, alpha_local);
     }
