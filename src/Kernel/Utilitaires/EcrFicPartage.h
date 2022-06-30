@@ -65,6 +65,7 @@ public:
   Sortie& operator <<(const double ob) override;
 #ifndef INT_is_64_
   Sortie& operator <<(const long ob) override;
+  Sortie& operator <<(const unsigned long ob) override;
 #endif
 
   int put(const unsigned* ob, int n, int pas) override;

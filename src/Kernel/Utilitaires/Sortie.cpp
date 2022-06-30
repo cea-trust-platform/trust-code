@@ -135,6 +135,7 @@ Sortie& Sortie::operator<<(const double ob) { return operator_template<double>(o
 
 #ifndef INT_is_64_
 Sortie& Sortie::operator<<(const long ob) { return operator_template<long>(ob); }
+Sortie& Sortie::operator<<(const unsigned long ob) { return operator_template<unsigned long>(ob); }
 int Sortie::put(const long * ob, int n, int nb_col) { return put_template<long>(ob,n,nb_col); }
 #endif
 
@@ -241,7 +242,7 @@ Sortie& Sortie::operator <<(const char* ob)
       // .Zones binaires...
       if (strcmp(ob, " "))
         {
-          const int n = strlen(ob) + 1;
+          const int n = (int)strlen(ob) + 1;
           ostream_->write((char *) ob, n * sizeof(char));
         }
     }

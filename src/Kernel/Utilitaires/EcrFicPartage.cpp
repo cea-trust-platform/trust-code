@@ -299,6 +299,7 @@ Sortie& EcrFicPartage::operator <<(const double ob) { return operator_template<d
 
 #ifndef INT_is_64_
 Sortie& EcrFicPartage::operator <<(const long ob) { return operator_template<long>(ob);}
+Sortie& EcrFicPartage::operator <<(const unsigned long ob) { return operator_template<unsigned long>(ob);}
 #endif
 
 int EcrFicPartage::put(const unsigned* ob, int n, int pas) { return put_template<unsigned>(ob,n,pas); }

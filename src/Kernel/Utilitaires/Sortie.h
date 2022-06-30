@@ -79,6 +79,7 @@ public:
   virtual Sortie& operator<<(const unsigned    ob);
 #ifndef INT_is_64_
   virtual Sortie& operator<<(const long      ob);
+  virtual Sortie& operator<<(const unsigned long      ob);
 #endif
   virtual Sortie& operator<<(const float     ob);
   virtual Sortie& operator<<(const double    ob);

@@ -70,6 +70,12 @@ public:
     exit();
     return *this;
   };
+  Sortie& operator <<(const unsigned long ob) override
+  {
+    Cerr << "EcrFicPartageMPIIO::operator<<(...) not implemented." << finl;
+    exit();
+    return *this;
+  };
 #endif
   Sortie& operator <<(const float ob) override;
   Sortie& operator <<(const double ob) override;

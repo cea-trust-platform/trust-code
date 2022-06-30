@@ -40,6 +40,7 @@ public:
   Sortie& operator <<(const char* ob) override { return *this; }
 #ifndef INT_is_64_
   Sortie& operator <<(const long ob) override { return *this; }
+  Sortie& operator <<(const unsigned long ob) override { return *this; }
 #endif
 
   int put(const unsigned* ob, int n, int pas=1) override { return 1; }
