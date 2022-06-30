@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <string>
 #include <math.h>
+#include <algorithm>
 
 int Nom::nb_noms=0;
 
@@ -285,9 +286,7 @@ Nom::~Nom()
 // Postcondition:
 Nom& Nom::majuscule()
 {
-  int length = nom_.size();
-  for(int p = 0; p < length; p++)
-    nom_[p] = toupper(nom_[p]);
+  std::transform(nom_.begin(), nom_.end(), nom_.begin(), ::toupper);
   return *this;
 }
 
@@ -297,7 +296,7 @@ Nom& Nom::majuscule()
 //    Exemple : Nom("hello").longueur() == 6
 int Nom::longueur() const
 {
-  return nom_.size()+1;
+  return (int)nom_.size()+1;
 }
 
 // Description:
@@ -387,7 +386,7 @@ Nom& Nom::suffix(const char* const s)
 {
   if (debute_par(s))
     {
-      int n2 = strlen(s);
+      int n2 = (int)strlen(s);
       nom_.erase(0,n2);
     }
   return *this;
@@ -397,8 +396,8 @@ const Nom Nom::getSuffix(const char* const s) const
 {
   if (debute_par(s))
     {
-      const int n1 = strlen(s);
-      const int n2 = nom_.size();
+      const int n1 = (int)strlen(s);
+      const int n2 = (int)nom_.size();
       const std::string str1 = nom_.substr(n1,n2);
       return Nom(str1);
 
@@ -423,7 +422,7 @@ int Nom::finit_par(const std::string& s) const
 int Nom::find(const std::string& n) const
 {
   std::size_t x = nom_.find(n);
-  return (x != std::string::npos) ? x : -1;
+  return (x != std::string::npos) ? (int)x : -1;
 }
 
 int Nom::find(const char* const n ) const
@@ -445,8 +444,8 @@ Nom& Nom::prefix(const char* const s)
 {
   if (finit_par(s))
     {
-      int n = nom_.size();
-      int n2 = strlen(s);
+      int n = (int)nom_.size();
+      int n2 = (int)strlen(s);
       nom_.erase(n-n2,n2);
     }
   return *this;
@@ -456,8 +455,8 @@ const Nom Nom::getPrefix(const char* const s) const
 {
   if (finit_par(s))
     {
-      const int n1 = nom_.size();
-      const int n2 = strlen(s);
+      const int n1 = (int)nom_.size();
+      const int n2 = (int)strlen(s);
       const std::string str1 = nom_.substr(0,n1-n2);
       return Nom(str1);
 
@@ -523,7 +522,7 @@ int Nom::est_egal_a(const Objet_U& x) const
 // Postcondition:
 Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
 {
-  int compteur=nom_.size();
+  int compteur=(int)nom_.size();
   const char* ptr=nom_.c_str()+compteur;
   while((*ptr!='.') && (*ptr!='/')&&(compteur>0))  // backward loop
     {
@@ -537,7 +536,7 @@ Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
   int pas_de_point=0;
   if(compteur==0)
     {
-      compteur=nom_.size();
+      compteur=(int)nom_.size();
       pas_de_point=1 ;
     }
   std::string newname=nom_.substr(0,compteur);
@@ -546,8 +545,8 @@ Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
   int digits=0,diviseur=0;
   if(without_padding)
     {
-      digits = (n==0) ? 1 : log10(n)+1;
-      diviseur = pow(10, digits-1);
+      digits = (n==0) ? 1 : (int)std::lround(std::truncl(log10(n)+1.0));
+      diviseur = (int)std::lround(std::truncl(pow(10, digits-1)));
     }
   else
     {
@@ -581,7 +580,7 @@ Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
     }
 
   int prefix_len = 1; //for the underscore
-  if(prefixe) prefix_len+=strlen(prefixe);
+  if(prefixe) prefix_len+=(int)strlen(prefixe);
 
   char *c_numero=new char[prefix_len+digits+1];
   int resultat;
@@ -590,7 +589,7 @@ Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
   for (int i=prefix_len; i<prefix_len+digits; i++)
     {
       resultat=n/diviseur;
-      char c=('0'+resultat);
+      char c= '0' + (char)resultat;
       c_numero[i]=c;
       n-=resultat*diviseur;
       diviseur/=10;
@@ -634,7 +633,7 @@ Nom Nom::basename() const
 {
   Nom dirname("");
   Nom the_basename(nom_);
-  int iLength = nom_.size();
+  int iLength = (int)nom_.size();
   for (int i=0; i<iLength; i++)
     {
       dirname+=nom_[i];
