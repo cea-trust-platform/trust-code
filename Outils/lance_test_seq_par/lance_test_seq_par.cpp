@@ -197,7 +197,7 @@ void Ote_blanc (StringPtr chaine)
 {
   int      len;
 
-  len = strlen(chaine);
+  len = (int)strlen(chaine);
   if(mode_debug)
     printf("Longueur %d Valeur de la chaine initiale : <%s>\n", len, chaine);
   for (int i = len-1; i > -1; i--){
