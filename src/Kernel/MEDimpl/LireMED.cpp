@@ -1286,11 +1286,15 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
       std::vector< std::string > meshes_names = data->getMeshesNames();
       if (std::find(meshes_names.begin(), meshes_names.end(), meshName) == meshes_names.end())
         {
-          Cerr << "Mesh " << nom_dom << " not found in the med file " << nom_fic << " !" << finl;
-          Cerr << "List of meshes found:" << finl;
-          for(unsigned int i = 0; i<meshes_names.size(); i++)
-            Cerr << meshes_names[i] << finl;
-          Process::exit(-1);
+          if (meshName == "--any--") meshName = meshes_names[0]; //magic name -> we take the first mesh
+          else
+            {
+              Cerr << "Mesh " << nom_dom << " not found in the med file " << nom_fic << " !" << finl;
+              Cerr << "List of meshes found:" << finl;
+              for(unsigned int i = 0; i<meshes_names.size(); i++)
+                Cerr << meshes_names[i] << finl;
+              Process::exit(-1);
+            }
         }
       const MEDFileMesh* mfmesh = data->getMeshWithName(meshName);
       const MEDFileUMesh* file = 0;
