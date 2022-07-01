@@ -54,7 +54,7 @@ entier LataOptions::read_int_opt(const Nom & s)
     ptr = s;
   errno = 0;
   char *errorptr = 0;
-  entier x = strtol(ptr+1, &errorptr, 0 /* base 10 par defaut */);
+  entier x = (entier)strtol(ptr+1, &errorptr, 0 /* base 10 par defaut */);
   if (errno || *errorptr != 0) {
     Journal() << "LataOptions error reading int parameter: " << s << endl;
     throw;
@@ -167,7 +167,7 @@ entier LataOptions::parse_option(const Nom & s)
     set_Journal_level(level);
   } else if (s.debute_par("regularize=")) {
     regularize = true;
-    regularize_tolerance = read_float_opt(s);
+    regularize_tolerance = (float)read_float_opt(s);
   } else if (s.debute_par("regularize_polyedre=")) {
     regularize_polyedre = read_int_opt(s);
   } else if (s.debute_par("extend_domain=")) {
@@ -176,9 +176,9 @@ entier LataOptions::parse_option(const Nom & s)
     invalidate = true;
   } else if (s.debute_par("reconnect=")) {
     reconnect = true;
-    reconnect_tolerance = read_float_opt(s);   
+    reconnect_tolerance = (float)read_float_opt(s);
   } else if (s.debute_par("reconnect_tolerance=")) {
-    reconnect_tolerance = read_float_opt(s);   
+    reconnect_tolerance = (float)read_float_opt(s);
   } else if (s == "dualmesh") {
     dual_mesh = true;
   } else if (s == "nodualmesh") {
@@ -494,14 +494,14 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData> & geoms_data,
         nom_sommets = "SOMMETS_IJK_K";
       const LataDBField & coord = lataDB().get_field(current_tstep, lata_geom_name, nom_sommets, "", LataDB::FIRST_AND_CURRENT);
       // Nombre d'elements dans la direction du decoupage parallele:
-      const entier nelem = coord.size_ - 1;
+      const entier nelem = (entier)(coord.size_ - 1);
       // Si les tranches sont trop petites diminuer le nombre de blocs
       if (nblocks > (nelem + 3) / 4)
         nblocks = (nelem + 3) / 4;
     } else {
       dim = lataDB().get_field(current_tstep, lata_geom_name, "SOMMETS", "*", LataDB::FIRST_AND_CURRENT).nb_comp_;
       if (lataDB().field_exists(current_tstep, lata_geom_name, "JOINTS_SOMMETS", LataDB::FIRST_AND_CURRENT))
-        nblocks = lataDB().get_field(current_tstep, lata_geom_name, "JOINTS_SOMMETS", "*", LataDB::FIRST_AND_CURRENT).size_;
+        nblocks = (entier)lataDB().get_field(current_tstep, lata_geom_name, "JOINTS_SOMMETS", "*", LataDB::FIRST_AND_CURRENT).size_;
     }
 
     // Initialize data common to all domains:
@@ -1020,10 +1020,10 @@ LataOptions::LataOptions()
   nc_mesh = false;
   boundary_mesh = false;
   reconnect = false;
-  reconnect_tolerance = 1e-6;
+  reconnect_tolerance = 1e-6f;
   regularize = false;
   extend_domain = 0;
-  regularize_tolerance = 1e-6;
+  regularize_tolerance = 1e-6f;
   invalidate = false;
   load_virtual_elements = false;
   user_fields_ = false;

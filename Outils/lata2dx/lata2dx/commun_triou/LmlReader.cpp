@@ -124,7 +124,7 @@ void lml_reader(const char * lmlfilename, const char * data_filename, LataDB & l
       sommets.uname_ = Field_UName(sommets.geometry_, sommets.name_, "");
       sommets.datatype_ = lata_db.default_type_float();
       sommets.datatype_.file_offset_ = file_offset++; // see file_offset_blurb
-      nodes.resize(sommets.size_, sommets.nb_comp_);
+      nodes.resize((int)sommets.size_, sommets.nb_comp_);
       for (entier i = 0; i < sommets.size_; i++)
         for (entier j = 0; j < sommets.nb_comp_; j++) {
           double x;
@@ -202,7 +202,7 @@ void lml_reader(const char * lmlfilename, const char * data_filename, LataDB & l
 
       Journal(lmllevel+1) << " " << elements.size_ << " elements " << motlu << endl;
       IntTab elems;
-      elems.resize(elements.size_, elements.nb_comp_);
+      elems.resize((int)elements.size_, elements.nb_comp_);
       for (entier i = 0; i < elements.size_; i++) {
         if (i != 0) {
           is >> motlu; // element type
@@ -307,7 +307,7 @@ void lml_reader(const char * lmlfilename, const char * data_filename, LataDB & l
       field.datatype_ = lata_db.default_type_float();
       field.datatype_.file_offset_ = file_offset++; // see file_offset_blurb
       FloatTab tab;
-      tab.resize(field.size_, field.nb_comp_);
+      tab.resize((int)field.size_, field.nb_comp_);
       for (entier i = 0; i < field.size_; i++) {
         entier n;
         is >> n;

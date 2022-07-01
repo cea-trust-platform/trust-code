@@ -29,6 +29,7 @@
 
 #include <LataFilter.h>
 #include <Operator.h>
+#include <limits>
 
 #define verb_level 4
 
@@ -59,7 +60,7 @@ static void retirer_doublons(Tab & tab, const T epsilon)
   int i = 0;
   int j;
   const int n = tab.size_array();
-  T last_tab_i = -1e40;
+  T last_tab_i = std::numeric_limits<T>::min();
   for (j = 0; j < n; j++) {
     const T x = tab[j];
     assert(x >= last_tab_i); // Array must be sorted
@@ -95,23 +96,23 @@ void build_geometry_(OperatorRegularize & op,
       for (i = 0; i < nsom; i++)
         coord[i] = src.nodes_(i, i_dim);
       coord.ordonne_array();
-      retirer_doublons(coord, op.tolerance_);
+      retirer_doublons(coord, (float)op.tolerance_);
       product_n *= coord.size_array();
       // Add extended domain layer:
       if (coord.size_array() > 1) {
         const entier n = coord.size_array();
         const entier l = op.extend_layer_;
         coord.resize_array(n + l * 2);
-        double x0 = coord[n-1];
-        double delta = coord[n-2] - x0;
+        float x0 = coord[n-1];
+        float delta = coord[n-2] - x0;
         for (i = 1; i <= l; i++)
-          coord[n + l + i] = x0 + delta * i;
+          coord[n + l + i] = x0 + delta * (float)i;
         for (i = l-1; i >= 0; i--)
           coord[i + l] = coord[i];
         x0 = coord[l];
         delta = coord[l+1] - x0;
         for (i = 1; i <= l; i++)
-          coord[l - i] = x0 - delta * i;
+          coord[l - i] = x0 - delta * (float)i;
       }
       nb_som_dir[i_dim] = coord.size_array();
     }

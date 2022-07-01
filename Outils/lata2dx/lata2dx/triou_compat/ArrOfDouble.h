@@ -51,6 +51,8 @@ class VDoubledata;
 class ArrOfDouble
 {
 public:
+  using value_type = double;
+
   //
   // Destructeur
   //

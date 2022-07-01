@@ -63,10 +63,12 @@ public:
   }
   DX_stream & operator<<(const float f) { (*os_) << f; return *this; }
   DX_stream & operator<<(const int i) { (*os_) << i; return *this; }
+  DX_stream & operator<<(const long i) { (*os_) << i; return *this; }
   DX_stream & operator<<(const char * s) { (*os_) << s; return *this; }
   DX_stream & operator<<(DX_stream & f(DX_stream &)) { return f(*this); }
 
-  void write(char * ptr, int sz) { os_->write(ptr, sz); }
+  void write(char * ptr, long sz) { os_->write(ptr, sz); }
+
   entier ok() { return os_ != 0; }
   entier ascii() { return ascii_; }
   std::ostream & stream() { return *os_; }
@@ -101,8 +103,8 @@ void DX_write_vect(DX_stream & os, int dxobject, const ArrOfFloat & v)
 }
 void DX_write_vect(DX_stream & os, int dxobject, const FloatTab & v)
 {
-  const int places = v.dimension(0);
-  const int shape  = v.dimension(1);
+  const long places = v.dimension(0);
+  const long shape  = v.dimension(1);
   os << "object " << dxobject << " class array" << endl;
   os << "type float rank 1 shape " << shape << " items " << places << " ";
 
@@ -111,8 +113,8 @@ void DX_write_vect(DX_stream & os, int dxobject, const FloatTab & v)
     os.write((char*)v.addr(), sizeof(float) * places * shape);
   } else {
     os << "ascii data follows" << endl;
-    for (int i=0;i<places;i++) {
-      for (int j=0;j<shape;j++)
+    for (entier i=0;i< (entier)places;i++) {
+      for (entier j=0;j< (entier)shape;j++)
         os << v(i, j) << " ";
       os << endl;
     }
@@ -125,8 +127,8 @@ void DX_write_vect(DX_stream & os, int dxobject, const IntTab & v)
     Journal() << "Error DX_write_vect : int size != 32 bits" << endl;
     throw OpenDXWriter::DXInternalError;
   }
-  const int places = v.dimension(0);
-  const int shape  = v.dimension(1);
+  const long places = v.dimension(0);
+  const long shape  = v.dimension(1);
   os << "object " << dxobject << " class array" << endl;
   os << "type int rank 1 shape " << shape << " items " << places << " ";
 
@@ -170,7 +172,7 @@ void OpenDXWriter::init_cout(double time, int ascii)
   dx_time_index_ = ++index_counter_;
   FloatTab t;
   t.resize(1,1);
-  t(0,0) = time;
+  t(0,0) = (float)time;
   DX_write_vect(*os_, dx_time_index_, t);
 }
 
@@ -181,7 +183,7 @@ void OpenDXWriter::init_file(double time, Nom & filename_, int ascii)
   dx_time_index_ = ++index_counter_;
   FloatTab t;
   t.resize(1,1);
-  t(0,0) = time;
+  t(0,0) = (float)time;
   DX_write_vect(*os_, dx_time_index_, t);
 }
 

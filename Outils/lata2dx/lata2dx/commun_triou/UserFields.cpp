@@ -327,7 +327,7 @@ FieldType UserFields::interpoler_elem_vers_som(const Field_Id & id)
                   entier som = som0 + (kk * nsom_y + jj) * nsom_x + ii;
                   for (entier compo = 0; compo < nbcompo; compo++)
                     resu.data_(som, compo) += source.data_(elem, compo);
-                  poids[som] += 1.;
+                  poids[som] += 1.0f;
                 }
               }
             }
@@ -354,7 +354,7 @@ FieldType UserFields::interpoler_elem_vers_som(const Field_Id & id)
           float x = source.data_(i, k);
           resu.data_(som, k) += x;
         }
-        poids[som] += 1.;
+        poids[som] += 1.0f;
       }
     }
   }
@@ -545,7 +545,7 @@ FieldType UserFields::calculer_angle(const Field_Id & id)
       for (int s=0;s<nb_som_elem;s++)
         for (int d=0;d<nodes_.dimension(1);d++)
           coords(s,d)=nodes_(les_elem(i,s),d);
-      resu.data_(i, 0) = largest_angle_2(coords);
+      resu.data_(i, 0) = (float)largest_angle_2(coords);
         
     }
   
@@ -612,7 +612,7 @@ FieldType UserFields::calculer_normale(const Field_Id & id)
           
         }
       for (int k = 0; k < nbcompo; k++) {
-        resu.data_(i, k) = nor[k];
+        resu.data_(i, k) = (float)nor[k];
       }
        
     }
@@ -697,7 +697,7 @@ FieldType UserFields::interpoler_faces_vdf_vers_elem(const Field_Id & id)
               face2 = face1 + nfaces_y * nfaces_x;
             // On fait la moyenne des vitesses sur les deux faces
             double v_moy = (source.data_(face1, dir) + source.data_(face2, dir)) * 0.5;
-            resu.data_(elem, dir) = v_moy;
+            resu.data_(elem, dir) = (float)v_moy;
           }
         }
         elem++;
@@ -1020,7 +1020,7 @@ FieldType FiltreSpatial::filtrer(const FieldType & source, const Field_Id & id) 
   double fact = pas * pas;
   if (pbDim_ == 3)
     fact *= pas;
-  resu.data_ *= (1. / fact);
+  resu.data_ *= (float)(1. / fact);
 
   return resu;
 }

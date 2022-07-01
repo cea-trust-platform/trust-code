@@ -1592,7 +1592,7 @@ void LataDB::read_data2_(LataDataFile & f,
 
   if (is_med(fld.filename_))
     {
-      read_data2_med_(fld,data,debut,n,lines_to_read);
+      read_data2_med_(fld,data, (entier)debut,n,lines_to_read);
       return;
     }
   // Si file_offset_ vaut 0 on y va car on peut avoir lu a un autre endroit avant.
@@ -1604,7 +1604,7 @@ void LataDB::read_data2_(LataDataFile & f,
     if (lines_to_read)
       n = lines_to_read->size_array();
     else
-      n = fld.size_;
+      n = (entier)fld.size_;
   }
 
   // in old lata format, 2d data is written as 3d:
@@ -1669,7 +1669,7 @@ void LataDB::read_data2_(LataDataFile & f,
             chunk_size = size_in_file - next_line;
             if (chunk_size > 1024)
               chunk_size = 1024;
-            tmp.resize(chunk_size, nb_comp_in_file);
+            tmp.resize((int)chunk_size, nb_comp_in_file);
             bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, (next_line - current_file_pos) * nb_comp_in_file);
             bloc_read(f, fld.datatype_.msb_, fld.datatype_.type_, tmp);
             current_chunk_pos = next_line;
@@ -1678,7 +1678,7 @@ void LataDB::read_data2_(LataDataFile & f,
           // Extract data from tmp array
           const long long tmp_index = next_line - current_chunk_pos;
           for (entier j = 0; j < nb_comp_in_file; j++)
-            (*data)(i, j) = tmp(tmp_index, j);
+            (*data)(i, j) = tmp((entier)tmp_index, j);
         }
         if (current_file_pos != size_in_file)
           bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, (size_in_file - current_file_pos) * nb_comp_in_file);
@@ -1723,7 +1723,7 @@ void LataDB::read_data2_(LataDataFile & f,
                 chunk_size = size_in_file - next_line;
                 if (chunk_size > 1024)
                   chunk_size = 1024;
-                tmp.resize(chunk_size, 1);
+                tmp.resize((entier)chunk_size, 1);
                 bloc_read_skip(f, fld.datatype_.msb_, fld.datatype_.type_, (next_line - current_file_pos));
                 bloc_read(f, fld.datatype_.msb_, fld.datatype_.type_, tmp);
                 current_chunk_pos = next_line;
@@ -2202,7 +2202,7 @@ FileOffset LataDB::write_data_(entier tstep, const Field_UName & uname, const C_
     throw;
   }
 
-  const entier n = fld.size_;
+  const entier n = (entier)fld.size_;
   
   switch (fld.datatype_.data_ordering_) {
   case LataDBDataType::C_ORDERING: 

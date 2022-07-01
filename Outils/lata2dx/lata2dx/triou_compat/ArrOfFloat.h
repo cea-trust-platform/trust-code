@@ -51,6 +51,8 @@ class VFloatdata;
 class ArrOfFloat
 {
 public:
+  using value_type = float;
+
   //
   // Destructeur
   //

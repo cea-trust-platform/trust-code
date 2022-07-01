@@ -84,11 +84,12 @@ void Domain::set_lata_block_offset(const LataField_base::Elem_som loc, entier n)
 template<class TabType>
 void DomainUnstructured::compute_cell_center_coordinates(TabType & coord, entier index_begin) const
 {
+  using TYPE = typename TabType::value_type;
   const entier dim = nodes_.dimension(1);
   const entier nb_elem = elements_.dimension(0);
   const entier nb_som_elem = elements_.dimension(1);
-  const double facteur = 1. / (double) nb_som_elem;
-  double tmp[3];
+  const TYPE facteur = (TYPE)(1.0 / (double)nb_som_elem);
+  TYPE tmp[3];
   for (int i = 0; i < nb_elem; i++) {
     int j, k;
     tmp[0] = tmp[1] = tmp[2] = 0.;
@@ -259,7 +260,7 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB & lataDB,
 
     IntTab & joint = joints.add();
     if (lataDB.field_exists(id.timestep_, id.name_, nom)) {
-      entier nbitems = lataDB.get_field(id.timestep_, id.name_, nom2, "*").size_;
+      entier nbitems = (entier)lataDB.get_field(id.timestep_, id.name_, nom2, "*").size_;
       IntTab tmp;
       lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, nom, "*"), tmp);
       nproc = tmp.dimension(0);
@@ -334,7 +335,7 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB & lataDB,
       if (id.block_ < nproc-1)
         nb_virt_elems = joints_virt_elems(id.block_+1, 0) - joints_virt_elems(id.block_, 0);
       else
-        nb_virt_elems = lataDB.get_field(id.timestep_, id.name_, "VIRTUAL_ELEMENTS", "*").size_ - joints_virt_elems(id.block_, 0);
+        nb_virt_elems = (entier)lataDB.get_field(id.timestep_, id.name_, "VIRTUAL_ELEMENTS", "*").size_ - joints_virt_elems(id.block_, 0);
       Journal(info_level+1) << " Number of virtual elements for block " << id.block_ << "=" << nb_virt_elems << endl;
       //  Second: load the indexes of the virtual elements to load:
       IntTab virt_elems;

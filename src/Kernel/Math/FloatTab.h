@@ -22,6 +22,8 @@ class FloatTab : public ArrOfFloat
 {
   Declare_instanciable_sans_constructeur_ni_destructeur(FloatTab);
 public:
+  using value_type = float;
+
   FloatTab();
   FloatTab(int ni, int nj);
   FloatTab(const FloatTab& tab);

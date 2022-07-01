@@ -129,7 +129,7 @@ void build_geometry_(OperatorDualMesh & op,
     c2.resize_array(n*2+1);
     for (int i = 0; i < n; i++) {
       c2[i*2] = c1[i];
-      c2[i*2+1] = (c1[i] + c1[i+1]) * 0.5;
+      c2[i*2+1] = (c1[i] + c1[i+1]) * 0.5f;
     }
     c2[n*2] = c1[n];
   }
