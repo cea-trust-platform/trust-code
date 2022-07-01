@@ -70,6 +70,8 @@ public :
   void iterer_NS(Equation_base&, DoubleTab& current, DoubleTab& pression, double, Matrice_Morse&, double, DoubleTrav&,int nb_iter,int& converge, int& ok) override;
   bool iterer_eqs(LIST(REF(Equation_base)) eqs, int compteur, int& ok) override;
 
+  /* memoization de iterer_eqs: public pour que la puissance iteree de TRUST-NK puisse la partager */
+  std::map<std::vector<intptr_t>, Matrice_Bloc> mbloc;
 protected :
 
   DoubleTab Ustar_old;        //U* = alpha_ U*_new + (1-alpha_)*U*_old   en pratique alpha = 1
@@ -79,8 +81,6 @@ protected :
   Entree& lire(const Motcle&, Entree&) override;
   void calculer_correction_en_vitesse(const DoubleTrav& correction_en_pression, DoubleTrav& gradP, DoubleTrav& correction_en_vitesse,const Matrice_Morse& matrice, const Operateur_Grad& gradient );
 
-  /* memoization de iterer_eqs */
-  std::map<std::vector<intptr_t>, Matrice_Bloc> mbloc;
 };
 
 void diviser_par_rho_np1_face(Equation_base& eqn, DoubleTab& tab);

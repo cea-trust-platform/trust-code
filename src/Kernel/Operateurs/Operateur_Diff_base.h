@@ -41,6 +41,7 @@ public:
 
   //liste d'Op_Diff de problemes resolus simultanement (thermique monolithique)
   mutable std::vector<const Operateur_Diff_base *> op_ext;
+  virtual void init_op_ext() const {}; //remplissage de op_ext (ne peut pas etre fait dans completer(), trop tot)
 
 protected:
   virtual const Champ_base& diffusivite_pour_pas_de_temps() const;

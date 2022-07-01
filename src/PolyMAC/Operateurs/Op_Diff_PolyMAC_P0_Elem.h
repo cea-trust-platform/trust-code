@@ -35,6 +35,7 @@ class Op_Diff_PolyMAC_P0_Elem : public Op_Diff_PolyMAC_P0_base
 public :
   Op_Diff_PolyMAC_P0_Elem();
   void completer() override;
+  void init_op_ext() const override; //fait plus de travail qu'en PolyMAC: op_ext + som_ext, pe_ext...
   // virtual void calculer_flux_bord(const DoubleTab& inco) const { abort(); };
 
   /* interface {dimensionner,ajouter}_blocs */
@@ -55,7 +56,6 @@ private:
   mutable int s_dist_init_ = 0;
 
   /* tableaux op_ext et pe_ext */
-  void init_som_ext() const; //initialisation
   mutable IntTab som_mix, som_ext_d, som_ext_pe, som_ext_pf; //sommet s = som_ext(i) : melange-t-il les composantes, couple (probleme, elem) dans som_ext_e([som_ext_d(i, 0), som_ext_d(i + 1, 0)[, 0/1)
   //faces Echange_contact (pb1, face1, pb2, face2) dans som_ext_f([som_ext_d(i, 1), som_ext_d(i + 1, 1)[, 0/1/2/3)
   mutable int som_ext_init_ = 0;

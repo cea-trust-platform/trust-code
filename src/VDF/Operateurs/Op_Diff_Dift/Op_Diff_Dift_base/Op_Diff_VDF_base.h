@@ -43,7 +43,7 @@ public:
   {
     return 1;
   };
-  void init_op_ext() const;
+  void init_op_ext() const override;
 
 protected:
   Iterateur_VDF iter;
