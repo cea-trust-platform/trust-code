@@ -47,6 +47,7 @@ public :
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void completer() override;
   void discretiser_vitesse() override;
+  void discretiser_grad_p() override;
   void mettre_a_jour(double temps) override;
   int impr(Sortie& os) const override
   {

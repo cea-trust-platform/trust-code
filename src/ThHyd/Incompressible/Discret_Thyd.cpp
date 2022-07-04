@@ -68,10 +68,10 @@ void Discret_Thyd::divergence_U(const Schema_Temps_base& sch, Zone_dis& z, Champ
   discretiser_champ("divergence_vitesse", z.valeur(), "divergence_U", "m3/s", 1, 1, sch.temps_courant(), ch);
 }
 
-void Discret_Thyd::gradient_P(const Schema_Temps_base& sch, Zone_dis& z, Champ_Inc& ch) const
+void Discret_Thyd::gradient_P(const Schema_Temps_base& sch, Zone_dis& z, Champ_Inc& ch, int nb_comp) const
 {
   Cerr << "Pressure gradient discretization" << finl;
-  discretiser_champ("gradient_pression", z.valeur(), "gradient_pression", "m/s2", dimension, 1, sch.temps_courant(), ch);
+  discretiser_champ("gradient_pression", z.valeur(), "gradient_pression", "m/s2", dimension * nb_comp, 1, sch.temps_courant(), ch);
 }
 
 /*! @brief NE FAIT RIEN, provoque une erreur A surcharger dans les classes derivees.

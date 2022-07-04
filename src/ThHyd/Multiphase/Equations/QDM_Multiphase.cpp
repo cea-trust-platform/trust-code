@@ -196,6 +196,12 @@ void QDM_Multiphase::mettre_a_jour(double temps)
             }
         if (copied != 1) { Cerr << "Problem in filling the gradients by phase" << finl ; abort();} //on ne connait pas
       }
+  if (gradient_P.non_nul())
+    {
+      gradient_P.valeur().valeurs() = 0;
+      gradient.valeur().ajouter(la_pression.valeur().valeurs(), gradient_P.valeur().valeurs());
+      solv_masse().valeur().appliquer_impl(gradient_P.valeur().valeurs());
+    }
 }
 
 bool QDM_Multiphase::initTimeStep(double dt)
@@ -224,6 +230,12 @@ void QDM_Multiphase::discretiser_vitesse()
 {
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   dis.vitesse(schema_temps(), zone_dis(), la_vitesse, ref_cast(Pb_Multiphase, probleme()).nb_phases());
+}
+
+void QDM_Multiphase::discretiser_grad_p()
+{
+// Ne fait rien ! Est appele par defaut dans Navier_Stokes_std.discretiser() mais pas requis en Pb_Multiphase
+// La dicretisation par dans le QDM_Multiphase.creer_champ()
 }
 
 const Champ_Don& QDM_Multiphase::diffusivite_pour_transport() const
@@ -294,6 +306,17 @@ void QDM_Multiphase::creer_champ(const Motcle& motlu)
       discretisation().discretiser_champ(typeChamp, zone_dis(), multi_scalaire, noms , unites, D*D, 0, grad_vit_phases_[0]);
       champs_compris_.ajoute_champ(grad_vit_phases_[i]);
     }
+
+  if (motlu == "gradient_pression")
+    {
+      if (!gradient_P.non_nul())
+        {
+          const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
+          dis.gradient_P(schema_temps(), zone_dis(), gradient_P, ref_cast(Pb_Multiphase, probleme()).nb_phases());
+          champs_compris_.ajoute_champ(gradient_P);
+        }
+    }
+
 }
 
 Entree& QDM_Multiphase::lire_cond_init(Entree& is)

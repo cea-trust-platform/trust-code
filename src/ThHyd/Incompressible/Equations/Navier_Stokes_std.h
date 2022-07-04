@@ -83,6 +83,7 @@ public :
   SolveurSys& solveur_pression();
   void discretiser() override;
   virtual void discretiser_vitesse();
+  virtual void discretiser_grad_p();
   void completer() override;
   Entree& lire_cond_init(Entree&) override;
   bool initTimeStep(double dt) override;

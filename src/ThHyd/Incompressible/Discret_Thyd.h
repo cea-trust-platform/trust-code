@@ -46,7 +46,7 @@ public :
   void pression(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;
   void pression_en_pa(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;
   void divergence_U(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;
-  void gradient_P(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;
+  void gradient_P(const Schema_Temps_base&, Zone_dis&, Champ_Inc&, int nb_comp = 1) const;
   void concentration(const Schema_Temps_base&, Zone_dis&, Champ_Inc&, int = 1, const Nom nom_champ = "concentration") const;
   // void diametre_hydraulique(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;
   void diametre_hydraulique_elem(const Zone_dis&, const Schema_Temps_base&, Champ_Fonc&) const;

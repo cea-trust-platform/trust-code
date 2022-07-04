@@ -335,7 +335,7 @@ void Navier_Stokes_std::completer()
   la_pression->associer_zone_cl_dis(la_zone_Cl_dis);
 
   divergence_U.associer_eqn(*this);
-  gradient_P.associer_eqn(*this);
+  if (gradient_P.non_nul()) gradient_P.associer_eqn(*this);
   la_pression_en_pa.associer_eqn(*this);
   la_pression_en_pa->completer(la_zone_Cl_dis.valeur());
   la_pression_en_pa->associer_zone_cl_dis(la_zone_Cl_dis);
@@ -383,15 +383,13 @@ void Navier_Stokes_std::discretiser()
   la_pression_en_pa.valeur().add_synonymous(Nom("Pressure"));
 
   dis.divergence_U(schema_temps(), zone_dis(), divergence_U);
-  dis.gradient_P(schema_temps(), zone_dis(), gradient_P);
+  discretiser_grad_p();
   divergence.typer();
   divergence.l_op_base().associer_eqn(*this);
   gradient.typer();
   gradient.l_op_base().associer_eqn(*this);
 
 
-
-  champs_compris_.ajoute_champ(gradient_P);
   champs_compris_.ajoute_champ(divergence_U);
 
 
@@ -407,6 +405,13 @@ void Navier_Stokes_std::discretiser_vitesse()
   dis.vitesse(schema_temps(), zone_dis(), la_vitesse);
 }
 
+void Navier_Stokes_std::discretiser_grad_p()
+{
+  const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
+  dis.gradient_P(schema_temps(), zone_dis(), gradient_P);
+  champs_compris_.ajoute_champ(gradient_P);
+}
+
 /*! @brief Typage de l'assembleur pression.
  *
  * Le nom de l'assembleur utilise est construit comme :
@@ -415,6 +420,7 @@ void Navier_Stokes_std::discretiser_vitesse()
  *   Elle est appelee par Navier_Stokes_std::discretiser()
  *
  */
+
 void Navier_Stokes_std::discretiser_assembleur_pression()
 {
   Nom type = "Assembleur_P_";
