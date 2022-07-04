@@ -13,41 +13,33 @@
 *
 *****************************************************************************/
 
-#ifndef Solv_rocALUTION_included
-#define Solv_rocALUTION_included
+#ifndef Solv_Externe_included
+#define Solv_Externe_included
 
 #include <SolveurSys_base.h>
-#include <rocalution_for_kernel.h>
+#include <ArrOfBit.h>
+#include <TRUSTTab.h>
+class Matrice_Morse;
+class Matrice_Morse_Sym;
 
-class Solv_rocALUTION : public Solv_Externe
+class Solv_Externe : public SolveurSys_base
 {
-  Declare_instanciable_sans_constructeur_ni_destructeur(Solv_rocALUTION);
-
-public :
-  Solv_rocALUTION();
-  Solv_rocALUTION(const Solv_rocALUTION&);
-  ~Solv_rocALUTION() override;
-
-  inline int solveur_direct() const override { return 0; };
-  inline int resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x, int niter_max) override { return resoudre_systeme(a,b,x); };
-
-  int resoudre_systeme(const Matrice_Base& a, const DoubleVect& b, DoubleVect& x) override;
-  void create_solver(Entree& entree);
-
-private :
-  void initialize();
-#ifdef ROCALUTION_ROCALUTION_HPP_
-  LocalMatrix<double> mat;
-  IterativeLinearSolver<LocalMatrix<double>, LocalVector<double>, double>* ls;
-  Solver<LocalMatrix<double>, LocalVector<double>, double>* p;
-  IterativeLinearSolver<LocalMatrix<float>, LocalVector<float>, float>* sp_ls;
-  Solver<LocalMatrix<float>, LocalVector<float>, float>* sp_p;
-  double atol_, rtol_;
-  bool write_system_;
-  bool first_solve_ = true;
-#endif
+  Declare_base_sans_constructeur_ni_destructeur(Solv_Externe);
+public:
+  Solv_Externe():SolveurSys_base::SolveurSys_base() {};
+  ~Solv_Externe() {};
+protected:
+  void construit_matrice_morse_intermediaire(const Matrice_Base&, Matrice_Morse& );
+  void construit_renum(const DoubleVect&);
+  void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M);
+  IntTab renum_;                // Tableau de renumerotation lignes matrice TRUST -> matrice CSR
+  ArrOfBit items_to_keep_;      // Faut t'il conserver dans la matrice CSR la ligne item de la matrice TRUST ?
+  int nb_items_to_keep_;        // Nombre local d'items a conserver
+  int nb_rows_;                 // Nombre de lignes locales de la matrice TRUST
+  int nb_rows_tot_;             // Nombre de lignes globales de la matrice TRUST
+  int decalage_local_global_;   // Decalage numerotation local/global pour matrice CSR et vecteur
+  int matrice_symetrique_;      // Drapeau sur la symetrie de la matrice
 };
 
-#endif
 
-
+#endif //TRUST_SOLV_EXTERNE_H

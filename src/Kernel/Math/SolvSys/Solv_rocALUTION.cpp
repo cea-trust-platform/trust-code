@@ -234,7 +234,7 @@ void Solv_rocALUTION::create_solver(Entree& entree)
   Motcle accolade_ouverte("{"), accolade_fermee("}");
   Motcle solver, motlu;
   EChaine precond;
-  is >> solver;   // On lit le solveur en premier puis les options du solveur: PETSC ksp { ... }
+  is >> solver;   // On lit le solveur en premier puis les options du solveur
   is >> motlu; // On lit l'accolade
   if (motlu != accolade_ouverte)
     {
@@ -271,7 +271,7 @@ void Solv_rocALUTION::create_solver(Entree& entree)
           str+=motlu;
           precond.init(str);
         }
-      else if (motlu==(Motcle)"save_matrix")
+      else if (motlu==(Motcle)"save_matrix_mtx_format")
         {
           write_system_ = true;
         }
@@ -413,10 +413,10 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 
       // Conversion matrice stockage symetrique vers matrice stockage general:
       Matrice_Morse csr;
-      MorseSymToMorseToMatrice_Morse(ref_cast(Matrice_Morse_Sym, a), csr);
+      construit_matrice_morse_intermediaire(a, csr);
 
       // Save TRUST matrix to check:
-      if (write_system_) write_matrix(a);
+      if (write_system_) write_matrix(csr);
 
       int N = csr.get_tab1().size_array() - 1;
       ArrOfInt tab1_c(N+1); // Passage Fortran->C

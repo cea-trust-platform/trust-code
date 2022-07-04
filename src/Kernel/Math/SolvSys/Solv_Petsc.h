@@ -20,7 +20,7 @@
 #include <EChaine.h>
 #include <Nom.h>
 #undef setbit // Sinon conflit de ArrOfBit.h avec Petsc
-#include <SolveurSys_base.h>
+#include <Solv_Externe.h>
 #include <ArrOfBit.h>
 #ifdef PETSCKSP_H
 #include <petscdm.h>
@@ -34,7 +34,7 @@ class Matrice_Morse;
 enum solveur_direct_ { no, mumps, superlu_dist, petsc, umfpack, pastix, cholmod, cli };
 extern bool gmres_right_unpreconditionned;
 
-class Solv_Petsc : public SolveurSys_base
+class Solv_Petsc : public Solv_Externe
 {
 
   Declare_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc);
@@ -91,7 +91,6 @@ public :
   static int numero_solveur;         // Compte les solveurs crees et utilises pour le prefix des options
 protected :
 #ifdef PETSCKSP_H
-  void construit_renum(const DoubleVect&);
   void check_aij(const Matrice_Morse&);
   void Create_vectors(const DoubleVect&); // Construit les vecteurs Petsc x et b
   void Create_DM(const DoubleVect& ); // Construit un DM (Distributed Mesh)
@@ -108,7 +107,6 @@ protected :
   bool enable_ksp_view( void );
   int add_option(const Nom& option, const double& value, int cli = 0);
   int add_option(const Nom& option, const Nom& value, int cli = 0);
-  void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M);
   void SaveObjectsToFile();
   void RestoreMatrixFromFile();
   int compute_nb_rows_petsc(int);
@@ -126,13 +124,6 @@ protected :
   KSP SolveurPetsc_;
   PC PreconditionneurPetsc_;
   DM dm_;                       //description de champs PETSC
-  int decalage_local_global_;   // Decalage numerotation local/global pour matrice et vecteur PETSc
-  int nb_rows_;                 // Nombre de lignes locales de la matrice TRUST
-  int nb_rows_tot_;             // Nombre de lignes globales de la matrice TRUST
-  IntTab renum_;                // Tableau de renumerotation lignes matrice TRUST -> matrice Petsc
-  ArrOfBit items_to_keep_;      // Faut t'il conserver dans la matrice Petsc la ligne item de la matrice TRUST ?
-  int nb_items_to_keep_;        // Nombre local d'items a conserver
-  int matrice_symetrique_;      // Drapeau sur la symetrie de la matrice
   int preconditionnement_non_symetrique_; // Drapeau sur la symetrie de la matrice de preconditionnement
   int nb_it_max_;		// Maximal number of iterations
   int convergence_with_nb_it_max_; 	// Convergence decided with nb_it_max_ specified and not by seuil threshold
@@ -276,7 +267,7 @@ inline void Solv_Petsc::initialize()
     }
 }
 
-inline Solv_Petsc::Solv_Petsc(const Solv_Petsc& org):SolveurSys_base::SolveurSys_base()
+inline Solv_Petsc::Solv_Petsc(const Solv_Petsc& org):Solv_Externe::Solv_Externe()
 {
   initialize();
   instance++;
