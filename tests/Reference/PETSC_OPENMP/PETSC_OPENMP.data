@@ -1,5 +1,5 @@
 # Hydraulique 3D Force de pression: D=1m U=1 m/s Re=200 #
-# PARALLEL OK 9 #
+# PARALLEL NOT #
 
 dimension 3
 

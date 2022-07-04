@@ -32,7 +32,7 @@ Corriger_frontiere_periodique { domaine dom bord paroiY }
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool Metis { nb_parts 9 }
+    Partition_tool Metis { nb_parts 4 }
     Larg_joint 2
     zones_name DOM
     periodique 1 paroiY

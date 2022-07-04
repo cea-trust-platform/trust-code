@@ -17,7 +17,7 @@ OrienteFacesBord dom
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool metis { Nb_parts 9 }
+    Partition_tool metis { Nb_parts 4 }
     Ecrire_decoupage Cx.metis
     print_more_infos 1
     Larg_joint 2

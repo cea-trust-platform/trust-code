@@ -20,7 +20,7 @@ Raffiner_isotrope dom
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool metis { Nb_parts 9 }
+    Partition_tool metis { Nb_parts 4 }
     Larg_joint 2
     zones_name DOM
     single_hdf

@@ -1,5 +1,5 @@
 # Test de PETSC_DECIDE=1 in PETSc solver. Warning, it is slower than PETSC_DECIDE=0 even if it is better load balanced #
-# PARALLEL OK 9 #
+# PARALLEL OK 4 #
 # VALGRIND NOT #
 
 dimension 3
@@ -17,7 +17,7 @@ Dilate dom 1000
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool metis { Nb_parts 9 }
+    Partition_tool metis { Nb_parts 4 }
     Larg_joint 2
     zones_name DOM
 }
