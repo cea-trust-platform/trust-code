@@ -52,3 +52,16 @@ void Masse_ajoutee_Coef_Constant::ajouter(const double *alpha, const double *rho
         a_r(n_l, k) -= beta * rho[n_l] * alpha[k];
       }
 }
+
+void Masse_ajoutee_Coef_Constant::ajouter_inj(const double *flux_alpha, const double *rho, DoubleTab& f_a_r) const
+{
+  int N = f_a_r.dimension(0);
+  for (int k = 0; k < N; k++)
+    if (n_l != k)
+      {
+        f_a_r(k,  k ) += beta * rho[n_l] * flux_alpha[k];
+        f_a_r(k, n_l) -= 0.;
+        f_a_r(n_l,n_l)+= 0.;
+        f_a_r(n_l, k) -= beta * rho[n_l] * flux_alpha[k];
+      }
+}
