@@ -59,7 +59,7 @@ public:
   Sortie& operator <<(const std::string& ob) override;
   Sortie& operator <<(const Separateur& ) override;
 
-  Sortie& operator <<(const unsigned ob) override;
+  Sortie& operator <<(const unsigned int ob) override;
   Sortie& operator <<(const int ob) override;
   Sortie& operator <<(const float ob) override;
   Sortie& operator <<(const double ob) override;

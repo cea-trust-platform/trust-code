@@ -62,7 +62,7 @@ public:
 
   Sortie& operator <<(const Separateur& ob) override;
   Sortie& operator <<(const int ob) override;
-  Sortie& operator <<(const unsigned ob) override;
+  Sortie& operator <<(const unsigned int ob) override;
 #ifndef INT_is_64_
   Sortie& operator <<(const long ob) override
   {

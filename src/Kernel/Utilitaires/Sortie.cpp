@@ -128,7 +128,7 @@ int Sortie::put(const int * ob, int n, int nb_col) { return put_template<int>(ob
 int Sortie::put(const float * ob, int n, int nb_col) { return put_template<float>(ob,n,nb_col); }
 int Sortie::put(const double * ob, int n, int nb_col) { return put_template<double>(ob,n,nb_col); }
 
-Sortie& Sortie::operator<<(const unsigned ob) { return operator_template<unsigned>(ob); }
+Sortie& Sortie::operator<<(const unsigned int ob) { return operator_template<unsigned int>(ob); }
 Sortie& Sortie::operator<<(const int ob) { return operator_template<int>(ob); }
 Sortie& Sortie::operator<<(const float ob) { return operator_template<float>(ob); }
 Sortie& Sortie::operator<<(const double ob) { return operator_template<double>(ob); }

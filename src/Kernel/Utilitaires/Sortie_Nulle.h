@@ -34,7 +34,7 @@ public:
   Sortie& operator <<(const Objet_U& ob) override { return *this; }
   Sortie& operator <<(const std::string& str) override { return *this; }
   Sortie& operator <<(const int ob) override { return *this; }
-  Sortie& operator <<(const unsigned ob) override { return *this; };
+  Sortie& operator <<(const unsigned int ob) override { return *this; };
   Sortie& operator <<(const float ob) override { return *this; }
   Sortie& operator <<(const double ob) override { return *this; }
   Sortie& operator <<(const char* ob) override { return *this; }

@@ -147,7 +147,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& s)
         {
           // use_existing_domain utilisable en parallele uniquement si le process 0 gere tout le domaine ou si decoup specifie:
           const Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom));
-          if (Process::nproc()>1 && mp_max(le_domaine.nb_som()>0) != 0 && use_medcoupling_==1)
+          if (Process::nproc()>1 && mp_max((int)(le_domaine.nb_som()>0)) != 0 && use_medcoupling_==1)
             {
               Cerr << "Warning, you can't use use_existing_domain on a partitionned domain like " << nom_dom << finl;
               Cerr << "It is not parallelized yet... So we use MED mesh, which is not optimal." << finl;

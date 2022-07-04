@@ -62,7 +62,7 @@ public:
     os_to_cout_ = 0;
   }
   DX_stream & operator<<(const float f) { (*os_) << f; return *this; }
-  DX_stream & operator<<(const int i) { (*os_) << i; return *this; }
+  DX_stream & operator<<(const int i) { (*os_) << i; return *this; } // to delete in 64b
   DX_stream & operator<<(const long i) { (*os_) << i; return *this; }
   DX_stream & operator<<(const char * s) { (*os_) << s; return *this; }
   DX_stream & operator<<(DX_stream & f(DX_stream &)) { return f(*this); }

@@ -187,10 +187,14 @@ Sortie& EcrFicPartageMPIIO::operator <<(const int ob)
     (*this)<<std::to_string(ob).c_str();
   return *this;
 }
-Sortie& EcrFicPartageMPIIO::operator <<(const unsigned ob)
+Sortie& EcrFicPartageMPIIO::operator <<(const unsigned int ob)
 {
   if (bin_)
+#ifdef INT_is_64_
+    write(MPI_UNSIGNED_LONG, &ob);
+#else
     write(MPI_UNSIGNED, &ob);
+#endif
   else
     (*this)<<std::to_string(ob).c_str();
   return *this;

@@ -76,7 +76,7 @@ public:
   virtual Sortie& operator<<(const Separateur& );
   virtual Sortie& operator<<(const Objet_U&    ob);
   virtual Sortie& operator<<(const int    ob);
-  virtual Sortie& operator<<(const unsigned    ob);
+  virtual Sortie& operator<<(const unsigned int ob);
 #ifndef INT_is_64_
   virtual Sortie& operator<<(const long      ob);
   virtual Sortie& operator<<(const unsigned long      ob);

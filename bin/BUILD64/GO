@@ -23,7 +23,8 @@ sed -i "s/connectivity=new int/connectivity=new long/g" Outils/ICoCo/ICoCo_src/s
 
 # Perform supplementary sed on some files
 sed "s/long long long/long long/" -i Outils/lata2dx//lata2dx/commun_triou/LataDB.cpp
-sed s"/long compare_indirect/int compare_indirect/" -i  Outils/lata2dx//lata2dx/commun_triou/Lata_tools.cpp
+sed "s/long compare_indirect/int compare_indirect/" -i  Outils/lata2dx//lata2dx/commun_triou/Lata_tools.cpp
+sed -i "s@DX_stream & operator<<(const long i) { (\*os_) << i; return \*this; } // to delete in 64b@@" Outils/lata2dx/lata2dx/commun_triou/OpenDXWriter.cpp
 
 sed "s/long fonction/int fonction/" -i Outils/lata2dx/lata2dx/triou_compat/ArrOf*.cpp 
 sed "s/long main(long/int main(int/" -i  Outils/lata2dx/lata2dx//*cpp
@@ -31,7 +32,6 @@ sed "s/long main(long/int main(int/" -i  Outils/lata2dx/lata2dx//*cpp
 sed -i "s/<< type_codage <</<</g" src/Kernel/Framework/Equation_base.cpp
 sed -i "s/%d/%ld/g" src/PolyMAC/Zones/Zone_PolyMAC.cpp
 sed -i "s/vector<long> P_c(nv + 1), P_l(nv), A_c, A_l;/vector<long long> P_c(nv + 1), P_l(nv), A_c, A_l;/" src/PolyMAC/Zones/Zone_PolyMAC.cpp
-sed -i "s/%d/%ld/g" src/CoviMAC/Zones/Zone_CoviMAC.cpp
 
 sed -i "s/std::vector< std::pair<long,long> > time_steps_;/std::vector< std::pair<int,int> > time_steps_;/" src/Kernel/MEDimpl/Champ_Fonc_MED.h
 sed -i "s/std::vector< std::pair<long,long> > tst = ft1->getTimeSteps(tps);/std::vector< std::pair<int,int> > tst = ft1->getTimeSteps(tps);/" src/Kernel/MEDimpl/Champ_Fonc_MED_Table_Temps.cpp
