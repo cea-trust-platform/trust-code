@@ -52,6 +52,7 @@ public :
 protected :
 
   mutable int grad_a_jour = 0;
+  mutable double tps_last_calc_grad_ = -1.e8 ;
 };
 
 #endif

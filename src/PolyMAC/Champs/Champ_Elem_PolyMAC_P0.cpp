@@ -59,7 +59,7 @@ const Zone_PolyMAC_P0& Champ_Elem_PolyMAC_P0::zone_PolyMAC_P0() const
 
 inline void Champ_Elem_PolyMAC_P0::mettre_a_jour(double tps)
 {
-  if (temps()!=tps) grad_a_jour = 0 ;
+  if (tps_last_calc_grad_ != tps) grad_a_jour = 0 ;
   Champ_Inc_P0_base::mettre_a_jour(tps);
 }
 
@@ -80,4 +80,5 @@ void Champ_Elem_PolyMAC_P0::calc_grad(int full_stencil) const
   const Conds_lim&           cls = zone_Cl_dis().les_conditions_limites(); // CAL du champ à dériver
   zone.fgrad(1, 0, cls, f_cl, NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_w);
   grad_a_jour = 1;
+  tps_last_calc_grad_ = temps();
 }

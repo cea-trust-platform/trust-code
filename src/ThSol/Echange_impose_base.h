@@ -46,6 +46,8 @@ public:
 
   virtual double h_imp(int num) const;
   virtual double h_imp(int num,int k) const;
+  virtual double h_imp_grad(int num) const { Process::exit(que_suis_je()+ " : h_imp_grad must be overloaded !" ) ; return -1.e10 ;};
+  virtual double h_imp_grad(int num,int k) const  { Process::exit(que_suis_je()+ " : h_imp_grad must be overloaded !") ; return -1.e10 ;};
   virtual double T_ext(int num) const;
   virtual double T_ext(int num,int k) const;
   void mettre_a_jour(double ) override;

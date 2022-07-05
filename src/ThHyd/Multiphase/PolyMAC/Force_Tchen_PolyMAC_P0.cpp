@@ -101,8 +101,8 @@ void Force_Tchen_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secme
           {
             double fac = pe(e) * ve(e) * alpha(e, k) * rho(e, n_l) ;
 
-            secmem(nf_tot + D * e + d, k) += fac * (inco(nf_tot + D * e + d, n_l)-pvit(nf_tot + D * e + d, n_l))/pas_tps;
-            secmem(nf_tot + D * e + d, k) -= fac * (inco(nf_tot + D * e + d, n_l)-pvit(nf_tot + D * e + d, n_l))/pas_tps;
+            secmem(nf_tot + D * e + d, k ) += fac * (inco(nf_tot + D * e + d, n_l)-pvit(nf_tot + D * e + d, n_l))/pas_tps;
+            secmem(nf_tot + D * e + d,n_l) -= fac * (inco(nf_tot + D * e + d, n_l)-pvit(nf_tot + D * e + d, n_l))/pas_tps;
             if (mat)
               {
                 (*mat)( N *(nf_tot + D * e + d) + k  , N *(nf_tot + D * e + d) + n_l) -= fac/pas_tps ;

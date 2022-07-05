@@ -83,7 +83,8 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::mettre_a_jour(double temps)
         int cR = (rho.dimension(0) == 1);
         DoubleTrav nu_t(nl, N);
         ref_cast(Viscosite_turbulente_base, corr.valeur()).eddy_viscosity(nu_t); //remplissage par la correlation
-        for (int i = 0; i < nl; i++) val(i, 0) = rho(!cR * i, n) * nu_t(i, n);
+        for (int i = 0; i < nl; i++)  val(i, 0) = rho(!cR * i, n) * nu_t(i, n);
+        nu_t_post_[n].mettre_a_jour(temps);
       }
 }
 
