@@ -250,7 +250,9 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     }
 
   {
-
+#ifdef linux
+    fedisableexcept(FE_ALL_EXCEPT);
+#endif
     if ( ieee == 1 )
       {
         char* theValue = getenv("TRUST_DISABLE_FP_EXCEPT");
