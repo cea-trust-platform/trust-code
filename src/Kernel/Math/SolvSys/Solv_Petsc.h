@@ -32,6 +32,7 @@ class Matrice_Morse;
 
 
 enum solveur_direct_ { no, mumps, superlu_dist, petsc, umfpack, pastix, cholmod, cli };
+extern bool gmres_right_unpreconditionned;
 
 class Solv_Petsc : public SolveurSys_base
 {

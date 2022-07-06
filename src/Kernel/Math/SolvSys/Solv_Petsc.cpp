@@ -76,6 +76,7 @@ static bool is_number(const std::string& s)
 }
 #endif
 
+bool gmres_right_unpreconditionned=true;
 // Lecture et creation du solveur
 void Solv_Petsc::create_solver(Entree& entree)
 {
@@ -300,8 +301,11 @@ void Solv_Petsc::create_solver(Entree& entree)
         // soit le residu reel ||Ax-b|| et non le residu preconditionne pour certains solveurs
         // avec un preconditionnement a gauche (ex: GMRES). Ainsi, on peut comparer strictement
         // les performances des solveurs (TRUST ou PETSC) entre eux
-        KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
-        KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
+        if (gmres_right_unpreconditionned)
+          {
+            KSPSetPCSide(SolveurPetsc_, PC_RIGHT);
+            KSPSetNormType(SolveurPetsc_, KSP_NORM_UNPRECONDITIONED);
+          }
         solver_supported_on_gpu_by_petsc=1;
         solver_supported_on_gpu_by_amgx=1;
         if (amgx_)
