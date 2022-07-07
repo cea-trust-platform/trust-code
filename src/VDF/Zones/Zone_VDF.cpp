@@ -439,8 +439,7 @@ void Zone_VDF::genere_aretes()
         {
           // Find 2 points P1 and P2 in cells so:
           est_une_plaque(face) = 1;
-          Journal() << "We detect an internal boundary on face " << face << " between elements " << elem1 << " and "
-                    << elem2 << finl;
+          //Journal() << "We detect an internal boundary on face " << face << " between elements " << elem1 << " and " << elem2 << finl;
         }
     }
   est_une_plaque.echange_espace_virtuel();
