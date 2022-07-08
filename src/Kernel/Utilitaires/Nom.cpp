@@ -365,6 +365,22 @@ Nom& Nom::operator +=(char x)
   return *this;
 }
 
+Nom& Nom::operator +=(unsigned char x)
+{
+  char n[2];
+  n[0] = (char)x;
+  n[1] = 0;
+  operator+=(n);
+  return *this;
+}
+
+
+Nom& Nom::operator +=(int x)
+{
+  nom_ += Nom(x);
+  return *this;
+}
+
 // Description:
 //     Extraction de suffixe :
 //     Nom x("azerty");

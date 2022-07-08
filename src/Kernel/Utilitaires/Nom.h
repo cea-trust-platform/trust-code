@@ -58,6 +58,8 @@ public:
   Nom& operator +=(const Nom& x);
   Nom& operator +=(const char *);
   Nom& operator +=(char x);
+  Nom& operator +=(unsigned char x);
+  Nom& operator +=(int x);
   Nom& suffix(const char* const) ;
   const Nom getSuffix(const char* const) const ;
   Nom& prefix(const char* const) ;
