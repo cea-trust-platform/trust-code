@@ -545,8 +545,8 @@ Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
   int digits=0,diviseur=0;
   if(without_padding)
     {
-      digits = (n==0) ? 1 : (int)std::lround(std::truncl(log10(n)+1.0));
-      diviseur = (int)std::lround(std::truncl(pow(10, digits-1)));
+      digits = (n==0) ? 1 : (int)std::lrint(std::truncl(log10(n)+1.0));
+      diviseur = (int)std::lrint(std::truncl(pow(10, digits-1)));
     }
   else
     {
@@ -589,7 +589,7 @@ Nom Nom::nom_me(int n, const char* prefixe, int without_padding) const
   for (int i=prefix_len; i<prefix_len+digits; i++)
     {
       resultat=n/diviseur;
-      char c= '0' + (char)resultat;
+      char c= (char)((int)'0' + resultat); // on old compilos, '+' is not for char, always int ...
       c_numero[i]=c;
       n-=resultat*diviseur;
       diviseur/=10;

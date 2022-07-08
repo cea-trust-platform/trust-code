@@ -275,13 +275,6 @@ Motcles::Motcles(int i):
 {
 }
 
-static inline char char_uppercase(char c)
-{
-  if (c >= 'a' && c <= 'z')
-    c += 'A' - 'a';
-  return c;
-}
-
 // "a"  == "a|b" returns 0
 // "b"  == "a|b" returns 0
 // "a|b" == "a|c" return 0
@@ -293,7 +286,7 @@ static inline int strcmp_uppercase(const char *n1, const char *n2)
   int length_i=0;
   do
     {
-      c1 = (unsigned char) char_uppercase(n1[i]);
+      c1 = (unsigned char) ::toupper(n1[i]);
       i++;
       length_i++;
       if (c1==0 || c1==124) // Keyword found in n1
@@ -303,7 +296,7 @@ static inline int strcmp_uppercase(const char *n1, const char *n2)
           int length_j=0;
           do
             {
-              c2 = (unsigned char) char_uppercase(n2[j]);
+              c2 = (unsigned char) ::toupper(n2[j]);
               j++;
               length_j++;
               if (c2==0 || c2==124) // Keyword found in n2
@@ -316,8 +309,8 @@ static inline int strcmp_uppercase(const char *n1, const char *n2)
                       unsigned char C1,C2;
                       do
                         {
-                          C1 = (unsigned char) char_uppercase(n1[i-l]);
-                          C2 = (unsigned char) char_uppercase(n2[j-l]);
+                          C1 = (unsigned char) ::toupper(n1[i-l]);
+                          C2 = (unsigned char) ::toupper(n2[j-l]);
                           delta = C2 - C1;
                           l--;
                         }

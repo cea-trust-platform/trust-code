@@ -212,7 +212,7 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
 
           /* x de norme L2 minimale par dgels */
           nw = -1,             F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
-          W.resize(nw = (int)std::lround(W(0))), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
+          W.resize(nw = (int)std::lrint(W(0))), F77NAME(dgelsy)(&nl, &nc, &un, &A(0, 0), &nl, &B(0), &nc, &pvt(0), &eps, &rank, &W(0), &nw, &infoo);
           assert(infoo == 0);
           /* ajout dans ve2 */
           for (i = 0; i < nc; i++) ve2(i, d) += P(i) * B(i);

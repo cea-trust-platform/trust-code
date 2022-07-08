@@ -64,7 +64,7 @@ int exec_cmd_and_get_output(const char* cmd, std::string& result)
     {
       return 0; // popen failed - unable to execute system command
     }
-  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+  while (fgets(buffer.data(), (int)buffer.size(), pipe.get()) != nullptr)
     {
       result += buffer.data();
     }

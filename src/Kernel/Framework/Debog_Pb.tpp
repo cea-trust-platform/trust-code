@@ -166,7 +166,7 @@ void Debog_Pb::verifier_partie_std(const TRUSTVect<_TYPE_>& reference, const TRU
                   // Comparaison de x et y
                   if (IS_DOUBLE)
                     {
-                      const _TYPE_ delta = std::fabs(x - y) / adim;
+                      const _TYPE_ delta = (_TYPE_)std::fabs(x - y) / adim;
                       max_err = std::max(max_err, delta);
                       // pour les items reels, indiquer si on est hors bornes:
                       if (step == 0 && !(x >= -DMAXFLOAT && x <= DMAXFLOAT))
@@ -193,8 +193,7 @@ void Debog_Pb::verifier_partie_std(const TRUSTVect<_TYPE_>& reference, const TRU
             }
         }
 
-      if (IS_DOUBLE) max_err = Process::mp_max(max_err);
-      else max_err = ::mp_max(max_err);
+      max_err = Process::mp_max(max_err);
 
       if (step == 0)
         max_err_items_reels = max_err;
@@ -380,12 +379,12 @@ Debog_Pb::verifier(const char *const msg, _TYPE_ x, _TYPE_ *ref_value)
 
       if (IS_DOUBLE)
         {
-          const _TYPE_ adim = std::max(std::fabs(x), std::fabs(y));
-          const _TYPE_ delta = std::fabs(x - y);
+          const _TYPE_ adim = (_TYPE_)std::max(std::fabs(x), std::fabs(y));  // explicit (double) for old compilo which do not handle const expr properly
+          const _TYPE_ delta = (_TYPE_)std::fabs(x - y);
           err = 0;
           if (delta >= seuil_absolu_ && delta / adim >= seuil_relatif_)
             {
-              err = delta;
+              err = (_TYPE_)delta;
               detailed_log_file_ << " ECART (double) reference=" << y << " calcul=" << x << " relative error=" << delta << " (adim=" << adim << ")" << finl;
             }
         }

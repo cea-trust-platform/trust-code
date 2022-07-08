@@ -217,7 +217,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
 
                 /* resolution -> DEGLSY */
                 nw = -1, piv.resize(nc), F77NAME(dgelsy)(&nl, &nc, &un, &M(0, 0, 0), &nl, &B(0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
-                for (W.resize(nw = (int)std::lround(W(0))), n = 0; n < N; n++) piv = 0, F77NAME(dgelsy)(&nl, &nc, &un, &M(n, 0, 0), &nl, &B(n, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
+                for (W.resize(nw = (int)std::lrint(W(0))), n = 0; n < N; n++) piv = 0, F77NAME(dgelsy)(&nl, &nc, &un, &M(n, 0, 0), &nl, &B(n, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
                 /* x_fs = xf + corrections */
                 for (x_fs.resize(N, n_f, D), n = 0; n < N; n++)
                   for (i = 0; i < n_f; i++)
@@ -237,7 +237,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                         for (f = s_f[k = se_f[i][j]], d = 0; d < D; d++) M(j, d) = (essai ? x_fs(n, k, d) : xv_(f, d)) - xp_(e, d);
                       for (B = 0, d = 0; d < D; d++) B(d, d) = 1;
                       nw = -1, piv = 0, F77NAME(dgelsy)(&D, &n_ef, &D, &M(0, 0), &D, &B(0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
-                      W.resize(nw = (int)std::lround(W(0))), F77NAME(dgelsy)(&D, &n_ef, &D, &M(0, 0), &D, &B(0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
+                      W.resize(nw = (int)std::lrint(W(0))), F77NAME(dgelsy)(&D, &n_ef, &D, &M(0, 0), &D, &B(0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
                       for (j = 0; j < n_ef; j++)
                         for (d = 0; d < D; d++) X(j, d) = B(d, j); /* pour pouvoir utiliser nu_dot */
                     }
@@ -276,7 +276,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                 }
             /* resolution de Mf.u_fs = Meb.u_eb : DGELSY, au cas ou */
             nw = -1, piv.resize(n_f), F77NAME(dgelsy)(&n_f, &n_f, &n_eb, &Mf(0, 0, 0), &n_f, &Meb(0, 0, 0), &n_f, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
-            for (W.resize(nw = (int)std::lround(W(0))), n = 0; n < N; n++)
+            for (W.resize(nw = (int)std::lrint(W(0))), n = 0; n < N; n++)
               piv = 0, F77NAME(dgelsy)(&n_f, &n_f, &n_eb, &Mf(n, 0, 0), &n_f, &Meb(n, 0, 0), &n_f, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
 
             /* substitution dans Feb */
@@ -299,7 +299,7 @@ void Zone_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntTab&
                 for (j = 0; j <= i; j++) A(n, i, j) = A(n, j, i) = (A(n, i, j) + A(n, j, i)) / 2;
             /* v.p. la plus petite : DSYEV */
             nw = -1, F77NAME(DSYEV)("N", "U", &n_e, &A(0, 0, 0), &n_e, S.addr(), &W(0), &nw, &infoo);
-            for (W.resize(nw = (int)std::lround(W(0))), S.resize(n_e), n = 0, ok = 1; n < N; n++)
+            for (W.resize(nw = (int)std::lrint(W(0))), S.resize(n_e), n = 0, ok = 1; n < N; n++)
               F77NAME(DSYEV)("N", "U", &n_e, &A(n, 0, 0), &n_e, &S(0), &W(0), &nw, &infoo), ok &= S(0) > -1e-8 * vol_s;
             if (ok) break; //pour qu' "essai" ait la bonne valeur en sortie
           }

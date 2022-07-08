@@ -319,7 +319,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
 
   int nb_lignes_tot = 0;
   const int tab_size = line_size * nb_lignes;
-  int nb_octets = tab_size * sizeof(float);
+  int nb_octets = tab_size * (int)sizeof(float);
   switch(option)
     {
     case Format_Post_Lata::SINGLE_FILE_MPIIO:
@@ -328,7 +328,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
       // En parallele, tous les tableaux doivent avoir le meme nombre
       // de colonnes (ou etre vides).
       nb_colonnes = (int) Process::mp_max(line_size); // Zut. Pas de mp_max(int) !!!
-      nb_octets = nb_colonnes*nb_lignes_tot * sizeof(float);
+      nb_octets = nb_colonnes*nb_lignes_tot * (int)sizeof(float);
       assert(nb_lignes == 0 || line_size == nb_colonnes);
       break;
     case Format_Post_Lata::MULTIPLE_FILES:
@@ -414,7 +414,7 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int deca
   int nb_lignes_tot = 0;
 
   const int tab_size = line_size * nb_lignes;
-  int nb_octets = tab_size * sizeof(_LATA_INT_TYPE_);
+  int nb_octets = tab_size * (int)sizeof(_LATA_INT_TYPE_);
   switch(option)
     {
     case Format_Post_Lata::SINGLE_FILE_MPIIO:
@@ -423,7 +423,7 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int deca
       // En parallele, tous les tableaux doivent avoir le meme nombre
       // de colonnes (ou etre vides).
       nb_colonnes = (int) Process::mp_max(line_size); // Zut. Pas de mp_max(int) !!!
-      nb_octets = nb_colonnes*nb_lignes_tot * sizeof(_LATA_INT_TYPE_);
+      nb_octets = nb_colonnes*nb_lignes_tot * (int)sizeof(_LATA_INT_TYPE_);
       assert(nb_lignes == 0 || line_size == nb_colonnes);
       break;
     case Format_Post_Lata::MULTIPLE_FILES:
@@ -1140,7 +1140,7 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
         sfichier << " composantes=" << nb_compo;
         if (reference != "")
           sfichier << " reference=" << reference;
-        const int sz = sizeof(_LATA_INT_TYPE_);
+        const int sz = (int)sizeof(_LATA_INT_TYPE_);
         switch(sz)
           {
           case 4:

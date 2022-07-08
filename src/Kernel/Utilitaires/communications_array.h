@@ -40,7 +40,7 @@ inline envoyer_array(const _TYPE_ *objet, int n, int source, int cible, int cana
     return 0;
 
   const char *data = (const char*) objet;
-  const int sz = sizeof(_TYPE_) * n;
+  const int sz = (int)sizeof(_TYPE_) * n;
   if (cible < 0)
     {
       const int nbproc = grp.nproc();
@@ -50,7 +50,7 @@ inline envoyer_array(const _TYPE_ *objet, int n, int source, int cible, int cana
             {
               // En mode check, on verifie que n est bien le meme sur l'expediteur et le recepteur
               if (grp.check_enabled())
-                grp.send(i, &sz, sizeof(int), canal);
+                grp.send(i, &sz, (int)sizeof(int), canal);
               if (sz > 0)
                 grp.send(i, data, sz, canal);
             }
@@ -59,7 +59,7 @@ inline envoyer_array(const _TYPE_ *objet, int n, int source, int cible, int cana
   else
     {
       if (grp.check_enabled())
-        grp.send(cible, &sz, sizeof(int), canal);
+        grp.send(cible, &sz, (int)sizeof(int), canal);
       if (sz > 0)
         grp.send(cible, data, sz, canal);
     }
@@ -85,11 +85,11 @@ inline recevoir_array(const _TYPE_ *objet, int n, int source, int cible, int can
   if (cible != moi && cible != -1)
     return 0;
 
-  const int sz = sizeof(_TYPE_) * n;
+  const int sz = (int)sizeof(_TYPE_) * n;
   if (grp.check_enabled())
     {
       int sz_check;
-      grp.recv(source, &sz_check, sizeof(int), canal);
+      grp.recv(source, &sz_check, (int)sizeof(int), canal);
       if (sz_check != sz)
         {
           Cerr << "Fatal error in template<typename _TYPE_> int recevoir_array : incorrect size\n" << " sent=" << sz_check << " expected=" << sz << finl;
@@ -117,14 +117,14 @@ inline envoyer_broadcast_array(_TYPE_ *objet, int n, int source)
   if (grp.check_enabled())
     {
       int copie_n = n;
-      grp.broadcast(&copie_n, sizeof(int), source);
+      grp.broadcast(&copie_n, (int)sizeof(int), source);
       if (copie_n != n)
         {
           Cerr << "Error in template<typename _TYPE_> envoyer_broadcast_array !" << finl;
           Process::exit();
         }
     }
-  grp.broadcast(objet, sizeof(_TYPE_) * n, source);
+  grp.broadcast(objet, (int)sizeof(_TYPE_) * n, source);
   return 1;
 }
 

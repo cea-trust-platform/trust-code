@@ -2,6 +2,7 @@
 #include <CommInterface.hxx>
 #include <ProcessorGroup.hxx>
 #include <MPIProcessorGroup.hxx>
+#include <Statistiques.h>
 
 #include <TrioDEC.hxx>
 #include <set>
@@ -116,7 +117,7 @@ int main(int argc, char **argv) {
         TrioField field1;
         TrioField field2;
 
-        clock_t clock0 = clock();
+        auto clock0 = Statistiques::get_time_now();
         int compti = 0;
 
         bool init = true; // first time step ??
@@ -124,8 +125,8 @@ int main(int argc, char **argv) {
         // loop on time steps
         while (!stop) {
             compti++;
-            clock_t clocki = clock();
-            cout << compti << " CLOCK " << (clocki - clock0) * 1.e-6 << endl;
+            auto clocki = Statistiques::get_time_now();
+            cout << compti << " CLOCK " << (clocki - clock0) << endl;
 
             ok = false; // Is the time interval successfully solved ?
 
@@ -217,12 +218,12 @@ int main(int argc, char **argv) {
                     }
                 }        // destruction of fields and associated tables
 
-                clock_t clock_avt_resolution = clock();
+                auto clock_avt_resolution = Statistiques::get_time_now();
                 // Solve the next time step
                 ok = T->solveTimeStep();
 
-                clock_t clock_ap_resolution = clock();
-                cout << compti << " TEMPS DE RESOLUTION DU PB (s) :  " << (clock_ap_resolution - clock_avt_resolution) * 1.e-6 << endl;
+                auto clock_ap_resolution = Statistiques::get_time_now();
+                cout << compti << " TEMPS DE RESOLUTION DU PB (s) :  " << (clock_ap_resolution - clock_avt_resolution) << endl;
 
                 init = false;
 

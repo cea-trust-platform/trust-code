@@ -22,7 +22,7 @@
 //  le premier appel au constructeur Synonyme_info::Synonyme_info(...).
 //  Or ce constructeur est appele pour initialiser le membre statique info_obj
 //  de tous les Objet_U.
-//  Risque de "static initialization ordre fiasco"
+//  Risque de "static initialization order fiasco"
 //    (voir http://www.parashift.com/c++-faq-lite/ctors.html   [10.11])
 //  Pour l'instant c'est ok parce qu'on initialise avec une constante...
 
@@ -37,13 +37,8 @@ const Synonyme_info** Synonyme_info::les_synonymes=0;
 int Synonyme_info::nb_classes=0;
 int Synonyme_info::les_synonymes_memsize=0;
 
-static inline char char_uppercase(char c)
-{
-  if (c >= 'a' && c <= 'z')
-    c += 'A' - 'a';
-  return c;
-}
 
+// [ABN] I don't dare replacing this with STL for efficiency purpose - here we convert only what's needed for comparison
 static inline int strcmp_uppercase(const char *n1, const char *n2)
 {
   int i = 0;
@@ -51,14 +46,15 @@ static inline int strcmp_uppercase(const char *n1, const char *n2)
   int delta;
   do
     {
-      c1 = (unsigned char) char_uppercase(n1[i]);
-      c2 = (unsigned char) char_uppercase(n2[i]);
+      c1 = (unsigned char) ::toupper(n1[i]);
+      c2 = (unsigned char) ::toupper(n2[i]);
       delta = c1 - c2;
       i++;
     }
   while ((delta == 0) && (c1 != 0) && (c2 != 0));
   return delta;
 }
+
 // GF pour liberer correctement la memoire il faut au moins detruire le nom
 Synonyme_info::~Synonyme_info()
 {

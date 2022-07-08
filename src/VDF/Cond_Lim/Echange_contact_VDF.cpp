@@ -318,7 +318,7 @@ int Echange_contact_VDF::initialiser(double temps)
     if (l_item(i) >= 0)
       {
         if (proc(i) == Process::me())
-          item(i) = (int)std::lround(l_item(i));                     //item local (reel)
+          item(i) = (int)std::lrint(l_item(i));                     //item local (reel)
         else
           {
             if (o_zone.virt_e_map.count({{ (int) proc(i), (int) l_item(i) }}))   //item local (virtuel)

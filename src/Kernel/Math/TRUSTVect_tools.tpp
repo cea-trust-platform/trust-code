@@ -75,7 +75,7 @@ enum class TYPE_OPERATION_VECT { IMAX_ , IMIN_ , MAX_ , MIN_ , MAX_ABS_ , MIN_AB
 
 inline double neutral_value_double_(const bool IS_MAX)
 {
-  return IS_MAX ? (-HUGE_VALL) : HUGE_VALL;
+  return IS_MAX ? (-HUGE_VAL) : HUGE_VAL;
 }
 
 inline int neutral_value_int_(const bool IS_MAX)
@@ -91,8 +91,8 @@ inline _TYPE_ neutral_value()
 
   _TYPE_ neutral_val;
 
-  if (std::is_same<_TYPE_, double>::value) neutral_val = neutral_value_double_(IS_MAX);
-  else neutral_val = neutral_value_int_(IS_MAX);
+  if (std::is_same<_TYPE_, double>::value) neutral_val = (_TYPE_)neutral_value_double_(IS_MAX);
+  else neutral_val = (_TYPE_)neutral_value_int_(IS_MAX);
 
   return neutral_val;
 }
@@ -149,7 +149,7 @@ inline _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_
           const _TYPE_ x = *x_ptr;
           if ((IS_IMAX && x > min_max_val) || (IS_IMIN && x < min_max_val))
             {
-              i_min_max = x_ptr - x_base;
+              i_min_max = (_TYPE_RETURN_)(x_ptr - x_base);
               min_max_val = x;
             }
 
@@ -628,8 +628,8 @@ inline void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x
           if (IS_MULT) p_resu *= x;
           if (IS_EGAL) p_resu = x;
           if (IS_NEGATE) p_resu = -p_resu;
-          if (IS_ABS) p_resu = std::is_same<_TYPE_,double>::value ? std::fabs(p_resu) : std::abs(p_resu);
-          if (IS_RACINE_CARRE) p_resu = sqrt(p_resu);
+          if (IS_ABS) p_resu = (_TYPE_) (std::is_same<_TYPE_,double>::value ? std::fabs(p_resu) : std::abs(p_resu));
+          if (IS_RACINE_CARRE) p_resu = (_TYPE_) sqrt(p_resu);  // _TYPE_ casting just to pass 'int' instanciation of the template wo triggering -Wconversion warning
           if (IS_CARRE) p_resu *= p_resu;
 
           if (IS_DIV)
@@ -641,7 +641,7 @@ inline void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x
           if (IS_INV)
             {
               if (p_resu == 0.) error_divide(__func__);
-              p_resu = 1. / p_resu;
+              p_resu = (_TYPE_) (1. / p_resu); // same as sqrt above
             }
         }
     }

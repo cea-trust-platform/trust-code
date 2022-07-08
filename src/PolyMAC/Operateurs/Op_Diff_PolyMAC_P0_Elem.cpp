@@ -458,7 +458,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                           }
                 /* resolution -> DEGLSY */
                 nw = -1, F77NAME(dgelsy)(&nl, &nc, &un, &C(0, 0, 0), &nl, &Y(0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
-                for (W.resize(nw = (int)(std::lround(W(0)))), piv.resize(nc), n = 0; n < Nm; n++)
+                for (W.resize(nw = (int)(std::lrint(W(0)))), piv.resize(nc), n = 0; n < Nm; n++)
                   piv = 0, F77NAME(dgelsy)(&nl, &nc, &un, &C(n, 0, 0), &nl, &Y(n, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
                 /* x_fs = xf + corrections */
                 for (x_fs.resize(Nm, n_f, D), n = 0; n < Nm; n++)
@@ -492,7 +492,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                         for (Y = 0, n = 0; n < Nm; n++)
                           for (d = 0; d < D; d++) Y(n, d, d) = 1;
                         nw = -1, F77NAME(dgelsy)(&D, &n_ef, &D, &C(0, 0, 0), &D, &Y(0, 0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
-                        for (W.resize(nw = (int)(std::lround(W(0)))), piv.resize(n_m), n = 0; n < Nm; n++)
+                        for (W.resize(nw = (int)(std::lrint(W(0)))), piv.resize(n_m), n = 0; n < Nm; n++)
                           piv = 0, F77NAME(dgelsy)(&D, &n_ef, &D, &C(n, 0, 0), &D, &Y(n, 0, 0), &n_m, &piv(0), &eps_g, &rk, &W(0), &nw, &infoo);
                         for (n = 0; n < Nm; n++)
                           for (j = 0; j < n_ef; j++)
@@ -595,7 +595,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                   }
                 /* resolution(s) -> DGELSY */
                 nw = -1, F77NAME(dgelsy)(&t_eq, &t_eq, &t_ec, &A(0, 0, 0), &t_eq, &B(0, 0, 0), &t_eq, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
-                for (piv.resize(t_eq), W.resize(nw = (int)(std::lround(W(0)))), n = 0; n < Nm; n++)
+                for (piv.resize(t_eq), W.resize(nw = (int)(std::lrint(W(0)))), n = 0; n < Nm; n++)
                   piv = 0, F77NAME(dgelsy)(&t_eq, &t_eq, &t_ec, &A(n, 0, 0), &t_eq, &B(n, 0, 0), &t_eq, &piv(0), &eps, &rk, &W(0), &nw, &infoo);
 
                 /* mise a jour des Tefs et convergence. Si nonlinear = 0, tout est lineaire -> pas besoin d'autres iterations */
@@ -631,7 +631,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                 for (j = 0; j <= i; j++) A(n, i, j) = A(n, j, i) = (A(n, i, j) + A(n, j, i)) / 2;
             /* v.p. la plus petite : DSYEV */
             nw = -1, F77NAME(DSYEV)("N", "U", &t_e, &A(0, 0, 0), &t_e, S.addr(), &W(0), &nw, &infoo);
-            for (W.resize(nw = (int)(std::lround(W(0)))), S.resize(t_e), cv = 1, n = 0; n < Nm; n++)
+            for (W.resize(nw = (int)(std::lrint(W(0)))), S.resize(t_e), cv = 1, n = 0; n < Nm; n++)
               F77NAME(DSYEV)("N", "U", &t_e, &A(n, 0, 0), &t_e, &S(0), &W(0), &nw, &infoo), cv &= S(0) > -1e-8 * vol_s;
             if (cv) break;
           }

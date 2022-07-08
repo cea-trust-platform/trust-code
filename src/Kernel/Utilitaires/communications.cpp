@@ -329,7 +329,7 @@ void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest)
     }
   else
     {
-      const int sz = src.size() / grp.nproc() * sizeof(double);
+      const int sz = src.size() / grp.nproc() * (int)sizeof(double);
       grp.all_to_all(src.addr(), dest.addr(), sz);
     }
 }

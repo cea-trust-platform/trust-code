@@ -2601,7 +2601,7 @@ void Solv_Petsc::Create_MatricePetsc(Mat& MatricePetsc, int mataij, const Matric
               double ratio = 1 - (double) nonzeros[0] / (double) nonzeros[1];
               if (ratio > 0.2) Cout << "Warning! Trust matrix contains a lot of useless stored zeros: " << (int) (ratio * 100) << "% (" << nonzeros[0] << "/" << nonzeros[1] << ")" << finl;
             }
-          int zero_discarded = (int)(std::lround(nonzeros[1] - nonzeros[0]));
+          int zero_discarded = (int)(std::lrint(nonzeros[1] - nonzeros[0]));
           if (zero_discarded) Cout << "[Petsc] Discarding " << zero_discarded << " zeros from TRUST matrix into the PETSc matrix ..." << finl;
         }
     }
