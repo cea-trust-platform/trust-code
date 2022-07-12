@@ -39,10 +39,13 @@ then
       echo "For that, your login on remote host should be configured in order that your local and remote TRUST versions match:"
       echo "ssh selected_host -n 'echo \$TRUST_VERSION' should return something like $TRUST_VERSION"
       echo "Else initialize TRUST v$TRUST_VERSION environment on the remote host by changing your ~/.profile file."
-      echo "If you get the message: can't open master pty: /dev/ttyTfcan't open slave pty: -1"
+      echo "If you get the message:ls can't open master pty: /dev/ttyTfcan't open slave pty: -1"
       echo "Then relaunch visit with the -nopty option."
       echo "########################################################################################"
    fi
    # Ajout des librairies Qt5 de conda apres VisIt 2.12.1:
    [ ! -d $TRUST_ROOT/exec/VisIt/2.12.1 ] && export LD_LIBRARY_PATH=$TRUST_ROOT/exec/python/lib:$LD_LIBRARY_PATH
+   # Ajout de PYTHONPATH apres Visit 3.2.1 (Erreur: PySide2/__init__.py: Unable to import shiboken2)
+   shiboken2=`ls $TRUST_ROOT/exec/python/lib/python*/site-packages/shiboken2/__init__.py 2>/dev/null`
+   [ "$shiboken2" != "" ] && export PYTHONPATH=`dirname $shiboken2`/..:$PYTHONPATH
 fi
