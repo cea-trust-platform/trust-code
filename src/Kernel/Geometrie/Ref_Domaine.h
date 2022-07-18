@@ -24,7 +24,7 @@
 class Domaine;
 Declare_ref(Domaine);
 
-// .SECTION Voir aussi
+// .SECTION voir aussi
 // Domaine
 
 #endif

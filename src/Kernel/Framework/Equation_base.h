@@ -66,8 +66,6 @@ enum Type_modele { TURBULENCE };
 //     Une equation est lie a un probleme par une reference contenue
 //     dans le membre REF(Probleme_base) mon_probleme.
 //
-// .SECTION voir aussi
-//     Equation
 //     Classe abstraite dont toutes les equations doivent deriver.
 //     Methodes abstraites:
 //       int nombre_d_operateurs() const
@@ -79,6 +77,10 @@ enum Type_modele { TURBULENCE };
 //       const Milieu_base& milieu() const
 //       Milieu_base& milieu()
 //       Entree& lire(const Motcle&, Entree&) [protegee]
+//
+//
+// .SECTION voir aussi
+//     Equation
 //////////////////////////////////////////////////////////////////////////////
 
 Declare_liste(RefObjU);

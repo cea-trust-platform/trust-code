@@ -25,7 +25,7 @@
 class Sous_Zone;
 Declare_ref(Sous_Zone);
 
-// .SECTION Voir aussi
+// .SECTION voir aussi
 // Sous_Zone
 
 #endif

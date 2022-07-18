@@ -27,7 +27,7 @@ class Frontiere;
 Declare_ref(Frontiere);
 Declare_liste(REF(Frontiere));
 
-// .SECTION Voir aussi
+// .SECTION voir aussi
 // Frontiere
 
 #endif

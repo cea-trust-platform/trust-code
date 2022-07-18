@@ -45,7 +45,7 @@ Entree& Loi_Etat_base::readOn(Entree& is)
 //    Signification: le fluide associe
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:
@@ -64,7 +64,7 @@ void Loi_Etat_base::associer_fluide(const Fluide_Dilatable_base& fl)
 //    Signification: le fluide associe
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:
@@ -155,7 +155,7 @@ void Loi_Etat_base::preparer_calcul()
 //    Signification: le temps de calcul
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:

@@ -28,9 +28,8 @@ declare_It_Sou_VEF_Face(Eval_Puiss_Th_QC_VEF_Face)
 // Cette classe represente un terme source de l'equation de la thermique
 // du type degagement volumique de puissance thermique
 //
-//.SECTION
-// voir aussi Terme_Puissance_Thermique, Terme_Source_VEF_base
-
+//.SECTION voir aussi Terme_Puissance_Thermique, Terme_Source_VEF_base
+//
 class Terme_Puissance_Thermique_QC_VEF_Face : public Terme_Puissance_Thermique_VEF_base
 {
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_QC_VEF_Face);

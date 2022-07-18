@@ -22,7 +22,7 @@
 #include <Ref_Zone_Cl_VDF.h>
 
 // .DESCRIPTION class Source_Generique_VDF_Face
-// .SECTION voir Source_Generique_base
+// .SECTION voir aussi Source_Generique_base
 //
 class Source_Generique_VDF_Face: public Source_Generique_base
 {

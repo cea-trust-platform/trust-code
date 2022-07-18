@@ -90,7 +90,7 @@ int Fluide_Weakly_Compressible::lire_motcle_non_standard(const Motcle& mot, Entr
 //    Signification: le probleme a resoudre
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:

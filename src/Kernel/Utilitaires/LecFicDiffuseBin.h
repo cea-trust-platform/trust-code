@@ -29,7 +29,6 @@ class Objet_U;
 //    The file to read is physically locate on the disk of the machine hosting the master task of the Trio-U application (the process of rank 0 in the "tous" group)
 //    and each item read from this file is published to all other processes of the "tous" group.
 //    It is the same for the methods of inspection of the state of a file.
-// .SECTION see also
 //////////////////////////////////////////////////////////////////////////////
 class LecFicDiffuseBin : public LecFicDiffuse
 {

@@ -390,131 +390,131 @@ void Format_Post_base::postraiter_debug_valeurs_un_instant(const Nom& nom_fich,
 //Actuellement on commente
 //Pourquoi pas de declaration de la methode (fonction) static
 
-/*
-// Description: Methode outil pour retirer les doublons dans un tableau.
-static void array_trier_retirer_doublons(ArrOfInt & array)
-{
-const int size_ = array.size_array();
-if (size_ == 0)
-return;
-// Tri dans l'ordre croissant
-array.ordonne_array();
-// Retire les doublons
-int new_size_ = 1;
-int last_value = array[0];
-for (int i = 1; i < size_; i++) {
-if (array[i] != last_value) {
-array[new_size_] = last_value = array[i];
-new_size_++;
-}
-}
-array.resize_array(new_size_);
-}
-*/
 
+//// Description: Methode outil pour retirer les doublons dans un tableau.
+//static void array_trier_retirer_doublons(ArrOfInt & array)
+//{
+//const int size_ = array.size_array();
+//if (size_ == 0)
+//return;
+//// Tri dans l'ordre croissant
+//array.ordonne_array();
+//// Retire les doublons
+//int new_size_ = 1;
+//int last_value = array[0];
+//for (int i = 1; i < size_; i++) {
+//if (array[i] != last_value) {
+//array[new_size_] = last_value = array[i];
+//new_size_++;
+//}
+//}
+//array.resize_array(new_size_);
+//}
+//
+//
+//
+//
+//// Description:
+////  Ecriture des bords du domaine dans le fichier de postraitement
+//// Parametre: id_du_domaine
+//// Signification: le nom du domaine dont on ecrit les bords
+//// Parametre: type_faces
+//// Signification: le type des faces du bord (le nom d'un type derive de Elem_Geom_base)
+//// Parametre: sommets
+//// Signification: Les coordonnees des sommets du domaine.
+//// Parametre: faces_sommets
+//// Signification: pour chaque face de bord, numeros de ses sommets dans le domaine
+//// Parametre: faces_num_bord
+//// Signification: pour chaque face, numero du bord auquel elle appartient
+////  (le premier bord porte le numero zero)
+//// Parametre: bords_nom
+//// Signification: le nom de chaque bord.
+//int Format_Post_base::ecrire_bords(const Nom    & id_du_domaine,
+//const Motcle & type_faces,
+//const DoubleTab & sommets,
+//const IntTab & faces_sommets,
+//const IntTab & faces_num_bord,
+//const Noms   & bords_nom)
+//{
+//// Le comportement par defaut de "ecrire_bords" consiste a
+//// ecrire une nouvelle geometrie appelee "id_du_domaine_boundary"
+//
+//int i, j;
+//
+//// Creation de la liste des indices de sommets utilises dans les faces de bord:
+//ArrOfInt sommets_bord;
+//sommets_bord = faces_sommets;
+//array_trier_retirer_doublons(sommets_bord);
+//
+//// Creation d'un tableau de renumerotation:
+////   renum[indice global] = indice dans le tableau des sommets de bord
+//const int nb_sommets = sommets.dimension(0);
+//const int nb_sommets_bord = sommets_bord.size_array();
+//ArrOfInt renum(nb_sommets);
+//renum = -1;
+//for (i = 0; i < nb_sommets_bord; i++)
+//renum[sommets_bord[i]] = i;
+//
+//// Renumerotation du tableau faces_sommets
+//IntTab faces_sommets_renum(faces_sommets);
+//{
+//ArrOfInt & faces_sommets_array = faces_sommets_renum;
+//const int faces_sommets_size_array = faces_sommets_array.size_array();
+//for (i = 0; i < faces_sommets_size_array; i++) {
+//int & isom = faces_sommets_array[i];
+//isom = renum[isom];
+//}
+//}
+//
+//// Construction du tableau des sommets
+//const int dim = sommets.dimension(1);
+//DoubleTab coord_som(nb_sommets_bord, dim);
+//for (i = 0; i < nb_sommets_bord; i++) {
+//const int i_old = sommets_bord[i];
+//for (j = 0; j < dim; j++)
+//coord_som(i,j) = sommets(i_old,j);
+//}
+//
+//// Ecriture de la geometrie:
+//Nom id = id_du_domaine + "_boundary";
+//ecrire_domaine(id,
+//type_faces,
+//dim,
+//coord_som,
+//faces_sommets_renum);
+//
+//// Ecriture des noms des bords
+//Nom id_noms = id + "_names";
+//ecrire_noms(id_noms,
+//id,
+//"",
+//bords_nom);
+//
+//// Ecriture des numeros de bord
+//Nom id_tableau = id + "_numbers";
+//
+//
+////La methode s appelle maintenant ecrire_item_int()
+//ecrire_champ_int(id_tableau,
+//id,
+//"elem",
+//id_noms,
+//faces_num_bord,
+//bords_nom.size());
+//
+//return 1;
+//}
+//
+//// Description:
+////  Ecriture d'un tableau de chaines de caracteres.
+////  Voir aussi ecrire_champ
+//int Format_Post_base::ecrire_noms(const Nom  & id_de_la_liste,
+//const Nom  & id_du_domaine,
+//const Nom  & localisation,
+//const Noms & liste_noms)
+//{
+//Cerr << "Format_Post_base::ecrire_noms(...)\n"
+//<< " method not coded for " << que_suis_je() << finl;
+//return 0;
+//}
 
-/*
-// Description:
-//  Ecriture des bords du domaine dans le fichier de postraitement
-// Parametre: id_du_domaine
-// Signification: le nom du domaine dont on ecrit les bords
-// Parametre: type_faces
-// Signification: le type des faces du bord (le nom d'un type derive de Elem_Geom_base)
-// Parametre: sommets
-// Signification: Les coordonnees des sommets du domaine.
-// Parametre: faces_sommets
-// Signification: pour chaque face de bord, numeros de ses sommets dans le domaine
-// Parametre: faces_num_bord
-// Signification: pour chaque face, numero du bord auquel elle appartient
-//  (le premier bord porte le numero zero)
-// Parametre: bords_nom
-// Signification: le nom de chaque bord.
-int Format_Post_base::ecrire_bords(const Nom    & id_du_domaine,
-const Motcle & type_faces,
-const DoubleTab & sommets,
-const IntTab & faces_sommets,
-const IntTab & faces_num_bord,
-const Noms   & bords_nom)
-{
-// Le comportement par defaut de "ecrire_bords" consiste a
-// ecrire une nouvelle geometrie appelee "id_du_domaine_boundary"
-
-int i, j;
-
-// Creation de la liste des indices de sommets utilises dans les faces de bord:
-ArrOfInt sommets_bord;
-sommets_bord = faces_sommets;
-array_trier_retirer_doublons(sommets_bord);
-
-// Creation d'un tableau de renumerotation:
-//   renum[indice global] = indice dans le tableau des sommets de bord
-const int nb_sommets = sommets.dimension(0);
-const int nb_sommets_bord = sommets_bord.size_array();
-ArrOfInt renum(nb_sommets);
-renum = -1;
-for (i = 0; i < nb_sommets_bord; i++)
-renum[sommets_bord[i]] = i;
-
-// Renumerotation du tableau faces_sommets
-IntTab faces_sommets_renum(faces_sommets);
-{
-ArrOfInt & faces_sommets_array = faces_sommets_renum;
-const int faces_sommets_size_array = faces_sommets_array.size_array();
-for (i = 0; i < faces_sommets_size_array; i++) {
-int & isom = faces_sommets_array[i];
-isom = renum[isom];
-}
-}
-
-// Construction du tableau des sommets
-const int dim = sommets.dimension(1);
-DoubleTab coord_som(nb_sommets_bord, dim);
-for (i = 0; i < nb_sommets_bord; i++) {
-const int i_old = sommets_bord[i];
-for (j = 0; j < dim; j++)
-coord_som(i,j) = sommets(i_old,j);
-}
-
-// Ecriture de la geometrie:
-Nom id = id_du_domaine + "_boundary";
-ecrire_domaine(id,
-type_faces,
-dim,
-coord_som,
-faces_sommets_renum);
-
-// Ecriture des noms des bords
-Nom id_noms = id + "_names";
-ecrire_noms(id_noms,
-id,
-"",
-bords_nom);
-
-// Ecriture des numeros de bord
-Nom id_tableau = id + "_numbers";
-
-
-//La methode s appelle maintenant ecrire_item_int()
-ecrire_champ_int(id_tableau,
-id,
-"elem",
-id_noms,
-faces_num_bord,
-bords_nom.size());
-
-return 1;
-}
-
-// Description:
-//  Ecriture d'un tableau de chaines de caracteres.
-//  Voir aussi ecrire_champ
-int Format_Post_base::ecrire_noms(const Nom  & id_de_la_liste,
-const Nom  & id_du_domaine,
-const Nom  & localisation,
-const Noms & liste_noms)
-{
-Cerr << "Format_Post_base::ecrire_noms(...)\n"
-<< " method not coded for " << que_suis_je() << finl;
-return 0;
-}
-*/

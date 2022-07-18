@@ -23,7 +23,6 @@
 //     Ces fonctions sont utilisees ici pour multiplier ou diviser un tableau par rho
 //     pour le cas ou le milieu est un Fluide_Dilatable_base
 //
-// .SECTION
 //////////////////////////////////////////////////////////////////////////////
 
 #include <TRUSTTabs_forward.h>

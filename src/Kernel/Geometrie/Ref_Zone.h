@@ -25,7 +25,7 @@
 class Zone;
 Declare_ref(Zone);
 
-// .SECTION Voir aussi
+// .SECTION voir aussi
 // Zone
 
 #endif

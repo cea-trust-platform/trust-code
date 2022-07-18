@@ -28,7 +28,7 @@ class Fluide_Dilatable_base;
 //    Cette classe est censee factoriser ce qui est commun a l'ensemble
 //    des problemes dilatables.
 //
-// .SECTION voir Pb_Fluide_base
+// .SECTION voir aussi Pb_Fluide_base
 //
 //////////////////////////////////////////////////////////////////////////////
 

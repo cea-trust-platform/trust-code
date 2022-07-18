@@ -57,7 +57,7 @@ Entree& Loi_Etat_Multi_GP_QC::readOn(Entree& is)
 //    Signification:
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:

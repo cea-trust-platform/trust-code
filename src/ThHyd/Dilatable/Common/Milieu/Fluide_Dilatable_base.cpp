@@ -234,7 +234,7 @@ void Fluide_Dilatable_base::verifier_coherence_champs(int& err,Nom& msg)
 //    Signification: le cp du fluide
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:
@@ -552,7 +552,7 @@ void Fluide_Dilatable_base::update_pressure_fields(double temps)
 //    Signification: le probleme a resoudre
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:

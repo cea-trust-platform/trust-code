@@ -26,9 +26,8 @@
 // Cette classe represente un evaluateur de flux diffusif
 // total (diffusion laminaire et turbulente)
 // avec une diffusivite constante en espace.
-
-//.SECTION
-// voir aussi Eval_Diff_VDF_const
+//.SECTION voir aussi Eval_Diff_VDF_const
+//
 
 class Eval_Dift_VDF_const : public Eval_Diff_VDF_const, public Eval_Turbulence
 {

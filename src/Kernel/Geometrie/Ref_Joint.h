@@ -21,7 +21,7 @@
 class Joint;
 Declare_ref(Joint);
 
-// .SECTION Voir aussi
+// .SECTION voir aussi
 // Joint
 
 #endif

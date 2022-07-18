@@ -212,7 +212,7 @@ inline const Champ_front& Cond_lim_base::champ_front() const
 //    Signification: valeur a donner au drapeau
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:

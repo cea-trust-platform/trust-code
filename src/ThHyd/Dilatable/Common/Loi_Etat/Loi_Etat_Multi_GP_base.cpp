@@ -58,7 +58,7 @@ void Loi_Etat_Multi_GP_base::calculer_masse_molaire()
 //    Signification: l inconnue associee
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:

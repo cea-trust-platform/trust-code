@@ -21,7 +21,7 @@
 #include <Ref_Zone_VF.h>
 
 // .DESCRIPTION class Source_Generique_VDF_Elem
-// .SECTION voir Source_Generique_base
+// .SECTION voir aussi Source_Generique_base
 //
 class Source_Generique_P0_Elem: public Source_Generique_base
 {

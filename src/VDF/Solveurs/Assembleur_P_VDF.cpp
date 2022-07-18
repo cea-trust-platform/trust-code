@@ -746,7 +746,7 @@ int Assembleur_P_VDF::assembler_rho_variable(Matrice& matrice,
 //    Signification: mass volumique
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//    Acces: lecture
+//    Acces: entree
 // Retour: int
 //    Signification: renvoie toujours 1
 //    Contraintes:

@@ -364,17 +364,17 @@ int Sch_CN_iteratif::faire_un_pas_de_temps_eqn_base(Equation_base&)
 //                   C'est aussi la premiere estimation u(n+1/2,0) de l'inconnue en tn+1/2.
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture seule
+//    Acces: entree
 // Parametre: DoubleTab& up1
 //    Signification: Estimation de l'inconnue en tn+1/2 a l'iteration p+1 : u(n+1/2,p+1)
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture seule
+//    Acces: entree
 // Parametre: DoubleTab& delta
 //    Signification: u(n+1/2,p+1) - u(n+1/2,p)
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture seule
+//    Acces: entree
 // Retour: bool
 //    Signification: true=converge, false=non converge
 //    Contraintes:

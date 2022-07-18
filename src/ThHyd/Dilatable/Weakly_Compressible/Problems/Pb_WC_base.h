@@ -26,7 +26,7 @@
 //    des problemes weakly-compressibles.
 //    Il est suppose dans l'algorithme de iterateTimeStep que la
 //     premiere equation est hydraulique et la deuxieme est thermique.
-// .SECTION voir Pb_Dilatable_base
+// .SECTION voir aussi Pb_Dilatable_base
 //
 //////////////////////////////////////////////////////////////////////////////
 

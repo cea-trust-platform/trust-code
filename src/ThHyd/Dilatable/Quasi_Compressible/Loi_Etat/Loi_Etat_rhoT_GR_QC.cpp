@@ -177,12 +177,12 @@ Entree& Loi_Etat_rhoT_GR_QC::readOn(Entree& is)
 //    Signification: pression
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture
+//    Acces: entree
 // Parametre: double h
 //    Signification: enthalpie
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture
+//    Acces: entree
 // Retour: double
 //    Signification: masse volumique correspondante
 //    Contraintes:
@@ -215,12 +215,12 @@ double Loi_Etat_rhoT_GR_QC::calculer_masse_volumique(double P, double h) const
 //    Signification: pression
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture
+//    Acces: entree
 // Parametre: double h
 //    Signification: enthalpie
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture
+//    Acces: entree
 // Retour: double
 //    Signification: masse volumique correspondante
 //    Contraintes:

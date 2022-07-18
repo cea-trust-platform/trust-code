@@ -28,9 +28,8 @@ declare_It_Sou_PolyMAC_Elem(Eval_Puiss_Th_PolyMAC_Elem)
 // Cette classe represente un terme source de l'equation de la thermique
 // du type degagement volumique de puissance thermique
 //
-//.SECTION
-// voir aussi Terme_Puissance_Thermique, Terme_Source_PolyMAC_base
-
+//.SECTION voir aussi Terme_Puissance_Thermique, Terme_Source_PolyMAC_base
+//
 class Terme_Puissance_Thermique_PolyMAC_Elem : public Terme_Puissance_Thermique_PolyMAC_base
 {
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem);

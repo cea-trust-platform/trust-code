@@ -458,7 +458,7 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
 //    Signification: mass volumique
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//    Acces: lecture
+//    Acces: entree
 // Retour: int
 //    Signification: renvoie toujours 1
 //    Contraintes:

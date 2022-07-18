@@ -147,7 +147,7 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 //    Signification: mass volumique
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//    Acces: lecture
+//    Acces: entree
 // Retour: int
 //    Signification: renvoie toujours 1
 //    Contraintes:

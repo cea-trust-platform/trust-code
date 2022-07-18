@@ -62,7 +62,7 @@ const Nom Loi_Etat_GP_base::type_fluide() const
 //    Signification: le fluide associe
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:

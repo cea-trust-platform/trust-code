@@ -23,7 +23,7 @@
 class Domaine_dis;
 Declare_ref(Domaine_dis);
 
-// .SECTION Voir aussi
+// .SECTION voir aussi
 // Domaine_dis
 
 #endif

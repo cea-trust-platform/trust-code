@@ -575,7 +575,7 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
 //    Signification: mass volumique
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//    Acces: lecture
+//    Acces: entree
 // Retour: int
 //    Signification: renvoie toujours 1
 //    Contraintes:
@@ -689,7 +689,7 @@ int Assembleur_P_VEF::modifier_solution(DoubleTab& pression)
 //    Modifier eventuellement la matrice pour la rendre definie si elle ne l'est pas
 //    Valeurs par defaut:
 //    Contraintes:
-//    Acces: lecture
+//    Acces: entree
 // Retour: int
 //    Signification: renvoie 1 si la matrice est modifiee 0 sinon
 //    Contraintes:

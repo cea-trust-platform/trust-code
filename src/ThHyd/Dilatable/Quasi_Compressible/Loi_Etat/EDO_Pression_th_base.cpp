@@ -34,7 +34,7 @@ Entree& EDO_Pression_th_base::readOn(Entree& is)
 //    Signification: le fluide associe
 //    Valeurs par defaut:
 //    Contraintes: reference constante
-//    Acces: lecture
+//    Acces: entree
 // Retour:
 //    Signification:
 //    Contraintes:

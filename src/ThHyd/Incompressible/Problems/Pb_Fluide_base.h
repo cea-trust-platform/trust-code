@@ -24,7 +24,7 @@
 //     classe  Pb_Fluide_base
 //     Cette classe a pour but de disposer d une classe amont pour
 //     la hierarchie des problemes portant une equation de Navier_Stokes
-// .SECTION voir Probleme_base
+// .SECTION voir aussi Probleme_base
 //////////////////////////////////////////////////////////////////////////////
 class Pb_Fluide_base : public Probleme_base
 {
