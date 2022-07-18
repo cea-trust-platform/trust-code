@@ -40,7 +40,7 @@ do
          then
             PROJECT_DIRECTORIES=`cat $PROJECT_ROOT/env/rep.TRUST` 
             TAGFILES=""
-         else 
+         else
             PROJECT_DIRECTORIES=`cat $PROJECT_ROOT/env/rep.TRUST | grep -v /src/Kernel`
             TAGFILES="../../TRUST/src/Kernel/doc/Kernel.tag=../../../TRUST/src/Kernel/doc/html"
          fi
@@ -115,12 +115,12 @@ do
              # if generate doc step, point to parsed sources:
              SRC_ROOT=$TRUST_DOXYGEN
          fi
-         INPUT=`for rep in $PROJECT_DIRECTORIES;do echo $rep;done | $TRUST_Awk -v SRC_ROOT=$SRC_ROOT '{gsub("\\\./","",$1);INPUT=INPUT" "SRC_ROOT"/"$1} END {print INPUT}'`     
+         INPUT=`for rep in $PROJECT_DIRECTORIES;do echo $rep;done | $TRUST_Awk -v SRC_ROOT=$SRC_ROOT '{gsub("\\\./","",$1);INPUT=INPUT" "SRC_ROOT"/"$1} END {print INPUT}'`
          OUTPUT_DIRECTORY=$PROJECT_DOC/tmp_html
          rm -r -f $OUTPUT_DIRECTORY
          mkdir -p $OUTPUT_DIRECTORY
          echo $ECHO_OPTS "1,$ s?INPUT                  =?INPUT                  = $INPUT?g\nw"                     | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-         echo $ECHO_OPTS "1,$ s?INCLUDE_PATH           =?INCLUDE_PATH           = $INPUT?g\nw"                     | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1            
+         echo $ECHO_OPTS "1,$ s?INCLUDE_PATH           =?INCLUDE_PATH           = $INPUT?g\nw"                     | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
          echo $ECHO_OPTS "1,$ s?PROJECT_NAME           =?PROJECT_NAME           = $PROJECT?g\nw"                 | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
          echo $ECHO_OPTS "1,$ s?PROJECT_NUMBER         =?PROJECT_NUMBER         = $TRUST_VERSION?g\nw"         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
          PREDEFINED=`$TRUST_Awk -F "Defines =" '{gsub("-D","",$2);print $2;exit}' $TRUST_ENV/make.$TRUST_ARCH_CC`
@@ -142,23 +142,14 @@ do
 
          if [ "$GENERATE_TAGFILE" = 0 ]
          then
-            ########################################################
-            # Change sources with triou2doxygen program to convert
-            # TRUST comments to Doxygen comments
-            ########################################################
-            # Rebuild the program if needed
-            if [ ! -f $TRUST_ROOT/exec/triou2doxygen ]
-            then
-               (cd $TRUST_ROOT/Outils/triou2doxygen;make)
-            fi
-            echo $ECHO_OPTS "Preparing parsed sources for project $PROJECT in $TRUST_DOXYGEN...\c"
+            echo $ECHO_OPTS "Linking sources for project $PROJECT in $TRUST_DOXYGEN...\c"
             for dir in $PROJECT_DIRECTORIES
             do
                mkdir -p $TRUST_DOXYGEN/$dir
                cd $TRUST_DOXYGEN/$dir
                for file in `cd $PROJECT_ROOT/$dir;ls *.cpp *.h *.tpp 2>/dev/null`
                do
-                  $TRUST_ROOT/exec/triou2doxygen $PROJECT_ROOT/$dir/$file > $file
+                  ln -nsf $PROJECT_ROOT/$dir/$file $file
                done
             done
             echo "OK"

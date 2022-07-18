@@ -40,7 +40,6 @@ make_tools()
    echo "$MESSAGE tools and plugins:"
    echo "==========================="
    reps="Outils/lance_test_seq_par"
-   [ "$TRUST_DISABLE_DOXYGEN" != 1 ] && reps=$reps" Outils/triou2doxygen"
    reps=$reps" Outils/lata2dx"
    [ "$TRUST_DISABLE_MPI" = 0 ] && reps=$reps" Outils/ICoCo"
    [ "$TRUST_DISABLE_VALGRIND" != 1 ] && reps=$reps" Outils/valgrind"

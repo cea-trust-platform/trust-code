@@ -4,7 +4,7 @@
 # a priori 8 differences avec make_Doxyfile
 prepare_sources()
 {
-   echo $ECHO_OPTS "Preparing sources in $TRUST_TMP/TRUST_dox...\c"
+   echo $ECHO_OPTS "Linking sources in $TRUST_TMP/TRUST_dox...\c"
    dirs=`cat $TRUST_ROOT/env/rep.TRUST`
    rm -r -f $TRUST_TMP/TRUST_dox
    mkdir -p $TRUST_TMP/TRUST_dox
@@ -14,7 +14,7 @@ prepare_sources()
    cd baltik
    for file in `ls $project_directory/build/src/*.cpp  $project_directory/build/src/*.h`
    do
-       $TRUST_ROOT/exec/triou2doxygen $file > `basename $file `
+       ln -nsf $file `basename $file`
    done
 
    cd $TRUST_TMP/TRUST_dox
@@ -26,7 +26,7 @@ prepare_sources()
       do
         if [ ! -f $TRUST_TMP/TRUST_dox/baltik/`basename $file` ]
         then
-            $TRUST_ROOT/exec/triou2doxygen $file > `basename $file`
+            ln -nsf $file `basename $file`
         else
             echo $file modifie par le projet baltik
         fi
