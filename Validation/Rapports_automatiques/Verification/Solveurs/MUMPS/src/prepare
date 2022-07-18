@@ -1,0 +1,30 @@
+#!/bin/bash
+meshes="21x21x21 11x11x11 6x6x6"
+meshes="10x10x10" && cpu=2 # cpu=8
+liste_cas="" 
+option[0]="petsc cholesky 		{ impr cli { -ksp_view  } reduce_ram  }" 				&& liste_cas=$liste_cas"mumps "  
+option[1]="petsc cholesky_mumps_blr 	{ impr cli { -ksp_view  } reduce_ram dropping_parameter 1.e-4 }"	&& liste_cas=$liste_cas"mumps_blr_4 "  
+option[2]="petsc cholesky_mumps_blr 	{ impr cli { -ksp_view  } reduce_ram dropping_parameter 1.e-8 }"	&& liste_cas=$liste_cas"mumps_blr_8 "  
+option[3]="petsc cholesky_mumps_blr 	{ impr cli { -ksp_view  } reduce_ram dropping_parameter 1.e-12 }"	&& liste_cas=$liste_cas"mumps_blr_12 "  
+#option[1]="petsc cholesky_mumps_blr 	{ cli { -ksp_view -mat_mumps_cntl_7 1.e-6 -mat_mumps_icntl_8 -2 -mat_mumps_icntl_35 2 -mat_mumps_icntl_36 0 } impr }" 		&& liste_cas=$liste_cas"mumps_blr "  
+i=-1
+for cas in $liste_cas
+do
+   let i=i+1
+   for mesh in $meshes
+   do
+      mkdir -p $mesh
+      cd $mesh
+      jdd=$cas.data
+      mesh=`echo $mesh | sed "1,$ s?x? ?g"`      
+      cp ../base.data $jdd
+      cp ../post_run .
+      sed -i "1,$ s?_solveur_pression_?${option[$i]}?g" $jdd
+      sed -i "1,$ s?_mesh_?$mesh?g" $jdd
+      make_PAR.data $jdd $cpu
+      mv PAR_$jdd $jdd
+      cd .. 1>/dev/null 2>&1
+   done
+done
+sed -i "1,$ s?_meshes_?$meshes?g" post_run
+exit 0

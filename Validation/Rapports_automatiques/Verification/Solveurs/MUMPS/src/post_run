@@ -1,0 +1,8 @@
+#!/bin/bash
+cas=${1%.data}
+
+# Memoire:
+awk '/Memory effectively used, max in  Mbytes/ {print 1" "$NF;print 2" "$NF}' $cas.out 1>$cas.ram
+
+# CPU:
+awk '/clock Ax=B/ {i++;print i" "$3}' $cas.out 1>$cas.cpu
