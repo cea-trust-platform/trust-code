@@ -4,7 +4,7 @@ if [ "$TRUST_LOGIN" != `whoami` ]
 then
    echo "You don't have rights to recreate the HTML documentation."
    exit -1
-fi   
+fi
 
 PROJECTS="$TRUST_ROOT/src/Kernel $TRUST_ROOT $project_directory" && GENERATE_TAGFILES="1 0"
 PROJECTS=$TRUST_ROOT && GENERATE_TAGFILES=0
@@ -20,7 +20,7 @@ do
    do
       PROJECT=`basename $PROJECT_ROOT`
       PROJECT_DOC=$PROJECT_ROOT/doc && [ ! -d $PROJECT_DOC ] && mkdir -p $PROJECT_DOC
-      cd $PROJECT_DOC	 
+      cd $PROJECT_DOC
 
       PROJECT_TAG=$PROJECT_DOC/$PROJECT.tag
       ##################################################
@@ -30,34 +30,34 @@ do
       then
          # Baltik projects (eg: MC2 with TRUST and Kernel projects)
          PROJECT_DIRECTORIES=`cd $PROJECT_ROOT;find src/* -type d`
-	 TAGFILES="$TRUST_ROOT/src/Kernel/doc/Kernel.tag=$TRUST_ROOT/src/Kernel/doc/html $TRUST_ROOT/doc/TRUST.tag=$TRUST_ROOT/doc/html"
-	 # Doc dans un endroit particulier (sous share):
-	 PROJECT_DOC=$PROJECT_ROOT/share/doc
+         TAGFILES="$TRUST_ROOT/src/Kernel/doc/Kernel.tag=$TRUST_ROOT/src/Kernel/doc/html $TRUST_ROOT/doc/TRUST.tag=$TRUST_ROOT/doc/html"
+         # Doc dans un endroit particulier (sous share):
+         PROJECT_DOC=$PROJECT_ROOT/share/doc
       elif [ -f $PROJECT_ROOT/env/rep.TRUST ]
       then
          # TRUST project (without Kernel)
-	 if [ $GENERATE_TAGFILES = 0 ]
-	 then
+         if [ $GENERATE_TAGFILES = 0 ]
+         then
             PROJECT_DIRECTORIES=`cat $PROJECT_ROOT/env/rep.TRUST` 
-	    TAGFILES=""
-	 else 
+            TAGFILES=""
+         else 
             PROJECT_DIRECTORIES=`cat $PROJECT_ROOT/env/rep.TRUST | grep -v /src/Kernel`
-	    TAGFILES="../../TRUST/src/Kernel/doc/Kernel.tag=../../../TRUST/src/Kernel/doc/html"
-	 fi
+            TAGFILES="../../TRUST/src/Kernel/doc/Kernel.tag=../../../TRUST/src/Kernel/doc/html"
+         fi
       else
          # Other project (eg: Kernel)
          PROJECT_DIRECTORIES=`cd $PROJECT_ROOT;find * -type d`
-	 TAGFILES=""
+         TAGFILES=""
       fi
-      
+
       echo "===================================================="
       if [ "$GENERATE_TAGFILE" = 1 ]
-      then	    
-	 echo "->STEP 1: GENERATING TAG FILES for project $PROJECT:"
-	 TARGET=$PROJECT_TAG
+      then
+         echo "->STEP 1: GENERATING TAG FILES for project $PROJECT:"
+         TARGET=$PROJECT_TAG
       else
-	 echo "->STEP 2: GENERATING DOC FILES for project $PROJECT:"	  
-	 TARGET=$PROJECT_DOC/html/index.html
+         echo "->STEP 2: GENERATING DOC FILES for project $PROJECT:"
+         TARGET=$PROJECT_DOC/html/index.html
       fi
       echo "===================================================="
 
@@ -68,133 +68,133 @@ do
       echo $ECHO_OPTS "HTML documentation needs to be rebuilt for the project $PROJECT ? \c"
       if [ ! -f $TARGET ] 
       then
-	 [ "$GENERATE_TAGFILE" = 1 ] && echo "Yes. Project tag is missing."
-	 [ "$GENERATE_TAGFILE" = 0 ] && echo "Yes. Documentation index is missing."
+         [ "$GENERATE_TAGFILE" = 1 ] && echo "Yes. Project tag is missing."
+         [ "$GENERATE_TAGFILE" = 0 ] && echo "Yes. Documentation index is missing."
       else
-	 files=""
+         files=""
          [ "$TRUST_ENABLE_DOC_DOXYGEN" = 0 ] && TARGET=$TRUST_ROOT/doc/.dico
-	 for rep in $PROJECT_DIRECTORIES
-	 do
-	    for file in `cd $PROJECT_ROOT/$rep;ls *.cpp *.h *.tpp 2>/dev/null`
-	    do
-	       [ $PROJECT_ROOT/$rep/$file -nt $TARGET ] && files=$files" "$file
-	    done
-	 done
-	 if [ "$files" = "" ]
-	 then
-	    echo "No"
-	    build=0
-	 else
-	    echo "Yes. Several source files have changed:"
-	    echo $files
-	    if [ -f $PROJECT_ROOT/bin/KSH/verifie_instanciable ]
-	    then
+         for rep in $PROJECT_DIRECTORIES
+         do
+            for file in `cd $PROJECT_ROOT/$rep;ls *.cpp *.h *.tpp 2>/dev/null`
+            do
+               [ $PROJECT_ROOT/$rep/$file -nt $TARGET ] && files=$files" "$file
+            done
+         done
+         if [ "$files" = "" ]
+         then
+            echo "No"
+            build=0
+         else
+            echo "Yes. Several source files have changed:"
+            echo $files
+            if [ -f $PROJECT_ROOT/bin/KSH/verifie_instanciable ]
+            then
                echo "-> Running verifie_instanciable on project $PROJECT..."
-               $PROJECT_ROOT/bin/KSH/verifie_instanciable	       
-	    fi
-	 fi
+               $PROJECT_ROOT/bin/KSH/verifie_instanciable
+            fi
+         fi
       fi
 
       if [ "$build" = 1 ]
       then
        (
-	 cd $PROJECT_DOC	    
-	 ###############################################
-	 # Build the configuration file of the project #
-	 ###############################################
-	 TRUST_DOXYGEN=`mktemp_ -d`
-	 TRUST_DOXYFILE=$TRUST_DOXYGEN/Doxyfile
-	 cat $TRUST_ROOT/bin/KSH/Doxyfile > $TRUST_DOXYFILE
-	 echo $ECHO_OPTS "Building $TRUST_DOXYFILE...\c"
-	 # Build director
-	 if [ "$GENERATE_TAGFILE" = 1 ]
-	 then
-	     # If generate tag file step, point to real sources:
-	     SRC_ROOT=$PROJECT_ROOT
+         cd $PROJECT_DOC
+         ###############################################
+         # Build the configuration file of the project #
+         ###############################################
+         TRUST_DOXYGEN=`mktemp_ -d`
+         TRUST_DOXYFILE=$TRUST_DOXYGEN/Doxyfile
+         cat $TRUST_ROOT/bin/KSH/Doxyfile > $TRUST_DOXYFILE
+         echo $ECHO_OPTS "Building $TRUST_DOXYFILE...\c"
+         # Build director
+         if [ "$GENERATE_TAGFILE" = 1 ]
+         then
+             # If generate tag file step, point to real sources:
+             SRC_ROOT=$PROJECT_ROOT
          else
-	     # if generate doc step, point to parsed sources:
-	     SRC_ROOT=$TRUST_DOXYGEN
-	 fi
-	 INPUT=`for rep in $PROJECT_DIRECTORIES;do echo $rep;done | $TRUST_Awk -v SRC_ROOT=$SRC_ROOT '{gsub("\\\./","",$1);INPUT=INPUT" "SRC_ROOT"/"$1} END {print INPUT}'`     
-	 OUTPUT_DIRECTORY=$PROJECT_DOC/tmp_html
-	 rm -r -f $OUTPUT_DIRECTORY
-	 mkdir -p $OUTPUT_DIRECTORY
-	 echo $ECHO_OPTS "1,$ s?INPUT                  =?INPUT                  = $INPUT?g\nw"             	| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	 echo $ECHO_OPTS "1,$ s?INCLUDE_PATH           =?INCLUDE_PATH           = $INPUT?g\nw"             	| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1	    
-	 echo $ECHO_OPTS "1,$ s?PROJECT_NAME           =?PROJECT_NAME           = $PROJECT?g\nw" 		| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	 echo $ECHO_OPTS "1,$ s?PROJECT_NUMBER         =?PROJECT_NUMBER         = $TRUST_VERSION?g\nw" 	| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	 PREDEFINED=`$TRUST_Awk -F "Defines =" '{gsub("-D","",$2);print $2;exit}' $TRUST_ENV/make.$TRUST_ARCH_CC`
-	 [ "`grep __PETSCKSP_H $PETSC_ROOT/$TRUST_ARCH/include/petscksp.h 2>/dev/null`" != "" ] && PREDEFINED=$PREDEFINED" __PETSCKSP_H"
-	 echo $ECHO_OPTS "1,$ s?PREDEFINED             =?PREDEFINED             = $PREDEFINED?g\nw"        	| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	 if [ "$GENERATE_TAGFILE" = 1 ]
-	 then
-	    echo $ECHO_OPTS "1,$ s?GENERATE_HTML          =?GENERATE_HTML          = NO?g\nw" 			| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	    echo $ECHO_OPTS "1,$ s?GENERATE_TAGFILE       =?GENERATE_TAGFILE       = $PROJECT_TAG?g\nw" 	| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	 else
-	    echo $ECHO_OPTS "1,$ s?GENERATE_HTML          =?GENERATE_HTML          = YES?g\nw" 			| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	    echo $ECHO_OPTS "1,$ s?TAGFILES               =?TAGFILES               = $TAGFILES?g\nw" 		| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	    echo $ECHO_OPTS "1,$ s?OUTPUT_DIRECTORY       =?OUTPUT_DIRECTORY       = $OUTPUT_DIRECTORY?g\nw" 	| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	    echo $ECHO_OPTS "1,$ s?STRIP_FROM_PATH        =?STRIP_FROM_PATH        = $TRUST_DOXYGEN/?g\nw"  	| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	    # To list external classes in index (eg: Kernel classes in TRUST index classes):
-	    echo $ECHO_OPTS "1,$ s?ALLEXTERNALS           =?ALLEXTERNALS           = YES?g\nw"  		| ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
-	 fi
+             # if generate doc step, point to parsed sources:
+             SRC_ROOT=$TRUST_DOXYGEN
+         fi
+         INPUT=`for rep in $PROJECT_DIRECTORIES;do echo $rep;done | $TRUST_Awk -v SRC_ROOT=$SRC_ROOT '{gsub("\\\./","",$1);INPUT=INPUT" "SRC_ROOT"/"$1} END {print INPUT}'`     
+         OUTPUT_DIRECTORY=$PROJECT_DOC/tmp_html
+         rm -r -f $OUTPUT_DIRECTORY
+         mkdir -p $OUTPUT_DIRECTORY
+         echo $ECHO_OPTS "1,$ s?INPUT                  =?INPUT                  = $INPUT?g\nw"                     | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+         echo $ECHO_OPTS "1,$ s?INCLUDE_PATH           =?INCLUDE_PATH           = $INPUT?g\nw"                     | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1            
+         echo $ECHO_OPTS "1,$ s?PROJECT_NAME           =?PROJECT_NAME           = $PROJECT?g\nw"                 | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+         echo $ECHO_OPTS "1,$ s?PROJECT_NUMBER         =?PROJECT_NUMBER         = $TRUST_VERSION?g\nw"         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+         PREDEFINED=`$TRUST_Awk -F "Defines =" '{gsub("-D","",$2);print $2;exit}' $TRUST_ENV/make.$TRUST_ARCH_CC`
+         [ "`grep __PETSCKSP_H $PETSC_ROOT/$TRUST_ARCH/include/petscksp.h 2>/dev/null`" != "" ] && PREDEFINED=$PREDEFINED" __PETSCKSP_H"
+         echo $ECHO_OPTS "1,$ s?PREDEFINED             =?PREDEFINED             = $PREDEFINED?g\nw"                | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+         if [ "$GENERATE_TAGFILE" = 1 ]
+         then
+            echo $ECHO_OPTS "1,$ s?GENERATE_HTML          =?GENERATE_HTML          = NO?g\nw"                         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+            echo $ECHO_OPTS "1,$ s?GENERATE_TAGFILE       =?GENERATE_TAGFILE       = $PROJECT_TAG?g\nw"         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+         else
+            echo $ECHO_OPTS "1,$ s?GENERATE_HTML          =?GENERATE_HTML          = YES?g\nw"                         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+            echo $ECHO_OPTS "1,$ s?TAGFILES               =?TAGFILES               = $TAGFILES?g\nw"                 | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+            echo $ECHO_OPTS "1,$ s?OUTPUT_DIRECTORY       =?OUTPUT_DIRECTORY       = $OUTPUT_DIRECTORY?g\nw"         | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+            echo $ECHO_OPTS "1,$ s?STRIP_FROM_PATH        =?STRIP_FROM_PATH        = $TRUST_DOXYGEN/?g\nw"          | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+            # To list external classes in index (eg: Kernel classes in TRUST index classes):
+            echo $ECHO_OPTS "1,$ s?ALLEXTERNALS           =?ALLEXTERNALS           = YES?g\nw"                  | ed $TRUST_DOXYFILE 1>/dev/null 2>&1 || exit -1
+         fi
          echo OK
 
-	 if [ "$GENERATE_TAGFILE" = 0 ]
-	 then
-	    ########################################################
-	    # Change sources with triou2doxygen program to convert
-	    # TRUST comments to Doxygen comments
-	    ########################################################
-	    # Rebuild the program if needed
-	    if [ ! -f $TRUST_ROOT/exec/triou2doxygen ]
-	    then
-	       (cd $TRUST_ROOT/Outils/triou2doxygen;make)
-	    fi
-	    echo $ECHO_OPTS "Preparing parsed sources for project $PROJECT in $TRUST_DOXYGEN...\c"
-	    for dir in $PROJECT_DIRECTORIES
-	    do
-	       mkdir -p $TRUST_DOXYGEN/$dir
-	       cd $TRUST_DOXYGEN/$dir
-	       for file in `cd $PROJECT_ROOT/$dir;ls *.cpp *.h *.tpp 2>/dev/null`
-	       do
-        	  $TRUST_ROOT/exec/triou2doxygen $PROJECT_ROOT/$dir/$file > $file
-	       done
-	    done
-	    echo "OK"
+         if [ "$GENERATE_TAGFILE" = 0 ]
+         then
+            ########################################################
+            # Change sources with triou2doxygen program to convert
+            # TRUST comments to Doxygen comments
+            ########################################################
+            # Rebuild the program if needed
+            if [ ! -f $TRUST_ROOT/exec/triou2doxygen ]
+            then
+               (cd $TRUST_ROOT/Outils/triou2doxygen;make)
+            fi
+            echo $ECHO_OPTS "Preparing parsed sources for project $PROJECT in $TRUST_DOXYGEN...\c"
+            for dir in $PROJECT_DIRECTORIES
+            do
+               mkdir -p $TRUST_DOXYGEN/$dir
+               cd $TRUST_DOXYGEN/$dir
+               for file in `cd $PROJECT_ROOT/$dir;ls *.cpp *.h *.tpp 2>/dev/null`
+               do
+                  $TRUST_ROOT/exec/triou2doxygen $PROJECT_ROOT/$dir/$file > $file
+               done
+            done
+            echo "OK"
          fi
 
-	 ####################
-	 # Run Doxygen (slow)
-	 ####################
-	 cd $PROJECT_DOC
-	 doxygen=`ls -rt $TRUST_ROOT/exec/doxygen*/bin/doxygen`
+         ####################
+         # Run Doxygen (slow)
+         ####################
+         cd $PROJECT_DOC
+         doxygen=`ls -rt $TRUST_ROOT/exec/doxygen*/bin/doxygen`
          Build=$TRUST_ROOT/build/doc
          [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
-	 echo $ECHO_OPTS "Running doxygen `$doxygen --version` (output in $Build/doxygen$GENERATE_TAGFILE.out|err)... \c" | tee $Build/doxygen$GENERATE_TAGFILE.out
-	 $doxygen $TRUST_DOXYFILE 1>>$Build/doxygen$GENERATE_TAGFILE.out 2>$Build/doxygen$GENERATE_TAGFILE.err
-	 [ $? != 0 ] && echo "Error! See $Build/doxygen$GENERATE_TAGFILE.err" && exit -1
-	 if [ "$GENERATE_TAGFILE" = 1 ]
-	 then
-	    echo "OK. Project tag is created: $PROJECT_TAG"
-	 else
+         echo $ECHO_OPTS "Running doxygen `$doxygen --version` (output in $Build/doxygen$GENERATE_TAGFILE.out|err)... \c" | tee $Build/doxygen$GENERATE_TAGFILE.out
+         $doxygen $TRUST_DOXYFILE 1>>$Build/doxygen$GENERATE_TAGFILE.out 2>$Build/doxygen$GENERATE_TAGFILE.err
+         [ $? != 0 ] && echo "Error! See $Build/doxygen$GENERATE_TAGFILE.err" && exit -1
+         if [ "$GENERATE_TAGFILE" = 1 ]
+         then
+            echo "OK. Project tag is created: $PROJECT_TAG"
+         else
             if [ -d $OUTPUT_DIRECTORY/html ]
-	    then
-	       ############################
-	       # Update the html directory
-	       ############################
-	       [ -d html ] && mv -f html html.old
-	       mv -f $OUTPUT_DIRECTORY/html html
-	       (nohup rm -r -f html.old $OUTPUT_DIRECTORY &) 1>/dev/null 2>&1
-	       # Suppress the temporary PATH TRUST_DOXYGEN from the doc (useless STRIP_FROM_PATH ?)
+            then
+               ############################
+               # Update the html directory
+               ############################
+               [ -d html ] && mv -f html html.old
+               mv -f $OUTPUT_DIRECTORY/html html
+               (nohup rm -r -f html.old $OUTPUT_DIRECTORY &) 1>/dev/null 2>&1
+               # Suppress the temporary PATH TRUST_DOXYGEN from the doc (useless STRIP_FROM_PATH ?)
                #cd $PROJECT_DOC/html
-	       #sed -i "s?$TRUST_DOXYGEN/??g" * # -i option very useful !
-	       echo "OK. Documentation for project $PROJECT is created."
-	    fi
-	 fi
-	 rm -r -f $TRUST_DOXYGEN
-	) &
-	PROCESS_IDS=$PROCESS_IDS" "$!
+               #sed -i "s?$TRUST_DOXYGEN/??g" * # -i option very useful !
+               echo "OK. Documentation for project $PROJECT is created."
+            fi
+         fi
+         rm -r -f $TRUST_DOXYGEN
+        ) &
+        PROCESS_IDS=$PROCESS_IDS" "$!
       fi
    done
    # Wait for all the processes to finish

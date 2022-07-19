@@ -6,17 +6,17 @@ prepare_sources()
 {
    echo $ECHO_OPTS "Preparing sources in $TRUST_TMP/TRUST_dox...\c"
    dirs=`cat $TRUST_ROOT/env/rep.TRUST`
-   rm -r -f $TRUST_TMP/TRUST_dox   
-   mkdir -p $TRUST_TMP/TRUST_dox 
+   rm -r -f $TRUST_TMP/TRUST_dox
+   mkdir -p $TRUST_TMP/TRUST_dox
    cd $TRUST_TMP/TRUST_dox
 
    mkdir baltik
    cd baltik
    for file in `ls $project_directory/build/src/*.cpp  $project_directory/build/src/*.h`
-     do 
-     $TRUST_ROOT/exec/triou2doxygen $file > `basename $file `
+   do
+       $TRUST_ROOT/exec/triou2doxygen $file > `basename $file `
    done
-   
+
    cd $TRUST_TMP/TRUST_dox
    for dir in $dirs
    do
@@ -24,12 +24,12 @@ prepare_sources()
       cd $dir
       for file in `ls $TRUST_ROOT/$dir/*.cpp $TRUST_ROOT/$dir/*.h`
       do
-	if	[ ! -f $TRUST_TMP/TRUST_dox/baltik/`basename $file` ] 
-	    then
-         $TRUST_ROOT/exec/triou2doxygen $file > `basename $file`
-	else
-	    echo $file modifie par le projet baltik
-	fi
+        if [ ! -f $TRUST_TMP/TRUST_dox/baltik/`basename $file` ]
+        then
+            $TRUST_ROOT/exec/triou2doxygen $file > `basename $file`
+        else
+            echo $file modifie par le projet baltik
+        fi
       done
       cd $TRUST_TMP/TRUST_dox
    done
