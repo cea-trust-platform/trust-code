@@ -1,4 +1,41 @@
 Version	Qui				Tache
+1.9.1   trust@cea.fr            empecher d'installer TRUST sur home titania
+1.9.1   trust@cea.fr            mise a jour tuto utilisateur/dev avec jupyter
+1.9.1   pierre.ledac@cea.fr	VisIt sur Ubuntu 22
+1.9.1   pierre.ledac@cea.fr     [PETSC_AMGX] Corriger erreur valgrind sur machine gpu en mettant a jour AMGX*
+1.9.1   pierre.ledac@cea.fr     Modifier scripts Baltik pour qu un Baltik quelconque puisse etre deplace sans souci apres installation
+1.9.1   anida.khizar@cea.fr     coder la resolution en increment dans le solveur_masse
+1.9.1   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC
+1.9.1   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
+1.9.1   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
+1.9.1   adrien.bruneton@cea.fr  ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
+1.9.1   adrien.bruneton@cea.fr  Nettoyer le vieux code med fichier
+1.9.1   adrien.bruneton@cea.fr  Revoir LireMED pour ne pas utiliser les familles mais que les groupes
+1.9.1   adrien.bruneton@cea.fr  Mettre dans un fichier separe la classe Champ_Fonc_MEDfile
+1.9.1   pierre.ledac@cea.fr     Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
+1.9.1   pierre.ledac@cea.fr     Doxygen update + remove #ifdef DOXYGEN_SHOULD_SKIP_THIS from Eval_DiffF22_VDF_const_Elem.h
+1.9.1   pierre.ledac@cea.fr     Suppression LataV1 mais verifier que ecrire_lata (cas d usage dans fiche Part_Ss_Dom) fonctionne
+1.9.1   pierre.ledac@cea.fr     Corriger sources TRUST pour l'erreur valgrind ajoutee au fichier suppression le 11/12/18.
+1.9.1   pierre.ledac@cea.fr	Fedora 36 et GNU 11.?
+1.9.1   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE Canal_172M_PE_4913 sur un cluster
+1.9.1   trust@cea.fr            LDC: ouvrir une DI pour "Branches a integrer dans TRUST pour prochaine version 185" (cf DI 188128)
+1.9.1   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
+1.9.1   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 188129)
+1.9.1   trust@cea.fr            LDC: ouvrir une DI pour installation reseau Titania (cf di 183455)
+1.9.1   trust@cea.fr            LDC: ouvrir une DI pour installation clusters
+1.9.1   trust@cea.fr            LDC: ouvrir une DI pour mise a jour des supports de formation (si besoin) et bon de livraison des slides (cf DI182050)
+1.9.1   trust@cea.fr            AGL: Revoir la procedure d installation de gcc car KO sur Fedora (OK sur CentOS cf is223196 gcc recent) -> cf Installer_gcc_MBT.sh ? utiliser spack ?
+1.9.1   trust@cea.fr            AGL: Revoir pour lancer le check_component des que exe TRUST OK => voir pour attendre (cf ICoCo et tuto sur is220964 le we) (MR je ne sais plus ce que cela veut dire...)
+1.9.1   trust@cea.fr            AGL: revoir le test (KO sur bcp de pc) commente a la fin du fichier Outils/lata2dx/lata2dx/new_build.sh pour tester l'installation lataloader
+1.9.1   trust@cea.fr            LDC: Mettre a jour le fichier License.txt (apres la 1ere RC et qd livraison en fin d'annee)
+1.9.1   trust@cea.fr            LDC: Verifier independance des sous-modules de chaque BALTIK car non lance via AGL (avec la premiere version RC)
+1.9.1   pierre.ledac@cea.fr     LDC: recuperer aupres du RPL l archive de couverture de code et la mettre sous doc/Coverage
+1.9.1   trust@cea.fr            LDC: envoyer BDL
+1.9.1   trust@cea.fr            LDC: En attente feu vert CEA - apres analyse du lancement de toutes les fiches de verification si OK (main_validation)
+1.9.1   trust@cea.fr            LDC: Creer new RELEASE dans TRUST et TrioCFD
+1.9.1   trust@cea.fr            LDC: mettre a jour depot doc html sur github
+1.9.1   trust@cea.fr            LDC: Apres feu vert CEA - demander a poser le tag sur les baltiks
+
 1.9.x   trust@cea.fr            empecher d'installer TRUST sur home titania
 1.9.x   trust@cea.fr            mise a jour tuto utilisateur/dev avec jupyter
 1.9.x   pierre.ledac@cea.fr	VisIt sur Ubuntu 22

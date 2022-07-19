@@ -504,7 +504,7 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    echo "<A HREF="nuit_equation_convection_diffusion.html">Tuto</A> : equation_convection_diffusion baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_ICoCo.html">ICoCo</A> : ICoCo baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_triocfd.html">TrioCFD</A> : TrioCFD baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_ijk.html">IJK-FT</A> : IJK-FT baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_Front_tracking_IJK.html">Front_tracking_IJK</A> : Front_tracking_IJK baltik compilation portability<BR>" >> $NUIT2
    #echo "<A HREF="nuit_polymac.html">PolyMAC</A> : PolyMAC baltik compilation portability<BR>" >> $NUIT2
    #echo "<A HREF="nuit_triomc.html">TrioMC</A> : TrioMC baltik compilation portability<BR>" >> $NUIT2
    #echo "<A HREF="nuit_mathys.html">MATHYS</A> : MATHYS baltik compilation portability<BR>" >> $NUIT2
@@ -519,7 +519,7 @@ $TD_CR<A HREF="$CR">$HOST</A>$FTD
    echo "<A HREF="nuit_scorpio.html">SCORPIO</A> : SCORPIO baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_sympy_to_TRUST.html">STT</A> : sympy_to_TRUST baltik compilation portability<BR>" >> $NUIT2
    echo "<A HREF="nuit_pemfc.html">PEMFC</A> : PEMFC baltik compilation portability<BR>" >> $NUIT2
-   echo "<A HREF="nuit_TRUST-NK.html">TRUST-NK</A> : TRUST-NK baltik compilation portability<BR>" >> $NUIT2
+   echo "<A HREF="nuit_TRUST_NK.html">TRUST_NK</A> : TRUST_NK baltik compilation portability<BR>" >> $NUIT2
    #echo "Release criteria of the $TRUST_VERSION version:<BR>" >> $NUIT2
    echo "$port_cible_all : Total number portability ( $nb_machine_cible = $nb_machine_total_cible )<BR>" >> $NUIT2
    echo "$port_trust : $MODULE portability ( $portabilite/$nb_machine_cible > $limite ) $mes<BR>" >> $NUIT2

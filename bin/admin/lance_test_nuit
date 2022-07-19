@@ -63,15 +63,15 @@ check_components()
 	    then
 	       make_option="make check_all_optim check_trust_optim"
             fi
-            if [ "$Composant" = flica5 ] || [ "$Composant" = ijk ]
+            if [ "$Composant" = flica5 ] || [ "$Composant" = Front_tracking_IJK ]
             then
                make_option="make check_optim"
             fi
 	    if [ $TRUST_ROOT = $TRUST_ROOT_MASTER ]
 	    then
 	       # Test debug tous les jours sur Template, Tuto, ICoCo, TrioMC, MPCube, Genepi3 et Flica5
-	       #if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != polymac ] && [ "$Composant" != mathys ]
-	       if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != ijk ] && [ "$Composant" != mathys ] && [ "$Composant" != flica5 ] && [ "$Composant" != pemfc ] &&  [ "$Composant" = sympy_to_TRUST ]
+	       #if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != Front_tracking_IJK ] && [ "$Composant" != polymac ] && [ "$Composant" != mathys ]
+	       if [ "$Composant" != Test_Baltik ] && [ "$Composant" != triocfd ] && [ "$Composant" != Front_tracking_IJK ] && [ "$Composant" != mathys ] && [ "$Composant" != flica5 ] && [ "$Composant" != pemfc ] &&  [ "$Composant" = sympy_to_TRUST ]
 	       then
 	          make_option="make check_all_optim check_all_debug"
 	       elif [ "$Composant" = flica5 ]
@@ -263,7 +263,7 @@ check_components()
 	       elif [ "$Composant" = TrioCFD ] || [ "$Composant" = triocfd ]
 	       then
 	          machines=`liste_machines "\-TrioCFD"`
-	       elif [ "$Composant" = IJK ] || [ "$Composant" = ijk ]
+	       elif [ "$Composant" = Front_tracking_IJK ]
 	       then
 	          machines=`liste_machines "\-IJK-FT"`
 	      # elif [ "$Composant" = PolyMAC ] || [ "$Composant" = polymac ]
@@ -278,9 +278,9 @@ check_components()
                elif [ "$Composant" = cathare3D ]
                then
                   machines=`liste_machines "\-C3D"`
-               elif [ "$Composant" = TRUST-NK ]
+               elif [ "$Composant" = TRUST_NK ]
                then
-                  machines=`liste_machines "\-TRUST-NK"`
+                  machines=`liste_machines "\-TRUST_NK"`
                elif [ "$Composant" = sides ]
                then
                   machines=`liste_machines "\-SIDES"`
@@ -383,7 +383,7 @@ check_components()
 	                      check_option=""
 			   fi
 	                else
-	                   check_option="--check-all" && [ "$Composant" = ijk ] && check_option="" # IJK modifie le FT (modification PL 15/05/2020) donc on ne fait plus que make check_optim
+	                   check_option="--check-all" && [ "$Composant" = Front_tracking_IJK ] && check_option="" # IJK modifie le FT (modification PL 15/05/2020) donc on ne fait plus que make check_optim
 		           if [[ "$updated_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines updated
 		           then
 			      if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
@@ -588,9 +588,9 @@ VOBS="TRUST Composants"
 # basic est le template Hello_word qui permet de tester TRUST avec make check_trust_optim (pas possible via script de portabilite) 
 # => on utilise maintenant le baltik Test_Baltik pour la portabilite
 #ComposantsLns="Test_Baltik basic equation_convection_diffusion ICoCo"
-ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo"
-#ComposantsGit="triocfd ijk polymac triomc mathys mpcube genepi3 pxp flica5"
-ComposantsOfficial="triocfd ijk mpcube genepi3 flica5 TRUST-NK cathare3D"
+ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo Front_tracking_IJK" # Front_tracking_IJK is now in triocfd
+#ComposantsGit="triocfd Front_tracking_IJK polymac triomc mathys mpcube genepi3 pxp flica5"
+ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK cathare3D"
 # 14/10/2020 : je retire mathys et triomc sur decision RPL
 #export ComposantsBeta="triomc mathys sides scorpio pemfc"
 export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5 cathare3D"
@@ -955,7 +955,7 @@ fi
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "ijk" && "$Composant" != "mpcube" && "$Composant" != "TRUST-NK" && "$Composant" != "cathare3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
+      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "Front_tracking_IJK" && "$Composant" != "mpcube" && "$Composant" != "TRUST_NK" && "$Composant" != "cathare3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
       then
          #if [[ "$Composant" == "triocfd" ]]
          #then
@@ -986,7 +986,7 @@ fi
          cat tmp.log
          [ "`cat tmp.log`" != "Already up to date" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push github TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
-      elif [[ "$Composant" == "TRUST-NK" ]]
+      elif [[ "$Composant" == "TRUST_NK" ]]
       then
          git remote update
          git checkout .
@@ -1822,7 +1822,7 @@ total_criteres=0
 baltik_ok=0
 #total_baltik=`echo $ComposantsOfficial | wc -w`
 nb=$(echo $ComposantsOfficial-1 | wc -w) # nb de baltik test\E9s pour les versions (beta, RC ou officielle)
-total_baltik=$(echo $nb-1 | bc -l)       # on retire ijk du d\E9compte car il n'est pas encore au point
+total_baltik=$(echo $nb-1 | bc -l)       # on retire Front_tracking_IJK du d\E9compte car il n'est pas encore au point
 
 ######################
 # Tests d'installation
@@ -2734,8 +2734,8 @@ do
 	    echo $machine >> tmp.log
             grep " CORE " $PROJECT_ROOT/*$Composant*$machine.*make_check.log | awk -F"|" '{print $NF}' >> tmp.log
             echo " " >> tmp.log
-            # on retire ijk, polymac, triomc et mathys du critere de livraison TRUST/TrioCFD
-            if [ "$Composant" != ijk ] && [[ "$ComposantsBeta" != *"$Composant"* ]] 
+            # on retire Front_tracking_IJK, polymac, triomc et mathys du critere de livraison TRUST/TrioCFD
+            if [ "$Composant" != Front_tracking_IJK ] && [[ "$ComposantsBeta" != *"$Composant"* ]] 
             then 
                 valgrind=0
             fi
@@ -3613,7 +3613,7 @@ do
       fi
    fi
 #   if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
-   if [ "$Composant" != ijk ] && [[ "$ComposantsBeta" != *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta ou pas ijk
+   if [ "$Composant" != Front_tracking_IJK ] && [[ "$ComposantsBeta" != *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta ou pas Front_tracking_IJK
    then
       let total_criteres=$total_criteres+1
       let criteres_remplis=$criteres_remplis+$validation_composant
@@ -3719,7 +3719,7 @@ for Composant in $Composants
 do
    if [[ "$ComposantsOfficial" = *"$Composant"* ]] || [[ "$ComposantsLns" = *"$Composant"* ]] # Test si Composant n est pas dans la liste des composants Beta
    then
-      if [ "$Composant" != Test_Baltik ] && [ "$Composant" != ijk ] # on retire ijk du critere de livraison TRUST/TrioCFD
+      if [ "$Composant" != Test_Baltik ] && [ "$Composant" != Front_tracking_IJK ] # on retire Front_tracking_IJK du critere de livraison TRUST/TrioCFD
       then
          echo " "
          echo "Search of $TRUST_ROOT/../Composants/$Composant/build/doxygen*.err file"
@@ -4035,19 +4035,19 @@ then
 	    echo "from `pwd`"
 	    # On pose le meme tag sur les BALTIK
             echo "    Call git commit --all -m Commit for an official Release $label version."
-	    #if [ "$Composant" = triocfd ]
-	    #then
-	    #   cp share/doc_auto/TRUST_Generic_Guide.pdf share/doc/TRUST_Generic_Guide.pdf
-	    #   if [ -f "share/doc_auto/TrioCFD_Reference_Manual.pdf" ]
-	    #   then
-	    #      cp share/doc_auto/TrioCFD_Reference_Manual.pdf share/doc/TrioCFD_Reference_Manual.pdf
-	    #   #else
-	    #   #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
-	    #   fi
-	    #   git checkout -- Multiphase/Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
-	    #   # Update the version in README.md file (displayed on github)
-	    #   sed -i "s/$old/$new/g" README.md
-	    #fi
+	    if [ "$Composant" = triocfd ]
+	    then
+	       cp share/doc_auto/TRUST_Generic_Guide.pdf share/doc/TRUST_Generic_Guide.pdf
+	       if [ -f "share/doc_auto/TrioCFD_Reference_Manual.pdf" ]
+	       then
+	          cp share/doc_auto/TrioCFD_Reference_Manual.pdf share/doc/TrioCFD_Reference_Manual.pdf
+	       #else
+	       #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
+	       fi
+	       git checkout -- Multiphase/Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
+	       # Update the version in README.md file (displayed on github)
+	       sed -i "s/$old/$new/g" README.md
+	    fi
             git commit --all -m"Commit for an official Release $label version."
             echo "    Call git tag $label"
 	    git tag $label_pose
@@ -4065,10 +4065,10 @@ then
 	       git push origin Livraison:triou/TMA
 	       git push origin Livraison:triou/$label
             fi
-	    #if [ "$Composant" = triocfd ] # || [ "$Composant" = mpcube ]
-            #then
-	    #   git push --tags origin Livraison:master
-            #fi
+	    if [ "$Composant" = triocfd ] # || [ "$Composant" = mpcube ]
+            then
+	       git push --tags origin Livraison:master
+            fi
 	    git fetch --all
 	    # Appel du make distrib
 	    echo "    Call make distrib"
@@ -4081,19 +4081,19 @@ then
             else
 	       cp -f $Composant.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz
             fi
-	    #if [ $Composant = "triocfd" ]
-            #then
-	    #   # Appel du Create_Light_archive.sh
-	    #   echo "    Call Create_Light_archive.sh"
-	    #   rm -rf Prov
-	    #   ./share/Distribution/Create_light_archive.sh
-            #   if [ $? != 0 ]
-            #   then
-            #      mail_ -s\"[lance_test_nuit] Error with Create_Light_archive.sh v$new for $Composant\" $TRUST_MAIL
-            #   else
-	    #      cp -f TrioCFD_light.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant"_light"-$new.tar.gz
-            #   fi
-	    #fi
+	    if [ $Composant = "triocfd" ]
+            then
+	       # Appel du Create_Light_archive.sh
+	       echo "    Call Create_Light_archive.sh"
+	       rm -rf Prov
+	       ./share/Distribution/Create_light_archive.sh
+               if [ $? != 0 ]
+               then
+                  mail_ -s\"[lance_test_nuit] Error with Create_Light_archive.sh v$new for $Composant\" $TRUST_MAIL
+               else
+	          cp -f TrioCFD_light.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant"_light"-$new.tar.gz
+               fi
+	    fi
 	    echo | mail_ -s\"[lance_test_nuit] $Composant v$new is released under $WORKDIR/archives/ARCHIVES_$Composant\" $TRUST_MAIL	 
 	    # Changement de la vue Maintenance
             if [ -d $WORKDIR/tuleap/Maintenance/Composants/$Composant ]
@@ -4284,7 +4284,7 @@ git clone https://github.com/cea-trust-platform/trust-code.git TRUST-$new
 cd TRUST-$new
 wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-$new.tar
 tar xf externalpackages-$new.tar
-./configure -help # To see the possible configure options. On various OS, we configure TRUST with OPTIONS -force_provided_mpich (DO NOT use it on HPC clusters)
+./configure -help # To see the possible configure options.
 ./configure \$OPTIONS # where \$OPTIONS is the list of selected options.
 make
 
@@ -4321,9 +4321,6 @@ source /gpfswork/rech/fej/ugz82dj/env_TRUST-$new-int64.sh
 
 # for IDRIS (jean-zay) supercomputer (GPU version):
 source /gpfswork/rech/fej/ugz82dj/env_TRUST-$new-gpu.sh
-
-# for CINES (occigen) supercomputer (64-bit integers version):
-source /panfs/panasas/softs/applications/trio_u/TRUST/env_TRUST-$new-int64.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------
@@ -4436,9 +4433,6 @@ source /gpfswork/rech/fej/ugz82dj/env_TrioCFD-$new-int64.sh
 
 # for IDRIS (jean-zay) supercomputer (GPU version):
 source /gpfswork/rech/fej/ugz82dj/env_TrioCFD-$new-gpu.sh
-
-# for CINES (occigen) supercomputer (64-bit integers version):
-source /panfs/panasas/softs/applications/trio_u/TrioCFD/env_TrioCFD-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------

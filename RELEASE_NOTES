@@ -1,4 +1,7 @@
 --------------------------------------------------------------------------------------------------
+Release notes version 1.9.1_beta : Enhancements, modifications and corrected bugs since version 1.9.0 :
+--------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 Release notes version 1.9.0 : Enhancements, modifications and corrected bugs since version 1.8.4 :
 --------------------------------------------------------------------------------------------------
 17/06/22 (TRUST)  New feature : New ICoCo method : set/getInputIntValue() to drive the "equation_non_resolue" parameter. Also added "getDirectAccessToUnknown()" method to directly access TRUST unknown array.
