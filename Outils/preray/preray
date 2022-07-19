@@ -1,8 +1,0 @@
-#!/bin/bash
-if [ "$TRUST_WISH" = "" ]
-then
-   TRUST_WISH="$TRUST_ROOT/exec/tcl_tk/bin/wish8.0"
-   [ ! -f $TRUST_WISH ] && TRUST_WISH=`whereis -b wish | awk '{if (NF>1) print $2}'`
-fi
-[ ! -f $TRUST_WISH ]  && echo wish non trouve definir TRUST_WISH && exit
-exec $TRUST_WISH $TRUST_ROOT/Outils/preray/trio_rayo.tcl $*

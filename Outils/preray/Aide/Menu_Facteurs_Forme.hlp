@@ -1,5 +1,0 @@
-Type : menu
-Acces : Facteurs de Forme
-
-Description :
-	Ce menu contient les commandes qui manipulent la matrice des facteurs de forme : verification des conditions, symetrisation, resolution des inconnues xxx, et reinitialisation.

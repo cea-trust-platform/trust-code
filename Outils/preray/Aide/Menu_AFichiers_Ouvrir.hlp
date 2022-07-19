@@ -1,6 +1,0 @@
-Type : menu
-Acces : Fichiers/Ouvrir
-
-Description :
-	Cette commande permet de mettre un cas en memoire : le logiciel va lire le fichier des noms et des surfaces ".facesrayo" selectionne et, si il existe, le fichier des facteurs de forme ".factforme" (il faut que les noms des fichiers, hors extension, soient identiques).
-	Si le second fichier n'est pas trouve, ou n'est pas conforme (nombre de faces differentes), le tableau des facteurs de forme est initialise (0 sur la diagonale, et inconnues xxx ailleurs).

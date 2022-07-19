@@ -1,8 +1,0 @@
-Type : menu
-Acces : Faces Rayonnantes/Voir
-
-Description :
-	Cette commande ouvre une fenetre separee et non bloquante, et permet de visualiser les surfaces et les emissivites des differentes faces du cas en cours.
-	Cliquer "Ok" pour fermer la fenetre.
-
-	Il est aussi possible de voir le nom complet d'une face (si celui-ci est trop grand pour etre affiche dans la fenetre principale) et sa surface en positionnant le pointeur de la souris sur les titres de lignes et de colonnes : au bout d'un instant un ballon possedant ces informations apparait sous le pointeur.
