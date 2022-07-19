@@ -1,5 +1,0 @@
-dimension 3 
-Domaine raff_dom 
-lire_fichier raff_dom crit_0000_raff1.geom 
-postraiter_domaine { domaine raff_dom  format lml fichier test.lml }
-postraiter_domaine { domaine raff_dom  format lata fichier test.lata }
