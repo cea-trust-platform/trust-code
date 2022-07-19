@@ -1467,7 +1467,7 @@ fi
 ########################
 # Installation de Salome
 ########################
-version_salome=9.8.0
+version_salome=9.9.0
 if [ $TRUST_DOWNLOAD_SALOME = 1 ]
 then
    package=SALOME-$version_salome
@@ -1603,7 +1603,7 @@ case $TRUST_ARCH_CC in
 	[ "$TRUST_USE_OPENMP" = 1 ] && PTHREAD="-pthread" # Pour OpenBLAS ?
 	FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
-	CppFlags="-O3 $FPIC $PTHREAD -std=c++11 -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0"
+	CppFlags="-O3 $FPIC $PTHREAD -std=c++11 -fno-common -Wno-long-long -Wall -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0 -Wno-cpp"
 	# flag -Wsuggest-override available on gcc version >= 5.1; on gcc 5.4.0 (ub 16) this flag suggests to fix mpich 3.2, so we do not add this flag
 	[ "`echo $TRUST_VERSION_GNU | awk '{split($1,a,".");print (a[1]>5||(a[1]==5&&(a[2]>4))?1:0)}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds -Wsuggest-override"
 	# include <sstream> fait un warning sur gcc 2.96, impossible d'utiliser #pragma supporte dans 4.2.x:
@@ -1643,7 +1643,7 @@ case $TRUST_ARCH_CC in
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
 	CppFlags="-O3 -fPIC $ArmFlags $AoccFlags -std=c++11 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
-	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter " #  -Wno-infinite-recursion"
+	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter -Wno-cpp " #  -Wno-infinite-recursion"
 	TRUST_VERSION_CLANG=`print_CLANG_VERSION`
 	clangFlags="-Wsuggest-override" && [ "`echo $TRUST_VERSION_CLANG | awk '{split($1,a,".");print (a[1]<11?1:0)}'`" = 1 ] && clangFlags=""
 	CppFlags=$CppFlags" "$clangFlags
@@ -2000,7 +2000,7 @@ LINK_MALIB = $LINK_MALIB" > $tmp
    Defines=${Defines% -D_INLINE_EVALUATEURS_ -DNDEBUG}
    # On remplace -O par -g
    O=`echo $CppFlags | awk '{print $1}'`
-   CppFlags="-g -O0"${CppFlags#$O}" -Wno-cpp"
+   CppFlags="-g -O0"${CppFlags#$O}
    O=`echo $F77Flags | awk '{print $1}'`
    F77Flags="-g"${F77Flags#$O}
    # 16/03/2010: Ajout de -fbounds-check en debug sur gfortran
