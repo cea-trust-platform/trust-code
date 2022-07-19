@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ORG=`pwd`
-for rep in CURVEPLOT TRUST_PLOT2D TRUST_WIZARD
+for rep in CURVEPLOT TRUST_PLOT2D
 do
   BUILD=$TRUST_TMP/build/$ORG/build_$rep
   BUILD=build_$rep

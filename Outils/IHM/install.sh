@@ -42,7 +42,6 @@ export MAKELEVEL=0
 
 
 ICI=`pwd`
-#for rep in CURVEPLOT TRUST_PLOT2D TRUST_WIZARD
 for rep in CURVEPLOT TRUST_PLOT2D
 do
   ORG=$DIR
