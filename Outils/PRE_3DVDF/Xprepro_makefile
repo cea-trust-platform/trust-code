@@ -1,8 +1,0 @@
-# Compilation de model et prepro
-include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
-
-modelage:
-	$(TRUST_F77_BASE) $(F77Flags) model.f $(LIBS) -o modelage
-
-prepro:
-	$(TRUST_F77_BASE) $(F77Flags) prepro.f -o prepro

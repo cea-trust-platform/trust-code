@@ -1,6 +1,0 @@
-#!/bin/bash
-for file in $1/decl_appel*.h
-do
-sort -u $file > $1/.pr
-mv $1/.pr $file
-done

@@ -1,5 +1,0 @@
-#include "defineh_inc"
-      COMMON /NUMS/ NUMSAB((NIMAX+1)*(NJMAX+1)*(NKMAX+1))          
-      COMMON /C1/ INDFAV(NIMAX,NJMAX,NKMAX)        
-      COMMON /C3/ INDSOV(NIMAX,NJMAX,NKMAX),              
-     1          INDSOM(NIMAX,NJMAX,NKMAX)

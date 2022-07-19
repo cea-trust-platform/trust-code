@@ -1,8 +1,0 @@
-#!/bin/bash
-# Lancement de Meshtv ou Visit
-if [ "$Meshtv" != "" ] && [ -f $Meshtv ]
-then
-   $Meshtv -i $1 
-else
-   visit -o $1
-fi

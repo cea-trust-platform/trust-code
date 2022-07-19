@@ -2287,42 +2287,6 @@ let total_criteres=$total_criteres+1
 let criteres_remplis=$criteres_remplis+$workshop
 echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
-#####################
-# Portabilite Xprepro
-#####################
-echo " "
-echo "################################"
-echo "# Test the Xprepro portability #"
-echo "################################"
-echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-echo "Analysis of $recupere_log file"
-grep "step Xprepro" $recupere_log
-echo "Analysis of $REP_NUIT/NUIT.html file"
-grep "Total number portability" $REP_NUIT/NUIT.html
-grep "Xprepro portability" $REP_NUIT/NUIT.html
-Xprepro=`$TRUST_Awk '/Xprepro portability with TRUST/ {print $1}' $REP_NUIT/NUIT.html`
-port_Xprepro=`$TRUST_Awk '/Xprepro portability with TRUST/ {print $8}' $REP_NUIT/NUIT.html`
-portabilite_Xprepro=`echo $Xprepro | $TRUST_Awk '{if ($1>=1) print 1;else print 0}'`
-[ "$nb_cible" != "$all_cible" ] && portabilite_Xprepro=0
-echo " "
-grep "XPREPRO=KO" $REP_NUIT/CR_* > tmp.log
-if [ $portabilite_Xprepro = 1 ]
-then
-   echo "Release criterion: Xprepro OK"
-   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] XPREPRO KO on host:\" $TRUST_MAIL
-else
-   echo "Release criterion: Xprepro KO"
-   grep "XPREPRO=NOT" $REP_NUIT/CR_* >> tmp.log
-   grep "Empty PERF report of" $recupere_log >> tmp.log
-   grep "No PERF report of" $recupere_log >> tmp.log
-   [ -s tmp.log ] && cat tmp.log | mail_ -s\"[lance_test_nuit] XPREPRO KO on cible host:\" $TMA_PROJECT_LEADER $TRUST_MAIL
-fi
-force_portabilite_Xprepro=~/force_portabilite_Xprepro && [ -f $force_portabilite_Xprepro ] && portabilite_Xprepro=1 && rm -f $force_portabilite_Xprepro
-echo "$portabilite_Xprepro  Xprepro $port_Xprepro=$Xprepro (>=1)" >> $MESSAGES_NUIT
-let total_criteres=$total_criteres+1
-let criteres_remplis=$criteres_remplis+$portabilite_Xprepro
-echo "<--- End at "`date '+%H:%M:%S %d/%m'`
-
 #######################
 # Portabilite de BALTIK
 #######################

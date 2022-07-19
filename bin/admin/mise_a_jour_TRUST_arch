@@ -827,17 +827,6 @@ do
             fi
 	    cd $TRUST_ROOT
          fi	 
-	 ################################
-	 # On lance les tests sur Xprepro
-	 ################################
-         echo "--------------------------------------------------------" 
-	 echo "Launch tests on XPREPRO at "`date '+%H:%M:%S'`
-	 Build=$TRUST_ROOT/build/Outils;
-         [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build};
-         rm -rf $Build/PRE_3DVDF;
-         cp -r $TRUST_ROOT/Outils/PRE_3DVDF $Build/.;
-         cd $Build/PRE_3DVDF;
-	 ./testfort2
 	 ###################################################
 	 # On lance le test sur les assertions en mode debug
 	 ###################################################

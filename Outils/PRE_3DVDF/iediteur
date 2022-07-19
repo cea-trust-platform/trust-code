@@ -1,2 +1,0 @@
-#!/bin/bash
-$TRUST_EDITOR $1 &
