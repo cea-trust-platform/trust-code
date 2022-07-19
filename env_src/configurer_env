@@ -955,19 +955,9 @@ fi
 #   Display_Missing_packages && exit -1
 #fi
 
-##############################
-# Installation de makedepend #
-##############################
-e="`cherche_file TRUST_MD makedepend`";eval $e
-if [ "$TRUST_MD" = ""  ]
-then
-echo "Compilation of makedepend"
-make_ $TRUST_ROOT/Outils/makedepend makedepend $TRUST_ROOT/exec/makedepend.log
-fi
-
 m="# Path to dtterm command";e="`cherche_file Dtterm $Dtterm`";ecrit $m"|"$e"|"$env;eval $e
 m="# Path to xterm command";e="`cherche_file Xterm xterm rxvt konsole`";ecrit $m"|"$e"|"$env;eval $e
-[ ${#Dtterm} = 0 ] || [ ${#Xterm} = 0 ] && echo "Warning. The TRUST GUI (Graphical User Interface) will not work cause Dtterm or Xterm not found. "
+[ ${#Dtterm} = 0 ] || [ ${#Xterm} = 0 ] && echo "Warning. Some TRUST tools (e.g. gdb on a parallel case) will not work cause Dtterm or Xterm not found. "
 
 #################################################################
 # Si on ne trouve pas la librairie graphique Tcl/Tk on l'installe
@@ -2105,22 +2095,9 @@ then
    fi
 fi
 ############################################################
-# Liste des outils possibles pour la creation de dependances
+# Outil pour la creation de dependances
 ############################################################
-# Fait a la fin car pour les tests de rapidite les make.*opt doivent etre crees
-if [ 0 -eq 1 ]
-then
-TRUST_MD="ccmakedep $TRUST_ROOT/exec/makedepend/bin/makedepend"
-echo "Test between $TRUST_MD to pick the fastest command:"
-time_ccmakedep=` (time -p env TRUST_MD=ccmakedep fait_makefile $TRUST_ROOT/src/Kernel/Framework 2>&1) 2>&1 | awk '/real / {print $2}'`
-echo "ccmakedep: $time_ccmakedep s"
-time_makedepend=`(time -p env TRUST_MD=$TRUST_ROOT/exec/makedepend/bin/makedepend fait_makefile $TRUST_ROOT/src/Kernel/Framework 2>&1) 2>&1 | awk '/real / {print $2}'`
-rm $TRUST_ROOT/src/Kernel/Framework/makefile
-echo "makedepend: $time_makedepend s"
-[ "`echo $time_ccmakedep $time_makedepend | awk '{print ($1>$2)}'`" = 1 ] && TRUST_MD="$TRUST_ROOT/exec/makedepend/bin/makedepend ccmakedep" # makedepend plus rapide
-else
-TRUST_MD="makedepend $TRUST_ROOT/exec/makedepend/bin/makedepend makedepend"
-fi
+TRUST_MD="makedepend"
 m="# Path to makedepend command";e="`cherche_file TRUST_MD $TRUST_MD`";ecrit $m"|"$e"|"$env;eval $e
 [ "$ligne_supp" != "" ] &&       echo $ligne_supp  >> $env
 

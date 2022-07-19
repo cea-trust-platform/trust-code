@@ -7,7 +7,6 @@ General,astyle_2.03_linux.tar.gz,outil,GF,LGPL,http://astyle.sourceforge.net/,ht
 General,doxygen-1.7.4.linux.bin.tar.gz,outil,GF,GPL,https://sourceforge.net/projects/doxygen/,http://sourceforge.net/projects/doxygen/files/rel-1.7.4/doxygen-1.7.4.linux.bin.tar.gz/download,
 General,doxygen-1.9.3.src.tar.gz,outil,ND,GPL,https://sourceforge.net/projects/doxygen/,https://www.doxygen.nl/files/doxygen-1.9.3.src.tar.gz,
 General,hwloc-2.7.1.tar.gz,,GF,BSD,http://www.open-mpi.org/projects/hwloc/,https://download.open-mpi.org/release/hwloc/v2.7/hwloc-2.7.1.tar.gz,
-General,makedepend-1.0.5.tar.bz2,,GF,"BSD like",https://github.com/ioerror/makedepend/,ftp://ftp.x.org/pub/individual/util/makedepend-1.0.5.tar.bz2,
 General,Vc-1.4.2.tar.gz,,AK,"BSD-3 Clause",https://github.com/VcDevel/Vc,https://github.com/VcDevel/Vc/releases/download/1.4.2/Vc-1.4.2.tar.gz,
 MPI,mvapich2-2.1.tgz,,GF,BSD,http://mvapich.cse.ohio-state.edu/,http://mvapich.cse.ohio-state.edu/download/mvapich/mv2/mvapich2-2.1.tar.gz,"archive introuvable, update !!"
 MPI,openmpi-2.0.4.tar.gz,,GF,BSD,https://www.open-mpi.org/,https://download.open-mpi.org/release/open-mpi/v2.0/openmpi-2.0.4.tar.gz,
