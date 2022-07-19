@@ -1,7 +1,6 @@
 #!/bin/bash
 test_visit=0 # Too much problems now for 1.7.0...
 test_visit=1 # Reactivation for 1.7.2...
-[ "`grep 'Ubuntu' /etc/issue 2>/dev/null`" != "" ] && test_visit=0 # v1.9.0: random fail of visit test on Ubuntu (due to upgrade).
 if [ "$test_visit" = 1 ]
 then
    # Teste que le format Visit+Lata fonctionne
