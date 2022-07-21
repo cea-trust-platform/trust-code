@@ -39,6 +39,7 @@ get_list_prm_from_Times()
 
 get_list_prm()
 {
+    uniq_names=" "
     # PRM 
     for f in `find $Rapports_auto_root/Validation/Rapports_automatiques -name '*.prm' -follow  | grep '/src/'`
       do
@@ -50,7 +51,12 @@ get_list_prm()
       else
         dirn_cas=`dirname $cas`
         if [ ! -f $dirn_cas/skip_prm ] && [ ! -f $dirn_cas/src/skip_prm ]; then
-          echo `dirname $cas`
+          name_only=`basename $dirn_cas`
+          echo $uniq_names | grep -e " $name_only " 2>&1 1>/dev/null  # note the spaces around name_only in the grep
+          if [ ! $? -eq 0 ]; then
+            echo `dirname $cas`
+            uniq_names=$uniq_names" $name_only "
+          fi
         fi
       fi
     done
@@ -65,7 +71,12 @@ get_list_prm()
         return
       else
         if [ ! -f $cas/skip_prm ] && [ ! -f $cas/src/skip_prm ]; then
-          echo $cas
+          name_only=`basename $cas`
+          echo $uniq_names | grep -e " $name_only " 2>&1 1>/dev/null  # note the spaces around name_only in the grep
+          if [ ! $? -eq 0 ]; then
+            echo $cas
+            uniq_names=$uniq_names" $name_only "
+          fi
         fi
       fi
     done
