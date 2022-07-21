@@ -164,12 +164,13 @@ check_src()
    ##############################
    # Verification des cast en dur
    ##############################
-   res=`grep -En "\(.*& *\)" *.cpp 2>/dev/null | grep -v "\:\:"| $TRUST_Awk -F\/\/ '{print $1}' | grep -v Eval_ |grep -v "iter.reconstructeur()"| $TRUST_Awk  '{if (NF>1) {print $0}}' ` 
+   grp_cmd=
+   res=`grep -En "\(.*& *\)" *.cpp 2>/dev/null | grep -v "\:\:"| $TRUST_Awk -F\/\/ '{print $1}' | grep -v Eval_ |grep -v "iter.reconstructeur()"|grep -v ":[ ]*\*"|grep -v ":/\*!"| $TRUST_Awk  '{if (NF>1) {print $0}}' ` 
    if [ "$res" != "" ]
    then
       echo $res
       echo $ECHO_OPTS "Vous devez corriger les cast en dur en utilisant ref_cast ou ref_cast_non_const dans le(s) fichier(s):"
-      grep -En "\(.*& *\)" *.cpp | grep -v "\:\:"| $TRUST_Awk -F\/\/ '{print $1}' | grep -v Eval_ | grep -v "iter.reconstructeur()"| $TRUST_Awk '{if (NF>1) {print $0}}'| $TRUST_Awk -F: '{print $1}' | sort -u
+      grep -En "\(.*& *\)" *.cpp | grep -v "\:\:"| $TRUST_Awk -F\/\/ '{print $1}' | grep -v Eval_ | grep -v "iter.reconstructeur()"|grep -v ":[ ]*\*"|grep -v ":/\*!"| $TRUST_Awk '{if (NF>1) {print $0}}'| $TRUST_Awk -F: '{print $1}' | sort -u
       erreur 1
    fi
 
