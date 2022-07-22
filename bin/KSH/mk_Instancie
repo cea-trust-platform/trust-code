@@ -38,7 +38,7 @@ then
    files=$files" toto.h"
    
    # On extrait les lignes declare_instanciable
-   grep eclare_instanciable $files 2>/dev/null | grep -v class_name | grep -v "//" | grep -v "\\\\" | grep -v ArrOf_Scala | grep -v Scalar_T | grep -v Diff_VDF_proto | sed "s?:? ?g" | sed "s?(? ?g" | sed "s?)? ?g" | sed "s?,? ?g" | $TRUST_Awk '{print $1" "$3}' > $tmp/declare_instanciable
+   grep eclare_instanciable $files 2>/dev/null | grep -v class_name | grep -v "//" | grep -v " \* " | grep -v "\\\\" | grep -v ArrOf_Scala | grep -v Scalar_T | grep -v Diff_VDF_proto | sed "s?:? ?g" | sed "s?(? ?g" | sed "s?)? ?g" | sed "s?,? ?g" | $TRUST_Awk '{print $1" "$3}' > $tmp/declare_instanciable
    
    # On construit le fichier instancie.cpp provisoire
    en_tete > $tmp/$name.cpp
